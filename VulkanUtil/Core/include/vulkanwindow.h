@@ -1,0 +1,322 @@
+// author: LostPeter
+// time:   2022-10-30
+
+#ifndef _VULKAN_WINDOW_H_
+#define _VULKAN_WINDOW_H_
+
+#include "vulkanbase.h"
+#include "camera.h"
+
+namespace LibUtil
+{
+    class utilExport VulkanWindow : public VulkanBase
+    {
+    public:
+        VulkanWindow(int width, int height, std::string name);
+        virtual ~VulkanWindow();
+
+    public:
+        static int versionVulkan_Major;
+        static int versionVulkan_Minor;    
+
+        static bool s_isEnableValidationLayers;
+        static int s_maxFramesInFight;
+
+    public:
+        //Pipeline Objects
+        VkInstance poInstance;
+        VkDebugUtilsMessengerEXT poDebugMessenger;
+        VkPhysicalDevice poPhysicalDevice;
+        VkDevice poDevice;
+        VkSampleCountFlagBits poMSAASamples;
+        VkQueue poQueueGraphics;
+        VkQueue poQueuePresent;
+
+        VkSurfaceKHR poSurface;
+        VkSwapchainKHR poSwapChain;
+        std::vector<VkImage> poSwapChainImages;
+        VkFormat poSwapChainImageFormat;
+        VkExtent2D poSwapChainExtent;
+        std::vector<VkImageView> poSwapChainImageViews;
+        std::vector<VkFramebuffer> poSwapChainFrameBuffers;
+        VkImage poColorImage;
+        VkDeviceMemory poColorImageMemory;
+        VkImageView poColorImageView;
+        VkImage poDepthImage;
+        VkDeviceMemory poDepthImageMemory;
+        VkImageView poDepthImageView;
+
+        VkRenderPass poRenderPass;
+        VkDescriptorSetLayout poDescriptorSetLayout;
+        
+        VkCommandPool poCommandPool;
+        
+        uint32_t poVertexCount;
+        size_t poVertexBuffer_Size;
+        void* poVertexBuffer_Data;
+        VkBuffer poVertexBuffer;
+        VkDeviceMemory poVertexBufferMemory;
+        uint32_t poIndexCount;
+        size_t poIndexBuffer_Size;
+        void* poIndexBuffer_Data;
+        VkBuffer poIndexBuffer;
+        VkDeviceMemory poIndexBufferMemory;
+
+        VertexType poTypeVertex;
+        VkPipelineLayout poPipelineLayout;
+        VkPipeline poPipelineGraphics;
+
+        uint32_t poMipLevels;
+        VkImage poTextureImage;
+        VkDeviceMemory poTextureImageMemory;
+        VkImageView poTextureImageView;
+        VkSampler poTextureSampler;
+
+        VkDescriptorPool poDescriptorPool;
+        std::vector<VkDescriptorSet> poDescriptorSets;
+
+        std::vector<VkCommandBuffer> poCommandBuffers;
+
+        //Synchronization Objects
+        std::vector<VkSemaphore> poImageAvailableSemaphores;
+        std::vector<VkSemaphore> poRenderFinishedSemaphores;
+        std::vector<VkFence> poInFlightFences;
+        std::vector<VkFence> poImagesInFlight;
+        size_t poCurrentFrame;
+        uint32_t poSwapChainImageIndex;
+
+        //Features 
+        struct SwapChainSupportDetails 
+        {
+            VkSurfaceCapabilitiesKHR capabilities;
+            std::vector<VkSurfaceFormatKHR> formats;
+            std::vector<VkPresentModeKHR> presentModes;
+        };
+        SwapChainSupportDetails swapChainSupport;
+
+        uint32_t graphicsIndex;
+        uint32_t presentIndex;
+        
+        bool framebufferResized;
+        //Config
+        glm::vec4 cfg_colorBackground;
+        bool cfg_isMSAA;
+        bool cfg_isImgui;
+        bool cfg_isWireFrame;
+
+        //Custom
+        std::string cfg_modelobj_Path;
+        std::string cfg_modelfbx_Path;
+        std::string cfg_shaderVertex_Path;
+        std::string cfg_shaderFragment_Path;
+        std::string cfg_texture_Path;
+
+        //Imgui
+        bool imgui_IsEnable;
+        int	imgui_MinimalSwapchainImages;
+	    VkDescriptorPool imgui_DescriptorPool;
+        const char* imgui_PathIni;
+        const char* imgui_PathLog;
+
+        //Multi object use, top priority
+        SceneManager* pSceneManager;
+
+        //Single object use
+        PassConstants passMainCB;
+        std::vector<VkBuffer> poBuffers_PassMainCB;
+        std::vector<VkDeviceMemory> poBuffersMemory_PassMainCB;
+        ObjectConstants objectCB;
+        std::vector<VkBuffer> poBuffers_ObjectCB;
+        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
+        MaterialConstants materialCB;
+        std::vector<VkBuffer> poBuffers_MaterialCB;
+        std::vector<VkDeviceMemory> poBuffersMemory_MaterialCB;
+
+        //MVP
+        Camera camera;
+        float speedMove;
+        float speedZoom;
+
+        //Mouse
+        glm::uvec2 lastMousePos;
+
+
+    private:
+        std::vector<const char*> validationLayers;
+        std::vector<const char*> deviceExtensions; 
+
+
+    public:
+        virtual void OnInit();
+        virtual void OnLoad();
+        virtual bool OnIsInit();
+        virtual void OnResize(int w, int h, bool force);
+        virtual bool OnBeginRender();
+            virtual void OnUpdate();
+            virtual void OnRender();
+        virtual void OnEndRender();
+        virtual void OnDestroy();
+
+        // Mouse Input
+        virtual void OnMouseDown(int btnState, int x, int y);
+        virtual void OnMouseUp(int btnState, int x, int y);
+        virtual void OnMouseMove(int btnState, int x, int y);
+
+        // Keyboard Input
+        virtual void OnKeyboardInput();
+
+    public:
+        virtual bool HasConfig_MASS();
+        virtual bool HasConfig_Imgui();
+
+        virtual bool IsEnable_MASS();
+        virtual bool IsEnable_Imgui();
+
+    protected:
+        //Create Pipeline
+        virtual void createPipeline();
+            virtual void createWindowCallback();
+            virtual void createDevice();
+                virtual void createInstance();
+                    virtual bool checkValidationLayerSupport();
+                    virtual std::vector<const char*> getRequiredExtensions();
+                    virtual void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+                virtual void setUpDebugMessenger();
+                virtual void createSurface();
+                virtual void pickPhysicalDevice();
+                    virtual void findQueueFamilies(VkPhysicalDevice device, int& indexGraphics, int& indexPresent);
+                    virtual bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+                    virtual VkSampleCountFlagBits getMaxUsableSampleCount();
+                    virtual SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, SwapChainSupportDetails& details);
+                    virtual bool isDeviceSuitable(VkPhysicalDevice device, int& indexGraphics, int& indexPresent);
+                virtual void createLogicalDevice();
+
+            virtual void createFeatureSupport();
+            
+            virtual void createSwapChainObjects();
+                virtual void createSwapChain();
+                    virtual VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+                    virtual VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+                    virtual VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+                virtual void createSwapChainImageViews();
+                    virtual VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+                    virtual void createColorResources();
+                    virtual void createDepthResources();
+                        virtual VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+                        virtual VkFormat findDepthFormat();
+                        virtual bool hasStencilComponent(VkFormat format);
+
+            virtual void createDescriptorObjects();
+                virtual void createDescriptorSetLayout();
+
+            virtual void createPipelineObjects();
+                virtual void createRenderPass();
+                    virtual void createRenderPass_KhrDepth();
+                    virtual void createRenderPass_KhrDepthImgui();
+                    virtual void createRenderPass_ColorDepthMSAA();
+                    virtual void createRenderPass_ColorDepthImguiMSAA();
+                virtual void createFramebuffers();
+
+            virtual void createCommandObjects();
+                virtual void createCommandPool();
+                    virtual VkCommandBuffer beginSingleTimeCommands();
+                    virtual void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+            
+            virtual void createSyncObjects();
+
+        //Load Assets
+        virtual void loadAssets();
+            //Scene
+            virtual void createScene();
+                virtual void createSceneManager();
+            virtual void buildScene();
+                virtual void buildScene_Shaders();
+                virtual void buildScene_InputLayouts();
+                virtual void buildScene_Meshes();
+                virtual void buildScene_SceneObjects();
+                virtual void buildScene_Materials();
+                virtual void buildScene_FrameResources();
+                virtual void buildScene_ConstantBufferViews();
+                virtual void buildScene_PipelineStates();
+
+            //Geometry
+            virtual void loadGeometry();
+                virtual void loadVertexIndexBuffer();
+                    virtual void loadModel();
+                        virtual void loadModel_Obj();
+                            virtual void createVertexIndexDataByObj(tinyobj::attrib_t* attrib, std::vector<tinyobj::shape_t>* shapes, std::vector<tinyobj::material_t>* materials);
+                        virtual void loadModel_Fbx();
+                            virtual void createVertexIndexDataByFbx();
+                        virtual void loadModel_User();
+                            virtual void createVertexIndexDataByUser();
+                    virtual void createVertexBuffer(size_t bufSize, void* pBuf, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory);
+                    virtual void createIndexBuffer(size_t bufSize, void* pBuf, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory);
+                        virtual void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+                        virtual uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+                        virtual void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+                
+                virtual void loadTexture();
+                    virtual void createTextureImage(const std::string& pathAsset_Tex, VkImage& textureImage, VkDeviceMemory& textureImageMemory, uint32_t& mipLevels);
+                        virtual void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
+                        virtual void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+                        virtual void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
+                        virtual void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+                    virtual void createTextureImageView(VkImage& textureImage, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, VkImageView& textureImageView);
+                    virtual void createTextureSampler(uint32_t mipLevels, VkSampler& textureSampler);
+                
+                virtual void loadConstBuffers();
+                    virtual void buildPassMainCB();
+                    virtual void buildObjectCB();
+                    virtual void buildMaterialCB();
+
+                virtual void createGraphicsPipeline();
+                    virtual VkShaderModule createShaderModule(std::string info, std::string pathFile);
+                    virtual void createPipelineVertexInputStateCreateInfo(VkPipelineVertexInputStateCreateInfo& vertexInputInfo);
+
+                virtual void createDescriptor();
+                    virtual void createDescriptorPool();
+                    virtual void createDescriptorSets();
+
+                virtual void createCommandBuffers();
+
+            //Imgui
+            virtual void createImgui();
+                virtual void createImgui_DescriptorPool();
+                virtual void createImgui_Init();
+
+        //Resize
+        virtual void resizeWindow(int w, int h, bool force);
+
+        //Render/Update
+        virtual bool beginRender();
+            virtual void update();
+                virtual void updateSceneObjects();
+                virtual void updateCBs_PassMain();
+                virtual void updateCBs_Objects();
+                virtual void updateCBs_Materials();
+
+                virtual void updateImgui();
+                    virtual bool beginRenderImgui();
+                    virtual void endRenderImgui();
+            virtual void render();
+        virtual void endRender();
+
+        //cleanup
+        virtual void cleanup();
+            virtual void cleanupSwapChain();
+            virtual void recreateSwapChain();
+
+    private:
+        VkResult createDebugUtilsMessengerEXT(VkInstance instance, 
+                                              const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+                                              const VkAllocationCallbacks* pAllocator,
+                                              VkDebugUtilsMessengerEXT* pDebugMessenger);
+        void destroyDebugUtilsMessengerEXT(VkInstance instance,
+                                           VkDebugUtilsMessengerEXT debugMessenger,
+                                           const VkAllocationCallbacks* pAllocator);
+        
+    };
+
+}; //LibUtil
+
+#endif
