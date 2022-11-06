@@ -1,12 +1,12 @@
 // author: LostPeter
-// time:   2022-10-30
+// time:   2022-11-05
 
 #include "preinclude.h"
-#include "vulkan_000_window.h"
+#include "vulkan_001_triangle.h"
 
 
 int main()
 {
-    Vulkan_000_Window sample(1280, 720, "LostPeter - Vulkan_000_Window");
+    Vulkan_001_Triangle sample(1280, 720, "LostPeter - Vulkan_001_Triangle");
     return App::Run(&sample, VulkanWindow::versionVulkan_Major, VulkanWindow::versionVulkan_Minor);
 }

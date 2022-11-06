@@ -1,9 +1,9 @@
 # author: LostPeter
-# time:   2022-10-30
+# time:   2022-11-05
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
 if (DEBUG)
-    PROJECT(vulkan_000_window_d)
+    PROJECT(vulkan_001_triangle_d)
     SET(CMAKE_BUILD_TYPE "Debug")
     if (!WIN32)
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
@@ -11,7 +11,7 @@ if (DEBUG)
 
     MESSAGE(STATUS "Set Debug Build !")
 else ()
-    PROJECT(vulkan_000_window)
+    PROJECT(vulkan_001_triangle)
 endif ()
 
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -67,7 +67,7 @@ endif ()
 MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
 INCLUDE_DIRECTORIES(${LIB_INCLUDE})
 
-#LIB_VULKAN_DIR, PLUGINS_DIR, STATIC_DIR
+#LIB_GLFW_DIR, LIB_VULKAN_DIR, PLUGINS_DIR, STATIC_DIR
 if (WIN32)
     SET(LIB_VULKAN_DIR "$ENV{VULKAN_SDK}/Lib")
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Lib/Windows")

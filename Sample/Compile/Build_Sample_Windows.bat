@@ -1,5 +1,5 @@
 @REM author: LostPeter
-@REM time:   2022-10-29
+@REM time:   2022-10-30
 
 @echo off
 set name_sample=%1
