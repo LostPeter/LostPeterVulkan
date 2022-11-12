@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "debug sample (MacOS)",
+            "type": "cppdbg",
+            "request": "launch",
+            //"program": "${workspaceFolder}/Bin/MacOS/vulkan_000_window_d",
+            //"program": "${workspaceFolder}/Bin/MacOS/vulkan_001_triangle_d",
+            "program": "${workspaceFolder}/Bin/MacOS/vulkan_002_imgui_d",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+        },
+
+        {
+            "name": "debug sample (Windows)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            //"program": "${workspaceFolder}/Bin/Windows/vulkan_000_window_d.exe",
+            //"program": "${workspaceFolder}/Bin/Windows/vulkan_001_triangle_d.exe",
+            //"program": "${workspaceFolder}/Bin/Windows/vulkan_002_imgui_d.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "console": "externalTerminal"
+        }
+    ]
+}

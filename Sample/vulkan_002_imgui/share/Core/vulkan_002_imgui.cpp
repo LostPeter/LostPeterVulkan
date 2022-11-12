@@ -1,0 +1,63 @@
+#include "preinclude.h"
+#include "vulkan_002_imgui.h"
+
+
+Vulkan_002_Imgui::Vulkan_002_Imgui(int width, int height, std::string name)
+    : VulkanWindow(width, height, name)
+{
+    this->cfg_isImgui = true;
+    this->imgui_IsEnable = true;
+
+    this->poTypeVertex = VertexType_Pos2Color3;
+    this->cfg_shaderVertex_Path = "Assets/Shader/Vulkan/notrans_pos2_color3.vert.spv";
+    this->cfg_shaderFragment_Path = "Assets/Shader/Vulkan/notrans_pos2_color3.frag.spv";
+}
+
+void Vulkan_002_Imgui::createVertexIndexDataByUser()
+{
+    //1> vertices
+    this->vertices.push_back(Vertex_Pos2Color3(glm::vec2( 0.0f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f)));
+    this->vertices.push_back(Vertex_Pos2Color3(glm::vec2(-0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f)));
+    this->vertices.push_back(Vertex_Pos2Color3(glm::vec2( 0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f)));
+    this->poVertexCount = (uint32_t)this->vertices.size();
+    this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos2Color3);
+    this->poVertexBuffer_Data = &this->vertices[0];
+    this->poIndexCount = 0;
+    this->poIndexBuffer_Size = 0;
+    this->poIndexBuffer_Data = nullptr;
+}
+
+void Vulkan_002_Imgui::loadConstBuffers()
+{
+
+}
+
+void Vulkan_002_Imgui::createDescriptor()
+{
+    
+}
+
+bool Vulkan_002_Imgui::beginRenderImgui()
+{
+    ImGui_ImplVulkan_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    static bool windowOpened = true;
+    static bool showDemoWindow = false;
+    ImGui::Begin("Rendertime", &windowOpened, 0);
+    ImGui::Text("Frametime: %f", 1000.0f / ImGui::GetIO().Framerate);
+    ImGui::Checkbox("Show ImGui demo window", &showDemoWindow);
+    ImGui::End();
+    if (showDemoWindow) 
+    {
+        ImGui::ShowDemoWindow();
+    }
+
+    return true;
+}
+
+void Vulkan_002_Imgui::endRenderImgui()
+{
+    VulkanWindow::endRenderImgui();
+
+}

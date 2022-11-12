@@ -34,3 +34,8 @@ Usage:
 * sample001：render a triangle with vulkan api
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_001_triangle.png)
+
+### <002> vulkan_002_imgui
+* sample002：integrate imgui
+
+![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_002_imgui.png)
