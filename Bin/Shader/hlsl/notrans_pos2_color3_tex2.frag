@@ -7,8 +7,8 @@ struct VSOutput
     [[vk::location(1)]] float2 inTexCoord       : TEXCOORD0;
 };
 
-[[vk::binding(1)]] Texture2D texture            : register(t1);
-[[vk::binding(1)]] SamplerState textureSampler  : register(s1);
+[[vk::binding(3)]] Texture2D texture            : register(t1);
+[[vk::binding(3)]] SamplerState textureSampler  : register(s1);
 
 float4 main(VSOutput input) : SV_TARGET
 {

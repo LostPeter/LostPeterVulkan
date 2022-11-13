@@ -4,11 +4,13 @@ Author:
 
     LostPeter
 
-    Document Web： https://www.zhihu.com/people/lostpeter
-
 Target: 
 
     Learning vulkan render api, compile in different platform with CMake and code the samples !
+
+Document Web: 
+
+    https://www.zhihu.com/people/lostpeter
 
 Usage:
     
@@ -21,9 +23,9 @@ Usage:
     2> Compile Samples
         cd Sample
         cd Compile
-        MacOS:      ./Build_Shader_MacOS_All.sh   
+        MacOS:      ./Build_Shader_HLSL_MacOS_All.sh   
                     ./Build_Sample_MacOS_All.sh debug
-        Windows:    ./Build_Shader_Windows_All.bat
+        Windows:    ./Build_Shader_HLSL_Windows_All.bat
                     ./Build_Sample_Windows_All.bat debug
 
 
