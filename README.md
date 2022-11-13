@@ -20,13 +20,17 @@ Usage:
         MacOS:      ./Build_all_lib_MacOS.sh debug
         Windows:    ./Build_all_lib_Windows.bat debug
 
-    2> Compile Samples
+    2> Compile Shader
+        cd Bin
+        cd Shader
+        MacOS:      ./Build_Shader_HLSL_MacOS_All.sh or ./Build_Shader_GLSL_MacOS_All.sh
+        Windows:    ./Build_Shader_HLSL_Windows_All.bat or ./Build_Shader_GLSL_Windows_All.bat
+
+    3> Compile Samples
         cd Sample
         cd Compile
-        MacOS:      ./Build_Shader_HLSL_MacOS_All.sh   
-                    ./Build_Sample_MacOS_All.sh debug
-        Windows:    ./Build_Shader_HLSL_Windows_All.bat
-                    ./Build_Sample_Windows_All.bat debug
+        MacOS:      ./Build_Sample_MacOS_All.sh debug
+        Windows:    ./Build_Sample_Windows_All.bat debug
 
 
 ### <000> vulkan_000_window
