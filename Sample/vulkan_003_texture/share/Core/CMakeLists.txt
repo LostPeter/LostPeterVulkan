@@ -1,5 +1,5 @@
 # author: LostPeter
-# time:   2022-11-08
+# time:   2022-11-12
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
 if (DEBUG)

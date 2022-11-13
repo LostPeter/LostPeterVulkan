@@ -6,3 +6,4 @@ set debug=%1
 call ./Build_Sample_Windows.bat vulkan_000_window %debug%
 call ./Build_Sample_Windows.bat vulkan_001_triangle %debug%
 call ./Build_Sample_Windows.bat vulkan_002_imgui %debug%
+call ./Build_Sample_Windows.bat vulkan_003_texture %debug%

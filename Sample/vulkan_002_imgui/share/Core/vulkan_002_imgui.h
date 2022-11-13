@@ -26,10 +26,6 @@ protected:
         //Geometry
             virtual void createVertexIndexDataByUser();
 
-        virtual void loadConstBuffers();
-
-        virtual void createDescriptor();
-
     //Render/Update
         virtual bool beginRenderImgui();
         virtual void endRenderImgui();

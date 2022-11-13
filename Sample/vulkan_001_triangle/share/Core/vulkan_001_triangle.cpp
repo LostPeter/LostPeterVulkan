@@ -6,8 +6,8 @@ Vulkan_001_Triangle::Vulkan_001_Triangle(int width, int height, std::string name
     : VulkanWindow(width, height, name)
 {
     this->poTypeVertex = VertexType_Pos2Color3;
-    this->cfg_shaderVertex_Path = "Assets/Shader/Vulkan/notrans_pos2_color3.vert.spv";
-    this->cfg_shaderFragment_Path = "Assets/Shader/Vulkan/notrans_pos2_color3.frag.spv";
+    this->cfg_shaderVertex_Path = "Assets/Shader/notrans_pos2_color3.vert.spv";
+    this->cfg_shaderFragment_Path = "Assets/Shader/notrans_pos2_color3.frag.spv";
 }
 
 void Vulkan_001_Triangle::createVertexIndexDataByUser()

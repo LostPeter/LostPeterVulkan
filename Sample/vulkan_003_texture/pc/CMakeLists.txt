@@ -1,9 +1,9 @@
 # author: LostPeter
-# time:   2022-11-08
+# time:   2022-11-12
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
 if (DEBUG)
-    PROJECT(vulkan_002_imgui_d)
+    PROJECT(vulkan_003_texture_d)
     SET(CMAKE_BUILD_TYPE "Debug")
     if (!WIN32)
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
@@ -11,7 +11,7 @@ if (DEBUG)
 
     MESSAGE(STATUS "Set Debug Build !")
 else ()
-    PROJECT(vulkan_002_imgui)
+    PROJECT(vulkan_003_texture)
 endif ()
 
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)

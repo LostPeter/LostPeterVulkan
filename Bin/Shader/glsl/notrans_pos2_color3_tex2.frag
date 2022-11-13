@@ -1,3 +1,6 @@
+//author: LostPeter
+//time:   2022-11-13
+
 #version 450
 
 layout(binding = 3) uniform sampler2D texSampler;
@@ -9,5 +12,6 @@ layout(location = 0) out vec4 outColor;
 
 void main() 
 {
-    outColor = texture(texSampler, fragTexCoord);
+    vec3 color = texture(texSampler, fragTexCoord).xyz * fragColor;
+    outColor = vec4(color, 1.0);
 }

@@ -4,6 +4,8 @@ Author:
 
     LostPeter
 
+    Document Web： https://www.zhihu.com/people/lostpeter
+
 Target: 
 
     Learning vulkan render api, compile in different platform with CMake and code the samples !
@@ -36,6 +38,11 @@ Usage:
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_001_triangle.png)
 
 ### <002> vulkan_002_imgui
-* sample002：integrate imgui
+* sample002：integrate imgui to vulkan
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_002_imgui.png)
+
+### <003> vulkan_003_texture
+* sample003：render a texture with vulkan api
+
+![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_003_texture.png)

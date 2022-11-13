@@ -9,8 +9,8 @@ Vulkan_002_Imgui::Vulkan_002_Imgui(int width, int height, std::string name)
     this->imgui_IsEnable = true;
 
     this->poTypeVertex = VertexType_Pos2Color3;
-    this->cfg_shaderVertex_Path = "Assets/Shader/Vulkan/notrans_pos2_color3.vert.spv";
-    this->cfg_shaderFragment_Path = "Assets/Shader/Vulkan/notrans_pos2_color3.frag.spv";
+    this->cfg_shaderVertex_Path = "Assets/Shader/notrans_pos2_color3.vert.spv";
+    this->cfg_shaderFragment_Path = "Assets/Shader/notrans_pos2_color3.frag.spv";
 }
 
 void Vulkan_002_Imgui::createVertexIndexDataByUser()
@@ -27,16 +27,6 @@ void Vulkan_002_Imgui::createVertexIndexDataByUser()
     this->poIndexBuffer_Data = nullptr;
 }
 
-void Vulkan_002_Imgui::loadConstBuffers()
-{
-
-}
-
-void Vulkan_002_Imgui::createDescriptor()
-{
-    
-}
-
 bool Vulkan_002_Imgui::beginRenderImgui()
 {
     ImGui_ImplVulkan_NewFrame();
@@ -45,7 +35,7 @@ bool Vulkan_002_Imgui::beginRenderImgui()
     static bool windowOpened = true;
     static bool showDemoWindow = false;
     ImGui::Begin("Rendertime", &windowOpened, 0);
-    ImGui::Text("Frametime: %f", 1000.0f / ImGui::GetIO().Framerate);
+    ImGui::Text("Frametime: %f", ImGui::GetIO().Framerate);
     ImGui::Checkbox("Show ImGui demo window", &showDemoWindow);
     ImGui::End();
     if (showDemoWindow) 
