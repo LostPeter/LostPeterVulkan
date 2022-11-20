@@ -13,9 +13,11 @@ Document Web:
     https://www.zhihu.com/people/lostpeter
 
 Usage:
-    Vulkan SDK: I'm using vulkan version 1.2.189.0, you can change it.
-    MacOS:   Config VULKAN_HOME, we will set vulkan path in CMakeLists.txt "$ENV{VULKAN_HOME}/macOS/include"
+
+    Vulkan SDK: I'm using vulkan version 1.2.189.0, you can change it.    
+    MacOS:   Config VULKAN_HOME, we will set vulkan path in CMakeLists.txt "$ENV{VULKAN_HOME}/macOS/include"  
     Windows: Config VULKAN_SDK, we will set vulkan path in CMakeLists.txt "$ENV{VULKAN_SDK}/Include"
+    
 
     1> Compile Dependencies
         cd Dependencies
