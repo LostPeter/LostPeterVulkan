@@ -45,22 +45,22 @@ endif ()
 #LIB_INCLUDE
 if (WIN32)
     SET(LIB_INCLUDE "$ENV{VULKAN_SDK}/Include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/assimp-5.2.4"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glfw-3.3.6"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/imgui-1.85_glfw_vulkan"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/stb-0.02"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/tinyobjloader-2.0.0")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/stb-0.02")
 
 elseif (ANDROID) 
 
 
 elseif (APPLE)
     SET(LIB_INCLUDE "$ENV{VULKAN_HOME}/macOS/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/assimp-5.2.4"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glfw-3.3.6"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/imgui-1.85_glfw_vulkan"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/stb-0.02"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/tinyobjloader-2.0.0")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/stb-0.02")
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
     SET(COCOA_LIBS ${SYS_FRAMEWORKS_DIR}/Cocoa.framework)
@@ -119,12 +119,14 @@ if (WIN32)
     if (DEBUG)
         LINK_LIBRARIES(shlwapi.lib
                        ${LIB_VULKAN_DIR}/vulkan-1.lib
+                       ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4_d.lib
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6_d.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan_d.lib)
         
     else ()
         LINK_LIBRARIES(shlwapi.lib
                        ${LIB_VULKAN_DIR}/vulkan-1.lib
+                       ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4.lib
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan.lib)
         
@@ -144,10 +146,12 @@ elseif (APPLE)
     MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom MacOS !")
 
     if (DEBUG)
-        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6_d.a
+        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6_d.a
                        "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan_d.a -Wl,-noall_load")
     else ()
-        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6.a
+        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4.a
+                       ${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6.a
                        "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan.a -Wl,-noall_load")
     endif()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})

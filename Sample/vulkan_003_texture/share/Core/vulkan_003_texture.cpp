@@ -8,13 +8,16 @@ Vulkan_003_Texture::Vulkan_003_Texture(int width, int height, std::string name)
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
 
+    this->cfg_isNegativeViewport = false;
+    this->cfg_vkFrontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+
     this->poTypeVertex = VertexType_Pos2Color3Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/notrans_pos2_color3_tex2.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/notrans_pos2_color3_tex2.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture.jpg";
 }
 
-void Vulkan_003_Texture::createVertexIndexDataByUser()
+void Vulkan_003_Texture::loadModel_User()
 {   
     //1> vertices
     this->vertices.push_back(Vertex_Pos2Color3Tex2(glm::vec2(-0.5f, -0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)));
@@ -39,8 +42,10 @@ bool Vulkan_003_Texture::beginRenderImgui()
     static bool windowOpened = true;
     static bool showDemoWindow = false;
     ImGui::Begin("Rendertime", &windowOpened, 0);
-    ImGui::Text("Frametime: %f", ImGui::GetIO().Framerate);
-
+    {
+        ImGui::Text("Frametime: %f", ImGui::GetIO().Framerate);
+        ImGui::Checkbox("Is WireFrame", &cfg_isWireFrame);
+    }
     ImGui::End();
     if (showDemoWindow) 
     {

@@ -1,5 +1,6 @@
 #include "../include/preinclude.h"
 #include "../include/vulkanwindow.h"
+#include "../include/meshloader.h"
 
 namespace LibUtil
 {
@@ -46,10 +47,12 @@ namespace LibUtil
         , poIndexBuffer_Data(nullptr)
         , poIndexBuffer(nullptr)
         , poIndexBufferMemory(nullptr)
+        , poMatWorld(MathUtil::Identity4x4())
 
         , poTypeVertex(VertexType_Default)
         , poPipelineLayout(nullptr)
         , poPipelineGraphics(nullptr)
+        , poPipelineGraphics_WireFrame(nullptr)
 
         , poTextureImage(nullptr)
         , poTextureImageMemory(nullptr)
@@ -67,8 +70,31 @@ namespace LibUtil
         , cfg_isMSAA(false)
         , cfg_isImgui(false)
         , cfg_isWireFrame(false)
-        , cfg_modelobj_Path("")
-        , cfg_modelfbx_Path("")
+        , cfg_isRotate(true)
+        , cfg_isNegativeViewport(true)
+        , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
+        , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
+        , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
+        , cfg_vkCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
+        , cfg_isDepthTest(VK_TRUE)
+        , cfg_isDepthWrite(VK_TRUE)
+        , cfg_DepthCompareOp(VK_COMPARE_OP_LESS) 
+        , cfg_isStencilTest(VK_FALSE)
+        , cfg_isBlend(VK_FALSE)
+        , cfg_BlendColorFactorSrc(VK_BLEND_FACTOR_ONE)
+        , cfg_BlendColorFactorDst(VK_BLEND_FACTOR_ZERO)
+        , cfg_BlendColorOp(VK_BLEND_OP_ADD)
+        , cfg_BlendAlphaFactorSrc(VK_BLEND_FACTOR_ONE)
+        , cfg_BlendAlphaFactorDst(VK_BLEND_FACTOR_ZERO)
+        , cfg_BlendAlphaOp(VK_BLEND_OP_ADD)
+        , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
+
+        , cfg_cameraPos(0.0f, 0.0f, -5.0f)
+        , cfg_cameraFov(45.0f)
+        , cfg_cameraNear(0.05f)
+        , cfg_cameraFar(1000.0f)
+
+        , cfg_model_Path("")
         , cfg_shaderVertex_Path("")
         , cfg_shaderFragment_Path("")
         , cfg_texture_Path("")
@@ -87,7 +113,23 @@ namespace LibUtil
     {
         this->validationLayers.push_back("VK_LAYER_KHRONOS_validation");
         this->deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+        this->deviceExtensions.push_back(VK_KHR_MAINTENANCE1_EXTENSION_NAME);
 
+        cfg_StencilOpFront.failOp = VK_STENCIL_OP_KEEP;
+        cfg_StencilOpFront.passOp = VK_STENCIL_OP_KEEP;
+        cfg_StencilOpFront.depthFailOp = VK_STENCIL_OP_KEEP;
+        cfg_StencilOpFront.compareOp = VK_COMPARE_OP_LESS;
+        cfg_StencilOpFront.compareMask = 0;
+        cfg_StencilOpFront.writeMask = 0;
+        cfg_StencilOpFront.reference = 0;
+
+        cfg_StencilOpBack.failOp = VK_STENCIL_OP_KEEP;
+        cfg_StencilOpBack.passOp = VK_STENCIL_OP_KEEP;
+        cfg_StencilOpBack.depthFailOp = VK_STENCIL_OP_KEEP;
+        cfg_StencilOpBack.compareOp = VK_COMPARE_OP_LESS;
+        cfg_StencilOpBack.compareMask = 0;
+        cfg_StencilOpBack.writeMask = 0;
+        cfg_StencilOpBack.reference = 0;
     }
 
     VulkanWindow::~VulkanWindow()
@@ -116,7 +158,7 @@ namespace LibUtil
     {
         resizeWindow(w, h, force);
 
-        this->camera.SetLens(0.25f * MathUtil::Pi, this->aspectRatio, 1.0f, 10000.0f);
+        this->camera.SetLens(0.25f * MathUtil::ms_fPI, this->aspectRatio, 1.0f, 10000.0f);
     }
 
     bool VulkanWindow::OnBeginRender()
@@ -214,17 +256,17 @@ namespace LibUtil
             //3> Create Feature Support
             createFeatureSupport();
 
-            //4> Create Swap Chain Objects
+            //4> Create Command Objects
+            createCommandObjects();
+
+            //5> Create Swap Chain Objects
             createSwapChainObjects();
 
-            //5> createDescriptorObjects
+            //6> createDescriptorObjects
             createDescriptorObjects();
             
-            //6> Create Pipeline Objects
+            //7> Create Pipeline Objects
             createPipelineObjects();
-
-            //7> Create Command Objects
-            createCommandObjects();
 
             //8> Create Sync Objects
             createSyncObjects();
@@ -353,7 +395,6 @@ namespace LibUtil
             glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
             std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
             if (s_isEnableValidationLayers) {
                 extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
             }
@@ -598,9 +639,69 @@ namespace LibUtil
         std::cout << "*****<1-3> VulkanWindow::createFeatureSupport finish *****" << std::endl;
     }
 
+    void VulkanWindow::createCommandObjects()
+    {
+        std::cout << "*****<1-4> VulkanWindow::createCommandObjects start *****" << std::endl;
+        {
+            //1> createCommandPool
+            createCommandPool();
+        }
+        std::cout << "*****<1-4> VulkanWindow::createCommandObjects finish *****" << std::endl;
+    }
+    void VulkanWindow::createCommandPool()
+    {
+        VkCommandPoolCreateInfo poolInfo = {};
+        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        poolInfo.queueFamilyIndex = this->graphicsIndex;
+        if (HasConfig_Imgui())
+        {
+            poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        }
+
+        if (vkCreateCommandPool(this->poDevice, &poolInfo, nullptr, &this->poCommandPool) != VK_SUCCESS) 
+        {
+            throw std::runtime_error("VulkanWindow::createCommandPool: Failed to create command pool !");
+        }
+
+        std::cout << "<1-4-1> VulkanWindow::createCommandPool finish !" << std::endl;
+    }
+    VkCommandBuffer VulkanWindow::beginSingleTimeCommands() 
+    {
+        VkCommandBufferAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool = this->poCommandPool;
+        allocInfo.commandBufferCount = 1;
+
+        VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
+        vkAllocateCommandBuffers(this->poDevice, &allocInfo, &commandBuffer);
+
+        VkCommandBufferBeginInfo beginInfo = {};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+        vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+        return commandBuffer;
+    }
+    void VulkanWindow::endSingleTimeCommands(VkCommandBuffer commandBuffer) 
+    {
+        vkEndCommandBuffer(commandBuffer);
+
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &commandBuffer;
+
+        vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, nullptr);
+        vkQueueWaitIdle(this->poQueueGraphics);
+
+        vkFreeCommandBuffers(this->poDevice, this->poCommandPool, 1, &commandBuffer);
+    }
+
     void VulkanWindow::createSwapChainObjects()
     {
-        std::cout << "*****<1-4> VulkanWindow::createSwapChainObjects start *****" << std::endl;
+        std::cout << "*****<1-5> VulkanWindow::createSwapChainObjects start *****" << std::endl;
         {
             //1> createSwapChain
             createSwapChain();
@@ -617,7 +718,7 @@ namespace LibUtil
             //4> createDepthResources
             createDepthResources();
         }
-        std::cout << "*****<1-4> VulkanWindow::createSwapChainObjects finish *****" << std::endl;
+        std::cout << "*****<1-5> VulkanWindow::createSwapChainObjects finish *****" << std::endl;
     }
     void VulkanWindow::createSwapChain()
     {
@@ -685,7 +786,7 @@ namespace LibUtil
 
         int width, height;
         glfwGetFramebufferSize(this->pWindow, &width, &height);
-        std::cout << "<1-4-1> VulkanWindow::createSwapChain finish, Swapchain size: [" 
+        std::cout << "<1-5-1> VulkanWindow::createSwapChain finish, Swapchain size: [" 
                   << extent.width 
                   << ","  
                   << extent.height
@@ -695,6 +796,8 @@ namespace LibUtil
                   << height
                   << "]"
                   << std::endl;
+
+        createViewport();
     }
         VkSurfaceFormatKHR VulkanWindow::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) 
         {
@@ -746,6 +849,23 @@ namespace LibUtil
                 return actualExtent;
             }
         }
+        void VulkanWindow::createViewport()
+        {
+            this->poViewport = {};
+            this->poViewport.x = 0.0f;
+            this->poViewport.y = 0.0f;
+            this->poViewport.width = (float)this->poSwapChainExtent.width;
+            this->poViewport.height = (float)this->poSwapChainExtent.height;
+            this->poViewport.minDepth = 0.0f;
+            this->poViewport.maxDepth = 1.0f;
+
+            this->poScissor = {};
+            VkOffset2D offset;
+            offset.x = 0;
+            offset.y = 0;
+            this->poScissor.offset = offset;
+            this->poScissor.extent = this->poSwapChainExtent;
+        }
 
     void VulkanWindow::createSwapChainImageViews()
     {
@@ -757,7 +877,7 @@ namespace LibUtil
             this->poSwapChainImageViews[i] = createImageView(this->poSwapChainImages[i], this->poSwapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
         }
 
-        std::cout << "<1-4-2> VulkanWindow::createSwapChainImageViews finish !" << std::endl;
+        std::cout << "<1-5-2> VulkanWindow::createSwapChainImageViews finish !" << std::endl;
     }
         VkImageView VulkanWindow::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) 
         {
@@ -786,7 +906,7 @@ namespace LibUtil
             createImage(this->poSwapChainExtent.width, this->poSwapChainExtent.height, 1, this->poMSAASamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, this->poColorImage, this->poColorImageMemory);
             this->poColorImageView = createImageView(this->poColorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 
-            std::cout << "<1-4-3> VulkanWindow::createColorResources finish !" << std::endl;
+            std::cout << "<1-5-3> VulkanWindow::createColorResources finish !" << std::endl;
         }
         void VulkanWindow::createDepthResources()
         {
@@ -795,7 +915,7 @@ namespace LibUtil
             createImage(this->poSwapChainExtent.width, this->poSwapChainExtent.height, 1, this->poMSAASamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, this->poDepthImage, this->poDepthImageMemory);
             this->poDepthImageView = createImageView(this->poDepthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 
-            std::cout << "<1-4-4> VulkanWindow::createDepthResources finish !" << std::endl;
+            std::cout << "<1-5-4> VulkanWindow::createDepthResources finish !" << std::endl;
         }
         VkFormat VulkanWindow::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) 
         {
@@ -833,16 +953,15 @@ namespace LibUtil
             return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
         }
 
-
     void VulkanWindow::createDescriptorObjects()
     {
-        std::cout << "*****<1-5> VulkanWindow::createDescriptorObjects start *****" << std::endl;
+        std::cout << "*****<1-6> VulkanWindow::createDescriptorObjects start *****" << std::endl;
         {
             //1> createDescriptorSetLayout
             createDescriptorSetLayout();
 
         }
-        std::cout << "*****<1-5> VulkanWindow::createDescriptorObjects finish *****" << std::endl;
+        std::cout << "*****<1-6> VulkanWindow::createDescriptorObjects finish *****" << std::endl;
     }
     void VulkanWindow::createDescriptorSetLayout()
     {
@@ -895,12 +1014,12 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createDescriptorSetLayout: Failed to create descriptor set layout !");
         }
 
-        std::cout << "<1-5-1> VulkanWindow::createDescriptorSetLayout finish !" << std::endl;
+        std::cout << "<1-6-1> VulkanWindow::createDescriptorSetLayout finish !" << std::endl;
     }
 
     void VulkanWindow::createPipelineObjects()
     {
-        std::cout << "*****<1-6> VulkanWindow::createPipelineObjects start *****" << std::endl;
+        std::cout << "*****<1-7> VulkanWindow::createPipelineObjects start *****" << std::endl;
         {
             //1> createRenderPass
             createRenderPass();
@@ -908,7 +1027,7 @@ namespace LibUtil
             //2> createFramebuffers
             createFramebuffers();
         }
-        std::cout << "*****<1-6> VulkanWindow::createPipelineObjects finish *****" << std::endl;
+        std::cout << "*****<1-7> VulkanWindow::createPipelineObjects finish *****" << std::endl;
     }
     void VulkanWindow::createRenderPass()
     {
@@ -1007,7 +1126,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createRenderPass_KhrDepth: Failed to create render pass !");
         }
 
-        std::cout << "<1-6-1> VulkanWindow::createRenderPass_KhrDepth finish !" << std::endl;
+        std::cout << "<1-7-1> VulkanWindow::createRenderPass_KhrDepth finish !" << std::endl;
     }
     void VulkanWindow::createRenderPass_KhrDepthImgui()
     {
@@ -1119,7 +1238,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create render pass !");
         }
 
-        std::cout << "<1-6-1> VulkanWindow::createRenderPass_KhrDepthImgui finish !" << std::endl;
+        std::cout << "<1-7-1> VulkanWindow::createRenderPass_KhrDepthImgui finish !" << std::endl;
     }
     void VulkanWindow::createRenderPass_ColorDepthMSAA()
     {
@@ -1210,7 +1329,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create render pass !");
         }
 
-        std::cout << "<1-6-1> VulkanWindow::createRenderPass_ColorDepthMSAA finish !" << std::endl;
+        std::cout << "<1-7-1> VulkanWindow::createRenderPass_ColorDepthMSAA finish !" << std::endl;
     }
     void VulkanWindow::createRenderPass_ColorDepthImguiMSAA()
     {
@@ -1344,7 +1463,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create render pass !");
         }
 
-        std::cout << "<1-6-1> VulkanWindow::createRenderPass_ColorDepthImguiMSAA finish !" << std::endl;
+        std::cout << "<1-7-1> VulkanWindow::createRenderPass_ColorDepthImguiMSAA finish !" << std::endl;
     }
     void VulkanWindow::createFramebuffers()
     {
@@ -1400,67 +1519,7 @@ namespace LibUtil
             }
         }
 
-        std::cout << "<1-6-2> VulkanWindow::createFramebuffers finish !" << std::endl;
-    }
-
-    void VulkanWindow::createCommandObjects()
-    {
-        std::cout << "*****<1-7> VulkanWindow::createCommandObjects start *****" << std::endl;
-        {
-            //1> createCommandPool
-            createCommandPool();
-        }
-        std::cout << "*****<1-7> VulkanWindow::createCommandObjects finish *****" << std::endl;
-    }
-    void VulkanWindow::createCommandPool()
-    {
-        VkCommandPoolCreateInfo poolInfo = {};
-        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        poolInfo.queueFamilyIndex = this->graphicsIndex;
-        if (HasConfig_Imgui())
-        {
-            poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        }
-
-        if (vkCreateCommandPool(this->poDevice, &poolInfo, nullptr, &this->poCommandPool) != VK_SUCCESS) 
-        {
-            throw std::runtime_error("VulkanWindow::createCommandPool: Failed to create command pool !");
-        }
-
-        std::cout << "<1-7-1> VulkanWindow::createCommandPool finish !" << std::endl;
-    }
-    VkCommandBuffer VulkanWindow::beginSingleTimeCommands() 
-    {
-        VkCommandBufferAllocateInfo allocInfo = {};
-        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandPool = this->poCommandPool;
-        allocInfo.commandBufferCount = 1;
-
-        VkCommandBuffer commandBuffer;
-        vkAllocateCommandBuffers(this->poDevice, &allocInfo, &commandBuffer);
-
-        VkCommandBufferBeginInfo beginInfo = {};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-        vkBeginCommandBuffer(commandBuffer, &beginInfo);
-
-        return commandBuffer;
-    }
-    void VulkanWindow::endSingleTimeCommands(VkCommandBuffer commandBuffer) 
-    {
-        vkEndCommandBuffer(commandBuffer);
-
-        VkSubmitInfo submitInfo = {};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffer;
-
-        vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, nullptr);
-        vkQueueWaitIdle(this->poQueueGraphics);
-
-        vkFreeCommandBuffers(this->poDevice, this->poCommandPool, 1, &commandBuffer);
+        std::cout << "<1-7-2> VulkanWindow::createFramebuffers finish !" << std::endl;
     }
 
     void VulkanWindow::createSyncObjects()
@@ -1651,17 +1710,12 @@ namespace LibUtil
     {
         std::cout << "**<2-2-1-1> VulkanWindow::loadModel start **" << std::endl;
         {
-            //1> model obj   
-            if (!this->cfg_modelobj_Path.empty())
+            //1> model 
+            if (!this->cfg_model_Path.empty())
             {
-                loadModel_Obj();
+                loadModel_Assimp();
             }
-            //2> model fbx
-            else if (!this->cfg_modelfbx_Path.empty())
-            {
-                loadModel_Fbx();
-            }
-            //3> model user
+            //2> model user
             else
             {
                 loadModel_User();
@@ -1669,39 +1723,11 @@ namespace LibUtil
         }
         std::cout << "**<2-2-1-1> VulkanWindow::loadModel finish **" << std::endl;
     }
-        void VulkanWindow::loadModel_Obj()
-        {
-            tinyobj::attrib_t attrib;
-            std::vector<tinyobj::shape_t> shapes;
-            std::vector<tinyobj::material_t> materials;
-            std::string warn, err;
-
-            std::string pathModel = GetAssetFullPath(this->cfg_modelobj_Path);
-            if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, pathModel.c_str()))
-            {
-                throw std::runtime_error(warn + err);
-            }
-
-            createVertexIndexDataByObj(&attrib, &shapes, &materials);
-        }
-        void VulkanWindow::createVertexIndexDataByObj(tinyobj::attrib_t* attrib, std::vector<tinyobj::shape_t>* shapes, std::vector<tinyobj::material_t>* materials)
+        void VulkanWindow::loadModel_Assimp()
         {
             
         }
-        void VulkanWindow::loadModel_Fbx()
-        {
-
-        }
-        void VulkanWindow::createVertexIndexDataByFbx()
-        {
-
-        }
         void VulkanWindow::loadModel_User()
-        {
-
-            createVertexIndexDataByUser();
-        }
-        void VulkanWindow::createVertexIndexDataByUser()
         {
 
         }
@@ -2157,6 +2183,7 @@ namespace LibUtil
             fragShaderModule = createShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
         }
 
+        //1> Pipeline Shader Stage
         VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
         vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -2171,51 +2198,41 @@ namespace LibUtil
 
         VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
+        //2> Pipeline VertexInput State
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
         vertexInputInfo.vertexBindingDescriptionCount = 1;
         createPipelineVertexInputStateCreateInfo(vertexInputInfo);
 
+        //3> Pipeline InputAssembly
         VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
         inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        inputAssembly.topology = this->cfg_vkPrimitiveTopology;
         inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-        VkViewport viewport = {};
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = (float)this->poSwapChainExtent.width;
-        viewport.height = (float)this->poSwapChainExtent.height;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-
-        VkRect2D scissor = {};
-        VkOffset2D offset;
-        offset.x = 0;
-        offset.y = 0;
-        scissor.offset = offset;
-        scissor.extent = this->poSwapChainExtent;
-
+        //4> Pipeline Viewport State
         VkPipelineViewportStateCreateInfo viewportState = {};
         viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewportState.viewportCount = 1;
-        viewportState.pViewports = &viewport;
+        viewportState.pViewports = &this->poViewport;
         viewportState.scissorCount = 1;
-        viewportState.pScissors = &scissor;
+        viewportState.pScissors = &this->poScissor;
 
+        //5> Pipeline Rasterization State
         VkPipelineRasterizationStateCreateInfo rasterizer = {};
         rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         rasterizer.depthClampEnable = VK_FALSE;
         rasterizer.rasterizerDiscardEnable = VK_FALSE;
-        rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+        rasterizer.polygonMode = this->cfg_vkPolygonMode;
         rasterizer.lineWidth = 1.0f;
-        rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-        rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+        rasterizer.cullMode = this->cfg_vkCullModeFlagBits;
+        rasterizer.frontFace = this->cfg_vkFrontFace;
         rasterizer.depthBiasEnable = VK_FALSE;
         rasterizer.depthBiasConstantFactor = 0.0f; // Optional
 	    rasterizer.depthBiasClamp = 0.0f; // Optional
 	    rasterizer.depthBiasSlopeFactor = 0.0f; // Optional
 
+        //6> Pipeline Multisample State
         VkPipelineMultisampleStateCreateInfo multisampling = {};
         multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
         multisampling.sampleShadingEnable = VK_FALSE;
@@ -2225,17 +2242,33 @@ namespace LibUtil
         multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
         multisampling.alphaToOneEnable = VK_FALSE; // Optional
 
+        //7> Pipeline DepthStencil State
         VkPipelineDepthStencilStateCreateInfo depthStencil = {};
         depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-        depthStencil.depthTestEnable = VK_TRUE;
-        depthStencil.depthWriteEnable = VK_TRUE;
-        depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+        depthStencil.depthTestEnable = this->cfg_isDepthTest;
+        depthStencil.depthWriteEnable = this->cfg_isDepthWrite;
+        depthStencil.depthCompareOp = this->cfg_DepthCompareOp;
         depthStencil.depthBoundsTestEnable = VK_FALSE;
-        depthStencil.stencilTestEnable = VK_FALSE;
+        depthStencil.stencilTestEnable = this->cfg_isStencilTest;
+        if (this->cfg_isStencilTest)
+        {
+            depthStencil.front = this->cfg_StencilOpFront;
+            depthStencil.back = this->cfg_StencilOpBack;
+        }
 
+        //8> Pipeline ColorBlend State 
         VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
-        colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-        colorBlendAttachment.blendEnable = VK_FALSE;
+        colorBlendAttachment.blendEnable = this->cfg_isBlend;
+        colorBlendAttachment.colorWriteMask = this->cfg_ColorWriteMask;
+        if (this->cfg_isBlend)
+        {
+            colorBlendAttachment.srcColorBlendFactor = this->cfg_BlendColorFactorSrc;
+            colorBlendAttachment.dstColorBlendFactor = this->cfg_BlendColorFactorDst;
+            colorBlendAttachment.colorBlendOp = this->cfg_BlendColorOp;
+            colorBlendAttachment.srcAlphaBlendFactor = this->cfg_BlendAlphaFactorSrc;
+            colorBlendAttachment.dstAlphaBlendFactor = this->cfg_BlendAlphaFactorDst;
+            colorBlendAttachment.alphaBlendOp = this->cfg_BlendAlphaOp;
+        }
 
         VkPipelineColorBlendStateCreateInfo colorBlending = {};
         colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -2248,38 +2281,54 @@ namespace LibUtil
         colorBlending.blendConstants[2] = 0.0f;
         colorBlending.blendConstants[3] = 0.0f;
 
+        //9> Pipeline Dynamic State
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
+        const std::vector<VkDynamicState> dynamicStateEnables = 
+        { 
+            VK_DYNAMIC_STATE_VIEWPORT, 
+            VK_DYNAMIC_STATE_SCISSOR 
+        };
+        dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicStateInfo.pDynamicStates = dynamicStateEnables.data();
+        dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
+        dynamicStateInfo.flags = 0;
+
+        //10> Pipeline Layout
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 0;
         pipelineLayoutInfo.pSetLayouts = nullptr;
         pipelineLayoutInfo.pushConstantRangeCount = 0;
-         
         if (this->poDescriptorSetLayout != nullptr)
         {
             pipelineLayoutInfo.setLayoutCount = 1;
             pipelineLayoutInfo.pSetLayouts = &this->poDescriptorSetLayout;
         }
-
         if (vkCreatePipelineLayout(this->poDevice, &pipelineLayoutInfo, nullptr, &this->poPipelineLayout) != VK_SUCCESS) 
         {
             throw std::runtime_error("VulkanWindow::createGraphicsPipeline: Failed to create pipeline layout !");
         }
 
+        //11> Graphics Pipeline
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        pipelineInfo.pNext = nullptr;
         pipelineInfo.stageCount = 2;
         pipelineInfo.pStages = shaderStages;
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &inputAssembly;
+        pipelineInfo.pTessellationState = nullptr;
         pipelineInfo.pViewportState = &viewportState;
         pipelineInfo.pRasterizationState = &rasterizer;
         pipelineInfo.pMultisampleState = &multisampling;
         pipelineInfo.pDepthStencilState = &depthStencil;
         pipelineInfo.pColorBlendState = &colorBlending;
+        pipelineInfo.pDynamicState = &dynamicStateInfo;
         pipelineInfo.layout = this->poPipelineLayout;
         pipelineInfo.renderPass = this->poRenderPass;
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = nullptr;
+        pipelineInfo.basePipelineIndex = 0;
 
         VkResult result = vkCreateGraphicsPipelines(this->poDevice, nullptr, 1, &pipelineInfo, nullptr, &this->poPipelineGraphics);
         if (result != VK_SUCCESS)
@@ -2288,6 +2337,18 @@ namespace LibUtil
             os << (int)result;
             std::cout << "VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline, result: " + os.str() << std::endl;
             throw std::runtime_error("VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline, result: " + os.str());
+        }
+
+        //12> Graphics Pipeline WireFrame
+        rasterizer.polygonMode = VK_POLYGON_MODE_LINE;
+        pipelineInfo.pRasterizationState = &rasterizer;
+        result = vkCreateGraphicsPipelines(this->poDevice, nullptr, 1, &pipelineInfo, nullptr, &this->poPipelineGraphics_WireFrame);
+        if (result != VK_SUCCESS)
+        {
+            std::ostringstream os;
+            os << (int)result;
+            std::cout << "VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline wireframe, result: " + os.str() << std::endl;
+            throw std::runtime_error("VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline wireframe, result: " + os.str());
         }
 
         vkDestroyShaderModule(this->poDevice, fragShaderModule, nullptr);
@@ -2300,7 +2361,12 @@ namespace LibUtil
         if (pathFile.empty())
             return nullptr;
 
-        std::vector<char> code = VulkanUtil::ReadFile(GetAssetFullPath(pathFile));
+        std::vector<char> code;
+        if (!VulkanUtil::LoadAssetFileContent(pathFile.c_str(), code))
+        {
+            std::cout << "VulkanWindow::createShaderModule failed, path: " << pathFile << std::endl;
+            return nullptr;
+        }
         if (code.size() <= 0)
         {
             return nullptr;
@@ -2365,8 +2431,8 @@ namespace LibUtil
             }
             case (int)VertexType_Default:
             {
-                VkVertexInputBindingDescription* pBindingDescription = Vertex::getBindingDescriptionPtr();
-                std::array<VkVertexInputAttributeDescription, 5>* pAttributeDescriptions = Vertex::getAttributeDescriptionsPtr();
+                VkVertexInputBindingDescription* pBindingDescription = MeshVertex::getBindingDescriptionPtr();
+                std::array<VkVertexInputAttributeDescription, 5>* pAttributeDescriptions = MeshVertex::getAttributeDescriptionsPtr();
 
                 vertexInputInfo.pVertexBindingDescriptions = pBindingDescription;
                 vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
@@ -2438,7 +2504,14 @@ namespace LibUtil
         {
             throw std::runtime_error("VulkanWindow::createDescriptorSets: Failed to allocate descriptor sets !");
         }
+        
+        updateDescriptorSets();
 
+        std::cout << "<2-2-5-2> VulkanWindow::createDescriptorSets finish !" << std::endl;
+    }
+    void VulkanWindow::updateDescriptorSets()
+    {
+        size_t count = this->poDescriptorSets.size();
         for (size_t i = 0; i < count; i++)
         {
             VkDescriptorBufferInfo bufferInfo_PassMain = {};
@@ -2497,8 +2570,6 @@ namespace LibUtil
 
             vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
         }
-
-        std::cout << "<2-2-5-2> VulkanWindow::createDescriptorSets finish !" << std::endl;
     }
 
     void VulkanWindow::createCommandBuffers()
@@ -2552,7 +2623,20 @@ namespace LibUtil
 
                     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
                     {
-                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics);
+                        if (!this->cfg_isWireFrame)
+                            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics);
+                        else 
+                            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics_WireFrame);
+
+                        //0> Viewport
+                        VkViewport viewport = this->poViewport;
+                        if (cfg_isNegativeViewport)
+                        {
+                            viewport.y = viewport.height - viewport.y;
+                            viewport.height = -viewport.height;
+                        }   
+                        vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+                        vkCmdSetScissor(commandBuffer, 0, 1, &this->poScissor);
 
                         VkBuffer vertexBuffers[] = { this->poVertexBuffer };
                         VkDeviceSize offsets[] = { 0 };
@@ -2731,9 +2815,13 @@ namespace LibUtil
             if (this->poBuffersMemory_PassMainCB.size() <= 0)
                 return;
 
-            this->passMainCB.g_MatView = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            this->passMainCB.g_MatProj = glm::perspective(glm::radians(45.0f), this->poSwapChainExtent.width / (float)this->poSwapChainExtent.height, 0.1f, 10.0f);
-            this->passMainCB.g_MatProj[1][1] *= -1;
+            this->passMainCB.g_MatView = glm::lookAtLH(this->cfg_cameraPos, 
+                                                       glm::vec3(0.0f, 0.0f, 0.0f), 
+                                                       glm::vec3(0.0f, 1.0f, 0.0f));
+            this->passMainCB.g_MatProj = glm::perspectiveLH(glm::radians(this->cfg_cameraFov), 
+                                                            this->poSwapChainExtent.width / (float)this->poSwapChainExtent.height,
+                                                            this->cfg_cameraNear, 
+                                                            this->cfg_cameraFar);
 
             VkDeviceMemory& memory = this->poBuffersMemory_PassMainCB[this->poSwapChainImageIndex];
             void* data;
@@ -2750,7 +2838,16 @@ namespace LibUtil
             auto currentTime = std::chrono::high_resolution_clock::now();
             float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-            this->objectCB.g_MatWorld = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+            if (this->cfg_isRotate)
+            {
+                this->objectCB.g_MatWorld = glm::rotate(this->poMatWorld, 
+                                                        time * glm::radians(90.0f), 
+                                                        glm::vec3(0.0f, 1.0f, 0.0f));
+            }
+            else
+            {
+                this->objectCB.g_MatWorld = this->poMatWorld;
+            }
 
             VkDeviceMemory& memory = this->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
             void* data;
@@ -2802,7 +2899,8 @@ namespace LibUtil
             ImGui::Render();
             ImDrawData* main_draw_data = ImGui::GetDrawData();
 
-            if (vkResetCommandBuffer(this->poCommandBuffers[this->poSwapChainImageIndex], 0) != VK_SUCCESS) 
+            VkCommandBuffer& commandBuffer = this->poCommandBuffers[this->poSwapChainImageIndex];
+            if (vkResetCommandBuffer(commandBuffer, 0) != VK_SUCCESS) 
             {
                 throw std::runtime_error("VulkanWindow::endRenderImgui: Failed to reset command buffer !");
             }
@@ -2812,7 +2910,7 @@ namespace LibUtil
             beginInfo.flags = 0; // Optional
             beginInfo.pInheritanceInfo = nullptr; // Optional
 
-            if (vkBeginCommandBuffer(this->poCommandBuffers[this->poSwapChainImageIndex], &beginInfo) != VK_SUCCESS) 
+            if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) 
             {
                 throw std::runtime_error("VulkanWindow::endRenderImgui: Failed to begin recording command buffer !");
             }
@@ -2837,35 +2935,49 @@ namespace LibUtil
                 renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
                 renderPassInfo.pClearValues = clearValues.data();
 
-                vkCmdBeginRenderPass(this->poCommandBuffers[this->poSwapChainImageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+                vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
                 {
-                    vkCmdBindPipeline(this->poCommandBuffers[this->poSwapChainImageIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics);
+                    if (!this->cfg_isWireFrame)
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics);
+                    else 
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics_WireFrame);
+
+                    //0> Viewport
+                    VkViewport viewport = this->poViewport;
+                    if (cfg_isNegativeViewport)
+                    {
+                        viewport.y = viewport.height - viewport.y;
+                        viewport.height = -viewport.height;
+                    }   
+                    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+                    vkCmdSetScissor(commandBuffer, 0, 1, &this->poScissor);
 
                     //1> Normal Render Pass
                     VkBuffer vertexBuffers[] = { this->poVertexBuffer };
                     VkDeviceSize offsets[] = { 0 };
-                    vkCmdBindVertexBuffers(this->poCommandBuffers[this->poSwapChainImageIndex], 0, 1, vertexBuffers, offsets);
+                    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
                     if (this->poDescriptorSets.size() > 0)
                     {
-                        vkCmdBindDescriptorSets(this->poCommandBuffers[this->poSwapChainImageIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &this->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+                        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &this->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
                     }
                     if (this->poIndexBuffer != nullptr)
                     {
-                        vkCmdBindIndexBuffer(this->poCommandBuffers[this->poSwapChainImageIndex], this->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-                        vkCmdDrawIndexed(this->poCommandBuffers[this->poSwapChainImageIndex], this->poIndexCount, 1, 0, 0, 0);
+                        vkCmdBindIndexBuffer(commandBuffer, this->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+                        vkCmdDrawIndexed(commandBuffer, this->poIndexCount, 1, 0, 0, 0);
                     }
                     else
                     {
-                        vkCmdDraw(this->poCommandBuffers[this->poSwapChainImageIndex], this->poVertexCount, 1, 0, 0);
+                        vkCmdDraw(commandBuffer, this->poVertexCount, 1, 0, 0);
                     }
 
                     //2> ImGui Pass
-                    vkCmdNextSubpass(this->poCommandBuffers[this->poSwapChainImageIndex], VK_SUBPASS_CONTENTS_INLINE);
-                    ImGui_ImplVulkan_RenderDrawData(main_draw_data, this->poCommandBuffers[this->poSwapChainImageIndex]);
+                    vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+                    ImGui_ImplVulkan_RenderDrawData(main_draw_data, commandBuffer);
                 }
-                vkCmdEndRenderPass(this->poCommandBuffers[this->poSwapChainImageIndex]);
+                vkCmdEndRenderPass(commandBuffer);
             }
-            if (vkEndCommandBuffer(this->poCommandBuffers[this->poSwapChainImageIndex]) != VK_SUCCESS) 
+            if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
             {
                 throw std::runtime_error("VulkanWindow::endRenderImgui: Failed to record command buffer !");
             }
@@ -2943,44 +3055,19 @@ namespace LibUtil
                 vkDestroyDescriptorPool(this->poDevice, this->imgui_DescriptorPool, nullptr);
             }
 
-            //3> TextureSampler
-            if (this->poTextureSampler != nullptr)
-            {
-                vkDestroySampler(this->poDevice, this->poTextureSampler, nullptr);
-            }
-            //4> TextureImageView
-            if (this->poTextureImageView != nullptr)
-            {
-                vkDestroyImageView(this->poDevice, this->poTextureImageView, nullptr);
-            }
-            //5> TextureImage
-            if (this->poTextureImage != nullptr)
-            {
-                vkDestroyImage(this->poDevice, this->poTextureImage, nullptr);
-                vkFreeMemory(this->poDevice, this->poTextureImageMemory, nullptr);
-            }
-            
-            //6> DescriptorSetLayout
+            //3> cleanupTexture
+            cleanupTexture();
+
+            //4> DescriptorSetLayout
             if (this->poDescriptorSetLayout != nullptr)
             {
                 vkDestroyDescriptorSetLayout(this->poDevice, this->poDescriptorSetLayout, nullptr);
             }
 
-            //7> IndexBuffer
-            if (this->poIndexBuffer != nullptr)
-            {
-                vkDestroyBuffer(this->poDevice, this->poIndexBuffer, nullptr);
-                vkFreeMemory(this->poDevice, this->poIndexBufferMemory, nullptr);
-            }
+            //5> cleanupVertexIndexBuffer
+            cleanupVertexIndexBuffer();
             
-            //8> VertexBuffer
-            if (this->poVertexBuffer != nullptr)
-            {
-                vkDestroyBuffer(this->poDevice, this->poVertexBuffer, nullptr);
-                vkFreeMemory(this->poDevice, this->poVertexBufferMemory, nullptr);
-            }
-            
-            //9> Semaphores
+            //6> Semaphores
             for (size_t i = 0; i < s_maxFramesInFight; i++) 
             {
                 vkDestroySemaphore(this->poDevice, this->poRenderFinishedSemaphores[i], nullptr);
@@ -2988,30 +3075,79 @@ namespace LibUtil
                 vkDestroyFence(this->poDevice, this->poInFlightFences[i], nullptr);
             }
 
-            //10> Imgui
+            //7> Imgui
             if (HasConfig_Imgui())
             {
                 ImGui_ImplVulkan_Shutdown();
 	            ImGui_ImplGlfw_Shutdown();
             }
 
-            //11> CommandPool
+            //8> CommandPool
             vkDestroyCommandPool(this->poDevice, this->poCommandPool, nullptr);
             
-            //12> Device
+            //9> Device
             vkDestroyDevice(this->poDevice, nullptr);
             if (s_isEnableValidationLayers)
             {
                 destroyDebugUtilsMessengerEXT(this->poInstance, this->poDebugMessenger, nullptr);
             }
-            //13> Surface
+            //10> Surface
             vkDestroySurfaceKHR(this->poInstance, this->poSurface, nullptr);
 
-            //14> Instance
+            //11> Instance
             vkDestroyInstance(this->poInstance, nullptr);
         }
         std::cout << "---------- VulkanWindow::cleanup finish ----------" << std::endl;
     }
+        void VulkanWindow::cleanupTexture()
+        {
+            //1> TextureSampler
+            if (this->poTextureSampler != nullptr)
+            {
+                vkDestroySampler(this->poDevice, this->poTextureSampler, nullptr);
+            }
+            this->poTextureSampler = nullptr;
+            //2> TextureImageView
+            if (this->poTextureImageView != nullptr)
+            {
+                vkDestroyImageView(this->poDevice, this->poTextureImageView, nullptr);
+            }
+            this->poTextureImageView = nullptr;
+            //3> TextureImage
+            if (this->poTextureImage != nullptr)
+            {
+                vkDestroyImage(this->poDevice, this->poTextureImage, nullptr);
+                vkFreeMemory(this->poDevice, this->poTextureImageMemory, nullptr);
+            }
+            this->poTextureImage = nullptr;
+            this->poTextureImageMemory = nullptr;
+        }
+        void VulkanWindow::cleanupVertexIndexBuffer()
+        {
+            //1> VertexBuffer
+            if (this->poVertexBuffer != nullptr)
+            {
+                vkDestroyBuffer(this->poDevice, this->poVertexBuffer, nullptr);
+                vkFreeMemory(this->poDevice, this->poVertexBufferMemory, nullptr);
+            }
+            this->poVertexBuffer = nullptr;
+            this->poVertexBufferMemory = nullptr;
+            this->poVertexCount = 0;
+            this->poVertexBuffer_Size = 0;
+            this->poVertexBuffer_Data = nullptr;
+
+            //2> IndexBuffer
+            if (this->poIndexBuffer != nullptr)
+            {
+                vkDestroyBuffer(this->poDevice, this->poIndexBuffer, nullptr);
+                vkFreeMemory(this->poDevice, this->poIndexBufferMemory, nullptr);
+            }
+            this->poIndexBuffer = nullptr;
+            this->poIndexBufferMemory = nullptr;
+            this->poIndexCount = 0;
+            this->poIndexBuffer_Size = 0;
+            this->poIndexBuffer_Data = nullptr;
+        }
         void VulkanWindow::cleanupSwapChain()
         {
             std::cout << "----- VulkanWindow::cleanupSwapChain start -----" << std::endl;
@@ -3050,6 +3186,10 @@ namespace LibUtil
                 if (this->poPipelineGraphics != nullptr)
                 {
                     vkDestroyPipeline(this->poDevice, this->poPipelineGraphics, nullptr);
+                }
+                if (this->poPipelineGraphics_WireFrame != nullptr)
+                {
+                    vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_WireFrame, nullptr);
                 }
                 if (this->poPipelineLayout != nullptr)
                 {

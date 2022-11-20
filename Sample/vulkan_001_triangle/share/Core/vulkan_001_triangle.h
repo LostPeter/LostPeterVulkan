@@ -22,14 +22,9 @@ protected:
     //Create Pipeline
 
     //Load Assets
-
         //Geometry
-            virtual void createVertexIndexDataByUser();
-
-        virtual void loadConstBuffers();
-
-        virtual void createDescriptor();
-
+            virtual void loadModel_User();
+            
 public:
     
 };

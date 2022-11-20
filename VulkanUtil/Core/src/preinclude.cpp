@@ -1,5 +1,3 @@
-#define TINYOBJLOADER_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
 #include "../include/preinclude.h"
 
 namespace LibUtil
@@ -21,9 +19,9 @@ namespace LibUtil
     VkVertexInputBindingDescription* Vertex_Pos3Color3Normal3Tex2::s_pBindingDescription = nullptr;
     std::array<VkVertexInputAttributeDescription, 4>* Vertex_Pos3Color3Normal3Tex2::s_pVertexInputAttributeDescriptions = nullptr;
 
-    //////////////////////////////// Vertex /////////////////////////////////////////
-    VkVertexInputBindingDescription* Vertex::s_pBindingDescription = nullptr;
-    std::array<VkVertexInputAttributeDescription, 5>* Vertex::s_pVertexInputAttributeDescriptions = nullptr;
+    //////////////////////////////// MeshVertex /////////////////////////////////////////
+    VkVertexInputBindingDescription* MeshVertex::s_pBindingDescription = nullptr;
+    std::array<VkVertexInputAttributeDescription, 5>* MeshVertex::s_pVertexInputAttributeDescriptions = nullptr;
 
 
 }; //LibUtil

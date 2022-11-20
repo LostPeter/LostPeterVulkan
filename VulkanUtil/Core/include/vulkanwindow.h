@@ -34,6 +34,8 @@ namespace LibUtil
 
         VkSurfaceKHR poSurface;
         VkSwapchainKHR poSwapChain;
+        VkViewport poViewport;
+        VkRect2D poScissor;
         std::vector<VkImage> poSwapChainImages;
         VkFormat poSwapChainImageFormat;
         VkExtent2D poSwapChainExtent;
@@ -61,10 +63,12 @@ namespace LibUtil
         void* poIndexBuffer_Data;
         VkBuffer poIndexBuffer;
         VkDeviceMemory poIndexBufferMemory;
+        glm::mat4 poMatWorld;
 
         VertexType poTypeVertex;
         VkPipelineLayout poPipelineLayout;
         VkPipeline poPipelineGraphics;
+        VkPipeline poPipelineGraphics_WireFrame;
 
         uint32_t poMipLevels;
         VkImage poTextureImage;
@@ -103,10 +107,34 @@ namespace LibUtil
         bool cfg_isMSAA;
         bool cfg_isImgui;
         bool cfg_isWireFrame;
+        bool cfg_isRotate;
+        bool cfg_isNegativeViewport;
+        VkPrimitiveTopology cfg_vkPrimitiveTopology;
+        VkFrontFace cfg_vkFrontFace;
+        VkPolygonMode cfg_vkPolygonMode;
+        VkCullModeFlagBits cfg_vkCullModeFlagBits;
+        VkBool32 cfg_isDepthTest;
+        VkBool32 cfg_isDepthWrite; 
+        VkCompareOp cfg_DepthCompareOp; 
+        VkBool32 cfg_isStencilTest;
+        VkStencilOpState cfg_StencilOpFront; 
+        VkStencilOpState cfg_StencilOpBack; 
+        VkBool32 cfg_isBlend;
+        VkBlendFactor cfg_BlendColorFactorSrc; 
+        VkBlendFactor cfg_BlendColorFactorDst; 
+        VkBlendOp cfg_BlendColorOp;
+        VkBlendFactor cfg_BlendAlphaFactorSrc;
+        VkBlendFactor cfg_BlendAlphaFactorDst; 
+        VkBlendOp cfg_BlendAlphaOp;
+        VkColorComponentFlags cfg_ColorWriteMask;
+
+        glm::vec3 cfg_cameraPos;
+        float cfg_cameraFov;
+        float cfg_cameraNear;
+        float cfg_cameraFar;
 
         //Custom
-        std::string cfg_modelobj_Path;
-        std::string cfg_modelfbx_Path;
+        std::string cfg_model_Path;
         std::string cfg_shaderVertex_Path;
         std::string cfg_shaderFragment_Path;
         std::string cfg_texture_Path;
@@ -192,12 +220,18 @@ namespace LibUtil
                 virtual void createLogicalDevice();
 
             virtual void createFeatureSupport();
+
+            virtual void createCommandObjects();
+                virtual void createCommandPool();
+                    virtual VkCommandBuffer beginSingleTimeCommands();
+                    virtual void endSingleTimeCommands(VkCommandBuffer commandBuffer);
             
             virtual void createSwapChainObjects();
                 virtual void createSwapChain();
                     virtual VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
                     virtual VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
                     virtual VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+                    virtual void createViewport();
                 virtual void createSwapChainImageViews();
                     virtual VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
                     virtual void createColorResources();
@@ -217,11 +251,6 @@ namespace LibUtil
                     virtual void createRenderPass_ColorDepthImguiMSAA();
                 virtual void createFramebuffers();
 
-            virtual void createCommandObjects();
-                virtual void createCommandPool();
-                    virtual VkCommandBuffer beginSingleTimeCommands();
-                    virtual void endSingleTimeCommands(VkCommandBuffer commandBuffer);
-            
             virtual void createSyncObjects();
 
         //Load Assets
@@ -243,12 +272,8 @@ namespace LibUtil
             virtual void loadGeometry();
                 virtual void loadVertexIndexBuffer();
                     virtual void loadModel();
-                        virtual void loadModel_Obj();
-                            virtual void createVertexIndexDataByObj(tinyobj::attrib_t* attrib, std::vector<tinyobj::shape_t>* shapes, std::vector<tinyobj::material_t>* materials);
-                        virtual void loadModel_Fbx();
-                            virtual void createVertexIndexDataByFbx();
+                        virtual void loadModel_Assimp();
                         virtual void loadModel_User();
-                            virtual void createVertexIndexDataByUser();
                     virtual void createVertexBuffer(size_t bufSize, void* pBuf, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory);
                     virtual void createIndexBuffer(size_t bufSize, void* pBuf, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory);
                         virtual void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
@@ -276,6 +301,7 @@ namespace LibUtil
                 virtual void createDescriptor();
                     virtual void createDescriptorPool();
                     virtual void createDescriptorSets();
+                    virtual void updateDescriptorSets();
 
                 virtual void createCommandBuffers();
 
@@ -303,6 +329,9 @@ namespace LibUtil
 
         //cleanup
         virtual void cleanup();
+            virtual void cleanupTexture();
+            virtual void cleanupVertexIndexBuffer();
+
             virtual void cleanupSwapChain();
             virtual void recreateSwapChain();
 

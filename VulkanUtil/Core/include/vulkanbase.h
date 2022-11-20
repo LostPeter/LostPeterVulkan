@@ -35,7 +35,7 @@ namespace LibUtil
 
     protected:
         std::string nameTitle;
-        std::string pathAssets; 
+        std::string pathBin; 
 
     public:
         // Accessors.

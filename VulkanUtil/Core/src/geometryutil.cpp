@@ -18,25 +18,25 @@ namespace LibUtil
 		meshData.indices32.resize(6);
 
 		// Position coordinates specified in NDC space.
-		meshData.vertices[0] = Vertex(
+		meshData.vertices[0] = MeshVertex(
 			x, y - h, depth,
 			0.0f, 0.0f, -1.0f,
 			1.0f, 0.0f, 0.0f,
 			0.0f, 1.0f);
 
-		meshData.vertices[1] = Vertex(
+		meshData.vertices[1] = MeshVertex(
 			x, y, depth,
 			0.0f, 0.0f, -1.0f,
 			1.0f, 0.0f, 0.0f,
 			0.0f, 0.0f);
 
-		meshData.vertices[2] = Vertex(
+		meshData.vertices[2] = MeshVertex(
 			x + w, y, depth,
 			0.0f, 0.0f, -1.0f,
 			1.0f, 0.0f, 0.0f,
 			1.0f, 0.0f);
 
-		meshData.vertices[3] = Vertex(
+		meshData.vertices[3] = MeshVertex(
 			x + w, y - h, depth,
 			0.0f, 0.0f, -1.0f,
 			1.0f, 0.0f, 0.0f,
@@ -126,47 +126,47 @@ namespace LibUtil
 	   // Create the vertices.
 	   //
 
-		Vertex v[24];
+		MeshVertex v[24];
 
 		float w2 = 0.5f * width;
 		float h2 = 0.5f * height;
 		float d2 = 0.5f * depth;
 
 		// Fill in the front face vertex data.
-		v[0] = Vertex(-w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-		v[1] = Vertex(-w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		v[2] = Vertex(+w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-		v[3] = Vertex(+w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+		v[0] = MeshVertex(-w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+		v[1] = MeshVertex(-w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+		v[2] = MeshVertex(+w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		v[3] = MeshVertex(+w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
 
 		// Fill in the back face vertex data.
-		v[4] = Vertex(-w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
-		v[5] = Vertex(+w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-		v[6] = Vertex(+w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		v[7] = Vertex(-w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		v[4] = MeshVertex(-w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+		v[5] = MeshVertex(+w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+		v[6] = MeshVertex(+w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+		v[7] = MeshVertex(-w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
 		// Fill in the top face vertex data.
-		v[8] = Vertex(-w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-		v[9] = Vertex(-w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		v[10] = Vertex(+w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-		v[11] = Vertex(+w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+		v[8] = MeshVertex(-w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+		v[9] = MeshVertex(-w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+		v[10] = MeshVertex(+w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		v[11] = MeshVertex(+w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
 
 		// Fill in the bottom face vertex data.
-		v[12] = Vertex(-w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
-		v[13] = Vertex(+w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-		v[14] = Vertex(+w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		v[15] = Vertex(-w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		v[12] = MeshVertex(-w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+		v[13] = MeshVertex(+w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+		v[14] = MeshVertex(+w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+		v[15] = MeshVertex(-w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
 		// Fill in the left face vertex data.
-		v[16] = Vertex(-w2, -h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f);
-		v[17] = Vertex(-w2, +h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f);
-		v[18] = Vertex(-w2, +h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f);
-		v[19] = Vertex(-w2, -h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f);
+		v[16] = MeshVertex(-w2, -h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f);
+		v[17] = MeshVertex(-w2, +h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f);
+		v[18] = MeshVertex(-w2, +h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f);
+		v[19] = MeshVertex(-w2, -h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f);
 
 		// Fill in the right face vertex data.
-		v[20] = Vertex(+w2, -h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
-		v[21] = Vertex(+w2, +h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
-		v[22] = Vertex(+w2, +h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-		v[23] = Vertex(+w2, -h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+		v[20] = MeshVertex(+w2, -h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+		v[21] = MeshVertex(+w2, +h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
+		v[22] = MeshVertex(+w2, +h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+		v[23] = MeshVertex(+w2, -h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
 		meshData.vertices.assign(&v[0], &v[24]);
 
@@ -221,8 +221,8 @@ namespace LibUtil
 		// Poles: note that there will be texture coordinate distortion as there is
 		// not a unique point on the texture map to assign to the pole when mapping
 		// a rectangular texture onto a sphere.
-		Vertex topVertex(0.0f, +radius, 0.0f, 0.0f, +1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		Vertex bottomVertex(0.0f, -radius, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+		MeshVertex topVertex(0.0f, +radius, 0.0f, 0.0f, +1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+		MeshVertex bottomVertex(0.0f, -radius, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
 		meshData.vertices.push_back(topVertex);
 
@@ -239,7 +239,7 @@ namespace LibUtil
 			{
 				float theta = j * thetaStep;
 
-				Vertex v;
+				MeshVertex v;
 
 				// spherical to cartesian
 				v.pos.x = radius * sinf(phi) * cosf(theta);
@@ -411,7 +411,7 @@ namespace LibUtil
 			float dTheta = 2.0f * s_fPI / sliceCount;
 			for (uint32 j = 0; j <= sliceCount; ++j)
 			{
-				Vertex vertex;
+				MeshVertex vertex;
 
 				float c = cosf(j * dTheta);
 				float s = sinf(j * dTheta);
@@ -499,17 +499,17 @@ namespace LibUtil
 		uint32 numTris = (uint32)inputCopy.indices32.size() / 3;
 		for (uint32 i = 0; i < numTris; ++i)
 		{
-			Vertex v0 = inputCopy.vertices[inputCopy.indices32[i * 3 + 0]];
-			Vertex v1 = inputCopy.vertices[inputCopy.indices32[i * 3 + 1]];
-			Vertex v2 = inputCopy.vertices[inputCopy.indices32[i * 3 + 2]];
+			MeshVertex v0 = inputCopy.vertices[inputCopy.indices32[i * 3 + 0]];
+			MeshVertex v1 = inputCopy.vertices[inputCopy.indices32[i * 3 + 1]];
+			MeshVertex v2 = inputCopy.vertices[inputCopy.indices32[i * 3 + 2]];
 
 			//
 			// Generate the midpoints.
 			//
 
-			Vertex m0 = midPoint(v0, v1);
-			Vertex m1 = midPoint(v1, v2);
-			Vertex m2 = midPoint(v0, v2);
+			MeshVertex m0 = midPoint(v0, v1);
+			MeshVertex m1 = midPoint(v1, v2);
+			MeshVertex m2 = midPoint(v0, v2);
 
 			//
 			// Add new geometry.
@@ -540,7 +540,7 @@ namespace LibUtil
 		}
 	}
 
-	Vertex GeometryUtil::midPoint(const Vertex& v0, const Vertex& v1)
+	MeshVertex GeometryUtil::midPoint(const MeshVertex& v0, const MeshVertex& v1)
 	{
 		glm::vec3 p0 = v0.pos;
 		glm::vec3 p1 = v1.pos;
@@ -561,7 +561,7 @@ namespace LibUtil
 		glm::vec3 tangent = glm::normalize(0.5f * (tan0 + tan1));
 		glm::vec2 tex = 0.5f * (tex0 + tex1);
 
-		Vertex v;
+		MeshVertex v;
         v.pos= pos;
         v.normal= normal;
         v.tangent= tangent;
@@ -588,11 +588,11 @@ namespace LibUtil
 			float u = x / height + 0.5f;
 			float v = z / height + 0.5f;
 
-			meshData.vertices.push_back(Vertex(x, y, z, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, u, v));
+			meshData.vertices.push_back(MeshVertex(x, y, z, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, u, v));
 		}
 
 		// Cap center vertex.
-		meshData.vertices.push_back(Vertex(0.0f, y, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f));
+		meshData.vertices.push_back(MeshVertex(0.0f, y, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f));
 
 		// Index of center vertex.
 		uint32 centerIndex = (uint32)meshData.vertices.size() - 1;
@@ -626,11 +626,11 @@ namespace LibUtil
 			float u = x / height + 0.5f;
 			float v = z / height + 0.5f;
 
-			meshData.vertices.push_back(Vertex(x, y, z, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, u, v));
+			meshData.vertices.push_back(MeshVertex(x, y, z, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, u, v));
 		}
 
 		// Cap center vertex.
-		meshData.vertices.push_back(Vertex(0.0f, y, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f));
+		meshData.vertices.push_back(MeshVertex(0.0f, y, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f));
 
 		// Cache the index of center vertex.
 		uint32 centerIndex = (uint32)meshData.vertices.size() - 1;

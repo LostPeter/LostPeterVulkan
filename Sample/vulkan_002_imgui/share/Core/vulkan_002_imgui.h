@@ -22,9 +22,8 @@ protected:
     //Create Pipeline
 
     //Load Assets
-
         //Geometry
-            virtual void createVertexIndexDataByUser();
+            virtual void loadModel_User();
 
     //Render/Update
         virtual bool beginRenderImgui();

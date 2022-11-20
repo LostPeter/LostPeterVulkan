@@ -20,8 +20,8 @@ namespace LibUtil
         , isLoadAsset(false)
 
     {
-        this->pathAssets = VulkanUtil::GetAssetsPath();
-        std::cout << "Path GetAssetsPath: " << this->pathAssets << std::endl; 
+        this->pathBin = VulkanUtil::GetPathBin() + "/";
+        std::cout << "Path Bin: " << this->pathBin << std::endl; 
 
         RefreshAspectRatio();
     }
@@ -44,7 +44,7 @@ namespace LibUtil
 
     std::string VulkanBase::GetAssetFullPath(const std::string& assetName)
     {
-        return this->pathAssets + assetName;
+        return this->pathBin + assetName;
     }
 
 }; //LibUtil

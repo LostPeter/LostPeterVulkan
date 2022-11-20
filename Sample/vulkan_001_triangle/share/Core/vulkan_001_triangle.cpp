@@ -5,12 +5,15 @@
 Vulkan_001_Triangle::Vulkan_001_Triangle(int width, int height, std::string name)
     : VulkanWindow(width, height, name)
 {
+    this->cfg_isNegativeViewport = false;
+    this->cfg_vkFrontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+
     this->poTypeVertex = VertexType_Pos2Color3;
     this->cfg_shaderVertex_Path = "Assets/Shader/notrans_pos2_color3.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/notrans_pos2_color3.frag.spv";
 }
 
-void Vulkan_001_Triangle::createVertexIndexDataByUser()
+void Vulkan_001_Triangle::loadModel_User()
 {
     //1> vertices
     this->vertices.push_back(Vertex_Pos2Color3(glm::vec2( 0.0f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f)));
@@ -22,14 +25,4 @@ void Vulkan_001_Triangle::createVertexIndexDataByUser()
     this->poIndexCount = 0;
     this->poIndexBuffer_Size = 0;
     this->poIndexBuffer_Data = nullptr;
-}
-
-void Vulkan_001_Triangle::loadConstBuffers()
-{
-
-}
-
-void Vulkan_001_Triangle::createDescriptor()
-{
-    
 }

@@ -11,13 +11,34 @@ namespace LibUtil
     class utilExport VulkanUtil
     {
     public:
+    ////Path
+        static std::string GetPathExecute();
+        static std::string GetPathBin();
+        static std::string GetPathAssets();
+        static std::string GetPathReal(const char* szFile);
+        static std::string GetPathReal(const std::string& strPath);
 
-    public:
-        static std::string GetAssetsPath(); 
+    ////File
+        static bool FileIsExist(const std::string& strPath);
+        static bool DeleteFile(const std::string& strPath);
+        static bool ClearFile(const std::string& strPath);
+        static bool CopyFile(const std::string& strSrcPath, const std::string& strDstPath);
 
-        static bool GetFileContent(const std::string& pathFile, std::string& contentFile);
+    ////Folder
+        static bool IsDirectory(const std::string& strPath);
+		static bool CreateDirectory(const std::string& strPath);
+		static bool EnumFiles(const std::string& strFolderPath, std::vector<std::string>& aFiles, bool bFilePath);
+		static bool EnumFiles(const std::string& strFolderPath, std::map<std::string, std::string>& mapFiles, bool bIsRecursive);
+		static bool EnumFolders(const std::string& strFolderPath, std::vector<std::string>& aFolders, bool bFolderPath, bool bIsRecursive);
 
-        static std::vector<char> ReadFile(const std::string& pathFile);
+    ////LoadFile
+        static bool LoadFileContent(const char* szFile, std::vector<char>& content, bool addEnd0 = false);
+        static bool LoadFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 = false);
+        static bool LoadFileToString(const char* szFile, std::string& contentFile);
+
+        static bool LoadAssetFileContent(const char* szFile, std::vector<char>& content, bool addEnd0 = false);
+        static bool LoadAssetFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 = false);
+        static bool LoadAssetFileToString(const char* szFile, std::string& contentFile);
     };
 
 }; //LibUtil

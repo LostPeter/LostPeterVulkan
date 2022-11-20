@@ -4,59 +4,6 @@
 #ifndef _PRE_INCLUDE_H_
 #define _PRE_INCLUDE_H_
 
-#include "premacro.h"
-
-//C
-#include <float.h>
-#include <assert.h>
-#include <string.h>
-
-
-//C++
-#include <stdexcept>
-#include <cstdint>
-#include <cassert>
-#include <cstdlib>
-#include <cmath>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <algorithm>
-#include <chrono>
-#include <memory>
-
-#include <string>
-#include <array>
-#include <vector>
-#include <list>
-#include <map>
-#include <set>
-#include <unordered_map>
-
-
-//Platform
-#if UTIL_PLATFORM == UTIL_PLATFORM_WIN32
-	#undef min
-	#undef max
-	#if defined(__MINGW32__)
-		#include <unistd.h>
-	#endif
-	#include <io.h>
-	#include <process.h>
-    #include <Windows.h>
-    #include <shlwapi.h>
-
-#elif UTIL_PLATFORM == UTIL_PLATFORM_MAC
-
-#elif UTIL_PLATFORM == UTIL_PLATFORM_LINUX
-
-#elif UTIL_PLATFORM == UTIL_PLATFORM_ANDROID
-
-#elif UTIL_PLATFORM == UTIL_PLATFORM_IOS
-    
-
-#endif
-
 //GLFW
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -66,14 +13,17 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/hash.hpp>
+#include "glm/gtc/quaternion.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/matrix_inverse.hpp"
+#include "glm/gtx/transform.hpp"
+#include "glm/gtx/euler_angles.hpp"
+#include "glm/gtx/norm.hpp"
+#include "glm/ext/scalar_common.hpp"
 
 //Vulkan
 #include <vulkan/vulkan.h>
-
-//tiny_obj_loader
-#include <tiny_obj_loader.h>
 
 //stb_image
 #include <stb_image.h>
@@ -88,29 +38,11 @@
 #include "vulkanutil.h"
 #include "app.h"
 #include "mathutil.h"
+#include "stringutil.h"
 
 namespace LibUtil
 {	
-    using int16 = std::int16_t;
-    using int32 = std::int32_t;
-    using uint16 = std::uint16_t;
-    using uint32 = std::uint32_t;
-
-    #define UTIL_ARRAYSIZE(_ARR)          ((int)(sizeof(_ARR)/sizeof(*_ARR)))    
-    #define UTIL_OFFSETOF(_TYPE,_MEMBER)  ((size_t)&(((_TYPE*)0)->_MEMBER))     
-
-    enum VertexType
-    {
-        VertexType_Pos2Color3 = 0,
-        VertexType_Pos2Color3Tex2,
-        VertexType_Pos3Color3Tex2,
-        VertexType_Pos3Color3Normal3Tex2,
-        VertexType_Default,
-
-        Count
-    };
-    
-    //Struct
+/////Struct
     //////////////////////////////// Vertex_Pos2Color3 //////////////////////////////
     struct utilExport Vertex_Pos2Color3
     {
@@ -432,8 +364,8 @@ namespace LibUtil
     };
 
 
-    //////////////////////////////// Vertex /////////////////////////////////////////
-    struct utilExport Vertex
+    //////////////////////////////// MeshVertex /////////////////////////////////////////
+    struct utilExport MeshVertex
     {
         static VkVertexInputBindingDescription* s_pBindingDescription;
         static std::array<VkVertexInputAttributeDescription, 5>* s_pVertexInputAttributeDescriptions;
@@ -445,16 +377,16 @@ namespace LibUtil
         glm::vec2 texCoord;
 
 
-        Vertex()
+        MeshVertex()
         {
 
         }
 
-        Vertex(const glm::vec3& _pos, 
-               const glm::vec3& _color, 
-               const glm::vec3& _normal, 
-               const glm::vec3& _tangent, 
-               const glm::vec2& _texCoord)
+        MeshVertex(const glm::vec3& _pos, 
+                   const glm::vec3& _color, 
+                   const glm::vec3& _normal, 
+                   const glm::vec3& _tangent, 
+                   const glm::vec2& _texCoord)
             : pos(_pos)
             , color(_color)
             , normal(_normal)
@@ -464,10 +396,10 @@ namespace LibUtil
             
         }
 
-        Vertex(float px, float py, float pz,
-               float nx, float ny, float nz,
-               float tx, float ty, float tz,
-               float u, float v)
+        MeshVertex(float px, float py, float pz,
+                   float nx, float ny, float nz,
+                   float tx, float ty, float tz,
+                   float u, float v)
             : pos(px, py, pz)
             , color(1.0f, 1.0f, 1.0f)
             , normal(nx, ny, nz)
@@ -477,11 +409,11 @@ namespace LibUtil
 
         }
 
-        Vertex(float px, float py, float pz,
-               float cx, float cy, float cz,  
-               float nx, float ny, float nz,
-               float tx, float ty, float tz,
-               float u, float v)
+        MeshVertex(float px, float py, float pz,
+                   float cx, float cy, float cz,  
+                   float nx, float ny, float nz,
+                   float tx, float ty, float tz,
+                   float u, float v)
             : pos(px, py, pz)
             , color(cx, cy, cz)
             , normal(nx, ny, nz)
@@ -497,7 +429,7 @@ namespace LibUtil
             {
                 s_pBindingDescription = new VkVertexInputBindingDescription();
                 s_pBindingDescription->binding = 0;
-                s_pBindingDescription->stride = sizeof(Vertex);
+                s_pBindingDescription->stride = sizeof(MeshVertex);
                 s_pBindingDescription->inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
             }
             return s_pBindingDescription;
@@ -517,27 +449,27 @@ namespace LibUtil
                 (*s_pVertexInputAttributeDescriptions)[0].binding = 0;
                 (*s_pVertexInputAttributeDescriptions)[0].location = 0;
                 (*s_pVertexInputAttributeDescriptions)[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-                (*s_pVertexInputAttributeDescriptions)[0].offset = offsetof(Vertex, pos);
+                (*s_pVertexInputAttributeDescriptions)[0].offset = offsetof(MeshVertex, pos);
 
                 (*s_pVertexInputAttributeDescriptions)[1].binding = 0;
                 (*s_pVertexInputAttributeDescriptions)[1].location = 1;
                 (*s_pVertexInputAttributeDescriptions)[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-                (*s_pVertexInputAttributeDescriptions)[1].offset = offsetof(Vertex, color);
+                (*s_pVertexInputAttributeDescriptions)[1].offset = offsetof(MeshVertex, color);
 
                 (*s_pVertexInputAttributeDescriptions)[2].binding = 0;
                 (*s_pVertexInputAttributeDescriptions)[2].location = 2;
                 (*s_pVertexInputAttributeDescriptions)[2].format = VK_FORMAT_R32G32B32_SFLOAT;
-                (*s_pVertexInputAttributeDescriptions)[2].offset = offsetof(Vertex, normal);
+                (*s_pVertexInputAttributeDescriptions)[2].offset = offsetof(MeshVertex, normal);
 
                 (*s_pVertexInputAttributeDescriptions)[3].binding = 0;
                 (*s_pVertexInputAttributeDescriptions)[3].location = 3;
                 (*s_pVertexInputAttributeDescriptions)[3].format = VK_FORMAT_R32G32B32_SFLOAT;
-                (*s_pVertexInputAttributeDescriptions)[3].offset = offsetof(Vertex, tangent);
+                (*s_pVertexInputAttributeDescriptions)[3].offset = offsetof(MeshVertex, tangent);
 
                 (*s_pVertexInputAttributeDescriptions)[4].binding = 0;
                 (*s_pVertexInputAttributeDescriptions)[4].location = 4;
                 (*s_pVertexInputAttributeDescriptions)[4].format = VK_FORMAT_R32G32_SFLOAT;
-                (*s_pVertexInputAttributeDescriptions)[4].offset = offsetof(Vertex, texCoord);
+                (*s_pVertexInputAttributeDescriptions)[4].offset = offsetof(MeshVertex, texCoord);
             }
             return s_pVertexInputAttributeDescriptions;
         }
@@ -547,7 +479,7 @@ namespace LibUtil
             return *pVertexInputAttributeDescriptions;
         }
 
-        bool operator==(const Vertex& other) const 
+        bool operator==(const MeshVertex& other) const 
         {
             return this->pos == other.pos && 
                 this->color == other.color && 
@@ -561,27 +493,128 @@ namespace LibUtil
 	//////////////////////////////// MeshData ///////////////////////////////////////
     struct utilExport MeshData
     {
-        std::vector<Vertex> vertices;
-        std::vector<uint16> indices16;
-        std::vector<uint32> indices32;
+        const size_t c_nMaxUint16 = std::numeric_limits<unsigned short>::max();
 
-        std::vector<uint16>& GetIndices16()
+        std::vector<MeshVertex> vertices;
+        std::vector<unsigned short> indices16;
+        std::vector<unsigned int> indices32;
+        bool bIsFlipY;
+
+        MeshData()
+            : bIsFlipY(true)
+        {
+
+        }
+
+        void Clear()
+        {
+            vertices.clear();
+            indices16.clear();
+            indices32.clear();
+        }
+
+        void ReserveVertexCount(size_t nCount)
+        {
+            vertices.reserve(nCount);
+        }
+        void ResizeVertexCount(size_t nCount)
+        {
+            vertices.resize(nCount);
+        }
+        void AddVertex(const MeshVertex& meshVertex)
+        {
+            vertices.push_back(meshVertex);
+        }
+
+        void ReserveIndexCount(size_t nCount)
+        {
+            indices32.reserve(nCount);
+        }
+        void ResizeIndexCount(size_t nCount)
+        {
+            indices32.resize(nCount);
+        }
+        void AddIndex(unsigned int nIndex)
+        {
+            indices32.push_back(nIndex);
+        }
+        void AddIndexTriangle(unsigned int nIndex1, unsigned int nIndex2, unsigned int nIndex3)
+        {
+            indices32.push_back(nIndex1);
+            indices32.push_back(nIndex2);
+            indices32.push_back(nIndex3);
+        }
+
+        std::vector<unsigned short>& GetIndices16()
         {
             return indices16;
         }
 
-        std::vector<uint32>& GetIndices32()
+        std::vector<unsigned int>& GetIndices32()
         {
             return indices32;
         }
 
+        void* GetVertexData()
+        {
+            return (void*)vertices.data();
+        }
+        unsigned int GetVertexCount()
+        {
+            return (unsigned int)vertices.size();
+        }
+        unsigned int GetVertexDataSize()
+        {
+            return (unsigned int)(vertices.size() * sizeof(MeshVertex));
+        }
+
+        void* GetIndexData()
+        {
+            EnsureIndices16();
+            if (!indices16.empty())
+            {
+                return (void*)indices16.data();
+            }
+            return (void*)indices32.data();
+        }
+        unsigned int GetIndexCount()
+        {
+            return (unsigned int)indices32.size();
+        }
+        unsigned int GetIndexDataSize()
+        {
+            EnsureIndices16();
+            if (!indices16.empty())
+            {
+                return (unsigned int)(indices16.size() * sizeof(unsigned short));
+            }
+            return (unsigned int)(indices32.size() * sizeof(unsigned int));
+        }
+        
+
+        bool IsIndices16()
+        {
+            return indices32.size() < c_nMaxUint16;
+        }
+        void EnsureIndices16()
+        {
+            if (IsIndices16() && indices16.empty())
+            {
+                indices16.clear();
+                indices16.resize(indices32.size());
+                for (size_t i = 0; i < indices32.size(); i++)
+                {
+                    indices16[i] = (unsigned short)indices32[i];
+                }
+            }
+        }
     };
 
 	//////////////////////////////// SubmeshGeometry ////////////////////////////////
     struct utilExport SubmeshGeometry
     {
-        uint32 indexCount = 0;
-        uint32 startIndexLocation = 0;
+        unsigned int indexCount = 0;
+        unsigned int startIndexLocation = 0;
         int32 baseVertexLocation = 0;
     };
 
@@ -674,9 +707,8 @@ namespace LibUtil
 
 }; //LibUtil
 
-
-namespace std {
-
+namespace std 
+{
     template<> struct hash<LibUtil::Vertex_Pos2Color3> {
         size_t operator()(LibUtil::Vertex_Pos2Color3 const& vertex) const 
         {
@@ -722,8 +754,8 @@ namespace std {
         }
     };
 
-    template<> struct hash<LibUtil::Vertex> {
-        size_t operator()(LibUtil::Vertex const& vertex) const
+    template<> struct hash<LibUtil::MeshVertex> {
+        size_t operator()(LibUtil::MeshVertex const& vertex) const
         {
             size_t hash = std::hash<glm::vec3>()(vertex.pos);
             hash = hash ^ (std::hash<glm::vec3>()(vertex.color) << 1);
@@ -736,7 +768,6 @@ namespace std {
             return hash;
         }
     };
-
 }
 
 

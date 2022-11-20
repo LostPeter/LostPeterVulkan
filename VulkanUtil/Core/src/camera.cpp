@@ -18,7 +18,7 @@ namespace LibUtil
 		, matView(MathUtil::Identity4x4())
 		, matProj(MathUtil::Identity4x4())
 	{
-		SetLens(0.25f * MathUtil::Pi, 1.0f, 1.0f, 1000.0f);
+		SetLens(0.25f * MathUtil::ms_fPI, 1.0f, 1.0f, 1000.0f);
 	}
 
 	Camera::~Camera()

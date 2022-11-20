@@ -59,7 +59,7 @@ namespace LibUtil
 
 	private:
 		static void subdivide(MeshData& meshData);
-		static Vertex midPoint(const Vertex& v0, const Vertex& v1);
+		static MeshVertex midPoint(const MeshVertex& v0, const MeshVertex& v1);
 		static void buildCylinderTopCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, MeshData& meshData);
 		static void buildCylinderBottomCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, MeshData& meshData);
 	};
