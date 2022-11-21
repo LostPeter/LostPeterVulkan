@@ -50,6 +50,7 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../../Dependencies/Include/Windows/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../../Dependencies/Include/Windows/imgui-1.85_glfw_vulkan"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../../Dependencies/Include/Windows/stb-0.02"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../../Dependencies/Include/Windows/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../../VulkanUtil/Core/include")
 
 elseif (ANDROID)     
@@ -62,6 +63,7 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../../Dependencies/Include/MacOS/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../../Dependencies/Include/MacOS/imgui-1.85_glfw_vulkan"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../../Dependencies/Include/MacOS/stb-0.02"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../../Dependencies/Include/MacOS/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../../VulkanUtil/Core/include")
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
@@ -125,6 +127,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4_d.lib
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6_d.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
                        ${PLUGINS_DIR}/VulkanUtil_d.lib)
     else ()
         LINK_LIBRARIES(shlwapi.lib 
@@ -132,6 +135,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4.lib
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan.lib
+                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
                        ${PLUGINS_DIR}/VulkanUtil.lib)
     endif ()
     MY_ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})

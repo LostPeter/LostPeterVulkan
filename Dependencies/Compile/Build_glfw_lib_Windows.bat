@@ -54,7 +54,7 @@ cd ..
 cd ..
 cd Compile
 
-set include_folder="..\Include\"%name%"\GLFW"
+set include_folder="..\Include\Windows\"%name%"\GLFW"
 if exist %include_folder% (
     rmdir /S/Q %include_folder%
 )

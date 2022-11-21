@@ -101,6 +101,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4_d.lib
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6_d.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
                        ${STATIC_DIR}/Share_d.lib 
                        ${PLUGINS_DIR}/VulkanUtil_d.lib)
     else ()
@@ -109,6 +110,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4.lib
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan.lib
+                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
                        ${STATIC_DIR}/Share.lib 
                        ${PLUGINS_DIR}/VulkanUtil.lib)
     endif()

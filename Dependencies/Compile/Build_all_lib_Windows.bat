@@ -8,3 +8,4 @@ call ./Build_glfw_lib_MacOS.bat %debug%
 call ./Build_glm_lib_Windows.bat
 call ./Build_imgui_lib_Windows.bat glfw_vulkan %debug%
 call ./Build_stb_lib_Windows.bat
+call ./Build_zlib_lib_Windows.bat %debug%
