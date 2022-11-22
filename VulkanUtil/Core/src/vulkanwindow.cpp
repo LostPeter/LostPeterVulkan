@@ -997,13 +997,14 @@ namespace LibUtil
         samplerLayoutBinding.pImmutableSamplers = nullptr;
         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        std::array<VkDescriptorSetLayoutBinding, 4> bindings = 
-        { 
-            passMainLayoutBinding,
-            objectLayoutBinding,
-            materialLayoutBinding,
-            samplerLayoutBinding
-        };
+        std::vector<VkDescriptorSetLayoutBinding> bindings;
+        bindings.push_back(passMainLayoutBinding);
+        bindings.push_back(objectLayoutBinding);
+        bindings.push_back(materialLayoutBinding);
+        if (!this->cfg_texture_Path.empty())
+        {
+            bindings.push_back(samplerLayoutBinding);
+        }
         VkDescriptorSetLayoutCreateInfo layoutInfo = {};
         layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -2511,6 +2512,7 @@ namespace LibUtil
     }
     void VulkanWindow::updateDescriptorSets()
     {
+        bool bHasTexture = this->poTextureImageView == nullptr ? false : true;
         size_t count = this->poDescriptorSets.size();
         for (size_t i = 0; i < count; i++)
         {
@@ -2533,41 +2535,56 @@ namespace LibUtil
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             imageInfo.imageView = this->poTextureImageView;
             imageInfo.sampler = this->poTextureSampler;
+            
+            std::vector<VkWriteDescriptorSet> descriptorWrites;
 
-            std::array<VkWriteDescriptorSet, 4> descriptorWrites = {};
+            //0
+            VkWriteDescriptorSet ds0 = {};
+            ds0.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            ds0.dstSet = this->poDescriptorSets[i];
+            ds0.dstBinding = 0;
+            ds0.dstArrayElement = 0;
+            ds0.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            ds0.descriptorCount = 1;
+            ds0.pBufferInfo = &bufferInfo_PassMain;
+            descriptorWrites.push_back(ds0);
 
-            descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[0].dstSet = this->poDescriptorSets[i];
-            descriptorWrites[0].dstBinding = 0;
-            descriptorWrites[0].dstArrayElement = 0;
-            descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            descriptorWrites[0].descriptorCount = 1;
-            descriptorWrites[0].pBufferInfo = &bufferInfo_PassMain;
+            //1
+            VkWriteDescriptorSet ds1 = {};
+            ds1.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            ds1.dstSet = this->poDescriptorSets[i];
+            ds1.dstBinding = 1;
+            ds1.dstArrayElement = 0;
+            ds1.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            ds1.descriptorCount = 1;
+            ds1.pBufferInfo = &bufferInfo_Object;
+            descriptorWrites.push_back(ds1);
 
-            descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[1].dstSet = this->poDescriptorSets[i];
-            descriptorWrites[1].dstBinding = 1;
-            descriptorWrites[1].dstArrayElement = 0;
-            descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            descriptorWrites[1].descriptorCount = 1;
-            descriptorWrites[1].pBufferInfo = &bufferInfo_Object;
-
-            descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[2].dstSet = this->poDescriptorSets[i];
-            descriptorWrites[2].dstBinding = 2;
-            descriptorWrites[2].dstArrayElement = 0;
-            descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            descriptorWrites[2].descriptorCount = 1;
-            descriptorWrites[2].pBufferInfo = &bufferInfo_Material;
-
-            descriptorWrites[3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[3].dstSet = this->poDescriptorSets[i];
-            descriptorWrites[3].dstBinding = 3;
-            descriptorWrites[3].dstArrayElement = 0;
-            descriptorWrites[3].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            descriptorWrites[3].descriptorCount = 1;
-            descriptorWrites[3].pImageInfo = &imageInfo;
-
+            //2
+            VkWriteDescriptorSet ds2 = {};
+            ds2.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            ds2.dstSet = this->poDescriptorSets[i];
+            ds2.dstBinding = 2;
+            ds2.dstArrayElement = 0;
+            ds2.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            ds2.descriptorCount = 1;
+            ds2.pBufferInfo = &bufferInfo_Material;
+            descriptorWrites.push_back(ds2);
+            
+            //3
+            if (bHasTexture)
+            {
+                VkWriteDescriptorSet ds3 = {};
+                ds3.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                ds3.dstSet = this->poDescriptorSets[i];
+                ds3.dstBinding = 3;
+                ds3.dstArrayElement = 0;
+                ds3.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                ds3.descriptorCount = 1;
+                ds3.pImageInfo = &imageInfo;
+                descriptorWrites.push_back(ds3);
+            }
+            
             vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
         }
     }
