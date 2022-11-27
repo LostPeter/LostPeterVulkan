@@ -9,6 +9,7 @@
 #include "app.h"
 #include "mathutil.h"
 #include "stringutil.h"
+#include "timer.h"
 
 namespace LibUtil
 {	

@@ -201,9 +201,9 @@ bool Vulkan_004_Model::beginRenderImgui()
     ImGui::NewFrame();
     static bool windowOpened = true;
     static bool showDemoWindow = false;
-    ImGui::Begin("Rendertime", &windowOpened, 0);
+    ImGui::Begin("Vulkan_004_Model", &windowOpened, 0);
     {
-        ImGui::Text("Frametime: %f", ImGui::GetIO().Framerate);
+        ImGui::Text("Frametime: %f", this->fFPS);
         ImGui::Separator();
 
         ImGui::Checkbox("Is WireFrame", &cfg_isWireFrame);

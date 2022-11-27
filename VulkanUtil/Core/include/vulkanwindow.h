@@ -5,7 +5,6 @@
 #define _VULKAN_WINDOW_H_
 
 #include "vulkanbase.h"
-#include "camera.h"
 
 namespace LibUtil
 {
@@ -129,9 +128,16 @@ namespace LibUtil
         VkColorComponentFlags cfg_ColorWriteMask;
 
         glm::vec3 cfg_cameraPos;
+        glm::vec3 cfg_cameraLookTarget;
+        glm::vec3 cfg_cameraUp;
+
         float cfg_cameraFov;
         float cfg_cameraNear;
         float cfg_cameraFar;
+
+        float cfg_cameraSpeedMove;
+        float cfg_cameraSpeedZoom;
+        float cfg_cameraSpeedRotate;
 
         //Custom
         std::string cfg_model_Path;
@@ -161,12 +167,12 @@ namespace LibUtil
         std::vector<VkDeviceMemory> poBuffersMemory_MaterialCB;
 
         //MVP
-        Camera camera;
-        float speedMove;
-        float speedZoom;
+        Camera* pCamera;
 
         //Mouse
-        glm::uvec2 lastMousePos;
+        glm::vec2 mousePosLast;
+        bool mouseButtonDownLeft;
+        bool mouseButtonDownRight;
 
 
     private:
@@ -186,9 +192,13 @@ namespace LibUtil
         virtual void OnDestroy();
 
         // Mouse Input
-        virtual void OnMouseDown(int btnState, int x, int y);
-        virtual void OnMouseUp(int btnState, int x, int y);
-        virtual void OnMouseMove(int btnState, int x, int y);
+        virtual void OnMouseInput();
+        virtual void OnMouseLeftDown(double x, double y);
+        virtual void OnMouseLeftUp(double x, double y);
+        virtual void OnMouseRightDown(double x, double y);
+        virtual void OnMouseRightUp(double x, double y);
+        virtual void OnMouseMove(int button, double x, double y);
+        virtual void OnMouseWheel(double x, double y);
 
         // Keyboard Input
         virtual void OnKeyboardInput();
@@ -268,6 +278,9 @@ namespace LibUtil
                 virtual void buildScene_ConstantBufferViews();
                 virtual void buildScene_PipelineStates();
 
+            //Camera
+            virtual void createCamera();
+
             //Geometry
             virtual void loadGeometry();
                 virtual void loadVertexIndexBuffer();
@@ -323,6 +336,10 @@ namespace LibUtil
 
                 virtual void updateImgui();
                     virtual bool beginRenderImgui();
+                        //Camera
+                        virtual void cameraConfig();
+                        virtual void cameraReset();
+
                     virtual void endRenderImgui();
             virtual void render();
         virtual void endRender();

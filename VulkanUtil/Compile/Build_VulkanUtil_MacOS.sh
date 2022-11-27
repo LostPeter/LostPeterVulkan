@@ -11,7 +11,7 @@ else
     name_dylib="libVulkanUtil.dylib"
 fi
 
-rm -rf "../Build/MacOS/"$name_project
+# rm -rf "../Build/MacOS/"$name_project
 mkdir -p "../Build/MacOS/"$name_project
 
 rm -rf "../../Plugins/MacOS/"$name_dylib

@@ -221,9 +221,9 @@ namespace LibUtil
 
     void MathUtil::FromMatrix3(glm::mat3& mat3, glm::vec3& xAxis, glm::vec3& yAxis, glm::vec3& zAxis)
     {
-        xAxis.x = mat3[0][0]; yAxis.x = mat3[0][1]; zAxis.x = mat3[0][2]; 
-        xAxis.y = mat3[1][0]; yAxis.y = mat3[1][1]; zAxis.y = mat3[1][2];
-        xAxis.z = mat3[2][0]; yAxis.z = mat3[2][1]; zAxis.z = mat3[2][2];
+        xAxis.x = mat3[0][0]; xAxis.y = mat3[0][1]; xAxis.z = mat3[0][2]; 
+        yAxis.x = mat3[1][0]; yAxis.y = mat3[1][1]; yAxis.z = mat3[1][2];
+        zAxis.x = mat3[2][0]; zAxis.y = mat3[2][1]; zAxis.z = mat3[2][2];
     }
     glm::mat3 MathUtil::ToMatrix3(const glm::vec3& xAxis, const glm::vec3& yAxis, const glm::vec3& zAxis)
     {
@@ -421,6 +421,15 @@ namespace LibUtil
     glm::mat4 MathUtil::InverseMatrix4(const glm::mat4& mat4)
     {
         return glm::inverse(mat4);
+    }
+
+    glm::mat3 MathUtil::TransposeMatrix3(const glm::mat3& mat3)
+    {
+        return glm::transpose(mat3);
+    }
+    glm::mat4 MathUtil::TransposeMatrix4(const glm::mat4& mat4)
+    {
+        return glm::transpose(mat4);
     }
 
 }; //LibUtil

@@ -1,182 +1,147 @@
 #include "../include/preinclude.h"
 #include "../include/camera.h"
+#include "../include/mathutil.h"
 
 namespace LibUtil
 {
     Camera::Camera()
-		: position(0.0f, 0.0f, 0.0f)
-		, right(1.0f, 0.0f, 0.0f)
-		, up(0.0f, 1.0f, 0.0f)
-		, look(0.0f, 0.0f, 1.0f)
-		, nearZ(0.0f)
-		, farZ(0.0f)
-		, aspect(0.0f)
-		, fovY(0.0f)
-		, nearWindowHeight(0.0f)
-		, farWindowHeight(0.0f)
-		, isViewDirty(true)
-		, matView(MathUtil::Identity4x4())
-		, matProj(MathUtil::Identity4x4())
+		: m_vPos(0.0f, 0.0f, 0.0f)
+		, m_vRight(1.0f, 0.0f, 0.0f)
+		, m_vUp(0.0f, 1.0f, 0.0f)
+		, m_vDir(0.0f, 0.0f, 1.0f)
+		, m_fNearZ(0.0f)
+		, m_fFarZ(0.0f)
+		, m_fAspect(0.0f)
+		, m_fFovY(0.0f)
+		, m_fNearWindowHeight(0.0f)
+		, m_fFarWindowHeight(0.0f)
+		, m_bIsViewDirty(true)
+		, m_mat4View(MathUtil::Identity4x4())
+		, m_mat4Projection(MathUtil::Identity4x4())
 	{
-		SetLens(0.25f * MathUtil::ms_fPI, 1.0f, 1.0f, 1000.0f);
+		PerspectiveLH(0.25f * MathUtil::ms_fPI, 1.0f, 1.0f, 1000.0f);
 	}
 
 	Camera::~Camera()
 	{
 
+	}	
+
+	glm::mat4 Camera::GetMatrix4World() const
+	{
+		return MathUtil::Translate(this->m_vPos);
 	}
 
-	glm::vec3 Camera::GetPosition()const
+	glm::quat Camera::GetOrientation() const
 	{
-		return this->position;
+		return MathUtil::ToQuaternion(this->m_vRight, this->m_vUp, this->m_vDir);
+	}
+	void Camera::SetOrientation(const glm::quat& quat)
+	{
+		this->m_vRight = quat * MathUtil::ms_v3UnitX;
+		this->m_vUp = quat * MathUtil::ms_v3UnitY;
+		this->m_vDir = quat * MathUtil::ms_v3UnitZ;
+
+		m_bIsViewDirty = true;
 	}
 
-	void Camera::SetPosition(float x, float y, float z)
+	glm::vec3 Camera::GetEulerAngles() const
 	{
-		this->position = glm::vec3(x, y, z);
-		this->isViewDirty = true;
+		glm::quat qRot = MathUtil::ToQuaternion(this->m_vRight, this->m_vUp, this->m_vDir);
+		return MathUtil::ToEulerAngles(qRot);
+	}
+	void Camera::SetEulerAngles(const glm::vec3& vEulerAngles)
+	{
+		glm::quat qRot = MathUtil::ToQuaternion(vEulerAngles);
+		SetOrientation(qRot);
 	}
 
-	void Camera::SetPosition(const glm::vec3& v)
+	void Camera::LookAtLH(const glm::vec3& pos, const glm::vec3& target, const glm::vec3& worldUp)
 	{
-		this->position = v;
-		this->isViewDirty = true;
+		glm::mat4 mat = glm::lookAtLH(pos, target, worldUp);
+		this->m_vPos = pos;
+		MathUtil::FromMatrix4(mat, this->m_vRight, this->m_vUp, this->m_vDir);
+
+		this->m_bIsViewDirty = true;
 	}
 
-	glm::vec3 Camera::GetRight()const
+	void Camera::PerspectiveLH(float fFovY, float fAspect, float fNearZ, float fFarZ)
 	{
-		return this->right;
+		this->m_fFovY = fFovY;
+		this->m_fAspect = fAspect;
+		this->m_fNearZ = fNearZ;
+		this->m_fFarZ = fFarZ;
+
+		float rad = glm::radians(this->m_fFovY);
+		this->m_fNearWindowHeight = 2.0f * this->m_fNearZ * tanf(0.5f * rad);
+		this->m_fFarWindowHeight = 2.0f * this->m_fFarZ * tanf(0.5f * rad);
+
+		this->m_mat4Projection = glm::perspectiveLH(rad, this->m_fAspect, this->m_fNearZ, this->m_fFarZ);
 	}
 
-	glm::vec3 Camera::GetUp()const
+	void Camera::Strafe(float dis)
 	{
-		return this->up;
+		this->m_vPos += dis * this->m_vRight;
+
+		this->m_bIsViewDirty = true;
 	}
 
-	glm::vec3 Camera::GetLook()const
+	void Camera::Walk(float dis)
 	{
-		return this->look;
-	}
+		this->m_vPos += dis * this->m_vDir;
 
-	float Camera::GetNearZ()const
-	{
-		return this->nearZ;
-	}
-
-	float Camera::GetFarZ()const
-	{
-		return this->farZ;
-	}
-
-	float Camera::GetAspect()const
-	{
-		return this->aspect;
-	}
-
-	float Camera::GetFovY()const
-	{
-		return this->fovY;
-	}
-
-	float Camera::GetFovX()const
-	{
-		float halfWidth = 0.5f * GetNearWindowWidth();
-		return 2.0f * atan(halfWidth / this->nearZ);
-	}
-
-	float Camera::GetNearWindowWidth()const
-	{
-		return this->aspect * this->nearWindowHeight;
-	}
-
-	float Camera::GetNearWindowHeight()const
-	{
-		return this->nearWindowHeight;
-	}
-
-	float Camera::GetFarWindowWidth()const
-	{
-		return this->aspect * this->farWindowHeight;
-	}
-
-	float Camera::GetFarWindowHeight()const
-	{
-		return this->farWindowHeight;
-	}
-
-	void Camera::SetLens(float fovY, float aspect, float zn, float zf)
-	{
-		// cache properties
-		this->fovY = fovY;
-		this->aspect = aspect;
-		this->nearZ = zn;
-		this->farZ = zf;
-
-		this->nearWindowHeight = 2.0f * this->nearZ * tanf(0.5f * this->fovY);
-		this->farWindowHeight = 2.0f * this->farZ * tanf(0.5f * this->fovY);
-
-		this->matProj = glm::perspective(this->fovY, this->aspect, this->nearZ, this->farZ);
-	}
-
-	void Camera::LookAt(const glm::vec3& pos, const glm::vec3& target, const glm::vec3& worldUp)
-	{
-		glm::mat4 mat = glm::lookAt(pos, target, worldUp);
-		
-		//pos
-		this->position = pos;
-		//right
-		this->right.x = mat[0][0];
-		this->right.y = mat[1][0];
-		this->right.z = mat[2][0];
-		//up
-		this->up.x = mat[0][1];
-		this->up.y = mat[1][1];
-		this->up.z = mat[2][1];
-		//look
-		this->look.x = mat[0][2];
-		this->look.y = mat[1][2];
-		this->look.z = mat[2][2];
-
-		this->isViewDirty = true;
-	}
-
-	glm::mat4 Camera::GetView()const
-	{
-		assert(!this->isViewDirty);
-		return this->matView;
-	}
-
-	glm::mat4 Camera::GetProj()const
-	{
-		return this->matProj;
-	}
-
-	void Camera::Strafe(float d)
-	{
-
-	}
-
-	void Camera::Walk(float d)
-	{
-		
+		this->m_bIsViewDirty = true;
 	}
 
 	void Camera::Pitch(float angle)
 	{
-		
+		glm::quat qRot = MathUtil::ToQuaternionFromAngleAxis(angle, m_vRight);
+		this->m_vUp = MathUtil::Normalize(qRot * this->m_vUp);
+		this->m_vDir = MathUtil::Normalize(qRot * this->m_vDir);
+
+		this->m_bIsViewDirty = true;
 	}
 
 	void Camera::RotateY(float angle)
 	{
-		
+		glm::quat qRot = MathUtil::ToQuaternionFromAngleAxis(angle, m_vUp);
+		this->m_vRight = MathUtil::Normalize(qRot * this->m_vRight);
+		this->m_vDir = MathUtil::Normalize(qRot * this->m_vDir);
+
+		this->m_bIsViewDirty = true;
 	}
 
 	void Camera::UpdateViewMatrix()
 	{
-		if (this->isViewDirty)
+		if (this->m_bIsViewDirty)
 		{
-			this->isViewDirty = false;
+			this->m_vRight = MathUtil::Normalize(this->m_vRight);
+			this->m_vDir = MathUtil::Normalize(this->m_vDir);
+			this->m_vUp = MathUtil::Normalize(MathUtil::Cross(this->m_vDir, this->m_vRight));
+			this->m_vRight = MathUtil::Cross(this->m_vUp, this->m_vDir);
+
+			// View matrix is: Use Left-Hand Coordinate, HLSL (matrix4 * vector4)
+			//  [ Px  Py  Pz   0  ]
+			//  [ Qx  Qy  Qz   0  ]
+			//  [ Rx  Ry  Rz   0  ]
+			//  [ Tx  Ty  Tz   1  ]
+			// T = -Matrix3(Rot) * Pos
+
+			glm::mat3 mat3Rot = MathUtil::ToMatrix3(this->m_vRight, this->m_vUp, this->m_vDir);
+			glm::vec3 trans = -mat3Rot * this->m_vPos;
+
+			this->m_mat4View = glm::mat4(mat3Rot);
+			this->m_mat4View[3][0] = trans.x;
+			this->m_mat4View[3][1] = trans.y;
+			this->m_mat4View[3][2] = trans.z;
+
+			this->m_bIsViewDirty = false;
 		}
+	}
+
+	void Camera::UpdateProjectionMatrix()
+	{
+		PerspectiveLH(this->m_fFovY, this->m_fAspect, this->m_fNearZ, this->m_fFarZ);
 	}
 
 }; //LibUtil

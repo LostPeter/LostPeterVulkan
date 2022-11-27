@@ -46,9 +46,13 @@
 
 #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32
 	#if defined(UTIL_EXPORTS)
-		#define utilExport				__declspec(dllexport) 
+		#define utilExport        		__declspec(dllexport) 
 	#else
-		#define utilExport				__declspec(dllimport) 
+		#if defined(UTIL_IMPORTS)
+			#define utilExport      	__declspec(dllimport) 
+		#else
+			#define utilExport
+		#endif
 	#endif
 #elif UTIL_PLATFORM == UTIL_PLATFORM_ANDROID
 	#define utilExport					__attribute__ ((visibility("default")))

@@ -1,6 +1,7 @@
 #include "../include/preinclude.h"
 #include "../include/vulkanwindow.h"
 #include "../include/meshloader.h"
+#include "../include/camera.h"
 
 namespace LibUtil
 {
@@ -90,9 +91,14 @@ namespace LibUtil
         , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
 
         , cfg_cameraPos(0.0f, 0.0f, -5.0f)
+        , cfg_cameraLookTarget(0.0f, 0.0f, 0.0f)
+        , cfg_cameraUp(0.0f, 1.0f, 0.0f)
         , cfg_cameraFov(45.0f)
         , cfg_cameraNear(0.05f)
         , cfg_cameraFar(1000.0f)
+        , cfg_cameraSpeedMove(100.0f)
+        , cfg_cameraSpeedZoom(0.05f)
+        , cfg_cameraSpeedRotate(10.0f)
 
         , cfg_model_Path("")
         , cfg_shaderVertex_Path("")
@@ -105,11 +111,12 @@ namespace LibUtil
         , imgui_PathIni(nullptr)
         , imgui_PathLog(nullptr)
 
-        
         , pSceneManager(nullptr)
 
-        , speedMove(10.0f)
-        , speedZoom(10.0f)
+        , pCamera(nullptr)
+
+        , mouseButtonDownLeft(false)
+        , mouseButtonDownRight(false)
     {
         this->validationLayers.push_back("VK_LAYER_KHRONOS_validation");
         this->deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -134,12 +141,11 @@ namespace LibUtil
 
     VulkanWindow::~VulkanWindow()
     {
-        
+        UTIL_DELETE(pCamera)
     }
 
     void VulkanWindow::OnInit()
     {
-        this->camera.SetPosition(0.0f, 2.0f, -15.0f);
         createPipeline();
     }
 
@@ -158,7 +164,10 @@ namespace LibUtil
     {
         resizeWindow(w, h, force);
 
-        this->camera.SetLens(0.25f * MathUtil::ms_fPI, this->aspectRatio, 1.0f, 10000.0f);
+        if (this->pCamera != nullptr)
+        {
+            this->pCamera->PerspectiveLH(glm::radians(this->cfg_cameraFov), this->aspectRatio, this->cfg_cameraNear, this->cfg_cameraFar);
+        }
     }
 
     bool VulkanWindow::OnBeginRender()
@@ -190,24 +199,111 @@ namespace LibUtil
         }
     }
 
-    void VulkanWindow::OnMouseDown(int btnState, int x, int y)
+    void VulkanWindow::OnMouseInput()
+    {   
+        double cursorX; double cursorY;
+        glfwGetCursorPos(this->pWindow, &cursorX, &cursorY);
+
+
+        //Mouse Left
+        int actionLeft = glfwGetMouseButton(this->pWindow, GLFW_MOUSE_BUTTON_LEFT);
+        if (actionLeft == GLFW_PRESS)
+        {
+            if (!this->mouseButtonDownLeft)
+            {
+                OnMouseLeftDown(cursorX, cursorY);
+            }
+            else
+            {
+                OnMouseMove(GLFW_MOUSE_BUTTON_LEFT, cursorX, cursorY);
+            }
+        }
+        else
+        {
+            if (this->mouseButtonDownLeft)
+            {
+                OnMouseLeftUp(cursorX, cursorY);
+            }
+        }
+        
+        //Mouse Right
+        int actionRight = glfwGetMouseButton(this->pWindow, GLFW_MOUSE_BUTTON_RIGHT);
+        if (actionRight == GLFW_PRESS)
+        {
+            if (!this->mouseButtonDownRight)
+            {
+                OnMouseRightDown(cursorX, cursorY);
+            }
+            else
+            {
+                OnMouseMove(GLFW_MOUSE_BUTTON_RIGHT, cursorX, cursorY);
+            }
+        }
+        else
+        {
+            if (this->mouseButtonDownRight)
+            {
+                OnMouseRightUp(cursorX, cursorY);
+            }
+        }
+    }
+    void VulkanWindow::OnMouseLeftDown(double x, double y)
     {
-        this->lastMousePos.x = x;
-        this->lastMousePos.y = y;
+        this->mouseButtonDownLeft = true;
+
+        this->mousePosLast.x = (float)x;
+        this->mousePosLast.y = (float)y;
+    }
+    void VulkanWindow::OnMouseLeftUp(double x, double y)
+    {   
+        this->mouseButtonDownLeft = false;
 
     }
-
-    void VulkanWindow::OnMouseUp(int btnState, int x, int y)
+    void VulkanWindow::OnMouseRightDown(double x, double y)
     {
+        this->mouseButtonDownRight = true;
 
     }
-
-    void VulkanWindow::OnMouseMove(int btnState, int x, int y)
+    void VulkanWindow::OnMouseRightUp(double x, double y)
     {
+        this->mouseButtonDownRight = false;
 
+    }
+    void VulkanWindow::OnMouseMove(int button, double x, double y)
+    {
+        if (button == GLFW_MOUSE_BUTTON_LEFT)
+        {
+            if (this->pCamera != nullptr)
+            {
+                float angleX = 0.25f * static_cast<float>(x - this->mousePosLast.x);
+                float angleY = 0.25f * static_cast<float>(y - this->mousePosLast.y);
+                this->pCamera->Pitch(angleY);
+                this->pCamera->RotateY(angleX);
+                this->pCamera->UpdateProjectionMatrix();
 
-        this->lastMousePos.x = x;
-        this->lastMousePos.y = y;
+                //std::cout << "AngleX: " << angleX << ", AngleY: " << angleY << std::endl;
+            }
+            
+            this->mousePosLast.x = (float)x;
+            this->mousePosLast.y = (float)y;
+        }
+        else if (button == GLFW_MOUSE_BUTTON_RIGHT)
+        {
+            
+        }
+        else if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+        {
+            
+        }
+    }
+    void VulkanWindow::OnMouseWheel(double x, double y)
+    {
+        if (this->pCamera != nullptr)
+        {
+            float fDis = (float)(this->cfg_cameraSpeedZoom * ( - y));
+            this->pCamera->Walk(fDis);
+            this->pCamera->UpdateProjectionMatrix();
+        }
     }
 
     void VulkanWindow::OnKeyboardInput()
@@ -216,10 +312,31 @@ namespace LibUtil
         {
             glfwSetWindowShouldClose(this->pWindow, true);
         }
-
         if (glfwGetKey(this->pWindow, GLFW_KEY_R) == GLFW_PRESS)
         {
             this->cfg_isWireFrame = !this->cfg_isWireFrame;
+        }
+
+        if (this->pCamera != nullptr)
+        {
+            float timeDelta = this->pTimer->GetTimeDelta();
+            if (glfwGetKey(this->pWindow, GLFW_KEY_W) == GLFW_PRESS)
+            {
+                this->pCamera->Walk(- this->cfg_cameraSpeedMove * timeDelta);
+            }
+            if (glfwGetKey(this->pWindow, GLFW_KEY_S) == GLFW_PRESS)
+            {
+                this->pCamera->Walk(this->cfg_cameraSpeedMove * timeDelta);
+            }
+            if (glfwGetKey(this->pWindow, GLFW_KEY_A) == GLFW_PRESS)
+            {
+                this->pCamera->Strafe(- this->cfg_cameraSpeedMove * timeDelta);
+            }
+            if (glfwGetKey(this->pWindow, GLFW_KEY_D) == GLFW_PRESS)
+            {
+                this->pCamera->Strafe(this->cfg_cameraSpeedMove * timeDelta);
+            }
+            this->pCamera->UpdateViewMatrix();
         }
     }
 
@@ -1557,16 +1674,19 @@ namespace LibUtil
             //1> Create Scene
             createScene();
 
-            //2> loadGeometry
+            //2> Create Camera
+            createCamera();
+
+            //3> loadGeometry
             if (this->pSceneManager == nullptr)
             {
                 loadGeometry();
             }
 
-            //3> Build Scene
+            //4> Build Scene
             buildScene();
 
-            //4> Imgui
+            //5> Imgui
             if (HasConfig_Imgui())
             {
                 createImgui();
@@ -1663,6 +1783,11 @@ namespace LibUtil
 
             std::cout << "<2-3-8> VulkanWindow::buildScene_PipelineStates finish !" << std::endl;
         }
+
+    void VulkanWindow::createCamera()
+    {
+
+    }
 
     void VulkanWindow::loadGeometry()
     {
@@ -2832,13 +2957,21 @@ namespace LibUtil
             if (this->poBuffersMemory_PassMainCB.size() <= 0)
                 return;
 
-            this->passMainCB.g_MatView = glm::lookAtLH(this->cfg_cameraPos, 
-                                                       glm::vec3(0.0f, 0.0f, 0.0f), 
-                                                       glm::vec3(0.0f, 1.0f, 0.0f));
-            this->passMainCB.g_MatProj = glm::perspectiveLH(glm::radians(this->cfg_cameraFov), 
-                                                            this->poSwapChainExtent.width / (float)this->poSwapChainExtent.height,
-                                                            this->cfg_cameraNear, 
-                                                            this->cfg_cameraFar);
+            if (this->pCamera != nullptr)
+            {
+                this->passMainCB.g_MatView = this->pCamera->GetMatrix4View();
+                this->passMainCB.g_MatProj = this->pCamera->GetMatrix4Projection();
+            }
+            else
+            {
+                this->passMainCB.g_MatView = glm::lookAtLH(this->cfg_cameraPos, 
+                                                           this->cfg_cameraLookTarget,
+                                                           this->cfg_cameraUp);
+                this->passMainCB.g_MatProj = glm::perspectiveLH(glm::radians(this->cfg_cameraFov), 
+                                                                this->poSwapChainExtent.width / (float)this->poSwapChainExtent.height,
+                                                                this->cfg_cameraNear, 
+                                                                this->cfg_cameraFar);
+            }   
 
             VkDeviceMemory& memory = this->poBuffersMemory_PassMainCB[this->poSwapChainImageIndex];
             void* data;
@@ -2851,12 +2984,9 @@ namespace LibUtil
             if (this->poBuffersMemory_ObjectCB.size() <= 0)
                 return;
 
-            static auto startTime = std::chrono::high_resolution_clock::now();
-            auto currentTime = std::chrono::high_resolution_clock::now();
-            float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
             if (this->cfg_isRotate)
             {
+                float time = this->pTimer->GetTimeSinceStart();
                 this->objectCB.g_MatWorld = glm::rotate(this->poMatWorld, 
                                                         time * glm::radians(90.0f), 
                                                         glm::vec3(0.0f, 1.0f, 0.0f));
@@ -2911,6 +3041,197 @@ namespace LibUtil
 
             return false;
         }
+            void VulkanWindow::cameraConfig()
+            {
+                if (this->pCamera == nullptr)
+                    return;
+
+                if (ImGui::Button("Camera Reset"))
+                {
+                    cameraReset();
+                }
+                if (ImGui::CollapsingHeader("Camera Transform"))
+                {
+                    //Position
+                    glm::vec3 vPos = this->pCamera->GetPos();
+                    if (ImGui::DragFloat3("Position", &vPos[0], 0.05f, -FLT_MAX, FLT_MAX))
+                    {
+                        this->pCamera->SetPos(vPos);
+                        this->pCamera->UpdateViewMatrix();
+                    }
+                    //Rotation
+                    glm::vec3 vEulerAngle = this->pCamera->GetEulerAngles();
+                    if (ImGui::DragFloat3("Rotation", &vEulerAngle[0], 0.1f, -180, 180))
+                    {
+                        this->pCamera->SetEulerAngles(vEulerAngle);
+                        this->pCamera->UpdateViewMatrix();
+                    }
+                    ImGui::Spacing();
+                    //Right
+                    glm::vec3 vRight = this->pCamera->GetRight();
+                    if (ImGui::DragFloat3("Right (X axis)", &vRight[0], 0.1f, -1.0f, 1.0f))
+                    {
+                        
+                    }
+                    //Up
+                    glm::vec3 vUp = this->pCamera->GetUp();
+                    if (ImGui::DragFloat3("Up (Y axis)", &vUp[0], 0.1f, -1.0f, 1.0f))
+                    {
+                        
+                    }
+                    //Direction
+                    glm::vec3 vDir = this->pCamera->GetDir();
+                    if (ImGui::DragFloat3("Direction (Z axis)", &vDir[0], 0.1f, -1.0f, 1.0f))
+                    {
+                        
+                    }
+                }
+                if (ImGui::CollapsingHeader("Camera Param"))
+                {
+                    //FovY
+                    float fAngle = this->pCamera->GetFovY();
+                    if (ImGui::DragFloat("FovY Angle", &fAngle, 0.1f, 0.1f, 180.0f))
+                    {
+                        this->pCamera->SetFovY(fAngle);
+                        this->pCamera->UpdateProjectionMatrix();
+                    }
+                    //Aspect
+                    float fAspect = this->pCamera->GetAspect();
+                    if (ImGui::DragFloat("Aspect", &fAspect, 0.1f, 0.1f, 10.0f))
+                    {
+                        this->pCamera->SetAspect(fAspect);
+                        this->pCamera->UpdateProjectionMatrix();
+                    }
+
+                    //NearZ/FarZ
+                    float fNearDist = this->pCamera->GetNearZ();
+                    float fFarDist = this->pCamera->GetFarZ();
+                    if (ImGui::DragFloat("Near Distance", &fNearDist, 0.1f, 0.1f, fFarDist - 1.0f))
+                    {
+                        this->pCamera->SetNearZ(fNearDist);
+                        this->pCamera->UpdateProjectionMatrix();
+                    }
+                    if (ImGui::DragFloat("Far Distance", &fFarDist, 0.1f, fNearDist + 1.0f, FLT_MAX))
+                    {
+                        this->pCamera->SetFarZ(fFarDist);
+                        this->pCamera->UpdateProjectionMatrix();
+                    }
+
+                    ImGui::Separator();
+                    ImGui::Spacing();
+                    
+                    //SpeedMove
+                    if (ImGui::DragFloat("Speed Move", &cfg_cameraSpeedMove, 1.0f, 1.0f, 100.0f))
+                    {
+                        
+                    }
+                    //SpeedZoom
+                    if (ImGui::DragFloat("Speed Zoom", &cfg_cameraSpeedZoom, 0.01f, 0.01f, 5.0f))
+                    {
+
+                    }
+                    //SpeedRotate
+                    if (ImGui::DragFloat("Speed Rotate", &cfg_cameraSpeedRotate, 0.1f, 0.1f, 10.0f))
+                    {
+
+                    }
+                }
+                if (ImGui::CollapsingHeader("Camera Matrix4 World"))
+                {
+                    glm::mat4 mat4World = this->pCamera->GetMatrix4World();
+                    if (ImGui::BeginTable("split_camera_world", 4))
+                    {
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
+
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
+
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
+
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
+                    
+                        ImGui::EndTable();
+                    }
+                }
+                if (ImGui::CollapsingHeader("Camera Matrix4 View"))
+                {
+                    const glm::mat4& mat4View = this->pCamera->GetMatrix4View();
+                    if (ImGui::BeginTable("split_camera_view", 4))
+                    {
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][0]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][1]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][2]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][3]);
+
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][0]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][1]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][2]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][3]);
+
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][0]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][1]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][2]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][3]);
+
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][0]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][1]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][2]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][3]);
+                    
+                        ImGui::EndTable();
+                    }
+                }
+                if (ImGui::CollapsingHeader("Camera Matrix4 Projection"))
+                {
+                    const glm::mat4& mat4Projection = pCamera->GetMatrix4Projection();
+                    if (ImGui::BeginTable("split_camera_projection", 4))
+                    {
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][0]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][1]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][2]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][3]);
+
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][0]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][1]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][2]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][3]);
+
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][0]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][1]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][2]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][3]);
+
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][0]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][1]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][2]);
+                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][3]);
+
+                        ImGui::EndTable();
+                    }
+                }
+                ImGui::Separator();
+            }
+            void VulkanWindow::cameraReset()
+            {
+                if (this->pCamera == nullptr)
+                    return;
+
+                this->pCamera->LookAtLH(this->cfg_cameraPos, this->cfg_cameraLookTarget, this->cfg_cameraUp);
+                this->pCamera->PerspectiveLH(this->cfg_cameraFov, this->aspectRatio, this->cfg_cameraNear, this->cfg_cameraFar);
+                this->pCamera->UpdateViewMatrix();
+            }
+
         void VulkanWindow::endRenderImgui()
         {
             ImGui::Render();

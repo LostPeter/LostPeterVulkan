@@ -31,14 +31,17 @@ namespace LibUtil
         bool isCreateDevice;        //is create device
         bool isLoadAsset;           //is load asset
 
-        Timer timer;
+        Timer* pTimer;
+        float fTimeLastFPS;
+        float fFPS;
+        int nFrameFPS;
+        uint64 nFrameTotal;
 
     protected:
         std::string nameTitle;
         std::string pathBin; 
 
     public:
-        // Accessors.
         int GetWidth() const { return this->width; }
         int GetHeight() const { return this->height; }
         float RefreshAspectRatio();
@@ -57,21 +60,24 @@ namespace LibUtil
         virtual void OnEndRender() = 0;
         virtual void OnDestroy() = 0;
 
-        // Samples override the event handlers to handle specific messages.
-        virtual void OnKeyDown(int /*key*/) {}
-        virtual void OnKeyUp(int /*key*/) {}
-
         // Mouse Input
-        virtual void OnMouseDown(int btnState, int x, int y) { }
-        virtual void OnMouseUp(int btnState, int x, int y) { }
-        virtual void OnMouseMove(int btnState, int x, int y) { }
+        virtual void OnMouseInput() { }
+        virtual void OnMouseLeftDown(double x, double y) { }
+        virtual void OnMouseLeftUp(double x, double y) { }
+        virtual void OnMouseRightDown(double x, double y) { }
+        virtual void OnMouseRightUp(double x, double y) { }
+        virtual void OnMouseMove(int button, double x, double y) { }
+        virtual void OnMouseWheel(double x, double y) { }
 
         // Keyboard Input
-        // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
         virtual void OnKeyboardInput() { }
+        virtual void OnKeyDown(int key) { }
+        virtual void OnKeyUp(int key) { }
 
     public:
         virtual void CalculateFrameStats(GLFWwindow* s_pWindow);
+
+        virtual void UpdateTimer();
 
     protected:
         std::string GetAssetFullPath(const std::string& assetName);

@@ -72,6 +72,11 @@ Usage:
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_003_texture.png)
 
 ### <004> vulkan_004_model
-* sample004：load different 3D models and textures and render them
+* sample004：load different 3D models and textures nd then render them
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_004_model.png)
+
+### <005> vulkan_005_camera
+* sample005: realize a camera and use it in the scene
+
+![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_005_camera.png)

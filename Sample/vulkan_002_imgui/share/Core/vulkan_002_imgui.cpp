@@ -34,8 +34,8 @@ bool Vulkan_002_Imgui::beginRenderImgui()
     ImGui::NewFrame();
     static bool windowOpened = true;
     static bool showDemoWindow = false;
-    ImGui::Begin("Rendertime", &windowOpened, 0);
-    ImGui::Text("Frametime: %f", ImGui::GetIO().Framerate);
+    ImGui::Begin("Vulkan_002_Imgui", &windowOpened, 0);
+    ImGui::Text("Frametime: %f", this->fFPS);
     ImGui::Checkbox("Show ImGui demo window", &showDemoWindow);
     ImGui::End();
     if (showDemoWindow) 

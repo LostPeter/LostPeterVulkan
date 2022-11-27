@@ -8,30 +8,53 @@
 #include "premacro.h"
 
 //C
-#include <float.h>
-#include <assert.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <time.h>
+#include <stddef.h>
 #include <string.h>
+#include <math.h>
+#include <assert.h>
+#include <float.h>
+#include <ctype.h>
+#include <signal.h>
+#include <errno.h>
 
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <cstring>
+#include <cstdarg>
+#include <cmath>
 
 //C++
-#include <stdexcept>
-#include <cstdint>
-#include <cassert>
-#include <cstdlib>
-#include <cmath>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <algorithm>
-#include <chrono>
 #include <memory>
+#include <new>
+#include <limits>
+#include <type_traits>
+#include <chrono>
 
-#include <string>
+//C++ Stream
+#include <istream>
+#include <ostream>
+#include <fstream>
+#include <iostream>  
+#include <iomanip>
+#include <sstream>
+
+//STL containers
 #include <array>
 #include <vector>
 #include <list>
 #include <map>
 #include <set>
+#include <stack>
+#include <deque>
+#include <queue>
+#include <bitset>
+#include <string>
 #include <unordered_map>
 
 

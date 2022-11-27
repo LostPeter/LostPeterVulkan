@@ -16,6 +16,7 @@ namespace LibUtil
 
 
         //2> glfw initialize and configure 
+        glfwSetErrorCallback(error_callback);
         if (!glfwInit()) {
             std::cout << "App::Run: glfwInit failed !" << std::endl;
             return -1;
@@ -30,6 +31,12 @@ namespace LibUtil
             return -1;
         }
         pBase->pWindow = s_pWindow;
+
+        glfwSetKeyCallback(s_pWindow, key_callback);
+        glfwSetFramebufferSizeCallback(s_pWindow, framebuffer_size_callback);
+        glfwSetMouseButtonCallback(s_pWindow, mouse_button_callback);
+        glfwSetCursorPosCallback(s_pWindow, cursor_position_callback);
+        glfwSetScrollCallback(s_pWindow, scroll_callback);
 
         //4> OnInit
         pBase->OnInit();
@@ -46,7 +53,11 @@ namespace LibUtil
         //8> Main loop
         while (!glfwWindowShouldClose(s_pWindow)) 
         {
+            //0) timer
+            pBase->UpdateTimer();
+            
             //1) input
+            pBase->OnMouseInput();
             pBase->OnKeyboardInput();
 
             //2) poll IO events (keys pressed/released, mouse moved etc)
@@ -82,6 +93,31 @@ namespace LibUtil
         glfwTerminate();
 
         return 0;
+    }
+
+    void App::error_callback(int error, const char* description)
+    {
+        std::cout << "Error: " << description << std::endl;
+    }
+    void App::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+    {
+        
+    }
+    void App::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+    {
+        s_pBase->OnResize(width, height, true);
+    }
+    void App::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+    {
+        
+    }
+    void App::cursor_position_callback(GLFWwindow* window, double x, double y)
+    {
+        
+    }
+    void App::scroll_callback(GLFWwindow* window, double x, double y)
+    {
+        s_pBase->OnMouseWheel(x, y);
     }
 
 }; //LibUtil

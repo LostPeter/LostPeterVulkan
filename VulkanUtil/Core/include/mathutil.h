@@ -501,6 +501,9 @@ namespace LibUtil
         static glm::quat InverseQuaternion(const glm::quat& qRot);
         static glm::mat3 InverseMatrix3(const glm::mat3& mat3);
         static glm::mat4 InverseMatrix4(const glm::mat4& mat4);
+
+        static glm::mat3 TransposeMatrix3(const glm::mat3& mat3);
+        static glm::mat4 TransposeMatrix4(const glm::mat4& mat4);
     };
 
 }; //LibUtil

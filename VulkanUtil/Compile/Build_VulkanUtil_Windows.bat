@@ -8,9 +8,11 @@ echo %debug%
 if "%debug%" == "debug" (
     set name_project="VulkanUtil_d"
     set name_lib="VulkanUtil_d.lib"
+    @REM set name_dll=%name%"_"%mode%"_d.dll"
 ) else (
     set name_project="VulkanUtil"
     set name_lib="VulkanUtil.lib"
+    @REM set name_dll=%name%"_"%mode%".dll"
 )
 
 @rem build folder
@@ -41,10 +43,12 @@ if "%debug%" == "debug" (
     cmake -DDEBUG=1 "../../../Core/"
     msbuild "%name_project%".sln /p:configuration=debug
     copy /Y ".\Debug\"%name_lib% "..\..\..\..\Plugins\Windows\"%name_lib%
+    @REM copy /Y ".\Debug\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
 ) else (
     cmake "../../../Core/"
     msbuild "%name_project%".sln /p:configuration=release
     copy /Y ".\Release\"%name_lib% "..\..\..\..\Plugins\Windows\"%name_lib%
+    @REM copy /Y ".\Release\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
 )
 
 

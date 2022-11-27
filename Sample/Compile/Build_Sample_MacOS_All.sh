@@ -8,3 +8,4 @@ debug=${1}
 ./Build_Sample_MacOS.sh vulkan_002_imgui $debug
 ./Build_Sample_MacOS.sh vulkan_003_texture $debug
 ./Build_Sample_MacOS.sh vulkan_004_model $debug
+./Build_Sample_MacOS.sh vulkan_005_camera $debug
