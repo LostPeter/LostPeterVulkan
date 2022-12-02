@@ -16,9 +16,7 @@ namespace LibUtil
 
     private:
 		glm::vec3 m_vPos;
-		glm::vec3 m_vRight;
-		glm::vec3 m_vUp;
-		glm::vec3 m_vDir;
+		glm::quat m_qRot;
 
 		float m_fNearZ;
 		float m_fFarZ;
@@ -40,9 +38,16 @@ namespace LibUtil
 			this->m_vPos = v;
 			this->m_bIsViewDirty = true;
 		}
-		const glm::vec3& GetRight() const { return this->m_vRight; }
-		const glm::vec3& GetUp() const { return this->m_vUp; }
-		const glm::vec3& GetDir() const { return this->m_vDir; }
+		const glm::quat& GetOrientation() const	{ return m_qRot; }
+		void SetOrientation(const glm::quat& qRot);
+
+		glm::vec3 GetEulerAngles() const;
+		void SetEulerAngles(const glm::vec3& vEulerAngles);
+
+		glm::vec3 GetRight() const;
+		glm::vec3 GetUp() const;
+		glm::vec3 GetDir() const;
+		void SetDir(const glm::vec3& vDir);
 
 		float GetNearZ() const { return this->m_fNearZ; }
 		void SetNearZ(float fNearZ) { this->m_fNearZ = fNearZ; }
@@ -68,20 +73,18 @@ namespace LibUtil
 		const glm::mat4& GetMatrix4Projection() const { return this->m_mat4Projection; }
 
 	public:
-		glm::quat GetOrientation() const;
-		void SetOrientation(const glm::quat& quat);
-
-		glm::vec3 GetEulerAngles() const;
-		void SetEulerAngles(const glm::vec3& vEulerAngles);
-
 		void LookAtLH(const glm::vec3& pos, const glm::vec3& target, const glm::vec3& vUp);
 		void PerspectiveLH(float fFovY, float fAspect, float fNearZ, float fFarZ);
 
 		void Strafe(float dis);
 		void Walk(float dis);
 
-		void Pitch(float angle);
-		void RotateY(float angle);	
+		void Pitch(float angle); //Rotate with X Axis 
+		void Yaw(float angle); //Rotate with Y Axis
+		void Roll(float angle);	//Rotate with Z Axis
+		
+		void Rotate(const glm::vec3& axis, float angle);
+		void Rotate(const glm::quat& qRot);
 		
 		void UpdateViewMatrix();
 		void UpdateProjectionMatrix();

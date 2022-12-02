@@ -101,7 +101,14 @@ namespace LibUtil
     }
     void App::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
-        
+        if (action == GLFW_PRESS)
+        {
+            s_pBase->OnKeyDown(key);
+        }
+        else if (action == GLFW_RELEASE)
+        {
+            s_pBase->OnKeyUp(key);
+        }
     }
     void App::framebuffer_size_callback(GLFWwindow* window, int width, int height)
     {

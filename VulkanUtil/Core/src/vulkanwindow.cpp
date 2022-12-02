@@ -96,9 +96,9 @@ namespace LibUtil
         , cfg_cameraFov(45.0f)
         , cfg_cameraNear(0.05f)
         , cfg_cameraFar(1000.0f)
-        , cfg_cameraSpeedMove(100.0f)
-        , cfg_cameraSpeedZoom(0.05f)
-        , cfg_cameraSpeedRotate(10.0f)
+        , cfg_cameraSpeedMove(1000.0f)
+        , cfg_cameraSpeedZoom(0.01f)
+        , cfg_cameraSpeedRotate(0.01f)
 
         , cfg_model_Path("")
         , cfg_shaderVertex_Path("")
@@ -246,13 +246,14 @@ namespace LibUtil
                 OnMouseRightUp(cursorX, cursorY);
             }
         }
+
+        //Mouse Middle
+
     }
     void VulkanWindow::OnMouseLeftDown(double x, double y)
     {
         this->mouseButtonDownLeft = true;
 
-        this->mousePosLast.x = (float)x;
-        this->mousePosLast.y = (float)y;
     }
     void VulkanWindow::OnMouseLeftUp(double x, double y)
     {   
@@ -263,6 +264,8 @@ namespace LibUtil
     {
         this->mouseButtonDownRight = true;
 
+        this->mousePosLast.x = (float)x;
+        this->mousePosLast.y = (float)y;
     }
     void VulkanWindow::OnMouseRightUp(double x, double y)
     {
@@ -273,23 +276,31 @@ namespace LibUtil
     {
         if (button == GLFW_MOUSE_BUTTON_LEFT)
         {
+            
+        }
+        else if (button == GLFW_MOUSE_BUTTON_RIGHT)
+        {
             if (this->pCamera != nullptr)
             {
-                float angleX = 0.25f * static_cast<float>(x - this->mousePosLast.x);
-                float angleY = 0.25f * static_cast<float>(y - this->mousePosLast.y);
-                this->pCamera->Pitch(angleY);
-                this->pCamera->RotateY(angleX);
-                this->pCamera->UpdateProjectionMatrix();
+                // float angleX = 0.25f * static_cast<float>(x - this->mousePosLast.x);
+                // float angleY = 0.25f * static_cast<float>(y - this->mousePosLast.y);
+                // this->pCamera->Pitch(angleX);
+                // this->pCamera->Yaw(angleY);
 
-                //std::cout << "AngleX: " << angleX << ", AngleY: " << angleY << std::endl;
+                float fX = static_cast<float>(x - this->mousePosLast.x);
+                float fY = static_cast<float>(y - this->mousePosLast.y);
+                float fRotYAngle = fX * this->cfg_cameraSpeedRotate;
+                float fRotXAngle = -fY * this->cfg_cameraSpeedRotate;
+                glm::vec3 vEulerAngles = pCamera->GetEulerAngles();
+                vEulerAngles.x += fRotXAngle;
+                vEulerAngles.y += fRotYAngle;
+                pCamera->SetEulerAngles(vEulerAngles);
+
+                this->pCamera->UpdateProjectionMatrix();
             }
             
             this->mousePosLast.x = (float)x;
             this->mousePosLast.y = (float)y;
-        }
-        else if (button == GLFW_MOUSE_BUTTON_RIGHT)
-        {
-            
         }
         else if (button == GLFW_MOUSE_BUTTON_MIDDLE)
         {
@@ -300,7 +311,7 @@ namespace LibUtil
     {
         if (this->pCamera != nullptr)
         {
-            float fDis = (float)(this->cfg_cameraSpeedZoom * ( - y));
+            float fDis = (float)(this->cfg_cameraSpeedZoom * y);
             this->pCamera->Walk(fDis);
             this->pCamera->UpdateProjectionMatrix();
         }
@@ -308,36 +319,49 @@ namespace LibUtil
 
     void VulkanWindow::OnKeyboardInput()
     {
-        if (glfwGetKey(this->pWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        {
-            glfwSetWindowShouldClose(this->pWindow, true);
-        }
-        if (glfwGetKey(this->pWindow, GLFW_KEY_R) == GLFW_PRESS)
-        {
-            this->cfg_isWireFrame = !this->cfg_isWireFrame;
-        }
-
         if (this->pCamera != nullptr)
         {
+            float speedMove = this->cfg_cameraSpeedMove;
+            if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ||
+                glfwGetKey(this->pWindow, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS) 
+            {
+                speedMove *= 10.0f;
+            }
+
             float timeDelta = this->pTimer->GetTimeDelta();
             if (glfwGetKey(this->pWindow, GLFW_KEY_W) == GLFW_PRESS)
             {
-                this->pCamera->Walk(- this->cfg_cameraSpeedMove * timeDelta);
+                this->pCamera->Walk(speedMove * timeDelta);
             }
             if (glfwGetKey(this->pWindow, GLFW_KEY_S) == GLFW_PRESS)
             {
-                this->pCamera->Walk(this->cfg_cameraSpeedMove * timeDelta);
+                this->pCamera->Walk(- speedMove * timeDelta);
             }
             if (glfwGetKey(this->pWindow, GLFW_KEY_A) == GLFW_PRESS)
             {
-                this->pCamera->Strafe(- this->cfg_cameraSpeedMove * timeDelta);
+                this->pCamera->Strafe(- speedMove * timeDelta);
             }
             if (glfwGetKey(this->pWindow, GLFW_KEY_D) == GLFW_PRESS)
             {
-                this->pCamera->Strafe(this->cfg_cameraSpeedMove * timeDelta);
+                this->pCamera->Strafe(speedMove * timeDelta);
             }
             this->pCamera->UpdateViewMatrix();
         }
+    }
+    void VulkanWindow::OnKeyDown(int key)
+    {
+        if (key == GLFW_KEY_ESCAPE)
+        {
+            glfwSetWindowShouldClose(this->pWindow, true);
+        }
+        if (key == GLFW_KEY_R)
+        {
+            this->cfg_isWireFrame = !this->cfg_isWireFrame;
+        }
+    }
+    void VulkanWindow::OnKeyUp(int key)
+    {
+
     }
 
     bool VulkanWindow::HasConfig_MASS()
@@ -3121,17 +3145,17 @@ namespace LibUtil
                     ImGui::Spacing();
                     
                     //SpeedMove
-                    if (ImGui::DragFloat("Speed Move", &cfg_cameraSpeedMove, 1.0f, 1.0f, 100.0f))
+                    if (ImGui::DragFloat("Speed Move", &cfg_cameraSpeedMove, 0.1f, 1.0f, 10000.0f))
                     {
                         
                     }
                     //SpeedZoom
-                    if (ImGui::DragFloat("Speed Zoom", &cfg_cameraSpeedZoom, 0.01f, 0.01f, 5.0f))
+                    if (ImGui::DragFloat("Speed Zoom", &cfg_cameraSpeedZoom, 0.001f, 0.01f, 5.0f))
                     {
 
                     }
                     //SpeedRotate
-                    if (ImGui::DragFloat("Speed Rotate", &cfg_cameraSpeedRotate, 0.1f, 0.1f, 10.0f))
+                    if (ImGui::DragFloat("Speed Rotate", &cfg_cameraSpeedRotate, 0.001f, 0.001f, 5.0f))
                     {
 
                     }

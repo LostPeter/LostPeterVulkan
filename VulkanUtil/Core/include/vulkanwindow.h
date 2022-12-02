@@ -202,6 +202,8 @@ namespace LibUtil
 
         // Keyboard Input
         virtual void OnKeyboardInput();
+        virtual void OnKeyDown(int key);
+        virtual void OnKeyUp(int key);
 
     public:
         virtual bool HasConfig_MASS();
