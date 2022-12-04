@@ -1,7 +1,7 @@
 #include "../include/preinclude.h"
 #include "../include/geometryutil.h"
 
-namespace LibUtil
+namespace LostPeter
 {
     float GeometryUtil::s_fPI_Half = glm::pi<float>() / 2.0f;
     float GeometryUtil::s_fPI = glm::pi<float>();
@@ -643,4 +643,4 @@ namespace LibUtil
 		}
 	}
 
-}; //LibUtil
+}; //LostPeter

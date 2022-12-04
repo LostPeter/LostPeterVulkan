@@ -5,7 +5,7 @@
 #define _VULKAN_001_TRIANGLE_H_
 
 #include "vulkanwindow.h"
-using namespace LibUtil; 
+using namespace LostPeter; 
 
 class Vulkan_001_Triangle : public VulkanWindow
 {
@@ -23,7 +23,7 @@ protected:
 
     //Load Assets
         //Geometry
-            virtual void loadModel_User();
+            virtual void loadModel_Custom();
             
 public:
     

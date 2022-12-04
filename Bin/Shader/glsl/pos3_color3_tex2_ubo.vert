@@ -3,7 +3,7 @@
 
 #version 450
 
-#define MaxLights 16
+#define MAX_LIGHT_COUNT 16
 struct Light
 {
     vec3 position;      // point light only
@@ -31,7 +31,7 @@ layout(binding = 0) uniform PassConstants
     float g_TotalTime;
     float g_DeltaTime;
     vec4 g_AmbientLight;
-    Light g_Lights[MaxLights];
+    Light g_Lights[MAX_LIGHT_COUNT];
 } passConsts;
 
 layout(binding = 1) uniform ObjectConstants

@@ -6,7 +6,7 @@
 
 #include "predefine.h"
 
-namespace LibUtil
+namespace LostPeter
 {
     class utilExport StringUtil
     {
@@ -80,6 +80,6 @@ namespace LibUtil
         static std::string SaveMatrix4(const glm::mat4& mat4Value);
     };
 
-}; //LibUtil
+}; //LostPeter
 
 #endif

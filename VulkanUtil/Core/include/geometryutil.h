@@ -6,7 +6,7 @@
 
 #include "predefine.h"
 
-namespace LibUtil
+namespace LostPeter
 {
     class utilExport GeometryUtil
 	{
@@ -64,6 +64,6 @@ namespace LibUtil
 		static void buildCylinderBottomCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, MeshData& meshData);
 	};
 
-}; //LibUtil
+}; //LostPeter
 
 #endif

@@ -6,7 +6,7 @@
 
 #include "vulkanbase.h"
 
-namespace LibUtil
+namespace LostPeter
 {
     class utilExport VulkanWindow : public VulkanBase
     {
@@ -149,25 +149,31 @@ namespace LibUtil
         bool imgui_IsEnable;
         int	imgui_MinimalSwapchainImages;
 	    VkDescriptorPool imgui_DescriptorPool;
-        const char* imgui_PathIni;
-        const char* imgui_PathLog;
+        std::string imgui_PathIni;
+        std::string imgui_PathLog;
 
         //Multi object use, top priority
-        SceneManager* pSceneManager;
+        VulkanSceneManager* pSceneManager;
 
-        //Single object use
-        PassConstants passMainCB;
-        std::vector<VkBuffer> poBuffers_PassMainCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_PassMainCB;
-        ObjectConstants objectCB;
+        //Constants Buffer
+        PassConstants passCB;
+        std::vector<VkBuffer> poBuffers_PassCB;
+        std::vector<VkDeviceMemory> poBuffersMemory_PassCB;
+
+        std::vector<ObjectConstants> objectCBs;
         std::vector<VkBuffer> poBuffers_ObjectCB;
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
-        MaterialConstants materialCB;
+
+        std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_MaterialCB;
         std::vector<VkDeviceMemory> poBuffersMemory_MaterialCB;
 
-        //MVP
-        Camera* pCamera;
+        std::vector<InstanceConstants> instanceCBs;
+        std::vector<VkBuffer> poBuffers_InstanceCB;
+        std::vector<VkDeviceMemory> poBuffersMemory_InstanceCB;
+
+        //Camera
+        VulkanCamera* pCamera;
 
         //Mouse
         glm::vec2 mousePosLast;
@@ -288,7 +294,7 @@ namespace LibUtil
                 virtual void loadVertexIndexBuffer();
                     virtual void loadModel();
                         virtual void loadModel_Assimp();
-                        virtual void loadModel_User();
+                        virtual void loadModel_Custom();
                     virtual void createVertexBuffer(size_t bufSize, void* pBuf, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory);
                     virtual void createIndexBuffer(size_t bufSize, void* pBuf, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory);
                         virtual void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
@@ -304,10 +310,15 @@ namespace LibUtil
                     virtual void createTextureImageView(VkImage& textureImage, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, VkImageView& textureImageView);
                     virtual void createTextureSampler(uint32_t mipLevels, VkSampler& textureSampler);
                 
-                virtual void loadConstBuffers();
-                    virtual void buildPassMainCB();
-                    virtual void buildObjectCB();
-                    virtual void buildMaterialCB();
+                virtual void createConstBuffers();
+                    virtual void createPassCB();
+                        virtual void buildPassCB();
+                    virtual void createObjectCB();
+                        virtual void buildObjectCB();
+                    virtual void createMaterialCB();
+                        virtual void buildMaterialCB();
+                    virtual void createInstanceCB();
+                        virtual void buildInstanceCB();
 
                 virtual void createGraphicsPipeline();
                     virtual VkShaderModule createShaderModule(std::string info, std::string pathFile);
@@ -332,9 +343,13 @@ namespace LibUtil
         virtual bool beginRender();
             virtual void update();
                 virtual void updateSceneObjects();
-                virtual void updateCBs_PassMain();
+                virtual void updateCBs_Pass();
                 virtual void updateCBs_Objects();
+                    virtual void updateCBs_ObjectsContent();
                 virtual void updateCBs_Materials();
+                    virtual void updateCBs_MaterialsContent();
+                virtual void updateCBs_Instances();
+                    virtual void updateCBs_InstancesContent();
 
                 virtual void updateImgui();
                     virtual bool beginRenderImgui();
@@ -343,11 +358,22 @@ namespace LibUtil
                         virtual void cameraReset();
 
                     virtual void endRenderImgui();
+
+                virtual void updateCommandBuffers();
+                    virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
+                    virtual void updateRenderPass_Custom(VkCommandBuffer& commandBuffer);
+                        virtual void bindPipeline(VkCommandBuffer& commandBuffer);
+                        virtual void bindViewport(VkCommandBuffer& commandBuffer);
+                        virtual void drawMesh(VkCommandBuffer& commandBuffer);
+                        virtual void drawMesh_Custom(VkCommandBuffer& commandBuffer);
+                        virtual void drawImgui(VkCommandBuffer& commandBuffer);
+
             virtual void render();
         virtual void endRender();
 
         //cleanup
         virtual void cleanup();
+            virtual void cleanupCustom();
             virtual void cleanupTexture();
             virtual void cleanupVertexIndexBuffer();
 
@@ -365,6 +391,6 @@ namespace LibUtil
         
     };
 
-}; //LibUtil
+}; //LostPeter
 
 #endif

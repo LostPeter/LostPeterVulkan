@@ -5,38 +5,17 @@
 #define _PRE_DEFINE_H_
 
 #include "preincludeStd.h"
+#include "preincludeThird.h"
 
-//GLFW
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 
-//GLM
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
-#include <glm/gtx/hash.hpp>
-#include "glm/gtc/quaternion.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/matrix_inverse.hpp"
-#include "glm/gtx/transform.hpp"
-#include "glm/gtx/euler_angles.hpp"
-#include "glm/gtx/norm.hpp"
-#include "glm/ext/scalar_common.hpp"
-
-//Vulkan
-#include <vulkan/vulkan.h>
-
-//stb_image
-#include <stb_image.h>
-
-//imgui
-#include <imgui/imgui.h>
-#include <impl_glfw/imgui_impl_glfw.h>
-#include <impl_vulkan/imgui_impl_vulkan.h>
-
-namespace LibUtil
+namespace LostPeter
 {
+////Define
+    #define MAX_LIGHT_COUNT 16
+    #define MAX_OBJECT_COUNT 1024
+    #define MAX_MATERIAL_COUNT 1024
+    #define MAX_INSTANCE_COUNT 1024
+
 ////Typedef
     using int8 = std::int8_t;
     using uint8 = std::uint8_t;
@@ -54,36 +33,14 @@ namespace LibUtil
     #define UTIL_DELETE(p)                  { if(p) { delete p; p=nullptr; }}
     #define UTIL_DELETE_T(p)                { if(p) { delete[] p; p=nullptr; }}
 
-////Class
-    class App;
-    class VulkanBase;
-    class VulkanWindow;
-    class Camera;
-    class Timer;
-
-    struct Vertex_Pos2Color3;
-    struct Vertex_Pos2Color3Tex2;
-    struct Vertex_Pos3Color3Tex2;
-    struct Vertex_Pos3Color3Normal3Tex2;
-    struct MeshVertex;
-
-    struct MeshData;
-    struct SubmeshGeometry;
-    struct MeshGeometry;
-
-    struct Light;
-    struct MaterialConstants;
-    struct Material;
-    struct Texture;
-    
-    struct ObjectConstants;
-    struct PassConstants;
-
-    class SceneObject;
-    class SceneManager;
-    
 
 ////Enum
+    enum VulkanLogType
+    {
+        Vulkan_Log_Console = 0,
+        Vulkan_Log_File,
+    };
+
     enum VertexType
     {
         VertexType_Pos2Color3 = 0,
@@ -95,7 +52,65 @@ namespace LibUtil
         Count
     };
 
-}; //LibUtil
+    enum VulkanSwapStatusType
+    {
+        Vulkan_SwapStatus_Normal = 0,
+        Vulkan_SwapStatus_OutOfDate = -1,
+        Vulkan_SwapStatus_Lost = -2,
+        Vulkan_SwapStatus_Error = -3,
+    };
+
+    enum VulkanPixelFormatType
+    {
+        Vulkan_PixelFormat_Unknown = 0,
+
+        Vulkan_PixelFormat_BYTE_A8R8G8B8_UNORM,
+    };
+
+////Class
+    class App;
+    
+    class VulkanBase;
+    class VulkanCamera;
+    class VulkanDevice;
+    class VulkanInstance;
+    class VulkanLog;
+    class VulkanLogConsole;
+    class VulkanLogFile;
+    class VulkanLogManager;
+    class VulkanManager;
+    class VulkanObject;
+    class VulkanQueue;
+    class VulkanSceneManager;
+    class VulkanSceneObject;
+    class VulkanSwapChain;
+    class VulkanTimer;
+    class VulkanWindow;
+    
+    struct Vertex_Pos2Color3;
+    struct Vertex_Pos2Color3Tex2;
+    struct Vertex_Pos3Color3Tex2;
+    struct Vertex_Pos3Color3Normal3Tex2;
+    struct MeshVertex;
+
+    struct MeshData;
+    struct SubmeshGeometry;
+    struct MeshGeometry;
+
+    struct Light;
+    struct Texture;
+    struct Material;
+    
+    struct PassConstants;
+    struct ObjectConstants;
+    struct MaterialConstants;
+    struct InstanceConstants;
+
+    typedef std::vector<VulkanLog*> VulkanLogPtrVector;
+    typedef std::map<std::string, VulkanLog*> VulkanLogPtrMap;
+
+
+}; //LostPeter
 
 
 #endif

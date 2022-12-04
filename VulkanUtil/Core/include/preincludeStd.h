@@ -82,4 +82,35 @@
 #endif
 
 
+namespace LostPeter
+{
+//Log
+#if UTIL_PLATFORM == UTIL_PLATFORM_ANDROID
+    #include <jni.h>
+    #include <android/log.h>
+    #include <android/native_window.h>
+    #include <android/native_activity.h>
+    #include <android/configuration.h>
+    #include <android/asset_manager.h>
+    #include <android/sensor.h>
+	#include <sys/system_properties.h>
+
+    #ifndef LOG_TAG
+        #define LOG_TAG "NDK-LIB"
+    #endif
+
+	#include <android_native_app_glue.h>
+    #define Util_LogError(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+    #define Util_LogInfo(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+    #define Util_LogWarning(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
+#else
+	utilExport void Util_LogError(const char* fmt, ...);
+	utilExport void Util_LogWarning(const char* fmt, ...);
+	utilExport void Util_LogInfo(const char* fmt, ...);
+
+#endif
+}; //LostPeter
+
+
+
 #endif

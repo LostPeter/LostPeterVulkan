@@ -6,7 +6,7 @@
 
 #include "predefine.h"
 
-namespace LibUtil
+namespace LostPeter
 {
     class utilExport MathUtil
     {
@@ -506,6 +506,6 @@ namespace LibUtil
         static glm::mat4 TransposeMatrix4(const glm::mat4& mat4);
     };
 
-}; //LibUtil
+}; //LostPeter
 
 #endif

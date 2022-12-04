@@ -5,7 +5,7 @@
 #define _VULKAN_002_IMGUI_H_
 
 #include "vulkanwindow.h"
-using namespace LibUtil; 
+using namespace LostPeter; 
 
 class Vulkan_002_Imgui : public VulkanWindow
 {
@@ -23,7 +23,7 @@ protected:
 
     //Load Assets
         //Geometry
-            virtual void loadModel_User();
+            virtual void loadModel_Custom();
 
     //Render/Update
         virtual bool beginRenderImgui();

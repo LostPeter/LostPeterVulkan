@@ -1,6 +1,6 @@
 #include "../include/preinclude.h"
 
-namespace LibUtil
+namespace LostPeter
 {   
     //Struct
     //////////////////////////////// Vertex_Pos2Color3 //////////////////////////////
@@ -24,4 +24,4 @@ namespace LibUtil
     std::array<VkVertexInputAttributeDescription, 5>* MeshVertex::s_pVertexInputAttributeDescriptions = nullptr;
 
 
-}; //LibUtil
+}; //LostPeter

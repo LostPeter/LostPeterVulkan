@@ -17,7 +17,7 @@ Vulkan_003_Texture::Vulkan_003_Texture(int width, int height, std::string name)
     this->cfg_texture_Path = "Assets/Texture/texture.jpg";
 }
 
-void Vulkan_003_Texture::loadModel_User()
+void Vulkan_003_Texture::loadModel_Custom()
 {   
     //1> vertices
     this->vertices.push_back(Vertex_Pos2Color3Tex2(glm::vec2(-0.5f, -0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)));

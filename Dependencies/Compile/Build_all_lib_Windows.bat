@@ -4,6 +4,7 @@
 set debug=%1
 
 call ./Build_glm_lib_Windows.bat
+call ./Build_spdlog_lib_Windows.bat
 call ./Build_stb_lib_Windows.bat
 
 call ./Build_zlib_lib_Windows.bat %debug%

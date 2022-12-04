@@ -5,7 +5,7 @@
 #define _VULKAN_003_TEXTURE_H_
 
 #include "vulkanwindow.h"
-using namespace LibUtil; 
+using namespace LostPeter; 
 
 class Vulkan_003_Texture : public VulkanWindow
 {
@@ -22,7 +22,7 @@ public:
 
     //Load Assets
         //Geometry
-            virtual void loadModel_User();
+            virtual void loadModel_Custom();
 
     //Render/Update
         virtual bool beginRenderImgui();

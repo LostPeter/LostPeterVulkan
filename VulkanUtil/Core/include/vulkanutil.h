@@ -6,7 +6,7 @@
 
 #include "predefine.h"
 
-namespace LibUtil
+namespace LostPeter
 {
     class utilExport VulkanUtil
     {
@@ -41,6 +41,6 @@ namespace LibUtil
         static bool LoadAssetFileToString(const char* szFile, std::string& contentFile);
     };
 
-}; //LibUtil
+}; //LostPeter
 
 #endif

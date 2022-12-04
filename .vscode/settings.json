@@ -93,6 +93,12 @@
         "regex": "cpp",
         "thread": "cpp",
         "unordered_set": "cpp",
-        "cassert": "cpp"
+        "cassert": "cpp",
+        "charconv": "cpp",
+        "clocale": "cpp",
+        "condition_variable": "cpp",
+        "future": "cpp",
+        "span": "cpp",
+        "variant": "cpp"
     }
 }

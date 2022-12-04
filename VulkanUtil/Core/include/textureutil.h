@@ -6,9 +6,9 @@
 
 #include "predefine.h"
 
-namespace LibUtil
+namespace LostPeter
 {
 
-}; //LibUtil
+}; //LostPeter
 
 #endif

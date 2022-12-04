@@ -9,3 +9,4 @@ call ./Build_Sample_Windows.bat vulkan_002_imgui %debug%
 call ./Build_Sample_Windows.bat vulkan_003_texture %debug%
 call ./Build_Sample_Windows.bat vulkan_004_model %debug%
 call ./Build_Sample_Windows.bat vulkan_005_camera %debug%
+call ./Build_Sample_Windows.bat vulkan_006_depth %debug%

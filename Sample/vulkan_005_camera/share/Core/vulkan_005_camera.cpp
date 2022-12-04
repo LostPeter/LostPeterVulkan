@@ -1,7 +1,7 @@
 #include "preinclude.h"
 #include "vulkan_005_camera.h"
-#include "meshloader.h"
-#include "camera.h"
+#include "vulkanmeshloader.h"
+#include "vulkancamera.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -141,7 +141,7 @@ void Vulkan_005_Camera::changeModel(int index)
 
 void Vulkan_005_Camera::createCamera()
 {
-    this->pCamera = new Camera();
+    this->pCamera = new VulkanCamera();
     cameraReset();
 }
 
@@ -150,9 +150,9 @@ void Vulkan_005_Camera::loadModel_Assimp()
     MeshData meshData;
     meshData.bIsFlipY = g_isFlipY;
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
-    if (!MeshLoader::LoadMeshData(this->cfg_model_Path, meshData, eMeshParserFlags))
+    if (!VulkanMeshLoader::LoadMeshData(this->cfg_model_Path, meshData, eMeshParserFlags))
     {
-        std::cout << "Vulkan_005_Camera::loadModel_Assimp load model failed: " << this->cfg_model_Path << std::endl;
+        Util_LogError("Vulkan_005_Camera::loadModel_Assimp load model failed: [%s] !", this->cfg_model_Path.c_str());
         return;
     }
 
@@ -171,11 +171,6 @@ void Vulkan_005_Camera::loadModel_Assimp()
         {
             v.pos = MathUtil::Transform(g_tranformLocal, v.pos);
         }
-        
-        // std::cout << "Vertex: " << i 
-        //           << ", Pos: [" << v.pos.x << "," << v.pos.y << "," << v.pos.z << "]," 
-        //           << ", TextureCoord: [" << v.texCoord.x << "," << v.texCoord.y << "]"
-        //           << std::endl;
 
         this->vertices.push_back(v);
     }
@@ -186,9 +181,6 @@ void Vulkan_005_Camera::loadModel_Assimp()
     for (int i = 0; i < count_index; i++)
     {
         this->indices.push_back(meshData.indices32[i]);
-
-        // std::cout << "Index: " << this->indices[i]
-        //           << std::endl;
     }
 
     this->poVertexCount = (uint32_t)this->vertices.size();
@@ -198,7 +190,7 @@ void Vulkan_005_Camera::loadModel_Assimp()
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
     this->poIndexBuffer_Data = &this->indices[0];
 
-    std::cout << "Vertex count: " << this->vertices.size() << ", Index count: " << this->indices.size() << std::endl;
+    Util_LogInfo("Vertex count: [%d], Index count: [%d] !", (int)this->vertices.size(), (int)this->indices.size());
 }
 
 bool Vulkan_005_Camera::beginRenderImgui()
@@ -244,7 +236,7 @@ bool Vulkan_005_Camera::beginRenderImgui()
             }
             if (ImGui::CollapsingHeader("Model World"))
             {
-                const glm::mat4& mat4World = this->objectCB.g_MatWorld;
+                const glm::mat4& mat4World = this->objectCBs[0].g_MatWorld;
                 if (ImGui::BeginTable("split_model_world", 4))
                 {
                     ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);

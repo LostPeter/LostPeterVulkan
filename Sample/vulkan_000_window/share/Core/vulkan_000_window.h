@@ -5,7 +5,7 @@
 #define _VULKAN_000_WINDOW_H_
 
 #include "vulkanwindow.h"
-using namespace LibUtil; 
+using namespace LostPeter; 
 
 class Vulkan_000_Window : public VulkanWindow
 {

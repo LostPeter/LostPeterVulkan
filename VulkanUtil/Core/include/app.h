@@ -6,7 +6,7 @@
 
 #include "predefine.h"
 
-namespace LibUtil
+namespace LostPeter
 {
     class utilExport App
     {
@@ -27,6 +27,6 @@ namespace LibUtil
         static void scroll_callback(GLFWwindow* window, double x, double y);
     };
 
-}; //LibUtil
+}; //LostPeter
 
 #endif

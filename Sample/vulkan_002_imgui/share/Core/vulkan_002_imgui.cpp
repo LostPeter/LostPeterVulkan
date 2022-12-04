@@ -13,7 +13,7 @@ Vulkan_002_Imgui::Vulkan_002_Imgui(int width, int height, std::string name)
     this->cfg_shaderFragment_Path = "Assets/Shader/notrans_pos2_color3.frag.spv";
 }
 
-void Vulkan_002_Imgui::loadModel_User()
+void Vulkan_002_Imgui::loadModel_Custom()
 {
     //1> vertices
     this->vertices.push_back(Vertex_Pos2Color3(glm::vec2( 0.0f,  0.5f), glm::vec3(1.0f, 0.0f, 0.0f)));

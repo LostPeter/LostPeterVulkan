@@ -1,7 +1,7 @@
 #include "../include/preinclude.h"
 #include "../include/textureutil.h"
 
-namespace LibUtil
+namespace LostPeter
 {
 
-}; //LibUtil
+}; //LostPeter

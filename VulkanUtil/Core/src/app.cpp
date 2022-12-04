@@ -3,7 +3,7 @@
 #include "../include/app.h"
 #include "../include/vulkanbase.h"
 
-namespace LibUtil
+namespace LostPeter
 {
     GLFWwindow* App::s_pWindow = nullptr;
     VulkanBase* App::s_pBase = nullptr;
@@ -18,7 +18,8 @@ namespace LibUtil
         //2> glfw initialize and configure 
         glfwSetErrorCallback(error_callback);
         if (!glfwInit()) {
-            std::cout << "App::Run: glfwInit failed !" << std::endl;
+
+            Util_LogError("App::Run: glfwInit failed !");
             return -1;
         }
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -26,7 +27,7 @@ namespace LibUtil
         //3> glfw window creation
         s_pWindow = glfwCreateWindow(pBase->width, pBase->height, pBase->GetTitle().c_str(), NULL, NULL);
         if (!s_pWindow) {
-            std::cout << "App::Run: glfwCreateWindow failed !" << std::endl;
+            Util_LogError("App::Run: glfwCreateWindow failed !");
             glfwTerminate();
             return -1;
         }
@@ -97,7 +98,7 @@ namespace LibUtil
 
     void App::error_callback(int error, const char* description)
     {
-        std::cout << "Error: " << description << std::endl;
+        Util_LogError("App::error_callback: [%s]", description);
     }
     void App::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
@@ -127,4 +128,4 @@ namespace LibUtil
         s_pBase->OnMouseWheel(x, y);
     }
 
-}; //LibUtil
+}; //LostPeter

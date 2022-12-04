@@ -2,7 +2,7 @@
 #include "../include/vulkanutil.h"
 #include "../include/ocutil.h"
 
-namespace LibUtil
+namespace LostPeter
 {
 #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32
     char* Unicode2Utf8(wchar_t* unicodeStr) {
@@ -35,7 +35,6 @@ namespace LibUtil
         path = OCUtil_GetPathExecute();
         
     #endif
-        //std::cout << "Path exe: " << path << std::endl; 
         if (path[path.size() - 1] == '.')
         {
             path = path.substr(0, path.size() - 2);
@@ -174,7 +173,7 @@ namespace LibUtil
         std::ifstream file(szFile, std::ios::ate | std::ios::binary);
         if (!file.is_open())
         {
-            std::cout << "*********************** VulkanUtil::LoadFileContent: Read file failed: " << szFile << std::endl;
+            Util_LogError("*********************** VulkanUtil::LoadFileContent: Read file failed: [%s] !", szFile);
             return false;
         }
 
@@ -195,7 +194,7 @@ namespace LibUtil
         std::ifstream file(szFile, std::ios::ate | std::ios::binary);
         if (!file.is_open())
         {
-            std::cout << "*********************** VulkanUtil::LoadFileToBuffer: Read file failed: " << szFile << std::endl;
+            Util_LogError("*********************** VulkanUtil::LoadFileToBuffer: Read file failed: [%s] !", szFile);
             return false;
         }
 
@@ -227,7 +226,7 @@ namespace LibUtil
         }
         catch(std::ifstream::failure e)
         {
-            std::cout << "*********************** VulkanUtil::LoadFileToString: Read file failed: " << szFile << std::endl;
+            Util_LogError("*********************** VulkanUtil::LoadFileToString: Read file failed: [%s] !", szFile);
             return false;
         }
         return true;
@@ -249,4 +248,4 @@ namespace LibUtil
         return LoadFileToString(pathReal.c_str(), contentFile); 
     }
 
-}; //LibUtil
+}; //LostPeter

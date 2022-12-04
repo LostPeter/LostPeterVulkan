@@ -8,7 +8,8 @@ struct VSInput
     [[vk::location(2)]]float2 inTexCoord    : TEXCOORD0;
 };
 
-#define MaxLights 16
+//Light
+#define MAX_LIGHT_COUNT 16
 struct Light
 {
     float3 position;    // point light only
@@ -19,6 +20,8 @@ struct Light
     float spotPower;    // spot light only
 };
 
+
+//PassConstants
 struct PassConstants
 {
     float4x4 g_MatView;
@@ -36,7 +39,7 @@ struct PassConstants
     float g_TotalTime;
     float g_DeltaTime;
     float4 g_AmbientLight;
-    Light g_Lights[MaxLights];
+    Light g_Lights[MAX_LIGHT_COUNT];
 };
 
 [[vk::binding(0)]]cbuffer passConsts               : register(b0) 
@@ -44,15 +47,48 @@ struct PassConstants
     PassConstants passConsts;
 }
 
+
+//ObjectConstants
+#define MAX_OBJECT_COUNT 1024
 struct ObjectConstants
 {
     float4x4 g_MatWorld;
-    float4x4 g_TexTransform;
 };
 
 [[vk::binding(1)]]cbuffer objectConsts            : register(b1) 
 {
-    ObjectConstants objectConsts;
+    ObjectConstants objectConsts[MAX_OBJECT_COUNT];
+}
+
+
+//MaterialConstants
+#define MAX_MATERIAL_COUNT 1024
+struct MaterialConstants
+{
+    float4 diffuseAlbedo;
+    float3 fresnelR0;
+    float roughness;
+
+    float4x4 MatTransform;
+};
+
+[[vk::binding(2)]]cbuffer materialConsts          : register(b2) 
+{
+    MaterialConstants materialConsts[MAX_MATERIAL_COUNT];
+}
+
+
+//InstanceConstants
+#define MAX_INSTANCE_COUNT 1024
+struct InstanceConstants
+{
+    int indexObject;
+    int indexMaterial;
+};
+
+[[vk::binding(3)]]cbuffer instanceConsts          : register(b3) 
+{
+    InstanceConstants instanceConsts[MAX_INSTANCE_COUNT];
 }
 
 
@@ -64,10 +100,10 @@ struct VSOutput
 };
 
 
-VSOutput main(VSInput input)
+VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
 {
     VSOutput output = (VSOutput)0;
-    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, mul(objectConsts.g_MatWorld, float4(input.inPosition, 1.0))));
+    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, mul(objectConsts[instanceIndex].g_MatWorld, float4(input.inPosition, 1.0))));
     output.outColor = input.inColor;
     output.outTexCoord = input.inTexCoord;
 

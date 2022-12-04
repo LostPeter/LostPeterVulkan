@@ -1,7 +1,7 @@
 #include "../include/preinclude.h"
 #include "../include/stringutil.h"
 
-namespace LibUtil
+namespace LostPeter
 {
     const std::string StringUtil::BLANK;
 
@@ -498,4 +498,4 @@ namespace LibUtil
         return stream.str();
     }
 
-}; //LibUtil
+}; //LostPeter

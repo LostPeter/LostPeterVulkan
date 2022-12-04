@@ -9,9 +9,8 @@
 #include "app.h"
 #include "mathutil.h"
 #include "stringutil.h"
-#include "timer.h"
 
-namespace LibUtil
+namespace LostPeter
 {	
 /////Struct
     //////////////////////////////// Vertex_Pos2Color3 //////////////////////////////
@@ -597,7 +596,6 @@ namespace LibUtil
 
 
     //////////////////////////////// Light //////////////////////////////////////////
-    #define MaxLights 16
     struct utilExport Light
     {
         glm::vec3 position = { 0.0f, 0.0f, 0.0f };   // point light only
@@ -608,18 +606,12 @@ namespace LibUtil
         float spotPower = 64.0f;                     // spot light only
     };
 
-
-    //////////////////////////////// MaterialConstants //////////////////////////////
-    struct utilExport MaterialConstants
+    //////////////////////////////// Texture ////////////////////////////////////////
+    struct utilExport Texture
     {
-        glm::vec4 diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
-        glm::vec3 fresnelR0 = { 0.01f, 0.01f, 0.01f };
-        float roughness = 0.25f;
-
-        // Used in texture mapping.
-        glm::mat4 MatTransform = MathUtil::Identity4x4();
+        std::string name;
+        std::string nameFile;
     };
-
 
     //////////////////////////////// Material ///////////////////////////////////////
     struct utilExport Material
@@ -635,23 +627,6 @@ namespace LibUtil
         float roughness = .25f;
         glm::mat4 matTransform = MathUtil::Identity4x4();
     };
-
-
-    //////////////////////////////// Texture ////////////////////////////////////////
-    struct utilExport Texture
-    {
-        std::string name;
-        std::string nameFile;
-    };
-
-
-    //////////////////////////////// ObjectConstants ////////////////////////////////
-    struct utilExport ObjectConstants
-    {
-        glm::mat4 g_MatWorld = MathUtil::Identity4x4();
-        glm::mat4 g_TexTransform = MathUtil::Identity4x4();
-    };
-
 
     //////////////////////////////// PassConstants //////////////////////////////////
     struct utilExport PassConstants
@@ -673,15 +648,41 @@ namespace LibUtil
         float g_DeltaTime = 0.0f;
         glm::vec4 g_AmbientLight = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-        Light g_Lights[MaxLights];
+        Light g_Lights[MAX_LIGHT_COUNT];
     };
 
-}; //LibUtil
+    //////////////////////////////// ObjectConstants ////////////////////////////////
+    struct utilExport ObjectConstants
+    {
+        glm::mat4 g_MatWorld = MathUtil::Identity4x4();
+        
+    };
+    
+    //////////////////////////////// MaterialConstants //////////////////////////////
+    struct utilExport MaterialConstants
+    {
+        glm::vec4 diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
+        glm::vec3 fresnelR0 = { 0.01f, 0.01f, 0.01f };
+        float roughness = 0.25f;
+
+        // Used in texture mapping.
+        glm::mat4 MatTransform = MathUtil::Identity4x4();
+    };
+
+    //////////////////////////////// InstanceConstants //////////////////////////////
+    struct utilExport InstanceConstants
+    {
+        int indexObject = 0;
+        int indexMaterial = 0;
+        
+    };
+
+}; //LostPeter
 
 namespace std 
 {
-    template<> struct hash<LibUtil::Vertex_Pos2Color3> {
-        size_t operator()(LibUtil::Vertex_Pos2Color3 const& vertex) const 
+    template<> struct hash<LostPeter::Vertex_Pos2Color3> {
+        size_t operator()(LostPeter::Vertex_Pos2Color3 const& vertex) const 
         {
             size_t hash = std::hash<glm::vec2>()(vertex.pos);
             hash = hash ^ (std::hash<glm::vec3>()(vertex.color) << 1);
@@ -690,8 +691,8 @@ namespace std
         }
     };
 
-    template<> struct hash<LibUtil::Vertex_Pos2Color3Tex2> {
-        size_t operator()(LibUtil::Vertex_Pos2Color3Tex2 const& vertex) const 
+    template<> struct hash<LostPeter::Vertex_Pos2Color3Tex2> {
+        size_t operator()(LostPeter::Vertex_Pos2Color3Tex2 const& vertex) const 
         {
             size_t hash = std::hash<glm::vec2>()(vertex.pos);
             hash = hash ^ (std::hash<glm::vec3>()(vertex.color) << 1);
@@ -701,8 +702,8 @@ namespace std
         }
     };
 
-    template<> struct hash<LibUtil::Vertex_Pos3Color3Tex2> {
-        size_t operator()(LibUtil::Vertex_Pos3Color3Tex2 const& vertex) const 
+    template<> struct hash<LostPeter::Vertex_Pos3Color3Tex2> {
+        size_t operator()(LostPeter::Vertex_Pos3Color3Tex2 const& vertex) const 
         {
             size_t hash = std::hash<glm::vec3>()(vertex.pos);
             hash = hash ^ (std::hash<glm::vec3>()(vertex.color) << 1);
@@ -712,8 +713,8 @@ namespace std
         }
     };
 
-    template<> struct hash<LibUtil::Vertex_Pos3Color3Normal3Tex2> {
-        size_t operator()(LibUtil::Vertex_Pos3Color3Normal3Tex2 const& vertex) const
+    template<> struct hash<LostPeter::Vertex_Pos3Color3Normal3Tex2> {
+        size_t operator()(LostPeter::Vertex_Pos3Color3Normal3Tex2 const& vertex) const
         {
             size_t hash = std::hash<glm::vec3>()(vertex.pos);
             hash = hash ^ (std::hash<glm::vec3>()(vertex.color) << 1);
@@ -725,8 +726,8 @@ namespace std
         }
     };
 
-    template<> struct hash<LibUtil::MeshVertex> {
-        size_t operator()(LibUtil::MeshVertex const& vertex) const
+    template<> struct hash<LostPeter::MeshVertex> {
+        size_t operator()(LostPeter::MeshVertex const& vertex) const
         {
             size_t hash = std::hash<glm::vec3>()(vertex.pos);
             hash = hash ^ (std::hash<glm::vec3>()(vertex.color) << 1);

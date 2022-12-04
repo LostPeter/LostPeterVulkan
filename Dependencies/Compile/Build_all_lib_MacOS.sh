@@ -4,6 +4,7 @@
 debug=${1}
 
 ./Build_glm_lib_MacOS.sh
+./Build_spdlog_lib_MacOS.sh
 ./Build_stb_lib_MacOS.sh
 
 ./Build_zlib_lib_MacOS.sh $debug

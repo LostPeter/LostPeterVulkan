@@ -39,6 +39,7 @@
 Dependencies/Build
 Dependencies/Include
 Dependencies/Lib
+Bin/Log
 Bin/MacOS
 Bin/Windows
 Bin/Android

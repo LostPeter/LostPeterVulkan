@@ -1,9 +1,10 @@
 #include "../include/preinclude.h"
 #include "../include/vulkanwindow.h"
-#include "../include/meshloader.h"
-#include "../include/camera.h"
+#include "../include/vulkanmeshloader.h"
+#include "../include/vulkancamera.h"
+#include "../include/vulkantimer.h"
 
-namespace LibUtil
+namespace LostPeter
 {
     int VulkanWindow::versionVulkan_Major = 1;
     int VulkanWindow::versionVulkan_Minor = 2;
@@ -15,7 +16,6 @@ namespace LibUtil
 #endif
 
     int VulkanWindow::s_maxFramesInFight = 2;
-
 
     VulkanWindow::VulkanWindow(int width, int height, std::string name)
         : VulkanBase(width, height, name)
@@ -98,7 +98,7 @@ namespace LibUtil
         , cfg_cameraFar(1000.0f)
         , cfg_cameraSpeedMove(1000.0f)
         , cfg_cameraSpeedZoom(0.01f)
-        , cfg_cameraSpeedRotate(0.01f)
+        , cfg_cameraSpeedRotate(0.1f)
 
         , cfg_model_Path("")
         , cfg_shaderVertex_Path("")
@@ -108,8 +108,8 @@ namespace LibUtil
         , imgui_IsEnable(false)
         , imgui_MinimalSwapchainImages(0)
         , imgui_DescriptorPool(nullptr)
-        , imgui_PathIni(nullptr)
-        , imgui_PathLog(nullptr)
+        , imgui_PathIni("")
+        , imgui_PathLog("")
 
         , pSceneManager(nullptr)
 
@@ -282,11 +282,6 @@ namespace LibUtil
         {
             if (this->pCamera != nullptr)
             {
-                // float angleX = 0.25f * static_cast<float>(x - this->mousePosLast.x);
-                // float angleY = 0.25f * static_cast<float>(y - this->mousePosLast.y);
-                // this->pCamera->Pitch(angleX);
-                // this->pCamera->Yaw(angleY);
-
                 float fX = static_cast<float>(x - this->mousePosLast.x);
                 float fY = static_cast<float>(y - this->mousePosLast.y);
                 float fRotYAngle = fX * this->cfg_cameraSpeedRotate;
@@ -386,7 +381,7 @@ namespace LibUtil
 
     void VulkanWindow::createPipeline()
     {   
-        std::cout << "**********<1> VulkanWindow::createPipeline start **********" << std::endl;
+        Util_LogInfo("**********<1> VulkanWindow::createPipeline start **********");
         {
             //1> Create Resize callback
             createWindowCallback();
@@ -415,7 +410,7 @@ namespace LibUtil
             //9> isCreateDevice
             this->isCreateDevice = true;
         }
-        std::cout << "**********<1> VulkanWindow::createPipeline finish **********" << std::endl;
+        Util_LogInfo("**********<1> VulkanWindow::createPipeline finish **********");
     }
     //glfw: whenever the window size changed (by OS or user resize) this callback function executes
     void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -429,11 +424,11 @@ namespace LibUtil
         glfwSetWindowUserPointer(this->pWindow, this);
         glfwSetFramebufferSizeCallback(this->pWindow, framebuffer_size_callback);
 
-        std::cout << "*****<1-1> VulkanWindow::createWindowCallback finish *****" << std::endl;
+        Util_LogInfo("*****<1-1> VulkanWindow::createWindowCallback finish *****");
     }
     void VulkanWindow::createDevice()
     {
-        std::cout << "*****<1-2> VulkanWindow::createDevice start *****" << std::endl;
+        Util_LogInfo("*****<1-2> VulkanWindow::createDevice start *****");
         {
             //1> createInstance
             createInstance();
@@ -450,14 +445,16 @@ namespace LibUtil
             //5> createLogicalDevice
             createLogicalDevice();
         }
-        std::cout << "*****<1-2> VulkanWindow::createDevice finish *****" << std::endl;
+        Util_LogInfo("*****<1-2> VulkanWindow::createDevice finish *****");
     }
     void VulkanWindow::createInstance()
     {
         if (s_isEnableValidationLayers && 
             !checkValidationLayerSupport()) 
         {
-            throw std::runtime_error("VulkanWindow::createInstance: Validation layers requested, but not available !");
+            std::string msg = "VulkanWindow::createInstance: Validation layers requested, but not available !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg.c_str());
         }
 
         VkApplicationInfo appInfo = {};
@@ -496,7 +493,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createInstance: Failed to create vulkan instance !");
         }
 
-        std::cout << "<1-2-1> VulkanWindow::createInstance finish !" << std::endl;
+        Util_LogInfo("<1-2-1> VulkanWindow::createInstance finish !");
     }
         bool VulkanWindow::checkValidationLayerSupport()
         {
@@ -543,7 +540,7 @@ namespace LibUtil
         }
         static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) 
         {
-            std::cerr << "Validation layer: " << pCallbackData->pMessage << std::endl;
+            Util_LogInfo("VulkanWindow.debugCallback: Validation layer: [%s] !", pCallbackData->pMessage);
             return VK_FALSE;
         }
         void VulkanWindow::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) 
@@ -567,7 +564,7 @@ namespace LibUtil
             }
         }
         
-        std::cout << "<1-2-2> VulkanWindow::setUpDebugMessenger finish !" << std::endl;
+        Util_LogInfo("<1-2-2> VulkanWindow::setUpDebugMessenger finish !");
     }
 
     void VulkanWindow::createSurface()
@@ -580,7 +577,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createSurface: Failed to create window surface, result: " + os.str());
         }
 
-        std::cout << "<1-2-3> VulkanWindow::createSurface finish !" << std::endl;
+        Util_LogInfo("<1-2-3> VulkanWindow::createSurface finish !");
     }
 
     void VulkanWindow::pickPhysicalDevice()
@@ -620,7 +617,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::pickPhysicalDevice: Failed to find a suitable GPU !");
         }
 
-        std::cout << "<1-2-4> VulkanWindow::pickPhysicalDevice finish !" << std::endl;
+        Util_LogInfo("<1-2-4> VulkanWindow::pickPhysicalDevice finish !");
     }
         void VulkanWindow::findQueueFamilies(VkPhysicalDevice device, int& indexGraphics, int& indexPresent)
         {
@@ -771,23 +768,23 @@ namespace LibUtil
         vkGetDeviceQueue(this->poDevice, this->graphicsIndex, 0, &this->poQueueGraphics);
         vkGetDeviceQueue(this->poDevice, this->presentIndex, 0, &this->poQueuePresent);
 
-        std::cout << "<1-2-5> VulkanWindow::createLogicalDevice finish !" << std::endl;
+        Util_LogInfo("<1-2-5> VulkanWindow::createLogicalDevice finish !");
     }
 
     void VulkanWindow::createFeatureSupport()
     {
 
-        std::cout << "*****<1-3> VulkanWindow::createFeatureSupport finish *****" << std::endl;
+        Util_LogInfo("*****<1-3> VulkanWindow::createFeatureSupport finish *****");
     }
 
     void VulkanWindow::createCommandObjects()
     {
-        std::cout << "*****<1-4> VulkanWindow::createCommandObjects start *****" << std::endl;
+        Util_LogInfo("*****<1-4> VulkanWindow::createCommandObjects start *****");
         {
             //1> createCommandPool
             createCommandPool();
         }
-        std::cout << "*****<1-4> VulkanWindow::createCommandObjects finish *****" << std::endl;
+        Util_LogInfo("*****<1-4> VulkanWindow::createCommandObjects finish *****");
     }
     void VulkanWindow::createCommandPool()
     {
@@ -804,7 +801,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createCommandPool: Failed to create command pool !");
         }
 
-        std::cout << "<1-4-1> VulkanWindow::createCommandPool finish !" << std::endl;
+        Util_LogInfo("<1-4-1> VulkanWindow::createCommandPool finish !");
     }
     VkCommandBuffer VulkanWindow::beginSingleTimeCommands() 
     {
@@ -842,7 +839,7 @@ namespace LibUtil
 
     void VulkanWindow::createSwapChainObjects()
     {
-        std::cout << "*****<1-5> VulkanWindow::createSwapChainObjects start *****" << std::endl;
+        Util_LogInfo("*****<1-5> VulkanWindow::createSwapChainObjects start *****");
         {
             //1> createSwapChain
             createSwapChain();
@@ -859,7 +856,7 @@ namespace LibUtil
             //4> createDepthResources
             createDepthResources();
         }
-        std::cout << "*****<1-5> VulkanWindow::createSwapChainObjects finish *****" << std::endl;
+        Util_LogInfo("*****<1-5> VulkanWindow::createSwapChainObjects finish *****");
     }
     void VulkanWindow::createSwapChain()
     {
@@ -875,7 +872,7 @@ namespace LibUtil
         {
             imageCount = this->swapChainSupport.capabilities.maxImageCount;
         }
-        std::cout << "**************** image count: " << imageCount << std::endl;
+        Util_LogInfo("**************** image count: [%d]", (int)imageCount);
 
         VkSwapchainCreateInfoKHR createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -927,16 +924,8 @@ namespace LibUtil
 
         int width, height;
         glfwGetFramebufferSize(this->pWindow, &width, &height);
-        std::cout << "<1-5-1> VulkanWindow::createSwapChain finish, Swapchain size: [" 
-                  << extent.width 
-                  << ","  
-                  << extent.height
-                  << "], window size: ["
-                  << width 
-                  << ","
-                  << height
-                  << "]"
-                  << std::endl;
+        Util_LogInfo("<1-5-1> VulkanWindow::createSwapChain finish, Swapchain size: [%d,%d], window size: [%d,%d]", 
+                    (int)extent.width, (int)extent.height, (int)width, (int)height);
 
         createViewport();
     }
@@ -1018,7 +1007,7 @@ namespace LibUtil
             this->poSwapChainImageViews[i] = createImageView(this->poSwapChainImages[i], this->poSwapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
         }
 
-        std::cout << "<1-5-2> VulkanWindow::createSwapChainImageViews finish !" << std::endl;
+        Util_LogInfo("<1-5-2> VulkanWindow::createSwapChainImageViews finish !");
     }
         VkImageView VulkanWindow::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) 
         {
@@ -1047,7 +1036,7 @@ namespace LibUtil
             createImage(this->poSwapChainExtent.width, this->poSwapChainExtent.height, 1, this->poMSAASamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, this->poColorImage, this->poColorImageMemory);
             this->poColorImageView = createImageView(this->poColorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 
-            std::cout << "<1-5-3> VulkanWindow::createColorResources finish !" << std::endl;
+            Util_LogInfo("<1-5-3> VulkanWindow::createColorResources finish !");
         }
         void VulkanWindow::createDepthResources()
         {
@@ -1056,7 +1045,7 @@ namespace LibUtil
             createImage(this->poSwapChainExtent.width, this->poSwapChainExtent.height, 1, this->poMSAASamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, this->poDepthImage, this->poDepthImageMemory);
             this->poDepthImageView = createImageView(this->poDepthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 
-            std::cout << "<1-5-4> VulkanWindow::createDepthResources finish !" << std::endl;
+            Util_LogInfo("<1-5-4> VulkanWindow::createDepthResources finish !");
         }
         VkFormat VulkanWindow::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) 
         {
@@ -1096,13 +1085,13 @@ namespace LibUtil
 
     void VulkanWindow::createDescriptorObjects()
     {
-        std::cout << "*****<1-6> VulkanWindow::createDescriptorObjects start *****" << std::endl;
+        Util_LogInfo("*****<1-6> VulkanWindow::createDescriptorObjects start *****");
         {
             //1> createDescriptorSetLayout
             createDescriptorSetLayout();
 
         }
-        std::cout << "*****<1-6> VulkanWindow::createDescriptorObjects finish *****" << std::endl;
+        Util_LogInfo("*****<1-6> VulkanWindow::createDescriptorObjects finish *****");
     }
     void VulkanWindow::createDescriptorSetLayout()
     {
@@ -1130,9 +1119,17 @@ namespace LibUtil
         materialLayoutBinding.pImmutableSamplers = nullptr;
         materialLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-        //3> Texture Sampler
+        //3> InstanceConstants
+        VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
+        instanceLayoutBinding.binding = 3;
+        instanceLayoutBinding.descriptorCount = 1;
+        instanceLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        instanceLayoutBinding.pImmutableSamplers = nullptr;
+        instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+        //4> Texture Sampler
         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        samplerLayoutBinding.binding = 3;
+        samplerLayoutBinding.binding = 4;
         samplerLayoutBinding.descriptorCount = 1;
         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         samplerLayoutBinding.pImmutableSamplers = nullptr;
@@ -1142,6 +1139,7 @@ namespace LibUtil
         bindings.push_back(passMainLayoutBinding);
         bindings.push_back(objectLayoutBinding);
         bindings.push_back(materialLayoutBinding);
+        bindings.push_back(instanceLayoutBinding);
         if (!this->cfg_texture_Path.empty())
         {
             bindings.push_back(samplerLayoutBinding);
@@ -1156,12 +1154,12 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createDescriptorSetLayout: Failed to create descriptor set layout !");
         }
 
-        std::cout << "<1-6-1> VulkanWindow::createDescriptorSetLayout finish !" << std::endl;
+        Util_LogInfo("<1-6-1> VulkanWindow::createDescriptorSetLayout finish !");
     }
 
     void VulkanWindow::createPipelineObjects()
     {
-        std::cout << "*****<1-7> VulkanWindow::createPipelineObjects start *****" << std::endl;
+        Util_LogInfo("*****<1-7> VulkanWindow::createPipelineObjects start *****");
         {
             //1> createRenderPass
             createRenderPass();
@@ -1169,7 +1167,7 @@ namespace LibUtil
             //2> createFramebuffers
             createFramebuffers();
         }
-        std::cout << "*****<1-7> VulkanWindow::createPipelineObjects finish *****" << std::endl;
+        Util_LogInfo("*****<1-7> VulkanWindow::createPipelineObjects finish *****");
     }
     void VulkanWindow::createRenderPass()
     {
@@ -1268,7 +1266,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createRenderPass_KhrDepth: Failed to create render pass !");
         }
 
-        std::cout << "<1-7-1> VulkanWindow::createRenderPass_KhrDepth finish !" << std::endl;
+        Util_LogInfo("<1-7-1> VulkanWindow::createRenderPass_KhrDepth finish !");
     }
     void VulkanWindow::createRenderPass_KhrDepthImgui()
     {
@@ -1380,7 +1378,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create render pass !");
         }
 
-        std::cout << "<1-7-1> VulkanWindow::createRenderPass_KhrDepthImgui finish !" << std::endl;
+        Util_LogInfo("<1-7-1> VulkanWindow::createRenderPass_KhrDepthImgui finish !");
     }
     void VulkanWindow::createRenderPass_ColorDepthMSAA()
     {
@@ -1471,7 +1469,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create render pass !");
         }
 
-        std::cout << "<1-7-1> VulkanWindow::createRenderPass_ColorDepthMSAA finish !" << std::endl;
+        Util_LogInfo("<1-7-1> VulkanWindow::createRenderPass_ColorDepthMSAA finish !");
     }
     void VulkanWindow::createRenderPass_ColorDepthImguiMSAA()
     {
@@ -1605,7 +1603,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create render pass !");
         }
 
-        std::cout << "<1-7-1> VulkanWindow::createRenderPass_ColorDepthImguiMSAA finish !" << std::endl;
+        Util_LogInfo("<1-7-1> VulkanWindow::createRenderPass_ColorDepthImguiMSAA finish !");
     }
     void VulkanWindow::createFramebuffers()
     {
@@ -1661,7 +1659,7 @@ namespace LibUtil
             }
         }
 
-        std::cout << "<1-7-2> VulkanWindow::createFramebuffers finish !" << std::endl;
+        Util_LogInfo("<1-7-2> VulkanWindow::createFramebuffers finish !");
     }
 
     void VulkanWindow::createSyncObjects()
@@ -1688,12 +1686,12 @@ namespace LibUtil
             }
         }
 
-        std::cout << "*****<1-8> VulkanWindow::createSyncObjects finish *****" << std::endl;
+        Util_LogInfo("*****<1-8> VulkanWindow::createSyncObjects finish *****");
     }
 
     void VulkanWindow::loadAssets()
     {
-        std::cout << "**********<2> VulkanWindow::loadAssets start **********" << std::endl;
+        Util_LogInfo("**********<2> VulkanWindow::loadAssets start **********");
         {
             //1> Create Scene
             createScene();
@@ -1718,17 +1716,17 @@ namespace LibUtil
 
             this->isLoadAsset = true;
         }
-        std::cout << "**********<2> VulkanWindow::loadAssets finish **********" << std::endl;
+        Util_LogInfo("**********<2> VulkanWindow::loadAssets finish **********");
     }
     void VulkanWindow::createScene()
     {
-        std::cout << "*****<2-1> VulkanWindow::createScene start *****" << std::endl;
+        Util_LogInfo("*****<2-1> VulkanWindow::createScene start *****");
         {
             //1> createSceneManager
             createSceneManager();
 
         }
-        std::cout << "*****<2-1> VulkanWindow::createScene finish *****" << std::endl;
+        Util_LogInfo("*****<2-1> VulkanWindow::createScene finish *****");
     }
     void VulkanWindow::createSceneManager()
     {
@@ -1739,7 +1737,7 @@ namespace LibUtil
         if (this->pSceneManager == nullptr)
             return;
 
-        std::cout << "*****<2-3> VulkanWindow::buildScene start *****" << std::endl;
+        Util_LogInfo("*****<2-3> VulkanWindow::buildScene start *****");
         {
             //1> build shaders
             buildScene_Shaders();
@@ -1765,47 +1763,47 @@ namespace LibUtil
             //8> build pipeline state
             buildScene_PipelineStates();
         }
-        std::cout << "*****<2-3> VulkanWindow::buildScene finish *****" << std::endl;
+        Util_LogInfo("*****<2-3> VulkanWindow::buildScene finish *****");
     }
         void VulkanWindow::buildScene_Shaders()
         {
 
-            std::cout << "<2-3-1> VulkanWindow::buildScene_Shaders finish !" << std::endl;
+            Util_LogInfo("<2-3-1> VulkanWindow::buildScene_Shaders finish !");
         }
         void VulkanWindow::buildScene_InputLayouts()
         {
 
-            std::cout << "<2-3-2> VulkanWindow::buildScene_InputLayouts finish !" << std::endl;
+            Util_LogInfo("<2-3-2> VulkanWindow::buildScene_InputLayouts finish !");
         }
         void VulkanWindow::buildScene_Meshes()
         {
 
-            std::cout << "<2-3-3> VulkanWindow::buildScene_Meshes finish !" << std::endl;
+            Util_LogInfo("<2-3-3> VulkanWindow::buildScene_Meshes finish !");
         }
         void VulkanWindow::buildScene_SceneObjects()
         {
 
-            std::cout << "<2-3-4> VulkanWindow::buildScene_SceneObjects finish !" << std::endl;
+            Util_LogInfo("<2-3-4> VulkanWindow::buildScene_SceneObjects finish !");
         }
         void VulkanWindow::buildScene_Materials()
         {
 
-            std::cout << "<2-3-5> VulkanWindow::buildScene_Materials finish !" << std::endl;
+            Util_LogInfo("<2-3-5> VulkanWindow::buildScene_Materials finish !");
         }
         void VulkanWindow::buildScene_FrameResources()
         {
 
-            std::cout << "<2-3-6> VulkanWindow::buildScene_FrameResources finish !" << std::endl;
+            Util_LogInfo("<2-3-6> VulkanWindow::buildScene_FrameResources finish !");
         }
         void VulkanWindow::buildScene_ConstantBufferViews()
         {
 
-            std::cout << "<2-3-7> VulkanWindow::buildScene_ConstantBufferViews finish !" << std::endl;
+            Util_LogInfo("<2-3-7> VulkanWindow::buildScene_ConstantBufferViews finish !");
         }
         void VulkanWindow::buildScene_PipelineStates()
         {
 
-            std::cout << "<2-3-8> VulkanWindow::buildScene_PipelineStates finish !" << std::endl;
+            Util_LogInfo("<2-3-8> VulkanWindow::buildScene_PipelineStates finish !");
         }
 
     void VulkanWindow::createCamera()
@@ -1815,7 +1813,7 @@ namespace LibUtil
 
     void VulkanWindow::loadGeometry()
     {
-        std::cout << "*****<2-2> VulkanWindow::loadGeometry start *****" << std::endl;
+        Util_LogInfo("*****<2-2> VulkanWindow::loadGeometry start *****");
         {
             //1> loadVertexIndexBuffer
             loadVertexIndexBuffer();
@@ -1823,8 +1821,8 @@ namespace LibUtil
             //2> loadTexture
             loadTexture();
 
-            //3> loadConstBuffers
-            loadConstBuffers();
+            //3> createConstBuffers
+            createConstBuffers();
 
             //4> createGraphicsPipeline
             createGraphicsPipeline();
@@ -1835,17 +1833,21 @@ namespace LibUtil
             //6> createCommandBuffers
             createCommandBuffers();    
         }
-        std::cout << "*****<2-2> VulkanWindow::loadGeometry finish *****" << std::endl;
+        Util_LogInfo("*****<2-2> VulkanWindow::loadGeometry finish *****");
     }
     void VulkanWindow::loadVertexIndexBuffer()
     {
-        std::cout << "**<2-2-1> VulkanWindow::loadVertexIndexBuffer start **" << std::endl;
+        Util_LogInfo("**<2-2-1> VulkanWindow::loadVertexIndexBuffer start **");
         {
             //1> loadModel
             loadModel();
 
             //2> createVertexBuffer
-            createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
+            if (this->poVertexBuffer_Size > 0 &&
+                this->poVertexBuffer_Data != nullptr)
+            {
+                createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
+            }
 
             //3> createIndexBuffer
             if (this->poIndexBuffer_Size > 0 &&
@@ -1854,11 +1856,11 @@ namespace LibUtil
                 createIndexBuffer(this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
             }
         }
-        std::cout << "**<2-2-1> VulkanWindow::loadVertexIndexBuffer finish **" << std::endl;
+        Util_LogInfo("**<2-2-1> VulkanWindow::loadVertexIndexBuffer finish **");
     }
     void VulkanWindow::loadModel()
     {
-        std::cout << "**<2-2-1-1> VulkanWindow::loadModel start **" << std::endl;
+        Util_LogInfo("**<2-2-1-1> VulkanWindow::loadModel start **");
         {
             //1> model 
             if (!this->cfg_model_Path.empty())
@@ -1868,16 +1870,16 @@ namespace LibUtil
             //2> model user
             else
             {
-                loadModel_User();
+                loadModel_Custom();
             }
         }
-        std::cout << "**<2-2-1-1> VulkanWindow::loadModel finish **" << std::endl;
+        Util_LogInfo("**<2-2-1-1> VulkanWindow::loadModel finish **");
     }
         void VulkanWindow::loadModel_Assimp()
         {
             
         }
-        void VulkanWindow::loadModel_User()
+        void VulkanWindow::loadModel_Custom()
         {
 
         }
@@ -1899,7 +1901,7 @@ namespace LibUtil
         vkDestroyBuffer(this->poDevice, stagingBuffer, nullptr);
         vkFreeMemory(this->poDevice, stagingBufferMemory, nullptr);
 
-        std::cout << "<2-2-1-2> VulkanWindow::createVertexBuffer finish !" << std::endl;
+        Util_LogInfo("<2-2-1-2> VulkanWindow::createVertexBuffer finish !");
     }
     void VulkanWindow::createIndexBuffer(size_t bufSize, void* pBuf, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory)
     {
@@ -1919,7 +1921,7 @@ namespace LibUtil
         vkDestroyBuffer(this->poDevice, stagingBuffer, nullptr);
         vkFreeMemory(this->poDevice, stagingBufferMemory, nullptr);
 
-        std::cout << "<2-2-1-3> VulkanWindow::createIndexBuffer finish !" << std::endl;
+        Util_LogInfo("<2-2-1-3> VulkanWindow::createIndexBuffer finish !");
     }
         void VulkanWindow::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) 
         {
@@ -1983,7 +1985,7 @@ namespace LibUtil
             createTextureImageView(this->poTextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipLevels, this->poTextureImageView);
             createTextureSampler(this->poMipLevels, this->poTextureSampler);
 
-            std::cout << "<2-2-2> VulkanWindow::loadTexture finish !" << std::endl;
+            Util_LogInfo("<2-2-2> VulkanWindow::loadTexture finish !");
         }
     }
     void VulkanWindow::createTextureImage(const std::string& pathAsset_Tex, VkImage& textureImage, VkDeviceMemory& textureImageMemory, uint32_t& mipLevels)
@@ -2259,39 +2261,48 @@ namespace LibUtil
         }
     }
 
-    void VulkanWindow::loadConstBuffers()
+    void VulkanWindow::createConstBuffers()
     {
-        std::cout << "**<2-2-3> VulkanWindow::loadConstBuffers start **" << std::endl;
+        Util_LogInfo("**<2-2-3> VulkanWindow::createConstBuffers start **");
         {
-            //1> buildPassMainCB
-            buildPassMainCB();
+            //1> createPassCB
+            createPassCB();
 
-            //2> buildObjectCB
-            buildObjectCB();
+            //2> createObjectCB
+            createObjectCB();
 
-            //3> buildMaterialCB
-            buildMaterialCB();
+            //3> createMaterialCB
+            createMaterialCB();
+
+            //4> createInstanceCB
+            createInstanceCB();
         }
-        std::cout << "**<2-2-3> VulkanWindow::loadConstBuffers finish **" << std::endl;
+        Util_LogInfo("**<2-2-3> VulkanWindow::createConstBuffers finish **");
     }
-    void VulkanWindow::buildPassMainCB()
+    void VulkanWindow::createPassCB()
     {
+        buildPassCB();
         VkDeviceSize bufferSize = sizeof(PassConstants);
 
         size_t count = this->poSwapChainImages.size();
-        this->poBuffers_PassMainCB.resize(count);
-        this->poBuffersMemory_PassMainCB.resize(count);
+        this->poBuffers_PassCB.resize(count);
+        this->poBuffersMemory_PassCB.resize(count);
 
         for (size_t i = 0; i < count; i++) 
         {
-            createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_PassMainCB[i], this->poBuffersMemory_PassMainCB[i]);
+            createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_PassCB[i], this->poBuffersMemory_PassCB[i]);
         }
 
-        std::cout << "<2-2-3-1> VulkanWindow::buildPassMainCB finish !" << std::endl;
+        Util_LogInfo("<2-2-3-1> VulkanWindow::createPassCB finish !");
     }
-    void VulkanWindow::buildObjectCB()
+        void VulkanWindow::buildPassCB()
+        {
+            
+        }
+    void VulkanWindow::createObjectCB()
     {
-        VkDeviceSize bufferSize = sizeof(ObjectConstants);
+        buildObjectCB();
+        VkDeviceSize bufferSize = sizeof(ObjectConstants) * this->objectCBs.size();
 
         size_t count = this->poSwapChainImages.size();
         this->poBuffers_ObjectCB.resize(count);
@@ -2302,11 +2313,17 @@ namespace LibUtil
             createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
         }
 
-        std::cout << "<2-2-3-2> VulkanWindow::buildObjectCB finish !" << std::endl;
+        Util_LogInfo("<2-2-3-2> VulkanWindow::createObjectCB finish !");
     }
-    void VulkanWindow::buildMaterialCB()
+        void VulkanWindow::buildObjectCB()
+        {
+            ObjectConstants objectConstants;
+            this->objectCBs.push_back(objectConstants);
+        }
+    void VulkanWindow::createMaterialCB()
     {
-        VkDeviceSize bufferSize = sizeof(MaterialConstants);
+        buildMaterialCB();
+        VkDeviceSize bufferSize = sizeof(MaterialConstants) * this->materialCBs.size();
 
         size_t count = this->poSwapChainImages.size();
         this->poBuffers_MaterialCB.resize(count);
@@ -2317,8 +2334,34 @@ namespace LibUtil
             createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_MaterialCB[i], this->poBuffersMemory_MaterialCB[i]);
         }
 
-        std::cout << "<2-2-3-3> VulkanWindow::buildMaterialCB finish !" << std::endl;
+        Util_LogInfo("<2-2-3-3> VulkanWindow::createMaterialCB finish !");
     }
+        void VulkanWindow::buildMaterialCB()
+        {
+            MaterialConstants materialConstants;
+            this->materialCBs.push_back(materialConstants);
+        }
+    void VulkanWindow::createInstanceCB()
+    {
+        buildInstanceCB();
+        VkDeviceSize bufferSize = sizeof(InstanceConstants) * this->instanceCBs.size();
+
+        size_t count = this->poSwapChainImages.size();
+        this->poBuffers_InstanceCB.resize(count);
+        this->poBuffersMemory_InstanceCB.resize(count);
+
+        for (size_t i = 0; i < count; i++) 
+        {
+            createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_InstanceCB[i], this->poBuffersMemory_InstanceCB[i]);
+        }
+
+        Util_LogInfo("<2-2-3-4> VulkanWindow::createInstanceCB finish !");
+    }
+        void VulkanWindow::buildInstanceCB()
+        {
+            InstanceConstants instanceConstants;
+            this->instanceCBs.push_back(instanceConstants);
+        }
 
     void VulkanWindow::createGraphicsPipeline()
     {
@@ -2485,7 +2528,7 @@ namespace LibUtil
         {
             std::ostringstream os;
             os << (int)result;
-            std::cout << "VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline, result: " + os.str() << std::endl;
+            Util_LogError("VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline, result: [%s] !", os.str().c_str());
             throw std::runtime_error("VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline, result: " + os.str());
         }
 
@@ -2497,14 +2540,14 @@ namespace LibUtil
         {
             std::ostringstream os;
             os << (int)result;
-            std::cout << "VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline wireframe, result: " + os.str() << std::endl;
+            Util_LogError("VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline wireframe, result: [%s] !", os.str().c_str());
             throw std::runtime_error("VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline wireframe, result: " + os.str());
         }
 
         vkDestroyShaderModule(this->poDevice, fragShaderModule, nullptr);
         vkDestroyShaderModule(this->poDevice, vertShaderModule, nullptr);
 
-        std::cout << "<2-2-4> VulkanWindow::createGraphicsPipeline finish !" << std::endl;
+        Util_LogInfo("<2-2-4> VulkanWindow::createGraphicsPipeline finish !");
     }
     VkShaderModule VulkanWindow::createShaderModule(std::string info, std::string pathFile)
     {
@@ -2514,7 +2557,7 @@ namespace LibUtil
         std::vector<char> code;
         if (!VulkanUtil::LoadAssetFileContent(pathFile.c_str(), code))
         {
-            std::cout << "VulkanWindow::createShaderModule failed, path: " << pathFile << std::endl;
+            Util_LogInfo("VulkanWindow::createShaderModule failed, path: [%s] !", pathFile.c_str());
             return nullptr;
         }
         if (code.size() <= 0)
@@ -2598,7 +2641,7 @@ namespace LibUtil
 
     void VulkanWindow::createDescriptor()
     {
-        std::cout << "**<2-2-5> VulkanWindow::createDescriptor start **" << std::endl;
+        Util_LogInfo("**<2-2-5> VulkanWindow::createDescriptor start **");
         {
             //1> createDescriptorPool
             createDescriptorPool();
@@ -2606,7 +2649,7 @@ namespace LibUtil
             //2> createDescriptorSets
             createDescriptorSets();
         }
-        std::cout << "**<2-2-5> VulkanWindow::createDescriptor finish **" << std::endl;
+        Util_LogInfo("**<2-2-5> VulkanWindow::createDescriptor finish **");
     }
     void VulkanWindow::createDescriptorPool()
     {
@@ -2637,7 +2680,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createDescriptorPool: Failed to create descriptor pool !");
         }
 
-        std::cout << "<2-2-5-1> VulkanWindow::createDescriptorPool finish !" << std::endl;
+        Util_LogInfo("<2-2-5-1> VulkanWindow::createDescriptorPool finish !");
     }
     void VulkanWindow::createDescriptorSets()
     {
@@ -2657,7 +2700,7 @@ namespace LibUtil
         
         updateDescriptorSets();
 
-        std::cout << "<2-2-5-2> VulkanWindow::createDescriptorSets finish !" << std::endl;
+        Util_LogInfo("<2-2-5-2> VulkanWindow::createDescriptorSets finish !");
     }
     void VulkanWindow::updateDescriptorSets()
     {
@@ -2665,20 +2708,25 @@ namespace LibUtil
         size_t count = this->poDescriptorSets.size();
         for (size_t i = 0; i < count; i++)
         {
-            VkDescriptorBufferInfo bufferInfo_PassMain = {};
-            bufferInfo_PassMain.buffer = this->poBuffers_PassMainCB[i];
-            bufferInfo_PassMain.offset = 0;
-            bufferInfo_PassMain.range = sizeof(PassConstants);
+            VkDescriptorBufferInfo bufferInfo_Pass = {};
+            bufferInfo_Pass.buffer = this->poBuffers_PassCB[i];
+            bufferInfo_Pass.offset = 0;
+            bufferInfo_Pass.range = sizeof(PassConstants);
 
             VkDescriptorBufferInfo bufferInfo_Object = {};
             bufferInfo_Object.buffer = this->poBuffers_ObjectCB[i];
             bufferInfo_Object.offset = 0;
-            bufferInfo_Object.range = sizeof(ObjectConstants);
+            bufferInfo_Object.range = sizeof(ObjectConstants) * this->objectCBs.size();
 
             VkDescriptorBufferInfo bufferInfo_Material = {};
             bufferInfo_Material.buffer = this->poBuffers_MaterialCB[i];
             bufferInfo_Material.offset = 0;
-            bufferInfo_Material.range = sizeof(MaterialConstants);
+            bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
+
+            VkDescriptorBufferInfo bufferInfo_Instance = {};
+            bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[i];
+            bufferInfo_Instance.offset = 0;
+            bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
 
             VkDescriptorImageInfo imageInfo = {};
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -2695,7 +2743,7 @@ namespace LibUtil
             ds0.dstArrayElement = 0;
             ds0.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             ds0.descriptorCount = 1;
-            ds0.pBufferInfo = &bufferInfo_PassMain;
+            ds0.pBufferInfo = &bufferInfo_Pass;
             descriptorWrites.push_back(ds0);
 
             //1
@@ -2719,19 +2767,30 @@ namespace LibUtil
             ds2.descriptorCount = 1;
             ds2.pBufferInfo = &bufferInfo_Material;
             descriptorWrites.push_back(ds2);
-            
+
             //3
+            VkWriteDescriptorSet ds3 = {};
+            ds3.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            ds3.dstSet = this->poDescriptorSets[i];
+            ds3.dstBinding = 3;
+            ds3.dstArrayElement = 0;
+            ds3.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            ds3.descriptorCount = 1;
+            ds3.pBufferInfo = &bufferInfo_Instance;
+            descriptorWrites.push_back(ds3);
+            
+            //4
             if (bHasTexture)
             {
-                VkWriteDescriptorSet ds3 = {};
-                ds3.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds3.dstSet = this->poDescriptorSets[i];
-                ds3.dstBinding = 3;
-                ds3.dstArrayElement = 0;
-                ds3.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                ds3.descriptorCount = 1;
-                ds3.pImageInfo = &imageInfo;
-                descriptorWrites.push_back(ds3);
+                VkWriteDescriptorSet ds4 = {};
+                ds4.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                ds4.dstSet = this->poDescriptorSets[i];
+                ds4.dstBinding = 4;
+                ds4.dstArrayElement = 0;
+                ds4.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                ds4.descriptorCount = 1;
+                ds4.pImageInfo = &imageInfo;
+                descriptorWrites.push_back(ds4);
             }
             
             vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
@@ -2747,95 +2806,17 @@ namespace LibUtil
         allocInfo.commandPool = this->poCommandPool;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.commandBufferCount = (uint32_t)this->poCommandBuffers.size();
-
         if (vkAllocateCommandBuffers(this->poDevice, &allocInfo, this->poCommandBuffers.data()) != VK_SUCCESS) 
         {
             throw std::runtime_error("VulkanWindow::createCommandBuffers: Failed to allocate command buffers !");
         }
 
-        if (!HasConfig_Imgui())
-        {
-            for (size_t i = 0; i < this->poCommandBuffers.size(); i++) 
-            {
-                VkCommandBuffer& commandBuffer = this->poCommandBuffers[i];
-
-                VkCommandBufferBeginInfo beginInfo = {};
-                beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-                if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
-                {
-                    throw std::runtime_error("VulkanWindow::createCommandBuffers: Failed to begin recording command buffer !");
-                }
-                {
-                    VkRenderPassBeginInfo renderPassInfo = {};
-                    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-                    renderPassInfo.renderPass = this->poRenderPass;
-                    renderPassInfo.framebuffer = this->poSwapChainFrameBuffers[i];
-                    VkOffset2D offset;
-                    offset.x = 0;
-                    offset.y = 0;
-                    renderPassInfo.renderArea.offset = offset;
-                    renderPassInfo.renderArea.extent = this->poSwapChainExtent;
-
-                    std::array<VkClearValue, 2> clearValues = {};
-                    VkClearColorValue colorValue = { this->cfg_colorBackground.x, this->cfg_colorBackground.y, this->cfg_colorBackground.z, this->cfg_colorBackground.w };
-                    clearValues[0].color = colorValue;
-                    VkClearDepthStencilValue depthStencilValue;
-                    depthStencilValue.depth = 1.0f;
-                    depthStencilValue.stencil = 0;
-                    clearValues[1].depthStencil = depthStencilValue;
-                    renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-                    renderPassInfo.pClearValues = clearValues.data();
-
-                    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-                    {
-                        if (!this->cfg_isWireFrame)
-                            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics);
-                        else 
-                            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics_WireFrame);
-
-                        //0> Viewport
-                        VkViewport viewport = this->poViewport;
-                        if (cfg_isNegativeViewport)
-                        {
-                            viewport.y = viewport.height - viewport.y;
-                            viewport.height = -viewport.height;
-                        }   
-                        vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-                        vkCmdSetScissor(commandBuffer, 0, 1, &this->poScissor);
-
-                        VkBuffer vertexBuffers[] = { this->poVertexBuffer };
-                        VkDeviceSize offsets[] = { 0 };
-                        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-                        if (this->poDescriptorSets.size() > 0)
-                        {
-                            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &this->poDescriptorSets[i], 0, nullptr);
-                        }
-                        if (this->poIndexBuffer != nullptr)
-                        {
-                            vkCmdBindIndexBuffer(commandBuffer, this->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-                            vkCmdDrawIndexed(commandBuffer, this->poIndexCount, 1, 0, 0, 0);
-                        }
-                        else
-                        {
-                            vkCmdDraw(commandBuffer, this->poVertexCount, 1, 0, 0);
-                        }
-                    }
-                    vkCmdEndRenderPass(commandBuffer);
-                }
-                if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
-                {
-                    throw std::runtime_error("VulkanWindow::createCommandBuffers: Failed to record command buffer !");
-                }
-            }
-        }
-
-        std::cout << "<2-2-6> VulkanWindow::createCommandBuffers finish !" << std::endl;
+        Util_LogInfo("<2-2-6> VulkanWindow::createCommandBuffers finish !");
     }
 
     void VulkanWindow::createImgui()
     {
-        std::cout << "**********<2-4> VulkanWindow::createImgui start **********" << std::endl;
+        Util_LogInfo("**********<2-4> VulkanWindow::createImgui start **********");
         {
             //1> createImgui_DescriptorPool
             createImgui_DescriptorPool();
@@ -2843,7 +2824,7 @@ namespace LibUtil
             //2> createImgui_Init
             createImgui_Init();
         }
-        std::cout << "**********<2-4> VulkanWindow::createImgui finish **********" << std::endl;
+        Util_LogInfo("**********<2-4> VulkanWindow::createImgui finish **********");
     }
     void VulkanWindow::createImgui_DescriptorPool()
     {   
@@ -2874,7 +2855,7 @@ namespace LibUtil
             throw std::runtime_error("VulkanWindow::createImgui_DescriptorPool: Imgui descriptor pool creation failed !");
         }
 
-        std::cout << "<2-4-1> VulkanWindow::createImgui_DescriptorPool finish !" << std::endl;
+        Util_LogInfo("<2-4-1> VulkanWindow::createImgui_DescriptorPool finish !");
     }
     void checkImguiError(VkResult err)
     {
@@ -2886,8 +2867,10 @@ namespace LibUtil
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
-        io.IniFilename = this->imgui_PathIni;   
-        io.LogFilename = this->imgui_PathLog;
+        this->imgui_PathIni = this->pathBin + "Log/" + this->nameTitle + ".ini";
+        this->imgui_PathLog = this->pathBin + "Log/" + this->nameTitle + ".log";
+        io.IniFilename = this->imgui_PathIni.c_str();
+        io.LogFilename = this->imgui_PathLog.c_str();
 
         //2> Setup Dear ImGui style
 	    ImGui::StyleColorsDark();
@@ -2917,7 +2900,7 @@ namespace LibUtil
         endSingleTimeCommands(commandBuffer);
         ImGui_ImplVulkan_DestroyFontUploadObjects();
 
-        std::cout << "<2-4-2> VulkanWindow::createImgui_Init finish !" << std::endl;
+        Util_LogInfo("<2-4-2> VulkanWindow::createImgui_Init finish !");
     }
 
     void VulkanWindow::resizeWindow(int w, int h, bool force)
@@ -2957,325 +2940,396 @@ namespace LibUtil
             //1> SceneObject
             updateSceneObjects();
 
-            //2> CB Objects
+            //2> CB Pass
+            updateCBs_Pass();
+
+            //3> CB Objects
             updateCBs_Objects();
 
-            //3> CB Materials
+            //4> CB Materials
             updateCBs_Materials();
 
-            //4> CB PassMain
-            updateCBs_PassMain();
+            //5> CB Instances
+            updateCBs_Instances();
 
-            //5> Imgui
+            //6> Imgui
             if (IsEnable_Imgui())
             {
                 updateImgui();
             }
-        }
-        void VulkanWindow::updateSceneObjects()
-        {
-            
-        }
-        void VulkanWindow::updateCBs_PassMain()
-        {
-            if (this->poBuffersMemory_PassMainCB.size() <= 0)
-                return;
 
-            if (this->pCamera != nullptr)
+            //7> CommandBuffers
+            updateCommandBuffers();
+        }
+            void VulkanWindow::updateSceneObjects()
             {
-                this->passMainCB.g_MatView = this->pCamera->GetMatrix4View();
-                this->passMainCB.g_MatProj = this->pCamera->GetMatrix4Projection();
+                
             }
-            else
+            void VulkanWindow::updateCBs_Pass()
             {
-                this->passMainCB.g_MatView = glm::lookAtLH(this->cfg_cameraPos, 
+                if (this->poBuffersMemory_PassCB.size() <= 0)
+                    return;
+
+                if (this->pCamera != nullptr)
+                {
+                    this->passCB.g_MatView = this->pCamera->GetMatrix4View();
+                    this->passCB.g_MatProj = this->pCamera->GetMatrix4Projection();
+                }
+                else
+                {
+                    this->passCB.g_MatView = glm::lookAtLH(this->cfg_cameraPos, 
                                                            this->cfg_cameraLookTarget,
                                                            this->cfg_cameraUp);
-                this->passMainCB.g_MatProj = glm::perspectiveLH(glm::radians(this->cfg_cameraFov), 
+                    this->passCB.g_MatProj = glm::perspectiveLH(glm::radians(this->cfg_cameraFov), 
                                                                 this->poSwapChainExtent.width / (float)this->poSwapChainExtent.height,
                                                                 this->cfg_cameraNear, 
                                                                 this->cfg_cameraFar);
-            }   
+                }   
 
-            VkDeviceMemory& memory = this->poBuffersMemory_PassMainCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(PassConstants), 0, &data);
-                memcpy(data, &this->passMainCB, sizeof(PassConstants));
-            vkUnmapMemory(this->poDevice, memory);
-        }
-        void VulkanWindow::updateCBs_Objects()
-        {
-            if (this->poBuffersMemory_ObjectCB.size() <= 0)
-                return;
-
-            if (this->cfg_isRotate)
-            {
-                float time = this->pTimer->GetTimeSinceStart();
-                this->objectCB.g_MatWorld = glm::rotate(this->poMatWorld, 
-                                                        time * glm::radians(90.0f), 
-                                                        glm::vec3(0.0f, 1.0f, 0.0f));
+                VkDeviceMemory& memory = this->poBuffersMemory_PassCB[this->poSwapChainImageIndex];
+                void* data;
+                vkMapMemory(this->poDevice, memory, 0, sizeof(PassConstants), 0, &data);
+                    memcpy(data, &this->passCB, sizeof(PassConstants));
+                vkUnmapMemory(this->poDevice, memory);
             }
-            else
+            void VulkanWindow::updateCBs_Objects()
             {
-                this->objectCB.g_MatWorld = this->poMatWorld;
-            }
-
-            VkDeviceMemory& memory = this->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants), 0, &data);
-                memcpy(data, &this->objectCB, sizeof(ObjectConstants));
-            vkUnmapMemory(this->poDevice, memory);
-        }
-        void VulkanWindow::updateCBs_Materials()
-        {
-            if (this->poBuffersMemory_MaterialCB.size() <= 0)
-                return;
-
-            this->materialCB.diffuseAlbedo = glm::vec4(1);
-
-            VkDeviceMemory& memory = this->poBuffersMemory_MaterialCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(MaterialConstants), 0, &data);
-                memcpy(data, &this->materialCB, sizeof(MaterialConstants));
-            vkUnmapMemory(this->poDevice, memory);
-        }
-
-        void VulkanWindow::updateImgui()
-        {
-            if (beginRenderImgui())
-            {
-                endRenderImgui();
-            }
-        }
-        bool VulkanWindow::beginRenderImgui()
-        {
-            // ImGui_ImplVulkan_NewFrame();
-            // ImGui_ImplGlfw_NewFrame();
-            // ImGui::NewFrame();
-            // static bool windowOpened = true;
-            // static bool showDemoWindow = false;
-            // ImGui::Begin("Rendertime", &windowOpened, 0);
-            // ImGui::Text("Frametime: %f", 1000.0f / ImGui::GetIO().Framerate);
-            // ImGui::Checkbox("Show ImGui demo window", &showDemoWindow);
-            // ImGui::End();
-            // if (showDemoWindow) 
-            // {
-            //     ImGui::ShowDemoWindow();
-            // }
-
-            return false;
-        }
-            void VulkanWindow::cameraConfig()
-            {
-                if (this->pCamera == nullptr)
+                if (this->poBuffersMemory_ObjectCB.size() <= 0)
                     return;
-
-                if (ImGui::Button("Camera Reset"))
+                size_t count = this->objectCBs.size();
+                if (count >= MAX_OBJECT_COUNT)
                 {
-                    cameraReset();
+                    Util_LogError("VulkanWindow::updateCBs_Objects: Max object count can not > [%d]", MAX_OBJECT_COUNT);
+                    return;
                 }
-                if (ImGui::CollapsingHeader("Camera Transform"))
+
+                updateCBs_ObjectsContent();
+
+                VkDeviceMemory& memory = this->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
+                void* data;
+                vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count, 0, &data);
+                    memcpy(data, this->objectCBs.data(), sizeof(ObjectConstants) * count);
+                vkUnmapMemory(this->poDevice, memory);
+            }
+                void VulkanWindow::updateCBs_ObjectsContent()
                 {
-                    //Position
-                    glm::vec3 vPos = this->pCamera->GetPos();
-                    if (ImGui::DragFloat3("Position", &vPos[0], 0.05f, -FLT_MAX, FLT_MAX))
+                    ObjectConstants& objectCB = this->objectCBs[0];
+                    if (this->cfg_isRotate)
                     {
-                        this->pCamera->SetPos(vPos);
+                        float time = this->pTimer->GetTimeSinceStart();
+                        objectCB.g_MatWorld = glm::rotate(this->poMatWorld, 
+                                                          time * glm::radians(90.0f), 
+                                                          glm::vec3(0.0f, 1.0f, 0.0f));
+                    }
+                    else
+                    {
+                        objectCB.g_MatWorld = this->poMatWorld;
+                    }
+                }
+            void VulkanWindow::updateCBs_Materials()
+            {
+                if (this->poBuffersMemory_MaterialCB.size() <= 0)
+                    return;
+                size_t count = this->materialCBs.size();
+                if (count >= MAX_MATERIAL_COUNT)
+                {
+                    Util_LogError("VulkanWindow::updateCBs_Materials: Max material count can not > [%d]", MAX_MATERIAL_COUNT);
+                    return;
+                }
+
+                updateCBs_MaterialsContent();
+
+                VkDeviceMemory& memory = this->poBuffersMemory_MaterialCB[this->poSwapChainImageIndex];
+                void* data;
+                vkMapMemory(this->poDevice, memory, 0, sizeof(MaterialConstants) * count, 0, &data);
+                    memcpy(data, this->materialCBs.data(), sizeof(MaterialConstants) * count);
+                vkUnmapMemory(this->poDevice, memory);
+            }
+                void VulkanWindow::updateCBs_MaterialsContent()
+                {   
+                    MaterialConstants materialCB = this->materialCBs[0];
+                    materialCB.diffuseAlbedo = glm::vec4(1);
+                }
+            void VulkanWindow::updateCBs_Instances()
+            {
+                if (this->poBuffersMemory_InstanceCB.size() <= 0)
+                    return;
+                size_t count = this->instanceCBs.size();
+                if (count >= MAX_INSTANCE_COUNT)
+                {
+                    Util_LogError("VulkanWindow::updateCBs_Instances: Max instance count can not > [%d]", MAX_INSTANCE_COUNT);
+                    return;
+                }
+
+                updateCBs_InstancesContent();
+
+                VkDeviceMemory& memory = this->poBuffersMemory_InstanceCB[this->poSwapChainImageIndex];
+                void* data;
+                vkMapMemory(this->poDevice, memory, 0, sizeof(InstanceConstants) * count, 0, &data);
+                    memcpy(data, this->instanceCBs.data(), sizeof(InstanceConstants) * count);
+                vkUnmapMemory(this->poDevice, memory);
+            }
+                void VulkanWindow::updateCBs_InstancesContent()
+                {
+                    InstanceConstants materialCB = this->instanceCBs[0];
+                    materialCB.indexObject = 0;
+                    materialCB.indexMaterial = 0;
+                }
+
+            void VulkanWindow::updateImgui()
+            {
+                if (beginRenderImgui())
+                {
+                    endRenderImgui();
+                }
+            }
+                bool VulkanWindow::beginRenderImgui()
+                {
+                    // ImGui_ImplVulkan_NewFrame();
+                    // ImGui_ImplGlfw_NewFrame();
+                    // ImGui::NewFrame();
+                    // static bool windowOpened = true;
+                    // static bool showDemoWindow = false;
+                    // ImGui::Begin("Rendertime", &windowOpened, 0);
+                    // ImGui::Text("Frametime: %f", 1000.0f / ImGui::GetIO().Framerate);
+                    // ImGui::Checkbox("Show ImGui demo window", &showDemoWindow);
+                    // ImGui::End();
+                    // if (showDemoWindow) 
+                    // {
+                    //     ImGui::ShowDemoWindow();
+                    // }
+
+                    return false;
+                }
+                    void VulkanWindow::cameraConfig()
+                    {
+                        if (this->pCamera == nullptr)
+                            return;
+
+                        if (ImGui::Button("Camera Reset"))
+                        {
+                            cameraReset();
+                        }
+                        if (ImGui::CollapsingHeader("Camera Transform"))
+                        {
+                            //Position
+                            glm::vec3 vPos = this->pCamera->GetPos();
+                            if (ImGui::DragFloat3("Position", &vPos[0], 0.05f, -FLT_MAX, FLT_MAX))
+                            {
+                                this->pCamera->SetPos(vPos);
+                                this->pCamera->UpdateViewMatrix();
+                            }
+                            //Rotation
+                            glm::vec3 vEulerAngle = this->pCamera->GetEulerAngles();
+                            if (ImGui::DragFloat3("Rotation", &vEulerAngle[0], 0.1f, -180, 180))
+                            {
+                                this->pCamera->SetEulerAngles(vEulerAngle);
+                                this->pCamera->UpdateViewMatrix();
+                            }
+                            ImGui::Spacing();
+                            //Right
+                            glm::vec3 vRight = this->pCamera->GetRight();
+                            if (ImGui::DragFloat3("Right (X axis)", &vRight[0], 0.1f, -1.0f, 1.0f))
+                            {
+                                
+                            }
+                            //Up
+                            glm::vec3 vUp = this->pCamera->GetUp();
+                            if (ImGui::DragFloat3("Up (Y axis)", &vUp[0], 0.1f, -1.0f, 1.0f))
+                            {
+                                
+                            }
+                            //Direction
+                            glm::vec3 vDir = this->pCamera->GetDir();
+                            if (ImGui::DragFloat3("Direction (Z axis)", &vDir[0], 0.1f, -1.0f, 1.0f))
+                            {
+                                
+                            }
+                        }
+                        if (ImGui::CollapsingHeader("Camera Param"))
+                        {
+                            //FovY
+                            float fAngle = this->pCamera->GetFovY();
+                            if (ImGui::DragFloat("FovY Angle", &fAngle, 0.1f, 0.1f, 180.0f))
+                            {
+                                this->pCamera->SetFovY(fAngle);
+                                this->pCamera->UpdateProjectionMatrix();
+                            }
+                            //Aspect
+                            float fAspect = this->pCamera->GetAspect();
+                            if (ImGui::DragFloat("Aspect", &fAspect, 0.1f, 0.1f, 10.0f))
+                            {
+                                this->pCamera->SetAspect(fAspect);
+                                this->pCamera->UpdateProjectionMatrix();
+                            }
+
+                            //NearZ/FarZ
+                            float fNearDist = this->pCamera->GetNearZ();
+                            float fFarDist = this->pCamera->GetFarZ();
+                            if (ImGui::DragFloat("Near Distance", &fNearDist, 0.1f, 0.1f, fFarDist - 1.0f))
+                            {
+                                this->pCamera->SetNearZ(fNearDist);
+                                this->pCamera->UpdateProjectionMatrix();
+                            }
+                            if (ImGui::DragFloat("Far Distance", &fFarDist, 0.1f, fNearDist + 1.0f, FLT_MAX))
+                            {
+                                this->pCamera->SetFarZ(fFarDist);
+                                this->pCamera->UpdateProjectionMatrix();
+                            }
+
+                            ImGui::Separator();
+                            ImGui::Spacing();
+                            
+                            //SpeedMove
+                            if (ImGui::DragFloat("Speed Move", &cfg_cameraSpeedMove, 0.1f, 1.0f, 10000.0f))
+                            {
+                                
+                            }
+                            //SpeedZoom
+                            if (ImGui::DragFloat("Speed Zoom", &cfg_cameraSpeedZoom, 0.001f, 0.01f, 5.0f))
+                            {
+
+                            }
+                            //SpeedRotate
+                            if (ImGui::DragFloat("Speed Rotate", &cfg_cameraSpeedRotate, 0.001f, 0.001f, 5.0f))
+                            {
+
+                            }
+                        }
+                        if (ImGui::CollapsingHeader("Camera Matrix4 World"))
+                        {
+                            glm::mat4 mat4World = this->pCamera->GetMatrix4World();
+                            if (ImGui::BeginTable("split_camera_world", 4))
+                            {
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
+
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
+
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
+
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
+                            
+                                ImGui::EndTable();
+                            }
+                        }
+                        if (ImGui::CollapsingHeader("Camera Matrix4 View"))
+                        {
+                            const glm::mat4& mat4View = this->pCamera->GetMatrix4View();
+                            if (ImGui::BeginTable("split_camera_view", 4))
+                            {
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][0]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][1]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][2]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][3]);
+
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][0]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][1]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][2]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][3]);
+
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][0]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][1]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][2]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][3]);
+
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][0]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][1]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][2]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][3]);
+                            
+                                ImGui::EndTable();
+                            }
+                        }
+                        if (ImGui::CollapsingHeader("Camera Matrix4 Projection"))
+                        {
+                            const glm::mat4& mat4Projection = pCamera->GetMatrix4Projection();
+                            if (ImGui::BeginTable("split_camera_projection", 4))
+                            {
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][0]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][1]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][2]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][3]);
+
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][0]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][1]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][2]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][3]);
+
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][0]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][1]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][2]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][3]);
+
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][0]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][1]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][2]);
+                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][3]);
+
+                                ImGui::EndTable();
+                            }
+                        }
+                        ImGui::Separator();
+                    }
+                    void VulkanWindow::cameraReset()
+                    {
+                        if (this->pCamera == nullptr)
+                            return;
+
+                        this->pCamera->LookAtLH(this->cfg_cameraPos, this->cfg_cameraLookTarget, this->cfg_cameraUp);
+                        this->pCamera->PerspectiveLH(this->cfg_cameraFov, this->aspectRatio, this->cfg_cameraNear, this->cfg_cameraFar);
                         this->pCamera->UpdateViewMatrix();
                     }
-                    //Rotation
-                    glm::vec3 vEulerAngle = this->pCamera->GetEulerAngles();
-                    if (ImGui::DragFloat3("Rotation", &vEulerAngle[0], 0.1f, -180, 180))
-                    {
-                        this->pCamera->SetEulerAngles(vEulerAngle);
-                        this->pCamera->UpdateViewMatrix();
-                    }
-                    ImGui::Spacing();
-                    //Right
-                    glm::vec3 vRight = this->pCamera->GetRight();
-                    if (ImGui::DragFloat3("Right (X axis)", &vRight[0], 0.1f, -1.0f, 1.0f))
-                    {
-                        
-                    }
-                    //Up
-                    glm::vec3 vUp = this->pCamera->GetUp();
-                    if (ImGui::DragFloat3("Up (Y axis)", &vUp[0], 0.1f, -1.0f, 1.0f))
-                    {
-                        
-                    }
-                    //Direction
-                    glm::vec3 vDir = this->pCamera->GetDir();
-                    if (ImGui::DragFloat3("Direction (Z axis)", &vDir[0], 0.1f, -1.0f, 1.0f))
-                    {
-                        
-                    }
-                }
-                if (ImGui::CollapsingHeader("Camera Param"))
+
+                void VulkanWindow::endRenderImgui()
                 {
-                    //FovY
-                    float fAngle = this->pCamera->GetFovY();
-                    if (ImGui::DragFloat("FovY Angle", &fAngle, 0.1f, 0.1f, 180.0f))
-                    {
-                        this->pCamera->SetFovY(fAngle);
-                        this->pCamera->UpdateProjectionMatrix();
-                    }
-                    //Aspect
-                    float fAspect = this->pCamera->GetAspect();
-                    if (ImGui::DragFloat("Aspect", &fAspect, 0.1f, 0.1f, 10.0f))
-                    {
-                        this->pCamera->SetAspect(fAspect);
-                        this->pCamera->UpdateProjectionMatrix();
-                    }
-
-                    //NearZ/FarZ
-                    float fNearDist = this->pCamera->GetNearZ();
-                    float fFarDist = this->pCamera->GetFarZ();
-                    if (ImGui::DragFloat("Near Distance", &fNearDist, 0.1f, 0.1f, fFarDist - 1.0f))
-                    {
-                        this->pCamera->SetNearZ(fNearDist);
-                        this->pCamera->UpdateProjectionMatrix();
-                    }
-                    if (ImGui::DragFloat("Far Distance", &fFarDist, 0.1f, fNearDist + 1.0f, FLT_MAX))
-                    {
-                        this->pCamera->SetFarZ(fFarDist);
-                        this->pCamera->UpdateProjectionMatrix();
-                    }
-
-                    ImGui::Separator();
-                    ImGui::Spacing();
-                    
-                    //SpeedMove
-                    if (ImGui::DragFloat("Speed Move", &cfg_cameraSpeedMove, 0.1f, 1.0f, 10000.0f))
-                    {
-                        
-                    }
-                    //SpeedZoom
-                    if (ImGui::DragFloat("Speed Zoom", &cfg_cameraSpeedZoom, 0.001f, 0.01f, 5.0f))
-                    {
-
-                    }
-                    //SpeedRotate
-                    if (ImGui::DragFloat("Speed Rotate", &cfg_cameraSpeedRotate, 0.001f, 0.001f, 5.0f))
-                    {
-
-                    }
+                    ImGui::Render();
                 }
-                if (ImGui::CollapsingHeader("Camera Matrix4 World"))
-                {
-                    glm::mat4 mat4World = this->pCamera->GetMatrix4World();
-                    if (ImGui::BeginTable("split_camera_world", 4))
-                    {
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
 
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
-
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
-
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
-                    
-                        ImGui::EndTable();
-                    }
-                }
-                if (ImGui::CollapsingHeader("Camera Matrix4 View"))
-                {
-                    const glm::mat4& mat4View = this->pCamera->GetMatrix4View();
-                    if (ImGui::BeginTable("split_camera_view", 4))
-                    {
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][3]);
-
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][3]);
-
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][3]);
-
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][3]);
-                    
-                        ImGui::EndTable();
-                    }
-                }
-                if (ImGui::CollapsingHeader("Camera Matrix4 Projection"))
-                {
-                    const glm::mat4& mat4Projection = pCamera->GetMatrix4Projection();
-                    if (ImGui::BeginTable("split_camera_projection", 4))
-                    {
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][3]);
-
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][3]);
-
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][3]);
-
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][3]);
-
-                        ImGui::EndTable();
-                    }
-                }
-                ImGui::Separator();
-            }
-            void VulkanWindow::cameraReset()
+            void VulkanWindow::updateCommandBuffers()
             {
-                if (this->pCamera == nullptr)
-                    return;
+                VkCommandBuffer& commandBuffer = this->poCommandBuffers[this->poSwapChainImageIndex];
+                if (vkResetCommandBuffer(commandBuffer, 0) != VK_SUCCESS) 
+                {
+                    std::string msg = "VulkanWindow::updateCommandBuffers: Failed to reset command buffer !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
 
-                this->pCamera->LookAtLH(this->cfg_cameraPos, this->cfg_cameraLookTarget, this->cfg_cameraUp);
-                this->pCamera->PerspectiveLH(this->cfg_cameraFov, this->aspectRatio, this->cfg_cameraNear, this->cfg_cameraFar);
-                this->pCamera->UpdateViewMatrix();
+                VkCommandBufferBeginInfo beginInfo = {};
+                beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+                beginInfo.flags = 0; // Optional
+                beginInfo.pInheritanceInfo = nullptr; // Optional
+
+                if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+                {
+                    std::string msg = "VulkanWindow::updateCommandBuffers: Failed to begin recording command buffer !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                {
+                    updateRenderPass_Default(commandBuffer);
+                    updateRenderPass_Custom(commandBuffer);
+                }
+                if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+                {
+                    std::string msg = "VulkanWindow::updateCommandBuffers: Failed to record command buffer !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
             }
-
-        void VulkanWindow::endRenderImgui()
-        {
-            ImGui::Render();
-            ImDrawData* main_draw_data = ImGui::GetDrawData();
-
-            VkCommandBuffer& commandBuffer = this->poCommandBuffers[this->poSwapChainImageIndex];
-            if (vkResetCommandBuffer(commandBuffer, 0) != VK_SUCCESS) 
-            {
-                throw std::runtime_error("VulkanWindow::endRenderImgui: Failed to reset command buffer !");
-            }
-
-            VkCommandBufferBeginInfo beginInfo = {};
-            beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-            beginInfo.flags = 0; // Optional
-            beginInfo.pInheritanceInfo = nullptr; // Optional
-
-            if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) 
-            {
-                throw std::runtime_error("VulkanWindow::endRenderImgui: Failed to begin recording command buffer !");
-            }
+            void VulkanWindow::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
             {
                 VkRenderPassBeginInfo renderPassInfo = {};
                 renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -3297,15 +3351,36 @@ namespace LibUtil
                 renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
                 renderPassInfo.pClearValues = clearValues.data();
 
-
                 vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+                {
+                    //0> Pipeline
+                    bindPipeline(commandBuffer);
+
+                    //1> Viewport
+                    bindViewport(commandBuffer);
+                   
+                    //2> Normal Render Pass
+                    drawMesh(commandBuffer);
+                    drawMesh_Custom(commandBuffer);
+
+                    //3> ImGui Pass
+                    drawImgui(commandBuffer);
+                }
+                vkCmdEndRenderPass(commandBuffer);
+            }
+            void VulkanWindow::updateRenderPass_Custom(VkCommandBuffer& commandBuffer)
+            {
+
+            }
+                void VulkanWindow::bindPipeline(VkCommandBuffer& commandBuffer)
                 {
                     if (!this->cfg_isWireFrame)
                         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics);
                     else 
                         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics_WireFrame);
-
-                    //0> Viewport
+                }
+                void VulkanWindow::bindViewport(VkCommandBuffer& commandBuffer)
+                {
                     VkViewport viewport = this->poViewport;
                     if (cfg_isNegativeViewport)
                     {
@@ -3314,8 +3389,12 @@ namespace LibUtil
                     }   
                     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
                     vkCmdSetScissor(commandBuffer, 0, 1, &this->poScissor);
+                }
+                void VulkanWindow::drawMesh(VkCommandBuffer& commandBuffer)
+                {
+                    if (this->poVertexBuffer == nullptr)
+                        return;
 
-                    //1> Normal Render Pass
                     VkBuffer vertexBuffers[] = { this->poVertexBuffer };
                     VkDeviceSize offsets[] = { 0 };
                     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
@@ -3332,18 +3411,21 @@ namespace LibUtil
                     {
                         vkCmdDraw(commandBuffer, this->poVertexCount, 1, 0, 0);
                     }
-
-                    //2> ImGui Pass
-                    vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
-                    ImGui_ImplVulkan_RenderDrawData(main_draw_data, commandBuffer);
                 }
-                vkCmdEndRenderPass(commandBuffer);
-            }
-            if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
-            {
-                throw std::runtime_error("VulkanWindow::endRenderImgui: Failed to record command buffer !");
-            }
-        }
+                void VulkanWindow::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+                {
+
+                }
+                void VulkanWindow::drawImgui(VkCommandBuffer& commandBuffer)
+                {
+                    if (HasConfig_Imgui())
+                    {
+                        ImDrawData* main_draw_data = ImGui::GetDrawData();
+                        vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+                        ImGui_ImplVulkan_RenderDrawData(main_draw_data, commandBuffer);
+                    }
+                }
+
 
         void VulkanWindow::render()
         {
@@ -3406,8 +3488,11 @@ namespace LibUtil
 
     void VulkanWindow::cleanup()
     {
-        std::cout << "---------- VulkanWindow::cleanup start ----------" << std::endl;
+        Util_LogInfo("---------- VulkanWindow::cleanup start ----------");
         {
+            //0> cleanupCustom
+            cleanupCustom();
+
             //1> cleanupSwapChain
             cleanupSwapChain();
 
@@ -3459,8 +3544,12 @@ namespace LibUtil
             //11> Instance
             vkDestroyInstance(this->poInstance, nullptr);
         }
-        std::cout << "---------- VulkanWindow::cleanup finish ----------" << std::endl;
+        Util_LogInfo("---------- VulkanWindow::cleanup finish ----------");
     }
+        void VulkanWindow::cleanupCustom()
+        {
+
+        }
         void VulkanWindow::cleanupTexture()
         {
             //1> TextureSampler
@@ -3512,7 +3601,7 @@ namespace LibUtil
         }
         void VulkanWindow::cleanupSwapChain()
         {
-            std::cout << "----- VulkanWindow::cleanupSwapChain start -----" << std::endl;
+            Util_LogInfo("----- VulkanWindow::cleanupSwapChain start -----");
             {
                 //1> DepthImage
                 if (this->poDepthImage != nullptr)
@@ -3569,11 +3658,11 @@ namespace LibUtil
                 vkDestroySwapchainKHR(this->poDevice, this->poSwapChain, nullptr);
 
                 //7> ConstBuffers
-                count = poBuffers_PassMainCB.size();
+                count = poBuffers_PassCB.size();
                 for (size_t i = 0; i < count; i++) 
                 {
-                    vkDestroyBuffer(this->poDevice, this->poBuffers_PassMainCB[i], nullptr);
-                    vkFreeMemory(this->poDevice, this->poBuffersMemory_PassMainCB[i], nullptr);
+                    vkDestroyBuffer(this->poDevice, this->poBuffers_PassCB[i], nullptr);
+                    vkFreeMemory(this->poDevice, this->poBuffersMemory_PassCB[i], nullptr);
                 }
                 count = poBuffers_ObjectCB.size();
                 for (size_t i = 0; i < count; i++) 
@@ -3587,6 +3676,12 @@ namespace LibUtil
                     vkDestroyBuffer(this->poDevice, this->poBuffers_MaterialCB[i], nullptr);
                     vkFreeMemory(this->poDevice, this->poBuffersMemory_MaterialCB[i], nullptr);
                 }
+                count = poBuffers_InstanceCB.size();
+                for (size_t i = 0; i < count; i++) 
+                {
+                    vkDestroyBuffer(this->poDevice, this->poBuffers_InstanceCB[i], nullptr);
+                    vkFreeMemory(this->poDevice, this->poBuffersMemory_InstanceCB[i], nullptr);
+                }
 
                 //8> DescriptorPool
                 if (this->poDescriptorPool != nullptr)
@@ -3594,11 +3689,11 @@ namespace LibUtil
                     vkDestroyDescriptorPool(this->poDevice, this->poDescriptorPool, nullptr);
                 }
             }
-            std::cout << "----- VulkanWindow::cleanupSwapChain finish -----" << std::endl;
+            Util_LogInfo("----- VulkanWindow::cleanupSwapChain finish -----");
         }
     void VulkanWindow::recreateSwapChain()
     {
-        std::cout << "++++++++++ VulkanWindow::recreateSwapChain start ++++++++++" << std::endl;
+        Util_LogInfo("++++++++++ VulkanWindow::recreateSwapChain start ++++++++++");
         {
             int width = 0;
             int height = 0;
@@ -3631,7 +3726,7 @@ namespace LibUtil
             createRenderPass();
             createFramebuffers();
 
-            loadConstBuffers();
+            createConstBuffers();
             createGraphicsPipeline();
             createDescriptor();
             createCommandBuffers();
@@ -3643,7 +3738,7 @@ namespace LibUtil
                 ImGui_ImplVulkan_SetMinImageCount(this->imgui_MinimalSwapchainImages);
             }
         }
-        std::cout << "++++++++++ VulkanWindow::recreateSwapChain finish ++++++++++" << std::endl;
+        Util_LogInfo("++++++++++ VulkanWindow::recreateSwapChain finish ++++++++++");
     }
 
     VkResult VulkanWindow::createDebugUtilsMessengerEXT(VkInstance instance, 
@@ -3673,4 +3768,4 @@ namespace LibUtil
         }
     } 
 
-}; //LibUtil
+}; //LostPeter

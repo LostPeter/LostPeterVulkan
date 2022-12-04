@@ -1,9 +1,12 @@
 #include "../include/preinclude.h"
 #include "../include/vulkanbase.h"
+#include "../include/vulkantimer.h"
+#include "../include/vulkanlogmanager.h"
 
-namespace LibUtil
+namespace LostPeter
 {
-     VulkanBase::VulkanBase(int width, int height, std::string name)
+    VulkanLogManager* VulkanBase::ms_pLogManager = VulkanLogManager::GetInstance();
+    VulkanBase::VulkanBase(int width, int height, std::string name)
         : width(width)
         , height(height)
         , nameTitle(name)
@@ -19,13 +22,13 @@ namespace LibUtil
         , isCreateDevice(false)
         , isLoadAsset(false)
 
-        , pTimer(new Timer())
+        , pTimer(new VulkanTimer())
         , fFPS(0.0f)
         , nFrameFPS(0)
         , nFrameTotal(0)
     {
         this->pathBin = VulkanUtil::GetPathBin() + "/";
-        std::cout << "Path Bin: " << this->pathBin << std::endl; 
+        Util_LogInfo("Path Bin: [%s] !", this->pathBin.c_str());
 
         RefreshAspectRatio();
         fTimeLastFPS = pTimer->GetTimeSinceStart();
@@ -65,4 +68,4 @@ namespace LibUtil
         return this->pathBin + assetName;
     }
 
-}; //LibUtil
+}; //LostPeter

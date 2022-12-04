@@ -5,15 +5,17 @@
 #define _VULKAN_BASE_H_
 
 #include "predefine.h"
-#include "timer.h"
 
-namespace LibUtil
+namespace LostPeter
 {
     class utilExport VulkanBase
     {
     public:
         VulkanBase(int width, int height, std::string name);
         virtual ~VulkanBase();
+
+    public:
+        static VulkanLogManager* ms_pLogManager;
 
     public:
         int width;
@@ -31,7 +33,7 @@ namespace LibUtil
         bool isCreateDevice;        //is create device
         bool isLoadAsset;           //is load asset
 
-        Timer* pTimer;
+        VulkanTimer* pTimer;
         float fTimeLastFPS;
         float fFPS;
         int nFrameFPS;
@@ -84,6 +86,6 @@ namespace LibUtil
 
     };
 
-}; //LibUtil
+}; //LostPeter
 
 #endif

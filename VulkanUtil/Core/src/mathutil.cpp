@@ -1,7 +1,7 @@
 #include "../include/preinclude.h"
 #include "../include/mathutil.h"
 
-namespace LibUtil
+namespace LostPeter
 {
 	const float MathUtil::ms_fPI_Half = glm::pi<float>() / 2.0f;
     const float MathUtil::ms_fPI = glm::pi<float>();
@@ -432,4 +432,4 @@ namespace LibUtil
         return glm::transpose(mat4);
     }
 
-}; //LibUtil
+}; //LostPeter
