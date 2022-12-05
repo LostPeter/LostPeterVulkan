@@ -5,7 +5,7 @@
 #define _VULKAN_001_TRIANGLE_H_
 
 #include "vulkanwindow.h"
-using namespace LostPeter; 
+using namespace LostPeter;
 
 class Vulkan_001_Triangle : public VulkanWindow
 {
@@ -13,7 +13,7 @@ public:
     Vulkan_001_Triangle(int width, int height, std::string name);
 
 public:
-    std::vector<Vertex_Pos2Color3> vertices;
+    std::vector<Vertex_Pos2Color4> vertices;
 
 public:
 

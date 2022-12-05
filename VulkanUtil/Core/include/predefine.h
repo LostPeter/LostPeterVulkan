@@ -33,6 +33,21 @@ namespace LostPeter
     #define UTIL_DELETE(p)                  { if(p) { delete p; p=nullptr; }}
     #define UTIL_DELETE_T(p)                { if(p) { delete[] p; p=nullptr; }}
 
+    std::string Utile_VkResult2String(VkResult result);
+
+    #define UTIL_VK_CHECK(vkcall) \
+    { \
+        VkResult result = vkcall; \
+        if (result != VK_SUCCESS) \
+        { \
+            std::string vkfunc = #vkcall; \
+            vkfunc = vkfunc.substr(0, vkfunc.find('(')); \
+            Util_LogError("UTIL_VK_CHECK: [%s] failed with: %s", vkfunc.c_str(), Utile_VkResult2String(result).c_str()); \
+        } \
+    }
+
+    bool Util_CheckVkResult(VkResult result, const std::string& nameFunc);
+
 
 ////Enum
     enum VulkanLogType
@@ -41,13 +56,13 @@ namespace LostPeter
         Vulkan_Log_File,
     };
 
-    enum VertexType
+    enum VulkanVertexType
     {
-        VertexType_Pos2Color3 = 0,
-        VertexType_Pos2Color3Tex2,
-        VertexType_Pos3Color3Tex2,
-        VertexType_Pos3Color3Normal3Tex2,
-        VertexType_Default,
+        Vulkan_VertexType_Pos2Color4 = 0,
+        Vulkan_VertexType_Pos2Color4Tex2,
+        Vulkan_VertexType_Pos3Color4Tex2,
+        Vulkan_VertexType_Pos3Color4Normal3Tex2,
+        Vulkan_VertexType_Pos3Color4Normal3Tangent3Tex2,
 
         Count
     };
@@ -66,6 +81,19 @@ namespace LostPeter
 
         Vulkan_PixelFormat_BYTE_A8R8G8B8_UNORM,
     };
+
+
+////Vulkan
+    typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;
+    typedef std::vector<VkVertexInputAttributeDescription> VkVertexInputAttributeDescriptionVector;
+
+    const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(VulkanVertexType type);
+    const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(VulkanVertexType type);
+    VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(VulkanVertexType type);
+    VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(VulkanVertexType type);
+
+    typedef std::vector<VkDescriptorSetLayout> VkDescriptorSetLayoutVector;
+
 
 ////Class
     class App;
@@ -87,11 +115,12 @@ namespace LostPeter
     class VulkanTimer;
     class VulkanWindow;
     
-    struct Vertex_Pos2Color3;
-    struct Vertex_Pos2Color3Tex2;
-    struct Vertex_Pos3Color3Tex2;
-    struct Vertex_Pos3Color3Normal3Tex2;
-    struct MeshVertex;
+    struct Vertex_Pos2Color4;
+    struct Vertex_Pos2Color4Tex2;
+    struct Vertex_Pos3Color4Tex2;
+    struct Vertex_Pos3Color4Normal3Tex2;
+    struct Vertex_Pos3Color4Normal3Tangent3Tex2;
+    typedef Vertex_Pos3Color4Normal3Tangent3Tex2 MeshVertex;
 
     struct MeshData;
     struct SubmeshGeometry;

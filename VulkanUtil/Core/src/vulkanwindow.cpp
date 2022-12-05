@@ -50,7 +50,7 @@ namespace LostPeter
         , poIndexBufferMemory(nullptr)
         , poMatWorld(MathUtil::Identity4x4())
 
-        , poTypeVertex(VertexType_Default)
+        , poTypeVertex(Vulkan_VertexType_Pos3Color4Normal3Tangent3Tex2)
         , poPipelineLayout(nullptr)
         , poPipelineGraphics(nullptr)
         , poPipelineGraphics_WireFrame(nullptr)
@@ -2276,6 +2276,9 @@ namespace LostPeter
 
             //4> createInstanceCB
             createInstanceCB();
+
+            //5> createCustomCB
+            createCustomCB();
         }
         Util_LogInfo("**<2-2-3> VulkanWindow::createConstBuffers finish **");
     }
@@ -2362,282 +2365,308 @@ namespace LostPeter
             InstanceConstants instanceConstants;
             this->instanceCBs.push_back(instanceConstants);
         }
+    void VulkanWindow::createCustomCB()
+    {
+        
+        Util_LogInfo("<2-2-3-5> VulkanWindow::createCustomCB finish !");
+    }
+
 
     void VulkanWindow::createGraphicsPipeline()
     {
-        VkShaderModule vertShaderModule;
-        if (!this->cfg_shaderVertex_Path.empty())
+        Util_LogInfo("**<2-2-4> VulkanWindow::createGraphicsPipeline start **");
         {
-            vertShaderModule = createShaderModule("VertexShader: ", this->cfg_shaderVertex_Path);
+            //1> createPipeline_Default
+            createPipeline_Default();
+
+            //2> createPipeline_Custom
+            createPipeline_Custom();
         }
-        VkShaderModule fragShaderModule;
-        if (!this->cfg_shaderFragment_Path.empty())
-        {
-            fragShaderModule = createShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
-        }
-
-        //1> Pipeline Shader Stage
-        VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
-        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        vertShaderStageInfo.module = vertShaderModule;
-        vertShaderStageInfo.pName = "main";
-
-        VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
-        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        fragShaderStageInfo.module = fragShaderModule;
-        fragShaderStageInfo.pName = "main";
-
-        VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
-
-        //2> Pipeline VertexInput State
-        VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
-        vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount = 1;
-        createPipelineVertexInputStateCreateInfo(vertexInputInfo);
-
-        //3> Pipeline InputAssembly
-        VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
-        inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        inputAssembly.topology = this->cfg_vkPrimitiveTopology;
-        inputAssembly.primitiveRestartEnable = VK_FALSE;
-
-        //4> Pipeline Viewport State
-        VkPipelineViewportStateCreateInfo viewportState = {};
-        viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewportState.viewportCount = 1;
-        viewportState.pViewports = &this->poViewport;
-        viewportState.scissorCount = 1;
-        viewportState.pScissors = &this->poScissor;
-
-        //5> Pipeline Rasterization State
-        VkPipelineRasterizationStateCreateInfo rasterizer = {};
-        rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-        rasterizer.depthClampEnable = VK_FALSE;
-        rasterizer.rasterizerDiscardEnable = VK_FALSE;
-        rasterizer.polygonMode = this->cfg_vkPolygonMode;
-        rasterizer.lineWidth = 1.0f;
-        rasterizer.cullMode = this->cfg_vkCullModeFlagBits;
-        rasterizer.frontFace = this->cfg_vkFrontFace;
-        rasterizer.depthBiasEnable = VK_FALSE;
-        rasterizer.depthBiasConstantFactor = 0.0f; // Optional
-	    rasterizer.depthBiasClamp = 0.0f; // Optional
-	    rasterizer.depthBiasSlopeFactor = 0.0f; // Optional
-
-        //6> Pipeline Multisample State
-        VkPipelineMultisampleStateCreateInfo multisampling = {};
-        multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-        multisampling.sampleShadingEnable = VK_FALSE;
-        multisampling.rasterizationSamples = this->poMSAASamples;
-        multisampling.minSampleShading = 1.0f; // Optional
-        multisampling.pSampleMask = nullptr; // Optional
-        multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
-        multisampling.alphaToOneEnable = VK_FALSE; // Optional
-
-        //7> Pipeline DepthStencil State
-        VkPipelineDepthStencilStateCreateInfo depthStencil = {};
-        depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-        depthStencil.depthTestEnable = this->cfg_isDepthTest;
-        depthStencil.depthWriteEnable = this->cfg_isDepthWrite;
-        depthStencil.depthCompareOp = this->cfg_DepthCompareOp;
-        depthStencil.depthBoundsTestEnable = VK_FALSE;
-        depthStencil.stencilTestEnable = this->cfg_isStencilTest;
-        if (this->cfg_isStencilTest)
-        {
-            depthStencil.front = this->cfg_StencilOpFront;
-            depthStencil.back = this->cfg_StencilOpBack;
-        }
-
-        //8> Pipeline ColorBlend State 
-        VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
-        colorBlendAttachment.blendEnable = this->cfg_isBlend;
-        colorBlendAttachment.colorWriteMask = this->cfg_ColorWriteMask;
-        if (this->cfg_isBlend)
-        {
-            colorBlendAttachment.srcColorBlendFactor = this->cfg_BlendColorFactorSrc;
-            colorBlendAttachment.dstColorBlendFactor = this->cfg_BlendColorFactorDst;
-            colorBlendAttachment.colorBlendOp = this->cfg_BlendColorOp;
-            colorBlendAttachment.srcAlphaBlendFactor = this->cfg_BlendAlphaFactorSrc;
-            colorBlendAttachment.dstAlphaBlendFactor = this->cfg_BlendAlphaFactorDst;
-            colorBlendAttachment.alphaBlendOp = this->cfg_BlendAlphaOp;
-        }
-
-        VkPipelineColorBlendStateCreateInfo colorBlending = {};
-        colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-        colorBlending.logicOpEnable = VK_FALSE;
-        colorBlending.logicOp = VK_LOGIC_OP_COPY;
-        colorBlending.attachmentCount = 1;
-        colorBlending.pAttachments = &colorBlendAttachment;
-        colorBlending.blendConstants[0] = 0.0f;
-        colorBlending.blendConstants[1] = 0.0f;
-        colorBlending.blendConstants[2] = 0.0f;
-        colorBlending.blendConstants[3] = 0.0f;
-
-        //9> Pipeline Dynamic State
-        VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
-        const std::vector<VkDynamicState> dynamicStateEnables = 
-        { 
-            VK_DYNAMIC_STATE_VIEWPORT, 
-            VK_DYNAMIC_STATE_SCISSOR 
-        };
-        dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        dynamicStateInfo.pDynamicStates = dynamicStateEnables.data();
-        dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
-        dynamicStateInfo.flags = 0;
-
-        //10> Pipeline Layout
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 0;
-        pipelineLayoutInfo.pSetLayouts = nullptr;
-        pipelineLayoutInfo.pushConstantRangeCount = 0;
-        if (this->poDescriptorSetLayout != nullptr)
-        {
-            pipelineLayoutInfo.setLayoutCount = 1;
-            pipelineLayoutInfo.pSetLayouts = &this->poDescriptorSetLayout;
-        }
-        if (vkCreatePipelineLayout(this->poDevice, &pipelineLayoutInfo, nullptr, &this->poPipelineLayout) != VK_SUCCESS) 
-        {
-            throw std::runtime_error("VulkanWindow::createGraphicsPipeline: Failed to create pipeline layout !");
-        }
-
-        //11> Graphics Pipeline
-        VkGraphicsPipelineCreateInfo pipelineInfo = {};
-        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        pipelineInfo.pNext = nullptr;
-        pipelineInfo.stageCount = 2;
-        pipelineInfo.pStages = shaderStages;
-        pipelineInfo.pVertexInputState = &vertexInputInfo;
-        pipelineInfo.pInputAssemblyState = &inputAssembly;
-        pipelineInfo.pTessellationState = nullptr;
-        pipelineInfo.pViewportState = &viewportState;
-        pipelineInfo.pRasterizationState = &rasterizer;
-        pipelineInfo.pMultisampleState = &multisampling;
-        pipelineInfo.pDepthStencilState = &depthStencil;
-        pipelineInfo.pColorBlendState = &colorBlending;
-        pipelineInfo.pDynamicState = &dynamicStateInfo;
-        pipelineInfo.layout = this->poPipelineLayout;
-        pipelineInfo.renderPass = this->poRenderPass;
-        pipelineInfo.subpass = 0;
-        pipelineInfo.basePipelineHandle = nullptr;
-        pipelineInfo.basePipelineIndex = 0;
-
-        VkResult result = vkCreateGraphicsPipelines(this->poDevice, nullptr, 1, &pipelineInfo, nullptr, &this->poPipelineGraphics);
-        if (result != VK_SUCCESS)
-        {
-            std::ostringstream os;
-            os << (int)result;
-            Util_LogError("VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline, result: [%s] !", os.str().c_str());
-            throw std::runtime_error("VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline, result: " + os.str());
-        }
-
-        //12> Graphics Pipeline WireFrame
-        rasterizer.polygonMode = VK_POLYGON_MODE_LINE;
-        pipelineInfo.pRasterizationState = &rasterizer;
-        result = vkCreateGraphicsPipelines(this->poDevice, nullptr, 1, &pipelineInfo, nullptr, &this->poPipelineGraphics_WireFrame);
-        if (result != VK_SUCCESS)
-        {
-            std::ostringstream os;
-            os << (int)result;
-            Util_LogError("VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline wireframe, result: [%s] !", os.str().c_str());
-            throw std::runtime_error("VulkanWindow::createGraphicsPipeline: Failed to create graphics pipeline wireframe, result: " + os.str());
-        }
-
-        vkDestroyShaderModule(this->poDevice, fragShaderModule, nullptr);
-        vkDestroyShaderModule(this->poDevice, vertShaderModule, nullptr);
-
-        Util_LogInfo("<2-2-4> VulkanWindow::createGraphicsPipeline finish !");
+        Util_LogInfo("**<2-2-4> VulkanWindow::createGraphicsPipeline finish **");
     }
-    VkShaderModule VulkanWindow::createShaderModule(std::string info, std::string pathFile)
-    {
-        if (pathFile.empty())
-            return nullptr;
-
-        std::vector<char> code;
-        if (!VulkanUtil::LoadAssetFileContent(pathFile.c_str(), code))
+        void VulkanWindow::createPipeline_Default()
         {
-            Util_LogInfo("VulkanWindow::createShaderModule failed, path: [%s] !", pathFile.c_str());
-            return nullptr;
+            //1> Shader
+            VkShaderModule vertShaderModule;
+            if (!this->cfg_shaderVertex_Path.empty())
+            {
+                vertShaderModule = createShaderModule("VertexShader: ", this->cfg_shaderVertex_Path);
+            }
+            VkShaderModule fragShaderModule;
+            if (!this->cfg_shaderFragment_Path.empty())
+            {
+                fragShaderModule = createShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
+            }
+
+            //2> Viewport
+            std::vector<VkViewport> viewports;
+            viewports.push_back(this->poViewport);
+            std::vector<VkRect2D> scissors;
+            scissors.push_back(this->poScissor);
+
+            //3> PipelineLayout
+            VkDescriptorSetLayoutVector aDescriptorSetLayout;
+            aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
+            this->poPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
+            if (this->poPipelineLayout == VK_NULL_HANDLE)
+            {
+                Util_LogError("*********************** VulkanPipeline::createPipeline_Default: createVkPipelineLayout failed !");
+                return;
+            }
+
+            //4> poPipelineGraphics
+            this->poPipelineGraphics = createVkPipeline(vertShaderModule, "main",
+                                                        fragShaderModule, "main",
+                                                        Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
+                                                        Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
+                                                        this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                        this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, this->cfg_vkPolygonMode, this->cfg_vkCullModeFlagBits,
+                                                        this->cfg_isDepthTest, this->cfg_isDepthWrite,this->cfg_DepthCompareOp,
+                                                        this->cfg_isStencilTest, this->cfg_StencilOpFront, this->cfg_StencilOpBack, 
+                                                        this->cfg_isBlend, this->cfg_BlendColorFactorSrc, this->cfg_BlendColorFactorDst, this->cfg_BlendColorOp,
+                                                        this->cfg_BlendAlphaFactorSrc, this->cfg_BlendAlphaFactorDst, this->cfg_BlendAlphaOp,
+                                                        this->cfg_ColorWriteMask);
+            if (this->poPipelineGraphics == VK_NULL_HANDLE)
+            {
+                Util_LogError("*********************** VulkanPipeline::createPipeline_Default: createVkPipeline failed !");
+                return;
+            }
+
+            //5> poPipelineGraphics_WireFrame
+            this->poPipelineGraphics_WireFrame = createVkPipeline(vertShaderModule, "main",
+                                                                  fragShaderModule, "main",
+                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
+                                                                  Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
+                                                                  this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                                  this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, this->cfg_vkCullModeFlagBits,
+                                                                  this->cfg_isDepthTest, this->cfg_isDepthWrite,this->cfg_DepthCompareOp,
+                                                                  this->cfg_isStencilTest, this->cfg_StencilOpFront, this->cfg_StencilOpBack, 
+                                                                  this->cfg_isBlend, this->cfg_BlendColorFactorSrc, this->cfg_BlendColorFactorDst, this->cfg_BlendColorOp,
+                                                                  this->cfg_BlendAlphaFactorSrc, this->cfg_BlendAlphaFactorDst, this->cfg_BlendAlphaOp,
+                                                                  this->cfg_ColorWriteMask);
+            if (this->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
+            {
+                Util_LogError("*********************** VulkanPipeline::createPipeline_Default: createVkPipeline wire frame failed !");
+                return;
+            }
+
+            //6> Destroy Shader
+            vkDestroyShaderModule(this->poDevice, fragShaderModule, nullptr);
+            vkDestroyShaderModule(this->poDevice, vertShaderModule, nullptr);
         }
-        if (code.size() <= 0)
+        void VulkanWindow::createPipeline_Custom()
         {
-            return nullptr;
+
         }
-
-        VkShaderModuleCreateInfo createInfo = {};
-        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        createInfo.codeSize = code.size();
-        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
-
-        VkShaderModule shaderModule;
-        if (vkCreateShaderModule(this->poDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) 
-        {
-            throw std::runtime_error("VulkanWindow::createShaderModule: Failed to create shader module, " + info);
-        }
-
-        return shaderModule;
-    }
-    void VulkanWindow::createPipelineVertexInputStateCreateInfo(VkPipelineVertexInputStateCreateInfo& vertexInputInfo)
-    {
-        switch ((int)this->poTypeVertex)
-        {
-            case (int)VertexType_Pos2Color3:
+            VkPipelineLayout VulkanWindow::createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout)
             {
-                VkVertexInputBindingDescription* pBindingDescription = Vertex_Pos2Color3::getBindingDescriptionPtr();
-                std::array<VkVertexInputAttributeDescription, 2>* pAttributeDescriptions = Vertex_Pos2Color3::getAttributeDescriptionsPtr();
+                VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+                pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+                pipelineLayoutInfo.setLayoutCount = 0;
+                pipelineLayoutInfo.pSetLayouts = nullptr;
+                pipelineLayoutInfo.pushConstantRangeCount = 0;
+                pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(aDescriptorSetLayout.size());
+                pipelineLayoutInfo.pSetLayouts = aDescriptorSetLayout.data();
 
-                vertexInputInfo.pVertexBindingDescriptions = pBindingDescription;
-                vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
-                vertexInputInfo.pVertexAttributeDescriptions = pAttributeDescriptions->data();
-                break;
+                VkPipelineLayout vkPipelineLayout = VK_NULL_HANDLE;
+                if (vkCreatePipelineLayout(this->poDevice, &pipelineLayoutInfo, nullptr, &vkPipelineLayout) != VK_SUCCESS) 
+                {
+                    std::string msg = "VulkanWindow::createVkPipelineLayout: Failed to create pipeline layout !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                return vkPipelineLayout;
             }
-            case (int)VertexType_Pos2Color3Tex2:
+            VkShaderModule VulkanWindow::createShaderModule(std::string info, std::string pathFile)
             {
-                VkVertexInputBindingDescription* pBindingDescription = Vertex_Pos2Color3Tex2::getBindingDescriptionPtr();
-                std::array<VkVertexInputAttributeDescription, 3>* pAttributeDescriptions = Vertex_Pos2Color3Tex2::getAttributeDescriptionsPtr();
+                if (pathFile.empty())
+                    return nullptr;
 
-                vertexInputInfo.pVertexBindingDescriptions = pBindingDescription;
-                vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
-                vertexInputInfo.pVertexAttributeDescriptions = pAttributeDescriptions->data();
-                break;
-            }
-            case (int)VertexType_Pos3Color3Tex2:
-            {
-                VkVertexInputBindingDescription* pBindingDescription = Vertex_Pos3Color3Tex2::getBindingDescriptionPtr();
-                std::array<VkVertexInputAttributeDescription, 3>* pAttributeDescriptions = Vertex_Pos3Color3Tex2::getAttributeDescriptionsPtr();
+                std::vector<char> code;
+                if (!VulkanUtil::LoadAssetFileContent(pathFile.c_str(), code))
+                {
+                    Util_LogError("VulkanWindow::createShaderModule failed, path: [%s] !", pathFile.c_str());
+                    return nullptr;
+                }
+                if (code.size() <= 0)
+                {
+                    return nullptr;
+                }
 
-                vertexInputInfo.pVertexBindingDescriptions = pBindingDescription;
-                vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
-                vertexInputInfo.pVertexAttributeDescriptions = pAttributeDescriptions->data();
-                break;
-            }
-            case (int)VertexType_Pos3Color3Normal3Tex2:
-            {
-                VkVertexInputBindingDescription* pBindingDescription = Vertex_Pos3Color3Normal3Tex2::getBindingDescriptionPtr();
-                std::array<VkVertexInputAttributeDescription, 4>* pAttributeDescriptions = Vertex_Pos3Color3Normal3Tex2::getAttributeDescriptionsPtr();
+                VkShaderModuleCreateInfo createInfo = {};
+                createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+                createInfo.codeSize = code.size();
+                createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
-                vertexInputInfo.pVertexBindingDescriptions = pBindingDescription;
-                vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
-                vertexInputInfo.pVertexAttributeDescriptions = pAttributeDescriptions->data();
-                break;
-            }
-            case (int)VertexType_Default:
-            {
-                VkVertexInputBindingDescription* pBindingDescription = MeshVertex::getBindingDescriptionPtr();
-                std::array<VkVertexInputAttributeDescription, 5>* pAttributeDescriptions = MeshVertex::getAttributeDescriptionsPtr();
+                VkShaderModule shaderModule;
+                if (vkCreateShaderModule(this->poDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) 
+                {
+                    std::string msg = "VulkanWindow::createShaderModule: Failed to create shader module: " + info;
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
 
-                vertexInputInfo.pVertexBindingDescriptions = pBindingDescription;
-                vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
-                vertexInputInfo.pVertexAttributeDescriptions = pAttributeDescriptions->data();
-                break;
+                return shaderModule;
             }
-            default:
+            VkPipeline VulkanWindow::createVkPipeline(VkShaderModule vertShaderModule, const std::string& vertMain,
+                                                      VkShaderModule fragShaderModule, const std::string& fragMain,
+                                                      VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                      VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                      VkRenderPass renderPass, VkPipelineLayout pipelineLayout, std::vector<VkViewport> viewports, std::vector<VkRect2D> scissors,
+                                                      VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                      VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                      VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                      VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                      VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                      VkColorComponentFlags colorWriteMask)
             {
-                throw std::runtime_error("VulkanWindow::createPipelineVertexInputStateCreateInfo: Failed to create VkPipelineVertexInputStateCreateInfo, type wrong !");
+                //1> Pipeline Shader Stage
+                VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+                vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+                vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+                vertShaderStageInfo.module = vertShaderModule;
+                vertShaderStageInfo.pName = vertMain.c_str();
+
+                VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+                fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+                fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+                fragShaderStageInfo.module = fragShaderModule;
+                fragShaderStageInfo.pName = fragMain.c_str();
+
+                VkPipelineShaderStageCreateInfo shaderStageInfos[] = 
+                { 
+                    vertShaderStageInfo, 
+                    fragShaderStageInfo 
+                };
+
+                //2> Pipeline VertexInput State
+                VkPipelineVertexInputStateCreateInfo vertexInputStateInfo = {};
+                vertexInputStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+                vertexInputStateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(pBindingDescriptions->size());
+                vertexInputStateInfo.pVertexBindingDescriptions = pBindingDescriptions->data();
+                vertexInputStateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
+                vertexInputStateInfo.pVertexAttributeDescriptions = pAttributeDescriptions->data();
+
+                //3> Pipeline InputAssembly
+                VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateInfo = {};
+                inputAssemblyStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+                inputAssemblyStateInfo.topology = primitiveTopology;
+                inputAssemblyStateInfo.primitiveRestartEnable = VK_FALSE;
+
+                //4> Pipeline Viewport State
+                VkPipelineViewportStateCreateInfo viewportStateInfo = {};
+                viewportStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+                viewportStateInfo.viewportCount = static_cast<uint32_t>(viewports.size());
+                viewportStateInfo.pViewports = viewports.data();
+                viewportStateInfo.scissorCount = static_cast<uint32_t>(scissors.size());
+                viewportStateInfo.pScissors = scissors.data();
+
+                //5> Pipeline Rasterization State
+                VkPipelineRasterizationStateCreateInfo rasterizationStateInfo = {};
+                rasterizationStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+                rasterizationStateInfo.depthClampEnable = VK_FALSE;
+                rasterizationStateInfo.rasterizerDiscardEnable = VK_FALSE;
+                rasterizationStateInfo.polygonMode = polygonMode;
+                rasterizationStateInfo.lineWidth = 1.0f;
+                rasterizationStateInfo.cullMode = cullMode;
+                rasterizationStateInfo.frontFace = frontFace;
+                rasterizationStateInfo.depthBiasEnable = VK_FALSE;
+                rasterizationStateInfo.depthBiasConstantFactor = 0.0f; // Optional
+                rasterizationStateInfo.depthBiasClamp = 0.0f; // Optional
+                rasterizationStateInfo.depthBiasSlopeFactor = 0.0f; // Optional
+
+
+                //6> Pipeline Multisample State
+                VkPipelineMultisampleStateCreateInfo multisamplingStateInfo = {};
+                multisamplingStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+                multisamplingStateInfo.sampleShadingEnable = VK_FALSE;
+                multisamplingStateInfo.rasterizationSamples = IsEnable_MASS() ? this->poMSAASamples : VK_SAMPLE_COUNT_1_BIT;
+                multisamplingStateInfo.minSampleShading = 1.0f; // Optional
+                multisamplingStateInfo.pSampleMask = nullptr; // Optional
+                multisamplingStateInfo.alphaToCoverageEnable = VK_FALSE; // Optional
+                multisamplingStateInfo.alphaToOneEnable = VK_FALSE; // Optional
+
+                //7> Pipeline DepthStencil State
+                VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
+                depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+                depthStencilStateInfo.depthTestEnable = bDepthTest;
+                depthStencilStateInfo.depthWriteEnable = bDepthWrite;
+                depthStencilStateInfo.depthCompareOp = depthCompareOp;
+                depthStencilStateInfo.depthBoundsTestEnable = VK_FALSE;
+                depthStencilStateInfo.stencilTestEnable = bStencilTest;
+                if (bStencilTest)
+                {
+                    depthStencilStateInfo.front = stencilOpFront;
+                    depthStencilStateInfo.back = stencilOpBack;
+                }
+
+                //8> Pipeline ColorBlend State 
+                VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+                colorBlendAttachment.blendEnable = bBlend;
+                colorBlendAttachment.colorWriteMask = colorWriteMask;
+                if (bBlend)
+                {
+                    colorBlendAttachment.srcColorBlendFactor = blendColorFactorSrc;
+                    colorBlendAttachment.dstColorBlendFactor = blendColorFactorDst;
+                    colorBlendAttachment.colorBlendOp = blendColorOp;
+                    colorBlendAttachment.srcAlphaBlendFactor = blendAlphaFactorSrc;
+                    colorBlendAttachment.dstAlphaBlendFactor = blendAlphaFactorDst;
+                    colorBlendAttachment.alphaBlendOp = blendAlphaOp;
+                }
+                
+                VkPipelineColorBlendStateCreateInfo colorBlendingStateInfo = {};
+                colorBlendingStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+                colorBlendingStateInfo.logicOpEnable = VK_FALSE;
+                colorBlendingStateInfo.logicOp = VK_LOGIC_OP_COPY;
+                colorBlendingStateInfo.attachmentCount = 1;
+                colorBlendingStateInfo.pAttachments = &colorBlendAttachment;
+                colorBlendingStateInfo.blendConstants[0] = 0.0f;
+                colorBlendingStateInfo.blendConstants[1] = 0.0f;
+                colorBlendingStateInfo.blendConstants[2] = 0.0f;
+                colorBlendingStateInfo.blendConstants[3] = 0.0f;
+
+                //9> Pipeline Dynamic State
+                VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
+                const std::vector<VkDynamicState> dynamicStateEnables = 
+                { 
+                    VK_DYNAMIC_STATE_VIEWPORT, 
+                    VK_DYNAMIC_STATE_SCISSOR 
+                };
+                dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+                dynamicStateInfo.pDynamicStates = dynamicStateEnables.data();
+                dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
+                dynamicStateInfo.flags = 0;
+
+                //10> Graphics Pipeline
+                VkGraphicsPipelineCreateInfo pipelineInfo = {};
+                pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+                pipelineInfo.pNext = nullptr;
+                pipelineInfo.stageCount = 2;
+                pipelineInfo.pStages = shaderStageInfos;
+                pipelineInfo.pVertexInputState = &vertexInputStateInfo;
+                pipelineInfo.pInputAssemblyState = &inputAssemblyStateInfo;
+                pipelineInfo.pTessellationState = nullptr;
+                pipelineInfo.pViewportState = &viewportStateInfo;
+                pipelineInfo.pRasterizationState = &rasterizationStateInfo;
+                pipelineInfo.pMultisampleState = &multisamplingStateInfo;
+                pipelineInfo.pDepthStencilState = &depthStencilStateInfo;
+                pipelineInfo.pColorBlendState = &colorBlendingStateInfo;
+                pipelineInfo.pDynamicState = &dynamicStateInfo;
+                pipelineInfo.layout = pipelineLayout;
+                pipelineInfo.renderPass = renderPass;
+                pipelineInfo.subpass = 0;
+                pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+                pipelineInfo.basePipelineIndex = 0;
+
+                VkPipeline pipeline;
+                if (!Util_CheckVkResult(vkCreateGraphicsPipelines(this->poDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline), "vkCreateGraphicsPipelines"))
+                {
+                    Util_LogError("*********************** VulkanUtil::createVkPipeline: vkCreateGraphicsPipelines failed !");
+                    return VK_NULL_HANDLE;
+                }
+
+                return pipeline;
             }
-        }
-    }
 
     void VulkanWindow::createDescriptor()
     {
@@ -2646,8 +2675,11 @@ namespace LostPeter
             //1> createDescriptorPool
             createDescriptorPool();
 
-            //2> createDescriptorSets
-            createDescriptorSets();
+            //2> createDescriptorSets_Default
+            createDescriptorSets_Default();
+
+            //3> createDescriptorSets_Custom
+            createDescriptorSets_Custom();
         }
         Util_LogInfo("**<2-2-5> VulkanWindow::createDescriptor finish **");
     }
@@ -2682,7 +2714,19 @@ namespace LostPeter
 
         Util_LogInfo("<2-2-5-1> VulkanWindow::createDescriptorPool finish !");
     }
-    void VulkanWindow::createDescriptorSets()
+    void VulkanWindow::createDescriptorSets_Default()
+    {
+        createDescriptorSets(this->poDescriptorSets);
+        updateDescriptorSets(this->poDescriptorSets, this->poTextureImageView, this->poTextureSampler);
+
+        Util_LogInfo("<2-2-5-2> VulkanWindow::createDescriptorSets_Default finish !");
+    }
+    void VulkanWindow::createDescriptorSets_Custom()
+    {   
+
+        Util_LogInfo("<2-2-5-3> VulkanWindow::createDescriptorSets_Custom finish !");
+    }
+    void VulkanWindow::createDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets)
     {
         std::vector<VkDescriptorSetLayout> layouts(this->poSwapChainImages.size(), this->poDescriptorSetLayout);
         VkDescriptorSetAllocateInfo allocInfo = {};
@@ -2692,20 +2736,15 @@ namespace LostPeter
         allocInfo.pSetLayouts = layouts.data();
 
         size_t count = this->poSwapChainImages.size();
-        this->poDescriptorSets.resize(count);
-        if (vkAllocateDescriptorSets(this->poDevice, &allocInfo, this->poDescriptorSets.data()) != VK_SUCCESS) 
+        aDescriptorSets.resize(count);
+        if (vkAllocateDescriptorSets(this->poDevice, &allocInfo, aDescriptorSets.data()) != VK_SUCCESS) 
         {
             throw std::runtime_error("VulkanWindow::createDescriptorSets: Failed to allocate descriptor sets !");
         }
-        
-        updateDescriptorSets();
-
-        Util_LogInfo("<2-2-5-2> VulkanWindow::createDescriptorSets finish !");
     }
-    void VulkanWindow::updateDescriptorSets()
+    void VulkanWindow::updateDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler)
     {
-        bool bHasTexture = this->poTextureImageView == nullptr ? false : true;
-        size_t count = this->poDescriptorSets.size();
+        size_t count = aDescriptorSets.size();
         for (size_t i = 0; i < count; i++)
         {
             VkDescriptorBufferInfo bufferInfo_Pass = {};
@@ -2730,15 +2769,15 @@ namespace LostPeter
 
             VkDescriptorImageInfo imageInfo = {};
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = this->poTextureImageView;
-            imageInfo.sampler = this->poTextureSampler;
+            imageInfo.imageView = vkTextureView;
+            imageInfo.sampler = vkSampler;
             
             std::vector<VkWriteDescriptorSet> descriptorWrites;
 
             //0
             VkWriteDescriptorSet ds0 = {};
             ds0.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds0.dstSet = this->poDescriptorSets[i];
+            ds0.dstSet = aDescriptorSets[i];
             ds0.dstBinding = 0;
             ds0.dstArrayElement = 0;
             ds0.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -2749,7 +2788,7 @@ namespace LostPeter
             //1
             VkWriteDescriptorSet ds1 = {};
             ds1.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds1.dstSet = this->poDescriptorSets[i];
+            ds1.dstSet = aDescriptorSets[i];
             ds1.dstBinding = 1;
             ds1.dstArrayElement = 0;
             ds1.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -2760,7 +2799,7 @@ namespace LostPeter
             //2
             VkWriteDescriptorSet ds2 = {};
             ds2.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds2.dstSet = this->poDescriptorSets[i];
+            ds2.dstSet = aDescriptorSets[i];
             ds2.dstBinding = 2;
             ds2.dstArrayElement = 0;
             ds2.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -2771,7 +2810,7 @@ namespace LostPeter
             //3
             VkWriteDescriptorSet ds3 = {};
             ds3.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds3.dstSet = this->poDescriptorSets[i];
+            ds3.dstSet = aDescriptorSets[i];
             ds3.dstBinding = 3;
             ds3.dstArrayElement = 0;
             ds3.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -2780,11 +2819,11 @@ namespace LostPeter
             descriptorWrites.push_back(ds3);
             
             //4
-            if (bHasTexture)
+            if (vkTextureView != VK_NULL_HANDLE)
             {
                 VkWriteDescriptorSet ds4 = {};
                 ds4.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds4.dstSet = this->poDescriptorSets[i];
+                ds4.dstSet = aDescriptorSets[i];
                 ds4.dstBinding = 4;
                 ds4.dstArrayElement = 0;
                 ds4.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -2952,13 +2991,16 @@ namespace LostPeter
             //5> CB Instances
             updateCBs_Instances();
 
-            //6> Imgui
+            //6> CB Custom
+            updateCBs_Custom();
+
+            //7> Imgui
             if (IsEnable_Imgui())
             {
                 updateImgui();
             }
 
-            //7> CommandBuffers
+            //8> CommandBuffers
             updateCommandBuffers();
         }
             void VulkanWindow::updateSceneObjects()
@@ -3075,6 +3117,10 @@ namespace LostPeter
                     materialCB.indexObject = 0;
                     materialCB.indexMaterial = 0;
                 }
+            void VulkanWindow::updateCBs_Custom()
+            {
+
+            }
 
             void VulkanWindow::updateImgui()
             {
@@ -3353,9 +3399,6 @@ namespace LostPeter
 
                 vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
                 {
-                    //0> Pipeline
-                    bindPipeline(commandBuffer);
-
                     //1> Viewport
                     bindViewport(commandBuffer);
                    
@@ -3372,13 +3415,6 @@ namespace LostPeter
             {
 
             }
-                void VulkanWindow::bindPipeline(VkCommandBuffer& commandBuffer)
-                {
-                    if (!this->cfg_isWireFrame)
-                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics);
-                    else 
-                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics_WireFrame);
-                }
                 void VulkanWindow::bindViewport(VkCommandBuffer& commandBuffer)
                 {
                     VkViewport viewport = this->poViewport;
@@ -3394,6 +3430,11 @@ namespace LostPeter
                 {
                     if (this->poVertexBuffer == nullptr)
                         return;
+
+                    if (!this->cfg_isWireFrame)
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics);
+                    else 
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics_WireFrame);
 
                     VkBuffer vertexBuffers[] = { this->poVertexBuffer };
                     VkDeviceSize offsets[] = { 0 };

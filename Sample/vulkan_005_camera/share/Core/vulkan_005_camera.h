@@ -13,7 +13,7 @@ public:
     Vulkan_005_Camera(int width, int height, std::string name);
 
 public:
-    std::vector<Vertex_Pos3Color3Tex2> vertices;
+    std::vector<Vertex_Pos3Color4Tex2> vertices;
     std::vector<uint32_t> indices;
 
 protected:

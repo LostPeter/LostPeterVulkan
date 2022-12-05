@@ -64,7 +64,7 @@ namespace LostPeter
         VkDeviceMemory poIndexBufferMemory;
         glm::mat4 poMatWorld;
 
-        VertexType poTypeVertex;
+        VulkanVertexType poTypeVertex;
         VkPipelineLayout poPipelineLayout;
         VkPipeline poPipelineGraphics;
         VkPipeline poPipelineGraphics_WireFrame;
@@ -319,15 +319,31 @@ namespace LostPeter
                         virtual void buildMaterialCB();
                     virtual void createInstanceCB();
                         virtual void buildInstanceCB();
+                    virtual void createCustomCB();
 
                 virtual void createGraphicsPipeline();
-                    virtual VkShaderModule createShaderModule(std::string info, std::string pathFile);
-                    virtual void createPipelineVertexInputStateCreateInfo(VkPipelineVertexInputStateCreateInfo& vertexInputInfo);
+                    virtual void createPipeline_Default();
+                    virtual void createPipeline_Custom();
+                        virtual VkPipelineLayout createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout);
+                        virtual VkShaderModule createShaderModule(std::string info, std::string pathFile);
+                        virtual VkPipeline createVkPipeline(VkShaderModule vertShaderModule, const std::string& vertMain,
+                                                            VkShaderModule fragShaderModule, const std::string& fragMain,
+                                                            VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                            VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                            VkRenderPass renderPass, VkPipelineLayout pipelineLayout, std::vector<VkViewport> viewports, std::vector<VkRect2D> scissors,
+                                                            VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                            VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                            VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                            VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                            VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                            VkColorComponentFlags colorWriteMask);
 
                 virtual void createDescriptor();
                     virtual void createDescriptorPool();
-                    virtual void createDescriptorSets();
-                    virtual void updateDescriptorSets();
+                    virtual void createDescriptorSets_Default();
+                    virtual void createDescriptorSets_Custom();
+                        virtual void createDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets);
+                        virtual void updateDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler);
 
                 virtual void createCommandBuffers();
 
@@ -350,6 +366,7 @@ namespace LostPeter
                     virtual void updateCBs_MaterialsContent();
                 virtual void updateCBs_Instances();
                     virtual void updateCBs_InstancesContent();
+                virtual void updateCBs_Custom();
 
                 virtual void updateImgui();
                     virtual bool beginRenderImgui();
@@ -362,7 +379,6 @@ namespace LostPeter
                 virtual void updateCommandBuffers();
                     virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_Custom(VkCommandBuffer& commandBuffer);
-                        virtual void bindPipeline(VkCommandBuffer& commandBuffer);
                         virtual void bindViewport(VkCommandBuffer& commandBuffer);
                         virtual void drawMesh(VkCommandBuffer& commandBuffer);
                         virtual void drawMesh_Custom(VkCommandBuffer& commandBuffer);

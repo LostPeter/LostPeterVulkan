@@ -4,7 +4,7 @@
 struct VSInput
 {
     [[vk::location(0)]]float3 inPosition    : POSITION0;
-    [[vk::location(1)]]float3 inColor       : COLOR0;
+    [[vk::location(1)]]float4 inColor       : COLOR0;
     [[vk::location(2)]]float2 inTexCoord    : TEXCOORD0;
 };
 
@@ -95,7 +95,7 @@ struct InstanceConstants
 struct VSOutput
 {
 	float4 outPosition                      : SV_POSITION;
-    [[vk::location(0)]] float3 outColor     : COLOR0;
+    [[vk::location(0)]] float4 outColor     : COLOR0;
     [[vk::location(1)]] float2 outTexCoord  : TEXCOORD0;
 };
 

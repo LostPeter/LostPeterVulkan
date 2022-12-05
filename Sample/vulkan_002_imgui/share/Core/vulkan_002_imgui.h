@@ -13,7 +13,7 @@ public:
     Vulkan_002_Imgui(int width, int height, std::string name);
 
 public:
-    std::vector<Vertex_Pos2Color3> vertices;
+    std::vector<Vertex_Pos2Color4> vertices;
 
 public:
 

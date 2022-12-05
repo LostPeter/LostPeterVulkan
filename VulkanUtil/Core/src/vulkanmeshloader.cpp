@@ -39,7 +39,7 @@ namespace LostPeter
             aiVector3D texCoords = pMesh->mTextureCoords[0] ? pMesh->mTextureCoords[0][i] : aiVector3D(0.0f, 0.0f, 0.0f);
             
             MeshVertex vertex(position.x, position.y, position.z,
-                              color.r, color.g, color.b,
+                              color.r, color.g, color.b, color.a,
                               normal.x, normal.y, normal.z,
                               tangent.x, tangent.y, tangent.z,
                               texCoords.x, meshData.bIsFlipY ? 1.0f - texCoords.y : texCoords.y);

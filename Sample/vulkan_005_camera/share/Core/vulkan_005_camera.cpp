@@ -101,9 +101,9 @@ Vulkan_005_Camera::Vulkan_005_Camera(int width, int height, std::string name)
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
 
-    this->poTypeVertex = VertexType_Pos3Color3Tex2;
-    this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color3_tex2_ubo.vert.spv";
-    this->cfg_shaderFragment_Path = "Assets/Shader/pos3_color3_tex2_ubo.frag.spv";
+    this->poTypeVertex = Vulkan_VertexType_Pos3Color4Tex2;
+    this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_tex2_ubo.vert.spv";
+    this->cfg_shaderFragment_Path = "Assets/Shader/pos3_color4_tex2_ubo.frag.spv";
     
     resetSetting(0);
 }
@@ -136,7 +136,7 @@ void Vulkan_005_Camera::changeModel(int index)
     //2> Texture
     cleanupTexture();
     loadTexture();
-    updateDescriptorSets();
+    updateDescriptorSets(this->poDescriptorSets, this->poTextureImageView, this->poTextureSampler);
 }
 
 void Vulkan_005_Camera::createCamera()
@@ -162,9 +162,9 @@ void Vulkan_005_Camera::loadModel_Assimp()
     for (int i = 0; i < count_vertex; i++)
     {
         MeshVertex& vertex = meshData.vertices[i];
-        Vertex_Pos3Color3Tex2 v;
+        Vertex_Pos3Color4Tex2 v;
         v.pos = vertex.pos;
-        v.color = glm::vec3(1.0f, 1.0f, 1.0f);
+        v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
         v.texCoord = vertex.texCoord;
 
         if (g_isTranformLocal)
@@ -184,7 +184,7 @@ void Vulkan_005_Camera::loadModel_Assimp()
     }
 
     this->poVertexCount = (uint32_t)this->vertices.size();
-    this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color3Tex2);
+    this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Tex2);
     this->poVertexBuffer_Data = &this->vertices[0];
     this->poIndexCount = (uint32_t)this->indices.size();
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);

@@ -11,23 +11,23 @@ Vulkan_003_Texture::Vulkan_003_Texture(int width, int height, std::string name)
     this->cfg_isNegativeViewport = false;
     this->cfg_vkFrontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 
-    this->poTypeVertex = VertexType_Pos2Color3Tex2;
-    this->cfg_shaderVertex_Path = "Assets/Shader/notrans_pos2_color3_tex2.vert.spv";
-    this->cfg_shaderFragment_Path = "Assets/Shader/notrans_pos2_color3_tex2.frag.spv";
+    this->poTypeVertex = Vulkan_VertexType_Pos2Color4Tex2;
+    this->cfg_shaderVertex_Path = "Assets/Shader/notrans_pos2_color4_tex2.vert.spv";
+    this->cfg_shaderFragment_Path = "Assets/Shader/notrans_pos2_color4_tex2.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture.jpg";
 }
 
 void Vulkan_003_Texture::loadModel_Custom()
 {   
     //1> vertices
-    this->vertices.push_back(Vertex_Pos2Color3Tex2(glm::vec2(-0.5f, -0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)));
-    this->vertices.push_back(Vertex_Pos2Color3Tex2(glm::vec2(-0.5f,  0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)));
-    this->vertices.push_back(Vertex_Pos2Color3Tex2(glm::vec2( 0.5f,  0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)));
-    this->vertices.push_back(Vertex_Pos2Color3Tex2(glm::vec2( 0.5f,  0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)));
-    this->vertices.push_back(Vertex_Pos2Color3Tex2(glm::vec2( 0.5f, -0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)));
-    this->vertices.push_back(Vertex_Pos2Color3Tex2(glm::vec2(-0.5f, -0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4Tex2(glm::vec2(-0.5f, -0.5f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4Tex2(glm::vec2(-0.5f,  0.5f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4Tex2(glm::vec2( 0.5f,  0.5f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4Tex2(glm::vec2( 0.5f,  0.5f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4Tex2(glm::vec2( 0.5f, -0.5f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4Tex2(glm::vec2(-0.5f, -0.5f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)));
     this->poVertexCount = (uint32_t)this->vertices.size();
-    this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos2Color3Tex2);
+    this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos2Color4Tex2);
     this->poVertexBuffer_Data = &this->vertices[0];
     this->poIndexCount = 0;
     this->poIndexBuffer_Size = 0;
