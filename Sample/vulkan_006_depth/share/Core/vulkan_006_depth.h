@@ -26,6 +26,9 @@ public:
             , isShow(true)
             , isRotate(true)
             , isWireFrame(false)
+            , isNoDepthTest(false)
+            , isNoDepthWrite(false)
+            , isNoDepthTestWrite(false)
 
             //Vertex
             , poVertexCount(0)
@@ -54,6 +57,9 @@ public:
             //Pipeline
             , poPipelineGraphics(VK_NULL_HANDLE)
             , poPipelineGraphics_WireFrame(VK_NULL_HANDLE)
+            , poPipelineGraphics_NoDepthTest(VK_NULL_HANDLE)
+            , poPipelineGraphics_NoDepthWrite(VK_NULL_HANDLE)
+            , poPipelineGraphics_NoDepthTestWrite(VK_NULL_HANDLE)
 
             //State
             , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
@@ -136,6 +142,21 @@ public:
                 vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_WireFrame, nullptr);
             }
             this->poPipelineGraphics_WireFrame = VK_NULL_HANDLE;
+            if (this->poPipelineGraphics_NoDepthTest != nullptr)
+            {
+                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_NoDepthTest, nullptr);
+            }
+            this->poPipelineGraphics_NoDepthTest = VK_NULL_HANDLE;
+            if (this->poPipelineGraphics_NoDepthWrite != nullptr)
+            {
+                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_NoDepthWrite, nullptr);
+            }
+            this->poPipelineGraphics_NoDepthWrite = VK_NULL_HANDLE;
+            if (this->poPipelineGraphics_NoDepthTestWrite != nullptr)
+            {
+                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_NoDepthTestWrite, nullptr);
+            }
+            this->poPipelineGraphics_NoDepthTestWrite = VK_NULL_HANDLE;
         }
 
         //Device
@@ -148,6 +169,9 @@ public:
         bool isShow;
         bool isRotate;
         bool isWireFrame;
+        bool isNoDepthTest;
+        bool isNoDepthWrite;
+        bool isNoDepthTestWrite;
 
         //Vertex
         std::vector<Vertex_Pos3Color4Tex2> vertices;
@@ -181,6 +205,9 @@ public:
         //Pipeline
         VkPipeline poPipelineGraphics;
         VkPipeline poPipelineGraphics_WireFrame;
+        VkPipeline poPipelineGraphics_NoDepthTest;
+        VkPipeline poPipelineGraphics_NoDepthWrite;
+        VkPipeline poPipelineGraphics_NoDepthTestWrite;
 
         //DescriptorSets
         std::vector<VkDescriptorSet> poDescriptorSets;
