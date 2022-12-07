@@ -314,16 +314,16 @@ void Vulkan_006_Depth::createPipeline_Custom()
 
         //poPipelineGraphics_NoDepthTestWrite
         pModelObject->poPipelineGraphics_NoDepthTestWrite = createVkPipeline(vertShaderModule, "main",
-                                                            fragShaderModule, "main",
-                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
-                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                            this->poRenderPass, this->poPipelineLayout, viewports, scissors,
-                                                            pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, pModelObject->cfg_vkCullModeFlagBits,
-                                                            VK_FALSE, VK_FALSE, pModelObject->cfg_DepthCompareOp,
-                                                            pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
-                                                            pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                            pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                            pModelObject->cfg_ColorWriteMask);
+                                                                             fragShaderModule, "main",
+                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
+                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
+                                                                             this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                                             pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, pModelObject->cfg_vkCullModeFlagBits,
+                                                                             VK_FALSE, VK_FALSE, pModelObject->cfg_DepthCompareOp,
+                                                                             pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
+                                                                             pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
+                                                                             pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
+                                                                             pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_NoDepthTestWrite == VK_NULL_HANDLE)
         {
             std::string msg = "Vulkan_006_Depth::createPipeline_Custom: Failed to create pipeline no depth test and write !";

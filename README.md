@@ -80,3 +80,8 @@ Usage:
 * sample005: realize a camera and use it in the scene
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_005_camera.png)
+
+### <006> vulkan_006_depth
+* sample006: Depth state test: depthTest and depthWrite 
+
+![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_006_depth.png)
