@@ -4,7 +4,7 @@
 #ifndef _VULKAN_003_TEXTURE_H_
 #define _VULKAN_003_TEXTURE_H_
 
-#include "vulkanwindow.h"
+#include "VulkanWindow.h"
 using namespace LostPeter; 
 
 class Vulkan_003_Texture : public VulkanWindow

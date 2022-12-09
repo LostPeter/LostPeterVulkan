@@ -4,7 +4,7 @@
 #ifndef _VULKAN_004_MODEL_H_
 #define _VULKAN_004_MODEL_H_
 
-#include "vulkanwindow.h"
+#include "VulkanWindow.h"
 using namespace LostPeter; 
 
 class Vulkan_004_Model : public VulkanWindow

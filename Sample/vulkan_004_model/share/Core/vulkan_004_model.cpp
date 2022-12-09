@@ -1,6 +1,6 @@
-#include "preinclude.h"
+#include "PreInclude.h"
 #include "vulkan_004_model.h"
-#include "vulkanmeshloader.h"
+#include "VulkanMeshLoader.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

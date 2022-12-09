@@ -4,7 +4,7 @@
 #ifndef _VULKAN_001_TRIANGLE_H_
 #define _VULKAN_001_TRIANGLE_H_
 
-#include "vulkanwindow.h"
+#include "VulkanWindow.h"
 using namespace LostPeter;
 
 class Vulkan_001_Triangle : public VulkanWindow

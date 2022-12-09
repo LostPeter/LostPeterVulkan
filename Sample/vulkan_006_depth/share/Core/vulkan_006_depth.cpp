@@ -1,8 +1,8 @@
-#include "preinclude.h"
+#include "PreInclude.h"
 #include "vulkan_006_depth.h"
-#include "vulkanmeshloader.h"
-#include "vulkancamera.h"
-#include "vulkantimer.h"
+#include "VulkanMeshLoader.h"
+#include "VulkanCamera.h"
+#include "VulkanTimer.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

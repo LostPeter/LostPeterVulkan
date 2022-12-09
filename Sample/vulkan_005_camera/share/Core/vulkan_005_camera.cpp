@@ -1,7 +1,7 @@
-#include "preinclude.h"
+#include "PreInclude.h"
 #include "vulkan_005_camera.h"
-#include "vulkanmeshloader.h"
-#include "vulkancamera.h"
+#include "VulkanMeshLoader.h"
+#include "VulkanCamera.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

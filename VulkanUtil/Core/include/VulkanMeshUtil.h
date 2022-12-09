@@ -4,7 +4,7 @@
 #ifndef _GEOMETRY_UTIL_H_
 #define _GEOMETRY_UTIL_H_
 
-#include "predefine.h"
+#include "PreDefine.h"
 
 namespace LostPeter
 {

@@ -1,5 +1,5 @@
-#include "../include/preinclude.h"
-#include "../include/geometryutil.h"
+#include "../include/PreInclude.h"
+#include "../include/VulkanMeshUtil.h"
 
 namespace LostPeter
 {

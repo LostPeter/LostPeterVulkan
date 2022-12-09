@@ -4,7 +4,7 @@
 #ifndef _VULKAN_002_IMGUI_H_
 #define _VULKAN_002_IMGUI_H_
 
-#include "vulkanwindow.h"
+#include "VulkanWindow.h"
 using namespace LostPeter; 
 
 class Vulkan_002_Imgui : public VulkanWindow

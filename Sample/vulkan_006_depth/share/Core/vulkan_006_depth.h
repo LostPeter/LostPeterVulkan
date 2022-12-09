@@ -4,7 +4,7 @@
 #ifndef _VULKAN_006_DEPTH_H_
 #define _VULKAN_006_DEPTH_H_
 
-#include "vulkanwindow.h"
+#include "VulkanWindow.h"
 using namespace LostPeter; 
 
 class Vulkan_006_Depth : public VulkanWindow
