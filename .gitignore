@@ -47,7 +47,6 @@ Bin/iOS
 Plugins
 VulkanUtil/Build
 Sample/Build
-Sample/*/share/Build
-Sample/*/share/Lib
+Sample/Lib
 Sample/*/android/app/build
 Sample/*/android/local.properties

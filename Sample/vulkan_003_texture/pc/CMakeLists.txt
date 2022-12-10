@@ -2,8 +2,9 @@
 # time:   2022-11-12
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
+SET(NAME_PROJECT "vulkan_003_texture")
 if (DEBUG)
-    PROJECT(vulkan_003_texture_d)
+    PROJECT(${NAME_PROJECT}_d)
     SET(CMAKE_BUILD_TYPE "Debug")
     if (!WIN32)
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
@@ -11,7 +12,7 @@ if (DEBUG)
 
     MESSAGE(STATUS "Set Debug Build !")
 else ()
-    PROJECT(vulkan_003_texture)
+    PROJECT(${NAME_PROJECT})
 endif ()
 
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -44,7 +45,7 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../VulkanUtil/Core/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../share/Core")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../share")
 
 elseif (ANDROID)        
 
@@ -59,7 +60,7 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../VulkanUtil/Core/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../share/Core")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../share")
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
     SET(COCOA_LIBS ${SYS_FRAMEWORKS_DIR}/Cocoa.framework)
@@ -71,12 +72,12 @@ endif ()
 MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
 INCLUDE_DIRECTORIES(${LIB_INCLUDE})
 
-#LIB_VULKAN_DIR, PLUGINS_DIR, STATIC_DIR
+#LIB_VULKAN_DIR, PLUGINS_DIR, SHARE_DIR
 if (WIN32)
     SET(LIB_VULKAN_DIR "$ENV{VULKAN_SDK}/Lib")
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Lib/Windows")
     SET(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Plugins/Windows")
-    SET(STATIC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../share/Lib/Windows")
+    SET(SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Lib/Windows")
 
 elseif (ANDROID) 
 
@@ -85,13 +86,13 @@ elseif (APPLE)
     SET(LIB_VULKAN_DIR "$ENV{VULKAN_HOME}/macOS/lib")
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Lib/MacOS")
     SET(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Plugins/MacOS")
-    SET(STATIC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../share/Lib/MacOS")
+    SET(SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Lib/MacOS")
 
 endif ()
 MESSAGE(STATUS "LIB_VULKAN_DIR dir: ${LIB_VULKAN_DIR}")
 MESSAGE(STATUS "DEPENDENCIES dir: ${LIB_DEPENDENCIES_DIR}")
 MESSAGE(STATUS "PLUGINS dir: ${PLUGINS_DIR}")
-MESSAGE(STATUS "STATIC dir: ${STATIC_DIR}")
+MESSAGE(STATUS "SHARE dir: ${SHARE_DIR}")
 
 if (WIN32)
     MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Win32 !")
@@ -106,8 +107,8 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6_d.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan_d.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
-                       ${STATIC_DIR}/Share_d.lib 
-                       ${PLUGINS_DIR}/VulkanUtil_d.lib)
+                       ${PLUGINS_DIR}/VulkanUtil_d.lib
+                       ${SHARE_DIR}/share_${NAME_PROJECT}_d.lib)
     else ()
         LINK_LIBRARIES(shlwapi.lib 
                        ${LIB_VULKAN_DIR}/vulkan-1.lib
@@ -115,8 +116,8 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
-                       ${STATIC_DIR}/Share.lib 
-                       ${PLUGINS_DIR}/VulkanUtil.lib)
+                       ${PLUGINS_DIR}/VulkanUtil.lib
+                       ${SHARE_DIR}/share_${NAME_PROJECT}.lib)
     endif()
     ADD_EXECUTABLE(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES_CPP})
 
@@ -137,7 +138,7 @@ elseif (APPLE)
                               ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib
                               ${SYS_VULKAN_LIBS}
                               ${PLUGINS_DIR}/libVulkanUtil_d.dylib
-                              ${STATIC_DIR}/libShare_d.dylib)
+                              ${SHARE_DIR}/libshare_${NAME_PROJECT}_d.dylib)
     else ()
         TARGET_LINK_LIBRARIES(${PROJECT_NAME}
                               ${COCOA_LIBS}
@@ -147,7 +148,7 @@ elseif (APPLE)
                               ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib
                               ${SYS_VULKAN_LIBS}
                               ${PLUGINS_DIR}/libVulkanUtil.dylib
-                              ${STATIC_DIR}/libShare.dylib)
+                              ${SHARE_DIR}/libshare_${NAME_PROJECT}.dylib)
     endif()
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup \
         -Wl,-no_pie \

@@ -1,8 +1,8 @@
 # author: LostPeter
-# time:   2022-11-21
+# time:   2022-12-08
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
-SET(NAME_PROJECT "vulkan_005_camera")
+SET(NAME_PROJECT "vulkan_007_stencil")
 if (DEBUG)
     PROJECT(${NAME_PROJECT}_d)
     SET(CMAKE_BUILD_TYPE "Debug")

@@ -17,38 +17,50 @@ Usage:
     Vulkan SDK: I'm using vulkan version 1.2.189.0, you can change it.    
     MacOS:   Config VULKAN_HOME, we will set vulkan path in CMakeLists.txt "$ENV{VULKAN_HOME}/macOS/include"  
     Windows: Config VULKAN_SDK, we will set vulkan path in CMakeLists.txt "$ENV{VULKAN_SDK}/Include"
-    
 
+
+    Build Auto: 
+        MacOS:      ./Build_MacOS.sh debug rebuild depends
+        Windows:    ./Build_Windows.bat debug rebuild depends
+
+        param1: debug or other is release
+        param2: rebuild or other is not rebuild
+        param3: depends or other is not build depends
+
+
+    Build Custom:
     1> Compile Dependencies
         cd Dependencies
         cd Compile
-        MacOS:      ./Build_all_lib_MacOS.sh debug
-        Windows:    ./Build_all_lib_Windows.bat debug
+        MacOS:      ./Build_MacOS_lib_all.sh debug rebuild
+        Windows:    ./Build_Windows_lib_all.bat debug rebuild
 
         used dependencies libraries：
             assimp-5.2.4
             glfw-3.3.6
             glm-0.9.9.8
             imgui-1.85
+            spdlog-1.10.0
             stb-0.02
+            zlib-1.2.11
 
     2> Compile Shader
         cd Bin
         cd Shader
-        MacOS:      ./Build_Shader_HLSL_MacOS_All.sh or ./Build_Shader_GLSL_MacOS_All.sh
-        Windows:    ./Build_Shader_HLSL_Windows_All.bat or ./Build_Shader_GLSL_Windows_All.bat
+        MacOS:      ./Build_MacOS_Shader_HLSL_All.sh or ./Build_MacOS_Shader_GLSL_All.sh
+        Windows:    ./Build_Windows_Shader_HLSL_All.bat or ./Build_Windows_Shader_GLSL_All.bat
 
     3> Compile VulkanUtil
         cd VulkanUtil
         cd Compile
-        MacOS:      ./Build_VulkanUtil_MacOS.sh debug
-        Windows:    ./Build_VulkanUtil_Windows.bat debug
+        MacOS:      ./Build_MacOS_VulkanUtil.sh debug rebuild
+        Windows:    ./Build_Windows_VulkanUtil.bat debug rebuild
 
     4> Compile Samples
         cd Sample
         cd Compile
-        MacOS:      ./Build_Sample_MacOS_All.sh debug
-        Windows:    ./Build_Sample_Windows_All.bat debug
+        MacOS:      ./Build_MacOS_Sample_All.sh debug rebuild
+        Windows:    ./Build_Windows_Sample_All.bat debug rebuild
 
 
 ### <000> vulkan_000_window
@@ -85,3 +97,8 @@ Usage:
 * sample006: Depth state test: depthTest and depthWrite 
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_006_depth.png)
+
+### <007> vulkan_007_stencil
+* sample007: Stencil usage sample
+
+![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_007_stencil.png)
