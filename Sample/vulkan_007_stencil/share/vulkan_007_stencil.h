@@ -13,6 +13,21 @@ public:
     Vulkan_007_Stencil(int width, int height, std::string name);
 
 public:
+    struct ObjectConstants_Outline
+    {
+        glm::mat4 g_MatWorld;
+        glm::vec4 g_OutlineColor;
+        float g_OutlineWidth;
+
+        ObjectConstants_Outline()
+            : g_MatWorld(MathUtil::Identity4x4())
+            , g_OutlineColor(1, 1, 1, 1)
+            , g_OutlineWidth(0.02f)
+        {
+
+        }
+    };
+
     struct ModelObject
     {
         ModelObject(VkDevice device)
@@ -24,11 +39,9 @@ public:
             , pathModel("")
             , pathTexture("")
             , isShow(true)
-            , isRotate(true)
             , isWireFrame(false)
-            , isNoDepthTest(false)
-            , isNoDepthWrite(false)
-            , isNoDepthTestWrite(false)
+            , isRotate(true)
+            , isOutline(true)
 
             //Vertex
             , poVertexCount(0)
@@ -55,11 +68,9 @@ public:
             , poTextureSampler(VK_NULL_HANDLE)
 
             //Pipeline
-            , poPipelineGraphics(VK_NULL_HANDLE)
             , poPipelineGraphics_WireFrame(VK_NULL_HANDLE)
-            , poPipelineGraphics_NoDepthTest(VK_NULL_HANDLE)
-            , poPipelineGraphics_NoDepthWrite(VK_NULL_HANDLE)
-            , poPipelineGraphics_NoDepthTestWrite(VK_NULL_HANDLE)
+            , poPipelineGraphics_Stencil(VK_NULL_HANDLE)
+            , poPipelineGraphics_Outline(VK_NULL_HANDLE)
 
             //State
             , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
@@ -101,17 +112,6 @@ public:
             this->poIndexBuffer = VK_NULL_HANDLE;
             this->poIndexBufferMemory = VK_NULL_HANDLE;
 
-            //Uniform
-            size_t count = this->poBuffers_ObjectCB.size();
-            for (size_t i = 0; i < count; i++) 
-            {
-                vkDestroyBuffer(this->poDevice, this->poBuffers_ObjectCB[i], nullptr);
-                vkFreeMemory(this->poDevice, this->poBuffersMemory_ObjectCB[i], nullptr);
-            }
-            this->objectCBs.clear();
-            this->poBuffers_ObjectCB.clear();
-            this->poBuffersMemory_ObjectCB.clear();
-
             //Texture
             if (this->poTextureSampler != VK_NULL_HANDLE)
             {
@@ -131,32 +131,53 @@ public:
             this->poTextureImage = VK_NULL_HANDLE;
             this->poTextureImageMemory = VK_NULL_HANDLE;
 
-            //Pipeline
-            if (this->poPipelineGraphics != nullptr)
+            cleanupSwapChain();
+        }
+
+        void cleanupSwapChain()
+        {
+            //Uniform
+            size_t count = this->poBuffers_ObjectCB.size();
+            for (size_t i = 0; i < count; i++) 
             {
-                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics, nullptr);
+                vkDestroyBuffer(this->poDevice, this->poBuffers_ObjectCB[i], nullptr);
+                vkFreeMemory(this->poDevice, this->poBuffersMemory_ObjectCB[i], nullptr);
             }
-            this->poPipelineGraphics = VK_NULL_HANDLE;
+            this->objectCBs.clear();
+            this->poBuffers_ObjectCB.clear();
+            this->poBuffersMemory_ObjectCB.clear();
+
+            count = this->poBuffers_ObjectCB_Outline.size();
+            for (size_t i = 0; i < count; i++) 
+            {
+                vkDestroyBuffer(this->poDevice, this->poBuffers_ObjectCB_Outline[i], nullptr);
+                vkFreeMemory(this->poDevice, this->poBuffersMemory_ObjectCB_Outline[i], nullptr);
+            }
+            this->objectCBs_Outline.clear();
+            this->poBuffers_ObjectCB_Outline.clear();
+            this->poBuffersMemory_ObjectCB_Outline.clear();
+
+            //Pipeline
             if (this->poPipelineGraphics_WireFrame != nullptr)
             {
                 vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_WireFrame, nullptr);
             }
             this->poPipelineGraphics_WireFrame = VK_NULL_HANDLE;
-            if (this->poPipelineGraphics_NoDepthTest != nullptr)
+            if (this->poPipelineGraphics_Stencil != nullptr)
             {
-                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_NoDepthTest, nullptr);
+                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_Stencil, nullptr);
             }
-            this->poPipelineGraphics_NoDepthTest = VK_NULL_HANDLE;
-            if (this->poPipelineGraphics_NoDepthWrite != nullptr)
+            this->poPipelineGraphics_Stencil = VK_NULL_HANDLE;
+            if (this->poPipelineGraphics_Outline != nullptr)
             {
-                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_NoDepthWrite, nullptr);
+                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_Outline, nullptr);
             }
-            this->poPipelineGraphics_NoDepthWrite = VK_NULL_HANDLE;
-            if (this->poPipelineGraphics_NoDepthTestWrite != nullptr)
-            {
-                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_NoDepthTestWrite, nullptr);
-            }
-            this->poPipelineGraphics_NoDepthTestWrite = VK_NULL_HANDLE;
+            this->poPipelineGraphics_Outline = VK_NULL_HANDLE;
+        }
+
+        void recreateSwapChain()
+        {
+
         }
 
         //Device
@@ -167,14 +188,12 @@ public:
         std::string pathModel;
         std::string pathTexture;
         bool isShow;
-        bool isRotate;
         bool isWireFrame;
-        bool isNoDepthTest;
-        bool isNoDepthWrite;
-        bool isNoDepthTestWrite;
+        bool isRotate;
+        bool isOutline;
 
         //Vertex
-        std::vector<Vertex_Pos3Color4Tex2> vertices;
+        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices;
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
@@ -195,6 +214,10 @@ public:
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
         glm::mat4 poMatWorld;
 
+        std::vector<ObjectConstants_Outline> objectCBs_Outline;
+        std::vector<VkBuffer> poBuffers_ObjectCB_Outline;
+        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_Outline;
+
         //Texture
         uint32_t poMipLevels;
         VkImage poTextureImage;
@@ -203,14 +226,13 @@ public:
         VkSampler poTextureSampler;
 
         //Pipeline
-        VkPipeline poPipelineGraphics;
         VkPipeline poPipelineGraphics_WireFrame;
-        VkPipeline poPipelineGraphics_NoDepthTest;
-        VkPipeline poPipelineGraphics_NoDepthWrite;
-        VkPipeline poPipelineGraphics_NoDepthTestWrite;
+        VkPipeline poPipelineGraphics_Stencil;
+        VkPipeline poPipelineGraphics_Outline;
 
         //DescriptorSets
         std::vector<VkDescriptorSet> poDescriptorSets;
+        std::vector<VkDescriptorSet> poDescriptorSets_Outline;
 
         //State
         VkPrimitiveTopology cfg_vkPrimitiveTopology;
@@ -238,6 +260,14 @@ public:
 public:
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrMap m_mapModelObjects;
+
+    std::string pathShaderVertex_Outline;
+    std::string pathShaderFragment_Outline;
+
+    VkDescriptorSetLayout poDescriptorSetLayout_Outline;
+    VulkanVertexType poTypeVertex_Outline;
+    VkPipelineLayout poPipelineLayout_Outline;
+    
 
 protected:
     //Create Pipeline
@@ -270,6 +300,13 @@ protected:
 
     //cleanup
         virtual void cleanupCustom();
+
+        virtual void cleanupSwapChain_Custom();
+        virtual void recreateSwapChain_Custom();
+
+private:
+    void createPipelineLayout_Outline();
+    void drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject);
 };
 
 

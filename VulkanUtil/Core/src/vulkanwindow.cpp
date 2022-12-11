@@ -52,6 +52,7 @@ namespace LostPeter
 
         , poTypeVertex(Vulkan_VertexType_Pos3Color4Normal3Tangent3Tex2)
         , poPipelineLayout(nullptr)
+        , poPipelineCache(nullptr)
         , poPipelineGraphics(nullptr)
         , poPipelineGraphics_WireFrame(nullptr)
 
@@ -2376,6 +2377,9 @@ namespace LostPeter
     {
         Util_LogInfo("**<2-2-4> VulkanWindow::createGraphicsPipeline start **");
         {
+            //0> createVkPipelineCache
+            createVkPipelineCache();
+
             //1> createPipeline_Default
             createPipeline_Default();
 
@@ -2458,6 +2462,17 @@ namespace LostPeter
         {
 
         }
+            void VulkanWindow::createVkPipelineCache()
+            {
+                VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
+                pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+                if (vkCreatePipelineCache(this->poDevice, &pipelineCacheCreateInfo, nullptr, &this->poPipelineCache) != VK_SUCCESS) 
+                {
+                    std::string msg = "VulkanWindow::createVkPipelineCache: Failed to create pipeline cache !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+            }
             VkPipelineLayout VulkanWindow::createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout)
             {
                 VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
@@ -2659,7 +2674,7 @@ namespace LostPeter
                 pipelineInfo.basePipelineIndex = 0;
 
                 VkPipeline pipeline;
-                if (!Util_CheckVkResult(vkCreateGraphicsPipelines(this->poDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline), "vkCreateGraphicsPipelines"))
+                if (!Util_CheckVkResult(vkCreateGraphicsPipelines(this->poDevice, this->poPipelineCache, 1, &pipelineInfo, nullptr, &pipeline), "vkCreateGraphicsPipelines"))
                 {
                     Util_LogError("*********************** VulkanUtil::createVkPipeline: vkCreateGraphicsPipelines failed !");
                     return VK_NULL_HANDLE;
@@ -3546,16 +3561,22 @@ namespace LostPeter
             //3> cleanupTexture
             cleanupTexture();
 
-            //4> DescriptorSetLayout
+            //4> VkPipelineCache
+            if (this->poPipelineCache != nullptr)
+            {
+                vkDestroyPipelineCache(this->poDevice, this->poPipelineCache, nullptr);
+            }
+
+            //5> DescriptorSetLayout
             if (this->poDescriptorSetLayout != nullptr)
             {
                 vkDestroyDescriptorSetLayout(this->poDevice, this->poDescriptorSetLayout, nullptr);
             }
 
-            //5> cleanupVertexIndexBuffer
+            //6> cleanupVertexIndexBuffer
             cleanupVertexIndexBuffer();
             
-            //6> Semaphores
+            //7> Semaphores
             for (size_t i = 0; i < s_maxFramesInFight; i++) 
             {
                 vkDestroySemaphore(this->poDevice, this->poRenderFinishedSemaphores[i], nullptr);
@@ -3563,26 +3584,26 @@ namespace LostPeter
                 vkDestroyFence(this->poDevice, this->poInFlightFences[i], nullptr);
             }
 
-            //7> Imgui
+            //8> Imgui
             if (HasConfig_Imgui())
             {
                 ImGui_ImplVulkan_Shutdown();
 	            ImGui_ImplGlfw_Shutdown();
             }
 
-            //8> CommandPool
+            //9> CommandPool
             vkDestroyCommandPool(this->poDevice, this->poCommandPool, nullptr);
             
-            //9> Device
+            //10> Device
             vkDestroyDevice(this->poDevice, nullptr);
             if (s_isEnableValidationLayers)
             {
                 destroyDebugUtilsMessengerEXT(this->poInstance, this->poDebugMessenger, nullptr);
             }
-            //10> Surface
+            //11> Surface
             vkDestroySurfaceKHR(this->poInstance, this->poSurface, nullptr);
 
-            //11> Instance
+            //12> Instance
             vkDestroyInstance(this->poInstance, nullptr);
         }
         Util_LogInfo("---------- VulkanWindow::cleanup finish ----------");
@@ -3644,6 +3665,9 @@ namespace LostPeter
         {
             Util_LogInfo("----- VulkanWindow::cleanupSwapChain start -----");
             {
+                //0> Custom
+                cleanupSwapChain_Custom();
+
                 //1> DepthImage
                 if (this->poDepthImage != nullptr)
                 {
@@ -3732,6 +3756,10 @@ namespace LostPeter
             }
             Util_LogInfo("----- VulkanWindow::cleanupSwapChain finish -----");
         }
+            void VulkanWindow::cleanupSwapChain_Custom()
+            {
+
+            }
     void VulkanWindow::recreateSwapChain()
     {
         Util_LogInfo("++++++++++ VulkanWindow::recreateSwapChain start ++++++++++");
@@ -3772,6 +3800,8 @@ namespace LostPeter
             createDescriptor();
             createCommandBuffers();
 
+            recreateSwapChain_Custom();
+
             this->poImagesInFlight.resize(this->poSwapChainImages.size(), nullptr);
 
             if (HasConfig_Imgui())
@@ -3781,6 +3811,10 @@ namespace LostPeter
         }
         Util_LogInfo("++++++++++ VulkanWindow::recreateSwapChain finish ++++++++++");
     }
+        void VulkanWindow::recreateSwapChain_Custom()
+        {
+
+        }
 
     VkResult VulkanWindow::createDebugUtilsMessengerEXT(VkInstance instance, 
                                                         const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,

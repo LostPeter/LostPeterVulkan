@@ -59,6 +59,7 @@ namespace LostPeter
     enum VulkanVertexType
     {
         Vulkan_VertexType_Pos2Color4 = 0,
+        Vulkan_VertexType_Pos3Normal3,
         Vulkan_VertexType_Pos2Color4Tex2,
         Vulkan_VertexType_Pos3Color4Tex2,
         Vulkan_VertexType_Pos3Color4Normal3Tex2,
@@ -116,6 +117,7 @@ namespace LostPeter
     class VulkanWindow;
     
     struct Vertex_Pos2Color4;
+    struct Vertex_Pos3Normal3;
     struct Vertex_Pos2Color4Tex2;
     struct Vertex_Pos3Color4Tex2;
     struct Vertex_Pos3Color4Normal3Tex2;

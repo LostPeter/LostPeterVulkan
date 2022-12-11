@@ -22,7 +22,7 @@ static const char* g_pathModels[3 * g_CountLen] =
 
 static glm::vec3 g_tranformModels[3 * g_CountLen] = 
 {
-    glm::vec3(  -1,   0,   -1),     glm::vec3(     0, 0, 0),      glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
+    glm::vec3(  -1,   0,   -1),     glm::vec3(     0,   0, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
     glm::vec3(   1,   0,   -1),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
 
     glm::vec3(  -1,   0,    1),     glm::vec3(   -90, 0, 0),      glm::vec3(0.02f,  0.02f,  0.02f), //plane
@@ -503,7 +503,8 @@ bool Vulkan_006_Depth::beginRenderImgui()
 
                 ImGui::Text("Vertex: [%d], Index: [%d]", (int)pModelObject->poVertexCount, (int)pModelObject->poIndexCount);
 
-                if (ImGui::CollapsingHeader("Model World"))
+                std::string nameWorld = "Model World - " + pModelObject->nameModel;
+                if (ImGui::CollapsingHeader(nameWorld.c_str()))
                 {
                     const glm::mat4& mat4World = pModelObject->objectCBs[0].g_MatWorld;
                     std::string nameTable = StringUtil::SaveInt(i) + " - split_model_world";

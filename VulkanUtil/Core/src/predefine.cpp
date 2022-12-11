@@ -60,6 +60,8 @@ namespace LostPeter
         {
             case Vulkan_VertexType_Pos2Color4:
                 return Vertex_Pos2Color4::GetBindingDescriptions();
+            case Vulkan_VertexType_Pos3Normal3:
+                return Vertex_Pos3Normal3::GetBindingDescriptions();
             case Vulkan_VertexType_Pos2Color4Tex2:
                 return Vertex_Pos2Color4Tex2::GetBindingDescriptions();
             case Vulkan_VertexType_Pos3Color4Tex2:
@@ -78,6 +80,8 @@ namespace LostPeter
         {
             case Vulkan_VertexType_Pos2Color4:
                 return Vertex_Pos2Color4::GetAttributeDescriptions();
+            case Vulkan_VertexType_Pos3Normal3:
+                return Vertex_Pos3Normal3::GetAttributeDescriptions();
             case Vulkan_VertexType_Pos2Color4Tex2:
                 return Vertex_Pos2Color4Tex2::GetAttributeDescriptions();
             case Vulkan_VertexType_Pos3Color4Tex2:
@@ -96,6 +100,8 @@ namespace LostPeter
         {
             case Vulkan_VertexType_Pos2Color4:
                 return Vertex_Pos2Color4::GetBindingDescriptionsPtr();
+            case Vulkan_VertexType_Pos3Normal3:
+                return Vertex_Pos3Normal3::GetBindingDescriptionsPtr();
             case Vulkan_VertexType_Pos2Color4Tex2:
                 return Vertex_Pos2Color4Tex2::GetBindingDescriptionsPtr();
             case Vulkan_VertexType_Pos3Color4Tex2:
@@ -114,6 +120,8 @@ namespace LostPeter
         {
             case Vulkan_VertexType_Pos2Color4:
                 return Vertex_Pos2Color4::GetAttributeDescriptionsPtr();
+            case Vulkan_VertexType_Pos3Normal3:
+                return Vertex_Pos3Normal3::GetAttributeDescriptionsPtr();
             case Vulkan_VertexType_Pos2Color4Tex2:
                 return Vertex_Pos2Color4Tex2::GetAttributeDescriptionsPtr();
             case Vulkan_VertexType_Pos3Color4Tex2:

@@ -66,6 +66,7 @@ namespace LostPeter
 
         VulkanVertexType poTypeVertex;
         VkPipelineLayout poPipelineLayout;
+        VkPipelineCache poPipelineCache;
         VkPipeline poPipelineGraphics;
         VkPipeline poPipelineGraphics_WireFrame;
 
@@ -324,6 +325,7 @@ namespace LostPeter
                 virtual void createGraphicsPipeline();
                     virtual void createPipeline_Default();
                     virtual void createPipeline_Custom();
+                        virtual void createVkPipelineCache();
                         virtual VkPipelineLayout createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout);
                         virtual VkShaderModule createShaderModule(std::string info, std::string pathFile);
                         virtual VkPipeline createVkPipeline(VkShaderModule vertShaderModule, const std::string& vertMain,
@@ -394,7 +396,9 @@ namespace LostPeter
             virtual void cleanupVertexIndexBuffer();
 
             virtual void cleanupSwapChain();
+                virtual void cleanupSwapChain_Custom();
             virtual void recreateSwapChain();
+                virtual void recreateSwapChain_Custom();
 
     private:
         VkResult createDebugUtilsMessengerEXT(VkInstance instance, 
