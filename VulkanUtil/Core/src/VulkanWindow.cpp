@@ -80,7 +80,7 @@ namespace LostPeter
         , cfg_vkCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
         , cfg_isDepthTest(VK_TRUE)
         , cfg_isDepthWrite(VK_TRUE)
-        , cfg_DepthCompareOp(VK_COMPARE_OP_LESS) 
+        , cfg_DepthCompareOp(VK_COMPARE_OP_LESS_OR_EQUAL) 
         , cfg_isStencilTest(VK_FALSE)
         , cfg_isBlend(VK_FALSE)
         , cfg_BlendColorFactorSrc(VK_BLEND_FACTOR_ONE)
@@ -126,7 +126,7 @@ namespace LostPeter
         cfg_StencilOpFront.failOp = VK_STENCIL_OP_KEEP;
         cfg_StencilOpFront.passOp = VK_STENCIL_OP_KEEP;
         cfg_StencilOpFront.depthFailOp = VK_STENCIL_OP_KEEP;
-        cfg_StencilOpFront.compareOp = VK_COMPARE_OP_LESS;
+        cfg_StencilOpFront.compareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
         cfg_StencilOpFront.compareMask = 0;
         cfg_StencilOpFront.writeMask = 0;
         cfg_StencilOpFront.reference = 0;
@@ -134,7 +134,7 @@ namespace LostPeter
         cfg_StencilOpBack.failOp = VK_STENCIL_OP_KEEP;
         cfg_StencilOpBack.passOp = VK_STENCIL_OP_KEEP;
         cfg_StencilOpBack.depthFailOp = VK_STENCIL_OP_KEEP;
-        cfg_StencilOpBack.compareOp = VK_COMPARE_OP_LESS;
+        cfg_StencilOpBack.compareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
         cfg_StencilOpBack.compareMask = 0;
         cfg_StencilOpBack.writeMask = 0;
         cfg_StencilOpBack.reference = 0;

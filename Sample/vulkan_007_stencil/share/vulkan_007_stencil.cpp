@@ -44,7 +44,6 @@ static bool g_isFlipYModels[g_CountLen] =
 
 Vulkan_007_Stencil::Vulkan_007_Stencil(int width, int height, std::string name)
     : VulkanWindow(width, height, name)
-    , poDescriptorSetLayout_Outline(VK_NULL_HANDLE)
     , poPipelineLayout_Outline(VK_NULL_HANDLE)
 {
     this->cfg_isImgui = true;
@@ -292,7 +291,7 @@ void Vulkan_007_Stencil::createPipeline_Custom()
                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                     this->poRenderPass, this->poPipelineLayout, viewports, scissors,
-                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
+                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, pModelObject->cfg_vkCullModeFlagBits, //VK_CULL_MODE_NONE,
                                                                     pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                                     VK_TRUE, front, back, 
                                                                     pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
@@ -316,7 +315,7 @@ void Vulkan_007_Stencil::createPipeline_Custom()
                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex_Outline), 
                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex_Outline),
                                                                     this->poRenderPass, this->poPipelineLayout_Outline, viewports, scissors,
-                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
+                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, pModelObject->cfg_vkCullModeFlagBits, //VK_CULL_MODE_NONE,
                                                                     VK_FALSE, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                                     VK_TRUE, front, back,
                                                                     pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
@@ -338,53 +337,14 @@ void Vulkan_007_Stencil::createPipeline_Custom()
 }
 void Vulkan_007_Stencil::createPipelineLayout_Outline()
 {
-    //1> poDescriptorSetLayout_Outline
-    // if (this->poDescriptorSetLayout_Outline == VK_NULL_HANDLE)
-    // {
-    //     //0, PassConstants
-    //     VkDescriptorSetLayoutBinding passMainLayoutBinding = {};
-    //     passMainLayoutBinding.binding = 0;
-    //     passMainLayoutBinding.descriptorCount = 1;
-    //     passMainLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    //     passMainLayoutBinding.pImmutableSamplers = nullptr;
-    //     passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-    //     //1, ObjectConstants
-    //     VkDescriptorSetLayoutBinding objectLayoutBinding = {};
-    //     objectLayoutBinding.binding = 1;
-    //     objectLayoutBinding.descriptorCount = 1;
-    //     objectLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    //     objectLayoutBinding.pImmutableSamplers = nullptr;
-    //     objectLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-    //     std::vector<VkDescriptorSetLayoutBinding> bindings;
-    //     bindings.push_back(passMainLayoutBinding);
-    //     bindings.push_back(objectLayoutBinding);
-
-    //     VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-    //     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    //     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-    //     layoutInfo.pBindings = bindings.data();
-
-    //     if (vkCreateDescriptorSetLayout(this->poDevice, &layoutInfo, nullptr, &this->poDescriptorSetLayout_Outline) != VK_SUCCESS) 
-    //     {
-    //         std::string msg = "Vulkan_007_Stencil::createPipelineLayout_Outline: Failed to create descriptor set layout outline !";
-    //         Util_LogError(msg.c_str());
-    //         throw std::runtime_error(msg.c_str());
-    //     }
-    // }
-    //2> poPipelineLayout_Outline
+    VkDescriptorSetLayoutVector aDescriptorSetLayout;
+    aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
+    this->poPipelineLayout_Outline = createVkPipelineLayout(aDescriptorSetLayout);
+    if (this->poPipelineLayout_Outline == VK_NULL_HANDLE)
     {
-        VkDescriptorSetLayoutVector aDescriptorSetLayout;
-        //aDescriptorSetLayout.push_back(this->poDescriptorSetLayout_Outline);
-        aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
-        this->poPipelineLayout_Outline = createVkPipelineLayout(aDescriptorSetLayout);
-        if (this->poPipelineLayout_Outline == VK_NULL_HANDLE)
-        {
-            std::string msg = "Vulkan_007_Stencil::createPipelineLayout_Outline: createVkPipelineLayout failed !";
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
-        }
+        std::string msg = "Vulkan_007_Stencil::createPipelineLayout_Outline: createVkPipelineLayout failed !";
+        Util_LogError(msg.c_str());
+        throw std::runtime_error(msg.c_str());
     }
 }
 
@@ -687,13 +647,15 @@ bool Vulkan_007_Stencil::beginRenderImgui()
                         ImGui::EndTable();
                     }
                     //OutlineWidth
+                    std::string nameOutlineWidth = "Outline Width - " + pModelObject->nameModel;
                     float fOutlineWidth = obj.g_OutlineWidth;
-                    if (ImGui::DragFloat("Outline Width", &fOutlineWidth, 0.01f, 0.01f, 1.0f))
+                    if (ImGui::DragFloat(nameOutlineWidth.c_str(), &fOutlineWidth, 0.01f, 0.01f, 1.0f))
                     {
                         obj.g_OutlineWidth = fOutlineWidth;
                     }
                     //OutlineColor
-                    if (ImGui::ColorEdit4("Outline Color", (float*)&(obj.g_OutlineColor)))
+                    std::string nameOutlineColor = "Outline Color - " + pModelObject->nameModel;
+                    if (ImGui::ColorEdit4(nameOutlineColor.c_str(), (float*)&(obj.g_OutlineColor)))
                     {
 
                     }
@@ -787,11 +749,6 @@ void Vulkan_007_Stencil::cleanupCustom()
         vkDestroyPipelineLayout(this->poDevice, this->poPipelineLayout_Outline, nullptr);
     }
     this->poPipelineLayout_Outline = VK_NULL_HANDLE;
-    // if (this->poDescriptorSetLayout_Outline != VK_NULL_HANDLE)
-    // {
-    //     vkDestroyDescriptorSetLayout(this->poDevice, this->poDescriptorSetLayout_Outline, nullptr);
-    // }
-    // this->poDescriptorSetLayout_Outline = VK_NULL_HANDLE;
     
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

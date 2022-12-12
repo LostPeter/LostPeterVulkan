@@ -68,7 +68,7 @@ public:
             , cfg_vkCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
             , cfg_isDepthTest(VK_TRUE)
             , cfg_isDepthWrite(VK_TRUE)
-            , cfg_DepthCompareOp(VK_COMPARE_OP_LESS) 
+            , cfg_DepthCompareOp(VK_COMPARE_OP_LESS_OR_EQUAL) 
             , cfg_isStencilTest(VK_FALSE)
             , cfg_isBlend(VK_FALSE)
             , cfg_BlendColorFactorSrc(VK_BLEND_FACTOR_ONE)
