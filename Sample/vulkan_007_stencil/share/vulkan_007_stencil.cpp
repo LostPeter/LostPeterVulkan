@@ -58,7 +58,7 @@ Vulkan_007_Stencil::Vulkan_007_Stencil(int width, int height, std::string name)
     this->pathShaderFragment_Outline = "Assets/Shader/pos3_color4_normal3_tex2_ubo_outline.frag.spv";
     this->poTypeVertex_Outline = Vulkan_VertexType_Pos3Color4Normal3Tex2;
 
-    this->cfg_cameraPos = glm::vec3(-0.65f, 2.5f, -4.0f);
+    this->cfg_cameraPos = glm::vec3(0.5f, 2.5f, -4.0f);
 }
 
 void Vulkan_007_Stencil::createCamera()

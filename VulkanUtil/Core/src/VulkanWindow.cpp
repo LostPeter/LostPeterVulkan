@@ -1072,16 +1072,20 @@ namespace LostPeter
         VkFormat VulkanWindow::findDepthFormat() 
         {
             std::vector<VkFormat> candidates;
-            candidates.push_back(VK_FORMAT_D32_SFLOAT);
             candidates.push_back(VK_FORMAT_D32_SFLOAT_S8_UINT);
+            candidates.push_back(VK_FORMAT_D32_SFLOAT);
             candidates.push_back(VK_FORMAT_D24_UNORM_S8_UINT);
+            candidates.push_back(VK_FORMAT_D16_UNORM_S8_UINT);
+            candidates.push_back(VK_FORMAT_D16_UNORM);
             return findSupportedFormat(candidates,
-                                    VK_IMAGE_TILING_OPTIMAL,
-                                    VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+                                       VK_IMAGE_TILING_OPTIMAL,
+                                       VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
         }
         bool VulkanWindow::hasStencilComponent(VkFormat format)
         {
-            return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
+            return format == VK_FORMAT_D32_SFLOAT_S8_UINT || 
+                format == VK_FORMAT_D24_UNORM_S8_UINT ||
+                format == VK_FORMAT_D16_UNORM_S8_UINT;
         }
 
     void VulkanWindow::createDescriptorObjects()
@@ -1218,8 +1222,8 @@ namespace LostPeter
         attachmentSR_Depth.format = findDepthFormat();
         attachmentSR_Depth.samples = VK_SAMPLE_COUNT_1_BIT;
         attachmentSR_Depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Depth.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_Depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        attachmentSR_Depth.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        attachmentSR_Depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         attachmentSR_Depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         attachmentSR_Depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         attachmentSR_Depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -1245,10 +1249,11 @@ namespace LostPeter
         VkSubpassDependency subpassDependency_SceneRender = {};
         subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
         subpassDependency_SceneRender.dstSubpass = 0;
-        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        subpassDependency_SceneRender.srcAccessMask = 0;
-        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
         subpassesDependencies.push_back(subpassDependency_SceneRender);
 
         //5> RenderPass Create Info
@@ -1292,8 +1297,8 @@ namespace LostPeter
         attachmentSR_Depth.format = findDepthFormat();
         attachmentSR_Depth.samples = VK_SAMPLE_COUNT_1_BIT;
         attachmentSR_Depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Depth.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_Depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        attachmentSR_Depth.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        attachmentSR_Depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         attachmentSR_Depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         attachmentSR_Depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         attachmentSR_Depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -1347,10 +1352,11 @@ namespace LostPeter
         VkSubpassDependency subpassDependency_SceneRender = {};
         subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
         subpassDependency_SceneRender.dstSubpass = 0;
-        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        subpassDependency_SceneRender.srcAccessMask = 0;
-        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
         subpassesDependencies.push_back(subpassDependency_SceneRender);
 
         //7> Subpass Dependency Imgui
@@ -1358,9 +1364,10 @@ namespace LostPeter
         subpassDependency_Imgui.srcSubpass = 0;
         subpassDependency_Imgui.dstSubpass = 1;
         subpassDependency_Imgui.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
         subpassDependency_Imgui.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
         subpassDependency_Imgui.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_Imgui.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
         subpassesDependencies.push_back(subpassDependency_Imgui);
 
         //8> RenderPass Create Info
@@ -1404,8 +1411,8 @@ namespace LostPeter
         attachmentSR_Depth.format = findDepthFormat();
         attachmentSR_Depth.samples = this->poMSAASamples;
         attachmentSR_Depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Depth.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_Depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        attachmentSR_Depth.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        attachmentSR_Depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         attachmentSR_Depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         attachmentSR_Depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         attachmentSR_Depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -1448,10 +1455,11 @@ namespace LostPeter
         VkSubpassDependency subpassDependency_SceneRender = {};
         subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
         subpassDependency_SceneRender.dstSubpass = 0;
-        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        subpassDependency_SceneRender.srcAccessMask = 0;
-        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
         subpassesDependencies.push_back(subpassDependency_SceneRender);
 
         //6> RenderPass Create Info
@@ -1495,8 +1503,8 @@ namespace LostPeter
         attachmentSR_Depth.format = findDepthFormat();
         attachmentSR_Depth.samples = this->poMSAASamples;
         attachmentSR_Depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Depth.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_Depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        attachmentSR_Depth.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        attachmentSR_Depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         attachmentSR_Depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         attachmentSR_Depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         attachmentSR_Depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -1572,10 +1580,11 @@ namespace LostPeter
         VkSubpassDependency subpassDependency_SceneRender = {};
         subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
         subpassDependency_SceneRender.dstSubpass = 0;
-        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        subpassDependency_SceneRender.srcAccessMask = 0;
-        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
         subpassesDependencies.push_back(subpassDependency_SceneRender);
 
         //8> Subpass Dependency Imgui
@@ -1583,8 +1592,8 @@ namespace LostPeter
         subpassDependency_Imgui.srcSubpass = 0;
         subpassDependency_Imgui.dstSubpass = 1;
         subpassDependency_Imgui.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
         subpassDependency_Imgui.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
         subpassDependency_Imgui.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
         subpassesDependencies.push_back(subpassDependency_Imgui);
 
