@@ -99,6 +99,6 @@ Usage:
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_006_depth.png)
 
 ### <007> vulkan_007_stencil
-* sample007: Stencil usage sample
+* sample007: Use stencil buffer to render outline
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_007_stencil.png)
