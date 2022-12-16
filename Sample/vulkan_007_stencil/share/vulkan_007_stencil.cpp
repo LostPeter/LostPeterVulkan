@@ -41,6 +41,18 @@ static bool g_isFlipYModels[g_CountLen] =
     false, //bunny
 };
 
+static float g_OutlineWidth[g_CountLen] = 
+{
+    0.02f,
+    0.02f,
+};
+
+static glm::vec4 g_OutlineColor[g_CountLen] = 
+{
+    glm::vec4(0,1,0,1), //viking_room
+    glm::vec4(1,0,0,1), //bunny
+};
+
 
 Vulkan_007_Stencil::Vulkan_007_Stencil(int width, int height, std::string name)
     : VulkanWindow(width, height, name)
@@ -203,8 +215,8 @@ void Vulkan_007_Stencil::createCustomCB()
         //2> Outline
         ObjectConstants_Outline objectConstants_Outline;
         objectConstants_Outline.g_MatWorld = pModelObject->poMatWorld;
-        objectConstants_Outline.g_OutlineColor = MathUtil::ms_clWhite;
-        objectConstants_Outline.g_OutlineWidth = 0.02f;
+        objectConstants_Outline.g_OutlineColor = g_OutlineColor[i];
+        objectConstants_Outline.g_OutlineWidth = g_OutlineWidth[i];
         pModelObject->objectCBs_Outline.push_back(objectConstants_Outline);
 
         bufferSize = sizeof(ObjectConstants_Outline) * pModelObject->objectCBs_Outline.size();
@@ -291,7 +303,7 @@ void Vulkan_007_Stencil::createPipeline_Custom()
                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                     this->poRenderPass, this->poPipelineLayout, viewports, scissors,
-                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, pModelObject->cfg_vkCullModeFlagBits, //VK_CULL_MODE_NONE,
+                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                                     pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                                     VK_TRUE, front, back, 
                                                                     pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
@@ -315,7 +327,7 @@ void Vulkan_007_Stencil::createPipeline_Custom()
                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex_Outline), 
                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex_Outline),
                                                                     this->poRenderPass, this->poPipelineLayout_Outline, viewports, scissors,
-                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, pModelObject->cfg_vkCullModeFlagBits, //VK_CULL_MODE_NONE,
+                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                                     VK_FALSE, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                                     VK_TRUE, front, back,
                                                                     pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,

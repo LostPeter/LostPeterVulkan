@@ -97,7 +97,7 @@ namespace LostPeter
         , cfg_cameraFov(45.0f)
         , cfg_cameraNear(0.05f)
         , cfg_cameraFar(1000.0f)
-        , cfg_cameraSpeedMove(1000.0f)
+        , cfg_cameraSpeedMove(500.0f)
         , cfg_cameraSpeedZoom(0.01f)
         , cfg_cameraSpeedRotate(0.1f)
 
@@ -286,13 +286,11 @@ namespace LostPeter
                 float fX = static_cast<float>(x - this->mousePosLast.x);
                 float fY = static_cast<float>(y - this->mousePosLast.y);
                 float fRotYAngle = fX * this->cfg_cameraSpeedRotate;
-                float fRotXAngle = -fY * this->cfg_cameraSpeedRotate;
+                float fRotXAngle = fY * this->cfg_cameraSpeedRotate;
                 glm::vec3 vEulerAngles = pCamera->GetEulerAngles();
                 vEulerAngles.x += fRotXAngle;
                 vEulerAngles.y += fRotYAngle;
                 pCamera->SetEulerAngles(vEulerAngles);
-
-                this->pCamera->UpdateProjectionMatrix();
             }
             
             this->mousePosLast.x = (float)x;
@@ -309,7 +307,6 @@ namespace LostPeter
         {
             float fDis = (float)(this->cfg_cameraSpeedZoom * y);
             this->pCamera->Walk(fDis);
-            this->pCamera->UpdateProjectionMatrix();
         }
     }
 
@@ -1073,10 +1070,8 @@ namespace LostPeter
         {
             std::vector<VkFormat> candidates;
             candidates.push_back(VK_FORMAT_D32_SFLOAT_S8_UINT);
-            candidates.push_back(VK_FORMAT_D32_SFLOAT);
             candidates.push_back(VK_FORMAT_D24_UNORM_S8_UINT);
             candidates.push_back(VK_FORMAT_D16_UNORM_S8_UINT);
-            candidates.push_back(VK_FORMAT_D16_UNORM);
             return findSupportedFormat(candidates,
                                        VK_IMAGE_TILING_OPTIMAL,
                                        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
