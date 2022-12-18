@@ -102,3 +102,8 @@ Usage:
 * sample007: Use stencil buffer to render outline
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_007_stencil.png)
+
+### <008> vulkan_008_blend
+* sample008: Use blend state to render transparent effect
+
+![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_008_blend.png)
