@@ -37,7 +37,6 @@ layout(binding = 0) uniform PassConstants
 layout(binding = 1) uniform ObjectConstants
 {
     mat4 g_MatWorld;
-    mat4 g_TexTransform;
 } objectConsts;
 
 layout(location = 0) in vec3 inPosition;

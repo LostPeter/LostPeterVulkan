@@ -1,5 +1,5 @@
 //author: LostPeter
-//time:   2022-12-11
+//time:   2022-12-17
 
 struct VSInput
 {
@@ -98,6 +98,7 @@ struct VSOutput
 	float4 outPosition                      : SV_POSITION;
     [[vk::location(0)]] float4 outColor     : COLOR0;
     [[vk::location(1)]] float2 outTexCoord  : TEXCOORD0;
+    [[vk::location(2)]] float outAlpha      : TEXCOORD1;
 };
 
 
@@ -107,6 +108,7 @@ VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
     output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, mul(objectConsts[instanceIndex].g_MatWorld, float4(input.inPosition, 1.0))));
     output.outColor = input.inColor;
     output.outTexCoord = input.inTexCoord;
+    output.outAlpha = materialConsts[instanceIndex].alpha;
 
     return output;
 }

@@ -1,5 +1,5 @@
 #include "PreInclude.h"
-#include "vulkan_007_stencil.h"
+#include "vulkan_008_blend.h"
 #include "VulkanMeshLoader.h"
 #include "VulkanCamera.h"
 #include "VulkanTimer.h"
@@ -10,17 +10,35 @@
 #include <assimp/postprocess.h>
 
 
+const std::string c_strVert = ".vert.spv";
+const std::string c_strFrag = ".frag.spv";
+
+static const int g_ShaderCount = 3;
+static const char* g_pathShaderModules[2 * g_ShaderCount] = 
+{
+    "Assets/Shader/standard_mesh_opaque.vert.spv", "Assets/Shader/standard_mesh_opaque.frag.spv", //standard_mesh_opaque
+    "Assets/Shader/standard_mesh_transparent.vert.spv", "Assets/Shader/standard_mesh_transparent.frag.spv", //standard_mesh_transparent
+    "Assets/Shader/standard_mesh_outline.vert.spv", "Assets/Shader/standard_mesh_outline.frag.spv", //standard_mesh_outline
+};
+
+
 static const int g_CountLen = 2;
 static const char* g_pathModels[3 * g_CountLen] = 
 {
     "viking_room",      "Assets/Model/Obj/viking_room/viking_room.obj",     "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
-    "bunny",            "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp", //bunny
+    "bunny",            "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp", //bunny  
+};
+
+static const char* g_pathModelShaderModules[2 * g_CountLen] = 
+{
+    "Assets/Shader/standard_mesh_transparent", "Assets/Shader/standard_mesh_outline", //viking_room
+    "Assets/Shader/standard_mesh_opaque", "Assets/Shader/standard_mesh_outline", //bunny 
 };
 
 static glm::vec3 g_tranformModels[3 * g_CountLen] = 
-{
-    glm::vec3(  -1,   0,   -1),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
-    glm::vec3(   1,   0,   -1),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
+{   
+    glm::vec3(   0,   0,    1),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
+    glm::vec3(   0,   0,    0),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
 };
 
 static glm::mat4 g_tranformLocalModels[g_CountLen] = 
@@ -41,6 +59,18 @@ static bool g_isFlipYModels[g_CountLen] =
     false, //bunny
 };
 
+static bool g_isTransparentModels[g_CountLen] = 
+{
+    true, //viking_room
+    false, //bunny
+};
+
+static float g_TransparentAlpha[g_CountLen] =
+{
+    0.5f, //viking_room
+    1.0f, //bunny
+};
+
 static float g_OutlineWidth[g_CountLen] = 
 {
     0.02f, //viking_room
@@ -54,7 +84,8 @@ static glm::vec4 g_OutlineColor[g_CountLen] =
 };
 
 
-Vulkan_007_Stencil::Vulkan_007_Stencil(int width, int height, std::string name)
+
+Vulkan_008_Blend::Vulkan_008_Blend(int width, int height, std::string name)
     : VulkanWindow(width, height, name)
     , poPipelineLayout_Outline(VK_NULL_HANDLE)
 {
@@ -62,24 +93,20 @@ Vulkan_007_Stencil::Vulkan_007_Stencil(int width, int height, std::string name)
     this->imgui_IsEnable = true;
 
     this->poTypeVertex = Vulkan_VertexType_Pos3Color4Normal3Tex2;
-    this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_normal3_tex2_ubo.vert.spv";
-    this->cfg_shaderFragment_Path = "Assets/Shader/pos3_color4_normal3_tex2_ubo.frag.spv";
+    this->cfg_shaderVertex_Path = "Assets/Shader/standard_mesh_opaque.vert.spv";
+    this->cfg_shaderFragment_Path = "Assets/Shader/standard_mesh_opaque.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture.jpg";
 
-    this->pathShaderVertex_Outline = "Assets/Shader/pos3_color4_normal3_tex2_ubo_outline.vert.spv";
-    this->pathShaderFragment_Outline = "Assets/Shader/pos3_color4_normal3_tex2_ubo_outline.frag.spv";
-    this->poTypeVertex_Outline = Vulkan_VertexType_Pos3Color4Normal3Tex2;
-
-    this->cfg_cameraPos = glm::vec3(0.5f, 2.5f, -4.0f);
+    this->cfg_cameraPos = glm::vec3(0.0f, 3.0f, -4.0f);
 }
 
-void Vulkan_007_Stencil::createCamera()
+void Vulkan_008_Blend::createCamera()
 {
     this->pCamera = new VulkanCamera();
     cameraReset();
 }
 
-void Vulkan_007_Stencil::loadModel_Custom()
+void Vulkan_008_Blend::loadModel_Custom()
 {
     for (int i = 0; i < g_CountLen; i++)
     {
@@ -88,13 +115,14 @@ void Vulkan_007_Stencil::loadModel_Custom()
         pModelObject->pathModel = g_pathModels[3 * i + 1];
         pModelObject->pathTexture = g_pathModels[3 * i + 2];
 
-        bool isFlipY = g_isFlipYModels[i];
         bool isTranformLocal = g_isTranformLocalModels[i];
-        
+        bool isFlipY = g_isFlipYModels[i];
+        pModelObject->isTransparent = g_isTransparentModels[i];
+
         //Model
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTranformLocal, g_tranformLocalModels[i]))
         {
-            std::string msg = "Vulkan_007_Stencil::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
+            std::string msg = "Vulkan_008_Blend::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -105,16 +133,19 @@ void Vulkan_007_Stencil::loadModel_Custom()
         //Texture
         if (!loadModel_Texture(pModelObject))
         {   
-            std::string msg = "Vulkan_007_Stencil::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
+            std::string msg = "Vulkan_008_Blend::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
-        m_aModelObjects.push_back(pModelObject);
+        if (pModelObject->isTransparent)
+            m_aModelObjects.push_back(pModelObject);
+        else 
+            m_aModelObjects.insert(m_aModelObjects.begin(), pModelObject);
         m_mapModelObjects[pModelObject->nameModel] = pModelObject;
     }
 }
-bool Vulkan_007_Stencil::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_008_Blend::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
 {
     //1> Load 
     MeshData meshData;
@@ -122,7 +153,7 @@ bool Vulkan_007_Stencil::loadModel_VertexIndex(ModelObject* pModelObject, bool i
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!VulkanMeshLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
     {
-        Util_LogError("Vulkan_007_Stencil::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
+        Util_LogError("Vulkan_008_Blend::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
         return false; 
     }
 
@@ -160,7 +191,7 @@ bool Vulkan_007_Stencil::loadModel_VertexIndex(ModelObject* pModelObject, bool i
     pModelObject->poIndexBuffer_Size = pModelObject->poIndexCount * sizeof(uint32_t);
     pModelObject->poIndexBuffer_Data = &pModelObject->indices[0];
 
-    Util_LogInfo("Vulkan_007_Stencil::loadModel_VertexIndex: load model [%s] success, Vertex count: [%d], Index count: [%d] !", 
+    Util_LogInfo("Vulkan_008_Blend::loadModel_VertexIndex: load model [%s] success, Vertex count: [%d], Index count: [%d] !", 
                  pModelObject->nameModel.c_str(),
                  (int)pModelObject->vertices.size(), 
                  (int)pModelObject->indices.size());
@@ -177,7 +208,7 @@ bool Vulkan_007_Stencil::loadModel_VertexIndex(ModelObject* pModelObject, bool i
 
     return true;
 }
-bool Vulkan_007_Stencil::loadModel_Texture(ModelObject* pModelObject)
+bool Vulkan_008_Blend::loadModel_Texture(ModelObject* pModelObject)
 {
     if (!pModelObject->pathTexture.empty())
     {
@@ -185,13 +216,13 @@ bool Vulkan_007_Stencil::loadModel_Texture(ModelObject* pModelObject)
         createTextureImageView(pModelObject->poTextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipLevels, pModelObject->poTextureImageView);
         createTextureSampler(pModelObject->poMipLevels, pModelObject->poTextureSampler);
 
-        Util_LogInfo("Vulkan_007_Stencil::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
+        Util_LogInfo("Vulkan_008_Blend::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
 
     return true;
 }
 
-void Vulkan_007_Stencil::createCustomCB()
+void Vulkan_008_Blend::createCustomCB()
 {
     size_t count_sci = this->poSwapChainImages.size();
     size_t count = this->m_aModelObjects.size();
@@ -212,7 +243,23 @@ void Vulkan_007_Stencil::createCustomCB()
             createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
         }
 
-        //2> Outline
+        //2> Transparent
+        if (pModelObject->isTransparent)
+        {
+            MaterialConstants materialConstants;
+            materialConstants.alpha = g_TransparentAlpha[i];
+            pModelObject->materialCBs.push_back(materialConstants);
+
+            bufferSize = sizeof(MaterialConstants) * pModelObject->materialCBs.size();
+            pModelObject->poBuffers_materialCB.resize(count_sci);
+            pModelObject->poBuffersMemory_materialCB.resize(count_sci);
+            for (size_t j = 0; j < count_sci; j++) 
+            {
+                createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
+            }
+        }
+
+        //3> Outline
         ObjectConstants_Outline objectConstants_Outline;
         objectConstants_Outline.g_MatWorld = pModelObject->poMatWorld;
         objectConstants_Outline.g_OutlineColor = g_OutlineColor[i];
@@ -229,30 +276,10 @@ void Vulkan_007_Stencil::createCustomCB()
     }
 }
 
-void Vulkan_007_Stencil::createPipeline_Custom()
+void Vulkan_008_Blend::createPipeline_Custom()
 {
     //1> Shader
-    VkShaderModule vertShaderModule_Stencil;
-    if (!this->cfg_shaderVertex_Path.empty())
-    {
-        vertShaderModule_Stencil = createShaderModule("VertexShader: ", this->cfg_shaderVertex_Path);
-    }
-    VkShaderModule fragShaderModule_Stencil;
-    if (!this->cfg_shaderFragment_Path.empty())
-    {
-        fragShaderModule_Stencil = createShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
-    }
-
-    VkShaderModule vertShaderModule_Outline;
-    if (!this->pathShaderVertex_Outline.empty())
-    {
-        vertShaderModule_Outline = createShaderModule("VertexShader: ", this->pathShaderVertex_Outline);
-    }
-    VkShaderModule fragShaderModule_Outline;
-    if (!this->pathShaderFragment_Outline.empty())
-    {
-        fragShaderModule_Outline = createShaderModule("FragmentShader: ", this->pathShaderFragment_Outline);
-    }
+    createShaderModules();
 
     //2> Viewport
     std::vector<VkViewport> viewports;
@@ -269,9 +296,19 @@ void Vulkan_007_Stencil::createPipeline_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
+        std::string pathVertShaderBase = g_pathModelShaderModules[2 * i + 0] + c_strVert;
+        std::string pathFragShaderBase = g_pathModelShaderModules[2 * i + 0] + c_strFrag;
+        VkShaderModule vertShaderBase = findShaderModule(pathVertShaderBase);
+        VkShaderModule fragShaderBase = findShaderModule(pathFragShaderBase);
+
+        std::string pathVertShaderOutline = g_pathModelShaderModules[2 * i + 1] + c_strVert;
+        std::string pathFragShaderOutline = g_pathModelShaderModules[2 * i + 1] + c_strFrag;
+        VkShaderModule vertShaderOutline = findShaderModule(pathVertShaderOutline);
+        VkShaderModule fragShaderOutline = findShaderModule(pathFragShaderOutline);
+
         //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkPipeline(vertShaderModule_Stencil, "main",
-                                                                      fragShaderModule_Stencil, "main",
+        pModelObject->poPipelineGraphics_WireFrame = createVkPipeline(vertShaderBase, "main",
+                                                                      fragShaderBase, "main",
                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                       this->poRenderPass, this->poPipelineLayout, viewports, scissors,
@@ -283,7 +320,7 @@ void Vulkan_007_Stencil::createPipeline_Custom()
                                                                       pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_007_Stencil::createPipeline_Custom: Failed to create pipeline wire frame !";
+            std::string msg = "Vulkan_008_Blend::createPipeline_Custom: Failed to create pipeline wire frame !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -298,20 +335,30 @@ void Vulkan_007_Stencil::createPipeline_Custom()
         back.writeMask = 0xFF;
         back.reference = 1;
         VkStencilOpState front = back;
-        pModelObject->poPipelineGraphics_Stencil = createVkPipeline(vertShaderModule_Stencil, "main",
-                                                                    fragShaderModule_Stencil, "main",
+
+        VkBool32 isBlend = pModelObject->cfg_isBlend;
+        VkBlendFactor blendColorFactorSrc = pModelObject->cfg_BlendColorFactorSrc; 
+        VkBlendFactor blendColorFactorDst = pModelObject->cfg_BlendColorFactorDst; 
+        if (pModelObject->isTransparent)
+        {
+            isBlend = VK_TRUE;
+            blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
+            blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+        }
+        pModelObject->poPipelineGraphics_Stencil = createVkPipeline(vertShaderBase, "main",
+                                                                    fragShaderBase, "main",
                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                     this->poRenderPass, this->poPipelineLayout, viewports, scissors,
                                                                     pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                                     pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                                     VK_TRUE, front, back, 
-                                                                    pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
+                                                                    isBlend, blendColorFactorSrc, blendColorFactorDst, pModelObject->cfg_BlendColorOp,
                                                                     pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
                                                                     pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_Stencil == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_007_Stencil::createPipeline_Custom: Failed to create pipeline stencil !";
+            std::string msg = "Vulkan_008_Blend::createPipeline_Custom: Failed to create pipeline stencil !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -322,10 +369,10 @@ void Vulkan_007_Stencil::createPipeline_Custom()
 		back.depthFailOp = VK_STENCIL_OP_KEEP;
 		back.passOp = VK_STENCIL_OP_REPLACE;
 		front = back;
-        pModelObject->poPipelineGraphics_Outline = createVkPipeline(vertShaderModule_Outline, "main",
-                                                                    fragShaderModule_Outline, "main",
-                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex_Outline), 
-                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex_Outline),
+        pModelObject->poPipelineGraphics_Outline = createVkPipeline(vertShaderOutline, "main",
+                                                                    fragShaderOutline, "main",
+                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
+                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                     this->poRenderPass, this->poPipelineLayout_Outline, viewports, scissors,
                                                                     pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                                     VK_FALSE, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
@@ -335,32 +382,67 @@ void Vulkan_007_Stencil::createPipeline_Custom()
                                                                     pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_Outline == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_007_Stencil::createPipeline_Custom: Failed to create pipeline outline !";
+            std::string msg = "Vulkan_008_Blend::createPipeline_Custom: Failed to create pipeline outline !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
     }
 
-    //5> Destroy Shader
-    vkDestroyShaderModule(this->poDevice, vertShaderModule_Stencil, nullptr);
-    vkDestroyShaderModule(this->poDevice, fragShaderModule_Stencil, nullptr);
-    vkDestroyShaderModule(this->poDevice, vertShaderModule_Outline, nullptr);
-    vkDestroyShaderModule(this->poDevice, fragShaderModule_Outline, nullptr);
 }
-void Vulkan_007_Stencil::createPipelineLayout_Outline()
+void Vulkan_008_Blend::createPipelineLayout_Outline()
 {
     VkDescriptorSetLayoutVector aDescriptorSetLayout;
     aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
     this->poPipelineLayout_Outline = createVkPipelineLayout(aDescriptorSetLayout);
     if (this->poPipelineLayout_Outline == VK_NULL_HANDLE)
     {
-        std::string msg = "Vulkan_007_Stencil::createPipelineLayout_Outline: createVkPipelineLayout failed !";
+        std::string msg = "Vulkan_008_Blend::createPipelineLayout_Outline: createVkPipelineLayout failed !";
         Util_LogError(msg.c_str());
         throw std::runtime_error(msg.c_str());
     }
 }
+void Vulkan_008_Blend::destroyShaderModules()
+{   
+    size_t count = this->m_aVkShaderModules.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        VkShaderModule& vkShaderModule= this->m_aVkShaderModules[i];
+        vkDestroyShaderModule(this->poDevice, vkShaderModule, nullptr);
+    }
+    this->m_aVkShaderModules.clear();
+    this->m_mapVkShaderModules.clear();
+}
+void Vulkan_008_Blend::createShaderModules()
+{
+    for (int i = 0; i < g_ShaderCount; i++)
+    {
+        std::string pathVert = g_pathShaderModules[2 * i + 0];
+        std::string pathFrag = g_pathShaderModules[2 * i + 1];
 
-void Vulkan_007_Stencil::createDescriptorSets_Custom()
+        //vert
+        VkShaderModule vertShaderModule = createShaderModule("VertexShader: ", pathVert);
+        this->m_aVkShaderModules.push_back(vertShaderModule);
+        this->m_mapVkShaderModules[pathVert] = vertShaderModule;
+        Util_LogInfo("Vulkan_008_Blend::createShaderModules: create shader [%s] success !", pathVert.c_str());
+
+        //frag
+        VkShaderModule fragShaderModule = createShaderModule("FragmentShader: ", pathFrag);
+        this->m_aVkShaderModules.push_back(fragShaderModule);
+        this->m_mapVkShaderModules[pathFrag] = fragShaderModule;
+        Util_LogInfo("Vulkan_008_Blend::createShaderModules: create shader [%s] success !", pathFrag.c_str());
+    }
+}
+VkShaderModule Vulkan_008_Blend::findShaderModule(const std::string& pathShaderModule)
+{
+    VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(pathShaderModule);
+    if (itFind == this->m_mapVkShaderModules.end())
+    {
+        return nullptr;
+    }
+    return itFind->second;
+}   
+
+void Vulkan_008_Blend::createDescriptorSets_Custom()
 {
     size_t count_sci = this->poSwapChainImages.size();
     size_t count = this->m_aModelObjects.size();
@@ -385,9 +467,9 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
                 bufferInfo_Object.range = sizeof(ObjectConstants) * pModelObject->objectCBs.size();
 
                 VkDescriptorBufferInfo bufferInfo_Material = {};
-                bufferInfo_Material.buffer = this->poBuffers_MaterialCB[j];
+                bufferInfo_Material.buffer = pModelObject->isTransparent ? pModelObject->poBuffers_materialCB[j] : this->poBuffers_MaterialCB[j];
                 bufferInfo_Material.offset = 0;
-                bufferInfo_Material.range = sizeof(MaterialConstants) * this->materialCBs.size();
+                bufferInfo_Material.range = sizeof(MaterialConstants) * (pModelObject->isTransparent ? pModelObject->materialCBs.size() : this->materialCBs.size());
 
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
                 bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
@@ -549,7 +631,7 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
     }
 }
 
-void Vulkan_007_Stencil::updateCBs_Custom()
+void Vulkan_008_Blend::updateCBs_Custom()
 {
     float time = this->pTimer->GetTimeSinceStart();
     size_t count = this->m_aModelObjects.size();
@@ -557,7 +639,7 @@ void Vulkan_007_Stencil::updateCBs_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        assert(pModelObject->objectCBs.size() == pModelObject->objectCBs_Outline.size() && "Vulkan_007_Stencil::updateCBs_Custom");
+        assert(pModelObject->objectCBs.size() == pModelObject->objectCBs_Outline.size() && "Vulkan_008_Blend::updateCBs_Custom");
         size_t count_object = pModelObject->objectCBs.size();
         for (size_t j = 0; j < count_object; j++)
         {
@@ -583,6 +665,15 @@ void Vulkan_007_Stencil::updateCBs_Custom()
                 memcpy(data, pModelObject->objectCBs.data(), sizeof(ObjectConstants) * count_object);
             vkUnmapMemory(this->poDevice, memory);
         }
+        //Transparent
+        if (pModelObject->isTransparent)
+        {
+            VkDeviceMemory& memory = pModelObject->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
+            void* data;
+            vkMapMemory(this->poDevice, memory, 0, sizeof(MaterialConstants) * count_object, 0, &data);
+                memcpy(data, pModelObject->materialCBs.data(), sizeof(MaterialConstants) * count_object);
+            vkUnmapMemory(this->poDevice, memory);
+        }
         //Outline
         {
             VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB_Outline[this->poSwapChainImageIndex];
@@ -596,13 +687,13 @@ void Vulkan_007_Stencil::updateCBs_Custom()
 
 
 
-bool Vulkan_007_Stencil::beginRenderImgui()
+bool Vulkan_008_Blend::beginRenderImgui()
 {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    ImGui::Begin("Vulkan_007_Stencil", &windowOpened, 0);
+    ImGui::Begin("Vulkan_008_Blend", &windowOpened, 0);
     {
         ImGui::Text("Frametime: %f", this->fFPS);
         ImGui::Separator();
@@ -624,6 +715,9 @@ bool Vulkan_007_Stencil::beginRenderImgui()
                 ImGui::Checkbox(nameIsRotate.c_str(), &pModelObject->isRotate);
                 std::string nameIsOutline = "Is Outline - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsOutline.c_str(), &pModelObject->isOutline);   
+                std::string nameIsTransparent = "Is Transparent - " + pModelObject->nameModel;
+                bool isTransparent = pModelObject->isTransparent;
+                ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
 
                 ImGui::Text("Vertex: [%d], Index: [%d]", (int)pModelObject->poVertexCount, (int)pModelObject->poIndexCount);
                 
@@ -686,13 +780,13 @@ bool Vulkan_007_Stencil::beginRenderImgui()
     return true;
 }
 
-void Vulkan_007_Stencil::endRenderImgui()
+void Vulkan_008_Blend::endRenderImgui()
 {
     VulkanWindow::endRenderImgui();
 
 }
 
-void Vulkan_007_Stencil::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_008_Blend::drawMesh_Custom(VkCommandBuffer& commandBuffer)
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
@@ -742,7 +836,7 @@ void Vulkan_007_Stencil::drawMesh_Custom(VkCommandBuffer& commandBuffer)
         
     }
 }
-void Vulkan_007_Stencil::drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject)
+void Vulkan_008_Blend::drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject)
 {
     if (pModelObject->poIndexBuffer != nullptr)
     {
@@ -754,7 +848,7 @@ void Vulkan_007_Stencil::drawModelObject(VkCommandBuffer& commandBuffer, ModelOb
     }
 }
 
-void Vulkan_007_Stencil::cleanupCustom()
+void Vulkan_008_Blend::cleanupCustom()
 {
     if (this->poPipelineLayout_Outline != nullptr)
     {
@@ -772,8 +866,10 @@ void Vulkan_007_Stencil::cleanupCustom()
     this->m_mapModelObjects.clear();
 }
 
-void Vulkan_007_Stencil::cleanupSwapChain_Custom()
+void Vulkan_008_Blend::cleanupSwapChain_Custom()
 {
+    destroyShaderModules();
+
     if (this->poPipelineLayout_Outline != nullptr)
     {
         vkDestroyPipelineLayout(this->poDevice, this->poPipelineLayout_Outline, nullptr);
@@ -789,7 +885,7 @@ void Vulkan_007_Stencil::cleanupSwapChain_Custom()
     }
 }
 
-void Vulkan_007_Stencil::recreateSwapChain_Custom()
+void Vulkan_008_Blend::recreateSwapChain_Custom()
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

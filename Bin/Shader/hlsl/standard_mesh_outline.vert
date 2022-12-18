@@ -1,5 +1,5 @@
 //author: LostPeter
-//time:   2022-12-11
+//time:   2022-12-17
 
 struct VSInput
 {
@@ -54,42 +54,13 @@ struct PassConstants
 struct ObjectConstants
 {
     float4x4 g_MatWorld;
+    float4 outlineColor;
+    float outlineWidth;
 };
 
-[[vk::binding(1)]]cbuffer objectConsts            : register(b1) 
+[[vk::binding(1)]]cbuffer objectConsts              : register(b1) 
 {
-    ObjectConstants objectConsts[MAX_OBJECT_COUNT];
-}
-
-
-//MaterialConstants
-#define MAX_MATERIAL_COUNT 1024
-struct MaterialConstants
-{
-    float4 diffuseAlbedo;
-    float3 fresnelR0;
-    float roughness;
-    float4x4 matTransform;
-    float alpha;
-};
-
-[[vk::binding(2)]]cbuffer materialConsts          : register(b2) 
-{
-    MaterialConstants materialConsts[MAX_MATERIAL_COUNT];
-}
-
-
-//InstanceConstants
-#define MAX_INSTANCE_COUNT 1024
-struct InstanceConstants
-{
-    int indexObject;
-    int indexMaterial;
-};
-
-[[vk::binding(3)]]cbuffer instanceConsts          : register(b3) 
-{
-    InstanceConstants instanceConsts[MAX_INSTANCE_COUNT];
+    ObjectConstants objectConsts; //[MAX_OBJECT_COUNT];
 }
 
 
@@ -97,16 +68,15 @@ struct VSOutput
 {
 	float4 outPosition                      : SV_POSITION;
     [[vk::location(0)]] float4 outColor     : COLOR0;
-    [[vk::location(1)]] float2 outTexCoord  : TEXCOORD0;
 };
 
 
 VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
 {
     VSOutput output = (VSOutput)0;
-    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, mul(objectConsts[instanceIndex].g_MatWorld, float4(input.inPosition, 1.0))));
-    output.outColor = input.inColor;
-    output.outTexCoord = input.inTexCoord;
+    float4 pos = float4(input.inPosition.xyz + input.inNormal * objectConsts.outlineWidth, 1.0);
+    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, mul(objectConsts.g_MatWorld, pos)));
+    output.outColor = objectConsts.outlineColor;
 
     return output;
 }

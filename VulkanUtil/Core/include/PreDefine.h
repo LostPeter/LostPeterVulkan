@@ -95,6 +95,13 @@ namespace LostPeter
 
     typedef std::vector<VkDescriptorSetLayout> VkDescriptorSetLayoutVector;
 
+    
+    typedef std::vector<VkShaderModule> VkShaderModuleVector;
+    typedef std::map<std::string, VkShaderModule> VkShaderModuleMap;
+
+    typedef std::vector<VkPipeline> VkPipelineVector;
+    typedef std::map<std::string, VkPipeline> VkPipelineMap;
+
 
 ////Class
     class App;

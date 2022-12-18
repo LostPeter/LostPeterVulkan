@@ -856,12 +856,23 @@ namespace LostPeter
     //////////////////////////////// Light //////////////////////////////////////////
     struct utilExport Light
     {
-        glm::vec3 position = { 0.0f, 0.0f, 0.0f };   // point light only
-        float falloffStart = 1.0f;                   // point/spot light only
-        glm::vec3 direction = { 0.0f, -1.0f, 0.0f }; // directional/spot light only
-        float falloffEnd = 10.0f;                    // point/spot light only
-        glm::vec3 strength = { 0.5f, 0.5f, 0.5f };   // directional/point/spot
-        float spotPower = 64.0f;                     // spot light only
+        glm::vec3 position;  // point light only
+        float falloffStart;  // point/spot light only
+        glm::vec3 direction; // directional/spot light only
+        float falloffEnd;    // point/spot light only
+        glm::vec3 strength;  // directional/point/spot
+        float spotPower;     // spot light only
+
+        Light()
+            : position(0.0f, 0.0f, 0.0f)
+            , falloffStart(1.0f)
+            , direction(0.0f, 0.0f, 1.0f)
+            , falloffEnd(10.0f)
+            , strength(0.5f, 0.5f, 0.5f)
+            , spotPower(64.0f)
+        {
+
+        }
     };
 
     //////////////////////////////// Texture ////////////////////////////////////////
@@ -869,62 +880,113 @@ namespace LostPeter
     {
         std::string name;
         std::string nameFile;
+
     };
 
     //////////////////////////////// Material ///////////////////////////////////////
     struct utilExport Material
     {
         std::string name;
-        int matCBIndex = -1;
-        int diffuseSrvHeapIndex = -1;
-        int normalSrvHeapIndex = -1;
-        int numFramesDirty = 0;
+        int matCBIndex;
+        int diffuseSrvHeapIndex;
+        int normalSrvHeapIndex;
+        int numFramesDirty;
 
-        glm::vec4 diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
-        glm::vec3 fresnelR0 = { 0.01f, 0.01f, 0.01f };
-        float roughness = .25f;
-        glm::mat4 matTransform = MathUtil::Identity4x4();
+        glm::vec4 diffuseAlbedo;
+        glm::vec3 fresnelR0;
+        float roughness;
+        float alpha;
+        glm::mat4 matTransform;
+
+        Material()
+            : name("")
+            , matCBIndex(-1)
+            , diffuseSrvHeapIndex(-1)
+            , normalSrvHeapIndex(-1)
+            , numFramesDirty(0)
+            , diffuseAlbedo(1.0f, 1.0f, 1.0f, 1.0f)
+            , fresnelR0(0.25f)
+            , alpha(1.0f)
+            , matTransform(MathUtil::Identity4x4())
+        {
+
+        }
     };
 
     //////////////////////////////// PassConstants //////////////////////////////////
     struct utilExport PassConstants
     {
-        glm::mat4 g_MatView = MathUtil::Identity4x4();
-        glm::mat4 g_MatView_Inv = MathUtil::Identity4x4();
-        glm::mat4 g_MatProj = MathUtil::Identity4x4();
-        glm::mat4 g_MatProj_Inv = MathUtil::Identity4x4();
-        glm::mat4 g_MatViewProj = MathUtil::Identity4x4();
-        glm::mat4 g_MatViewProj_Inv = MathUtil::Identity4x4();
+        glm::mat4 g_MatView;
+        glm::mat4 g_MatView_Inv;
+        glm::mat4 g_MatProj;
+        glm::mat4 g_MatProj_Inv;
+        glm::mat4 g_MatViewProj;
+        glm::mat4 g_MatViewProj_Inv;
 
-        glm::vec3 g_EyePosW = { 0.0f, 0.0f, 0.0f };
-        float g_cbPerObjectPad1 = 0.0f;
-        glm::vec2 g_RenderTargetSize = { 0.0f, 0.0f };
-        glm::vec2 g_RenderTargetSize_Inv = { 0.0f, 0.0f };
-        float g_NearZ = 0.0f;
-        float g_FarZ = 0.0f;
-        float g_TotalTime = 0.0f;
-        float g_DeltaTime = 0.0f;
-        glm::vec4 g_AmbientLight = { 0.0f, 0.0f, 0.0f, 1.0f };
+        glm::vec3 g_EyePosW;
+        float g_cbPerObjectPad1;
+        glm::vec2 g_RenderTargetSize;
+        glm::vec2 g_RenderTargetSize_Inv;
+        float g_NearZ;
+        float g_FarZ;
+        float g_TotalTime;
+        float g_DeltaTime;
+        glm::vec4 g_AmbientLight;
 
         Light g_Lights[MAX_LIGHT_COUNT];
+
+        PassConstants()
+            : g_MatView(MathUtil::Identity4x4())
+            , g_MatView_Inv(MathUtil::Identity4x4())
+            , g_MatProj(MathUtil::Identity4x4())
+            , g_MatProj_Inv(MathUtil::Identity4x4())
+            , g_MatViewProj(MathUtil::Identity4x4())
+            , g_MatViewProj_Inv(MathUtil::Identity4x4())
+            , g_EyePosW(0.0f, 0.0f, 0.0f)
+            , g_cbPerObjectPad1(0.0f)
+            , g_RenderTargetSize(0.0f, 0.0f)
+            , g_RenderTargetSize_Inv(0.0f, 0.0f)
+            , g_NearZ(0.0f)
+            , g_FarZ(0.0f)
+            , g_TotalTime(0.0f)
+            , g_DeltaTime(0.0f)
+            , g_AmbientLight(0.0f, 0.0f, 0.0f, 1.0f)
+        {
+
+        }
     };
 
     //////////////////////////////// ObjectConstants ////////////////////////////////
     struct utilExport ObjectConstants
     {
-        glm::mat4 g_MatWorld = MathUtil::Identity4x4();
+        glm::mat4 g_MatWorld;
         
+
+        ObjectConstants()
+            : g_MatWorld(MathUtil::Identity4x4())
+        {
+
+        }
     };
     
     //////////////////////////////// MaterialConstants //////////////////////////////
     struct utilExport MaterialConstants
     {
-        glm::vec4 diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
-        glm::vec3 fresnelR0 = { 0.01f, 0.01f, 0.01f };
-        float roughness = 0.25f;
+        glm::vec4 diffuseAlbedo;
+        glm::vec3 fresnelR0;
+        float roughness;
+        glm::mat4 matTransform;
+        float alpha;
 
-        // Used in texture mapping.
-        glm::mat4 MatTransform = MathUtil::Identity4x4();
+        MaterialConstants()
+            : diffuseAlbedo(1.0f, 1.0f, 1.0f, 1.0f)
+            , fresnelR0(0.01f, 0.01f, 0.01f)
+            , roughness(0.25f)
+            , matTransform(MathUtil::Identity4x4())
+            , alpha(1.0f)
+        {
+
+        }
     };
 
     //////////////////////////////// InstanceConstants //////////////////////////////
@@ -932,7 +994,13 @@ namespace LostPeter
     {
         int indexObject = 0;
         int indexMaterial = 0;
-        
+
+        InstanceConstants()
+            : indexObject(0)
+            , indexMaterial(0)
+        {
+
+        }  
     };
 
 }; //LostPeter
