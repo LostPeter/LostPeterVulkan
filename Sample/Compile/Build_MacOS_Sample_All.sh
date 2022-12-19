@@ -13,4 +13,3 @@ rebuild=${2}
 ./Build_MacOS_Sample.sh vulkan_006_depth $debug $rebuild
 ./Build_MacOS_Sample.sh vulkan_007_stencil $debug $rebuild
 ./Build_MacOS_Sample.sh vulkan_008_blend $debug $rebuild
-./Build_MacOS_Sample.sh vulkan_009_instancing $debug $rebuild

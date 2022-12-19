@@ -63,7 +63,7 @@ struct ObjectConstants
 
 
 //MaterialConstants
-#define MAX_MATERIAL_COUNT 1024
+#define MAX_MATERIAL_COUNT 128
 struct MaterialConstants
 {
     float4 diffuseAlbedo;

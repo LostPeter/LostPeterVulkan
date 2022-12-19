@@ -13,7 +13,7 @@ namespace LostPeter
 ////Define
     #define MAX_LIGHT_COUNT 16
     #define MAX_OBJECT_COUNT 1024
-    #define MAX_MATERIAL_COUNT 1024
+    #define MAX_MATERIAL_COUNT 128
     #define MAX_INSTANCE_COUNT 1024
 
 ////Typedef

@@ -138,10 +138,11 @@ void Vulkan_008_Blend::loadModel_Custom()
             throw std::runtime_error(msg.c_str());
         }
 
+        m_aModelObjects.push_back(pModelObject);
         if (pModelObject->isTransparent)
-            m_aModelObjects.push_back(pModelObject);
+            m_aModelObjects_Render.push_back(pModelObject);
         else 
-            m_aModelObjects.insert(m_aModelObjects.begin(), pModelObject);
+            m_aModelObjects_Render.insert(m_aModelObjects_Render.begin(), pModelObject);
         m_mapModelObjects[pModelObject->nameModel] = pModelObject;
     }
 }
@@ -336,11 +337,16 @@ void Vulkan_008_Blend::createPipeline_Custom()
         back.reference = 1;
         VkStencilOpState front = back;
 
+        VkBool32 isDepthTestEnable = pModelObject->cfg_isDepthTest;
+        VkBool32 isDepthWriteEnable = pModelObject->cfg_isDepthWrite;
         VkBool32 isBlend = pModelObject->cfg_isBlend;
         VkBlendFactor blendColorFactorSrc = pModelObject->cfg_BlendColorFactorSrc; 
         VkBlendFactor blendColorFactorDst = pModelObject->cfg_BlendColorFactorDst; 
         if (pModelObject->isTransparent)
         {
+            isDepthTestEnable = VK_FALSE;
+            isDepthWriteEnable = VK_FALSE;
+
             isBlend = VK_TRUE;
             blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
             blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
@@ -351,7 +357,7 @@ void Vulkan_008_Blend::createPipeline_Custom()
                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                     this->poRenderPass, this->poPipelineLayout, viewports, scissors,
                                                                     pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
-                                                                    pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
+                                                                    isDepthTestEnable, isDepthWriteEnable, pModelObject->cfg_DepthCompareOp,
                                                                     VK_TRUE, front, back, 
                                                                     isBlend, blendColorFactorSrc, blendColorFactorDst, pModelObject->cfg_BlendColorOp,
                                                                     pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
@@ -656,6 +662,12 @@ void Vulkan_008_Blend::updateCBs_Custom()
                 objectCB.g_MatWorld = pModelObject->poMatWorld;
             }
             objectCB_Outline.g_MatWorld = objectCB.g_MatWorld;
+
+            if (pModelObject->isTransparent)
+            {
+                MaterialConstants& materialCB = pModelObject->materialCBs[j];
+                materialCB.alpha = pModelObject->alpha;
+            }
         }
         //Stencil
         {
@@ -718,6 +730,16 @@ bool Vulkan_008_Blend::beginRenderImgui()
                 std::string nameIsTransparent = "Is Transparent - " + pModelObject->nameModel;
                 bool isTransparent = pModelObject->isTransparent;
                 ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
+                if (pModelObject->isTransparent)
+                {
+                    //alpha
+                    std::string nameAlpha = "Alpha - " + pModelObject->nameModel;
+                    float fAlpha = pModelObject->alpha;
+                    if (ImGui::DragFloat(nameAlpha.c_str(), &fAlpha, 0.001f, 0.0f, 1.0f))
+                    {
+                        pModelObject->alpha = fAlpha;
+                    }
+                }
 
                 ImGui::Text("Vertex: [%d], Index: [%d]", (int)pModelObject->poVertexCount, (int)pModelObject->poIndexCount);
                 
@@ -788,10 +810,10 @@ void Vulkan_008_Blend::endRenderImgui()
 
 void Vulkan_008_Blend::drawMesh_Custom(VkCommandBuffer& commandBuffer)
 {   
-    size_t count = this->m_aModelObjects.size();
+    size_t count = this->m_aModelObjects_Render.size();
     for (size_t i = 0; i < count; i++)
     {
-        ModelObject* pModelObject = this->m_aModelObjects[i];
+        ModelObject* pModelObject = this->m_aModelObjects_Render[i];
         if (!pModelObject->isShow)
             continue;
 
@@ -863,6 +885,7 @@ void Vulkan_008_Blend::cleanupCustom()
         UTIL_DELETE(pModelObject)
     }
     this->m_aModelObjects.clear();
+    this->m_aModelObjects_Render.clear();
     this->m_mapModelObjects.clear();
 }
 

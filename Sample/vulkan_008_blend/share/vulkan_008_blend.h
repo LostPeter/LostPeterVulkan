@@ -60,6 +60,7 @@ public:
 
             //Uniform
             , poMatWorld(1.0f)
+            , alpha(0.5f)
             
             //Texture
             , poMipLevels(0)
@@ -229,6 +230,7 @@ public:
         std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_materialCB;
         std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
+        float alpha;
 
         std::vector<ObjectConstants_Outline> objectCBs_Outline;
         std::vector<VkBuffer> poBuffers_ObjectCB_Outline;
@@ -275,6 +277,7 @@ public:
 
 public:
     ModelObjectPtrVector m_aModelObjects;
+    ModelObjectPtrVector m_aModelObjects_Render;
     ModelObjectPtrMap m_mapModelObjects;
     
     VkPipelineLayout poPipelineLayout_Outline;

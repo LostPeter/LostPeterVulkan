@@ -50,7 +50,7 @@ struct PassConstants
 
 
 //ObjectConstants
-#define MAX_OBJECT_COUNT 1024
+#define MAX_OBJECT_COUNT 128
 struct ObjectConstants
 {
     float4x4 g_MatWorld;
@@ -60,7 +60,7 @@ struct ObjectConstants
 
 [[vk::binding(1)]]cbuffer objectConsts              : register(b1) 
 {
-    ObjectConstants objectConsts; //[MAX_OBJECT_COUNT];
+    ObjectConstants objectConsts[MAX_OBJECT_COUNT];
 }
 
 
@@ -74,9 +74,9 @@ struct VSOutput
 VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
 {
     VSOutput output = (VSOutput)0;
-    float4 pos = float4(input.inPosition.xyz + input.inNormal * objectConsts.outlineWidth, 1.0);
-    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, mul(objectConsts.g_MatWorld, pos)));
-    output.outColor = objectConsts.outlineColor;
+    float4 pos = float4(input.inPosition.xyz + input.inNormal * objectConsts[instanceIndex].outlineWidth, 1.0);
+    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, mul(objectConsts[instanceIndex].g_MatWorld, pos)));
+    output.outColor = objectConsts[instanceIndex].outlineColor;
 
     return output;
 }
