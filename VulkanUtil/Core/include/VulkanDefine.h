@@ -977,6 +977,9 @@ namespace LostPeter
         float roughness;
         glm::mat4 matTransform;
         float alpha;
+        float reserve0;
+        float reserve1;
+        float reserve2;
 
         MaterialConstants()
             : diffuseAlbedo(1.0f, 1.0f, 1.0f, 1.0f)
@@ -984,6 +987,9 @@ namespace LostPeter
             , roughness(0.25f)
             , matTransform(MathUtil::Identity4x4())
             , alpha(1.0f)
+            , reserve0(0.0f)
+            , reserve1(0.0f)
+            , reserve2(0.0f)
         {
 
         }

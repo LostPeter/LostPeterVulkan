@@ -13,3 +13,4 @@ call ./Build_Windows_Sample.bat vulkan_005_camera %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_006_depth %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_007_stencil %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_008_blend %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_009_instancing %debug% %rebuild%

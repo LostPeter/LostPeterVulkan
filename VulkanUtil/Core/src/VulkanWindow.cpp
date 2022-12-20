@@ -98,7 +98,7 @@ namespace LostPeter
         , cfg_cameraNear(0.05f)
         , cfg_cameraFar(1000.0f)
         , cfg_cameraSpeedMove(500.0f)
-        , cfg_cameraSpeedZoom(0.01f)
+        , cfg_cameraSpeedZoom(0.1f)
         , cfg_cameraSpeedRotate(0.1f)
 
         , cfg_model_Path("")

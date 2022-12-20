@@ -14,9 +14,20 @@ Document Web:
 
 Usage:
 
-    Vulkan SDK: I'm using vulkan version 1.2.189.0, you can change it.    
-    MacOS:   Config VULKAN_HOME, we will set vulkan path in CMakeLists.txt "$ENV{VULKAN_HOME}/macOS/include"  
-    Windows: Config VULKAN_SDK, we will set vulkan path in CMakeLists.txt "$ENV{VULKAN_SDK}/Include"
+    Vulkan SDK: 
+        I'm using vulkan version 1.2.189.0
+        you can change it, but to MacOS, you must replace all libvulkan.1.2.189.dylib in all CMakeLists.txt to your version.
+
+    MacOS:   
+        Setup your vulkan sdk and config VULKAN_HOME to your .bash_profile, in CMakeLists.txt we will using it "$ENV{VULKAN_HOME}/macOS/include"  
+
+    Windows: 
+        Setup your vulkan sdk and config VULKAN_SDK to your environment %Path%, in CMakeLists.txt we will using it "$ENV{VULKAN_SDK}/Include"
+        Check your VisualStudio is setup, and msbuild command tool path in the environment %Path% and can compile VisualStudio .sln project.
+
+    VSCode:
+        Config above complete, I'm only using VSCode to edit, compile and debug code in platform Windows/MacOS, maybe later also Android/iOS.
+        You can look at .vscode/launch.json file, config your vscode, there is all samples debug config, it is nice and effective to debug direct in vscode.
     
 
     Build Auto: 
@@ -50,6 +61,8 @@ Usage:
         MacOS:      ./Build_MacOS_Shader_HLSL_All.sh or ./Build_MacOS_Shader_GLSL_All.sh
         Windows:    ./Build_Windows_Shader_HLSL_All.bat or ./Build_Windows_Shader_GLSL_All.bat
 
+        Always prefer using hlsl shader, glsl shader maybe delay or not to realize and commit.
+
     3> Compile VulkanUtil
         cd VulkanUtil
         cd Compile
@@ -64,32 +77,32 @@ Usage:
 
 
 ### <000> vulkan_000_window
-* sample000：setup a framework, compile all sort of dependencies libraries, show a Window 
+* sample000：Setup a framework, compile all sort of dependencies libraries, show a Window 
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_000_window.png)
 
 ### <001> vulkan_001_triangle
-* sample001：render a triangle with vulkan api
+* sample001：Render a triangle with vulkan api
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_001_triangle.png)
 
 ### <002> vulkan_002_imgui
-* sample002：integrate imgui to vulkan
+* sample002：Integrate imgui to vulkan
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_002_imgui.png)
 
 ### <003> vulkan_003_texture
-* sample003：render a texture with vulkan api
+* sample003：Render a texture with vulkan api
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_003_texture.png)
 
 ### <004> vulkan_004_model
-* sample004：load different 3D models and textures nd then render them
+* sample004：Load different 3D models and textures nd then render them
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_004_model.png)
 
 ### <005> vulkan_005_camera
-* sample005: realize a camera and use it in the scene
+* sample005: Realize a camera and use it in the scene
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_005_camera.png)
 
@@ -107,3 +120,8 @@ Usage:
 * sample008: Use blend state to render transparent effect
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_008_blend.png)
+
+### <009> vulkan_009_instancing
+* sample009: Vulkan instance rendering
+
+![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_009_instancing.png)

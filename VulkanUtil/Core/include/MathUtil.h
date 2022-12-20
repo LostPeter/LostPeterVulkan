@@ -88,6 +88,36 @@ namespace LostPeter
 			return a + rand() % ((b - a) + 1);
 		}
 
+        static float RandomMinMax(float fMin, float fMax)								
+		{
+			if (fMin == fMax) 
+				return(fMin);
+			float fRandom = (float)rand() / (float)RAND_MAX;
+			return((fRandom * (float)fabs(fMax - fMin)) + fMin);
+		}
+
+        static glm::vec4 RandomColor(bool isAlpha)	
+        {
+            float r = MathUtil::RandomMinMax(0, 1);
+			float g = MathUtil::RandomMinMax(0, 1);
+			float b = MathUtil::RandomMinMax(0, 1);
+			float a = 1.0f;
+            if (isAlpha)
+                a = MathUtil::RandomMinMax(0, 1);
+
+			return glm::vec4(r, g, b, a);
+        }
+
+        static glm::vec4 RandomColor(glm::vec4 clMin, glm::vec4 clMax)	
+		{
+			float r = MathUtil::RandomMinMax(clMin.r, clMax.r);
+			float g = MathUtil::RandomMinMax(clMin.g, clMax.g);
+			float b = MathUtil::RandomMinMax(clMin.b, clMax.b);
+			float a = MathUtil::RandomMinMax(clMin.a, clMax.a);
+
+			return glm::vec4(r, g, b, a);
+		}
+
 		template<typename T>
 		static T Min(const T& a, const T& b)
 		{
