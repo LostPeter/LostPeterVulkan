@@ -1,6 +1,7 @@
 #include "../include/PreInclude.h"
 #include "../include/VulkanSceneObject.h"
 #include "../include/VulkanSceneManager.h"
+#include "../include/VulkanMaterial.h"
 
 namespace LostPeter
 {

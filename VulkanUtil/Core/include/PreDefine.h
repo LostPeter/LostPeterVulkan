@@ -83,6 +83,13 @@ namespace LostPeter
         Vulkan_PixelFormat_BYTE_A8R8G8B8_UNORM,
     };
 
+    enum VulkanLightType
+    {
+        Vulkan_Light_Directional = 0,
+        Vulkan_Light_Point,
+        Vulkan_Light_Spot,
+    };
+
 
 ////Vulkan
     typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;
@@ -110,16 +117,21 @@ namespace LostPeter
     class VulkanCamera;
     class VulkanDevice;
     class VulkanInstance;
+    class VulkanLight;
     class VulkanLog;
     class VulkanLogConsole;
     class VulkanLogFile;
     class VulkanLogManager;
     class VulkanManager;
+    class VulkanMaterial;
+    class VulkanMesh;
+    class VulkanMeshSub;
     class VulkanObject;
     class VulkanQueue;
     class VulkanSceneManager;
     class VulkanSceneObject;
     class VulkanSwapChain;
+    class VulkanTexture;
     class VulkanTimer;
     class VulkanWindow;
     
@@ -135,10 +147,7 @@ namespace LostPeter
     struct SubmeshGeometry;
     struct MeshGeometry;
 
-    struct Light;
-    struct Texture;
-    struct Material;
-    
+    struct LightConstants;
     struct PassConstants;
     struct ObjectConstants;
     struct MaterialConstants;

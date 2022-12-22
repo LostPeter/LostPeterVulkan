@@ -22,65 +22,89 @@ static const char* g_pathShaderModules[2 * g_ShaderCount] =
 };
 
 
-static const int g_CountLen = 2;
+static const int g_CountLen = 3;
 static const char* g_pathModels[3 * g_CountLen] = 
 {
+    "plane",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/terrain.png", //plane
     "viking_room",      "Assets/Model/Obj/viking_room/viking_room.obj",     "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
     "bunny",            "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp", //bunny  
 };
 
 static const char* g_pathModelShaderModules[2 * g_CountLen] = 
 {
+    "Assets/Shader/standard_mesh_opaque", "Assets/Shader/standard_mesh_outline", //plane 
     "Assets/Shader/standard_mesh_transparent", "Assets/Shader/standard_mesh_outline", //viking_room
     "Assets/Shader/standard_mesh_opaque", "Assets/Shader/standard_mesh_outline", //bunny 
 };
 
-static float g_instanceGap = 1.5f;
+static float g_instanceGap = 4.0f;
+
+static int g_instanceExtCount[] =
+{
+    0, //plane
+    5, //viking_room
+    5, //bunny
+};
 
 static glm::vec3 g_tranformModels[3 * g_CountLen] = 
 {   
+    glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //plane
     glm::vec3(   0,   0,    1),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
     glm::vec3(   0,   0,    0),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
 };
 
 static glm::mat4 g_tranformLocalModels[g_CountLen] = 
 {
+    MathUtil::ms_mat4Unit, //plane
     MathUtil::RotateX(-90.0f), //viking_room
     MathUtil::ms_mat4Unit, //bunny
 };
 
 static bool g_isTranformLocalModels[g_CountLen] = 
 {
+    false, //plane
     true, //viking_room
     false, //bunny
 };
 
 static bool g_isFlipYModels[g_CountLen] = 
 {
+    false, //plane
     false, //viking_room
     false, //bunny
 };
 
 static bool g_isTransparentModels[g_CountLen] = 
 {
+    false, //plane
     true, //viking_room
     false, //bunny
 };
 
+static bool g_isRotateModels[] =
+{
+    false, //plane
+    true, //viking_room
+    true, //bunny
+};
+
 static float g_TransparentAlpha[g_CountLen] =
 {
+    1.0f, //plane
     0.5f, //viking_room
     1.0f, //bunny
 };
 
 static glm::vec4 g_OutlineWidth[g_CountLen] = 
 {
+    glm::vec4(0.02f,0.02f,0.02f,0.02f), //plane
     glm::vec4(0.02f,0.02f,0.02f,0.02f), //viking_room
     glm::vec4(0.02f,0.02f,0.02f,0.02f), //bunny
 };
 
 static glm::vec4 g_OutlineColor[g_CountLen] = 
 {
+    glm::vec4(0,0,1,1), //plane
     glm::vec4(0,1,0,1), //viking_room
     glm::vec4(1,0,0,1), //bunny
 };
@@ -89,7 +113,6 @@ static glm::vec4 g_OutlineColor[g_CountLen] =
 
 Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, std::string name)
     : VulkanWindow(width, height, name)
-    , poPipelineLayout_Outline(VK_NULL_HANDLE)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -99,7 +122,7 @@ Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, std::string name
     this->cfg_shaderFragment_Path = "Assets/Shader/standard_mesh_opaque.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture.jpg";
 
-    this->cfg_cameraPos = glm::vec3(0.0f, 3.0f, -4.0f);
+    this->cfg_cameraPos = glm::vec3(0.0f, 15.0f, -20.0f);
 }
 
 void Vulkan_010_Lighting::createCamera()
@@ -120,6 +143,10 @@ void Vulkan_010_Lighting::loadModel_Custom()
         bool isTranformLocal = g_isTranformLocalModels[i];
         bool isFlipY = g_isFlipYModels[i];
         pModelObject->isTransparent = g_isTransparentModels[i];
+
+        pModelObject->isRotate = g_isRotateModels[i];
+        pModelObject->countInstanceExt = g_instanceExtCount[i];
+        pModelObject->countInstance = pModelObject->countInstanceExt * 2 + 1;
 
         //Model
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTranformLocal, g_tranformLocalModels[i]))
@@ -235,7 +262,7 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        //1> Stencil
+        //1> Normal
         pModelObject->instanceMatWorld.clear();
         pModelObject->objectCBs.clear();
         for (int j = 0; j < pModelObject->countInstance; j++)
@@ -281,28 +308,6 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
                 }
             }
         }
-
-        //3> Outline
-        pModelObject->objectCBs_Outline.clear();
-        for (int j = 0; j < pModelObject->countInstance; j++)
-        {
-            ObjectConstants_Outline objectConstants_Outline;
-            objectConstants_Outline.g_MatWorld = pModelObject->instanceMatWorld[j];
-            objectConstants_Outline.g_OutlineColor = MathUtil::RandomColor(false);
-            objectConstants_Outline.g_OutlineWidth = g_OutlineWidth[i];
-            pModelObject->objectCBs_Outline.push_back(objectConstants_Outline);
-        }
-        
-        if (isCreateVkBuffer)
-        {
-            bufferSize = sizeof(ObjectConstants_Outline) * 128; //pModelObject->objectCBs_Outline.size();
-            pModelObject->poBuffers_ObjectCB_Outline.resize(count_sci);
-            pModelObject->poBuffersMemory_ObjectCB_Outline.resize(count_sci);
-            for (size_t j = 0; j < count_sci; j++) 
-            {
-                createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB_Outline[j], pModelObject->poBuffersMemory_ObjectCB_Outline[j]);
-            }
-        }
     }
 }
 
@@ -317,10 +322,7 @@ void Vulkan_010_Lighting::createPipeline_Custom()
     std::vector<VkRect2D> scissors;
     scissors.push_back(this->poScissor);
 
-    //3> PipelineLayout
-    createPipelineLayout_Outline();
-
-    //4> Pipeline
+    //3> Pipeline
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
@@ -355,17 +357,7 @@ void Vulkan_010_Lighting::createPipeline_Custom()
             throw std::runtime_error(msg.c_str());
         }
 
-        //poPipelineGraphics_Stencil
-        VkStencilOpState back = {};
-        back.compareOp = VK_COMPARE_OP_ALWAYS;
-        back.failOp = VK_STENCIL_OP_REPLACE;
-        back.depthFailOp = VK_STENCIL_OP_REPLACE;
-        back.passOp = VK_STENCIL_OP_REPLACE;
-        back.compareMask = 0xFF;
-        back.writeMask = 0xFF;
-        back.reference = 1;
-        VkStencilOpState front = back;
-
+        //poPipelineGraphics
         VkBool32 isDepthTestEnable = pModelObject->cfg_isDepthTest;
         VkBool32 isDepthWriteEnable = pModelObject->cfg_isDepthWrite;
         VkBool32 isBlend = pModelObject->cfg_isBlend;
@@ -380,61 +372,25 @@ void Vulkan_010_Lighting::createPipeline_Custom()
             blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
             blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         }
-        pModelObject->poPipelineGraphics_Stencil = createVkPipeline(vertShaderBase, "main",
-                                                                    fragShaderBase, "main",
-                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
-                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                    this->poRenderPass, this->poPipelineLayout, viewports, scissors,
-                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
-                                                                    isDepthTestEnable, isDepthWriteEnable, pModelObject->cfg_DepthCompareOp,
-                                                                    VK_TRUE, front, back, 
-                                                                    isBlend, blendColorFactorSrc, blendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                                    pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                                    pModelObject->cfg_ColorWriteMask);
-        if (pModelObject->poPipelineGraphics_Stencil == VK_NULL_HANDLE)
+        pModelObject->poPipelineGraphics = createVkPipeline(vertShaderBase, "main",
+                                                            fragShaderBase, "main",
+                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
+                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
+                                                            this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                            pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
+                                                            isDepthTestEnable, isDepthWriteEnable, pModelObject->cfg_DepthCompareOp,
+                                                            pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
+                                                            isBlend, blendColorFactorSrc, blendColorFactorDst, pModelObject->cfg_BlendColorOp,
+                                                            pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
+                                                            pModelObject->cfg_ColorWriteMask);
+        if (pModelObject->poPipelineGraphics == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_010_Lighting::createPipeline_Custom: Failed to create pipeline stencil !";
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
-        }
-
-        //poPipelineGraphics_Outline
-        back.compareOp = VK_COMPARE_OP_NOT_EQUAL;
-        back.failOp = VK_STENCIL_OP_KEEP;
-		back.depthFailOp = VK_STENCIL_OP_KEEP;
-		back.passOp = VK_STENCIL_OP_REPLACE;
-		front = back;
-        pModelObject->poPipelineGraphics_Outline = createVkPipeline(vertShaderOutline, "main",
-                                                                    fragShaderOutline, "main",
-                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
-                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                    this->poRenderPass, this->poPipelineLayout_Outline, viewports, scissors,
-                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
-                                                                    VK_FALSE, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
-                                                                    VK_TRUE, front, back,
-                                                                    pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                                    pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                                    pModelObject->cfg_ColorWriteMask);
-        if (pModelObject->poPipelineGraphics_Outline == VK_NULL_HANDLE)
-        {
-            std::string msg = "Vulkan_010_Lighting::createPipeline_Custom: Failed to create pipeline outline !";
+            std::string msg = "Vulkan_010_Lighting::createPipeline_Custom: Failed to create pipeline !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
     }
 
-}
-void Vulkan_010_Lighting::createPipelineLayout_Outline()
-{
-    VkDescriptorSetLayoutVector aDescriptorSetLayout;
-    aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
-    this->poPipelineLayout_Outline = createVkPipelineLayout(aDescriptorSetLayout);
-    if (this->poPipelineLayout_Outline == VK_NULL_HANDLE)
-    {
-        std::string msg = "Vulkan_010_Lighting::createPipelineLayout_Outline: createVkPipelineLayout failed !";
-        Util_LogError(msg.c_str());
-        throw std::runtime_error(msg.c_str());
-    }
 }
 void Vulkan_010_Lighting::destroyShaderModules()
 {   
@@ -486,182 +442,92 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
         createDescriptorSets(pModelObject->poDescriptorSets);
-        createDescriptorSets(pModelObject->poDescriptorSets_Outline);
         for (size_t j = 0; j < count_sci; j++)
-        {
-            //1> Stencil
-            {
-                VkDescriptorBufferInfo bufferInfo_Pass = {};
-                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
-                bufferInfo_Pass.offset = 0;
-                bufferInfo_Pass.range = sizeof(PassConstants);
+        {   
+            VkDescriptorBufferInfo bufferInfo_Pass = {};
+            bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
+            bufferInfo_Pass.offset = 0;
+            bufferInfo_Pass.range = sizeof(PassConstants);
 
-                VkDescriptorBufferInfo bufferInfo_Object = {};
-                bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j];
-                bufferInfo_Object.offset = 0;
-                bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT; //pModelObject->objectCBs.size();
+            VkDescriptorBufferInfo bufferInfo_Object = {};
+            bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j];
+            bufferInfo_Object.offset = 0;
+            bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT; //pModelObject->objectCBs.size();
 
-                VkDescriptorBufferInfo bufferInfo_Material = {};
-                bufferInfo_Material.buffer = pModelObject->isTransparent ? pModelObject->poBuffers_materialCB[j] : this->poBuffers_MaterialCB[j];
-                bufferInfo_Material.offset = 0;
-                bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT; //(pModelObject->isTransparent ? pModelObject->materialCBs.size() : this->materialCBs.size());
+            VkDescriptorBufferInfo bufferInfo_Material = {};
+            bufferInfo_Material.buffer = pModelObject->isTransparent ? pModelObject->poBuffers_materialCB[j] : this->poBuffers_MaterialCB[j];
+            bufferInfo_Material.offset = 0;
+            bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT; //(pModelObject->isTransparent ? pModelObject->materialCBs.size() : this->materialCBs.size());
 
-                VkDescriptorBufferInfo bufferInfo_Instance = {};
-                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
-                bufferInfo_Instance.offset = 0;
-                bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
+            VkDescriptorBufferInfo bufferInfo_Instance = {};
+            bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
+            bufferInfo_Instance.offset = 0;
+            bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
 
-                VkDescriptorImageInfo imageInfo = {};
-                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView = pModelObject->poTextureImageView;
-                imageInfo.sampler = pModelObject->poTextureSampler;
-                
-                std::vector<VkWriteDescriptorSet> descriptorWrites;
+            VkDescriptorImageInfo imageInfo = {};
+            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            imageInfo.imageView = pModelObject->poTextureImageView;
+            imageInfo.sampler = pModelObject->poTextureSampler;
+            
+            std::vector<VkWriteDescriptorSet> descriptorWrites;
 
-                //0
-                VkWriteDescriptorSet ds0 = {};
-                ds0.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds0.dstSet = pModelObject->poDescriptorSets[j];
-                ds0.dstBinding = 0;
-                ds0.dstArrayElement = 0;
-                ds0.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds0.descriptorCount = 1;
-                ds0.pBufferInfo = &bufferInfo_Pass;
-                descriptorWrites.push_back(ds0);
+            //0
+            VkWriteDescriptorSet ds0 = {};
+            ds0.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            ds0.dstSet = pModelObject->poDescriptorSets[j];
+            ds0.dstBinding = 0;
+            ds0.dstArrayElement = 0;
+            ds0.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            ds0.descriptorCount = 1;
+            ds0.pBufferInfo = &bufferInfo_Pass;
+            descriptorWrites.push_back(ds0);
 
-                //1
-                VkWriteDescriptorSet ds1 = {};
-                ds1.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds1.dstSet = pModelObject->poDescriptorSets[j];
-                ds1.dstBinding = 1;
-                ds1.dstArrayElement = 0;
-                ds1.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds1.descriptorCount = 1;
-                ds1.pBufferInfo = &bufferInfo_Object;
-                descriptorWrites.push_back(ds1);
+            //1
+            VkWriteDescriptorSet ds1 = {};
+            ds1.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            ds1.dstSet = pModelObject->poDescriptorSets[j];
+            ds1.dstBinding = 1;
+            ds1.dstArrayElement = 0;
+            ds1.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            ds1.descriptorCount = 1;
+            ds1.pBufferInfo = &bufferInfo_Object;
+            descriptorWrites.push_back(ds1);
 
-                //2
-                VkWriteDescriptorSet ds2 = {};
-                ds2.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds2.dstSet = pModelObject->poDescriptorSets[j];
-                ds2.dstBinding = 2;
-                ds2.dstArrayElement = 0;
-                ds2.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds2.descriptorCount = 1;
-                ds2.pBufferInfo = &bufferInfo_Material;
-                descriptorWrites.push_back(ds2);
+            //2
+            VkWriteDescriptorSet ds2 = {};
+            ds2.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            ds2.dstSet = pModelObject->poDescriptorSets[j];
+            ds2.dstBinding = 2;
+            ds2.dstArrayElement = 0;
+            ds2.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            ds2.descriptorCount = 1;
+            ds2.pBufferInfo = &bufferInfo_Material;
+            descriptorWrites.push_back(ds2);
 
-                //3
-                VkWriteDescriptorSet ds3 = {};
-                ds3.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds3.dstSet = pModelObject->poDescriptorSets[j];
-                ds3.dstBinding = 3;
-                ds3.dstArrayElement = 0;
-                ds3.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds3.descriptorCount = 1;
-                ds3.pBufferInfo = &bufferInfo_Instance;
-                descriptorWrites.push_back(ds3);
-                
-                //4
-                VkWriteDescriptorSet ds4 = {};
-                ds4.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds4.dstSet = pModelObject->poDescriptorSets[j];
-                ds4.dstBinding = 4;
-                ds4.dstArrayElement = 0;
-                ds4.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                ds4.descriptorCount = 1;
-                ds4.pImageInfo = &imageInfo;
-                descriptorWrites.push_back(ds4);
+            //3
+            VkWriteDescriptorSet ds3 = {};
+            ds3.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            ds3.dstSet = pModelObject->poDescriptorSets[j];
+            ds3.dstBinding = 3;
+            ds3.dstArrayElement = 0;
+            ds3.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            ds3.descriptorCount = 1;
+            ds3.pBufferInfo = &bufferInfo_Instance;
+            descriptorWrites.push_back(ds3);
+            
+            //4
+            VkWriteDescriptorSet ds4 = {};
+            ds4.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            ds4.dstSet = pModelObject->poDescriptorSets[j];
+            ds4.dstBinding = 4;
+            ds4.dstArrayElement = 0;
+            ds4.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            ds4.descriptorCount = 1;
+            ds4.pImageInfo = &imageInfo;
+            descriptorWrites.push_back(ds4);
 
-                vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-            }
-
-            //2> Outline
-            {
-                VkDescriptorBufferInfo bufferInfo_Pass_Outline  = {};
-                bufferInfo_Pass_Outline.buffer = this->poBuffers_PassCB[j];
-                bufferInfo_Pass_Outline.offset = 0;
-                bufferInfo_Pass_Outline.range = sizeof(PassConstants);
-
-                VkDescriptorBufferInfo bufferInfo_Object_Outline = {};
-                bufferInfo_Object_Outline.buffer = pModelObject->poBuffers_ObjectCB_Outline[j];
-                bufferInfo_Object_Outline.offset = 0;
-                bufferInfo_Object_Outline.range = sizeof(ObjectConstants_Outline) * 128; //pModelObject->objectCBs_Outline.size();
-
-                VkDescriptorBufferInfo bufferInfo_Material_Outline = {};
-                bufferInfo_Material_Outline.buffer = this->poBuffers_MaterialCB[j];
-                bufferInfo_Material_Outline.offset = 0;
-                bufferInfo_Material_Outline.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT; //this->materialCBs.size();
-
-                VkDescriptorBufferInfo bufferInfo_Instance_Outline = {};
-                bufferInfo_Instance_Outline.buffer = this->poBuffers_InstanceCB[j];
-                bufferInfo_Instance_Outline.offset = 0;
-                bufferInfo_Instance_Outline.range = sizeof(InstanceConstants) * this->instanceCBs.size();
-
-                VkDescriptorImageInfo imageInfo_Outline = {};
-                imageInfo_Outline.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo_Outline.imageView = pModelObject->poTextureImageView;
-                imageInfo_Outline.sampler = pModelObject->poTextureSampler;
-
-                std::vector<VkWriteDescriptorSet> descriptorWrites_Outline;
-
-                //0
-                VkWriteDescriptorSet ds0_Outline  = {};
-                ds0_Outline.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds0_Outline.dstSet = pModelObject->poDescriptorSets_Outline[j];
-                ds0_Outline.dstBinding = 0;
-                ds0_Outline.dstArrayElement = 0;
-                ds0_Outline.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds0_Outline.descriptorCount = 1;
-                ds0_Outline.pBufferInfo = &bufferInfo_Pass_Outline;
-                descriptorWrites_Outline.push_back(ds0_Outline);
-
-                //1
-                VkWriteDescriptorSet ds1_Outline = {};
-                ds1_Outline.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds1_Outline.dstSet = pModelObject->poDescriptorSets_Outline[j];
-                ds1_Outline.dstBinding = 1;
-                ds1_Outline.dstArrayElement = 0;
-                ds1_Outline.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds1_Outline.descriptorCount = 1;
-                ds1_Outline.pBufferInfo = &bufferInfo_Object_Outline;
-                descriptorWrites_Outline.push_back(ds1_Outline);
-
-                //2
-                VkWriteDescriptorSet ds2_Outline = {};
-                ds2_Outline.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds2_Outline.dstSet = pModelObject->poDescriptorSets_Outline[j];
-                ds2_Outline.dstBinding = 2;
-                ds2_Outline.dstArrayElement = 0;
-                ds2_Outline.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds2_Outline.descriptorCount = 1;
-                ds2_Outline.pBufferInfo = &bufferInfo_Material_Outline;
-                descriptorWrites_Outline.push_back(ds2_Outline);
-
-                //3
-                VkWriteDescriptorSet ds3_Outline = {};
-                ds3_Outline.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds3_Outline.dstSet = pModelObject->poDescriptorSets_Outline[j];
-                ds3_Outline.dstBinding = 3;
-                ds3_Outline.dstArrayElement = 0;
-                ds3_Outline.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds3_Outline.descriptorCount = 1;
-                ds3_Outline.pBufferInfo = &bufferInfo_Instance_Outline;
-                descriptorWrites_Outline.push_back(ds3_Outline);
-                
-                //4
-                VkWriteDescriptorSet ds4_Outline = {};
-                ds4_Outline.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds4_Outline.dstSet = pModelObject->poDescriptorSets_Outline[j];
-                ds4_Outline.dstBinding = 4;
-                ds4_Outline.dstArrayElement = 0;
-                ds4_Outline.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                ds4_Outline.descriptorCount = 1;
-                ds4_Outline.pImageInfo = &imageInfo_Outline;
-                descriptorWrites_Outline.push_back(ds4_Outline);
-
-                vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites_Outline.size()), descriptorWrites_Outline.data(), 0, nullptr);
-            }
+            vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+            
         }
     }
 }
@@ -674,12 +540,10 @@ void Vulkan_010_Lighting::updateCBs_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        assert(pModelObject->objectCBs.size() == pModelObject->objectCBs_Outline.size() && "Vulkan_010_Lighting::updateCBs_Custom");
         size_t count_object = pModelObject->objectCBs.size();
         for (size_t j = 0; j < count_object; j++)
         {
             ObjectConstants& objectCB = pModelObject->objectCBs[j];
-            ObjectConstants_Outline& objectCB_Outline = pModelObject->objectCBs_Outline[j];
             if (pModelObject->isRotate)
             {
                 objectCB.g_MatWorld = glm::rotate(pModelObject->instanceMatWorld[j], 
@@ -690,7 +554,6 @@ void Vulkan_010_Lighting::updateCBs_Custom()
             {
                 objectCB.g_MatWorld = pModelObject->instanceMatWorld[j];
             }
-            objectCB_Outline.g_MatWorld = objectCB.g_MatWorld;
 
             if (pModelObject->isTransparent)
             {
@@ -698,7 +561,7 @@ void Vulkan_010_Lighting::updateCBs_Custom()
                 materialCB.alpha = pModelObject->alpha;
             }
         }
-        //Stencil
+        //Normal
         {
             VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
             void* data;
@@ -713,14 +576,6 @@ void Vulkan_010_Lighting::updateCBs_Custom()
             void* data;
             vkMapMemory(this->poDevice, memory, 0, sizeof(MaterialConstants) * count_object, 0, &data);
                 memcpy(data, pModelObject->materialCBs.data(), sizeof(MaterialConstants) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
-        }
-        //Outline
-        {
-            VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB_Outline[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants_Outline) * count_object, 0, &data);
-                memcpy(data, pModelObject->objectCBs_Outline.data(), sizeof(ObjectConstants_Outline) * count_object);
             vkUnmapMemory(this->poDevice, memory);
         }
     }
@@ -746,10 +601,6 @@ bool Vulkan_010_Lighting::beginRenderImgui()
             g_instanceGap = fGap;
             rebuildInstanceCBs(false);
         }
-        // if (ImGui::Button("Rebuild InstanceCBs"))
-        // {
-        //     rebuildInstanceCBs(false);
-        // }
 
         size_t count = this->m_aModelObjects.size();
         for (size_t i = 0; i < count; i++)
@@ -789,17 +640,13 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                     pModelObject->countInstance = countInstanceExt * 2 + 1;
                     rebuildInstanceCBs(false);
                 }
-                // if (ImGui::Button("Rebuild InstanceCBs"))
-                // {
-                //     rebuildInstanceCBs(false);
-                // }
 
                 ImGui::Text("Vertex: [%d], Index: [%d]", (int)pModelObject->poVertexCount, (int)pModelObject->poIndexCount);
                 
                 std::string nameWorld = "Model Object - " + pModelObject->nameModel;
                 if (ImGui::CollapsingHeader(nameWorld.c_str()))
                 {
-                    ObjectConstants_Outline& obj = pModelObject->objectCBs_Outline[0];
+                    ObjectConstants& obj = pModelObject->objectCBs[0];
                     //Mat
                     const glm::mat4& mat4World = obj.g_MatWorld;
                     std::string nameTable = StringUtil::SaveInt(i) + " - split_model_world";
@@ -827,19 +674,6 @@ bool Vulkan_010_Lighting::beginRenderImgui()
 
                         ImGui::EndTable();
                     }
-                    //OutlineWidth
-                    std::string nameOutlineWidth = "Outline Width - " + pModelObject->nameModel;
-                    float fOutlineWidth = obj.g_OutlineWidth.x;
-                    if (ImGui::DragFloat(nameOutlineWidth.c_str(), &fOutlineWidth, 0.01f, 0.01f, 1.0f))
-                    {
-                        obj.g_OutlineWidth = glm::vec4(fOutlineWidth,fOutlineWidth,fOutlineWidth,fOutlineWidth);
-                    }
-                    //OutlineColor
-                    std::string nameOutlineColor = "Outline Color - " + pModelObject->nameModel;
-                    if (ImGui::ColorEdit4(nameOutlineColor.c_str(), (float*)&(obj.g_OutlineColor)))
-                    {
-
-                    }
                 }
             }
         }
@@ -848,7 +682,15 @@ bool Vulkan_010_Lighting::beginRenderImgui()
         ImGui::Spacing();
 
         //2> Camera
-        cameraConfig();
+        if (ImGui::CollapsingHeader("Camera Settings"))
+        {
+            cameraConfig();
+        }
+        //3> Light
+        if (ImGui::CollapsingHeader("Light Settings"))
+        {
+            lightConfig();
+        }
     }
     ImGui::End();
 
@@ -889,24 +731,12 @@ void Vulkan_010_Lighting::drawMesh_Custom(VkCommandBuffer& commandBuffer)
         }
         else
         {
-            //1> Stencil Pass
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_Stencil);
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics);
             if (pModelObject->poDescriptorSets.size() > 0)
             {
                 vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &pModelObject->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
             }
             drawModelObject(commandBuffer, pModelObject);
-
-            //2> Outline Pass
-            if (pModelObject->isOutline)
-            {
-                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_Outline);
-                if (pModelObject->poDescriptorSets_Outline.size() > 0)
-                {
-                    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout_Outline, 0, 1, &pModelObject->poDescriptorSets_Outline[this->poSwapChainImageIndex], 0, nullptr);
-                }
-                drawModelObject(commandBuffer, pModelObject);
-            }
         }
         
     }
@@ -924,13 +754,7 @@ void Vulkan_010_Lighting::drawModelObject(VkCommandBuffer& commandBuffer, ModelO
 }
 
 void Vulkan_010_Lighting::cleanupCustom()
-{
-    if (this->poPipelineLayout_Outline != nullptr)
-    {
-        vkDestroyPipelineLayout(this->poDevice, this->poPipelineLayout_Outline, nullptr);
-    }
-    this->poPipelineLayout_Outline = VK_NULL_HANDLE;
-    
+{   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
@@ -945,12 +769,6 @@ void Vulkan_010_Lighting::cleanupCustom()
 void Vulkan_010_Lighting::cleanupSwapChain_Custom()
 {
     destroyShaderModules();
-
-    if (this->poPipelineLayout_Outline != nullptr)
-    {
-        vkDestroyPipelineLayout(this->poDevice, this->poPipelineLayout_Outline, nullptr);
-    }
-    this->poPipelineLayout_Outline = VK_NULL_HANDLE;
 
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

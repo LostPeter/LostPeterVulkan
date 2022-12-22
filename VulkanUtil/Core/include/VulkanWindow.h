@@ -176,6 +176,9 @@ namespace LostPeter
         //Camera
         VulkanCamera* pCamera;
 
+        //Light
+        LightConstants aLights[MAX_LIGHT_COUNT];
+
         //Mouse
         glm::vec2 mousePosLast;
         bool mouseButtonDownLeft;
@@ -375,6 +378,7 @@ namespace LostPeter
                         //Camera
                         virtual void cameraConfig();
                         virtual void cameraReset();
+                        virtual void lightConfig();
 
                     virtual void endRenderImgui();
 

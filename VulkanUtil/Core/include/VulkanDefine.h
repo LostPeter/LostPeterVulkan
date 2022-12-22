@@ -852,62 +852,25 @@ namespace LostPeter
         std::string name;
     };
 
-
-    //////////////////////////////// Light //////////////////////////////////////////
-    struct utilExport Light
+    //////////////////////////////// LightConstants /////////////////////////////////
+    struct utilExport LightConstants
     {
-        glm::vec3 position;  // point light only
+        glm::vec4 common;    // x: type; y:  z:  w:
+        glm::vec3 position;  // point/spot light only
         float falloffStart;  // point/spot light only
         glm::vec3 direction; // directional/spot light only
         float falloffEnd;    // point/spot light only
         glm::vec3 strength;  // directional/point/spot
         float spotPower;     // spot light only
 
-        Light()
-            : position(0.0f, 0.0f, 0.0f)
+        LightConstants()
+            : common(0, 0, 0, 0)
+            , position(0.0f, 0.0f, 0.0f)
             , falloffStart(1.0f)
             , direction(0.0f, 0.0f, 1.0f)
             , falloffEnd(10.0f)
             , strength(0.5f, 0.5f, 0.5f)
             , spotPower(64.0f)
-        {
-
-        }
-    };
-
-    //////////////////////////////// Texture ////////////////////////////////////////
-    struct utilExport Texture
-    {
-        std::string name;
-        std::string nameFile;
-
-    };
-
-    //////////////////////////////// Material ///////////////////////////////////////
-    struct utilExport Material
-    {
-        std::string name;
-        int matCBIndex;
-        int diffuseSrvHeapIndex;
-        int normalSrvHeapIndex;
-        int numFramesDirty;
-
-        glm::vec4 diffuseAlbedo;
-        glm::vec3 fresnelR0;
-        float roughness;
-        float alpha;
-        glm::mat4 matTransform;
-
-        Material()
-            : name("")
-            , matCBIndex(-1)
-            , diffuseSrvHeapIndex(-1)
-            , normalSrvHeapIndex(-1)
-            , numFramesDirty(0)
-            , diffuseAlbedo(1.0f, 1.0f, 1.0f, 1.0f)
-            , fresnelR0(0.25f)
-            , alpha(1.0f)
-            , matTransform(MathUtil::Identity4x4())
         {
 
         }
@@ -933,7 +896,7 @@ namespace LostPeter
         float g_DeltaTime;
         glm::vec4 g_AmbientLight;
 
-        Light g_Lights[MAX_LIGHT_COUNT];
+        LightConstants g_Lights[MAX_LIGHT_COUNT];
 
         PassConstants()
             : g_MatView(MathUtil::Identity4x4())

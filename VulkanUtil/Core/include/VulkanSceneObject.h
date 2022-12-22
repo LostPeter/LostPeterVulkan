@@ -21,7 +21,7 @@ namespace LostPeter
         int numFramesDirty;
 		uint32_t objCBIndex;
 
-		Material* pMaterial;
+		VulkanMaterial* pMaterial;
 		MeshGeometry* pMeshGeometry;
 
 		uint32_t indexCount;

@@ -3,6 +3,7 @@
 #include "../include/VulkanMeshLoader.h"
 #include "../include/VulkanCamera.h"
 #include "../include/VulkanTimer.h"
+#include "../include/StringUtil.h"
 
 namespace LostPeter
 {
@@ -3356,6 +3357,131 @@ namespace LostPeter
                         this->pCamera->PerspectiveLH(this->cfg_cameraFov, this->aspectRatio, this->cfg_cameraNear, this->cfg_cameraFar);
                         this->pCamera->UpdateViewMatrix();
                     }
+
+                    void VulkanWindow::lightConfig()
+                    {
+                        int count_light = MAX_LIGHT_COUNT;
+                        for (int i = 0; i < count_light; i++)
+                        {
+                            LightConstants& lc = this->aLights[i];
+
+                            std::string nameLight = "Light - " + StringUtil::SaveInt(i);
+                            if (ImGui::CollapsingHeader(nameLight.c_str()))
+                            {
+                                struct EnumLightDesc { VulkanLightType Value; const char* Name; const char* Tooltip; };
+                                static const EnumLightDesc s_aLightDescs[] =
+                                {
+                                    { Vulkan_Light_Directional,     "Directional",      "Directional Light" },
+                                    { Vulkan_Light_Point,           "Point",            "Point Light" },
+                                    { Vulkan_Light_Spot,            "Spot",             "Spot Light" },
+                                };
+
+                                //Light Type
+                                int nIndex = 0;
+                                for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aLightDescs); nIndex++)
+                                {
+                                    if (s_aLightDescs[nIndex].Value == lc.common.x)
+                                        break;
+                                }
+                                const char* preview_text = s_aLightDescs[nIndex].Name;
+                                std::string nameType = "LightType - " + StringUtil::SaveInt(i);
+                                if (ImGui::BeginCombo(nameType.c_str(), preview_text))
+                                {
+                                    for (int j = 0; j < IM_ARRAYSIZE(s_aLightDescs); j++)
+                                    {
+                                        if (ImGui::Selectable(s_aLightDescs[j].Name, nIndex == j))
+                                        {
+                                            lc.common.x = (int)s_aLightDescs[j].Value;
+                                            break;
+                                        }
+                                    }
+                                    ImGui::EndCombo();
+                                }
+
+                                if (lc.common.x == (int)Vulkan_Light_Directional)
+                                {
+                                    //direction
+                                    glm::vec3 vDirection = lc.direction;
+                                    std::string nameDirection = "Direction - " + StringUtil::SaveInt(i);
+                                    if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
+                                    {
+                                        lc.direction = vDirection;
+                                    }
+                                }
+                                else if (lc.common.x == (int)Vulkan_Light_Point)
+                                {
+                                    //position
+                                    glm::vec3 vPosition = lc.position;
+                                    std::string namePosition = "Position - " + StringUtil::SaveInt(i);
+                                    if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
+                                    {
+                                        lc.position = vPosition;
+                                    }
+                                    //falloffStart
+                                    float fFalloffStart = lc.falloffStart;
+                                    std::string nameFalloffStart = "FalloffStart - " + StringUtil::SaveInt(i);
+                                    if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
+                                    {
+                                        lc.falloffStart = fFalloffStart;
+                                    }
+                                    //falloffEnd
+                                    float fFalloffEnd = lc.falloffEnd;
+                                    std::string nameFalloffEnd = "FalloffEnd - " + StringUtil::SaveInt(i);
+                                    if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
+                                    {
+                                        lc.falloffEnd = fFalloffEnd;
+                                    }
+                                }
+                                else if (lc.common.x == (int)Vulkan_Light_Spot)
+                                {
+                                    //position
+                                    glm::vec3 vPosition = lc.position;
+                                    std::string namePosition = "Position - " + StringUtil::SaveInt(i);
+                                    if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
+                                    {
+                                        lc.position = vPosition;
+                                    }
+                                    //direction
+                                    glm::vec3 vDirection = lc.direction;
+                                    std::string nameDirection = "Direction - " + StringUtil::SaveInt(i);
+                                    if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
+                                    {
+                                        lc.direction = vDirection;
+                                    }
+                                    //falloffStart
+                                    float fFalloffStart = lc.falloffStart;
+                                    std::string nameFalloffStart = "FalloffStart - " + StringUtil::SaveInt(i);
+                                    if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
+                                    {
+                                        lc.falloffStart = fFalloffStart;
+                                    }
+                                    //falloffEnd
+                                    float fFalloffEnd = lc.falloffEnd;
+                                    std::string nameFalloffEnd = "FalloffEnd - " + StringUtil::SaveInt(i);
+                                    if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
+                                    {
+                                        lc.falloffEnd = fFalloffEnd;
+                                    }
+                                    //spotPower
+                                    float fSpotPower = lc.spotPower;
+                                    std::string nameSpotPower = "SpotPower - " + StringUtil::SaveInt(i);
+                                    if (ImGui::DragFloat(nameSpotPower.c_str(), &fSpotPower, 0.01f, 0.1f, 200.0f))
+                                    {
+                                        lc.spotPower = fSpotPower;
+                                    }
+                                }
+
+                                //strength
+                                glm::vec3 vStrength = lc.strength;
+                                std::string nameStrength = "Strength - " + StringUtil::SaveInt(i);
+                                if (ImGui::DragFloat3(nameStrength.c_str(), &vStrength[0], 0.001f, 0.001, 10))
+                                {
+                                    lc.strength = vStrength;
+                                }
+                            }
+                        }
+                    }
+
 
                 void VulkanWindow::endRenderImgui()
                 {

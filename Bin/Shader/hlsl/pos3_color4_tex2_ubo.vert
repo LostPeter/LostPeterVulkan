@@ -8,10 +8,11 @@ struct VSInput
     [[vk::location(2)]]float2 inTexCoord    : TEXCOORD0;
 };
 
-//Light
+//LightConstants
 #define MAX_LIGHT_COUNT 16
-struct Light
+struct LightConstants
 {
+    float4 common;      // x: type; y:  z:  w:
     float3 position;    // point light only
     float falloffStart; // point/spot light only
     float3 direction;   // directional/spot light only
@@ -39,7 +40,7 @@ struct PassConstants
     float g_TotalTime;
     float g_DeltaTime;
     float4 g_AmbientLight;
-    Light g_Lights[MAX_LIGHT_COUNT];
+    LightConstants g_Lights[MAX_LIGHT_COUNT];
 };
 
 [[vk::binding(0)]]cbuffer passConsts               : register(b0) 
