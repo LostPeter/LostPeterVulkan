@@ -13,12 +13,11 @@
 const std::string c_strVert = ".vert.spv";
 const std::string c_strFrag = ".frag.spv";
 
-static const int g_ShaderCount = 3;
+static const int g_ShaderCount = 2;
 static const char* g_pathShaderModules[2 * g_ShaderCount] = 
 {
-    "Assets/Shader/standard_mesh_opaque.vert.spv", "Assets/Shader/standard_mesh_opaque.frag.spv", //standard_mesh_opaque
-    "Assets/Shader/standard_mesh_transparent.vert.spv", "Assets/Shader/standard_mesh_transparent.frag.spv", //standard_mesh_transparent
-    "Assets/Shader/standard_mesh_outline.vert.spv", "Assets/Shader/standard_mesh_outline.frag.spv", //standard_mesh_outline
+    "Assets/Shader/standard_mesh_opaque_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_lit.frag.spv", //standard_mesh_opaque_lit
+    "Assets/Shader/standard_mesh_transparent_lit.vert.spv", "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit
 };
 
 
@@ -30,11 +29,11 @@ static const char* g_pathModels[3 * g_CountLen] =
     "bunny",            "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp", //bunny  
 };
 
-static const char* g_pathModelShaderModules[2 * g_CountLen] = 
+static const char* g_pathModelShaderModules[g_CountLen] = 
 {
-    "Assets/Shader/standard_mesh_opaque", "Assets/Shader/standard_mesh_outline", //plane 
-    "Assets/Shader/standard_mesh_transparent", "Assets/Shader/standard_mesh_outline", //viking_room
-    "Assets/Shader/standard_mesh_opaque", "Assets/Shader/standard_mesh_outline", //bunny 
+    "Assets/Shader/standard_mesh_opaque_lit", //plane 
+    "Assets/Shader/standard_mesh_transparent_lit", //viking_room
+    "Assets/Shader/standard_mesh_opaque_lit", //bunny 
 };
 
 static float g_instanceGap = 4.0f;
@@ -93,20 +92,6 @@ static float g_TransparentAlpha[g_CountLen] =
     1.0f, //plane
     0.5f, //viking_room
     1.0f, //bunny
-};
-
-static glm::vec4 g_OutlineWidth[g_CountLen] = 
-{
-    glm::vec4(0.02f,0.02f,0.02f,0.02f), //plane
-    glm::vec4(0.02f,0.02f,0.02f,0.02f), //viking_room
-    glm::vec4(0.02f,0.02f,0.02f,0.02f), //bunny
-};
-
-static glm::vec4 g_OutlineColor[g_CountLen] = 
-{
-    glm::vec4(0,0,1,1), //plane
-    glm::vec4(0,1,0,1), //viking_room
-    glm::vec4(1,0,0,1), //bunny
 };
 
 
@@ -328,15 +313,10 @@ void Vulkan_010_Lighting::createPipeline_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        std::string pathVertShaderBase = g_pathModelShaderModules[2 * i + 0] + c_strVert;
-        std::string pathFragShaderBase = g_pathModelShaderModules[2 * i + 0] + c_strFrag;
+        std::string pathVertShaderBase = g_pathModelShaderModules[i] + c_strVert;
+        std::string pathFragShaderBase = g_pathModelShaderModules[i] + c_strFrag;
         VkShaderModule vertShaderBase = findShaderModule(pathVertShaderBase);
         VkShaderModule fragShaderBase = findShaderModule(pathFragShaderBase);
-
-        std::string pathVertShaderOutline = g_pathModelShaderModules[2 * i + 1] + c_strVert;
-        std::string pathFragShaderOutline = g_pathModelShaderModules[2 * i + 1] + c_strFrag;
-        VkShaderModule vertShaderOutline = findShaderModule(pathVertShaderOutline);
-        VkShaderModule fragShaderOutline = findShaderModule(pathFragShaderOutline);
 
         //poPipelineGraphics_WireFrame
         pModelObject->poPipelineGraphics_WireFrame = createVkPipeline(vertShaderBase, "main",
@@ -452,12 +432,12 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
             VkDescriptorBufferInfo bufferInfo_Object = {};
             bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j];
             bufferInfo_Object.offset = 0;
-            bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT; //pModelObject->objectCBs.size();
+            bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
 
             VkDescriptorBufferInfo bufferInfo_Material = {};
             bufferInfo_Material.buffer = pModelObject->isTransparent ? pModelObject->poBuffers_materialCB[j] : this->poBuffers_MaterialCB[j];
             bufferInfo_Material.offset = 0;
-            bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT; //(pModelObject->isTransparent ? pModelObject->materialCBs.size() : this->materialCBs.size());
+            bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
 
             VkDescriptorBufferInfo bufferInfo_Instance = {};
             bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
@@ -616,8 +596,6 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                 ImGui::Checkbox(nameIsWireFrame.c_str(), &pModelObject->isWireFrame);
                 std::string nameIsRotate = "Is Rotate - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsRotate.c_str(), &pModelObject->isRotate);
-                std::string nameIsOutline = "Is Outline - " + pModelObject->nameModel;
-                ImGui::Checkbox(nameIsOutline.c_str(), &pModelObject->isOutline);   
                 std::string nameIsTransparent = "Is Transparent - " + pModelObject->nameModel;
                 bool isTransparent = pModelObject->isTransparent;
                 ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
@@ -646,33 +624,37 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                 std::string nameWorld = "Model Object - " + pModelObject->nameModel;
                 if (ImGui::CollapsingHeader(nameWorld.c_str()))
                 {
-                    ObjectConstants& obj = pModelObject->objectCBs[0];
-                    //Mat
-                    const glm::mat4& mat4World = obj.g_MatWorld;
-                    std::string nameTable = StringUtil::SaveInt(i) + " - split_model_world";
-                    if (ImGui::BeginTable(nameTable.c_str(), 4))
+                    int count_instance = pModelObject->countInstance;
+                    for (int j = 0; j < count_instance; j++)
                     {
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
+                        ObjectConstants& obj = pModelObject->objectCBs[j];
+                        //Mat
+                        const glm::mat4& mat4World = obj.g_MatWorld;
+                        std::string nameTable = StringUtil::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
+                        if (ImGui::BeginTable(nameTable.c_str(), 4))
+                        {
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
 
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
 
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
 
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
 
-                        ImGui::EndTable();
+                            ImGui::EndTable();
+                        }
                     }
                 }
             }

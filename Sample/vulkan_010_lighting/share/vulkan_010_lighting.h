@@ -26,7 +26,6 @@ public:
             , isShow(true)
             , isWireFrame(false)
             , isRotate(true)
-            , isOutline(true)
             , isTransparent(false)
 
             //Vertex
@@ -172,7 +171,6 @@ public:
         bool isShow;
         bool isWireFrame;
         bool isRotate;
-        bool isOutline;
         bool isTransparent;
 
         //Vertex
@@ -246,8 +244,6 @@ public:
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrVector m_aModelObjects_Render;
     ModelObjectPtrMap m_mapModelObjects;
-    
-    VkPipelineLayout poPipelineLayout_Outline;
     
     VkShaderModuleVector m_aVkShaderModules;
     VkShaderModuleMap m_mapVkShaderModules;

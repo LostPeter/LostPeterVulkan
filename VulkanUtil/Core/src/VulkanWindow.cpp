@@ -1102,7 +1102,7 @@ namespace LostPeter
         passMainLayoutBinding.descriptorCount = 1;
         passMainLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         passMainLayoutBinding.pImmutableSamplers = nullptr;
-        passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
         //1> ObjectConstants
         VkDescriptorSetLayoutBinding objectLayoutBinding = {};
@@ -1118,7 +1118,7 @@ namespace LostPeter
         materialLayoutBinding.descriptorCount = 1;
         materialLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         materialLayoutBinding.pImmutableSamplers = nullptr;
-        materialLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        materialLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
         //3> InstanceConstants
         VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
@@ -1126,7 +1126,7 @@ namespace LostPeter
         instanceLayoutBinding.descriptorCount = 1;
         instanceLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         instanceLayoutBinding.pImmutableSamplers = nullptr;
-        instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
         //4> Texture Sampler
         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};

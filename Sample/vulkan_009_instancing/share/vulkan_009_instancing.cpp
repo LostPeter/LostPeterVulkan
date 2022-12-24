@@ -250,7 +250,7 @@ void Vulkan_009_Instancing::rebuildInstanceCBs(bool isCreateVkBuffer)
         
         if (isCreateVkBuffer)
         {
-            bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT; //pModelObject->objectCBs.size();
+            bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
             pModelObject->poBuffers_ObjectCB.resize(count_sci);
             pModelObject->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
@@ -272,7 +272,7 @@ void Vulkan_009_Instancing::rebuildInstanceCBs(bool isCreateVkBuffer)
 
             if (isCreateVkBuffer)
             {
-                bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT; //pModelObject->materialCBs.size();
+                bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
                 pModelObject->poBuffers_materialCB.resize(count_sci);
                 pModelObject->poBuffersMemory_materialCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
@@ -295,7 +295,7 @@ void Vulkan_009_Instancing::rebuildInstanceCBs(bool isCreateVkBuffer)
         
         if (isCreateVkBuffer)
         {
-            bufferSize = sizeof(ObjectConstants_Outline) * 128; //pModelObject->objectCBs_Outline.size();
+            bufferSize = sizeof(ObjectConstants_Outline) * 128;
             pModelObject->poBuffers_ObjectCB_Outline.resize(count_sci);
             pModelObject->poBuffersMemory_ObjectCB_Outline.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
@@ -499,12 +499,12 @@ void Vulkan_009_Instancing::createDescriptorSets_Custom()
                 VkDescriptorBufferInfo bufferInfo_Object = {};
                 bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j];
                 bufferInfo_Object.offset = 0;
-                bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT; //pModelObject->objectCBs.size();
+                bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
 
                 VkDescriptorBufferInfo bufferInfo_Material = {};
                 bufferInfo_Material.buffer = pModelObject->isTransparent ? pModelObject->poBuffers_materialCB[j] : this->poBuffers_MaterialCB[j];
                 bufferInfo_Material.offset = 0;
-                bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT; //(pModelObject->isTransparent ? pModelObject->materialCBs.size() : this->materialCBs.size());
+                bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT; 
 
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
                 bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
@@ -586,12 +586,12 @@ void Vulkan_009_Instancing::createDescriptorSets_Custom()
                 VkDescriptorBufferInfo bufferInfo_Object_Outline = {};
                 bufferInfo_Object_Outline.buffer = pModelObject->poBuffers_ObjectCB_Outline[j];
                 bufferInfo_Object_Outline.offset = 0;
-                bufferInfo_Object_Outline.range = sizeof(ObjectConstants_Outline) * 128; //pModelObject->objectCBs_Outline.size();
+                bufferInfo_Object_Outline.range = sizeof(ObjectConstants_Outline) * 128; 
 
                 VkDescriptorBufferInfo bufferInfo_Material_Outline = {};
                 bufferInfo_Material_Outline.buffer = this->poBuffers_MaterialCB[j];
                 bufferInfo_Material_Outline.offset = 0;
-                bufferInfo_Material_Outline.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT; //this->materialCBs.size();
+                bufferInfo_Material_Outline.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
 
                 VkDescriptorBufferInfo bufferInfo_Instance_Outline = {};
                 bufferInfo_Instance_Outline.buffer = this->poBuffers_InstanceCB[j];
@@ -746,10 +746,6 @@ bool Vulkan_009_Instancing::beginRenderImgui()
             g_instanceGap = fGap;
             rebuildInstanceCBs(false);
         }
-        // if (ImGui::Button("Rebuild InstanceCBs"))
-        // {
-        //     rebuildInstanceCBs(false);
-        // }
 
         size_t count = this->m_aModelObjects.size();
         for (size_t i = 0; i < count; i++)
@@ -789,56 +785,56 @@ bool Vulkan_009_Instancing::beginRenderImgui()
                     pModelObject->countInstance = countInstanceExt * 2 + 1;
                     rebuildInstanceCBs(false);
                 }
-                // if (ImGui::Button("Rebuild InstanceCBs"))
-                // {
-                //     rebuildInstanceCBs(false);
-                // }
 
                 ImGui::Text("Vertex: [%d], Index: [%d]", (int)pModelObject->poVertexCount, (int)pModelObject->poIndexCount);
                 
                 std::string nameWorld = "Model Object - " + pModelObject->nameModel;
                 if (ImGui::CollapsingHeader(nameWorld.c_str()))
                 {
-                    ObjectConstants_Outline& obj = pModelObject->objectCBs_Outline[0];
-                    //Mat
-                    const glm::mat4& mat4World = obj.g_MatWorld;
-                    std::string nameTable = StringUtil::SaveInt(i) + " - split_model_world";
-                    if (ImGui::BeginTable(nameTable.c_str(), 4))
+                    int count_instance = pModelObject->countInstance;
+                    for (int j = 0; j < count_instance; j++)
                     {
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
+                        ObjectConstants_Outline& obj = pModelObject->objectCBs_Outline[j];
+                        //Mat
+                        const glm::mat4& mat4World = obj.g_MatWorld;
+                        std::string nameTable = StringUtil::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
+                        if (ImGui::BeginTable(nameTable.c_str(), 4))
+                        {
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
 
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
 
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
 
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
-                        ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
+                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
 
-                        ImGui::EndTable();
-                    }
-                    //OutlineWidth
-                    std::string nameOutlineWidth = "Outline Width - " + pModelObject->nameModel;
-                    float fOutlineWidth = obj.g_OutlineWidth.x;
-                    if (ImGui::DragFloat(nameOutlineWidth.c_str(), &fOutlineWidth, 0.01f, 0.01f, 1.0f))
-                    {
-                        obj.g_OutlineWidth = glm::vec4(fOutlineWidth,fOutlineWidth,fOutlineWidth,fOutlineWidth);
-                    }
-                    //OutlineColor
-                    std::string nameOutlineColor = "Outline Color - " + pModelObject->nameModel;
-                    if (ImGui::ColorEdit4(nameOutlineColor.c_str(), (float*)&(obj.g_OutlineColor)))
-                    {
+                            ImGui::EndTable();
+                        }
+                        //OutlineWidth
+                        std::string nameOutlineWidth = "Outline Width - " + pModelObject->nameModel;
+                        float fOutlineWidth = obj.g_OutlineWidth.x;
+                        if (ImGui::DragFloat(nameOutlineWidth.c_str(), &fOutlineWidth, 0.01f, 0.01f, 1.0f))
+                        {
+                            obj.g_OutlineWidth = glm::vec4(fOutlineWidth,fOutlineWidth,fOutlineWidth,fOutlineWidth);
+                        }
+                        //OutlineColor
+                        std::string nameOutlineColor = "Outline Color - " + pModelObject->nameModel;
+                        if (ImGui::ColorEdit4(nameOutlineColor.c_str(), (float*)&(obj.g_OutlineColor)))
+                        {
 
+                        }
                     }
                 }
             }
