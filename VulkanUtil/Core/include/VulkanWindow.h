@@ -177,7 +177,8 @@ namespace LostPeter
         VulkanCamera* pCamera;
 
         //Light
-        LightConstants aLights[MAX_LIGHT_COUNT];
+        LightConstants mainLight; //common.x == Vulkan_Light_Directional, can not change
+        LightConstants aAdditionalLights[MAX_LIGHT_COUNT];
 
         //Mouse
         glm::vec2 mousePosLast;
@@ -379,6 +380,7 @@ namespace LostPeter
                         virtual void cameraConfig();
                         virtual void cameraReset();
                         virtual void lightConfig();
+                            virtual void lightConfigItem(LightConstants& lc, const std::string& name, int index, bool canChangeType);
 
                     virtual void endRenderImgui();
 

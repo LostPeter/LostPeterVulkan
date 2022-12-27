@@ -32,7 +32,8 @@ layout(binding = 0) uniform PassConstants
     float g_TotalTime;
     float g_DeltaTime;
     vec4 g_AmbientLight;
-    LightConstants g_Lights[MAX_LIGHT_COUNT];
+    LightConstants g_MainLight;
+    LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 } passConsts;
 
 layout(binding = 1) uniform ObjectConstants

@@ -41,7 +41,8 @@ struct PassConstants
     float g_TotalTime;
     float g_DeltaTime;
     float4 g_AmbientLight;
-    LightConstants g_Lights[MAX_LIGHT_COUNT];
+    LightConstants g_MainLight;
+    LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 };
 
 [[vk::binding(0)]]cbuffer passConsts               : register(b0) 

@@ -281,7 +281,8 @@ namespace LostPeter
 
     glm::vec3 MathUtil::ToEulerAngles(const glm::quat& qRot)
     {
-        glm::vec3 vEulerAngles = glm::eulerAngles(qRot);
+        glm::vec3 vEulerAngles(0, 0, 0);
+        glm::extractEulerAngleYXZ(glm::toMat4(qRot), vEulerAngles.y, vEulerAngles.x, vEulerAngles.z);
         vEulerAngles.x = glm::degrees(vEulerAngles.x);
         vEulerAngles.y = glm::degrees(vEulerAngles.y);
         vEulerAngles.z = glm::degrees(vEulerAngles.z);

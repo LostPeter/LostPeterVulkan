@@ -855,7 +855,7 @@ namespace LostPeter
     //////////////////////////////// LightConstants /////////////////////////////////
     struct utilExport LightConstants
     {
-        glm::vec4 common;    // x: type; y:  z:  w:
+        glm::vec4 common;    // x: type; y: enable(1 or 0); z:  w:
         glm::vec3 position;  // point/spot light only
         float falloffStart;  // point/spot light only
         glm::vec3 direction; // directional/spot light only
@@ -896,7 +896,8 @@ namespace LostPeter
         float g_DeltaTime;
         glm::vec4 g_AmbientLight;
 
-        LightConstants g_Lights[MAX_LIGHT_COUNT];
+        LightConstants g_MainLight;
+        LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 
         PassConstants()
             : g_MatView(MathUtil::Identity4x4())
