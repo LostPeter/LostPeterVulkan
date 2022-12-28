@@ -50,6 +50,26 @@ struct PassConstants
 }
 
 
+//MaterialConstants
+#define MAX_MATERIAL_COUNT 128
+struct MaterialConstants
+{
+    float4 diffuseAlbedo;
+    float3 fresnelR0;
+    float roughness;
+    float4x4 matTransform;
+    float alpha;
+    float reserve0;
+    float reserve1;
+    float reserve2;
+};
+
+[[vk::binding(2)]]cbuffer materialConsts          : register(b2) 
+{
+    MaterialConstants materialConsts[MAX_MATERIAL_COUNT];
+}
+
+
 [[vk::binding(4)]] Texture2D texture            : register(t1);
 [[vk::binding(4)]] SamplerState textureSampler  : register(s1);
 

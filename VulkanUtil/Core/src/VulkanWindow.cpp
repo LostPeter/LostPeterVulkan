@@ -3036,6 +3036,7 @@ namespace LostPeter
                 if (this->poBuffersMemory_PassCB.size() <= 0)
                     return;
 
+                //Camera Settings
                 if (this->pCamera != nullptr)
                 {
                     this->passCB.g_MatView = this->pCamera->GetMatrix4View();
@@ -3052,6 +3053,14 @@ namespace LostPeter
                                                                 this->cfg_cameraFar);
                 }   
 
+                //Light Settings
+                memcpy(&this->passCB.g_MainLight, &this->mainLight, sizeof(LightConstants));
+                for (int i = 0; i < MAX_LIGHT_COUNT; i++)
+                {
+                    memcpy(&this->passCB.g_AdditionalLights[i], &this->aAdditionalLights[i], sizeof(LightConstants));
+                }
+
+                //Update Buffer
                 VkDeviceMemory& memory = this->poBuffersMemory_PassCB[this->poSwapChainImageIndex];
                 void* data;
                 vkMapMemory(this->poDevice, memory, 0, sizeof(PassConstants), 0, &data);
