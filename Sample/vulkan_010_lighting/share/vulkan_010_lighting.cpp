@@ -628,7 +628,7 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                     for (int j = 0; j < count_instance; j++)
                     {
                         ObjectConstants& obj = pModelObject->objectCBs[j];
-                        //Mat
+                        //ObjectConstants
                         const glm::mat4& mat4World = obj.g_MatWorld;
                         std::string nameTable = StringUtil::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
                         if (ImGui::BeginTable(nameTable.c_str(), 4))
@@ -655,6 +655,8 @@ bool Vulkan_010_Lighting::beginRenderImgui()
 
                             ImGui::EndTable();
                         }
+                        //MaterialConstants
+
                     }
                 }
             }
@@ -663,12 +665,17 @@ bool Vulkan_010_Lighting::beginRenderImgui()
         ImGui::Separator();
         ImGui::Spacing();
 
-        //2> Camera
+        //2> PassConstants
+        if (ImGui::CollapsingHeader("PassConstants Settings"))
+        {
+            passConstantsConfig();
+        }
+        //3> Camera
         if (ImGui::CollapsingHeader("Camera Settings"))
         {
             cameraConfig();
         }
-        //3> Light
+        //4> Light
         if (ImGui::CollapsingHeader("Light Settings"))
         {
             lightConfig();

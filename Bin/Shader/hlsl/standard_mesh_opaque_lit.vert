@@ -32,15 +32,19 @@ struct PassConstants
     float4x4 g_MatProj_Inv;
     float4x4 g_MatViewProj;
     float4x4 g_MatViewProj_Inv;
+
     float3 g_EyePosW;
     float g_cbPerObjectPad1;
-    float2 g_RenderTargetSize;
-    float2 g_RenderTargetSize_Inv;
     float g_NearZ;
     float g_FarZ;
     float g_TotalTime;
     float g_DeltaTime;
+
+    float2 g_RenderTargetSize;
+    float2 g_RenderTargetSize_Inv;
+
     float4 g_AmbientLight;
+    
     LightConstants g_MainLight;
     LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 };
@@ -103,6 +107,7 @@ struct VSOutput
 	float4 outPosition                      : SV_POSITION;
     [[vk::location(0)]] float4 outColor     : COLOR0;
     [[vk::location(1)]] float2 outTexCoord  : TEXCOORD0;
+    [[vk::location(2)]] float3 outNormal    : TEXCOORD1;
 };
 
 
@@ -112,6 +117,7 @@ VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
     output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, mul(objectConsts[instanceIndex].g_MatWorld, float4(input.inPosition, 1.0))));
     output.outColor = input.inColor;
     output.outTexCoord = input.inTexCoord;
+    output.outNormal = input.inNormal;
 
     return output;
 }

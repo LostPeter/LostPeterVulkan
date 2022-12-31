@@ -3041,6 +3041,10 @@ namespace LostPeter
                 {
                     this->passCB.g_MatView = this->pCamera->GetMatrix4View();
                     this->passCB.g_MatProj = this->pCamera->GetMatrix4Projection();
+
+                    this->passCB.g_EyePosW = this->pCamera->GetPos();
+                    this->passCB.g_NearZ = this->pCamera->GetNearZ();
+                    this->passCB.g_FarZ = this->pCamera->GetFarZ();
                 }
                 else
                 {
@@ -3051,7 +3055,20 @@ namespace LostPeter
                                                                 this->poSwapChainExtent.width / (float)this->poSwapChainExtent.height,
                                                                 this->cfg_cameraNear, 
                                                                 this->cfg_cameraFar);
+                    this->passCB.g_EyePosW = this->cfg_cameraPos;
+                    this->passCB.g_NearZ = this->cfg_cameraNear;
+                    this->passCB.g_FarZ = this->cfg_cameraFar;
                 }   
+                this->passCB.g_MatView_Inv = MathUtil::InverseMatrix4(this->passCB.g_MatView);
+                this->passCB.g_MatProj_Inv = MathUtil::InverseMatrix4(this->passCB.g_MatProj);
+                this->passCB.g_MatViewProj = this->passCB.g_MatProj * this->passCB.g_MatView;
+                this->passCB.g_MatViewProj_Inv = MathUtil::InverseMatrix4(this->passCB.g_MatViewProj);
+                this->passCB.g_TotalTime = this->pTimer->GetTimeSinceStart();
+                this->passCB.g_DeltaTime = this->pTimer->GetTimeDelta();
+
+                //RenderTarget
+                this->passCB.g_RenderTargetSize = glm::vec2(this->poViewport.width, this->poViewport.height);
+                this->passCB.g_RenderTargetSize_Inv = glm::vec2(1.0f / this->poViewport.width, 1.0f / this->poViewport.height);
 
                 //Light Settings
                 memcpy(&this->passCB.g_MainLight, &this->mainLight, sizeof(LightConstants));
@@ -3180,6 +3197,17 @@ namespace LostPeter
 
                     return false;
                 }
+                    void VulkanWindow::passConstantsConfig()
+                    {
+                        //Material
+                        {
+                            //g_AmbientLight
+                            if (ImGui::ColorEdit4("Global AmbientLight", (float*)&(this->passCB.g_AmbientLight)))
+                            {
+                                
+                            }
+                        }
+                    }
                     void VulkanWindow::cameraConfig()
                     {
                         if (this->pCamera == nullptr)
@@ -3432,12 +3460,20 @@ namespace LostPeter
 
                             if (lc.common.x == (int)Vulkan_Light_Directional)
                             {
+                                //Euler Angle
+                                std::string nameEulerAngle = "EulerAngle - " + StringUtil::SaveInt(index);
+                                glm::vec3 vEulerAngle = MathUtil::ToEulerAngles(lc.direction);
+                                if (ImGui::DragFloat3(nameEulerAngle.c_str(), &vEulerAngle[0], 0.1f, -180, 180))
+                                {
+                                    lc.direction = MathUtil::ToDirection(vEulerAngle);
+                                }
+
                                 //direction
                                 glm::vec3 vDirection = lc.direction;
                                 std::string nameDirection = "Direction - " + StringUtil::SaveInt(index);
                                 if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
                                 {
-                                    lc.direction = vDirection;
+                                    
                                 }
                             }
                             else if (lc.common.x == (int)Vulkan_Light_Point)

@@ -5,6 +5,7 @@ struct VSOutput
 {
     [[vk::location(0)]] float4 inColor          : COLOR0;
     [[vk::location(1)]] float2 inTexCoord       : TEXCOORD0;
+    [[vk::location(2)]] float3 inNormal         : TEXCOORD1;
 };
 
 
@@ -31,15 +32,19 @@ struct PassConstants
     float4x4 g_MatProj_Inv;
     float4x4 g_MatViewProj;
     float4x4 g_MatViewProj_Inv;
+
     float3 g_EyePosW;
     float g_cbPerObjectPad1;
-    float2 g_RenderTargetSize;
-    float2 g_RenderTargetSize_Inv;
     float g_NearZ;
     float g_FarZ;
     float g_TotalTime;
     float g_DeltaTime;
+
+    float2 g_RenderTargetSize;
+    float2 g_RenderTargetSize_Inv;
+
     float4 g_AmbientLight;
+
     LightConstants g_MainLight;
     LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 };
@@ -64,7 +69,7 @@ struct MaterialConstants
     float reserve2;
 };
 
-[[vk::binding(2)]]cbuffer materialConsts          : register(b2) 
+[[vk::binding(2)]]cbuffer materialConsts            : register(b2) 
 {
     MaterialConstants materialConsts[MAX_MATERIAL_COUNT];
 }
@@ -76,8 +81,15 @@ struct MaterialConstants
 
 float4 main(VSOutput input) : SV_TARGET
 {
-    float3 outColor = texture.Sample(textureSampler, input.inTexCoord).rgb;
-    outColor.xyz *= input.inColor.rgb;
+    float3 outColor;
+
+    //Texture
+    outColor = texture.Sample(textureSampler, input.inTexCoord).rgb;
+    outColor.rgb *= input.inColor.rgb;
+
+    //Light
+    outColor.rgb += passConsts.g_AmbientLight.rgb;
+
     
     return float4(outColor, 1.0);
 }

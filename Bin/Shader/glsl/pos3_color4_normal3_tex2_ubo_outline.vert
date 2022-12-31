@@ -23,15 +23,19 @@ layout(binding = 0) uniform PassConstants
     mat4 g_MatProj_Inv;
     mat4 g_MatViewProj;
     mat4 g_MatViewProj_Inv;
+
     vec3 g_EyePosW;
     float g_cbPerObjectPad1;
-    vec2 g_RenderTargetSize;
-    vec2 g_RenderTargetSize_Inv;
     float g_NearZ;
     float g_FarZ;
     float g_TotalTime;
     float g_DeltaTime;
+
+    vec2 g_RenderTargetSize;
+    vec2 g_RenderTargetSize_Inv;
+
     vec4 g_AmbientLight;
+    
     LightConstants g_MainLight;
     LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 } passConsts;

@@ -31,15 +31,19 @@ struct PassConstants
     float4x4 g_MatProj_Inv;
     float4x4 g_MatViewProj;
     float4x4 g_MatViewProj_Inv;
+
     float3 g_EyePosW;
     float g_cbPerObjectPad1;
-    float2 g_RenderTargetSize;
-    float2 g_RenderTargetSize_Inv;
     float g_NearZ;
     float g_FarZ;
     float g_TotalTime;
     float g_DeltaTime;
+
+    float2 g_RenderTargetSize;
+    float2 g_RenderTargetSize_Inv;
+
     float4 g_AmbientLight;
+    
     LightConstants g_MainLight;
     LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 };

@@ -867,7 +867,7 @@ namespace LostPeter
             : common(0, 0, 0, 0)
             , position(0.0f, 0.0f, 0.0f)
             , falloffStart(1.0f)
-            , direction(0.0f, 0.0f, 1.0f)
+            , direction(0.0f, -1.0f, 0.0f)
             , falloffEnd(10.0f)
             , strength(0.5f, 0.5f, 0.5f)
             , spotPower(64.0f)
@@ -879,6 +879,7 @@ namespace LostPeter
     //////////////////////////////// PassConstants //////////////////////////////////
     struct utilExport PassConstants
     {
+        //Matrix4
         glm::mat4 g_MatView;
         glm::mat4 g_MatView_Inv;
         glm::mat4 g_MatProj;
@@ -886,16 +887,22 @@ namespace LostPeter
         glm::mat4 g_MatViewProj;
         glm::mat4 g_MatViewProj_Inv;
 
-        glm::vec3 g_EyePosW;
+        //Camera
+        glm::vec3 g_EyePosW;    
         float g_cbPerObjectPad1;
-        glm::vec2 g_RenderTargetSize;
-        glm::vec2 g_RenderTargetSize_Inv;
         float g_NearZ;
         float g_FarZ;
         float g_TotalTime;
         float g_DeltaTime;
+
+        //RenderTarget
+        glm::vec2 g_RenderTargetSize;   
+        glm::vec2 g_RenderTargetSize_Inv;
+
+        //Material
         glm::vec4 g_AmbientLight;
 
+        //Light
         LightConstants g_MainLight;
         LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 
@@ -908,12 +915,12 @@ namespace LostPeter
             , g_MatViewProj_Inv(MathUtil::Identity4x4())
             , g_EyePosW(0.0f, 0.0f, 0.0f)
             , g_cbPerObjectPad1(0.0f)
-            , g_RenderTargetSize(0.0f, 0.0f)
-            , g_RenderTargetSize_Inv(0.0f, 0.0f)
             , g_NearZ(0.0f)
             , g_FarZ(0.0f)
             , g_TotalTime(0.0f)
             , g_DeltaTime(0.0f)
+            , g_RenderTargetSize(0.0f, 0.0f)
+            , g_RenderTargetSize_Inv(0.0f, 0.0f)
             , g_AmbientLight(0.0f, 0.0f, 0.0f, 1.0f)
         {
 

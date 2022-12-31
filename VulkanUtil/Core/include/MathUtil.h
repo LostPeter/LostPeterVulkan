@@ -506,6 +506,8 @@ namespace LostPeter
         static glm::mat4 ToMatrix4(const glm::mat3& mat3);
 
         static glm::vec3 ToEulerAngles(const glm::quat& qRot);
+        static glm::vec3 ToEulerAngles(const glm::vec3& vDir);
+        static glm::vec3 ToDirection(const glm::vec3& vEulerAngles);
         
         static glm::quat ToQuaternion(const glm::mat3& mat3);
         static glm::quat ToQuaternion(const glm::mat4& mat4);

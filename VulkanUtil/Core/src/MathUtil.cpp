@@ -288,6 +288,38 @@ namespace LostPeter
         vEulerAngles.z = glm::degrees(vEulerAngles.z);
         return vEulerAngles;
     }
+    glm::vec3 MathUtil::ToEulerAngles(const glm::vec3& vDir)
+    {
+        glm::vec3 vRight;
+        glm::vec3 vUp;
+        glm::vec3 vDirection = Normalize(vDir);
+        if (vDirection == ms_v3UnitY)
+        {
+            vRight = ms_v3UnitX;
+            vUp = ms_v3UnitNegZ;
+        }
+        else if (vDirection == ms_v3UnitNegY)
+        {
+            vRight = ms_v3UnitX;
+            vUp = ms_v3UnitZ;
+        }
+        else
+        {
+            vRight = Normalize(Cross(ms_v3UnitY, vDirection));
+            vUp = Normalize(Cross(vDirection, vRight));
+        }
+        glm::quat qRot = ToQuaternion(vRight, vUp, vDirection);
+        return ToEulerAngles(qRot);
+    }
+    glm::vec3 MathUtil::ToDirection(const glm::vec3& vEulerAngles)
+    {
+        glm::quat qRot = ToQuaternion(vEulerAngles);
+        glm::vec3 xAxis(0);
+        glm::vec3 yAxis(0);
+        glm::vec3 zAxis(0);
+        ToAxes(qRot, xAxis, yAxis, zAxis);
+        return Normalize(zAxis);
+    }
 
     glm::quat MathUtil::ToQuaternion(const glm::mat3& mat3)
     {
