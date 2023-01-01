@@ -3139,8 +3139,7 @@ namespace LostPeter
             }
                 void VulkanWindow::updateCBs_MaterialsContent()
                 {   
-                    MaterialConstants materialCB = this->materialCBs[0];
-                    materialCB.diffuseAlbedo = glm::vec4(1);
+                    
                 }
             void VulkanWindow::updateCBs_Instances()
             {
@@ -3432,6 +3431,7 @@ namespace LostPeter
                             {   
                                 lc.common.y = isEnable ? 1.0f : 0.0f;
                             }
+                            ImGui::Spacing();
 
                             //Light Type
                             int nIndex = 0;
@@ -3457,34 +3457,48 @@ namespace LostPeter
                                 }
                                 ImGui::EndCombo();
                             }
+                            ImGui::Spacing();
+
+                            //position
+                            glm::vec3 vPosition = lc.position;
+                            std::string namePosition = "Position - " + StringUtil::SaveInt(index);
+                            if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
+                            {
+                                lc.position = vPosition;
+                            }
+                            ImGui::Spacing();
+
+                            //Euler Angle
+                            std::string nameEulerAngle = "EulerAngle - " + StringUtil::SaveInt(index);
+                            glm::vec3 vEulerAngle = MathUtil::ToEulerAngles(lc.direction);
+                            if (ImGui::DragFloat3(nameEulerAngle.c_str(), &vEulerAngle[0], 0.1f, -180, 180))
+                            {
+                                lc.direction = MathUtil::ToDirection(vEulerAngle);
+                            }
+                            //direction
+                            glm::vec3 vDirection = lc.direction;
+                            std::string nameDirection = "Direction - " + StringUtil::SaveInt(index);
+                            if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
+                            {
+                                
+                            }
+                            ImGui::Spacing();
+
+                            //color
+                            glm::vec4 vColor = glm::vec4(lc.color, 1);
+                            std::string nameStrength = "Color - " + StringUtil::SaveInt(index);
+                            if (ImGui::ColorEdit4(nameStrength.c_str(), (float*)&vColor))
+                            {
+                                lc.color = glm::vec3(vColor.x, vColor.y, vColor.z);
+                            }
+                            ImGui::Spacing();
 
                             if (lc.common.x == (int)Vulkan_Light_Directional)
                             {
-                                //Euler Angle
-                                std::string nameEulerAngle = "EulerAngle - " + StringUtil::SaveInt(index);
-                                glm::vec3 vEulerAngle = MathUtil::ToEulerAngles(lc.direction);
-                                if (ImGui::DragFloat3(nameEulerAngle.c_str(), &vEulerAngle[0], 0.1f, -180, 180))
-                                {
-                                    lc.direction = MathUtil::ToDirection(vEulerAngle);
-                                }
-
-                                //direction
-                                glm::vec3 vDirection = lc.direction;
-                                std::string nameDirection = "Direction - " + StringUtil::SaveInt(index);
-                                if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
-                                {
-                                    
-                                }
+                                
                             }
                             else if (lc.common.x == (int)Vulkan_Light_Point)
                             {
-                                //position
-                                glm::vec3 vPosition = lc.position;
-                                std::string namePosition = "Position - " + StringUtil::SaveInt(index);
-                                if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
-                                {
-                                    lc.position = vPosition;
-                                }
                                 //falloffStart
                                 float fFalloffStart = lc.falloffStart;
                                 std::string nameFalloffStart = "FalloffStart - " + StringUtil::SaveInt(index);
@@ -3492,6 +3506,8 @@ namespace LostPeter
                                 {
                                     lc.falloffStart = fFalloffStart;
                                 }
+                                ImGui::Spacing();
+
                                 //falloffEnd
                                 float fFalloffEnd = lc.falloffEnd;
                                 std::string nameFalloffEnd = "FalloffEnd - " + StringUtil::SaveInt(index);
@@ -3502,20 +3518,6 @@ namespace LostPeter
                             }
                             else if (lc.common.x == (int)Vulkan_Light_Spot)
                             {
-                                //position
-                                glm::vec3 vPosition = lc.position;
-                                std::string namePosition = "Position - " + StringUtil::SaveInt(index);
-                                if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
-                                {
-                                    lc.position = vPosition;
-                                }
-                                //direction
-                                glm::vec3 vDirection = lc.direction;
-                                std::string nameDirection = "Direction - " + StringUtil::SaveInt(index);
-                                if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
-                                {
-                                    lc.direction = vDirection;
-                                }
                                 //falloffStart
                                 float fFalloffStart = lc.falloffStart;
                                 std::string nameFalloffStart = "FalloffStart - " + StringUtil::SaveInt(index);
@@ -3523,6 +3525,8 @@ namespace LostPeter
                                 {
                                     lc.falloffStart = fFalloffStart;
                                 }
+                                ImGui::Spacing();
+
                                 //falloffEnd
                                 float fFalloffEnd = lc.falloffEnd;
                                 std::string nameFalloffEnd = "FalloffEnd - " + StringUtil::SaveInt(index);
@@ -3530,6 +3534,8 @@ namespace LostPeter
                                 {
                                     lc.falloffEnd = fFalloffEnd;
                                 }
+                                ImGui::Spacing();
+
                                 //spotPower
                                 float fSpotPower = lc.spotPower;
                                 std::string nameSpotPower = "SpotPower - " + StringUtil::SaveInt(index);
@@ -3538,14 +3544,7 @@ namespace LostPeter
                                     lc.spotPower = fSpotPower;
                                 }
                             }
-
-                            //strength
-                            glm::vec3 vStrength = lc.strength;
-                            std::string nameStrength = "Strength - " + StringUtil::SaveInt(index);
-                            if (ImGui::DragFloat3(nameStrength.c_str(), &vStrength[0], 0.001f, 0.001, 10))
-                            {
-                                lc.strength = vStrength;
-                            }
+                            
                         }
                     }
 

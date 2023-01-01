@@ -14,11 +14,11 @@ struct VSInput
 struct LightConstants
 {
     float4 common;      // x: type; y:  z:  w:
-    float3 position;    // point light only
+    float3 position;    // directional/point/spot
     float falloffStart; // point/spot light only
     float3 direction;   // directional/spot light only
     float falloffEnd;   // point/spot light only
-    float3 strength;    // directional/point/spot
+    float3 color;       // directional/point/spot
     float spotPower;    // spot light only
 };
 
@@ -72,7 +72,8 @@ struct ObjectConstants
 #define MAX_MATERIAL_COUNT 128
 struct MaterialConstants
 {
-    float4 diffuseAlbedo;
+    float4 factorAmbient;
+    float4 factorDiffuse;
     float3 fresnelR0;
     float roughness;
     float4x4 matTransform;

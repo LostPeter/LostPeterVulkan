@@ -7,11 +7,11 @@
 struct LightConstants
 {
     vec4 common;        // x: type; y:  z:  w:
-    vec3 position;      // point light only
+    vec3 position;      // directional/point/spot
     float falloffStart; // point/spot light only
     vec3 direction;     // directional/spot light only
     float falloffEnd;   // point/spot light only
-    vec3 strength;      // directional/point/spot
+    vec3 color;         // directional/point/spot
     float spotPower;    // spot light only
 };
 

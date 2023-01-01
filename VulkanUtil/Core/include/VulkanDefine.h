@@ -856,11 +856,11 @@ namespace LostPeter
     struct utilExport LightConstants
     {
         glm::vec4 common;    // x: type; y: enable(1 or 0); z:  w:
-        glm::vec3 position;  // point/spot light only
+        glm::vec3 position;  // directional/point/spot
         float falloffStart;  // point/spot light only
         glm::vec3 direction; // directional/spot light only
         float falloffEnd;    // point/spot light only
-        glm::vec3 strength;  // directional/point/spot
+        glm::vec3 color;     // directional/point/spot
         float spotPower;     // spot light only
 
         LightConstants()
@@ -869,7 +869,7 @@ namespace LostPeter
             , falloffStart(1.0f)
             , direction(0.0f, -1.0f, 0.0f)
             , falloffEnd(10.0f)
-            , strength(0.5f, 0.5f, 0.5f)
+            , color(1.0f, 1.0f, 1.0f)
             , spotPower(64.0f)
         {
 
@@ -943,7 +943,8 @@ namespace LostPeter
     //////////////////////////////// MaterialConstants //////////////////////////////
     struct utilExport MaterialConstants
     {
-        glm::vec4 diffuseAlbedo;
+        glm::vec4 factorAmbient;
+        glm::vec4 factorDiffuse;
         glm::vec3 fresnelR0;
         float roughness;
         glm::mat4 matTransform;
@@ -953,7 +954,8 @@ namespace LostPeter
         float reserve2;
 
         MaterialConstants()
-            : diffuseAlbedo(1.0f, 1.0f, 1.0f, 1.0f)
+            : factorAmbient(1.0f, 1.0f, 1.0f, 1.0f)
+            , factorDiffuse(1.0f, 1.0f, 1.0f, 1.0f)
             , fresnelR0(0.01f, 0.01f, 0.01f)
             , roughness(0.25f)
             , matTransform(MathUtil::Identity4x4())

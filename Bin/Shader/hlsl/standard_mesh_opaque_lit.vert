@@ -14,11 +14,11 @@ struct VSInput
 struct LightConstants
 {
     float4 common;      // x: type; y:  z:  w:
-    float3 position;    // point light only
+    float3 position;    // directional/point/spot
     float falloffStart; // point/spot light only
     float3 direction;   // directional/spot light only
     float falloffEnd;   // point/spot light only
-    float3 strength;    // directional/point/spot
+    float3 color;       // directional/point/spot
     float spotPower;    // spot light only
 };
 
@@ -72,7 +72,8 @@ struct ObjectConstants
 #define MAX_MATERIAL_COUNT 128
 struct MaterialConstants
 {
-    float4 diffuseAlbedo;
+    float4 factorAmbient;
+    float4 factorDiffuse;
     float3 fresnelR0;
     float roughness;
     float4x4 matTransform;
@@ -108,16 +109,20 @@ struct VSOutput
     [[vk::location(0)]] float4 outColor     : COLOR0;
     [[vk::location(1)]] float2 outTexCoord  : TEXCOORD0;
     [[vk::location(2)]] float3 outNormal    : TEXCOORD1;
+    [[vk::location(3)]] float4 outWorld     : TEXCOORD2; //xyz: World Pos; w: instanceIndex
 };
 
 
 VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
 {
     VSOutput output = (VSOutput)0;
-    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, mul(objectConsts[instanceIndex].g_MatWorld, float4(input.inPosition, 1.0))));
+    output.outWorld = mul(objectConsts[instanceIndex].g_MatWorld, float4(input.inPosition, 1.0));
+    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, output.outWorld));
     output.outColor = input.inColor;
     output.outTexCoord = input.inTexCoord;
     output.outNormal = input.inNormal;
+    output.outWorld.xyz /= output.outWorld.w;
+    output.outWorld.w = instanceIndex;
 
     return output;
 }

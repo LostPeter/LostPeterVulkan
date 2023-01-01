@@ -108,6 +108,7 @@ Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, std::string name
     this->cfg_texture_Path = "Assets/Texture/texture.jpg";
 
     this->cfg_cameraPos = glm::vec3(0.0f, 15.0f, -20.0f);
+    this->mainLight.common.y = 1.0f;
 }
 
 void Vulkan_010_Lighting::createCamera()
@@ -247,50 +248,43 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        //1> Normal
         pModelObject->instanceMatWorld.clear();
         pModelObject->objectCBs.clear();
+        pModelObject->materialCBs.clear();
         for (int j = 0; j < pModelObject->countInstance; j++)
         {
+            //ObjectConstants
             ObjectConstants objectConstants;
             objectConstants.g_MatWorld = MathUtil::FromTRS(g_tranformModels[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
                                                            g_tranformModels[i * 3 + 1],
                                                            g_tranformModels[i * 3 + 2]);
             pModelObject->objectCBs.push_back(objectConstants);
             pModelObject->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+
+            //MaterialConstants
+            MaterialConstants materialConstants;
+            materialConstants.alpha = g_TransparentAlpha[i];
+            pModelObject->materialCBs.push_back(materialConstants);
         }
         
         if (isCreateVkBuffer)
         {
-            bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT; //pModelObject->objectCBs.size();
+            //ObjectConstants
+            bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
             pModelObject->poBuffers_ObjectCB.resize(count_sci);
             pModelObject->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
                 createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
             }
-        }
 
-        //2> Transparent
-        if (pModelObject->isTransparent)
-        {
-            pModelObject->materialCBs.clear();
-            for (int j = 0; j < pModelObject->countInstance; j++)
+            //MaterialConstants
+            bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
+            pModelObject->poBuffers_materialCB.resize(count_sci);
+            pModelObject->poBuffersMemory_materialCB.resize(count_sci);
+            for (size_t j = 0; j < count_sci; j++) 
             {
-                MaterialConstants materialConstants;
-                materialConstants.alpha = g_TransparentAlpha[i];
-                pModelObject->materialCBs.push_back(materialConstants);
-            }
-
-            if (isCreateVkBuffer)
-            {
-                bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT; //pModelObject->materialCBs.size();
-                pModelObject->poBuffers_materialCB.resize(count_sci);
-                pModelObject->poBuffersMemory_materialCB.resize(count_sci);
-                for (size_t j = 0; j < count_sci; j++) 
-                {
-                    createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
-                }
+                createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
             }
         }
     }
@@ -435,7 +429,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
             bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
 
             VkDescriptorBufferInfo bufferInfo_Material = {};
-            bufferInfo_Material.buffer = pModelObject->isTransparent ? pModelObject->poBuffers_materialCB[j] : this->poBuffers_MaterialCB[j];
+            bufferInfo_Material.buffer = pModelObject->poBuffers_materialCB[j];
             bufferInfo_Material.offset = 0;
             bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
 
@@ -523,6 +517,7 @@ void Vulkan_010_Lighting::updateCBs_Custom()
         size_t count_object = pModelObject->objectCBs.size();
         for (size_t j = 0; j < count_object; j++)
         {
+            //ObjectConstants
             ObjectConstants& objectCB = pModelObject->objectCBs[j];
             if (pModelObject->isRotate)
             {
@@ -535,13 +530,12 @@ void Vulkan_010_Lighting::updateCBs_Custom()
                 objectCB.g_MatWorld = pModelObject->instanceMatWorld[j];
             }
 
-            if (pModelObject->isTransparent)
-            {
-                MaterialConstants& materialCB = pModelObject->materialCBs[j];
-                materialCB.alpha = pModelObject->alpha;
-            }
+            //MaterialConstants
+            MaterialConstants& materialCB = pModelObject->materialCBs[j];
+            materialCB.alpha = pModelObject->alpha;
         }
-        //Normal
+
+        //ObjectConstants
         {
             VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
             void* data;
@@ -549,8 +543,8 @@ void Vulkan_010_Lighting::updateCBs_Custom()
                 memcpy(data, pModelObject->objectCBs.data(), sizeof(ObjectConstants) * count_object);
             vkUnmapMemory(this->poDevice, memory);
         }
-        //Transparent
-        if (pModelObject->isTransparent)
+
+        //MaterialConstants
         {
             VkDeviceMemory& memory = pModelObject->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
             void* data;
@@ -655,6 +649,7 @@ bool Vulkan_010_Lighting::beginRenderImgui()
 
                             ImGui::EndTable();
                         }
+
                         //MaterialConstants
 
                     }
