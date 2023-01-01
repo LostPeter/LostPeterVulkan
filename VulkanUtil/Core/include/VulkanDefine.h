@@ -865,7 +865,7 @@ namespace LostPeter
 
         LightConstants()
             : common(0, 0, 0, 0)
-            , position(0.0f, 0.0f, 0.0f)
+            , position(0.0f, 100.0f, 0.0f)
             , falloffStart(1.0f)
             , direction(0.0f, -1.0f, 0.0f)
             , falloffEnd(10.0f)
