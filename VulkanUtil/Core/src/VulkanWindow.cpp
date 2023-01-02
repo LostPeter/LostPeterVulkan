@@ -3422,12 +3422,21 @@ namespace LostPeter
                             { Vulkan_Light_Spot,            "Spot",             "Spot Light" },
                         };
 
-                        struct EnumLightSpecularDesc { VulkanLightSpecularType Value; const char* Name; const char* Tooltip; };
-                        static const EnumLightSpecularDesc s_aLightSpecularDescs[] =
+                        struct EnumLightingDesc { VulkanLightingType Value; const char* Name; const char* Tooltip; };
+                        static const EnumLightingDesc s_aLightingDescs[] =
                         {
-                            { Vulkan_LightSpecular_None,        "None",         "None Specular" },
-                            { Vulkan_LightSpecular_Phong,       "Phong",        "Phong Specular" },
-                            { Vulkan_LightSpecular_BlinnPhong,  "BlinnPhong",   "BlinnPhong Specular" },
+                            { Vulkan_Lighting_Node,                                     "None",                                     "None Lighting" },
+                            { Vulkan_Lighting_Ambient,                                  "Ambient",                                  "Ambient Lighting" },
+                            { Vulkan_Lighting_DiffuseLambert,                           "DiffuseLambert",                           "DiffuseLambert Lighting" },
+                            { Vulkan_Lighting_SpecularPhong,                            "SpecularPhong",                            "SpecularPhong Lighting" },
+                            { Vulkan_Lighting_SpecularBlinnPhong,                       "SpecularBlinnPhong",                       "SpecularBlinnPhong Lighting" },
+                            { Vulkan_Lighting_AmbientDiffuseLambert,                    "AmbientDiffuseLambert",                    "AmbientDiffuseLambert Lighting" },
+                            { Vulkan_Lighting_AmbientSpecularPhong,                     "AmbientSpecularPhong",                     "AmbientSpecularPhong Lighting" },
+                            { Vulkan_Lighting_AmbientSpecularBlinnPhong,                "AmbientSpecularBlinnPhong",                "AmbientSpecularBlinnPhong Lighting" },
+                            { Vulkan_Lighting_DiffuseLambertSpecularPhong,              "DiffuseLambertSpecularPhong",              "DiffuseLambertSpecularPhong Lighting" },
+                            { Vulkan_Lighting_DiffuseLambertSpecularBlinnPhong,         "DiffuseLambertSpecularBlinnPhong",         "DiffuseLambertSpecularBlinnPhong Lighting" },
+                            { Vulkan_Lighting_AmbientDiffuseLambertSpecularPhong,       "AmbientDiffuseLambertSpecularPhong",       "AmbientDiffuseLambertSpecularPhong Lighting" },
+                            { Vulkan_Lighting_AmbientDiffuseLambertSpecularBlinnPhong,  "AmbientDiffuseLambertSpecularBlinnPhong",  "AmbientDiffuseLambertSpecularBlinnPhong Lighting" },
                         };
                         
                         if (ImGui::CollapsingHeader(name.c_str()))
@@ -3469,23 +3478,23 @@ namespace LostPeter
                             }
                             ImGui::Spacing();
 
-                            //Light Specular Type
+                            //Lighting Type
                             {
                                 int nIndex = 0;
-                                for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aLightSpecularDescs); nIndex++)
+                                for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aLightingDescs); nIndex++)
                                 {
-                                    if (s_aLightSpecularDescs[nIndex].Value == lc.common.z)
+                                    if (s_aLightingDescs[nIndex].Value == lc.common.z)
                                         break;
                                 }
-                                const char* preview_text = s_aLightSpecularDescs[nIndex].Name;
-                                std::string nameType = "LightSpecularType - " + StringUtil::SaveInt(index);
+                                const char* preview_text = s_aLightingDescs[nIndex].Name;
+                                std::string nameType = "LightingType - " + StringUtil::SaveInt(index);
                                 if (ImGui::BeginCombo(nameType.c_str(), preview_text))
                                 {
-                                    for (int j = 0; j < IM_ARRAYSIZE(s_aLightSpecularDescs); j++)
+                                    for (int j = 0; j < IM_ARRAYSIZE(s_aLightingDescs); j++)
                                     {
-                                        if (ImGui::Selectable(s_aLightSpecularDescs[j].Name, nIndex == j))
+                                        if (ImGui::Selectable(s_aLightingDescs[j].Name, nIndex == j))
                                         {
-                                            lc.common.z = (int)s_aLightSpecularDescs[j].Value;
+                                            lc.common.z = (int)s_aLightingDescs[j].Value;
                                             break;
                                         }
                                     }

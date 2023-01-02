@@ -855,7 +855,7 @@ namespace LostPeter
     //////////////////////////////// LightConstants /////////////////////////////////
     struct utilExport LightConstants
     {
-        glm::vec4 common;    // x: type; y: enable(1 or 0); z: 0,1,2 w: spotPower
+        glm::vec4 common;    // x: type; y: enable(1 or 0); z: 0-11; w: spotPower
         glm::vec3 position;  // directional/point/spot
         float falloffStart;  // point/spot light only
         glm::vec3 direction; // directional/spot light only

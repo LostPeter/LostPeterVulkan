@@ -90,11 +90,20 @@ namespace LostPeter
         Vulkan_Light_Spot,
     };
 
-    enum VulkanLightSpecularType
+    enum VulkanLightingType
     {
-        Vulkan_LightSpecular_None = 0,
-        Vulkan_LightSpecular_Phong,
-        Vulkan_LightSpecular_BlinnPhong,
+        Vulkan_Lighting_Node = 0,                                //0:    None
+        Vulkan_Lighting_Ambient,                                 //1:    Ambient
+        Vulkan_Lighting_DiffuseLambert,                          //2:    DiffuseLambert
+        Vulkan_Lighting_SpecularPhong,                           //3:    SpecularPhong
+        Vulkan_Lighting_SpecularBlinnPhong,                      //4:    SpecularBlinnPhong
+        Vulkan_Lighting_AmbientDiffuseLambert,                   //5:    Ambient + DiffuseLambert
+        Vulkan_Lighting_AmbientSpecularPhong,                    //6:    Ambient + SpecularPhong
+        Vulkan_Lighting_AmbientSpecularBlinnPhong,               //7:    Ambient + SpecularBlinnPhong
+        Vulkan_Lighting_DiffuseLambertSpecularPhong,             //8:    DiffuseLambert + SpecularPhong
+        Vulkan_Lighting_DiffuseLambertSpecularBlinnPhong,        //9:    DiffuseLambert + SpecularBlinnPhong
+        Vulkan_Lighting_AmbientDiffuseLambertSpecularPhong,      //10:   Ambient + DiffuseLambert + SpecularPhong
+        Vulkan_Lighting_AmbientDiffuseLambertSpecularBlinnPhong, //11:   Ambient + DiffuseLambert + SpecularBlinnPhong
     };
 
 

@@ -14,7 +14,7 @@ struct VSOutput
 #define MAX_LIGHT_COUNT 16
 struct LightConstants
 {
-    float4 common;      // x: type; y: enable(1 or 0); z: 0,1,2; w: spotPower
+    float4 common;      // x: type; y: enable(1 or 0); z: 0-11; w: spotPower
     float3 position;    // directional/point/spot
     float falloffStart; // point/spot light only
     float3 direction;   // directional/spot light only
@@ -109,7 +109,7 @@ float3 calculate_Specular_Phong(float3 specularMaterial,
     
     return specularMaterial * specularLight * pow(max(dot(V, R), 0), shininess);
 }
-float3 calculate_Specular_BlinPhong(float3 specularMaterial, 
+float3 calculate_Specular_BlinnPhong(float3 specularMaterial, 
                                     float3 specularLight,
                                     float shininess,
                                     float3 posWorld,
@@ -130,6 +130,9 @@ float3 calculate_Light(float3 ambientGlobal,
                        float3 posEye,
                        float3 N)
 {
+    if (lightCB.common.z == 0)
+        return float3(1, 1, 1);
+    
     float3 L;
     if (lightCB.common.x == 0)
     {
@@ -142,21 +145,43 @@ float3 calculate_Light(float3 ambientGlobal,
     }
 
     //Ambient
-    float3 colorAmbient = calculate_Light_Ambient(ambientGlobal,
-                                                  matCB.factorAmbient.rgb,
-                                                  lightCB.ambient.rgb);
-
+    float3 colorAmbient = float3(0,0,0); 
+    if (lightCB.common.z == 1 ||
+        lightCB.common.z == 5 ||
+        lightCB.common.z == 6 ||
+        lightCB.common.z == 7 ||
+        lightCB.common.z == 10 ||
+        lightCB.common.z == 11)
+    {
+        colorAmbient = calculate_Light_Ambient(ambientGlobal,
+                                               matCB.factorAmbient.rgb,
+                                               lightCB.ambient.rgb);
+    }
+    
     //Diffuse
-    float3 colorDiffuse = calculate_Light_Diffuse_Lambert(matCB.factorDiffuse.rgb,
-                                                          lightCB.diffuse.rgb,
-                                                          L,
-                                                          N);
-
+    float3 colorDiffuse = float3(0,0,0); 
+    if (lightCB.common.z == 2 ||
+        lightCB.common.z == 5 ||
+        lightCB.common.z == 8 ||
+        lightCB.common.z == 9 ||
+        lightCB.common.z == 10 ||
+        lightCB.common.z == 11)
+    {
+        colorDiffuse = calculate_Light_Diffuse_Lambert(matCB.factorDiffuse.rgb,
+                                                       lightCB.diffuse.rgb,
+                                                       L,
+                                                       N);
+    }
+    
     //Specular
     float3 colorSpecular = float3(0,0,0);
-    if (lightCB.common.z == 1) //Phong
+    if (lightCB.common.z == 3 ||
+        lightCB.common.z == 6 ||
+        lightCB.common.z == 8 ||
+        lightCB.common.z == 10)
     {
-        colorSpecular = calculate_Specular_Phong(matCB.factorSpecular.rgb,
+        //Phong
+        colorSpecular = calculate_Specular_Phong(matCB.factorSpecular.rgb, 
                                                  lightCB.specular.rgb,
                                                  matCB.shininess,
                                                  posWorld,
@@ -164,15 +189,19 @@ float3 calculate_Light(float3 ambientGlobal,
                                                  L,
                                                  N);
     }
-    else if (lightCB.common.z == 2) //BlinnPhong
+    else if (lightCB.common.z == 4 ||
+             lightCB.common.z == 7 ||
+             lightCB.common.z == 9 ||
+             lightCB.common.z == 11)
     {
-        colorSpecular = calculate_Specular_BlinPhong(matCB.factorSpecular.rgb,
-                                                     lightCB.specular.rgb,
-                                                     matCB.shininess,
-                                                     posWorld,
-                                                     posEye,
-                                                     L,
-                                                     N);
+        //BlinnPhong
+        colorSpecular = calculate_Specular_BlinnPhong(matCB.factorSpecular.rgb,
+                                                      lightCB.specular.rgb,
+                                                      matCB.shininess,
+                                                      posWorld,
+                                                      posEye,
+                                                      L,
+                                                      N);
     }
 
     return colorAmbient + colorDiffuse + colorSpecular;

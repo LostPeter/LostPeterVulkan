@@ -1,5 +1,5 @@
 #include "PreInclude.h"
-#include "vulkan_010_lighting.h"
+#include "vulkan_011_texturing.h"
 #include "VulkanMeshLoader.h"
 #include "VulkanCamera.h"
 #include "VulkanTimer.h"
@@ -89,7 +89,7 @@ static bool g_isRotateModels[] =
 
 
 
-Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, std::string name)
+Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, std::string name)
     : VulkanWindow(width, height, name)
 {
     this->cfg_isImgui = true;
@@ -106,13 +106,13 @@ Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, std::string name
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
 }
 
-void Vulkan_010_Lighting::createCamera()
+void Vulkan_011_Texturing::createCamera()
 {
     this->pCamera = new VulkanCamera();
     cameraReset();
 }
 
-void Vulkan_010_Lighting::loadModel_Custom()
+void Vulkan_011_Texturing::loadModel_Custom()
 {
     for (int i = 0; i < g_CountLen; i++)
     {
@@ -132,7 +132,7 @@ void Vulkan_010_Lighting::loadModel_Custom()
         //Model
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTranformLocal, g_tranformLocalModels[i]))
         {
-            std::string msg = "Vulkan_010_Lighting::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
+            std::string msg = "Vulkan_011_Texturing::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -140,7 +140,7 @@ void Vulkan_010_Lighting::loadModel_Custom()
         //Texture
         if (!loadModel_Texture(pModelObject))
         {   
-            std::string msg = "Vulkan_010_Lighting::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
+            std::string msg = "Vulkan_011_Texturing::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -153,7 +153,7 @@ void Vulkan_010_Lighting::loadModel_Custom()
         m_mapModelObjects[pModelObject->nameModel] = pModelObject;
     }
 }
-bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_011_Texturing::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
 {
     //1> Load 
     MeshData meshData;
@@ -161,7 +161,7 @@ bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool 
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!VulkanMeshLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
     {
-        Util_LogError("Vulkan_010_Lighting::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
+        Util_LogError("Vulkan_011_Texturing::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
         return false; 
     }
 
@@ -199,7 +199,7 @@ bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool 
     pModelObject->poIndexBuffer_Size = pModelObject->poIndexCount * sizeof(uint32_t);
     pModelObject->poIndexBuffer_Data = &pModelObject->indices[0];
 
-    Util_LogInfo("Vulkan_010_Lighting::loadModel_VertexIndex: load model [%s] success, Vertex count: [%d], Index count: [%d] !", 
+    Util_LogInfo("Vulkan_011_Texturing::loadModel_VertexIndex: load model [%s] success, Vertex count: [%d], Index count: [%d] !", 
                  pModelObject->nameModel.c_str(),
                  (int)pModelObject->vertices.size(), 
                  (int)pModelObject->indices.size());
@@ -216,7 +216,7 @@ bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool 
 
     return true;
 }
-bool Vulkan_010_Lighting::loadModel_Texture(ModelObject* pModelObject)
+bool Vulkan_011_Texturing::loadModel_Texture(ModelObject* pModelObject)
 {
     if (!pModelObject->pathTexture.empty())
     {
@@ -224,17 +224,17 @@ bool Vulkan_010_Lighting::loadModel_Texture(ModelObject* pModelObject)
         createTextureImageView(pModelObject->poTextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipLevels, pModelObject->poTextureImageView);
         createTextureSampler(pModelObject->poMipLevels, pModelObject->poTextureSampler);
 
-        Util_LogInfo("Vulkan_010_Lighting::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
+        Util_LogInfo("Vulkan_011_Texturing::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
 
     return true;
 }
 
-void Vulkan_010_Lighting::createCustomCB()
+void Vulkan_011_Texturing::createCustomCB()
 {
     rebuildInstanceCBs(true);
 }
-void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
+void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
 {   
     VkDeviceSize bufferSize;
     size_t count_sci = this->poSwapChainImages.size();
@@ -289,7 +289,7 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
     }
 }
 
-void Vulkan_010_Lighting::createPipeline_Custom()
+void Vulkan_011_Texturing::createPipeline_Custom()
 {
     //1> Shader
     createShaderModules();
@@ -325,7 +325,7 @@ void Vulkan_010_Lighting::createPipeline_Custom()
                                                                       pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_010_Lighting::createPipeline_Custom: Failed to create pipeline wire frame !";
+            std::string msg = "Vulkan_011_Texturing::createPipeline_Custom: Failed to create pipeline wire frame !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -358,14 +358,14 @@ void Vulkan_010_Lighting::createPipeline_Custom()
                                                             pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_010_Lighting::createPipeline_Custom: Failed to create pipeline !";
+            std::string msg = "Vulkan_011_Texturing::createPipeline_Custom: Failed to create pipeline !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
     }
 
 }
-void Vulkan_010_Lighting::destroyShaderModules()
+void Vulkan_011_Texturing::destroyShaderModules()
 {   
     size_t count = this->m_aVkShaderModules.size();
     for (size_t i = 0; i < count; i++)
@@ -376,7 +376,7 @@ void Vulkan_010_Lighting::destroyShaderModules()
     this->m_aVkShaderModules.clear();
     this->m_mapVkShaderModules.clear();
 }
-void Vulkan_010_Lighting::createShaderModules()
+void Vulkan_011_Texturing::createShaderModules()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
@@ -387,16 +387,16 @@ void Vulkan_010_Lighting::createShaderModules()
         VkShaderModule vertShaderModule = createShaderModule("VertexShader: ", pathVert);
         this->m_aVkShaderModules.push_back(vertShaderModule);
         this->m_mapVkShaderModules[pathVert] = vertShaderModule;
-        Util_LogInfo("Vulkan_010_Lighting::createShaderModules: create shader [%s] success !", pathVert.c_str());
+        Util_LogInfo("Vulkan_011_Texturing::createShaderModules: create shader [%s] success !", pathVert.c_str());
 
         //frag
         VkShaderModule fragShaderModule = createShaderModule("FragmentShader: ", pathFrag);
         this->m_aVkShaderModules.push_back(fragShaderModule);
         this->m_mapVkShaderModules[pathFrag] = fragShaderModule;
-        Util_LogInfo("Vulkan_010_Lighting::createShaderModules: create shader [%s] success !", pathFrag.c_str());
+        Util_LogInfo("Vulkan_011_Texturing::createShaderModules: create shader [%s] success !", pathFrag.c_str());
     }
 }
-VkShaderModule Vulkan_010_Lighting::findShaderModule(const std::string& pathShaderModule)
+VkShaderModule Vulkan_011_Texturing::findShaderModule(const std::string& pathShaderModule)
 {
     VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(pathShaderModule);
     if (itFind == this->m_mapVkShaderModules.end())
@@ -406,7 +406,7 @@ VkShaderModule Vulkan_010_Lighting::findShaderModule(const std::string& pathShad
     return itFind->second;
 }   
 
-void Vulkan_010_Lighting::createDescriptorSets_Custom()
+void Vulkan_011_Texturing::createDescriptorSets_Custom()
 {
     size_t count_sci = this->poSwapChainImages.size();
     size_t count = this->m_aModelObjects.size();
@@ -505,7 +505,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
     }
 }
 
-void Vulkan_010_Lighting::updateCBs_Custom()
+void Vulkan_011_Texturing::updateCBs_Custom()
 {
     float time = this->pTimer->GetTimeSinceStart();
     size_t count = this->m_aModelObjects.size();
@@ -555,13 +555,13 @@ void Vulkan_010_Lighting::updateCBs_Custom()
 
 
 
-bool Vulkan_010_Lighting::beginRenderImgui()
+bool Vulkan_011_Texturing::beginRenderImgui()
 {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    ImGui::Begin("Vulkan_010_Lighting", &windowOpened, 0);
+    ImGui::Begin("Vulkan_011_Texturing", &windowOpened, 0);
     {
         ImGui::Text("Frametime: %f", this->fFPS);
         ImGui::Separator();
@@ -722,13 +722,13 @@ bool Vulkan_010_Lighting::beginRenderImgui()
     return true;
 }
 
-void Vulkan_010_Lighting::endRenderImgui()
+void Vulkan_011_Texturing::endRenderImgui()
 {
     VulkanWindow::endRenderImgui();
 
 }
 
-void Vulkan_010_Lighting::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_011_Texturing::drawMesh_Custom(VkCommandBuffer& commandBuffer)
 {   
     size_t count = this->m_aModelObjects_Render.size();
     for (size_t i = 0; i < count; i++)
@@ -766,7 +766,7 @@ void Vulkan_010_Lighting::drawMesh_Custom(VkCommandBuffer& commandBuffer)
         
     }
 }
-void Vulkan_010_Lighting::drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject)
+void Vulkan_011_Texturing::drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject)
 {
     if (pModelObject->poIndexBuffer != nullptr)
     {
@@ -778,7 +778,7 @@ void Vulkan_010_Lighting::drawModelObject(VkCommandBuffer& commandBuffer, ModelO
     }
 }
 
-void Vulkan_010_Lighting::cleanupCustom()
+void Vulkan_011_Texturing::cleanupCustom()
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
@@ -791,7 +791,7 @@ void Vulkan_010_Lighting::cleanupCustom()
     this->m_mapModelObjects.clear();
 }
 
-void Vulkan_010_Lighting::cleanupSwapChain_Custom()
+void Vulkan_011_Texturing::cleanupSwapChain_Custom()
 {
     destroyShaderModules();
 
@@ -804,7 +804,7 @@ void Vulkan_010_Lighting::cleanupSwapChain_Custom()
     }
 }
 
-void Vulkan_010_Lighting::recreateSwapChain_Custom()
+void Vulkan_011_Texturing::recreateSwapChain_Custom()
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
