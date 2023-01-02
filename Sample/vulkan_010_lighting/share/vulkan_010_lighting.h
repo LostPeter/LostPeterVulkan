@@ -45,7 +45,6 @@ public:
             //Uniform
             , countInstanceExt(5)
             , countInstance(11)
-            , alpha(0.5f)
             
             //Texture
             , poMipLevels(0)
@@ -201,7 +200,6 @@ public:
         std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_materialCB;
         std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
-        float alpha;
 
         //Texture
         uint32_t poMipLevels;

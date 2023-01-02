@@ -13,13 +13,14 @@ struct VSInput
 #define MAX_LIGHT_COUNT 16
 struct LightConstants
 {
-    float4 common;      // x: type; y:  z:  w:
+    float4 common;      // x: type; y: enable(1 or 0); z: 0,1,2; w: spotPower
     float3 position;    // directional/point/spot
     float falloffStart; // point/spot light only
     float3 direction;   // directional/spot light only
     float falloffEnd;   // point/spot light only
-    float3 color;       // directional/point/spot
-    float spotPower;    // spot light only
+    float4 ambient;     // ambient
+    float4 diffuse;     // diffuse
+    float4 specular;    // specular
 };
 
 
@@ -74,13 +75,14 @@ struct MaterialConstants
 {
     float4 factorAmbient;
     float4 factorDiffuse;
-    float3 fresnelR0;
-    float roughness;
-    float4x4 matTransform;
+    float4 factorSpecular;
+
+    float shininess;
     float alpha;
     float reserve0;
     float reserve1;
-    float reserve2;
+    
+    float4x4 matTransform;
 };
 
 [[vk::binding(2)]]cbuffer materialConsts          : register(b2) 

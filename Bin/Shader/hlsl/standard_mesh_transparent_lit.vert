@@ -13,13 +13,14 @@ struct VSInput
 #define MAX_LIGHT_COUNT 16
 struct LightConstants
 {
-    float4 common;      // x: type; y:  z:  w:
+    float4 common;      // x: type; y: enable(1 or 0); z: 0,1,2; w: spotPower
     float3 position;    // directional/point/spot
     float falloffStart; // point/spot light only
     float3 direction;   // directional/spot light only
     float falloffEnd;   // point/spot light only
-    float3 color;       // directional/point/spot
-    float spotPower;    // spot light only
+    float4 ambient;     // ambient
+    float4 diffuse;     // diffuse
+    float4 specular;    // specular
 };
 
 
@@ -74,13 +75,14 @@ struct MaterialConstants
 {
     float4 factorAmbient;
     float4 factorDiffuse;
-    float3 fresnelR0;
-    float roughness;
-    float4x4 matTransform;
+    float4 factorSpecular;
+
+    float shininess;
     float alpha;
     float reserve0;
     float reserve1;
-    float reserve2;
+
+    float4x4 matTransform;
 };
 
 [[vk::binding(2)]]cbuffer materialConsts          : register(b2) 
@@ -105,20 +107,26 @@ struct InstanceConstants
 
 struct VSOutput
 {
-	float4 outPosition                      : SV_POSITION;
-    [[vk::location(0)]] float4 outColor     : COLOR0;
-    [[vk::location(1)]] float2 outTexCoord  : TEXCOORD0;
-    [[vk::location(2)]] float outAlpha      : TEXCOORD1;
+	float4 outPosition                            : SV_POSITION;
+    [[vk::location(0)]] float4 outColor           : COLOR0;
+    [[vk::location(1)]] float2 outTexCoord        : TEXCOORD0;
+    [[vk::location(2)]] float4 outWorldPos        : TEXCOORD1; //xyz: World Pos; w: instanceIndex
+    [[vk::location(3)]] float3 outWorldNormal     : TEXCOORD2;
 };
 
 
 VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
 {
     VSOutput output = (VSOutput)0;
-    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, mul(objectConsts[instanceIndex].g_MatWorld, float4(input.inPosition, 1.0))));
+    ObjectConstants objInstance = objectConsts[instanceIndex];
+    output.outWorldPos = mul(objInstance.g_MatWorld, float4(input.inPosition, 1.0));
+    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, output.outWorldPos));
     output.outColor = input.inColor;
     output.outTexCoord = input.inTexCoord;
-    output.outAlpha = materialConsts[instanceIndex].alpha;
+    output.outWorldPos.xyz /= output.outWorldPos.w;
+    output.outWorldPos.w = instanceIndex;
+    float4 worldNormal = mul(objInstance.g_MatWorld, float4(input.inNormal, 1.0));
+    output.outWorldNormal.xyz = worldNormal.xyz / worldNormal.w;
 
     return output;
 }

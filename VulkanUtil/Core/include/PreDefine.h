@@ -90,6 +90,13 @@ namespace LostPeter
         Vulkan_Light_Spot,
     };
 
+    enum VulkanLightSpecularType
+    {
+        Vulkan_LightSpecular_None = 0,
+        Vulkan_LightSpecular_Phong,
+        Vulkan_LightSpecular_BlinnPhong,
+    };
+
 
 ////Vulkan
     typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;

@@ -48,7 +48,7 @@ static int g_instanceExtCount[] =
 static glm::vec3 g_tranformModels[3 * g_CountLen] = 
 {   
     glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //plane
-    glm::vec3(   0,   0,    1),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
+    glm::vec3(   0,   0,    5),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
     glm::vec3(   0,   0,    0),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
 };
 
@@ -87,13 +87,6 @@ static bool g_isRotateModels[] =
     true, //bunny
 };
 
-static float g_TransparentAlpha[g_CountLen] =
-{
-    1.0f, //plane
-    0.5f, //viking_room
-    1.0f, //bunny
-};
-
 
 
 Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, std::string name)
@@ -108,7 +101,9 @@ Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, std::string name
     this->cfg_texture_Path = "Assets/Texture/texture.jpg";
 
     this->cfg_cameraPos = glm::vec3(0.0f, 15.0f, -20.0f);
-    this->mainLight.common.y = 1.0f;
+    this->mainLight.common.x = 0; //Directional Type
+    this->mainLight.common.y = 1.0f; //Enable
+    this->mainLight.common.z = 2; //BlinnPhong Type
 }
 
 void Vulkan_010_Lighting::createCamera()
@@ -263,7 +258,11 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
 
             //MaterialConstants
             MaterialConstants materialConstants;
-            materialConstants.alpha = g_TransparentAlpha[i];
+            materialConstants.factorAmbient = MathUtil::RandomColor(false);
+            materialConstants.factorDiffuse = MathUtil::RandomColor(false);
+            materialConstants.factorSpecular = MathUtil::RandomColor(false);
+            materialConstants.shininess = MathUtil::RandF(10.0f, 100.0f);
+            materialConstants.alpha = MathUtil::RandF(0.2f, 0.9f);
             pModelObject->materialCBs.push_back(materialConstants);
         }
         
@@ -532,7 +531,6 @@ void Vulkan_010_Lighting::updateCBs_Custom()
 
             //MaterialConstants
             MaterialConstants& materialCB = pModelObject->materialCBs[j];
-            materialCB.alpha = pModelObject->alpha;
         }
 
         //ObjectConstants
@@ -593,16 +591,7 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                 std::string nameIsTransparent = "Is Transparent - " + pModelObject->nameModel;
                 bool isTransparent = pModelObject->isTransparent;
                 ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
-                if (pModelObject->isTransparent)
-                {
-                    //alpha
-                    std::string nameAlpha = "Alpha - " + pModelObject->nameModel;
-                    float fAlpha = pModelObject->alpha;
-                    if (ImGui::DragFloat(nameAlpha.c_str(), &fAlpha, 0.001f, 0.0f, 1.0f))
-                    {
-                        pModelObject->alpha = fAlpha;
-                    }
-                }
+                
                 std::string nameInstances = "Instance - " + pModelObject->nameModel;
                 int countInstanceExt = pModelObject->countInstanceExt;
                 ImGui::DragInt(nameInstances.c_str(), &countInstanceExt, 1, 0, 63);
@@ -622,36 +611,88 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                     for (int j = 0; j < count_instance; j++)
                     {
                         ObjectConstants& obj = pModelObject->objectCBs[j];
-                        //ObjectConstants
-                        const glm::mat4& mat4World = obj.g_MatWorld;
-                        std::string nameTable = StringUtil::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
-                        if (ImGui::BeginTable(nameTable.c_str(), 4))
+                        MaterialConstants& mat = pModelObject->materialCBs[j];
+
+                        std::string nameModelInstance = nameModel + " - " + StringUtil::SaveInt(j);
+                        if (ImGui::CollapsingHeader(nameModelInstance.c_str()))
                         {
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
+                            //ObjectConstants
+                            std::string nameObject = StringUtil::SaveInt(j) + " - Object - " + pModelObject->nameModel;
+                            if (ImGui::CollapsingHeader(nameObject.c_str()))
+                            {
+                                const glm::mat4& mat4World = obj.g_MatWorld;
+                                std::string nameTable = StringUtil::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
+                                if (ImGui::BeginTable(nameTable.c_str(), 4))
+                                {
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
 
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
 
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
 
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
-                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
 
-                            ImGui::EndTable();
+                                    ImGui::EndTable();
+                                }
+                            }
+                            
+                            //MaterialConstants
+                            std::string nameMaterial = StringUtil::SaveInt(j) + " - Material - " + pModelObject->nameModel;
+                            if (ImGui::CollapsingHeader(nameMaterial.c_str()))
+                            {
+                                //factorAmbient
+                                std::string nameFactorAmbient = "FactorAmbient - " + StringUtil::SaveInt(j);
+                                if (ImGui::ColorEdit4(nameFactorAmbient.c_str(), (float*)&mat.factorAmbient))
+                                {
+
+                                }
+                                ImGui::Spacing();
+
+                                //factorDiffuse
+                                std::string nameFactorDiffuse = "FactorDiffuse - " + StringUtil::SaveInt(j);
+                                if (ImGui::ColorEdit4(nameFactorDiffuse.c_str(), (float*)&mat.factorDiffuse))
+                                {
+
+                                }
+                                ImGui::Spacing();
+
+                                //factorSpecular
+                                std::string nameFactorSpecular = "FactorSpecular - " + StringUtil::SaveInt(j);
+                                if (ImGui::ColorEdit4(nameFactorSpecular.c_str(), (float*)&mat.factorSpecular))
+                                {
+
+                                }
+                                ImGui::Spacing();
+
+                                //shininess
+                                std::string nameShininess = "Shininess - " + StringUtil::SaveInt(j);
+                                if (ImGui::DragFloat(nameShininess.c_str(), &mat.shininess, 0.01f, 0.01f, 100.0f))
+                                {
+                                    
+                                }
+                                ImGui::Spacing();
+
+                                //alpha
+                                std::string nameAlpha = "Alpha - " + StringUtil::SaveInt(j);
+                                if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
+                                {
+                                    
+                                }
+                                ImGui::Spacing();
+                            }
                         }
-
-                        //MaterialConstants
-
                     }
                 }
             }

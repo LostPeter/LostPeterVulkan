@@ -6,13 +6,14 @@
 #define MAX_LIGHT_COUNT 16
 struct LightConstants
 {
-    vec4 common;        // x: type; y:  z:  w:
+    vec4 common;        // x: type; y: enable(1 or 0); z: 0,1,2; w: spotPower
     vec3 position;      // directional/point/spot
     float falloffStart; // point/spot light only
     vec3 direction;     // directional/spot light only
     float falloffEnd;   // point/spot light only
-    vec3 color;         // directional/point/spot
-    float spotPower;    // spot light only
+    vec4 ambient;       // ambient
+    vec4 diffuse;       // diffuse
+    vec4 specular;      // specular
 };
 
 layout(binding = 0) uniform PassConstants 

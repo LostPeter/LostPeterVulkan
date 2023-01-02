@@ -23,9 +23,11 @@ namespace LostPeter
 
         glm::vec4 factorAmbient;
         glm::vec4 factorDiffuse;
-        glm::vec3 fresnelR0;
-        float roughness;
+        glm::vec4 factorSpecular;
+
+        float shininess;
         float alpha;
+        
         glm::mat4 matTransform;
 
     public:

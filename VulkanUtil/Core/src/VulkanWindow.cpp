@@ -3421,6 +3421,14 @@ namespace LostPeter
                             { Vulkan_Light_Point,           "Point",            "Point Light" },
                             { Vulkan_Light_Spot,            "Spot",             "Spot Light" },
                         };
+
+                        struct EnumLightSpecularDesc { VulkanLightSpecularType Value; const char* Name; const char* Tooltip; };
+                        static const EnumLightSpecularDesc s_aLightSpecularDescs[] =
+                        {
+                            { Vulkan_LightSpecular_None,        "None",         "None Specular" },
+                            { Vulkan_LightSpecular_Phong,       "Phong",        "Phong Specular" },
+                            { Vulkan_LightSpecular_BlinnPhong,  "BlinnPhong",   "BlinnPhong Specular" },
+                        };
                         
                         if (ImGui::CollapsingHeader(name.c_str()))
                         {
@@ -3434,28 +3442,55 @@ namespace LostPeter
                             ImGui::Spacing();
 
                             //Light Type
-                            int nIndex = 0;
-                            for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aLightDescs); nIndex++)
                             {
-                                if (s_aLightDescs[nIndex].Value == lc.common.x)
-                                    break;
-                            }
-                            const char* preview_text = s_aLightDescs[nIndex].Name;
-                            std::string nameType = "LightType - " + StringUtil::SaveInt(index);
-                            if (ImGui::BeginCombo(nameType.c_str(), preview_text))
-                            {
-                                for (int j = 0; j < IM_ARRAYSIZE(s_aLightDescs); j++)
+                                int nIndex = 0;
+                                for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aLightDescs); nIndex++)
                                 {
-                                    if (ImGui::Selectable(s_aLightDescs[j].Name, nIndex == j))
-                                    {
-                                        if (canChangeType)
-                                        {
-                                            lc.common.x = (int)s_aLightDescs[j].Value;
-                                        }
+                                    if (s_aLightDescs[nIndex].Value == lc.common.x)
                                         break;
-                                    }
                                 }
-                                ImGui::EndCombo();
+                                const char* preview_text = s_aLightDescs[nIndex].Name;
+                                std::string nameType = "LightType - " + StringUtil::SaveInt(index);
+                                if (ImGui::BeginCombo(nameType.c_str(), preview_text))
+                                {
+                                    for (int j = 0; j < IM_ARRAYSIZE(s_aLightDescs); j++)
+                                    {
+                                        if (ImGui::Selectable(s_aLightDescs[j].Name, nIndex == j))
+                                        {
+                                            if (canChangeType)
+                                            {
+                                                lc.common.x = (int)s_aLightDescs[j].Value;
+                                            }
+                                            break;
+                                        }
+                                    }
+                                    ImGui::EndCombo();
+                                }
+                            }
+                            ImGui::Spacing();
+
+                            //Light Specular Type
+                            {
+                                int nIndex = 0;
+                                for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aLightSpecularDescs); nIndex++)
+                                {
+                                    if (s_aLightSpecularDescs[nIndex].Value == lc.common.z)
+                                        break;
+                                }
+                                const char* preview_text = s_aLightSpecularDescs[nIndex].Name;
+                                std::string nameType = "LightSpecularType - " + StringUtil::SaveInt(index);
+                                if (ImGui::BeginCombo(nameType.c_str(), preview_text))
+                                {
+                                    for (int j = 0; j < IM_ARRAYSIZE(s_aLightSpecularDescs); j++)
+                                    {
+                                        if (ImGui::Selectable(s_aLightSpecularDescs[j].Name, nIndex == j))
+                                        {
+                                            lc.common.z = (int)s_aLightSpecularDescs[j].Value;
+                                            break;
+                                        }
+                                    }
+                                    ImGui::EndCombo();
+                                }
                             }
                             ImGui::Spacing();
 
@@ -3484,12 +3519,27 @@ namespace LostPeter
                             }
                             ImGui::Spacing();
 
-                            //color
-                            glm::vec4 vColor = glm::vec4(lc.color, 1);
-                            std::string nameStrength = "Color - " + StringUtil::SaveInt(index);
-                            if (ImGui::ColorEdit4(nameStrength.c_str(), (float*)&vColor))
+                            //ambient
+                            std::string nameAmbient = "Ambient - " + StringUtil::SaveInt(index);
+                            if (ImGui::ColorEdit4(nameAmbient.c_str(), (float*)&lc.ambient))
                             {
-                                lc.color = glm::vec3(vColor.x, vColor.y, vColor.z);
+
+                            }
+                            ImGui::Spacing();
+
+                            //diffuse
+                            std::string nameDiffuse = "Diffuse - " + StringUtil::SaveInt(index);
+                            if (ImGui::ColorEdit4(nameDiffuse.c_str(), (float*)&lc.diffuse))
+                            {
+
+                            }
+                            ImGui::Spacing();
+
+                            //specular
+                            std::string nameSpecular = "Specular - " + StringUtil::SaveInt(index);
+                            if (ImGui::ColorEdit4(nameSpecular.c_str(), (float*)&lc.specular))
+                            {
+
                             }
                             ImGui::Spacing();
 
@@ -3537,11 +3587,11 @@ namespace LostPeter
                                 ImGui::Spacing();
 
                                 //spotPower
-                                float fSpotPower = lc.spotPower;
+                                float fSpotPower = lc.common.w;
                                 std::string nameSpotPower = "SpotPower - " + StringUtil::SaveInt(index);
                                 if (ImGui::DragFloat(nameSpotPower.c_str(), &fSpotPower, 0.01f, 0.1f, 200.0f))
                                 {
-                                    lc.spotPower = fSpotPower;
+                                    lc.common.w = fSpotPower;
                                 }
                             }
                             

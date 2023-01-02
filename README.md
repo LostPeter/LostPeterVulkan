@@ -125,3 +125,8 @@ Usage:
 * sample009: Vulkan instance rendering
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_009_instancing.png)
+
+### <010> vulkan_010_lighting
+* sample010: Vulkan classic lighting model, Ambient, Lambert Diffuse, Phong Specular, Blinn-Phong Specular
+
+![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_010_lighting.png)

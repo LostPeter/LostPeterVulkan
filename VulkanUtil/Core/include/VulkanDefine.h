@@ -855,22 +855,24 @@ namespace LostPeter
     //////////////////////////////// LightConstants /////////////////////////////////
     struct utilExport LightConstants
     {
-        glm::vec4 common;    // x: type; y: enable(1 or 0); z:  w:
+        glm::vec4 common;    // x: type; y: enable(1 or 0); z: 0,1,2 w: spotPower
         glm::vec3 position;  // directional/point/spot
         float falloffStart;  // point/spot light only
         glm::vec3 direction; // directional/spot light only
         float falloffEnd;    // point/spot light only
-        glm::vec3 color;     // directional/point/spot
-        float spotPower;     // spot light only
+        glm::vec4 ambient;   // ambient
+        glm::vec4 diffuse;   // diffuse
+        glm::vec4 specular;  // specular
 
         LightConstants()
-            : common(0, 0, 0, 0)
+            : common(0, 0, 0, 64)
             , position(0.0f, 100.0f, 0.0f)
             , falloffStart(1.0f)
             , direction(0.0f, -1.0f, 0.0f)
             , falloffEnd(10.0f)
-            , color(1.0f, 1.0f, 1.0f)
-            , spotPower(64.0f)
+            , ambient(1.0f, 1.0f, 1.0f, 1.0f)
+            , diffuse(1.0f, 1.0f, 1.0f, 1.0f)
+            , specular(1.0f, 1.0f, 1.0f, 1.0f)
         {
 
         }
@@ -921,7 +923,7 @@ namespace LostPeter
             , g_DeltaTime(0.0f)
             , g_RenderTargetSize(0.0f, 0.0f)
             , g_RenderTargetSize_Inv(0.0f, 0.0f)
-            , g_AmbientLight(0.0f, 0.0f, 0.0f, 1.0f)
+            , g_AmbientLight(1.0f, 1.0f, 1.0f, 1.0f)
         {
 
         }
@@ -945,24 +947,24 @@ namespace LostPeter
     {
         glm::vec4 factorAmbient;
         glm::vec4 factorDiffuse;
-        glm::vec3 fresnelR0;
-        float roughness;
-        glm::mat4 matTransform;
+        glm::vec4 factorSpecular;
+
+        float shininess;
         float alpha;
         float reserve0;
         float reserve1;
-        float reserve2;
+
+        glm::mat4 matTransform;
 
         MaterialConstants()
             : factorAmbient(1.0f, 1.0f, 1.0f, 1.0f)
             , factorDiffuse(1.0f, 1.0f, 1.0f, 1.0f)
-            , fresnelR0(0.01f, 0.01f, 0.01f)
-            , roughness(0.25f)
-            , matTransform(MathUtil::Identity4x4())
+            , factorSpecular(1.0f, 1.0f, 1.0f, 1.0f)
+            , shininess(20.0f)
             , alpha(1.0f)
             , reserve0(0.0f)
             , reserve1(0.0f)
-            , reserve2(0.0f)
+            , matTransform(MathUtil::Identity4x4())
         {
 
         }

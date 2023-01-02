@@ -13,13 +13,14 @@ struct VSInput
 #define MAX_LIGHT_COUNT 16
 struct LightConstants
 {
-    float4 common;      // x: type; y:  z:  w:
+    float4 common;      // x: type; y: enable(1 or 0); z: 0,1,2; w: spotPower
     float3 position;    // directional/point/spot
     float falloffStart; // point/spot light only
     float3 direction;   // directional/spot light only
     float falloffEnd;   // point/spot light only
-    float3 color;       // directional/point/spot
-    float spotPower;    // spot light only
+    float4 ambient;     // ambient
+    float4 diffuse;     // diffuse
+    float4 specular;    // specular
 };
 
 
