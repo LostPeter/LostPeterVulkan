@@ -14,6 +14,7 @@ namespace LostPeter
         , factorSpecular(1.0f, 1.0f, 1.0f, 1.0f)
         , shininess(0.25f)
         , alpha(1.0f)
+        , lighting(1.0f)
         , matTransform(MathUtil::Identity4x4())
     {
 

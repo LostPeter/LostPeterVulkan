@@ -951,7 +951,7 @@ namespace LostPeter
 
         float shininess;
         float alpha;
-        float reserve0;
+        float lighting;
         float reserve1;
 
         glm::mat4 matTransform;
@@ -962,7 +962,7 @@ namespace LostPeter
             , factorSpecular(1.0f, 1.0f, 1.0f, 1.0f)
             , shininess(20.0f)
             , alpha(1.0f)
-            , reserve0(0.0f)
+            , lighting(1.0f)
             , reserve1(0.0f)
             , matTransform(MathUtil::Identity4x4())
         {

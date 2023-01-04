@@ -21,12 +21,18 @@ static const char* g_pathShaderModules[2 * g_ShaderCount] =
 };
 
 
-static const int g_CountLen = 3;
+static const int g_CountLen = 8;
 static const char* g_pathModels[3 * g_CountLen] = 
 {
-    "plane",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/terrain.png", //plane
-    "viking_room",      "Assets/Model/Obj/viking_room/viking_room.obj",     "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
-    "bunny",            "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp", //bunny  
+    "plane",                "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/terrain.png", //plane
+    "viking_room",          "Assets/Model/Obj/viking_room/viking_room.obj",     "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
+    "bunny",                "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp", //bunny  
+
+    "texture1D",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture1d.tga", //texture1D
+    "texture2D",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture.jpg", //texture2D
+    "texture2Darray",       "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp", //texture2Darray
+    "texture3D",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp", //texture3D
+    "texturecubemap",       "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp", //texturecubemap
 };
 
 static const char* g_pathModelShaderModules[g_CountLen] = 
@@ -34,6 +40,12 @@ static const char* g_pathModelShaderModules[g_CountLen] =
     "Assets/Shader/standard_mesh_opaque_lit", //plane 
     "Assets/Shader/standard_mesh_transparent_lit", //viking_room
     "Assets/Shader/standard_mesh_opaque_lit", //bunny 
+
+    "Assets/Shader/standard_mesh_opaque_lit", //texture1D 
+    "Assets/Shader/standard_mesh_opaque_lit", //texture2D 
+    "Assets/Shader/standard_mesh_opaque_lit", //texture2Darray 
+    "Assets/Shader/standard_mesh_opaque_lit", //texture3D
+    "Assets/Shader/standard_mesh_opaque_lit", //texturecubemap 
 };
 
 static float g_instanceGap = 4.0f;
@@ -41,8 +53,14 @@ static float g_instanceGap = 4.0f;
 static int g_instanceExtCount[] =
 {
     0, //plane
-    5, //viking_room
-    5, //bunny
+    0, //viking_room
+    0, //bunny
+
+    0, //texture1D 
+    0, //texture2D 
+    0, //texture2Darray 
+    0, //texture3D 
+    0, //texturecubemap 
 };
 
 static glm::vec3 g_tranformModels[3 * g_CountLen] = 
@@ -50,6 +68,12 @@ static glm::vec3 g_tranformModels[3 * g_CountLen] =
     glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //plane
     glm::vec3(   0,   0,    5),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
     glm::vec3(   0,   0,    0),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
+
+    glm::vec3(  -4,   1,   -1),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture1D
+    glm::vec3(  -2,   1,   -2),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D
+    glm::vec3(   0,   1,   -3),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray
+    glm::vec3(   2,   1,   -4),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture3D
+    glm::vec3(   4,   1,   -5),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texturecubemap
 };
 
 static glm::mat4 g_tranformLocalModels[g_CountLen] = 
@@ -57,6 +81,12 @@ static glm::mat4 g_tranformLocalModels[g_CountLen] =
     MathUtil::ms_mat4Unit, //plane
     MathUtil::RotateX(-90.0f), //viking_room
     MathUtil::ms_mat4Unit, //bunny
+
+    MathUtil::ms_mat4Unit, //texture1D
+    MathUtil::ms_mat4Unit, //texture2D
+    MathUtil::ms_mat4Unit, //texture2Darray
+    MathUtil::ms_mat4Unit, //texture3D
+    MathUtil::ms_mat4Unit, //texturecubemap
 };
 
 static bool g_isTranformLocalModels[g_CountLen] = 
@@ -64,13 +94,25 @@ static bool g_isTranformLocalModels[g_CountLen] =
     false, //plane
     true, //viking_room
     false, //bunny
+
+    false, //texture1D
+    false, //texture2D
+    false, //texture2Darray
+    false, //texture3D
+    false, //texturecubemap  
 };
 
 static bool g_isFlipYModels[g_CountLen] = 
 {
-    false, //plane
+    true, //plane
     false, //viking_room
     false, //bunny
+
+    false, //texture1D
+    true, //texture2D
+    false, //texture2Darray
+    false, //texture3D
+    false, //texturecubemap
 };
 
 static bool g_isTransparentModels[g_CountLen] = 
@@ -78,6 +120,12 @@ static bool g_isTransparentModels[g_CountLen] =
     false, //plane
     true, //viking_room
     false, //bunny
+
+    false, //texture1D
+    false, //texture2D
+    false, //texture2Darray
+    false, //texture3D
+    false, //texturecubemap
 };
 
 static bool g_isRotateModels[] =
@@ -85,8 +133,26 @@ static bool g_isRotateModels[] =
     false, //plane
     true, //viking_room
     true, //bunny
+
+    false, //texture1D
+    false, //texture2D
+    false, //texture2Darray
+    false, //texture3D
+    false, //texturecubemap
 };
 
+static bool g_isLightingModels[] =
+{
+    true, //plane
+    true, //viking_room
+    true, //bunny
+
+    false, //texture1D
+    false, //texture2D
+    false, //texture2Darray
+    false, //texture3D
+    false, //texturecubemap
+};
 
 
 Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, std::string name)
@@ -263,6 +329,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             materialConstants.factorSpecular = MathUtil::RandomColor(false);
             materialConstants.shininess = MathUtil::RandF(10.0f, 100.0f);
             materialConstants.alpha = MathUtil::RandF(0.2f, 0.9f);
+            materialConstants.lighting = g_isLightingModels[i];
             pModelObject->materialCBs.push_back(materialConstants);
         }
         
@@ -689,6 +756,15 @@ bool Vulkan_011_Texturing::beginRenderImgui()
                                 if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
                                 {
                                     
+                                }
+                                ImGui::Spacing();
+
+                                //lighting
+                                std::string nameLighting = "Lighting - " + StringUtil::SaveInt(j);
+                                bool isLighting = mat.lighting == 1.0f ? true : false;
+                                if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
+                                {
+                                    mat.lighting = isLighting ? 1.0f : 0.0f;
                                 }
                                 ImGui::Spacing();
                             }

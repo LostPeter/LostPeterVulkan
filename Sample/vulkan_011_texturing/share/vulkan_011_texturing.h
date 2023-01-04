@@ -43,8 +43,8 @@ public:
             , poIndexBufferMemory(VK_NULL_HANDLE)
 
             //Uniform
-            , countInstanceExt(5)
-            , countInstance(11)
+            , countInstanceExt(0)
+            , countInstance(1)
             
             //Texture
             , poMipLevels(0)

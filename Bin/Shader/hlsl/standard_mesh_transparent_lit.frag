@@ -67,7 +67,7 @@ struct MaterialConstants
 
     float shininess;
     float alpha;
-    float reserve0;
+    float lighting;
     float reserve1;
 
     float4x4 matTransform;
@@ -130,7 +130,7 @@ float3 calculate_Light(float3 ambientGlobal,
                        float3 posEye,
                        float3 N)
 {
-    if (lightCB.common.z == 0)
+    if (lightCB.common.z == 0 || matCB.lighting != 1)
         return float3(1, 1, 1);
     
     float3 L;

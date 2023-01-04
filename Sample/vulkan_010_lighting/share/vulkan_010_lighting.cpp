@@ -68,7 +68,7 @@ static bool g_isTranformLocalModels[g_CountLen] =
 
 static bool g_isFlipYModels[g_CountLen] = 
 {
-    false, //plane
+    true, //plane
     false, //viking_room
     false, //bunny
 };
@@ -689,6 +689,15 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                                 if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
                                 {
                                     
+                                }
+                                ImGui::Spacing();
+
+                                //lighting
+                                std::string nameLighting = "Lighting - " + StringUtil::SaveInt(j);
+                                bool isLighting = mat.lighting == 1.0f ? true : false;
+                                if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
+                                {
+                                    mat.lighting = isLighting ? 1.0f : 0.0f;
                                 }
                                 ImGui::Spacing();
                             }

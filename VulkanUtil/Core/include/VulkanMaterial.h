@@ -27,6 +27,7 @@ namespace LostPeter
 
         float shininess;
         float alpha;
+        float lighting;
         
         glm::mat4 matTransform;
 
