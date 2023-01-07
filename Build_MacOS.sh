@@ -1,5 +1,11 @@
-# author: LostPeter
-# time:   2022-12-10
+#****************************************************************************
+# LostPeterVulkan - Copyright (C) 2022 by LostPeter
+# 
+# Author: LostPeter
+# Time:   2022-12-10
+#
+# This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
+#****************************************************************************/
 
 debug=${1}
 rebuild=${2}

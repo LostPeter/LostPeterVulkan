@@ -1,5 +1,11 @@
-// author: LostPeter
-// time:   2022-01-02
+/****************************************************************************
+* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* 
+* Author: LostPeter
+* Time:   2023-01-02
+*
+* This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
+****************************************************************************/
 
 #ifndef _VULKAN_011_TEXTURING_H_
 #define _VULKAN_011_TEXTURING_H_

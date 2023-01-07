@@ -1,5 +1,11 @@
-// author: LostPeter
-// time:   2022-12-03
+/****************************************************************************
+* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* 
+* Author: LostPeter
+* Time:   2022-12-03
+*
+* This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
+****************************************************************************/
 
 #ifndef _PRE_INCLUDE_THIRD_H_
 #define _PRE_INCLUDE_THIRD_H_

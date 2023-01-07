@@ -1,5 +1,11 @@
-// author: LostPeter
-// time:   2022-12-24
+/****************************************************************************
+* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* 
+* Author: LostPeter
+* Time:   2022-12-24
+*
+* This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
+****************************************************************************/
 
 #ifndef _VULKAN_010_LIGHTING_H_
 #define _VULKAN_010_LIGHTING_H_

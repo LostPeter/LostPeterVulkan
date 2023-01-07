@@ -75,6 +75,10 @@ Usage:
         MacOS:      ./Build_MacOS_Sample_All.sh debug rebuild
         Windows:    ./Build_Windows_Sample_All.bat debug rebuild
 
+License:
+
+    MIT License 
+
 
 ### <000> vulkan_000_window
 * sample000：Setup a framework, compile all sort of dependencies libraries, show a Window 

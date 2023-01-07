@@ -1,5 +1,11 @@
-# author: LostPeter
-# time:   2022-12-17
+#****************************************************************************
+# LostPeterVulkan - Copyright (C) 2022 by LostPeter
+# 
+# Author: LostPeter
+# Time:   2022-12-17
+#
+# This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
+#****************************************************************************/
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
 SET(NAME_PROJECT "vulkan_008_blend")
