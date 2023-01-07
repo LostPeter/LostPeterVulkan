@@ -43,6 +43,10 @@
 #include <impl_glfw/imgui_impl_glfw.h>
 #include <impl_vulkan/imgui_impl_vulkan.h>
 
+//libnoise
+#include <noise/noise.h>
+#include <noiseutils/noiseutils.h>
+
 // spdlog
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>

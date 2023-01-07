@@ -55,6 +55,7 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glfw-3.3.6"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/imgui-1.85_glfw_vulkan"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/zlib-1.2.11")
@@ -68,6 +69,7 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glfw-3.3.6"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/imgui-1.85_glfw_vulkan"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/zlib-1.2.11")
@@ -132,6 +134,8 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4_d.lib
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6_d.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib)
         
     else ()
@@ -140,6 +144,8 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4.lib
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan.lib
+                       ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
+                       ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib)
         
     endif()
@@ -161,11 +167,15 @@ elseif (APPLE)
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4_d.a
                        ${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6_d.a
                        "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan_d.a -Wl,-noall_load"
+                       ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a)
     else ()
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4.a
                        ${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6.a
                        "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan.a -Wl,-noall_load"
+                       ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
+                       ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a)
     endif()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
