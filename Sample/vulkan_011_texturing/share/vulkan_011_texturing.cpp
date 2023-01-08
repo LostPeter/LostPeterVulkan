@@ -22,11 +22,23 @@
 const std::string c_strVert = ".vert.spv";
 const std::string c_strFrag = ".frag.spv";
 
-static const int g_ShaderCount = 2;
+static const int g_ShaderCount = 6;
 static const char* g_pathShaderModules[2 * g_ShaderCount] = 
 {
-    "Assets/Shader/standard_mesh_opaque_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_lit.frag.spv", //standard_mesh_opaque_lit
+    "Assets/Shader/standard_mesh_opaque_tex1d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex1d_lit.frag.spv", //standard_mesh_opaque_tex1d_lit
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit
+    "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit
+    "Assets/Shader/standard_mesh_opaque_tex3d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex3d_lit.frag.spv", //standard_mesh_opaque_tex3d_lit
+    "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit
+    
     "Assets/Shader/standard_mesh_transparent_lit.vert.spv", "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit
+};
+
+static const int g_DescriptorSetLayoutCount = 2;
+static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
+{
+    "Pass-Object-Material-Instance-Texture",
+    "",
 };
 
 
@@ -45,17 +57,30 @@ static const char* g_pathModels[4 * g_CountLen] =
     "texturecubemap",       "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp",                         "", //texturecubemap
 };
 
+static const VulkanTextureType g_ModelsTextureTypes[2 * g_CountLen] =
+{
+    Vulkan_Texture_2D, Vulkan_Texture_2D, //plane 
+    Vulkan_Texture_2D, Vulkan_Texture_2D, //viking_room
+    Vulkan_Texture_2D, Vulkan_Texture_2D, //bunny 
+
+    Vulkan_Texture_1D, Vulkan_Texture_1D, //texture1D 
+    Vulkan_Texture_2D, Vulkan_Texture_2D, //texture2D 
+    Vulkan_Texture_2DArray, Vulkan_Texture_2DArray, //texture2Darray 
+    Vulkan_Texture_3D, Vulkan_Texture_3D, //texture3D
+    Vulkan_Texture_CubeMap, Vulkan_Texture_CubeMap, //texturecubemap
+};
+
 static const char* g_pathModelShaderModules[g_CountLen] = 
 {
-    "Assets/Shader/standard_mesh_opaque_lit", //plane 
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //plane 
     "Assets/Shader/standard_mesh_transparent_lit", //viking_room
-    "Assets/Shader/standard_mesh_opaque_lit", //bunny 
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //bunny 
 
-    "Assets/Shader/standard_mesh_opaque_lit", //texture1D 
-    "Assets/Shader/standard_mesh_opaque_lit", //texture2D 
-    "Assets/Shader/standard_mesh_opaque_lit", //texture2Darray 
-    "Assets/Shader/standard_mesh_opaque_lit", //texture3D
-    "Assets/Shader/standard_mesh_opaque_lit", //texturecubemap 
+    "Assets/Shader/standard_mesh_opaque_tex1d_lit", //texture1D 
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture2D 
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture2Darray 
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture3D
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texturecubemap 
 };
 
 static float g_instanceGap = 4.0f;
@@ -182,6 +207,13 @@ Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, std::string na
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
 }
 
+void Vulkan_011_Texturing::createDescriptorSetLayout_Custom()
+{
+
+
+    VulkanWindow::createDescriptorSetLayout_Custom();
+}
+
 void Vulkan_011_Texturing::createCamera()
 {
     this->pCamera = new VulkanCamera();
@@ -193,14 +225,19 @@ void Vulkan_011_Texturing::loadModel_Custom()
     for (int i = 0; i < g_CountLen; i++)
     {
         ModelObject* pModelObject = new ModelObject(this);
+        pModelObject->indexModel = i;
         pModelObject->nameModel = g_pathModels[4 * i + 0];
         pModelObject->pathModel = g_pathModels[4 * i + 1];
         std::string pathTexture1 = g_pathModels[4 * i + 2];
         if (!pathTexture1.empty())
+        {
             pModelObject->aPathTextures.push_back(pathTexture1);
-         std::string pathTexture2 = g_pathModels[4 * i + 3];
+        }
+        std::string pathTexture2 = g_pathModels[4 * i + 3];
         if (!pathTexture2.empty())
+        {
             pModelObject->aPathTextures.push_back(pathTexture2);
+        }
 
         bool isTranformLocal = g_isTranformLocalModels[i];
         bool isFlipY = g_isFlipYModels[i];
@@ -313,9 +350,45 @@ bool Vulkan_011_Texturing::loadModel_Texture(ModelObject* pModelObject)
         {
             pTexture = new ModelTexture(this, pathTexture);
             pTexture->AddRef();
-            createTexture2D(pathTexture, pTexture->poMipMapCount, pTexture->poTextureImage, pTexture->poTextureImageMemory);
-            createImageView(pTexture->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pTexture->poMipMapCount, pTexture->poTextureImageView);
-            createSampler(pTexture->poMipMapCount, pTexture->poTextureSampler);
+            pTexture->typeTexture = g_ModelsTextureTypes[2 * pModelObject->indexModel + i];
+
+            if (pTexture->typeTexture == Vulkan_Texture_1D)
+            {
+                createTexture1D(pathTexture, pTexture->poMipMapCount, pTexture->poTextureImage, pTexture->poTextureImageMemory);
+                createImageView(pTexture->poTextureImage, VK_IMAGE_VIEW_TYPE_1D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pTexture->poMipMapCount, pTexture->poTextureImageView);
+                createSampler(pTexture->poMipMapCount, pTexture->poTextureSampler);
+            }
+            else if (pTexture->typeTexture == Vulkan_Texture_2D)
+            {
+                createTexture2D(pathTexture, pTexture->poMipMapCount, pTexture->poTextureImage, pTexture->poTextureImageMemory);
+                createImageView(pTexture->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pTexture->poMipMapCount, pTexture->poTextureImageView);
+                createSampler(pTexture->poMipMapCount, pTexture->poTextureSampler);
+            }
+            else if (pTexture->typeTexture == Vulkan_Texture_2DArray)
+            {
+                createTexture2D(pathTexture, pTexture->poMipMapCount, pTexture->poTextureImage, pTexture->poTextureImageMemory);
+                createImageView(pTexture->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pTexture->poMipMapCount, pTexture->poTextureImageView);
+                createSampler(pTexture->poMipMapCount, pTexture->poTextureSampler);
+            }
+            else if (pTexture->typeTexture == Vulkan_Texture_3D)
+            {
+                createTexture2D(pathTexture, pTexture->poMipMapCount, pTexture->poTextureImage, pTexture->poTextureImageMemory);
+                createImageView(pTexture->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pTexture->poMipMapCount, pTexture->poTextureImageView);
+                createSampler(pTexture->poMipMapCount, pTexture->poTextureSampler);
+            }
+            else if (pTexture->typeTexture == Vulkan_Texture_CubeMap)
+            {
+                createTexture2D(pathTexture, pTexture->poMipMapCount, pTexture->poTextureImage, pTexture->poTextureImageMemory);
+                createImageView(pTexture->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pTexture->poMipMapCount, pTexture->poTextureImageView);
+                createSampler(pTexture->poMipMapCount, pTexture->poTextureSampler);
+            }   
+            else
+            {
+                std::string msg = "Vulkan_011_Texturing::loadModel_Texture: Wrong texture type !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+
             pModelObject->AddTexture(pTexture);
         }
         Util_LogInfo("Vulkan_011_Texturing::loadModel_Texture: Load texture [%s] success !", pathTexture.c_str());
@@ -459,6 +532,20 @@ void Vulkan_011_Texturing::createPipeline_Custom()
     }
 
 }
+
+void Vulkan_011_Texturing::destroyDescriptorSetLayouts()
+{
+
+}
+void Vulkan_011_Texturing::createDescriptorSetLayouts()
+{
+
+}
+VkDescriptorSetLayout Vulkan_011_Texturing::findDescriptorSetLayout(const std::string& nameDescriptorSetLayout)
+{
+    return VK_NULL_HANDLE;
+}
+
 void Vulkan_011_Texturing::destroyShaderModules()
 {   
     size_t count = this->m_aVkShaderModules.size();
@@ -892,6 +979,8 @@ void Vulkan_011_Texturing::cleanupCustom()
     this->m_aModelObjects.clear();
     this->m_aModelObjects_Render.clear();
     this->m_mapModelObjects.clear();
+
+    destroyDescriptorSetLayouts();
 }
 
 void Vulkan_011_Texturing::cleanupSwapChain_Custom()

@@ -32,6 +32,7 @@ namespace LostPeter
         VkInstance poInstance;
         VkDebugUtilsMessengerEXT poDebugMessenger;
         VkPhysicalDevice poPhysicalDevice;
+        VkPhysicalDeviceFeatures poPhysicalDeviceFeatures;
         VkDevice poDevice;
         VkSampleCountFlagBits poMSAASamples;
         VkQueue poQueueGraphics;
@@ -269,7 +270,8 @@ namespace LostPeter
                         virtual bool hasStencilComponent(VkFormat format);
 
             virtual void createDescriptorObjects();
-                virtual void createDescriptorSetLayout();
+                virtual void createDescriptorSetLayout_Default();
+                virtual void createDescriptorSetLayout_Custom();
 
             virtual void createPipelineObjects();
                 virtual void createRenderPass();
@@ -322,11 +324,30 @@ namespace LostPeter
                                                bool autoMipMap, 
                                                uint32_t& mipMapCount, 
                                                VkImage& image, 
+                                               VkDeviceMemory& imageMemory,
+                                               VkBuffer& buffer, 
+                                               VkDeviceMemory& bufferMemory);
+                    virtual void createTexture(const std::string& pathAsset_Tex, 
+                                               VkImageType type,
+                                               VkSampleCountFlagBits numSamples,
+                                               VkFormat format,
+                                               bool autoMipMap, 
+                                               uint32_t& mipMapCount, 
+                                               VkImage& image, 
                                                VkDeviceMemory& imageMemory);
+                    virtual void createTexture1D(const std::string& pathAsset_Tex, 
+                                                 uint32_t& mipMapCount,
+                                                 VkImage& image, 
+                                                 VkDeviceMemory& imageMemory);
                     virtual void createTexture2D(const std::string& pathAsset_Tex, 
                                                  uint32_t& mipMapCount,
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
+                    virtual void createTexture3D(const std::string& pathAsset_Tex, 
+                                                 uint32_t& mipMapCount,
+                                                 VkImage& image, 
+                                                 VkDeviceMemory& imageMemory);
+                    
                         virtual void createImage(uint32_t width, 
                                                  uint32_t height, 
                                                  uint32_t depth, 

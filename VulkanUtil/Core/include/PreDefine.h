@@ -238,7 +238,7 @@ namespace LostPeter
     VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(VulkanVertexType type);
 
     typedef std::vector<VkDescriptorSetLayout> VkDescriptorSetLayoutVector;
-
+    typedef std::map<std::string, VkDescriptorSetLayout> VkDescriptorSetLayoutMap;
     
     typedef std::vector<VkShaderModule> VkShaderModuleVector;
     typedef std::map<std::string, VkShaderModule> VkShaderModuleMap;

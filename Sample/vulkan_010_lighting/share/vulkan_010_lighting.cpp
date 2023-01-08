@@ -25,7 +25,7 @@ const std::string c_strFrag = ".frag.spv";
 static const int g_ShaderCount = 2;
 static const char* g_pathShaderModules[2 * g_ShaderCount] = 
 {
-    "Assets/Shader/standard_mesh_opaque_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_lit.frag.spv", //standard_mesh_opaque_lit
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit
     "Assets/Shader/standard_mesh_transparent_lit.vert.spv", "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit
 };
 
@@ -40,9 +40,9 @@ static const char* g_pathModels[3 * g_CountLen] =
 
 static const char* g_pathModelShaderModules[g_CountLen] = 
 {
-    "Assets/Shader/standard_mesh_opaque_lit", //plane 
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //plane 
     "Assets/Shader/standard_mesh_transparent_lit", //viking_room
-    "Assets/Shader/standard_mesh_opaque_lit", //bunny 
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //bunny 
 };
 
 static float g_instanceGap = 4.0f;

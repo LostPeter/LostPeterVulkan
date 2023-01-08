@@ -466,7 +466,7 @@ namespace LostPeter
         {
             std::string msg = "VulkanWindow::createInstance: Validation layers requested, but not available !";
             Util_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         VkApplicationInfo appInfo = {};
@@ -502,7 +502,9 @@ namespace LostPeter
 
         if (vkCreateInstance(&createInfo, nullptr, &this->poInstance) != VK_SUCCESS)
         {
-            throw std::runtime_error("VulkanWindow::createInstance: Failed to create vulkan instance !");
+            std::string msg = "VulkanWindow::createInstance: Failed to create vulkan instance !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         Util_LogInfo("<1-2-1> VulkanWindow::createInstance finish !");
@@ -572,7 +574,9 @@ namespace LostPeter
                 
             if (createDebugUtilsMessengerEXT(this->poInstance, &createInfo, nullptr, &this->poDebugMessenger) != VK_SUCCESS) 
             {
-                throw std::runtime_error("VulkanWindow::setUpDebugMessenger: Failed to set up debug messenger !");
+                std::string msg = "VulkanWindow::setUpDebugMessenger: Failed to set up debug messenger !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
         }
         
@@ -586,7 +590,9 @@ namespace LostPeter
         {
             std::ostringstream os;
             os << (int)result;
-            throw std::runtime_error("VulkanWindow::createSurface: Failed to create window surface, result: " + os.str());
+            std::string msg = "VulkanWindow::createSurface: Failed to create window surface, result: " + os.str();
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         Util_LogInfo("<1-2-3> VulkanWindow::createSurface finish !");
@@ -599,7 +605,9 @@ namespace LostPeter
 
         if (deviceCount == 0)
         {
-            throw std::runtime_error("VulkanWindow::pickPhysicalDevice: Failed to find GPUs width Vulkan support !");
+            std::string msg = "VulkanWindow::pickPhysicalDevice: Failed to find GPUs width Vulkan support !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         std::vector<VkPhysicalDevice> devices(deviceCount);
@@ -626,8 +634,71 @@ namespace LostPeter
 
         if (this->poPhysicalDevice == nullptr) 
         {
-            throw std::runtime_error("VulkanWindow::pickPhysicalDevice: Failed to find a suitable GPU !");
+            std::string msg = "VulkanWindow::pickPhysicalDevice: Failed to find a suitable GPU !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
+
+        vkGetPhysicalDeviceFeatures(this->poPhysicalDevice, &this->poPhysicalDeviceFeatures);
+        Util_LogInfo("**************** VulkanWindow::pickPhysicalDevice: ****************");
+        {
+            Util_LogInfo("  robustBufferAccess: [%s]", this->poPhysicalDeviceFeatures.robustBufferAccess ? "true" : "false");
+            Util_LogInfo("  fullDrawIndexUint32: [%s]", this->poPhysicalDeviceFeatures.fullDrawIndexUint32 ? "true" : "false");
+            Util_LogInfo("  imageCubeArray: [%s]", this->poPhysicalDeviceFeatures.imageCubeArray ? "true" : "false");
+            Util_LogInfo("  independentBlend: [%s]", this->poPhysicalDeviceFeatures.independentBlend ? "true" : "false");
+            Util_LogInfo("  geometryShader: [%s]", this->poPhysicalDeviceFeatures.geometryShader ? "true" : "false");
+            Util_LogInfo("  tessellationShader: [%s]", this->poPhysicalDeviceFeatures.tessellationShader ? "true" : "false");
+            Util_LogInfo("  sampleRateShading: [%s]", this->poPhysicalDeviceFeatures.sampleRateShading ? "true" : "false");
+            Util_LogInfo("  dualSrcBlend: [%s]", this->poPhysicalDeviceFeatures.dualSrcBlend ? "true" : "false");
+            Util_LogInfo("  logicOp: [%s]", this->poPhysicalDeviceFeatures.logicOp ? "true" : "false");
+            Util_LogInfo("  multiDrawIndirect: [%s]", this->poPhysicalDeviceFeatures.multiDrawIndirect ? "true" : "false");
+            Util_LogInfo("  drawIndirectFirstInstance: [%s]", this->poPhysicalDeviceFeatures.drawIndirectFirstInstance ? "true" : "false");
+            Util_LogInfo("  depthClamp: [%s]", this->poPhysicalDeviceFeatures.depthClamp ? "true" : "false");
+            Util_LogInfo("  depthBiasClamp: [%s]", this->poPhysicalDeviceFeatures.depthBiasClamp ? "true" : "false");
+            Util_LogInfo("  fillModeNonSolid: [%s]", this->poPhysicalDeviceFeatures.fillModeNonSolid ? "true" : "false");
+            Util_LogInfo("  depthBounds: [%s]", this->poPhysicalDeviceFeatures.depthBounds ? "true" : "false");
+            Util_LogInfo("  wideLines: [%s]", this->poPhysicalDeviceFeatures.wideLines ? "true" : "false");
+            Util_LogInfo("  largePoints: [%s]", this->poPhysicalDeviceFeatures.largePoints ? "true" : "false");
+            Util_LogInfo("  alphaToOne: [%s]", this->poPhysicalDeviceFeatures.alphaToOne ? "true" : "false");
+            Util_LogInfo("  multiViewport: [%s]", this->poPhysicalDeviceFeatures.multiViewport ? "true" : "false");
+            Util_LogInfo("  samplerAnisotropy: [%s]", this->poPhysicalDeviceFeatures.samplerAnisotropy ? "true" : "false");
+            Util_LogInfo("  textureCompressionETC2: [%s]", this->poPhysicalDeviceFeatures.textureCompressionETC2 ? "true" : "false");
+            Util_LogInfo("  textureCompressionASTC_LDR: [%s]", this->poPhysicalDeviceFeatures.textureCompressionASTC_LDR ? "true" : "false");
+            Util_LogInfo("  textureCompressionBC: [%s]", this->poPhysicalDeviceFeatures.textureCompressionBC ? "true" : "false");
+            Util_LogInfo("  occlusionQueryPrecise: [%s]", this->poPhysicalDeviceFeatures.occlusionQueryPrecise ? "true" : "false");
+            Util_LogInfo("  pipelineStatisticsQuery: [%s]", this->poPhysicalDeviceFeatures.pipelineStatisticsQuery ? "true" : "false");
+            Util_LogInfo("  vertexPipelineStoresAndAtomics: [%s]", this->poPhysicalDeviceFeatures.vertexPipelineStoresAndAtomics ? "true" : "false");
+            Util_LogInfo("  fragmentStoresAndAtomics: [%s]", this->poPhysicalDeviceFeatures.fragmentStoresAndAtomics ? "true" : "false");
+            Util_LogInfo("  shaderTessellationAndGeometryPointSize: [%s]", this->poPhysicalDeviceFeatures.shaderTessellationAndGeometryPointSize ? "true" : "false");
+            Util_LogInfo("  shaderImageGatherExtended: [%s]", this->poPhysicalDeviceFeatures.shaderImageGatherExtended ? "true" : "false");
+            Util_LogInfo("  shaderStorageImageExtendedFormats: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageExtendedFormats ? "true" : "false");
+            Util_LogInfo("  shaderStorageImageMultisample: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageMultisample ? "true" : "false");
+            Util_LogInfo("  shaderStorageImageReadWithoutFormat: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageReadWithoutFormat ? "true" : "false");
+            Util_LogInfo("  shaderStorageImageWriteWithoutFormat: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageWriteWithoutFormat ? "true" : "false");
+            Util_LogInfo("  shaderUniformBufferArrayDynamicIndexing: [%s]", this->poPhysicalDeviceFeatures.shaderUniformBufferArrayDynamicIndexing ? "true" : "false");
+            Util_LogInfo("  shaderSampledImageArrayDynamicIndexing: [%s]", this->poPhysicalDeviceFeatures.shaderSampledImageArrayDynamicIndexing ? "true" : "false");
+            Util_LogInfo("  shaderStorageBufferArrayDynamicIndexing: [%s]", this->poPhysicalDeviceFeatures.shaderStorageBufferArrayDynamicIndexing ? "true" : "false");
+            Util_LogInfo("  shaderStorageImageArrayDynamicIndexing: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageArrayDynamicIndexing ? "true" : "false");
+            Util_LogInfo("  shaderClipDistance: [%s]", this->poPhysicalDeviceFeatures.shaderClipDistance ? "true" : "false");
+            Util_LogInfo("  shaderCullDistance: [%s]", this->poPhysicalDeviceFeatures.shaderCullDistance ? "true" : "false");
+            Util_LogInfo("  shaderFloat64: [%s]", this->poPhysicalDeviceFeatures.shaderFloat64 ? "true" : "false");
+            Util_LogInfo("  shaderInt64: [%s]", this->poPhysicalDeviceFeatures.shaderInt64 ? "true" : "false");
+            Util_LogInfo("  shaderInt16: [%s]", this->poPhysicalDeviceFeatures.shaderInt16 ? "true" : "false");
+            Util_LogInfo("  shaderResourceResidency: [%s]", this->poPhysicalDeviceFeatures.shaderResourceResidency ? "true" : "false");
+            Util_LogInfo("  shaderResourceMinLod: [%s]", this->poPhysicalDeviceFeatures.shaderResourceMinLod ? "true" : "false");
+            Util_LogInfo("  sparseBinding: [%s]", this->poPhysicalDeviceFeatures.sparseBinding ? "true" : "false");
+            Util_LogInfo("  sparseResidencyBuffer: [%s]", this->poPhysicalDeviceFeatures.sparseResidencyBuffer ? "true" : "false");
+            Util_LogInfo("  sparseResidencyImage2D: [%s]", this->poPhysicalDeviceFeatures.sparseResidencyImage2D ? "true" : "false");
+            Util_LogInfo("  sparseResidencyImage3D: [%s]", this->poPhysicalDeviceFeatures.sparseResidencyImage3D ? "true" : "false");
+            Util_LogInfo("  sparseResidency2Samples: [%s]", this->poPhysicalDeviceFeatures.sparseResidency2Samples ? "true" : "false");
+            Util_LogInfo("  sparseResidency4Samples: [%s]", this->poPhysicalDeviceFeatures.sparseResidency4Samples ? "true" : "false");
+            Util_LogInfo("  sparseResidency8Samples: [%s]", this->poPhysicalDeviceFeatures.sparseResidency8Samples ? "true" : "false");
+            Util_LogInfo("  sparseResidency16Samples: [%s]", this->poPhysicalDeviceFeatures.sparseResidency16Samples ? "true" : "false");
+            Util_LogInfo("  sparseResidencyAliased: [%s]", this->poPhysicalDeviceFeatures.sparseResidencyAliased ? "true" : "false");
+            Util_LogInfo("  variableMultisampleRate: [%s]", this->poPhysicalDeviceFeatures.variableMultisampleRate ? "true" : "false");
+            Util_LogInfo("  inheritedQueries: [%s]", this->poPhysicalDeviceFeatures.inheritedQueries ? "true" : "false");
+        }       
+        Util_LogInfo("**************** VulkanWindow::pickPhysicalDevice: ****************");
 
         Util_LogInfo("<1-2-4> VulkanWindow::pickPhysicalDevice finish !");
     }
@@ -753,6 +824,7 @@ namespace LostPeter
 
         VkPhysicalDeviceFeatures deviceFeatures = {};
         deviceFeatures.samplerAnisotropy = VK_TRUE;
+        deviceFeatures.fillModeNonSolid = VK_TRUE;
 
         VkDeviceCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -774,7 +846,9 @@ namespace LostPeter
 
         if (vkCreateDevice(this->poPhysicalDevice, &createInfo, nullptr, &this->poDevice) != VK_SUCCESS) 
         {
-            throw std::runtime_error("VulkanWindow::createLogicalDevice: Failed to create logical device !");
+            std::string msg = "VulkanWindow::createLogicalDevice: Failed to create logical device !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         vkGetDeviceQueue(this->poDevice, this->graphicsIndex, 0, &this->poQueueGraphics);
@@ -810,7 +884,9 @@ namespace LostPeter
 
         if (vkCreateCommandPool(this->poDevice, &poolInfo, nullptr, &this->poCommandPool) != VK_SUCCESS) 
         {
-            throw std::runtime_error("VulkanWindow::createCommandPool: Failed to create command pool !");
+            std::string msg = "VulkanWindow::createCommandPool: Failed to create command pool !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         Util_LogInfo("<1-4-1> VulkanWindow::createCommandPool finish !");
@@ -924,7 +1000,9 @@ namespace LostPeter
         {
             std::ostringstream os;
             os << (int)result;
-            throw std::runtime_error("VulkanWindow::createSwapChain: Failed to create swap chain, result: " + os.str());
+            std::string msg = "VulkanWindow::createSwapChain: Failed to create swap chain, result: " + os.str();
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         vkGetSwapchainImagesKHR(this->poDevice, this->poSwapChain, &imageCount, nullptr);
@@ -1096,7 +1174,9 @@ namespace LostPeter
                 }
             }
 
-            throw std::runtime_error("VulkanWindow::findSupportedFormat: Failed to find supported format !");
+            std::string msg = "VulkanWindow::findSupportedFormat: Failed to find supported format !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
         VkFormat VulkanWindow::findDepthFormat() 
         {
@@ -1119,13 +1199,15 @@ namespace LostPeter
     {
         Util_LogInfo("*****<1-6> VulkanWindow::createDescriptorObjects start *****");
         {
-            //1> createDescriptorSetLayout
-            createDescriptorSetLayout();
+            //1> createDescriptorSetLayout_Default
+            createDescriptorSetLayout_Default();
 
+            //2> void createDescriptorSetLayout_Custom
+            createDescriptorSetLayout_Custom();
         }
         Util_LogInfo("*****<1-6> VulkanWindow::createDescriptorObjects finish *****");
     }
-    void VulkanWindow::createDescriptorSetLayout()
+    void VulkanWindow::createDescriptorSetLayout_Default()
     {
         //0> PassConstants
         VkDescriptorSetLayoutBinding passMainLayoutBinding = {};
@@ -1183,10 +1265,18 @@ namespace LostPeter
 
         if (vkCreateDescriptorSetLayout(this->poDevice, &layoutInfo, nullptr, &this->poDescriptorSetLayout) != VK_SUCCESS) 
         {
-            throw std::runtime_error("VulkanWindow::createDescriptorSetLayout: Failed to create descriptor set layout !");
+            std::string msg = "VulkanWindow::createDescriptorSetLayout_Default: Failed to create descriptor set layout !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
-        Util_LogInfo("<1-6-1> VulkanWindow::createDescriptorSetLayout finish !");
+        Util_LogInfo("<1-6-1> VulkanWindow::createDescriptorSetLayout_Default finish !");
+    }
+    void VulkanWindow::createDescriptorSetLayout_Custom()
+    {
+        
+
+        Util_LogInfo("<1-6-2> VulkanWindow::createDescriptorSetLayout_Custom finish !");
     }
 
     void VulkanWindow::createPipelineObjects()
@@ -1296,7 +1386,9 @@ namespace LostPeter
         //6> vkCreateRenderPass
         if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &this->poRenderPass) != VK_SUCCESS) 
         {
-            throw std::runtime_error("VulkanWindow::createRenderPass_KhrDepth: Failed to create render pass !");
+            std::string msg = "VulkanWindow::createRenderPass_KhrDepth: Failed to create render pass !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         Util_LogInfo("<1-7-1> VulkanWindow::createRenderPass_KhrDepth finish !");
@@ -1410,7 +1502,9 @@ namespace LostPeter
         //9> vkCreateRenderPass
         if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &this->poRenderPass) != VK_SUCCESS) 
         {
-            throw std::runtime_error("VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create render pass !");
+            std::string msg = "VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create render pass !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         Util_LogInfo("<1-7-1> VulkanWindow::createRenderPass_KhrDepthImgui finish !");
@@ -1502,7 +1596,9 @@ namespace LostPeter
         //7> vkCreateRenderPass
         if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &this->poRenderPass) != VK_SUCCESS) 
         {
-            throw std::runtime_error("VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create render pass !");
+            std::string msg = "VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create render pass !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         Util_LogInfo("<1-7-1> VulkanWindow::createRenderPass_ColorDepthMSAA finish !");
@@ -1637,7 +1733,9 @@ namespace LostPeter
         //10> vkCreateRenderPass
         if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &this->poRenderPass) != VK_SUCCESS) 
         {
-            throw std::runtime_error("VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create render pass !");
+            std::string msg = "VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create render pass !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         Util_LogInfo("<1-7-1> VulkanWindow::createRenderPass_ColorDepthImguiMSAA finish !");
@@ -1692,7 +1790,9 @@ namespace LostPeter
 
             if (vkCreateFramebuffer(this->poDevice, &framebufferInfo, nullptr, &this->poSwapChainFrameBuffers[i]) != VK_SUCCESS) 
             {
-                throw std::runtime_error("VulkanWindow::createFramebuffers: Failed to create framebuffer !");
+                std::string msg = "VulkanWindow::createFramebuffers: Failed to create framebuffer !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
         }
 
@@ -1719,7 +1819,9 @@ namespace LostPeter
                 vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poRenderFinishedSemaphores[i]) != VK_SUCCESS ||
                 vkCreateFence(this->poDevice, &fenceInfo, nullptr, &this->poInFlightFences[i]) != VK_SUCCESS) 
             {
-                throw std::runtime_error("VulkanWindow::createSyncObjects: Failed to create synchronization objects for a frame !");
+                std::string msg = "VulkanWindow::createSyncObjects: Failed to create synchronization objects for a frame !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
         }
 
@@ -1978,7 +2080,9 @@ namespace LostPeter
 
             if (vkCreateBuffer(this->poDevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) 
             {
-                throw std::runtime_error("VulkanWindow::createBuffer: Failed to create buffer !");
+                std::string msg = "VulkanWindow::createBuffer: Failed to create buffer !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
 
             VkMemoryRequirements memRequirements;
@@ -1991,7 +2095,9 @@ namespace LostPeter
 
             if (vkAllocateMemory(this->poDevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) 
             {
-                throw std::runtime_error("VulkanWindow::createBuffer: Failed to allocate buffer memory !");
+                std::string msg = "VulkanWindow::createBuffer: Failed to allocate buffer memory !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
 
             vkBindBufferMemory(this->poDevice, buffer, bufferMemory, 0);
@@ -2009,7 +2115,9 @@ namespace LostPeter
                     }
                 }
 
-                throw std::runtime_error("VulkanWindow::findMemoryType: Failed to find suitable memory type !");
+                std::string msg = "VulkanWindow::findMemoryType: Failed to find suitable memory type !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
             void VulkanWindow::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) 
             {
@@ -2061,25 +2169,49 @@ namespace LostPeter
                                      VkImage& image, 
                                      VkDeviceMemory& imageMemory)
     {
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createTexture(pathAsset_Tex, 
+                      type, 
+                      numSamples,
+                      format,
+                      autoMipMap,
+                      mipMapCount,
+                      image, 
+                      imageMemory, 
+                      stagingBuffer, 
+                      stagingBufferMemory);
+        destroyBuffer(stagingBuffer, stagingBufferMemory);
+    }
+    void VulkanWindow::createTexture(const std::string& pathAsset_Tex, 
+                                     VkImageType type,
+                                     VkSampleCountFlagBits numSamples,
+                                     VkFormat format,
+                                     bool autoMipMap, 
+                                     uint32_t& mipMapCount, 
+                                     VkImage& image, 
+                                     VkDeviceMemory& imageMemory,
+                                     VkBuffer& buffer, 
+                                     VkDeviceMemory& bufferMemory)
+    {
         std::string pathTexture = GetAssetFullPath(pathAsset_Tex);
         int texWidth, texHeight, texChannels;
         stbi_uc* pixels = stbi_load(pathTexture.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         VkDeviceSize imageSize = texWidth * texHeight * 4;
         mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
-
         if (!pixels) 
         {
-            throw std::runtime_error("VulkanWindow::createTexture: Failed to load texture image !");
+            std::string msg = "VulkanWindow::createTexture: Failed to load texture image !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
-        createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+        createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer, bufferMemory);
 
         void* data;
-        vkMapMemory(this->poDevice, stagingBufferMemory, 0, imageSize, 0, &data);
+        vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
             memcpy(data, pixels, static_cast<size_t>(imageSize));
-        vkUnmapMemory(this->poDevice, stagingBufferMemory);
+        vkUnmapMemory(this->poDevice, bufferMemory);
 
         stbi_image_free(pixels);
 
@@ -2101,15 +2233,27 @@ namespace LostPeter
                               VK_IMAGE_LAYOUT_UNDEFINED, 
                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
                               mipMapCount);
-        copyBufferToImage(stagingBuffer, 
+        copyBufferToImage(buffer, 
                           image, 
                           static_cast<uint32_t>(texWidth), 
                           static_cast<uint32_t>(texHeight));
 
-        vkDestroyBuffer(this->poDevice, stagingBuffer, nullptr);
-        vkFreeMemory(this->poDevice, stagingBufferMemory, nullptr);
-
-        generateMipMaps(image, format, texWidth, texHeight, mipMapCount);
+        if (autoMipMap)
+            generateMipMaps(image, format, texWidth, texHeight, mipMapCount);
+    }
+    void VulkanWindow::createTexture1D(const std::string& pathAsset_Tex, 
+                                       uint32_t& mipMapCount,
+                                       VkImage& image, 
+                                       VkDeviceMemory& imageMemory)
+    {
+        createTexture(pathAsset_Tex,
+                      VK_IMAGE_TYPE_1D,
+                      VK_SAMPLE_COUNT_1_BIT,
+                      VK_FORMAT_R8G8B8A8_SRGB,
+                      true,
+                      mipMapCount,
+                      image,
+                      imageMemory);
     }
     void VulkanWindow::createTexture2D(const std::string& pathAsset_Tex, 
                                        uint32_t& mipMapCount,
@@ -2118,6 +2262,20 @@ namespace LostPeter
     {
         createTexture(pathAsset_Tex,
                       VK_IMAGE_TYPE_2D,
+                      VK_SAMPLE_COUNT_1_BIT,
+                      VK_FORMAT_R8G8B8A8_SRGB,
+                      true,
+                      mipMapCount,
+                      image,
+                      imageMemory);
+    }
+    void VulkanWindow::createTexture3D(const std::string& pathAsset_Tex, 
+                                       uint32_t& mipMapCount,
+                                       VkImage& image, 
+                                       VkDeviceMemory& imageMemory)
+    {
+        createTexture(pathAsset_Tex,
+                      VK_IMAGE_TYPE_3D,
                       VK_SAMPLE_COUNT_1_BIT,
                       VK_FORMAT_R8G8B8A8_SRGB,
                       true,
@@ -2155,7 +2313,9 @@ namespace LostPeter
 
             if (vkCreateImage(this->poDevice, &imageInfo, nullptr, &image) != VK_SUCCESS) 
             {
-                throw std::runtime_error("VulkanWindow::createImage: Failed to create image !");
+                std::string msg = "VulkanWindow::createImage: Failed to create image !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
 
             VkMemoryRequirements memRequirements;
@@ -2168,7 +2328,9 @@ namespace LostPeter
 
             if (vkAllocateMemory(this->poDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) 
             {
-                throw std::runtime_error("VulkanWindow::createImage: Failed to allocate image memory !");
+                std::string msg = "VulkanWindow::createImage: Failed to allocate image memory !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
             vkBindImageMemory(this->poDevice, image, imageMemory, 0);
         }
@@ -2192,7 +2354,9 @@ namespace LostPeter
 
             if (vkCreateImageView(this->poDevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS) 
             {
-                throw std::runtime_error("VulkanWindow::createImageView: Failed to create texture image view !");
+                std::string msg = "VulkanWindow::createImageView: Failed to create texture image view !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
         }
         void VulkanWindow::createSampler(uint32_t mipMapCount, 
@@ -2221,7 +2385,9 @@ namespace LostPeter
 
             if (vkCreateSampler(this->poDevice, &samplerInfo, nullptr, &sampler) != VK_SUCCESS) 
             {
-                throw std::runtime_error("VulkanWindow::createSampler: Failed to create texture sampler !");
+                std::string msg = "VulkanWindow::createSampler: Failed to create texture sampler !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
         }
         void VulkanWindow::createSampler(VulkanTextureFilterType eTextureFilter,
@@ -2257,7 +2423,9 @@ namespace LostPeter
 
             if (vkCreateSampler(this->poDevice, &samplerInfo, nullptr, &sampler) != VK_SUCCESS) 
             {
-                throw std::runtime_error("VulkanWindow::createSampler: Failed to create texture sampler !");
+                std::string msg = "VulkanWindow::createSampler: Failed to create texture sampler !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
         }
 
@@ -2349,7 +2517,9 @@ namespace LostPeter
 
             if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) 
             {
-                throw std::runtime_error("VulkanWindow::generateMipMaps: Texture image format does not support linear blitting !");
+                std::string msg = "VulkanWindow::generateMipMaps: Texture image format does not support linear blitting !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
 
             VkCommandBuffer commandBuffer = beginSingleTimeCommands();
@@ -2639,7 +2809,7 @@ namespace LostPeter
                 {
                     std::string msg = "VulkanWindow::createVkPipelineCache: Failed to create pipeline cache !";
                     Util_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
+                    throw std::runtime_error(msg);
                 }
             }
             VkPipelineLayout VulkanWindow::createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout)
@@ -2657,7 +2827,7 @@ namespace LostPeter
                 {
                     std::string msg = "VulkanWindow::createVkPipelineLayout: Failed to create pipeline layout !";
                     Util_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
+                    throw std::runtime_error(msg);
                 }
                 return vkPipelineLayout;
             }
@@ -2687,7 +2857,7 @@ namespace LostPeter
                 {
                     std::string msg = "VulkanWindow::createShaderModule: Failed to create shader module: " + info;
                     Util_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
+                    throw std::runtime_error(msg);
                 }
 
                 return shaderModule;
@@ -2900,7 +3070,9 @@ namespace LostPeter
 
         if (vkCreateDescriptorPool(this->poDevice, &poolInfo, nullptr, &this->poDescriptorPool) != VK_SUCCESS) 
         {
-            throw std::runtime_error("VulkanWindow::createDescriptorPool: Failed to create descriptor pool !");
+            std::string msg = "VulkanWindow::createDescriptorPool: Failed to create descriptor pool !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         Util_LogInfo("<2-2-5-1> VulkanWindow::createDescriptorPool finish !");
@@ -2930,7 +3102,9 @@ namespace LostPeter
         aDescriptorSets.resize(count);
         if (vkAllocateDescriptorSets(this->poDevice, &allocInfo, aDescriptorSets.data()) != VK_SUCCESS) 
         {
-            throw std::runtime_error("VulkanWindow::createDescriptorSets: Failed to allocate descriptor sets !");
+            std::string msg = "VulkanWindow::createDescriptorSets: Failed to allocate descriptor sets !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
     }
     void VulkanWindow::updateDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler)
@@ -3038,7 +3212,9 @@ namespace LostPeter
         allocInfo.commandBufferCount = (uint32_t)this->poCommandBuffers.size();
         if (vkAllocateCommandBuffers(this->poDevice, &allocInfo, this->poCommandBuffers.data()) != VK_SUCCESS) 
         {
-            throw std::runtime_error("VulkanWindow::createCommandBuffers: Failed to allocate command buffers !");
+            std::string msg = "VulkanWindow::createCommandBuffers: Failed to allocate command buffers !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         Util_LogInfo("<2-2-6> VulkanWindow::createCommandBuffers finish !");
@@ -3082,7 +3258,9 @@ namespace LostPeter
 
         if (vkCreateDescriptorPool(this->poDevice, &pool_info, nullptr, &this->imgui_DescriptorPool) != VK_SUCCESS) 
         {
-            throw std::runtime_error("VulkanWindow::createImgui_DescriptorPool: Imgui descriptor pool creation failed !");
+            std::string msg = "VulkanWindow::createImgui_DescriptorPool: Imgui descriptor pool creation failed !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         Util_LogInfo("<2-4-1> VulkanWindow::createImgui_DescriptorPool finish !");
@@ -3160,7 +3338,9 @@ namespace LostPeter
         }
         else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
         {
-            throw std::runtime_error("VulkanWindow::beginRender: Failed to acquire swap chain image !");
+            std::string msg = "VulkanWindow::beginRender: Failed to acquire swap chain image !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
             return false;
         }
         return true;
@@ -3787,7 +3967,7 @@ namespace LostPeter
                 {
                     std::string msg = "VulkanWindow::updateCommandBuffers: Failed to reset command buffer !";
                     Util_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
+                    throw std::runtime_error(msg);
                 }
 
                 VkCommandBufferBeginInfo beginInfo = {};
@@ -3799,7 +3979,7 @@ namespace LostPeter
                 {
                     std::string msg = "VulkanWindow::updateCommandBuffers: Failed to begin recording command buffer !";
                     Util_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
+                    throw std::runtime_error(msg);
                 }
                 {
                     updateRenderPass_Default(commandBuffer);
@@ -3809,7 +3989,7 @@ namespace LostPeter
                 {
                     std::string msg = "VulkanWindow::updateCommandBuffers: Failed to record command buffer !";
                     Util_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
+                    throw std::runtime_error(msg);
                 }
             }
             void VulkanWindow::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
@@ -3933,7 +4113,9 @@ namespace LostPeter
 
             if (vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, this->poInFlightFences[this->poCurrentFrame]) != VK_SUCCESS) 
             {
-                throw std::runtime_error("VulkanWindow::render: Failed to submit draw command buffer !");
+                std::string msg = "VulkanWindow::render: Failed to submit draw command buffer !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
 
             VkPresentInfoKHR presentInfo = {};
@@ -3956,7 +4138,9 @@ namespace LostPeter
             } 
             else if (result != VK_SUCCESS) 
             {
-                throw std::runtime_error("VulkanWindow::render: Failed to present swap chain image !");
+                std::string msg = "VulkanWindow::render: Failed to present swap chain image !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
             }
         }
     void VulkanWindow::endRender()

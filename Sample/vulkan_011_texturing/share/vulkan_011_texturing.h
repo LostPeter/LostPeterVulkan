@@ -23,6 +23,7 @@ public:
     {
         Vulkan_011_Texturing* pWindow;
         std::string pathTexture;
+        VulkanTextureType typeTexture;
         int refCount;
 
         uint32_t poMipMapCount;
@@ -34,9 +35,10 @@ public:
         ModelTexture(Vulkan_011_Texturing* _pWindow, const std::string& _pathTexture)
             : pWindow(_pWindow)
             , pathTexture(_pathTexture)
+            , typeTexture(Vulkan_Texture_2D)
             , refCount(0)
 
-            , poMipMapCount(0)
+            , poMipMapCount(1)
             , poTextureImage(VK_NULL_HANDLE)
             , poTextureImageMemory(VK_NULL_HANDLE)
             , poTextureImageView(VK_NULL_HANDLE)
@@ -53,7 +55,7 @@ public:
         int GetRef() { return this->refCount; }
         int AddRef() { return ++ this->refCount; }
         int DelRef() { return -- this->refCount; }
-        bool HasRef() { return this->refCount <= 0; }
+        bool HasRef() { return this->refCount > 0; }
         bool CanDel() { return !HasRef(); }
 
         void Destroy()
@@ -200,6 +202,7 @@ public:
         Vulkan_011_Texturing* pWindow;
 
         //Name
+        int indexModel;
         std::string nameModel;
         std::string pathModel;
         std::vector<std::string> aPathTextures;
@@ -305,13 +308,19 @@ public:
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrVector m_aModelObjects_Render;
     ModelObjectPtrMap m_mapModelObjects;
+
+    VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
+    VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
     
     VkShaderModuleVector m_aVkShaderModules;
     VkShaderModuleMap m_mapVkShaderModules;
 
 protected:
     //Create Pipeline
-    
+
+        //DescriptorSetLayout
+        virtual void createDescriptorSetLayout_Custom();
+
     //Load Assets
         //Camera
         virtual void createCamera();
@@ -346,6 +355,10 @@ protected:
 
 private:
     void rebuildInstanceCBs(bool isCreateVkBuffer);
+
+    void destroyDescriptorSetLayouts();
+    void createDescriptorSetLayouts();
+    VkDescriptorSetLayout findDescriptorSetLayout(const std::string& nameDescriptorSetLayout);
 
     void destroyShaderModules();
     void createShaderModules();
