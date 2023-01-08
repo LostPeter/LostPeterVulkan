@@ -16,13 +16,14 @@
 
 namespace LostPeter
 {
-////Define
+////////////////////////////// Define //////////////////////////////
     #define MAX_LIGHT_COUNT 16
     #define MAX_OBJECT_COUNT 1024
     #define MAX_MATERIAL_COUNT 128
     #define MAX_INSTANCE_COUNT 1024
 
-////Typedef
+
+////////////////////////////// Typedef /////////////////////////////
     using int8 = std::int8_t;
     using uint8 = std::uint8_t;
     using int16 = std::int16_t;
@@ -55,12 +56,13 @@ namespace LostPeter
     bool Util_CheckVkResult(VkResult result, const std::string& nameFunc);
 
 
-////Enum
+////////////////////////////// Enum ////////////////////////////////
     enum VulkanLogType
     {
         Vulkan_Log_Console = 0,
         Vulkan_Log_File,
     };
+
 
     enum VulkanVertexType
     {
@@ -74,6 +76,7 @@ namespace LostPeter
         Count
     };
 
+
     enum VulkanSwapStatusType
     {
         Vulkan_SwapStatus_Normal = 0,
@@ -82,6 +85,7 @@ namespace LostPeter
         Vulkan_SwapStatus_Error = -3,
     };
 
+
     enum VulkanPixelFormatType
     {
         Vulkan_PixelFormat_Unknown = 0,
@@ -89,12 +93,14 @@ namespace LostPeter
         Vulkan_PixelFormat_BYTE_A8R8G8B8_UNORM,
     };
 
+
     enum VulkanLightType
     {
         Vulkan_Light_Directional = 0,
         Vulkan_Light_Point,
         Vulkan_Light_Spot,
     };
+
 
     enum VulkanLightingType
     {
@@ -113,7 +119,116 @@ namespace LostPeter
     };
 
 
-////Vulkan
+    enum VulkanTextureType
+    {
+        Vulkan_Texture_1D = 0,                              //0: 1D
+        Vulkan_Texture_2D,                                  //1: 2D
+        Vulkan_Texture_2DArray,                             //2: 2DArray
+        Vulkan_Texture_3D,                                  //3: 3D
+        Vulkan_Texture_CubeMap,                             //4: CubeMap
+
+        Vulkan_Texture_Count,
+    };
+    const std::string& Util_GetTextureTypeName(VulkanTextureType type);
+    const std::string& Util_GetTextureTypeName(int type);
+    VulkanTextureType Util_ParseTextureType(const std::string& strName);
+    VkImageViewType Util_Transform2VkImageViewType(VulkanTextureType type);
+
+
+    enum VulkanTextureFilterSizeType
+    {
+        Vulkan_TextureFilterSize_Min = 0,	                //0: Min		
+        Vulkan_TextureFilterSize_Mag,				        //1: Mag
+        Vulkan_TextureFilterSize_Mip,				        //2: Mip
+
+        Vulkan_TextureFilterSize_Count,
+    };
+    const std::string& Util_GetTextureFilterSizeTypeName(VulkanTextureFilterSizeType type);
+    const std::string& Util_GetTextureFilterSizeTypeName(int type);
+    VulkanTextureFilterSizeType Util_ParseTextureFilterSizeType(const std::string& strName);
+
+
+    enum VulkanTextureFilterPixelType
+    {
+        Vulkan_TextureFilterPixel_None	= 0,	            //0: None
+        Vulkan_TextureFilterPixel_Point,			        //1: Point
+        Vulkan_TextureFilterPixel_Linear,			        //2: Linear
+        Vulkan_TextureFilterPixel_Anisotropic,		        //3: Anisotropic
+
+        Vulkan_TextureFilterPixel_Count,
+    };
+    const std::string& Util_GetTextureFilterPixelTypeName(VulkanTextureFilterPixelType type);
+    const std::string& Util_GetTextureFilterPixelTypeName(int type);
+    VulkanTextureFilterPixelType Util_ParseTextureFilterPixelType(const std::string& strName);
+    VkFilter Util_Transform2VkFilter(VulkanTextureFilterPixelType type);
+    VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(VulkanTextureFilterPixelType type);
+
+
+     enum VulkanTextureFilterType
+    {
+        Vulkan_TextureFilter_None = 0,					    //0: min=Vulkan_TextureFilterPixel_Point,       mag=Vulkan_TextureFilterPixel_Point,  	  mip=Vulkan_TextureFilterPixel_None
+        Vulkan_TextureFilter_Bilinear,				        //1: min=Vulkan_TextureFilterPixel_Linear,      mag=Vulkan_TextureFilterPixel_Linear, 	  mip=Vulkan_TextureFilterPixel_Point
+        Vulkan_TextureFilter_Trilinear,			            //2: min=Vulkan_TextureFilterPixel_Linear,	     mag=Vulkan_TextureFilterPixel_Linear, 	  mip=Vulkan_TextureFilterPixel_Linear
+        Vulkan_TextureFilter_Anisotropic,			        //3: min=Vulkan_TextureFilterPixel_Anisotropic, mag=Vulkan_TextureFilterPixel_Anisotropic,  mip=Vulkan_TextureFilterPixel_Linear
+
+        Vulkan_TextureFilter_Count,
+    };
+    const std::string& Util_GetTextureFilterTypeName(VulkanTextureFilterType type);
+    const std::string& Util_GetTextureFilterTypeName(int type);
+    VulkanTextureFilterType Util_ParseTextureFilterType(const std::string& strName);
+    VkFilter Util_Transform2VkFilter(VulkanTextureFilterType typeFilter, VulkanTextureFilterSizeType typeFilterSize);
+    VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(VulkanTextureFilterType typeFilter);
+
+
+    enum VulkanTextureAddressingType
+    {
+        Vulkan_TextureAddressing_Wrap = 0,	                //0: Wrap
+        Vulkan_TextureAddressing_Mirror,			        //1: Mirror
+        Vulkan_TextureAddressing_Clamp,			            //2: Clamp
+        Vulkan_TextureAddressing_Border,			        //3: Border
+
+        Vulkan_TextureAddressing_Count,
+    };
+    const std::string& Util_GetTextureAddressingTypeName(VulkanTextureAddressingType type);
+    const std::string& Util_GetTextureAddressingTypeName(int type);
+    VulkanTextureAddressingType Util_ParseTextureAddressingType(const std::string& strName);
+    VkSamplerAddressMode Util_Transform2VkSamplerAddressMode(VulkanTextureAddressingType type);
+
+
+    enum VulkanTextureBorderColorType
+    {
+        Vulkan_TextureBorderColor_OpaqueBlack = 0,          //0: OpaqueBlack
+        Vulkan_TextureBorderColor_OpaqueWhite,              //1: OpaqueWhite
+        Vulkan_TextureBorderColor_TransparentBlack,         //2: TransparentBlack
+
+        Vulkan_TextureBorderColor_Count,
+    };
+    const std::string& Util_GetTextureBorderColorTypeName(VulkanTextureBorderColorType type);
+    const std::string& Util_GetTextureBorderColorTypeName(int type);
+    VulkanTextureBorderColorType Util_ParseTextureBorderColorType(const std::string& strName);
+    VkBorderColor Util_Transform2VkBorderColor(VulkanTextureBorderColorType type);
+
+
+    enum VulkanMSAASampleCountType
+    {
+        Vulkan_MSAASampleCount_1_Bit = 0,
+        Vulkan_MSAASampleCount_2_Bit,
+        Vulkan_MSAASampleCount_4_Bit,
+        Vulkan_MSAASampleCount_8_Bit,
+        Vulkan_MSAASampleCount_16_Bit,
+        Vulkan_MSAASampleCount_32_Bit,
+        Vulkan_MSAASampleCount_64_Bit,
+
+        Vulkan_MSAASampleCount_Count,
+    };
+    const std::string& Util_GetMSAASampleCountTypeName(VulkanMSAASampleCountType type);
+    const std::string& Util_GetMSAASampleCountTypeName(int type);
+    VulkanMSAASampleCountType Util_ParseMSAASampleCountType(const std::string& strName);
+    VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(VulkanMSAASampleCountType type);
+
+    
+
+////////////////////////////// Vulkan //////////////////////////////
     typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;
     typedef std::vector<VkVertexInputAttributeDescription> VkVertexInputAttributeDescriptionVector;
 
@@ -132,7 +247,7 @@ namespace LostPeter
     typedef std::map<std::string, VkPipeline> VkPipelineMap;
 
 
-////Class
+////////////////////////////// Class ///////////////////////////////
     class App;
     
     class VulkanBase;

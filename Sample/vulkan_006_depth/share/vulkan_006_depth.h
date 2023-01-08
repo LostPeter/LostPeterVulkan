@@ -54,7 +54,7 @@ public:
             , poMatWorld(1.0f)
             
             //Texture
-            , poMipLevels(0)
+            , poMipMapCount(0)
             , poTextureImage(VK_NULL_HANDLE)
             , poTextureImageMemory(VK_NULL_HANDLE)
             , poTextureImageView(VK_NULL_HANDLE)
@@ -202,7 +202,7 @@ public:
         glm::mat4 poMatWorld;
 
         //Texture
-        uint32_t poMipLevels;
+        uint32_t poMipMapCount;
         VkImage poTextureImage;
         VkDeviceMemory poTextureImageMemory;
         VkImageView poTextureImageView;

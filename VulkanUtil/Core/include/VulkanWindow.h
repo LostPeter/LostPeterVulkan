@@ -76,7 +76,7 @@ namespace LostPeter
         VkPipeline poPipelineGraphics;
         VkPipeline poPipelineGraphics_WireFrame;
 
-        uint32_t poMipLevels;
+        uint32_t poMipMapCount;
         VkImage poTextureImage;
         VkDeviceMemory poTextureImageMemory;
         VkImageView poTextureImageView;
@@ -262,7 +262,6 @@ namespace LostPeter
                     virtual VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
                     virtual void createViewport();
                 virtual void createSwapChainImageViews();
-                    virtual VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
                     virtual void createColorResources();
                     virtual void createDepthResources();
                         virtual VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
@@ -306,6 +305,7 @@ namespace LostPeter
                     virtual void loadModel();
                         virtual void loadModel_Assimp();
                         virtual void loadModel_Custom();
+                    virtual void destroyBuffer(VkBuffer buffer, VkDeviceMemory bufferMemory);
                     virtual void createVertexBuffer(size_t bufSize, void* pBuf, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory);
                     virtual void createIndexBuffer(size_t bufSize, void* pBuf, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory);
                         virtual void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
@@ -313,13 +313,66 @@ namespace LostPeter
                         virtual void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
                 
                 virtual void loadTexture();
-                    virtual void createTextureImage(const std::string& pathAsset_Tex, VkImage& textureImage, VkDeviceMemory& textureImageMemory, uint32_t& mipLevels);
-                        virtual void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
-                        virtual void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
-                        virtual void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
-                        virtual void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-                    virtual void createTextureImageView(VkImage& textureImage, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, VkImageView& textureImageView);
-                    virtual void createTextureSampler(uint32_t mipLevels, VkSampler& textureSampler);
+                    virtual void destroyTexture(VkImage image, VkDeviceMemory imageMemory, VkImageView imageView);
+                    virtual void destroyTextureSampler(VkSampler sampler);
+                    virtual void createTexture(const std::string& pathAsset_Tex, 
+                                               VkImageType type,
+                                               VkSampleCountFlagBits numSamples,
+                                               VkFormat format,
+                                               bool autoMipMap, 
+                                               uint32_t& mipMapCount, 
+                                               VkImage& image, 
+                                               VkDeviceMemory& imageMemory);
+                    virtual void createTexture2D(const std::string& pathAsset_Tex, 
+                                                 uint32_t& mipMapCount,
+                                                 VkImage& image, 
+                                                 VkDeviceMemory& imageMemory);
+                        virtual void createImage(uint32_t width, 
+                                                 uint32_t height, 
+                                                 uint32_t depth, 
+                                                 uint32_t mipMapCount, 
+                                                 VkImageType type, 
+                                                 VkSampleCountFlagBits numSamples, 
+                                                 VkFormat format, 
+                                                 VkImageTiling tiling, 
+                                                 VkImageUsageFlags usage, 
+                                                 VkMemoryPropertyFlags properties, 
+                                                 VkImage& image, 
+                                                 VkDeviceMemory& imageMemory);
+                        virtual void createImageView(VkImage image, 
+                                                     VkImageViewType type, 
+                                                     VkFormat format, 
+                                                     VkImageAspectFlags aspectFlags, 
+                                                     uint32_t mipMapCount,
+                                                     VkImageView& imageView);
+                                                     
+                        virtual void createSampler(uint32_t mipMapCount, 
+                                                   VkSampler& sampler);
+                        virtual void createSampler(VulkanTextureFilterType eTextureFilter,
+                                                   VulkanTextureAddressingType eTextureAddressing,
+                                                   VulkanTextureBorderColorType eTextureBorderColor,
+                                                   bool enableAnisotropy,
+                                                   float maxAnisotropy,
+                                                   float minLod, 
+                                                   float maxLod, 
+                                                   float mipLodBias,
+                                                   VkSampler& sampler);
+                        
+                        virtual void transitionImageLayout(VkImage image, 
+                                                           VkFormat format, 
+                                                           VkImageLayout oldLayout, 
+                                                           VkImageLayout newLayout, 
+                                                           uint32_t mipMapCount);
+                        virtual void copyBufferToImage(VkBuffer buffer, 
+                                                       VkImage image, 
+                                                       uint32_t width, 
+                                                       uint32_t height);
+                        virtual void generateMipMaps(VkImage image, 
+                                                     VkFormat imageFormat, 
+                                                     int32_t texWidth, 
+                                                     int32_t texHeight, 
+                                                     uint32_t mipMapCount);
+                    
                 
                 virtual void createConstBuffers();
                     virtual void createPassCB();
@@ -338,6 +391,7 @@ namespace LostPeter
                         virtual void createVkPipelineCache();
                         virtual VkPipelineLayout createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout);
                         virtual VkShaderModule createShaderModule(std::string info, std::string pathFile);
+                        virtual void destroyVkPipeline(VkPipeline vkPipeline);
                         virtual VkPipeline createVkPipeline(VkShaderModule vertShaderModule, const std::string& vertMain,
                                                             VkShaderModule fragShaderModule, const std::string& fragMain,
                                                             VkVertexInputBindingDescriptionVector* pBindingDescriptions,

@@ -229,9 +229,9 @@ bool Vulkan_010_Lighting::loadModel_Texture(ModelObject* pModelObject)
 {
     if (!pModelObject->pathTexture.empty())
     {
-        createTextureImage(pModelObject->pathTexture, pModelObject->poTextureImage, pModelObject->poTextureImageMemory, pModelObject->poMipLevels);
-        createTextureImageView(pModelObject->poTextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipLevels, pModelObject->poTextureImageView);
-        createTextureSampler(pModelObject->poMipLevels, pModelObject->poTextureSampler);
+        createTexture2D(pModelObject->pathTexture, pModelObject->poMipMapCount, pModelObject->poTextureImage, pModelObject->poTextureImageMemory);
+        createImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, pModelObject->poTextureImageView);
+        createSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
 
         Util_LogInfo("Vulkan_010_Lighting::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }

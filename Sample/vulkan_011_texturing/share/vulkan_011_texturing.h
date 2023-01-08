@@ -19,16 +19,70 @@ public:
     Vulkan_011_Texturing(int width, int height, std::string name);
 
 public:
+    struct ModelTexture
+    {
+        Vulkan_011_Texturing* pWindow;
+        std::string pathTexture;
+        int refCount;
+
+        uint32_t poMipMapCount;
+        VkImage poTextureImage;
+        VkDeviceMemory poTextureImageMemory;
+        VkImageView poTextureImageView;
+        VkSampler poTextureSampler;
+
+        ModelTexture(Vulkan_011_Texturing* _pWindow, const std::string& _pathTexture)
+            : pWindow(_pWindow)
+            , pathTexture(_pathTexture)
+            , refCount(0)
+
+            , poMipMapCount(0)
+            , poTextureImage(VK_NULL_HANDLE)
+            , poTextureImageMemory(VK_NULL_HANDLE)
+            , poTextureImageView(VK_NULL_HANDLE)
+            , poTextureSampler(VK_NULL_HANDLE)
+        {
+
+        }
+
+        ~ModelTexture()
+        {
+            Destroy();
+        }
+
+        int GetRef() { return this->refCount; }
+        int AddRef() { return ++ this->refCount; }
+        int DelRef() { return -- this->refCount; }
+        bool HasRef() { return this->refCount <= 0; }
+        bool CanDel() { return !HasRef(); }
+
+        void Destroy()
+        {
+            DelRef();
+            if (CanDel())
+            {
+                pWindow->destroyTexture(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
+                this->poTextureImage = VK_NULL_HANDLE;
+                this->poTextureImageMemory = VK_NULL_HANDLE;
+                this->poTextureImageView = VK_NULL_HANDLE;
+                pWindow->destroyTextureSampler(this->poTextureSampler);
+                this->poTextureSampler = VK_NULL_HANDLE;
+            }
+        }
+
+    };
+    typedef std::vector<ModelTexture*> ModelTexturePtrVector;
+    typedef std::map<std::string, ModelTexture*> ModelTexturePtrMap;
+
     struct ModelObject
     {
-        ModelObject(VkDevice device)
-            //Device
-            : poDevice(device)
+        ModelObject(Vulkan_011_Texturing* _pWindow)
+            //Window
+            : pWindow(_pWindow)
 
             //Name
             , nameModel("")
             , pathModel("")
-            , pathTexture("")
             , isShow(true)
             , isWireFrame(false)
             , isRotate(true)
@@ -53,11 +107,7 @@ public:
             , countInstance(1)
             
             //Texture
-            , poMipLevels(0)
-            , poTextureImage(VK_NULL_HANDLE)
-            , poTextureImageMemory(VK_NULL_HANDLE)
-            , poTextureImageView(VK_NULL_HANDLE)
-            , poTextureSampler(VK_NULL_HANDLE)
+
 
             //Pipeline
             , poPipelineGraphics_WireFrame(VK_NULL_HANDLE)
@@ -86,42 +136,29 @@ public:
         ~ModelObject()
         {
             //Vertex
-            if (this->poVertexBuffer != VK_NULL_HANDLE)
-            {
-                vkDestroyBuffer(this->poDevice, this->poVertexBuffer, nullptr);
-                vkFreeMemory(this->poDevice, this->poVertexBufferMemory, nullptr);
-            }
+            this->pWindow->destroyBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
             this->poVertexBuffer = VK_NULL_HANDLE;
             this->poVertexBufferMemory = VK_NULL_HANDLE;
 
             //Index
-            if (this->poIndexBuffer != VK_NULL_HANDLE)
-            {
-                vkDestroyBuffer(this->poDevice, this->poIndexBuffer, nullptr);
-                vkFreeMemory(this->poDevice, this->poIndexBufferMemory, nullptr);
-            }
+            this->pWindow->destroyBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
             this->poIndexBuffer = VK_NULL_HANDLE;
             this->poIndexBufferMemory = VK_NULL_HANDLE;
 
             //Texture
-            if (this->poTextureSampler != VK_NULL_HANDLE)
+            size_t count_tex = this->m_aModelTextures.size();
+            for (size_t i = 0; i < count_tex; i++)
             {
-                vkDestroySampler(this->poDevice, this->poTextureSampler, nullptr);
+                ModelTexture* pTexture = this->m_aModelTextures[i];
+                pTexture->Destroy();
+                if (pTexture->CanDel())
+                {
+                    delete pTexture;
+                }
             }
-            this->poTextureSampler = VK_NULL_HANDLE;
-            if (this->poTextureImageView != VK_NULL_HANDLE)
-            {
-                vkDestroyImageView(this->poDevice, this->poTextureImageView, nullptr);
-            }
-            this->poTextureImageView = VK_NULL_HANDLE;
-            if (this->poTextureImage != VK_NULL_HANDLE)
-            {
-                vkDestroyImage(this->poDevice, this->poTextureImage, nullptr);
-                vkFreeMemory(this->poDevice, this->poTextureImageMemory, nullptr);
-            }
-            this->poTextureImage = VK_NULL_HANDLE;
-            this->poTextureImageMemory = VK_NULL_HANDLE;
-
+            this->m_aModelTextures.clear();
+            this->m_mapModelTextures.clear();
+            
             cleanupSwapChain();
         }
 
@@ -131,8 +168,7 @@ public:
             size_t count = this->poBuffers_ObjectCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                vkDestroyBuffer(this->poDevice, this->poBuffers_ObjectCB[i], nullptr);
-                vkFreeMemory(this->poDevice, this->poBuffersMemory_ObjectCB[i], nullptr);
+                this->pWindow->destroyBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
             }
             this->objectCBs.clear();
             this->poBuffers_ObjectCB.clear();
@@ -141,23 +177,17 @@ public:
             count = this->poBuffers_materialCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                vkDestroyBuffer(this->poDevice, this->poBuffers_materialCB[i], nullptr);
-                vkFreeMemory(this->poDevice, this->poBuffersMemory_materialCB[i], nullptr);
+                this->pWindow->destroyBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
             }
             this->materialCBs.clear();
             this->poBuffers_materialCB.clear();
             this->poBuffersMemory_materialCB.clear();
 
             //Pipeline
-            if (this->poPipelineGraphics_WireFrame != nullptr)
-            {
-                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_WireFrame, nullptr);
-            }
+            this->pWindow->destroyVkPipeline(this->poPipelineGraphics_WireFrame);
             this->poPipelineGraphics_WireFrame = VK_NULL_HANDLE;
-            if (this->poPipelineGraphics != nullptr)
-            {
-                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics, nullptr);
-            }
+
+            this->pWindow->destroyVkPipeline(this->poPipelineGraphics);
             this->poPipelineGraphics = VK_NULL_HANDLE;
         }
 
@@ -166,13 +196,13 @@ public:
 
         }
 
-        //Device
-        VkDevice poDevice;
+        //Window
+        Vulkan_011_Texturing* pWindow;
 
         //Name
         std::string nameModel;
         std::string pathModel;
-        std::string pathTexture;
+        std::vector<std::string> aPathTextures;
         bool isShow;
         bool isWireFrame;
         bool isRotate;
@@ -208,11 +238,8 @@ public:
         std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
 
         //Texture
-        uint32_t poMipLevels;
-        VkImage poTextureImage;
-        VkDeviceMemory poTextureImageMemory;
-        VkImageView poTextureImageView;
-        VkSampler poTextureSampler;
+        ModelTexturePtrVector m_aModelTextures;
+        ModelTexturePtrMap m_mapModelTextures;
 
         //Pipeline
         VkPipeline poPipelineGraphics_WireFrame;
@@ -240,6 +267,36 @@ public:
         VkBlendFactor cfg_BlendAlphaFactorDst; 
         VkBlendOp cfg_BlendAlphaOp;
         VkColorComponentFlags cfg_ColorWriteMask;
+
+
+        bool HasTexture(const std::string& pathTexture)
+        {
+            return GetTexture(pathTexture) != nullptr;
+        }
+        ModelTexture* GetTexture(const std::string& pathTexture)
+        {
+            ModelTexturePtrMap::iterator itFind = this->m_mapModelTextures.find(pathTexture);
+            if (itFind == this->m_mapModelTextures.end())
+                return nullptr;
+            return itFind->second;
+        }
+        void AddTexture(ModelTexture* pTexture)
+        {
+            this->m_aModelTextures.push_back(pTexture);
+            this->m_mapModelTextures[pTexture->pathTexture] = pTexture;
+        }
+        VkImage GetTextureImage(int index)
+        {
+            return this->m_aModelTextures[index]->poTextureImage;
+        }
+        VkImageView GetTextureImageView(int index)
+        {
+            return this->m_aModelTextures[index]->poTextureImageView;
+        }
+        VkSampler GetTextureSampler(int index)
+        {
+            return this->m_aModelTextures[index]->poTextureSampler;
+        }
     };
     typedef std::vector<ModelObject*> ModelObjectPtrVector;
     typedef std::map<std::string, ModelObject*> ModelObjectPtrMap;

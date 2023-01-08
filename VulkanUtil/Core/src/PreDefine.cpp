@@ -13,7 +13,7 @@
 namespace LostPeter
 {   
 
-////Typedef
+////////////////////////////// Typedef /////////////////////////////
     std::string Utile_VkResult2String(VkResult result)
     {   
         switch ((int)result)
@@ -62,7 +62,342 @@ namespace LostPeter
     }
 
 
-////Vulkan
+////////////////////////////// Enum ////////////////////////////////
+
+    //VulkanTextureType
+    static std::string s_nameTextures[] = 
+    {
+        "1d",
+        "2d",
+        "2darray",
+        "3d",
+        "cubemap"
+    };
+    const std::string& Util_GetTextureTypeName(VulkanTextureType type)
+    {
+        return s_nameTextures[(int)type];
+    }
+    const std::string& Util_GetTextureTypeName(int type)
+    {
+        return s_nameTextures[type];
+    }
+    VulkanTextureType Util_ParseTextureType(const std::string& strName)
+    {
+        for (size_t i = 0; i < (int)Vulkan_Texture_Count; i++)
+        {
+            if (s_nameTextures[i] == strName)
+                return (VulkanTextureType)(i);
+        }
+        assert(false && "Util_ParseTextureType: Wrong type name !");
+        return Vulkan_Texture_2D;
+    }
+    VkImageViewType Util_Transform2VkImageViewType(VulkanTextureType type)
+    {
+        switch ((int)type)
+        {
+        case Vulkan_Texture_1D: return VK_IMAGE_VIEW_TYPE_1D;
+        case Vulkan_Texture_2D: return VK_IMAGE_VIEW_TYPE_2D;
+        case Vulkan_Texture_2DArray: return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+        case Vulkan_Texture_3D: return VK_IMAGE_VIEW_TYPE_3D;
+        case Vulkan_Texture_CubeMap: return VK_IMAGE_VIEW_TYPE_CUBE;
+        }
+        assert(false && "Util_Transform2VkImageViewType: Wrong type !");
+        return VK_IMAGE_VIEW_TYPE_2D;
+    }
+
+
+    //VulkanTextureFilterSizeType
+    static std::string s_nameTextureFilterSizes[] = 
+    {
+        "min",
+        "mag",
+        "mip",
+    };
+    const std::string& Util_GetTextureFilterSizeTypeName(VulkanTextureFilterSizeType type)
+    {
+        return s_nameTextureFilterSizes[(int)type];
+    }
+    const std::string& Util_GetTextureFilterSizeTypeName(int type)
+    {
+        return s_nameTextureFilterSizes[type];
+    }
+    VulkanTextureFilterSizeType Util_ParseTextureFilterSizeType(const std::string& strName)
+    {
+        for (size_t i = 0; i < (int)Vulkan_TextureFilterSize_Count; i++)
+        {
+            if (s_nameTextureFilterSizes[i] == strName)
+                return (VulkanTextureFilterSizeType)(i);
+        }
+        assert(false && "Util_ParseTextureFilterSizeType: Wrong type name !");
+        return Vulkan_TextureFilterSize_Min;
+    }
+
+
+    //VulkanTextureFilterPixelType
+    static std::string s_nameTextureFilterPixels[] = 
+    {
+        "none",
+        "point",
+        "linear",
+        "anisotropic",
+    };
+    const std::string& Util_GetTextureFilterPixelTypeName(VulkanTextureFilterPixelType type)
+    {
+        return s_nameTextureFilterPixels[(int)type];
+    }
+    const std::string& Util_GetTextureFilterPixelTypeName(int type)
+    {
+        return s_nameTextureFilterPixels[type];
+    }
+    VulkanTextureFilterPixelType Util_ParseTextureFilterPixelType(const std::string& strName)
+    {
+        for (size_t i = 0; i < (int)Vulkan_TextureFilterPixel_Count; i++)
+        {
+            if (s_nameTextureFilterPixels[i] == strName)
+                return (VulkanTextureFilterPixelType)(i);
+        }
+        assert(false && "Util_ParseTextureFilterPixelType: Wrong type name !");
+        return Vulkan_TextureFilterPixel_None;
+    }
+    VkFilter Util_Transform2VkFilter(VulkanTextureFilterPixelType type)
+    {
+        switch ((int)type)
+        {
+        case Vulkan_TextureFilterPixel_None:            return VK_FILTER_NEAREST;
+        case Vulkan_TextureFilterPixel_Point:           return VK_FILTER_NEAREST;
+        case Vulkan_TextureFilterPixel_Linear:          return VK_FILTER_LINEAR;
+        case Vulkan_TextureFilterPixel_Anisotropic:     return VK_FILTER_LINEAR;
+        }
+        assert(false && "Util_Transform2VkFilter: Wrong type !");
+        return VK_FILTER_NEAREST;
+    }
+    VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(VulkanTextureFilterPixelType type)
+    {
+        switch ((int)type)
+        {
+        case Vulkan_TextureFilterPixel_None:            return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+        case Vulkan_TextureFilterPixel_Point:           return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+        case Vulkan_TextureFilterPixel_Linear:          return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        case Vulkan_TextureFilterPixel_Anisotropic:     return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        }
+        assert(false && "Util_Transform2VkSamplerMipmapMode: Wrong type !");
+        return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+    }
+
+
+    //VulkanTextureFilterType
+    static std::string s_nameTextureFilters[] = 
+    {
+        "none",
+        "bilinear",
+        "trilinear",
+        "anisotropic",
+    };
+    const std::string& Util_GetTextureFilterTypeName(VulkanTextureFilterType type)
+    {
+        return s_nameTextureFilters[(int)type];
+    }
+    const std::string& Util_GetTextureFilterTypeName(int type)
+    {
+        return s_nameTextureFilters[type];
+    }
+    VulkanTextureFilterType Util_ParseTextureFilterType(const std::string& strName)
+    {
+        for (size_t i = 0; i < (int)Vulkan_TextureFilter_Count; i++)
+        {
+            if (s_nameTextureFilters[i] == strName)
+                return (VulkanTextureFilterType)(i);
+        }
+        assert(false && "Util_ParseTextureFilterType: Wrong type name !");
+        return Vulkan_TextureFilter_None;
+    }
+    VkFilter Util_Transform2VkFilter(VulkanTextureFilterType typeFilter, VulkanTextureFilterSizeType typeFilterSize)
+    {
+        switch ((int)typeFilter)
+        {
+        case Vulkan_TextureFilter_None:
+            {
+                switch ((int)typeFilterSize)
+                {
+                    case Vulkan_TextureFilterSize_Min:        return VK_FILTER_NEAREST;
+                    case Vulkan_TextureFilterSize_Mag:        return VK_FILTER_NEAREST;
+                    assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterSizeType type !");    
+                }   
+            }   
+            break;
+        case Vulkan_TextureFilter_Bilinear:
+            {
+                switch ((int)typeFilterSize)
+                {
+                    case Vulkan_TextureFilterSize_Min:        return VK_FILTER_LINEAR;
+                    case Vulkan_TextureFilterSize_Mag:        return VK_FILTER_LINEAR;
+                    assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterSizeType type !");    
+                }
+            }
+            break;
+        case Vulkan_TextureFilter_Trilinear:
+            {
+                switch ((int)typeFilterSize)
+                {
+                    case Vulkan_TextureFilterSize_Min:        return VK_FILTER_LINEAR;
+                    case Vulkan_TextureFilterSize_Mag:        return VK_FILTER_LINEAR;
+                    assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterSizeType type !");    
+                }
+            }
+            break;
+        case Vulkan_TextureFilter_Anisotropic:
+            {
+                switch ((int)typeFilterSize)
+                {
+                    case Vulkan_TextureFilterSize_Min:        return VK_FILTER_LINEAR;
+                    case Vulkan_TextureFilterSize_Mag:        return VK_FILTER_LINEAR;
+                    assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterSizeType type !");    
+                }
+            }
+            break;
+        } 
+        assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterType type !");
+        return VK_FILTER_NEAREST;
+    }
+    VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(VulkanTextureFilterType typeFilter)
+    {
+        switch ((int)typeFilter)
+        {
+        case Vulkan_TextureFilter_None:         return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+        case Vulkan_TextureFilter_Bilinear:     return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        case Vulkan_TextureFilter_Trilinear:    return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        case Vulkan_TextureFilter_Anisotropic:  return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        } 
+        assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterType type !");
+        return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+    }
+
+
+    //VulkanTextureAddressingType
+    static std::string s_nameTextureAddressings[] = 
+    {
+        "wrap",
+        "mirror",
+        "clamp",
+        "border",
+    };
+    const std::string& Util_GetTextureAddressingTypeName(VulkanTextureAddressingType type)
+    {
+        return s_nameTextureAddressings[(int)type];
+    }
+    const std::string& Util_GetTextureAddressingTypeName(int type)
+    {
+        return s_nameTextureAddressings[type];
+    }
+    VulkanTextureAddressingType Util_ParseTextureAddressingType(const std::string& strName)
+    {
+        for (size_t i = 0; i < (int)Vulkan_TextureAddressing_Count; i++)
+        {
+            if (s_nameTextureAddressings[i] == strName)
+                return (VulkanTextureAddressingType)(i);
+        }
+        assert(false && "Util_ParseTextureAddressingType: Wrong type name !");
+        return Vulkan_TextureAddressing_Wrap;
+    }
+    VkSamplerAddressMode Util_Transform2VkSamplerAddressMode(VulkanTextureAddressingType type)
+    {
+        switch((int)type)
+        {
+        case Vulkan_TextureAddressing_Wrap:      return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        case Vulkan_TextureAddressing_Mirror:    return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+        case Vulkan_TextureAddressing_Clamp:     return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        case Vulkan_TextureAddressing_Border:    return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        }
+        assert(false && "Util_Transform2VkSamplerAddressMode: Wrong type !");
+        return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    }
+
+
+    //VulkanTextureBorderColorType
+    static std::string s_nameTextureBorderColors[] = 
+    {
+        "opaque_black",
+        "opaque_white",
+        "transparent_black",
+    };
+    const std::string& Util_GetTextureBorderColorTypeName(VulkanTextureBorderColorType type)
+    {
+        return s_nameTextureBorderColors[(int)type];
+    }
+    const std::string& Util_GetTextureBorderColorTypeName(int type)
+    {
+        return s_nameTextureBorderColors[type];
+    }
+    VulkanTextureBorderColorType Util_ParseTextureBorderColorType(const std::string& strName)
+    {
+        for (size_t i = 0; i < (int)Vulkan_TextureBorderColor_Count; i++)
+        {
+            if (s_nameTextureAddressings[i] == strName)
+                return (VulkanTextureBorderColorType)(i);
+        }
+        assert(false && "Util_ParseTextureBorderColorType: Wrong type name !");
+        return Vulkan_TextureBorderColor_OpaqueBlack;
+    }
+    VkBorderColor Util_Transform2VkBorderColor(VulkanTextureBorderColorType type)
+    {
+        switch((int)type)
+        {
+        case Vulkan_TextureBorderColor_OpaqueBlack:         return VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        case Vulkan_TextureBorderColor_OpaqueWhite:         return VK_BORDER_COLOR_INT_OPAQUE_WHITE;
+        case Vulkan_TextureBorderColor_TransparentBlack:    return VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
+        }
+        assert(false && "Util_Transform2VkBorderColor: Wrong type !");
+        return VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    }
+
+
+    //VulkanMSAASampleCountType
+    static std::string s_nameMSAASampleCounts[] = 
+    {
+        "1-Bit",
+        "2-Bit",
+        "4-Bit",
+        "8-Bit",
+        "16-Bit",
+        "32-Bit",
+        "64-Bit",
+    };
+    const std::string& Util_GetMSAASampleCountTypeName(VulkanMSAASampleCountType type)
+    {
+        return s_nameMSAASampleCounts[(int)type];
+    }
+    const std::string& Util_GetMSAASampleCountTypeName(int type)
+    {
+        return s_nameMSAASampleCounts[type];
+    }
+    VulkanMSAASampleCountType Util_ParseMSAASampleCountType(const std::string& strName)
+    {
+        for (size_t i = 0; i < (int)Vulkan_MSAASampleCount_Count; i++)
+        {
+            if (s_nameMSAASampleCounts[i] == strName)
+                return (VulkanMSAASampleCountType)(i);
+        }
+        assert(false && "Util_ParseMSAASampleCountType: Wrong type name !");
+        return Vulkan_MSAASampleCount_1_Bit;
+    }
+    VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(VulkanMSAASampleCountType type)
+    {
+        switch((int)type)
+        {
+        case Vulkan_MSAASampleCount_1_Bit:      return VK_SAMPLE_COUNT_1_BIT;
+        case Vulkan_MSAASampleCount_2_Bit:      return VK_SAMPLE_COUNT_2_BIT;
+        case Vulkan_MSAASampleCount_4_Bit:      return VK_SAMPLE_COUNT_4_BIT;
+        case Vulkan_MSAASampleCount_8_Bit:      return VK_SAMPLE_COUNT_8_BIT;
+        case Vulkan_MSAASampleCount_16_Bit:     return VK_SAMPLE_COUNT_16_BIT;
+        case Vulkan_MSAASampleCount_32_Bit:     return VK_SAMPLE_COUNT_32_BIT;
+        case Vulkan_MSAASampleCount_64_Bit:     return VK_SAMPLE_COUNT_64_BIT;
+        }
+        assert(false && "Util_Transform2VkSampleCountFlagBits: Wrong type !");
+        return VK_SAMPLE_COUNT_1_BIT;
+    }
+
+
+////////////////////////////// Vulkan //////////////////////////////
     const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(VulkanVertexType type)
     {
         switch ((int)type)

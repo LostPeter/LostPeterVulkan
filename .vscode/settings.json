@@ -99,6 +99,7 @@
         "condition_variable": "cpp",
         "future": "cpp",
         "span": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "memory_resource": "cpp"
     }
 }

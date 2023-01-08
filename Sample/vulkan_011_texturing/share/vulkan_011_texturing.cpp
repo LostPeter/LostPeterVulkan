@@ -31,17 +31,18 @@ static const char* g_pathShaderModules[2 * g_ShaderCount] =
 
 
 static const int g_CountLen = 8;
-static const char* g_pathModels[3 * g_CountLen] = 
+static const char* g_pathModels[4 * g_CountLen] = 
 {
-    "plane",                "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/terrain.png", //plane
-    "viking_room",          "Assets/Model/Obj/viking_room/viking_room.obj",     "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
-    "bunny",                "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp", //bunny  
+    //Model Name            //Model Path                                        //Texture One                                       //Texture Two
+    "plane",                "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/terrain.png",                       "", //plane
+    "viking_room",          "Assets/Model/Obj/viking_room/viking_room.obj",     "Assets/Model/Obj/viking_room/viking_room.png",     "", //viking_room
+    "bunny",                "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp",                         "", //bunny  
 
-    "texture1D",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture1d.tga", //texture1D
-    "texture2D",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture.jpg", //texture2D
-    "texture2Darray",       "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp", //texture2Darray
-    "texture3D",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp", //texture3D
-    "texturecubemap",       "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp", //texturecubemap
+    "texture1D",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture1d.tga",                     "", //texture1D
+    "texture2D",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture.jpg",                       "", //texture2D
+    "texture2Darray",       "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp",                         "", //texture2Darray
+    "texture3D",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp",                         "", //texture3D
+    "texturecubemap",       "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp",                         "", //texturecubemap
 };
 
 static const char* g_pathModelShaderModules[g_CountLen] = 
@@ -191,10 +192,15 @@ void Vulkan_011_Texturing::loadModel_Custom()
 {
     for (int i = 0; i < g_CountLen; i++)
     {
-        ModelObject* pModelObject = new ModelObject(this->poDevice);
-        pModelObject->nameModel = g_pathModels[3 * i + 0];
-        pModelObject->pathModel = g_pathModels[3 * i + 1];
-        pModelObject->pathTexture = g_pathModels[3 * i + 2];
+        ModelObject* pModelObject = new ModelObject(this);
+        pModelObject->nameModel = g_pathModels[4 * i + 0];
+        pModelObject->pathModel = g_pathModels[4 * i + 1];
+        std::string pathTexture1 = g_pathModels[4 * i + 2];
+        if (!pathTexture1.empty())
+            pModelObject->aPathTextures.push_back(pathTexture1);
+         std::string pathTexture2 = g_pathModels[4 * i + 3];
+        if (!pathTexture2.empty())
+            pModelObject->aPathTextures.push_back(pathTexture2);
 
         bool isTranformLocal = g_isTranformLocalModels[i];
         bool isFlipY = g_isFlipYModels[i];
@@ -215,7 +221,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
         //Texture
         if (!loadModel_Texture(pModelObject))
         {   
-            std::string msg = "Vulkan_011_Texturing::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
+            std::string msg = "Vulkan_011_Texturing::loadModel_Custom: Failed to load textures !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -293,15 +299,27 @@ bool Vulkan_011_Texturing::loadModel_VertexIndex(ModelObject* pModelObject, bool
 }
 bool Vulkan_011_Texturing::loadModel_Texture(ModelObject* pModelObject)
 {
-    if (!pModelObject->pathTexture.empty())
+    size_t count_tex = pModelObject->aPathTextures.size();
+    for (size_t i = 0; i < count_tex; i++)
     {
-        createTextureImage(pModelObject->pathTexture, pModelObject->poTextureImage, pModelObject->poTextureImageMemory, pModelObject->poMipLevels);
-        createTextureImageView(pModelObject->poTextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipLevels, pModelObject->poTextureImageView);
-        createTextureSampler(pModelObject->poMipLevels, pModelObject->poTextureSampler);
-
-        Util_LogInfo("Vulkan_011_Texturing::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
+        std::string pathTexture = pModelObject->aPathTextures[i];
+        ModelTexture* pTexture = pModelObject->GetTexture(pathTexture);
+        if (pTexture != nullptr)
+        {
+            pTexture->AddRef();
+            pModelObject->m_aModelTextures.push_back(pTexture);
+        }
+        else
+        {
+            pTexture = new ModelTexture(this, pathTexture);
+            pTexture->AddRef();
+            createTexture2D(pathTexture, pTexture->poMipMapCount, pTexture->poTextureImage, pTexture->poTextureImageMemory);
+            createImageView(pTexture->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pTexture->poMipMapCount, pTexture->poTextureImageView);
+            createSampler(pTexture->poMipMapCount, pTexture->poTextureSampler);
+            pModelObject->AddTexture(pTexture);
+        }
+        Util_LogInfo("Vulkan_011_Texturing::loadModel_Texture: Load texture [%s] success !", pathTexture.c_str());
     }
-
     return true;
 }
 
@@ -515,8 +533,8 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
 
             VkDescriptorImageInfo imageInfo = {};
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = pModelObject->poTextureImageView;
-            imageInfo.sampler = pModelObject->poTextureSampler;
+            imageInfo.imageView = pModelObject->GetTextureImageView(0);
+            imageInfo.sampler = pModelObject->GetTextureSampler(0);
             
             std::vector<VkWriteDescriptorSet> descriptorWrites;
 
