@@ -50,14 +50,14 @@ cd %name_project%
 
 if "%debug%" == "debug" (
     cmake -DDEBUG=1 "../../../Sources/%name%/"
-    msbuild libnoise.sln /p:configuration=debug
-    copy /Y ".\Debug\libnoise.lib" "..\..\..\Lib\Windows\"%name_lib%
-    copy /Y ".\Debug\libnoiseutils.lib" "..\..\..\Lib\Windows\"%nameutil_lib%
+    msbuild Project.sln /p:configuration=debug
+    copy /Y ".\src\Debug\noise.lib" "..\..\..\Lib\Windows\"%name_lib%
+    copy /Y ".\noiseutils\Debug\noiseutils-static.lib" "..\..\..\Lib\Windows\"%nameutil_lib%
 ) else (
     cmake "../../../Sources/%name%/"
-    msbuild libnoise.sln /p:configuration=release
-    copy /Y ".\Release\libnoise.lib" "..\..\..\Lib\Windows\"%name_lib%
-    copy /Y ".\Release\libnoiseutils.lib" "..\..\..\Lib\Windows\"%nameutil_lib%
+    msbuild Project.sln /p:configuration=release
+    copy /Y ".\src\Release\noise.lib" "..\..\..\Lib\Windows\"%name_lib%
+    copy /Y ".\noiseutils\Release\noiseutils-static.lib" "..\..\..\Lib\Windows\"%nameutil_lib%
 )
 
 
@@ -71,7 +71,8 @@ if exist %include_folder% (
     rmdir /S/Q %include_folder%
 )
 mkdir %include_folder%
+mkdir %include_folder%"\noise"
 mkdir %include_folder%"\noiseutils"
 
-xcopy /E /S /Y /F "..\Sources\%name%\src\noise" %include_folder%"\"
+xcopy /E /S /Y /F "..\Sources\%name%\src\noise" %include_folder%"\noise\"
 xcopy /E /S /Y /F "..\Sources\%name%\noiseutils\*.h" %include_folder%"\noiseutils\"

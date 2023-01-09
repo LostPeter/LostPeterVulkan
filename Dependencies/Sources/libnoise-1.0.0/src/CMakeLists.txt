@@ -52,17 +52,16 @@ IF(BUILD_SHARED_LIBS)
 		message(STATUS "build - shared for others")
 		add_library( noise SHARED ${libSrcs} )
     ENDIF()
+
+    set_target_properties( noise PROPERTIES LIBNOISE_VERSION ${LIBNOISE_VERSION} )
+    target_compile_definitions( noise PRIVATE NOISE_BUILD_DLL)
 ENDIF()
 
 add_library( noise-static STATIC ${libSrcs} )
 
 # this value is set in the root CMakeLists.txt
-set_target_properties( noise PROPERTIES LIBNOISE_VERSION ${LIBNOISE_VERSION} )
 set_target_properties( noise-static PROPERTIES LIBNOISE_VERSION ${LIBNOISE_VERSION} )
-
-target_compile_definitions( noise PRIVATE NOISE_BUILD_DLL)
 target_compile_definitions( noise-static PUBLIC NOISE_STATIC)
-
 set_target_properties( noise-static PROPERTIES OUTPUT_NAME "noise" )
 
 # I would like to see more projects using these defaults

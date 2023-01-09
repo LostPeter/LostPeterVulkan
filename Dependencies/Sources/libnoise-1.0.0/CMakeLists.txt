@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.0)
 
 set ( LIBNOISE_VERSION "1.0.0-cmake" )
 
-option(BUILD_SHARED_LIBS "Build shared libraries for libnoise" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries for libnoise" OFF)
 option(BUILD_LIBNOISE_DOCUMENTATION "Create doxygen documentation for developers" OFF)
 option(BUILD_LIBNOISE_UTILS "Build utility functions for use with libnoise" ON)
 option(BUILD_LIBNOISE_EXAMPLES "Build libnoise examples" ON)
