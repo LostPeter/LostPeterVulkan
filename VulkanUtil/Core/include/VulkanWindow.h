@@ -317,24 +317,44 @@ namespace LostPeter
                 virtual void loadTexture();
                     virtual void destroyTexture(VkImage image, VkDeviceMemory imageMemory, VkImageView imageView);
                     virtual void destroyTextureSampler(VkSampler sampler);
-                    virtual void createTexture(const std::string& pathAsset_Tex, 
-                                               VkImageType type,
-                                               VkSampleCountFlagBits numSamples,
-                                               VkFormat format,
-                                               bool autoMipMap, 
-                                               uint32_t& mipMapCount, 
-                                               VkImage& image, 
-                                               VkDeviceMemory& imageMemory,
-                                               VkBuffer& buffer, 
-                                               VkDeviceMemory& bufferMemory);
-                    virtual void createTexture(const std::string& pathAsset_Tex, 
-                                               VkImageType type,
-                                               VkSampleCountFlagBits numSamples,
-                                               VkFormat format,
-                                               bool autoMipMap, 
-                                               uint32_t& mipMapCount, 
-                                               VkImage& image, 
-                                               VkDeviceMemory& imageMemory);
+                    virtual void createTextureSingle(const std::string& pathAsset_Tex, 
+                                                     VkImageType type,
+                                                     VkSampleCountFlagBits numSamples,
+                                                     VkFormat format,
+                                                     bool autoMipMap, 
+                                                     uint32_t& mipMapCount, 
+                                                     VkImage& image, 
+                                                     VkDeviceMemory& imageMemory,
+                                                     VkBuffer& buffer, 
+                                                     VkDeviceMemory& bufferMemory);
+                    virtual void createTextureSingle(const std::string& pathAsset_Tex, 
+                                                     VkImageType type,
+                                                     VkSampleCountFlagBits numSamples,
+                                                     VkFormat format,
+                                                     bool autoMipMap, 
+                                                     uint32_t& mipMapCount, 
+                                                     VkImage& image, 
+                                                     VkDeviceMemory& imageMemory);
+                    virtual void createTextureArray(const std::vector<std::string>& aPathAsset_Tex, 
+                                                    VkImageType type,
+                                                    VkSampleCountFlagBits numSamples,
+                                                    VkFormat format,
+                                                    bool autoMipMap, 
+                                                    uint32_t& mipMapCount, 
+                                                    VkImage& image, 
+                                                    VkDeviceMemory& imageMemory,
+                                                    VkBuffer& buffer, 
+                                                    VkDeviceMemory& bufferMemory);
+                    virtual void createTextureArray(const std::vector<std::string>& aPathAsset_Tex, 
+                                                    VkImageType type,
+                                                    VkSampleCountFlagBits numSamples,
+                                                    VkFormat format,
+                                                    bool autoMipMap, 
+                                                    uint32_t& mipMapCount, 
+                                                    VkImage& image, 
+                                                    VkDeviceMemory& imageMemory);
+
+
                     virtual void createTexture1D(const std::string& pathAsset_Tex, 
                                                  uint32_t& mipMapCount,
                                                  VkImage& image, 
