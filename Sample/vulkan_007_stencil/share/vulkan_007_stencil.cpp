@@ -73,7 +73,7 @@ Vulkan_007_Stencil::Vulkan_007_Stencil(int width, int height, std::string name)
     this->poTypeVertex = Vulkan_VertexType_Pos3Color4Normal3Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_normal3_tex2_ubo.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/pos3_color4_normal3_tex2_ubo.frag.spv";
-    this->cfg_texture_Path = "Assets/Texture/texture.jpg";
+    this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
 
     this->pathShaderVertex_Outline = "Assets/Shader/pos3_color4_normal3_tex2_ubo_outline.vert.spv";
     this->pathShaderFragment_Outline = "Assets/Shader/pos3_color4_normal3_tex2_ubo_outline.frag.spv";

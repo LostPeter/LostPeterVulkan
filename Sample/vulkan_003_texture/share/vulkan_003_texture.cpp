@@ -23,7 +23,7 @@ Vulkan_003_Texture::Vulkan_003_Texture(int width, int height, std::string name)
     this->poTypeVertex = Vulkan_VertexType_Pos2Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/notrans_pos2_color4_tex2.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/notrans_pos2_color4_tex2.frag.spv";
-    this->cfg_texture_Path = "Assets/Texture/texture.jpg";
+    this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
 }
 
 void Vulkan_003_Texture::loadModel_Custom()

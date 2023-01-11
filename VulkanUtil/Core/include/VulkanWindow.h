@@ -407,7 +407,8 @@ namespace LostPeter
                         virtual void copyBufferToImage(VkBuffer buffer, 
                                                        VkImage image, 
                                                        uint32_t width, 
-                                                       uint32_t height);
+                                                       uint32_t height,
+                                                       uint32_t depth);
                         virtual void generateMipMaps(VkImage image, 
                                                      VkFormat imageFormat, 
                                                      int32_t texWidth, 

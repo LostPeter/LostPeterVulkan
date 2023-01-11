@@ -104,7 +104,7 @@ Vulkan_008_Blend::Vulkan_008_Blend(int width, int height, std::string name)
     this->poTypeVertex = Vulkan_VertexType_Pos3Color4Normal3Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/standard_mesh_opaque.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/standard_mesh_opaque.frag.spv";
-    this->cfg_texture_Path = "Assets/Texture/texture.jpg";
+    this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
 
     this->cfg_cameraPos = glm::vec3(0.0f, 3.0f, -4.0f);
 }

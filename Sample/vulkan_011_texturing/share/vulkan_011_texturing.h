@@ -22,7 +22,8 @@ public:
     struct ModelTexture
     {
         Vulkan_011_Texturing* pWindow;
-        std::string pathTexture;
+        std::string nameTexture;
+        std::vector<std::string> aPathTexture;
         VulkanTextureType typeTexture;
         int refCount;
 
@@ -32,10 +33,14 @@ public:
         VkImageView poTextureImageView;
         VkSampler poTextureSampler;
 
-        ModelTexture(Vulkan_011_Texturing* _pWindow, const std::string& _pathTexture)
+        ModelTexture(Vulkan_011_Texturing* _pWindow, 
+                     const std::string& _nameTexture,
+                     VulkanTextureType _typeTexture,
+                     const std::vector<std::string>& _aPathTexture)
             : pWindow(_pWindow)
-            , pathTexture(_pathTexture)
-            , typeTexture(Vulkan_Texture_2D)
+            , nameTexture(_nameTexture)
+            , typeTexture(_typeTexture)
+            , aPathTexture(_aPathTexture)
             , refCount(0)
 
             , poMipMapCount(1)
@@ -60,18 +65,49 @@ public:
 
         void Destroy()
         {
-            DelRef();
-            if (CanDel())
-            {
-                pWindow->destroyTexture(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
-                this->poTextureImage = VK_NULL_HANDLE;
-                this->poTextureImageMemory = VK_NULL_HANDLE;
-                this->poTextureImageView = VK_NULL_HANDLE;
-                pWindow->destroyTextureSampler(this->poTextureSampler);
-                this->poTextureSampler = VK_NULL_HANDLE;
-            }
+            this->pWindow->destroyTexture(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
+            this->poTextureImage = VK_NULL_HANDLE;
+            this->poTextureImageMemory = VK_NULL_HANDLE;
+            this->poTextureImageView = VK_NULL_HANDLE;
+            this->pWindow->destroyTextureSampler(this->poTextureSampler);
+            this->poTextureSampler = VK_NULL_HANDLE;   
         }
 
+        void LoadTexture()
+        {
+            if (this->typeTexture == Vulkan_Texture_1D)
+            {
+                this->pWindow->createTexture1D(this->aPathTexture[0], this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
+                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_1D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, this->poTextureImageView);
+                this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
+            }
+            else if (this->typeTexture == Vulkan_Texture_2D)
+            {
+                this->pWindow->createTexture2D(this->aPathTexture[0], this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
+                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, this->poTextureImageView);
+                this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
+            }
+            else if (this->typeTexture == Vulkan_Texture_2DArray)
+            {
+                // this->pWindow->createTexture2D(this->aPathTexture, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
+                // this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, this->poTextureImageView);
+                // this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
+            }
+            else if (this->typeTexture == Vulkan_Texture_3D)
+            {
+                
+            }
+            else if (this->typeTexture == Vulkan_Texture_CubeMap)
+            {
+                
+            }   
+            else
+            {
+                std::string msg = "ModelTexture::LoadTexture: Wrong texture type !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+        }
     };
     typedef std::vector<ModelTexture*> ModelTexturePtrVector;
     typedef std::map<std::string, ModelTexture*> ModelTexturePtrMap;
@@ -107,9 +143,6 @@ public:
             //Uniform
             , countInstanceExt(0)
             , countInstance(1)
-            
-            //Texture
-
 
             //Pipeline
             , poPipelineGraphics_WireFrame(VK_NULL_HANDLE)
@@ -148,16 +181,6 @@ public:
             this->poIndexBufferMemory = VK_NULL_HANDLE;
 
             //Texture
-            size_t count_tex = this->m_aModelTextures.size();
-            for (size_t i = 0; i < count_tex; i++)
-            {
-                ModelTexture* pTexture = this->m_aModelTextures[i];
-                pTexture->Destroy();
-                if (pTexture->CanDel())
-                {
-                    delete pTexture;
-                }
-            }
             this->m_aModelTextures.clear();
             this->m_mapModelTextures.clear();
             
@@ -205,7 +228,9 @@ public:
         int indexModel;
         std::string nameModel;
         std::string pathModel;
+        std::vector<int> aTextureChannels;
         std::vector<std::string> aPathTextures;
+        std::map<int, std::vector<std::string>> mapPathTextures;
         bool isShow;
         bool isWireFrame;
         bool isRotate;
@@ -272,21 +297,10 @@ public:
         VkColorComponentFlags cfg_ColorWriteMask;
 
 
-        bool HasTexture(const std::string& pathTexture)
-        {
-            return GetTexture(pathTexture) != nullptr;
-        }
-        ModelTexture* GetTexture(const std::string& pathTexture)
-        {
-            ModelTexturePtrMap::iterator itFind = this->m_mapModelTextures.find(pathTexture);
-            if (itFind == this->m_mapModelTextures.end())
-                return nullptr;
-            return itFind->second;
-        }
         void AddTexture(ModelTexture* pTexture)
         {
             this->m_aModelTextures.push_back(pTexture);
-            this->m_mapModelTextures[pTexture->pathTexture] = pTexture;
+            this->m_mapModelTextures[pTexture->nameTexture] = pTexture;
         }
         VkImage GetTextureImage(int index)
         {
@@ -305,6 +319,9 @@ public:
     typedef std::map<std::string, ModelObject*> ModelObjectPtrMap;
 
 public:
+    ModelTexturePtrVector m_aModelTexture;
+    ModelTexturePtrMap m_mapModelTexture;
+
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrVector m_aModelObjects_Render;
     ModelObjectPtrMap m_mapModelObjects;
@@ -355,6 +372,10 @@ protected:
 
 private:
     void rebuildInstanceCBs(bool isCreateVkBuffer);
+
+    void destroyModelTextures();
+    void createModelTextures();
+    ModelTexture* findModelTexture(const std::string& nameTexture);
 
     void destroyDescriptorSetLayouts();
     void createDescriptorSetLayouts();

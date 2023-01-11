@@ -25,8 +25,8 @@ static const char* g_pathModels[3 * g_CountLen] =
     "viking_room",      "Assets/Model/Obj/viking_room/viking_room.obj",     "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
     "bunny",            "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp", //bunny
 
-    "plane",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture.jpg", //plane
-    "cube",             "Assets/Model/Fbx/cube.fbx",                        "Assets/Texture/texture.jpg", //cube
+    "plane",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture2d.jpg", //plane
+    "cube",             "Assets/Model/Fbx/cube.fbx",                        "Assets/Texture/texture2d.jpg", //cube
 };
 
 static glm::vec3 g_tranformModels[3 * g_CountLen] = 
@@ -75,7 +75,7 @@ Vulkan_006_Depth::Vulkan_006_Depth(int width, int height, std::string name)
     this->poTypeVertex = Vulkan_VertexType_Pos3Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_tex2_ubo.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/pos3_color4_tex2_ubo.frag.spv";
-    this->cfg_texture_Path = "Assets/Texture/texture.jpg";
+    this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
 
     this->cfg_cameraPos = glm::vec3(-0.65f, 2.5f, -4.0f);
 }

@@ -20,8 +20,8 @@
 static const int g_CountLen = 4;
 static const char* g_pathModels[3 * g_CountLen] = 
 {
-    "plane",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture.jpg", //plane
-    "cube",             "Assets/Model/Fbx/cube.fbx",                        "Assets/Texture/texture.jpg", //cube
+    "plane",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture2d.jpg", //plane
+    "cube",             "Assets/Model/Fbx/cube.fbx",                        "Assets/Texture/texture2d.jpg", //cube
 
     "viking_room",      "Assets/Model/Obj/viking_room/viking_room.obj",     "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
     "bunny",            "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp", //bunny

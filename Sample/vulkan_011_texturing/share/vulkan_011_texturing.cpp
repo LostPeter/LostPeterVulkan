@@ -41,23 +41,34 @@ static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
     "",
 };
 
-
-static const int g_CountLen = 8;
-static const char* g_pathModels[4 * g_CountLen] = 
+static const int g_TextureCount = 5;
+static const char* g_pathTextures[3 * g_TextureCount] = 
 {
-    //Model Name            //Model Path                                        //Texture One                                       //Texture Two
-    "plane",                "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/terrain.png",                       "", //plane
-    "viking_room",          "Assets/Model/Obj/viking_room/viking_room.obj",     "Assets/Model/Obj/viking_room/viking_room.png",     "", //viking_room
-    "bunny",                "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp",                         "", //bunny  
-
-    "texture1D",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture1d.tga",                     "", //texture1D
-    "texture2D",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture.jpg",                       "", //texture2D
-    "texture2Darray",       "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp",                         "", //texture2Darray
-    "texture3D",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp",                         "", //texture3D
-    "texturecubemap",       "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/white.bmp",                         "", //texturecubemap
+    "terrain",          "2d",       "Assets/Texture/terrain.png",
+    "viking_room",      "2d",       "Assets/Model/Obj/viking_room/viking_room.png",
+    "white",            "2d",       "Assets/Texture/white.bmp",
+    
+    "texture1d",        "1d",       "Assets/Texture/texture1d.tga",
+    "texture2d",        "2d",       "Assets/Texture/texture2d.jpg",
 };
 
-static const VulkanTextureType g_ModelsTextureTypes[2 * g_CountLen] =
+
+static const int g_ModelCount = 8;
+static const char* g_pathModels[4 * g_ModelCount] = 
+{
+    //Model Name            //Model Path                                        //Texture One                    //Texture Two
+    "plane",                "Assets/Model/Fbx/plane.fbx",                       "terrain",                       "", //plane
+    "viking_room",          "Assets/Model/Obj/viking_room/viking_room.obj",     "viking_room",                   "", //viking_room
+    "bunny",                "Assets/Model/Obj/bunny/bunny.obj",                 "white",                         "", //bunny  
+
+    "texture1D",            "Assets/Model/Fbx/plane.fbx",                       "texture1d",                     "", //texture1D
+    "texture2D",            "Assets/Model/Fbx/plane.fbx",                       "texture2d",                     "", //texture2D
+    "texture2Darray",       "Assets/Model/Fbx/plane.fbx",                       "white",                         "", //texture2Darray
+    "texture3D",            "Assets/Model/Fbx/plane.fbx",                       "white",                         "", //texture3D
+    "texturecubemap",       "Assets/Model/Fbx/plane.fbx",                       "white",                         "", //texturecubemap
+};
+
+static const VulkanTextureType g_ModelsTextureTypes[2 * g_ModelCount] =
 {
     Vulkan_Texture_2D, Vulkan_Texture_2D, //plane 
     Vulkan_Texture_2D, Vulkan_Texture_2D, //viking_room
@@ -70,7 +81,7 @@ static const VulkanTextureType g_ModelsTextureTypes[2 * g_CountLen] =
     Vulkan_Texture_CubeMap, Vulkan_Texture_CubeMap, //texturecubemap
 };
 
-static const char* g_pathModelShaderModules[g_CountLen] = 
+static const char* g_pathModelShaderModules[g_ModelCount] = 
 {
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //plane 
     "Assets/Shader/standard_mesh_transparent_lit", //viking_room
@@ -98,7 +109,7 @@ static int g_instanceExtCount[] =
     0, //texturecubemap 
 };
 
-static glm::vec3 g_tranformModels[3 * g_CountLen] = 
+static glm::vec3 g_tranformModels[3 * g_ModelCount] = 
 {   
     glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //plane
     glm::vec3(   0,   0,    5),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
@@ -111,7 +122,7 @@ static glm::vec3 g_tranformModels[3 * g_CountLen] =
     glm::vec3(   4,   1,   -5),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texturecubemap
 };
 
-static glm::mat4 g_tranformLocalModels[g_CountLen] = 
+static glm::mat4 g_tranformLocalModels[g_ModelCount] = 
 {
     MathUtil::ms_mat4Unit, //plane
     MathUtil::RotateX(-90.0f), //viking_room
@@ -124,7 +135,7 @@ static glm::mat4 g_tranformLocalModels[g_CountLen] =
     MathUtil::ms_mat4Unit, //texturecubemap
 };
 
-static bool g_isTranformLocalModels[g_CountLen] = 
+static bool g_isTranformLocalModels[g_ModelCount] = 
 {
     false, //plane
     true, //viking_room
@@ -137,7 +148,7 @@ static bool g_isTranformLocalModels[g_CountLen] =
     false, //texturecubemap  
 };
 
-static bool g_isFlipYModels[g_CountLen] = 
+static bool g_isFlipYModels[g_ModelCount] = 
 {
     true, //plane
     false, //viking_room
@@ -150,7 +161,7 @@ static bool g_isFlipYModels[g_CountLen] =
     false, //texturecubemap
 };
 
-static bool g_isTransparentModels[g_CountLen] = 
+static bool g_isTransparentModels[g_ModelCount] = 
 {
     false, //plane
     true, //viking_room
@@ -199,7 +210,7 @@ Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, std::string na
     this->poTypeVertex = Vulkan_VertexType_Pos3Color4Normal3Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/standard_mesh_opaque.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/standard_mesh_opaque.frag.spv";
-    this->cfg_texture_Path = "Assets/Texture/texture.jpg";
+    this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
 
     this->cfg_cameraPos = glm::vec3(0.0f, 15.0f, -20.0f);
     this->mainLight.common.x = 0; //Directional Type
@@ -222,21 +233,37 @@ void Vulkan_011_Texturing::createCamera()
 
 void Vulkan_011_Texturing::loadModel_Custom()
 {
-    for (int i = 0; i < g_CountLen; i++)
+    createModelTextures();
+
+    for (int i = 0; i < g_ModelCount; i++)
     {
         ModelObject* pModelObject = new ModelObject(this);
         pModelObject->indexModel = i;
         pModelObject->nameModel = g_pathModels[4 * i + 0];
         pModelObject->pathModel = g_pathModels[4 * i + 1];
-        std::string pathTexture1 = g_pathModels[4 * i + 2];
-        if (!pathTexture1.empty())
+
+        int indexTex = 0;
+        //Texture Channel 1
         {
-            pModelObject->aPathTextures.push_back(pathTexture1);
+            pModelObject->aTextureChannels.push_back(indexTex);
+            std::string nameTexture1 = g_pathModels[4 * i + 2];
+            if (!nameTexture1.empty())
+            {
+                ModelTexture* pTexture1 = this->findModelTexture(nameTexture1);
+                pModelObject->AddTexture(pTexture1);
+            }
+            indexTex ++;
         }
-        std::string pathTexture2 = g_pathModels[4 * i + 3];
-        if (!pathTexture2.empty())
+        //Texture Channel 2
         {
-            pModelObject->aPathTextures.push_back(pathTexture2);
+            pModelObject->aTextureChannels.push_back(indexTex);
+            std::string nameTexture2 = g_pathModels[4 * i + 3];
+            if (!nameTexture2.empty())
+            {
+                ModelTexture* pTexture2 = this->findModelTexture(nameTexture2);
+                pModelObject->AddTexture(pTexture2);
+            }
+            indexTex ++;
         }
 
         bool isTranformLocal = g_isTranformLocalModels[i];
@@ -336,63 +363,8 @@ bool Vulkan_011_Texturing::loadModel_VertexIndex(ModelObject* pModelObject, bool
 }
 bool Vulkan_011_Texturing::loadModel_Texture(ModelObject* pModelObject)
 {
-    size_t count_tex = pModelObject->aPathTextures.size();
-    for (size_t i = 0; i < count_tex; i++)
-    {
-        std::string pathTexture = pModelObject->aPathTextures[i];
-        ModelTexture* pTexture = pModelObject->GetTexture(pathTexture);
-        if (pTexture != nullptr)
-        {
-            pTexture->AddRef();
-            pModelObject->m_aModelTextures.push_back(pTexture);
-        }
-        else
-        {
-            pTexture = new ModelTexture(this, pathTexture);
-            pTexture->AddRef();
-            pTexture->typeTexture = g_ModelsTextureTypes[2 * pModelObject->indexModel + i];
+    
 
-            if (pTexture->typeTexture == Vulkan_Texture_1D)
-            {
-                createTexture1D(pathTexture, pTexture->poMipMapCount, pTexture->poTextureImage, pTexture->poTextureImageMemory);
-                createImageView(pTexture->poTextureImage, VK_IMAGE_VIEW_TYPE_1D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pTexture->poMipMapCount, pTexture->poTextureImageView);
-                createSampler(pTexture->poMipMapCount, pTexture->poTextureSampler);
-            }
-            else if (pTexture->typeTexture == Vulkan_Texture_2D)
-            {
-                createTexture2D(pathTexture, pTexture->poMipMapCount, pTexture->poTextureImage, pTexture->poTextureImageMemory);
-                createImageView(pTexture->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pTexture->poMipMapCount, pTexture->poTextureImageView);
-                createSampler(pTexture->poMipMapCount, pTexture->poTextureSampler);
-            }
-            else if (pTexture->typeTexture == Vulkan_Texture_2DArray)
-            {
-                createTexture2D(pathTexture, pTexture->poMipMapCount, pTexture->poTextureImage, pTexture->poTextureImageMemory);
-                createImageView(pTexture->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pTexture->poMipMapCount, pTexture->poTextureImageView);
-                createSampler(pTexture->poMipMapCount, pTexture->poTextureSampler);
-            }
-            else if (pTexture->typeTexture == Vulkan_Texture_3D)
-            {
-                createTexture2D(pathTexture, pTexture->poMipMapCount, pTexture->poTextureImage, pTexture->poTextureImageMemory);
-                createImageView(pTexture->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pTexture->poMipMapCount, pTexture->poTextureImageView);
-                createSampler(pTexture->poMipMapCount, pTexture->poTextureSampler);
-            }
-            else if (pTexture->typeTexture == Vulkan_Texture_CubeMap)
-            {
-                createTexture2D(pathTexture, pTexture->poMipMapCount, pTexture->poTextureImage, pTexture->poTextureImageMemory);
-                createImageView(pTexture->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pTexture->poMipMapCount, pTexture->poTextureImageView);
-                createSampler(pTexture->poMipMapCount, pTexture->poTextureSampler);
-            }   
-            else
-            {
-                std::string msg = "Vulkan_011_Texturing::loadModel_Texture: Wrong texture type !";
-                Util_LogError(msg.c_str());
-                throw std::runtime_error(msg);
-            }
-
-            pModelObject->AddTexture(pTexture);
-        }
-        Util_LogInfo("Vulkan_011_Texturing::loadModel_Texture: Load texture [%s] success !", pathTexture.c_str());
-    }
     return true;
 }
 
@@ -531,6 +503,50 @@ void Vulkan_011_Texturing::createPipeline_Custom()
         }
     }
 
+}
+
+void Vulkan_011_Texturing::destroyModelTextures()
+{
+    size_t count = this->m_aModelTexture.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ModelTexture* pTexture = this->m_aModelTexture[i];
+        delete pTexture;
+    }
+    this->m_aModelTexture.clear();
+    this->m_mapModelTexture.clear();
+}
+void Vulkan_011_Texturing::createModelTextures()
+{
+    for (int i = 0; i < g_TextureCount; i++)
+    {
+        std::string nameTexture = g_pathTextures[3 * i + 0];
+        std::string nameType = g_pathTextures[3 * i + 1];
+        VulkanTextureType typeTexture = Util_ParseTextureType(nameType);
+        std::string pathTextures = g_pathTextures[3 * i + 2];
+
+        std::vector<std::string> aPathTexture = StringUtil::Split(pathTextures, ";");
+        ModelTexture* pTexture = new ModelTexture(this, 
+                                                  nameTexture,
+                                                  typeTexture,
+                                                  aPathTexture);
+        pTexture->AddRef();
+        pTexture->LoadTexture();
+
+        this->m_aModelTexture.push_back(pTexture);
+        this->m_mapModelTexture[nameTexture] = pTexture;
+
+        Util_LogInfo("Vulkan_011_Texturing::createModelTextures: create texture: [%s], type: [%s], path: [%s] success !", nameTexture.c_str(), nameType.c_str(), pathTextures.c_str());
+    }
+}
+Vulkan_011_Texturing::ModelTexture* Vulkan_011_Texturing::findModelTexture(const std::string& nameTexture)
+{
+    ModelTexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
+    if (itFind == this->m_mapModelTexture.end())
+    {
+        return nullptr;
+    }
+    return itFind->second;
 }
 
 void Vulkan_011_Texturing::destroyDescriptorSetLayouts()
@@ -970,6 +986,8 @@ void Vulkan_011_Texturing::drawModelObject(VkCommandBuffer& commandBuffer, Model
 
 void Vulkan_011_Texturing::cleanupCustom()
 {   
+    destroyModelTextures();
+
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
