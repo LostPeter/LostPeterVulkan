@@ -1112,6 +1112,7 @@ namespace LostPeter
                         this->poSwapChainExtent.height, 
                         1,
                         1,
+                        1,
                         VK_IMAGE_TYPE_2D, 
                         this->poMSAASamples, 
                         colorFormat, 
@@ -1136,6 +1137,7 @@ namespace LostPeter
             createImage(this->poSwapChainExtent.width, 
                         this->poSwapChainExtent.height, 
                         1, 
+                        1,
                         1,
                         VK_IMAGE_TYPE_2D, 
                         this->poMSAASamples, 
@@ -2160,16 +2162,44 @@ namespace LostPeter
             vkDestroySampler(this->poDevice, sampler, nullptr);
         }
     }
-    void VulkanWindow::createTextureSingle(const std::string& pathAsset_Tex, 
-                                           VkImageType type,
-                                           VkSampleCountFlagBits numSamples,
-                                           VkFormat format,
-                                           bool autoMipMap, 
-                                           uint32_t& mipMapCount, 
-                                           VkImage& image, 
-                                           VkDeviceMemory& imageMemory,
-                                           VkBuffer& buffer, 
-                                           VkDeviceMemory& bufferMemory)
+    void VulkanWindow::createTexture1D(const std::string& pathAsset_Tex, 
+                                       uint32_t& mipMapCount,
+                                       VkImage& image, 
+                                       VkDeviceMemory& imageMemory)
+    {
+        createTexture2D(pathAsset_Tex,
+                        VK_IMAGE_TYPE_1D,
+                        VK_SAMPLE_COUNT_1_BIT,
+                        VK_FORMAT_R8G8B8A8_SRGB,
+                        true,
+                        mipMapCount,
+                        image,
+                        imageMemory);
+    }
+    void VulkanWindow::createTexture2D(const std::string& pathAsset_Tex, 
+                                       uint32_t& mipMapCount,
+                                       VkImage& image, 
+                                       VkDeviceMemory& imageMemory)
+    {
+        createTexture2D(pathAsset_Tex,
+                        VK_IMAGE_TYPE_2D,
+                        VK_SAMPLE_COUNT_1_BIT,
+                        VK_FORMAT_R8G8B8A8_SRGB,
+                        true,
+                        mipMapCount,
+                        image,
+                        imageMemory);
+    }
+    void VulkanWindow::createTexture2D(const std::string& pathAsset_Tex, 
+                                       VkImageType type,
+                                       VkSampleCountFlagBits numSamples,
+                                       VkFormat format,
+                                       bool autoMipMap, 
+                                       uint32_t& mipMapCount, 
+                                       VkImage& image, 
+                                       VkDeviceMemory& imageMemory,
+                                       VkBuffer& buffer, 
+                                       VkDeviceMemory& bufferMemory)
     {
         //1> Load Texture From File
         std::string pathTexture = GetAssetFullPath(pathAsset_Tex);
@@ -2179,7 +2209,7 @@ namespace LostPeter
         mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
         if (!pixels) 
         {
-            std::string msg = "VulkanWindow::createTextureSingle: Failed to load texture image !";
+            std::string msg = "VulkanWindow::createTexture2D: Failed to load texture image !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -2194,10 +2224,14 @@ namespace LostPeter
 
         stbi_image_free(pixels);
 
+        uint32_t depth = 1;
+        uint32_t numArray = 1;
+
         //3> CreateImage, TransitionImageLayout and CopyBufferToImage
         createImage(texWidth, 
                     texHeight, 
-                    1,
+                    depth,
+                    numArray,
                     mipMapCount, 
                     type,
                     numSamples, 
@@ -2210,6 +2244,7 @@ namespace LostPeter
 
         transitionImageLayout(image, 
                               format, 
+                              numArray,
                               VK_IMAGE_LAYOUT_UNDEFINED, 
                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
                               mipMapCount);
@@ -2217,36 +2252,52 @@ namespace LostPeter
                           image, 
                           static_cast<uint32_t>(texWidth), 
                           static_cast<uint32_t>(texHeight),
-                          1);
+                          depth,
+                          numArray);
 
         //4> GenerateMipMaps
         if (autoMipMap)
             generateMipMaps(image, format, texWidth, texHeight, mipMapCount);
     }
-    void VulkanWindow::createTextureSingle(const std::string& pathAsset_Tex, 
-                                           VkImageType type,
-                                           VkSampleCountFlagBits numSamples,
-                                           VkFormat format,
-                                           bool autoMipMap, 
-                                           uint32_t& mipMapCount, 
-                                           VkImage& image, 
-                                           VkDeviceMemory& imageMemory)
+    void VulkanWindow::createTexture2D(const std::string& pathAsset_Tex, 
+                                       VkImageType type,
+                                       VkSampleCountFlagBits numSamples,
+                                       VkFormat format,
+                                       bool autoMipMap, 
+                                       uint32_t& mipMapCount, 
+                                       VkImage& image, 
+                                       VkDeviceMemory& imageMemory)
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createTextureSingle(pathAsset_Tex, 
-                            type, 
-                            numSamples,
-                            format,
-                            autoMipMap,
-                            mipMapCount,
-                            image, 
-                            imageMemory, 
-                            stagingBuffer, 
-                            stagingBufferMemory);
+        createTexture2D(pathAsset_Tex, 
+                        type, 
+                        numSamples,
+                        format,
+                        autoMipMap,
+                        mipMapCount,
+                        image, 
+                        imageMemory, 
+                        stagingBuffer, 
+                        stagingBufferMemory);
         destroyBuffer(stagingBuffer, stagingBufferMemory);
     }
 
+
+    void VulkanWindow::createTexture2DArray(const std::vector<std::string>& aPathAsset_Tex, 
+                                            uint32_t& mipMapCount,
+                                            VkImage& image, 
+                                            VkDeviceMemory& imageMemory)
+    {
+        createTexture2DArray(aPathAsset_Tex,
+                             VK_IMAGE_TYPE_2D,
+                             VK_SAMPLE_COUNT_1_BIT,
+                             VK_FORMAT_R8G8B8A8_SRGB,
+                             true,
+                             mipMapCount,
+                             image,
+                             imageMemory);
+    }
     static void s_DeletePixels(const std::vector<stbi_uc*>& aPixels)
     {
         size_t count_tex = aPixels.size();
@@ -2256,16 +2307,16 @@ namespace LostPeter
             stbi_image_free(pixels);
         }
     }
-    void VulkanWindow::createTextureArray(const std::vector<std::string>& aPathAsset_Tex, 
-                                          VkImageType type,
-                                          VkSampleCountFlagBits numSamples,
-                                          VkFormat format,
-                                          bool autoMipMap, 
-                                          uint32_t& mipMapCount, 
-                                          VkImage& image, 
-                                          VkDeviceMemory& imageMemory,
-                                          VkBuffer& buffer, 
-                                          VkDeviceMemory& bufferMemory)
+    void VulkanWindow::createTexture2DArray(const std::vector<std::string>& aPathAsset_Tex, 
+                                            VkImageType type,
+                                            VkSampleCountFlagBits numSamples,
+                                            VkFormat format,
+                                            bool autoMipMap, 
+                                            uint32_t& mipMapCount, 
+                                            VkImage& image, 
+                                            VkDeviceMemory& imageMemory,
+                                            VkBuffer& buffer, 
+                                            VkDeviceMemory& bufferMemory)
     {
         //1> Load Texture From File
         std::vector<int> aWidth;
@@ -2275,7 +2326,7 @@ namespace LostPeter
         size_t count_tex = aPathAsset_Tex.size();
         if (count_tex <= 0)
         {
-            Util_LogError("VulkanWindow::createTextureArray: Texture path count <= 0 !");
+            Util_LogError("VulkanWindow::createTexture2DArray: Texture path count <= 0 !");
             return;
         }
         for (size_t i = 0; i < count_tex; i++)
@@ -2287,7 +2338,7 @@ namespace LostPeter
             if (!pixels) 
             {
                 s_DeletePixels(aPixels);
-                std::string msg = "VulkanWindow::createTextureSingle: Failed to load texture image: " + pathTexture;
+                std::string msg = "VulkanWindow::createTexture2DArray: Failed to load texture image: " + pathTexture;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -2304,17 +2355,24 @@ namespace LostPeter
             if (aWidth[i] != texWidth)
             {
                 s_DeletePixels(aPixels);
-                std::string msg = "VulkanWindow::createTextureSingle: Texture image's all width must the same !";
+                std::string msg = "VulkanWindow::createTexture2DArray: Texture image's all width must the same !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
             if (aHeight[i] != texHeight)
             {
                 s_DeletePixels(aPixels);
-                std::string msg = "VulkanWindow::createTextureSingle: Texture image's all height must the same !";
+                std::string msg = "VulkanWindow::createTexture2DArray: Texture image's all height must the same !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
+        }
+
+        uint32_t depth = 1;
+        uint32_t numArray = count_tex;
+        if (type == VK_IMAGE_TYPE_1D)
+        {
+            depth = 0;
         }
 
         //2> Create Buffer and copy Texture data to buffer
@@ -2337,7 +2395,8 @@ namespace LostPeter
         //3> CreateImage, TransitionImageLayout and CopyBufferToImage
         createImage(texWidth, 
                     texHeight, 
-                    count_tex,
+                    depth,
+                    numArray,
                     mipMapCount, 
                     type,
                     numSamples, 
@@ -2350,6 +2409,7 @@ namespace LostPeter
 
         transitionImageLayout(image, 
                               format, 
+                              numArray,
                               VK_IMAGE_LAYOUT_UNDEFINED, 
                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
                               mipMapCount);
@@ -2357,81 +2417,49 @@ namespace LostPeter
                           image, 
                           static_cast<uint32_t>(texWidth), 
                           static_cast<uint32_t>(texHeight),
-                          static_cast<uint32_t>(count_tex));
+                          depth,
+                          numArray);
 
         //4> GenerateMipMaps
         if (autoMipMap)
             generateMipMaps(image, format, texWidth, texHeight, mipMapCount);
     }
-    void VulkanWindow::createTextureArray(const std::vector<std::string>& aPathAsset_Tex, 
-                                          VkImageType type,
-                                          VkSampleCountFlagBits numSamples,
-                                          VkFormat format,
-                                          bool autoMipMap, 
-                                          uint32_t& mipMapCount, 
-                                          VkImage& image, 
-                                          VkDeviceMemory& imageMemory)
+    void VulkanWindow::createTexture2DArray(const std::vector<std::string>& aPathAsset_Tex, 
+                                            VkImageType type,
+                                            VkSampleCountFlagBits numSamples,
+                                            VkFormat format,
+                                            bool autoMipMap, 
+                                            uint32_t& mipMapCount, 
+                                            VkImage& image, 
+                                            VkDeviceMemory& imageMemory)
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createTextureArray(aPathAsset_Tex, 
-                           type, 
-                           numSamples,
-                           format,
-                           autoMipMap,
-                           mipMapCount,
-                           image, 
-                           imageMemory, 
-                           stagingBuffer, 
-                           stagingBufferMemory);
+        createTexture2DArray(aPathAsset_Tex, 
+                             type, 
+                             numSamples,
+                             format,
+                             autoMipMap,
+                             mipMapCount,
+                             image, 
+                             imageMemory, 
+                             stagingBuffer, 
+                             stagingBufferMemory);
         destroyBuffer(stagingBuffer, stagingBufferMemory);
     }
     
-    void VulkanWindow::createTexture1D(const std::string& pathAsset_Tex, 
-                                       uint32_t& mipMapCount,
-                                       VkImage& image, 
-                                       VkDeviceMemory& imageMemory)
-    {
-        createTextureSingle(pathAsset_Tex,
-                            VK_IMAGE_TYPE_1D,
-                            VK_SAMPLE_COUNT_1_BIT,
-                            VK_FORMAT_R8G8B8A8_SRGB,
-                            true,
-                            mipMapCount,
-                            image,
-                            imageMemory);
-    }
-    void VulkanWindow::createTexture2D(const std::string& pathAsset_Tex, 
-                                       uint32_t& mipMapCount,
-                                       VkImage& image, 
-                                       VkDeviceMemory& imageMemory)
-    {
-        createTextureSingle(pathAsset_Tex,
-                            VK_IMAGE_TYPE_2D,
-                            VK_SAMPLE_COUNT_1_BIT,
-                            VK_FORMAT_R8G8B8A8_SRGB,
-                            true,
-                            mipMapCount,
-                            image,
-                            imageMemory);
-    }
     void VulkanWindow::createTexture3D(const std::string& pathAsset_Tex, 
                                        uint32_t& mipMapCount,
                                        VkImage& image, 
                                        VkDeviceMemory& imageMemory)
     {
-        createTextureSingle(pathAsset_Tex,
-                            VK_IMAGE_TYPE_3D,
-                            VK_SAMPLE_COUNT_1_BIT,
-                            VK_FORMAT_R8G8B8A8_SRGB,
-                            true,
-                            mipMapCount,
-                            image,
-                            imageMemory);
+
     }
+
         void VulkanWindow::createImage(uint32_t width, 
                                        uint32_t height, 
                                        uint32_t depth, 
+                                       uint32_t numArray,
                                        uint32_t mipMapCount, 
                                        VkImageType type, 
                                        VkSampleCountFlagBits numSamples, 
@@ -2449,7 +2477,7 @@ namespace LostPeter
             imageInfo.extent.height = height;
             imageInfo.extent.depth = depth;
             imageInfo.mipLevels = mipMapCount <= 0 ? 1 : mipMapCount;
-            imageInfo.arrayLayers = 1;
+            imageInfo.arrayLayers = numArray;
             imageInfo.format = format;
             imageInfo.tiling = tiling;
             imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -2578,6 +2606,7 @@ namespace LostPeter
 
         void VulkanWindow::transitionImageLayout(VkImage image, 
                                                  VkFormat format, 
+                                                 uint32_t numArray,
                                                  VkImageLayout oldLayout, 
                                                  VkImageLayout newLayout, 
                                                  uint32_t mipMapCount) 
@@ -2595,7 +2624,7 @@ namespace LostPeter
                 barrier.subresourceRange.baseMipLevel = 0;
                 barrier.subresourceRange.levelCount = mipMapCount;
                 barrier.subresourceRange.baseArrayLayer = 0;
-                barrier.subresourceRange.layerCount = 1;
+                barrier.subresourceRange.layerCount = numArray;
 
                 VkPipelineStageFlags sourceStage;
                 VkPipelineStageFlags destinationStage;
@@ -2638,7 +2667,8 @@ namespace LostPeter
                                              VkImage image, 
                                              uint32_t width, 
                                              uint32_t height,
-                                             uint32_t depth) 
+                                             uint32_t depth,
+                                             uint32_t numArray) 
         {
             VkCommandBuffer commandBuffer = beginSingleTimeCommands();
             {
@@ -2649,7 +2679,7 @@ namespace LostPeter
                 region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                 region.imageSubresource.mipLevel = 0;
                 region.imageSubresource.baseArrayLayer = 0;
-                region.imageSubresource.layerCount = 1;
+                region.imageSubresource.layerCount = numArray;
                 VkOffset3D offset;
                 offset.x = 0;
                 offset.y = 0;

@@ -132,6 +132,7 @@ namespace LostPeter
     const std::string& Util_GetTextureTypeName(VulkanTextureType type);
     const std::string& Util_GetTextureTypeName(int type);
     VulkanTextureType Util_ParseTextureType(const std::string& strName);
+    VkImageType Util_Transform2VkImageType(VulkanTextureType type);
     VkImageViewType Util_Transform2VkImageViewType(VulkanTextureType type);
 
 

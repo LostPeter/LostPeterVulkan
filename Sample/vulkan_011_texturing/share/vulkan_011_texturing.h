@@ -11,6 +11,7 @@
 #define _VULKAN_011_TEXTURING_H_
 
 #include "VulkanWindow.h"
+#include "MathUtil.h"
 using namespace LostPeter; 
 
 class Vulkan_011_Texturing : public VulkanWindow
@@ -73,6 +74,16 @@ public:
             this->poTextureSampler = VK_NULL_HANDLE;   
         }
 
+        int RandomTextureIndex()
+        {
+            if (this->typeTexture == Vulkan_Texture_2DArray)
+            {
+                int count = (int)this->aPathTexture.size();
+                return MathUtil::Rand(0, count - 1);
+            }
+            return 0;
+        }
+
         void LoadTexture()
         {
             if (this->typeTexture == Vulkan_Texture_1D)
@@ -89,9 +100,9 @@ public:
             }
             else if (this->typeTexture == Vulkan_Texture_2DArray)
             {
-                // this->pWindow->createTexture2D(this->aPathTexture, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
-                // this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, this->poTextureImageView);
-                // this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
+                this->pWindow->createTexture2DArray(this->aPathTexture, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
+                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D_ARRAY, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, this->poTextureImageView);
+                this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
             }
             else if (this->typeTexture == Vulkan_Texture_3D)
             {
@@ -302,6 +313,11 @@ public:
             this->m_aModelTextures.push_back(pTexture);
             this->m_mapModelTextures[pTexture->nameTexture] = pTexture;
         }
+        ModelTexture* GetTexture(int index)
+        {
+            return this->m_aModelTextures[index];
+        }
+
         VkImage GetTextureImage(int index)
         {
             return this->m_aModelTextures[index]->poTextureImage;

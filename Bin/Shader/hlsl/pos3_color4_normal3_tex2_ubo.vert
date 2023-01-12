@@ -86,7 +86,7 @@ struct MaterialConstants
     float shininess;
     float alpha;
     float lighting;
-    float reserve1;
+    float indexTextureArray;
 
     float4x4 matTransform;
 };

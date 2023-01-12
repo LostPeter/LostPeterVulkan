@@ -74,7 +74,7 @@ struct MaterialConstants
     float shininess;
     float alpha;
     float lighting;
-    float reserve1;
+    float indexTextureArray;
 
     float4x4 matTransform;
 };
@@ -85,8 +85,8 @@ struct MaterialConstants
 }
 
 
-[[vk::binding(4)]] Texture2D texture            : register(t1);
-[[vk::binding(4)]] SamplerState textureSampler  : register(s1);
+[[vk::binding(4)]] Texture2DArray textureArray      : register(t1);
+[[vk::binding(4)]] SamplerState textureSampler      : register(s1);
 
 
 float3 calculate_Light_Ambient(float3 ambientGlobal, 
@@ -236,7 +236,7 @@ float4 main(VSOutput input) : SV_TARGET
 
 
     //Texture
-    float3 colorTexture = texture.Sample(textureSampler, input.inTexCoord).rgb;
+    float3 colorTexture = textureArray.Sample(textureSampler, float3(input.inTexCoord, mat.indexTextureArray)).rgb;
     //VertexColor
     float3 colorVertex = input.inColor.rgb;
 

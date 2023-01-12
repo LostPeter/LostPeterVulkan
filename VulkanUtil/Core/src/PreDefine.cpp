@@ -91,6 +91,19 @@ namespace LostPeter
         assert(false && "Util_ParseTextureType: Wrong type name !");
         return Vulkan_Texture_2D;
     }
+    VkImageType Util_Transform2VkImageType(VulkanTextureType type)
+    {
+        switch ((int)type)
+        {
+        case Vulkan_Texture_1D: return VK_IMAGE_TYPE_1D;
+        case Vulkan_Texture_2D: return VK_IMAGE_TYPE_2D;
+        case Vulkan_Texture_2DArray: return VK_IMAGE_TYPE_2D;
+        case Vulkan_Texture_3D: return VK_IMAGE_TYPE_3D;
+        case Vulkan_Texture_CubeMap: return VK_IMAGE_TYPE_2D;
+        }
+        assert(false && "Util_Transform2VkImageType: Wrong type !");
+        return VK_IMAGE_TYPE_2D;
+    }
     VkImageViewType Util_Transform2VkImageViewType(VulkanTextureType type)
     {
         switch ((int)type)

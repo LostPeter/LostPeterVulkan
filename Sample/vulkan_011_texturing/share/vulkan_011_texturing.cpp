@@ -41,7 +41,7 @@ static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
     "",
 };
 
-static const int g_TextureCount = 5;
+static const int g_TextureCount = 6;
 static const char* g_pathTextures[3 * g_TextureCount] = 
 {
     "terrain",          "2d",       "Assets/Texture/terrain.png",
@@ -50,6 +50,7 @@ static const char* g_pathTextures[3 * g_TextureCount] =
     
     "texture1d",        "1d",       "Assets/Texture/texture1d.tga",
     "texture2d",        "2d",       "Assets/Texture/texture2d.jpg",
+    "texture2darray",   "2darray",  "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png",
 };
 
 
@@ -63,7 +64,7 @@ static const char* g_pathModels[4 * g_ModelCount] =
 
     "texture1D",            "Assets/Model/Fbx/plane.fbx",                       "texture1d",                     "", //texture1D
     "texture2D",            "Assets/Model/Fbx/plane.fbx",                       "texture2d",                     "", //texture2D
-    "texture2Darray",       "Assets/Model/Fbx/plane.fbx",                       "white",                         "", //texture2Darray
+    "texture2Darray",       "Assets/Model/Fbx/plane.fbx",                       "texture2darray",                "", //texture2Darray
     "texture3D",            "Assets/Model/Fbx/plane.fbx",                       "white",                         "", //texture3D
     "texturecubemap",       "Assets/Model/Fbx/plane.fbx",                       "white",                         "", //texturecubemap
 };
@@ -89,12 +90,12 @@ static const char* g_pathModelShaderModules[g_ModelCount] =
 
     "Assets/Shader/standard_mesh_opaque_tex1d_lit", //texture1D 
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture2D 
-    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture2Darray 
+    "Assets/Shader/standard_mesh_opaque_tex2darray_lit", //texture2Darray
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture3D
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texturecubemap 
 };
 
-static float g_instanceGap = 4.0f;
+static float g_instanceGap = 2.0f;
 
 static int g_instanceExtCount[] =
 {
@@ -104,7 +105,7 @@ static int g_instanceExtCount[] =
 
     0, //texture1D 
     0, //texture2D 
-    0, //texture2Darray 
+    5, //texture2Darray 
     0, //texture3D 
     0, //texturecubemap 
 };
@@ -380,6 +381,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
+        ModelTexture* pTexture1 = pModelObject->GetTexture(0);
 
         pModelObject->instanceMatWorld.clear();
         pModelObject->objectCBs.clear();
@@ -402,6 +404,8 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             materialConstants.shininess = MathUtil::RandF(10.0f, 100.0f);
             materialConstants.alpha = MathUtil::RandF(0.2f, 0.9f);
             materialConstants.lighting = g_isLightingModels[i];
+            materialConstants.indexTextureArray = pTexture1->RandomTextureIndex();
+            Util_LogInfo("index array: [%d]", materialConstants.indexTextureArray);
             pModelObject->materialCBs.push_back(materialConstants);
         }
         
@@ -775,6 +779,7 @@ bool Vulkan_011_Texturing::beginRenderImgui()
         for (size_t i = 0; i < count; i++)
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
+            ModelTexture* pTexture1 = pModelObject->GetTexture(0);
 
             std::string nameModel = StringUtil::SaveInt(i) + " - " + pModelObject->nameModel;
             if (ImGui::CollapsingHeader(nameModel.c_str()))
@@ -896,6 +901,16 @@ bool Vulkan_011_Texturing::beginRenderImgui()
                                 {
                                     mat.lighting = isLighting ? 1.0f : 0.0f;
                                 }
+
+                                //indexTextureArray
+                                std::string nameIndexTextureArray = "IndexTextureArray - " + StringUtil::SaveInt(j);
+                                int count_tex = (int)pTexture1->aPathTexture.size();
+                                int indexTextureArray = mat.indexTextureArray;
+                                if (ImGui::DragInt(nameInstances.c_str(), &indexTextureArray, 1, 0, count_tex-1))
+                                {
+                                    mat.indexTextureArray = indexTextureArray;
+                                }
+
                                 ImGui::Spacing();
                             }
                         }
