@@ -89,19 +89,19 @@ public:
             if (this->typeTexture == Vulkan_Texture_1D)
             {
                 this->pWindow->createTexture1D(this->aPathTexture[0], this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
-                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_1D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, this->poTextureImageView);
+                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_1D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
                 this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
             }
             else if (this->typeTexture == Vulkan_Texture_2D)
             {
                 this->pWindow->createTexture2D(this->aPathTexture[0], this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
-                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, this->poTextureImageView);
+                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
                 this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
             }
             else if (this->typeTexture == Vulkan_Texture_2DArray)
             {
                 this->pWindow->createTexture2DArray(this->aPathTexture, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
-                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D_ARRAY, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, this->poTextureImageView);
+                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D_ARRAY, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, (int)this->aPathTexture.size(), this->poTextureImageView);
                 this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
             }
             else if (this->typeTexture == Vulkan_Texture_3D)

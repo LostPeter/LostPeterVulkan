@@ -392,6 +392,7 @@ namespace LostPeter
                                                      VkFormat format, 
                                                      VkImageAspectFlags aspectFlags, 
                                                      uint32_t mipMapCount,
+                                                     uint32_t numArray,
                                                      VkImageView& imageView);
                                                      
                         virtual void createSampler(uint32_t mipMapCount, 
@@ -406,23 +407,30 @@ namespace LostPeter
                                                    float mipLodBias,
                                                    VkSampler& sampler);
                         
-                        virtual void transitionImageLayout(VkImage image, 
-                                                           VkFormat format, 
-                                                           uint32_t numArray,
+                        virtual void transitionImageLayout(VkCommandBuffer cmdBuffer,
+                                                           VkImage image, 
                                                            VkImageLayout oldLayout, 
-                                                           VkImageLayout newLayout, 
-                                                           uint32_t mipMapCount);
-                        virtual void copyBufferToImage(VkBuffer buffer, 
+                                                           VkImageLayout newLayout,
+                                                           uint32_t mipBase,
+                                                           uint32_t mipCount,
+                                                           uint32_t numBase,
+                                                           uint32_t numArray,
+                                                           VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT);
+                        virtual void copyBufferToImage(VkCommandBuffer cmdBuffer,
+                                                       VkBuffer buffer, 
                                                        VkImage image, 
                                                        uint32_t width, 
                                                        uint32_t height,
                                                        uint32_t depth,
                                                        uint32_t numArray);
-                        virtual void generateMipMaps(VkImage image, 
+                        virtual void generateMipMaps(VkCommandBuffer cmdBuffer,
+                                                     VkImage image, 
                                                      VkFormat imageFormat, 
-                                                     int32_t texWidth, 
-                                                     int32_t texHeight, 
-                                                     uint32_t mipMapCount);
+                                                     int32_t width, 
+                                                     int32_t height, 
+                                                     uint32_t mipMapCount,
+                                                     uint32_t numArray,
+                                                     bool autoMipMap);
                     
                 
                 virtual void createConstBuffers();

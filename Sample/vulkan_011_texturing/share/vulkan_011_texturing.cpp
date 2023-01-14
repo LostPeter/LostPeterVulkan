@@ -103,11 +103,11 @@ static int g_instanceExtCount[] =
     0, //viking_room
     0, //bunny
 
-    0, //texture1D 
-    0, //texture2D 
+    5, //texture1D 
+    5, //texture2D 
     5, //texture2Darray 
-    0, //texture3D 
-    0, //texturecubemap 
+    5, //texture3D 
+    5, //texturecubemap 
 };
 
 static glm::vec3 g_tranformModels[3 * g_ModelCount] = 
@@ -405,7 +405,6 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             materialConstants.alpha = MathUtil::RandF(0.2f, 0.9f);
             materialConstants.lighting = g_isLightingModels[i];
             materialConstants.indexTextureArray = pTexture1->RandomTextureIndex();
-            Util_LogInfo("index array: [%d]", materialConstants.indexTextureArray);
             pModelObject->materialCBs.push_back(materialConstants);
         }
         

@@ -222,7 +222,7 @@ bool Vulkan_009_Instancing::loadModel_Texture(ModelObject* pModelObject)
     if (!pModelObject->pathTexture.empty())
     {
         createTexture2D(pModelObject->pathTexture, pModelObject->poMipMapCount, pModelObject->poTextureImage, pModelObject->poTextureImageMemory);
-        createImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, pModelObject->poTextureImageView);
+        createImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
         createSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
 
         Util_LogInfo("Vulkan_009_Instancing::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());

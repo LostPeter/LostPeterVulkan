@@ -877,10 +877,7 @@ namespace LostPeter
         VkCommandPoolCreateInfo poolInfo = {};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         poolInfo.queueFamilyIndex = this->graphicsIndex;
-        if (HasConfig_Imgui())
-        {
-            poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        }
+        poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
         if (vkCreateCommandPool(this->poDevice, &poolInfo, nullptr, &this->poCommandPool) != VK_SUCCESS) 
         {
@@ -1099,6 +1096,7 @@ namespace LostPeter
                             this->poSwapChainImageFormat, 
                             VK_IMAGE_ASPECT_COLOR_BIT, 
                             1,
+                            1,
                             this->poSwapChainImageViews[i]);
         }
 
@@ -1126,6 +1124,7 @@ namespace LostPeter
                             colorFormat, 
                             VK_IMAGE_ASPECT_COLOR_BIT, 
                             1, 
+                            1,
                             this->poColorImageView);
 
             Util_LogInfo("<1-5-3> VulkanWindow::createColorResources finish !");
@@ -1152,6 +1151,7 @@ namespace LostPeter
                             VK_IMAGE_VIEW_TYPE_2D,
                             depthFormat, 
                             VK_IMAGE_ASPECT_DEPTH_BIT, 
+                            1,
                             1,
                             this->poDepthImageView);
 
@@ -2137,7 +2137,7 @@ namespace LostPeter
         if (!this->cfg_texture_Path.empty())
         {
             createTexture2D(this->cfg_texture_Path, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
-            createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, this->poTextureImageView);
+            createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
             createSampler(this->poMipMapCount, this->poTextureSampler);
 
             Util_LogInfo("<2-2-2> VulkanWindow::loadTexture finish !");
@@ -2227,7 +2227,7 @@ namespace LostPeter
         uint32_t depth = 1;
         uint32_t numArray = 1;
 
-        //3> CreateImage, TransitionImageLayout and CopyBufferToImage
+        //3> CreateImage
         createImage(texWidth, 
                     texHeight, 
                     depth,
@@ -2242,22 +2242,45 @@ namespace LostPeter
                     image, 
                     imageMemory);
 
-        transitionImageLayout(image, 
-                              format, 
-                              numArray,
-                              VK_IMAGE_LAYOUT_UNDEFINED, 
-                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
-                              mipMapCount);
-        copyBufferToImage(buffer, 
-                          image, 
-                          static_cast<uint32_t>(texWidth), 
-                          static_cast<uint32_t>(texHeight),
-                          depth,
-                          numArray);
+        //4> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
+        {
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_UNDEFINED, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+            {
+                copyBufferToImage(cmdBuffer,
+                                  buffer, 
+                                  image, 
+                                  static_cast<uint32_t>(texWidth), 
+                                  static_cast<uint32_t>(texHeight),
+                                  depth,
+                                  numArray);
+            }
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
 
-        //4> GenerateMipMaps
-        if (autoMipMap)
-            generateMipMaps(image, format, texWidth, texHeight, mipMapCount);
+            generateMipMaps(cmdBuffer,
+                            image, 
+                            format, 
+                            texWidth, 
+                            texHeight, 
+                            mipMapCount,
+                            numArray,
+                            autoMipMap);
+        }
+        endSingleTimeCommands(cmdBuffer);
     }
     void VulkanWindow::createTexture2D(const std::string& pathAsset_Tex, 
                                        VkImageType type,
@@ -2407,22 +2430,45 @@ namespace LostPeter
                     image, 
                     imageMemory);
 
-        transitionImageLayout(image, 
-                              format, 
-                              numArray,
-                              VK_IMAGE_LAYOUT_UNDEFINED, 
-                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
-                              mipMapCount);
-        copyBufferToImage(buffer, 
-                          image, 
-                          static_cast<uint32_t>(texWidth), 
-                          static_cast<uint32_t>(texHeight),
-                          depth,
-                          numArray);
+        //4> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
+        {
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_UNDEFINED, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
+            {   
+                copyBufferToImage(cmdBuffer,
+                                  buffer, 
+                                  image, 
+                                  static_cast<uint32_t>(texWidth), 
+                                  static_cast<uint32_t>(texHeight),
+                                  depth,
+                                  numArray);
+            }
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  numArray);
 
-        //4> GenerateMipMaps
-        if (autoMipMap)
-            generateMipMaps(image, format, texWidth, texHeight, mipMapCount);
+            generateMipMaps(cmdBuffer,
+                            image, 
+                            format, 
+                            texWidth, 
+                            texHeight,
+                            mipMapCount,
+                            numArray,
+                            autoMipMap);
+        }
+        endSingleTimeCommands(cmdBuffer);
     }
     void VulkanWindow::createTexture2DArray(const std::vector<std::string>& aPathAsset_Tex, 
                                             VkImageType type,
@@ -2513,6 +2559,7 @@ namespace LostPeter
                                            VkFormat format, 
                                            VkImageAspectFlags aspectFlags, 
                                            uint32_t mipMapCount,
+                                           uint32_t numArray,
                                            VkImageView& imageView) 
         {
             VkImageViewCreateInfo viewInfo = {};
@@ -2520,11 +2567,12 @@ namespace LostPeter
             viewInfo.image = image;
             viewInfo.viewType = type;
             viewInfo.format = format;
+            viewInfo.components = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
             viewInfo.subresourceRange.aspectMask = aspectFlags;
             viewInfo.subresourceRange.baseMipLevel = 0;
             viewInfo.subresourceRange.levelCount = mipMapCount;
             viewInfo.subresourceRange.baseArrayLayer = 0;
-            viewInfo.subresourceRange.layerCount = 1;
+            viewInfo.subresourceRange.layerCount = numArray;
 
             if (vkCreateImageView(this->poDevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS) 
             {
@@ -2604,14 +2652,22 @@ namespace LostPeter
         }
 
 
-        void VulkanWindow::transitionImageLayout(VkImage image, 
-                                                 VkFormat format, 
-                                                 uint32_t numArray,
+        void VulkanWindow::transitionImageLayout(VkCommandBuffer cmdBuffer,
+                                                 VkImage image, 
                                                  VkImageLayout oldLayout, 
-                                                 VkImageLayout newLayout, 
-                                                 uint32_t mipMapCount) 
+                                                 VkImageLayout newLayout,
+                                                 uint32_t mipBase,
+                                                 uint32_t mipCount,
+                                                 uint32_t numBase,
+                                                 uint32_t numArray,
+                                                 VkImageAspectFlags aspectFlags /*= VK_IMAGE_ASPECT_COLOR_BIT*/) 
         {
-            VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+            bool isCreate = false;
+            if (cmdBuffer == VK_NULL_HANDLE)
+            {
+                isCreate = true;
+                cmdBuffer = beginSingleTimeCommands();
+            }
             {
                 VkImageMemoryBarrier barrier = {};
                 barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -2620,10 +2676,11 @@ namespace LostPeter
                 barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
                 barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
                 barrier.image = image;
-                barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-                barrier.subresourceRange.baseMipLevel = 0;
-                barrier.subresourceRange.levelCount = mipMapCount;
-                barrier.subresourceRange.baseArrayLayer = 0;
+
+                barrier.subresourceRange.aspectMask = aspectFlags;
+                barrier.subresourceRange.baseMipLevel = mipBase;
+                barrier.subresourceRange.levelCount = mipCount;
+                barrier.subresourceRange.baseArrayLayer = numBase;
                 barrier.subresourceRange.layerCount = numArray;
 
                 VkPipelineStageFlags sourceStage;
@@ -2631,15 +2688,26 @@ namespace LostPeter
 
                 if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) 
                 {
+                    // VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
                     barrier.srcAccessMask = 0;
                     barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
                     sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
                     destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
                 } 
-                else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) 
+                else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
                 {
+                    // VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL -> VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
                     barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+                    barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+                    sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                    destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                }
+                else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) 
+                {
+                    // VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL -> VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+                    barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
                     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
                     sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
@@ -2650,7 +2718,7 @@ namespace LostPeter
                     throw std::invalid_argument("VulkanWindow::transitionImageLayout: Unsupported layout transition !");
                 }
 
-                vkCmdPipelineBarrier(commandBuffer,
+                vkCmdPipelineBarrier(cmdBuffer,
                                      sourceStage, 
                                      destinationStage,
                                      0,
@@ -2661,153 +2729,131 @@ namespace LostPeter
                                      1, 
                                      &barrier);
             }
-            endSingleTimeCommands(commandBuffer);
+            if (isCreate)
+            {
+                endSingleTimeCommands(cmdBuffer);
+            }
         }
-        void VulkanWindow::copyBufferToImage(VkBuffer buffer, 
+        void VulkanWindow::copyBufferToImage(VkCommandBuffer cmdBuffer,
+                                             VkBuffer buffer, 
                                              VkImage image, 
                                              uint32_t width, 
                                              uint32_t height,
                                              uint32_t depth,
                                              uint32_t numArray) 
         {
-            VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+            bool isCreate = false;
+            if (cmdBuffer == VK_NULL_HANDLE)
             {
-                VkBufferImageCopy region = {};
-                region.bufferOffset = 0;
-                region.bufferRowLength = 0;
-                region.bufferImageHeight = 0;
-                region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-                region.imageSubresource.mipLevel = 0;
-                region.imageSubresource.baseArrayLayer = 0;
-                region.imageSubresource.layerCount = numArray;
-                VkOffset3D offset;
-                offset.x = 0;
-                offset.y = 0;
-                offset.z = 0;
-                region.imageOffset = offset;
-                VkExtent3D extent;
-                extent.width = width;
-                extent.height = height;
-                extent.depth = depth;
-                region.imageExtent = extent;
-
-                vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+                isCreate = true;
+                cmdBuffer = beginSingleTimeCommands();
             }
-            endSingleTimeCommands(commandBuffer);
-        }
-        void VulkanWindow::generateMipMaps(VkImage image, 
-                                           VkFormat imageFormat, 
-                                           int32_t texWidth, 
-                                           int32_t texHeight, 
-                                           uint32_t mipMapCount) 
-        {
-            VkFormatProperties formatProperties;
-            vkGetPhysicalDeviceFormatProperties(this->poPhysicalDevice, imageFormat, &formatProperties);
-
-            if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) 
             {
-                std::string msg = "VulkanWindow::generateMipMaps: Texture image format does not support linear blitting !";
-                Util_LogError(msg.c_str());
-                throw std::runtime_error(msg);
-            }
-
-            VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-            {
-                VkImageMemoryBarrier barrier = {};
-                barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-                barrier.image = image;
-                barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-                barrier.subresourceRange.baseArrayLayer = 0;
-                barrier.subresourceRange.layerCount = 1;
-                barrier.subresourceRange.levelCount = 1;
-
-                int32_t mipWidth = texWidth;
-                int32_t mipHeight = texHeight;
-
-                for (uint32_t i = 1; i < mipMapCount; i++) 
+                std::vector<VkBufferImageCopy> bufferCopyRegions;
+                for (uint32_t i = 0; i < numArray; i++)
                 {
-                    barrier.subresourceRange.baseMipLevel = i - 1;
-                    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-                    barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-                    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-                    barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+                    VkBufferImageCopy region = {};
+                    region.bufferOffset = width * height * 4 * i;
+                    region.imageExtent.width = width;
+                    region.imageExtent.height = height;
+                    region.imageExtent.depth = depth;
+                    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                    region.imageSubresource.mipLevel = 0;
+                    region.imageSubresource.baseArrayLayer = i;
+                    region.imageSubresource.layerCount = 1;
+                    bufferCopyRegions.push_back(region);
+                }
+                vkCmdCopyBufferToImage(cmdBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, (uint32_t)bufferCopyRegions.size(), bufferCopyRegions.data());
+            }
+            if (isCreate)
+            {
+                endSingleTimeCommands(cmdBuffer);
+            }
+        }
+        void VulkanWindow::generateMipMaps(VkCommandBuffer cmdBuffer,
+                                           VkImage image, 
+                                           VkFormat imageFormat, 
+                                           int32_t width, 
+                                           int32_t height, 
+                                           uint32_t mipMapCount,
+                                           uint32_t numArray,
+                                           bool autoMipMap)
+        {
+            bool isCreate = false;
+            if (cmdBuffer == VK_NULL_HANDLE)
+            {
+                isCreate = true;
+                cmdBuffer = beginSingleTimeCommands();
+            }
+            {
+                if (autoMipMap)
+                {
+                    int32_t mipWidth = width;
+                    int32_t mipHeight = height;
+                    for (uint32_t i = 1; i < mipMapCount; i++) 
+                    {
+                        transitionImageLayout(cmdBuffer,
+                                              image, 
+                                              VK_IMAGE_LAYOUT_UNDEFINED, 
+                                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                              i,
+                                              1,
+                                              0,
+                                              numArray);
+                        {
+                            VkImageBlit blit = {};
+                            blit.srcOffsets[0] = {0, 0, 0};
+                            blit.srcOffsets[1] = {mipWidth, mipHeight, 1};
+                            blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                            blit.srcSubresource.mipLevel = i - 1;
+                            blit.srcSubresource.baseArrayLayer = 0;
+                            blit.srcSubresource.layerCount = numArray;
 
-                    vkCmdPipelineBarrier(commandBuffer,
-                                         VK_PIPELINE_STAGE_TRANSFER_BIT, 
-                                         VK_PIPELINE_STAGE_TRANSFER_BIT, 
-                                         0,
-                                         0, 
-                                         nullptr,
-                                         0, 
-                                         nullptr,
-                                         1, 
-                                         &barrier);
+                            blit.dstOffsets[0] = {0, 0, 0};
+                            blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 };
+                            blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                            blit.dstSubresource.mipLevel = i;
+                            blit.dstSubresource.baseArrayLayer = 0;
+                            blit.dstSubresource.layerCount = numArray;
 
-                    VkImageBlit blit{};
-                    blit.srcOffsets[0] = {0, 0, 0};
-                    blit.srcOffsets[1] = {mipWidth, mipHeight, 1};
-                    blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-                    blit.srcSubresource.mipLevel = i - 1;
-                    blit.srcSubresource.baseArrayLayer = 0;
-                    blit.srcSubresource.layerCount = 1;
-                    blit.dstOffsets[0] = {0, 0, 0};
-                    blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 };
-                    blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-                    blit.dstSubresource.mipLevel = i;
-                    blit.dstSubresource.baseArrayLayer = 0;
-                    blit.dstSubresource.layerCount = 1;
+                            vkCmdBlitImage(cmdBuffer,
+                                           image, 
+                                           VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                           image, 
+                                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                           1, 
+                                           &blit,
+                                           VK_FILTER_LINEAR);
 
-                    vkCmdBlitImage(commandBuffer,
-                                   image, 
-                                   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                                   image, 
-                                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                   1, 
-                                   &blit,
-                                   VK_FILTER_LINEAR);
-
-                    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-                    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-                    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-                    vkCmdPipelineBarrier(commandBuffer,
-                                         VK_PIPELINE_STAGE_TRANSFER_BIT, 
-                                         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 
-                                         0,
-                                         0, 
-                                         nullptr,
-                                         0, 
-                                         nullptr,
-                                         1, 
-                                         &barrier);
-
-                    if (mipWidth > 1) 
-                        mipWidth /= 2;
-                    if (mipHeight > 1) 
-                        mipHeight /= 2;
+                            if (mipWidth > 1) 
+                                mipWidth /= 2;
+                            if (mipHeight > 1) 
+                                mipHeight /= 2;
+                        }   
+                        transitionImageLayout(cmdBuffer,
+                                              image,
+                                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                              VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                              i,
+                                              1,
+                                              0,
+                                              numArray);
+                    }
                 }
 
-                barrier.subresourceRange.baseMipLevel = mipMapCount - 1;
-                barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-                barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-                barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-                vkCmdPipelineBarrier(commandBuffer,
-                                     VK_PIPELINE_STAGE_TRANSFER_BIT, 
-                                     VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 
-                                     0,
-                                     0, 
-                                     nullptr,
-                                     0, 
-                                     nullptr,
-                                     1, 
-                                     &barrier);
+                transitionImageLayout(cmdBuffer,
+                                      image,
+                                      VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                      0,
+                                      mipMapCount,
+                                      0,
+                                      numArray);
             }
-            endSingleTimeCommands(commandBuffer);
+            if (isCreate)
+            {
+                endSingleTimeCommands(cmdBuffer);
+            }
         }
 
     void VulkanWindow::createConstBuffers()
