@@ -26,6 +26,7 @@ public:
         std::string nameTexture;
         std::vector<std::string> aPathTexture;
         VulkanTextureType typeTexture;
+        VkFormat typeFormat; 
         int refCount;
 
         uint32_t poMipMapCount;
@@ -34,13 +35,25 @@ public:
         VkImageView poTextureImageView;
         VkSampler poTextureSampler;
 
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+
+        //Texture 3D
+        uint8* pDataRGBA;
+        int width;
+        int height;
+        int depth;
+
+
         ModelTexture(Vulkan_011_Texturing* _pWindow, 
                      const std::string& _nameTexture,
                      VulkanTextureType _typeTexture,
+                     VkFormat _typeFormat,
                      const std::vector<std::string>& _aPathTexture)
             : pWindow(_pWindow)
             , nameTexture(_nameTexture)
             , typeTexture(_typeTexture)
+            , typeFormat(_typeFormat)
             , aPathTexture(_aPathTexture)
             , refCount(0)
 
@@ -49,6 +62,16 @@ public:
             , poTextureImageMemory(VK_NULL_HANDLE)
             , poTextureImageView(VK_NULL_HANDLE)
             , poTextureSampler(VK_NULL_HANDLE)
+
+            , stagingBuffer(VK_NULL_HANDLE)
+            , stagingBufferMemory(VK_NULL_HANDLE)
+
+            //Texture 3D
+            , pDataRGBA(nullptr)
+            , width(128)
+            , height(128)
+            , depth(128)
+
         {
 
         }
@@ -66,12 +89,17 @@ public:
 
         void Destroy()
         {
+            if (this->stagingBuffer != VK_NULL_HANDLE)
+            {
+                this->pWindow->destroyBuffer(this->stagingBuffer, this->stagingBufferMemory);
+            }
             this->pWindow->destroyTexture(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
             this->poTextureImage = VK_NULL_HANDLE;
             this->poTextureImageMemory = VK_NULL_HANDLE;
             this->poTextureImageView = VK_NULL_HANDLE;
             this->pWindow->destroyTextureSampler(this->poTextureSampler);
-            this->poTextureSampler = VK_NULL_HANDLE;   
+            this->poTextureSampler = VK_NULL_HANDLE;
+            UTIL_DELETE_T(pDataRGBA)
         }
 
         int RandomTextureIndex()
@@ -84,29 +112,40 @@ public:
             return 0;
         }
 
-        void LoadTexture()
+        void LoadTexture(int width,
+                         int height,
+                         int depth)
         {
             if (this->typeTexture == Vulkan_Texture_1D)
             {
                 this->pWindow->createTexture1D(this->aPathTexture[0], this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
-                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_1D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
+                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_1D, this->typeFormat, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
                 this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
             }
             else if (this->typeTexture == Vulkan_Texture_2D)
             {
                 this->pWindow->createTexture2D(this->aPathTexture[0], this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
-                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
+                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, this->typeFormat, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
                 this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
             }
             else if (this->typeTexture == Vulkan_Texture_2DArray)
             {
                 this->pWindow->createTexture2DArray(this->aPathTexture, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
-                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D_ARRAY, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, (int)this->aPathTexture.size(), this->poTextureImageView);
+                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D_ARRAY, this->typeFormat, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, (int)this->aPathTexture.size(), this->poTextureImageView);
                 this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
             }
             else if (this->typeTexture == Vulkan_Texture_3D)
             {
-                
+                this->width = width;
+                this->height = height;
+                this->depth = depth;
+                uint32_t size = width * height * depth;
+                this->pDataRGBA = new uint8[size];
+                memset(this->pDataRGBA, 0, (size_t)size);
+                updateNoiseTextureData();
+                this->pWindow->createTexture3D(this->typeFormat, this->pDataRGBA, size, width, height, depth, this->poTextureImage, this->poTextureImageMemory, this->stagingBuffer, this->stagingBufferMemory);
+                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_3D, this->typeFormat, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
+                this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
             }
             else if (this->typeTexture == Vulkan_Texture_CubeMap)
             {
@@ -118,7 +157,13 @@ public:
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-        }
+        }   
+
+        void UpdateTexture();
+
+    private:
+        void updateNoiseTextureData();
+        void updateNoiseTexture();
     };
     typedef std::vector<ModelTexture*> ModelTexturePtrVector;
     typedef std::map<std::string, ModelTexture*> ModelTexturePtrMap;

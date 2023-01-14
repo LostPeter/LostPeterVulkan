@@ -41,16 +41,43 @@ static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
     "",
 };
 
-static const int g_TextureCount = 6;
+static const std::string g_TextureDefault = "default";
+static const int g_TextureCount = 8;
 static const char* g_pathTextures[3 * g_TextureCount] = 
 {
-    "terrain",          "2d",       "Assets/Texture/terrain.png",
-    "viking_room",      "2d",       "Assets/Model/Obj/viking_room/viking_room.png",
-    "white",            "2d",       "Assets/Texture/white.bmp",
+    "default",          "2d",       "Assets/Texture/default_blackwhite.png", //default
+    "terrain",          "2d",       "Assets/Texture/terrain.png", //terrain
+    "viking_room",      "2d",       "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
+    "white",            "2d",       "Assets/Texture/white.bmp", //white
     
-    "texture1d",        "1d",       "Assets/Texture/texture1d.tga",
-    "texture2d",        "2d",       "Assets/Texture/texture2d.jpg",
-    "texture2darray",   "2darray",  "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png",
+    "texture1d",        "1d",       "Assets/Texture/texture1d.tga", //texture1d
+    "texture2d",        "2d",       "Assets/Texture/texture2d.jpg", //texture2d
+    "texture2darray",   "2darray",  "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture2darray
+    "texture3d",        "3d",       "", //texture3d
+};
+static VkFormat g_formatTextures[g_TextureCount] = 
+{
+    VK_FORMAT_R8G8B8A8_SRGB, //default
+    VK_FORMAT_R8G8B8A8_SRGB, //terrain
+    VK_FORMAT_R8G8B8A8_SRGB, //viking_room
+    VK_FORMAT_R8G8B8A8_SRGB, //white
+
+    VK_FORMAT_R8G8B8A8_SRGB, //texture1d
+    VK_FORMAT_R8G8B8A8_SRGB, //texture2d
+    VK_FORMAT_R8G8B8A8_SRGB, //texture2darray
+    VK_FORMAT_R8_UNORM, //texture3d
+};
+static int g_sizeTextures[3 * g_TextureCount] = 
+{
+    512,    512,    1, //default
+    512,    512,    1, //terrain
+    512,    512,    1, //viking_room
+    512,    512,    1, //white
+
+    512,    512,    1, //texture1d
+    512,    512,    1, //texture2d
+    512,    512,    1, //texture2darray
+    128,    128,    128, //texture3d
 };
 
 
@@ -65,7 +92,7 @@ static const char* g_pathModels[4 * g_ModelCount] =
     "texture1D",            "Assets/Model/Fbx/plane.fbx",                       "texture1d",                     "", //texture1D
     "texture2D",            "Assets/Model/Fbx/plane.fbx",                       "texture2d",                     "", //texture2D
     "texture2Darray",       "Assets/Model/Fbx/plane.fbx",                       "texture2darray",                "", //texture2Darray
-    "texture3D",            "Assets/Model/Fbx/plane.fbx",                       "white",                         "", //texture3D
+    "texture3D",            "Assets/Model/Fbx/plane.fbx",                       "texture3d",                     "", //texture3D
     "texturecubemap",       "Assets/Model/Fbx/plane.fbx",                       "white",                         "", //texturecubemap
 };
 
@@ -91,7 +118,7 @@ static const char* g_pathModelShaderModules[g_ModelCount] =
     "Assets/Shader/standard_mesh_opaque_tex1d_lit", //texture1D 
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture2D 
     "Assets/Shader/standard_mesh_opaque_tex2darray_lit", //texture2Darray
-    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture3D
+    "Assets/Shader/standard_mesh_opaque_tex3d_lit", //texture3D
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texturecubemap 
 };
 
@@ -194,12 +221,69 @@ static bool g_isLightingModels[] =
     true, //viking_room
     true, //bunny
 
-    false, //texture1D
-    false, //texture2D
-    false, //texture2Darray
-    false, //texture3D
-    false, //texturecubemap
+    true, //texture1D
+    true, //texture2D
+    true, //texture2Darray
+    true, //texture3D
+    true, //texturecubemap
 };
+
+
+
+void Vulkan_011_Texturing::ModelTexture::UpdateTexture()
+{
+    if (this->typeTexture == Vulkan_Texture_3D)
+    {
+        updateNoiseTexture();
+    }
+}
+void Vulkan_011_Texturing::ModelTexture::updateNoiseTextureData()
+{
+    // Perlin noise
+    noise::module::Perlin modulePerlin;
+    for (int z = 0; z < this->depth; z++)
+    {
+        for (int y = 0; y < this->height; y++)
+        {
+            for (int x = 0; x < this->width; x++)
+            {
+                float nx = (float)x / (float)this->width;
+                float ny = (float)y / (float)this->height;
+                float nz = (float)z / (float)this->depth;
+
+                float n = 20.0f * modulePerlin.GetValue(nx, ny, nz);
+                n = n - floor(n);
+                this->pDataRGBA[x + y * this->width + z * this->width * this->height] = static_cast<uint8>(floor(n * 255));
+            }
+        }
+    }
+}
+void Vulkan_011_Texturing::ModelTexture::updateNoiseTexture()
+{
+    //1> updateNoiseTextureData
+    updateNoiseTextureData();
+
+    //2> MapData to stagingBuffer
+    VkDeviceSize bufSize = this->width * this->height * this->depth;
+    void* data;
+    vkMapMemory(this->pWindow->poDevice, this->stagingBufferMemory, 0, bufSize, 0, &data);
+        memcpy(data, this->pDataRGBA, bufSize);
+    vkUnmapMemory(this->pWindow->poDevice, this->stagingBufferMemory);
+
+    //3> CopyToImage
+    VkCommandBuffer cmdBuffer = this->pWindow->beginSingleTimeCommands();
+    {   
+        this->pWindow->copyBufferToImage(cmdBuffer,
+                                         this->stagingBuffer, 
+                                         this->poTextureImage, 
+                                         static_cast<uint32_t>(this->width), 
+                                         static_cast<uint32_t>(this->height),
+                                         static_cast<uint32_t>(this->depth), 
+                                         1);
+    }
+    this->pWindow->endSingleTimeCommands(cmdBuffer);
+}
+
 
 
 Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, std::string name)
@@ -404,7 +488,14 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             materialConstants.shininess = MathUtil::RandF(10.0f, 100.0f);
             materialConstants.alpha = MathUtil::RandF(0.2f, 0.9f);
             materialConstants.lighting = g_isLightingModels[i];
-            materialConstants.indexTextureArray = pTexture1->RandomTextureIndex();
+            if (pTexture1->typeTexture == Vulkan_Texture_2DArray)
+            {
+                materialConstants.indexTextureArray = pTexture1->RandomTextureIndex();
+            }
+            else
+            {
+                materialConstants.indexTextureArray = MathUtil::RandF(0.0f, 1.0f);
+            }
             pModelObject->materialCBs.push_back(materialConstants);
         }
         
@@ -532,9 +623,16 @@ void Vulkan_011_Texturing::createModelTextures()
         ModelTexture* pTexture = new ModelTexture(this, 
                                                   nameTexture,
                                                   typeTexture,
+                                                  g_formatTextures[i],
                                                   aPathTexture);
         pTexture->AddRef();
-        pTexture->LoadTexture();
+
+        int width = g_sizeTextures[3 * i + 0];
+        int height = g_sizeTextures[3 * i + 1];
+        int depth = g_sizeTextures[3 * i + 1];
+        pTexture->LoadTexture(width, 
+                              height,
+                              depth);
 
         this->m_aModelTexture.push_back(pTexture);
         this->m_mapModelTexture[nameTexture] = pTexture;
@@ -903,11 +1001,21 @@ bool Vulkan_011_Texturing::beginRenderImgui()
 
                                 //indexTextureArray
                                 std::string nameIndexTextureArray = "IndexTextureArray - " + StringUtil::SaveInt(j);
-                                int count_tex = (int)pTexture1->aPathTexture.size();
-                                int indexTextureArray = mat.indexTextureArray;
-                                if (ImGui::DragInt(nameInstances.c_str(), &indexTextureArray, 1, 0, count_tex-1))
+                                if (pTexture1->typeTexture == Vulkan_Texture_2DArray)
                                 {
-                                    mat.indexTextureArray = indexTextureArray;
+                                    int count_tex = (int)pTexture1->aPathTexture.size();
+                                    int indexTextureArray = (int)mat.indexTextureArray;
+                                    if (ImGui::DragInt(nameIndexTextureArray.c_str(), &indexTextureArray, 1, 0, count_tex-1))
+                                    {
+                                        mat.indexTextureArray = indexTextureArray;
+                                    }
+                                }
+                                else 
+                                {
+                                    if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.indexTextureArray, 0.001f, 0.0f, 1.0f))
+                                    {
+
+                                    }
                                 }
 
                                 ImGui::Spacing();

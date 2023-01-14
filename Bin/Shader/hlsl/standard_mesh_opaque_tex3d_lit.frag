@@ -85,8 +85,8 @@ struct MaterialConstants
 }
 
 
-[[vk::binding(4)]] Texture2D texture            : register(t1);
-[[vk::binding(4)]] SamplerState textureSampler  : register(s1);
+[[vk::binding(4)]] Texture3D texture3D              : register(t1);
+[[vk::binding(4)]] SamplerState texture3DSampler    : register(s1);
 
 
 float3 calculate_Light_Ambient(float3 ambientGlobal, 
@@ -236,12 +236,12 @@ float4 main(VSOutput input) : SV_TARGET
 
 
     //Texture
-    float3 colorTexture = texture.Sample(textureSampler, input.inTexCoord).rgb;
+    float3 colorTexture = texture3D.Sample(texture3DSampler, float3(input.inTexCoord, mat.indexTextureArray)).rgb;
     //VertexColor
     float3 colorVertex = input.inColor.rgb;
 
     //Final Color
-    outColor = colorLight * colorTexture * colorVertex;
+    outColor = colorLight * colorTexture.r * colorVertex;
 
     return float4(outColor, 1.0);
 }

@@ -639,6 +639,8 @@ namespace LostPeter
             throw std::runtime_error(msg);
         }
 
+        
+        vkGetPhysicalDeviceProperties(this->poPhysicalDevice, &this->poPhysicalDeviceProperties);
         vkGetPhysicalDeviceFeatures(this->poPhysicalDevice, &this->poPhysicalDeviceFeatures);
         Util_LogInfo("**************** VulkanWindow::pickPhysicalDevice: ****************");
         {
@@ -750,10 +752,7 @@ namespace LostPeter
         }
         VkSampleCountFlagBits VulkanWindow::getMaxUsableSampleCount()
         {
-            VkPhysicalDeviceProperties physicalDeviceProperties;
-            vkGetPhysicalDeviceProperties(this->poPhysicalDevice, &physicalDeviceProperties);
-
-            VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts & physicalDeviceProperties.limits.framebufferDepthSampleCounts;
+            VkSampleCountFlags counts = this->poPhysicalDeviceProperties.limits.framebufferColorSampleCounts & this->poPhysicalDeviceProperties.limits.framebufferDepthSampleCounts;
             if (counts & VK_SAMPLE_COUNT_64_BIT) { return VK_SAMPLE_COUNT_64_BIT; }
             if (counts & VK_SAMPLE_COUNT_32_BIT) { return VK_SAMPLE_COUNT_32_BIT; }
             if (counts & VK_SAMPLE_COUNT_16_BIT) { return VK_SAMPLE_COUNT_16_BIT; }
@@ -1987,14 +1986,20 @@ namespace LostPeter
             if (this->poVertexBuffer_Size > 0 &&
                 this->poVertexBuffer_Data != nullptr)
             {
-                createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
+                createVertexBuffer(this->poVertexBuffer_Size, 
+                                   this->poVertexBuffer_Data, 
+                                   this->poVertexBuffer, 
+                                   this->poVertexBufferMemory);
             }
 
             //3> createIndexBuffer
             if (this->poIndexBuffer_Size > 0 &&
                 this->poIndexBuffer_Data != nullptr)
             {
-                createIndexBuffer(this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+                createIndexBuffer(this->poIndexBuffer_Size, 
+                                  this->poIndexBuffer_Data, 
+                                  this->poIndexBuffer, 
+                                  this->poIndexBufferMemory);
             }
         }
         Util_LogInfo("**<2-2-1> VulkanWindow::loadVertexIndexBuffer finish **");
@@ -2032,18 +2037,29 @@ namespace LostPeter
             vkFreeMemory(this->poDevice, bufferMemory, nullptr);
         }
     }
-    void VulkanWindow::createVertexBuffer(size_t bufSize, void* pBuf, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory)
+    void VulkanWindow::createVertexBuffer(size_t bufSize, 
+                                          void* pBuf, 
+                                          VkBuffer& vertexBuffer, 
+                                          VkDeviceMemory& vertexBufferMemory)
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createBuffer(bufSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-        void* data;
-        vkMapMemory(this->poDevice, stagingBufferMemory, 0, bufSize, 0, &data);
-            memcpy(data, pBuf, bufSize);
-        vkUnmapMemory(this->poDevice, stagingBufferMemory);
-
-        createBuffer(bufSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+        createBuffer(bufSize, 
+                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                     stagingBuffer, 
+                     stagingBufferMemory);
+        {
+            void* data;
+            vkMapMemory(this->poDevice, stagingBufferMemory, 0, bufSize, 0, &data);
+                memcpy(data, pBuf, bufSize);
+            vkUnmapMemory(this->poDevice, stagingBufferMemory);
+        }
+        createBuffer(bufSize, 
+                     VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
+                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                     vertexBuffer,
+                     vertexBufferMemory);
 
         copyBuffer(stagingBuffer, vertexBuffer, bufSize);
 
@@ -2052,18 +2068,29 @@ namespace LostPeter
 
         Util_LogInfo("<2-2-1-2> VulkanWindow::createVertexBuffer finish !");
     }
-    void VulkanWindow::createIndexBuffer(size_t bufSize, void* pBuf, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory)
+    void VulkanWindow::createIndexBuffer(size_t bufSize, 
+                                         void* pBuf, 
+                                         VkBuffer& indexBuffer, 
+                                         VkDeviceMemory& indexBufferMemory)
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createBuffer(bufSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-        void* data;
-        vkMapMemory(this->poDevice, stagingBufferMemory, 0, bufSize, 0, &data);
-            memcpy(data, pBuf, bufSize);
-        vkUnmapMemory(this->poDevice, stagingBufferMemory);
-
-        createBuffer(bufSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+        createBuffer(bufSize, 
+                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                     stagingBuffer, 
+                     stagingBufferMemory);
+        {
+            void* data;
+            vkMapMemory(this->poDevice, stagingBufferMemory, 0, bufSize, 0, &data);
+                memcpy(data, pBuf, bufSize);
+            vkUnmapMemory(this->poDevice, stagingBufferMemory);
+        }
+        createBuffer(bufSize, 
+                     VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
+                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                     indexBuffer, 
+                     indexBufferMemory);
 
         copyBuffer(stagingBuffer, indexBuffer, bufSize);
 
@@ -2072,7 +2099,11 @@ namespace LostPeter
 
         Util_LogInfo("<2-2-1-3> VulkanWindow::createIndexBuffer finish !");
     }
-        void VulkanWindow::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) 
+        void VulkanWindow::createBuffer(VkDeviceSize size, 
+                                        VkBufferUsageFlags usage, 
+                                        VkMemoryPropertyFlags properties, 
+                                        VkBuffer& buffer, 
+                                        VkDeviceMemory& bufferMemory)
         {
             VkBufferCreateInfo bufferInfo = {};
             bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -2080,16 +2111,15 @@ namespace LostPeter
             bufferInfo.usage = usage;
             bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-            if (vkCreateBuffer(this->poDevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) 
+            if (!Util_CheckVkResult(vkCreateBuffer(this->poDevice, &bufferInfo, nullptr, &buffer), "vkCreateBuffer")) 
             {
                 std::string msg = "VulkanWindow::createBuffer: Failed to create buffer !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
 
-            VkMemoryRequirements memRequirements;
+            VkMemoryRequirements memRequirements = {};
             vkGetBufferMemoryRequirements(this->poDevice, buffer, &memRequirements);
-
             VkMemoryAllocateInfo allocInfo = {};
             allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
             allocInfo.allocationSize = memRequirements.size;
@@ -2101,7 +2131,6 @@ namespace LostPeter
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-
             vkBindBufferMemory(this->poDevice, buffer, bufferMemory, 0);
         }
             uint32_t VulkanWindow::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
@@ -2203,10 +2232,10 @@ namespace LostPeter
     {
         //1> Load Texture From File
         std::string pathTexture = GetAssetFullPath(pathAsset_Tex);
-        int texWidth, texHeight, texChannels;
-        stbi_uc* pixels = stbi_load(pathTexture.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-        VkDeviceSize imageSize = texWidth * texHeight * 4;
-        mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
+        int width, height, texChannels;
+        stbi_uc* pixels = stbi_load(pathTexture.c_str(), &width, &height, &texChannels, STBI_rgb_alpha);
+        VkDeviceSize imageSize = width * height * 4;
+        mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
         if (!pixels) 
         {
             std::string msg = "VulkanWindow::createTexture2D: Failed to load texture image !";
@@ -2215,7 +2244,11 @@ namespace LostPeter
         }
 
         //2> Create Buffer and copy Texture data to buffer
-        createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer, bufferMemory);
+        createBuffer(imageSize, 
+                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                     buffer, 
+                     bufferMemory);
 
         void* data;
         vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
@@ -2228,8 +2261,8 @@ namespace LostPeter
         uint32_t numArray = 1;
 
         //3> CreateImage
-        createImage(texWidth, 
-                    texHeight, 
+        createImage(width, 
+                    height, 
                     depth,
                     numArray,
                     mipMapCount, 
@@ -2257,9 +2290,9 @@ namespace LostPeter
                 copyBufferToImage(cmdBuffer,
                                   buffer, 
                                   image, 
-                                  static_cast<uint32_t>(texWidth), 
-                                  static_cast<uint32_t>(texHeight),
-                                  depth,
+                                  static_cast<uint32_t>(width), 
+                                  static_cast<uint32_t>(height),
+                                  static_cast<uint32_t>(depth), 
                                   numArray);
             }
             transitionImageLayout(cmdBuffer,
@@ -2274,8 +2307,8 @@ namespace LostPeter
             generateMipMaps(cmdBuffer,
                             image, 
                             format, 
-                            texWidth, 
-                            texHeight, 
+                            width, 
+                            height, 
                             mipMapCount,
                             numArray,
                             autoMipMap);
@@ -2356,8 +2389,8 @@ namespace LostPeter
         {
             const std::string& pathAsset_Tex = aPathAsset_Tex[i];
             std::string pathTexture = GetAssetFullPath(pathAsset_Tex);
-            int texWidth, texHeight, texChannels;
-            stbi_uc* pixels = stbi_load(pathTexture.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+            int width, height, texChannels;
+            stbi_uc* pixels = stbi_load(pathTexture.c_str(), &width, &height, &texChannels, STBI_rgb_alpha);
             if (!pixels) 
             {
                 s_DeletePixels(aPixels);
@@ -2366,23 +2399,23 @@ namespace LostPeter
                 throw std::runtime_error(msg);
             }
 
-            aWidth.push_back(texWidth);
-            aHeight.push_back(texHeight);
+            aWidth.push_back(width);
+            aHeight.push_back(height);
             aPixels.push_back(pixels);
         }
 
-        int texWidth = aWidth[0];
-        int texHeight = aHeight[0];
+        int width = aWidth[0];
+        int height = aHeight[0];
         for (size_t i = 1; i < count_tex; i++)
         {
-            if (aWidth[i] != texWidth)
+            if (aWidth[i] != width)
             {
                 s_DeletePixels(aPixels);
                 std::string msg = "VulkanWindow::createTexture2DArray: Texture image's all width must the same !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-            if (aHeight[i] != texHeight)
+            if (aHeight[i] != height)
             {
                 s_DeletePixels(aPixels);
                 std::string msg = "VulkanWindow::createTexture2DArray: Texture image's all height must the same !";
@@ -2399,25 +2432,29 @@ namespace LostPeter
         }
 
         //2> Create Buffer and copy Texture data to buffer
-        mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
-        VkDeviceSize imageSize = texWidth * texHeight * 4;
+        mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
+        VkDeviceSize imageSize = width * height * 4;
         VkDeviceSize imageSizeAll = imageSize * count_tex;
-        createBuffer(imageSizeAll, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer, bufferMemory);
+        createBuffer(imageSizeAll, 
+                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                     buffer, 
+                     bufferMemory);
 
         for (size_t i = 0; i < count_tex; i++)
         {
             stbi_uc* pixels = aPixels[i];
 
             void* data;
-            vkMapMemory(this->poDevice, bufferMemory, texWidth * texHeight * 4 * i, imageSize, 0, &data);
+            vkMapMemory(this->poDevice, bufferMemory, width * height * 4 * i, imageSize, 0, &data);
                 memcpy(data, pixels, static_cast<size_t>(imageSize));
             vkUnmapMemory(this->poDevice, bufferMemory);
         }
         s_DeletePixels(aPixels);
 
         //3> CreateImage, TransitionImageLayout and CopyBufferToImage
-        createImage(texWidth, 
-                    texHeight, 
+        createImage(width, 
+                    height, 
                     depth,
                     numArray,
                     mipMapCount, 
@@ -2445,9 +2482,9 @@ namespace LostPeter
                 copyBufferToImage(cmdBuffer,
                                   buffer, 
                                   image, 
-                                  static_cast<uint32_t>(texWidth), 
-                                  static_cast<uint32_t>(texHeight),
-                                  depth,
+                                  static_cast<uint32_t>(width), 
+                                  static_cast<uint32_t>(height),
+                                  static_cast<uint32_t>(depth), 
                                   numArray);
             }
             transitionImageLayout(cmdBuffer,
@@ -2462,8 +2499,8 @@ namespace LostPeter
             generateMipMaps(cmdBuffer,
                             image, 
                             format, 
-                            texWidth, 
-                            texHeight,
+                            width, 
+                            height,
                             mipMapCount,
                             numArray,
                             autoMipMap);
@@ -2494,12 +2531,121 @@ namespace LostPeter
         destroyBuffer(stagingBuffer, stagingBufferMemory);
     }
     
-    void VulkanWindow::createTexture3D(const std::string& pathAsset_Tex, 
-                                       uint32_t& mipMapCount,
+    void VulkanWindow::createTexture3D(VkFormat format,
+                                       const uint8* pDataRGBA,
+                                       uint32_t size,
+                                       uint32_t width,
+                                       uint32_t height,
+                                       uint32_t depth,
+                                       VkImage& image, 
+                                       VkDeviceMemory& imageMemory,
+                                       VkBuffer& buffer, 
+                                       VkDeviceMemory& bufferMemory)
+    {
+        VkFormatProperties formatProperties;
+		vkGetPhysicalDeviceFormatProperties(this->poPhysicalDevice, format, &formatProperties);
+		if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_TRANSFER_DST_BIT))
+		{
+            Util_LogError("VulkanWindow::createTexture3D: Physical device does not support flag 'VK_FORMAT_FEATURE_TRANSFER_DST_BIT' for selected texture format !");
+            return;
+		}
+		uint32_t maxImageDimension3D(this->poPhysicalDeviceProperties.limits.maxImageDimension3D);
+		if (width > maxImageDimension3D || height > maxImageDimension3D || depth > maxImageDimension3D)
+		{
+            Util_LogError("VulkanWindow::createTexture3D: Requested texture dimensions is greater than supported 3D texture dimension !");
+			return;
+		}
+
+        //1> Create Buffer and copy Texture data to buffer
+        VkDeviceSize imageSize = size;
+        createBuffer(imageSize, 
+                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                     buffer, 
+                     bufferMemory);
+
+        void* data;
+        vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
+            memcpy(data, pDataRGBA, static_cast<size_t>(imageSize));
+        vkUnmapMemory(this->poDevice, bufferMemory);
+
+        //2> CreateImage
+        createImage(width, 
+                    height, 
+                    depth,
+                    1,
+                    1, 
+                    VK_IMAGE_TYPE_3D,
+                    VK_SAMPLE_COUNT_1_BIT, 
+                    format, 
+                    VK_IMAGE_TILING_OPTIMAL, 
+                    VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                    image, 
+                    imageMemory);
+
+        //3> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
+        {
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_UNDEFINED, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  1);
+            {   
+                copyBufferToImage(cmdBuffer,
+                                  buffer, 
+                                  image, 
+                                  static_cast<uint32_t>(width), 
+                                  static_cast<uint32_t>(height),
+                                  static_cast<uint32_t>(depth), 
+                                  1);
+            }
+            transitionImageLayout(cmdBuffer,
+                                  image, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                  0,
+                                  1,
+                                  0,
+                                  1);
+
+            generateMipMaps(cmdBuffer,
+                            image, 
+                            format, 
+                            width, 
+                            height,
+                            1,
+                            1,
+                            false);
+        }
+        endSingleTimeCommands(cmdBuffer);
+    }
+    void VulkanWindow::createTexture3D(VkFormat format,
+                                       const uint8* pDataRGBA,
+                                       uint32_t size,
+                                       uint32_t width,
+                                       uint32_t height,
+                                       uint32_t depth,
                                        VkImage& image, 
                                        VkDeviceMemory& imageMemory)
     {
-
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createTexture3D(format, 
+                        pDataRGBA, 
+                        size,
+                        width,
+                        height,
+                        depth,
+                        image, 
+                        imageMemory, 
+                        stagingBuffer, 
+                        stagingBufferMemory);
+        destroyBuffer(stagingBuffer, stagingBufferMemory);
     }
 
         void VulkanWindow::createImage(uint32_t width, 
@@ -2584,9 +2730,6 @@ namespace LostPeter
         void VulkanWindow::createSampler(uint32_t mipMapCount, 
                                          VkSampler& sampler)
         {
-            VkPhysicalDeviceProperties properties = {};
-            vkGetPhysicalDeviceProperties(this->poPhysicalDevice, &properties);
-
             VkSamplerCreateInfo samplerInfo = {};
             samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
             samplerInfo.magFilter = VK_FILTER_LINEAR;
@@ -2595,7 +2738,7 @@ namespace LostPeter
             samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
             samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
             samplerInfo.anisotropyEnable = VK_TRUE;
-            samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+            samplerInfo.maxAnisotropy = this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy;
             samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
             samplerInfo.unnormalizedCoordinates = VK_FALSE;
             samplerInfo.compareEnable = VK_FALSE;
@@ -2622,9 +2765,6 @@ namespace LostPeter
                                          float mipLodBias,
                                          VkSampler& sampler)
         {
-            VkPhysicalDeviceProperties properties = {};
-            vkGetPhysicalDeviceProperties(this->poPhysicalDevice, &properties);
-
             VkSamplerCreateInfo samplerInfo = {};
             samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
             samplerInfo.minFilter = Util_Transform2VkFilter(eTextureFilter, Vulkan_TextureFilterSize_Min);
@@ -2633,7 +2773,7 @@ namespace LostPeter
             samplerInfo.addressModeV = Util_Transform2VkSamplerAddressMode(eTextureAddressing);
             samplerInfo.addressModeW = Util_Transform2VkSamplerAddressMode(eTextureAddressing);
             samplerInfo.anisotropyEnable = enableAnisotropy ? VK_TRUE : VK_FALSE;
-            samplerInfo.maxAnisotropy = maxAnisotropy > properties.limits.maxSamplerAnisotropy ? properties.limits.maxSamplerAnisotropy : maxAnisotropy;
+            samplerInfo.maxAnisotropy = maxAnisotropy > this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy ? this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy : maxAnisotropy;
             samplerInfo.borderColor = Util_Transform2VkBorderColor(eTextureBorderColor);
             samplerInfo.unnormalizedCoordinates = VK_FALSE;
             samplerInfo.compareEnable = VK_FALSE;
@@ -2888,7 +3028,11 @@ namespace LostPeter
 
         for (size_t i = 0; i < count; i++) 
         {
-            createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_PassCB[i], this->poBuffersMemory_PassCB[i]);
+            createBuffer(bufferSize, 
+                         VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                         this->poBuffers_PassCB[i], 
+                         this->poBuffersMemory_PassCB[i]);
         }
 
         Util_LogInfo("<2-2-3-1> VulkanWindow::createPassCB finish !");
@@ -2908,7 +3052,11 @@ namespace LostPeter
 
         for (size_t i = 0; i < count; i++) 
         {
-            createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+            createBuffer(bufferSize, 
+                         VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                         this->poBuffers_ObjectCB[i], 
+                         this->poBuffersMemory_ObjectCB[i]);
         }
 
         Util_LogInfo("<2-2-3-2> VulkanWindow::createObjectCB finish !");
@@ -2929,7 +3077,11 @@ namespace LostPeter
 
         for (size_t i = 0; i < count; i++) 
         {
-            createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_MaterialCB[i], this->poBuffersMemory_MaterialCB[i]);
+            createBuffer(bufferSize, 
+                         VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                         this->poBuffers_MaterialCB[i], 
+                         this->poBuffersMemory_MaterialCB[i]);
         }
 
         Util_LogInfo("<2-2-3-3> VulkanWindow::createMaterialCB finish !");
@@ -2950,7 +3102,11 @@ namespace LostPeter
 
         for (size_t i = 0; i < count; i++) 
         {
-            createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_InstanceCB[i], this->poBuffersMemory_InstanceCB[i]);
+            createBuffer(bufferSize, 
+                         VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                         this->poBuffers_InstanceCB[i], 
+                         this->poBuffersMemory_InstanceCB[i]);
         }
 
         Util_LogInfo("<2-2-3-4> VulkanWindow::createInstanceCB finish !");

@@ -32,6 +32,7 @@ namespace LostPeter
         VkInstance poInstance;
         VkDebugUtilsMessengerEXT poDebugMessenger;
         VkPhysicalDevice poPhysicalDevice;
+        VkPhysicalDeviceProperties poPhysicalDeviceProperties;
         VkPhysicalDeviceFeatures poPhysicalDeviceFeatures;
         VkDevice poDevice;
         VkSampleCountFlagBits poMSAASamples;
@@ -308,9 +309,19 @@ namespace LostPeter
                         virtual void loadModel_Assimp();
                         virtual void loadModel_Custom();
                     virtual void destroyBuffer(VkBuffer buffer, VkDeviceMemory bufferMemory);
-                    virtual void createVertexBuffer(size_t bufSize, void* pBuf, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory);
-                    virtual void createIndexBuffer(size_t bufSize, void* pBuf, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory);
-                        virtual void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+                    virtual void createVertexBuffer(size_t bufSize, 
+                                                    void* pBuf, 
+                                                    VkBuffer& vertexBuffer, 
+                                                    VkDeviceMemory& vertexBufferMemory);
+                    virtual void createIndexBuffer(size_t bufSize, 
+                                                   void* pBuf, 
+                                                   VkBuffer& indexBuffer, 
+                                                   VkDeviceMemory& indexBufferMemory);
+                        virtual void createBuffer(VkDeviceSize size, 
+                                                  VkBufferUsageFlags usage, 
+                                                  VkMemoryPropertyFlags properties, 
+                                                  VkBuffer& buffer, 
+                                                  VkDeviceMemory& bufferMemory);
                         virtual uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
                         virtual void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
                 
@@ -368,11 +379,26 @@ namespace LostPeter
                                                       uint32_t& mipMapCount, 
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
-                    
-                    virtual void createTexture3D(const std::string& pathAsset_Tex, 
-                                                 uint32_t& mipMapCount,
+
+                    virtual void createTexture3D(VkFormat format,
+                                                 const uint8* pDataRGBA,
+                                                 uint32_t size,
+                                                 uint32_t width,
+                                                 uint32_t height,
+                                                 uint32_t depth,
+                                                 VkImage& image, 
+                                                 VkDeviceMemory& imageMemory,
+                                                 VkBuffer& buffer, 
+                                                 VkDeviceMemory& bufferMemory);
+                    virtual void createTexture3D(VkFormat format,
+                                                 const uint8* pDataRGBA,
+                                                 uint32_t size,
+                                                 uint32_t width,
+                                                 uint32_t height,
+                                                 uint32_t depth,
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
+                    
                     
                         virtual void createImage(uint32_t width, 
                                                  uint32_t height, 
