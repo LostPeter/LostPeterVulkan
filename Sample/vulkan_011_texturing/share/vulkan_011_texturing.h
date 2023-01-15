@@ -149,7 +149,17 @@ public:
             }
             else if (this->typeTexture == Vulkan_Texture_CubeMap)
             {
-                
+                this->pWindow->createTextureCubeMap(this->aPathTexture, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
+                this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_CUBE, this->typeFormat, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, (int)this->aPathTexture.size(), this->poTextureImageView);
+                this->pWindow->createSampler(Vulkan_TextureFilter_Bilinear, 
+                                             Vulkan_TextureAddressing_Wrap,
+                                             Vulkan_TextureBorderColor_OpaqueBlack,
+                                             true,
+                                             this->pWindow->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+                                             0.0f,
+                                             static_cast<float>(this->poMipMapCount),
+                                             0.0f,
+                                             this->poTextureSampler);
             }   
             else
             {

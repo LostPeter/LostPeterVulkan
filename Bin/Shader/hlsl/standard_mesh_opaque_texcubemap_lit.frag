@@ -10,7 +10,7 @@
 struct VSOutput
 {
     [[vk::location(0)]] float4 inColor          : COLOR0;
-    [[vk::location(1)]] float2 inTexCoord       : TEXCOORD0;
+    [[vk::location(1)]] float3 inTexCoord       : TEXCOORD0;
     [[vk::location(2)]] float4 inWorldPos       : TEXCOORD1; //xyz: World Pos; w: instanceIndex
     [[vk::location(3)]] float3 inWorldNormal    : TEXCOORD2;
 };
@@ -85,8 +85,8 @@ struct MaterialConstants
 }
 
 
-[[vk::binding(4)]] Texture2D texture            : register(t1);
-[[vk::binding(4)]] SamplerState textureSampler  : register(s1);
+[[vk::binding(4)]] TextureCube textureCubeMap          : register(t1);
+[[vk::binding(4)]] SamplerState textureCubeMapSampler  : register(s1);
 
 
 float3 calculate_Light_Ambient(float3 ambientGlobal, 
@@ -236,7 +236,7 @@ float4 main(VSOutput input) : SV_TARGET
 
 
     //Texture
-    float3 colorTexture = texture.Sample(textureSampler, input.inTexCoord).rgb;
+    float3 colorTexture = textureCubeMap.Sample(textureCubeMapSampler, input.inTexCoord).rgb;
     //VertexColor
     float3 colorVertex = input.inColor.rgb;
 

@@ -42,7 +42,7 @@ static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
 };
 
 static const std::string g_TextureDefault = "default";
-static const int g_TextureCount = 8;
+static const int g_TextureCount = 9;
 static const char* g_pathTextures[3 * g_TextureCount] = 
 {
     "default",          "2d",       "Assets/Texture/default_blackwhite.png", //default
@@ -54,6 +54,7 @@ static const char* g_pathTextures[3 * g_TextureCount] =
     "texture2d",        "2d",       "Assets/Texture/texture2d.jpg", //texture2d
     "texture2darray",   "2darray",  "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture2darray
     "texture3d",        "3d",       "", //texture3d
+    "texturecubemap",   "cubemap",  "Assets/Texture/texturecubemap_x_right.png;Assets/Texture/texturecubemap_x_left.png;Assets/Texture/texturecubemap_y_up.png;Assets/Texture/texturecubemap_y_down.png;Assets/Texture/texturecubemap_z_front.png;Assets/Texture/texturecubemap_z_back.png", //texturecubemap
 };
 static VkFormat g_formatTextures[g_TextureCount] = 
 {
@@ -66,6 +67,7 @@ static VkFormat g_formatTextures[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_SRGB, //texture2d
     VK_FORMAT_R8G8B8A8_SRGB, //texture2darray
     VK_FORMAT_R8_UNORM, //texture3d
+    VK_FORMAT_R8G8B8A8_SRGB, //texturecubemap
 };
 static int g_sizeTextures[3 * g_TextureCount] = 
 {
@@ -78,6 +80,7 @@ static int g_sizeTextures[3 * g_TextureCount] =
     512,    512,    1, //texture2d
     512,    512,    1, //texture2darray
     128,    128,    128, //texture3d
+    512,    512,    1, //texturecubemap
 };
 
 
@@ -93,7 +96,7 @@ static const char* g_pathModels[4 * g_ModelCount] =
     "texture2D",            "Assets/Model/Fbx/plane.fbx",                       "texture2d",                     "", //texture2D
     "texture2Darray",       "Assets/Model/Fbx/plane.fbx",                       "texture2darray",                "", //texture2Darray
     "texture3D",            "Assets/Model/Fbx/plane.fbx",                       "texture3d",                     "", //texture3D
-    "texturecubemap",       "Assets/Model/Fbx/plane.fbx",                       "white",                         "", //texturecubemap
+    "texturecubemap",       "Assets/Model/Obj/cube/cube.obj",                   "texturecubemap",                "", //texturecubemap
 };
 
 static const VulkanTextureType g_ModelsTextureTypes[2 * g_ModelCount] =
@@ -119,7 +122,7 @@ static const char* g_pathModelShaderModules[g_ModelCount] =
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture2D 
     "Assets/Shader/standard_mesh_opaque_tex2darray_lit", //texture2Darray
     "Assets/Shader/standard_mesh_opaque_tex3d_lit", //texture3D
-    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texturecubemap 
+    "Assets/Shader/standard_mesh_opaque_texcubemap_lit", //texturecubemap
 };
 
 static float g_instanceGap = 2.0f;
@@ -134,7 +137,7 @@ static int g_instanceExtCount[] =
     5, //texture2D 
     5, //texture2Darray 
     5, //texture3D 
-    5, //texturecubemap 
+    0, //texturecubemap 
 };
 
 static glm::vec3 g_tranformModels[3 * g_ModelCount] = 
@@ -147,7 +150,7 @@ static glm::vec3 g_tranformModels[3 * g_ModelCount] =
     glm::vec3(  -2,   1,   -2),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D
     glm::vec3(   0,   1,   -3),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray
     glm::vec3(   2,   1,   -4),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture3D
-    glm::vec3(   4,   1,   -5),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texturecubemap
+    glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //texturecubemap
 };
 
 static glm::mat4 g_tranformLocalModels[g_ModelCount] = 
