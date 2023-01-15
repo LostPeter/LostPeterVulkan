@@ -76,6 +76,11 @@ struct MaterialConstants
     float lighting;
     float indexTextureArray;
 
+    float texSpeedU;
+    float texSpeedV;
+    float texSpeedW;
+    float reserve;
+
     float4x4 matTransform;
 };
 

@@ -22,7 +22,7 @@
 const std::string c_strVert = ".vert.spv";
 const std::string c_strFrag = ".frag.spv";
 
-static const int g_ShaderCount = 6;
+static const int g_ShaderCount = 7;
 static const char* g_pathShaderModules[2 * g_ShaderCount] = 
 {
     "Assets/Shader/standard_mesh_opaque_tex1d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex1d_lit.frag.spv", //standard_mesh_opaque_tex1d_lit
@@ -30,7 +30,8 @@ static const char* g_pathShaderModules[2 * g_ShaderCount] =
     "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit
     "Assets/Shader/standard_mesh_opaque_tex3d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex3d_lit.frag.spv", //standard_mesh_opaque_tex3d_lit
     "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit
-    
+    "Assets/Shader/standard_mesh_opaque_texanimation_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texanimation_lit.frag.spv", //standard_mesh_opaque_texanimation_lit
+
     "Assets/Shader/standard_mesh_transparent_lit.vert.spv", "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit
 };
 
@@ -42,19 +43,22 @@ static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
 };
 
 static const std::string g_TextureDefault = "default";
-static const int g_TextureCount = 9;
+static const int g_TextureCount = 10;
 static const char* g_pathTextures[3 * g_TextureCount] = 
 {
-    "default",          "2d",       "Assets/Texture/default_blackwhite.png", //default
-    "terrain",          "2d",       "Assets/Texture/terrain.png", //terrain
-    "viking_room",      "2d",       "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
-    "white",            "2d",       "Assets/Texture/white.bmp", //white
+    "default",              "2d",           "Assets/Texture/default_blackwhite.png", //default
+    "terrain",              "2d",           "Assets/Texture/terrain.png", //terrain
+    "viking_room",          "2d",           "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
+    "white",                "2d",           "Assets/Texture/white.bmp", //white
     
-    "texture1d",        "1d",       "Assets/Texture/texture1d.tga", //texture1d
-    "texture2d",        "2d",       "Assets/Texture/texture2d.jpg", //texture2d
-    "texture2darray",   "2darray",  "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture2darray
-    "texture3d",        "3d",       "", //texture3d
-    "texturecubemap",   "cubemap",  "Assets/Texture/texturecubemap_x_right.png;Assets/Texture/texturecubemap_x_left.png;Assets/Texture/texturecubemap_y_up.png;Assets/Texture/texturecubemap_y_down.png;Assets/Texture/texturecubemap_z_front.png;Assets/Texture/texturecubemap_z_back.png", //texturecubemap
+    "texture1d",            "1d",           "Assets/Texture/texture1d.tga", //texture1d
+    "texture2d",            "2d",           "Assets/Texture/texture2d.jpg", //texture2d
+    "texture2darray",       "2darray",      "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture2darray
+    "texture3d",            "3d",           "", //texture3d
+    "texturecubemap",       "cubemap",      "Assets/Texture/texturecubemap_x_right.png;Assets/Texture/texturecubemap_x_left.png;Assets/Texture/texturecubemap_y_up.png;Assets/Texture/texturecubemap_y_down.png;Assets/Texture/texturecubemap_z_front.png;Assets/Texture/texturecubemap_z_back.png", //texturecubemap
+
+    "textureanimation",     "2darray",      "Assets/Texture/textureanimation1.png;Assets/Texture/textureanimation2.png", //textureanimation
+
 };
 static VkFormat g_formatTextures[g_TextureCount] = 
 {
@@ -68,6 +72,53 @@ static VkFormat g_formatTextures[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_SRGB, //texture2darray
     VK_FORMAT_R8_UNORM, //texture3d
     VK_FORMAT_R8G8B8A8_SRGB, //texturecubemap
+
+    VK_FORMAT_R8G8B8A8_SRGB, //textureanimation
+};
+static VulkanTextureFilterType g_filterTextures[g_TextureCount] = 
+{
+    Vulkan_TextureFilter_Bilinear, //default
+    Vulkan_TextureFilter_Bilinear, //terrain
+    Vulkan_TextureFilter_Bilinear, //viking_room
+    Vulkan_TextureFilter_Bilinear, //white
+
+    Vulkan_TextureFilter_Bilinear, //texture1d
+    Vulkan_TextureFilter_Bilinear, //texture2d
+    Vulkan_TextureFilter_Bilinear, //texture2darray
+    Vulkan_TextureFilter_Bilinear, //texture3d
+    Vulkan_TextureFilter_Bilinear, //texturecubemap
+
+    Vulkan_TextureFilter_Bilinear, //textureanimation
+};
+static VulkanTextureAddressingType g_addressingTextures[g_TextureCount] = 
+{
+    Vulkan_TextureAddressing_Clamp, //default
+    Vulkan_TextureAddressing_Clamp, //terrain
+    Vulkan_TextureAddressing_Clamp, //viking_room
+    Vulkan_TextureAddressing_Clamp, //white
+
+    Vulkan_TextureAddressing_Clamp, //texture1d
+    Vulkan_TextureAddressing_Clamp, //texture2d
+    Vulkan_TextureAddressing_Clamp, //texture2darray
+    Vulkan_TextureAddressing_Clamp, //texture3d
+    Vulkan_TextureAddressing_Wrap, //texturecubemap
+
+    Vulkan_TextureAddressing_Wrap, //textureanimation
+};
+static VulkanTextureBorderColorType g_borderColorTextures[g_TextureCount] = 
+{
+    Vulkan_TextureBorderColor_OpaqueBlack, //default
+    Vulkan_TextureBorderColor_OpaqueBlack, //terrain
+    Vulkan_TextureBorderColor_OpaqueBlack, //viking_room
+    Vulkan_TextureBorderColor_OpaqueBlack, //white
+
+    Vulkan_TextureBorderColor_OpaqueBlack, //texture1d
+    Vulkan_TextureBorderColor_OpaqueBlack, //texture2d
+    Vulkan_TextureBorderColor_OpaqueBlack, //texture2darray
+    Vulkan_TextureBorderColor_OpaqueBlack, //texture3d
+    Vulkan_TextureBorderColor_OpaqueBlack, //texturecubemap
+
+    Vulkan_TextureBorderColor_OpaqueBlack, //textureanimation
 };
 static int g_sizeTextures[3 * g_TextureCount] = 
 {
@@ -81,10 +132,12 @@ static int g_sizeTextures[3 * g_TextureCount] =
     512,    512,    1, //texture2darray
     128,    128,    128, //texture3d
     512,    512,    1, //texturecubemap
+
+    512,    512,    1, //textureanimation
 };
 
 
-static const int g_ModelCount = 8;
+static const int g_ModelCount = 9;
 static const char* g_pathModels[4 * g_ModelCount] = 
 {
     //Model Name            //Model Path                                        //Texture One                    //Texture Two
@@ -96,7 +149,9 @@ static const char* g_pathModels[4 * g_ModelCount] =
     "texture2D",            "Assets/Model/Fbx/plane.fbx",                       "texture2d",                     "", //texture2D
     "texture2Darray",       "Assets/Model/Fbx/plane.fbx",                       "texture2darray",                "", //texture2Darray
     "texture3D",            "Assets/Model/Fbx/plane.fbx",                       "texture3d",                     "", //texture3D
-    "texturecubemap",       "Assets/Model/Obj/cube/cube.obj",                   "texturecubemap",                "", //texturecubemap
+    "textureCubeMap",       "Assets/Model/Obj/cube/cube.obj",                   "texturecubemap",                "", //textureCubeMap
+
+    "textureAnimation",     "Assets/Model/Fbx/plane.fbx",                       "textureanimation",              "", //textureAnimation
 };
 
 static const VulkanTextureType g_ModelsTextureTypes[2 * g_ModelCount] =
@@ -109,7 +164,9 @@ static const VulkanTextureType g_ModelsTextureTypes[2 * g_ModelCount] =
     Vulkan_Texture_2D, Vulkan_Texture_2D, //texture2D 
     Vulkan_Texture_2DArray, Vulkan_Texture_2DArray, //texture2Darray 
     Vulkan_Texture_3D, Vulkan_Texture_3D, //texture3D
-    Vulkan_Texture_CubeMap, Vulkan_Texture_CubeMap, //texturecubemap
+    Vulkan_Texture_CubeMap, Vulkan_Texture_CubeMap, //textureCubeMap
+
+    Vulkan_Texture_2DArray, Vulkan_Texture_2DArray, //textureAnimation 
 };
 
 static const char* g_pathModelShaderModules[g_ModelCount] = 
@@ -122,7 +179,9 @@ static const char* g_pathModelShaderModules[g_ModelCount] =
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture2D 
     "Assets/Shader/standard_mesh_opaque_tex2darray_lit", //texture2Darray
     "Assets/Shader/standard_mesh_opaque_tex3d_lit", //texture3D
-    "Assets/Shader/standard_mesh_opaque_texcubemap_lit", //texturecubemap
+    "Assets/Shader/standard_mesh_opaque_texcubemap_lit", //textureCubeMap
+
+    "Assets/Shader/standard_mesh_opaque_texanimation_lit", //textureAnimation 
 };
 
 static float g_instanceGap = 2.0f;
@@ -137,7 +196,9 @@ static int g_instanceExtCount[] =
     5, //texture2D 
     5, //texture2Darray 
     5, //texture3D 
-    0, //texturecubemap 
+    0, //textureCubeMap 
+
+    5, //textureAnimation
 };
 
 static glm::vec3 g_tranformModels[3 * g_ModelCount] = 
@@ -150,7 +211,9 @@ static glm::vec3 g_tranformModels[3 * g_ModelCount] =
     glm::vec3(  -2,   1,   -2),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D
     glm::vec3(   0,   1,   -3),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray
     glm::vec3(   2,   1,   -4),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture3D
-    glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //texturecubemap
+    glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap
+
+    glm::vec3(   4,   1,   -5),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation
 };
 
 static glm::mat4 g_tranformLocalModels[g_ModelCount] = 
@@ -163,7 +226,9 @@ static glm::mat4 g_tranformLocalModels[g_ModelCount] =
     MathUtil::ms_mat4Unit, //texture2D
     MathUtil::ms_mat4Unit, //texture2Darray
     MathUtil::ms_mat4Unit, //texture3D
-    MathUtil::ms_mat4Unit, //texturecubemap
+    MathUtil::ms_mat4Unit, //textureCubeMap
+
+    MathUtil::ms_mat4Unit, //textureAnimation
 };
 
 static bool g_isTranformLocalModels[g_ModelCount] = 
@@ -176,7 +241,9 @@ static bool g_isTranformLocalModels[g_ModelCount] =
     false, //texture2D
     false, //texture2Darray
     false, //texture3D
-    false, //texturecubemap  
+    false, //textureCubeMap  
+
+    false, //textureAnimation
 };
 
 static bool g_isFlipYModels[g_ModelCount] = 
@@ -189,7 +256,9 @@ static bool g_isFlipYModels[g_ModelCount] =
     true, //texture2D
     false, //texture2Darray
     false, //texture3D
-    false, //texturecubemap
+    false, //textureCubeMap
+
+    true, //textureAnimation
 };
 
 static bool g_isTransparentModels[g_ModelCount] = 
@@ -202,10 +271,12 @@ static bool g_isTransparentModels[g_ModelCount] =
     false, //texture2D
     false, //texture2Darray
     false, //texture3D
-    false, //texturecubemap
+    false, //textureCubeMap
+
+    false, //textureAnimation
 };
 
-static bool g_isRotateModels[] =
+static bool g_isRotateModels[g_ModelCount] =
 {
     false, //plane
     true, //viking_room
@@ -215,10 +286,12 @@ static bool g_isRotateModels[] =
     false, //texture2D
     false, //texture2Darray
     false, //texture3D
-    false, //texturecubemap
+    false, //textureCubeMap
+
+    false, //textureAnimation
 };
 
-static bool g_isLightingModels[] =
+static bool g_isLightingModels[g_ModelCount] =
 {
     true, //plane
     true, //viking_room
@@ -228,9 +301,10 @@ static bool g_isLightingModels[] =
     true, //texture2D
     true, //texture2Darray
     true, //texture3D
-    true, //texturecubemap
-};
+    true, //textureCubeMap
 
+    true, //textureAnimation
+};
 
 
 void Vulkan_011_Texturing::ModelTexture::UpdateTexture()
@@ -494,11 +568,21 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             if (pTexture1->typeTexture == Vulkan_Texture_2DArray)
             {
                 materialConstants.indexTextureArray = pTexture1->RandomTextureIndex();
+
+                if (materialConstants.indexTextureArray > 0)
+                {
+                    materialConstants.texSpeedU = MathUtil::RandF(1.0f, 10.0f);
+                }
+                else 
+                {
+                    materialConstants.texSpeedV = MathUtil::RandF(1.0f, 10.0f);
+                }
             }
             else
             {
                 materialConstants.indexTextureArray = MathUtil::RandF(0.0f, 1.0f);
             }
+
             pModelObject->materialCBs.push_back(materialConstants);
         }
         
@@ -627,6 +711,9 @@ void Vulkan_011_Texturing::createModelTextures()
                                                   nameTexture,
                                                   typeTexture,
                                                   g_formatTextures[i],
+                                                  g_filterTextures[i],
+                                                  g_addressingTextures[i],
+                                                  g_borderColorTextures[i],
                                                   aPathTexture);
         pTexture->AddRef();
 
@@ -1019,6 +1106,27 @@ bool Vulkan_011_Texturing::beginRenderImgui()
                                     {
 
                                     }
+                                }
+
+                                //texSpeedU
+                                std::string nameTexSpeedU = "TexSpeedU - " + StringUtil::SaveInt(j);
+                                if (ImGui::DragFloat(nameTexSpeedU.c_str(), &mat.texSpeedU, 0.01f, 0.0f, 100.0f))
+                                {
+                                    
+                                }
+
+                                //texSpeedV
+                                std::string nameTexSpeedV = "texSpeedV - " + StringUtil::SaveInt(j);
+                                if (ImGui::DragFloat(nameTexSpeedV.c_str(), &mat.texSpeedV, 0.01f, 0.0f, 100.0f))
+                                {
+                                    
+                                }
+
+                                //texSpeedW
+                                std::string nameTexSpeedW = "texSpeedW - " + StringUtil::SaveInt(j);
+                                if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.texSpeedW, 0.01f, 0.0f, 100.0f))
+                                {
+                                    
                                 }
 
                                 ImGui::Spacing();

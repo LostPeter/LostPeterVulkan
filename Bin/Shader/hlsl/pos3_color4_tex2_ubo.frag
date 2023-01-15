@@ -13,12 +13,12 @@ struct VSOutput
     [[vk::location(1)]] float2 inTexCoord       : TEXCOORD0;
 };
 
-[[vk::binding(4)]] Texture2D texture            : register(t1);
-[[vk::binding(4)]] SamplerState textureSampler  : register(s1);
+[[vk::binding(4)]] Texture2D texture2D            : register(t1);
+[[vk::binding(4)]] SamplerState texture2DSampler  : register(s1);
 
 float4 main(VSOutput input) : SV_TARGET
 {
-    float3 outColor = texture.Sample(textureSampler, input.inTexCoord).rgb;
+    float3 outColor = texture2D.Sample(texture2DSampler, input.inTexCoord).rgb;
     outColor.xyz *= input.inColor.rgb;
     
     return float4(outColor, 1.0);

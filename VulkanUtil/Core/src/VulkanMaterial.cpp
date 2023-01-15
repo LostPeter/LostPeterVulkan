@@ -25,6 +25,10 @@ namespace LostPeter
         , alpha(1.0f)
         , lighting(1.0f)
         , indexTextureArray(0)
+        , texSpeedU(0.0f)
+        , texSpeedV(0.0f)
+        , texSpeedW(0.0f)
+        , reserve(0.0f)
         , matTransform(MathUtil::Identity4x4())
     {
 

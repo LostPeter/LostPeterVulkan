@@ -27,6 +27,9 @@ public:
         std::vector<std::string> aPathTexture;
         VulkanTextureType typeTexture;
         VkFormat typeFormat; 
+        VulkanTextureFilterType typeFilter;
+        VulkanTextureAddressingType typeAddressing;
+        VulkanTextureBorderColorType typeBorderColor;
         int refCount;
 
         uint32_t poMipMapCount;
@@ -49,11 +52,17 @@ public:
                      const std::string& _nameTexture,
                      VulkanTextureType _typeTexture,
                      VkFormat _typeFormat,
+                     VulkanTextureFilterType _typeFilter,
+                     VulkanTextureAddressingType _typeAddressing,
+                     VulkanTextureBorderColorType _typeBorderColor,
                      const std::vector<std::string>& _aPathTexture)
             : pWindow(_pWindow)
             , nameTexture(_nameTexture)
             , typeTexture(_typeTexture)
             , typeFormat(_typeFormat)
+            , typeFilter(_typeFilter)
+            , typeAddressing(_typeAddressing)
+            , typeBorderColor(_typeBorderColor)
             , aPathTexture(_aPathTexture)
             , refCount(0)
 
@@ -120,19 +129,16 @@ public:
             {
                 this->pWindow->createTexture1D(this->aPathTexture[0], this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
                 this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_1D, this->typeFormat, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
-                this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
             }
             else if (this->typeTexture == Vulkan_Texture_2D)
             {
                 this->pWindow->createTexture2D(this->aPathTexture[0], this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
                 this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, this->typeFormat, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
-                this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
             }
             else if (this->typeTexture == Vulkan_Texture_2DArray)
             {
                 this->pWindow->createTexture2DArray(this->aPathTexture, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
                 this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D_ARRAY, this->typeFormat, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, (int)this->aPathTexture.size(), this->poTextureImageView);
-                this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
             }
             else if (this->typeTexture == Vulkan_Texture_3D)
             {
@@ -145,21 +151,11 @@ public:
                 updateNoiseTextureData();
                 this->pWindow->createTexture3D(this->typeFormat, this->pDataRGBA, size, width, height, depth, this->poTextureImage, this->poTextureImageMemory, this->stagingBuffer, this->stagingBufferMemory);
                 this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_3D, this->typeFormat, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
-                this->pWindow->createSampler(this->poMipMapCount, this->poTextureSampler);
             }
             else if (this->typeTexture == Vulkan_Texture_CubeMap)
             {
                 this->pWindow->createTextureCubeMap(this->aPathTexture, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
                 this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_CUBE, this->typeFormat, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, (int)this->aPathTexture.size(), this->poTextureImageView);
-                this->pWindow->createSampler(Vulkan_TextureFilter_Bilinear, 
-                                             Vulkan_TextureAddressing_Wrap,
-                                             Vulkan_TextureBorderColor_OpaqueBlack,
-                                             true,
-                                             this->pWindow->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
-                                             0.0f,
-                                             static_cast<float>(this->poMipMapCount),
-                                             0.0f,
-                                             this->poTextureSampler);
             }   
             else
             {
@@ -167,6 +163,16 @@ public:
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
+
+            this->pWindow->createSampler(this->typeFilter, 
+                                         this->typeAddressing,
+                                         this->typeBorderColor,
+                                         true,
+                                         this->pWindow->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+                                         0.0f,
+                                         static_cast<float>(this->poMipMapCount),
+                                         0.0f,
+                                         this->poTextureSampler);
         }   
 
         void UpdateTexture();

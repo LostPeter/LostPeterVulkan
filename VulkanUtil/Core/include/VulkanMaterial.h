@@ -35,6 +35,11 @@ namespace LostPeter
         float alpha;
         float lighting;
         float indexTextureArray;
+
+        float texSpeedU;
+        float texSpeedV;
+        float texSpeedW;
+        float reserve;
         
         glm::mat4 matTransform;
 

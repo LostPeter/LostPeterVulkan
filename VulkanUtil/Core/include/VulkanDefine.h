@@ -960,6 +960,11 @@ namespace LostPeter
         float lighting;
         float indexTextureArray;
 
+        float texSpeedU;
+        float texSpeedV;
+        float texSpeedW;
+        float reserve;
+
         glm::mat4 matTransform;
 
         MaterialConstants()
@@ -970,6 +975,10 @@ namespace LostPeter
             , alpha(1.0f)
             , lighting(1.0f)
             , indexTextureArray(0.0f)
+            , texSpeedU(0.0f)
+            , texSpeedV(0.0f)
+            , texSpeedW(0.0f)
+            , reserve(0.0f)
             , matTransform(MathUtil::Identity4x4())
         {
 

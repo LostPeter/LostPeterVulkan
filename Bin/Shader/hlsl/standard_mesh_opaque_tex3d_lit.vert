@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author: LostPeter
-* Time:   2022-12-22
+* Time:   2023-01-14
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
@@ -87,6 +87,11 @@ struct MaterialConstants
     float alpha;
     float lighting;
     float indexTextureArray;
+
+    float texSpeedU;
+    float texSpeedV;
+    float texSpeedW;
+    float reserve;
 
     float4x4 matTransform;
 };
