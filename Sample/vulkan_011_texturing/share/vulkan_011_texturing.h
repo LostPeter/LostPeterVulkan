@@ -197,6 +197,7 @@ public:
             , isWireFrame(false)
             , isRotate(true)
             , isTransparent(false)
+            , isLighting(true)
 
             //Vertex
             , poVertexCount(0)
@@ -307,6 +308,7 @@ public:
         bool isWireFrame;
         bool isRotate;
         bool isTransparent;
+        bool isLighting;
 
         //Vertex
         std::vector<Vertex_Pos3Color4Normal3Tex2> vertices;

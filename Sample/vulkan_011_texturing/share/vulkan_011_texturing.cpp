@@ -184,7 +184,7 @@ static const char* g_pathModelShaderModules[g_ModelCount] =
     "Assets/Shader/standard_mesh_opaque_texanimation_lit", //textureAnimation 
 };
 
-static float g_instanceGap = 2.0f;
+static float g_instanceGap = 1.5f;
 
 static int g_instanceExtCount[] =
 {
@@ -204,16 +204,16 @@ static int g_instanceExtCount[] =
 static glm::vec3 g_tranformModels[3 * g_ModelCount] = 
 {   
     glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //plane
-    glm::vec3(   0,   0,    5),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
-    glm::vec3(   0,   0,    0),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
+    glm::vec3(   0,   0,   -2),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
+    glm::vec3(   0,   0,   -4),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
 
-    glm::vec3(  -4,   1,   -1),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture1D
-    glm::vec3(  -2,   1,   -2),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D
-    glm::vec3(   0,   1,   -3),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray
-    glm::vec3(   2,   1,   -4),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture3D
+    glm::vec3(   0, 0.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture1D
+    glm::vec3(   0, 2.0,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D
+    glm::vec3(   0, 3.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray
+    glm::vec3(   0, 5.0,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture3D
     glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap
 
-    glm::vec3(   4,   1,   -5),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation
+    glm::vec3(   0, 6.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation
 };
 
 static glm::mat4 g_tranformLocalModels[g_ModelCount] = 
@@ -374,7 +374,8 @@ Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, std::string na
     this->cfg_shaderFragment_Path = "Assets/Shader/standard_mesh_opaque.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
 
-    this->cfg_cameraPos = glm::vec3(0.0f, 15.0f, -20.0f);
+    this->cfg_cameraPos = glm::vec3(-2.5f, 2.0f, -20.0f);
+    this->cfg_cameraLookTarget = glm::vec3(-2.5f, 5.0f, 0.0f);
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
@@ -980,6 +981,15 @@ bool Vulkan_011_Texturing::beginRenderImgui()
                 std::string nameIsTransparent = "Is Transparent - " + pModelObject->nameModel;
                 bool isTransparent = pModelObject->isTransparent;
                 ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
+                std::string nameIsLighting = "Is Lighting - " + pModelObject->nameModel;
+                if (ImGui::Checkbox(nameIsLighting.c_str(), &pModelObject->isLighting))
+                {
+                    for (int j = 0; j < pModelObject->countInstance; j++)
+                    {
+                        MaterialConstants& mat = pModelObject->materialCBs[j];
+                        mat.lighting = pModelObject->isLighting;
+                    }
+                }
                 
                 std::string nameInstances = "Instance - " + pModelObject->nameModel;
                 int countInstanceExt = pModelObject->countInstanceExt;

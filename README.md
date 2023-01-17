@@ -134,3 +134,8 @@ License:
 * sample010: Vulkan classic lighting model, Ambient, Lambert Diffuse, Phong Specular, Blinn-Phong Specular
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_010_lighting.png)
+
+### <011> vulkan_011_texturing
+* sample011: Vulkan basic texture1D, texture2D, texture2DArray, texture3D, textureAnimation usage
+
+![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_011_texturing.png)
