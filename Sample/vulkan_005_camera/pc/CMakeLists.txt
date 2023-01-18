@@ -105,6 +105,7 @@ MESSAGE(STATUS "SHARE dir: ${SHARE_DIR}")
 if (WIN32)
     MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Win32 !")
     
+    ADD_DEFINITIONS(-DNOISE_STATIC)
     if(MSVC)
         ADD_DEFINITIONS(/wd4251 /wd4275)
     endif()
