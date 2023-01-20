@@ -137,21 +137,22 @@ static int g_sizeTextures[3 * g_TextureCount] =
 };
 
 
-static const int g_ModelCount = 9;
+static const int g_ModelCount = 10;
 static const char* g_pathModels[4 * g_ModelCount] = 
 {
-    //Model Name            //Model Path                                        //Texture One                    //Texture Two
-    "plane",                "Assets/Model/Fbx/plane.fbx",                       "terrain",                       "", //plane
-    "viking_room",          "Assets/Model/Obj/viking_room/viking_room.obj",     "viking_room",                   "", //viking_room
-    "bunny",                "Assets/Model/Obj/bunny/bunny.obj",                 "white",                         "", //bunny  
+    //Model Name                //Model Path                                        //Texture One                    //Texture Two
+    "plane",                    "Assets/Model/Fbx/plane.fbx",                       "terrain",                       "", //plane
+    "viking_room",              "Assets/Model/Obj/viking_room/viking_room.obj",     "viking_room",                   "", //viking_room
+    "bunny",                    "Assets/Model/Obj/bunny/bunny.obj",                 "white",                         "", //bunny  
 
-    "texture1D",            "Assets/Model/Fbx/plane.fbx",                       "texture1d",                     "", //texture1D
-    "texture2D",            "Assets/Model/Fbx/plane.fbx",                       "texture2d",                     "", //texture2D
-    "texture2Darray",       "Assets/Model/Fbx/plane.fbx",                       "texture2darray",                "", //texture2Darray
-    "texture3D",            "Assets/Model/Fbx/plane.fbx",                       "texture3d",                     "", //texture3D
-    "textureCubeMap",       "Assets/Model/Obj/cube/cube.obj",                   "texturecubemap",                "", //textureCubeMap
+    "texture1D",                "Assets/Model/Fbx/plane.fbx",                       "texture1d",                     "", //texture1D
+    "texture2D",                "Assets/Model/Fbx/plane.fbx",                       "texture2d",                     "", //texture2D
+    "texture2Darray",           "Assets/Model/Fbx/plane.fbx",                       "texture2darray",                "", //texture2Darray
+    "texture3D",                "Assets/Model/Fbx/plane.fbx",                       "texture3d",                     "", //texture3D
+    "textureCubeMap_SkyBox",    "Assets/Model/Obj/cube/cube.obj",                   "texturecubemap",                "", //textureCubeMap_SkyBox
+    "textureCubeMap_Sphere",    "Assets/Model/Fbx/sphere.fbx",                      "texturecubemap",                "", //textureCubeMap_Sphere
 
-    "textureAnimation",     "Assets/Model/Fbx/plane.fbx",                       "textureanimation",              "", //textureAnimation
+    "textureAnimation",         "Assets/Model/Fbx/plane.fbx",                       "textureanimation",              "", //textureAnimation
 };
 
 static const VulkanTextureType g_ModelsTextureTypes[2 * g_ModelCount] =
@@ -164,7 +165,8 @@ static const VulkanTextureType g_ModelsTextureTypes[2 * g_ModelCount] =
     Vulkan_Texture_2D, Vulkan_Texture_2D, //texture2D 
     Vulkan_Texture_2DArray, Vulkan_Texture_2DArray, //texture2Darray 
     Vulkan_Texture_3D, Vulkan_Texture_3D, //texture3D
-    Vulkan_Texture_CubeMap, Vulkan_Texture_CubeMap, //textureCubeMap
+    Vulkan_Texture_CubeMap, Vulkan_Texture_CubeMap, //textureCubeMap_SkyBox
+    Vulkan_Texture_CubeMap, Vulkan_Texture_CubeMap, //textureCubeMap_Sphere
 
     Vulkan_Texture_2DArray, Vulkan_Texture_2DArray, //textureAnimation 
 };
@@ -179,7 +181,8 @@ static const char* g_pathModelShaderModules[g_ModelCount] =
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture2D 
     "Assets/Shader/standard_mesh_opaque_tex2darray_lit", //texture2Darray
     "Assets/Shader/standard_mesh_opaque_tex3d_lit", //texture3D
-    "Assets/Shader/standard_mesh_opaque_texcubemap_lit", //textureCubeMap
+    "Assets/Shader/standard_mesh_opaque_texcubemap_lit", //textureCubeMap_SkyBox
+    "Assets/Shader/standard_mesh_opaque_texcubemap_lit", //textureCubeMap_Sphere
 
     "Assets/Shader/standard_mesh_opaque_texanimation_lit", //textureAnimation 
 };
@@ -196,7 +199,8 @@ static int g_instanceExtCount[] =
     5, //texture2D 
     5, //texture2Darray 
     5, //texture3D 
-    0, //textureCubeMap 
+    0, //textureCubeMap_SkyBox 
+    5, //textureCubeMap_Sphere 
 
     5, //textureAnimation
 };
@@ -211,9 +215,10 @@ static glm::vec3 g_tranformModels[3 * g_ModelCount] =
     glm::vec3(   0, 2.0,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D
     glm::vec3(   0, 3.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray
     glm::vec3(   0, 5.0,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture3D
-    glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap
+    glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
+    glm::vec3(   0, 6.5,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 0.005f,  0.005f,  0.005f), //textureCubeMap_Sphere
 
-    glm::vec3(   0, 6.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation
+    glm::vec3(   0, 8.0,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation
 };
 
 static glm::mat4 g_tranformLocalModels[g_ModelCount] = 
@@ -226,7 +231,8 @@ static glm::mat4 g_tranformLocalModels[g_ModelCount] =
     MathUtil::ms_mat4Unit, //texture2D
     MathUtil::ms_mat4Unit, //texture2Darray
     MathUtil::ms_mat4Unit, //texture3D
-    MathUtil::ms_mat4Unit, //textureCubeMap
+    MathUtil::ms_mat4Unit, //textureCubeMap_SkyBox
+    MathUtil::ms_mat4Unit, //textureCubeMap_Sphere
 
     MathUtil::ms_mat4Unit, //textureAnimation
 };
@@ -241,7 +247,8 @@ static bool g_isTranformLocalModels[g_ModelCount] =
     false, //texture2D
     false, //texture2Darray
     false, //texture3D
-    false, //textureCubeMap  
+    false, //textureCubeMap_SkyBox  
+    false, //textureCubeMap_Sphere  
 
     false, //textureAnimation
 };
@@ -256,7 +263,8 @@ static bool g_isFlipYModels[g_ModelCount] =
     true, //texture2D
     false, //texture2Darray
     false, //texture3D
-    false, //textureCubeMap
+    false, //textureCubeMap_SkyBox
+    false, //textureCubeMap_Sphere
 
     true, //textureAnimation
 };
@@ -271,7 +279,8 @@ static bool g_isTransparentModels[g_ModelCount] =
     false, //texture2D
     false, //texture2Darray
     false, //texture3D
-    false, //textureCubeMap
+    false, //textureCubeMap_SkyBox
+    false, //textureCubeMap_Sphere
 
     false, //textureAnimation
 };
@@ -286,7 +295,8 @@ static bool g_isRotateModels[g_ModelCount] =
     false, //texture2D
     false, //texture2Darray
     false, //texture3D
-    false, //textureCubeMap
+    false, //textureCubeMap_SkyBox
+    false, //textureCubeMap_Sphere
 
     false, //textureAnimation
 };
@@ -301,7 +311,8 @@ static bool g_isLightingModels[g_ModelCount] =
     true, //texture2D
     true, //texture2Darray
     true, //texture3D
-    true, //textureCubeMap
+    true, //textureCubeMap_SkyBox
+    true, //textureCubeMap_Sphere
 
     true, //textureAnimation
 };
