@@ -141,7 +141,7 @@ static const int g_ModelCount = 10;
 static const char* g_pathModels[4 * g_ModelCount] = 
 {
     //Model Name                //Model Path                                        //Texture One                    //Texture Two
-    "plane",                    "Assets/Model/Fbx/plane.fbx",                       "terrain",                       "", //plane
+    "ground",                    "Assets/Model/Fbx/plane.fbx",                       "terrain",                       "", //ground
     "viking_room",              "Assets/Model/Obj/viking_room/viking_room.obj",     "viking_room",                   "", //viking_room
     "bunny",                    "Assets/Model/Obj/bunny/bunny.obj",                 "white",                         "", //bunny  
 
@@ -157,7 +157,7 @@ static const char* g_pathModels[4 * g_ModelCount] =
 
 static const VulkanTextureType g_ModelsTextureTypes[2 * g_ModelCount] =
 {
-    Vulkan_Texture_2D, Vulkan_Texture_2D, //plane 
+    Vulkan_Texture_2D, Vulkan_Texture_2D, //ground 
     Vulkan_Texture_2D, Vulkan_Texture_2D, //viking_room
     Vulkan_Texture_2D, Vulkan_Texture_2D, //bunny 
 
@@ -173,7 +173,7 @@ static const VulkanTextureType g_ModelsTextureTypes[2 * g_ModelCount] =
 
 static const char* g_pathModelShaderModules[g_ModelCount] = 
 {
-    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //plane 
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //ground 
     "Assets/Shader/standard_mesh_transparent_lit", //viking_room
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //bunny 
 
@@ -191,7 +191,7 @@ static float g_instanceGap = 1.5f;
 
 static int g_instanceExtCount[] =
 {
-    0, //plane
+    0, //ground
     0, //viking_room
     0, //bunny
 
@@ -207,7 +207,7 @@ static int g_instanceExtCount[] =
 
 static glm::vec3 g_tranformModels[3 * g_ModelCount] = 
 {   
-    glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //plane
+    glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //ground
     glm::vec3(   0,   0,   -2),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
     glm::vec3(   0,   0,   -4),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
 
@@ -223,7 +223,7 @@ static glm::vec3 g_tranformModels[3 * g_ModelCount] =
 
 static glm::mat4 g_tranformLocalModels[g_ModelCount] = 
 {
-    MathUtil::ms_mat4Unit, //plane
+    MathUtil::ms_mat4Unit, //ground
     MathUtil::RotateX(-90.0f), //viking_room
     MathUtil::ms_mat4Unit, //bunny
 
@@ -239,7 +239,7 @@ static glm::mat4 g_tranformLocalModels[g_ModelCount] =
 
 static bool g_isTranformLocalModels[g_ModelCount] = 
 {
-    false, //plane
+    false, //ground
     true, //viking_room
     false, //bunny
 
@@ -255,7 +255,7 @@ static bool g_isTranformLocalModels[g_ModelCount] =
 
 static bool g_isFlipYModels[g_ModelCount] = 
 {
-    true, //plane
+    true, //ground
     false, //viking_room
     false, //bunny
 
@@ -271,7 +271,7 @@ static bool g_isFlipYModels[g_ModelCount] =
 
 static bool g_isTransparentModels[g_ModelCount] = 
 {
-    false, //plane
+    false, //ground
     true, //viking_room
     false, //bunny
 
@@ -287,7 +287,7 @@ static bool g_isTransparentModels[g_ModelCount] =
 
 static bool g_isRotateModels[g_ModelCount] =
 {
-    false, //plane
+    false, //ground
     true, //viking_room
     true, //bunny
 
@@ -303,7 +303,7 @@ static bool g_isRotateModels[g_ModelCount] =
 
 static bool g_isLightingModels[g_ModelCount] =
 {
-    true, //plane
+    true, //ground
     true, //viking_room
     true, //bunny
 
