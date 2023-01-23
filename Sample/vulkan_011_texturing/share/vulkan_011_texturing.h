@@ -47,6 +47,12 @@ public:
         int height;
         int depth;
 
+        //Texture Animation
+        int texChunkMaxX;
+        int texChunkMaxY;
+        int texChunkIndex;
+        int frameCurrent;
+
 
         ModelTexture(Vulkan_011_Texturing* _pWindow, 
                      const std::string& _nameTexture,
@@ -81,6 +87,11 @@ public:
             , height(128)
             , depth(128)
 
+            //Texture Animation
+            , texChunkMaxX(0)
+            , texChunkMaxY(0)
+            , texChunkIndex(0)
+            , frameCurrent(0)
         {
 
         }

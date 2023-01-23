@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author: LostPeter
-* Time:   2022-12-17
+* Time:   2023-01-15
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
@@ -97,7 +97,7 @@ struct MaterialConstants
     float texChunkMaxY;
     float texChunkIndexX;
     float texChunkIndexY;
-    
+
     float4x4 matTransform;
 };
 
@@ -123,18 +123,27 @@ struct InstanceConstants
 
 struct VSOutput
 {
-	float4 outPosition                      : SV_POSITION;
-    [[vk::location(0)]] float4 outColor     : COLOR0;
-    [[vk::location(1)]] float2 outTexCoord  : TEXCOORD0;
+	float4 outPosition                            : SV_POSITION;
+    [[vk::location(0)]] float4 outColor           : COLOR0;
+    [[vk::location(1)]] float2 outTexCoord        : TEXCOORD0;
+    [[vk::location(2)]] float4 outWorldPos        : TEXCOORD1; //xyz: World Pos; w: instanceIndex
+    [[vk::location(3)]] float3 outWorldNormal     : TEXCOORD2;
 };
 
 
 VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
 {
     VSOutput output = (VSOutput)0;
-    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, mul(objectConsts[instanceIndex].g_MatWorld, float4(input.inPosition, 1.0))));
+    ObjectConstants objInstance = objectConsts[instanceIndex];
+    MaterialConstants materialInstance = materialConsts[instanceIndex];
+    output.outWorldPos = mul(objInstance.g_MatWorld, float4(input.inPosition, 1.0));
+    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, output.outWorldPos));
     output.outColor = input.inColor;
-    output.outTexCoord = input.inTexCoord;
+    output.outTexCoord = float2(input.inTexCoord.x - passConsts.g_TotalTime * materialInstance.texSpeedU, input.inTexCoord.y - passConsts.g_TotalTime * materialInstance.texSpeedV);
+    output.outWorldPos.xyz /= output.outWorldPos.w;
+    output.outWorldPos.w = instanceIndex;
+    float4 worldNormal = mul(objInstance.g_MatWorld, float4(input.inNormal, 1.0));
+    output.outWorldNormal.xyz = worldNormal.xyz / worldNormal.w;
 
     return output;
 }

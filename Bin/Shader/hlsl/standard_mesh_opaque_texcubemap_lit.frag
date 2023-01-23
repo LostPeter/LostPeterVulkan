@@ -81,6 +81,11 @@ struct MaterialConstants
     float texSpeedW;
     float reserve;
 
+    float texChunkMaxX;
+    float texChunkMaxY;
+    float texChunkIndexX;
+    float texChunkIndexY;
+
     float4x4 matTransform;
 };
 

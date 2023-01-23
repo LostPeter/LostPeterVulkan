@@ -93,6 +93,11 @@ struct MaterialConstants
     float texSpeedW;
     float reserve;
 
+    float texChunkMaxX;
+    float texChunkMaxY;
+    float texChunkIndexX;
+    float texChunkIndexY;
+
     float4x4 matTransform;
 };
 
@@ -134,7 +139,7 @@ VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
     output.outWorldPos = mul(objInstance.g_MatWorld, float4(input.inPosition, 1.0));
     output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, output.outWorldPos));
     output.outColor = input.inColor;
-    output.outTexCoord = float2(input.inTexCoord.x - passConsts.g_TotalTime * materialInstance.texSpeedU, input.inTexCoord.y - passConsts.g_TotalTime * materialInstance.texSpeedV);
+    output.outTexCoord = float2((input.inTexCoord.x + materialInstance.texChunkIndexX) / materialInstance.texChunkMaxX, (input.inTexCoord.y + materialInstance.texChunkIndexY) / materialInstance.texChunkMaxY);
     output.outWorldPos.xyz /= output.outWorldPos.w;
     output.outWorldPos.w = instanceIndex;
     float4 worldNormal = mul(objInstance.g_MatWorld, float4(input.inNormal, 1.0));

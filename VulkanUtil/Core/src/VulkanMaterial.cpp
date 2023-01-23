@@ -29,6 +29,10 @@ namespace LostPeter
         , texSpeedV(0.0f)
         , texSpeedW(0.0f)
         , reserve(0.0f)
+        , texChunkMaxX(0.0f)
+        , texChunkMaxY(0.0f)
+        , texChunkIndexX(0.0f)
+        , texChunkIndexY(0.0f)
         , matTransform(MathUtil::Identity4x4())
     {
 

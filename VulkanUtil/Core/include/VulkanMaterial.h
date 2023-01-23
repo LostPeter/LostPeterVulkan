@@ -40,6 +40,11 @@ namespace LostPeter
         float texSpeedV;
         float texSpeedW;
         float reserve;
+
+        float texChunkMaxX;
+        float texChunkMaxY;
+        float texChunkIndexX;
+        float texChunkIndexY;
         
         glm::mat4 matTransform;
 

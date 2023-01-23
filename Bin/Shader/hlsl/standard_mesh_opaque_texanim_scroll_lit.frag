@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author: LostPeter
-* Time:   2023-01-14
+* Time:   2023-01-15
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
@@ -95,8 +95,8 @@ struct MaterialConstants
 }
 
 
-[[vk::binding(4)]] Texture3D texture3D              : register(t1);
-[[vk::binding(4)]] SamplerState texture3DSampler    : register(s1);
+[[vk::binding(4)]] Texture2DArray texture2DArray         : register(t1);
+[[vk::binding(4)]] SamplerState texture2DArraySampler    : register(s1);
 
 
 float3 calculate_Light_Ambient(float3 ambientGlobal, 
@@ -246,12 +246,12 @@ float4 main(VSOutput input) : SV_TARGET
 
 
     //Texture
-    float3 colorTexture = texture3D.Sample(texture3DSampler, float3(input.inTexCoord, mat.indexTextureArray)).rgb;
+    float3 colorTexture = texture2DArray.Sample(texture2DArraySampler, float3(input.inTexCoord, mat.indexTextureArray)).rgb;
     //VertexColor
     float3 colorVertex = input.inColor.rgb;
 
     //Final Color
-    outColor = colorLight * colorTexture.r * colorVertex;
+    outColor = colorLight * colorTexture * colorVertex;
 
     return float4(outColor, 1.0);
 }
