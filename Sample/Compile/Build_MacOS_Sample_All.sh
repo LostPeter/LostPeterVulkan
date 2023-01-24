@@ -22,3 +22,4 @@ rebuild=${2}
 ./Build_MacOS_Sample.sh vulkan_009_instancing $debug $rebuild
 ./Build_MacOS_Sample.sh vulkan_010_lighting $debug $rebuild
 ./Build_MacOS_Sample.sh vulkan_011_texturing $debug $rebuild
+./Build_MacOS_Sample.sh vulkan_012_shadering $debug $rebuild
