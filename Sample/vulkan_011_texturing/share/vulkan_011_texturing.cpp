@@ -22,9 +22,10 @@
 const std::string c_strVert = ".vert.spv";
 const std::string c_strFrag = ".frag.spv";
 
-static const int g_ShaderCount = 8;
+static const int g_ShaderCount = 9;
 static const char* g_pathShaderModules[2 * g_ShaderCount] = 
 {
+    "Assets/Shader/standard_mesh_opaque_texsampler_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texsampler_lit.frag.spv", //standard_mesh_opaque_texsampler_lit
     "Assets/Shader/standard_mesh_opaque_tex1d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex1d_lit.frag.spv", //standard_mesh_opaque_tex1d_lit
     "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit
     "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit
@@ -44,7 +45,7 @@ static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
 };
 
 static const std::string g_TextureDefault = "default";
-static const int g_TextureCount = 11;
+static const int g_TextureCount = 15;
 static const char* g_pathTextures[3 * g_TextureCount] = 
 {
     "default",                      "2d",           "Assets/Texture/default_blackwhite.png", //default
@@ -52,16 +53,17 @@ static const char* g_pathTextures[3 * g_TextureCount] =
     "viking_room",                  "2d",           "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
     "white",                        "2d",           "Assets/Texture/white.bmp", //white
     
-   //"textureSampler_"
-    
+    "texturesampler_wrap",          "2d",           "Assets/Texture/texture2d.jpg", //texturesampler_wrap
+    "texturesampler_mirror",        "2d",           "Assets/Texture/texture2d.jpg", //texturesampler_mirror
+    "texturesampler_clamp",         "2d",           "Assets/Texture/texture2d.jpg", //texturesampler_clamp
+    "texturesampler_border",        "2d",           "Assets/Texture/texture2d.jpg", //texturesampler_border
     "texture1d",                    "1d",           "Assets/Texture/texture1d.tga", //texture1d
     "texture2d",                    "2d",           "Assets/Texture/texture2d.jpg", //texture2d
     "texture2darray",               "2darray",      "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture2darray
     "texture3d",                    "3d",           "", //texture3d
     "texturecubemap",               "cubemap",      "Assets/Texture/texturecubemap_x_right.png;Assets/Texture/texturecubemap_x_left.png;Assets/Texture/texturecubemap_y_up.png;Assets/Texture/texturecubemap_y_down.png;Assets/Texture/texturecubemap_z_front.png;Assets/Texture/texturecubemap_z_back.png", //texturecubemap
-
     "textureanimation_scroll",      "2darray",      "Assets/Texture/textureanimation1.png;Assets/Texture/textureanimation2.png", //textureanimation_scroll
-    "textureanimation_chunk",       "2d",           "Assets/Texture/textureanimation3.png", //textureanimation_chunk
+    "textureanimation_chunk",       "2darray",      "Assets/Texture/textureanimation3.png", //textureanimation_chunk
 };
 static VkFormat g_formatTextures[g_TextureCount] = 
 {
@@ -70,12 +72,15 @@ static VkFormat g_formatTextures[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_SRGB, //viking_room
     VK_FORMAT_R8G8B8A8_SRGB, //white
 
+    VK_FORMAT_R8G8B8A8_SRGB, //texturesampler_wrap
+    VK_FORMAT_R8G8B8A8_SRGB, //texturesampler_mirror
+    VK_FORMAT_R8G8B8A8_SRGB, //texturesampler_clamp
+    VK_FORMAT_R8G8B8A8_SRGB, //texturesampler_border
     VK_FORMAT_R8G8B8A8_SRGB, //texture1d
     VK_FORMAT_R8G8B8A8_SRGB, //texture2d
     VK_FORMAT_R8G8B8A8_SRGB, //texture2darray
     VK_FORMAT_R8_UNORM, //texture3d
     VK_FORMAT_R8G8B8A8_SRGB, //texturecubemap
-
     VK_FORMAT_R8G8B8A8_SRGB, //textureanimation_scroll
     VK_FORMAT_R8G8B8A8_SRGB, //textureanimation_chunk
 };
@@ -86,12 +91,15 @@ static VulkanTextureFilterType g_filterTextures[g_TextureCount] =
     Vulkan_TextureFilter_Bilinear, //viking_room
     Vulkan_TextureFilter_Bilinear, //white
 
+    Vulkan_TextureFilter_Bilinear, //texturesampler_wrap
+    Vulkan_TextureFilter_Bilinear, //texturesampler_mirror
+    Vulkan_TextureFilter_Bilinear, //texturesampler_clamp
+    Vulkan_TextureFilter_Bilinear, //texturesampler_border
     Vulkan_TextureFilter_Bilinear, //texture1d
     Vulkan_TextureFilter_Bilinear, //texture2d
     Vulkan_TextureFilter_Bilinear, //texture2darray
     Vulkan_TextureFilter_Bilinear, //texture3d
     Vulkan_TextureFilter_Bilinear, //texturecubemap
-
     Vulkan_TextureFilter_Bilinear, //textureanimation_scroll
     Vulkan_TextureFilter_Bilinear, //textureanimation_chunk
 };
@@ -102,12 +110,15 @@ static VulkanTextureAddressingType g_addressingTextures[g_TextureCount] =
     Vulkan_TextureAddressing_Clamp, //viking_room
     Vulkan_TextureAddressing_Clamp, //white
 
+    Vulkan_TextureAddressing_Wrap, //texturesampler_wrap
+    Vulkan_TextureAddressing_Mirror, //texturesampler_mirror
+    Vulkan_TextureAddressing_Clamp, //texturesampler_clamp
+    Vulkan_TextureAddressing_Border, //texturesampler_border
     Vulkan_TextureAddressing_Clamp, //texture1d
     Vulkan_TextureAddressing_Clamp, //texture2d
     Vulkan_TextureAddressing_Clamp, //texture2darray
     Vulkan_TextureAddressing_Clamp, //texture3d
     Vulkan_TextureAddressing_Wrap, //texturecubemap
-
     Vulkan_TextureAddressing_Wrap, //textureanimation_scroll
     Vulkan_TextureAddressing_Wrap, //textureanimation_chunk
 };
@@ -118,12 +129,15 @@ static VulkanTextureBorderColorType g_borderColorTextures[g_TextureCount] =
     Vulkan_TextureBorderColor_OpaqueBlack, //viking_room
     Vulkan_TextureBorderColor_OpaqueBlack, //white
 
+    Vulkan_TextureBorderColor_OpaqueBlack, //texturesampler_wrap
+    Vulkan_TextureBorderColor_OpaqueBlack, //texturesampler_mirror
+    Vulkan_TextureBorderColor_OpaqueBlack, //texturesampler_clamp
+    Vulkan_TextureBorderColor_OpaqueBlack, //texturesampler_border
     Vulkan_TextureBorderColor_OpaqueBlack, //texture1d
     Vulkan_TextureBorderColor_OpaqueBlack, //texture2d
     Vulkan_TextureBorderColor_OpaqueBlack, //texture2darray
     Vulkan_TextureBorderColor_OpaqueBlack, //texture3d
     Vulkan_TextureBorderColor_OpaqueBlack, //texturecubemap
-
     Vulkan_TextureBorderColor_OpaqueBlack, //textureanimation_scroll
     Vulkan_TextureBorderColor_OpaqueBlack, //textureanimation_chunk
 };
@@ -134,12 +148,15 @@ static int g_sizeTextures[3 * g_TextureCount] =
     512,    512,    1, //viking_room
     512,    512,    1, //white
 
+    512,    512,    1, //texturesampler_wrap
+    512,    512,    1, //texturesampler_mirror
+    512,    512,    1, //texturesampler_clamp
+    512,    512,    1, //texturesampler_border
     512,    512,    1, //texture1d
     512,    512,    1, //texture2d
     512,    512,    1, //texture2darray
     128,    128,    128, //texture3d
     512,    512,    1, //texturecubemap
-
     512,    512,    1, //textureanimation_scroll
     512,    512,    1, //textureanimation_chunk
 };
@@ -150,19 +167,22 @@ static float g_animChunkTextures[2 * g_TextureCount] =
     0,    0, //viking_room
     0,    0, //white
 
+    0,    0, //texturesampler_wrap
+    0,    0, //texturesampler_mirror
+    0,    0, //texturesampler_clamp
+    0,    0, //texturesampler_border
     0,    0, //texture1d
     0,    0, //texture2d
     0,    0, //texture2darray
     0,    0, //texture3d
     0,    0, //texturecubemap
-
     0,    0, //textureanimation_scroll
     4,    8, //textureanimation_chunk
 };
 
 
 
-static const int g_ModelCount = 11;
+static const int g_ModelCount = 15;
 static const char* g_pathModels[4 * g_ModelCount] = 
 {
     //Model Name                    //Model Path                                        //Texture One                           //Texture Two
@@ -170,13 +190,16 @@ static const char* g_pathModels[4 * g_ModelCount] =
     "viking_room",                  "Assets/Model/Obj/viking_room/viking_room.obj",     "viking_room",                          "", //viking_room
     "bunny",                        "Assets/Model/Obj/bunny/bunny.obj",                 "white",                                "", //bunny  
 
+    "textureSampler_Wrap",          "Assets/Model/Fbx/plane.fbx",                       "texturesampler_wrap",                  "", //textureSampler_Wrap
+    "textureSampler_Mirror",        "Assets/Model/Fbx/plane.fbx",                       "texturesampler_mirror",                "", //textureSampler_Mirror
+    "textureSampler_Clamp",         "Assets/Model/Fbx/plane.fbx",                       "texturesampler_clamp",                 "", //textureSampler_Clamp
+    "textureSampler_Border",        "Assets/Model/Fbx/plane.fbx",                       "texturesampler_border",                "", //textureSampler_Border
     "texture1D",                    "Assets/Model/Fbx/plane.fbx",                       "texture1d",                            "", //texture1D
     "texture2D",                    "Assets/Model/Fbx/plane.fbx",                       "texture2d",                            "", //texture2D
     "texture2Darray",               "Assets/Model/Fbx/plane.fbx",                       "texture2darray",                       "", //texture2Darray
     "texture3D",                    "Assets/Model/Fbx/plane.fbx",                       "texture3d",                            "", //texture3D
     "textureCubeMap_SkyBox",        "Assets/Model/Obj/cube/cube.obj",                   "texturecubemap",                       "", //textureCubeMap_SkyBox
     "textureCubeMap_Sphere",        "Assets/Model/Fbx/sphere.fbx",                      "texturecubemap",                       "", //textureCubeMap_Sphere
-
     "textureAnimation_Scroll",      "Assets/Model/Fbx/plane.fbx",                       "textureanimation_scroll",              "", //textureAnimation_Scroll
     "textureAnimation_Chunk",       "Assets/Model/Fbx/plane.fbx",                       "textureanimation_chunk",               "", //textureAnimation_Chunk
 };
@@ -187,13 +210,16 @@ static const VulkanTextureType g_ModelsTextureTypes[2 * g_ModelCount] =
     Vulkan_Texture_2D, Vulkan_Texture_2D, //viking_room
     Vulkan_Texture_2D, Vulkan_Texture_2D, //bunny 
 
+    Vulkan_Texture_2D, Vulkan_Texture_2D, //textureSampler_Wrap 
+    Vulkan_Texture_2D, Vulkan_Texture_2D, //textureSampler_Mirror 
+    Vulkan_Texture_2D, Vulkan_Texture_2D, //textureSampler_Clamp 
+    Vulkan_Texture_2D, Vulkan_Texture_2D, //textureSampler_Border 
     Vulkan_Texture_1D, Vulkan_Texture_1D, //texture1D 
     Vulkan_Texture_2D, Vulkan_Texture_2D, //texture2D 
     Vulkan_Texture_2DArray, Vulkan_Texture_2DArray, //texture2Darray 
     Vulkan_Texture_3D, Vulkan_Texture_3D, //texture3D
     Vulkan_Texture_CubeMap, Vulkan_Texture_CubeMap, //textureCubeMap_SkyBox
     Vulkan_Texture_CubeMap, Vulkan_Texture_CubeMap, //textureCubeMap_Sphere
-
     Vulkan_Texture_2DArray, Vulkan_Texture_2DArray, //textureAnimation_Scroll
     Vulkan_Texture_2D, Vulkan_Texture_2D, //textureAnimation_Chunk 
 };
@@ -204,13 +230,16 @@ static const char* g_pathModelShaderModules[g_ModelCount] =
     "Assets/Shader/standard_mesh_transparent_lit", //viking_room
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //bunny 
 
+    "Assets/Shader/standard_mesh_opaque_texsampler_lit", //textureSampler_Wrap 
+    "Assets/Shader/standard_mesh_opaque_texsampler_lit", //textureSampler_Mirror 
+    "Assets/Shader/standard_mesh_opaque_texsampler_lit", //textureSampler_Clamp 
+    "Assets/Shader/standard_mesh_opaque_texsampler_lit", //textureSampler_Border 
     "Assets/Shader/standard_mesh_opaque_tex1d_lit", //texture1D 
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture2D 
     "Assets/Shader/standard_mesh_opaque_tex2darray_lit", //texture2Darray
     "Assets/Shader/standard_mesh_opaque_tex3d_lit", //texture3D
     "Assets/Shader/standard_mesh_opaque_texcubemap_lit", //textureCubeMap_SkyBox
     "Assets/Shader/standard_mesh_opaque_texcubemap_lit", //textureCubeMap_Sphere
-
     "Assets/Shader/standard_mesh_opaque_texanim_scroll_lit", //textureAnimation_Scroll
     "Assets/Shader/standard_mesh_opaque_texanim_chunk_lit", //textureAnimation_Chunk
 };
@@ -223,32 +252,38 @@ static int g_instanceExtCount[] =
     0, //viking_room
     0, //bunny
 
+    5, //textureSampler_Wrap 
+    5, //textureSampler_Mirror 
+    5, //textureSampler_Clamp 
+    5, //textureSampler_Border 
     5, //texture1D 
     5, //texture2D 
     5, //texture2Darray 
     5, //texture3D 
     0, //textureCubeMap_SkyBox 
     5, //textureCubeMap_Sphere 
-
     5, //textureAnimation_Scroll
     5, //textureAnimation_Chunk
 };
 
 static glm::vec3 g_tranformModels[3 * g_ModelCount] = 
 {   
-    glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //ground
-    glm::vec3(   0,   0,   -2),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
-    glm::vec3(   0,   0,   -4),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
+    glm::vec3(   0, -0.1,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //ground
+    glm::vec3(   0,    0,   -2),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
+    glm::vec3(   0,    0,   -4),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
 
-    glm::vec3(   0, 0.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture1D
-    glm::vec3(   0, 2.0,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D
-    glm::vec3(   0, 3.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray
-    glm::vec3(   0, 5.0,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture3D
-    glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
-    glm::vec3(   0, 6.5,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 0.005f,  0.005f,  0.005f), //textureCubeMap_Sphere
-
-    glm::vec3(   0, 8.0,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation_Scroll
-    glm::vec3(   0, 9.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation_Chunk
+    glm::vec3(   0,  0.4,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Wrap
+    glm::vec3(   0,  1.6,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Mirror
+    glm::vec3(   0,  2.8,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Clamp
+    glm::vec3(   0,  4.0,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Border
+    glm::vec3(   0,  5.2,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture1D
+    glm::vec3(   0,  6.4,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D
+    glm::vec3(   0,  7.6,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray
+    glm::vec3(   0,  8.8,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture3D
+    glm::vec3(   0,    0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
+    glm::vec3(   0, 10.0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 0.005f,  0.005f,  0.005f), //textureCubeMap_Sphere
+    glm::vec3(   0, 11.2,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation_Scroll
+    glm::vec3(   0, 12.4,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation_Chunk
 };
 
 static glm::mat4 g_tranformLocalModels[g_ModelCount] = 
@@ -257,13 +292,16 @@ static glm::mat4 g_tranformLocalModels[g_ModelCount] =
     MathUtil::RotateX(-90.0f), //viking_room
     MathUtil::ms_mat4Unit, //bunny
 
+    MathUtil::ms_mat4Unit, //textureSampler_Wrap
+    MathUtil::ms_mat4Unit, //textureSampler_Mirror
+    MathUtil::ms_mat4Unit, //textureSampler_Clamp
+    MathUtil::ms_mat4Unit, //textureSampler_Border
     MathUtil::ms_mat4Unit, //texture1D
     MathUtil::ms_mat4Unit, //texture2D
     MathUtil::ms_mat4Unit, //texture2Darray
     MathUtil::ms_mat4Unit, //texture3D
     MathUtil::ms_mat4Unit, //textureCubeMap_SkyBox
     MathUtil::ms_mat4Unit, //textureCubeMap_Sphere
-
     MathUtil::ms_mat4Unit, //textureAnimation_Scroll
     MathUtil::ms_mat4Unit, //textureAnimation_Chunk
 };
@@ -274,13 +312,16 @@ static bool g_isTranformLocalModels[g_ModelCount] =
     true, //viking_room
     false, //bunny
 
+    false, //textureSampler_Wrap
+    false, //textureSampler_Mirror
+    false, //textureSampler_Clamp
+    false, //textureSampler_Border
     false, //texture1D
     false, //texture2D
     false, //texture2Darray
     false, //texture3D
     false, //textureCubeMap_SkyBox  
     false, //textureCubeMap_Sphere  
-
     false, //textureAnimation_Scroll
     false, //textureAnimation_Chunk
 };
@@ -291,13 +332,16 @@ static bool g_isFlipYModels[g_ModelCount] =
     false, //viking_room
     false, //bunny
 
+    true, //textureSampler_Wrap
+    true, //textureSampler_Mirror
+    true, //textureSampler_Clamp
+    true, //textureSampler_Border
     false, //texture1D
     true, //texture2D
     false, //texture2Darray
     false, //texture3D
     false, //textureCubeMap_SkyBox
     false, //textureCubeMap_Sphere
-
     true, //textureAnimation_Scroll
     true, //textureAnimation_Chunk
 };
@@ -308,15 +352,38 @@ static bool g_isTransparentModels[g_ModelCount] =
     true, //viking_room
     false, //bunny
 
+    false, //textureSampler_Wrap
+    false, //textureSampler_Mirror
+    false, //textureSampler_Clamp
+    false, //textureSampler_Border
     false, //texture1D
     false, //texture2D
     false, //texture2Darray
     false, //texture3D
     false, //textureCubeMap_SkyBox
     false, //textureCubeMap_Sphere
-
     false, //textureAnimation_Scroll
     false, //textureAnimation_Chunk
+};
+
+static bool g_isShowModels[] = 
+{
+    true, //ground
+    false, //viking_room
+    false, //bunny
+
+    true, //textureSampler_Wrap
+    true, //textureSampler_Mirror
+    true, //textureSampler_Clamp
+    true, //textureSampler_Border
+    true, //texture1D
+    true, //texture2D
+    true, //texture2Darray
+    true, //texture3D
+    true, //textureCubeMap_SkyBox
+    true, //textureCubeMap_Sphere
+    true, //textureAnimation_Scroll
+    true, //textureAnimation_Chunk
 };
 
 static bool g_isRotateModels[g_ModelCount] =
@@ -325,13 +392,16 @@ static bool g_isRotateModels[g_ModelCount] =
     true, //viking_room
     true, //bunny
 
+    false, //textureSampler_Wrap
+    false, //textureSampler_Mirror
+    false, //textureSampler_Clamp
+    false, //textureSampler_Border
     false, //texture1D
     false, //texture2D
     false, //texture2Darray
     false, //texture3D
     false, //textureCubeMap_SkyBox
     false, //textureCubeMap_Sphere
-
     false, //textureAnimation_Scroll
     false, //textureAnimation_Chunk
 };
@@ -342,13 +412,16 @@ static bool g_isLightingModels[g_ModelCount] =
     true, //viking_room
     true, //bunny
 
+    true, //textureSampler_Wrap
+    true, //textureSampler_Mirror
+    true, //textureSampler_Clamp
+    true, //textureSampler_Border
     true, //texture1D
     true, //texture2D
     true, //texture2Darray
     true, //texture3D
     true, //textureCubeMap_SkyBox
     true, //textureCubeMap_Sphere
-
     true, //textureAnimation_Scroll
     true, //textureAnimation_Chunk
 };
@@ -480,6 +553,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
         bool isFlipY = g_isFlipYModels[i];
         pModelObject->isTransparent = g_isTransparentModels[i];
 
+        pModelObject->isShow = g_isShowModels[i];
         pModelObject->isRotate = g_isRotateModels[i];
         pModelObject->countInstanceExt = g_instanceExtCount[i];
         pModelObject->countInstance = pModelObject->countInstanceExt * 2 + 1;
@@ -961,7 +1035,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
 
 void Vulkan_011_Texturing::updateCBs_Custom()
 {
-    float time = this->pTimer->GetTimeSinceStart();
+    float timeSinceStart = this->pTimer->GetTimeSinceStart();
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
@@ -976,7 +1050,7 @@ void Vulkan_011_Texturing::updateCBs_Custom()
             if (pModelObject->isRotate)
             {
                 objectCB.g_MatWorld = glm::rotate(pModelObject->instanceMatWorld[j], 
-                                                  time * glm::radians(90.0f), 
+                                                  timeSinceStart * glm::radians(90.0f), 
                                                   glm::vec3(0.0f, 1.0f, 0.0f));
             }
             else
