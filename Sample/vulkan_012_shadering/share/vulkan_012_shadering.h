@@ -143,12 +143,12 @@ public:
             }
             else if (this->typeTexture == Vulkan_Texture_2D)
             {
-                this->pWindow->createTexture2D(this->aPathTexture[0], this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
+                this->pWindow->createTexture2D(this->aPathTexture[0], VK_IMAGE_TYPE_2D, VK_SAMPLE_COUNT_1_BIT, this->typeFormat, true, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
                 this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, this->typeFormat, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
             }
             else if (this->typeTexture == Vulkan_Texture_2DArray)
             {
-                this->pWindow->createTexture2DArray(this->aPathTexture, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
+                this->pWindow->createTexture2DArray(this->aPathTexture, VK_IMAGE_TYPE_2D, VK_SAMPLE_COUNT_1_BIT, this->typeFormat, true, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
                 this->pWindow->createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D_ARRAY, this->typeFormat, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, (int)this->aPathTexture.size(), this->poTextureImageView);
             }
             else if (this->typeTexture == Vulkan_Texture_3D)
