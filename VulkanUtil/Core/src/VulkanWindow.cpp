@@ -3664,7 +3664,7 @@ namespace LostPeter
     }
     void VulkanWindow::createDescriptorSets_Default()
     {
-        createDescriptorSets(this->poDescriptorSets);
+        createDescriptorSets(this->poDescriptorSets, this->poDescriptorSetLayout);
         updateDescriptorSets(this->poDescriptorSets, this->poTextureImageView, this->poTextureSampler);
 
         Util_LogInfo("<2-2-5-2> VulkanWindow::createDescriptorSets_Default finish !");
@@ -3674,9 +3674,9 @@ namespace LostPeter
 
         Util_LogInfo("<2-2-5-3> VulkanWindow::createDescriptorSets_Custom finish !");
     }
-    void VulkanWindow::createDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets)
+    void VulkanWindow::createDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout)
     {
-        std::vector<VkDescriptorSetLayout> layouts(this->poSwapChainImages.size(), this->poDescriptorSetLayout);
+        std::vector<VkDescriptorSetLayout> layouts(this->poSwapChainImages.size(), vkDescriptorSetLayout);
         VkDescriptorSetAllocateInfo allocInfo = {};
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         allocInfo.descriptorPool = this->poDescriptorPool;

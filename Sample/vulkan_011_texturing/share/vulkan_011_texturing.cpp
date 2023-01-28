@@ -21,7 +21,6 @@
 
 const std::string c_strVert = ".vert.spv";
 const std::string c_strFrag = ".frag.spv";
-
 static const int g_ShaderCount = 9;
 static const char* g_pathShaderModules[2 * g_ShaderCount] = 
 {
@@ -37,11 +36,16 @@ static const char* g_pathShaderModules[2 * g_ShaderCount] =
     "Assets/Shader/standard_mesh_transparent_lit.vert.spv", "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit
 };
 
+const std::string c_strLayout_Pass = "Pass";
+const std::string c_strLayout_Object = "Object";
+const std::string c_strLayout_Material = "Material";
+const std::string c_strLayout_Instance = "Instance";
+const std::string c_strLayout_Texture = "Texture";
 static const int g_DescriptorSetLayoutCount = 2;
 static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
 {
     "Pass-Object-Material-Instance-Texture",
-    "",
+    "Pass-Object-Material-Instance-Texture-Texture",
 };
 
 static const std::string g_TextureDefault = "default";
@@ -202,6 +206,8 @@ static const char* g_pathModels[4 * g_ModelCount] =
     "textureCubeMap_Sphere",        "Assets/Model/Fbx/sphere.fbx",                      "texturecubemap",                       "", //textureCubeMap_Sphere
     "textureAnimation_Scroll",      "Assets/Model/Fbx/plane.fbx",                       "textureanimation_scroll",              "", //textureAnimation_Scroll
     "textureAnimation_Chunk",       "Assets/Model/Fbx/plane.fbx",                       "textureanimation_chunk",               "", //textureAnimation_Chunk
+
+    
 };
 
 static const VulkanTextureType g_ModelsTextureTypes[2 * g_ModelCount] =
@@ -243,6 +249,28 @@ static const char* g_pathModelShaderModules[g_ModelCount] =
     "Assets/Shader/standard_mesh_opaque_texanim_scroll_lit", //textureAnimation_Scroll
     "Assets/Shader/standard_mesh_opaque_texanim_chunk_lit", //textureAnimation_Chunk
 };
+
+static const char* g_nameModelDescriptorSetLayouts[g_ModelCount] = 
+{
+    "Pass-Object-Material-Instance-Texture", //ground 
+    "Pass-Object-Material-Instance-Texture", //viking_room
+    "Pass-Object-Material-Instance-Texture", //bunny 
+
+    "Pass-Object-Material-Instance-Texture", //textureSampler_Wrap 
+    "Pass-Object-Material-Instance-Texture", //textureSampler_Mirror 
+    "Pass-Object-Material-Instance-Texture", //textureSampler_Clamp 
+    "Pass-Object-Material-Instance-Texture", //textureSampler_Border 
+    "Pass-Object-Material-Instance-Texture", //texture1D 
+    "Pass-Object-Material-Instance-Texture", //texture2D 
+    "Pass-Object-Material-Instance-Texture", //texture2Darray
+    "Pass-Object-Material-Instance-Texture", //texture3D
+    "Pass-Object-Material-Instance-Texture", //textureCubeMap_SkyBox
+    "Pass-Object-Material-Instance-Texture", //textureCubeMap_Sphere
+    "Pass-Object-Material-Instance-Texture", //textureAnimation_Scroll
+    "Pass-Object-Material-Instance-Texture", //textureAnimation_Chunk
+};
+
+
 
 static float g_instanceGap = 1.5f;
 
@@ -524,6 +552,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
         pModelObject->indexModel = i;
         pModelObject->nameModel = g_pathModels[4 * i + 0];
         pModelObject->pathModel = g_pathModels[4 * i + 1];
+        pModelObject->nameDescriptorSetLayout = g_nameModelDescriptorSetLayouts[i];
 
         int indexTex = 0;
         //Texture Channel 1
@@ -744,16 +773,19 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
 
 void Vulkan_011_Texturing::createPipeline_Custom()
 {
-    //1> Shader
+    //1> DescriptorSetLayout
+    createDescriptorSetLayouts();
+
+    //2> Shader
     createShaderModules();
 
-    //2> Viewport
+    //3> Viewport
     std::vector<VkViewport> viewports;
     viewports.push_back(this->poViewport);
     std::vector<VkRect2D> scissors;
     scissors.push_back(this->poScissor);
 
-    //3> Pipeline
+    //4> Pipeline
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
@@ -882,15 +914,126 @@ Vulkan_011_Texturing::ModelTexture* Vulkan_011_Texturing::findModelTexture(const
 
 void Vulkan_011_Texturing::destroyDescriptorSetLayouts()
 {
-
+    size_t count = this->m_aVkDescriptorSetLayouts.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        VkDescriptorSetLayout& vkDescriptorSetLayout = this->m_aVkDescriptorSetLayouts[i];
+        vkDestroyDescriptorSetLayout(this->poDevice, vkDescriptorSetLayout, nullptr);
+    }
+    this->m_aVkDescriptorSetLayouts.clear();
+    this->m_mapVkDescriptorSetLayout.clear();
+    this->m_mapName2Layouts.clear();
 }
 void Vulkan_011_Texturing::createDescriptorSetLayouts()
 {
+    for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
+    {
+        std::string nameLayout(g_nameDescriptorSetLayouts[i]);
+        std::vector<std::string> aLayouts = StringUtil::Split(nameLayout, "-");
+        size_t count_layout = aLayouts.size();
 
+        VkDescriptorSetLayout vkDescriptorSetLayout;
+        std::vector<VkDescriptorSetLayoutBinding> bindings;
+        for (size_t j = 0; j < count_layout; j++)
+        {
+            std::string& strLayout = aLayouts[j];
+            if (strLayout == c_strLayout_Pass) //Pass
+            {
+                VkDescriptorSetLayoutBinding passMainLayoutBinding = {};
+                passMainLayoutBinding.binding = j;
+                passMainLayoutBinding.descriptorCount = 1;
+                passMainLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                passMainLayoutBinding.pImmutableSamplers = nullptr;
+                passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+
+                bindings.push_back(passMainLayoutBinding);
+            }
+            else if (strLayout == c_strLayout_Object) //Object
+            {
+                VkDescriptorSetLayoutBinding objectLayoutBinding = {};
+                objectLayoutBinding.binding = j;
+                objectLayoutBinding.descriptorCount = 1;
+                objectLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                objectLayoutBinding.pImmutableSamplers = nullptr;
+                objectLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+                bindings.push_back(objectLayoutBinding);
+            }
+            else if (strLayout == c_strLayout_Material) //Material
+            {
+                VkDescriptorSetLayoutBinding materialLayoutBinding = {};
+                materialLayoutBinding.binding = j;
+                materialLayoutBinding.descriptorCount = 1;
+                materialLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                materialLayoutBinding.pImmutableSamplers = nullptr;
+                materialLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+
+                bindings.push_back(materialLayoutBinding);
+            }
+            else if (strLayout == c_strLayout_Instance) //Instance
+            {
+                VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
+                instanceLayoutBinding.binding = j;
+                instanceLayoutBinding.descriptorCount = 1;
+                instanceLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                instanceLayoutBinding.pImmutableSamplers = nullptr;
+                instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+
+                bindings.push_back(instanceLayoutBinding);
+            }
+            else if (strLayout == c_strLayout_Texture) //Texture
+            {
+                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+                samplerLayoutBinding.binding = j;
+                samplerLayoutBinding.descriptorCount = 1;
+                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                samplerLayoutBinding.pImmutableSamplers = nullptr;
+                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+                bindings.push_back(samplerLayoutBinding);
+            }
+            else
+            {
+                std::string msg = "Vulkan_011_Texturing::createDescriptorSetLayouts: Wrong DescriptorSetLayout type: " + strLayout;
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+        }
+
+        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+        layoutInfo.pBindings = bindings.data();
+        if (vkCreateDescriptorSetLayout(this->poDevice, &layoutInfo, nullptr, &vkDescriptorSetLayout) != VK_SUCCESS) 
+        {
+            std::string msg = "VulkanWindow::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+        this->m_aVkDescriptorSetLayouts.push_back(vkDescriptorSetLayout);
+        this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
+        this->m_mapName2Layouts[nameLayout] = aLayouts;
+
+        Util_LogInfo("Vulkan_011_Texturing::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
+    }
 }
 VkDescriptorSetLayout Vulkan_011_Texturing::findDescriptorSetLayout(const std::string& nameDescriptorSetLayout)
 {
-    return VK_NULL_HANDLE;
+    VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
+    if (itFind == this->m_mapVkDescriptorSetLayout.end())
+    {
+        return nullptr;
+    }
+    return itFind->second;
+}
+std::vector<std::string>* Vulkan_011_Texturing::findDescriptorSetLayoutNames(const std::string& nameDescriptorSetLayout)
+{
+    std::map<std::string, std::vector<std::string>>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
+    if (itFind == this->m_mapName2Layouts.end())
+    {
+        return nullptr;
+    }
+    return &(itFind->second);
 }
 
 void Vulkan_011_Texturing::destroyShaderModules()
@@ -941,94 +1084,115 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
+        VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(pModelObject->nameDescriptorSetLayout);
+        std::vector<std::string>* pDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pModelObject->nameDescriptorSetLayout);
 
-        createDescriptorSets(pModelObject->poDescriptorSets);
+        assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_011_Texturing::createDescriptorSets_Custom");
+        createDescriptorSets(pModelObject->poDescriptorSets, vkDescriptorSetLayout);
         for (size_t j = 0; j < count_sci; j++)
         {   
-            VkDescriptorBufferInfo bufferInfo_Pass = {};
-            bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
-            bufferInfo_Pass.offset = 0;
-            bufferInfo_Pass.range = sizeof(PassConstants);
-
-            VkDescriptorBufferInfo bufferInfo_Object = {};
-            bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j];
-            bufferInfo_Object.offset = 0;
-            bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-
-            VkDescriptorBufferInfo bufferInfo_Material = {};
-            bufferInfo_Material.buffer = pModelObject->poBuffers_materialCB[j];
-            bufferInfo_Material.offset = 0;
-            bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
-
-            VkDescriptorBufferInfo bufferInfo_Instance = {};
-            bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
-            bufferInfo_Instance.offset = 0;
-            bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
-
-            VkDescriptorImageInfo imageInfo = {};
-            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = pModelObject->GetTextureImageView(0);
-            imageInfo.sampler = pModelObject->GetTextureSampler(0);
-            
             std::vector<VkWriteDescriptorSet> descriptorWrites;
+            int nIndexTexture = 0;
 
-            //0
-            VkWriteDescriptorSet ds0 = {};
-            ds0.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds0.dstSet = pModelObject->poDescriptorSets[j];
-            ds0.dstBinding = 0;
-            ds0.dstArrayElement = 0;
-            ds0.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            ds0.descriptorCount = 1;
-            ds0.pBufferInfo = &bufferInfo_Pass;
-            descriptorWrites.push_back(ds0);
+            size_t count_names = pDescriptorSetLayoutNames->size();
+            for (size_t p = 0; p < count_names; p++)
+            {
+                std::string& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
+                if (nameDescriptorSet == c_strLayout_Pass) //Pass
+                {
+                    VkDescriptorBufferInfo bufferInfo_Pass = {};
+                    bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
+                    bufferInfo_Pass.offset = 0;
+                    bufferInfo_Pass.range = sizeof(PassConstants);
 
-            //1
-            VkWriteDescriptorSet ds1 = {};
-            ds1.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds1.dstSet = pModelObject->poDescriptorSets[j];
-            ds1.dstBinding = 1;
-            ds1.dstArrayElement = 0;
-            ds1.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            ds1.descriptorCount = 1;
-            ds1.pBufferInfo = &bufferInfo_Object;
-            descriptorWrites.push_back(ds1);
+                    VkWriteDescriptorSet ds0 = {};
+                    ds0.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    ds0.dstSet = pModelObject->poDescriptorSets[j];
+                    ds0.dstBinding = p;
+                    ds0.dstArrayElement = 0;
+                    ds0.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    ds0.descriptorCount = 1;
+                    ds0.pBufferInfo = &bufferInfo_Pass;
+                    descriptorWrites.push_back(ds0);
+                }
+                else if (nameDescriptorSet == c_strLayout_Object) //Object
+                {
+                    VkDescriptorBufferInfo bufferInfo_Object = {};
+                    bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j];
+                    bufferInfo_Object.offset = 0;
+                    bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
 
-            //2
-            VkWriteDescriptorSet ds2 = {};
-            ds2.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds2.dstSet = pModelObject->poDescriptorSets[j];
-            ds2.dstBinding = 2;
-            ds2.dstArrayElement = 0;
-            ds2.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            ds2.descriptorCount = 1;
-            ds2.pBufferInfo = &bufferInfo_Material;
-            descriptorWrites.push_back(ds2);
+                    VkWriteDescriptorSet ds1 = {};
+                    ds1.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    ds1.dstSet = pModelObject->poDescriptorSets[j];
+                    ds1.dstBinding = p;
+                    ds1.dstArrayElement = 0;
+                    ds1.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    ds1.descriptorCount = 1;
+                    ds1.pBufferInfo = &bufferInfo_Object;
+                    descriptorWrites.push_back(ds1);
+                }
+                else if (nameDescriptorSet == c_strLayout_Material) //Material
+                {
+                    VkDescriptorBufferInfo bufferInfo_Material = {};
+                    bufferInfo_Material.buffer = pModelObject->poBuffers_materialCB[j];
+                    bufferInfo_Material.offset = 0;
+                    bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
 
-            //3
-            VkWriteDescriptorSet ds3 = {};
-            ds3.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds3.dstSet = pModelObject->poDescriptorSets[j];
-            ds3.dstBinding = 3;
-            ds3.dstArrayElement = 0;
-            ds3.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            ds3.descriptorCount = 1;
-            ds3.pBufferInfo = &bufferInfo_Instance;
-            descriptorWrites.push_back(ds3);
-            
-            //4
-            VkWriteDescriptorSet ds4 = {};
-            ds4.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds4.dstSet = pModelObject->poDescriptorSets[j];
-            ds4.dstBinding = 4;
-            ds4.dstArrayElement = 0;
-            ds4.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            ds4.descriptorCount = 1;
-            ds4.pImageInfo = &imageInfo;
-            descriptorWrites.push_back(ds4);
+                    VkWriteDescriptorSet ds2 = {};
+                    ds2.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    ds2.dstSet = pModelObject->poDescriptorSets[j];
+                    ds2.dstBinding = p;
+                    ds2.dstArrayElement = 0;
+                    ds2.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    ds2.descriptorCount = 1;
+                    ds2.pBufferInfo = &bufferInfo_Material;
+                    descriptorWrites.push_back(ds2);
+                }
+                else if (nameDescriptorSet == c_strLayout_Instance) //Instance
+                {
+                    VkDescriptorBufferInfo bufferInfo_Instance = {};
+                    bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
+                    bufferInfo_Instance.offset = 0;
+                    bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
 
+                    VkWriteDescriptorSet ds3 = {};
+                    ds3.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    ds3.dstSet = pModelObject->poDescriptorSets[j];
+                    ds3.dstBinding = p;
+                    ds3.dstArrayElement = 0;
+                    ds3.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    ds3.descriptorCount = 1;
+                    ds3.pBufferInfo = &bufferInfo_Instance;
+                    descriptorWrites.push_back(ds3);
+                }
+                else if (nameDescriptorSet == c_strLayout_Texture) //Texture
+                {
+                    VkDescriptorImageInfo imageInfo = {};
+                    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    imageInfo.imageView = pModelObject->GetTextureImageView(nIndexTexture);
+                    imageInfo.sampler = pModelObject->GetTextureSampler(nIndexTexture);
+                    nIndexTexture ++;
+
+                    VkWriteDescriptorSet ds4 = {};
+                    ds4.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    ds4.dstSet = pModelObject->poDescriptorSets[j];
+                    ds4.dstBinding = p;
+                    ds4.dstArrayElement = 0;
+                    ds4.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                    ds4.descriptorCount = 1;
+                    ds4.pImageInfo = &imageInfo;
+                    descriptorWrites.push_back(ds4);
+                }
+                else
+                {
+                    std::string msg = "Vulkan_011_Texturing::createDescriptorSets_Custom: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+            }
             vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-            
+
         }
     }
 }
@@ -1407,6 +1571,7 @@ void Vulkan_011_Texturing::drawModelObject(VkCommandBuffer& commandBuffer, Model
 
 void Vulkan_011_Texturing::cleanupCustom()
 {   
+    destroyDescriptorSetLayouts();
     destroyModelTextures();
 
     size_t count = this->m_aModelObjects.size();
@@ -1418,8 +1583,6 @@ void Vulkan_011_Texturing::cleanupCustom()
     this->m_aModelObjects.clear();
     this->m_aModelObjects_Render.clear();
     this->m_mapModelObjects.clear();
-
-    destroyDescriptorSetLayouts();
 }
 
 void Vulkan_011_Texturing::cleanupSwapChain_Custom()

@@ -515,7 +515,7 @@ namespace LostPeter
                     virtual void createDescriptorPool();
                     virtual void createDescriptorSets_Default();
                     virtual void createDescriptorSets_Custom();
-                        virtual void createDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets);
+                        virtual void createDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout);
                         virtual void updateDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler);
 
                 virtual void createCommandBuffers();

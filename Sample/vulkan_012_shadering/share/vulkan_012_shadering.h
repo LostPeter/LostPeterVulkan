@@ -232,6 +232,9 @@ public:
             , poPipelineGraphics_WireFrame(VK_NULL_HANDLE)
             , poPipelineGraphics(VK_NULL_HANDLE)
 
+            //DescriptorSetLayout
+            , nameDescriptorSetLayout("")
+
             //State
             , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
             , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
@@ -358,6 +361,9 @@ public:
         VkPipeline poPipelineGraphics_WireFrame;
         VkPipeline poPipelineGraphics;
 
+        //DescriptorSetLayout
+        std::string nameDescriptorSetLayout;
+
         //DescriptorSets
         std::vector<VkDescriptorSet> poDescriptorSets;
 
@@ -418,6 +424,7 @@ public:
 
     VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
     VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
+    std::map<std::string, std::vector<std::string>> m_mapName2Layouts;
     
     VkShaderModuleVector m_aVkShaderModules;
     VkShaderModuleMap m_mapVkShaderModules;
@@ -470,6 +477,7 @@ private:
     void destroyDescriptorSetLayouts();
     void createDescriptorSetLayouts();
     VkDescriptorSetLayout findDescriptorSetLayout(const std::string& nameDescriptorSetLayout);
+    std::vector<std::string>* findDescriptorSetLayoutNames(const std::string& nameDescriptorSetLayout);
 
     void destroyShaderModules();
     void createShaderModules();

@@ -423,7 +423,7 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        createDescriptorSets(pModelObject->poDescriptorSets);
+        createDescriptorSets(pModelObject->poDescriptorSets, this->poDescriptorSetLayout);
         for (size_t j = 0; j < count_sci; j++)
         {   
             VkDescriptorBufferInfo bufferInfo_Pass = {};

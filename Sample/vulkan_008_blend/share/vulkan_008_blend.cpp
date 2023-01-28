@@ -465,8 +465,8 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        createDescriptorSets(pModelObject->poDescriptorSets);
-        createDescriptorSets(pModelObject->poDescriptorSets_Outline);
+        createDescriptorSets(pModelObject->poDescriptorSets, this->poDescriptorSetLayout);
+        createDescriptorSets(pModelObject->poDescriptorSets_Outline, this->poDescriptorSetLayout);
         for (size_t j = 0; j < count_sci; j++)
         {
             //1> Stencil
