@@ -24,16 +24,7 @@ namespace LostPeter
         , shininess(0.25f)
         , alpha(1.0f)
         , lighting(1.0f)
-        , indexTextureArray(0)
-        , texSpeedU(0.0f)
-        , texSpeedV(0.0f)
-        , texSpeedW(0.0f)
-        , reserve(0.0f)
-        , texChunkMaxX(0.0f)
-        , texChunkMaxY(0.0f)
-        , texChunkIndexX(0.0f)
-        , texChunkIndexY(0.0f)
-        , matTransform(MathUtil::Identity4x4())
+        , reserve0(0)
     {
 
     }

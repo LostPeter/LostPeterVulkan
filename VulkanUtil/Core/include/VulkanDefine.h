@@ -947,6 +947,44 @@ namespace LostPeter
 
         }
     };
+
+    //////////////////////////////// TextureConstants ///////////////////////////////
+    struct utilExport TextureConstants
+    {
+        float texWidth;
+        float texHeight;
+        float texDepth;
+        float indexTextureArray;
+
+        float texSpeedU;
+        float texSpeedV;
+        float texSpeedW;
+        float reserve0;
+
+        float texChunkMaxX;
+        float texChunkMaxY;
+        float texChunkIndexX;
+        float texChunkIndexY;
+
+        TextureConstants()
+            : texWidth(512.0f)
+            , texHeight(512.0f)
+            , texDepth(512.0f)
+            , indexTextureArray(0.0f)
+
+            , texSpeedU(0.0f)
+            , texSpeedV(0.0f)
+            , texSpeedW(0.0f)
+            , reserve0(0.0f)
+            
+            , texChunkMaxX(0.0f)
+            , texChunkMaxY(0.0f)
+            , texChunkIndexX(0.0f)
+            , texChunkIndexY(0.0f)
+        {
+
+        }
+    };
     
     //////////////////////////////// MaterialConstants //////////////////////////////
     struct utilExport MaterialConstants
@@ -958,19 +996,9 @@ namespace LostPeter
         float shininess;
         float alpha;
         float lighting;
-        float indexTextureArray;
+        float reserve0;
 
-        float texSpeedU;
-        float texSpeedV;
-        float texSpeedW;
-        float reserve;
-
-        float texChunkMaxX;
-        float texChunkMaxY;
-        float texChunkIndexX;
-        float texChunkIndexY;
-
-        glm::mat4 matTransform;
+        TextureConstants aTexLayers[MAX_TEXTURE_COUNT];
 
         MaterialConstants()
             : factorAmbient(1.0f, 1.0f, 1.0f, 1.0f)
@@ -979,18 +1007,9 @@ namespace LostPeter
             , shininess(20.0f)
             , alpha(1.0f)
             , lighting(1.0f)
-            , indexTextureArray(0.0f)
-            , texSpeedU(0.0f)
-            , texSpeedV(0.0f)
-            , texSpeedW(0.0f)
-            , reserve(0.0f)
-            , texChunkMaxX(0.0f)
-            , texChunkMaxY(0.0f)
-            , texChunkIndexX(0.0f)
-            , texChunkIndexY(0.0f)
-            , matTransform(MathUtil::Identity4x4())
+            , reserve0(0.0f)
         {
-
+            
         }
     };
 

@@ -1226,7 +1226,7 @@ namespace LostPeter
         objectLayoutBinding.descriptorCount = 1;
         objectLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         objectLayoutBinding.pImmutableSamplers = nullptr;
-        objectLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        objectLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
         //2> MaterialConstants
         VkDescriptorSetLayoutBinding materialLayoutBinding = {};

@@ -29,8 +29,6 @@ struct LightConstants
     float4 diffuse;     // diffuse
     float4 specular;    // specular
 };
-
-
 //PassConstants
 struct PassConstants
 {
@@ -63,8 +61,27 @@ struct PassConstants
 }
 
 
+//TextureConstants
+#define MAX_TEXTURE_COUNT 16
+struct TextureConstants
+{
+    float texWidth;
+    float texHeight;
+    float texDepth;
+    float indexTextureArray;
+
+    float texSpeedU;
+    float texSpeedV;
+    float texSpeedW;
+    float reserve0;
+
+    float texChunkMaxX;
+    float texChunkMaxY;
+    float texChunkIndexX;
+    float texChunkIndexY;
+};
 //MaterialConstants
-#define MAX_MATERIAL_COUNT 128
+#define MAX_MATERIAL_COUNT 64
 struct MaterialConstants
 {
     float4 factorAmbient;
@@ -74,19 +91,9 @@ struct MaterialConstants
     float shininess;
     float alpha;
     float lighting;
-    float indexTextureArray;
+    float reserve0;
 
-    float texSpeedU;
-    float texSpeedV;
-    float texSpeedW;
-    float reserve;
-
-    float texChunkMaxX;
-    float texChunkMaxY;
-    float texChunkIndexX;
-    float texChunkIndexY;
-
-    float4x4 matTransform;
+    TextureConstants aTexLayers[MAX_TEXTURE_COUNT];
 };
 
 [[vk::binding(2)]]cbuffer materialConsts            : register(b2) 

@@ -34,19 +34,9 @@ namespace LostPeter
         float shininess;
         float alpha;
         float lighting;
-        float indexTextureArray;
+        float reserve0;
 
-        float texSpeedU;
-        float texSpeedV;
-        float texSpeedW;
-        float reserve;
-
-        float texChunkMaxX;
-        float texChunkMaxY;
-        float texChunkIndexX;
-        float texChunkIndexY;
-        
-        glm::mat4 matTransform;
+        TextureConstants aTexLayers[MAX_TEXTURE_COUNT];
 
     public:
 

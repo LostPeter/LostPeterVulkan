@@ -18,8 +18,9 @@ namespace LostPeter
 {
 ////////////////////////////// Define //////////////////////////////
     #define MAX_LIGHT_COUNT 16
+    #define MAX_TEXTURE_COUNT 16
     #define MAX_OBJECT_COUNT 1024
-    #define MAX_MATERIAL_COUNT 128
+    #define MAX_MATERIAL_COUNT 64
     #define MAX_INSTANCE_COUNT 1024
 
 
@@ -240,9 +241,12 @@ namespace LostPeter
 
     typedef std::vector<VkDescriptorSetLayout> VkDescriptorSetLayoutVector;
     typedef std::map<std::string, VkDescriptorSetLayout> VkDescriptorSetLayoutMap;
-    
+
     typedef std::vector<VkShaderModule> VkShaderModuleVector;
     typedef std::map<std::string, VkShaderModule> VkShaderModuleMap;
+
+    typedef std::vector<VkPipelineLayout> VkPipelineLayoutVector;
+    typedef std::map<std::string, VkPipelineLayout> VkPipelineLayoutMap;
 
     typedef std::vector<VkPipeline> VkPipelineVector;
     typedef std::map<std::string, VkPipeline> VkPipelineMap;

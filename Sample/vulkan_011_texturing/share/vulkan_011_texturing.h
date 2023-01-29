@@ -31,6 +31,9 @@ public:
         VulkanTextureAddressingType typeAddressing;
         VulkanTextureBorderColorType typeBorderColor;
         int refCount;
+        int width;
+        int height;
+        int depth;
 
         uint32_t poMipMapCount;
         VkImage poTextureImage;
@@ -43,9 +46,6 @@ public:
 
         //Texture 3D
         uint8* pDataRGBA;
-        int width;
-        int height;
-        int depth;
 
         //Texture Animation
         int texChunkMaxX;
@@ -71,6 +71,9 @@ public:
             , typeBorderColor(_typeBorderColor)
             , aPathTexture(_aPathTexture)
             , refCount(0)
+            , width(0)
+            , height(0)
+            , depth(0)
 
             , poMipMapCount(1)
             , poTextureImage(VK_NULL_HANDLE)
@@ -83,9 +86,6 @@ public:
 
             //Texture 3D
             , pDataRGBA(nullptr)
-            , width(128)
-            , height(128)
-            , depth(128)
 
             //Texture Animation
             , texChunkMaxX(0)
@@ -136,6 +136,10 @@ public:
                          int height,
                          int depth)
         {
+            this->width = width;
+            this->height = height;
+            this->depth = depth;
+
             if (this->typeTexture == Vulkan_Texture_1D)
             {
                 this->pWindow->createTexture1D(this->aPathTexture[0], this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
@@ -153,9 +157,6 @@ public:
             }
             else if (this->typeTexture == Vulkan_Texture_3D)
             {
-                this->width = width;
-                this->height = height;
-                this->depth = depth;
                 uint32_t size = width * height * depth;
                 this->pDataRGBA = new uint8[size];
                 memset(this->pDataRGBA, 0, (size_t)size);
@@ -228,12 +229,15 @@ public:
             , countInstanceExt(0)
             , countInstance(1)
 
+            //DescriptorSetLayout
+            , nameDescriptorSetLayout("")
+
+            //PipelineLayout
+            , poPipelineLayout(VK_NULL_HANDLE)
+
             //Pipeline
             , poPipelineGraphics_WireFrame(VK_NULL_HANDLE)
             , poPipelineGraphics(VK_NULL_HANDLE)
-
-            //DescriptorSetLayout
-            , nameDescriptorSetLayout("")
             
             //State
             , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
@@ -357,12 +361,15 @@ public:
         ModelTexturePtrVector m_aModelTextures;
         ModelTexturePtrMap m_mapModelTextures;
 
+        //DescriptorSetLayout
+        std::string nameDescriptorSetLayout;
+
+        //PipelineLayout
+        VkPipelineLayout poPipelineLayout;
+
         //Pipeline
         VkPipeline poPipelineGraphics_WireFrame;
         VkPipeline poPipelineGraphics;
-
-        //DescriptorSetLayout
-        std::string nameDescriptorSetLayout;
 
         //DescriptorSets
         std::vector<VkDescriptorSet> poDescriptorSets;
@@ -429,9 +436,12 @@ public:
     VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
     VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
     std::map<std::string, std::vector<std::string>> m_mapName2Layouts;
-    
+
     VkShaderModuleVector m_aVkShaderModules;
     VkShaderModuleMap m_mapVkShaderModules;
+
+    VkPipelineLayoutVector m_aVkPipelineLayouts;
+    VkPipelineLayoutMap m_mapVkPipelineLayouts;
 
 protected:
     //Create Pipeline
@@ -486,6 +496,10 @@ private:
     void destroyShaderModules();
     void createShaderModules();
     VkShaderModule findShaderModule(const std::string& pathShaderModule);
+
+    void destroyPipelineLayouts();
+    void createPipelineLayouts();
+    VkPipelineLayout findPipelineLayout(const std::string& namePipelineLayout);
 
     void drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject);
 };

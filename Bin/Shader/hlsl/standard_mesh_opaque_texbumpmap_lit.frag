@@ -29,8 +29,6 @@ struct LightConstants
     float4 diffuse;     // diffuse
     float4 specular;    // specular
 };
-
-
 //PassConstants
 struct PassConstants
 {
@@ -63,8 +61,40 @@ struct PassConstants
 }
 
 
+//ObjectConstants
+#define MAX_OBJECT_COUNT 1024
+struct ObjectConstants
+{
+    float4x4 g_MatWorld;
+};
+
+[[vk::binding(1)]]cbuffer objectConsts            : register(b1) 
+{
+    ObjectConstants objectConsts[MAX_OBJECT_COUNT];
+}
+
+
+//TextureConstants
+#define MAX_TEXTURE_COUNT 16
+struct TextureConstants
+{
+    float texWidth;
+    float texHeight;
+    float texDepth;
+    float indexTextureArray;
+
+    float texSpeedU;
+    float texSpeedV;
+    float texSpeedW;
+    float reserve0;
+
+    float texChunkMaxX;
+    float texChunkMaxY;
+    float texChunkIndexX;
+    float texChunkIndexY;
+};
 //MaterialConstants
-#define MAX_MATERIAL_COUNT 128
+#define MAX_MATERIAL_COUNT 64
 struct MaterialConstants
 {
     float4 factorAmbient;
@@ -74,19 +104,9 @@ struct MaterialConstants
     float shininess;
     float alpha;
     float lighting;
-    float indexTextureArray;
+    float reserve0;
 
-    float texSpeedU;
-    float texSpeedV;
-    float texSpeedW;
-    float reserve;
-
-    float texChunkMaxX;
-    float texChunkMaxY;
-    float texChunkIndexX;
-    float texChunkIndexY;
-
-    float4x4 matTransform;
+    TextureConstants aTexLayers[MAX_TEXTURE_COUNT];
 };
 
 [[vk::binding(2)]]cbuffer materialConsts            : register(b2) 
@@ -233,6 +253,17 @@ float4 main(VSOutput input) : SV_TARGET
 
     MaterialConstants mat = materialConsts[(uint)input.inWorldPos.w];
     float3 N = normalize(input.inWorldNormal);
+
+    //BumpMap, Need Sample four times to get dx,dy
+    float bumpValueU = texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(-1.0 / mat.aTexLayers[1].texWidth, 0.0)).r -
+                       texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(1.0 / mat.aTexLayers[1].texWidth, 0.0)).r;
+    float bumpValueV = texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(0.0, -1.0 / mat.aTexLayers[1].texHeight)).r -
+                       texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(0.0, 1.0 / mat.aTexLayers[1].texHeight)).r;
+    float bumpScale = mat.aTexLayers[1].indexTextureArray;
+    if (bumpScale < 50.0f)
+    {
+        N = float3(N.x + bumpValueU * bumpScale, N.y * bumpValueV * bumpScale, N.z);
+    }
 
     float3 colorLight;
     //Main Light

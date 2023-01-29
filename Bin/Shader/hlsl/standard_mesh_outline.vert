@@ -28,8 +28,6 @@ struct LightConstants
     float4 diffuse;     // diffuse
     float4 specular;    // specular
 };
-
-
 //PassConstants
 struct PassConstants
 {

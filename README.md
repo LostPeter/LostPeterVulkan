@@ -101,7 +101,7 @@ License:
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_003_texture.png)
 
 ### <004> vulkan_004_model
-* sample004：Load different 3D models and textures nd then render them
+* sample004：Load different 3D models and textures and then render them
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_004_model.png)
 
