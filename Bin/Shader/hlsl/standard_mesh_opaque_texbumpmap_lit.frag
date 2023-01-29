@@ -68,7 +68,7 @@ struct ObjectConstants
     float4x4 g_MatWorld;
 };
 
-[[vk::binding(1)]]cbuffer objectConsts            : register(b1) 
+[[vk::binding(1)]]cbuffer objectConsts             : register(b1) 
 {
     ObjectConstants objectConsts[MAX_OBJECT_COUNT];
 }
@@ -115,11 +115,25 @@ struct MaterialConstants
 }
 
 
-[[vk::binding(4)]] Texture2D texDiffuse              : register(t1);
-[[vk::binding(4)]] SamplerState texDiffuseSampler    : register(s1);
+//InstanceConstants
+#define MAX_INSTANCE_COUNT 1024
+struct InstanceConstants
+{
+    int indexObject;
+    int indexMaterial;
+};
 
-[[vk::binding(5)]] Texture2D texBumpMap              : register(t2);
-[[vk::binding(5)]] SamplerState texBumpMapSampler    : register(s2);
+[[vk::binding(3)]]cbuffer instanceConsts            : register(b3) 
+{
+    InstanceConstants instanceConsts[MAX_INSTANCE_COUNT];
+}
+
+
+[[vk::binding(4)]] Texture2D texDiffuse             : register(t1);
+[[vk::binding(4)]] SamplerState texDiffuseSampler   : register(s1);
+
+[[vk::binding(5)]] Texture2D texBumpMap             : register(t2);
+[[vk::binding(5)]] SamplerState texBumpMapSampler   : register(s2);
 
 
 float3 calculate_Light_Ambient(float3 ambientGlobal, 
