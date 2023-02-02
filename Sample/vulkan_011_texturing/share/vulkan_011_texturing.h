@@ -40,6 +40,7 @@ public:
         VkDeviceMemory poTextureImageMemory;
         VkImageView poTextureImageView;
         VkSampler poTextureSampler;
+        VkDescriptorImageInfo poTextureImageInfo;
 
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
@@ -185,6 +186,11 @@ public:
                                          static_cast<float>(this->poMipMapCount),
                                          0.0f,
                                          this->poTextureSampler);
+
+            this->poTextureImageInfo = {};
+            this->poTextureImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            this->poTextureImageInfo.imageView = this->poTextureImageView;
+            this->poTextureImageInfo.sampler = this->poTextureSampler;
         }   
 
         void UpdateTexture();

@@ -1352,10 +1352,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                 }
                 else if (nameDescriptorSet == c_strLayout_Texture) //Texture
                 {
-                    VkDescriptorImageInfo imageInfo = {};
-                    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    imageInfo.imageView = pModelObject->GetTextureImageView(nIndexTexture);
-                    imageInfo.sampler = pModelObject->GetTextureSampler(nIndexTexture);
+                    ModelTexture* pTexture = pModelObject->GetTexture(nIndexTexture);
                     nIndexTexture ++;
 
                     VkWriteDescriptorSet ds4 = {};
@@ -1365,7 +1362,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                     ds4.dstArrayElement = 0;
                     ds4.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                     ds4.descriptorCount = 1;
-                    ds4.pImageInfo = &imageInfo;
+                    ds4.pImageInfo = &pTexture->poTextureImageInfo;
                     descriptorWrites.push_back(ds4);
                 }
                 else
