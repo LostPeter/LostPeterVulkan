@@ -269,16 +269,16 @@ float4 main(VSOutput input) : SV_TARGET
     float3 N = normalize(input.inWorldNormal);
 
     //BumpMap, Need Sample four times to get dx,dy
-    float bumpValueU = texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(-1.0 / mat.aTexLayers[1].texWidth, 0.0)).r -
-                       texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(1.0 / mat.aTexLayers[1].texWidth, 0.0)).r;
-    float bumpValueV = texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(0.0, -1.0 / mat.aTexLayers[1].texHeight)).r -
-                       texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(0.0, 1.0 / mat.aTexLayers[1].texHeight)).r;
     float bumpScale = mat.aTexLayers[1].indexTextureArray;
-    if (bumpScale < 50.0f)
+    if (bumpScale > 0.0)
     {
+        float bumpValueU = texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(-1.0 / mat.aTexLayers[1].texWidth, 0.0)).r -
+                       texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(1.0 / mat.aTexLayers[1].texWidth, 0.0)).r;
+        float bumpValueV = texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(0.0, -1.0 / mat.aTexLayers[1].texHeight)).r -
+                        texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(0.0, 1.0 / mat.aTexLayers[1].texHeight)).r;
         N = float3(N.x + bumpValueU * bumpScale, N.y * bumpValueV * bumpScale, N.z);
     }
-
+    
     float3 colorLight;
     //Main Light
     float3 colorMainLight = calculate_Light(passConsts.g_AmbientLight.rgb,

@@ -544,6 +544,30 @@ static bool g_isRotateModels[g_ModelCount] =
 
 };
 
+static bool g_isLightingModels[g_ModelCount] =
+{
+    true, //ground
+    true, //viking_room
+    true, //bunny
+
+////Basic-Level Texture Operation
+    true, //textureSampler_Wrap
+    true, //textureSampler_Mirror
+    true, //textureSampler_Clamp
+    true, //textureSampler_Border
+    true, //texture1D
+    true, //texture2D
+    true, //texture2Darray
+    true, //texture3D
+    true, //textureCubeMap_SkyBox
+    true, //textureCubeMap_Sphere
+    true, //textureAnimation_Scroll
+    true, //textureAnimation_Chunk
+
+////High-Level Texture Operation
+    false, //textureBumpMap
+};
+
 
 
 void Vulkan_011_Texturing::ModelTexture::UpdateTexture()
@@ -614,7 +638,7 @@ Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, std::string na
     this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
 
     this->cfg_cameraPos = glm::vec3(-2.5f, 2.0f, -20.0f);
-    this->cfg_cameraLookTarget = glm::vec3(-2.5f, 5.0f, 0.0f);
+    this->cfg_cameraLookTarget = glm::vec3(-2.5f, 6.0f, 0.0f);
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
@@ -806,6 +830,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             materialConstants.factorSpecular = MathUtil::RandomColor(false);
             materialConstants.shininess = MathUtil::RandF(10.0f, 100.0f);
             materialConstants.alpha = MathUtil::RandF(0.2f, 0.9f);
+            materialConstants.lighting = g_isLightingModels[i];
             float fValue = MathUtil::RandF(0.0f, 1.0f);
             if (j == pModelObject->countInstance / 2 || fValue >  0.5f)
             {
@@ -863,9 +888,9 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                     if (p == 1)
                     {
                         if (j == pModelObject->countInstance / 2)
-                            materialConstants.aTexLayers[p].indexTextureArray = 5.0f;
+                            materialConstants.aTexLayers[p].indexTextureArray = 0.0f;
                         else
-                            materialConstants.aTexLayers[p].indexTextureArray = MathUtil::RandF(1.0f, 15.0f);
+                            materialConstants.aTexLayers[p].indexTextureArray = MathUtil::RandF(2000.0f, 10000.0f);
                     }
                 } 
 
@@ -1643,7 +1668,7 @@ bool Vulkan_011_Texturing::beginRenderImgui()
                                         {
                                             if (pModelObject->nameModel == g_Model_TextureBumpMap) //TextureBumpMap
                                             {
-                                                if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[p].indexTextureArray, 1.0f, 1.0f, 100.0f))
+                                                if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[p].indexTextureArray, 0.5f, 0.0f, 10000.0f))
                                                 {
                                                     
                                                 }
