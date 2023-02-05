@@ -17,7 +17,7 @@ namespace LostPeter
 {
 /////Struct
     //////////////////////////////// Vertex_Pos2Color4 //////////////////////////////
-    //0: Vulkan_VertexType_Pos2Color4
+    //0: Vulkan_Vertex_Pos2Color4
     struct utilExport Vertex_Pos2Color4
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -117,7 +117,7 @@ namespace LostPeter
     };
 
     //////////////////////////////// Vertex_Pos3Normal3 /////////////////////////////
-    //1: Vulkan_VertexType_Pos3Normal3
+    //1: Vulkan_Vertex_Pos3Normal3
     struct utilExport Vertex_Pos3Normal3
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -217,7 +217,7 @@ namespace LostPeter
     };
 
     //////////////////////////////// Vertex_Pos2Color4Tex2 //////////////////////////
-    //2: Vulkan_VertexType_Pos2Color4Tex2
+    //2: Vulkan_Vertex_Pos2Color4Tex2
     struct utilExport Vertex_Pos2Color4Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -328,7 +328,7 @@ namespace LostPeter
     };
 
     //////////////////////////////// Vertex_Pos3Color4Tex2 //////////////////////////
-    //3: Vulkan_VertexType_Pos3Color4Tex2
+    //3: Vulkan_Vertex_Pos3Color4Tex2
     struct utilExport Vertex_Pos3Color4Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -439,7 +439,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tex2 ///////////////////
-    //4: Vulkan_VertexType_Pos3Color4Normal3Tex2
+    //4: Vulkan_Vertex_Pos3Color4Normal3Tex2
     struct utilExport Vertex_Pos3Color4Normal3Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -562,7 +562,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex2 ///////////////
-    //5: Vulkan_VertexType_Pos3Color4Normal3Tangent3Tex2
+    //5: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2
     struct utilExport Vertex_Pos3Color4Normal3Tangent3Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;

@@ -103,7 +103,7 @@ Vulkan_009_Instancing::Vulkan_009_Instancing(int width, int height, std::string 
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
 
-    this->poTypeVertex = Vulkan_VertexType_Pos3Color4Normal3Tex2;
+    this->poTypeVertex = Vulkan_Vertex_Pos3Color4Normal3Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/standard_mesh_opaque.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/standard_mesh_opaque.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";

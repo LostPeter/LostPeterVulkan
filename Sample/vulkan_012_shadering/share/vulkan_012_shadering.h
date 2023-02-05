@@ -20,6 +20,45 @@ public:
     Vulkan_012_Shadering(int width, int height, std::string name);
 
 public:
+    /////////////////////////// ModelMesh ///////////////////////////
+    struct ModelMesh
+    {
+        Vulkan_012_Shadering* pWindow;
+        std::string nameMesh;
+        VulkanVertexType poTypeVertex;
+        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
+        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
+        uint32_t poVertexCount;
+        size_t poVertexBuffer_Size;
+        void* poVertexBuffer_Data;
+
+
+        ModelMesh(Vulkan_012_Shadering* _pWindow, 
+                  const std::string& _nameMesh,
+                  VulkanVertexType _poTypeVertex)
+            : pWindow(_pWindow)
+            , nameMesh(_nameMesh)
+            , poTypeVertex(_poTypeVertex)
+        {
+
+        }
+
+        ~ModelMesh()
+        {
+            Destroy();
+        }
+
+        void Destroy()
+        {
+
+        }
+
+    };
+    typedef std::vector<ModelMesh*> ModelMeshPtrVector;
+    typedef std::map<std::string, ModelMesh*> ModelMeshPtrMap;
+
+
+    /////////////////////////// ModelTexture ////////////////////////
     struct ModelTexture
     {
         Vulkan_012_Shadering* pWindow;
@@ -202,6 +241,8 @@ public:
     typedef std::vector<ModelTexture*> ModelTexturePtrVector;
     typedef std::map<std::string, ModelTexture*> ModelTexturePtrMap;
 
+
+    /////////////////////////// ModelObject /////////////////////////
     struct ModelObject
     {
         ModelObject(Vulkan_012_Shadering* _pWindow)
@@ -218,6 +259,7 @@ public:
             , isLighting(true)
 
             //Vertex
+            , poTypeVertex(Vulkan_Vertex_Pos3Color4Normal3Tex2)
             , poVertexCount(0)
             , poVertexBuffer_Size(0)
             , poVertexBuffer_Data(nullptr)
@@ -335,7 +377,9 @@ public:
         bool isLighting;
 
         //Vertex
-        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices;
+        VulkanVertexType poTypeVertex;
+        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
+        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
@@ -432,6 +476,9 @@ public:
     typedef std::map<std::string, ModelObject*> ModelObjectPtrMap;
 
 public:
+    ModelMeshPtrVector m_aModelMesh;
+    ModelMeshPtrMap m_mapModelMesh;    
+
     ModelTexturePtrVector m_aModelTexture;
     ModelTexturePtrMap m_mapModelTexture;
 
@@ -462,7 +509,6 @@ protected:
         //Geometry/Texture
         virtual void loadModel_Custom();
             bool loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal);
-            bool loadModel_Texture(ModelObject* pModelObject);
 
         //ConstBuffers
         virtual void createCustomCB();
@@ -489,6 +535,10 @@ protected:
 
 private:
     void rebuildInstanceCBs(bool isCreateVkBuffer);
+
+    void destroyModelMeshes();
+    void createModelMeshes();
+    ModelMesh* findModelMesh(const std::string& nameMesh);
 
     void destroyModelTextures();
     void createModelTextures();

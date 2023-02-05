@@ -60,22 +60,57 @@ namespace LostPeter
 ////////////////////////////// Enum ////////////////////////////////
     enum VulkanLogType
     {
-        Vulkan_Log_Console = 0,
-        Vulkan_Log_File,
+        Vulkan_Log_Console = 0,                         //0:    Console
+        Vulkan_Log_File,                                //0:    File
     };
 
 
     enum VulkanVertexType
     {
-        Vulkan_VertexType_Pos2Color4 = 0,
-        Vulkan_VertexType_Pos3Normal3,
-        Vulkan_VertexType_Pos2Color4Tex2,
-        Vulkan_VertexType_Pos3Color4Tex2,
-        Vulkan_VertexType_Pos3Color4Normal3Tex2,
-        Vulkan_VertexType_Pos3Color4Normal3Tangent3Tex2,
+        Vulkan_Vertex_Pos2Color4 = 0,                   //0:    Pos2Color4
+        Vulkan_Vertex_Pos3Normal3,                      //1:    Pos3Normal3
+        Vulkan_Vertex_Pos2Color4Tex2,                   //2:    Pos2Color4Tex2
+        Vulkan_Vertex_Pos3Color4Tex2,                   //3:    Pos3Color4Tex2
+        Vulkan_Vertex_Pos3Color4Normal3Tex2,            //4:    Pos3Color4Normal3Tex2
+        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2,    //5:    Pos3Color4Normal3Tangent3Tex2
 
-        Count
+        Vulkan_Vertex_Count
     };
+
+
+    enum VulkanMeshType
+    {
+        Vulkan_Mesh_File = 0,                           //0:    File
+        Vulkan_Mesh_Geometry,                           //1:    Geometry
+
+        Vulkan_Mesh_Count
+    };
+    const std::string& Util_GetMeshTypeName(VulkanMeshType type);
+    const std::string& Util_GetMeshTypeName(int type);
+    VulkanMeshType Util_ParseMeshType(const std::string& strName);
+
+
+    enum VulkanMeshGeometryType
+    {
+        Vulkan_MeshGeometry_Triangle = 0,               //0:    Triangle
+        Vulkan_MeshGeometry_Quad,                       //1:    Quad
+        Vulkan_MeshGeometry_Grid,                       //2:    Grid
+        Vulkan_MeshGeometry_Circle,                     //3:    Circle
+        Vulkan_MeshGeometry_AABB,                       //4:    AABB
+        Vulkan_MeshGeometry_Sphere,                     //5:    Sphere
+        Vulkan_MeshGeometry_GeoSphere,                  //6:    GeoSphere
+        Vulkan_MeshGeometry_Cylinder,                   //7:    Cylinder
+        Vulkan_MeshGeometry_Capsule,                    //8:    Capsule
+        Vulkan_MeshGeometry_Cone,                       //9:    Cone
+        Vulkan_MeshGeometry_Torus,                      //10:   Torus
+        Vulkan_MeshGeometry_SkyBox,                     //11:   SkyBox
+        Vulkan_MeshGeometry_SkyDome,                    //12:   SkyDome
+
+        Vulkan_MeshGeometry_Count,
+    };
+    const std::string& Util_GetMeshGeometryTypeName(VulkanMeshGeometryType type);
+    const std::string& Util_GetMeshGeometryTypeName(int type);
+    VulkanMeshGeometryType Util_ParseMeshGeometryType(const std::string& strName);
 
 
     enum VulkanSwapStatusType

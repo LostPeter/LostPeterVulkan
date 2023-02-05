@@ -60,7 +60,7 @@ namespace LostPeter
         , poIndexBufferMemory(nullptr)
         , poMatWorld(MathUtil::Identity4x4())
 
-        , poTypeVertex(Vulkan_VertexType_Pos3Color4Normal3Tangent3Tex2)
+        , poTypeVertex(Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
         , poPipelineLayout(nullptr)
         , poPipelineCache(nullptr)
         , poPipelineGraphics(nullptr)
@@ -3315,15 +3315,21 @@ namespace LostPeter
         void VulkanWindow::createPipeline_Default()
         {
             //1> Shader
-            VkShaderModule vertShaderModule;
+            VkShaderModule vertShaderModule = VK_NULL_HANDLE;
             if (!this->cfg_shaderVertex_Path.empty())
             {
                 vertShaderModule = createShaderModule("VertexShader: ", this->cfg_shaderVertex_Path);
             }
-            VkShaderModule fragShaderModule;
+            VkShaderModule fragShaderModule = VK_NULL_HANDLE;
             if (!this->cfg_shaderFragment_Path.empty())
             {
                 fragShaderModule = createShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
+            }
+
+            if (vertShaderModule == VK_NULL_HANDLE || 
+                fragShaderModule == VK_NULL_HANDLE)
+            {
+                return;
             }
 
             //2> Viewport

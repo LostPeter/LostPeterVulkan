@@ -17,7 +17,7 @@ Vulkan_002_Imgui::Vulkan_002_Imgui(int width, int height, std::string name)
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
 
-    this->poTypeVertex = Vulkan_VertexType_Pos2Color4;
+    this->poTypeVertex = Vulkan_Vertex_Pos2Color4;
     this->cfg_shaderVertex_Path = "Assets/Shader/notrans_pos2_color4.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/notrans_pos2_color4.frag.spv";
 }

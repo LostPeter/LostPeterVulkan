@@ -20,7 +20,7 @@ Vulkan_003_Texture::Vulkan_003_Texture(int width, int height, std::string name)
     this->cfg_isNegativeViewport = false;
     this->cfg_vkFrontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 
-    this->poTypeVertex = Vulkan_VertexType_Pos2Color4Tex2;
+    this->poTypeVertex = Vulkan_Vertex_Pos2Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/notrans_pos2_color4_tex2.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/notrans_pos2_color4_tex2.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";

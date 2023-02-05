@@ -70,14 +70,14 @@ Vulkan_007_Stencil::Vulkan_007_Stencil(int width, int height, std::string name)
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
 
-    this->poTypeVertex = Vulkan_VertexType_Pos3Color4Normal3Tex2;
+    this->poTypeVertex = Vulkan_Vertex_Pos3Color4Normal3Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_normal3_tex2_ubo.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/pos3_color4_normal3_tex2_ubo.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
 
     this->pathShaderVertex_Outline = "Assets/Shader/pos3_color4_normal3_tex2_ubo_outline.vert.spv";
     this->pathShaderFragment_Outline = "Assets/Shader/pos3_color4_normal3_tex2_ubo_outline.frag.spv";
-    this->poTypeVertex_Outline = Vulkan_VertexType_Pos3Color4Normal3Tex2;
+    this->poTypeVertex_Outline = Vulkan_Vertex_Pos3Color4Normal3Tex2;
 
     this->cfg_cameraPos = glm::vec3(0.5f, 2.5f, -4.0f);
 }

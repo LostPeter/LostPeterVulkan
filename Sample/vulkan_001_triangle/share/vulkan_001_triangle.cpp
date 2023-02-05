@@ -17,7 +17,7 @@ Vulkan_001_Triangle::Vulkan_001_Triangle(int width, int height, std::string name
     this->cfg_isNegativeViewport = false;
     this->cfg_vkFrontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 
-    this->poTypeVertex = Vulkan_VertexType_Pos2Color4;
+    this->poTypeVertex = Vulkan_Vertex_Pos2Color4;
     this->cfg_shaderVertex_Path = "Assets/Shader/notrans_pos2_color4.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/notrans_pos2_color4.frag.spv";
 }

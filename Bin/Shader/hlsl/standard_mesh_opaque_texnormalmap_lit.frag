@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author: LostPeter
-* Time:   2023-01-14
+* Time:   2023-02-04
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
@@ -61,6 +61,19 @@ struct PassConstants
 }
 
 
+//ObjectConstants
+#define MAX_OBJECT_COUNT 1024
+struct ObjectConstants
+{
+    float4x4 g_MatWorld;
+};
+
+[[vk::binding(1)]]cbuffer objectConsts             : register(b1) 
+{
+    ObjectConstants objectConsts[MAX_OBJECT_COUNT];
+}
+
+
 //TextureConstants
 #define MAX_TEXTURE_COUNT 16
 struct TextureConstants
@@ -102,8 +115,34 @@ struct MaterialConstants
 }
 
 
-[[vk::binding(4)]] Texture2DArray texture2DArray        : register(t1);
-[[vk::binding(4)]] SamplerState texture2DArraySampler   : register(s1);
+//InstanceConstants
+#define MAX_INSTANCE_COUNT 1024
+struct InstanceConstants
+{
+    int indexObject;
+    int indexMaterial;
+};
+
+[[vk::binding(3)]]cbuffer instanceConsts            : register(b3) 
+{
+    InstanceConstants instanceConsts[MAX_INSTANCE_COUNT];
+}
+
+
+[[vk::binding(4)]] Texture2D texDiffuse             : register(t1);
+[[vk::binding(4)]] SamplerState texDiffuseSampler   : register(s1);
+
+[[vk::binding(5)]] Texture2D texNormalMap           : register(t2);
+[[vk::binding(5)]] SamplerState texNormalMapSampler : register(s2);
+
+
+float3 unpackNormal(float4 packedNormal)
+{
+    float3 normal;
+    normal.xy = packedNormal.xy * 2 - 1;
+    normal.z = sqrt(1 - saturate(dot(normal.xy, normal.xy)));
+    return normal;
+}
 
 
 float3 calculate_Light_Ambient(float3 ambientGlobal, 
@@ -231,9 +270,6 @@ float3 calculate_Light(float3 ambientGlobal,
 }
 
 
-
-
-
 float4 main(VSOutput input) : SV_TARGET
 {
     float3 outColor;
@@ -241,6 +277,13 @@ float4 main(VSOutput input) : SV_TARGET
     MaterialConstants mat = materialConsts[(uint)input.inWorldPos.w];
     float3 N = normalize(input.inWorldNormal);
 
+    //BumpMap, Need Sample four times to get dx,dy
+    float normalScale = mat.aTexLayers[1].indexTextureArray;
+    if (normalScale > 0.0)
+    {
+        N = unpackNormal(texNormalMap.Sample(texNormalMapSampler, input.inTexCoord));
+    }
+    
     float3 colorLight;
     //Main Light
     float3 colorMainLight = calculate_Light(passConsts.g_AmbientLight.rgb,
@@ -256,7 +299,7 @@ float4 main(VSOutput input) : SV_TARGET
 
 
     //Texture
-    float3 colorTexture = texture2DArray.Sample(texture2DArraySampler, float3(input.inTexCoord, mat.aTexLayers[0].indexTextureArray)).rgb;
+    float3 colorTexture = texDiffuse.Sample(texDiffuseSampler, input.inTexCoord).rgb;
     //VertexColor
     float3 colorVertex = input.inColor.rgb;
 

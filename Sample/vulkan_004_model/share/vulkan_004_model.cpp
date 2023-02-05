@@ -109,7 +109,7 @@ Vulkan_004_Model::Vulkan_004_Model(int width, int height, std::string name)
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
 
-    this->poTypeVertex = Vulkan_VertexType_Pos3Color4Tex2;
+    this->poTypeVertex = Vulkan_Vertex_Pos3Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_tex2_ubo.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/pos3_color4_tex2_ubo.frag.spv";
     

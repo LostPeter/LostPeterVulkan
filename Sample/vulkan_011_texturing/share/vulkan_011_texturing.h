@@ -218,6 +218,7 @@ public:
             , isLighting(true)
 
             //Vertex
+            , poTypeVertex(Vulkan_Vertex_Pos3Color4Normal3Tex2)
             , poVertexCount(0)
             , poVertexBuffer_Size(0)
             , poVertexBuffer_Data(nullptr)
@@ -335,7 +336,9 @@ public:
         bool isLighting;
 
         //Vertex
-        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices;
+        VulkanVertexType poTypeVertex;
+        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
+        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
@@ -462,7 +465,6 @@ protected:
         //Geometry/Texture
         virtual void loadModel_Custom();
             bool loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal);
-            bool loadModel_Texture(ModelObject* pModelObject);
 
         //ConstBuffers
         virtual void createCustomCB();
