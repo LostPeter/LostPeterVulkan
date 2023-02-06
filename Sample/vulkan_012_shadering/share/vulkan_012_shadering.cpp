@@ -22,18 +22,50 @@
 
 /////////////////////////// Mesh ////////////////////////////////
 static const int g_MeshCount = 5;
-static const char* g_pathMeshes[4 * g_MeshCount] =
+static const char* g_MeshPaths[5 * g_MeshCount] =
 {
-    //Mesh Name                 //Mesh Type         //Mesh Geometry Type        //Mesh Path
-    "viking_room",              "file",             "",                         "Assets/Model/Obj/viking_room/viking_room.obj", //viking_room
-    "bunny",                    "file",             "",                         "Assets/Model/Obj/bunny/bunny.obj", //bunny
+    //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
+    "viking_room",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/viking_room/viking_room.obj", //viking_room
+    "bunny",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/bunny/bunny.obj", //bunny
 
-    "plane",                    "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
-    "cube",                     "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
-    "sphere",                   "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
+    "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
+    "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
+    "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
 
 };
 
+static bool g_MeshIsFlipYs[g_MeshCount] = 
+{
+    false, //viking_room
+    false, //bunny
+
+    true, //plane
+    false, //cube
+    false, //sphere
+
+};
+
+static bool g_MeshIsTranformLocals[g_MeshCount] = 
+{
+    true, //viking_room
+    false, //bunny
+
+    false, //plane  
+    false, //cube
+    false, //sphere
+
+};
+
+static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
+{
+    MathUtil::RotateX(-90.0f), //viking_room
+    MathUtil::ms_mat4Unit, //bunny
+
+    MathUtil::ms_mat4Unit, //plane
+    MathUtil::ms_mat4Unit, //cube
+    MathUtil::ms_mat4Unit, //sphere
+
+};
 
 
 /////////////////////////// Texture /////////////////////////////
@@ -169,37 +201,21 @@ static const char* g_ShaderModulePaths[2 * g_ShaderCount] =
 static const int g_ObjectCount = 8;
 static const char* g_ObjectConfigs[5 * g_ObjectCount] = 
 {
-    //Model Name                            //Model Path                                        //Texture One                           //Texture Two                   //Texture Three
-    "viking_room",                          "Assets/Model/Obj/viking_room/viking_room.obj",     "viking_room",                          "",                             "", //viking_room
-    "bunny",                                "Assets/Model/Obj/bunny/bunny.obj",                 "white",                                "",                             "", //bunny  
+    //Object Name                           //Mesh Name                     //Texture One                           //Texture Two                   //Texture Three
+    "viking_room",                          "viking_room",                  "viking_room",                          "",                             "", //viking_room
+    "bunny",                                "bunny",                        "white",                                "",                             "", //bunny  
 
-    "textureCubeMap_SkyBox",                "Assets/Model/Obj/cube/cube.obj",                   "texturecubemap",                       "",                             "", //textureCubeMap_SkyBox
-    "textureCubeMap_Sphere",                "Assets/Model/Fbx/sphere.fbx",                      "texturecubemap",                       "",                             "", //textureCubeMap_Sphere
+    "textureCubeMap_SkyBox",                "cube",                         "texturecubemap",                       "",                             "", //textureCubeMap_SkyBox
+    "textureCubeMap_Sphere",                "sphere",                       "texturecubemap",                       "",                             "", //textureCubeMap_Sphere
 
-    "texture2Darray_TerrainDiffuse",        "Assets/Model/Fbx/plane.fbx",                       "texture_terrain_diffuse",              "",                             "", //texture2Darray_TerrainDiffuse
-    "texture2Darray_TerrainNormal",         "Assets/Model/Fbx/plane.fbx",                       "texture_terrain_normal",               "",                             "", //texture2Darray_TerrainNormal
-    "texture2Darray_TerrainControl",        "Assets/Model/Fbx/plane.fbx",                       "texture_terrain_control",              "",                             "", //texture2Darray_TerrainControl
+    "texture2Darray_TerrainDiffuse",        "plane",                        "texture_terrain_diffuse",              "",                             "", //texture2Darray_TerrainDiffuse
+    "texture2Darray_TerrainNormal",         "plane",                        "texture_terrain_normal",               "",                             "", //texture2Darray_TerrainNormal
+    "texture2Darray_TerrainControl",        "plane",                        "texture_terrain_control",              "",                             "", //texture2Darray_TerrainControl
 
-    "terrain",                              "Assets/Model/Fbx/plane.fbx",                       "texture_terrain_diffuse",              "texture_terrain_normal",       "texture_terrain_control", //terrain
+    "terrain",                              "plane",                        "texture_terrain_diffuse",              "texture_terrain_normal",       "texture_terrain_control", //terrain
 };
 
-static const VulkanVertexType g_ModelsVertexTypes[g_ObjectCount] =
-{
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //viking_room
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //bunny
-
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //textureCubeMap_SkyBox
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //textureCubeMap_Sphere
-
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //texture2Darray_TerrainDiffuse
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //texture2Darray_TerrainNormal
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //texture2Darray_TerrainControl
-
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //terrain
-};
-
-
-static const char* g_pathModelShaderModules[g_ObjectCount] = 
+static const char* g_ObjectPathShaderModules[g_ObjectCount] = 
 {
     "Assets/Shader/standard_mesh_transparent_lit", //viking_room
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //bunny
@@ -214,7 +230,7 @@ static const char* g_pathModelShaderModules[g_ObjectCount] =
     "Assets/Shader/standard_terrain_opaque_lit", //terrain
 };
 
-static const char* g_nameModelDescriptorSetLayouts[g_ObjectCount] = 
+static const char* g_ObjectNameDescriptorSetLayouts[g_ObjectCount] = 
 {
     "Pass-Object-Material-Instance-TextureFS", //viking_room
     "Pass-Object-Material-Instance-TextureFS", //bunny
@@ -231,8 +247,7 @@ static const char* g_nameModelDescriptorSetLayouts[g_ObjectCount] =
 
 
 static float g_instanceGap = 1.5f;
-
-static int g_ObjectInstanceExtCount[] =
+static int g_ObjectInstanceExtCount[g_ObjectCount] =
 {
     0, //viking_room
     0, //bunny
@@ -261,51 +276,6 @@ static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] =
 
     glm::vec3(   0, -0.1,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //terrain
 
-};
-
-static glm::mat4 g_ObjectTranformLocals[g_ObjectCount] = 
-{
-    MathUtil::RotateX(-90.0f), //viking_room
-    MathUtil::ms_mat4Unit, //bunny
-
-    MathUtil::ms_mat4Unit, //textureCubeMap_SkyBox
-    MathUtil::ms_mat4Unit, //textureCubeMap_Sphere
-
-    MathUtil::ms_mat4Unit, //texture2Darray_TerrainDiffuse
-    MathUtil::ms_mat4Unit, //texture2Darray_TerrainNormal
-    MathUtil::ms_mat4Unit, //texture2Darray_TerrainControl
-
-    MathUtil::ms_mat4Unit, //terrain
-};
-
-static bool g_ObjectIsTranformLocals[g_ObjectCount] = 
-{
-    true, //viking_room
-    false, //bunny
-
-    false, //textureCubeMap_SkyBox  
-    false, //textureCubeMap_Sphere 
-
-    false, //texture2Darray_TerrainDiffuse
-    false, //texture2Darray_TerrainNormal
-    false, //texture2Darray_TerrainControl
-
-    false, //terrain
-};
-
-static bool g_ObjectIsFlipYs[g_ObjectCount] = 
-{
-    false, //viking_room
-    false, //bunny
-
-    false, //textureCubeMap_SkyBox
-    false, //textureCubeMap_Sphere
-
-    false, //texture2Darray_TerrainDiffuse
-    false, //texture2Darray_TerrainNormal
-    false, //texture2Darray_TerrainControl
-
-    false, //terrain
 };
 
 static bool g_ObjectIsTransparents[g_ObjectCount] = 
@@ -370,7 +340,109 @@ static bool g_ObjectIsLightings[g_ObjectCount] =
 
 
 /////////////////////////// ModelMesh ///////////////////////////
+bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+{
+    //1> Load
+    MeshData meshData;
+    meshData.bIsFlipY = isFlipY;
+    unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
+    if (!VulkanMeshLoader::LoadMeshData(this->pathMesh, meshData, eMeshParserFlags))
+    {
+        Util_LogError("Vulkan_012_Shadering::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
+        return false; 
+    }
 
+    int count_vertex = (int)meshData.vertices.size();
+    if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex2)
+    {
+        this->vertices_Pos3Color4Normal3Tex2.clear();
+        this->vertices_Pos3Color4Normal3Tex2.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            MeshVertex& vertex = meshData.vertices[i];
+            Vertex_Pos3Color4Normal3Tex2 v;
+            v.pos = vertex.pos;
+            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.normal = vertex.normal;
+            v.texCoord = vertex.texCoord;
+            if (isTranformLocal)
+            {
+                v.pos = MathUtil::Transform(matTransformLocal, v.pos);
+            }
+            this->vertices_Pos3Color4Normal3Tex2.push_back(v);
+        }
+
+        int count_index = (int)meshData.indices32.size();
+        this->indices.clear();
+        this->indices.reserve(count_index);
+        for (int i = 0; i < count_index; i++)
+        {
+            this->indices.push_back(meshData.indices32[i]);
+        }
+        this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tex2.size();
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tex2);
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex2[0];
+        this->poIndexCount = (uint32_t)this->indices.size();
+        this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+        this->poIndexBuffer_Data = &this->indices[0];
+
+        Util_LogInfo("Vulkan_012_Shadering::ModelMesh::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                     this->nameMesh.c_str(),
+                     (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
+                     (int)this->indices.size());
+    }
+    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
+    {
+        this->vertices_Pos3Color4Normal3Tangent3Tex2.clear();
+        this->vertices_Pos3Color4Normal3Tangent3Tex2.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            MeshVertex& vertex = meshData.vertices[i];
+            Vertex_Pos3Color4Normal3Tangent3Tex2 v;
+            v.pos = vertex.pos;
+            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.normal = vertex.normal;
+            v.tangent = vertex.tangent;
+            v.texCoord = vertex.texCoord;
+            if (isTranformLocal)
+            {
+                v.pos = MathUtil::Transform(matTransformLocal, v.pos);
+            }
+            this->vertices_Pos3Color4Normal3Tangent3Tex2.push_back(v);
+        }
+
+        int count_index = (int)meshData.indices32.size();
+        this->indices.clear();
+        this->indices.reserve(count_index);
+        for (int i = 0; i < count_index; i++)
+        {
+            this->indices.push_back(meshData.indices32[i]);
+        }
+        this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2);
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex2[0];
+        this->poIndexCount = (uint32_t)this->indices.size();
+        this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+        this->poIndexBuffer_Data = &this->indices[0];
+
+        Util_LogInfo("Vulkan_012_Shadering::ModelMesh::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                     this->nameMesh.c_str(),
+                     (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
+                     (int)this->indices.size());
+    }
+
+    //2> createVertexBuffer
+    this->pWindow->createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
+
+    //3> createIndexBuffer
+    if (this->poIndexBuffer_Size > 0 &&
+        this->poIndexBuffer_Data != nullptr)
+    {
+        this->pWindow->createIndexBuffer(this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+    }
+
+    return true;
+}
 
 
 /////////////////////////// ModelTexture ////////////////////////
@@ -469,9 +541,15 @@ void Vulkan_012_Shadering::loadModel_Custom()
         ModelObject* pModelObject = new ModelObject(this);
         pModelObject->indexModel = i;
         pModelObject->nameModel = g_ObjectConfigs[5 * i + 0];
-        pModelObject->pathModel = g_ObjectConfigs[5 * i + 1];
-        pModelObject->nameDescriptorSetLayout = g_nameModelDescriptorSetLayouts[i];
-        pModelObject->poTypeVertex = g_ModelsVertexTypes[i];
+        pModelObject->nameMesh = g_ObjectConfigs[5 * i + 1];
+        pModelObject->nameDescriptorSetLayout = g_ObjectNameDescriptorSetLayouts[i];
+
+        //Mesh
+        {
+            ModelMesh* pMesh = this->findModelMesh(pModelObject->nameMesh);
+            assert(pMesh != nullptr && "Vulkan_012_Shadering::loadModel_Custom");
+            pModelObject->SetMesh(pMesh);
+        }
 
         int indexTex = 0;
         //Texture Channel 0
@@ -508,22 +586,11 @@ void Vulkan_012_Shadering::loadModel_Custom()
             indexTex ++;
         }
 
-        bool isTranformLocal = g_ObjectIsTranformLocals[i];
-        bool isFlipY = g_ObjectIsFlipYs[i];
         pModelObject->isTransparent = g_ObjectIsTransparents[i];
-
         pModelObject->isShow = g_ObjectIsShows[i];
         pModelObject->isRotate = g_ObjectIsRotates[i];
         pModelObject->countInstanceExt = g_ObjectInstanceExtCount[i];
         pModelObject->countInstance = pModelObject->countInstanceExt * 2 + 1;
-
-        //Model
-        if (!loadModel_VertexIndex(pModelObject, isFlipY, isTranformLocal, g_ObjectTranformLocals[i]))
-        {
-            std::string msg = "Vulkan_012_Shadering::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
-        }
 
         m_aModelObjects.push_back(pModelObject);
         if (pModelObject->isTransparent)
@@ -532,109 +599,6 @@ void Vulkan_012_Shadering::loadModel_Custom()
             m_aModelObjects_Render.insert(m_aModelObjects_Render.begin(), pModelObject);
         m_mapModelObjects[pModelObject->nameModel] = pModelObject;
     }
-}
-bool Vulkan_012_Shadering::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
-{
-    //1> Load 
-    MeshData meshData;
-    meshData.bIsFlipY = isFlipY;
-    unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
-    if (!VulkanMeshLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
-    {
-        Util_LogError("Vulkan_012_Shadering::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
-        return false; 
-    }
-
-    int count_vertex = (int)meshData.vertices.size();
-    if (pModelObject->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex2)
-    {
-        pModelObject->vertices_Pos3Color4Normal3Tex2.clear();
-        pModelObject->vertices_Pos3Color4Normal3Tex2.reserve(count_vertex);
-        for (int i = 0; i < count_vertex; i++)
-        {
-            MeshVertex& vertex = meshData.vertices[i];
-            Vertex_Pos3Color4Normal3Tex2 v;
-            v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-            v.normal = vertex.normal;
-            v.texCoord = vertex.texCoord;
-            if (isTranformLocal)
-            {
-                v.pos = MathUtil::Transform(matTransformLocal, v.pos);
-            }
-            pModelObject->vertices_Pos3Color4Normal3Tex2.push_back(v);
-        }
-
-        int count_index = (int)meshData.indices32.size();
-        pModelObject->indices.clear();
-        pModelObject->indices.reserve(count_index);
-        for (int i = 0; i < count_index; i++)
-        {
-            pModelObject->indices.push_back(meshData.indices32[i]);
-        }
-        pModelObject->poVertexCount = (uint32_t)pModelObject->vertices_Pos3Color4Normal3Tex2.size();
-        pModelObject->poVertexBuffer_Size = pModelObject->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tex2);
-        pModelObject->poVertexBuffer_Data = &pModelObject->vertices_Pos3Color4Normal3Tex2[0];
-        pModelObject->poIndexCount = (uint32_t)pModelObject->indices.size();
-        pModelObject->poIndexBuffer_Size = pModelObject->poIndexCount * sizeof(uint32_t);
-        pModelObject->poIndexBuffer_Data = &pModelObject->indices[0];
-
-        Util_LogInfo("Vulkan_012_Shadering::loadModel_VertexIndex: load model [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
-                     pModelObject->nameModel.c_str(),
-                     (int)pModelObject->vertices_Pos3Color4Normal3Tex2.size(), 
-                     (int)pModelObject->indices.size());
-    }
-    else if (pModelObject->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
-    {
-        pModelObject->vertices_Pos3Color4Normal3Tangent3Tex2.clear();
-        pModelObject->vertices_Pos3Color4Normal3Tangent3Tex2.reserve(count_vertex);
-        for (int i = 0; i < count_vertex; i++)
-        {
-            MeshVertex& vertex = meshData.vertices[i];
-            Vertex_Pos3Color4Normal3Tangent3Tex2 v;
-            v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-            v.normal = vertex.normal;
-            v.tangent = vertex.tangent;
-            v.texCoord = vertex.texCoord;
-            if (isTranformLocal)
-            {
-                v.pos = MathUtil::Transform(matTransformLocal, v.pos);
-            }
-            pModelObject->vertices_Pos3Color4Normal3Tangent3Tex2.push_back(v);
-        }
-
-        int count_index = (int)meshData.indices32.size();
-        pModelObject->indices.clear();
-        pModelObject->indices.reserve(count_index);
-        for (int i = 0; i < count_index; i++)
-        {
-            pModelObject->indices.push_back(meshData.indices32[i]);
-        }
-        pModelObject->poVertexCount = (uint32_t)pModelObject->vertices_Pos3Color4Normal3Tangent3Tex2.size();
-        pModelObject->poVertexBuffer_Size = pModelObject->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2);
-        pModelObject->poVertexBuffer_Data = &pModelObject->vertices_Pos3Color4Normal3Tangent3Tex2[0];
-        pModelObject->poIndexCount = (uint32_t)pModelObject->indices.size();
-        pModelObject->poIndexBuffer_Size = pModelObject->poIndexCount * sizeof(uint32_t);
-        pModelObject->poIndexBuffer_Data = &pModelObject->indices[0];
-
-        Util_LogInfo("Vulkan_012_Shadering::loadModel_VertexIndex: load model [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
-                     pModelObject->nameModel.c_str(),
-                     (int)pModelObject->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
-                     (int)pModelObject->indices.size());
-    }
-
-    //2> createVertexBuffer
-    createVertexBuffer(pModelObject->poVertexBuffer_Size, pModelObject->poVertexBuffer_Data, pModelObject->poVertexBuffer, pModelObject->poVertexBufferMemory);
-
-    //3> createIndexBuffer
-    if (pModelObject->poIndexBuffer_Size > 0 &&
-        pModelObject->poIndexBuffer_Data != nullptr)
-    {
-        createIndexBuffer(pModelObject->poIndexBuffer_Size, pModelObject->poIndexBuffer_Data, pModelObject->poIndexBuffer, pModelObject->poIndexBufferMemory);
-    }
-
-    return true;
 }
 
 void Vulkan_012_Shadering::createCustomCB()
@@ -736,8 +700,8 @@ void Vulkan_012_Shadering::createPipeline_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        std::string pathVertShaderBase = g_pathModelShaderModules[i] + c_strVert;
-        std::string pathFragShaderBase = g_pathModelShaderModules[i] + c_strFrag;
+        std::string pathVertShaderBase = g_ObjectPathShaderModules[i] + c_strVert;
+        std::string pathFragShaderBase = g_ObjectPathShaderModules[i] + c_strFrag;
         VkShaderModule vertShaderBase = findShaderModule(pathVertShaderBase);
         VkShaderModule fragShaderBase = findShaderModule(pathFragShaderBase);
         pModelObject->poPipelineLayout = findPipelineLayout(pModelObject->nameDescriptorSetLayout);
@@ -751,8 +715,8 @@ void Vulkan_012_Shadering::createPipeline_Custom()
         //poPipelineGraphics_WireFrame
         pModelObject->poPipelineGraphics_WireFrame = createVkPipeline(vertShaderBase, "main",
                                                                       fragShaderBase, "main",
-                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->poTypeVertex),
-                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->poTypeVertex),
+                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
+                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                                       this->poRenderPass, pModelObject->poPipelineLayout, viewports, scissors,
                                                                       pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pModelObject->cfg_vkCullModeFlagBits,
                                                                       pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
@@ -784,8 +748,8 @@ void Vulkan_012_Shadering::createPipeline_Custom()
         }
         pModelObject->poPipelineGraphics = createVkPipeline(vertShaderBase, "main",
                                                             fragShaderBase, "main",
-                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->poTypeVertex), 
-                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->poTypeVertex),
+                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex), 
+                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                             this->poRenderPass, pModelObject->poPipelineLayout, viewports, scissors,
                                                             pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                             isDepthTestEnable, isDepthWriteEnable, pModelObject->cfg_DepthCompareOp,
@@ -805,11 +769,54 @@ void Vulkan_012_Shadering::createPipeline_Custom()
 
 void Vulkan_012_Shadering::destroyModelMeshes()
 {
-
+    size_t count = this->m_aModelMesh.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ModelMesh* pMesh = this->m_aModelMesh[i];
+        delete pMesh;
+    }
+    this->m_aModelMesh.clear();
+    this->m_mapModelMesh.clear();
 }
 void Vulkan_012_Shadering::createModelMeshes()
 {
+    for (int i = 0; i < g_MeshCount; i++)
+    {
+        std::string nameMesh = g_MeshPaths[5 * i + 0];
+        std::string nameVertexType = g_MeshPaths[5 * i + 1];
+        std::string nameMeshType = g_MeshPaths[5 * i + 2];
+        std::string nameGeometryType = g_MeshPaths[5 * i + 3];
+        std::string pathMesh = g_MeshPaths[5 * i + 4];
+        
+        VulkanVertexType typeVertex = Util_ParseVertexType(nameVertexType); 
+        VulkanMeshType typeMesh = Util_ParseMeshType(nameMeshType);
+        VulkanMeshGeometryType typeGeometryType = Vulkan_MeshGeometry_Triangle;
+        if (!nameGeometryType.empty())
+        {
+            typeGeometryType = Util_ParseMeshGeometryType(nameGeometryType);
+        }
 
+        ModelMesh* pMesh = new ModelMesh(this, 
+                                         nameMesh,
+                                         pathMesh,
+                                         typeMesh,
+                                         typeGeometryType,
+                                         typeVertex);
+        bool isFlipY = g_MeshIsFlipYs[i];
+        bool isTranformLocal = g_MeshIsTranformLocals[i];
+        if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_MeshTranformLocals[i]))
+        {
+            std::string msg = "Vulkan_012_Shadering::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+
+        this->m_aModelMesh.push_back(pMesh);
+        this->m_mapModelMesh[nameMesh] = pMesh;
+
+        Util_LogInfo("Vulkan_012_Shadering::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], path: [%s] success !", 
+                     nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), pathMesh.c_str());
+    }
 }
 Vulkan_012_Shadering::ModelMesh* Vulkan_012_Shadering::findModelMesh(const std::string& nameMesh)
 {
@@ -1336,7 +1343,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                     rebuildInstanceCBs(false);
                 }
 
-                ImGui::Text("Vertex: [%d], Index: [%d]", (int)pModelObject->poVertexCount, (int)pModelObject->poIndexCount);
+                ImGui::Text("Vertex: [%d], Index: [%d]", (int)pModelObject->pMesh->poVertexCount, (int)pModelObject->pMesh->poIndexCount);
                 
                 std::string nameWorld = "Model Object - " + pModelObject->nameModel;
                 if (ImGui::CollapsingHeader(nameWorld.c_str()))
@@ -1562,13 +1569,14 @@ void Vulkan_012_Shadering::drawMesh_Custom(VkCommandBuffer& commandBuffer)
         ModelObject* pModelObject = this->m_aModelObjects_Render[i];
         if (!pModelObject->isShow)
             continue;
+        ModelMesh* pMesh = pModelObject->pMesh;
 
-        VkBuffer vertexBuffers[] = { pModelObject->poVertexBuffer };
+        VkBuffer vertexBuffers[] = { pMesh->poVertexBuffer };
         VkDeviceSize offsets[] = { 0 };
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-        if (pModelObject->poIndexBuffer != nullptr)
+        if (pMesh->poIndexBuffer != nullptr)
         {
-            vkCmdBindIndexBuffer(commandBuffer, pModelObject->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            vkCmdBindIndexBuffer(commandBuffer, pMesh->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
         }
 
         if (pModelObject->isWireFrame)
@@ -1594,13 +1602,13 @@ void Vulkan_012_Shadering::drawMesh_Custom(VkCommandBuffer& commandBuffer)
 }
 void Vulkan_012_Shadering::drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject)
 {
-    if (pModelObject->poIndexBuffer != nullptr)
+    if (pModelObject->pMesh->poIndexBuffer != nullptr)
     {
-        vkCmdDrawIndexed(commandBuffer, pModelObject->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+        vkCmdDrawIndexed(commandBuffer, pModelObject->pMesh->poIndexCount, pModelObject->countInstance, 0, 0, 0);
     }
     else
     {
-        vkCmdDraw(commandBuffer, pModelObject->poVertexCount, pModelObject->countInstance, 0, 0);
+        vkCmdDraw(commandBuffer, pModelObject->pMesh->poVertexCount, pModelObject->countInstance, 0, 0);
     }
 }
 

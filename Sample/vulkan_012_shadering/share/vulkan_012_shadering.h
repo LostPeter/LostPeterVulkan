@@ -25,20 +25,55 @@ public:
     {
         Vulkan_012_Shadering* pWindow;
         std::string nameMesh;
+        std::string pathMesh;
+        VulkanMeshType typeMesh;
+        VulkanMeshGeometryType typeGeometryType;
+
+        //Vertex
         VulkanVertexType poTypeVertex;
         std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
         std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
+        VkBuffer poVertexBuffer;
+        VkDeviceMemory poVertexBufferMemory;
+
+        //Index
+        std::vector<uint32_t> indices;
+        uint32_t poIndexCount;
+        size_t poIndexBuffer_Size;
+        void* poIndexBuffer_Data;
+        VkBuffer poIndexBuffer;
+        VkDeviceMemory poIndexBufferMemory;
 
 
         ModelMesh(Vulkan_012_Shadering* _pWindow, 
                   const std::string& _nameMesh,
+                  const std::string& _pathMesh,
+                  VulkanMeshType _typeMesh,
+                  VulkanMeshGeometryType _typeGeometryType,
                   VulkanVertexType _poTypeVertex)
             : pWindow(_pWindow)
             , nameMesh(_nameMesh)
+            , pathMesh(_pathMesh)
+            , typeMesh(_typeMesh)
+            , typeGeometryType(_typeGeometryType)
+
+            //Vertex
             , poTypeVertex(_poTypeVertex)
+            , poVertexCount(0)
+            , poVertexBuffer_Size(0)
+            , poVertexBuffer_Data(nullptr)
+            , poVertexBuffer(VK_NULL_HANDLE)
+            , poVertexBufferMemory(VK_NULL_HANDLE)
+
+            //Index
+            , poIndexCount(0)
+            , poIndexBuffer_Size(0)
+            , poIndexBuffer_Data(nullptr)
+            , poIndexBuffer(VK_NULL_HANDLE)
+            , poIndexBufferMemory(VK_NULL_HANDLE)
         {
 
         }
@@ -50,8 +85,19 @@ public:
 
         void Destroy()
         {
+            //Vertex
+            this->pWindow->destroyBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
+            this->poVertexBuffer = VK_NULL_HANDLE;
+            this->poVertexBufferMemory = VK_NULL_HANDLE;
 
+            //Index
+            this->pWindow->destroyBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
+            this->poIndexBuffer = VK_NULL_HANDLE;
+            this->poIndexBufferMemory = VK_NULL_HANDLE;
         }
+
+
+        bool LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal);
 
     };
     typedef std::vector<ModelMesh*> ModelMeshPtrVector;
@@ -251,27 +297,15 @@ public:
 
             //Name
             , nameModel("")
-            , pathModel("")
+            , nameMesh("")
             , isShow(true)
             , isWireFrame(false)
             , isRotate(true)
             , isTransparent(false)
             , isLighting(true)
 
-            //Vertex
-            , poTypeVertex(Vulkan_Vertex_Pos3Color4Normal3Tex2)
-            , poVertexCount(0)
-            , poVertexBuffer_Size(0)
-            , poVertexBuffer_Data(nullptr)
-            , poVertexBuffer(VK_NULL_HANDLE)
-            , poVertexBufferMemory(VK_NULL_HANDLE)
-
-            //Index
-            , poIndexCount(0)
-            , poIndexBuffer_Size(0)
-            , poIndexBuffer_Data(nullptr)
-            , poIndexBuffer(VK_NULL_HANDLE)
-            , poIndexBufferMemory(VK_NULL_HANDLE)
+            //Mesh
+            , pMesh(nullptr)
 
             //Uniform
             , countInstanceExt(0)
@@ -309,15 +343,8 @@ public:
         }
         ~ModelObject()
         {
-            //Vertex
-            this->pWindow->destroyBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
-            this->poVertexBuffer = VK_NULL_HANDLE;
-            this->poVertexBufferMemory = VK_NULL_HANDLE;
-
-            //Index
-            this->pWindow->destroyBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
-            this->poIndexBuffer = VK_NULL_HANDLE;
-            this->poIndexBufferMemory = VK_NULL_HANDLE;
+            //Mesh
+            this->pMesh = nullptr;
 
             //Texture
             this->m_aModelTextures.clear();
@@ -366,7 +393,7 @@ public:
         //Name
         int indexModel;
         std::string nameModel;
-        std::string pathModel;
+        std::string nameMesh;
         std::vector<int> aTextureChannels;
         std::vector<std::string> aPathTextures;
         std::map<int, std::vector<std::string>> mapPathTextures;
@@ -376,23 +403,12 @@ public:
         bool isTransparent;
         bool isLighting;
 
-        //Vertex
-        VulkanVertexType poTypeVertex;
-        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
-        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
-        uint32_t poVertexCount;
-        size_t poVertexBuffer_Size;
-        void* poVertexBuffer_Data;
-        VkBuffer poVertexBuffer;
-        VkDeviceMemory poVertexBufferMemory;
+        //Mesh
+        ModelMesh* pMesh;
 
-        //Index
-        std::vector<uint32_t> indices;
-        uint32_t poIndexCount;
-        size_t poIndexBuffer_Size;
-        void* poIndexBuffer_Data;
-        VkBuffer poIndexBuffer;
-        VkDeviceMemory poIndexBufferMemory;
+        //Texture
+        ModelTexturePtrVector m_aModelTextures;
+        ModelTexturePtrMap m_mapModelTextures;
 
         //Uniform
         int countInstanceExt;
@@ -406,10 +422,6 @@ public:
         std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_materialCB;
         std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
-
-        //Texture
-        ModelTexturePtrVector m_aModelTextures;
-        ModelTexturePtrMap m_mapModelTextures;
 
         //DescriptorSetLayout
         std::string nameDescriptorSetLayout;
@@ -445,6 +457,26 @@ public:
         VkColorComponentFlags cfg_ColorWriteMask;
 
 
+    ////Mesh
+        void SetMesh(ModelMesh* pMesh)
+        {
+            this->pMesh = pMesh;
+        }
+        ModelMesh* GetMesh()
+        {
+            return this->pMesh;
+        }
+
+        VkBuffer GetMeshVertexBuffer()
+        {
+            return this->pMesh->poVertexBuffer;
+        }
+        VkBuffer GetMeshIndexBuffer()
+        {
+            return this->pMesh->poIndexBuffer;
+        }
+
+    ////Textures
         void AddTexture(ModelTexture* pTexture)
         {
             this->m_aModelTextures.push_back(pTexture);
@@ -508,7 +540,6 @@ protected:
 
         //Geometry/Texture
         virtual void loadModel_Custom();
-            bool loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal);
 
         //ConstBuffers
         virtual void createCustomCB();
@@ -536,23 +567,28 @@ protected:
 private:
     void rebuildInstanceCBs(bool isCreateVkBuffer);
 
+////ModelMesh
     void destroyModelMeshes();
     void createModelMeshes();
     ModelMesh* findModelMesh(const std::string& nameMesh);
 
+////ModelTexture
     void destroyModelTextures();
     void createModelTextures();
     ModelTexture* findModelTexture(const std::string& nameTexture);
 
+////DescriptorSetLayout
     void destroyDescriptorSetLayouts();
     void createDescriptorSetLayouts();
     VkDescriptorSetLayout findDescriptorSetLayout(const std::string& nameDescriptorSetLayout);
     std::vector<std::string>* findDescriptorSetLayoutNames(const std::string& nameDescriptorSetLayout);
 
+////ShaderModule
     void destroyShaderModules();
     void createShaderModules();
     VkShaderModule findShaderModule(const std::string& pathShaderModule);
 
+////PipelineLayout
     void destroyPipelineLayouts();
     void createPipelineLayouts();
     VkPipelineLayout findPipelineLayout(const std::string& namePipelineLayout);

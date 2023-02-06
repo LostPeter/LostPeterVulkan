@@ -19,46 +19,59 @@
 #include <assimp/postprocess.h>
 
 
-const std::string c_strVert = ".vert.spv";
-const std::string c_strFrag = ".frag.spv";
-static const int g_ShaderCount = 11;
-static const char* g_pathShaderModules[2 * g_ShaderCount] = 
+
+/////////////////////////// Mesh ////////////////////////////////
+static const int g_MeshCount = 5;
+static const char* g_MeshPaths[5 * g_MeshCount] =
 {
-////Basic-Level Texture Operation
-    "Assets/Shader/standard_mesh_opaque_texsampler_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texsampler_lit.frag.spv", //standard_mesh_opaque_texsampler_lit
-    "Assets/Shader/standard_mesh_opaque_tex1d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex1d_lit.frag.spv", //standard_mesh_opaque_tex1d_lit
-    "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit
-    "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit
-    "Assets/Shader/standard_mesh_opaque_tex3d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex3d_lit.frag.spv", //standard_mesh_opaque_tex3d_lit
-    "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit
-    "Assets/Shader/standard_mesh_opaque_texanim_scroll_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texanim_scroll_lit.frag.spv", //standard_mesh_opaque_texanim_scroll_lit
-    "Assets/Shader/standard_mesh_opaque_texanim_chunk_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texanim_chunk_lit.frag.spv", //standard_mesh_opaque_texanim_chunk_lit
-    
-////High-Level Texture Operation
-    "Assets/Shader/standard_mesh_opaque_texbumpmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texbumpmap_lit.frag.spv", //standard_mesh_opaque_texbumpmap_lit
-    "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit
+    //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
+    "viking_room",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/viking_room/viking_room.obj", //viking_room
+    "bunny",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/bunny/bunny.obj", //bunny
 
+    "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
+    "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
+    "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
 
-////Transparent
-    "Assets/Shader/standard_mesh_transparent_lit.vert.spv", "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit
 };
 
-const std::string c_strLayout_Pass = "Pass";
-const std::string c_strLayout_Object = "Object";
-const std::string c_strLayout_Material = "Material";
-const std::string c_strLayout_Instance = "Instance";
-const std::string c_strLayout_TextureVS = "TextureVS";
-const std::string c_strLayout_TextureFS = "TextureFS";
-static const int g_DescriptorSetLayoutCount = 2;
-static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
+static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
-    "Pass-Object-Material-Instance-TextureFS",
-    "Pass-Object-Material-Instance-TextureFS-TextureFS",
+    false, //viking_room
+    false, //bunny
+
+    true, //plane
+    false, //cube
+    false, //sphere
+
 };
 
+static bool g_MeshIsTranformLocals[g_MeshCount] = 
+{
+    true, //viking_room
+    false, //bunny
+
+    false, //plane  
+    false, //cube
+    false, //sphere
+
+};
+
+static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
+{
+    MathUtil::RotateX(-90.0f), //viking_room
+    MathUtil::ms_mat4Unit, //bunny
+
+    MathUtil::ms_mat4Unit, //plane
+    MathUtil::ms_mat4Unit, //cube
+    MathUtil::ms_mat4Unit, //sphere
+
+};
+
+
+/////////////////////////// Texture /////////////////////////////
 static const std::string g_TextureDefault = "default";
 static const int g_TextureCount = 18;
-static const char* g_pathTextures[3 * g_TextureCount] = 
+static const char* g_TexturePaths[3 * g_TextureCount] = 
 {
     "default",                      "2d",           "Assets/Texture/default_blackwhite.png", //default
     "terrain",                      "2d",           "Assets/Texture/terrain.png", //terrain
@@ -84,7 +97,7 @@ static const char* g_pathTextures[3 * g_TextureCount] =
     "texturenormalmap_normalmap",   "2d",           "Assets/Texture/bricks_normalmap.png", //texturenormalmap_normalmap
 
 };
-static VkFormat g_formatTextures[g_TextureCount] = 
+static VkFormat g_TextureFormats[g_TextureCount] = 
 {
     VK_FORMAT_R8G8B8A8_SRGB, //default
     VK_FORMAT_R8G8B8A8_SRGB, //terrain
@@ -110,7 +123,7 @@ static VkFormat g_formatTextures[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_UNORM, //texturenormalmap_normalmap
 
 };
-static VulkanTextureFilterType g_filterTextures[g_TextureCount] = 
+static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
     Vulkan_TextureFilter_Bilinear, //default
     Vulkan_TextureFilter_Bilinear, //terrain
@@ -136,7 +149,7 @@ static VulkanTextureFilterType g_filterTextures[g_TextureCount] =
     Vulkan_TextureFilter_Bilinear, //texturenormalmap_normalmap
 
 };
-static VulkanTextureAddressingType g_addressingTextures[g_TextureCount] = 
+static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
 {
     Vulkan_TextureAddressing_Clamp, //default
     Vulkan_TextureAddressing_Clamp, //terrain
@@ -162,7 +175,7 @@ static VulkanTextureAddressingType g_addressingTextures[g_TextureCount] =
     Vulkan_TextureAddressing_Clamp, //texturenormalmap_normalmap
 
 };
-static VulkanTextureBorderColorType g_borderColorTextures[g_TextureCount] = 
+static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
     Vulkan_TextureBorderColor_OpaqueBlack, //default
     Vulkan_TextureBorderColor_OpaqueBlack, //terrain
@@ -188,7 +201,7 @@ static VulkanTextureBorderColorType g_borderColorTextures[g_TextureCount] =
     Vulkan_TextureBorderColor_OpaqueBlack, //texturenormalmap_normalmap
 
 };
-static int g_sizeTextures[3 * g_TextureCount] = 
+static int g_TextureSizes[3 * g_TextureCount] = 
 {
     512,    512,    1, //default
     512,    512,    1, //terrain
@@ -214,7 +227,7 @@ static int g_sizeTextures[3 * g_TextureCount] =
     512,    512,    1, //texturenormalmap_normalmap
 
 };
-static float g_animChunkTextures[2 * g_TextureCount] = 
+static float g_TextureAnimChunks[2 * g_TextureCount] = 
 {
     0,    0, //default
     0,    0, //terrain
@@ -242,68 +255,84 @@ static float g_animChunkTextures[2 * g_TextureCount] =
 };
 
 
-
-static const int g_ModelCount = 17;
-static const char* g_pathModels[4 * g_ModelCount] = 
+/////////////////////////// DescriptorSetLayout /////////////////
+const std::string c_strLayout_Pass = "Pass";
+const std::string c_strLayout_Object = "Object";
+const std::string c_strLayout_Material = "Material";
+const std::string c_strLayout_Instance = "Instance";
+const std::string c_strLayout_TextureVS = "TextureVS";
+const std::string c_strLayout_TextureFS = "TextureFS";
+static const int g_DescriptorSetLayoutCount = 2;
+static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
 {
-    //Model Name                    //Model Path                                        //Texture One                           //Texture Two
-    "ground",                       "Assets/Model/Fbx/plane.fbx",                       "terrain",                              "", //ground
-    "viking_room",                  "Assets/Model/Obj/viking_room/viking_room.obj",     "viking_room",                          "", //viking_room
-    "bunny",                        "Assets/Model/Obj/bunny/bunny.obj",                 "white",                                "", //bunny  
+    "Pass-Object-Material-Instance-TextureFS",
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",
+};
+
+
+/////////////////////////// Shader //////////////////////////////
+const std::string c_strVert = ".vert.spv";
+const std::string c_strFrag = ".frag.spv";
+static const int g_ShaderCount = 11;
+static const char* g_ShaderModulePaths[2 * g_ShaderCount] = 
+{
+////Basic-Level Texture Operation
+    "Assets/Shader/standard_mesh_opaque_texsampler_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texsampler_lit.frag.spv", //standard_mesh_opaque_texsampler_lit
+    "Assets/Shader/standard_mesh_opaque_tex1d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex1d_lit.frag.spv", //standard_mesh_opaque_tex1d_lit
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit
+    "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit
+    "Assets/Shader/standard_mesh_opaque_tex3d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex3d_lit.frag.spv", //standard_mesh_opaque_tex3d_lit
+    "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit
+    "Assets/Shader/standard_mesh_opaque_texanim_scroll_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texanim_scroll_lit.frag.spv", //standard_mesh_opaque_texanim_scroll_lit
+    "Assets/Shader/standard_mesh_opaque_texanim_chunk_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texanim_chunk_lit.frag.spv", //standard_mesh_opaque_texanim_chunk_lit
+    
+////High-Level Texture Operation
+    "Assets/Shader/standard_mesh_opaque_texbumpmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texbumpmap_lit.frag.spv", //standard_mesh_opaque_texbumpmap_lit
+    "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit
+
+
+////Transparent
+    "Assets/Shader/standard_mesh_transparent_lit.vert.spv", "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit
+};
+
+
+/////////////////////////// Object //////////////////////////////
+static const int g_ObjectCount = 17;
+static const char* g_ObjectConfigs[5 * g_ObjectCount] = 
+{
+    //Object Name                       //Mesh Path                    //Texture One                           //Texture Two                    //Texture Three
+    "ground",                           "plane",                       "terrain",                              "",                              "", //ground
+    "viking_room",                      "viking_room",                 "viking_room",                          "",                              "", //viking_room
+    "bunny",                            "bunny",                       "white",                                "",                              "", //bunny  
 
 ////Basic-Level Texture Operation
-    "textureSampler_Wrap",          "Assets/Model/Fbx/plane.fbx",                       "texturesampler_wrap",                  "", //textureSampler_Wrap
-    "textureSampler_Mirror",        "Assets/Model/Fbx/plane.fbx",                       "texturesampler_mirror",                "", //textureSampler_Mirror
-    "textureSampler_Clamp",         "Assets/Model/Fbx/plane.fbx",                       "texturesampler_clamp",                 "", //textureSampler_Clamp
-    "textureSampler_Border",        "Assets/Model/Fbx/plane.fbx",                       "texturesampler_border",                "", //textureSampler_Border
-    "texture1D",                    "Assets/Model/Fbx/plane.fbx",                       "texture1d",                            "", //texture1D
-    "texture2D",                    "Assets/Model/Fbx/plane.fbx",                       "texture2d",                            "", //texture2D
-    "texture2Darray",               "Assets/Model/Fbx/plane.fbx",                       "texture2darray",                       "", //texture2Darray
-    "texture3D",                    "Assets/Model/Fbx/plane.fbx",                       "texture3d",                            "", //texture3D
-    "textureCubeMap_SkyBox",        "Assets/Model/Obj/cube/cube.obj",                   "texturecubemap",                       "", //textureCubeMap_SkyBox
-    "textureCubeMap_Sphere",        "Assets/Model/Fbx/sphere.fbx",                      "texturecubemap",                       "", //textureCubeMap_Sphere
-    "textureAnimation_Scroll",      "Assets/Model/Fbx/plane.fbx",                       "textureanimation_scroll",              "", //textureAnimation_Scroll
-    "textureAnimation_Chunk",       "Assets/Model/Fbx/plane.fbx",                       "textureanimation_chunk",               "", //textureAnimation_Chunk
+    "textureSampler_Wrap",              "plane",                       "texturesampler_wrap",                  "",                              "", //textureSampler_Wrap
+    "textureSampler_Mirror",            "plane",                       "texturesampler_mirror",                "",                              "", //textureSampler_Mirror
+    "textureSampler_Clamp",             "plane",                       "texturesampler_clamp",                 "",                              "", //textureSampler_Clamp
+    "textureSampler_Border",            "plane",                       "texturesampler_border",                "",                              "", //textureSampler_Border
+    "texture1D",                        "plane",                       "texture1d",                            "",                              "", //texture1D
+    "texture2D",                        "plane",                       "texture2d",                            "",                              "", //texture2D
+    "texture2Darray",                   "plane",                       "texture2darray",                       "",                              "", //texture2Darray
+    "texture3D",                        "plane",                       "texture3d",                            "",                              "", //texture3D
+    "textureCubeMap_SkyBox",            "cube",                        "texturecubemap",                       "",                              "", //textureCubeMap_SkyBox
+    "textureCubeMap_Sphere",            "sphere",                      "texturecubemap",                       "",                              "", //textureCubeMap_Sphere
+    "textureAnimation_Scroll",          "plane",                       "textureanimation_scroll",              "",                              "", //textureAnimation_Scroll
+    "textureAnimation_Chunk",           "plane",                       "textureanimation_chunk",               "",                              "", //textureAnimation_Chunk
 
 ////High-Level Texture Operation
-    "textureBumpMap",               "Assets/Model/Fbx/plane.fbx",                       "texturebumpmap_diffuse",               "texturebumpmap_bumpmap", //textureBumpMap
-    "textureNormalMap",             "Assets/Model/Fbx/plane.fbx",                       "texturebumpmap_diffuse",               "texturenormalmap_normalmap", //textureNormalMap
+    "textureBumpMap",                   "plane",                       "texturebumpmap_diffuse",               "texturebumpmap_bumpmap",        "", //textureBumpMap
+    "textureNormalMap",                 "plane",                       "texturebumpmap_diffuse",               "texturenormalmap_normalmap",    "", //textureNormalMap
 
 };
 
-static const std::string g_Model_Texture3D = "texture3D";
-static const std::string g_Model_TextureAnimation_Scroll = "textureAnimation_Scroll";
-static const std::string g_Model_TextureAnimation_Chunk = "textureAnimation_Chunk";
-static const std::string g_Model_TextureBumpMap = "textureBumpMap";
-static const std::string g_Model_TextureNormalMap = "textureNormalMap";
+static const std::string g_Object_Texture3D = "texture3D";
+static const std::string g_Object_TextureAnimation_Scroll = "textureAnimation_Scroll";
+static const std::string g_Object_TextureAnimation_Chunk = "textureAnimation_Chunk";
+static const std::string g_Object_TextureBumpMap = "textureBumpMap";
+static const std::string g_Object_TextureNormalMap = "textureNormalMap";
 
-static const VulkanVertexType g_ModelsVertexTypes[g_ModelCount] =
-{
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //ground 
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //viking_room
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //bunny 
 
-////Basic-Level Texture Operation
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //textureSampler_Wrap 
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //textureSampler_Mirror 
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //textureSampler_Clamp 
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //textureSampler_Border 
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //texture1D 
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //texture2D 
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //texture2Darray 
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //texture3D
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //textureCubeMap_SkyBox
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //textureCubeMap_Sphere
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //textureAnimation_Scroll
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //textureAnimation_Chunk 
-
-////High-Level Texture Operation
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //textureBumpMap 
-    Vulkan_Vertex_Pos3Color4Normal3Tex2, //textureNormalMap 
-
-};
-
-static const char* g_pathModelShaderModules[g_ModelCount] = 
+static const char* g_ObjectPathShaderModules[g_ObjectCount] = 
 {
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //ground 
     "Assets/Shader/standard_mesh_transparent_lit", //viking_room
@@ -329,7 +358,7 @@ static const char* g_pathModelShaderModules[g_ModelCount] =
     
 };
 
-static const char* g_nameModelDescriptorSetLayouts[g_ModelCount] = 
+static const char* g_ObjectNameDescriptorSetLayouts[g_ObjectCount] = 
 {
     "Pass-Object-Material-Instance-TextureFS", //ground 
     "Pass-Object-Material-Instance-TextureFS", //viking_room
@@ -353,14 +382,11 @@ static const char* g_nameModelDescriptorSetLayouts[g_ModelCount] =
     "Pass-Object-Material-Instance-TextureFS-TextureFS", //textureBumpMap
     "Pass-Object-Material-Instance-TextureFS-TextureFS", //textureNormalMap
 
-
 };
 
 
-
 static float g_instanceGap = 1.5f;
-
-static int g_instanceExtCount[] =
+static int g_ObjectInstanceExtCount[g_ObjectCount] =
 {
     0, //ground
     0, //viking_room
@@ -386,7 +412,7 @@ static int g_instanceExtCount[] =
 
 };
 
-static glm::vec3 g_tranformModels[3 * g_ModelCount] = 
+static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] = 
 {   
     glm::vec3(   0, -0.1,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //ground
     glm::vec3(   0,    0,   -2),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
@@ -412,85 +438,7 @@ static glm::vec3 g_tranformModels[3 * g_ModelCount] =
 
 };
 
-static glm::mat4 g_tranformLocalModels[g_ModelCount] = 
-{
-    MathUtil::ms_mat4Unit, //ground
-    MathUtil::RotateX(-90.0f), //viking_room
-    MathUtil::ms_mat4Unit, //bunny
-
-////Basic-Level Texture Operation
-    MathUtil::ms_mat4Unit, //textureSampler_Wrap
-    MathUtil::ms_mat4Unit, //textureSampler_Mirror
-    MathUtil::ms_mat4Unit, //textureSampler_Clamp
-    MathUtil::ms_mat4Unit, //textureSampler_Border
-    MathUtil::ms_mat4Unit, //texture1D
-    MathUtil::ms_mat4Unit, //texture2D
-    MathUtil::ms_mat4Unit, //texture2Darray
-    MathUtil::ms_mat4Unit, //texture3D
-    MathUtil::ms_mat4Unit, //textureCubeMap_SkyBox
-    MathUtil::ms_mat4Unit, //textureCubeMap_Sphere
-    MathUtil::ms_mat4Unit, //textureAnimation_Scroll
-    MathUtil::ms_mat4Unit, //textureAnimation_Chunk
-
-////High-Level Texture Operation
-    MathUtil::ms_mat4Unit, //textureBumpMap
-    MathUtil::ms_mat4Unit, //textureNormalMap
-
-};
-
-static bool g_isTranformLocalModels[g_ModelCount] = 
-{
-    false, //ground
-    true, //viking_room
-    false, //bunny
-
-////Basic-Level Texture Operation
-    false, //textureSampler_Wrap
-    false, //textureSampler_Mirror
-    false, //textureSampler_Clamp
-    false, //textureSampler_Border
-    false, //texture1D
-    false, //texture2D
-    false, //texture2Darray
-    false, //texture3D
-    false, //textureCubeMap_SkyBox  
-    false, //textureCubeMap_Sphere  
-    false, //textureAnimation_Scroll
-    false, //textureAnimation_Chunk
-
-////High-Level Texture Operation
-    false, //textureBumpMap
-    false, //textureNormalMap
-
-};
-
-static bool g_isFlipYModels[g_ModelCount] = 
-{
-    true, //ground
-    false, //viking_room
-    false, //bunny
-
-////Basic-Level Texture Operation
-    true, //textureSampler_Wrap
-    true, //textureSampler_Mirror
-    true, //textureSampler_Clamp
-    true, //textureSampler_Border
-    false, //texture1D
-    true, //texture2D
-    false, //texture2Darray
-    false, //texture3D
-    false, //textureCubeMap_SkyBox
-    false, //textureCubeMap_Sphere
-    true, //textureAnimation_Scroll
-    true, //textureAnimation_Chunk
-
-////High-Level Texture Operation
-    true, //textureBumpMap
-    true, //textureNormalMap
-
-};
-
-static bool g_isTransparentModels[g_ModelCount] = 
+static bool g_ObjectIsTransparents[g_ObjectCount] = 
 {
     false, //ground
     true, //viking_room
@@ -516,7 +464,7 @@ static bool g_isTransparentModels[g_ModelCount] =
 
 };
 
-static bool g_isShowModels[] = 
+static bool g_ObjectIsShows[] = 
 {
     true, //ground
     false, //viking_room
@@ -542,7 +490,7 @@ static bool g_isShowModels[] =
 
 };
 
-static bool g_isRotateModels[g_ModelCount] =
+static bool g_ObjectIsRotates[g_ObjectCount] =
 {
     false, //ground
     true, //viking_room
@@ -568,7 +516,7 @@ static bool g_isRotateModels[g_ModelCount] =
 
 };
 
-static bool g_isLightingModels[g_ModelCount] =
+static bool g_ObjectIsLightings[g_ObjectCount] =
 {
     true, //ground
     true, //viking_room
@@ -596,6 +544,113 @@ static bool g_isLightingModels[g_ModelCount] =
 
 
 
+/////////////////////////// ModelMesh ///////////////////////////
+bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+{
+    //1> Load
+    MeshData meshData;
+    meshData.bIsFlipY = isFlipY;
+    unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
+    if (!VulkanMeshLoader::LoadMeshData(this->pathMesh, meshData, eMeshParserFlags))
+    {
+        Util_LogError("Vulkan_011_Texturing::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
+        return false; 
+    }
+
+    int count_vertex = (int)meshData.vertices.size();
+    if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex2)
+    {
+        this->vertices_Pos3Color4Normal3Tex2.clear();
+        this->vertices_Pos3Color4Normal3Tex2.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            MeshVertex& vertex = meshData.vertices[i];
+            Vertex_Pos3Color4Normal3Tex2 v;
+            v.pos = vertex.pos;
+            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.normal = vertex.normal;
+            v.texCoord = vertex.texCoord;
+            if (isTranformLocal)
+            {
+                v.pos = MathUtil::Transform(matTransformLocal, v.pos);
+            }
+            this->vertices_Pos3Color4Normal3Tex2.push_back(v);
+        }
+
+        int count_index = (int)meshData.indices32.size();
+        this->indices.clear();
+        this->indices.reserve(count_index);
+        for (int i = 0; i < count_index; i++)
+        {
+            this->indices.push_back(meshData.indices32[i]);
+        }
+        this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tex2.size();
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tex2);
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex2[0];
+        this->poIndexCount = (uint32_t)this->indices.size();
+        this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+        this->poIndexBuffer_Data = &this->indices[0];
+
+        Util_LogInfo("Vulkan_011_Texturing::ModelMesh::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                     this->nameMesh.c_str(),
+                     (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
+                     (int)this->indices.size());
+    }
+    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
+    {
+        this->vertices_Pos3Color4Normal3Tangent3Tex2.clear();
+        this->vertices_Pos3Color4Normal3Tangent3Tex2.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            MeshVertex& vertex = meshData.vertices[i];
+            Vertex_Pos3Color4Normal3Tangent3Tex2 v;
+            v.pos = vertex.pos;
+            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.normal = vertex.normal;
+            v.tangent = vertex.tangent;
+            v.texCoord = vertex.texCoord;
+            if (isTranformLocal)
+            {
+                v.pos = MathUtil::Transform(matTransformLocal, v.pos);
+            }
+            this->vertices_Pos3Color4Normal3Tangent3Tex2.push_back(v);
+        }
+
+        int count_index = (int)meshData.indices32.size();
+        this->indices.clear();
+        this->indices.reserve(count_index);
+        for (int i = 0; i < count_index; i++)
+        {
+            this->indices.push_back(meshData.indices32[i]);
+        }
+        this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2);
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex2[0];
+        this->poIndexCount = (uint32_t)this->indices.size();
+        this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+        this->poIndexBuffer_Data = &this->indices[0];
+
+        Util_LogInfo("Vulkan_011_Texturing::ModelMesh::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                     this->nameMesh.c_str(),
+                     (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
+                     (int)this->indices.size());
+    }
+
+    //2> createVertexBuffer
+    this->pWindow->createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
+
+    //3> createIndexBuffer
+    if (this->poIndexBuffer_Size > 0 &&
+        this->poIndexBuffer_Data != nullptr)
+    {
+        this->pWindow->createIndexBuffer(this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+    }
+
+    return true;
+}
+
+
+/////////////////////////// ModelTexture ////////////////////////
 void Vulkan_011_Texturing::ModelTexture::UpdateTexture()
 {
     if (this->typeTexture == Vulkan_Texture_3D)
@@ -681,22 +736,29 @@ void Vulkan_011_Texturing::createCamera()
 
 void Vulkan_011_Texturing::loadModel_Custom()
 {
+    createModelMeshes();
     createModelTextures();
 
-    for (int i = 0; i < g_ModelCount; i++)
+    for (int i = 0; i < g_ObjectCount; i++)
     {
         ModelObject* pModelObject = new ModelObject(this);
         pModelObject->indexModel = i;
-        pModelObject->nameModel = g_pathModels[4 * i + 0];
-        pModelObject->pathModel = g_pathModels[4 * i + 1];
-        pModelObject->nameDescriptorSetLayout = g_nameModelDescriptorSetLayouts[i];
-        pModelObject->poTypeVertex = g_ModelsVertexTypes[i];
+        pModelObject->nameModel = g_ObjectConfigs[5 * i + 0];
+        pModelObject->nameMesh = g_ObjectConfigs[5 * i + 1];
+        pModelObject->nameDescriptorSetLayout = g_ObjectNameDescriptorSetLayouts[i];
+
+        //Mesh
+        {
+            ModelMesh* pMesh = this->findModelMesh(pModelObject->nameMesh);
+            assert(pMesh != nullptr && "Vulkan_011_Texturing::loadModel_Custom");
+            pModelObject->SetMesh(pMesh);
+        }
 
         int indexTex = 0;
         //Texture Channel 1
         {
             pModelObject->aTextureChannels.push_back(indexTex);
-            std::string nameTexture1 = g_pathModels[4 * i + 2];
+            std::string nameTexture1 = g_ObjectConfigs[5 * i + 2];
             if (!nameTexture1.empty())
             {
                 ModelTexture* pTexture1 = this->findModelTexture(nameTexture1);
@@ -707,7 +769,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
         //Texture Channel 2
         {
             pModelObject->aTextureChannels.push_back(indexTex);
-            std::string nameTexture2 = g_pathModels[4 * i + 3];
+            std::string nameTexture2 = g_ObjectConfigs[5 * i + 3];
             if (!nameTexture2.empty())
             {
                 ModelTexture* pTexture2 = this->findModelTexture(nameTexture2);
@@ -715,23 +777,23 @@ void Vulkan_011_Texturing::loadModel_Custom()
             }
             indexTex ++;
         }
-
-        bool isTranformLocal = g_isTranformLocalModels[i];
-        bool isFlipY = g_isFlipYModels[i];
-        pModelObject->isTransparent = g_isTransparentModels[i];
-
-        pModelObject->isShow = g_isShowModels[i];
-        pModelObject->isRotate = g_isRotateModels[i];
-        pModelObject->countInstanceExt = g_instanceExtCount[i];
-        pModelObject->countInstance = pModelObject->countInstanceExt * 2 + 1;
-
-        //Model
-        if (!loadModel_VertexIndex(pModelObject, isFlipY, isTranformLocal, g_tranformLocalModels[i]))
+        //Texture Chnnel 2
         {
-            std::string msg = "Vulkan_011_Texturing::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
+            pModelObject->aTextureChannels.push_back(indexTex);
+            std::string nameTexture3 = g_ObjectConfigs[5 * i + 4];
+            if (!nameTexture3.empty())
+            {
+                ModelTexture* pTexture3 = this->findModelTexture(nameTexture3);
+                pModelObject->AddTexture(pTexture3);
+            }
+            indexTex ++;
         }
+
+        pModelObject->isTransparent = g_ObjectIsTransparents[i];
+        pModelObject->isShow = g_ObjectIsShows[i];
+        pModelObject->isRotate = g_ObjectIsRotates[i];
+        pModelObject->countInstanceExt = g_ObjectInstanceExtCount[i];
+        pModelObject->countInstance = pModelObject->countInstanceExt * 2 + 1;
 
         m_aModelObjects.push_back(pModelObject);
         if (pModelObject->isTransparent)
@@ -740,109 +802,6 @@ void Vulkan_011_Texturing::loadModel_Custom()
             m_aModelObjects_Render.insert(m_aModelObjects_Render.begin(), pModelObject);
         m_mapModelObjects[pModelObject->nameModel] = pModelObject;
     }
-}
-bool Vulkan_011_Texturing::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
-{
-    //1> Load 
-    MeshData meshData;
-    meshData.bIsFlipY = isFlipY;
-    unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
-    if (!VulkanMeshLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
-    {
-        Util_LogError("Vulkan_011_Texturing::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
-        return false; 
-    }
-
-    int count_vertex = (int)meshData.vertices.size();
-    if (pModelObject->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex2)
-    {
-        pModelObject->vertices_Pos3Color4Normal3Tex2.clear();
-        pModelObject->vertices_Pos3Color4Normal3Tex2.reserve(count_vertex);
-        for (int i = 0; i < count_vertex; i++)
-        {
-            MeshVertex& vertex = meshData.vertices[i];
-            Vertex_Pos3Color4Normal3Tex2 v;
-            v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-            v.normal = vertex.normal;
-            v.texCoord = vertex.texCoord;
-            if (isTranformLocal)
-            {
-                v.pos = MathUtil::Transform(matTransformLocal, v.pos);
-            }
-            pModelObject->vertices_Pos3Color4Normal3Tex2.push_back(v);
-        }
-
-        int count_index = (int)meshData.indices32.size();
-        pModelObject->indices.clear();
-        pModelObject->indices.reserve(count_index);
-        for (int i = 0; i < count_index; i++)
-        {
-            pModelObject->indices.push_back(meshData.indices32[i]);
-        }
-        pModelObject->poVertexCount = (uint32_t)pModelObject->vertices_Pos3Color4Normal3Tex2.size();
-        pModelObject->poVertexBuffer_Size = pModelObject->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tex2);
-        pModelObject->poVertexBuffer_Data = &pModelObject->vertices_Pos3Color4Normal3Tex2[0];
-        pModelObject->poIndexCount = (uint32_t)pModelObject->indices.size();
-        pModelObject->poIndexBuffer_Size = pModelObject->poIndexCount * sizeof(uint32_t);
-        pModelObject->poIndexBuffer_Data = &pModelObject->indices[0];
-
-        Util_LogInfo("Vulkan_011_Texturing::loadModel_VertexIndex: load model [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
-                     pModelObject->nameModel.c_str(),
-                     (int)pModelObject->vertices_Pos3Color4Normal3Tex2.size(), 
-                     (int)pModelObject->indices.size());
-    }
-    else if (pModelObject->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
-    {
-        pModelObject->vertices_Pos3Color4Normal3Tangent3Tex2.clear();
-        pModelObject->vertices_Pos3Color4Normal3Tangent3Tex2.reserve(count_vertex);
-        for (int i = 0; i < count_vertex; i++)
-        {
-            MeshVertex& vertex = meshData.vertices[i];
-            Vertex_Pos3Color4Normal3Tangent3Tex2 v;
-            v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-            v.normal = vertex.normal;
-            v.tangent = vertex.tangent;
-            v.texCoord = vertex.texCoord;
-            if (isTranformLocal)
-            {
-                v.pos = MathUtil::Transform(matTransformLocal, v.pos);
-            }
-            pModelObject->vertices_Pos3Color4Normal3Tangent3Tex2.push_back(v);
-        }
-
-        int count_index = (int)meshData.indices32.size();
-        pModelObject->indices.clear();
-        pModelObject->indices.reserve(count_index);
-        for (int i = 0; i < count_index; i++)
-        {
-            pModelObject->indices.push_back(meshData.indices32[i]);
-        }
-        pModelObject->poVertexCount = (uint32_t)pModelObject->vertices_Pos3Color4Normal3Tangent3Tex2.size();
-        pModelObject->poVertexBuffer_Size = pModelObject->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2);
-        pModelObject->poVertexBuffer_Data = &pModelObject->vertices_Pos3Color4Normal3Tangent3Tex2[0];
-        pModelObject->poIndexCount = (uint32_t)pModelObject->indices.size();
-        pModelObject->poIndexBuffer_Size = pModelObject->poIndexCount * sizeof(uint32_t);
-        pModelObject->poIndexBuffer_Data = &pModelObject->indices[0];
-
-        Util_LogInfo("Vulkan_011_Texturing::loadModel_VertexIndex: load model [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
-                     pModelObject->nameModel.c_str(),
-                     (int)pModelObject->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
-                     (int)pModelObject->indices.size());
-    }
-
-    //2> createVertexBuffer
-    createVertexBuffer(pModelObject->poVertexBuffer_Size, pModelObject->poVertexBuffer_Data, pModelObject->poVertexBuffer, pModelObject->poVertexBufferMemory);
-
-    //3> createIndexBuffer
-    if (pModelObject->poIndexBuffer_Size > 0 &&
-        pModelObject->poIndexBuffer_Data != nullptr)
-    {
-        createIndexBuffer(pModelObject->poIndexBuffer_Size, pModelObject->poIndexBuffer_Data, pModelObject->poIndexBuffer, pModelObject->poIndexBufferMemory);
-    }
-
-    return true;
 }
 
 void Vulkan_011_Texturing::createCustomCB()
@@ -865,9 +824,9 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
         {
             //ObjectConstants
             ObjectConstants objectConstants;
-            objectConstants.g_MatWorld = MathUtil::FromTRS(g_tranformModels[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
-                                                           g_tranformModels[i * 3 + 1],
-                                                           g_tranformModels[i * 3 + 2]);
+            objectConstants.g_MatWorld = MathUtil::FromTRS(g_ObjectTranforms[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+                                                           g_ObjectTranforms[i * 3 + 1],
+                                                           g_ObjectTranforms[i * 3 + 2]);
             pModelObject->objectCBs.push_back(objectConstants);
             pModelObject->instanceMatWorld.push_back(objectConstants.g_MatWorld);
 
@@ -878,7 +837,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             materialConstants.factorSpecular = MathUtil::RandomColor(false);
             materialConstants.shininess = MathUtil::RandF(10.0f, 100.0f);
             materialConstants.alpha = MathUtil::RandF(0.2f, 0.9f);
-            materialConstants.lighting = g_isLightingModels[i];
+            materialConstants.lighting = g_ObjectIsLightings[i];
             float fValue = MathUtil::RandF(0.0f, 1.0f);
             if (j == pModelObject->countInstance / 2 || fValue >  0.5f)
             {
@@ -898,11 +857,11 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                 materialConstants.aTexLayers[p].texHeight = pTexture->height;
                 materialConstants.aTexLayers[p].texDepth = pTexture->depth;
 
-                if (pModelObject->nameModel == g_Model_Texture3D) //Texture3D
+                if (pModelObject->nameModel == g_Object_Texture3D) //Texture3D
                 {
                     materialConstants.aTexLayers[p].indexTextureArray = MathUtil::RandF(0.0f, 1.0f);
                 }
-                else if (pModelObject->nameModel == g_Model_TextureAnimation_Scroll) //TextureAnimation_Scroll
+                else if (pModelObject->nameModel == g_Object_TextureAnimation_Scroll) //TextureAnimation_Scroll
                 {
                     if (pTexture->typeTexture == Vulkan_Texture_2DArray)
                     {
@@ -918,7 +877,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                         }
                     }
                 }
-                else if (pModelObject->nameModel == g_Model_TextureAnimation_Chunk) //TextureAnimation_Chunk
+                else if (pModelObject->nameModel == g_Object_TextureAnimation_Chunk) //TextureAnimation_Chunk
                 {
                     if (pTexture->texChunkMaxX > 0 &&
                         pTexture->texChunkMaxY > 0)
@@ -931,7 +890,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                         materialConstants.aTexLayers[p].texChunkIndexY = indexZ;
                     }
                 }       
-                else if (pModelObject->nameModel == g_Model_TextureBumpMap) //TextureBumpMap
+                else if (pModelObject->nameModel == g_Object_TextureBumpMap) //TextureBumpMap
                 {
                     if (p == 1)
                     {
@@ -941,7 +900,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                             materialConstants.aTexLayers[p].indexTextureArray = MathUtil::RandF(2000.0f, 10000.0f);
                     }
                 } 
-                else if (pModelObject->nameModel == g_Model_TextureNormalMap) //TextureNormalMap
+                else if (pModelObject->nameModel == g_Object_TextureNormalMap) //TextureNormalMap
                 {
                     if (p == 1)
                     {
@@ -1003,8 +962,8 @@ void Vulkan_011_Texturing::createPipeline_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        std::string pathVertShaderBase = g_pathModelShaderModules[i] + c_strVert;
-        std::string pathFragShaderBase = g_pathModelShaderModules[i] + c_strFrag;
+        std::string pathVertShaderBase = g_ObjectPathShaderModules[i] + c_strVert;
+        std::string pathFragShaderBase = g_ObjectPathShaderModules[i] + c_strFrag;
         VkShaderModule vertShaderBase = findShaderModule(pathVertShaderBase);
         VkShaderModule fragShaderBase = findShaderModule(pathFragShaderBase);
         pModelObject->poPipelineLayout = findPipelineLayout(pModelObject->nameDescriptorSetLayout);
@@ -1018,8 +977,8 @@ void Vulkan_011_Texturing::createPipeline_Custom()
         //poPipelineGraphics_WireFrame
         pModelObject->poPipelineGraphics_WireFrame = createVkPipeline(vertShaderBase, "main",
                                                                       fragShaderBase, "main",
-                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->poTypeVertex),
-                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->poTypeVertex),
+                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
+                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                                       this->poRenderPass, pModelObject->poPipelineLayout, viewports, scissors,
                                                                       pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pModelObject->cfg_vkCullModeFlagBits,
                                                                       pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
@@ -1051,8 +1010,8 @@ void Vulkan_011_Texturing::createPipeline_Custom()
         }
         pModelObject->poPipelineGraphics = createVkPipeline(vertShaderBase, "main",
                                                             fragShaderBase, "main",
-                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->poTypeVertex), 
-                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->poTypeVertex),
+                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex), 
+                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                             this->poRenderPass, pModelObject->poPipelineLayout, viewports, scissors,
                                                             pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                             isDepthTestEnable, isDepthWriteEnable, pModelObject->cfg_DepthCompareOp,
@@ -1070,6 +1029,68 @@ void Vulkan_011_Texturing::createPipeline_Custom()
 
 }
 
+void Vulkan_011_Texturing::destroyModelMeshes()
+{
+    size_t count = this->m_aModelMesh.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ModelMesh* pMesh = this->m_aModelMesh[i];
+        delete pMesh;
+    }
+    this->m_aModelMesh.clear();
+    this->m_mapModelMesh.clear();
+}
+void Vulkan_011_Texturing::createModelMeshes()
+{
+    for (int i = 0; i < g_MeshCount; i++)
+    {
+        std::string nameMesh = g_MeshPaths[5 * i + 0];
+        std::string nameVertexType = g_MeshPaths[5 * i + 1];
+        std::string nameMeshType = g_MeshPaths[5 * i + 2];
+        std::string nameGeometryType = g_MeshPaths[5 * i + 3];
+        std::string pathMesh = g_MeshPaths[5 * i + 4];
+        
+        VulkanVertexType typeVertex = Util_ParseVertexType(nameVertexType); 
+        VulkanMeshType typeMesh = Util_ParseMeshType(nameMeshType);
+        VulkanMeshGeometryType typeGeometryType = Vulkan_MeshGeometry_Triangle;
+        if (!nameGeometryType.empty())
+        {
+            typeGeometryType = Util_ParseMeshGeometryType(nameGeometryType);
+        }
+
+        ModelMesh* pMesh = new ModelMesh(this, 
+                                         nameMesh,
+                                         pathMesh,
+                                         typeMesh,
+                                         typeGeometryType,
+                                         typeVertex);
+        bool isFlipY = g_MeshIsFlipYs[i];
+        bool isTranformLocal = g_MeshIsTranformLocals[i];
+        if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_MeshTranformLocals[i]))
+        {
+            std::string msg = "Vulkan_011_Texturing::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+
+        this->m_aModelMesh.push_back(pMesh);
+        this->m_mapModelMesh[nameMesh] = pMesh;
+
+        Util_LogInfo("Vulkan_011_Texturing::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], path: [%s] success !", 
+                     nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), pathMesh.c_str());
+    }
+}
+Vulkan_011_Texturing::ModelMesh* Vulkan_011_Texturing::findModelMesh(const std::string& nameMesh)
+{
+    ModelMeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
+    if (itFind == this->m_mapModelMesh.end())
+    {
+        return nullptr;
+    }
+    return itFind->second;
+}
+
+
 void Vulkan_011_Texturing::destroyModelTextures()
 {
     size_t count = this->m_aModelTexture.size();
@@ -1085,22 +1106,22 @@ void Vulkan_011_Texturing::createModelTextures()
 {
     for (int i = 0; i < g_TextureCount; i++)
     {
-        std::string nameTexture = g_pathTextures[3 * i + 0];
-        std::string nameType = g_pathTextures[3 * i + 1];
+        std::string nameTexture = g_TexturePaths[3 * i + 0];
+        std::string nameType = g_TexturePaths[3 * i + 1];
         VulkanTextureType typeTexture = Util_ParseTextureType(nameType);
-        std::string pathTextures = g_pathTextures[3 * i + 2];
+        std::string pathTextures = g_TexturePaths[3 * i + 2];
 
         std::vector<std::string> aPathTexture = StringUtil::Split(pathTextures, ";");
         ModelTexture* pTexture = new ModelTexture(this, 
                                                   nameTexture,
                                                   typeTexture,
-                                                  g_formatTextures[i],
-                                                  g_filterTextures[i],
-                                                  g_addressingTextures[i],
-                                                  g_borderColorTextures[i],
+                                                  g_TextureFormats[i],
+                                                  g_TextureFilters[i],
+                                                  g_TextureAddressings[i],
+                                                  g_TextureBorderColors[i],
                                                   aPathTexture);
-        pTexture->texChunkMaxX = g_animChunkTextures[i * 2 + 0];
-        pTexture->texChunkMaxY = g_animChunkTextures[i * 2 + 1];
+        pTexture->texChunkMaxX = g_TextureAnimChunks[i * 2 + 0];
+        pTexture->texChunkMaxY = g_TextureAnimChunks[i * 2 + 1];
         if (pTexture->texChunkMaxX > 0 && 
             pTexture->texChunkMaxY > 0)
         {
@@ -1108,9 +1129,9 @@ void Vulkan_011_Texturing::createModelTextures()
         }
         pTexture->AddRef();
 
-        int width = g_sizeTextures[3 * i + 0];
-        int height = g_sizeTextures[3 * i + 1];
-        int depth = g_sizeTextures[3 * i + 1];
+        int width = g_TextureSizes[3 * i + 0];
+        int height = g_TextureSizes[3 * i + 1];
+        int depth = g_TextureSizes[3 * i + 1];
         pTexture->LoadTexture(width, 
                               height,
                               depth);
@@ -1281,8 +1302,8 @@ void Vulkan_011_Texturing::createShaderModules()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
-        std::string pathVert = g_pathShaderModules[2 * i + 0];
-        std::string pathFrag = g_pathShaderModules[2 * i + 1];
+        std::string pathVert = g_ShaderModulePaths[2 * i + 0];
+        std::string pathFrag = g_ShaderModulePaths[2 * i + 1];
 
         //vert
         VkShaderModule vertShaderModule = createShaderModule("VertexShader: ", pathVert);
@@ -1499,7 +1520,7 @@ void Vulkan_011_Texturing::updateCBs_Custom()
 
             //MaterialConstants
             MaterialConstants& materialCB = pModelObject->materialCBs[j];
-            if (pModelObject->nameModel == g_Model_TextureAnimation_Chunk)
+            if (pModelObject->nameModel == g_Object_TextureAnimation_Chunk)
             {
                 ModelTexture* pTexture = pModelObject->GetTexture(0);
                 if (pTexture->texChunkMaxX > 0 &&
@@ -1601,7 +1622,7 @@ bool Vulkan_011_Texturing::beginRenderImgui()
                     rebuildInstanceCBs(false);
                 }
 
-                ImGui::Text("Vertex: [%d], Index: [%d]", (int)pModelObject->poVertexCount, (int)pModelObject->poIndexCount);
+                ImGui::Text("Vertex: [%d], Index: [%d]", (int)pModelObject->pMesh->poVertexCount, (int)pModelObject->pMesh->poIndexCount);
                 
                 std::string nameWorld = "Model Object - " + pModelObject->nameModel;
                 if (ImGui::CollapsingHeader(nameWorld.c_str()))
@@ -1736,14 +1757,14 @@ bool Vulkan_011_Texturing::beginRenderImgui()
                                         }
                                         else 
                                         {
-                                            if (pModelObject->nameModel == g_Model_TextureBumpMap) //TextureBumpMap
+                                            if (pModelObject->nameModel == g_Object_TextureBumpMap) //TextureBumpMap
                                             {
                                                 if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[p].indexTextureArray, 0.5f, 0.0f, 10000.0f))
                                                 {
                                                     
                                                 }
                                             }
-                                            else if (pModelObject->nameModel == g_Model_TextureNormalMap) //TextureNormalMap
+                                            else if (pModelObject->nameModel == g_Object_TextureNormalMap) //TextureNormalMap
                                             {
                                                 if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[p].indexTextureArray, 0.5f, 0.0f, 10000.0f))
                                                 {
@@ -1843,13 +1864,14 @@ void Vulkan_011_Texturing::drawMesh_Custom(VkCommandBuffer& commandBuffer)
         ModelObject* pModelObject = this->m_aModelObjects_Render[i];
         if (!pModelObject->isShow)
             continue;
+        ModelMesh* pMesh = pModelObject->pMesh;
 
-        VkBuffer vertexBuffers[] = { pModelObject->poVertexBuffer };
+        VkBuffer vertexBuffers[] = { pMesh->poVertexBuffer };
         VkDeviceSize offsets[] = { 0 };
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-        if (pModelObject->poIndexBuffer != nullptr)
+        if (pMesh->poIndexBuffer != nullptr)
         {
-            vkCmdBindIndexBuffer(commandBuffer, pModelObject->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            vkCmdBindIndexBuffer(commandBuffer, pMesh->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
         }
 
         if (pModelObject->isWireFrame)
@@ -1875,13 +1897,13 @@ void Vulkan_011_Texturing::drawMesh_Custom(VkCommandBuffer& commandBuffer)
 }
 void Vulkan_011_Texturing::drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject)
 {
-    if (pModelObject->poIndexBuffer != nullptr)
+    if (pModelObject->pMesh->poIndexBuffer != nullptr)
     {
-        vkCmdDrawIndexed(commandBuffer, pModelObject->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+        vkCmdDrawIndexed(commandBuffer, pModelObject->pMesh->poIndexCount, pModelObject->countInstance, 0, 0, 0);
     }
     else
     {
-        vkCmdDraw(commandBuffer, pModelObject->poVertexCount, pModelObject->countInstance, 0, 0);
+        vkCmdDraw(commandBuffer, pModelObject->pMesh->poVertexCount, pModelObject->countInstance, 0, 0);
     }
 }
 
@@ -1890,6 +1912,7 @@ void Vulkan_011_Texturing::cleanupCustom()
     destroyPipelineLayouts();
     destroyDescriptorSetLayouts();
     destroyModelTextures();
+    destroyModelMeshes();
 
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

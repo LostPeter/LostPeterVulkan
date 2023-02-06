@@ -64,6 +64,36 @@ namespace LostPeter
 
 ////////////////////////////// Enum ////////////////////////////////
 
+    //VulkanVertexType
+    static std::string s_nameVertices[] = 
+    {
+        "Pos2Color4",
+        "Pos3Normal3",
+        "Pos2Color4Tex2",
+        "Pos3Color4Tex2",
+        "Pos3Color4Normal3Tex2",
+        "Pos3Color4Normal3Tangent3Tex2",
+    };
+    const std::string& Util_GetVertexTypeName(VulkanVertexType type)
+    {
+        return s_nameVertices[(int)type];
+    }
+    const std::string& Util_GetVertexTypeName(int type)
+    {
+        return s_nameVertices[(int)type];
+    }
+    VulkanVertexType Util_ParseVertexType(const std::string& strName)
+    {
+        for (size_t i = 0; i < (int)Vulkan_Vertex_Count; i++)
+        {
+            if (s_nameVertices[i] == strName)
+                return (VulkanVertexType)(i);
+        }
+        assert(false && "Util_ParseVertexType: Wrong type name !");
+        return Vulkan_Vertex_Pos3Color4Normal3Tex2;
+    }
+
+
     //VulkanMeshType
     static std::string s_nameMeshes[] = 
     {

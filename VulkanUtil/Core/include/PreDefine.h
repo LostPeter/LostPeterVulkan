@@ -76,6 +76,9 @@ namespace LostPeter
 
         Vulkan_Vertex_Count
     };
+    const std::string& Util_GetVertexTypeName(VulkanVertexType type);
+    const std::string& Util_GetVertexTypeName(int type);
+    VulkanVertexType Util_ParseVertexType(const std::string& strName);
 
 
     enum VulkanMeshType
