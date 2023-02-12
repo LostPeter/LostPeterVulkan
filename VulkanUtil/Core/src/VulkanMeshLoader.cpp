@@ -43,8 +43,8 @@ namespace LostPeter
         {
             aiVector3D position	= meshTransformation * pMesh->mVertices[i];
             aiColor4D color = pMesh->mColors[0] ? pMesh->mColors[0][i] : aiColor4D(1.0f, 1.0f, 1.0f, 1.0f);
-            aiVector3D normal = meshTransformation * (pMesh->mNormals ? pMesh->mNormals[i] : aiVector3D(0.0f, 0.0f, 0.0f));
-            aiVector3D tangent = pMesh->mTangents ? meshTransformation * pMesh->mTangents[i] : aiVector3D(0.0f, 0.0f, 0.0f);
+            aiVector3D normal = meshTransformation * (pMesh->mNormals ? pMesh->mNormals[i] : aiVector3D(0.0f, 0.0f, 1.0f));
+            aiVector3D tangent = pMesh->mTangents ? meshTransformation * pMesh->mTangents[i] : aiVector3D(1.0f, 0.0f, 0.0f);
             aiVector3D texCoords = pMesh->mTextureCoords[0] ? pMesh->mTextureCoords[0][i] : aiVector3D(0.0f, 0.0f, 0.0f);
             
             MeshVertex vertex(position.x, position.y, position.z,

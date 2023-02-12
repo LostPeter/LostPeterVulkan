@@ -13,6 +13,7 @@ struct VSOutput
     [[vk::location(1)]] float2 inTexCoord       : TEXCOORD0;
     [[vk::location(2)]] float4 inWorldPos       : TEXCOORD1; //xyz: World Pos; w: instanceIndex
     [[vk::location(3)]] float3 inWorldNormal    : TEXCOORD2;
+    [[vk::location(4)]] float3 inWorldTangent   : TEXCOORD3;
 };
 
 
@@ -136,12 +137,32 @@ struct InstanceConstants
 [[vk::binding(5)]] SamplerState texNormalMapSampler : register(s2);
 
 
-float3 unpackNormal(float4 packedNormal)
+
+float3 unpackNormalXYZ(float2 uv)
 {
+    float3 tangentNormal = texNormalMap.Sample(texNormalMapSampler, uv).rgb;
+    return normalize(tangentNormal * 2.0 - 1.0);
+}
+float3 unpackNormalXY(float2 uv)
+{
+    float2 packedNormal = texNormalMap.Sample(texNormalMapSampler, uv).rg;
     float3 normal;
     normal.xy = packedNormal.xy * 2 - 1;
     normal.z = sqrt(1 - saturate(dot(normal.xy, normal.xy)));
     return normal;
+}
+
+
+float3 calculateNormal(VSOutput input)
+{
+    float3 tangentNormal = unpackNormalXYZ(input.inTexCoord);
+
+    float3 N = normalize(input.inWorldNormal);
+    float3 T = normalize(input.inWorldTangent);
+    float3 B = normalize(cross(N, T));
+    float3x3 TBN = transpose(float3x3(T, B, N));
+
+    return normalize(mul(TBN, tangentNormal));
 }
 
 
@@ -275,14 +296,13 @@ float4 main(VSOutput input) : SV_TARGET
     float3 outColor;
 
     MaterialConstants mat = materialConsts[(uint)input.inWorldPos.w];
-    float3 N = normalize(input.inWorldNormal);
-
-    //BumpMap, Need Sample four times to get dx,dy
-    float normalScale = mat.aTexLayers[1].indexTextureArray;
-    if (normalScale > 0.0)
-    {
-        N = unpackNormal(texNormalMap.Sample(texNormalMapSampler, input.inTexCoord));
-    }
+    //Normal Map
+    float3 N = float3(0,0,1);
+    float normalMapFlag = mat.aTexLayers[1].indexTextureArray;
+    if (normalMapFlag == 1)
+        N = normalize(input.inWorldNormal);
+    else
+        N = calculateNormal(input);
     
     float3 colorLight;
     //Main Light
@@ -304,7 +324,18 @@ float4 main(VSOutput input) : SV_TARGET
     float3 colorVertex = input.inColor.rgb;
 
     //Final Color
-    outColor = colorLight * colorTexture * colorVertex;
+    if (normalMapFlag == 2)
+    {
+        outColor = N;
+    }
+    else if (normalMapFlag == 3)
+    {
+        outColor = colorLight;
+    }
+    else
+    {
+        outColor = colorLight * colorTexture * colorVertex;
+    }
 
     return float4(outColor, 1.0);
 }

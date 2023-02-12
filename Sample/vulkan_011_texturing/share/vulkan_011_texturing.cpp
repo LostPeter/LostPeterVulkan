@@ -21,7 +21,7 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 5;
+static const int g_MeshCount = 6;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
@@ -29,6 +29,7 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
     "bunny",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/bunny/bunny.obj", //bunny
 
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
+    "plane_nt",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane_nt
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
 
@@ -40,6 +41,7 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     false, //bunny
 
     true, //plane
+    true, //plane_nt
     false, //cube
     false, //sphere
 
@@ -51,6 +53,7 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //bunny
 
     false, //plane  
+    false, //plane_nt  
     false, //cube
     false, //sphere
 
@@ -62,6 +65,7 @@ static glm::mat4 g_MeshTranformLocals[g_MeshCount] =
     MathUtil::ms_mat4Unit, //bunny
 
     MathUtil::ms_mat4Unit, //plane
+    MathUtil::ms_mat4Unit, //plane_nt
     MathUtil::ms_mat4Unit, //cube
     MathUtil::ms_mat4Unit, //sphere
 
@@ -297,7 +301,7 @@ static const char* g_ShaderModulePaths[2 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_ObjectCount = 17;
+static const int g_ObjectCount = 18;
 static const char* g_ObjectConfigs[5 * g_ObjectCount] = 
 {
     //Object Name                       //Mesh Path                    //Texture One                           //Texture Two                    //Texture Three
@@ -320,14 +324,16 @@ static const char* g_ObjectConfigs[5 * g_ObjectCount] =
     "textureAnimation_Chunk",           "plane",                       "textureanimation_chunk",               "",                              "", //textureAnimation_Chunk
 
 ////High-Level Texture Operation
+    "textureOriginal",                  "plane",                       "texturebumpmap_diffuse",               "",                              "", //textureOriginal    
     "textureBumpMap",                   "plane",                       "texturebumpmap_diffuse",               "texturebumpmap_bumpmap",        "", //textureBumpMap
-    "textureNormalMap",                 "plane",                       "texturebumpmap_diffuse",               "texturenormalmap_normalmap",    "", //textureNormalMap
+    "textureNormalMap",                 "plane_nt",                    "texturebumpmap_diffuse",               "texturenormalmap_normalmap",    "", //textureNormalMap
 
 };
 
 static const std::string g_Object_Texture3D = "texture3D";
 static const std::string g_Object_TextureAnimation_Scroll = "textureAnimation_Scroll";
 static const std::string g_Object_TextureAnimation_Chunk = "textureAnimation_Chunk";
+static const std::string g_Object_TextureOriginal = "textureOriginal";
 static const std::string g_Object_TextureBumpMap = "textureBumpMap";
 static const std::string g_Object_TextureNormalMap = "textureNormalMap";
 
@@ -353,6 +359,7 @@ static const char* g_ObjectPathShaderModules[g_ObjectCount] =
     "Assets/Shader/standard_mesh_opaque_texanim_chunk_lit", //textureAnimation_Chunk
 
 ////High-Level Texture Operation
+    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //textureOriginal 
     "Assets/Shader/standard_mesh_opaque_texbumpmap_lit", //textureBumpMap
     "Assets/Shader/standard_mesh_opaque_texnormalmap_lit", //textureNormalMap
     
@@ -379,13 +386,14 @@ static const char* g_ObjectNameDescriptorSetLayouts[g_ObjectCount] =
     "Pass-Object-Material-Instance-TextureFS", //textureAnimation_Chunk
 
 ////High-Level Texture Operation
+    "Pass-Object-Material-Instance-TextureFS", //textureOriginal 
     "Pass-Object-Material-Instance-TextureFS-TextureFS", //textureBumpMap
     "Pass-Object-Material-Instance-TextureFS-TextureFS", //textureNormalMap
 
 };
 
 
-static float g_instanceGap = 1.5f;
+static float g_instanceGap = 1.2f;
 static int g_ObjectInstanceExtCount[g_ObjectCount] =
 {
     0, //ground
@@ -407,6 +415,7 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
     5, //textureAnimation_Chunk
 
 ////High-Level Texture Operation
+    5, //textureOriginal 
     5, //textureBumpMap 
     5, //textureNormalMap 
 
@@ -420,21 +429,22 @@ static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] =
 
 ////Basic-Level Texture Operation
     glm::vec3(   0,  0.4,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Wrap
-    glm::vec3(   0,  1.6,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Mirror
-    glm::vec3(   0,  2.8,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Clamp
-    glm::vec3(   0,  4.0,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Border
-    glm::vec3(   0,  5.2,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture1D
-    glm::vec3(   0,  6.4,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D
-    glm::vec3(   0,  7.6,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray
-    glm::vec3(   0,  8.8,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture3D
+    glm::vec3(   0,  1.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Mirror
+    glm::vec3(   0,  2.6,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Clamp
+    glm::vec3(   0,  3.7,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Border
+    glm::vec3(   0,  4.8,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture1D
+    glm::vec3(   0,  5.9,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D
+    glm::vec3(   0,  7.0,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray
+    glm::vec3(   0,  8.1,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture3D
     glm::vec3(   0,    0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
-    glm::vec3(   0, 10.0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 0.005f,  0.005f,  0.005f), //textureCubeMap_Sphere
-    glm::vec3(   0, 11.2,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation_Scroll
-    glm::vec3(   0, 12.4,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation_Chunk
+    glm::vec3(   0,  9.2,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 0.005f,  0.005f,  0.005f), //textureCubeMap_Sphere
+    glm::vec3(   0, 10.3,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation_Scroll
+    glm::vec3(   0, 11.4,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation_Chunk
 
 ////High-Level Texture Operation
+    glm::vec3(   0, 12.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureOriginal
     glm::vec3(   0, 13.6,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureBumpMap
-    glm::vec3(   0, 14.8,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureNormalMap
+    glm::vec3(   0, 14.7,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureNormalMap
 
 };
 
@@ -459,6 +469,7 @@ static bool g_ObjectIsTransparents[g_ObjectCount] =
     false, //textureAnimation_Chunk
 
 ////High-Level Texture Operation
+    false, //textureOriginal
     false, //textureBumpMap
     false, //textureNormalMap
 
@@ -485,6 +496,7 @@ static bool g_ObjectIsShows[] =
     true, //textureAnimation_Chunk
 
 ////High-Level Texture Operation
+    true, //textureOriginal
     true, //textureBumpMap
     true, //textureNormalMap
 
@@ -511,6 +523,7 @@ static bool g_ObjectIsRotates[g_ObjectCount] =
     false, //textureAnimation_Chunk
 
 ////High-Level Texture Operation
+    false, //textureOriginal
     false, //textureBumpMap
     false, //textureNormalMap
 
@@ -537,8 +550,9 @@ static bool g_ObjectIsLightings[g_ObjectCount] =
     true, //textureAnimation_Chunk
 
 ////High-Level Texture Operation
-    false, //textureBumpMap
-    false, //textureNormalMap
+    true, //textureOriginal
+    true, //textureBumpMap
+    true, //textureNormalMap
 
 };
 
@@ -614,6 +628,10 @@ bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
                 v.pos = MathUtil::Transform(matTransformLocal, v.pos);
             }
             this->vertices_Pos3Color4Normal3Tangent3Tex2.push_back(v);
+
+            // Util_LogInfo("Vulkan_011_Texturing::ModelMesh::LoadMesh: Normal: [%f, %f, %f], Tangent: [%f, %f, %f] !",
+            //              v.normal.x, v.normal.y, v.normal.z,
+            //              v.tangent.x, v.tangent.y, v.tangent.z);
         }
 
         int count_index = (int)meshData.indices32.size();
@@ -714,7 +732,7 @@ Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, std::string na
     this->imgui_IsEnable = true;
 
     this->cfg_cameraPos = glm::vec3(-2.5f, 2.0f, -20.0f);
-    this->cfg_cameraLookTarget = glm::vec3(-2.5f, 6.0f, 0.0f);
+    this->cfg_cameraLookTarget = glm::vec3(-2.5f, 7.0f, 0.0f);
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
@@ -838,15 +856,6 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             materialConstants.shininess = MathUtil::RandF(10.0f, 100.0f);
             materialConstants.alpha = MathUtil::RandF(0.2f, 0.9f);
             materialConstants.lighting = g_ObjectIsLightings[i];
-            float fValue = MathUtil::RandF(0.0f, 1.0f);
-            if (j == pModelObject->countInstance / 2 || fValue >  0.5f)
-            {
-                materialConstants.lighting = 1.0f;
-            }
-            else
-            {
-                materialConstants.lighting = 0.0f;
-            }
 
             //Texture
             int count_texture = pModelObject->GetTextureCount();
@@ -890,24 +899,42 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                         materialConstants.aTexLayers[p].texChunkIndexY = indexZ;
                     }
                 }       
+                else if (pModelObject->nameModel == g_Object_TextureOriginal) //TextureOriginal
+                {
+                    if (j == pModelObject->countInstance / 2)
+                    {
+                        materialConstants.factorAmbient = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+                        materialConstants.factorDiffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                        materialConstants.factorSpecular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                        materialConstants.lighting = 0.0f;
+                    }
+                }
                 else if (pModelObject->nameModel == g_Object_TextureBumpMap) //TextureBumpMap
                 {
+                    if (j == pModelObject->countInstance / 2)
+                    {
+                        materialConstants.factorAmbient = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+                        materialConstants.factorDiffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                        materialConstants.factorSpecular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                    }
+
                     if (p == 1)
                     {
-                        if (j == pModelObject->countInstance / 2)
-                            materialConstants.aTexLayers[p].indexTextureArray = 0.0f;
-                        else
-                            materialConstants.aTexLayers[p].indexTextureArray = MathUtil::RandF(2000.0f, 10000.0f);
+                        materialConstants.aTexLayers[p].indexTextureArray = MathUtil::RandF(2000.0f, 10000.0f);
                     }
                 } 
                 else if (pModelObject->nameModel == g_Object_TextureNormalMap) //TextureNormalMap
                 {
+                    if (j == pModelObject->countInstance / 2)
+                    {
+                        materialConstants.factorAmbient = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+                        materialConstants.factorDiffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                        materialConstants.factorSpecular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                    }
+
                     if (p == 1)
                     {
-                        if (j == pModelObject->countInstance / 2)
-                            materialConstants.aTexLayers[p].indexTextureArray = 0.0f;
-                        else
-                            materialConstants.aTexLayers[p].indexTextureArray = MathUtil::RandF(2000.0f, 10000.0f);
+                        materialConstants.aTexLayers[p].indexTextureArray = 0;
                     }
                 }
 

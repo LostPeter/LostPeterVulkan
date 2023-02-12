@@ -149,8 +149,7 @@ VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
     output.outTexCoord = float2(input.inTexCoord.x - passConsts.g_TotalTime * materialInstance.aTexLayers[0].texSpeedU, input.inTexCoord.y - passConsts.g_TotalTime * materialInstance.aTexLayers[0].texSpeedV);
     output.outWorldPos.xyz /= output.outWorldPos.w;
     output.outWorldPos.w = instanceIndex;
-    float4 worldNormal = mul(objInstance.g_MatWorld, float4(input.inNormal, 1.0));
-    output.outWorldNormal.xyz = worldNormal.xyz / worldNormal.w;
+    output.outWorldNormal = mul((float3x3)objInstance.g_MatWorld, input.inNormal);
 
     return output;
 }
