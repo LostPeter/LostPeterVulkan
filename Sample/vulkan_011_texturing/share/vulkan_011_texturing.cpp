@@ -277,7 +277,7 @@ static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
 /////////////////////////// Shader //////////////////////////////
 const std::string c_strVert = ".vert.spv";
 const std::string c_strFrag = ".frag.spv";
-static const int g_ShaderCount = 11;
+static const int g_ShaderCount = 12;
 static const char* g_ShaderModulePaths[2 * g_ShaderCount] = 
 {
 ////Basic-Level Texture Operation
@@ -293,7 +293,7 @@ static const char* g_ShaderModulePaths[2 * g_ShaderCount] =
 ////High-Level Texture Operation
     "Assets/Shader/standard_mesh_opaque_texbumpmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texbumpmap_lit.frag.spv", //standard_mesh_opaque_texbumpmap_lit
     "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit
-
+    "Assets/Shader/standard_mesh_opaque_texparallaxmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texparallaxmap_lit.frag.spv", //standard_mesh_opaque_texparallaxmap_lit
 
 ////Transparent
     "Assets/Shader/standard_mesh_transparent_lit.vert.spv", "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit
@@ -301,7 +301,7 @@ static const char* g_ShaderModulePaths[2 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_ObjectCount = 18;
+static const int g_ObjectCount = 19;
 static const char* g_ObjectConfigs[5 * g_ObjectCount] = 
 {
     //Object Name                       //Mesh Path                    //Texture One                           //Texture Two                    //Texture Three
@@ -327,6 +327,7 @@ static const char* g_ObjectConfigs[5 * g_ObjectCount] =
     "textureOriginal",                  "plane",                       "texturebumpmap_diffuse",               "",                              "", //textureOriginal    
     "textureBumpMap",                   "plane",                       "texturebumpmap_diffuse",               "texturebumpmap_bumpmap",        "", //textureBumpMap
     "textureNormalMap",                 "plane_nt",                    "texturebumpmap_diffuse",               "texturenormalmap_normalmap",    "", //textureNormalMap
+    "textureParallaxMap",               "plane_nt",                    "texturebumpmap_diffuse",               "texturenormalmap_normalmap",    "", //textureParallaxMap
 
 };
 
@@ -336,6 +337,7 @@ static const std::string g_Object_TextureAnimation_Chunk = "textureAnimation_Chu
 static const std::string g_Object_TextureOriginal = "textureOriginal";
 static const std::string g_Object_TextureBumpMap = "textureBumpMap";
 static const std::string g_Object_TextureNormalMap = "textureNormalMap";
+static const std::string g_Object_TextureParallaxMap = "textureParallaxMap";
 
 
 static const char* g_ObjectPathShaderModules[g_ObjectCount] = 
@@ -362,6 +364,7 @@ static const char* g_ObjectPathShaderModules[g_ObjectCount] =
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //textureOriginal 
     "Assets/Shader/standard_mesh_opaque_texbumpmap_lit", //textureBumpMap
     "Assets/Shader/standard_mesh_opaque_texnormalmap_lit", //textureNormalMap
+    "Assets/Shader/standard_mesh_opaque_texparallaxmap_lit", //textureParallaxMap
     
 };
 
@@ -389,6 +392,7 @@ static const char* g_ObjectNameDescriptorSetLayouts[g_ObjectCount] =
     "Pass-Object-Material-Instance-TextureFS", //textureOriginal 
     "Pass-Object-Material-Instance-TextureFS-TextureFS", //textureBumpMap
     "Pass-Object-Material-Instance-TextureFS-TextureFS", //textureNormalMap
+    "Pass-Object-Material-Instance-TextureFS-TextureFS", //textureParallaxMap
 
 };
 
@@ -418,6 +422,7 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
     5, //textureOriginal 
     5, //textureBumpMap 
     5, //textureNormalMap 
+    5, //textureParallaxMap 
 
 };
 
@@ -445,6 +450,7 @@ static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] =
     glm::vec3(   0, 12.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureOriginal
     glm::vec3(   0, 13.6,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureBumpMap
     glm::vec3(   0, 14.7,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureNormalMap
+    glm::vec3(   0, 15.8,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureParallaxMap
 
 };
 
@@ -472,6 +478,7 @@ static bool g_ObjectIsTransparents[g_ObjectCount] =
     false, //textureOriginal
     false, //textureBumpMap
     false, //textureNormalMap
+    false, //textureParallaxMap
 
 };
 
@@ -499,6 +506,7 @@ static bool g_ObjectIsShows[] =
     true, //textureOriginal
     true, //textureBumpMap
     true, //textureNormalMap
+    true, //textureParallaxMap
 
 };
 
@@ -526,6 +534,7 @@ static bool g_ObjectIsRotates[g_ObjectCount] =
     false, //textureOriginal
     false, //textureBumpMap
     false, //textureNormalMap
+    false, //textureParallaxMap
 
 };
 
@@ -553,6 +562,7 @@ static bool g_ObjectIsLightings[g_ObjectCount] =
     true, //textureOriginal
     true, //textureBumpMap
     true, //textureNormalMap
+    true, //textureParallaxMap
 
 };
 
@@ -924,6 +934,20 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                     }
                 } 
                 else if (pModelObject->nameModel == g_Object_TextureNormalMap) //TextureNormalMap
+                {
+                    if (j == pModelObject->countInstance / 2)
+                    {
+                        materialConstants.factorAmbient = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+                        materialConstants.factorDiffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                        materialConstants.factorSpecular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                    }
+
+                    if (p == 1)
+                    {
+                        materialConstants.aTexLayers[p].indexTextureArray = 0;
+                    }
+                }
+                else if (pModelObject->nameModel == g_Object_TextureParallaxMap) //TextureParallaxMap
                 {
                     if (j == pModelObject->countInstance / 2)
                     {
@@ -1792,6 +1816,13 @@ bool Vulkan_011_Texturing::beginRenderImgui()
                                                 }
                                             }
                                             else if (pModelObject->nameModel == g_Object_TextureNormalMap) //TextureNormalMap
+                                            {
+                                                if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[p].indexTextureArray, 0.5f, 0.0f, 10000.0f))
+                                                {
+                                                    
+                                                }
+                                            }
+                                            else if (pModelObject->nameModel == g_Object_TextureParallaxMap) //TextureParallaxMap
                                             {
                                                 if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[p].indexTextureArray, 0.5f, 0.0f, 10000.0f))
                                                 {
