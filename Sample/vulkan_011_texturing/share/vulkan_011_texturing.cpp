@@ -74,7 +74,7 @@ static glm::mat4 g_MeshTranformLocals[g_MeshCount] =
 
 /////////////////////////// Texture /////////////////////////////
 static const std::string g_TextureDefault = "default";
-static const int g_TextureCount = 18;
+static const int g_TextureCount = 20;
 static const char* g_TexturePaths[3 * g_TextureCount] = 
 {
     "default",                      "2d",           "Assets/Texture/default_blackwhite.png", //default
@@ -99,6 +99,9 @@ static const char* g_TexturePaths[3 * g_TextureCount] =
     "texturebumpmap_diffuse",       "2d",           "Assets/Texture/bricks_diffuse.png", //texturebumpmap_diffuse
     "texturebumpmap_bumpmap",       "2d",           "Assets/Texture/bricks_bumpmap.png", //texturebumpmap_bumpmap
     "texturenormalmap_normalmap",   "2d",           "Assets/Texture/bricks_normalmap.png", //texturenormalmap_normalmap
+
+    "rocks_color_rgba",             "2d",           "Assets/Texture/rocks_color_rgba.png", //rocks_color_rgba
+    "rocks_normal_height_rgba",     "2d",           "Assets/Texture/rocks_normal_height_rgba.png", //rocks_normal_height_rgba
 
 };
 static VkFormat g_TextureFormats[g_TextureCount] = 
@@ -126,6 +129,9 @@ static VkFormat g_TextureFormats[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_SRGB, //texturebumpmap_bumpmap
     VK_FORMAT_R8G8B8A8_UNORM, //texturenormalmap_normalmap
 
+    VK_FORMAT_R8G8B8A8_SRGB, //rocks_color_rgba
+    VK_FORMAT_R8G8B8A8_UNORM, //rocks_normal_height_rgba
+
 };
 static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
@@ -151,6 +157,9 @@ static VulkanTextureFilterType g_TextureFilters[g_TextureCount] =
     Vulkan_TextureFilter_Bilinear, //texturebumpmap_diffuse
     Vulkan_TextureFilter_Bilinear, //texturebumpmap_bumpmap
     Vulkan_TextureFilter_Bilinear, //texturenormalmap_normalmap
+
+    Vulkan_TextureFilter_Bilinear, //rocks_color_rgba
+    Vulkan_TextureFilter_Bilinear, //rocks_normal_height_rgba
 
 };
 static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
@@ -178,6 +187,9 @@ static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] =
     Vulkan_TextureAddressing_Clamp, //texturebumpmap_bumpmap
     Vulkan_TextureAddressing_Clamp, //texturenormalmap_normalmap
 
+    Vulkan_TextureAddressing_Clamp, //rocks_color_rgba
+    Vulkan_TextureAddressing_Clamp, //rocks_normal_height_rgba
+
 };
 static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
@@ -203,6 +215,9 @@ static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
     Vulkan_TextureBorderColor_OpaqueBlack, //texturebumpmap_diffuse
     Vulkan_TextureBorderColor_OpaqueBlack, //texturebumpmap_bumpmap
     Vulkan_TextureBorderColor_OpaqueBlack, //texturenormalmap_normalmap
+
+    Vulkan_TextureBorderColor_OpaqueBlack, //rocks_color_rgba
+    Vulkan_TextureBorderColor_OpaqueBlack, //rocks_normal_height_rgba
 
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
@@ -230,6 +245,9 @@ static int g_TextureSizes[3 * g_TextureCount] =
     512,    512,    1, //texturebumpmap_bumpmap
     512,    512,    1, //texturenormalmap_normalmap
 
+    1024,  1024,    1, //rocks_color_rgba
+    1024,  1024,    1, //rocks_normal_height_rgba
+
 };
 static float g_TextureAnimChunks[2 * g_TextureCount] = 
 {
@@ -256,6 +274,8 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
     0,    0, //texturebumpmap_bumpmap
     0,    0, //texturenormalmap_normalmap
 
+    0,    0, //rocks_color_rgba
+    0,    0, //rocks_normal_height_rgba
 };
 
 
@@ -327,7 +347,7 @@ static const char* g_ObjectConfigs[5 * g_ObjectCount] =
     "textureOriginal",                  "plane",                       "texturebumpmap_diffuse",               "",                              "", //textureOriginal    
     "textureBumpMap",                   "plane",                       "texturebumpmap_diffuse",               "texturebumpmap_bumpmap",        "", //textureBumpMap
     "textureNormalMap",                 "plane_nt",                    "texturebumpmap_diffuse",               "texturenormalmap_normalmap",    "", //textureNormalMap
-    "textureParallaxMap",               "plane_nt",                    "texturebumpmap_diffuse",               "texturenormalmap_normalmap",    "", //textureParallaxMap
+    "textureParallaxMap",               "plane_nt",                    "rocks_color_rgba",                     "rocks_normal_height_rgba",      "", //textureParallaxMap
 
 };
 
