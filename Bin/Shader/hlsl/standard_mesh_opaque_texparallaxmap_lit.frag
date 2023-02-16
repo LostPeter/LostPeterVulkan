@@ -133,29 +133,28 @@ struct InstanceConstants
 [[vk::binding(4)]] Texture2D texDiffuse             : register(t1);
 [[vk::binding(4)]] SamplerState texDiffuseSampler   : register(s1);
 
-[[vk::binding(5)]] Texture2D texNormalMap           : register(t2);
-[[vk::binding(5)]] SamplerState texNormalMapSampler : register(s2);
+[[vk::binding(5)]] Texture2D texParallaxMap           : register(t2);
+[[vk::binding(5)]] SamplerState texParallaxMapSampler : register(s2);
 
 
 
 float3 unpackNormalXYZ(float2 uv)
 {
-    float3 tangentNormal = texNormalMap.Sample(texNormalMapSampler, uv).rgb;
+    float3 tangentNormal = texParallaxMap.SampleLevel(texParallaxMapSampler, uv, 0.0).rgb;
     return normalize(tangentNormal * 2.0 - 1.0);
 }
 float3 unpackNormalXY(float2 uv)
 {
-    float2 packedNormal = texNormalMap.Sample(texNormalMapSampler, uv).rg;
+    float2 packedNormal = texParallaxMap.SampleLevel(texParallaxMapSampler, uv, 0.0).rg;
     float3 normal;
     normal.xy = packedNormal.xy * 2 - 1;
     normal.z = sqrt(1 - saturate(dot(normal.xy, normal.xy)));
     return normal;
 }
 
-
-float3 calculateNormal(VSOutput input)
+float3 calculateNormal(VSOutput input, float2 uv)
 {
-    float3 tangentNormal = unpackNormalXYZ(input.inTexCoord);
+    float3 tangentNormal = unpackNormalXYZ(uv);
 
     float3 N = normalize(input.inWorldNormal);
     float3 T = normalize(input.inWorldTangent);
@@ -163,6 +162,68 @@ float3 calculateNormal(VSOutput input)
     float3x3 TBN = transpose(float3x3(T, B, N));
 
     return normalize(mul(TBN, tangentNormal));
+}
+
+float2 normalParallaxMapping(VSOutput input, 
+                             float2 uv,
+                             float3 viewDir,
+                             float heightScale,
+                             float parallaxBias)
+{
+	float height = 1.0 - texParallaxMap.SampleLevel(texParallaxMapSampler, uv, 0.0).a;
+	float2 p = viewDir.xy * (height * (heightScale * 0.5) + parallaxBias) / viewDir.z;
+	return uv - p;
+}
+
+float2 steepParallaxMapping(VSOutput input, 
+                            float2 uv, 
+                            float3 viewDir,
+                            float heightScale,
+                            float numLayers)
+{
+	float layerDepth = 1.0 / numLayers;
+	float currLayerDepth = 0.0;
+	float2 deltaUV = viewDir.xy * heightScale / (viewDir.z * numLayers);
+	float2 currUV = uv;
+	float height = 1.0 - texParallaxMap.SampleLevel(texParallaxMapSampler, currUV, 0.0).a;
+	for (int i = 0; i < numLayers; i++) 
+    {
+		currLayerDepth += layerDepth;
+		currUV -= deltaUV;
+		height = 1.0 - texParallaxMap.SampleLevel(texParallaxMapSampler, currUV, 0.0).a;
+		if (height < currLayerDepth) 
+        {
+			break;
+		}
+	}
+	return currUV;
+}
+
+float2 occlusionParallaxMapping(VSOutput input, 
+                                float2 uv, 
+                                float3 viewDir,
+                                float heightScale,
+                                float numLayers)
+{
+	float layerDepth = 1.0 / numLayers;
+	float currLayerDepth = 0.0;
+	float2 deltaUV = viewDir.xy * heightScale / (viewDir.z * numLayers);
+	float2 currUV = uv;
+	float height = 1.0 - texParallaxMap.SampleLevel(texParallaxMapSampler, currUV, 0.0).a;
+	for (int i = 0; i < numLayers; i++) 
+    {
+		currLayerDepth += layerDepth;
+		currUV -= deltaUV;
+		height = 1.0 - texParallaxMap.SampleLevel(texParallaxMapSampler, currUV, 0.0).a;
+		if (height < currLayerDepth) 
+        {
+			break;
+		}
+	}
+	float2 prevUV = currUV + deltaUV;
+	float nextDepth = height - currLayerDepth;
+	float prevDepth = 1.0 - texParallaxMap.SampleLevel(texParallaxMapSampler, prevUV, 0.0).a - currLayerDepth + layerDepth;
+	return lerp(currUV, prevUV, nextDepth / (nextDepth - prevDepth));
 }
 
 
@@ -296,13 +357,53 @@ float4 main(VSOutput input) : SV_TARGET
     float3 outColor;
 
     MaterialConstants mat = materialConsts[(uint)input.inWorldPos.w];
-    //Normal Map
+    float3 V = normalize(passConsts.g_EyePosW - input.inWorldPos.xyz);
     float3 N = float3(0,0,1);
-    float normalMapFlag = mat.aTexLayers[1].indexTextureArray;
-    if (normalMapFlag == 1)
-        N = normalize(input.inWorldNormal);
+    float parallaxMapFlag = mat.aTexLayers[1].indexTextureArray;  
+    float2 uv = input.inTexCoord;
+    if (parallaxMapFlag == 0)
+    {
+        float heightScale = mat.aTexLayers[1].texSpeedU;
+        float parallaxBias = mat.aTexLayers[1].texSpeedV;
+        uv = normalParallaxMapping(input, 
+                                   uv, 
+                                   V, 
+                                   heightScale, 
+                                   parallaxBias);
+        N = calculateNormal(input, uv);
+    }
+    else if (parallaxMapFlag == 1)
+    {
+        float heightScale = mat.aTexLayers[1].texSpeedU;
+        float numLayers = mat.aTexLayers[1].texSpeedW;
+        uv = steepParallaxMapping(input, 
+                                  uv, 
+                                  V, 
+                                  heightScale, 
+                                  numLayers);
+        N = calculateNormal(input, uv);
+    }
+    else if (parallaxMapFlag == 2)
+    {
+        float heightScale = mat.aTexLayers[1].texSpeedU;
+        float numLayers = mat.aTexLayers[1].texSpeedW;
+        occlusionParallaxMapping(input, 
+                                 uv, 
+                                 V, 
+                                 heightScale, 
+                                 numLayers);
+        N = calculateNormal(input, uv);
+    }
     else
-        N = calculateNormal(input);
+    {
+        N = normalize(input.inWorldNormal);
+    }
+
+    // Discard fragments at texture border
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) 
+    {
+        clip(-1);
+    }
     
     float3 colorLight;
     //Main Light
@@ -319,23 +420,12 @@ float4 main(VSOutput input) : SV_TARGET
 
 
     //Texture
-    float3 colorTexture = texDiffuse.Sample(texDiffuseSampler, input.inTexCoord).rgb;
+    float3 colorTexture = texDiffuse.Sample(texDiffuseSampler, uv).rgb;
     //VertexColor
     float3 colorVertex = input.inColor.rgb;
 
     //Final Color
-    if (normalMapFlag == 2)
-    {
-        outColor = N;
-    }
-    else if (normalMapFlag == 3)
-    {
-        outColor = colorLight;
-    }
-    else
-    {
-        outColor = colorLight * colorTexture * colorVertex;
-    }
+    outColor = colorLight * colorTexture * colorVertex;
 
     return float4(outColor, 1.0);
 }

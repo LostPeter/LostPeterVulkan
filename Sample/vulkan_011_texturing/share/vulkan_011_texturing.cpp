@@ -979,6 +979,9 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                     if (p == 1)
                     {
                         materialConstants.aTexLayers[p].indexTextureArray = 0;
+                        materialConstants.aTexLayers[p].texSpeedU = 0.1f;
+                        materialConstants.aTexLayers[p].texSpeedV = -0.02f;
+                        materialConstants.aTexLayers[p].texSpeedW = 48.0f;
                     }
                 }
 
