@@ -21,13 +21,10 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 6;
+static const int g_MeshCount = 4;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
-    "viking_room",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/viking_room/viking_room.obj", //viking_room
-    "bunny",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/bunny/bunny.obj", //bunny
-
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
     "plane_nt",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane_nt
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
@@ -37,9 +34,6 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
 
 static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
-    false, //viking_room
-    false, //bunny
-
     true, //plane
     true, //plane_nt
     false, //cube
@@ -49,9 +43,6 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
 
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
 {
-    true, //viking_room
-    false, //bunny
-
     false, //plane  
     false, //plane_nt  
     false, //cube
@@ -61,9 +52,6 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
 
 static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
 {
-    MathUtil::RotateX(-90.0f), //viking_room
-    MathUtil::ms_mat4Unit, //bunny
-
     MathUtil::ms_mat4Unit, //plane
     MathUtil::ms_mat4Unit, //plane_nt
     MathUtil::ms_mat4Unit, //cube
@@ -79,7 +67,6 @@ static const char* g_TexturePaths[3 * g_TextureCount] =
 {
     "default",                      "2d",           "Assets/Texture/default_blackwhite.png", //default
     "terrain",                      "2d",           "Assets/Texture/terrain.png", //terrain
-    "viking_room",                  "2d",           "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
     "white",                        "2d",           "Assets/Texture/white.bmp", //white
     
 ////Basic-Level Texture Operation
@@ -100,15 +87,16 @@ static const char* g_TexturePaths[3 * g_TextureCount] =
     "texturebumpmap_bumpmap",       "2d",           "Assets/Texture/bricks_bumpmap.png", //texturebumpmap_bumpmap
     "texturenormalmap_normalmap",   "2d",           "Assets/Texture/bricks_normalmap.png", //texturenormalmap_normalmap
 
-    "rocks_color_rgba",             "2d",           "Assets/Texture/rocks_color_rgba.png", //rocks_color_rgba
-    "rocks_normal_height_rgba",     "2d",           "Assets/Texture/rocks_normal_height_rgba.png", //rocks_normal_height_rgba
+    "rocks_color",                  "2d",           "Assets/Texture/rocks_color.png", //rocks_color
+    "rocks_normal_height",          "2d",           "Assets/Texture/rocks_normal_height.png", //rocks_normal_height
+
+    "stonefloor_color_height",      "2d",           "Assets/Texture/stonefloor_color_height.png", //stonefloor_color_height
 
 };
 static VkFormat g_TextureFormats[g_TextureCount] = 
 {
     VK_FORMAT_R8G8B8A8_SRGB, //default
     VK_FORMAT_R8G8B8A8_SRGB, //terrain
-    VK_FORMAT_R8G8B8A8_SRGB, //viking_room
     VK_FORMAT_R8G8B8A8_SRGB, //white
 
 ////Basic-Level Texture Operation
@@ -129,15 +117,16 @@ static VkFormat g_TextureFormats[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_SRGB, //texturebumpmap_bumpmap
     VK_FORMAT_R8G8B8A8_UNORM, //texturenormalmap_normalmap
 
-    VK_FORMAT_R8G8B8A8_SRGB, //rocks_color_rgba
-    VK_FORMAT_R8G8B8A8_UNORM, //rocks_normal_height_rgba
+    VK_FORMAT_R8G8B8A8_SRGB, //rocks_color
+    VK_FORMAT_R8G8B8A8_UNORM, //rocks_normal_height
+
+    VK_FORMAT_R8G8B8A8_UNORM, //stonefloor_color_height
 
 };
 static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
     Vulkan_TextureFilter_Bilinear, //default
     Vulkan_TextureFilter_Bilinear, //terrain
-    Vulkan_TextureFilter_Bilinear, //viking_room
     Vulkan_TextureFilter_Bilinear, //white
 
 ////Basic-Level Texture Operation
@@ -158,15 +147,16 @@ static VulkanTextureFilterType g_TextureFilters[g_TextureCount] =
     Vulkan_TextureFilter_Bilinear, //texturebumpmap_bumpmap
     Vulkan_TextureFilter_Bilinear, //texturenormalmap_normalmap
 
-    Vulkan_TextureFilter_Bilinear, //rocks_color_rgba
-    Vulkan_TextureFilter_Bilinear, //rocks_normal_height_rgba
+    Vulkan_TextureFilter_Bilinear, //rocks_color
+    Vulkan_TextureFilter_Bilinear, //rocks_normal_height
+
+    Vulkan_TextureFilter_Bilinear, //stonefloor_color_height
 
 };
 static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
 {
     Vulkan_TextureAddressing_Clamp, //default
     Vulkan_TextureAddressing_Clamp, //terrain
-    Vulkan_TextureAddressing_Clamp, //viking_room
     Vulkan_TextureAddressing_Clamp, //white
 
 ////Basic-Level Texture Operation
@@ -187,15 +177,16 @@ static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] =
     Vulkan_TextureAddressing_Clamp, //texturebumpmap_bumpmap
     Vulkan_TextureAddressing_Clamp, //texturenormalmap_normalmap
 
-    Vulkan_TextureAddressing_Clamp, //rocks_color_rgba
-    Vulkan_TextureAddressing_Clamp, //rocks_normal_height_rgba
+    Vulkan_TextureAddressing_Clamp, //rocks_color
+    Vulkan_TextureAddressing_Clamp, //rocks_normal_height
+
+    Vulkan_TextureAddressing_Clamp, //stonefloor_color_height
 
 };
 static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
     Vulkan_TextureBorderColor_OpaqueBlack, //default
     Vulkan_TextureBorderColor_OpaqueBlack, //terrain
-    Vulkan_TextureBorderColor_OpaqueBlack, //viking_room
     Vulkan_TextureBorderColor_OpaqueBlack, //white
 
 ////Basic-Level Texture Operation
@@ -216,15 +207,16 @@ static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
     Vulkan_TextureBorderColor_OpaqueBlack, //texturebumpmap_bumpmap
     Vulkan_TextureBorderColor_OpaqueBlack, //texturenormalmap_normalmap
 
-    Vulkan_TextureBorderColor_OpaqueBlack, //rocks_color_rgba
-    Vulkan_TextureBorderColor_OpaqueBlack, //rocks_normal_height_rgba
+    Vulkan_TextureBorderColor_OpaqueBlack, //rocks_color
+    Vulkan_TextureBorderColor_OpaqueBlack, //rocks_normal_height
+
+    Vulkan_TextureBorderColor_OpaqueBlack, //stonefloor_color_height
 
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
 {
     512,    512,    1, //default
     512,    512,    1, //terrain
-   1024,   1024,    1, //viking_room
      64,     64,    1, //white
 
 ////Basic-Level Texture Operation
@@ -245,15 +237,16 @@ static int g_TextureSizes[3 * g_TextureCount] =
     512,    512,    1, //texturebumpmap_bumpmap
     512,    512,    1, //texturenormalmap_normalmap
 
-    1024,  1024,    1, //rocks_color_rgba
-    1024,  1024,    1, //rocks_normal_height_rgba
+    1024,  1024,    1, //rocks_color
+    1024,  1024,    1, //rocks_normal_height
+
+    1024,  1024,    1, //stonefloor_color_height
 
 };
 static float g_TextureAnimChunks[2 * g_TextureCount] = 
 {
     0,    0, //default
     0,    0, //terrain
-    0,    0, //viking_room
     0,    0, //white
 
 ////Basic-Level Texture Operation
@@ -274,8 +267,11 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
     0,    0, //texturebumpmap_bumpmap
     0,    0, //texturenormalmap_normalmap
 
-    0,    0, //rocks_color_rgba
-    0,    0, //rocks_normal_height_rgba
+    0,    0, //rocks_color
+    0,    0, //rocks_normal_height
+
+    0,    0, //stonefloor_color_height
+
 };
 
 
@@ -297,7 +293,7 @@ static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
 /////////////////////////// Shader //////////////////////////////
 const std::string c_strVert = ".vert.spv";
 const std::string c_strFrag = ".frag.spv";
-static const int g_ShaderCount = 12;
+static const int g_ShaderCount = 13;
 static const char* g_ShaderModulePaths[2 * g_ShaderCount] = 
 {
 ////Basic-Level Texture Operation
@@ -314,20 +310,19 @@ static const char* g_ShaderModulePaths[2 * g_ShaderCount] =
     "Assets/Shader/standard_mesh_opaque_texbumpmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texbumpmap_lit.frag.spv", //standard_mesh_opaque_texbumpmap_lit
     "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit
     "Assets/Shader/standard_mesh_opaque_texparallaxmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texparallaxmap_lit.frag.spv", //standard_mesh_opaque_texparallaxmap_lit
-
+    "Assets/Shader/standard_mesh_opaque_texdisplacementmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texdisplacementmap_lit.frag.spv", //standard_mesh_opaque_texdisplacementmap_lit
+    
 ////Transparent
     "Assets/Shader/standard_mesh_transparent_lit.vert.spv", "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit
 };
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_ObjectCount = 19;
+static const int g_ObjectCount = 18;
 static const char* g_ObjectConfigs[5 * g_ObjectCount] = 
 {
     //Object Name                       //Mesh Path                    //Texture One                           //Texture Two                    //Texture Three
     "ground",                           "plane",                       "terrain",                              "",                              "", //ground
-    "viking_room",                      "viking_room",                 "viking_room",                          "",                              "", //viking_room
-    "bunny",                            "bunny",                       "white",                                "",                              "", //bunny  
 
 ////Basic-Level Texture Operation
     "textureSampler_Wrap",              "plane",                       "texturesampler_wrap",                  "",                              "", //textureSampler_Wrap
@@ -347,7 +342,8 @@ static const char* g_ObjectConfigs[5 * g_ObjectCount] =
     "textureOriginal",                  "plane",                       "texturebumpmap_diffuse",               "",                              "", //textureOriginal    
     "textureBumpMap",                   "plane",                       "texturebumpmap_diffuse",               "texturebumpmap_bumpmap",        "", //textureBumpMap
     "textureNormalMap",                 "plane_nt",                    "texturebumpmap_diffuse",               "texturenormalmap_normalmap",    "", //textureNormalMap
-    "textureParallaxMap",               "plane_nt",                    "rocks_color_rgba",                     "rocks_normal_height_rgba",      "", //textureParallaxMap
+    "textureParallaxMap",               "plane_nt",                    "rocks_color",                          "rocks_normal_height",           "", //textureParallaxMap
+    "textureDisplacementMap",           "plane_nt",                    "stonefloor_color_height",              "",                              "", //textureDisplacementMap
 
 };
 
@@ -358,13 +354,12 @@ static const std::string g_Object_TextureOriginal = "textureOriginal";
 static const std::string g_Object_TextureBumpMap = "textureBumpMap";
 static const std::string g_Object_TextureNormalMap = "textureNormalMap";
 static const std::string g_Object_TextureParallaxMap = "textureParallaxMap";
+static const std::string g_Object_TextureDisplacementMap = "textureDisplacementMap";
 
 
 static const char* g_ObjectPathShaderModules[g_ObjectCount] = 
 {
     "Assets/Shader/standard_mesh_opaque_tex2d_lit", //ground 
-    "Assets/Shader/standard_mesh_transparent_lit", //viking_room
-    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //bunny 
 
 ////Basic-Level Texture Operation
     "Assets/Shader/standard_mesh_opaque_texsampler_lit", //textureSampler_Wrap 
@@ -385,14 +380,13 @@ static const char* g_ObjectPathShaderModules[g_ObjectCount] =
     "Assets/Shader/standard_mesh_opaque_texbumpmap_lit", //textureBumpMap
     "Assets/Shader/standard_mesh_opaque_texnormalmap_lit", //textureNormalMap
     "Assets/Shader/standard_mesh_opaque_texparallaxmap_lit", //textureParallaxMap
-    
+    "Assets/Shader/standard_mesh_opaque_texdisplacementmap_lit", //textureDisplacementMap
+
 };
 
 static const char* g_ObjectNameDescriptorSetLayouts[g_ObjectCount] = 
 {
     "Pass-Object-Material-Instance-TextureFS", //ground 
-    "Pass-Object-Material-Instance-TextureFS", //viking_room
-    "Pass-Object-Material-Instance-TextureFS", //bunny 
 
 ////Basic-Level Texture Operation
     "Pass-Object-Material-Instance-TextureFS", //textureSampler_Wrap 
@@ -413,6 +407,7 @@ static const char* g_ObjectNameDescriptorSetLayouts[g_ObjectCount] =
     "Pass-Object-Material-Instance-TextureFS-TextureFS", //textureBumpMap
     "Pass-Object-Material-Instance-TextureFS-TextureFS", //textureNormalMap
     "Pass-Object-Material-Instance-TextureFS-TextureFS", //textureParallaxMap
+    "Pass-Object-Material-Instance-TextureFS", //textureDisplacementMap
 
 };
 
@@ -421,8 +416,6 @@ static float g_instanceGap = 1.2f;
 static int g_ObjectInstanceExtCount[g_ObjectCount] =
 {
     0, //ground
-    0, //viking_room
-    0, //bunny
 
 ////Basic-Level Texture Operation
     5, //textureSampler_Wrap 
@@ -443,14 +436,13 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
     5, //textureBumpMap 
     5, //textureNormalMap 
     5, //textureParallaxMap 
+    5, //textureDisplacementMap 
 
 };
 
 static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] = 
 {   
     glm::vec3(   0, -0.1,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //ground
-    glm::vec3(   0,    0,   -2),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
-    glm::vec3(   0,    0,   -4),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
 
 ////Basic-Level Texture Operation
     glm::vec3(   0,  0.4,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Wrap
@@ -471,14 +463,13 @@ static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] =
     glm::vec3(   0, 13.6,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureBumpMap
     glm::vec3(   0, 14.7,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureNormalMap
     glm::vec3(   0, 15.8,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureParallaxMap
+    glm::vec3(   0, 16.9,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureDisplacementMap
 
 };
 
 static bool g_ObjectIsTransparents[g_ObjectCount] = 
 {
     false, //ground
-    true, //viking_room
-    false, //bunny
 
 ////Basic-Level Texture Operation
     false, //textureSampler_Wrap
@@ -499,14 +490,13 @@ static bool g_ObjectIsTransparents[g_ObjectCount] =
     false, //textureBumpMap
     false, //textureNormalMap
     false, //textureParallaxMap
+    false, //textureDisplacementMap
 
 };
 
 static bool g_ObjectIsShows[] = 
 {
     true, //ground
-    false, //viking_room
-    false, //bunny
 
 ////Basic-Level Texture Operation
     true, //textureSampler_Wrap
@@ -527,14 +517,13 @@ static bool g_ObjectIsShows[] =
     true, //textureBumpMap
     true, //textureNormalMap
     true, //textureParallaxMap
+    true, //textureDisplacementMap
 
 };
 
 static bool g_ObjectIsRotates[g_ObjectCount] =
 {
     false, //ground
-    true, //viking_room
-    true, //bunny
 
 ////Basic-Level Texture Operation
     false, //textureSampler_Wrap
@@ -555,14 +544,13 @@ static bool g_ObjectIsRotates[g_ObjectCount] =
     false, //textureBumpMap
     false, //textureNormalMap
     false, //textureParallaxMap
+    false, //textureDisplacementMap
 
 };
 
 static bool g_ObjectIsLightings[g_ObjectCount] =
 {
     true, //ground
-    true, //viking_room
-    true, //bunny
 
 ////Basic-Level Texture Operation
     true, //textureSampler_Wrap
@@ -583,6 +571,7 @@ static bool g_ObjectIsLightings[g_ObjectCount] =
     true, //textureBumpMap
     true, //textureNormalMap
     true, //textureParallaxMap
+    true, //textureDisplacementMap
 
 };
 
@@ -761,8 +750,8 @@ Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, std::string na
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
 
-    this->cfg_cameraPos = glm::vec3(-2.5f, 2.0f, -20.0f);
-    this->cfg_cameraLookTarget = glm::vec3(-2.5f, 7.0f, 0.0f);
+    this->cfg_cameraPos = glm::vec3(-2.5f, 2.0f, -23.0f);
+    this->cfg_cameraLookTarget = glm::vec3(-2.5f, 8.0f, 0.0f);
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type

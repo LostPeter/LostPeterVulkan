@@ -2227,7 +2227,7 @@ namespace LostPeter
         mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
         if (!pixels) 
         {
-            std::string msg = "VulkanWindow::createTexture2D: Failed to load texture image !";
+            std::string msg = "VulkanWindow::createTexture2D: Failed to load texture image: " + pathAsset_Tex;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
