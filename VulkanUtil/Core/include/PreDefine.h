@@ -267,10 +267,31 @@ namespace LostPeter
     VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(VulkanMSAASampleCountType type);
 
     
+    enum VulkanShaderType
+    {
+        Vulkan_Shader_Vertex = 0,
+        Vulkan_Shader_TessellationControl,
+        Vulkan_Shader_TessellationEVALUATION,
+        Vulkan_Shader_Geometry,
+        Vulkan_Shader_Fragment,
+        Vulkan_Shader_Compute,
+
+        Vulkan_Shader_Count,
+    };
+    const std::string& Util_GetShaderTypeName(VulkanShaderType type);
+    const std::string& Util_GetShaderTypeName(int type);
+    VulkanShaderType Util_ParseShaderType(const std::string& strName);
+    VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(VulkanShaderType type);
+
 
 ////////////////////////////// Vulkan //////////////////////////////
     typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;
     typedef std::vector<VkVertexInputAttributeDescription> VkVertexInputAttributeDescriptionVector;
+
+    typedef std::vector<VkViewport> VkViewportVector;
+    typedef std::vector<VkRect2D> VkRect2DVector;
+
+    typedef std::vector<VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoVector;
 
     const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(VulkanVertexType type);
     const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(VulkanVertexType type);

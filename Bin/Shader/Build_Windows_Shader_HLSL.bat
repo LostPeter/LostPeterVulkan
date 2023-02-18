@@ -13,32 +13,32 @@ set name_shader=%1
 set debug=%2
 
 set name_vert=.vert
-set name_frag=.frag
-set name_comp=.comp
-set name_geom=.geom
 set name_tesc=.tesc
 set name_tese=.tese
+set name_geom=.geom
+set name_frag=.frag
+set name_comp=.comp
 
 echo file name: %name_shader%
 
 echo %name_shader%| findstr %name_vert% >nul && (
     set name_profile=vs_6_1
 	@REM echo "file is .vert !"
-) || echo %name_shader%| findstr %name_frag% >nul && (
-    set name_profile=ps_6_1
-	@REM echo "file is .frag !"
-) || echo %name_shader%| findstr %name_comp% >nul && (
-    set name_profile=cs_6_1
-	@REM echo "file is .comp !"
-) || echo %name_shader%| findstr %name_geom% >nul && (
-    set name_profile=gs_6_1
-	@REM echo "file is .geom !"
 ) || echo %name_shader%| findstr %name_tesc% >nul && (
     set name_profile=hs_6_1
 	@REM echo "file is .tesc !"
 ) || echo %name_shader%| findstr %name_tese% >nul && (
     set name_profile=ds_6_1
 	@REM echo "file is .tese !"
+) || echo %name_shader%| findstr %name_geom% >nul && (
+    set name_profile=gs_6_1
+	@REM echo "file is .geom !"
+) || echo %name_shader%| findstr %name_frag% >nul && (
+    set name_profile=ps_6_1
+	@REM echo "file is .frag !"
+) || echo %name_shader%| findstr %name_comp% >nul && (
+    set name_profile=cs_6_1
+	@REM echo "file is .comp !"
 ) || ( echo file is not valid !
     exit
 )

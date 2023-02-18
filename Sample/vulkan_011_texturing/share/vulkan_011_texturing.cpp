@@ -293,27 +293,50 @@ static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
 /////////////////////////// Shader //////////////////////////////
 const std::string c_strVert = ".vert.spv";
 const std::string c_strFrag = ".frag.spv";
-static const int g_ShaderCount = 13;
-static const char* g_ShaderModulePaths[2 * g_ShaderCount] = 
+static const int g_ShaderCount = 24;
+static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
-////Basic-Level Texture Operation
-    "Assets/Shader/standard_mesh_opaque_texsampler_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texsampler_lit.frag.spv", //standard_mesh_opaque_texsampler_lit
-    "Assets/Shader/standard_mesh_opaque_tex1d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex1d_lit.frag.spv", //standard_mesh_opaque_tex1d_lit
-    "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit
-    "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit
-    "Assets/Shader/standard_mesh_opaque_tex3d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex3d_lit.frag.spv", //standard_mesh_opaque_tex3d_lit
-    "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit
-    "Assets/Shader/standard_mesh_opaque_texanim_scroll_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texanim_scroll_lit.frag.spv", //standard_mesh_opaque_texanim_scroll_lit
-    "Assets/Shader/standard_mesh_opaque_texanim_chunk_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texanim_chunk_lit.frag.spv", //standard_mesh_opaque_texanim_chunk_lit
-    
-////High-Level Texture Operation
-    "Assets/Shader/standard_mesh_opaque_texbumpmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texbumpmap_lit.frag.spv", //standard_mesh_opaque_texbumpmap_lit
-    "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit
-    "Assets/Shader/standard_mesh_opaque_texparallaxmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texparallaxmap_lit.frag.spv", //standard_mesh_opaque_texparallaxmap_lit
-    "Assets/Shader/standard_mesh_opaque_texdisplacementmap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texdisplacementmap_lit.frag.spv", //standard_mesh_opaque_texdisplacementmap_lit
-    
-////Transparent
-    "Assets/Shader/standard_mesh_transparent_lit.vert.spv", "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit
+    //name                                                     //type              //path
+
+    ///////////////////////////////////////// vert /////////////////////////////////////////
+    "vert_standard_mesh_opaque_texsampler_lit",                "vert",             "Assets/Shader/standard_mesh_opaque_texsampler_lit.vert.spv", //standard_mesh_opaque_texsampler_lit vert
+    "vert_standard_mesh_opaque_tex1d_lit",                     "vert",             "Assets/Shader/standard_mesh_opaque_tex1d_lit.vert.spv", //standard_mesh_opaque_tex1d_lit vert
+    "vert_standard_mesh_opaque_tex2d_lit",                     "vert",             "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
+    "vert_standard_mesh_opaque_tex2darray_lit",                "vert",             "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
+    "vert_standard_mesh_opaque_tex3d_lit",                     "vert",             "Assets/Shader/standard_mesh_opaque_tex3d_lit.vert.spv", //standard_mesh_opaque_tex3d_lit vert
+    "vert_standard_mesh_opaque_texcubemap_lit",                "vert",             "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
+    "vert_standard_mesh_opaque_texanim_scroll_lit",            "vert",             "Assets/Shader/standard_mesh_opaque_texanim_scroll_lit.vert.spv", //standard_mesh_opaque_texanim_scroll_lit vert
+    "vert_standard_mesh_opaque_texanim_chunk_lit",             "vert",             "Assets/Shader/standard_mesh_opaque_texanim_chunk_lit.vert.spv", //standard_mesh_opaque_texanim_chunk_lit vert
+
+    "vert_standard_mesh_opaque_texbumpmap_lit",                "vert",             "Assets/Shader/standard_mesh_opaque_texbumpmap_lit.vert.spv", //standard_mesh_opaque_texbumpmap_lit vert
+    "vert_standard_mesh_opaque_texnormalmap_lit",              "vert",             "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.vert.spv", //standard_mesh_opaque_texnormalmap_lit vert   
+    "vert_standard_mesh_opaque_texparallaxmap_lit",            "vert",             "Assets/Shader/standard_mesh_opaque_texparallaxmap_lit.vert.spv", //standard_mesh_opaque_texparallaxmap_lit vert
+    "vert_standard_mesh_opaque_texdisplacementmap_lit",        "vert",             "Assets/Shader/standard_mesh_opaque_texdisplacementmap_lit.vert.spv", //standard_mesh_opaque_texdisplacementmap_lit vert
+
+    ///////////////////////////////////////// tesc /////////////////////////////////////////
+
+    ///////////////////////////////////////// tese /////////////////////////////////////////
+
+    ///////////////////////////////////////// geom /////////////////////////////////////////
+
+    ///////////////////////////////////////// frag /////////////////////////////////////////
+    "frag_standard_mesh_opaque_texsampler_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_texsampler_lit.frag.spv", //standard_mesh_opaque_texsampler_lit frag
+    "frag_standard_mesh_opaque_tex1d_lit",                     "frag",              "Assets/Shader/standard_mesh_opaque_tex1d_lit.frag.spv", //standard_mesh_opaque_tex1d_lit frag
+    "frag_standard_mesh_opaque_tex2d_lit",                     "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
+    "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
+    "frag_standard_mesh_opaque_tex3d_lit",                     "frag",              "Assets/Shader/standard_mesh_opaque_tex3d_lit.frag.spv", //standard_mesh_opaque_tex3d_lit frag
+    "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
+    "frag_standard_mesh_opaque_texanim_scroll_lit",            "frag",              "Assets/Shader/standard_mesh_opaque_texanim_scroll_lit.frag.spv", //standard_mesh_opaque_texanim_scroll_lit frag
+    "frag_standard_mesh_opaque_texanim_chunk_lit",             "frag",              "Assets/Shader/standard_mesh_opaque_texanim_chunk_lit.frag.spv", //standard_mesh_opaque_texanim_chunk_lit frag
+         
+    "frag_standard_mesh_opaque_texbumpmap_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_texbumpmap_lit.frag.spv", //standard_mesh_opaque_texbumpmap_lit frag
+    "frag_standard_mesh_opaque_texnormalmap_lit",              "frag",              "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit frag
+    "frag_standard_mesh_opaque_texparallaxmap_lit",            "frag",              "Assets/Shader/standard_mesh_opaque_texparallaxmap_lit.frag.spv", //standard_mesh_opaque_texparallaxmap_lit frag
+    "frag_standard_mesh_opaque_texdisplacementmap_lit",        "frag",              "Assets/Shader/standard_mesh_opaque_texdisplacementmap_lit.frag.spv", //standard_mesh_opaque_texdisplacementmap_lit frag
+
+    ///////////////////////////////////////// comp /////////////////////////////////////////
+
+
 };
 
 
@@ -357,30 +380,32 @@ static const std::string g_Object_TextureParallaxMap = "textureParallaxMap";
 static const std::string g_Object_TextureDisplacementMap = "textureDisplacementMap";
 
 
-static const char* g_ObjectPathShaderModules[g_ObjectCount] = 
+static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] = 
 {
-    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //ground 
+    //vert                                                  //tesc                          //tese                          //geom                      //frag                                                  //comp
+    
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //ground
 
 ////Basic-Level Texture Operation
-    "Assets/Shader/standard_mesh_opaque_texsampler_lit", //textureSampler_Wrap 
-    "Assets/Shader/standard_mesh_opaque_texsampler_lit", //textureSampler_Mirror 
-    "Assets/Shader/standard_mesh_opaque_texsampler_lit", //textureSampler_Clamp 
-    "Assets/Shader/standard_mesh_opaque_texsampler_lit", //textureSampler_Border 
-    "Assets/Shader/standard_mesh_opaque_tex1d_lit", //texture1D 
-    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //texture2D 
-    "Assets/Shader/standard_mesh_opaque_tex2darray_lit", //texture2Darray
-    "Assets/Shader/standard_mesh_opaque_tex3d_lit", //texture3D
-    "Assets/Shader/standard_mesh_opaque_texcubemap_lit", //textureCubeMap_SkyBox
-    "Assets/Shader/standard_mesh_opaque_texcubemap_lit", //textureCubeMap_Sphere
-    "Assets/Shader/standard_mesh_opaque_texanim_scroll_lit", //textureAnimation_Scroll
-    "Assets/Shader/standard_mesh_opaque_texanim_chunk_lit", //textureAnimation_Chunk
+    "vert_standard_mesh_opaque_texsampler_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_texsampler_lit",             "", //textureSampler_Wrap 
+    "vert_standard_mesh_opaque_texsampler_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_texsampler_lit",             "", //textureSampler_Mirror 
+    "vert_standard_mesh_opaque_texsampler_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_texsampler_lit",             "", //textureSampler_Clamp 
+    "vert_standard_mesh_opaque_texsampler_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_texsampler_lit",             "", //textureSampler_Border 
+    "vert_standard_mesh_opaque_tex1d_lit",                  "",                             "",                             "",                         "frag_standard_mesh_opaque_tex1d_lit",                  "", //texture1D 
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //texture2D 
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray 
+    "vert_standard_mesh_opaque_tex3d_lit",                  "",                             "",                             "",                         "frag_standard_mesh_opaque_tex3d_lit",                  "", //texture3D 
+    "vert_standard_mesh_opaque_texcubemap_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_SkyBox 
+    "vert_standard_mesh_opaque_texcubemap_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_Sphere 
+    "vert_standard_mesh_opaque_texanim_scroll_lit",         "",                             "",                             "",                         "frag_standard_mesh_opaque_texanim_scroll_lit",         "", //textureAnimation_Scroll 
+    "vert_standard_mesh_opaque_texanim_chunk_lit",          "",                             "",                             "",                         "frag_standard_mesh_opaque_texanim_chunk_lit",          "", //textureAnimation_Chunk 
 
 ////High-Level Texture Operation
-    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //textureOriginal 
-    "Assets/Shader/standard_mesh_opaque_texbumpmap_lit", //textureBumpMap
-    "Assets/Shader/standard_mesh_opaque_texnormalmap_lit", //textureNormalMap
-    "Assets/Shader/standard_mesh_opaque_texparallaxmap_lit", //textureParallaxMap
-    "Assets/Shader/standard_mesh_opaque_texdisplacementmap_lit", //textureDisplacementMap
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //textureOriginal 
+    "vert_standard_mesh_opaque_texbumpmap_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_texbumpmap_lit",             "", //textureBumpMap 
+    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                             "",                             "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //textureNormalMap 
+    "vert_standard_mesh_opaque_texparallaxmap_lit",         "",                             "",                             "",                         "frag_standard_mesh_opaque_texparallaxmap_lit",         "", //textureParallaxMap 
+    "vert_standard_mesh_opaque_texdisplacementmap_lit",     "",                             "",                             "",                         "frag_standard_mesh_opaque_texdisplacementmap_lit",     "", //textureDisplacementMap 
 
 };
 
@@ -1014,10 +1039,10 @@ void Vulkan_011_Texturing::createPipeline_Custom()
     createShaderModules();
 
     //4> Viewport
-    std::vector<VkViewport> viewports;
-    viewports.push_back(this->poViewport);
-    std::vector<VkRect2D> scissors;
-    scissors.push_back(this->poScissor);
+    VkViewportVector aViewports;
+    aViewports.push_back(this->poViewport);
+    VkRect2DVector aScissors;
+    aScissors.push_back(this->poScissor);
 
     //5> Pipeline
     size_t count = this->m_aModelObjects.size();
@@ -1025,10 +1050,25 @@ void Vulkan_011_Texturing::createPipeline_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        std::string pathVertShaderBase = g_ObjectPathShaderModules[i] + c_strVert;
-        std::string pathFragShaderBase = g_ObjectPathShaderModules[i] + c_strFrag;
-        VkShaderModule vertShaderBase = findShaderModule(pathVertShaderBase);
-        VkShaderModule fragShaderBase = findShaderModule(pathFragShaderBase);
+        std::string nameShaderVert = g_ObjectNameShaderModules[6 * i + 0];
+        std::string nameShaderTesc = g_ObjectNameShaderModules[6 * i + 1];
+        std::string nameShaderTese = g_ObjectNameShaderModules[6 * i + 2];
+        std::string nameShaderGeom = g_ObjectNameShaderModules[6 * i + 3];
+        std::string nameShaderFrag = g_ObjectNameShaderModules[6 * i + 4];
+        std::string nameShaderComp = g_ObjectNameShaderModules[6 * i + 5];
+        if (!createPipelineShaderStageCreateInfos(nameShaderVert,
+                                                  nameShaderTesc,
+                                                  nameShaderTese,
+                                                  nameShaderGeom,
+                                                  nameShaderFrag,
+                                                  nameShaderComp,
+                                                  pModelObject->m_aShaderStageCreateInfos))
+        {
+            std::string msg = "Vulkan_011_Texturing::createPipeline_Custom: Can not find shader used !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg.c_str());
+        }
+
         pModelObject->poPipelineLayout = findPipelineLayout(pModelObject->nameDescriptorSetLayout);
         if (pModelObject->poPipelineLayout  == VK_NULL_HANDLE)
         {
@@ -1038,11 +1078,10 @@ void Vulkan_011_Texturing::createPipeline_Custom()
         }
 
         //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkPipeline(vertShaderBase, "main",
-                                                                      fragShaderBase, "main",
+        pModelObject->poPipelineGraphics_WireFrame = createVkPipeline(pModelObject->m_aShaderStageCreateInfos,
                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
-                                                                      this->poRenderPass, pModelObject->poPipelineLayout, viewports, scissors,
+                                                                      this->poRenderPass, pModelObject->poPipelineLayout, aViewports, aScissors,
                                                                       pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pModelObject->cfg_vkCullModeFlagBits,
                                                                       pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                                       pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
@@ -1071,11 +1110,10 @@ void Vulkan_011_Texturing::createPipeline_Custom()
             blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
             blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         }
-        pModelObject->poPipelineGraphics = createVkPipeline(vertShaderBase, "main",
-                                                            fragShaderBase, "main",
+        pModelObject->poPipelineGraphics = createVkPipeline(pModelObject->m_aShaderStageCreateInfos,
                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex), 
                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
-                                                            this->poRenderPass, pModelObject->poPipelineLayout, viewports, scissors,
+                                                            this->poRenderPass, pModelObject->poPipelineLayout, aViewports, aScissors,
                                                             pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                             isDepthTestEnable, isDepthWriteEnable, pModelObject->cfg_DepthCompareOp,
                                                             pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
@@ -1365,32 +1403,137 @@ void Vulkan_011_Texturing::createShaderModules()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
-        std::string pathVert = g_ShaderModulePaths[2 * i + 0];
-        std::string pathFrag = g_ShaderModulePaths[2 * i + 1];
+        std::string shaderName = g_ShaderModulePaths[3 * i + 0];
+        std::string shaderType = g_ShaderModulePaths[3 * i + 1];
+        std::string shaderPath = g_ShaderModulePaths[3 * i + 2];
 
-        //vert
-        VkShaderModule vertShaderModule = createShaderModule("VertexShader: ", pathVert);
-        this->m_aVkShaderModules.push_back(vertShaderModule);
-        this->m_mapVkShaderModules[pathVert] = vertShaderModule;
-        Util_LogInfo("Vulkan_011_Texturing::createShaderModules: create shader [%s] success !", pathVert.c_str());
-
-        //frag
-        VkShaderModule fragShaderModule = createShaderModule("FragmentShader: ", pathFrag);
-        this->m_aVkShaderModules.push_back(fragShaderModule);
-        this->m_mapVkShaderModules[pathFrag] = fragShaderModule;
-        Util_LogInfo("Vulkan_011_Texturing::createShaderModules: create shader [%s] success !", pathFrag.c_str());
+        VkShaderModule shaderModule = createShaderModule(shaderType, shaderPath);
+        this->m_aVkShaderModules.push_back(shaderModule);
+        this->m_mapVkShaderModules[shaderName] = shaderModule;
+        Util_LogInfo("Vulkan_011_Texturing::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+                     shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
-VkShaderModule Vulkan_011_Texturing::findShaderModule(const std::string& pathShaderModule)
+VkShaderModule Vulkan_011_Texturing::findShaderModule(const std::string& nameShaderModule)
 {
-    VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(pathShaderModule);
+    VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
     if (itFind == this->m_mapVkShaderModules.end())
     {
         return nullptr;
     }
     return itFind->second;
 }   
+bool Vulkan_011_Texturing::createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
+                                                                const std::string& nameShaderTesc,
+                                                                const std::string& nameShaderTese,
+                                                                const std::string& nameShaderGeom,
+                                                                const std::string& nameShaderFrag,
+                                                                const std::string& nameShaderComp,
+                                                                VkPipelineShaderStageCreateInfoVector& aStageCreateInfos)
+{
+    //vert
+    {
+        VkShaderModule shaderModule = findShaderModule(nameShaderVert);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            Util_LogError("Vulkan_011_Texturing::createPipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
+            return false;
+        }
 
+        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
+        aStageCreateInfos.push_back(shaderStageInfo);
+    }
+    //tesc
+    if (!nameShaderTesc.empty())
+    {
+        VkShaderModule shaderModule = findShaderModule(nameShaderTesc);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            Util_LogError("Vulkan_011_Texturing::createPipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
+            return false;
+        }
+
+        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
+        aStageCreateInfos.push_back(shaderStageInfo);
+    }
+    //tese
+    if (!nameShaderTese.empty())
+    {
+        VkShaderModule shaderModule = findShaderModule(nameShaderTese);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            Util_LogError("Vulkan_011_Texturing::createPipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
+            return false;
+        }
+
+        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
+        aStageCreateInfos.push_back(shaderStageInfo);
+    }
+    //geom
+    if (!nameShaderGeom.empty())
+    {
+        VkShaderModule shaderModule = findShaderModule(nameShaderGeom);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            Util_LogError("Vulkan_011_Texturing::createPipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
+            return false;
+        }
+
+        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
+        aStageCreateInfos.push_back(shaderStageInfo);
+    }
+    //frag
+    {
+        VkShaderModule shaderModule = findShaderModule(nameShaderFrag);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            Util_LogError("Vulkan_011_Texturing::createPipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
+            return false;
+        }
+
+        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
+        aStageCreateInfos.push_back(shaderStageInfo);
+    }
+    //comp
+    if (!nameShaderComp.empty())
+    {
+        VkShaderModule shaderModule = findShaderModule(nameShaderComp);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            Util_LogError("Vulkan_011_Texturing::createPipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameShaderComp.c_str());
+            return false;
+        }
+
+        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
+        aStageCreateInfos.push_back(shaderStageInfo);
+    }
+
+    return true;
+}
 
 void Vulkan_011_Texturing::destroyPipelineLayouts()
 {

@@ -234,10 +234,10 @@ void Vulkan_006_Depth::createPipeline_Custom()
     }
 
     //2> Viewport
-    std::vector<VkViewport> viewports;
-    viewports.push_back(this->poViewport);
-    std::vector<VkRect2D> scissors;
-    scissors.push_back(this->poScissor);
+    VkViewportVector aViewports;
+    aViewports.push_back(this->poViewport);
+    VkRect2DVector aScissors;
+    aScissors.push_back(this->poScissor);
 
     //3> Pipeline
     size_t count = this->m_aModelObjects.size();
@@ -250,7 +250,7 @@ void Vulkan_006_Depth::createPipeline_Custom()
                                                             fragShaderModule, "main",
                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                            this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                            this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
                                                             pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, pModelObject->cfg_vkCullModeFlagBits,
                                                             pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                             pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
@@ -269,7 +269,7 @@ void Vulkan_006_Depth::createPipeline_Custom()
                                                                       fragShaderModule, "main",
                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                      this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                                      this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
                                                                       pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pModelObject->cfg_vkCullModeFlagBits,
                                                                       pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                                       pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
@@ -288,7 +288,7 @@ void Vulkan_006_Depth::createPipeline_Custom()
                                                                         fragShaderModule, "main",
                                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                         Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                        this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                                        this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
                                                                         pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, pModelObject->cfg_vkCullModeFlagBits,
                                                                         VK_FALSE, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                                         pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
@@ -307,7 +307,7 @@ void Vulkan_006_Depth::createPipeline_Custom()
                                                                          fragShaderModule, "main",
                                                                          Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                          Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                         this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                                         this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
                                                                          pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, pModelObject->cfg_vkCullModeFlagBits,
                                                                          pModelObject->cfg_isDepthTest, VK_FALSE, pModelObject->cfg_DepthCompareOp,
                                                                          pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
@@ -326,7 +326,7 @@ void Vulkan_006_Depth::createPipeline_Custom()
                                                                              fragShaderModule, "main",
                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                             this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                                             this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
                                                                              pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, pModelObject->cfg_vkCullModeFlagBits,
                                                                              VK_FALSE, VK_FALSE, pModelObject->cfg_DepthCompareOp,
                                                                              pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 

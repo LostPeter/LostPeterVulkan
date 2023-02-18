@@ -264,10 +264,10 @@ void Vulkan_007_Stencil::createPipeline_Custom()
     }
 
     //2> Viewport
-    std::vector<VkViewport> viewports;
-    viewports.push_back(this->poViewport);
-    std::vector<VkRect2D> scissors;
-    scissors.push_back(this->poScissor);
+    VkViewportVector aViewports;
+    aViewports.push_back(this->poViewport);
+    VkRect2DVector aScissors;
+    aScissors.push_back(this->poScissor);
 
     //3> PipelineLayout
     createPipelineLayout_Outline();
@@ -283,7 +283,7 @@ void Vulkan_007_Stencil::createPipeline_Custom()
                                                                       fragShaderModule_Stencil, "main",
                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                      this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                                      this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
                                                                       pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pModelObject->cfg_vkCullModeFlagBits,
                                                                       pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                                       pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
@@ -311,7 +311,7 @@ void Vulkan_007_Stencil::createPipeline_Custom()
                                                                     fragShaderModule_Stencil, "main",
                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                    this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                                    this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
                                                                     pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                                     pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                                     VK_TRUE, front, back, 
@@ -335,7 +335,7 @@ void Vulkan_007_Stencil::createPipeline_Custom()
                                                                     fragShaderModule_Outline, "main",
                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex_Outline), 
                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex_Outline),
-                                                                    this->poRenderPass, this->poPipelineLayout_Outline, viewports, scissors,
+                                                                    this->poRenderPass, this->poPipelineLayout_Outline, aViewports, aScissors,
                                                                     pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                                     VK_FALSE, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                                     VK_TRUE, front, back,

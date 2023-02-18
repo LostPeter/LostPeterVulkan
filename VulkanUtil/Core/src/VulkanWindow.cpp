@@ -3333,10 +3333,10 @@ namespace LostPeter
             }
 
             //2> Viewport
-            std::vector<VkViewport> viewports;
-            viewports.push_back(this->poViewport);
-            std::vector<VkRect2D> scissors;
-            scissors.push_back(this->poScissor);
+            VkViewportVector aViewports;
+            aViewports.push_back(this->poViewport);
+            VkRect2DVector aScissors;
+            aScissors.push_back(this->poScissor);
 
             //3> PipelineLayout
             VkDescriptorSetLayoutVector aDescriptorSetLayout;
@@ -3353,7 +3353,7 @@ namespace LostPeter
                                                         fragShaderModule, "main",
                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                         Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                        this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                        this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
                                                         this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, this->cfg_vkPolygonMode, this->cfg_vkCullModeFlagBits,
                                                         this->cfg_isDepthTest, this->cfg_isDepthWrite,this->cfg_DepthCompareOp,
                                                         this->cfg_isStencilTest, this->cfg_StencilOpFront, this->cfg_StencilOpBack, 
@@ -3371,7 +3371,7 @@ namespace LostPeter
                                                                   fragShaderModule, "main",
                                                                   Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                   Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                  this->poRenderPass, this->poPipelineLayout, viewports, scissors,
+                                                                  this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
                                                                   this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, this->cfg_vkCullModeFlagBits,
                                                                   this->cfg_isDepthTest, this->cfg_isDepthWrite,this->cfg_DepthCompareOp,
                                                                   this->cfg_isStencilTest, this->cfg_StencilOpFront, this->cfg_StencilOpBack, 
@@ -3464,7 +3464,7 @@ namespace LostPeter
                                                       VkShaderModule fragShaderModule, const std::string& fragMain,
                                                       VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                       VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
-                                                      VkRenderPass renderPass, VkPipelineLayout pipelineLayout, std::vector<VkViewport> viewports, std::vector<VkRect2D> scissors,
+                                                      VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
                                                       VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
                                                       VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                       VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
@@ -3472,26 +3472,45 @@ namespace LostPeter
                                                       VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
                                                       VkColorComponentFlags colorWriteMask)
             {
+                VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
                 //1> Pipeline Shader Stage
                 VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
                 vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
                 vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
                 vertShaderStageInfo.module = vertShaderModule;
                 vertShaderStageInfo.pName = vertMain.c_str();
+                aShaderStageCreateInfos.push_back(vertShaderStageInfo);
 
                 VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
                 fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
                 fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
                 fragShaderStageInfo.module = fragShaderModule;
                 fragShaderStageInfo.pName = fragMain.c_str();
+                aShaderStageCreateInfos.push_back(fragShaderStageInfo);
 
-                VkPipelineShaderStageCreateInfo shaderStageInfos[] = 
-                { 
-                    vertShaderStageInfo, 
-                    fragShaderStageInfo 
-                };
-
-                //2> Pipeline VertexInput State
+                return createVkPipeline(aShaderStageCreateInfos,
+                                        pBindingDescriptions,
+                                        pAttributeDescriptions,
+                                        renderPass, pipelineLayout, aViewports, aScissors,
+                                        primitiveTopology, frontFace, polygonMode, cullMode,
+                                        bDepthTest, bDepthWrite, depthCompareOp,
+                                        bStencilTest, stencilOpFront, stencilOpBack,
+                                        bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
+                                        blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
+                                        colorWriteMask);
+            }
+            VkPipeline VulkanWindow::createVkPipeline(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                                                      VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                      VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                      VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                      VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                      VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                      VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                      VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                      VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                      VkColorComponentFlags colorWriteMask)
+            {
+                //1> Pipeline VertexInput State
                 VkPipelineVertexInputStateCreateInfo vertexInputStateInfo = {};
                 vertexInputStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
                 vertexInputStateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(pBindingDescriptions->size());
@@ -3499,21 +3518,21 @@ namespace LostPeter
                 vertexInputStateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
                 vertexInputStateInfo.pVertexAttributeDescriptions = pAttributeDescriptions->data();
 
-                //3> Pipeline InputAssembly
+                //2> Pipeline InputAssembly
                 VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateInfo = {};
                 inputAssemblyStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
                 inputAssemblyStateInfo.topology = primitiveTopology;
                 inputAssemblyStateInfo.primitiveRestartEnable = VK_FALSE;
 
-                //4> Pipeline Viewport State
+                //3> Pipeline Viewport State
                 VkPipelineViewportStateCreateInfo viewportStateInfo = {};
                 viewportStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-                viewportStateInfo.viewportCount = static_cast<uint32_t>(viewports.size());
-                viewportStateInfo.pViewports = viewports.data();
-                viewportStateInfo.scissorCount = static_cast<uint32_t>(scissors.size());
-                viewportStateInfo.pScissors = scissors.data();
+                viewportStateInfo.viewportCount = static_cast<uint32_t>(aViewports.size());
+                viewportStateInfo.pViewports = aViewports.data();
+                viewportStateInfo.scissorCount = static_cast<uint32_t>(aScissors.size());
+                viewportStateInfo.pScissors = aScissors.data();
 
-                //5> Pipeline Rasterization State
+                //4> Pipeline Rasterization State
                 VkPipelineRasterizationStateCreateInfo rasterizationStateInfo = {};
                 rasterizationStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
                 rasterizationStateInfo.depthClampEnable = VK_FALSE;
@@ -3527,8 +3546,7 @@ namespace LostPeter
                 rasterizationStateInfo.depthBiasClamp = 0.0f; // Optional
                 rasterizationStateInfo.depthBiasSlopeFactor = 0.0f; // Optional
 
-
-                //6> Pipeline Multisample State
+                //5> Pipeline Multisample State
                 VkPipelineMultisampleStateCreateInfo multisamplingStateInfo = {};
                 multisamplingStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
                 multisamplingStateInfo.sampleShadingEnable = VK_FALSE;
@@ -3538,7 +3556,7 @@ namespace LostPeter
                 multisamplingStateInfo.alphaToCoverageEnable = VK_FALSE; // Optional
                 multisamplingStateInfo.alphaToOneEnable = VK_FALSE; // Optional
 
-                //7> Pipeline DepthStencil State
+                //6> Pipeline DepthStencil State
                 VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
                 depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
                 depthStencilStateInfo.depthTestEnable = bDepthTest;
@@ -3552,7 +3570,7 @@ namespace LostPeter
                     depthStencilStateInfo.back = stencilOpBack;
                 }
 
-                //8> Pipeline ColorBlend State 
+                //7> Pipeline ColorBlend State 
                 VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
                 colorBlendAttachment.blendEnable = bBlend;
                 colorBlendAttachment.colorWriteMask = colorWriteMask;
@@ -3577,7 +3595,7 @@ namespace LostPeter
                 colorBlendingStateInfo.blendConstants[2] = 0.0f;
                 colorBlendingStateInfo.blendConstants[3] = 0.0f;
 
-                //9> Pipeline Dynamic State
+                //8> Pipeline Dynamic State
                 VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
                 const std::vector<VkDynamicState> dynamicStateEnables = 
                 { 
@@ -3589,12 +3607,12 @@ namespace LostPeter
                 dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
                 dynamicStateInfo.flags = 0;
 
-                //10> Graphics Pipeline
+                //9> Graphics Pipeline
                 VkGraphicsPipelineCreateInfo pipelineInfo = {};
                 pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
                 pipelineInfo.pNext = nullptr;
-                pipelineInfo.stageCount = 2;
-                pipelineInfo.pStages = shaderStageInfos;
+                pipelineInfo.stageCount = static_cast<uint32_t>(aShaderStageCreateInfos.size());
+                pipelineInfo.pStages = aShaderStageCreateInfos.data();
                 pipelineInfo.pVertexInputState = &vertexInputStateInfo;
                 pipelineInfo.pInputAssemblyState = &inputAssemblyStateInfo;
                 pipelineInfo.pTessellationState = nullptr;

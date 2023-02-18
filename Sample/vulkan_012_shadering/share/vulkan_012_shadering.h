@@ -349,6 +349,9 @@ public:
             //Texture
             this->m_aModelTextures.clear();
             this->m_mapModelTextures.clear();
+
+            //Shader
+            this->m_aShaderStageCreateInfos.clear();
             
             cleanupSwapChain();
         }
@@ -409,6 +412,9 @@ public:
         //Texture
         ModelTexturePtrVector m_aModelTextures;
         ModelTexturePtrMap m_mapModelTextures;
+
+        //Shader
+        VkPipelineShaderStageCreateInfoVector m_aShaderStageCreateInfos;
 
         //Uniform
         int countInstanceExt;
@@ -586,7 +592,14 @@ private:
 ////ShaderModule
     void destroyShaderModules();
     void createShaderModules();
-    VkShaderModule findShaderModule(const std::string& pathShaderModule);
+    VkShaderModule findShaderModule(const std::string& nameShaderModule);
+    bool createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
+                                              const std::string& nameShaderTesc,
+                                              const std::string& nameShaderTese,
+                                              const std::string& nameShaderGeom,
+                                              const std::string& nameShaderFrag,
+                                              const std::string& nameShaderComp,
+                                              VkPipelineShaderStageCreateInfoVector& aStageCreateInfos);
 
 ////PipelineLayout
     void destroyPipelineLayouts();

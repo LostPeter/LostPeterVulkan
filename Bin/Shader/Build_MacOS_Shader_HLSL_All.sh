@@ -38,10 +38,14 @@ function compile_shader() {
     done
 }
 
-echo "************** Shader Source .vert/.frag/.comp/.geom/.tesc/.tese **************"
-# read_dir $dirSrc
+echo "************** Shader Source .vert/.tesc/.tese/.geom/.frag/.comp **************"
 {
     compile_shader $dirSrc
 }
-echo "************** Shader Compile .spv ********************"
-read_dir $dirDst
+echo "************** Shader Source .vert/.tesc/.tese/.geom/.frag/.comp **************"
+
+echo "************** Shader Compile .spv ********************************************"
+{
+    read_dir $dirDst
+}
+echo "************** Shader Compile .spv ********************************************"

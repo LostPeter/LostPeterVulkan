@@ -11,31 +11,31 @@ name_shader=${1}
 debug=${2}
 
 name_vert=".vert"
-name_frag=".frag"
-name_comp=".comp"
-name_geom=".geom"
 name_tesc=".tesc"
 name_tese=".tese"
+name_geom=".geom"
+name_frag=".frag"
+name_comp=".comp"
 
 name_profile=""
 if [[ $name_shader =~ $name_vert ]]; then
     name_profile="vs_6_1"
 	# echo "file is .vert !"
-elif [[ $name_shader =~ $name_frag ]]; then
-    name_profile="ps_6_1"
-	# echo "file is .frag !"
-elif [[ $name_shader =~ $name_comp ]]; then
-    name_profile="cs_6_1"
-	# echo "file is .comp !"
-elif [[ $name_shader =~ $name_geom ]]; then
-    name_profile="gs_6_1"
-	# echo "file is .geom !"
 elif [[ $name_shader =~ $name_tesc ]]; then
     name_profile="hs_6_1"
 	# echo "file is .tesc !"
 elif [[ $name_shader =~ $name_tese ]]; then
     name_profile="ds_6_1"
 	# echo "file is .tese !"
+elif [[ $name_shader =~ $name_geom ]]; then
+    name_profile="gs_6_1"
+	# echo "file is .geom !"
+elif [[ $name_shader =~ $name_frag ]]; then
+    name_profile="ps_6_1"
+	# echo "file is .frag !"
+elif [[ $name_shader =~ $name_comp ]]; then
+    name_profile="cs_6_1"
+	# echo "file is .comp !"
 else
 	echo "file is not valid !"
 	exit

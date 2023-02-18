@@ -19,7 +19,10 @@ if exist %folderShader% (
 )
 mkdir %folderShader%
 
-echo "************** Shader Source .vert/.frag **************"
+echo "************** Shader Source .vert/.tesc/.tese/.geom/.frag/.comp **************"
 for /F %%i in ('Dir %folderSrc%\*.* /B') do call ./Build_Windows_Shader_HLSL.bat %%i %debug%
-echo "************** Shader Compile .spv ********************"
+echo "************** Shader Source .vert/.tesc/.tese/.geom/.frag/.comp **************"
+
+echo "************** Shader Compile .spv ********************************************"
 for %%i in (%folderShader%\*.*) do echo %%i
+echo "************** Shader Compile .spv ********************************************"

@@ -503,6 +503,50 @@ namespace LostPeter
     }
 
 
+    //VulkanShaderType
+    static std::string s_nameShaders[] = 
+    {
+        "vert",
+        "tesc",
+        "tese",
+        "geom",
+        "frag",
+        "comp",
+    };
+    const std::string& Util_GetShaderTypeName(VulkanShaderType type)
+    {
+        return s_nameShaders[(int)type];
+    }
+    const std::string& Util_GetShaderTypeName(int type)
+    {
+        return s_nameShaders[type];
+    }
+    VulkanShaderType Util_ParseShaderType(const std::string& strName)
+    {
+        for (size_t i = 0; i < (int)Vulkan_Shader_Count; i++)
+        {
+            if (s_nameShaders[i] == strName)
+                return (VulkanShaderType)(i);
+        }
+        assert(false && "Util_ParseShaderType: Wrong type name !");
+        return Vulkan_Shader_Vertex;
+    }
+    VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(VulkanShaderType type)
+    {
+        switch((int)type)
+        {
+        case Vulkan_Shader_Vertex:                  return VK_SHADER_STAGE_VERTEX_BIT;
+        case Vulkan_Shader_TessellationControl:     return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+        case Vulkan_Shader_TessellationEVALUATION:  return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+        case Vulkan_Shader_Geometry:                return VK_SHADER_STAGE_GEOMETRY_BIT;
+        case Vulkan_Shader_Fragment:                return VK_SHADER_STAGE_FRAGMENT_BIT;
+        case Vulkan_Shader_Compute:                 return VK_SHADER_STAGE_COMPUTE_BIT;
+        }
+        assert(false && "Util_Transform2VkShaderStageFlagBits: Wrong type !");
+        return VK_SHADER_STAGE_VERTEX_BIT;
+    }
+
+
 ////////////////////////////// Vulkan //////////////////////////////
     const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(VulkanVertexType type)
     {

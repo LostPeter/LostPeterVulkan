@@ -184,16 +184,37 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 /////////////////////////// Shader //////////////////////////////
 const std::string c_strVert = ".vert.spv";
 const std::string c_strFrag = ".frag.spv";
-static const int g_ShaderCount = 5;
-static const char* g_ShaderModulePaths[2 * g_ShaderCount] = 
+static const int g_ShaderCount = 10;
+static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
-    "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit
-    "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit
-    "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit
+    //name                                                     //type              //path
 
-    "Assets/Shader/standard_terrain_opaque_lit.vert.spv", "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //terrain
+    ///////////////////////////////////////// vert /////////////////////////////////////////
+    "vert_standard_mesh_opaque_tex2d_lit",                     "vert",             "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
+    "vert_standard_mesh_opaque_texcubemap_lit",                "vert",             "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
+    "vert_standard_mesh_opaque_tex2darray_lit",                "vert",             "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
+    
+    "vert_standard_terrain_opaque_lit",                        "vert",             "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
+    
+    "vert_standard_mesh_transparent_lit",                      "vert",             "Assets/Shader/standard_mesh_transparent_lit.vert.spv", //standard_mesh_transparent_lit vert
 
-    "Assets/Shader/standard_mesh_transparent_lit.vert.spv", "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit
+    ///////////////////////////////////////// tesc /////////////////////////////////////////
+
+    ///////////////////////////////////////// tese /////////////////////////////////////////
+
+    ///////////////////////////////////////// geom /////////////////////////////////////////
+
+    ///////////////////////////////////////// frag /////////////////////////////////////////
+    "frag_standard_mesh_opaque_tex2d_lit",                     "frag",             "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
+    "frag_standard_mesh_opaque_texcubemap_lit",                "frag",             "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
+    "frag_standard_mesh_opaque_tex2darray_lit",                "frag",             "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
+    
+    "frag_standard_terrain_opaque_lit",                        "frag",             "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
+    
+    "frag_standard_mesh_transparent_lit",                      "frag",             "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit frag
+
+    ///////////////////////////////////////// comp /////////////////////////////////////////
+
 };
 
 
@@ -215,19 +236,22 @@ static const char* g_ObjectConfigs[5 * g_ObjectCount] =
     "terrain",                              "plane",                        "texture_terrain_diffuse",              "texture_terrain_normal",       "texture_terrain_control", //terrain
 };
 
-static const char* g_ObjectPathShaderModules[g_ObjectCount] = 
+static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] = 
 {
-    "Assets/Shader/standard_mesh_transparent_lit", //viking_room
-    "Assets/Shader/standard_mesh_opaque_tex2d_lit", //bunny
+    //vert                                                  //tesc                          //tese                          //geom                      //frag                                                  //comp
 
-    "Assets/Shader/standard_mesh_opaque_texcubemap_lit", //textureCubeMap_SkyBox
-    "Assets/Shader/standard_mesh_opaque_texcubemap_lit", //textureCubeMap_Sphere
+    "vert_standard_mesh_transparent_lit",                   "",                             "",                             "",                         "frag_standard_mesh_transparent_lit",                   "", //viking_room
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //bunny
+    
+    "vert_standard_mesh_opaque_texcubemap_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_SkyBox
+    "vert_standard_mesh_opaque_texcubemap_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_Sphere
 
-    "Assets/Shader/standard_mesh_opaque_tex2darray_lit", //texture2Darray_TerrainDiffuse
-    "Assets/Shader/standard_mesh_opaque_tex2darray_lit", //texture2Darray_TerrainNormal
-    "Assets/Shader/standard_mesh_opaque_tex2darray_lit", //texture2Darray_TerrainControl
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainDiffuse
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainNormal
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainControl
 
-    "Assets/Shader/standard_terrain_opaque_lit", //terrain
+    "vert_standard_terrain_opaque_lit",                     "",                             "",                             "",                         "frag_standard_terrain_opaque_lit",                     "", //terrain
+    
 };
 
 static const char* g_ObjectNameDescriptorSetLayouts[g_ObjectCount] = 
@@ -689,10 +713,10 @@ void Vulkan_012_Shadering::createPipeline_Custom()
     createShaderModules();
 
     //4> Viewport
-    std::vector<VkViewport> viewports;
-    viewports.push_back(this->poViewport);
-    std::vector<VkRect2D> scissors;
-    scissors.push_back(this->poScissor);
+    VkViewportVector aViewports;
+    aViewports.push_back(this->poViewport);
+    VkRect2DVector aScissors;
+    aScissors.push_back(this->poScissor);
 
     //5> Pipeline
     size_t count = this->m_aModelObjects.size();
@@ -700,10 +724,26 @@ void Vulkan_012_Shadering::createPipeline_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        std::string pathVertShaderBase = g_ObjectPathShaderModules[i] + c_strVert;
-        std::string pathFragShaderBase = g_ObjectPathShaderModules[i] + c_strFrag;
-        VkShaderModule vertShaderBase = findShaderModule(pathVertShaderBase);
-        VkShaderModule fragShaderBase = findShaderModule(pathFragShaderBase);
+        std::string nameShaderVert = g_ObjectNameShaderModules[6 * i + 0];
+        std::string nameShaderTesc = g_ObjectNameShaderModules[6 * i + 1];
+        std::string nameShaderTese = g_ObjectNameShaderModules[6 * i + 2];
+        std::string nameShaderGeom = g_ObjectNameShaderModules[6 * i + 3];
+        std::string nameShaderFrag = g_ObjectNameShaderModules[6 * i + 4];
+        std::string nameShaderComp = g_ObjectNameShaderModules[6 * i + 5];
+        if (!createPipelineShaderStageCreateInfos(nameShaderVert,
+                                                  nameShaderTesc,
+                                                  nameShaderTese,
+                                                  nameShaderGeom,
+                                                  nameShaderFrag,
+                                                  nameShaderComp,
+                                                  pModelObject->m_aShaderStageCreateInfos))
+        {
+            std::string msg = "Vulkan_012_Shadering::createPipeline_Custom: Can not find shader used !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg.c_str());
+        }
+
+
         pModelObject->poPipelineLayout = findPipelineLayout(pModelObject->nameDescriptorSetLayout);
         if (pModelObject->poPipelineLayout  == VK_NULL_HANDLE)
         {
@@ -713,11 +753,10 @@ void Vulkan_012_Shadering::createPipeline_Custom()
         }
 
         //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkPipeline(vertShaderBase, "main",
-                                                                      fragShaderBase, "main",
+        pModelObject->poPipelineGraphics_WireFrame = createVkPipeline(pModelObject->m_aShaderStageCreateInfos,
                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
-                                                                      this->poRenderPass, pModelObject->poPipelineLayout, viewports, scissors,
+                                                                      this->poRenderPass, pModelObject->poPipelineLayout, aViewports, aScissors,
                                                                       pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pModelObject->cfg_vkCullModeFlagBits,
                                                                       pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
                                                                       pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
@@ -746,11 +785,10 @@ void Vulkan_012_Shadering::createPipeline_Custom()
             blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
             blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         }
-        pModelObject->poPipelineGraphics = createVkPipeline(vertShaderBase, "main",
-                                                            fragShaderBase, "main",
+        pModelObject->poPipelineGraphics = createVkPipeline(pModelObject->m_aShaderStageCreateInfos,
                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex), 
                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
-                                                            this->poRenderPass, pModelObject->poPipelineLayout, viewports, scissors,
+                                                            this->poRenderPass, pModelObject->poPipelineLayout, aViewports, aScissors,
                                                             pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                             isDepthTestEnable, isDepthWriteEnable, pModelObject->cfg_DepthCompareOp,
                                                             pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
@@ -1042,31 +1080,138 @@ void Vulkan_012_Shadering::createShaderModules()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
-        std::string pathVert = g_ShaderModulePaths[2 * i + 0];
-        std::string pathFrag = g_ShaderModulePaths[2 * i + 1];
+        std::string shaderName = g_ShaderModulePaths[3 * i + 0];
+        std::string shaderType = g_ShaderModulePaths[3 * i + 1];
+        std::string shaderPath = g_ShaderModulePaths[3 * i + 2];
 
-        //vert
-        VkShaderModule vertShaderModule = createShaderModule("VertexShader: ", pathVert);
-        this->m_aVkShaderModules.push_back(vertShaderModule);
-        this->m_mapVkShaderModules[pathVert] = vertShaderModule;
-        Util_LogInfo("Vulkan_012_Shadering::createShaderModules: create shader [%s] success !", pathVert.c_str());
-
-        //frag
-        VkShaderModule fragShaderModule = createShaderModule("FragmentShader: ", pathFrag);
-        this->m_aVkShaderModules.push_back(fragShaderModule);
-        this->m_mapVkShaderModules[pathFrag] = fragShaderModule;
-        Util_LogInfo("Vulkan_012_Shadering::createShaderModules: create shader [%s] success !", pathFrag.c_str());
+        VkShaderModule shaderModule = createShaderModule(shaderType, shaderPath);
+        this->m_aVkShaderModules.push_back(shaderModule);
+        this->m_mapVkShaderModules[shaderName] = shaderModule;
+        Util_LogInfo("Vulkan_012_Shadering::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+                     shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
-VkShaderModule Vulkan_012_Shadering::findShaderModule(const std::string& pathShaderModule)
+VkShaderModule Vulkan_012_Shadering::findShaderModule(const std::string& nameShaderModule)
 {
-    VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(pathShaderModule);
+    VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
     if (itFind == this->m_mapVkShaderModules.end())
     {
         return nullptr;
     }
     return itFind->second;
 }   
+bool Vulkan_012_Shadering::createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
+                                                                const std::string& nameShaderTesc,
+                                                                const std::string& nameShaderTese,
+                                                                const std::string& nameShaderGeom,
+                                                                const std::string& nameShaderFrag,
+                                                                const std::string& nameShaderComp,
+                                                                VkPipelineShaderStageCreateInfoVector& aStageCreateInfos)
+{
+    //vert
+    {
+        VkShaderModule shaderModule = findShaderModule(nameShaderVert);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            Util_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
+            return false;
+        }
+
+        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
+        aStageCreateInfos.push_back(shaderStageInfo);
+    }
+    //tesc
+    if (!nameShaderTesc.empty())
+    {
+        VkShaderModule shaderModule = findShaderModule(nameShaderTesc);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            Util_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
+            return false;
+        }
+
+        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
+        aStageCreateInfos.push_back(shaderStageInfo);
+    }
+    //tese
+    if (!nameShaderTese.empty())
+    {
+        VkShaderModule shaderModule = findShaderModule(nameShaderTese);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            Util_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
+            return false;
+        }
+
+        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
+        aStageCreateInfos.push_back(shaderStageInfo);
+    }
+    //geom
+    if (!nameShaderGeom.empty())
+    {
+        VkShaderModule shaderModule = findShaderModule(nameShaderGeom);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            Util_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
+            return false;
+        }
+
+        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
+        aStageCreateInfos.push_back(shaderStageInfo);
+    }
+    //frag
+    {
+        VkShaderModule shaderModule = findShaderModule(nameShaderFrag);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            Util_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
+            return false;
+        }
+
+        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
+        aStageCreateInfos.push_back(shaderStageInfo);
+    }
+    //comp
+    if (!nameShaderComp.empty())
+    {
+        VkShaderModule shaderModule = findShaderModule(nameShaderComp);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            Util_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameShaderComp.c_str());
+            return false;
+        }
+
+        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
+        aStageCreateInfos.push_back(shaderStageInfo);
+    }
+
+    return true;
+}
+
 
 void Vulkan_012_Shadering::destroyPipelineLayouts()
 {
