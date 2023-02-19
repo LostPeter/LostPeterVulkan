@@ -269,9 +269,10 @@ float4 main(VSOutput input) : SV_TARGET
     float3 N = normalize(input.inWorldNormal);
 
     //BumpMap, Need Sample four times to get dx,dy
-    float bumpScale = mat.aTexLayers[1].indexTextureArray;
-    if (bumpScale > 0.0)
+    float bumpMapType = mat.aTexLayers[1].indexTextureArray;
+    if (bumpMapType == 1)
     {
+        float bumpScale = mat.aTexLayers[1].texSpeedU;
         float bumpValueU = texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(-1.0 / mat.aTexLayers[1].texWidth, 0.0)).r -
                        texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(1.0 / mat.aTexLayers[1].texWidth, 0.0)).r;
         float bumpValueV = texBumpMap.Sample(texBumpMapSampler, input.inTexCoord + float2(0.0, -1.0 / mat.aTexLayers[1].texHeight)).r -
@@ -299,7 +300,14 @@ float4 main(VSOutput input) : SV_TARGET
     float3 colorVertex = input.inColor.rgb;
 
     //Final Color
-    outColor = colorLight * colorTexture * colorVertex;
+    if (bumpMapType == 0)
+    {
+        outColor = colorTexture;
+    }
+    else
+    {
+        outColor = colorLight * colorTexture * colorVertex;
+    }
 
     return float4(outColor, 1.0);
 }

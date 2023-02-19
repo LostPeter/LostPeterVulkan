@@ -19,6 +19,59 @@
 #include <assimp/postprocess.h>
 
 
+/////////////////////////// Type ////////////////////////////////
+enum BumpMappingType
+{
+    BumpMapping_DiffuseColor = 0,       //0: DiffuseColor
+    BumpMapping_BumpMapping,            //1: NormalMapping
+
+};
+struct EnumBumpMappingDesc { BumpMappingType Value; const char* Name; const char* Tooltip; };
+static const EnumBumpMappingDesc s_aBumpMappingDescs[] =
+{
+    { BumpMapping_DiffuseColor,                   "DiffuseColor",                     "Diffuse Color" },
+    { BumpMapping_BumpMapping,                    "BumpMapping",                      "Bump Mapping" },
+};
+
+
+enum NormalMappingType
+{
+    NormalMapping_DiffuseColor = 0,     //0: DiffuseColor
+    NormalMapping_NormalColor,          //1: NormalColor
+    NormalMapping_NormalMapping,        //2: NormalMapping
+
+};
+struct EnumNormalMappingDesc { NormalMappingType Value; const char* Name; const char* Tooltip; };
+static const EnumNormalMappingDesc s_aNormalMappingDescs[] =
+{
+    { NormalMapping_DiffuseColor,                 "DiffuseColor",                     "Diffuse Color" },
+    { NormalMapping_NormalColor,                  "NormalColor",                      "Normal Color" },
+    { NormalMapping_NormalMapping,                "NormalMapping",                    "Normal Mapping" },
+};
+
+
+enum ParallaxMappingType
+{
+    ParallaxMapping_DiffuseColor = 0,           //0: DiffuseColor
+    ParallaxMapping_NormalColor,                //1: NormalColor
+    ParallaxMapping_NormalMapping,              //2: NormalMapping
+    ParallaxMapping_CommonParallaxMapping,      //3: CommonParallaxMapping
+    ParallaxMapping_SteepParallaxMapping,       //4: SteepParallaxMapping
+    ParallaxMapping_OcclusionParallaxMapping,   //5: OcclusionParallaxMapping
+
+};
+struct EnumParallaxMappingDesc { ParallaxMappingType Value; const char* Name; const char* Tooltip; };
+static const EnumParallaxMappingDesc s_aParallaxMappingDescs[] =
+{
+    { ParallaxMapping_DiffuseColor,                 "DiffuseColor",                     "Diffuse Color" },
+    { ParallaxMapping_NormalColor,                  "NormalColor",                      "Normal Color" },
+    { ParallaxMapping_NormalMapping,                "NormalMapping",                    "Normal Mapping" },
+    { ParallaxMapping_CommonParallaxMapping,        "CommonParallaxMapping",            "Common Parallax Mapping" },
+    { ParallaxMapping_SteepParallaxMapping,         "SteepParallaxMapping",             "Steep Parallax Mapping" },
+    { ParallaxMapping_OcclusionParallaxMapping,     "OcclusionParallaxMapping",         "Occlusion Parallax Mapping" },
+};
+
+
 
 /////////////////////////// Mesh ////////////////////////////////
 static const int g_MeshCount = 4;
@@ -961,11 +1014,8 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                         materialConstants.factorDiffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
                         materialConstants.factorSpecular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
                     }
-
-                    if (p == 1)
-                    {
-                        materialConstants.aTexLayers[p].indexTextureArray = MathUtil::RandF(2000.0f, 10000.0f);
-                    }
+                    materialConstants.aTexLayers[p].indexTextureArray = 1; 
+                    materialConstants.aTexLayers[p].texSpeedU = MathUtil::RandF(20.0f, 1000.0f);
                 } 
                 else if (pModelObject->nameModel == g_Object_TextureNormalMap) //TextureNormalMap
                 {
@@ -975,11 +1025,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                         materialConstants.factorDiffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
                         materialConstants.factorSpecular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
                     }
-
-                    if (p == 1)
-                    {
-                        materialConstants.aTexLayers[p].indexTextureArray = 0;
-                    }
+                    materialConstants.aTexLayers[p].indexTextureArray = 2;
                 }
                 else if (pModelObject->nameModel == g_Object_TextureParallaxMap) //TextureParallaxMap
                 {
@@ -989,14 +1035,10 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                         materialConstants.factorDiffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
                         materialConstants.factorSpecular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
                     }
-
-                    if (p == 1)
-                    {
-                        materialConstants.aTexLayers[p].indexTextureArray = 0;
-                        materialConstants.aTexLayers[p].texSpeedU = 0.1f;
-                        materialConstants.aTexLayers[p].texSpeedV = -0.02f;
-                        materialConstants.aTexLayers[p].texSpeedW = 48.0f;
-                    }
+                    materialConstants.aTexLayers[p].indexTextureArray = 3;
+                    materialConstants.aTexLayers[p].texSpeedU = 0.1f;
+                    materialConstants.aTexLayers[p].texSpeedV = -0.02f;
+                    materialConstants.aTexLayers[p].texSpeedW = 48.0f;
                 }
 
             }
@@ -1965,23 +2007,101 @@ bool Vulkan_011_Texturing::beginRenderImgui()
                                         {
                                             if (pModelObject->nameModel == g_Object_TextureBumpMap) //TextureBumpMap
                                             {
-                                                if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[p].indexTextureArray, 0.5f, 0.0f, 10000.0f))
+                                                //BumpMapping Type
+                                                int nIndex = 0;
+                                                for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aBumpMappingDescs); nIndex++)
+                                                {
+                                                    if (s_aBumpMappingDescs[nIndex].Value == mat.aTexLayers[p].indexTextureArray)
+                                                        break;
+                                                }
+                                                const char* preview_text = s_aBumpMappingDescs[nIndex].Name;
+                                                std::string nameBumpMappingType = "BumpMappingType - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                                if (ImGui::BeginCombo(nameBumpMappingType.c_str(), preview_text))
+                                                {
+                                                    for (int q = 0; q < IM_ARRAYSIZE(s_aBumpMappingDescs); q++)
+                                                    {
+                                                        if (ImGui::Selectable(s_aBumpMappingDescs[q].Name, nIndex == q))
+                                                        {
+                                                            mat.aTexLayers[p].indexTextureArray = (int)s_aBumpMappingDescs[q].Value;
+                                                            break;
+                                                        }
+                                                    }
+                                                    ImGui::EndCombo();
+                                                }
+
+                                                //Bump Scale
+                                                std::string nameBumpScale = "BumpScale - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                                if (ImGui::DragFloat(nameBumpScale.c_str(), &mat.aTexLayers[p].texSpeedU, 0.5f, 0.0f, 5000.0f))
                                                 {
                                                     
                                                 }
                                             }
                                             else if (pModelObject->nameModel == g_Object_TextureNormalMap) //TextureNormalMap
                                             {
-                                                if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[p].indexTextureArray, 0.5f, 0.0f, 10000.0f))
+                                                //NormalMapping Type
+                                                int nIndex = 0;
+                                                for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aNormalMappingDescs); nIndex++)
                                                 {
-                                                    
+                                                    if (s_aNormalMappingDescs[nIndex].Value == mat.aTexLayers[p].indexTextureArray)
+                                                        break;
+                                                }
+                                                const char* preview_text = s_aNormalMappingDescs[nIndex].Name;
+                                                std::string nameNormalMappingType = "NormalMappingType - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                                if (ImGui::BeginCombo(nameNormalMappingType.c_str(), preview_text))
+                                                {
+                                                    for (int q = 0; q < IM_ARRAYSIZE(s_aNormalMappingDescs); q++)
+                                                    {
+                                                        if (ImGui::Selectable(s_aNormalMappingDescs[q].Name, nIndex == q))
+                                                        {
+                                                            mat.aTexLayers[p].indexTextureArray = (int)s_aNormalMappingDescs[q].Value;
+                                                            break;
+                                                        }
+                                                    }
+                                                    ImGui::EndCombo();
                                                 }
                                             }
                                             else if (pModelObject->nameModel == g_Object_TextureParallaxMap) //TextureParallaxMap
                                             {
-                                                if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[p].indexTextureArray, 0.5f, 0.0f, 10000.0f))
+                                                //ParallaxMapping Type
+                                                int nIndex = 0;
+                                                for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aParallaxMappingDescs); nIndex++)
+                                                {
+                                                    if (s_aParallaxMappingDescs[nIndex].Value == mat.aTexLayers[p].indexTextureArray)
+                                                        break;
+                                                }
+                                                const char* preview_text = s_aParallaxMappingDescs[nIndex].Name;
+                                                std::string nameParallaxMappingType = "ParallaxMappingType - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                                if (ImGui::BeginCombo(nameParallaxMappingType.c_str(), preview_text))
+                                                {
+                                                    for (int q = 0; q < IM_ARRAYSIZE(s_aParallaxMappingDescs); q++)
+                                                    {
+                                                        if (ImGui::Selectable(s_aParallaxMappingDescs[q].Name, nIndex == q))
+                                                        {
+                                                            mat.aTexLayers[p].indexTextureArray = (int)s_aParallaxMappingDescs[q].Value;
+                                                            break;
+                                                        }
+                                                    }
+                                                    ImGui::EndCombo();
+                                                }
+
+                                                //heightScale
+                                                std::string nameHeightScale = "HeightScale - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                                if (ImGui::DragFloat(nameHeightScale.c_str(), &mat.aTexLayers[p].texSpeedU, 0.01f, 0.005f, 10.0f))
                                                 {
                                                     
+                                                }
+                                                //parallaxBias
+                                                std::string nameParallaxBias = "ParallaxBias - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                                if (ImGui::DragFloat(nameParallaxBias.c_str(), &mat.aTexLayers[p].texSpeedV, 0.05f, -100.0f, 100.0f))
+                                                {
+                                                    
+                                                }
+                                                //numLayers
+                                                std::string nameNumLayers = "NumLayers - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                                int numLayers = (int)mat.aTexLayers[p].texSpeedW;
+                                                if (ImGui::DragInt(nameNumLayers.c_str(), &numLayers, 1, 1, 100.0f))
+                                                {
+                                                    mat.aTexLayers[p].texSpeedW = numLayers;
                                                 }
                                             }
                                             else
@@ -1993,25 +2113,33 @@ bool Vulkan_011_Texturing::beginRenderImgui()
                                             }
                                         }
 
-                                        //texSpeedU
-                                        std::string nameTexSpeedU = "TexSpeedU - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
-                                        if (ImGui::DragFloat(nameTexSpeedU.c_str(), &mat.aTexLayers[p].texSpeedU, 0.01f, 0.0f, 100.0f))
+                                        if (pModelObject->nameModel != g_Object_TextureBumpMap &&
+                                            pModelObject->nameModel != g_Object_TextureParallaxMap)
                                         {
-                                            
+                                            //texSpeedU
+                                            std::string nameTexSpeedU = "TexSpeedU - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                            if (ImGui::DragFloat(nameTexSpeedU.c_str(), &mat.aTexLayers[p].texSpeedU, 0.01f, 0.0f, 100.0f))
+                                            {
+                                                
+                                            }
                                         }
-                                        //texSpeedV
-                                        std::string nameTexSpeedV = "texSpeedV - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
-                                        if (ImGui::DragFloat(nameTexSpeedV.c_str(), &mat.aTexLayers[p].texSpeedV, 0.01f, 0.0f, 100.0f))
+                                        
+                                        if (pModelObject->nameModel != g_Object_TextureParallaxMap)
                                         {
-                                            
+                                            //texSpeedV
+                                            std::string nameTexSpeedV = "texSpeedV - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                            if (ImGui::DragFloat(nameTexSpeedV.c_str(), &mat.aTexLayers[p].texSpeedV, 0.01f, 0.0f, 100.0f))
+                                            {
+                                                
+                                            }
+                                            //texSpeedW
+                                            std::string nameTexSpeedW = "texSpeedW - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                            if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
+                                            {
+                                                
+                                            }
                                         }
-                                        //texSpeedW
-                                        std::string nameTexSpeedW = "texSpeedW - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
-                                        if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
-                                        {
-                                            
-                                        }
-
+                                        
                                         //texChunkMaxX
                                         std::string nameTexChunkMaxX = "texChunkMaxX - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
                                         float fTexChunkMaxX = mat.aTexLayers[p].texChunkMaxX;

@@ -164,7 +164,7 @@ float3 calculateNormal(VSOutput input, float2 uv)
     return normalize(mul(TBN, tangentNormal));
 }
 
-float2 normalParallaxMapping(VSOutput input, 
+float2 commonParallaxMapping(VSOutput input, 
                              float2 uv,
                              float3 viewDir,
                              float heightScale,
@@ -361,18 +361,23 @@ float4 main(VSOutput input) : SV_TARGET
     float3 N = float3(0,0,1);
     float parallaxMapFlag = mat.aTexLayers[1].indexTextureArray;  
     float2 uv = input.inTexCoord;
-    if (parallaxMapFlag == 0)
+    if (parallaxMapFlag == 1 ||
+        parallaxMapFlag == 2)
+    {
+        N = calculateNormal(input, uv);
+    }
+    else if (parallaxMapFlag == 3)
     {
         float heightScale = mat.aTexLayers[1].texSpeedU;
         float parallaxBias = mat.aTexLayers[1].texSpeedV;
-        uv = normalParallaxMapping(input, 
+        uv = commonParallaxMapping(input, 
                                    uv, 
                                    V, 
                                    heightScale, 
                                    parallaxBias);
         N = calculateNormal(input, uv);
     }
-    else if (parallaxMapFlag == 1)
+    else if (parallaxMapFlag == 4)
     {
         float heightScale = mat.aTexLayers[1].texSpeedU;
         float numLayers = mat.aTexLayers[1].texSpeedW;
@@ -383,7 +388,7 @@ float4 main(VSOutput input) : SV_TARGET
                                   numLayers);
         N = calculateNormal(input, uv);
     }
-    else if (parallaxMapFlag == 2)
+    else if (parallaxMapFlag == 5)
     {
         float heightScale = mat.aTexLayers[1].texSpeedU;
         float numLayers = mat.aTexLayers[1].texSpeedW;
@@ -425,7 +430,18 @@ float4 main(VSOutput input) : SV_TARGET
     float3 colorVertex = input.inColor.rgb;
 
     //Final Color
-    outColor = colorLight * colorTexture * colorVertex;
+    if (parallaxMapFlag == 0)
+    {
+        outColor = colorTexture;
+    }
+    else if (parallaxMapFlag == 1)
+    {
+        outColor = N;
+    }
+    else
+    {
+        outColor = colorLight * colorTexture * colorVertex;
+    }
 
     return float4(outColor, 1.0);
 }

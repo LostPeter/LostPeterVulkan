@@ -298,11 +298,12 @@ float4 main(VSOutput input) : SV_TARGET
     MaterialConstants mat = materialConsts[(uint)input.inWorldPos.w];
     //Normal Map
     float3 N = float3(0,0,1);
-    float normalMapFlag = mat.aTexLayers[1].indexTextureArray;
-    if (normalMapFlag == 1)
-        N = normalize(input.inWorldNormal);
-    else
+    float normalMapType = mat.aTexLayers[1].indexTextureArray;
+    if (normalMapType == 1 ||
+        normalMapType == 2)
         N = calculateNormal(input);
+    else
+        N = normalize(input.inWorldNormal);
     
     float3 colorLight;
     //Main Light
@@ -324,13 +325,13 @@ float4 main(VSOutput input) : SV_TARGET
     float3 colorVertex = input.inColor.rgb;
 
     //Final Color
-    if (normalMapFlag == 2)
+    if (normalMapType == 0)
+    {
+        outColor = colorTexture;
+    }
+    else if (normalMapType == 1)
     {
         outColor = N;
-    }
-    else if (normalMapFlag == 3)
-    {
-        outColor = colorLight;
     }
     else
     {
