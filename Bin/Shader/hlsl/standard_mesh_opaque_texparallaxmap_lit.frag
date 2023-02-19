@@ -392,11 +392,11 @@ float4 main(VSOutput input) : SV_TARGET
     {
         float heightScale = mat.aTexLayers[1].texSpeedU;
         float numLayers = mat.aTexLayers[1].texSpeedW;
-        occlusionParallaxMapping(input, 
-                                 uv, 
-                                 V, 
-                                 heightScale, 
-                                 numLayers);
+        uv = occlusionParallaxMapping(input, 
+                                      uv, 
+                                      V, 
+                                      heightScale, 
+                                      numLayers);
         N = calculateNormal(input, uv);
     }
     else
