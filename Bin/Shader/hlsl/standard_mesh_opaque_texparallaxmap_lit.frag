@@ -14,6 +14,8 @@ struct VSOutput
     [[vk::location(2)]] float4 inWorldPos       : TEXCOORD1; //xyz: World Pos; w: instanceIndex
     [[vk::location(3)]] float3 inWorldNormal    : TEXCOORD2;
     [[vk::location(4)]] float3 inWorldTangent   : TEXCOORD3;
+    [[vk::location(5)]] float3 outTSPos         : TEXCOORD4; 
+    [[vk::location(6)]] float3 outTSEyePos      : TEXCOORD5;
 };
 
 
@@ -358,6 +360,7 @@ float4 main(VSOutput input) : SV_TARGET
 
     MaterialConstants mat = materialConsts[(uint)input.inWorldPos.w];
     float3 V = normalize(passConsts.g_EyePosW - input.inWorldPos.xyz);
+    float3 VT = normalize(input.outTSEyePos - input.outTSPos);
     float3 N = float3(0,0,1);
     float parallaxMapFlag = mat.aTexLayers[1].indexTextureArray;  
     float2 uv = input.inTexCoord;
@@ -372,7 +375,7 @@ float4 main(VSOutput input) : SV_TARGET
         float parallaxBias = mat.aTexLayers[1].texSpeedV;
         uv = commonParallaxMapping(input, 
                                    uv, 
-                                   V, 
+                                   VT, 
                                    heightScale, 
                                    parallaxBias);
         N = calculateNormal(input, uv);
@@ -383,7 +386,7 @@ float4 main(VSOutput input) : SV_TARGET
         float numLayers = mat.aTexLayers[1].texSpeedW;
         uv = steepParallaxMapping(input, 
                                   uv, 
-                                  V, 
+                                  VT, 
                                   heightScale, 
                                   numLayers);
         N = calculateNormal(input, uv);
@@ -394,7 +397,7 @@ float4 main(VSOutput input) : SV_TARGET
         float numLayers = mat.aTexLayers[1].texSpeedW;
         uv = occlusionParallaxMapping(input, 
                                       uv, 
-                                      V, 
+                                      VT, 
                                       heightScale, 
                                       numLayers);
         N = calculateNormal(input, uv);

@@ -2086,13 +2086,13 @@ bool Vulkan_011_Texturing::beginRenderImgui()
 
                                                 //heightScale
                                                 std::string nameHeightScale = "HeightScale - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
-                                                if (ImGui::DragFloat(nameHeightScale.c_str(), &mat.aTexLayers[p].texSpeedU, 0.01f, 0.005f, 10.0f))
+                                                if (ImGui::DragFloat(nameHeightScale.c_str(), &mat.aTexLayers[p].texSpeedU, 0.00001f, 0.0005f, 5.0f))
                                                 {
                                                     
                                                 }
                                                 //parallaxBias
                                                 std::string nameParallaxBias = "ParallaxBias - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
-                                                if (ImGui::DragFloat(nameParallaxBias.c_str(), &mat.aTexLayers[p].texSpeedV, 0.05f, -100.0f, 100.0f))
+                                                if (ImGui::DragFloat(nameParallaxBias.c_str(), &mat.aTexLayers[p].texSpeedV, 0.00001f, -2.0f, 2.0f))
                                                 {
                                                     
                                                 }

@@ -137,6 +137,8 @@ struct VSOutput
     [[vk::location(2)]] float4 outWorldPos        : TEXCOORD1; //xyz: World Pos; w: instanceIndex
     [[vk::location(3)]] float3 outWorldNormal     : TEXCOORD2;
     [[vk::location(4)]] float3 outWorldTangent    : TEXCOORD3;
+    [[vk::location(5)]] float3 outTSPos           : TEXCOORD4; 
+    [[vk::location(6)]] float3 outTSEyePos        : TEXCOORD5;
 };
 
 
@@ -152,6 +154,13 @@ VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
     output.outWorldPos.w = instanceIndex;
     output.outWorldNormal = mul((float3x3)objInstance.g_MatWorld, input.inNormal);
     output.outWorldTangent = mul((float3x3)objInstance.g_MatWorld, input.inTangent);
+
+    float3 N = normalize(input.inNormal);
+	float3 T = normalize(input.inTangent);
+	float3 B = normalize(cross(N, T));
+	float3x3 TBN = float3x3(T, B, N);
+    output.outTSPos = mul(TBN, output.outWorldPos.xyz);
+    output.outTSEyePos = mul(TBN, passConsts.g_EyePosW);
 
     return output;
 }
