@@ -74,12 +74,13 @@ static const EnumParallaxMappingDesc s_aParallaxMappingDescs[] =
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 4;
+static const int g_MeshCount = 5;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
     "plane_nt",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane_nt
+    "plane_gltf",       "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane_gltf
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
 
@@ -89,6 +90,7 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
 {
     true, //plane
     true, //plane_nt
+    true, //plane_gltf
     false, //cube
     false, //sphere
 
@@ -98,15 +100,17 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
 {
     false, //plane  
     false, //plane_nt  
+    false, //plane_gltf  
     false, //cube
     false, //sphere
-
+    
 };
 
 static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
 {
     MathUtil::ms_mat4Unit, //plane
     MathUtil::ms_mat4Unit, //plane_nt
+    MathUtil::ms_mat4Unit, //plane_gltf
     MathUtil::ms_mat4Unit, //cube
     MathUtil::ms_mat4Unit, //sphere
 
@@ -418,7 +422,7 @@ static const char* g_ObjectConfigs[5 * g_ObjectCount] =
     "textureOriginal",                  "plane",                       "texturebumpmap_diffuse",               "",                              "", //textureOriginal    
     "textureBumpMap",                   "plane",                       "texturebumpmap_diffuse",               "texturebumpmap_bumpmap",        "", //textureBumpMap
     "textureNormalMap",                 "plane_nt",                    "texturebumpmap_diffuse",               "texturenormalmap_normalmap",    "", //textureNormalMap
-    "textureParallaxMap",               "plane_nt",                    "rocks_color",                          "rocks_normal_height",           "", //textureParallaxMap
+    "textureParallaxMap",               "plane_gltf",                  "rocks_color",                          "rocks_normal_height",           "", //textureParallaxMap
     "textureDisplacementMap",           "plane_nt",                    "stonefloor_color_height",              "",                              "", //textureDisplacementMap
 
 };
@@ -523,25 +527,25 @@ static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] =
     glm::vec3(   0, -0.1,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //ground
 
 ////Basic-Level Texture Operation
-    glm::vec3(   0,  0.4,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Wrap
-    glm::vec3(   0,  1.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Mirror
-    glm::vec3(   0,  2.6,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Clamp
-    glm::vec3(   0,  3.7,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureSampler_Border
-    glm::vec3(   0,  4.8,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture1D
-    glm::vec3(   0,  5.9,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D
-    glm::vec3(   0,  7.0,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray
-    glm::vec3(   0,  8.1,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture3D
+    glm::vec3(   0,  0.1,  0.4),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureSampler_Wrap
+    glm::vec3(   0,  0.1,  1.5),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureSampler_Mirror
+    glm::vec3(   0,  0.1,  2.6),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureSampler_Clamp
+    glm::vec3(   0,  0.1,  3.7),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureSampler_Border
+    glm::vec3(   0,  0.1,  4.8),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //texture1D
+    glm::vec3(   0,  0.1,  5.9),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //texture2D
+    glm::vec3(   0,  0.1,  7.0),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //texture2Darray
+    glm::vec3(   0,  0.1,  8.1),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //texture3D
     glm::vec3(   0,    0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
-    glm::vec3(   0,  9.2,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 0.005f,  0.005f,  0.005f), //textureCubeMap_Sphere
-    glm::vec3(   0, 10.3,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation_Scroll
-    glm::vec3(   0, 11.4,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureAnimation_Chunk
+    glm::vec3(   0,  0.4,  9.2),     glm::vec3(     0,  0,  0),    glm::vec3( 0.005f,  0.005f,  0.005f), //textureCubeMap_Sphere
+    glm::vec3(   0,  0.1, 10.3),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureAnimation_Scroll
+    glm::vec3(   0,  0.1, 11.4),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureAnimation_Chunk
 
 ////High-Level Texture Operation
-    glm::vec3(   0, 12.5,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureOriginal
-    glm::vec3(   0, 13.6,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureBumpMap
-    glm::vec3(   0, 14.7,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureNormalMap
-    glm::vec3(   0, 15.8,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureParallaxMap
-    glm::vec3(   0, 16.9,    0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //textureDisplacementMap
+    glm::vec3(   0,  0.1, 12.5),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureOriginal
+    glm::vec3(   0,  0.1, 13.6),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureBumpMap
+    glm::vec3(   0,  0.1, 14.7),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureNormalMap
+    glm::vec3(   0,  0.1, 15.8),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureParallaxMap
+    glm::vec3(   0,  0.1, 16.9),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureDisplacementMap
 
 };
 
@@ -828,12 +832,10 @@ Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, std::string na
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
 
-    this->cfg_cameraPos = glm::vec3(-2.5f, 2.0f, -23.0f);
-    this->cfg_cameraLookTarget = glm::vec3(-2.5f, 8.0f, 0.0f);
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-    this->mainLight.direction = glm::vec3(0, 0, 1); //z+
+    this->mainLight.direction = glm::vec3(0, -1, 0); //y-
 }
 
 void Vulkan_011_Texturing::createDescriptorSetLayout_Custom()
@@ -847,6 +849,8 @@ void Vulkan_011_Texturing::createCamera()
 {
     this->pCamera = new VulkanCamera();
     cameraReset();
+    this->pCamera->SetPos(glm::vec3(-4.0f, 24.0f, 3.6f));
+    this->pCamera->SetEulerAngles(glm::vec3(80.0f, 0.0f, 0.0f));
 }
 
 void Vulkan_011_Texturing::loadModel_Custom()
@@ -2086,13 +2090,13 @@ bool Vulkan_011_Texturing::beginRenderImgui()
 
                                                 //heightScale
                                                 std::string nameHeightScale = "HeightScale - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
-                                                if (ImGui::DragFloat(nameHeightScale.c_str(), &mat.aTexLayers[p].texSpeedU, 0.00001f, 0.0005f, 5.0f))
+                                                if (ImGui::DragFloat(nameHeightScale.c_str(), &mat.aTexLayers[p].texSpeedU, 0.01f, 0.0f, 10.0f))
                                                 {
                                                     
                                                 }
                                                 //parallaxBias
                                                 std::string nameParallaxBias = "ParallaxBias - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
-                                                if (ImGui::DragFloat(nameParallaxBias.c_str(), &mat.aTexLayers[p].texSpeedV, 0.00001f, -2.0f, 2.0f))
+                                                if (ImGui::DragFloat(nameParallaxBias.c_str(), &mat.aTexLayers[p].texSpeedV, 0.01f, -5.0f, 5.0f))
                                                 {
                                                     
                                                 }

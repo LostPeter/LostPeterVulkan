@@ -168,24 +168,24 @@ float3 calculateNormal(VSOutput input, float2 uv)
 
 float2 commonParallaxMapping(VSOutput input, 
                              float2 uv,
-                             float3 viewDir,
+                             float3 viewDirTS,
                              float heightScale,
                              float parallaxBias)
 {
 	float height = 1.0 - texParallaxMap.SampleLevel(texParallaxMapSampler, uv, 0.0).a;
-	float2 p = viewDir.xy * (height * (heightScale * 0.5) + parallaxBias) / viewDir.z;
+	float2 p = viewDirTS.xy * (height * (heightScale * 0.5) + parallaxBias) / viewDirTS.z;
 	return uv - p;
 }
 
 float2 steepParallaxMapping(VSOutput input, 
                             float2 uv, 
-                            float3 viewDir,
+                            float3 viewDirTS,
                             float heightScale,
                             float numLayers)
 {
 	float layerDepth = 1.0 / numLayers;
 	float currLayerDepth = 0.0;
-	float2 deltaUV = viewDir.xy * heightScale / (viewDir.z * numLayers);
+	float2 deltaUV = viewDirTS.xy * heightScale / (viewDirTS.z * numLayers);
 	float2 currUV = uv;
 	float height = 1.0 - texParallaxMap.SampleLevel(texParallaxMapSampler, currUV, 0.0).a;
 	for (int i = 0; i < numLayers; i++) 
@@ -203,13 +203,13 @@ float2 steepParallaxMapping(VSOutput input,
 
 float2 occlusionParallaxMapping(VSOutput input, 
                                 float2 uv, 
-                                float3 viewDir,
+                                float3 viewDirTS,
                                 float heightScale,
                                 float numLayers)
 {
 	float layerDepth = 1.0 / numLayers;
 	float currLayerDepth = 0.0;
-	float2 deltaUV = viewDir.xy * heightScale / (viewDir.z * numLayers);
+	float2 deltaUV = viewDirTS.xy * heightScale / (viewDirTS.z * numLayers);
 	float2 currUV = uv;
 	float height = 1.0 - texParallaxMap.SampleLevel(texParallaxMapSampler, currUV, 0.0).a;
 	for (int i = 0; i < numLayers; i++) 
