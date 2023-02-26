@@ -36,6 +36,7 @@ namespace LostPeter
         , poMSAASamples(VK_SAMPLE_COUNT_1_BIT)
         , poQueueGraphics(nullptr)
         , poQueuePresent(nullptr)
+        , poQueueCompute(nullptr)
         , poSurface(nullptr)
         , poSwapChain(nullptr)
         , poColorImage(nullptr)
@@ -76,7 +77,11 @@ namespace LostPeter
         , poCurrentFrame(0)
         , poSwapChainImageIndex(0)
 
-        , framebufferResized(false)
+        , queueIndexGraphics(0)
+        , queueIndexPresent(0)
+        , queueIndexCompute(0)
+
+        , isFrameBufferResized(false)
 
         , cfg_colorBackground(0.0f, 0.2f, 0.4f, 1.0f)
         , cfg_isMSAA(false)
@@ -84,6 +89,7 @@ namespace LostPeter
         , cfg_isWireFrame(false)
         , cfg_isRotate(true)
         , cfg_isNegativeViewport(true)
+        , cfg_isUseComputeShader(false)
         , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
         , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
         , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
@@ -179,6 +185,19 @@ namespace LostPeter
         {
             this->pCamera->PerspectiveLH(glm::radians(this->cfg_cameraFov), this->aspectRatio, this->cfg_cameraNear, this->cfg_cameraFar);
         }
+    }
+
+    bool VulkanWindow::OnBeginCompute()
+    {
+        return beginCompute();
+    }
+        void VulkanWindow::OnCompute()
+        {
+            compute();
+        }
+    void VulkanWindow::OnEndCompute()
+    {
+        endCompute();
     }
 
     bool VulkanWindow::OnBeginRender()
@@ -428,7 +447,7 @@ namespace LostPeter
     void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     {
         VulkanWindow* pWnd = (VulkanWindow*)glfwGetWindowUserPointer(window);
-        pWnd->framebufferResized = true;
+        pWnd->isFrameBufferResized = true;
         pWnd->OnResize(width, height, false);
     }
     void VulkanWindow::createWindowCallback()
@@ -619,11 +638,14 @@ namespace LostPeter
             VkPhysicalDevice& device = devices[i];
             int indexGraphics = -1;
             int indexPresent = -1;
-            if (isDeviceSuitable(device, indexGraphics, indexPresent))
+            int indexCompute = -1;
+            if (isDeviceSuitable(device, indexGraphics, indexPresent, indexCompute))
             {
                 this->poPhysicalDevice = device;
-                this->graphicsIndex = indexGraphics;
-                this->presentIndex = indexPresent;
+                this->queueIndexGraphics = indexGraphics;
+                this->queueIndexPresent = indexPresent;
+                this->queueIndexCompute = indexCompute;
+
                 if (HasConfig_MASS())
                 {
                     this->poMSAASamples = getMaxUsableSampleCount();
@@ -704,7 +726,7 @@ namespace LostPeter
 
         Util_LogInfo("<1-2-4> VulkanWindow::pickPhysicalDevice finish !");
     }
-        void VulkanWindow::findQueueFamilies(VkPhysicalDevice device, int& indexGraphics, int& indexPresent)
+        void VulkanWindow::findQueueFamilies(VkPhysicalDevice device, int& indexGraphics, int& indexPresent, int& indexCompute)
         {
             uint32_t queueFamilyCount = 0;
             vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
@@ -717,10 +739,13 @@ namespace LostPeter
             {
                 VkQueueFamilyProperties& queueFamily = queueFamilies[i];
 
-                if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+                //Graphics
+                if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) 
+                {
                     indexGraphics = i;
                 }
 
+                //Present
                 VkBool32 presentSupport = false;
                 vkGetPhysicalDeviceSurfaceSupportKHR(device, i, this->poSurface, &presentSupport);
                 if (presentSupport)
@@ -728,8 +753,22 @@ namespace LostPeter
                     indexPresent = i;
                 }
 
-                if (indexGraphics >= 0 && indexPresent >= 0)
-                    break;
+                //Compute
+                if (this->cfg_isUseComputeShader)
+                {
+                    if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
+                    {
+                        indexCompute = i;
+                    }
+
+                    if (indexGraphics >= 0 && indexPresent >= 0 && indexCompute >= 0)
+                        break;
+                }
+                else
+                {
+                    if (indexGraphics >= 0 && indexPresent >= 0)
+                        break;
+                }
             }
         }
         bool VulkanWindow::checkDeviceExtensionSupport(VkPhysicalDevice device) 
@@ -786,11 +825,19 @@ namespace LostPeter
 
             return details;
         }
-        bool VulkanWindow::isDeviceSuitable(VkPhysicalDevice device, int& indexGraphics, int& indexPresent)
+        bool VulkanWindow::isDeviceSuitable(VkPhysicalDevice device, int& indexGraphics, int& indexPresent, int& indexCompute)
         {   
-            findQueueFamilies(device, indexGraphics, indexPresent);
-            if (indexGraphics == -1 || indexPresent == -1)
-                return false;
+            findQueueFamilies(device, indexGraphics, indexPresent, indexCompute);
+            if (this->cfg_isUseComputeShader)
+            {
+                if (indexGraphics == -1 || indexPresent == -1 || indexCompute == -1)
+                    return false;
+            }
+            else
+            {
+                if (indexGraphics == -1 || indexPresent == -1)
+                    return false;
+            }
             
             bool extensionsSupported = checkDeviceExtensionSupport(device);
             bool swapChainAdequate = false;
@@ -806,8 +853,10 @@ namespace LostPeter
     {
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<uint32_t> uniqueQueueFamilies;
-        uniqueQueueFamilies.insert(this->graphicsIndex);
-        uniqueQueueFamilies.insert(this->presentIndex);
+        uniqueQueueFamilies.insert(this->queueIndexGraphics);
+        uniqueQueueFamilies.insert(this->queueIndexPresent);
+        if (this->cfg_isUseComputeShader)
+            uniqueQueueFamilies.insert(this->queueIndexCompute);
 
         float queuePriority = 1.0f;
         for (std::set<uint32_t>::iterator it = uniqueQueueFamilies.begin(); 
@@ -850,8 +899,10 @@ namespace LostPeter
             throw std::runtime_error(msg);
         }
 
-        vkGetDeviceQueue(this->poDevice, this->graphicsIndex, 0, &this->poQueueGraphics);
-        vkGetDeviceQueue(this->poDevice, this->presentIndex, 0, &this->poQueuePresent);
+        vkGetDeviceQueue(this->poDevice, this->queueIndexGraphics, 0, &this->poQueueGraphics);
+        vkGetDeviceQueue(this->poDevice, this->queueIndexPresent, 0, &this->poQueuePresent);
+        if (this->cfg_isUseComputeShader)
+            vkGetDeviceQueue(this->poDevice, this->queueIndexCompute, 0, &this->poQueueCompute);
 
         Util_LogInfo("<1-2-5> VulkanWindow::createLogicalDevice finish !");
     }
@@ -875,7 +926,7 @@ namespace LostPeter
     {
         VkCommandPoolCreateInfo poolInfo = {};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        poolInfo.queueFamilyIndex = this->graphicsIndex;
+        poolInfo.queueFamilyIndex = this->queueIndexGraphics;
         poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
         if (vkCreateCommandPool(this->poDevice, &poolInfo, nullptr, &this->poCommandPool) != VK_SUCCESS) 
@@ -971,11 +1022,11 @@ namespace LostPeter
 
         uint32_t queueFamilyIndices[] =
         {
-            this->graphicsIndex,
-            this->presentIndex
+            this->queueIndexGraphics,
+            this->queueIndexPresent
         };
 
-        if (this->graphicsIndex != this->presentIndex)
+        if (this->queueIndexGraphics != this->queueIndexPresent)
         {
             createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
             createInfo.queueFamilyIndexCount = 2;
@@ -3900,7 +3951,7 @@ namespace LostPeter
         init_info.Instance = this->poInstance;
         init_info.PhysicalDevice = this->poPhysicalDevice;
         init_info.Device = this->poDevice;
-        init_info.QueueFamily = this->graphicsIndex;
+        init_info.QueueFamily = this->queueIndexGraphics;
         init_info.Queue = this->poQueueGraphics;
         init_info.DescriptorPool = this->imgui_DescriptorPool;
         init_info.Subpass = 1;
@@ -3933,6 +3984,21 @@ namespace LostPeter
         RefreshAspectRatio();
 
     }
+
+    bool VulkanWindow::beginCompute()
+    {
+
+        return true;
+    }
+        void VulkanWindow::compute()
+        {
+
+        }
+    void VulkanWindow::endCompute()
+    {
+
+    }
+
 
     bool VulkanWindow::beginRender()
     {
@@ -4705,16 +4771,18 @@ namespace LostPeter
             VkSubmitInfo submitInfo = {};
             submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-            VkSemaphore waitSemaphores[] = { this->poImageAvailableSemaphores[this->poCurrentFrame] };
             VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-            submitInfo.waitSemaphoreCount = 1;
-            submitInfo.pWaitSemaphores = waitSemaphores;
-            submitInfo.pWaitDstStageMask = waitStages;
-
+            VkSemaphore waitSemaphores[] = { this->poImageAvailableSemaphores[this->poCurrentFrame] };
+            VkSemaphore signalSemaphores[] = { this->poRenderFinishedSemaphores[this->poCurrentFrame] };
+            //Command Buffer
             submitInfo.commandBufferCount = 1;
             submitInfo.pCommandBuffers = &this->poCommandBuffers[this->poSwapChainImageIndex];
-
-            VkSemaphore signalSemaphores[] = { this->poRenderFinishedSemaphores[this->poCurrentFrame] };
+            //WaitSemaphores
+            submitInfo.waitSemaphoreCount = 1;
+            submitInfo.pWaitSemaphores = waitSemaphores;
+            //WaitDstStageMask 
+            submitInfo.pWaitDstStageMask = waitStages;
+            //SignalSemaphores
             submitInfo.signalSemaphoreCount = 1;
             submitInfo.pSignalSemaphores = signalSemaphores;
 
@@ -4740,9 +4808,9 @@ namespace LostPeter
 
             VkResult result = vkQueuePresentKHR(this->poQueuePresent, &presentInfo);
 
-            if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || this->framebufferResized) 
+            if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || this->isFrameBufferResized) 
             {
-                this->framebufferResized = false;
+                this->isFrameBufferResized = false;
                 recreateSwapChain();
             } 
             else if (result != VK_SUCCESS) 

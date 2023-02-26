@@ -80,6 +80,14 @@ namespace LostPeter
                 {
                     pBase->CalculateFrameStats(s_pWindow);
 
+                    //Compute
+                    if (pBase->OnBeginCompute())
+                    {
+                        pBase->OnCompute();
+                        pBase->OnEndCompute();
+                    }
+
+                    //Render
                     if (pBase->OnBeginRender())
                     {
                         pBase->OnUpdate();

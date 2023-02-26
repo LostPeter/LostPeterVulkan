@@ -169,6 +169,7 @@ const std::string c_strLayout_Material = "Material";
 const std::string c_strLayout_Instance = "Instance";
 const std::string c_strLayout_TextureVS = "TextureVS";
 const std::string c_strLayout_TextureFS = "TextureFS";
+const std::string c_strLayout_TextureCS = "TextureCS";
 static const int g_DescriptorSetLayoutCount = 3;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
@@ -520,6 +521,7 @@ Vulkan_012_Shadering::Vulkan_012_Shadering(int width, int height, std::string na
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
+    this->cfg_isUseComputeShader = true;
 
     this->cfg_cameraPos = glm::vec3(-2.5f, 2.0f, -20.0f);
     this->cfg_cameraLookTarget = glm::vec3(-2.5f, 5.0f, 0.0f);
@@ -1006,6 +1008,17 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
 
                 bindings.push_back(samplerLayoutBinding);
             }
+            else if (strLayout == c_strLayout_TextureCS) //TextureCS
+            {
+                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+                samplerLayoutBinding.binding = j;
+                samplerLayoutBinding.descriptorCount = 1;
+                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                samplerLayoutBinding.pImmutableSamplers = nullptr;
+                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+
+                bindings.push_back(samplerLayoutBinding);
+            }
             else
             {
                 std::string msg = "Vulkan_012_Shadering::createDescriptorSetLayouts: Wrong DescriptorSetLayout type: " + strLayout;
@@ -1337,7 +1350,8 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                     descriptorWrites.push_back(ds3);
                 }
                 else if (nameDescriptorSet == c_strLayout_TextureVS || //TextureVS
-                         nameDescriptorSet == c_strLayout_TextureFS) //TextureFS
+                         nameDescriptorSet == c_strLayout_TextureFS || //TextureFS
+                         nameDescriptorSet == c_strLayout_TextureCS) //TextureCS
                 {
                     ModelTexture* pTexture = pModelObject->GetTexture(nIndexTexture);
                     nIndexTexture ++;

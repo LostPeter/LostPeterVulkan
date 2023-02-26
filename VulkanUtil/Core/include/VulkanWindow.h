@@ -38,6 +38,7 @@ namespace LostPeter
         VkSampleCountFlagBits poMSAASamples;
         VkQueue poQueueGraphics;
         VkQueue poQueuePresent;
+        VkQueue poQueueCompute;
 
         VkSurfaceKHR poSurface;
         VkSwapchainKHR poSwapChain;
@@ -59,6 +60,7 @@ namespace LostPeter
         VkDescriptorSetLayout poDescriptorSetLayout;
         
         VkCommandPool poCommandPool;
+        std::vector<VkCommandBuffer> poCommandBuffers;
         
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
@@ -87,7 +89,6 @@ namespace LostPeter
         VkDescriptorPool poDescriptorPool;
         std::vector<VkDescriptorSet> poDescriptorSets;
 
-        std::vector<VkCommandBuffer> poCommandBuffers;
 
         //Synchronization Objects
         std::vector<VkSemaphore> poImageAvailableSemaphores;
@@ -106,10 +107,11 @@ namespace LostPeter
         };
         SwapChainSupportDetails swapChainSupport;
 
-        uint32_t graphicsIndex;
-        uint32_t presentIndex;
+        uint32_t queueIndexGraphics;
+        uint32_t queueIndexPresent;
+        uint32_t queueIndexCompute;
         
-        bool framebufferResized;
+        bool isFrameBufferResized;
         //Config
         glm::vec4 cfg_colorBackground;
         bool cfg_isMSAA;
@@ -117,6 +119,7 @@ namespace LostPeter
         bool cfg_isWireFrame;
         bool cfg_isRotate;
         bool cfg_isNegativeViewport;
+        bool cfg_isUseComputeShader;
         VkPrimitiveTopology cfg_vkPrimitiveTopology;
         VkFrontFace cfg_vkFrontFace;
         VkPolygonMode cfg_vkPolygonMode;
@@ -204,6 +207,9 @@ namespace LostPeter
         virtual void OnLoad();
         virtual bool OnIsInit();
         virtual void OnResize(int w, int h, bool force);
+        virtual bool OnBeginCompute();
+            virtual void OnCompute();
+        virtual void OnEndCompute();
         virtual bool OnBeginRender();
             virtual void OnUpdate();
             virtual void OnRender();
@@ -243,11 +249,11 @@ namespace LostPeter
                 virtual void setUpDebugMessenger();
                 virtual void createSurface();
                 virtual void pickPhysicalDevice();
-                    virtual void findQueueFamilies(VkPhysicalDevice device, int& indexGraphics, int& indexPresent);
+                    virtual void findQueueFamilies(VkPhysicalDevice device, int& indexGraphics, int& indexPresent, int& indexCompute);
                     virtual bool checkDeviceExtensionSupport(VkPhysicalDevice device);
                     virtual VkSampleCountFlagBits getMaxUsableSampleCount();
                     virtual SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, SwapChainSupportDetails& details);
-                    virtual bool isDeviceSuitable(VkPhysicalDevice device, int& indexGraphics, int& indexPresent);
+                    virtual bool isDeviceSuitable(VkPhysicalDevice device, int& indexGraphics, int& indexPresent, int& indexCompute);
                 virtual void createLogicalDevice();
 
             virtual void createFeatureSupport();
@@ -537,6 +543,12 @@ namespace LostPeter
 
         //Resize
         virtual void resizeWindow(int w, int h, bool force);
+
+        //Compute
+        virtual bool beginCompute();
+
+            virtual void compute();
+        virtual void endCompute();
 
         //Render/Update
         virtual bool beginRender();
