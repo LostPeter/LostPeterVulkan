@@ -39,13 +39,13 @@ static glm::vec3 g_tranformModels[3 * g_CountLen] =
 
 static glm::mat4 g_tranformLocalModels[g_CountLen] = 
 {
-    MathUtil::ms_mat4Unit, //plane
-    MathUtil::ms_mat4Unit, //cube
+    VulkanMath::ms_mat4Unit, //plane
+    VulkanMath::ms_mat4Unit, //cube
 
-    MathUtil::RotateX(-90.0f), //viking_room
-    MathUtil::ms_mat4Unit, //bunny
+    VulkanMath::RotateX(-90.0f), //viking_room
+    VulkanMath::ms_mat4Unit, //bunny
 };
-static glm::mat4 g_tranformLocal = MathUtil::ms_mat4Unit;
+static glm::mat4 g_tranformLocal = VulkanMath::ms_mat4Unit;
 static bool g_isTranformLocalModels[] = 
 {
     false, //plane
@@ -127,7 +127,7 @@ void Vulkan_005_Camera::resetSetting(int index)
     this->cfg_cameraPos = g_vCameraPos[index];
     this->cfg_cameraFov = g_fCameraFov[index];
 
-    this->poMatWorld = MathUtil::FromTRS(g_tranformModels[index * 3 + 0],
+    this->poMatWorld = VulkanMath::FromTRS(g_tranformModels[index * 3 + 0],
                                          g_tranformModels[index * 3 + 1],
                                          g_tranformModels[index * 3 + 2]); 
     this->cfg_model_Path = g_pathModels[index * 3 + 1]; 
@@ -178,7 +178,7 @@ void Vulkan_005_Camera::loadModel_Assimp()
 
         if (g_isTranformLocal)
         {
-            v.pos = MathUtil::Transform(g_tranformLocal, v.pos);
+            v.pos = VulkanMath::Transform(g_tranformLocal, v.pos);
         }
 
         this->vertices.push_back(v);
@@ -233,8 +233,8 @@ bool Vulkan_005_Camera::beginRenderImgui()
                 std::string nameModel = s_Name + g_pathModels[3 * i + 0];
                 if (isShowModel)
                 {
-                    nameModel += "(" + StringUtil::SaveSizeT(this->vertices.size()) + 
-                                 "/" + StringUtil::SaveSizeT(this->indices.size()) +
+                    nameModel += "(" + VulkanUtilString::SaveSizeT(this->vertices.size()) + 
+                                 "/" + VulkanUtilString::SaveSizeT(this->indices.size()) +
                                  ")";
                 }
                 ImGui::Checkbox(nameModel.c_str(), &isShowModel);

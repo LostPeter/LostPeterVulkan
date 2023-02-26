@@ -15,8 +15,8 @@
 namespace LostPeter
 {
     VulkanSceneObject::VulkanSceneObject()
-        : matWorld(MathUtil::Identity4x4())
-		, matTexTransform(MathUtil::Identity4x4())
+        : matWorld(VulkanMath::Identity4x4())
+		, matTexTransform(VulkanMath::Identity4x4())
 		, numFramesDirty(VulkanSceneManager::s_numFrameResources)
 		, objCBIndex(-1)
 		, pMaterial(nullptr)

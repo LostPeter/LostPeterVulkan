@@ -12,7 +12,7 @@
 #include "../include/VulkanMeshLoader.h"
 #include "../include/VulkanCamera.h"
 #include "../include/VulkanTimer.h"
-#include "../include/StringUtil.h"
+#include "../include/VulkanUtilString.h"
 
 namespace LostPeter
 {
@@ -58,7 +58,7 @@ namespace LostPeter
         , poIndexBuffer_Data(nullptr)
         , poIndexBuffer(nullptr)
         , poIndexBufferMemory(nullptr)
-        , poMatWorld(MathUtil::Identity4x4())
+        , poMatWorld(VulkanMath::Identity4x4())
 
         , poTypeVertex(Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
         , poPipelineLayout(nullptr)
@@ -1059,8 +1059,8 @@ namespace LostPeter
                     static_cast<uint32_t>(height)
                 };
 
-                actualExtent.width = MathUtil::Clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-                actualExtent.height = MathUtil::Clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+                actualExtent.width = VulkanMath::Clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+                actualExtent.height = VulkanMath::Clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 
                 return actualExtent;
             }
@@ -4015,10 +4015,10 @@ namespace LostPeter
                     this->passCB.g_NearZ = this->cfg_cameraNear;
                     this->passCB.g_FarZ = this->cfg_cameraFar;
                 }   
-                this->passCB.g_MatView_Inv = MathUtil::InverseMatrix4(this->passCB.g_MatView);
-                this->passCB.g_MatProj_Inv = MathUtil::InverseMatrix4(this->passCB.g_MatProj);
+                this->passCB.g_MatView_Inv = VulkanMath::InverseMatrix4(this->passCB.g_MatView);
+                this->passCB.g_MatProj_Inv = VulkanMath::InverseMatrix4(this->passCB.g_MatProj);
                 this->passCB.g_MatViewProj = this->passCB.g_MatProj * this->passCB.g_MatView;
-                this->passCB.g_MatViewProj_Inv = MathUtil::InverseMatrix4(this->passCB.g_MatViewProj);
+                this->passCB.g_MatViewProj_Inv = VulkanMath::InverseMatrix4(this->passCB.g_MatViewProj);
                 this->passCB.g_TotalTime = this->pTimer->GetTimeSinceStart();
                 this->passCB.g_DeltaTime = this->pTimer->GetTimeDelta();
 
@@ -4364,7 +4364,7 @@ namespace LostPeter
                         for (int i = 0; i < count_light; i++)
                         {
                             LightConstants& lc = this->aAdditionalLights[i];
-                            std::string nameLight = "Light - " + StringUtil::SaveInt(i);
+                            std::string nameLight = "Light - " + VulkanUtilString::SaveInt(i);
                             lightConfigItem(lc, nameLight, i, true);
                         }
                     }
@@ -4399,7 +4399,7 @@ namespace LostPeter
                         {
                             //Light Enable
                             bool isEnable = lc.common.y == 0.0f ? false : true;
-                            std::string nameEnable = "LightEnable - " + StringUtil::SaveInt(index);
+                            std::string nameEnable = "LightEnable - " + VulkanUtilString::SaveInt(index);
                             if (ImGui::Checkbox(nameEnable.c_str(), &isEnable))
                             {   
                                 lc.common.y = isEnable ? 1.0f : 0.0f;
@@ -4415,7 +4415,7 @@ namespace LostPeter
                                         break;
                                 }
                                 const char* preview_text = s_aLightDescs[nIndex].Name;
-                                std::string nameType = "LightType - " + StringUtil::SaveInt(index);
+                                std::string nameType = "LightType - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::BeginCombo(nameType.c_str(), preview_text))
                                 {
                                     for (int j = 0; j < IM_ARRAYSIZE(s_aLightDescs); j++)
@@ -4443,7 +4443,7 @@ namespace LostPeter
                                         break;
                                 }
                                 const char* preview_text = s_aLightingDescs[nIndex].Name;
-                                std::string nameType = "LightingType - " + StringUtil::SaveInt(index);
+                                std::string nameType = "LightingType - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::BeginCombo(nameType.c_str(), preview_text))
                                 {
                                     for (int j = 0; j < IM_ARRAYSIZE(s_aLightingDescs); j++)
@@ -4461,7 +4461,7 @@ namespace LostPeter
 
                             //position
                             glm::vec3 vPosition = lc.position;
-                            std::string namePosition = "Position - " + StringUtil::SaveInt(index);
+                            std::string namePosition = "Position - " + VulkanUtilString::SaveInt(index);
                             if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
                             {
                                 lc.position = vPosition;
@@ -4469,15 +4469,15 @@ namespace LostPeter
                             ImGui::Spacing();
 
                             //Euler Angle
-                            std::string nameEulerAngle = "EulerAngle - " + StringUtil::SaveInt(index);
-                            glm::vec3 vEulerAngle = MathUtil::ToEulerAngles(lc.direction);
+                            std::string nameEulerAngle = "EulerAngle - " + VulkanUtilString::SaveInt(index);
+                            glm::vec3 vEulerAngle = VulkanMath::ToEulerAngles(lc.direction);
                             if (ImGui::DragFloat3(nameEulerAngle.c_str(), &vEulerAngle[0], 0.1f, -180, 180))
                             {
-                                lc.direction = MathUtil::ToDirection(vEulerAngle);
+                                lc.direction = VulkanMath::ToDirection(vEulerAngle);
                             }
                             //direction
                             glm::vec3 vDirection = lc.direction;
-                            std::string nameDirection = "Direction - " + StringUtil::SaveInt(index);
+                            std::string nameDirection = "Direction - " + VulkanUtilString::SaveInt(index);
                             if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
                             {
                                 
@@ -4485,7 +4485,7 @@ namespace LostPeter
                             ImGui::Spacing();
 
                             //ambient
-                            std::string nameAmbient = "Ambient - " + StringUtil::SaveInt(index);
+                            std::string nameAmbient = "Ambient - " + VulkanUtilString::SaveInt(index);
                             if (ImGui::ColorEdit4(nameAmbient.c_str(), (float*)&lc.ambient))
                             {
 
@@ -4493,7 +4493,7 @@ namespace LostPeter
                             ImGui::Spacing();
 
                             //diffuse
-                            std::string nameDiffuse = "Diffuse - " + StringUtil::SaveInt(index);
+                            std::string nameDiffuse = "Diffuse - " + VulkanUtilString::SaveInt(index);
                             if (ImGui::ColorEdit4(nameDiffuse.c_str(), (float*)&lc.diffuse))
                             {
 
@@ -4501,7 +4501,7 @@ namespace LostPeter
                             ImGui::Spacing();
 
                             //specular
-                            std::string nameSpecular = "Specular - " + StringUtil::SaveInt(index);
+                            std::string nameSpecular = "Specular - " + VulkanUtilString::SaveInt(index);
                             if (ImGui::ColorEdit4(nameSpecular.c_str(), (float*)&lc.specular))
                             {
 
@@ -4516,7 +4516,7 @@ namespace LostPeter
                             {
                                 //falloffStart
                                 float fFalloffStart = lc.falloffStart;
-                                std::string nameFalloffStart = "FalloffStart - " + StringUtil::SaveInt(index);
+                                std::string nameFalloffStart = "FalloffStart - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
                                 {
                                     lc.falloffStart = fFalloffStart;
@@ -4525,7 +4525,7 @@ namespace LostPeter
 
                                 //falloffEnd
                                 float fFalloffEnd = lc.falloffEnd;
-                                std::string nameFalloffEnd = "FalloffEnd - " + StringUtil::SaveInt(index);
+                                std::string nameFalloffEnd = "FalloffEnd - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
                                 {
                                     lc.falloffEnd = fFalloffEnd;
@@ -4535,7 +4535,7 @@ namespace LostPeter
                             {
                                 //falloffStart
                                 float fFalloffStart = lc.falloffStart;
-                                std::string nameFalloffStart = "FalloffStart - " + StringUtil::SaveInt(index);
+                                std::string nameFalloffStart = "FalloffStart - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
                                 {
                                     lc.falloffStart = fFalloffStart;
@@ -4544,7 +4544,7 @@ namespace LostPeter
 
                                 //falloffEnd
                                 float fFalloffEnd = lc.falloffEnd;
-                                std::string nameFalloffEnd = "FalloffEnd - " + StringUtil::SaveInt(index);
+                                std::string nameFalloffEnd = "FalloffEnd - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
                                 {
                                     lc.falloffEnd = fFalloffEnd;
@@ -4553,7 +4553,7 @@ namespace LostPeter
 
                                 //spotPower
                                 float fSpotPower = lc.common.w;
-                                std::string nameSpotPower = "SpotPower - " + StringUtil::SaveInt(index);
+                                std::string nameSpotPower = "SpotPower - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::DragFloat(nameSpotPower.c_str(), &fSpotPower, 0.01f, 0.1f, 200.0f))
                                 {
                                     lc.common.w = fSpotPower;

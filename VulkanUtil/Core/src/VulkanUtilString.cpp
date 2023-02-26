@@ -8,13 +8,13 @@
 ****************************************************************************/
 
 #include "../include/PreInclude.h"
-#include "../include/StringUtil.h"
+#include "../include/VulkanUtilString.h"
 
 namespace LostPeter
 {
-    const std::string StringUtil::BLANK;
+    const std::string VulkanUtilString::BLANK;
 
-    void StringUtil::Trim(std::string& str, bool left /*= true*/, bool right /*= true*/)
+    void VulkanUtilString::Trim(std::string& str, bool left /*= true*/, bool right /*= true*/)
     {
         static const std::string delims = " \t\r";
         size_t index;
@@ -36,7 +36,7 @@ namespace LostPeter
         }
     }
 
-    std::vector<std::string> StringUtil::Split(const std::string& str, const std::string& delims /*= "\t\n "*/, unsigned int maxSplits /*= 0*/)
+    std::vector<std::string> VulkanUtilString::Split(const std::string& str, const std::string& delims /*= "\t\n "*/, unsigned int maxSplits /*= 0*/)
     {
         std::vector<std::string> ret;
         ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
@@ -74,17 +74,17 @@ namespace LostPeter
         return ret;
     }
 
-    void StringUtil::ToLowerCase(std::string& str)
+    void VulkanUtilString::ToLowerCase(std::string& str)
     {
         std::transform(str.begin(), str.end(), str.begin(), tolower);
     }
 
-    void StringUtil::ToUpperCase(std::string& str)
+    void VulkanUtilString::ToUpperCase(std::string& str)
     {
         std::transform(str.begin(), str.end(), str.begin(), toupper);
     }
 
-    bool StringUtil::StartsWith(const std::string& str, const std::string& pattern, bool lowerCase /*= true*/)
+    bool VulkanUtilString::StartsWith(const std::string& str, const std::string& pattern, bool lowerCase /*= true*/)
     {
         size_t thisLen = str.length();
         size_t patternLen = pattern.length();
@@ -93,12 +93,12 @@ namespace LostPeter
 
         std::string startOfThis = str.substr(0, patternLen);
         if (lowerCase)
-            StringUtil::ToLowerCase(startOfThis);
+            VulkanUtilString::ToLowerCase(startOfThis);
 
         return (startOfThis == pattern);
     }
 
-    bool StringUtil::EndsWith(const std::string& str, const std::string& pattern, bool lowerCase /*= true*/)
+    bool VulkanUtilString::EndsWith(const std::string& str, const std::string& pattern, bool lowerCase /*= true*/)
     {
         size_t thisLen = str.length();
         size_t patternLen = pattern.length();
@@ -107,12 +107,12 @@ namespace LostPeter
 
         std::string endOfThis = str.substr(thisLen - patternLen,patternLen);
         if (lowerCase)
-            StringUtil::ToLowerCase(endOfThis);
+            VulkanUtilString::ToLowerCase(endOfThis);
 
         return (endOfThis == pattern);
     }
 
-    std::string StringUtil::Replace(const std::string& src_str, const std::string& sub_str, const std::string& new_str)
+    std::string VulkanUtilString::Replace(const std::string& src_str, const std::string& sub_str, const std::string& new_str)
     {
         std::string dst_str = src_str;
         std::string::size_type pos = 0;
@@ -123,7 +123,7 @@ namespace LostPeter
         return dst_str;
     }
 
-    std::string StringUtil::FormatString(const char* format, ...)
+    std::string VulkanUtilString::FormatString(const char* format, ...)
     {
         char szTemp[2048] = {0};
         va_list ap;
@@ -134,7 +134,7 @@ namespace LostPeter
         return szTemp;
     }
 
-    void StringUtil::AddUnique(std::vector<std::string>& arr, const std::string& val)
+    void VulkanUtilString::AddUnique(std::vector<std::string>& arr, const std::string& val)
     {
         bool found = false;
 		for (int32 i = 0; i < arr.size(); ++i)
@@ -152,7 +152,7 @@ namespace LostPeter
 		}
     }
 
-    void StringUtil::AddUnique(std::vector<const char*>& arr, const char* val)
+    void VulkanUtilString::AddUnique(std::vector<const char*>& arr, const char* val)
 	{
 		bool found = false;
 		for (int32 i = 0; i < arr.size(); ++i) 
@@ -171,7 +171,7 @@ namespace LostPeter
 	}
 
 
-    bool StringUtil::ParserBool(const std::string& strValue)
+    bool VulkanUtilString::ParserBool(const std::string& strValue)
     {
         bool bValue = false;
         if (strValue == "true")
@@ -179,7 +179,7 @@ namespace LostPeter
 
         return bValue;
     }
-    int32 StringUtil::ParserInt(const std::string& strValue)
+    int32 VulkanUtilString::ParserInt(const std::string& strValue)
     {
         int32 nValue = 0;
         std::istringstream str(strValue.c_str());
@@ -187,7 +187,7 @@ namespace LostPeter
 
         return nValue;
     }
-    uint32 StringUtil::ParserUInt(const std::string& strValue)
+    uint32 VulkanUtilString::ParserUInt(const std::string& strValue)
     {
         uint32 nValue = 0;
         std::istringstream str(strValue.c_str());
@@ -195,7 +195,7 @@ namespace LostPeter
 
         return nValue;
     }
-    size_t StringUtil::ParserSizeT(const std::string& strValue)
+    size_t VulkanUtilString::ParserSizeT(const std::string& strValue)
     {
         size_t nValue = 0;
         std::istringstream str(strValue.c_str());
@@ -203,7 +203,7 @@ namespace LostPeter
 
         return nValue;
     }
-    float StringUtil::ParserFloat(const std::string& strValue)
+    float VulkanUtilString::ParserFloat(const std::string& strValue)
     {
         float fValue = 0.0f;
         std::istringstream str(strValue.c_str());
@@ -211,7 +211,7 @@ namespace LostPeter
 
         return fValue;
     }
-    double StringUtil::ParserDouble(const std::string& strValue)
+    double VulkanUtilString::ParserDouble(const std::string& strValue)
     {
         double dValue = 0;
         std::istringstream str(strValue.c_str());
@@ -219,10 +219,10 @@ namespace LostPeter
 
         return dValue;
     }
-    glm::vec4 StringUtil::ParserColor(const std::string& strValue)
+    glm::vec4 VulkanUtilString::ParserColor(const std::string& strValue)
     {
         glm::vec4 clValue = glm::vec4(0, 0, 0, 0);
-        std::vector<std::string> vec = StringUtil::Split(strValue);
+        std::vector<std::string> vec = VulkanUtilString::Split(strValue);
         if (vec.size() == 4)
         {
             clValue = glm::vec4(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]));
@@ -230,10 +230,10 @@ namespace LostPeter
 
         return clValue;
     }
-    glm::vec2 StringUtil::ParserSize(const std::string& strValue)
+    glm::vec2 VulkanUtilString::ParserSize(const std::string& strValue)
     {
         glm::vec2 size = glm::vec2(0, 0);
-        std::vector<std::string> vec = StringUtil::Split(strValue);
+        std::vector<std::string> vec = VulkanUtilString::Split(strValue);
         if (vec.size() == 2)
         {
             size = glm::vec2(ParserFloat(vec[0]), ParserFloat(vec[1]));
@@ -241,10 +241,10 @@ namespace LostPeter
 
         return size;
     }
-    glm::vec2 StringUtil::ParserPoint(const std::string& strValue)
+    glm::vec2 VulkanUtilString::ParserPoint(const std::string& strValue)
     {
         glm::vec2 point = glm::vec2(0, 0);
-        std::vector<std::string> vec = StringUtil::Split(strValue);
+        std::vector<std::string> vec = VulkanUtilString::Split(strValue);
         if (vec.size() == 2)
         {
             point = glm::vec2(ParserFloat(vec[0]), ParserFloat(vec[1]));
@@ -252,10 +252,10 @@ namespace LostPeter
 
         return point;
     }
-    glm::vec2 StringUtil::ParserVector2(const std::string& strValue)
+    glm::vec2 VulkanUtilString::ParserVector2(const std::string& strValue)
     {
         glm::vec2 v2Value = glm::vec2(0, 0);
-        std::vector<std::string> vec = StringUtil::Split(strValue);
+        std::vector<std::string> vec = VulkanUtilString::Split(strValue);
         if (vec.size() == 2)
         {
             v2Value = glm::vec2(ParserFloat(vec[0]), ParserFloat(vec[1]));
@@ -263,10 +263,10 @@ namespace LostPeter
 
         return v2Value;
     }
-    glm::vec3 StringUtil::ParserVector3(const std::string& strValue)
+    glm::vec3 VulkanUtilString::ParserVector3(const std::string& strValue)
     {
         glm::vec3 v3Value = glm::vec3(0, 0, 0);
-        std::vector<std::string> vec = StringUtil::Split(strValue);
+        std::vector<std::string> vec = VulkanUtilString::Split(strValue);
         if (vec.size() == 3)
         {
             v3Value = glm::vec3(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]));
@@ -274,10 +274,10 @@ namespace LostPeter
 
         return v3Value;
     }
-    glm::vec4 StringUtil::ParserVector4(const std::string& strValue)
+    glm::vec4 VulkanUtilString::ParserVector4(const std::string& strValue)
     {
         glm::vec4 v4Value = glm::vec4(0, 0, 0, 0);
-        std::vector<std::string> vec = StringUtil::Split(strValue);
+        std::vector<std::string> vec = VulkanUtilString::Split(strValue);
         if (vec.size() == 4)
         {
             v4Value = glm::vec4(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]));
@@ -285,10 +285,10 @@ namespace LostPeter
 
         return v4Value;
     }
-    glm::quat StringUtil::ParserQuaternion(const std::string& strValue)
+    glm::quat VulkanUtilString::ParserQuaternion(const std::string& strValue)
     {
         glm::quat qValue = glm::quat(0, 0, 0, 1);
-        std::vector<std::string> vec = StringUtil::Split(strValue);
+        std::vector<std::string> vec = VulkanUtilString::Split(strValue);
         if (vec.size() == 4)
         {
             qValue = glm::quat(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]));
@@ -296,10 +296,10 @@ namespace LostPeter
 
         return qValue;
     }
-    glm::mat3 StringUtil::ParserMatrix3(const std::string& strValue)
+    glm::mat3 VulkanUtilString::ParserMatrix3(const std::string& strValue)
     {
         glm::mat3 mat3Value = glm::mat3(0);
-        std::vector<std::string> vec = StringUtil::Split(strValue);
+        std::vector<std::string> vec = VulkanUtilString::Split(strValue);
         if (vec.size() == 9)
         {
             mat3Value = glm::mat3(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]),
@@ -309,10 +309,10 @@ namespace LostPeter
 
         return mat3Value;
     }
-    glm::mat4 StringUtil::ParserMatrix4(const std::string& strValue)
+    glm::mat4 VulkanUtilString::ParserMatrix4(const std::string& strValue)
     {
         glm::mat4 mat4Value = glm::mat4(0);
-        std::vector<std::string> vec = StringUtil::Split(strValue);
+        std::vector<std::string> vec = VulkanUtilString::Split(strValue);
         if (vec.size() == 16)
         {
             mat4Value = glm::mat4(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]),
@@ -324,107 +324,107 @@ namespace LostPeter
         return mat4Value;
     }
 
-    void StringUtil::SaveBool(std::string& strValue, bool bValue)
+    void VulkanUtilString::SaveBool(std::string& strValue, bool bValue)
     {
         strValue = SaveBool(bValue);
     }
-    void StringUtil::SaveInt(std::string& strValue, int32 nValue)
+    void VulkanUtilString::SaveInt(std::string& strValue, int32 nValue)
     {
     strValue = SaveInt(nValue);
     }
-    void StringUtil::SaveUInt(std::string& strValue, uint32 nValue)
+    void VulkanUtilString::SaveUInt(std::string& strValue, uint32 nValue)
     {
         strValue = SaveUInt(nValue);
     }
-    void StringUtil::SaveSizeT(std::string& strValue, size_t nValue)
+    void VulkanUtilString::SaveSizeT(std::string& strValue, size_t nValue)
     {
         strValue = SaveSizeT(nValue);
     }
-    void StringUtil::SaveFloat(std::string& strValue, float fValue)
+    void VulkanUtilString::SaveFloat(std::string& strValue, float fValue)
     {
         strValue = SaveFloat(fValue);
     }
-    void StringUtil::SaveDouble(std::string& strValue, double dValue)
+    void VulkanUtilString::SaveDouble(std::string& strValue, double dValue)
     {
         strValue = SaveDouble(dValue);
     }
-    void StringUtil::SaveColor(std::string& strValue, const glm::vec4& clValue)
+    void VulkanUtilString::SaveColor(std::string& strValue, const glm::vec4& clValue)
     {
         strValue = SaveColor(clValue);
     }
-    void StringUtil::SaveSize(std::string& strValue, const glm::vec2& size)
+    void VulkanUtilString::SaveSize(std::string& strValue, const glm::vec2& size)
     {
         strValue = SaveSize(size);
     }
-    void StringUtil::SavePoint(std::string& strValue, const glm::vec2& point)
+    void VulkanUtilString::SavePoint(std::string& strValue, const glm::vec2& point)
     {
         strValue = SavePoint(point);
     }
-    void StringUtil::SaveVector2(std::string& strValue, const glm::vec2& v2Value)
+    void VulkanUtilString::SaveVector2(std::string& strValue, const glm::vec2& v2Value)
     {
         strValue = SaveVector2(v2Value);
     }
-    void StringUtil::SaveVector3(std::string& strValue, const glm::vec3& v3Value)
+    void VulkanUtilString::SaveVector3(std::string& strValue, const glm::vec3& v3Value)
     {
         strValue = SaveVector3(v3Value);
     }
-    void StringUtil::SaveVector4(std::string& strValue, const glm::vec4& v4Value)
+    void VulkanUtilString::SaveVector4(std::string& strValue, const glm::vec4& v4Value)
     {
         strValue = SaveVector4(v4Value);
     }
-    void StringUtil::SaveQuaternion(std::string& strValue, const glm::quat& qValue)
+    void VulkanUtilString::SaveQuaternion(std::string& strValue, const glm::quat& qValue)
     {
         strValue = SaveQuaternion(qValue);
     }
-    void StringUtil::SaveMatrix3(std::string& strValue, const glm::mat3& mat3Value)
+    void VulkanUtilString::SaveMatrix3(std::string& strValue, const glm::mat3& mat3Value)
     {
         strValue = SaveMatrix3(mat3Value);
     }
-    void StringUtil::SaveMatrix4(std::string& strValue, const glm::mat4& mat4Value)
+    void VulkanUtilString::SaveMatrix4(std::string& strValue, const glm::mat4& mat4Value)
     {
         strValue = SaveMatrix4(mat4Value);
     }
 
 
-    std::string StringUtil::SaveBool(bool bValue)
+    std::string VulkanUtilString::SaveBool(bool bValue)
     {
         if (bValue)
             return "true";
         return "false";
     }
-    std::string StringUtil::SaveInt(int32 nValue)
+    std::string VulkanUtilString::SaveInt(int32 nValue)
     {
         std::ostringstream stream;
         stream << nValue;
         return stream.str();
     }
-    std::string StringUtil::SaveUInt(uint32 nValue)
+    std::string VulkanUtilString::SaveUInt(uint32 nValue)
     {
         std::ostringstream stream;
         stream << nValue;
         return stream.str();
     }
-    std::string StringUtil::SaveSizeT(size_t nValue)
+    std::string VulkanUtilString::SaveSizeT(size_t nValue)
     {
         std::ostringstream stream;
         stream << nValue;
         return stream.str();
     }
-    std::string StringUtil::SaveFloat(float fValue)
+    std::string VulkanUtilString::SaveFloat(float fValue)
     {
         std::ostringstream stream;
         stream.precision(6);
         stream << fValue;
         return stream.str();
     }
-    std::string StringUtil::SaveDouble(double dValue)
+    std::string VulkanUtilString::SaveDouble(double dValue)
     {
         std::ostringstream stream;
         stream.precision(10);
         stream << dValue;
         return stream.str();
     }
-    std::string StringUtil::SaveColor(const glm::vec4& clValue)
+    std::string VulkanUtilString::SaveColor(const glm::vec4& clValue)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -434,7 +434,7 @@ namespace LostPeter
                << clValue.w;
         return stream.str();
     }
-    std::string StringUtil::SaveSize(const glm::vec2& size)
+    std::string VulkanUtilString::SaveSize(const glm::vec2& size)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -442,7 +442,7 @@ namespace LostPeter
                << size.y;
         return stream.str();
     }
-    std::string StringUtil::SavePoint(const glm::vec2& point)
+    std::string VulkanUtilString::SavePoint(const glm::vec2& point)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -450,7 +450,7 @@ namespace LostPeter
                << point.y;
         return stream.str();
     }
-    std::string StringUtil::SaveVector2(const glm::vec2& v2Value)
+    std::string VulkanUtilString::SaveVector2(const glm::vec2& v2Value)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -458,7 +458,7 @@ namespace LostPeter
                << v2Value.y;
         return stream.str();
     }
-    std::string StringUtil::SaveVector3(const glm::vec3& v3Value)
+    std::string VulkanUtilString::SaveVector3(const glm::vec3& v3Value)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -467,7 +467,7 @@ namespace LostPeter
                << v3Value.z;
         return stream.str();
     }
-    std::string StringUtil::SaveVector4(const glm::vec4& v4Value)
+    std::string VulkanUtilString::SaveVector4(const glm::vec4& v4Value)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -477,7 +477,7 @@ namespace LostPeter
                << v4Value.w;
         return stream.str();
     }
-    std::string StringUtil::SaveQuaternion(const glm::quat& qValue)
+    std::string VulkanUtilString::SaveQuaternion(const glm::quat& qValue)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -487,7 +487,7 @@ namespace LostPeter
                << qValue.w;
         return stream.str();
     }
-    std::string StringUtil::SaveMatrix3(const glm::mat3& mat3Value)
+    std::string VulkanUtilString::SaveMatrix3(const glm::mat3& mat3Value)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -496,7 +496,7 @@ namespace LostPeter
                << mat3Value[2][0] << " " << mat3Value[2][1] << " " << mat3Value[2][2];
         return stream.str();
     }
-    std::string StringUtil::SaveMatrix4(const glm::mat4& mat4Value)
+    std::string VulkanUtilString::SaveMatrix4(const glm::mat4& mat4Value)
     {
         std::ostringstream stream;
         stream.precision(6);

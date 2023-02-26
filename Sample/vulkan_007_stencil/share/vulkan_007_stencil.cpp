@@ -34,8 +34,8 @@ static glm::vec3 g_tranformModels[3 * g_CountLen] =
 
 static glm::mat4 g_tranformLocalModels[g_CountLen] = 
 {
-    MathUtil::RotateX(-90.0f), //viking_room
-    MathUtil::ms_mat4Unit, //bunny
+    VulkanMath::RotateX(-90.0f), //viking_room
+    VulkanMath::ms_mat4Unit, //bunny
 };
 
 static bool g_isTranformLocalModels[g_CountLen] = 
@@ -107,7 +107,7 @@ void Vulkan_007_Stencil::loadModel_Custom()
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
-        pModelObject->poMatWorld = MathUtil::FromTRS(g_tranformModels[i * 3 + 0],
+        pModelObject->poMatWorld = VulkanMath::FromTRS(g_tranformModels[i * 3 + 0],
                                                      g_tranformModels[i * 3 + 1],
                                                      g_tranformModels[i * 3 + 2]); 
 
@@ -149,7 +149,7 @@ bool Vulkan_007_Stencil::loadModel_VertexIndex(ModelObject* pModelObject, bool i
 
         if (isTranformLocal)
         {
-            v.pos = MathUtil::Transform(matTransformLocal, v.pos);
+            v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
         }
 
         pModelObject->vertices.push_back(v);
@@ -622,7 +622,7 @@ bool Vulkan_007_Stencil::beginRenderImgui()
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
 
-            std::string nameModel = StringUtil::SaveInt(i) + " - " + pModelObject->nameModel;
+            std::string nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
             if (ImGui::CollapsingHeader(nameModel.c_str()))
             {
                 std::string nameIsShow = "Is Show - " + pModelObject->nameModel;
@@ -642,7 +642,7 @@ bool Vulkan_007_Stencil::beginRenderImgui()
                     ObjectConstants_Outline& obj = pModelObject->objectCBs_Outline[0];
                     //Mat
                     const glm::mat4& mat4World = obj.g_MatWorld;
-                    std::string nameTable = StringUtil::SaveInt(i) + " - split_model_world";
+                    std::string nameTable = VulkanUtilString::SaveInt(i) + " - split_model_world";
                     if (ImGui::BeginTable(nameTable.c_str(), 4))
                     {
                         ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);

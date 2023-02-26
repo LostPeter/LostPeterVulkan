@@ -33,7 +33,6 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
 
 };
-
 static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
     false, //viking_room
@@ -44,7 +43,6 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     false, //sphere
 
 };
-
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
 {
     true, //viking_room
@@ -55,15 +53,14 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //sphere
 
 };
-
 static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
 {
-    MathUtil::RotateX(-90.0f), //viking_room
-    MathUtil::ms_mat4Unit, //bunny
+    VulkanMath::RotateX(-90.0f), //viking_room
+    VulkanMath::ms_mat4Unit, //bunny
 
-    MathUtil::ms_mat4Unit, //plane
-    MathUtil::ms_mat4Unit, //cube
-    MathUtil::ms_mat4Unit, //sphere
+    VulkanMath::ms_mat4Unit, //plane
+    VulkanMath::ms_mat4Unit, //cube
+    VulkanMath::ms_mat4Unit, //sphere
 
 };
 
@@ -182,8 +179,6 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 
 
 /////////////////////////// Shader //////////////////////////////
-const std::string c_strVert = ".vert.spv";
-const std::string c_strFrag = ".frag.spv";
 static const int g_ShaderCount = 10;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
@@ -235,7 +230,6 @@ static const char* g_ObjectConfigs[5 * g_ObjectCount] =
 
     "terrain",                              "plane",                        "texture_terrain_diffuse",              "texture_terrain_normal",       "texture_terrain_control", //terrain
 };
-
 static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] = 
 {
     //vert                                                  //tesc                          //tese                          //geom                      //frag                                                  //comp
@@ -253,7 +247,6 @@ static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] =
     "vert_standard_terrain_opaque_lit",                     "",                             "",                             "",                         "frag_standard_terrain_opaque_lit",                     "", //terrain
     
 };
-
 static const char* g_ObjectNameDescriptorSetLayouts[g_ObjectCount] = 
 {
     "Pass-Object-Material-Instance-TextureFS", //viking_room
@@ -268,8 +261,6 @@ static const char* g_ObjectNameDescriptorSetLayouts[g_ObjectCount] =
 
     "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS", //terrain
 };
-
-
 static float g_instanceGap = 1.5f;
 static int g_ObjectInstanceExtCount[g_ObjectCount] =
 {
@@ -285,7 +276,6 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
 
     0, //terrain 
 };
-
 static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] = 
 {   
     glm::vec3(   0,   0,   -2),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
@@ -301,7 +291,6 @@ static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] =
     glm::vec3(   0, -0.1,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //terrain
 
 };
-
 static bool g_ObjectIsTransparents[g_ObjectCount] = 
 {
     true, //viking_room
@@ -316,7 +305,6 @@ static bool g_ObjectIsTransparents[g_ObjectCount] =
 
     false, //terrain
 };
-
 static bool g_ObjectIsShows[] = 
 {
     false, //viking_room
@@ -331,7 +319,6 @@ static bool g_ObjectIsShows[] =
 
     true, //terrain
 };
-
 static bool g_ObjectIsRotates[g_ObjectCount] =
 {
     true, //viking_room
@@ -346,7 +333,6 @@ static bool g_ObjectIsRotates[g_ObjectCount] =
 
     false, //terrain
 };
-
 static bool g_ObjectIsLightings[g_ObjectCount] =
 {
     true, //viking_room
@@ -391,7 +377,7 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
             v.texCoord = vertex.texCoord;
             if (isTranformLocal)
             {
-                v.pos = MathUtil::Transform(matTransformLocal, v.pos);
+                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
             }
             this->vertices_Pos3Color4Normal3Tex2.push_back(v);
         }
@@ -430,7 +416,7 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
             v.texCoord = vertex.texCoord;
             if (isTranformLocal)
             {
-                v.pos = MathUtil::Transform(matTransformLocal, v.pos);
+                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
             }
             this->vertices_Pos3Color4Normal3Tangent3Tex2.push_back(v);
         }
@@ -645,7 +631,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
         {
             //ObjectConstants
             ObjectConstants objectConstants;
-            objectConstants.g_MatWorld = MathUtil::FromTRS(g_ObjectTranforms[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+            objectConstants.g_MatWorld = VulkanMath::FromTRS(g_ObjectTranforms[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
                                                            g_ObjectTranforms[i * 3 + 1],
                                                            g_ObjectTranforms[i * 3 + 2]);
             pModelObject->objectCBs.push_back(objectConstants);
@@ -653,11 +639,11 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
 
             //MaterialConstants
             MaterialConstants materialConstants;
-            materialConstants.factorAmbient = MathUtil::RandomColor(false);
-            materialConstants.factorDiffuse = MathUtil::RandomColor(false);
-            materialConstants.factorSpecular = MathUtil::RandomColor(false);
-            materialConstants.shininess = MathUtil::RandF(10.0f, 100.0f);
-            materialConstants.alpha = MathUtil::RandF(0.2f, 0.9f);
+            materialConstants.factorAmbient = VulkanMath::RandomColor(false);
+            materialConstants.factorDiffuse = VulkanMath::RandomColor(false);
+            materialConstants.factorSpecular = VulkanMath::RandomColor(false);
+            materialConstants.shininess = VulkanMath::RandF(10.0f, 100.0f);
+            materialConstants.alpha = VulkanMath::RandF(0.2f, 0.9f);
             materialConstants.lighting = g_ObjectIsLightings[i];
 
             //Texture
@@ -887,7 +873,7 @@ void Vulkan_012_Shadering::createModelTextures()
         VulkanTextureType typeTexture = Util_ParseTextureType(nameType);
         std::string pathTextures = g_TexturePaths[3 * i + 2];
 
-        std::vector<std::string> aPathTexture = StringUtil::Split(pathTextures, ";");
+        std::vector<std::string> aPathTexture = VulkanUtilString::Split(pathTextures, ";");
         ModelTexture* pTexture = new ModelTexture(this, 
                                                   nameTexture,
                                                   typeTexture,
@@ -901,7 +887,7 @@ void Vulkan_012_Shadering::createModelTextures()
         if (pTexture->texChunkMaxX > 0 && 
             pTexture->texChunkMaxY > 0)
         {
-            pTexture->texChunkIndex = MathUtil::Rand(0, pTexture->texChunkMaxX * pTexture->texChunkMaxY - 1);
+            pTexture->texChunkIndex = VulkanMath::Rand(0, pTexture->texChunkMaxX * pTexture->texChunkMaxY - 1);
         }
         pTexture->AddRef();
 
@@ -946,7 +932,7 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
         std::string nameLayout(g_DescriptorSetLayoutNames[i]);
-        std::vector<std::string> aLayouts = StringUtil::Split(nameLayout, "-");
+        std::vector<std::string> aLayouts = VulkanUtilString::Split(nameLayout, "-");
         size_t count_layout = aLayouts.size();
 
         VkDescriptorSetLayout vkDescriptorSetLayout;
@@ -1456,7 +1442,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
             ModelObject* pModelObject = this->m_aModelObjects[i];
             ModelTexture* pTexture1 = pModelObject->GetTexture(0);
 
-            std::string nameModel = StringUtil::SaveInt(i) + " - " + pModelObject->nameModel;
+            std::string nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
             if (ImGui::CollapsingHeader(nameModel.c_str()))
             {
                 std::string nameIsShow = "Is Show - " + pModelObject->nameModel;
@@ -1499,15 +1485,15 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                         ObjectConstants& obj = pModelObject->objectCBs[j];
                         MaterialConstants& mat = pModelObject->materialCBs[j];
 
-                        std::string nameModelInstance = nameModel + " - " + StringUtil::SaveInt(j);
+                        std::string nameModelInstance = nameModel + " - " + VulkanUtilString::SaveInt(j);
                         if (ImGui::CollapsingHeader(nameModelInstance.c_str()))
                         {
                             //ObjectConstants
-                            std::string nameObject = StringUtil::SaveInt(j) + " - Object - " + pModelObject->nameModel;
+                            std::string nameObject = VulkanUtilString::SaveInt(j) + " - Object - " + pModelObject->nameModel;
                             if (ImGui::CollapsingHeader(nameObject.c_str()))
                             {
                                 const glm::mat4& mat4World = obj.g_MatWorld;
-                                std::string nameTable = StringUtil::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
+                                std::string nameTable = VulkanUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
                                 if (ImGui::BeginTable(nameTable.c_str(), 4))
                                 {
                                     ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
@@ -1535,11 +1521,11 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                             }
                             
                             //MaterialConstants
-                            std::string nameMaterial = StringUtil::SaveInt(j) + " - Material - " + pModelObject->nameModel;
+                            std::string nameMaterial = VulkanUtilString::SaveInt(j) + " - Material - " + pModelObject->nameModel;
                             if (ImGui::CollapsingHeader(nameMaterial.c_str()))
                             {
                                 //factorAmbient
-                                std::string nameFactorAmbient = "FactorAmbient - " + StringUtil::SaveInt(j);
+                                std::string nameFactorAmbient = "FactorAmbient - " + VulkanUtilString::SaveInt(j);
                                 if (ImGui::ColorEdit4(nameFactorAmbient.c_str(), (float*)&mat.factorAmbient))
                                 {
 
@@ -1547,7 +1533,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //factorDiffuse
-                                std::string nameFactorDiffuse = "FactorDiffuse - " + StringUtil::SaveInt(j);
+                                std::string nameFactorDiffuse = "FactorDiffuse - " + VulkanUtilString::SaveInt(j);
                                 if (ImGui::ColorEdit4(nameFactorDiffuse.c_str(), (float*)&mat.factorDiffuse))
                                 {
 
@@ -1555,7 +1541,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //factorSpecular
-                                std::string nameFactorSpecular = "FactorSpecular - " + StringUtil::SaveInt(j);
+                                std::string nameFactorSpecular = "FactorSpecular - " + VulkanUtilString::SaveInt(j);
                                 if (ImGui::ColorEdit4(nameFactorSpecular.c_str(), (float*)&mat.factorSpecular))
                                 {
 
@@ -1563,7 +1549,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //shininess
-                                std::string nameShininess = "Shininess - " + StringUtil::SaveInt(j);
+                                std::string nameShininess = "Shininess - " + VulkanUtilString::SaveInt(j);
                                 if (ImGui::DragFloat(nameShininess.c_str(), &mat.shininess, 0.01f, 0.01f, 100.0f))
                                 {
                                     
@@ -1571,7 +1557,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //alpha
-                                std::string nameAlpha = "Alpha - " + StringUtil::SaveInt(j);
+                                std::string nameAlpha = "Alpha - " + VulkanUtilString::SaveInt(j);
                                 if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
                                 {
                                     
@@ -1579,7 +1565,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //lighting
-                                std::string nameLighting = "Lighting - " + StringUtil::SaveInt(j);
+                                std::string nameLighting = "Lighting - " + VulkanUtilString::SaveInt(j);
                                 bool isLighting = mat.lighting == 1.0f ? true : false;
                                 if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
                                 {
@@ -1592,26 +1578,26 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 {
                                     ModelTexture* pTexture = pModelObject->GetTexture(p);
 
-                                    std::string nameMaterial_Texture = StringUtil::SaveInt(j) + " - Material - " + pModelObject->nameModel + " - Texture - " + StringUtil::SaveInt(p);
+                                    std::string nameMaterial_Texture = VulkanUtilString::SaveInt(j) + " - Material - " + pModelObject->nameModel + " - Texture - " + VulkanUtilString::SaveInt(p);
                                     if (ImGui::CollapsingHeader(nameMaterial_Texture.c_str()))
                                     {
                                         //texWidth
-                                        std::string nameWidth = "Width - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                        std::string nameWidth = "Width - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
                                         int width = pTexture->width;
                                         ImGui::DragInt(nameWidth.c_str(), &width, 1, 0, 4096);
 
                                         //texHeight
-                                        std::string nameHeight = "Height - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                        std::string nameHeight = "Height - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
                                         int height = pTexture->height;
                                         ImGui::DragInt(nameHeight.c_str(), &height, 1, 0, 4096);
 
                                         //texDepth
-                                        std::string nameDepth = "Depth - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                        std::string nameDepth = "Depth - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
                                         int depth = pTexture->depth;
                                         ImGui::DragInt(nameDepth.c_str(), &depth, 1, 0, 4096);
 
                                         //indexTextureArray
-                                        std::string nameIndexTextureArray = "IndexTextureArray - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                        std::string nameIndexTextureArray = "IndexTextureArray - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
                                         if (pTexture->typeTexture == Vulkan_Texture_2DArray)
                                         {
                                             int count_tex = (int)pTexture->aPathTexture.size();
@@ -1630,38 +1616,38 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                         }
 
                                         //texSpeedU
-                                        std::string nameTexSpeedU = "TexSpeedU - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                        std::string nameTexSpeedU = "TexSpeedU - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
                                         if (ImGui::DragFloat(nameTexSpeedU.c_str(), &mat.aTexLayers[p].texSpeedU, 0.01f, 0.0f, 100.0f))
                                         {
                                             
                                         }
                                         //texSpeedV
-                                        std::string nameTexSpeedV = "texSpeedV - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                        std::string nameTexSpeedV = "texSpeedV - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
                                         if (ImGui::DragFloat(nameTexSpeedV.c_str(), &mat.aTexLayers[p].texSpeedV, 0.01f, 0.0f, 100.0f))
                                         {
                                             
                                         }
                                         //texSpeedW
-                                        std::string nameTexSpeedW = "texSpeedW - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                        std::string nameTexSpeedW = "texSpeedW - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
                                         if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
                                         {
                                             
                                         }
 
                                         //texChunkMaxX
-                                        std::string nameTexChunkMaxX = "texChunkMaxX - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                        std::string nameTexChunkMaxX = "texChunkMaxX - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
                                         float fTexChunkMaxX = mat.aTexLayers[p].texChunkMaxX;
                                         ImGui::DragFloat(nameTexChunkMaxX.c_str(), &fTexChunkMaxX, 1.0f, 1.0f, 100.0f);
                                         //texChunkMaxY
-                                        std::string nameTexChunkMaxY = "texChunkMaxY - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                        std::string nameTexChunkMaxY = "texChunkMaxY - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
                                         float fTexChunkMaxY = mat.aTexLayers[p].texChunkMaxY;
                                         ImGui::DragFloat(nameTexChunkMaxY.c_str(), &fTexChunkMaxY, 1.0f, 1.0f, 100.0f);
                                         //texChunkIndexX
-                                        std::string nameTexChunkIndexX = "texChunkIndexX - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                        std::string nameTexChunkIndexX = "texChunkIndexX - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
                                         float fTexChunkIndexX = mat.aTexLayers[p].texChunkIndexX;
                                         ImGui::DragFloat(nameTexChunkIndexX.c_str(), &fTexChunkIndexX, 1.0f, 0.0f, 100.0f);
                                         //texChunkIndexY
-                                        std::string nameTexChunkIndexY = "texChunkIndexY - " + StringUtil::SaveInt(j) + " - " + StringUtil::SaveInt(p);
+                                        std::string nameTexChunkIndexY = "texChunkIndexY - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
                                         float fTexChunkIndexY = mat.aTexLayers[p].texChunkIndexY;
                                         ImGui::DragFloat(nameTexChunkIndexY.c_str(), &fTexChunkIndexY, 1.0f, 0.0f, 100.0f);
                                     }

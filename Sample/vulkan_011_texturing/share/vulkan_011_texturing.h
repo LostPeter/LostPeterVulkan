@@ -11,7 +11,7 @@
 #define _VULKAN_011_TEXTURING_H_
 
 #include "VulkanWindow.h"
-#include "MathUtil.h"
+#include "VulkanMath.h"
 using namespace LostPeter; 
 
 class Vulkan_011_Texturing : public VulkanWindow
@@ -213,7 +213,7 @@ public:
             if (this->typeTexture == Vulkan_Texture_2DArray)
             {
                 int count = (int)this->aPathTexture.size();
-                return MathUtil::Rand(0, count - 1);
+                return VulkanMath::Rand(0, count - 1);
             }
             return 0;
         }

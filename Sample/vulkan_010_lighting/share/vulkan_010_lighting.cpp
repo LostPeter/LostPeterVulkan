@@ -63,9 +63,9 @@ static glm::vec3 g_tranformModels[3 * g_CountLen] =
 
 static glm::mat4 g_tranformLocalModels[g_CountLen] = 
 {
-    MathUtil::ms_mat4Unit, //plane
-    MathUtil::RotateX(-90.0f), //viking_room
-    MathUtil::ms_mat4Unit, //bunny
+    VulkanMath::ms_mat4Unit, //plane
+    VulkanMath::RotateX(-90.0f), //viking_room
+    VulkanMath::ms_mat4Unit, //bunny
 };
 
 static bool g_isTranformLocalModels[g_CountLen] = 
@@ -188,7 +188,7 @@ bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool 
 
         if (isTranformLocal)
         {
-            v.pos = MathUtil::Transform(matTransformLocal, v.pos);
+            v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
         }
 
         pModelObject->vertices.push_back(v);
@@ -259,7 +259,7 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
         {
             //ObjectConstants
             ObjectConstants objectConstants;
-            objectConstants.g_MatWorld = MathUtil::FromTRS(g_tranformModels[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+            objectConstants.g_MatWorld = VulkanMath::FromTRS(g_tranformModels[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
                                                            g_tranformModels[i * 3 + 1],
                                                            g_tranformModels[i * 3 + 2]);
             pModelObject->objectCBs.push_back(objectConstants);
@@ -267,11 +267,11 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
 
             //MaterialConstants
             MaterialConstants materialConstants;
-            materialConstants.factorAmbient = MathUtil::RandomColor(false);
-            materialConstants.factorDiffuse = MathUtil::RandomColor(false);
-            materialConstants.factorSpecular = MathUtil::RandomColor(false);
-            materialConstants.shininess = MathUtil::RandF(10.0f, 100.0f);
-            materialConstants.alpha = MathUtil::RandF(0.2f, 0.9f);
+            materialConstants.factorAmbient = VulkanMath::RandomColor(false);
+            materialConstants.factorDiffuse = VulkanMath::RandomColor(false);
+            materialConstants.factorSpecular = VulkanMath::RandomColor(false);
+            materialConstants.shininess = VulkanMath::RandF(10.0f, 100.0f);
+            materialConstants.alpha = VulkanMath::RandF(0.2f, 0.9f);
             pModelObject->materialCBs.push_back(materialConstants);
         }
         
@@ -588,7 +588,7 @@ bool Vulkan_010_Lighting::beginRenderImgui()
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
 
-            std::string nameModel = StringUtil::SaveInt(i) + " - " + pModelObject->nameModel;
+            std::string nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
             if (ImGui::CollapsingHeader(nameModel.c_str()))
             {
                 std::string nameIsShow = "Is Show - " + pModelObject->nameModel;
@@ -622,15 +622,15 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                         ObjectConstants& obj = pModelObject->objectCBs[j];
                         MaterialConstants& mat = pModelObject->materialCBs[j];
 
-                        std::string nameModelInstance = nameModel + " - " + StringUtil::SaveInt(j);
+                        std::string nameModelInstance = nameModel + " - " + VulkanUtilString::SaveInt(j);
                         if (ImGui::CollapsingHeader(nameModelInstance.c_str()))
                         {
                             //ObjectConstants
-                            std::string nameObject = StringUtil::SaveInt(j) + " - Object - " + pModelObject->nameModel;
+                            std::string nameObject = VulkanUtilString::SaveInt(j) + " - Object - " + pModelObject->nameModel;
                             if (ImGui::CollapsingHeader(nameObject.c_str()))
                             {
                                 const glm::mat4& mat4World = obj.g_MatWorld;
-                                std::string nameTable = StringUtil::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
+                                std::string nameTable = VulkanUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
                                 if (ImGui::BeginTable(nameTable.c_str(), 4))
                                 {
                                     ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
@@ -658,11 +658,11 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                             }
                             
                             //MaterialConstants
-                            std::string nameMaterial = StringUtil::SaveInt(j) + " - Material - " + pModelObject->nameModel;
+                            std::string nameMaterial = VulkanUtilString::SaveInt(j) + " - Material - " + pModelObject->nameModel;
                             if (ImGui::CollapsingHeader(nameMaterial.c_str()))
                             {
                                 //factorAmbient
-                                std::string nameFactorAmbient = "FactorAmbient - " + StringUtil::SaveInt(j);
+                                std::string nameFactorAmbient = "FactorAmbient - " + VulkanUtilString::SaveInt(j);
                                 if (ImGui::ColorEdit4(nameFactorAmbient.c_str(), (float*)&mat.factorAmbient))
                                 {
 
@@ -670,7 +670,7 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //factorDiffuse
-                                std::string nameFactorDiffuse = "FactorDiffuse - " + StringUtil::SaveInt(j);
+                                std::string nameFactorDiffuse = "FactorDiffuse - " + VulkanUtilString::SaveInt(j);
                                 if (ImGui::ColorEdit4(nameFactorDiffuse.c_str(), (float*)&mat.factorDiffuse))
                                 {
 
@@ -678,7 +678,7 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //factorSpecular
-                                std::string nameFactorSpecular = "FactorSpecular - " + StringUtil::SaveInt(j);
+                                std::string nameFactorSpecular = "FactorSpecular - " + VulkanUtilString::SaveInt(j);
                                 if (ImGui::ColorEdit4(nameFactorSpecular.c_str(), (float*)&mat.factorSpecular))
                                 {
 
@@ -686,7 +686,7 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //shininess
-                                std::string nameShininess = "Shininess - " + StringUtil::SaveInt(j);
+                                std::string nameShininess = "Shininess - " + VulkanUtilString::SaveInt(j);
                                 if (ImGui::DragFloat(nameShininess.c_str(), &mat.shininess, 0.01f, 0.01f, 100.0f))
                                 {
                                     
@@ -694,7 +694,7 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //alpha
-                                std::string nameAlpha = "Alpha - " + StringUtil::SaveInt(j);
+                                std::string nameAlpha = "Alpha - " + VulkanUtilString::SaveInt(j);
                                 if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
                                 {
                                     
@@ -702,7 +702,7 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //lighting
-                                std::string nameLighting = "Lighting - " + StringUtil::SaveInt(j);
+                                std::string nameLighting = "Lighting - " + VulkanUtilString::SaveInt(j);
                                 bool isLighting = mat.lighting == 1.0f ? true : false;
                                 if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
                                 {

@@ -54,8 +54,8 @@ static glm::vec3 g_tranformModels[3 * g_CountLen] =
 
 static glm::mat4 g_tranformLocalModels[g_CountLen] = 
 {
-    MathUtil::RotateX(-90.0f), //viking_room
-    MathUtil::ms_mat4Unit, //bunny
+    VulkanMath::RotateX(-90.0f), //viking_room
+    VulkanMath::ms_mat4Unit, //bunny
 };
 
 static bool g_isTranformLocalModels[g_CountLen] = 
@@ -180,7 +180,7 @@ bool Vulkan_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, boo
 
         if (isTranformLocal)
         {
-            v.pos = MathUtil::Transform(matTransformLocal, v.pos);
+            v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
         }
 
         pModelObject->vertices.push_back(v);
@@ -250,7 +250,7 @@ void Vulkan_009_Instancing::rebuildInstanceCBs(bool isCreateVkBuffer)
         for (int j = 0; j < pModelObject->countInstance; j++)
         {
             ObjectConstants objectConstants;
-            objectConstants.g_MatWorld = MathUtil::FromTRS(g_tranformModels[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+            objectConstants.g_MatWorld = VulkanMath::FromTRS(g_tranformModels[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
                                                            g_tranformModels[i * 3 + 1],
                                                            g_tranformModels[i * 3 + 2]);
             pModelObject->objectCBs.push_back(objectConstants);
@@ -297,7 +297,7 @@ void Vulkan_009_Instancing::rebuildInstanceCBs(bool isCreateVkBuffer)
         {
             ObjectConstants_Outline objectConstants_Outline;
             objectConstants_Outline.g_MatWorld = pModelObject->instanceMatWorld[j];
-            objectConstants_Outline.g_OutlineColor = MathUtil::RandomColor(false);
+            objectConstants_Outline.g_OutlineColor = VulkanMath::RandomColor(false);
             objectConstants_Outline.g_OutlineWidth = g_OutlineWidth[i];
             pModelObject->objectCBs_Outline.push_back(objectConstants_Outline);
         }
@@ -761,7 +761,7 @@ bool Vulkan_009_Instancing::beginRenderImgui()
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
 
-            std::string nameModel = StringUtil::SaveInt(i) + " - " + pModelObject->nameModel;
+            std::string nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
             if (ImGui::CollapsingHeader(nameModel.c_str()))
             {
                 std::string nameIsShow = "Is Show - " + pModelObject->nameModel;
@@ -806,7 +806,7 @@ bool Vulkan_009_Instancing::beginRenderImgui()
                         ObjectConstants_Outline& obj = pModelObject->objectCBs_Outline[j];
                         //Mat
                         const glm::mat4& mat4World = obj.g_MatWorld;
-                        std::string nameTable = StringUtil::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
+                        std::string nameTable = VulkanUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
                         if (ImGui::BeginTable(nameTable.c_str(), 4))
                         {
                             ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);

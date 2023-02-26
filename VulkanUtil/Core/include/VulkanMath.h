@@ -7,14 +7,14 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _MATH_UTIL_H_
-#define _MATH_UTIL_H_
+#ifndef _VULKAN_MATH_H_
+#define _VULKAN_MATH_H_
 
 #include "PreDefine.h"
 
 namespace LostPeter
 {
-    class utilExport MathUtil
+    class utilExport VulkanMath
     {
     public:
 		static const float ms_fPI_Half;
@@ -104,22 +104,22 @@ namespace LostPeter
 
         static glm::vec4 RandomColor(bool isAlpha)	
         {
-            float r = MathUtil::RandomMinMax(0, 1);
-			float g = MathUtil::RandomMinMax(0, 1);
-			float b = MathUtil::RandomMinMax(0, 1);
+            float r = VulkanMath::RandomMinMax(0, 1);
+			float g = VulkanMath::RandomMinMax(0, 1);
+			float b = VulkanMath::RandomMinMax(0, 1);
 			float a = 1.0f;
             if (isAlpha)
-                a = MathUtil::RandomMinMax(0, 1);
+                a = VulkanMath::RandomMinMax(0, 1);
 
 			return glm::vec4(r, g, b, a);
         }
 
         static glm::vec4 RandomColor(glm::vec4 clMin, glm::vec4 clMax)	
 		{
-			float r = MathUtil::RandomMinMax(clMin.r, clMax.r);
-			float g = MathUtil::RandomMinMax(clMin.g, clMax.g);
-			float b = MathUtil::RandomMinMax(clMin.b, clMax.b);
-			float a = MathUtil::RandomMinMax(clMin.a, clMax.a);
+			float r = VulkanMath::RandomMinMax(clMin.r, clMax.r);
+			float g = VulkanMath::RandomMinMax(clMin.g, clMax.g);
+			float b = VulkanMath::RandomMinMax(clMin.b, clMax.b);
+			float a = VulkanMath::RandomMinMax(clMin.a, clMax.a);
 
 			return glm::vec4(r, g, b, a);
 		}
@@ -363,9 +363,9 @@ namespace LostPeter
         }
         static bool IsEqual(const glm::vec3& v1, const glm::vec3& v2, float tolerance)
         {
-            if (MathUtil::IsEqual(v1.x, v2.x, tolerance) &&
-				MathUtil::IsEqual(v1.y, v2.y, tolerance) &&
-				MathUtil::IsEqual(v1.z, v2.z, tolerance))
+            if (VulkanMath::IsEqual(v1.x, v2.x, tolerance) &&
+				VulkanMath::IsEqual(v1.y, v2.y, tolerance) &&
+				VulkanMath::IsEqual(v1.z, v2.z, tolerance))
                 return true;
             return false;
         }
@@ -523,7 +523,7 @@ namespace LostPeter
         static glm::quat ToQuaternionFromAngleAxis(const glm::quat& qSrc, float fAngle, const glm::vec3& vAxis);
         static glm::quat ToQuaternionFromRadianAxis(float fRadian, const glm::vec3& vAxis);
         static glm::quat ToQuaternionFromRadianAxis(const glm::quat& qSrc, float fRadian, const glm::vec3& vAxis);
-        static glm::quat ToQuaternionFromSrc2Dst(const glm::vec3& vSrc, const glm::vec3& vDst, const glm::vec3& vFallbackAxis = MathUtil::ms_v3Zero);
+        static glm::quat ToQuaternionFromSrc2Dst(const glm::vec3& vSrc, const glm::vec3& vDst, const glm::vec3& vFallbackAxis = VulkanMath::ms_v3Zero);
 
         static void ToAxes(const glm::quat& qRot, glm::vec3& xAxis, glm::vec3& yAxis, glm::vec3& zAxis);
         static void ToAngleAxis(const glm::quat& qRot, float& fAngle, glm::vec3& vAxis);

@@ -12,9 +12,9 @@
 
 #include "PreDefine.h"
 #include "VulkanDefine.h"
+#include "VulkanMath.h"
 #include "VulkanUtil.h"
-#include "MathUtil.h"
-#include "StringUtil.h"
+#include "VulkanUtilString.h"
 #include "App.h"
 
 namespace LostPeter

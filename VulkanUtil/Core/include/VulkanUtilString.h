@@ -7,14 +7,14 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _STRING_UTIL_H_
-#define _STRING_UTIL_H_
+#ifndef _VULKAN_UTIL_STRING_H_
+#define _VULKAN_UTIL_STRING_H_
 
 #include "PreDefine.h"
 
 namespace LostPeter
 {
-    class utilExport StringUtil
+    class utilExport VulkanUtilString
     {
     public:
         static const std::string BLANK;

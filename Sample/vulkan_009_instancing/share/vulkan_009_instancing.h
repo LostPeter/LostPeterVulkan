@@ -26,7 +26,7 @@ public:
         glm::vec4 g_OutlineWidth;
 
         ObjectConstants_Outline()
-            : g_MatWorld(MathUtil::Identity4x4())
+            : g_MatWorld(VulkanMath::Identity4x4())
             , g_OutlineColor(1, 1, 1, 1)
             , g_OutlineWidth(0.02f, 0.02f, 0.02f, 0.02f)
         {

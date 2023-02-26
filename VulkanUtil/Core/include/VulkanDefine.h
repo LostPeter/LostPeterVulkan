@@ -11,7 +11,7 @@
 #define _VULKAN_DEFINE_H_
 
 #include "PreDefine.h"
-#include "MathUtil.h"
+#include "VulkanMath.h"
 
 namespace LostPeter
 {
@@ -915,12 +915,12 @@ namespace LostPeter
         LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 
         PassConstants()
-            : g_MatView(MathUtil::Identity4x4())
-            , g_MatView_Inv(MathUtil::Identity4x4())
-            , g_MatProj(MathUtil::Identity4x4())
-            , g_MatProj_Inv(MathUtil::Identity4x4())
-            , g_MatViewProj(MathUtil::Identity4x4())
-            , g_MatViewProj_Inv(MathUtil::Identity4x4())
+            : g_MatView(VulkanMath::Identity4x4())
+            , g_MatView_Inv(VulkanMath::Identity4x4())
+            , g_MatProj(VulkanMath::Identity4x4())
+            , g_MatProj_Inv(VulkanMath::Identity4x4())
+            , g_MatViewProj(VulkanMath::Identity4x4())
+            , g_MatViewProj_Inv(VulkanMath::Identity4x4())
             , g_EyePosW(0.0f, 0.0f, 0.0f)
             , g_cbPerObjectPad1(0.0f)
             , g_NearZ(0.0f)
@@ -942,7 +942,7 @@ namespace LostPeter
         
 
         ObjectConstants()
-            : g_MatWorld(MathUtil::Identity4x4())
+            : g_MatWorld(VulkanMath::Identity4x4())
         {
 
         }
