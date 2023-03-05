@@ -63,10 +63,11 @@ namespace LostPeter
         virtual bool OnIsInit() = 0;
         virtual void OnResize(int w, int h, bool force) = 0;
         virtual bool OnBeginCompute() = 0;
+            virtual void OnUpdateCompute() = 0;
             virtual void OnCompute() = 0;
         virtual void OnEndCompute() = 0;
         virtual bool OnBeginRender() = 0;
-            virtual void OnUpdate() = 0;
+            virtual void OnUpdateRender() = 0;
             virtual void OnRender() = 0;
         virtual void OnEndRender() = 0;
         virtual void OnDestroy() = 0;

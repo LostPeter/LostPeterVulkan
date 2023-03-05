@@ -59,8 +59,11 @@ namespace LostPeter
         VkRenderPass poRenderPass;
         VkDescriptorSetLayout poDescriptorSetLayout;
         
-        VkCommandPool poCommandPool;
-        std::vector<VkCommandBuffer> poCommandBuffers;
+        VkCommandPool poCommandPoolGraphics;
+        std::vector<VkCommandBuffer> poCommandBuffersGraphics;
+
+        VkCommandPool poCommandPoolCompute;
+        VkCommandBuffer poCommandBufferCompute;
         
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
@@ -91,12 +94,16 @@ namespace LostPeter
 
 
         //Synchronization Objects
-        std::vector<VkSemaphore> poImageAvailableSemaphores;
-        std::vector<VkSemaphore> poRenderFinishedSemaphores;
-        std::vector<VkFence> poInFlightFences;
-        std::vector<VkFence> poImagesInFlight;
+        VkSemaphoreVector poPresentCompleteSemaphores;
+        VkSemaphoreVector poRenderCompleteSemaphores;
+        VkFenceVector poInFlightFences;
+        VkFenceVector poImagesInFlight;
         size_t poCurrentFrame;
         uint32_t poSwapChainImageIndex;
+
+        VkSemaphore poGraphicsWaitSemaphore;
+        VkSemaphore poComputeWaitSemaphore;
+
 
         //Features 
         struct SwapChainSupportDetails 
@@ -120,6 +127,7 @@ namespace LostPeter
         bool cfg_isRotate;
         bool cfg_isNegativeViewport;
         bool cfg_isUseComputeShader;
+        bool cfg_isCreateRenderComputeSycSemaphore;
         VkPrimitiveTopology cfg_vkPrimitiveTopology;
         VkFrontFace cfg_vkFrontFace;
         VkPolygonMode cfg_vkPolygonMode;
@@ -208,10 +216,11 @@ namespace LostPeter
         virtual bool OnIsInit();
         virtual void OnResize(int w, int h, bool force);
         virtual bool OnBeginCompute();
+            virtual void OnUpdateCompute();
             virtual void OnCompute();
         virtual void OnEndCompute();
         virtual bool OnBeginRender();
-            virtual void OnUpdate();
+            virtual void OnUpdateRender();
             virtual void OnRender();
         virtual void OnEndRender();
         virtual void OnDestroy();
@@ -289,6 +298,8 @@ namespace LostPeter
                 virtual void createFramebuffers();
 
             virtual void createSyncObjects();
+                virtual void createPresentRenderSyncObjects();
+                virtual void createRenderComputeSyncObjects();
 
         //Load Assets
         virtual void loadAssets();
@@ -427,6 +438,132 @@ namespace LostPeter
                                                       VkDeviceMemory& imageMemory);
 
                     
+                    virtual void createTextureRenderTarget1D(const glm::vec4& clDefault,
+                                                             bool isSetColor,
+                                                             uint32_t width, 
+                                                             uint32_t mipMapCount,
+                                                             VkSampleCountFlagBits numSamples,
+                                                             VkFormat format,
+                                                             VkImageUsageFlags usage, 
+                                                             bool isGraphicsComputeShared,
+                                                             VkImage& image, 
+                                                             VkDeviceMemory& imageMemory,
+                                                             VkBuffer& buffer, 
+                                                             VkDeviceMemory& bufferMemory);
+                    virtual void createTextureRenderTarget1D(const glm::vec4& clDefault,
+                                                             bool isSetColor,
+                                                             uint32_t width, 
+                                                             uint32_t mipMapCount,
+                                                             VkSampleCountFlagBits numSamples,
+                                                             VkFormat format,
+                                                             VkImageUsageFlags usage, 
+                                                             bool isGraphicsComputeShared,
+                                                             VkImage& image, 
+                                                             VkDeviceMemory& imageMemory);
+                    
+                    virtual void createTextureRenderTarget2D(const glm::vec4& clDefault,
+                                                             bool isSetColor,
+                                                             uint32_t width, 
+                                                             uint32_t height,
+                                                             uint32_t mipMapCount,
+                                                             VkImageType type,
+                                                             VkSampleCountFlagBits numSamples,
+                                                             VkFormat format,
+                                                             VkImageUsageFlags usage, 
+                                                             bool isGraphicsComputeShared,
+                                                             VkImage& image, 
+                                                             VkDeviceMemory& imageMemory,
+                                                             VkBuffer& buffer, 
+                                                             VkDeviceMemory& bufferMemory);
+                    virtual void createTextureRenderTarget2D(const glm::vec4& clDefault,
+                                                             bool isSetColor,
+                                                             uint32_t width, 
+                                                             uint32_t height,
+                                                             uint32_t mipMapCount,
+                                                             VkSampleCountFlagBits numSamples,
+                                                             VkFormat format,
+                                                             VkImageUsageFlags usage, 
+                                                             bool isGraphicsComputeShared,
+                                                             VkImage& image, 
+                                                             VkDeviceMemory& imageMemory);
+                    
+                    virtual void createTextureRenderTarget2DArray(const glm::vec4& clDefault,
+                                                                  bool isSetColor,
+                                                                  uint32_t width, 
+                                                                  uint32_t height,
+                                                                  uint32_t numArray,
+                                                                  uint32_t mipMapCount,
+                                                                  VkImageType type,
+                                                                  VkSampleCountFlagBits numSamples,
+                                                                  VkFormat format,
+                                                                  VkImageUsageFlags usage, 
+                                                                  bool isGraphicsComputeShared,
+                                                                  VkImage& image, 
+                                                                  VkDeviceMemory& imageMemory,
+                                                                  VkBuffer& buffer, 
+                                                                  VkDeviceMemory& bufferMemory);
+                    virtual void createTextureRenderTarget2DArray(const glm::vec4& clDefault,
+                                                                  bool isSetColor,
+                                                                  uint32_t width, 
+                                                                  uint32_t height,
+                                                                  uint32_t numArray,
+                                                                  uint32_t mipMapCount,
+                                                                  VkSampleCountFlagBits numSamples,
+                                                                  VkFormat format,
+                                                                  VkImageUsageFlags usage, 
+                                                                  bool isGraphicsComputeShared,
+                                                                  VkImage& image, 
+                                                                  VkDeviceMemory& imageMemory);
+
+                    virtual void createTextureRenderTarget3D(const glm::vec4& clDefault,
+                                                             bool isSetColor,
+                                                             uint32_t width, 
+                                                             uint32_t height,
+                                                             uint32_t depth,
+                                                             uint32_t mipMapCount,
+                                                             VkSampleCountFlagBits numSamples,
+                                                             VkFormat format,
+                                                             VkImageUsageFlags usage, 
+                                                             bool isGraphicsComputeShared,
+                                                             VkImage& image, 
+                                                             VkDeviceMemory& imageMemory,
+                                                             VkBuffer& buffer, 
+                                                             VkDeviceMemory& bufferMemory);                                           
+                    virtual void createTextureRenderTarget3D(const glm::vec4& clDefault,
+                                                             bool isSetColor,
+                                                             uint32_t width, 
+                                                             uint32_t height,
+                                                             uint32_t depth,
+                                                             uint32_t mipMapCount,
+                                                             VkSampleCountFlagBits numSamples,
+                                                             VkFormat format,
+                                                             VkImageUsageFlags usage, 
+                                                             bool isGraphicsComputeShared,
+                                                             VkImage& image, 
+                                                             VkDeviceMemory& imageMemory);
+                    
+                    virtual void createTextureRenderTargetCubeMap(uint32_t width, 
+                                                                  uint32_t height,
+                                                                  uint32_t mipMapCount,
+                                                                  VkSampleCountFlagBits numSamples,
+                                                                  VkFormat format,
+                                                                  VkImageUsageFlags usage, 
+                                                                  bool isGraphicsComputeShared,
+                                                                  VkImage& image, 
+                                                                  VkDeviceMemory& imageMemory,
+                                                                  VkBuffer& buffer, 
+                                                                  VkDeviceMemory& bufferMemory);
+                    virtual void createTextureRenderTargetCubeMap(uint32_t width, 
+                                                                  uint32_t height,
+                                                                  uint32_t mipMapCount,
+                                                                  VkSampleCountFlagBits numSamples,
+                                                                  VkFormat format,
+                                                                  VkImageUsageFlags usage, 
+                                                                  bool isGraphicsComputeShared,
+                                                                  VkImage& image, 
+                                                                  VkDeviceMemory& imageMemory);
+                    
+
                         virtual void createImage(uint32_t width, 
                                                  uint32_t height, 
                                                  uint32_t depth, 
@@ -438,6 +575,8 @@ namespace LostPeter
                                                  VkFormat format, 
                                                  VkImageTiling tiling, 
                                                  VkImageUsageFlags usage, 
+                                                 VkSharingMode sharingMode,
+                                                 bool isGraphicsComputeShared,
                                                  VkMemoryPropertyFlags properties, 
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
@@ -546,13 +685,17 @@ namespace LostPeter
 
         //Compute
         virtual bool beginCompute();
+            virtual void updateCompute();
+                virtual void updateComputeCommandBuffer();
+                    virtual void updateCompute_Default(VkCommandBuffer& commandBuffer);
+                    virtual void updateCompute_Custom(VkCommandBuffer& commandBuffer);
 
             virtual void compute();
         virtual void endCompute();
 
         //Render/Update
         virtual bool beginRender();
-            virtual void update();
+            virtual void updateRender();
                 virtual void updateSceneObjects();
                 virtual void updateCBs_Pass();
                 virtual void updateCBs_Objects();
@@ -576,7 +719,7 @@ namespace LostPeter
 
                     virtual void endRenderImgui();
 
-                virtual void updateCommandBuffers();
+                virtual void updateRenderCommandBuffers();
                     virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_Custom(VkCommandBuffer& commandBuffer);
                         virtual void bindViewport(VkCommandBuffer& commandBuffer);

@@ -1,0 +1,47 @@
+/****************************************************************************
+* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* 
+* Author: LostPeter
+* Time:   2023-03-04
+*
+* This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
+****************************************************************************/
+
+struct TextureCopyConstants
+{
+    //[x,y,z,w] = [w,h,mip,processLinear]
+    float4 texInfo;
+
+};
+[[vk::binding(0)]] cbuffer _textureInfo                         : register(b0)
+{
+    TextureCopyConstants _textureInfo;
+}
+
+[[vk::binding(1)]] Texture2D _textureSrc                        : register(t0);
+[[vk::binding(2)]] RWTexture2D<float4> _textureDst              : register(u0);
+
+
+float4 processLinear(float4 pixel)
+{
+	return float4(pow(abs(pixel.xyz), 1.0 / 2.2), pixel.w);
+}
+
+float4 LinearToSRGB(float4 pixel)
+{
+	float3 sRGBLo = pixel.xyz * 12.92;
+	float3 sRGBHi = (pow(abs(pixel.xyz), float3(1.0 / 2.4, 1.0 / 2.4, 1.0 / 2.4)) * 1.055) - 0.055;
+	float3 sRGB = (pixel.xyz <= 0.0031308) ? sRGBLo : sRGBHi;
+	return float4(sRGB, pixel.w);
+}
+
+[numthreads(8, 8, 1)]
+void main(uint3 id : SV_DispatchThreadID)
+{   
+    float4 pixel = _textureSrc.Load(uint3(id.xy, _textureInfo.texInfo.z));
+	if (_textureInfo.texInfo.w > 0)
+	{
+		pixel = LinearToSRGB(pixel);
+	}
+	_textureDst[id.xy] = pixel;
+}

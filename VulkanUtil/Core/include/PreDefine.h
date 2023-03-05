@@ -291,7 +291,11 @@ namespace LostPeter
     typedef std::vector<VkViewport> VkViewportVector;
     typedef std::vector<VkRect2D> VkRect2DVector;
 
+    typedef std::vector<VkSemaphore> VkSemaphoreVector;
+    typedef std::vector<VkFence> VkFenceVector;
+        
     typedef std::vector<VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoVector;
+    typedef std::map<std::string, VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoMap;
 
     const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(VulkanVertexType type);
     const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(VulkanVertexType type);

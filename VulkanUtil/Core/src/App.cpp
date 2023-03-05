@@ -83,6 +83,7 @@ namespace LostPeter
                     //Compute
                     if (pBase->OnBeginCompute())
                     {
+                        pBase->OnUpdateCompute();
                         pBase->OnCompute();
                         pBase->OnEndCompute();
                     }
@@ -90,7 +91,7 @@ namespace LostPeter
                     //Render
                     if (pBase->OnBeginRender())
                     {
-                        pBase->OnUpdate();
+                        pBase->OnUpdateRender();
                         pBase->OnRender();
                         pBase->OnEndRender();
                     }

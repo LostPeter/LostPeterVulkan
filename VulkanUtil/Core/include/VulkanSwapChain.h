@@ -36,7 +36,7 @@ namespace LostPeter
         VkColorSpaceKHR m_vkSwapChainImageColorSpaceKHR;
         int32 m_nSwapChainImageCount;
 
-        std::vector<VkSemaphore> m_aVkImageAcquiredSemaphore;
+        VkSemaphoreVector m_aVkImageAcquiredSemaphore;
 
         int32 m_nSwapChainImageIndex;
         int32 m_nSemaphoreIndex;

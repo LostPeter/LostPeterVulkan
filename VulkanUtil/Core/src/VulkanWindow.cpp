@@ -47,7 +47,9 @@ namespace LostPeter
         , poDepthImageView(nullptr)
         , poRenderPass(nullptr)
         , poDescriptorSetLayout(nullptr)
-        , poCommandPool(nullptr) 
+        , poCommandPoolGraphics(nullptr) 
+        , poCommandPoolCompute(nullptr)
+        , poCommandBufferCompute(nullptr)
 
         , poVertexCount(0)
         , poVertexBuffer_Size(0)
@@ -76,6 +78,8 @@ namespace LostPeter
 
         , poCurrentFrame(0)
         , poSwapChainImageIndex(0)
+        , poGraphicsWaitSemaphore(nullptr)
+        , poComputeWaitSemaphore(nullptr)
 
         , queueIndexGraphics(0)
         , queueIndexPresent(0)
@@ -90,6 +94,7 @@ namespace LostPeter
         , cfg_isRotate(true)
         , cfg_isNegativeViewport(true)
         , cfg_isUseComputeShader(false)
+        , cfg_isCreateRenderComputeSycSemaphore(false)
         , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
         , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
         , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
@@ -191,6 +196,10 @@ namespace LostPeter
     {
         return beginCompute();
     }
+        void VulkanWindow::OnUpdateCompute()
+        {
+            updateCompute();
+        }
         void VulkanWindow::OnCompute()
         {
             compute();
@@ -204,9 +213,9 @@ namespace LostPeter
     {
         return beginRender();
     }
-        void VulkanWindow::OnUpdate()
+        void VulkanWindow::OnUpdateRender()
         {
-            update();
+            updateRender();
         }
         void VulkanWindow::OnRender()
         {
@@ -924,26 +933,49 @@ namespace LostPeter
     }
     void VulkanWindow::createCommandPool()
     {
-        VkCommandPoolCreateInfo poolInfo = {};
-        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        poolInfo.queueFamilyIndex = this->queueIndexGraphics;
-        poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-
-        if (vkCreateCommandPool(this->poDevice, &poolInfo, nullptr, &this->poCommandPool) != VK_SUCCESS) 
+        //1> poCommandPoolGraphics
         {
-            std::string msg = "VulkanWindow::createCommandPool: Failed to create command pool !";
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg);
+            VkCommandPoolCreateInfo poolGraphicsInfo = {};
+            poolGraphicsInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+            poolGraphicsInfo.queueFamilyIndex = this->queueIndexGraphics;
+            poolGraphicsInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+            if (vkCreateCommandPool(this->poDevice, &poolGraphicsInfo, nullptr, &this->poCommandPoolGraphics) != VK_SUCCESS) 
+            {
+                std::string msg = "VulkanWindow::createCommandPool: Failed to create command pool graphics !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+
+            Util_LogInfo("<1-4-1> VulkanWindow::createCommandPool: Create CommandPoolGraphics success !");
         }
 
-        Util_LogInfo("<1-4-1> VulkanWindow::createCommandPool finish !");
+        //2> poCommandPoolCompute
+        if (this->cfg_isUseComputeShader)
+        {
+            VkCommandPoolCreateInfo poolComputeInfo = {};
+            poolComputeInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+            poolComputeInfo.queueFamilyIndex = this->queueIndexCompute;
+            poolComputeInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+            if (vkCreateCommandPool(this->poDevice, &poolComputeInfo, nullptr, &this->poCommandPoolCompute) != VK_SUCCESS) 
+            {
+                std::string msg = "VulkanWindow::createCommandPool: Failed to create command pool compute !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+
+            Util_LogInfo("<1-4-1> VulkanWindow::createCommandPool: Create CommandPoolCompute success !");
+        }
+
+        Util_LogInfo("<1-4-1> VulkanWindow::createCommandPool finish, create CommandPoolGraphics: [true], create CommandPoolCompute: [%s]", this->cfg_isUseComputeShader ? "true" : "false");
     }
     VkCommandBuffer VulkanWindow::beginSingleTimeCommands() 
     {
         VkCommandBufferAllocateInfo allocInfo = {};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandPool = this->poCommandPool;
+        allocInfo.commandPool = this->poCommandPoolGraphics;
         allocInfo.commandBufferCount = 1;
 
         VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
@@ -969,7 +1001,7 @@ namespace LostPeter
         vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, nullptr);
         vkQueueWaitIdle(this->poQueueGraphics);
 
-        vkFreeCommandBuffers(this->poDevice, this->poCommandPool, 1, &commandBuffer);
+        vkFreeCommandBuffers(this->poDevice, this->poCommandPoolGraphics, 1, &commandBuffer);
     }
 
     void VulkanWindow::createSwapChainObjects()
@@ -1166,7 +1198,10 @@ namespace LostPeter
                         this->poMSAASamples, 
                         colorFormat, 
                         VK_IMAGE_TILING_OPTIMAL, 
-                        VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                        VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, 
+                        VK_SHARING_MODE_EXCLUSIVE,
+                        false,
+                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                         this->poColorImage, 
                         this->poColorImageMemory);
 
@@ -1195,6 +1230,8 @@ namespace LostPeter
                         depthFormat, 
                         VK_IMAGE_TILING_OPTIMAL, 
                         VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, 
+                        VK_SHARING_MODE_EXCLUSIVE,
+                        false,
                         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                         this->poDepthImage, 
                         this->poDepthImageMemory);
@@ -1440,7 +1477,7 @@ namespace LostPeter
         //6> vkCreateRenderPass
         if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &this->poRenderPass) != VK_SUCCESS) 
         {
-            std::string msg = "VulkanWindow::createRenderPass_KhrDepth: Failed to create render pass !";
+            std::string msg = "VulkanWindow::createRenderPass_KhrDepth: Failed to create renderpass !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1556,7 +1593,7 @@ namespace LostPeter
         //9> vkCreateRenderPass
         if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &this->poRenderPass) != VK_SUCCESS) 
         {
-            std::string msg = "VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create render pass !";
+            std::string msg = "VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create renderpass !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1650,7 +1687,7 @@ namespace LostPeter
         //7> vkCreateRenderPass
         if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &this->poRenderPass) != VK_SUCCESS) 
         {
-            std::string msg = "VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create render pass !";
+            std::string msg = "VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create renderpass !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1787,7 +1824,7 @@ namespace LostPeter
         //10> vkCreateRenderPass
         if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &this->poRenderPass) != VK_SUCCESS) 
         {
-            std::string msg = "VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create render pass !";
+            std::string msg = "VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create renderpass !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1855,32 +1892,75 @@ namespace LostPeter
 
     void VulkanWindow::createSyncObjects()
     {
-        this->poImageAvailableSemaphores.resize(s_maxFramesInFight);
-        this->poRenderFinishedSemaphores.resize(s_maxFramesInFight);
-        this->poInFlightFences.resize(s_maxFramesInFight);
-        this->poImagesInFlight.resize(this->poSwapChainImages.size(), nullptr);
+        //1> Present/Render VkSemaphore/VkFence 
+        createPresentRenderSyncObjects();
 
-        VkSemaphoreCreateInfo semaphoreInfo = {};
-        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-        VkFenceCreateInfo fenceInfo = {};
-        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-        for (size_t i = 0; i < s_maxFramesInFight; i++) 
+        //2> Graphics/Compute Sync VkSemaphore
+        if (this->cfg_isCreateRenderComputeSycSemaphore)
         {
-            if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poImageAvailableSemaphores[i]) != VK_SUCCESS ||
-                vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poRenderFinishedSemaphores[i]) != VK_SUCCESS ||
-                vkCreateFence(this->poDevice, &fenceInfo, nullptr, &this->poInFlightFences[i]) != VK_SUCCESS) 
-            {
-                std::string msg = "VulkanWindow::createSyncObjects: Failed to create synchronization objects for a frame !";
-                Util_LogError(msg.c_str());
-                throw std::runtime_error(msg);
-            }
+            createRenderComputeSyncObjects();
         }
 
         Util_LogInfo("*****<1-8> VulkanWindow::createSyncObjects finish *****");
     }
+        void VulkanWindow::createPresentRenderSyncObjects()
+        {
+            this->poPresentCompleteSemaphores.resize(s_maxFramesInFight);
+            this->poRenderCompleteSemaphores.resize(s_maxFramesInFight);
+            this->poInFlightFences.resize(s_maxFramesInFight);
+            this->poImagesInFlight.resize(this->poSwapChainImages.size(), nullptr);
+
+            VkSemaphoreCreateInfo semaphoreInfo = {};
+            semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+            VkFenceCreateInfo fenceInfo = {};
+            fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+            fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+            for (size_t i = 0; i < s_maxFramesInFight; i++) 
+            {
+                if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poPresentCompleteSemaphores[i]) != VK_SUCCESS ||
+                    vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poRenderCompleteSemaphores[i]) != VK_SUCCESS ||
+                    vkCreateFence(this->poDevice, &fenceInfo, nullptr, &this->poInFlightFences[i]) != VK_SUCCESS) 
+                {
+                    std::string msg = "VulkanWindow::createPresentRenderSyncObjects: Failed to create present/render synchronization objects for a frame !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+            
+            Util_LogInfo("<1-8-1> VulkanWindow::createPresentRenderSyncObjects finish !");
+        }
+        void VulkanWindow::createRenderComputeSyncObjects()
+        {
+            VkSemaphoreCreateInfo semaphoreInfo = {};
+            semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+            //1> poGraphicsWaitSemaphore
+            if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poGraphicsWaitSemaphore) != VK_SUCCESS)
+            {
+                std::string msg = "VulkanWindow::createRenderComputeSyncObjects: Failed to create GraphicsWaitSemaphore !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+            //Signal the semaphore
+            VkSubmitInfo submitInfo = {};
+            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+            submitInfo.signalSemaphoreCount = 1;
+            submitInfo.pSignalSemaphores = &this->poGraphicsWaitSemaphore;
+            vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, nullptr);
+            vkQueueWaitIdle(this->poQueueGraphics);
+
+            //2> poComputeWaitSemaphore
+            if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poComputeWaitSemaphore) != VK_SUCCESS)
+            {
+                std::string msg = "VulkanWindow::createRenderComputeSyncObjects: Failed to create ComputeWaitSemaphore!";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+
+            Util_LogInfo("<1-8-2> VulkanWindow::createRenderComputeSyncObjects finish !");
+        }
 
     void VulkanWindow::loadAssets()
     {
@@ -2312,6 +2392,8 @@ namespace LostPeter
                     format, 
                     VK_IMAGE_TILING_OPTIMAL, 
                     VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                    VK_SHARING_MODE_EXCLUSIVE,
+                    false,
                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                     image, 
                     imageMemory);
@@ -2504,6 +2586,8 @@ namespace LostPeter
                     format, 
                     VK_IMAGE_TILING_OPTIMAL, 
                     VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                    VK_SHARING_MODE_EXCLUSIVE,
+                    false,
                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                     image, 
                     imageMemory);
@@ -2636,6 +2720,8 @@ namespace LostPeter
                     format, 
                     VK_IMAGE_TILING_OPTIMAL, 
                     VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                    VK_SHARING_MODE_EXCLUSIVE,
+                    false,
                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                     image, 
                     imageMemory);
@@ -2806,6 +2892,8 @@ namespace LostPeter
                     format, 
                     VK_IMAGE_TILING_OPTIMAL, 
                     VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                    VK_SHARING_MODE_EXCLUSIVE,
+                    false,
                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                     image, 
                     imageMemory);
@@ -2885,6 +2973,461 @@ namespace LostPeter
                              imageMemory);
     }
 
+    void VulkanWindow::createTextureRenderTarget1D(const glm::vec4& clDefault,
+                                                   bool isSetColor,
+                                                   uint32_t width, 
+                                                   uint32_t mipMapCount,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& image, 
+                                                   VkDeviceMemory& imageMemory,
+                                                   VkBuffer& buffer, 
+                                                   VkDeviceMemory& bufferMemory)
+    {
+        createTextureRenderTarget2D(clDefault,
+                                    isSetColor,
+                                    width,
+                                    1,
+                                    mipMapCount,
+                                    VK_IMAGE_TYPE_1D,
+                                    numSamples,
+                                    format,
+                                    usage,
+                                    isGraphicsComputeShared,
+                                    image,
+                                    imageMemory,
+                                    buffer,
+                                    bufferMemory);
+    }
+    void VulkanWindow::createTextureRenderTarget1D(const glm::vec4& clDefault,
+                                                   bool isSetColor,
+                                                   uint32_t width, 
+                                                   uint32_t mipMapCount,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& image, 
+                                                   VkDeviceMemory& imageMemory)
+    {
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createTextureRenderTarget1D(clDefault, 
+                                    isSetColor,
+                                    width, 
+                                    mipMapCount,
+                                    numSamples,
+                                    format,
+                                    usage,
+                                    isGraphicsComputeShared,
+                                    image, 
+                                    imageMemory, 
+                                    stagingBuffer, 
+                                    stagingBufferMemory);
+        destroyBuffer(stagingBuffer, stagingBufferMemory);
+    }
+
+    void VulkanWindow::createTextureRenderTarget2D(const glm::vec4& clDefault,
+                                                   bool isSetColor,
+                                                   uint32_t width, 
+                                                   uint32_t height,
+                                                   uint32_t mipMapCount,
+                                                   VkImageType type,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& image, 
+                                                   VkDeviceMemory& imageMemory,
+                                                   VkBuffer& buffer, 
+                                                   VkDeviceMemory& bufferMemory)
+    {
+        //1> CreateBuffer
+        VkDeviceSize imageSize = width * height * 4;
+        createBuffer(imageSize, 
+                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                     buffer, 
+                     bufferMemory);
+        if (isSetColor)
+        {
+            uint8 r = (uint8)(clDefault.x * 255);
+            uint8 g = (uint8)(clDefault.y * 255);
+            uint8 b = (uint8)(clDefault.z * 255);
+            uint8 a = (uint8)(clDefault.w * 255);
+
+            void* data;
+            vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
+            {
+                uint8* pColor = (uint8*)data;
+                for (int i = 0; i < width * height; i++)
+                {
+                    pColor[4 * i + 0] = r;
+                    pColor[4 * i + 1] = g;
+                    pColor[4 * i + 2] = b;
+                    pColor[4 * i + 3] = a;
+                }
+            }
+            vkUnmapMemory(this->poDevice, bufferMemory);
+        }
+        
+        //2> CreateImage
+        uint32_t depth = 1;
+        uint32_t numArray = 1;
+        createImage(width, 
+                    height, 
+                    depth,
+                    numArray,
+                    mipMapCount, 
+                    type,
+                    false,
+                    numSamples, 
+                    format, 
+                    VK_IMAGE_TILING_OPTIMAL, 
+                    usage, 
+                    VK_SHARING_MODE_EXCLUSIVE,
+                    isGraphicsComputeShared,
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                    image, 
+                    imageMemory);
+
+        //3> TransitionImageLayout
+        transitionImageLayout(VK_NULL_HANDLE,
+                              image, 
+                              VK_IMAGE_LAYOUT_UNDEFINED, 
+                              VK_IMAGE_LAYOUT_GENERAL,
+                              0,
+                              mipMapCount,
+                              0,
+                              numArray);
+    }
+    void VulkanWindow::createTextureRenderTarget2D(const glm::vec4& clDefault,
+                                                   bool isSetColor,
+                                                   uint32_t width, 
+                                                   uint32_t height,
+                                                   uint32_t mipMapCount,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& image, 
+                                                   VkDeviceMemory& imageMemory)
+    {
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createTextureRenderTarget2D(clDefault, 
+                                    isSetColor,
+                                    width, 
+                                    height,
+                                    mipMapCount,
+                                    VK_IMAGE_TYPE_2D,
+                                    numSamples,
+                                    format,
+                                    usage,
+                                    isGraphicsComputeShared,
+                                    image, 
+                                    imageMemory, 
+                                    stagingBuffer, 
+                                    stagingBufferMemory);
+        destroyBuffer(stagingBuffer, stagingBufferMemory);
+    }
+
+    void VulkanWindow::createTextureRenderTarget2DArray(const glm::vec4& clDefault,
+                                                        bool isSetColor,
+                                                        uint32_t width, 
+                                                        uint32_t height,
+                                                        uint32_t numArray,
+                                                        uint32_t mipMapCount,
+                                                        VkImageType type,
+                                                        VkSampleCountFlagBits numSamples,
+                                                        VkFormat format,
+                                                        VkImageUsageFlags usage, 
+                                                        bool isGraphicsComputeShared,
+                                                        VkImage& image, 
+                                                        VkDeviceMemory& imageMemory,
+                                                        VkBuffer& buffer, 
+                                                        VkDeviceMemory& bufferMemory)
+    {
+        //1> CreateBuffer
+        VkDeviceSize imageSize = width * height * 4;
+        VkDeviceSize imageSizeAll = imageSize * numArray;
+        createBuffer(imageSizeAll, 
+                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                     buffer, 
+                     bufferMemory);
+        if (isSetColor)
+        {
+            uint8 r = (uint8)(clDefault.x * 255);
+            uint8 g = (uint8)(clDefault.y * 255);
+            uint8 b = (uint8)(clDefault.z * 255);
+            uint8 a = (uint8)(clDefault.w * 255);
+
+            void* data;
+            vkMapMemory(this->poDevice, bufferMemory, 0, imageSizeAll, 0, &data);
+            {
+                uint8* pColor = (uint8*)data;
+                for (int i = 0; i < width * height * numArray; i++)
+                {
+                    pColor[4 * i + 0] = r;
+                    pColor[4 * i + 1] = g;
+                    pColor[4 * i + 2] = b;
+                    pColor[4 * i + 3] = a;
+                }
+            }
+            vkUnmapMemory(this->poDevice, bufferMemory);
+        }
+
+        //2> CreateImage
+        uint32_t depth = 1;
+        if (type == VK_IMAGE_TYPE_1D)
+        {
+            depth = 0;
+        }
+        createImage(width, 
+                    height, 
+                    depth,
+                    numArray,
+                    mipMapCount, 
+                    type,
+                    false,
+                    numSamples, 
+                    format, 
+                    VK_IMAGE_TILING_OPTIMAL, 
+                    usage, 
+                    VK_SHARING_MODE_EXCLUSIVE,
+                    isGraphicsComputeShared,
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                    image, 
+                    imageMemory);
+
+        //3> TransitionImageLayout
+        transitionImageLayout(VK_NULL_HANDLE,
+                              image, 
+                              VK_IMAGE_LAYOUT_UNDEFINED, 
+                              VK_IMAGE_LAYOUT_GENERAL,
+                              0,
+                              mipMapCount,
+                              0,
+                              numArray);
+    }
+    void VulkanWindow::createTextureRenderTarget2DArray(const glm::vec4& clDefault,
+                                                        bool isSetColor,
+                                                        uint32_t width, 
+                                                        uint32_t height,
+                                                        uint32_t numArray,
+                                                        uint32_t mipMapCount,
+                                                        VkSampleCountFlagBits numSamples,
+                                                        VkFormat format,
+                                                        VkImageUsageFlags usage, 
+                                                        bool isGraphicsComputeShared,
+                                                        VkImage& image, 
+                                                        VkDeviceMemory& imageMemory)
+    {
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createTextureRenderTarget2DArray(clDefault, 
+                                         isSetColor,
+                                         width, 
+                                         height,
+                                         numArray,
+                                         mipMapCount,
+                                         VK_IMAGE_TYPE_2D,
+                                         numSamples,
+                                         format,
+                                         usage,
+                                         isGraphicsComputeShared,
+                                         image, 
+                                         imageMemory, 
+                                         stagingBuffer, 
+                                         stagingBufferMemory);
+        destroyBuffer(stagingBuffer, stagingBufferMemory);
+    }
+
+    void VulkanWindow::createTextureRenderTarget3D(const glm::vec4& clDefault,
+                                                   bool isSetColor,
+                                                   uint32_t width, 
+                                                   uint32_t height,
+                                                   uint32_t depth,
+                                                   uint32_t mipMapCount,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& image, 
+                                                   VkDeviceMemory& imageMemory,
+                                                   VkBuffer& buffer, 
+                                                   VkDeviceMemory& bufferMemory)
+    {
+        //1> CreateBuffer
+        VkDeviceSize imageSize = width * height * depth * 4;
+        createBuffer(imageSize, 
+                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                     buffer, 
+                     bufferMemory);
+        if (isSetColor)
+        {
+            uint8 r = (uint8)(clDefault.x * 255);
+            uint8 g = (uint8)(clDefault.y * 255);
+            uint8 b = (uint8)(clDefault.z * 255);
+            uint8 a = (uint8)(clDefault.w * 255);
+
+            void* data;
+            vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
+            {
+                uint8* pColor = (uint8*)data;
+                for (int i = 0; i < width * height * depth; i++)
+                {
+                    pColor[4 * i + 0] = r;
+                    pColor[4 * i + 1] = g;
+                    pColor[4 * i + 2] = b;
+                    pColor[4 * i + 3] = a;
+                }
+            }
+            vkUnmapMemory(this->poDevice, bufferMemory);
+        }
+
+        //2> CreateImage
+        createImage(width, 
+                    height, 
+                    depth,
+                    1,
+                    mipMapCount, 
+                    VK_IMAGE_TYPE_3D,
+                    false,
+                    numSamples, 
+                    format, 
+                    VK_IMAGE_TILING_OPTIMAL, 
+                    usage, 
+                    VK_SHARING_MODE_EXCLUSIVE,
+                    isGraphicsComputeShared,
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                    image, 
+                    imageMemory);
+
+        //3> TransitionImageLayout
+        transitionImageLayout(VK_NULL_HANDLE,
+                              image, 
+                              VK_IMAGE_LAYOUT_UNDEFINED, 
+                              VK_IMAGE_LAYOUT_GENERAL,
+                              0,
+                              mipMapCount,
+                              0,
+                              1);
+    }
+    void VulkanWindow::createTextureRenderTarget3D(const glm::vec4& clDefault,
+                                                   bool isSetColor,
+                                                   uint32_t width, 
+                                                   uint32_t height,
+                                                   uint32_t depth,
+                                                   uint32_t mipMapCount,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& image, 
+                                                   VkDeviceMemory& imageMemory)
+    {
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createTextureRenderTarget3D(clDefault, 
+                                    isSetColor,
+                                    width, 
+                                    height,
+                                    depth,
+                                    mipMapCount,
+                                    numSamples,
+                                    format,
+                                    usage,
+                                    isGraphicsComputeShared,
+                                    image, 
+                                    imageMemory, 
+                                    stagingBuffer, 
+                                    stagingBufferMemory);
+        destroyBuffer(stagingBuffer, stagingBufferMemory);
+    }
+
+    void VulkanWindow::createTextureRenderTargetCubeMap(uint32_t width, 
+                                                        uint32_t height,
+                                                        uint32_t mipMapCount,
+                                                        VkSampleCountFlagBits numSamples,
+                                                        VkFormat format,
+                                                        VkImageUsageFlags usage, 
+                                                        bool isGraphicsComputeShared,
+                                                        VkImage& image, 
+                                                        VkDeviceMemory& imageMemory,
+                                                        VkBuffer& buffer, 
+                                                        VkDeviceMemory& bufferMemory)
+    {
+        uint32_t numArray = 6;
+        //1> CreateBuffer
+        VkDeviceSize imageSize = width * height * 4;
+        VkDeviceSize imageSizeAll = imageSize * numArray;
+        createBuffer(imageSizeAll, 
+                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                     buffer, 
+                     bufferMemory);
+
+        //2> CreateImage
+        uint32_t depth = 1;
+        createImage(width, 
+                    height, 
+                    depth,
+                    numArray,
+                    mipMapCount, 
+                    VK_IMAGE_TYPE_2D,
+                    true,
+                    numSamples, 
+                    format, 
+                    VK_IMAGE_TILING_OPTIMAL, 
+                    usage, 
+                    VK_SHARING_MODE_EXCLUSIVE,
+                    isGraphicsComputeShared,
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                    image, 
+                    imageMemory);
+
+        //3> TransitionImageLayout
+        transitionImageLayout(VK_NULL_HANDLE,
+                              image, 
+                              VK_IMAGE_LAYOUT_UNDEFINED, 
+                              VK_IMAGE_LAYOUT_GENERAL,
+                              0,
+                              mipMapCount,
+                              0,
+                              numArray);
+    }
+    void VulkanWindow::createTextureRenderTargetCubeMap(uint32_t width, 
+                                                        uint32_t height,
+                                                        uint32_t mipMapCount,
+                                                        VkSampleCountFlagBits numSamples,
+                                                        VkFormat format,
+                                                        VkImageUsageFlags usage, 
+                                                        bool isGraphicsComputeShared,
+                                                        VkImage& image, 
+                                                        VkDeviceMemory& imageMemory)
+    {
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createTextureRenderTargetCubeMap(width, 
+                                         height,
+                                         mipMapCount,
+                                         numSamples,
+                                         format,
+                                         usage,
+                                         isGraphicsComputeShared,
+                                         image, 
+                                         imageMemory, 
+                                         stagingBuffer, 
+                                         stagingBufferMemory);
+        destroyBuffer(stagingBuffer, stagingBufferMemory);
+    }                                                     
+
+
         void VulkanWindow::createImage(uint32_t width, 
                                        uint32_t height, 
                                        uint32_t depth, 
@@ -2896,28 +3439,42 @@ namespace LostPeter
                                        VkFormat format, 
                                        VkImageTiling tiling, 
                                        VkImageUsageFlags usage, 
+                                       VkSharingMode sharingMode,
+                                       bool isGraphicsComputeShared,
                                        VkMemoryPropertyFlags properties, 
                                        VkImage& image, 
                                        VkDeviceMemory& imageMemory) 
         {
-            VkImageCreateInfo imageInfo = {};
-            imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+            VkImageCreateInfo imageCreateInfo = {};
+            imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
             if (isCubeMap)
-                imageInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-            imageInfo.imageType = type;
-            imageInfo.format = format;
-            imageInfo.extent.width = width;
-            imageInfo.extent.height = height;
-            imageInfo.extent.depth = depth;
-            imageInfo.mipLevels = mipMapCount <= 0 ? 1 : mipMapCount;
-            imageInfo.arrayLayers = numArray;
-            imageInfo.samples = numSamples;
-            imageInfo.tiling = tiling;
-            imageInfo.usage = usage;
-            imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-            imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+                imageCreateInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+            imageCreateInfo.imageType = type;
+            imageCreateInfo.format = format;
+            imageCreateInfo.extent.width = width;
+            imageCreateInfo.extent.height = height;
+            imageCreateInfo.extent.depth = depth;
+            imageCreateInfo.mipLevels = mipMapCount <= 0 ? 1 : mipMapCount;
+            imageCreateInfo.arrayLayers = numArray;
+            imageCreateInfo.samples = numSamples;
+            imageCreateInfo.tiling = tiling;
+            imageCreateInfo.usage = usage;
+            imageCreateInfo.sharingMode = sharingMode;
+            if (isGraphicsComputeShared)
+            {
+                if (this->queueIndexGraphics != this->queueIndexCompute) 
+                {
+                    std::vector<uint32_t> queueFamilyIndices;
+                    queueFamilyIndices.push_back(this->queueIndexGraphics);
+                    queueFamilyIndices.push_back(this->queueIndexCompute);
+                    imageCreateInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
+                    imageCreateInfo.queueFamilyIndexCount = static_cast<uint32_t>(queueFamilyIndices.size());
+                    imageCreateInfo.pQueueFamilyIndices = queueFamilyIndices.data();
+                }
+            }
+            imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
-            if (vkCreateImage(this->poDevice, &imageInfo, nullptr, &image) != VK_SUCCESS) 
+            if (vkCreateImage(this->poDevice, &imageCreateInfo, nullptr, &image) != VK_SUCCESS) 
             {
                 std::string msg = "VulkanWindow::createImage: Failed to create image !";
                 Util_LogError(msg.c_str());
@@ -3060,6 +3617,15 @@ namespace LostPeter
                     sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
                     destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
                 } 
+                else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_GENERAL)
+                {
+                    // VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_GENERAL
+                    barrier.srcAccessMask = 0;
+                    barrier.dstAccessMask = 0;
+
+                    sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                    destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                }
                 else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
                 {
                     // VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL -> VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
@@ -3863,21 +4429,43 @@ namespace LostPeter
 
     void VulkanWindow::createCommandBuffers()
     {
-        this->poCommandBuffers.resize(this->poSwapChainFrameBuffers.size());
-
-        VkCommandBufferAllocateInfo allocInfo = {};
-        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.commandPool = this->poCommandPool;
-        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandBufferCount = (uint32_t)this->poCommandBuffers.size();
-        if (vkAllocateCommandBuffers(this->poDevice, &allocInfo, this->poCommandBuffers.data()) != VK_SUCCESS) 
+        //1> poCommandBuffersGraphics
         {
-            std::string msg = "VulkanWindow::createCommandBuffers: Failed to allocate command buffers !";
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg);
+            this->poCommandBuffersGraphics.resize(this->poSwapChainFrameBuffers.size());
+            VkCommandBufferAllocateInfo allocInfo = {};
+            allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+            allocInfo.commandPool = this->poCommandPoolGraphics;
+            allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+            allocInfo.commandBufferCount = (uint32_t)this->poCommandBuffersGraphics.size();
+            if (vkAllocateCommandBuffers(this->poDevice, &allocInfo, this->poCommandBuffersGraphics.data()) != VK_SUCCESS) 
+            {
+                std::string msg = "VulkanWindow::createCommandBuffers: Failed to allocate command buffers graphics !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+
+            Util_LogInfo("<1-4-1> VulkanWindow::createCommandBuffers: Create CommandBuffersGraphics success !");
         }
 
-        Util_LogInfo("<2-2-6> VulkanWindow::createCommandBuffers finish !");
+        //2> poCommandBufferCompute
+        if (this->cfg_isUseComputeShader)
+        {
+            VkCommandBufferAllocateInfo allocInfo = {};
+            allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+            allocInfo.commandPool = this->poCommandPoolCompute;
+            allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+            allocInfo.commandBufferCount = 1;
+            if (vkAllocateCommandBuffers(this->poDevice, &allocInfo, &this->poCommandBufferCompute) != VK_SUCCESS) 
+            {
+                std::string msg = "VulkanWindow::createCommandBuffers: Failed to allocate command buffer compute !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+
+            Util_LogInfo("<1-4-1> VulkanWindow::createCommandBuffers: Create CommandBufferCompute success !");
+        }
+
+        Util_LogInfo("<2-2-6> VulkanWindow::createCommandBuffers finish, create CommandBuffersGraphics: [true], create CommandBufferCompute: [%s]", this->cfg_isUseComputeShader ? "true" : "false");
     }
 
     void VulkanWindow::createImgui()
@@ -3987,16 +4575,82 @@ namespace LostPeter
 
     bool VulkanWindow::beginCompute()
     {
+        if (this->poQueueCompute == nullptr ||
+            this->poCommandBufferCompute == nullptr ||
+            this->poGraphicsWaitSemaphore == nullptr ||
+            this->poComputeWaitSemaphore == nullptr)
+        {
+            return false;
+        }
 
         return true;
     }
+        void VulkanWindow::updateCompute()
+        {  
+            // CommandBuffer
+            updateComputeCommandBuffer();
+
+        }
+                void VulkanWindow::updateComputeCommandBuffer()
+                {
+                    vkQueueWaitIdle(this->poQueueCompute);
+
+                    VkCommandBuffer& commandBuffer = this->poCommandBufferCompute;
+                    VkCommandBufferBeginInfo beginInfo = {};
+                    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+                    beginInfo.flags = 0; // Optional
+                    beginInfo.pInheritanceInfo = nullptr; // Optional
+
+                    if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+                    {
+                        std::string msg = "VulkanWindow::updateComputeCommandBuffer: vkBeginCommandBuffer: Failed to begin recording compute command buffer !";
+                        Util_LogError(msg.c_str());
+                        throw std::runtime_error(msg);
+                    }
+                    {
+                        updateCompute_Default(commandBuffer);
+                        updateCompute_Custom(commandBuffer);
+                    }
+                    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+                    {
+                        std::string msg = "VulkanWindow::updateComputeCommandBuffer: vkEndCommandBuffer: Failed to record compute command buffer !";
+                        Util_LogError(msg.c_str());
+                        throw std::runtime_error(msg);
+                    }
+                }
+                    void VulkanWindow::updateCompute_Default(VkCommandBuffer& commandBuffer)
+                    {
+
+                    }
+                    void VulkanWindow::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+                    {
+
+                    }
+
         void VulkanWindow::compute()
         {
+            VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
 
+            VkSubmitInfo submitInfo = {};
+            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+            submitInfo.commandBufferCount = 1;
+            submitInfo.pCommandBuffers = &this->poCommandBufferCompute;
+            submitInfo.waitSemaphoreCount = 1;
+            submitInfo.pWaitSemaphores = &this->poGraphicsWaitSemaphore;
+            submitInfo.pWaitDstStageMask = &waitStageMask;
+            submitInfo.signalSemaphoreCount = 1;
+            submitInfo.pSignalSemaphores = &this->poComputeWaitSemaphore;
+            
+            if (vkQueueSubmit(this->poQueueCompute, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) 
+            {
+                std::string msg = "VulkanWindow::compute: Failed to submit compute command buffer !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
         }
     void VulkanWindow::endCompute()
     {
-
+        
     }
 
 
@@ -4004,8 +4658,7 @@ namespace LostPeter
     {
         vkWaitForFences(this->poDevice, 1, &this->poInFlightFences[this->poCurrentFrame], VK_TRUE, UINT64_MAX);
 
-        VkResult result = vkAcquireNextImageKHR(this->poDevice, this->poSwapChain, UINT64_MAX, this->poImageAvailableSemaphores[this->poCurrentFrame], nullptr, &this->poSwapChainImageIndex);
-
+        VkResult result = vkAcquireNextImageKHR(this->poDevice, this->poSwapChain, UINT64_MAX, this->poPresentCompleteSemaphores[this->poCurrentFrame], nullptr, &this->poSwapChainImageIndex);
         if (result == VK_ERROR_OUT_OF_DATE_KHR)
         {
             recreateSwapChain();
@@ -4020,7 +4673,7 @@ namespace LostPeter
         }
         return true;
     }
-        void VulkanWindow::update()
+        void VulkanWindow::updateRender()
         {
             //1> SceneObject
             updateSceneObjects();
@@ -4047,7 +4700,7 @@ namespace LostPeter
             }
 
             //8> CommandBuffers
-            updateCommandBuffers();
+            updateRenderCommandBuffers();
         }
             void VulkanWindow::updateSceneObjects()
             {
@@ -4202,20 +4855,7 @@ namespace LostPeter
             }
                 bool VulkanWindow::beginRenderImgui()
                 {
-                    // ImGui_ImplVulkan_NewFrame();
-                    // ImGui_ImplGlfw_NewFrame();
-                    // ImGui::NewFrame();
-                    // static bool windowOpened = true;
-                    // static bool showDemoWindow = false;
-                    // ImGui::Begin("Rendertime", &windowOpened, 0);
-                    // ImGui::Text("Frametime: %f", 1000.0f / ImGui::GetIO().Framerate);
-                    // ImGui::Checkbox("Show ImGui demo window", &showDemoWindow);
-                    // ImGui::End();
-                    // if (showDemoWindow) 
-                    // {
-                    //     ImGui::ShowDemoWindow();
-                    // }
-
+                    
                     return false;
                 }
                     void VulkanWindow::passConstantsConfig()
@@ -4635,12 +5275,12 @@ namespace LostPeter
                     ImGui::Render();
                 }
 
-            void VulkanWindow::updateCommandBuffers()
+            void VulkanWindow::updateRenderCommandBuffers()
             {
-                VkCommandBuffer& commandBuffer = this->poCommandBuffers[this->poSwapChainImageIndex];
+                VkCommandBuffer& commandBuffer = this->poCommandBuffersGraphics[this->poSwapChainImageIndex];
                 if (vkResetCommandBuffer(commandBuffer, 0) != VK_SUCCESS) 
                 {
-                    std::string msg = "VulkanWindow::updateCommandBuffers: Failed to reset command buffer !";
+                    std::string msg = "VulkanWindow::updateRenderCommandBuffers: Failed to reset render command buffer !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -4652,7 +5292,7 @@ namespace LostPeter
 
                 if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
                 {
-                    std::string msg = "VulkanWindow::updateCommandBuffers: Failed to begin recording command buffer !";
+                    std::string msg = "VulkanWindow::updateRenderCommandBuffers: vkBeginCommandBuffer: Failed to begin recording render command buffer !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -4662,7 +5302,7 @@ namespace LostPeter
                 }
                 if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
                 {
-                    std::string msg = "VulkanWindow::updateCommandBuffers: Failed to record command buffer !";
+                    std::string msg = "VulkanWindow::updateRenderCommandBuffers: vkEndCommandBuffer: Failed to record render command buffer !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -4762,52 +5402,59 @@ namespace LostPeter
 
         void VulkanWindow::render()
         {
+            //1> Wait
             if (this->poImagesInFlight[this->poSwapChainImageIndex] != nullptr)
             {
                 vkWaitForFences(this->poDevice, 1, &this->poImagesInFlight[this->poSwapChainImageIndex], VK_TRUE, UINT64_MAX);
             }
             this->poImagesInFlight[this->poSwapChainImageIndex] = this->poInFlightFences[this->poCurrentFrame];
 
+            //2> Submit Command
+            VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+            VkSemaphoreVector aWaitSemaphores;
+            if (this->poComputeWaitSemaphore != nullptr)
+                aWaitSemaphores.push_back(this->poComputeWaitSemaphore);
+            VkSemaphore presentCompleteSemaphore = this->poPresentCompleteSemaphores[this->poCurrentFrame];
+            aWaitSemaphores.push_back(presentCompleteSemaphore);
+
+            VkSemaphoreVector aSignalSemaphores;
+            if (this->poGraphicsWaitSemaphore != nullptr)
+                aSignalSemaphores.push_back(this->poGraphicsWaitSemaphore);
+            VkSemaphore renderCompleteSemaphore = this->poRenderCompleteSemaphores[this->poCurrentFrame];
+            aSignalSemaphores.push_back(renderCompleteSemaphore);
+
             VkSubmitInfo submitInfo = {};
             submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-            VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-            VkSemaphore waitSemaphores[] = { this->poImageAvailableSemaphores[this->poCurrentFrame] };
-            VkSemaphore signalSemaphores[] = { this->poRenderFinishedSemaphores[this->poCurrentFrame] };
             //Command Buffer
             submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers = &this->poCommandBuffers[this->poSwapChainImageIndex];
+            submitInfo.pCommandBuffers = &this->poCommandBuffersGraphics[this->poSwapChainImageIndex];
             //WaitSemaphores
-            submitInfo.waitSemaphoreCount = 1;
-            submitInfo.pWaitSemaphores = waitSemaphores;
-            //WaitDstStageMask 
+            submitInfo.waitSemaphoreCount = static_cast<uint32_t>(aWaitSemaphores.size());
+            submitInfo.pWaitSemaphores = aWaitSemaphores.data();
+            //WaitDstStageMask
             submitInfo.pWaitDstStageMask = waitStages;
             //SignalSemaphores
-            submitInfo.signalSemaphoreCount = 1;
-            submitInfo.pSignalSemaphores = signalSemaphores;
-
+            submitInfo.signalSemaphoreCount = static_cast<uint32_t>(aSignalSemaphores.size());
+            submitInfo.pSignalSemaphores = aSignalSemaphores.data();
             vkResetFences(this->poDevice, 1, &this->poInFlightFences[this->poCurrentFrame]);
-
             if (vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, this->poInFlightFences[this->poCurrentFrame]) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::render: Failed to submit draw command buffer !";
+                std::string msg = "VulkanWindow::render: Failed to submit render command buffer !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
 
+            //3> Present
             VkPresentInfoKHR presentInfo = {};
             presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
             presentInfo.waitSemaphoreCount = 1;
-            presentInfo.pWaitSemaphores = signalSemaphores;
-
+            presentInfo.pWaitSemaphores = &renderCompleteSemaphore;
             VkSwapchainKHR swapChains[] = { this->poSwapChain };
             presentInfo.swapchainCount = 1;
             presentInfo.pSwapchains = swapChains;
             presentInfo.pImageIndices = &this->poSwapChainImageIndex;
-
             VkResult result = vkQueuePresentKHR(this->poQueuePresent, &presentInfo);
-
             if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || this->isFrameBufferResized) 
             {
                 this->isFrameBufferResized = false;
@@ -4862,9 +5509,17 @@ namespace LostPeter
             //7> Semaphores
             for (size_t i = 0; i < s_maxFramesInFight; i++) 
             {
-                vkDestroySemaphore(this->poDevice, this->poRenderFinishedSemaphores[i], nullptr);
-                vkDestroySemaphore(this->poDevice, this->poImageAvailableSemaphores[i], nullptr);
+                vkDestroySemaphore(this->poDevice, this->poRenderCompleteSemaphores[i], nullptr);
+                vkDestroySemaphore(this->poDevice, this->poPresentCompleteSemaphores[i], nullptr);
                 vkDestroyFence(this->poDevice, this->poInFlightFences[i], nullptr);
+            }
+            if (this->poGraphicsWaitSemaphore != nullptr)
+            {
+                vkDestroySemaphore(this->poDevice, this->poGraphicsWaitSemaphore, nullptr);
+            }
+            if (this->poComputeWaitSemaphore != nullptr)
+            {
+                vkDestroySemaphore(this->poDevice, this->poComputeWaitSemaphore, nullptr);
             }
 
             //8> Imgui
@@ -4875,7 +5530,11 @@ namespace LostPeter
             }
 
             //9> CommandPool
-            vkDestroyCommandPool(this->poDevice, this->poCommandPool, nullptr);
+            vkDestroyCommandPool(this->poDevice, this->poCommandPoolGraphics, nullptr);
+            if (this->poCommandPoolCompute != nullptr)
+            {
+                vkDestroyCommandPool(this->poDevice, this->poCommandPoolCompute, nullptr);
+            }
             
             //10> Device
             vkDestroyDevice(this->poDevice, nullptr);
@@ -4976,9 +5635,15 @@ namespace LostPeter
                 }
 
                 //4> CommandBuffers
-                if (this->poCommandBuffers.size() > 0)
+                if (this->poCommandBuffersGraphics.size() > 0)
                 {
-                    vkFreeCommandBuffers(this->poDevice, this->poCommandPool, (uint32_t)this->poCommandBuffers.size(), this->poCommandBuffers.data());
+                    vkFreeCommandBuffers(this->poDevice, this->poCommandPoolGraphics, (uint32_t)this->poCommandBuffersGraphics.size(), this->poCommandBuffersGraphics.data());
+                }
+                this->poCommandBuffersGraphics.clear();
+                if (this->poCommandPoolCompute != nullptr &&
+                    this->poCommandBufferCompute != nullptr)
+                {
+                    vkFreeCommandBuffers(this->poDevice, this->poCommandPoolCompute, 1, &(this->poCommandBufferCompute));
                 }
                 
                 //5> PipelineGraphics
