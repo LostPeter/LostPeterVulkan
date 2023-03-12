@@ -1027,6 +1027,18 @@ namespace LostPeter
         }  
     };
 
+    //////////////////////////////// TextureCopyConstants ///////////////////////////
+    struct utilExport TextureCopyConstants
+    {
+        glm::vec4 texInfo;
+
+        TextureCopyConstants()
+            : texInfo(0, 0, 0, 0)
+        {
+
+        }
+    };
+
 }; //LostPeter
 
 namespace std 

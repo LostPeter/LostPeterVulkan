@@ -537,7 +537,7 @@ namespace LostPeter
         {
         case Vulkan_Shader_Vertex:                  return VK_SHADER_STAGE_VERTEX_BIT;
         case Vulkan_Shader_TessellationControl:     return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-        case Vulkan_Shader_TessellationEVALUATION:  return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+        case Vulkan_Shader_TessellationEvaluation:  return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
         case Vulkan_Shader_Geometry:                return VK_SHADER_STAGE_GEOMETRY_BIT;
         case Vulkan_Shader_Fragment:                return VK_SHADER_STAGE_FRAGMENT_BIT;
         case Vulkan_Shader_Compute:                 return VK_SHADER_STAGE_COMPUTE_BIT;

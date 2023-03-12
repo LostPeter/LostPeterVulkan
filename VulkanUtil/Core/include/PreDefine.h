@@ -23,6 +23,13 @@ namespace LostPeter
     #define MAX_MATERIAL_COUNT 64
     #define MAX_INSTANCE_COUNT 1024
 
+    #define SHADER_NAME_Vertex                      "vert"
+    #define SHADER_NAME_TessellationControl         "tesc"
+    #define SHADER_NAME_TessellationEvaluation      "tese"
+    #define SHADER_NAME_Geometry                    "geom"
+    #define SHADER_NAME_Fragment                    "frag"
+    #define SHADER_NAME_Compute                     "comp"
+
 
 ////////////////////////////// Typedef /////////////////////////////
     using int8 = std::int8_t;
@@ -35,6 +42,7 @@ namespace LostPeter
     using uint64 = std::uint64_t;
     typedef std::chrono::steady_clock::time_point TimePoint;
 
+    
     #define UTIL_ARRAYSIZE(_ARR)            ((int)(sizeof(_ARR)/sizeof(*_ARR)))    
     #define UTIL_OFFSETOF(_TYPE,_MEMBER)    ((size_t)&(((_TYPE*)0)->_MEMBER))     
     
@@ -271,7 +279,7 @@ namespace LostPeter
     {
         Vulkan_Shader_Vertex = 0,
         Vulkan_Shader_TessellationControl,
-        Vulkan_Shader_TessellationEVALUATION,
+        Vulkan_Shader_TessellationEvaluation,
         Vulkan_Shader_Geometry,
         Vulkan_Shader_Fragment,
         Vulkan_Shader_Compute,

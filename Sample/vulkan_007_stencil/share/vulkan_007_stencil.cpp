@@ -238,7 +238,7 @@ void Vulkan_007_Stencil::createCustomCB()
     }
 }
 
-void Vulkan_007_Stencil::createPipeline_Custom()
+void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
 {
     //1> Shader
     VkShaderModule vertShaderModule_Stencil;
@@ -279,20 +279,20 @@ void Vulkan_007_Stencil::createPipeline_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
         //poPipelineGraphics_WireFrame
-        pModelObject->poPipelineGraphics_WireFrame = createVkPipeline(vertShaderModule_Stencil, "main",
-                                                                      fragShaderModule_Stencil, "main",
-                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
-                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                      this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
-                                                                      pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pModelObject->cfg_vkCullModeFlagBits,
-                                                                      pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
-                                                                      pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
-                                                                      pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                                      pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                                      pModelObject->cfg_ColorWriteMask);
+        pModelObject->poPipelineGraphics_WireFrame = createVkGraphicsPipeline(vertShaderModule_Stencil, "main",
+                                                                              fragShaderModule_Stencil, "main",
+                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex),
+                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
+                                                                              this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
+                                                                              pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pModelObject->cfg_vkCullModeFlagBits,
+                                                                              pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
+                                                                              pModelObject->cfg_isStencilTest, pModelObject->cfg_StencilOpFront, pModelObject->cfg_StencilOpBack, 
+                                                                              pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
+                                                                              pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
+                                                                              pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_007_Stencil::createPipeline_Custom: Failed to create pipeline wire frame !";
+            std::string msg = "Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -307,20 +307,20 @@ void Vulkan_007_Stencil::createPipeline_Custom()
         back.writeMask = 0xFF;
         back.reference = 1;
         VkStencilOpState front = back;
-        pModelObject->poPipelineGraphics_Stencil = createVkPipeline(vertShaderModule_Stencil, "main",
-                                                                    fragShaderModule_Stencil, "main",
-                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
-                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
-                                                                    this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
-                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
-                                                                    pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
-                                                                    VK_TRUE, front, back, 
-                                                                    pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                                    pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                                    pModelObject->cfg_ColorWriteMask);
+        pModelObject->poPipelineGraphics_Stencil = createVkGraphicsPipeline(vertShaderModule_Stencil, "main",
+                                                                            fragShaderModule_Stencil, "main",
+                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
+                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
+                                                                            this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
+                                                                            pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
+                                                                            pModelObject->cfg_isDepthTest, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
+                                                                            VK_TRUE, front, back, 
+                                                                            pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
+                                                                            pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
+                                                                            pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_Stencil == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_007_Stencil::createPipeline_Custom: Failed to create pipeline stencil !";
+            std::string msg = "Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline stencil !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -331,20 +331,20 @@ void Vulkan_007_Stencil::createPipeline_Custom()
 		back.depthFailOp = VK_STENCIL_OP_KEEP;
 		back.passOp = VK_STENCIL_OP_REPLACE;
 		front = back;
-        pModelObject->poPipelineGraphics_Outline = createVkPipeline(vertShaderModule_Outline, "main",
-                                                                    fragShaderModule_Outline, "main",
-                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex_Outline), 
-                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex_Outline),
-                                                                    this->poRenderPass, this->poPipelineLayout_Outline, aViewports, aScissors,
-                                                                    pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
-                                                                    VK_FALSE, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
-                                                                    VK_TRUE, front, back,
-                                                                    pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
-                                                                    pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
-                                                                    pModelObject->cfg_ColorWriteMask);
+        pModelObject->poPipelineGraphics_Outline = createVkGraphicsPipeline(vertShaderModule_Outline, "main",
+                                                                            fragShaderModule_Outline, "main",
+                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex_Outline), 
+                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex_Outline),
+                                                                            this->poRenderPass, this->poPipelineLayout_Outline, aViewports, aScissors,
+                                                                            pModelObject->cfg_vkPrimitiveTopology, pModelObject->cfg_vkFrontFace, pModelObject->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
+                                                                            VK_FALSE, pModelObject->cfg_isDepthWrite, pModelObject->cfg_DepthCompareOp,
+                                                                            VK_TRUE, front, back,
+                                                                            pModelObject->cfg_isBlend, pModelObject->cfg_BlendColorFactorSrc, pModelObject->cfg_BlendColorFactorDst, pModelObject->cfg_BlendColorOp,
+                                                                            pModelObject->cfg_BlendAlphaFactorSrc, pModelObject->cfg_BlendAlphaFactorDst, pModelObject->cfg_BlendAlphaOp,
+                                                                            pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_Outline == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_007_Stencil::createPipeline_Custom: Failed to create pipeline outline !";
+            std::string msg = "Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline outline !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -794,7 +794,7 @@ void Vulkan_007_Stencil::cleanupSwapChain_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        pModelObject->cleanupSwapChain();
+        pModelObject->CleanupSwapChain();
     }
 }
 

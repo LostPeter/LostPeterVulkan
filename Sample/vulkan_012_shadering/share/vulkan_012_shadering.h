@@ -480,43 +480,135 @@ public:
     };
     typedef std::vector<ModelTexture*> ModelTexturePtrVector;
     typedef std::map<std::string, ModelTexture*> ModelTexturePtrMap;
+    typedef std::map<std::string, ModelTexturePtrVector> ModelTexturePtrShaderSortMap;
 
 
     /////////////////////////// PipelineGraphics ////////////////////
     struct PipelineGraphics
     {
+        Vulkan_012_Shadering* pWindow;
         std::string nameDescriptorSetLayout;
+        std::vector<std::string>* poDescriptorSetLayoutNames;
+        VkDescriptorSetLayout poDescriptorSetLayout;
         VkPipelineLayout poPipelineLayout;
         VkPipeline poPipeline_WireFrame;
         VkPipeline poPipeline;
         std::vector<VkDescriptorSet> poDescriptorSets;
 
-        PipelineGraphics()
-            : nameDescriptorSetLayout("")
+        PipelineGraphics(Vulkan_012_Shadering* _pWindow)
+            : pWindow(_pWindow)
+            , nameDescriptorSetLayout("")
+            , poDescriptorSetLayoutNames(nullptr)
+            , poDescriptorSetLayout(VK_NULL_HANDLE)
             , poPipelineLayout(VK_NULL_HANDLE)
             , poPipeline_WireFrame(VK_NULL_HANDLE)
             , poPipeline(VK_NULL_HANDLE)
         {
 
         }
+        
+        ~PipelineGraphics()
+        {
+            Destroy();
+        }
+
+        void Destroy()
+        {
+            CleanupSwapChain();
+        }
+
+        void CleanupSwapChain()
+        {
+            this->poDescriptorSetLayoutNames = nullptr;
+            this->poDescriptorSetLayout = VK_NULL_HANDLE;
+            this->poPipelineLayout = VK_NULL_HANDLE;
+            if (this->poPipeline_WireFrame != VK_NULL_HANDLE)
+            {
+                this->pWindow->destroyVkPipeline(this->poPipeline_WireFrame);
+            }
+            this->poPipeline_WireFrame = VK_NULL_HANDLE;
+
+            if (this->poPipeline != VK_NULL_HANDLE)
+            {
+                this->pWindow->destroyVkPipeline(this->poPipeline);
+            }
+            this->poPipeline = VK_NULL_HANDLE;
+            this->poDescriptorSets.clear();
+        }  
     };
-    
+
 
     /////////////////////////// PipelineCompute /////////////////////
     struct PipelineCompute
     {
+        Vulkan_012_Shadering* pWindow;
         std::string nameDescriptorSetLayout;
+        std::vector<std::string>* poDescriptorSetLayoutNames;
+        VkDescriptorSetLayout poDescriptorSetLayout;
         VkPipelineLayout poPipelineLayout;
         VkPipeline poPipeline;
-        std::vector<VkDescriptorSet> poDescriptorSets;
+        VkDescriptorSet poDescriptorSet;
 
-        PipelineCompute()
-            : nameDescriptorSetLayout("")
+        TextureCopyConstants* pTextureCopy;
+        VkBuffer poBuffer_TextureCopy;  
+        VkDeviceMemory poBufferMemory_TextureCopy;
+        void CreateTextureCopy()
+        {
+            DestroyTextureCopy();
+            this->pTextureCopy = new TextureCopyConstants();
+            VkDeviceSize bufferSize = sizeof(TextureCopyConstants);
+            this->pWindow->createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
+        }
+        void DestroyTextureCopy()
+        {
+            UTIL_DELETE(this->pTextureCopy)
+            if (this->poBuffer_TextureCopy != VK_NULL_HANDLE)
+            {
+                this->pWindow->destroyBuffer(this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
+            }
+            this->poBuffer_TextureCopy = VK_NULL_HANDLE;
+            this->poBufferMemory_TextureCopy = VK_NULL_HANDLE;
+        }
+
+        PipelineCompute(Vulkan_012_Shadering* _pWindow)
+            : pWindow(_pWindow)
+            , nameDescriptorSetLayout("")
+            , poDescriptorSetLayoutNames(nullptr)
+            , poDescriptorSetLayout(VK_NULL_HANDLE)
             , poPipelineLayout(VK_NULL_HANDLE)
             , poPipeline(VK_NULL_HANDLE)
+            
+            , pTextureCopy(nullptr)
+            , poBuffer_TextureCopy(VK_NULL_HANDLE)
+            , poBufferMemory_TextureCopy(VK_NULL_HANDLE)
         {
 
         }
+
+        ~PipelineCompute()
+        {
+            Destroy();
+        }
+
+        void Destroy()
+        {
+            CleanupSwapChain();
+        }
+
+        void CleanupSwapChain()
+        {
+            this->poDescriptorSetLayoutNames = nullptr;
+            this->poDescriptorSetLayout = VK_NULL_HANDLE;
+            this->poPipelineLayout = VK_NULL_HANDLE;
+            if (this->poPipeline != VK_NULL_HANDLE)
+            {
+                this->pWindow->destroyVkPipeline(this->poPipeline);
+            }       
+            this->poPipeline = VK_NULL_HANDLE;
+            this->poDescriptorSet = VK_NULL_HANDLE;
+
+            DestroyTextureCopy();
+        }  
     };
     typedef std::vector<PipelineCompute*> PipelineComputePtrVector;
     typedef std::map<std::string, PipelineCompute*> PipelineComputePtrMap;
@@ -567,7 +659,7 @@ public:
             , cfg_BlendAlphaOp(VK_BLEND_OP_ADD)
             , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
         {
-
+            this->pPipelineGraphics = new PipelineGraphics(_pWindow);
         }
         ~ModelObject()
         {
@@ -575,18 +667,14 @@ public:
             this->pMesh = nullptr;
 
             //Texture
-            this->aModelTextures.clear();
-            this->mapModelTextures.clear();
+            this->mapModelTexturesShaderSort.clear();
 
-            //Shader
-            this->aShaderStageCreateInfos_Graphics.clear();
-            this->aShaderStageCreateInfos_Computes.clear();
-            this->mapShaderStageCreateInfos_Computes.clear();
-            
-            cleanupSwapChain();
+            //Clean
+            CleanupSwapChain();
+            UTIL_DELETE(pPipelineGraphics)
         }
 
-        void cleanupSwapChain()
+        void CleanupSwapChain()
         {
             //Uniform
             size_t count = this->poBuffers_ObjectCB.size();
@@ -607,26 +695,22 @@ public:
             this->poBuffers_materialCB.clear();
             this->poBuffersMemory_materialCB.clear();
 
+            //Shader
+            this->aShaderStageCreateInfos_Graphics.clear();
+            this->aShaderStageCreateInfos_Computes.clear();
+            this->mapShaderStageCreateInfos_Computes.clear();
+
             //Pipeline Graphics
-            {
-                this->pWindow->destroyVkPipeline(this->pipelineGraphics.poPipeline_WireFrame);
-                this->pipelineGraphics.poPipeline_WireFrame = VK_NULL_HANDLE;
-                this->pWindow->destroyVkPipeline(this->pipelineGraphics.poPipeline);
-                this->pipelineGraphics.poPipeline = VK_NULL_HANDLE;
-            }
+            this->pPipelineGraphics->CleanupSwapChain();
+
             //Pipeline Computes
+            count = this->aPipelineComputes.size();
+            for (size_t i = 0; i < count; i++)
             {
-                count = this->aPipelineComputes.size();
-                for (size_t i = 0; i < count; i++)
-                {
-                    PipelineCompute* p = this->aPipelineComputes[i];
-                    this->pWindow->destroyVkPipeline(p->poPipeline);
-                    p->poPipeline = VK_NULL_HANDLE;
-                    delete p;
-                }
-                this->aPipelineComputes.clear();
-                this->mapPipelineComputes.clear();
+                PipelineCompute* p = this->aPipelineComputes[i];
+                UTIL_DELETE(p)
             }
+            this->aPipelineComputes.clear();
         }
 
         void recreateSwapChain()
@@ -641,9 +725,6 @@ public:
         int indexModel;
         std::string nameObject;
         std::string nameMesh;
-        std::vector<int> aTextureChannels;
-        std::vector<std::string> aPathTextures;
-        std::map<int, std::vector<std::string>> mapPathTextures;
         bool isShow;
         bool isWireFrame;
         bool isRotate;
@@ -654,8 +735,7 @@ public:
         ModelMesh* pMesh;
 
         //Texture
-        ModelTexturePtrVector aModelTextures;
-        ModelTexturePtrMap mapModelTextures;
+        ModelTexturePtrShaderSortMap mapModelTexturesShaderSort;
 
         //Shader
         VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
@@ -676,11 +756,10 @@ public:
         std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
 
         //Pipeline Graphics
-        PipelineGraphics pipelineGraphics;
+        PipelineGraphics* pPipelineGraphics;
 
         //Pipeline Computes
         PipelineComputePtrVector aPipelineComputes;
-        PipelineComputePtrMap mapPipelineComputes;
         
         //State
         VkPrimitiveTopology cfg_vkPrimitiveTopology;
@@ -723,32 +802,44 @@ public:
         }
 
     ////Textures
-        void AddTexture(ModelTexture* pTexture)
+        void AddTexture(const std::string& nameShaderSort, ModelTexture* pTexture)
         {
-            this->aModelTextures.push_back(pTexture);
-            this->mapModelTextures[pTexture->nameTexture] = pTexture;
+            ModelTexturePtrVector* pVector = nullptr;
+            ModelTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
+            if (itFind == this->mapModelTexturesShaderSort.end())
+            {
+                ModelTexturePtrVector aMTs;
+                this->mapModelTexturesShaderSort[nameShaderSort] = aMTs;
+                itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
+            }
+            itFind->second.push_back(pTexture);
         }
-        int GetTextureCount()
+        ModelTexture* GetTexture(const std::string& nameShaderSort, int index)
         {
-            return (int)this->aModelTextures.size();
+            ModelTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
+            if (itFind == this->mapModelTexturesShaderSort.end())
+                return nullptr;
+            return itFind->second.at(index);
         }
-        ModelTexture* GetTexture(int index)
+        ModelTexturePtrVector* GetTextures(const std::string& nameShaderSort)
         {
-            return this->aModelTextures[index];
+            ModelTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
+            if (itFind == this->mapModelTexturesShaderSort.end())
+                return nullptr;
+            return &(itFind->second);
         }
 
-        VkImage GetTextureImage(int index)
+    //Pipeline Computes
+        void AddPipelineCompute(PipelineCompute* pPipelineCompute)
         {
-            return this->aModelTextures[index]->poTextureImage;
+            this->aPipelineComputes.push_back(pPipelineCompute);
         }
-        VkImageView GetTextureImageView(int index)
+        PipelineCompute* GetPipelineCompute(int index)
         {
-            return this->aModelTextures[index]->poTextureImageView;
+            assert (index >= 0 && index < (int)this->aPipelineComputes.size() && "ModelObject::GetPipelineCompute");
+            return this->aPipelineComputes[index];
         }
-        VkSampler GetTextureSampler(int index)
-        {
-            return this->aModelTextures[index]->poTextureSampler;
-        }
+
     };
     typedef std::vector<ModelObject*> ModelObjectPtrVector;
     typedef std::map<std::string, ModelObject*> ModelObjectPtrMap;
@@ -791,10 +882,15 @@ protected:
         virtual void createCustomCB();
 
         //Pipeline
-        virtual void createPipeline_Custom();
+        virtual void createCustomBeforePipeline();
+        virtual void createGraphicsPipeline_Custom();
+        virtual void createComputePipeline_Custom();
 
         //DescriptorSets
         virtual void createDescriptorSets_Custom();
+
+    //Compute/Update
+        virtual void updateCompute_Custom(VkCommandBuffer& commandBuffer);
 
     //Render/Update
         virtual void updateCBs_Custom();
@@ -840,6 +936,15 @@ private:
                                               const std::string& nameShaderFrag,
                                               const std::string& nameShaderComp,
                                               VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
+                                              VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                              VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
+    bool createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
+                                              const std::string& nameShaderTesc,
+                                              const std::string& nameShaderTese,
+                                              const std::string& nameShaderGeom,
+                                              const std::string& nameShaderFrag,
+                                              VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics);
+    bool createPipelineShaderStageCreateInfos(const std::string& nameShaderComp,
                                               VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                               VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
 

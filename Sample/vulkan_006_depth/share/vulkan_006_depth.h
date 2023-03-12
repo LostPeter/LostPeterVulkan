@@ -261,7 +261,7 @@ protected:
         virtual void createCustomCB();
 
         //Pipeline
-        virtual void createPipeline_Custom();
+        virtual void createGraphicsPipeline_Custom();
 
         //DescriptorSets
         virtual void createDescriptorSets_Custom();

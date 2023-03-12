@@ -137,10 +137,10 @@ public:
             this->poTextureImage = VK_NULL_HANDLE;
             this->poTextureImageMemory = VK_NULL_HANDLE;
 
-            cleanupSwapChain();
+            CleanupSwapChain();
         }
 
-        void cleanupSwapChain()
+        void CleanupSwapChain()
         {
             //Uniform
             size_t count = this->poBuffers_ObjectCB.size();
@@ -290,7 +290,7 @@ protected:
         virtual void createCustomCB();
 
         //Pipeline
-        virtual void createPipeline_Custom();
+        virtual void createGraphicsPipeline_Custom();
 
         //DescriptorSets
         virtual void createDescriptorSets_Custom();

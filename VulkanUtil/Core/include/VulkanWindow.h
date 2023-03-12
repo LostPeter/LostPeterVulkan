@@ -269,6 +269,9 @@ namespace LostPeter
 
             virtual void createCommandObjects();
                 virtual void createCommandPool();
+                    virtual void createCommandPool_Graphics();
+                    virtual void createCommandPool_Compute();
+
                     virtual VkCommandBuffer beginSingleTimeCommands();
                     virtual void endSingleTimeCommands(VkCommandBuffer commandBuffer);
             
@@ -637,43 +640,63 @@ namespace LostPeter
                         virtual void buildInstanceCB();
                     virtual void createCustomCB();
 
+
+                virtual VkShaderModule createShaderModule(std::string info, std::string pathFile);
+                virtual VkPipelineLayout createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout);
+                virtual void destroyVkPipeline(VkPipeline vkPipeline);
+
+                virtual void preparePipeline();
+                    virtual void createVkPipelineCache();
+                    virtual void createCustomBeforePipeline();
+
                 virtual void createGraphicsPipeline();
-                    virtual void createPipeline_Default();
-                    virtual void createPipeline_Custom();
-                        virtual void createVkPipelineCache();
-                        virtual VkPipelineLayout createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout);
-                        virtual VkShaderModule createShaderModule(std::string info, std::string pathFile);
-                        virtual void destroyVkPipeline(VkPipeline vkPipeline);
-                        virtual VkPipeline createVkPipeline(VkShaderModule vertShaderModule, const std::string& vertMain,
-                                                            VkShaderModule fragShaderModule, const std::string& fragMain,
-                                                            VkVertexInputBindingDescriptionVector* pBindingDescriptions,
-                                                            VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
-                                                            VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
-                                                            VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
-                                                            VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
-                                                            VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
-                                                            VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
-                                                            VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
-                                                            VkColorComponentFlags colorWriteMask);
-                        virtual VkPipeline createVkPipeline(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
-                                                            VkVertexInputBindingDescriptionVector* pBindingDescriptions,
-                                                            VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
-                                                            VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
-                                                            VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
-                                                            VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
-                                                            VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
-                                                            VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
-                                                            VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
-                                                            VkColorComponentFlags colorWriteMask);
+                    virtual void createGraphicsPipeline_Default();
+                    virtual void createGraphicsPipeline_Custom();
+                        virtual VkPipeline createVkGraphicsPipeline(VkShaderModule vertShaderModule, const std::string& vertMain,
+                                                                    VkShaderModule fragShaderModule, const std::string& fragMain,
+                                                                    VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                                    VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                                    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                                    VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                                    VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                                    VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                                    VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                                    VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                                    VkColorComponentFlags colorWriteMask);
+                        virtual VkPipeline createVkGraphicsPipeline(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                                                                    VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                                    VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                                    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                                    VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                                    VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                                    VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                                    VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                                    VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                                    VkColorComponentFlags colorWriteMask);
+
+                virtual void createComputePipeline();
+                    virtual void createComputePipeline_Default();
+                    virtual void createComputePipeline_Custom();
+                        virtual VkPipeline createVkComputePipeline(VkShaderModule compShaderModule,
+                                                                   const std::string& compMain,
+                                                                   VkPipelineLayout pipelineLayout, 
+                                                                   VkPipelineCreateFlags flags = 0);
+                        virtual VkPipeline createVkComputePipeline(const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
+                                                                   VkPipelineLayout pipelineLayout, 
+                                                                   VkPipelineCreateFlags flags = 0);
+
 
                 virtual void createDescriptor();
                     virtual void createDescriptorPool();
                     virtual void createDescriptorSets_Default();
                     virtual void createDescriptorSets_Custom();
+                        virtual void createDescriptorSet(VkDescriptorSet& descriptorSet, VkDescriptorSetLayout vkDescriptorSetLayout);
                         virtual void createDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout);
                         virtual void updateDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler);
 
                 virtual void createCommandBuffers();
+                    virtual void createCommandBuffer_Graphics();
+                    virtual void createCommandBuffer_Compute();
 
             //Imgui
             virtual void createImgui();
