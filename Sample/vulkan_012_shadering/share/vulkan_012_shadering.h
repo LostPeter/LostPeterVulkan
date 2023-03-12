@@ -548,7 +548,9 @@ public:
         VkPipelineLayout poPipelineLayout;
         VkPipeline poPipeline;
         VkDescriptorSet poDescriptorSet;
-
+        
+        ModelTexture* pTextureSource;
+        ModelTexture* pTextureTarget;
         TextureCopyConstants* pTextureCopy;
         VkBuffer poBuffer_TextureCopy;  
         VkDeviceMemory poBufferMemory_TextureCopy;
@@ -577,6 +579,8 @@ public:
             , poDescriptorSetLayout(VK_NULL_HANDLE)
             , poPipelineLayout(VK_NULL_HANDLE)
             , poPipeline(VK_NULL_HANDLE)
+            , pTextureSource(nullptr)
+            , pTextureTarget(nullptr)
             
             , pTextureCopy(nullptr)
             , poBuffer_TextureCopy(VK_NULL_HANDLE)
@@ -894,6 +898,8 @@ protected:
 
     //Render/Update
         virtual void updateCBs_Custom();
+
+        virtual void updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer);
 
         virtual bool beginRenderImgui();
         virtual void endRenderImgui();

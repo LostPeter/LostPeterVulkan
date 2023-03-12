@@ -743,6 +743,7 @@ namespace LostPeter
                     virtual void endRenderImgui();
 
                 virtual void updateRenderCommandBuffers();
+                    virtual void updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_Custom(VkCommandBuffer& commandBuffer);
                         virtual void bindViewport(VkCommandBuffer& commandBuffer);

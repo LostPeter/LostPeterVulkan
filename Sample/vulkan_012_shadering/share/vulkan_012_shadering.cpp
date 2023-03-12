@@ -480,7 +480,7 @@ Vulkan_012_Shadering::Vulkan_012_Shadering(int width, int height, std::string na
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
     this->cfg_isUseComputeShader = true;
-    //this->cfg_isCreateRenderComputeSycSemaphore = true;
+    this->cfg_isCreateRenderComputeSycSemaphore = true;
 
     this->cfg_cameraPos = glm::vec3(-2.5f, 2.0f, -20.0f);
     this->cfg_cameraLookTarget = glm::vec3(-2.5f, 5.0f, 0.0f);
@@ -1588,6 +1588,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                 {
                     ModelTexture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
                     nIndexTextureCS ++;
+                    pPipelineCompute->pTextureSource = pTexture;
 
                     VkWriteDescriptorSet ds = {};
                     ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -1603,6 +1604,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                 {
                     ModelTexture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
                     nIndexTextureCS ++;
+                    pPipelineCompute->pTextureTarget = pTexture;
 
                     VkWriteDescriptorSet ds = {};
                     ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -1628,7 +1630,38 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
 
 void Vulkan_012_Shadering::updateCompute_Custom(VkCommandBuffer& commandBuffer)
 {
+    size_t count = this->m_aModelObjects.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ModelObject* pModelObject = this->m_aModelObjects[i];
 
+        size_t count_comp = pModelObject->aPipelineComputes.size();
+        for (int j = 0; j < count_comp; j++)
+        {
+            PipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
+            if (pPipelineCompute->pTextureSource != nullptr &&
+                pPipelineCompute->pTextureTarget != nullptr &&
+                pPipelineCompute->pTextureCopy != nullptr)
+            {
+                pPipelineCompute->pTextureCopy->texInfo.x = pPipelineCompute->pTextureSource->width;
+                pPipelineCompute->pTextureCopy->texInfo.y = pPipelineCompute->pTextureSource->height;
+                pPipelineCompute->pTextureCopy->texInfo.z = 0;
+                pPipelineCompute->pTextureCopy->texInfo.w = 0;
+                VkDeviceMemory& memory = pPipelineCompute->poBufferMemory_TextureCopy;
+                void* data;
+                vkMapMemory(this->poDevice, memory, 0, sizeof(TextureCopyConstants), 0, &data);
+                    memcpy(data, pPipelineCompute->pTextureCopy, sizeof(TextureCopyConstants));
+                vkUnmapMemory(this->poDevice, memory);
+
+                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipeline);
+                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipelineLayout, 0, 1, &pPipelineCompute->poDescriptorSet, 0, 0);
+                
+                uint32_t groupX = (uint32_t)(pPipelineCompute->pTextureSource->width / 8);
+                uint32_t groupY = (uint32_t)(pPipelineCompute->pTextureSource->height / 8);
+                vkCmdDispatch(commandBuffer, groupX, groupY, 1);
+            }
+        }
+    }
 }
 
 void Vulkan_012_Shadering::updateCBs_Custom()
@@ -1680,7 +1713,46 @@ void Vulkan_012_Shadering::updateCBs_Custom()
     }
 }
 
+void Vulkan_012_Shadering::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
+{
+    size_t count = this->m_aModelObjects.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ModelObject* pModelObject = this->m_aModelObjects[i];
 
+        size_t count_comp = pModelObject->aPipelineComputes.size();
+        for (int j = 0; j < count_comp; j++)
+        {
+            PipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
+            if (pPipelineCompute->pTextureSource != nullptr &&
+                pPipelineCompute->pTextureTarget != nullptr &&
+                pPipelineCompute->pTextureCopy != nullptr)
+            {
+                VkImageMemoryBarrier imageMemoryBarrier = {};
+                imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+                imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
+                imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
+                imageMemoryBarrier.image = pPipelineCompute->pTextureTarget->poTextureImage;
+                imageMemoryBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+                imageMemoryBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+                imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+                imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			    imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+
+                vkCmdPipelineBarrier(commandBuffer,
+                                     VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                                     VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                                     0,
+                                     0,
+                                     nullptr,
+                                     0,
+                                     nullptr,
+                                     1,
+                                     &imageMemoryBarrier);
+            }
+        }
+    }
+}
 
 bool Vulkan_012_Shadering::beginRenderImgui()
 {

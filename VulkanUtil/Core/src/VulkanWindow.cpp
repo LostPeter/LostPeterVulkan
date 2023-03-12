@@ -5404,6 +5404,7 @@ namespace LostPeter
                     throw std::runtime_error(msg);
                 }
                 {
+                    updateRenderPass_SyncComputeGraphics(commandBuffer);
                     updateRenderPass_Default(commandBuffer);
                     updateRenderPass_Custom(commandBuffer);
                 }
@@ -5413,6 +5414,10 @@ namespace LostPeter
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
+            }
+            void VulkanWindow::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
+            {
+
             }
             void VulkanWindow::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
             {
@@ -5517,7 +5522,7 @@ namespace LostPeter
             this->poImagesInFlight[this->poSwapChainImageIndex] = this->poInFlightFences[this->poCurrentFrame];
 
             //2> Submit Command
-            VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+            VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
             VkSemaphoreVector aWaitSemaphores;
             if (this->poComputeWaitSemaphore != nullptr)
