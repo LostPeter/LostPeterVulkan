@@ -11,7 +11,9 @@ struct TextureCopyConstants
 {
     //[x,y,z,w] = [w,h,mip,processLinear]
     float4 texInfo;
-
+	float4 texOffset;
+	float4 texIndexArray;
+	float4 texClearColor;
 };
 [[vk::binding(0)]] cbuffer _textureInfo                         : register(b0)
 {
@@ -37,11 +39,23 @@ float4 LinearToSRGB(float4 pixel)
 
 [numthreads(8, 8, 1)]
 void main(uint3 id : SV_DispatchThreadID)
-{   
-    float4 pixel = _textureSrc.Load(uint3(id.xy, _textureInfo.texInfo.z));
-	if (_textureInfo.texInfo.w > 0)
+{
+	uint coordX = id.x;
+	uint coordY = id.y;
+	if (coordX >= _textureInfo.texOffset.x &&
+		coordX < _textureInfo.texOffset.x + _textureInfo.texInfo.x &&
+		coordY >= _textureInfo.texOffset.y &&
+		coordY < _textureInfo.texOffset.y + _textureInfo.texInfo.y)
 	{
-		pixel = LinearToSRGB(pixel);
+		float4 pixel = _textureSrc.Load(uint3(coordX - _textureInfo.texOffset.x, coordY - _textureInfo.texOffset.y, _textureInfo.texInfo.z));
+		if (_textureInfo.texInfo.w > 0)
+		{
+			pixel = LinearToSRGB(pixel);
+		}
+		_textureDst[uint2(coordX, coordY)] = pixel;
 	}
-	_textureDst[id.xy] = pixel;
+	else
+	{
+		_textureDst[uint2(coordX, coordY)] = _textureInfo.texClearColor;
+	}
 }

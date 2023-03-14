@@ -56,90 +56,125 @@ static glm::mat4 g_MeshTranformLocals[g_MeshCount] =
 
 /////////////////////////// Texture /////////////////////////////
 static const std::string g_TextureDefault = "default_blackwhite";
-static const int g_TextureCount = 6;
+static const int g_TextureCount = 10;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
-    //Texture Name                  //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
-    "default_blackwhite",           "2d",            "false",                  "false",                           "Assets/Texture/default_blackwhite.png", //default_blackwhite
-    "texturecubemap",               "cubemap",       "false",                  "false",                           "Assets/Texture/texturecubemap_x_right.png;Assets/Texture/texturecubemap_x_left.png;Assets/Texture/texturecubemap_y_up.png;Assets/Texture/texturecubemap_y_down.png;Assets/Texture/texturecubemap_z_front.png;Assets/Texture/texturecubemap_z_back.png", //texturecubemap
+    //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
+    "default_blackwhite",               "2d",            "false",                  "false",                           "Assets/Texture/default_blackwhite.png", //default_blackwhite
+    "bricks_diffuse",                   "2d",            "false",                  "false",                           "Assets/Texture/bricks_diffuse.png", //bricks_diffuse
+    "terrain",                          "2d",            "false",                  "false",                           "Assets/Texture/terrain.png", //terrain
+    "texture2d",                        "2d",            "false",                  "false",                           "Assets/Texture/texture2d.jpg", //texture2d
+    
+    "texturecubemap",                   "cubemap",       "false",                  "false",                           "Assets/Texture/texturecubemap_x_right.png;Assets/Texture/texturecubemap_x_left.png;Assets/Texture/texturecubemap_y_up.png;Assets/Texture/texturecubemap_y_down.png;Assets/Texture/texturecubemap_z_front.png;Assets/Texture/texturecubemap_z_back.png", //texturecubemap
 
-    "texture_terrain_diffuse",      "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture_terrain_diffuse
-    "texture_terrain_normal",       "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png", //texture_terrain_normal
-    "texture_terrain_control",      "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/terrain_control.png", //texture_terrain_control
+    "texture_terrain_diffuse",          "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture_terrain_diffuse
+    "texture_terrain_normal",           "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png", //texture_terrain_normal
+    "texture_terrain_control",          "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/terrain_control.png", //texture_terrain_control
 
-    "texture_render_target",        "2d",            "true",                   "true",                            "", //texture_render_target
+    "texture_rt_compute_copy_tex",      "2d",            "true",                   "true",                            "", //texture_rt_compute_copy_tex
+    "texture_rt_compute_copy_texarray", "2d",            "true",                   "true",                            "", //texture_rt_compute_copy_texarray
 
 };
 static VkFormat g_TextureFormats[g_TextureCount] = 
 {
     VK_FORMAT_R8G8B8A8_SRGB, //default_blackwhite
+    VK_FORMAT_R8G8B8A8_SRGB, //bricks_diffuse
+    VK_FORMAT_R8G8B8A8_SRGB, //terrain
+    VK_FORMAT_R8G8B8A8_SRGB, //texture2d
+
     VK_FORMAT_R8G8B8A8_SRGB, //texturecubemap
 
     VK_FORMAT_R8G8B8A8_SRGB, //texture_terrain_diffuse
     VK_FORMAT_R8G8B8A8_UNORM, //texture_terrain_normal
     VK_FORMAT_R8G8B8A8_UNORM, //texture_terrain_control
 
-    VK_FORMAT_R8G8B8A8_UNORM, //texture_render_target
+    VK_FORMAT_R8G8B8A8_UNORM, //texture_rt_compute_copy_tex
+    VK_FORMAT_R8G8B8A8_UNORM, //texture_rt_compute_copy_texarray
 
 };
 static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
     Vulkan_TextureFilter_Bilinear, //default_blackwhite
+    Vulkan_TextureFilter_Bilinear, //bricks_diffuse
+    Vulkan_TextureFilter_Bilinear, //terrain
+    Vulkan_TextureFilter_Bilinear, //texture2d
+
     Vulkan_TextureFilter_Bilinear, //texturecubemap
 
     Vulkan_TextureFilter_Bilinear, //texture_terrain_diffuse
     Vulkan_TextureFilter_Bilinear, //texture_terrain_normal
     Vulkan_TextureFilter_Bilinear, //texture_terrain_control
 
-    Vulkan_TextureFilter_Bilinear, //texture_render_target
+    Vulkan_TextureFilter_Bilinear, //texture_rt_compute_copy_tex
+    Vulkan_TextureFilter_Bilinear, //texture_rt_compute_copy_texarray
 
 };
 static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
 {
     Vulkan_TextureAddressing_Clamp, //default_blackwhite
+    Vulkan_TextureAddressing_Clamp, //bricks_diffuse
+    Vulkan_TextureAddressing_Clamp, //terrain
+    Vulkan_TextureAddressing_Clamp, //texture2d
+
     Vulkan_TextureAddressing_Wrap, //texturecubemap
 
     Vulkan_TextureAddressing_Clamp, //texture_terrain_diffuse
     Vulkan_TextureAddressing_Clamp, //texture_terrain_normal
     Vulkan_TextureAddressing_Clamp, //texture_terrain_control
 
-    Vulkan_TextureAddressing_Clamp, //texture_render_target
+    Vulkan_TextureAddressing_Clamp, //texture_rt_compute_copy_tex
+    Vulkan_TextureAddressing_Clamp, //texture_rt_compute_copy_texarray
 
 };
 static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
     Vulkan_TextureBorderColor_OpaqueBlack, //default_blackwhite
+    Vulkan_TextureBorderColor_OpaqueBlack, //bricks_diffuse
+    Vulkan_TextureBorderColor_OpaqueBlack, //terrain
+    Vulkan_TextureBorderColor_OpaqueBlack, //texture2d
+
     Vulkan_TextureBorderColor_OpaqueBlack, //texturecubemap
 
     Vulkan_TextureBorderColor_OpaqueBlack, //texture_terrain_diffuse
     Vulkan_TextureBorderColor_OpaqueBlack, //texture_terrain_normal
     Vulkan_TextureBorderColor_OpaqueBlack, //texture_terrain_control
 
-    Vulkan_TextureBorderColor_OpaqueBlack, //texture_render_target
+    Vulkan_TextureBorderColor_OpaqueBlack, //texture_rt_compute_copy_tex
+    Vulkan_TextureBorderColor_OpaqueBlack, //texture_rt_compute_copy_texarray
 
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
 {
     512,    512,    1, //default_blackwhite
+    512,    512,    1, //bricks_diffuse
+    512,    512,    1, //terrain
+    512,    512,    1, //texture2d
+
     512,    512,    1, //texturecubemap
 
    1024,   1024,    1, //texture_terrain_diffuse
    1024,   1024,    1, //texture_terrain_normal
     512,    512,    1, //texture_terrain_control
 
-   1024,   1024,    1, //texture_render_target
+   1024,   1024,    1, //texture_rt_compute_copy_tex
+   2048,   2048,    1, //texture_rt_compute_copy_texarray
 
 };
 static float g_TextureAnimChunks[2 * g_TextureCount] = 
 {
     0,    0, //default_blackwhite
+    0,    0, //bricks_diffuse
+    0,    0, //terrain
+    0,    0, //texture2d
+
     0,    0, //texturecubemap
 
     0,    0, //texture_terrain_diffuse
     0,    0, //texture_terrain_normal
     0,    0, //texture_terrain_control
 
-    0,    0, //texture_render_target
+    0,    0, //texture_rt_compute_copy_tex
+    0,    0, //texture_rt_compute_copy_texarray
 
 };
 
@@ -199,18 +234,19 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_ObjectCount = 6;
+static const int g_ObjectCount = 7;
 static const char* g_ObjectConfigs[5 * g_ObjectCount] = 
 {
-    //Object Name                           //Mesh Name         //Texture VS            //Texture FS                                                                    //Texture CS
-    "textureCubeMap_SkyBox",                "cube",             "",                     "texturecubemap",                                                               "", //textureCubeMap_SkyBox
-    "texture2Darray_TerrainDiffuse",        "plane",            "",                     "texture_terrain_diffuse",                                                      "", //texture2Darray_TerrainDiffuse
-    "texture2Darray_TerrainNormal",         "plane",            "",                     "texture_terrain_normal",                                                       "", //texture2Darray_TerrainNormal
-    "texture2Darray_TerrainControl",        "plane",            "",                     "texture_terrain_control",                                                      "", //texture2Darray_TerrainControl
+    //Object Name                               //Mesh Name         //Texture VS            //Texture FS                                                                    //Texture CS
+    "textureCubeMap_SkyBox",                    "cube",             "",                     "texturecubemap",                                                               "", //textureCubeMap_SkyBox
+    "texture2Darray_TerrainDiffuse",            "plane",            "",                     "texture_terrain_diffuse",                                                      "", //texture2Darray_TerrainDiffuse
+    "texture2Darray_TerrainNormal",             "plane",            "",                     "texture_terrain_normal",                                                       "", //texture2Darray_TerrainNormal
+    "texture2Darray_TerrainControl",            "plane",            "",                     "texture_terrain_control",                                                      "", //texture2Darray_TerrainControl
 
-    "texture2D_RenderTarget",               "plane",            "",                     "texture_render_target",                                                        "default_blackwhite;texture_render_target", //texture2D_RenderTarget
+    "texture2D_ComputeCopyTexture",             "plane",            "",                     "texture_rt_compute_copy_tex",                                                  "default_blackwhite;texture_rt_compute_copy_tex", //texture2D_ComputeCopyTexture
+    "texture2D_ComputeCopyTextureArray",        "plane",            "",                     "texture_rt_compute_copy_texarray",                                             "texture_terrain_diffuse;texture_rt_compute_copy_texarray", //texture2D_ComputeCopyTextureArray
 
-    "terrain",                              "plane",            "",                     "texture_terrain_diffuse;texture_terrain_normal;texture_terrain_control",       "", //terrain
+    "terrain",                                  "plane",            "",                     "texture_terrain_diffuse;texture_terrain_normal;texture_terrain_control",       "", //terrain
 
 };
 static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] = 
@@ -221,7 +257,8 @@ static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] =
     "vert_standard_mesh_opaque_tex2darray_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainNormal
     "vert_standard_mesh_opaque_tex2darray_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainControl
 
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "standard_compute_texcopy_tex2d", //texture2D_RenderTarget
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "standard_compute_texcopy_tex2d", //texture2D_ComputeCopyTexture
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "standard_compute_texcopy_tex2darray", //texture2D_ComputeCopyTextureArray
 
     "vert_standard_terrain_opaque_lit",                     "",                             "",                             "",                         "frag_standard_terrain_opaque_lit",                     "", //terrain
     
@@ -234,7 +271,8 @@ static const char* g_ObjectNameDescriptorSetLayouts[2 * g_ObjectCount] =
     "Pass-Object-Material-Instance-TextureFS",                          "", //texture2Darray_TerrainNormal
     "Pass-Object-Material-Instance-TextureFS",                          "", //texture2Darray_TerrainControl
 
-    "Pass-Object-Material-Instance-TextureFS",                          "TextureCopy-TextureCSR-TextureCSRW", //texture2D_RenderTarget
+    "Pass-Object-Material-Instance-TextureFS",                          "TextureCopy-TextureCSR-TextureCSRW", //texture2D_ComputeCopyTexture
+    "Pass-Object-Material-Instance-TextureFS",                          "TextureCopy-TextureCSR-TextureCSRW", //texture2D_ComputeCopyTextureArray
 
     "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",      "", //terrain
 };
@@ -246,7 +284,8 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
     0, //texture2Darray_TerrainNormal 
     0, //texture2Darray_TerrainControl 
 
-    0, //texture2D_RenderTarget 
+    0, //texture2D_ComputeCopyTexture 
+    0, //texture2D_ComputeCopyTextureArray 
 
     0, //terrain 
 };
@@ -257,7 +296,8 @@ static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] =
     glm::vec3(   0,  1.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainNormal
     glm::vec3( 2.0,  1.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainControl
 
-    glm::vec3(   0,  2.5,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D_RenderTarget
+    glm::vec3(   0,  2.5,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D_ComputeCopyTexture
+    glm::vec3(   0,  4.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D_ComputeCopyTextureArray
 
     glm::vec3(   0, -0.1,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //terrain
 
@@ -269,7 +309,8 @@ static bool g_ObjectIsTransparents[g_ObjectCount] =
     false, //texture2Darray_TerrainNormal
     false, //texture2Darray_TerrainControl
 
-    false, //texture2D_RenderTarget
+    false, //texture2D_ComputeCopyTexture
+    false, //texture2D_ComputeCopyTextureArray
 
     false, //terrain
 };
@@ -280,7 +321,8 @@ static bool g_ObjectIsShows[] =
     true, //texture2Darray_TerrainNormal
     true, //texture2Darray_TerrainControl
 
-    true, //texture2D_RenderTarget
+    true, //texture2D_ComputeCopyTexture
+    true, //texture2D_ComputeCopyTextureArray
 
     true, //terrain
 };
@@ -291,7 +333,8 @@ static bool g_ObjectIsRotates[g_ObjectCount] =
     false, //texture2Darray_TerrainNormal
     false, //texture2Darray_TerrainControl
 
-    false, //texture2D_RenderTarget
+    false, //texture2D_ComputeCopyTexture
+    false, //texture2D_ComputeCopyTextureArray
 
     false, //terrain
 };
@@ -302,7 +345,8 @@ static bool g_ObjectIsLightings[g_ObjectCount] =
     false, //texture2Darray_TerrainNormal
     false, //texture2Darray_TerrainControl
 
-    false, //texture2D_RenderTarget
+    false, //texture2D_ComputeCopyTexture
+    false, //texture2D_ComputeCopyTextureArray
 
     true, //terrain
 };
@@ -1647,6 +1691,21 @@ void Vulkan_012_Shadering::updateCompute_Custom(VkCommandBuffer& commandBuffer)
                 pPipelineCompute->pTextureCopy->texInfo.y = pPipelineCompute->pTextureSource->height;
                 pPipelineCompute->pTextureCopy->texInfo.z = 0;
                 pPipelineCompute->pTextureCopy->texInfo.w = 0;
+                pPipelineCompute->pTextureCopy->texOffset.x = VulkanMath::Rand(0, 1) * pPipelineCompute->pTextureSource->width;
+                pPipelineCompute->pTextureCopy->texOffset.y = VulkanMath::Rand(0, 1) * pPipelineCompute->pTextureSource->height;
+                pPipelineCompute->pTextureCopy->texOffset.z = 0;
+                pPipelineCompute->pTextureCopy->texOffset.w = 0;
+                int seed = VulkanMath::Rand(0, 10000);
+                int start = seed % 4;
+                pPipelineCompute->pTextureCopy->texIndexArray.x = start;
+                pPipelineCompute->pTextureCopy->texIndexArray.y = ++start % 4;
+                pPipelineCompute->pTextureCopy->texIndexArray.z = ++start % 4;
+                pPipelineCompute->pTextureCopy->texIndexArray.w = ++start % 4;
+                pPipelineCompute->pTextureCopy->texClearColor.x = 0;
+                pPipelineCompute->pTextureCopy->texClearColor.y = 0;
+                pPipelineCompute->pTextureCopy->texClearColor.z = 0;
+                pPipelineCompute->pTextureCopy->texClearColor.w = 1;
+
                 VkDeviceMemory& memory = pPipelineCompute->poBufferMemory_TextureCopy;
                 void* data;
                 vkMapMemory(this->poDevice, memory, 0, sizeof(TextureCopyConstants), 0, &data);
@@ -1656,8 +1715,8 @@ void Vulkan_012_Shadering::updateCompute_Custom(VkCommandBuffer& commandBuffer)
                 vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipeline);
                 vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipelineLayout, 0, 1, &pPipelineCompute->poDescriptorSet, 0, 0);
                 
-                uint32_t groupX = (uint32_t)(pPipelineCompute->pTextureSource->width / 8);
-                uint32_t groupY = (uint32_t)(pPipelineCompute->pTextureSource->height / 8);
+                uint32_t groupX = (uint32_t)(pPipelineCompute->pTextureTarget->width / 8);
+                uint32_t groupY = (uint32_t)(pPipelineCompute->pTextureTarget->height / 8);
                 vkCmdDispatch(commandBuffer, groupX, groupY, 1);
             }
         }

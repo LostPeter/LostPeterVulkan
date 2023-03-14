@@ -1031,9 +1031,15 @@ namespace LostPeter
     struct utilExport TextureCopyConstants
     {
         glm::vec4 texInfo;
+        glm::vec4 texOffset;
+        glm::vec4 texIndexArray;
+        glm::vec4 texClearColor;
 
         TextureCopyConstants()
             : texInfo(0, 0, 0, 0)
+            , texOffset(0, 0, 0, 0)
+            , texIndexArray(0, 0, 0, 0)
+            , texClearColor(0, 0, 0, 1)
         {
 
         }

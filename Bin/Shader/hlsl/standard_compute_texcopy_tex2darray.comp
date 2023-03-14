@@ -11,14 +11,16 @@ struct TextureCopyConstants
 {
     //[x,y,z,w] = [w,h,mip,processLinear]
     float4 texInfo;
-
+	float4 texOffset;
+	float4 texIndexArray;
+	float4 texClearColor;
 };
 [[vk::binding(0)]] cbuffer _textureInfo                         : register(b0)
 {
     TextureCopyConstants _textureInfo;
 }
 
-[[vk::binding(1)]] Texture2D _textureSrc                        : register(t0);
+[[vk::binding(1)]] Texture2DArray _textureSrc                   : register(t0);
 [[vk::binding(2)]] RWTexture2D<float4> _textureDst              : register(u0);
 
 
@@ -38,7 +40,33 @@ float4 LinearToSRGB(float4 pixel)
 [numthreads(8, 8, 1)]
 void main(uint3 id : SV_DispatchThreadID)
 {   
-    float4 pixel = _textureSrc.Load(uint3(id.xy, _textureInfo.texInfo.z));
+	int index = 0;
+	uint2 coord = id.xy;
+	if (id.x < _textureInfo.texInfo.x &&
+		id.y < _textureInfo.texInfo.y)
+	{
+		index = _textureInfo.texIndexArray.x;
+	}
+	else if (id.x >= _textureInfo.texInfo.x &&
+			 id.y < _textureInfo.texInfo.y)
+	{
+		index = _textureInfo.texIndexArray.y;
+		coord.x -= _textureInfo.texInfo.x;
+	}
+	else if (id.x < _textureInfo.texInfo.x &&
+			 id.y >= _textureInfo.texInfo.y)
+	{
+		index = _textureInfo.texIndexArray.z;
+		coord.y -= _textureInfo.texInfo.y;
+	}
+	else
+	{
+		index = _textureInfo.texIndexArray.w;
+		coord.x -= _textureInfo.texInfo.x;
+		coord.y -= _textureInfo.texInfo.y;
+	}
+
+    float4 pixel = _textureSrc.Load(uint4(coord.xy, index, 0));
 	if (_textureInfo.texInfo.w > 0)
 	{
 		pixel = LinearToSRGB(pixel);
