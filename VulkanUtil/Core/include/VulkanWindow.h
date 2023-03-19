@@ -34,6 +34,7 @@ namespace LostPeter
         VkPhysicalDevice poPhysicalDevice;
         VkPhysicalDeviceProperties poPhysicalDeviceProperties;
         VkPhysicalDeviceFeatures poPhysicalDeviceFeatures;
+        VkPhysicalDeviceFeatures poPhysicalEnabledFeatures;
         VkDevice poDevice;
         VkSampleCountFlagBits poMSAASamples;
         VkQueue poQueueGraphics;
@@ -206,9 +207,10 @@ namespace LostPeter
 
 
     private:
-        std::vector<const char*> validationLayers;
-        std::vector<const char*> deviceExtensions; 
-
+        std::vector<const char*> aInstanceLayers;
+        std::vector<const char*> aInstanceExtensions;
+        std::vector<const char*> aDeviceLayers;
+        std::vector<const char*> aDeviceExtensions;
 
     public:
         virtual void OnInit();
@@ -252,17 +254,15 @@ namespace LostPeter
             virtual void createWindowCallback();
             virtual void createDevice();
                 virtual void createInstance();
-                    virtual bool checkValidationLayerSupport();
-                    virtual std::vector<const char*> getRequiredExtensions();
                     virtual void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
                 virtual void setUpDebugMessenger();
                 virtual void createSurface();
                 virtual void pickPhysicalDevice();
                     virtual void findQueueFamilies(VkPhysicalDevice device, int& indexGraphics, int& indexPresent, int& indexCompute);
-                    virtual bool checkDeviceExtensionSupport(VkPhysicalDevice device);
                     virtual VkSampleCountFlagBits getMaxUsableSampleCount();
                     virtual SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, SwapChainSupportDetails& details);
                     virtual bool isDeviceSuitable(VkPhysicalDevice device, int& indexGraphics, int& indexPresent, int& indexCompute);
+                virtual void setUpEnabledFeatures();
                 virtual void createLogicalDevice();
 
             virtual void createFeatureSupport();
@@ -663,7 +663,22 @@ namespace LostPeter
                                                                     VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
                                                                     VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
                                                                     VkColorComponentFlags colorWriteMask);
+                        virtual VkPipeline createVkGraphicsPipeline(VkShaderModule vertShaderModule, const std::string& vertMain,
+                                                                    VkShaderModule tescShaderModule, const std::string& tescMain,
+                                                                    VkShaderModule teseShaderModule, const std::string& teseMain,
+                                                                    VkShaderModule fragShaderModule, const std::string& fragMain,
+                                                                    VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+                                                                    VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                                    VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                                    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                                    VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                                    VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                                    VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                                    VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                                    VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                                    VkColorComponentFlags colorWriteMask);
                         virtual VkPipeline createVkGraphicsPipeline(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                                                                    bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                                     VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
@@ -774,6 +789,12 @@ namespace LostPeter
                                            VkDebugUtilsMessengerEXT debugMessenger,
                                            const VkAllocationCallbacks* pAllocator);
         
+        void getInstanceLayersAndExtensions(bool bIsEnableValidationLayers,
+                                            std::vector<const char*>& outInstanceLayers, 
+                                            std::vector<const char*>& outInstanceExtensions);
+        void getDeviceLayersAndExtensions(bool bIsEnableValidationLayers,
+                                          std::vector<const char*>& outDeviceLayers, 
+                                          std::vector<const char*>& outDeviceExtensions);
     };
 
 }; //LostPeter

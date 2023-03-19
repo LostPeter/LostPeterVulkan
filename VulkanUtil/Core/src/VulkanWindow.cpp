@@ -140,10 +140,6 @@ namespace LostPeter
         , mouseButtonDownLeft(false)
         , mouseButtonDownRight(false)
     {
-        this->validationLayers.push_back("VK_LAYER_KHRONOS_validation");
-        this->deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-        this->deviceExtensions.push_back(VK_KHR_MAINTENANCE1_EXTENSION_NAME);
-
         cfg_StencilOpFront.failOp = VK_STENCIL_OP_KEEP;
         cfg_StencilOpFront.passOp = VK_STENCIL_OP_KEEP;
         cfg_StencilOpFront.depthFailOp = VK_STENCIL_OP_KEEP;
@@ -489,46 +485,106 @@ namespace LostPeter
     }
     void VulkanWindow::createInstance()
     {
-        if (s_isEnableValidationLayers && 
-            !checkValidationLayerSupport()) 
+        getInstanceLayersAndExtensions(s_isEnableValidationLayers, 
+                                       this->aInstanceLayers, 
+                                       this->aInstanceExtensions);
+        if (s_isEnableValidationLayers) 
         {
-            std::string msg = "VulkanWindow::createInstance: Validation layers requested, but not available !";
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg);
+            this->aInstanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         }
+
+        uint32_t glfwExtensionCount = 0;
+        const char** glfwExtensions;
+        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+        std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+        size_t count_extensions = this->aInstanceExtensions.size();
+        size_t count_glfw = extensions.size();
+        for (size_t i = 0; i < count_glfw; i++)
+        {
+            bool isFind = false;
+            for (size_t j = 0; j < count_extensions; j++)
+            {   
+                if (strcmp(extensions[i], this->aInstanceExtensions[j]) == 0)
+                {
+                    isFind = true;
+                    break;
+                }
+            }
+
+            if (!isFind)
+            {
+                this->aInstanceExtensions.push_back(extensions[i]);
+            }
+        }
+
 
         VkApplicationInfo appInfo = {};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        appInfo.pApplicationName = "VulkanUtil";
+        appInfo.pApplicationName = "vulkan_xxx_samples";
         appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.pEngineName = "No Engine";
+        appInfo.pEngineName = "vulkan_xxx_samples";
         appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
         appInfo.apiVersion = VK_API_VERSION_1_0;
 
         VkInstanceCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         createInfo.pApplicationInfo = &appInfo;
-
-        std::vector<const char*> extensions = getRequiredExtensions();
-        createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-        createInfo.ppEnabledExtensionNames = extensions.data();
+        createInfo.enabledExtensionCount = static_cast<uint32_t>(this->aInstanceExtensions.size());
+        createInfo.ppEnabledExtensionNames = this->aInstanceExtensions.size() > 0 ? this->aInstanceExtensions.data() : nullptr;
+        createInfo.enabledLayerCount = static_cast<uint32_t>(this->aInstanceLayers.size());
+        createInfo.ppEnabledLayerNames = this->aInstanceLayers.size() > 0 ? this->aInstanceLayers.data() : nullptr;
 
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
         if (s_isEnableValidationLayers) 
         {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(this->validationLayers.size());
-            createInfo.ppEnabledLayerNames = this->validationLayers.data();
-
             populateDebugMessengerCreateInfo(debugCreateInfo);
             createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
         } 
+
+        VkResult result = vkCreateInstance(&createInfo, nullptr, &this->poInstance);
+        if (result == VK_ERROR_INCOMPATIBLE_DRIVER) 
+        {
+            Util_LogError("VulkanWindow::createInstance: Cannot find a compatible Vulkan driver (ICD)");
+        }
+        else if (result == VK_ERROR_EXTENSION_NOT_PRESENT)
+        {
+            std::string missingExtensions;
+            uint32 propertyCount = 0;
+            vkEnumerateInstanceExtensionProperties(nullptr, &propertyCount, nullptr);
+            std::vector<VkExtensionProperties> properties(propertyCount);
+            vkEnumerateInstanceExtensionProperties(nullptr, &propertyCount, properties.data());
+
+            for (const char* extension : this->aInstanceExtensions)
+            {
+                bool found = false;
+                for (uint32 i = 0; i < propertyCount; ++i)
+                {
+                    const char* propExtension = properties[i].extensionName;
+                    if (strcmp(propExtension, extension) == 0) 
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) 
+                {
+                    std::string extensionStr(extension);
+                    missingExtensions += extensionStr + "\n";
+                }
+            }
+
+            Util_LogError("*********************** VulkanWindow::createInstance: Vulkan driver doesn't contain specified extensions: [%s] !", missingExtensions.c_str());
+        }
+        else if (result != VK_SUCCESS) 
+        {
+            Util_LogError("*********************** VulkanWindow::createInstance: Create vulkan instance failed !");
+        }
         else 
         {
-            createInfo.enabledLayerCount = 0;
-            createInfo.pNext = nullptr;
+            Util_LogInfo("VulkanWindow::createInstance: Create vulkan instance successed !");
         }
 
-        if (vkCreateInstance(&createInfo, nullptr, &this->poInstance) != VK_SUCCESS)
+        if (result != VK_SUCCESS)
         {
             std::string msg = "VulkanWindow::createInstance: Failed to create vulkan instance !";
             Util_LogError(msg.c_str());
@@ -537,49 +593,6 @@ namespace LostPeter
 
         Util_LogInfo("<1-2-1> VulkanWindow::createInstance finish !");
     }
-        bool VulkanWindow::checkValidationLayerSupport()
-        {
-            uint32_t layerCount = 0;
-            vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-
-            std::vector<VkLayerProperties> availableLayers(layerCount);
-            vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-
-            int count = (int)this->validationLayers.size();
-            for (int i = 0; i < count; i++)
-            {
-                const char* layerName = this->validationLayers[i];
-                bool layerFound = false;
-
-                int count_avai = (int)availableLayers.size();
-                for (int j = 0; j < count_avai; j++)
-                {
-                    VkLayerProperties& layerProperties = availableLayers[j];
-                    if (strcmp(layerName, layerProperties.layerName) == 0)
-                    {
-                        layerFound = true;
-                        break;
-                    }
-                }
-
-                if (!layerFound)
-                    return false;
-            }
-
-            return true;
-        }
-        std::vector<const char*> VulkanWindow::getRequiredExtensions()
-        {
-            uint32_t glfwExtensionCount = 0;
-            const char** glfwExtensions;
-            glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-            std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-            if (s_isEnableValidationLayers) {
-                extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-            }
-            return extensions;
-        }
         static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) 
         {
             Util_LogInfo("VulkanWindow.debugCallback: Validation layer: [%s] !", pCallbackData->pMessage);
@@ -670,7 +683,6 @@ namespace LostPeter
             throw std::runtime_error(msg);
         }
 
-        
         vkGetPhysicalDeviceProperties(this->poPhysicalDevice, &this->poPhysicalDeviceProperties);
         vkGetPhysicalDeviceFeatures(this->poPhysicalDevice, &this->poPhysicalDeviceFeatures);
         Util_LogInfo("**************** VulkanWindow::pickPhysicalDevice: ****************");
@@ -780,24 +792,6 @@ namespace LostPeter
                 }
             }
         }
-        bool VulkanWindow::checkDeviceExtensionSupport(VkPhysicalDevice device) 
-        {
-            uint32_t extensionCount;
-            vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
-
-            std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-            vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
-
-            std::set<std::string> requiredExtensions(this->deviceExtensions.begin(), this->deviceExtensions.end());
-            int count = (int)availableExtensions.size();
-            for (int i = 0; i < count; i++)
-            {
-                const VkExtensionProperties& extension = availableExtensions[i];
-                requiredExtensions.erase(extension.extensionName);
-            }
-
-            return requiredExtensions.empty();
-        }
         VkSampleCountFlagBits VulkanWindow::getMaxUsableSampleCount()
         {
             VkSampleCountFlags counts = this->poPhysicalDeviceProperties.limits.framebufferColorSampleCounts & this->poPhysicalDeviceProperties.limits.framebufferDepthSampleCounts;
@@ -848,18 +842,27 @@ namespace LostPeter
                     return false;
             }
             
-            bool extensionsSupported = checkDeviceExtensionSupport(device);
             bool swapChainAdequate = false;
-            if (extensionsSupported) 
-            {
-                querySwapChainSupport(device, this->swapChainSupport);
-                swapChainAdequate = !this->swapChainSupport.formats.empty() && !this->swapChainSupport.presentModes.empty();
-            }
+            querySwapChainSupport(device, this->swapChainSupport);
+            swapChainAdequate = !this->swapChainSupport.formats.empty() && !this->swapChainSupport.presentModes.empty();
             return swapChainAdequate;
         }
 
+    void VulkanWindow::setUpEnabledFeatures()
+    {
+        this->poPhysicalEnabledFeatures = {};
+
+        if (this->poPhysicalDeviceFeatures.samplerAnisotropy)
+            this->poPhysicalEnabledFeatures.samplerAnisotropy = VK_TRUE;
+        if (this->poPhysicalDeviceFeatures.fillModeNonSolid)
+            this->poPhysicalEnabledFeatures.fillModeNonSolid = VK_TRUE;
+    }
     void VulkanWindow::createLogicalDevice()
     {
+        getDeviceLayersAndExtensions(s_isEnableValidationLayers,
+                                     this->aDeviceLayers,
+                                     this->aDeviceExtensions);
+
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<uint32_t> uniqueQueueFamilies;
         uniqueQueueFamilies.insert(this->queueIndexGraphics);
@@ -879,26 +882,24 @@ namespace LostPeter
             queueCreateInfos.push_back(queueCreateInfo);
         }
 
-        VkPhysicalDeviceFeatures deviceFeatures = {};
-        deviceFeatures.samplerAnisotropy = VK_TRUE;
-        deviceFeatures.fillModeNonSolid = VK_TRUE;
-
+        setUpEnabledFeatures();
+    
         VkDeviceCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
         createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
         createInfo.pQueueCreateInfos = queueCreateInfos.data();
-        createInfo.pEnabledFeatures = &deviceFeatures;
-        createInfo.enabledExtensionCount = static_cast<uint32_t>(this->deviceExtensions.size());
-        createInfo.ppEnabledExtensionNames = this->deviceExtensions.data();
-
+        createInfo.pEnabledFeatures = &this->poPhysicalEnabledFeatures;
+        createInfo.enabledExtensionCount = static_cast<uint32_t>(this->aDeviceExtensions.size());
+        createInfo.ppEnabledExtensionNames = this->aDeviceExtensions.size() > 0 ? this->aDeviceExtensions.data() : nullptr;
         if (s_isEnableValidationLayers) 
         {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(this->validationLayers.size());
-            createInfo.ppEnabledLayerNames = this->validationLayers.data();
+            createInfo.enabledLayerCount = static_cast<uint32_t>(this->aDeviceLayers.size());
+            createInfo.ppEnabledLayerNames = this->aDeviceLayers.size() > 0 ? this->aDeviceLayers.data() : nullptr;
         } 
         else 
         {
             createInfo.enabledLayerCount = 0;
+            createInfo.ppEnabledLayerNames = nullptr;
         }
 
         if (vkCreateDevice(this->poPhysicalDevice, &createInfo, nullptr, &this->poDevice) != VK_SUCCESS) 
@@ -4119,6 +4120,7 @@ namespace LostPeter
             {
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
                 //1> Pipeline Shader Stage
+                //vert
                 VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
                 vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
                 vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -4126,6 +4128,7 @@ namespace LostPeter
                 vertShaderStageInfo.pName = vertMain.c_str();
                 aShaderStageCreateInfos.push_back(vertShaderStageInfo);
 
+                //frag
                 VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
                 fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
                 fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -4134,6 +4137,68 @@ namespace LostPeter
                 aShaderStageCreateInfos.push_back(fragShaderStageInfo);
 
                 return createVkGraphicsPipeline(aShaderStageCreateInfos,
+                                                false, 0, 0,
+                                                pBindingDescriptions,
+                                                pAttributeDescriptions,
+                                                renderPass, pipelineLayout, aViewports, aScissors,
+                                                primitiveTopology, frontFace, polygonMode, cullMode,
+                                                bDepthTest, bDepthWrite, depthCompareOp,
+                                                bStencilTest, stencilOpFront, stencilOpBack,
+                                                bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
+                                                blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
+                                                colorWriteMask);
+            }
+            VkPipeline VulkanWindow::createVkGraphicsPipeline(VkShaderModule vertShaderModule, const std::string& vertMain,
+                                                              VkShaderModule tescShaderModule, const std::string& tescMain,
+                                                              VkShaderModule teseShaderModule, const std::string& teseMain,
+                                                              VkShaderModule fragShaderModule, const std::string& fragMain,
+                                                              VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+                                                              VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                              VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                              VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                              VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                              VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                              VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                              VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                              VkColorComponentFlags colorWriteMask)
+            {
+                VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
+                //1> Pipeline Shader Stage
+                //vert
+                VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+                vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+                vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+                vertShaderStageInfo.module = vertShaderModule;
+                vertShaderStageInfo.pName = vertMain.c_str();
+                aShaderStageCreateInfos.push_back(vertShaderStageInfo);
+
+                //tesc
+                VkPipelineShaderStageCreateInfo tescShaderStageInfo = {};
+                tescShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+                tescShaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+                tescShaderStageInfo.module = tescShaderModule;
+                tescShaderStageInfo.pName = tescMain.c_str();
+                aShaderStageCreateInfos.push_back(tescShaderStageInfo);
+
+                //tese
+                VkPipelineShaderStageCreateInfo teseShaderStageInfo = {};
+                teseShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+                teseShaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+                teseShaderStageInfo.module = teseShaderModule;
+                teseShaderStageInfo.pName = teseMain.c_str();
+                aShaderStageCreateInfos.push_back(teseShaderStageInfo);
+
+                //frag
+                VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+                fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+                fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+                fragShaderStageInfo.module = fragShaderModule;
+                fragShaderStageInfo.pName = fragMain.c_str();
+                aShaderStageCreateInfos.push_back(fragShaderStageInfo);
+
+                return createVkGraphicsPipeline(aShaderStageCreateInfos,
+                                                true, tessellationFlags, tessellationPatchControlPoints,
                                                 pBindingDescriptions,
                                                 pAttributeDescriptions,
                                                 renderPass, pipelineLayout, aViewports, aScissors,
@@ -4145,6 +4210,7 @@ namespace LostPeter
                                                 colorWriteMask);
             }
             VkPipeline VulkanWindow::createVkGraphicsPipeline(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                                                              bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                               VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
@@ -4252,7 +4318,13 @@ namespace LostPeter
                 dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
                 dynamicStateInfo.flags = 0;
 
-                //9> Graphics Pipeline
+                //9> Tessellation State
+                VkPipelineTessellationStateCreateInfo tessellationState = {};
+                tessellationState.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+                tessellationState.flags = tessellationFlags;
+                tessellationState.patchControlPoints = tessellationPatchControlPoints;
+
+                //10> Graphics Pipeline
                 VkGraphicsPipelineCreateInfo pipelineInfo = {};
                 pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
                 pipelineInfo.pNext = nullptr;
@@ -4260,7 +4332,7 @@ namespace LostPeter
                 pipelineInfo.pStages = aShaderStageCreateInfos.data();
                 pipelineInfo.pVertexInputState = &vertexInputStateInfo;
                 pipelineInfo.pInputAssemblyState = &inputAssemblyStateInfo;
-                pipelineInfo.pTessellationState = nullptr;
+                pipelineInfo.pTessellationState = tessellationIsUsed ? &tessellationState : nullptr;
                 pipelineInfo.pViewportState = &viewportStateInfo;
                 pipelineInfo.pRasterizationState = &rasterizationStateInfo;
                 pipelineInfo.pMultisampleState = &multisamplingStateInfo;

@@ -1045,6 +1045,23 @@ namespace LostPeter
         }
     };
 
+    //////////////////////////////// TessellationConstants //////////////////////////
+    struct utilExport TessellationConstants
+    {
+    ////tesc
+        float tessLevel;
+
+    ////tese
+        float tessAlpha;
+
+        TessellationConstants()
+            : tessLevel(3.0f)
+            , tessAlpha(1.0f)
+        {
+
+        }
+    };
+
 }; //LostPeter
 
 namespace std 

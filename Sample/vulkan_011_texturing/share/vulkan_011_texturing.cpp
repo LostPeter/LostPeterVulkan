@@ -336,15 +336,18 @@ const std::string c_strLayout_Object = "Object";
 const std::string c_strLayout_Material = "Material";
 const std::string c_strLayout_Instance = "Instance";
 const std::string c_strLayout_TextureCopy = "TextureCopy";
+const std::string c_strLayout_Tessellation = "Tessellation";
 const std::string c_strLayout_TextureVS = "TextureVS";
 const std::string c_strLayout_TextureFS = "TextureFS";
 const std::string c_strLayout_TextureCSR = "TextureCSR";
 const std::string c_strLayout_TextureCSRW = "TextureCSRW";
-static const int g_DescriptorSetLayoutCount = 2;
+static const int g_DescriptorSetLayoutCount = 3;
 static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
 {
     "Pass-Object-Material-Instance-TextureFS",
     "Pass-Object-Material-Instance-TextureFS-TextureFS",
+
+    "Pass-Object-Material-Instance-TextureFS-Tessellation",
 
 };
 
@@ -648,7 +651,32 @@ static bool g_ObjectIsLightings[g_ObjectCount] =
     true, //textureDisplacementMap
 
 };
+static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
+{
+    false, //ground
 
+////Basic-Level Texture Operation
+    false, //textureSampler_Wrap
+    false, //textureSampler_Mirror
+    false, //textureSampler_Clamp
+    false, //textureSampler_Border
+    false, //texture1D
+    false, //texture2D
+    false, //texture2Darray
+    false, //texture3D
+    false, //textureCubeMap_SkyBox
+    false, //textureCubeMap_Sphere
+    false, //textureAnimation_Scroll
+    false, //textureAnimation_Chunk
+
+////High-Level Texture Operation
+    false, //textureOriginal
+    false, //textureBumpMap
+    false, //textureNormalMap
+    false, //textureParallaxMap
+    false, //textureDisplacementMap
+
+};
 
 
 /////////////////////////// ModelMesh ///////////////////////////
@@ -827,11 +855,26 @@ Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, std::string na
     this->mainLight.direction = glm::vec3(0, -1, 0); //y-
 }
 
+void Vulkan_011_Texturing::setUpEnabledFeatures()
+{
+    VulkanWindow::setUpEnabledFeatures();
+
+    //Tessellation Enable
+    if (this->poPhysicalDeviceFeatures.tessellationShader)
+    {
+        this->poPhysicalEnabledFeatures.tessellationShader = VK_TRUE;
+    }
+    else
+    {
+        Util_LogError("Vulkan_011_Texturing::setUpEnabledFeatures: tessellationShader is not supported !");
+    }
+    
+}
+
 void Vulkan_011_Texturing::createDescriptorSetLayout_Custom()
 {
-
-
     VulkanWindow::createDescriptorSetLayout_Custom();
+
 }
 
 void Vulkan_011_Texturing::createCamera()
@@ -904,6 +947,17 @@ void Vulkan_011_Texturing::loadModel_Custom()
                     ModelTexture* pTextureCS = this->findModelTexture(nameTex);
                     pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), pTextureCS);
                 }
+            }
+        }
+
+        std::string nameShaderTesc = g_ObjectNameShaderModules[6 * i + 1];
+        std::string nameShaderTese = g_ObjectNameShaderModules[6 * i + 2];
+        if (!nameShaderTesc.empty() || !nameShaderTese.empty())
+        {
+            pModelObject->isUsedTessellation = true;
+            if (g_ObjectIsTopologyPatchLists[i])
+            {
+                pModelObject->cfg_vkPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
             }
         }
 
@@ -1108,6 +1162,18 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             {
                 createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
             }
+
+            //TessellationConstants
+            if (pModelObject->isUsedTessellation)
+            {
+                bufferSize = sizeof(TessellationConstants);
+                pModelObject->poBuffers_tessellationCB.resize(count_sci);
+                pModelObject->poBuffersMemory_tessellationCB.resize(count_sci);
+                for (size_t j = 0; j < count_sci; j++) 
+                {
+                    createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_tessellationCB[j], pModelObject->poBuffersMemory_tessellationCB[j]);
+                }
+            }
         }
     }
 }
@@ -1181,6 +1247,7 @@ void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
 
             //pPipelineGraphics->poPipeline_WireFrame
             pModelObject->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline(pModelObject->aShaderStageCreateInfos_Graphics,
+                                                                                             pModelObject->isUsedTessellation, 0, 3,
                                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                                                              this->poRenderPass, pModelObject->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
@@ -1214,6 +1281,7 @@ void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
             pModelObject->pPipelineGraphics->poPipeline = createVkGraphicsPipeline(pModelObject->aShaderStageCreateInfos_Graphics,
+                                                                                   pModelObject->isUsedTessellation, 0, 3,
                                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex), 
                                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                                                    this->poRenderPass, pModelObject->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
@@ -1464,7 +1532,7 @@ void Vulkan_011_Texturing::createDescriptorSetLayouts()
                 passMainLayoutBinding.descriptorCount = 1;
                 passMainLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 passMainLayoutBinding.pImmutableSamplers = nullptr;
-                passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+                passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 
                 bindings.push_back(passMainLayoutBinding);
             }
@@ -1509,6 +1577,17 @@ void Vulkan_011_Texturing::createDescriptorSetLayouts()
                 textureCopyLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 textureCopyLayoutBinding.pImmutableSamplers = nullptr;
                 textureCopyLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+
+                bindings.push_back(textureCopyLayoutBinding);
+            }
+            else if (strLayout == c_strLayout_Tessellation) //Tessellation
+            {
+                VkDescriptorSetLayoutBinding textureCopyLayoutBinding = {};
+                textureCopyLayoutBinding.binding = j;
+                textureCopyLayoutBinding.descriptorCount = 1;
+                textureCopyLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                textureCopyLayoutBinding.pImmutableSamplers = nullptr;
+                textureCopyLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 
                 bindings.push_back(textureCopyLayoutBinding);
             }
@@ -1928,6 +2007,23 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                         ds3.descriptorCount = 1;
                         ds3.pBufferInfo = &bufferInfo_Instance;
                         descriptorWrites.push_back(ds3);
+                    }
+                    else if (nameDescriptorSet == c_strLayout_Tessellation) //Tessellation
+                    {
+                        VkDescriptorBufferInfo bufferInfo_Tessellation = {};
+                        bufferInfo_Tessellation.buffer = pModelObject->poBuffers_tessellationCB[j];
+                        bufferInfo_Tessellation.offset = 0;
+                        bufferInfo_Tessellation.range = sizeof(TessellationConstants);
+
+                        VkWriteDescriptorSet ds = {};
+                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                        ds.dstSet = pModelObject->pPipelineGraphics->poDescriptorSets[j];
+                        ds.dstBinding = p;
+                        ds.dstArrayElement = 0;
+                        ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                        ds.descriptorCount = 1;
+                        ds.pBufferInfo = &bufferInfo_Tessellation;
+                        descriptorWrites.push_back(ds);
                     }
                     else if (nameDescriptorSet == c_strLayout_TextureVS)//TextureVS
                     {

@@ -185,16 +185,19 @@ const std::string c_strLayout_Object = "Object";
 const std::string c_strLayout_Material = "Material";
 const std::string c_strLayout_Instance = "Instance";
 const std::string c_strLayout_TextureCopy = "TextureCopy";
+const std::string c_strLayout_Tessellation = "Tessellation";
 const std::string c_strLayout_TextureVS = "TextureVS";
 const std::string c_strLayout_TextureFS = "TextureFS";
 const std::string c_strLayout_TextureCSR = "TextureCSR";
 const std::string c_strLayout_TextureCSRW = "TextureCSRW";
-static const int g_DescriptorSetLayoutCount = 4;
+static const int g_DescriptorSetLayoutCount = 5;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
     "Pass-Object-Material-Instance-TextureFS",
     "Pass-Object-Material-Instance-TextureFS-TextureFS",
     "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",
+    
+    "Pass-Object-Material-Instance-TextureFS-Tessellation",
 
     "TextureCopy-TextureCSR-TextureCSRW",
 
@@ -202,39 +205,45 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 10;
+static const int g_ShaderCount = 16;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
-    //name                                                     //type              //path
+    //name                                                     //type               //path
     ///////////////////////////////////////// vert /////////////////////////////////////////
-    "vert_standard_mesh_opaque_tex2d_lit",                     "vert",             "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
-    "vert_standard_mesh_opaque_texcubemap_lit",                "vert",             "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
-    "vert_standard_mesh_opaque_tex2darray_lit",                "vert",             "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
+    "vert_standard_mesh_opaque_tex2d_lit",                     "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
+    "vert_standard_mesh_opaque_texcubemap_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
+    "vert_standard_mesh_opaque_tex2darray_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
     
-    "vert_standard_terrain_opaque_lit",                        "vert",             "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
+    "vert_standard_terrain_opaque_lit",                        "vert",              "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
+    "tesc_standard_tessellation_passthrough",                  "tesc",              "Assets/Shader/standard_tessellation_passthrough.tesc.spv", //standard_tessellation_passthrough tesc
+    "tesc_standard_tessellation_pntriangles",                  "tesc",              "Assets/Shader/standard_tessellation_pntriangles.tesc.spv", //standard_tessellation_pntriangles tesc
+    "tesc_standard_tessellation_terrain",                      "tesc",              "Assets/Shader/standard_tessellation_terrain.tesc.spv", //standard_tessellation_terrain tesc
 
     ///////////////////////////////////////// tese /////////////////////////////////////////
+    "tese_standard_tessellation_passthrough",                  "tese",              "Assets/Shader/standard_tessellation_passthrough.tese.spv", //standard_tessellation_passthrough tese
+    "tese_standard_tessellation_pntriangles",                  "tese",              "Assets/Shader/standard_tessellation_pntriangles.tese.spv", //standard_tessellation_pntriangles tese
+    "tese_standard_tessellation_terrain",                      "tese",              "Assets/Shader/standard_tessellation_terrain.tese.spv", //standard_tessellation_terrain tese
 
     ///////////////////////////////////////// geom /////////////////////////////////////////
 
     ///////////////////////////////////////// frag /////////////////////////////////////////
-    "frag_standard_mesh_opaque_tex2d_lit",                     "frag",             "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
-    "frag_standard_mesh_opaque_texcubemap_lit",                "frag",             "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
-    "frag_standard_mesh_opaque_tex2darray_lit",                "frag",             "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
+    "frag_standard_mesh_opaque_tex2d_lit",                     "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
+    "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
+    "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
     
-    "frag_standard_terrain_opaque_lit",                        "frag",             "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
+    "frag_standard_terrain_opaque_lit",                        "frag",              "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
-    "standard_compute_texcopy_tex2d",                           "comp",            "Assets/Shader/standard_compute_texcopy_tex2d.comp.spv", //standard_compute_texcopy_tex2d
-    "standard_compute_texcopy_tex2darray",                      "comp",            "Assets/Shader/standard_compute_texcopy_tex2darray.comp.spv", //standard_compute_texcopy_tex2darray
+    "comp_standard_compute_texcopy_tex2d",                     "comp",              "Assets/Shader/standard_compute_texcopy_tex2d.comp.spv", //standard_compute_texcopy_tex2d comp
+    "comp_standard_compute_texcopy_tex2darray",                "comp",              "Assets/Shader/standard_compute_texcopy_tex2darray.comp.spv", //standard_compute_texcopy_tex2darray comp
 
 };
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_ObjectCount = 7;
+static const int g_ObjectCount = 9;
 static const char* g_ObjectConfigs[5 * g_ObjectCount] = 
 {
     //Object Name                               //Mesh Name         //Texture VS            //Texture FS                                                                    //Texture CS
@@ -246,21 +255,27 @@ static const char* g_ObjectConfigs[5 * g_ObjectCount] =
     "texture2D_ComputeCopyTexture",             "plane",            "",                     "texture_rt_compute_copy_tex",                                                  "default_blackwhite;texture_rt_compute_copy_tex", //texture2D_ComputeCopyTexture
     "texture2D_ComputeCopyTextureArray",        "plane",            "",                     "texture_rt_compute_copy_texarray",                                             "texture_terrain_diffuse;texture_rt_compute_copy_texarray", //texture2D_ComputeCopyTextureArray
 
+    "tessellation_passthrough",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_passthrough
+    "tessellation_pntriangles",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_pntriangles
+
     "terrain",                                  "plane",            "",                     "texture_terrain_diffuse;texture_terrain_normal;texture_terrain_control",       "", //terrain
 
 };
 static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] = 
 {
-    //vert                                                  //tesc                          //tese                          //geom                      //frag                                                  //comp
-    "vert_standard_mesh_opaque_texcubemap_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_SkyBox
-    "vert_standard_mesh_opaque_tex2darray_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainDiffuse
-    "vert_standard_mesh_opaque_tex2darray_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainNormal
-    "vert_standard_mesh_opaque_tex2darray_lit",             "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainControl
+    //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
+    "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_SkyBox
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainDiffuse
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainNormal
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainControl
 
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "standard_compute_texcopy_tex2d", //texture2D_ComputeCopyTexture
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                             "",                             "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "standard_compute_texcopy_tex2darray", //texture2D_ComputeCopyTextureArray
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2d", //texture2D_ComputeCopyTexture
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2darray", //texture2D_ComputeCopyTextureArray
 
-    "vert_standard_terrain_opaque_lit",                     "",                             "",                             "",                         "frag_standard_terrain_opaque_lit",                     "", //terrain
+    "vert_standard_mesh_opaque_tex2d_lit",                  "tesc_standard_tessellation_passthrough",       "tese_standard_tessellation_passthrough",   "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //tessellation_passthrough
+    "vert_standard_mesh_opaque_tex2d_lit",                  "tesc_standard_tessellation_pntriangles",       "tese_standard_tessellation_pntriangles",   "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //tessellation_pntriangles
+
+    "vert_standard_terrain_opaque_lit",                     "",                                             "",                                         "",                         "frag_standard_terrain_opaque_lit",                     "", //terrain
     
 };
 static const char* g_ObjectNameDescriptorSetLayouts[2 * g_ObjectCount] = 
@@ -273,6 +288,9 @@ static const char* g_ObjectNameDescriptorSetLayouts[2 * g_ObjectCount] =
 
     "Pass-Object-Material-Instance-TextureFS",                          "TextureCopy-TextureCSR-TextureCSRW", //texture2D_ComputeCopyTexture
     "Pass-Object-Material-Instance-TextureFS",                          "TextureCopy-TextureCSR-TextureCSRW", //texture2D_ComputeCopyTextureArray
+
+    "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_passthrough
+    "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_pntriangles
 
     "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",      "", //terrain
 };
@@ -287,6 +305,9 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
     0, //texture2D_ComputeCopyTexture 
     0, //texture2D_ComputeCopyTextureArray 
 
+    0, //tessellation_passthrough 
+    0, //tessellation_pntriangles 
+
     0, //terrain 
 };
 static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] = 
@@ -296,8 +317,11 @@ static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] =
     glm::vec3(   0,  1.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainNormal
     glm::vec3( 2.0,  1.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainControl
 
-    glm::vec3(   0,  2.5,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D_ComputeCopyTexture
-    glm::vec3(   0,  4.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D_ComputeCopyTextureArray
+    glm::vec3(   0,  2.2,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D_ComputeCopyTexture
+    glm::vec3(   0,  3.4,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D_ComputeCopyTextureArray
+
+    glm::vec3(   0,  4.6,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_passthrough
+    glm::vec3(   0,  5.8,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_pntriangles
 
     glm::vec3(   0, -0.1,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //terrain
 
@@ -312,6 +336,9 @@ static bool g_ObjectIsTransparents[g_ObjectCount] =
     false, //texture2D_ComputeCopyTexture
     false, //texture2D_ComputeCopyTextureArray
 
+    false, //tessellation_passthrough
+    false, //tessellation_pntriangles
+
     false, //terrain
 };
 static bool g_ObjectIsShows[] = 
@@ -323,6 +350,9 @@ static bool g_ObjectIsShows[] =
 
     true, //texture2D_ComputeCopyTexture
     true, //texture2D_ComputeCopyTextureArray
+
+    true, //tessellation_passthrough
+    true, //tessellation_pntriangles
 
     true, //terrain
 };
@@ -336,6 +366,9 @@ static bool g_ObjectIsRotates[g_ObjectCount] =
     false, //texture2D_ComputeCopyTexture
     false, //texture2D_ComputeCopyTextureArray
 
+    false, //tessellation_passthrough
+    false, //tessellation_pntriangles
+
     false, //terrain
 };
 static bool g_ObjectIsLightings[g_ObjectCount] =
@@ -348,7 +381,25 @@ static bool g_ObjectIsLightings[g_ObjectCount] =
     false, //texture2D_ComputeCopyTexture
     false, //texture2D_ComputeCopyTextureArray
 
+    false, //tessellation_passthrough
+    false, //tessellation_pntriangles
+
     true, //terrain
+};
+static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
+{
+    false, //textureCubeMap_SkyBox
+    false, //texture2Darray_TerrainDiffuse
+    false, //texture2Darray_TerrainNormal
+    false, //texture2Darray_TerrainControl
+
+    false, //texture2D_ComputeCopyTexture
+    false, //texture2D_ComputeCopyTextureArray
+
+    true, //tessellation_passthrough
+    true, //tessellation_pntriangles
+
+    false, //terrain
 };
 
 
@@ -534,10 +585,24 @@ Vulkan_012_Shadering::Vulkan_012_Shadering(int width, int height, std::string na
     this->mainLight.direction = glm::vec3(0, -1, 0); //y-
 }
 
+void Vulkan_012_Shadering::setUpEnabledFeatures()
+{
+    VulkanWindow::setUpEnabledFeatures();
+
+    //Tessellation Enable
+    if (this->poPhysicalDeviceFeatures.tessellationShader)
+    {
+        this->poPhysicalEnabledFeatures.tessellationShader = VK_TRUE;
+    }
+    else
+    {
+        Util_LogError("Vulkan_012_Shadering::setUpEnabledFeatures: tessellationShader is not supported !");
+    }
+
+}
+
 void Vulkan_012_Shadering::createDescriptorSetLayout_Custom()
 {
-
-
     VulkanWindow::createDescriptorSetLayout_Custom();
 }
 
@@ -610,6 +675,17 @@ void Vulkan_012_Shadering::loadModel_Custom()
                     ModelTexture* pTextureCS = this->findModelTexture(nameTex);
                     pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), pTextureCS);
                 }
+            }
+        }
+
+        std::string nameShaderTesc = g_ObjectNameShaderModules[6 * i + 1];
+        std::string nameShaderTese = g_ObjectNameShaderModules[6 * i + 2];
+        if (!nameShaderTesc.empty() || !nameShaderTese.empty())
+        {
+            pModelObject->isUsedTessellation = true;
+            if (g_ObjectIsTopologyPatchLists[i])
+            {
+                pModelObject->cfg_vkPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
             }
         }
 
@@ -729,6 +805,18 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
             {
                 createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
             }
+
+            //TessellationConstants
+            if (pModelObject->isUsedTessellation)
+            {
+                bufferSize = sizeof(TessellationConstants);
+                pModelObject->poBuffers_tessellationCB.resize(count_sci);
+                pModelObject->poBuffersMemory_tessellationCB.resize(count_sci);
+                for (size_t j = 0; j < count_sci; j++) 
+                {
+                    createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_tessellationCB[j], pModelObject->poBuffersMemory_tessellationCB[j]);
+                }
+            }
         }
     }
 }
@@ -802,6 +890,7 @@ void Vulkan_012_Shadering::createGraphicsPipeline_Custom()
 
             //pPipelineGraphics->poPipeline_WireFrame
             pModelObject->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline(pModelObject->aShaderStageCreateInfos_Graphics,
+                                                                                             pModelObject->isUsedTessellation, 0, 3,
                                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                                                              this->poRenderPass, pModelObject->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
@@ -835,6 +924,7 @@ void Vulkan_012_Shadering::createGraphicsPipeline_Custom()
                 blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             }
             pModelObject->pPipelineGraphics->poPipeline = createVkGraphicsPipeline(pModelObject->aShaderStageCreateInfos_Graphics,
+                                                                                   pModelObject->isUsedTessellation, 0, 3,
                                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex), 
                                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(pModelObject->pMesh->poTypeVertex),
                                                                                    this->poRenderPass, pModelObject->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
@@ -1086,7 +1176,7 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
                 passMainLayoutBinding.descriptorCount = 1;
                 passMainLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 passMainLayoutBinding.pImmutableSamplers = nullptr;
-                passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+                passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 
                 bindings.push_back(passMainLayoutBinding);
             }
@@ -1097,7 +1187,7 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
                 objectLayoutBinding.descriptorCount = 1;
                 objectLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 objectLayoutBinding.pImmutableSamplers = nullptr;
-                objectLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+                objectLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 
                 bindings.push_back(objectLayoutBinding);
             }
@@ -1131,6 +1221,17 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
                 textureCopyLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 textureCopyLayoutBinding.pImmutableSamplers = nullptr;
                 textureCopyLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+
+                bindings.push_back(textureCopyLayoutBinding);
+            }
+            else if (strLayout == c_strLayout_Tessellation) //Tessellation
+            {
+                VkDescriptorSetLayoutBinding textureCopyLayoutBinding = {};
+                textureCopyLayoutBinding.binding = j;
+                textureCopyLayoutBinding.descriptorCount = 1;
+                textureCopyLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                textureCopyLayoutBinding.pImmutableSamplers = nullptr;
+                textureCopyLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 
                 bindings.push_back(textureCopyLayoutBinding);
             }
@@ -1552,6 +1653,23 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                         ds.pBufferInfo = &bufferInfo_Instance;
                         descriptorWrites.push_back(ds);
                     }
+                    else if (nameDescriptorSet == c_strLayout_Tessellation) //Tessellation
+                    {
+                        VkDescriptorBufferInfo bufferInfo_Tessellation = {};
+                        bufferInfo_Tessellation.buffer = pModelObject->poBuffers_tessellationCB[j];
+                        bufferInfo_Tessellation.offset = 0;
+                        bufferInfo_Tessellation.range = sizeof(TessellationConstants);
+
+                        VkWriteDescriptorSet ds = {};
+                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                        ds.dstSet = pModelObject->pPipelineGraphics->poDescriptorSets[j];
+                        ds.dstBinding = p;
+                        ds.dstArrayElement = 0;
+                        ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                        ds.descriptorCount = 1;
+                        ds.pBufferInfo = &bufferInfo_Tessellation;
+                        descriptorWrites.push_back(ds);
+                    }
                     else if (nameDescriptorSet == c_strLayout_TextureVS) //TextureVS
                     {
                         ModelTexture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
@@ -1687,20 +1805,31 @@ void Vulkan_012_Shadering::updateCompute_Custom(VkCommandBuffer& commandBuffer)
                 pPipelineCompute->pTextureTarget != nullptr &&
                 pPipelineCompute->pTextureCopy != nullptr)
             {
+                bool isRand = false;
+                if (++pPipelineCompute->frameRand > 30)
+                {
+                    isRand = true;
+                    pPipelineCompute->frameRand = 0;
+                }
+
                 pPipelineCompute->pTextureCopy->texInfo.x = pPipelineCompute->pTextureSource->width;
                 pPipelineCompute->pTextureCopy->texInfo.y = pPipelineCompute->pTextureSource->height;
                 pPipelineCompute->pTextureCopy->texInfo.z = 0;
                 pPipelineCompute->pTextureCopy->texInfo.w = 0;
-                pPipelineCompute->pTextureCopy->texOffset.x = VulkanMath::Rand(0, 1) * pPipelineCompute->pTextureSource->width;
-                pPipelineCompute->pTextureCopy->texOffset.y = VulkanMath::Rand(0, 1) * pPipelineCompute->pTextureSource->height;
-                pPipelineCompute->pTextureCopy->texOffset.z = 0;
-                pPipelineCompute->pTextureCopy->texOffset.w = 0;
-                int seed = VulkanMath::Rand(0, 10000);
-                int start = seed % 4;
-                pPipelineCompute->pTextureCopy->texIndexArray.x = start;
-                pPipelineCompute->pTextureCopy->texIndexArray.y = ++start % 4;
-                pPipelineCompute->pTextureCopy->texIndexArray.z = ++start % 4;
-                pPipelineCompute->pTextureCopy->texIndexArray.w = ++start % 4;
+                if (isRand)
+                {
+                    pPipelineCompute->pTextureCopy->texOffset.x = VulkanMath::Rand(0, 1) * pPipelineCompute->pTextureSource->width;
+                    pPipelineCompute->pTextureCopy->texOffset.y = VulkanMath::Rand(0, 1) * pPipelineCompute->pTextureSource->height;
+                    pPipelineCompute->pTextureCopy->texOffset.z = 0;
+                    pPipelineCompute->pTextureCopy->texOffset.w = 0;
+
+                    int seed = VulkanMath::Rand(0, 10000);
+                    int start = seed % 4;
+                    pPipelineCompute->pTextureCopy->texIndexArray.x = start;
+                    pPipelineCompute->pTextureCopy->texIndexArray.y = ++start % 4;
+                    pPipelineCompute->pTextureCopy->texIndexArray.z = ++start % 4;
+                    pPipelineCompute->pTextureCopy->texIndexArray.w = ++start % 4;
+                }
                 pPipelineCompute->pTextureCopy->texClearColor.x = 0;
                 pPipelineCompute->pTextureCopy->texClearColor.y = 0;
                 pPipelineCompute->pTextureCopy->texClearColor.z = 0;

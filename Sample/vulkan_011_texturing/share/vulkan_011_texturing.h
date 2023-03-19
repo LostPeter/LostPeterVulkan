@@ -637,6 +637,7 @@ public:
             //Uniform
             , countInstanceExt(0)
             , countInstance(1)
+            , isUsedTessellation(false)
 
             //Pipeline Graphics
 
@@ -695,6 +696,14 @@ public:
             this->materialCBs.clear();
             this->poBuffers_materialCB.clear();
             this->poBuffersMemory_materialCB.clear();
+
+            count = this->poBuffers_tessellationCB.size();
+            for (size_t i = 0; i < count; i++) 
+            {
+                this->pWindow->destroyBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
+            }
+            this->poBuffers_tessellationCB.clear();
+            this->poBuffersMemory_tessellationCB.clear();
 
             //Shader
             this->aShaderStageCreateInfos_Graphics.clear();
@@ -755,6 +764,11 @@ public:
         std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_materialCB;
         std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
+
+        TessellationConstants tessellationCB;
+        std::vector<VkBuffer> poBuffers_tessellationCB;
+        std::vector<VkDeviceMemory> poBuffersMemory_tessellationCB;
+        bool isUsedTessellation;
 
         //Pipeline Graphics
         PipelineGraphics* pPipelineGraphics;
@@ -868,6 +882,7 @@ public:
 
 protected:
     //Create Pipeline
+        virtual void setUpEnabledFeatures();
 
         //DescriptorSetLayout
         virtual void createDescriptorSetLayout_Custom();
