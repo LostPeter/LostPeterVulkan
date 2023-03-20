@@ -742,48 +742,59 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
         for (int j = 0; j < pModelObject->countInstance; j++)
         {
             //ObjectConstants
-            ObjectConstants objectConstants;
-            objectConstants.g_MatWorld = VulkanMath::FromTRS(g_ObjectTranforms[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
-                                                             g_ObjectTranforms[i * 3 + 1],
-                                                             g_ObjectTranforms[i * 3 + 2]);
-            pModelObject->objectCBs.push_back(objectConstants);
-            pModelObject->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+            {
+                ObjectConstants objectConstants;
+                objectConstants.g_MatWorld = VulkanMath::FromTRS(g_ObjectTranforms[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+                                                                 g_ObjectTranforms[i * 3 + 1],
+                                                                 g_ObjectTranforms[i * 3 + 2]);
+                pModelObject->objectCBs.push_back(objectConstants);
+                pModelObject->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+            }
 
             //MaterialConstants
-            MaterialConstants materialConstants;
-            materialConstants.factorAmbient = VulkanMath::RandomColor(false);
-            materialConstants.factorDiffuse = VulkanMath::RandomColor(false);
-            materialConstants.factorSpecular = VulkanMath::RandomColor(false);
-            materialConstants.shininess = VulkanMath::RandF(10.0f, 100.0f);
-            materialConstants.alpha = VulkanMath::RandF(0.2f, 0.9f);
-            materialConstants.lighting = g_ObjectIsLightings[i];
-
-            //Texture VS
             {
-                ModelTexturePtrVector* pTextureVSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
-                if (pTextureVSs != nullptr)
+                MaterialConstants materialConstants;
+                materialConstants.factorAmbient = VulkanMath::RandomColor(false);
+                materialConstants.factorDiffuse = VulkanMath::RandomColor(false);
+                materialConstants.factorSpecular = VulkanMath::RandomColor(false);
+                materialConstants.shininess = VulkanMath::RandF(10.0f, 100.0f);
+                materialConstants.alpha = VulkanMath::RandF(0.2f, 0.9f);
+                materialConstants.lighting = g_ObjectIsLightings[i];
+                //Texture VS
                 {
+                    ModelTexturePtrVector* pTextureVSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
+                    if (pTextureVSs != nullptr)
+                    {
 
+                    }
                 }
+                //Texture FS
+                {
+                    ModelTexturePtrVector* pTextureFSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                    if (pTextureFSs != nullptr)
+                    {
+
+                    }
+                }
+                //Texture CS
+                {
+                    ModelTexturePtrVector* pTextureCSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
+                    if (pTextureCSs != nullptr)
+                    {
+
+                    }
+                }
+                pModelObject->materialCBs.push_back(materialConstants);
             }
-            //Texture FS
+
+            //TessellationConstants
+            if (pModelObject->isUsedTessellation)
             {
-                ModelTexturePtrVector* pTextureFSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
-                if (pTextureFSs != nullptr)
-                {
-
-                }
+                TessellationConstants tessellationConstants;
+                tessellationConstants.tessLevel = 3.0f;
+                tessellationConstants.tessAlpha = 1.0f;
+                pModelObject->tessellationCBs.push_back(tessellationConstants);
             }
-            //Texture CS
-            {
-                ModelTexturePtrVector* pTextureCSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
-                if (pTextureCSs != nullptr)
-                {
-
-                }
-            }
-            
-            pModelObject->materialCBs.push_back(materialConstants);
         }
         
         if (isCreateVkBuffer)
@@ -809,7 +820,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
             //TessellationConstants
             if (pModelObject->isUsedTessellation)
             {
-                bufferSize = sizeof(TessellationConstants);
+                bufferSize = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
                 pModelObject->poBuffers_tessellationCB.resize(count_sci);
                 pModelObject->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
@@ -1658,7 +1669,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                         VkDescriptorBufferInfo bufferInfo_Tessellation = {};
                         bufferInfo_Tessellation.buffer = pModelObject->poBuffers_tessellationCB[j];
                         bufferInfo_Tessellation.offset = 0;
-                        bufferInfo_Tessellation.range = sizeof(TessellationConstants);
+                        bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
 
                         VkWriteDescriptorSet ds = {};
                         ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -1879,6 +1890,12 @@ void Vulkan_012_Shadering::updateCBs_Custom()
             //MaterialConstants
             MaterialConstants& materialCB = pModelObject->materialCBs[j];
             
+            //TessellationConstants
+            if (pModelObject->isUsedTessellation)
+            {
+                TessellationConstants& tessellationCB = pModelObject->tessellationCBs[j];
+            }
+            
         }
 
         //ObjectConstants
@@ -1896,6 +1913,16 @@ void Vulkan_012_Shadering::updateCBs_Custom()
             void* data;
             vkMapMemory(this->poDevice, memory, 0, sizeof(MaterialConstants) * count_object, 0, &data);
                 memcpy(data, pModelObject->materialCBs.data(), sizeof(MaterialConstants) * count_object);
+            vkUnmapMemory(this->poDevice, memory);
+        }
+
+        //TessellationConstants
+        if (pModelObject->isUsedTessellation)
+        {
+            VkDeviceMemory& memory = pModelObject->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
+            void* data;
+            vkMapMemory(this->poDevice, memory, 0, sizeof(TessellationConstants) * count_object, 0, &data);
+                memcpy(data, pModelObject->tessellationCBs.data(), sizeof(TessellationConstants) * count_object);
             vkUnmapMemory(this->poDevice, memory);
         }
     }
@@ -2049,7 +2076,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                             if (ImGui::CollapsingHeader(nameMaterial.c_str()))
                             {
                                 //factorAmbient
-                                std::string nameFactorAmbient = "FactorAmbient - " + VulkanUtilString::SaveInt(j);
+                                std::string nameFactorAmbient = "FactorAmbient - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                 if (ImGui::ColorEdit4(nameFactorAmbient.c_str(), (float*)&mat.factorAmbient))
                                 {
 
@@ -2057,7 +2084,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //factorDiffuse
-                                std::string nameFactorDiffuse = "FactorDiffuse - " + VulkanUtilString::SaveInt(j);
+                                std::string nameFactorDiffuse = "FactorDiffuse - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                 if (ImGui::ColorEdit4(nameFactorDiffuse.c_str(), (float*)&mat.factorDiffuse))
                                 {
 
@@ -2065,7 +2092,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //factorSpecular
-                                std::string nameFactorSpecular = "FactorSpecular - " + VulkanUtilString::SaveInt(j);
+                                std::string nameFactorSpecular = "FactorSpecular - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                 if (ImGui::ColorEdit4(nameFactorSpecular.c_str(), (float*)&mat.factorSpecular))
                                 {
 
@@ -2073,7 +2100,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //shininess
-                                std::string nameShininess = "Shininess - " + VulkanUtilString::SaveInt(j);
+                                std::string nameShininess = "Shininess - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                 if (ImGui::DragFloat(nameShininess.c_str(), &mat.shininess, 0.01f, 0.01f, 100.0f))
                                 {
                                     
@@ -2081,7 +2108,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //alpha
-                                std::string nameAlpha = "Alpha - " + VulkanUtilString::SaveInt(j);
+                                std::string nameAlpha = "Alpha - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                 if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
                                 {
                                     
@@ -2089,7 +2116,7 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 ImGui::Spacing();
 
                                 //lighting
-                                std::string nameLighting = "Lighting - " + VulkanUtilString::SaveInt(j);
+                                std::string nameLighting = "Lighting - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                 bool isLighting = mat.lighting == 1.0f ? true : false;
                                 if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
                                 {
@@ -2118,22 +2145,22 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                             if (ImGui::CollapsingHeader(nameMaterial_Texture.c_str()))
                                             {
                                                 //texWidth
-                                                std::string nameWidth = "Width - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
+                                                std::string nameWidth = "Width - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 int width = pTexture->width;
                                                 ImGui::DragInt(nameWidth.c_str(), &width, 1, 0, 4096);
 
                                                 //texHeight
-                                                std::string nameHeight = "Height - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
+                                                std::string nameHeight = "Height - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 int height = pTexture->height;
                                                 ImGui::DragInt(nameHeight.c_str(), &height, 1, 0, 4096);
 
                                                 //texDepth
-                                                std::string nameDepth = "Depth - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
+                                                std::string nameDepth = "Depth - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 int depth = pTexture->depth;
                                                 ImGui::DragInt(nameDepth.c_str(), &depth, 1, 0, 4096);
 
                                                 //indexTextureArray
-                                                std::string nameIndexTextureArray = "IndexTextureArray - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
+                                                std::string nameIndexTextureArray = "IndexTextureArray - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 if (pTexture->typeTexture == Vulkan_Texture_2DArray)
                                                 {
                                                     int count_tex = (int)pTexture->aPathTexture.size();
@@ -2152,38 +2179,38 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                                 }
 
                                                 //texSpeedU
-                                                std::string nameTexSpeedU = "TexSpeedU - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
+                                                std::string nameTexSpeedU = "TexSpeedU - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 if (ImGui::DragFloat(nameTexSpeedU.c_str(), &mat.aTexLayers[p].texSpeedU, 0.01f, 0.0f, 100.0f))
                                                 {
                                                     
                                                 }
                                                 //texSpeedV
-                                                std::string nameTexSpeedV = "texSpeedV - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
+                                                std::string nameTexSpeedV = "texSpeedV - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 if (ImGui::DragFloat(nameTexSpeedV.c_str(), &mat.aTexLayers[p].texSpeedV, 0.01f, 0.0f, 100.0f))
                                                 {
                                                     
                                                 }
                                                 //texSpeedW
-                                                std::string nameTexSpeedW = "texSpeedW - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
+                                                std::string nameTexSpeedW = "texSpeedW - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
                                                 {
                                                     
                                                 }
 
                                                 //texChunkMaxX
-                                                std::string nameTexChunkMaxX = "texChunkMaxX - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
+                                                std::string nameTexChunkMaxX = "texChunkMaxX - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 float fTexChunkMaxX = mat.aTexLayers[p].texChunkMaxX;
                                                 ImGui::DragFloat(nameTexChunkMaxX.c_str(), &fTexChunkMaxX, 1.0f, 1.0f, 100.0f);
                                                 //texChunkMaxY
-                                                std::string nameTexChunkMaxY = "texChunkMaxY - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
+                                                std::string nameTexChunkMaxY = "texChunkMaxY - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 float fTexChunkMaxY = mat.aTexLayers[p].texChunkMaxY;
                                                 ImGui::DragFloat(nameTexChunkMaxY.c_str(), &fTexChunkMaxY, 1.0f, 1.0f, 100.0f);
                                                 //texChunkIndexX
-                                                std::string nameTexChunkIndexX = "texChunkIndexX - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
+                                                std::string nameTexChunkIndexX = "texChunkIndexX - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 float fTexChunkIndexX = mat.aTexLayers[p].texChunkIndexX;
                                                 ImGui::DragFloat(nameTexChunkIndexX.c_str(), &fTexChunkIndexX, 1.0f, 0.0f, 100.0f);
                                                 //texChunkIndexY
-                                                std::string nameTexChunkIndexY = "texChunkIndexY - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p);
+                                                std::string nameTexChunkIndexY = "texChunkIndexY - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 float fTexChunkIndexY = mat.aTexLayers[p].texChunkIndexY;
                                                 ImGui::DragFloat(nameTexChunkIndexY.c_str(), &fTexChunkIndexY, 1.0f, 0.0f, 100.0f);
                                             }
@@ -2200,6 +2227,24 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 }
 
                                 ImGui::Spacing();
+                            }
+
+                            //TessellationConstants
+                            if (pModelObject->isUsedTessellation)
+                            {
+                                TessellationConstants& tess = pModelObject->tessellationCBs[j];
+                                //tessLevel
+                                std::string nameTexSpeedW = "tessLevel - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
+                                {
+                                    
+                                }
+                                //tessAlpha
+                                std::string nameTexSpeedW = "tessAlpha - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
+                                {
+                                    
+                                }
                             }
                         }
                     }

@@ -8,6 +8,7 @@
 ****************************************************************************/
 
 
+#define MAX_OBJECT_COUNT 1024
 struct TessellationConstants
 {
     float tessLevel;
@@ -16,7 +17,7 @@ struct TessellationConstants
 
 [[vk::binding(5)]]cbuffer tessellationConsts        : register(b5)
 {
-    TessellationConstants tessellationConsts;
+    TessellationConstants tessellationConsts[MAX_OBJECT_COUNT];
 }
 
 

@@ -8,6 +8,7 @@
 ****************************************************************************/
 
 
+#define MAX_OBJECT_COUNT 1024
 struct TessellationConstants
 {
     float tessLevel;
@@ -16,7 +17,7 @@ struct TessellationConstants
 
 [[vk::binding(5)]]cbuffer tessellationConsts        : register(b5)
 {
-    TessellationConstants tessellationConsts;
+    TessellationConstants tessellationConsts[MAX_OBJECT_COUNT];
 }
 
 // PN patch data
@@ -89,10 +90,10 @@ float vij(float4 iPos, float3 iNormal, float4 jPos, float3 jNormal)
 ConstantsHSOutput ConstantsHS(InputPatch<VSOutput, 3> patch, uint InvocationID : SV_PrimitiveID)
 {
     ConstantsHSOutput output = (ConstantsHSOutput)0;
-	output.tessLevelOuter[0] = tessellationConsts.tessLevel;
-	output.tessLevelOuter[1] = tessellationConsts.tessLevel;
-	output.tessLevelOuter[2] = tessellationConsts.tessLevel;
-	output.tessLevelInner = tessellationConsts.tessLevel;
+	output.tessLevelOuter[0] = tessellationConsts[0].tessLevel;
+	output.tessLevelOuter[1] = tessellationConsts[0].tessLevel;
+	output.tessLevelOuter[2] = tessellationConsts[0].tessLevel;
+	output.tessLevelInner = tessellationConsts[0].tessLevel;
     return output;
 }
 

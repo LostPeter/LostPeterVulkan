@@ -74,7 +74,7 @@ struct TessellationConstants
 
 [[vk::binding(5)]]cbuffer tessellationConsts        : register(b5)
 {
-    TessellationConstants tessellationConsts;
+    TessellationConstants tessellationConsts[MAX_OBJECT_COUNT];
 }
 
 

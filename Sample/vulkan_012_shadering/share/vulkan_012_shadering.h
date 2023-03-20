@@ -707,6 +707,7 @@ public:
             {
                 this->pWindow->destroyBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
             }
+            this->tessellationCBs.clear();
             this->poBuffers_tessellationCB.clear();
             this->poBuffersMemory_tessellationCB.clear();
 
@@ -770,7 +771,7 @@ public:
         std::vector<VkBuffer> poBuffers_materialCB;
         std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
 
-        TessellationConstants tessellationCB;
+        std::vector<TessellationConstants> tessellationCBs;
         std::vector<VkBuffer> poBuffers_tessellationCB;
         std::vector<VkDeviceMemory> poBuffersMemory_tessellationCB;
         bool isUsedTessellation;

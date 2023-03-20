@@ -53,6 +53,19 @@ struct PassConstants
 }
 
 
+//ObjectConstants
+#define MAX_OBJECT_COUNT 1024
+struct ObjectConstants
+{
+    float4x4 g_MatWorld;
+};
+
+[[vk::binding(1)]]cbuffer objectConsts              : register(b1) 
+{
+    ObjectConstants objectConsts[MAX_OBJECT_COUNT];
+}
+
+
 struct TessellationConstants
 {
     float tessLevel;
@@ -61,7 +74,7 @@ struct TessellationConstants
 
 [[vk::binding(5)]]cbuffer tessellationConsts        : register(b5)
 {
-    TessellationConstants tessellationConsts;
+    TessellationConstants tessellationConsts[MAX_OBJECT_COUNT];
 }
 
 // PN patch data
@@ -165,7 +178,7 @@ DSOutput main(ConstantsHSOutput input,
                       n110 * uvw[2] * uvw[0] + 
                       n011 * uvw[0] * uvw[1] + 
                       n101 * uvw[2] * uvw[1];
-    output.outWorldNormal = tessellationConsts.tessAlpha * pnNormal + (1.0 - tessellationConsts.tessAlpha) * barNormal;
+    output.outWorldNormal = tessellationConsts[0].tessAlpha * pnNormal + (1.0 - tessellationConsts[0].tessAlpha) * barNormal;
     
     // compute interpolated pos
     float3 barPos = uvw[2] * patch[0].outPosition.xyz +
@@ -188,7 +201,9 @@ DSOutput main(ConstantsHSOutput input,
                    b111 * 6.0 * uvw[0] * uvw[1] * uvw[2];
 
     // final position and normal
-    float3 finalPos = (1.0 - tessellationConsts.tessAlpha) * barPos + tessellationConsts.tessAlpha * pnPos;
+    float3 finalPos = (1.0 - tessellationConsts[0].tessAlpha) * barPos + tessellationConsts[0].tessAlpha * pnPos;
+    ObjectConstants objInstance = objectConsts[0];
+    float4 outWorldPos = mul(objInstance.g_MatWorld, float4(finalPos.xyz, 1.0));
     output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, float4(finalPos, 1.0)));
     output.outWorldPos.xyz = output.outPosition.xyz;
     return output;
