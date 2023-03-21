@@ -2234,14 +2234,14 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                             {
                                 TessellationConstants& tess = pModelObject->tessellationCBs[j];
                                 //tessLevel
-                                std::string nameTexSpeedW = "tessLevel - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
-                                if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
+                                std::string nameTessLevel = "tessLevel - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                if (ImGui::DragFloat(nameTessLevel.c_str(), &tess.tessLevel, 0.1f, 1.0f, 10.0f))
                                 {
                                     
                                 }
                                 //tessAlpha
-                                std::string nameTexSpeedW = "tessAlpha - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
-                                if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
+                                std::string nameTessAlpha = "tessAlpha - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                if (ImGui::DragFloat(nameTessAlpha.c_str(), &tess.tessAlpha, 0.1f, 1.0f, 10.0f))
                                 {
                                     
                                 }

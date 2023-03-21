@@ -114,16 +114,13 @@ DSOutput main(ConstantsHSOutput input,
     output.outPosition = uvw.x * patch[0].outPosition +
                          uvw.y * patch[1].outPosition +
                          uvw.z * patch[2].outPosition;
-    ObjectConstants objInstance = objectConsts[0];
-    float4 outWorldPos = mul(objInstance.g_MatWorld, float4(output.outPosition.xyz, 1.0));
-	output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, outWorldPos));
     output.outColor = uvw.x * patch[0].outColor + 
                       uvw.y * patch[1].outColor + 
                       uvw.z * patch[2].outColor;
 	output.outTexCoord = uvw.x * patch[0].outTexCoord + 
                          uvw.y * patch[1].outTexCoord + 
                          uvw.z * patch[2].outTexCoord;
-    output.outWorldPos.xyz = outWorldPos.xyz / outWorldPos.w;
+    output.outWorldPos.xyz = output.outPosition.xyz;
     output.outWorldNormal = uvw.x * patch[0].outWorldNormal + 
                             uvw.y * patch[1].outWorldNormal + 
                             uvw.z * patch[2].outWorldNormal;
