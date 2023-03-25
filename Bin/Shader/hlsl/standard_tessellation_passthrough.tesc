@@ -23,20 +23,18 @@ struct TessellationConstants
 
 struct VSOutput 
 {
-    float4 outPosition                              : SV_POSITION;
+    float4 outPosition                              : SV_POSITION; //xyz: Object Pos; w: instanceIndex
     [[vk::location(0)]] float4 outColor             : COLOR0;
-    [[vk::location(1)]] float2 outTexCoord          : TEXCOORD0;
-    [[vk::location(2)]] float4 outWorldPos          : TEXCOORD1; //xyz: World Pos; w: instanceIndex
-    [[vk::location(3)]] float3 outWorldNormal       : TEXCOORD2;
+    [[vk::location(1)]] float3 outNormal            : NORMAL0;
+    [[vk::location(2)]] float2 outTexCoord          : TEXCOORD0;
 };
 
 struct HSOutput
 {
-    float4 outPosition                              : SV_POSITION;
+    float4 outPosition                              : SV_POSITION; //xyz: Object Pos; w: instanceIndex
     [[vk::location(0)]] float4 outColor             : COLOR0;
-    [[vk::location(1)]] float2 outTexCoord          : TEXCOORD0;
-    [[vk::location(2)]] float4 outWorldPos          : TEXCOORD1; //xyz: World Pos; w: instanceIndex
-    [[vk::location(3)]] float3 outWorldNormal       : TEXCOORD2;
+    [[vk::location(1)]] float3 outNormal            : NORMAL0;
+    [[vk::location(2)]] float2 outTexCoord          : TEXCOORD0;
 };
 
 
@@ -68,9 +66,8 @@ HSOutput main(InputPatch<VSOutput, 3> patch, uint InvocationID : SV_OutputContro
     HSOutput output = (HSOutput)0;
     output.outPosition = patch[InvocationID].outPosition;
 	output.outColor = patch[InvocationID].outColor;
+    output.outNormal = patch[InvocationID].outNormal;
 	output.outTexCoord = patch[InvocationID].outTexCoord;
-    output.outWorldPos = patch[InvocationID].outWorldPos;
-    output.outWorldNormal = patch[InvocationID].outWorldNormal;
-
+    
     return output;
 }

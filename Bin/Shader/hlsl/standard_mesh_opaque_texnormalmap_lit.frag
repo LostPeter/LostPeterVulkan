@@ -9,11 +9,11 @@
 
 struct VSOutput
 {
-    [[vk::location(0)]] float4 inColor          : COLOR0;
-    [[vk::location(1)]] float2 inTexCoord       : TEXCOORD0;
-    [[vk::location(2)]] float4 inWorldPos       : TEXCOORD1; //xyz: World Pos; w: instanceIndex
-    [[vk::location(3)]] float3 inWorldNormal    : TEXCOORD2;
-    [[vk::location(4)]] float3 inWorldTangent   : TEXCOORD3;
+    [[vk::location(0)]] float4 inWorldPos       : POSITION0; //xyz: World Pos; w: instanceIndex
+    [[vk::location(1)]] float4 inColor          : COLOR0;
+    [[vk::location(2)]] float3 inWorldNormal    : NORMAL0;
+    [[vk::location(3)]] float3 inWorldTangent   : TANGENT0;
+    [[vk::location(4)]] float2 inTexCoord       : TEXCOORD0;
 };
 
 

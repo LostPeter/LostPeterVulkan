@@ -94,12 +94,11 @@ struct PnPatch
 
 struct HSOutput
 {
-    float4 outPosition                              : SV_POSITION;
+    float4 outPosition                              : SV_POSITION; //xyz: Object Pos; w: instanceIndex
     [[vk::location(0)]] float4 outColor             : COLOR0;
-    [[vk::location(1)]] float2 outTexCoord          : TEXCOORD0;
-    [[vk::location(2)]] float4 outWorldPos          : TEXCOORD1; //xyz: World Pos; w: instanceIndex
-    [[vk::location(3)]] float3 outWorldNormal       : TEXCOORD2;
-    [[vk::location(4)]] float pnPatch[10]           : TEXCOORD3;
+    [[vk::location(3)]] float3 outNormal            : NORMAL0;
+    [[vk::location(6)]] float2 outTexCoord          : TEXCOORD0;
+    [[vk::location(9)]] float pnPatch[10]           : TEXCOORD6;
 };
 
 
@@ -112,10 +111,10 @@ struct ConstantsHSOutput
 struct DSOutput
 {
     float4 outPosition                              : SV_POSITION;
-    [[vk::location(0)]] float4 outColor             : COLOR0;
-    [[vk::location(1)]] float2 outTexCoord          : TEXCOORD0;
-    [[vk::location(2)]] float4 outWorldPos          : TEXCOORD1; //xyz: World Pos; w: instanceIndex
-    [[vk::location(3)]] float3 outWorldNormal       : TEXCOORD2;
+    [[vk::location(0)]] float4 outWorldPos          : POSITION0; //xyz: World Pos; w: instanceIndex
+    [[vk::location(1)]] float4 outColor             : COLOR0;
+    [[vk::location(2)]] float3 outWorldNormal       : NORMAL0;
+    [[vk::location(3)]] float2 outTexCoord          : TEXCOORD0;
 };
 
 PnPatch GetPnPatch(float pnPatch[10])
@@ -142,6 +141,9 @@ DSOutput main(ConstantsHSOutput input,
 {
     DSOutput output = (DSOutput)0;
 
+    uint instanceIndex = patch[0].outPosition.w;
+    ObjectConstants objInstance = objectConsts[instanceIndex];
+    
     PnPatch pnPatch[3];
     pnPatch[0] = GetPnPatch(patch[0].pnPatch);
     pnPatch[1] = GetPnPatch(patch[1].pnPatch);
@@ -164,21 +166,18 @@ DSOutput main(ConstantsHSOutput input,
     float3 n011 = normalize(float3(pnPatch[0].n011, pnPatch[1].n011, pnPatch[2].n011));
     float3 n101 = normalize(float3(pnPatch[0].n101, pnPatch[1].n101, pnPatch[2].n101));
 
-    // compute texcoords
-    output.outTexCoord  = uvw[2] * patch[0].outTexCoord + uvw[0] * patch[1].outTexCoord + uvw[1] * patch[2].outTexCoord;
-
     // normal
     // Barycentric normal
-    float3 barNormal = uvw[2] * patch[0].outWorldNormal + 
-                       uvw[0] * patch[1].outWorldNormal + 
-                       uvw[1] * patch[2].outWorldNormal;
-    float3 pnNormal = patch[0].outWorldNormal * uvwSquared[2] + 
-                      patch[1].outWorldNormal * uvwSquared[0] + 
-                      patch[2].outWorldNormal * uvwSquared[1] +
+    float3 barNormal = uvw[2] * patch[0].outNormal + 
+                       uvw[0] * patch[1].outNormal + 
+                       uvw[1] * patch[2].outNormal;
+    float3 pnNormal = patch[0].outNormal * uvwSquared[2] + 
+                      patch[1].outNormal * uvwSquared[0] + 
+                      patch[2].outNormal * uvwSquared[1] +
                       n110 * uvw[2] * uvw[0] + 
                       n011 * uvw[0] * uvw[1] + 
                       n101 * uvw[2] * uvw[1];
-    output.outWorldNormal = tessellationConsts[0].tessAlpha * pnNormal + (1.0 - tessellationConsts[0].tessAlpha) * barNormal;
+    float3 outNormal = tessellationConsts[0].tessAlpha * pnNormal + (1.0 - tessellationConsts[0].tessAlpha) * barNormal;
     
     // compute interpolated pos
     float3 barPos = uvw[2] * patch[0].outPosition.xyz +
@@ -201,10 +200,18 @@ DSOutput main(ConstantsHSOutput input,
                    b111 * 6.0 * uvw[0] * uvw[1] * uvw[2];
 
     // final position and normal
-    float3 finalPos = (1.0 - tessellationConsts[0].tessAlpha) * barPos + tessellationConsts[0].tessAlpha * pnPos;
-    ObjectConstants objInstance = objectConsts[0];
-    float4 outWorldPos = mul(objInstance.g_MatWorld, float4(finalPos.xyz, 1.0));
-    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, float4(finalPos, 1.0)));
-    output.outWorldPos.xyz = output.outPosition.xyz;
+    float3 finalPos = tessellationConsts[0].tessAlpha * pnPos + (1.0 - tessellationConsts[0].tessAlpha) * barPos;
+    output.outWorldPos = mul(objInstance.g_MatWorld, float4(finalPos.xyz, 1.0));
+    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, output.outWorldPos));
+    output.outWorldPos.xyz /= output.outWorldPos.w;
+    output.outWorldPos.w = instanceIndex;
+    output.outColor = uvw[2] * patch[0].outColor + 
+                      uvw[0] * patch[1].outColor + 
+                      uvw[1] * patch[2].outColor;
+    output.outWorldNormal = mul((float3x3)objInstance.g_MatWorld, outNormal);
+    output.outTexCoord  = uvw[2] * patch[0].outTexCoord + 
+                          uvw[0] * patch[1].outTexCoord + 
+                          uvw[1] * patch[2].outTexCoord;
+
     return output;
 }

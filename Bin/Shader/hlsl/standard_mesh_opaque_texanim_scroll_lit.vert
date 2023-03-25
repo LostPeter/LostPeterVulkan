@@ -131,10 +131,10 @@ struct InstanceConstants
 struct VSOutput
 {
 	float4 outPosition                            : SV_POSITION;
-    [[vk::location(0)]] float4 outColor           : COLOR0;
-    [[vk::location(1)]] float2 outTexCoord        : TEXCOORD0;
-    [[vk::location(2)]] float4 outWorldPos        : TEXCOORD1; //xyz: World Pos; w: instanceIndex
-    [[vk::location(3)]] float3 outWorldNormal     : TEXCOORD2;
+    [[vk::location(0)]] float4 outWorldPos        : POSITION0; //xyz: World Pos; w: instanceIndex
+    [[vk::location(1)]] float4 outColor           : COLOR0;
+    [[vk::location(2)]] float3 outWorldNormal     : NORMAL0;
+    [[vk::location(3)]] float2 outTexCoord        : TEXCOORD0;
 };
 
 
@@ -145,11 +145,11 @@ VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
     MaterialConstants materialInstance = materialConsts[instanceIndex];
     output.outWorldPos = mul(objInstance.g_MatWorld, float4(input.inPosition, 1.0));
     output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, output.outWorldPos));
-    output.outColor = input.inColor;
-    output.outTexCoord = float2(input.inTexCoord.x - passConsts.g_TotalTime * materialInstance.aTexLayers[0].texSpeedU, input.inTexCoord.y - passConsts.g_TotalTime * materialInstance.aTexLayers[0].texSpeedV);
     output.outWorldPos.xyz /= output.outWorldPos.w;
     output.outWorldPos.w = instanceIndex;
+    output.outColor = input.inColor;
     output.outWorldNormal = mul((float3x3)objInstance.g_MatWorld, input.inNormal);
-
+    output.outTexCoord = float2(input.inTexCoord.x - passConsts.g_TotalTime * materialInstance.aTexLayers[0].texSpeedU, input.inTexCoord.y - passConsts.g_TotalTime * materialInstance.aTexLayers[0].texSpeedV);
+    
     return output;
 }

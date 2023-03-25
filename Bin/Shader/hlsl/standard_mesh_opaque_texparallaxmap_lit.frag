@@ -9,13 +9,13 @@
 
 struct VSOutput
 {
-    [[vk::location(0)]] float4 inColor          : COLOR0;
-    [[vk::location(1)]] float2 inTexCoord       : TEXCOORD0;
-    [[vk::location(2)]] float4 inWorldPos       : TEXCOORD1; //xyz: World Pos; w: instanceIndex
-    [[vk::location(3)]] float3 inWorldNormal    : TEXCOORD2;
-    [[vk::location(4)]] float3 inWorldTangent   : TEXCOORD3;
-    [[vk::location(5)]] float3 outTSPos         : TEXCOORD4; 
-    [[vk::location(6)]] float3 outTSEyePos      : TEXCOORD5;
+    [[vk::location(0)]] float4 inWorldPos        : POSITION0; //xyz: World Pos; w: instanceIndex
+    [[vk::location(1)]] float4 inColor           : COLOR0;
+    [[vk::location(2)]] float3 inWorldNormal     : NORMAL0;
+    [[vk::location(3)]] float3 inWorldTangent    : TANGENT0;
+    [[vk::location(4)]] float2 inTexCoord        : TEXCOORD0;
+    [[vk::location(5)]] float3 inTSPos           : TEXCOORD1; 
+    [[vk::location(6)]] float3 inTSEyePos        : TEXCOORD2;
 };
 
 
@@ -360,7 +360,7 @@ float4 main(VSOutput input) : SV_TARGET
 
     MaterialConstants mat = materialConsts[(uint)input.inWorldPos.w];
     float3 V = normalize(passConsts.g_EyePosW - input.inWorldPos.xyz);
-    float3 VT = normalize(input.outTSEyePos - input.outTSPos);
+    float3 VT = normalize(input.inTSEyePos - input.inTSPos);
     float3 N = float3(0,0,1);
     float parallaxMapFlag = mat.aTexLayers[1].indexTextureArray;  
     float2 uv = input.inTexCoord;

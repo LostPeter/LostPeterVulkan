@@ -2,12 +2,12 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author: LostPeter
-* Time:   2023-02-05
+* Time:   2023-03-25
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-struct VSOutput
+struct DSOutput
 {
     [[vk::location(0)]] float4 inWorldPos       : POSITION0; //xyz: World Pos; w: instanceIndex
     [[vk::location(1)]] float4 inColor          : COLOR0;
@@ -102,14 +102,8 @@ struct MaterialConstants
 }
 
 
-[[vk::binding(4)]] Texture2DArray texture2DArrayDiffuse       : register(t1);
-[[vk::binding(4)]] SamplerState texture2DArrayDiffuseSampler  : register(s1);
-
-[[vk::binding(5)]] Texture2DArray texture2DArrayNormal        : register(t2);
-[[vk::binding(5)]] SamplerState texture2DArrayNormalSampler   : register(s2);
-
-[[vk::binding(6)]] Texture2DArray texture2DArrayControl       : register(t3);
-[[vk::binding(6)]] SamplerState texture2DArrayControlSampler  : register(s3);
+[[vk::binding(4)]] Texture2D texture2D              : register(t1);
+[[vk::binding(4)]] SamplerState texture2DSampler    : register(s1);
 
 
 float3 calculate_Light_Ambient(float3 ambientGlobal, 
@@ -237,7 +231,7 @@ float3 calculate_Light(float3 ambientGlobal,
 }
 
 
-float4 main(VSOutput input) : SV_TARGET
+float4 main(DSOutput input) : SV_TARGET
 {
     float3 outColor;
 
@@ -259,7 +253,7 @@ float4 main(VSOutput input) : SV_TARGET
 
 
     //Texture
-    float3 colorTexture = texture2DArrayDiffuse.Sample(texture2DArrayDiffuseSampler, float3(input.inTexCoord, mat.aTexLayers[0].indexTextureArray)).rgb;
+    float3 colorTexture = texture2D.Sample(texture2DSampler, input.inTexCoord).rgb;
     //VertexColor
     float3 colorVertex = input.inColor.rgb;
 

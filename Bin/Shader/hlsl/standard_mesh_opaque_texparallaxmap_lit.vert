@@ -132,13 +132,13 @@ struct InstanceConstants
 struct VSOutput
 {
 	float4 outPosition                            : SV_POSITION;
-    [[vk::location(0)]] float4 outColor           : COLOR0;
-    [[vk::location(1)]] float2 outTexCoord        : TEXCOORD0;
-    [[vk::location(2)]] float4 outWorldPos        : TEXCOORD1; //xyz: World Pos; w: instanceIndex
-    [[vk::location(3)]] float3 outWorldNormal     : TEXCOORD2;
-    [[vk::location(4)]] float3 outWorldTangent    : TEXCOORD3;
-    [[vk::location(5)]] float3 outTSPos           : TEXCOORD4; 
-    [[vk::location(6)]] float3 outTSEyePos        : TEXCOORD5;
+    [[vk::location(0)]] float4 outWorldPos        : POSITION0; //xyz: World Pos; w: instanceIndex
+    [[vk::location(1)]] float4 outColor           : COLOR0;
+    [[vk::location(2)]] float3 outWorldNormal     : NORMAL0;
+    [[vk::location(3)]] float3 outWorldTangent    : TANGENT0;
+    [[vk::location(4)]] float2 outTexCoord        : TEXCOORD0;
+    [[vk::location(5)]] float3 outTSPos           : TEXCOORD1; 
+    [[vk::location(6)]] float3 outTSEyePos        : TEXCOORD2;
 };
 
 
@@ -148,12 +148,12 @@ VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
     ObjectConstants objInstance = objectConsts[instanceIndex];
     output.outWorldPos = mul(objInstance.g_MatWorld, float4(input.inPosition, 1.0));
     output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, output.outWorldPos));
-    output.outColor = input.inColor;
-    output.outTexCoord = input.inTexCoord;
     output.outWorldPos.xyz /= output.outWorldPos.w;
     output.outWorldPos.w = instanceIndex;
+    output.outColor = input.inColor;
     output.outWorldNormal = mul((float3x3)objInstance.g_MatWorld, input.inNormal);
     output.outWorldTangent = mul((float3x3)objInstance.g_MatWorld, input.inTangent);
+    output.outTexCoord = input.inTexCoord;
 
     float3 N = normalize(input.inNormal);
 	float3 T = normalize(input.inTangent);

@@ -82,9 +82,8 @@ struct HSOutput
 {
     float4 outPosition                              : SV_POSITION;
     [[vk::location(0)]] float4 outColor             : COLOR0;
-    [[vk::location(1)]] float2 outTexCoord          : TEXCOORD0;
-    [[vk::location(2)]] float4 outWorldPos          : TEXCOORD1; //xyz: World Pos; w: instanceIndex
-    [[vk::location(3)]] float3 outWorldNormal       : TEXCOORD2;
+    [[vk::location(1)]] float3 outNormal            : NORMAL0;
+    [[vk::location(2)]] float2 outTexCoord          : TEXCOORD0;
 };
 
 
@@ -97,10 +96,10 @@ struct ConstantsHSOutput
 struct DSOutput
 {
     float4 outPosition                              : SV_POSITION;
-    [[vk::location(0)]] float4 outColor             : COLOR0;
-    [[vk::location(1)]] float2 outTexCoord          : TEXCOORD0;
-    [[vk::location(2)]] float4 outWorldPos          : TEXCOORD1; //xyz: World Pos; w: instanceIndex
-    [[vk::location(3)]] float3 outWorldNormal       : TEXCOORD2;
+    [[vk::location(0)]] float4 outWorldPos          : POSITION0; //xyz: World Pos; w: instanceIndex
+    [[vk::location(1)]] float4 outColor             : COLOR0;
+    [[vk::location(2)]] float3 outWorldNormal       : NORMAL0;
+    [[vk::location(3)]] float2 outTexCoord          : TEXCOORD0;
 };
 
 
@@ -111,19 +110,26 @@ DSOutput main(ConstantsHSOutput input,
 {
     DSOutput output = (DSOutput)0;
 
-    output.outPosition = uvw.x * patch[0].outPosition +
-                         uvw.y * patch[1].outPosition +
-                         uvw.z * patch[2].outPosition;
+    uint instanceIndex = patch[0].outPosition.w;
+    ObjectConstants objInstance = objectConsts[instanceIndex];
+    output.outPosition.xyz = uvw.x * patch[0].outPosition.xyz +
+                             uvw.y * patch[1].outPosition.xyz +
+                             uvw.z * patch[2].outPosition.xyz;
+    output.outPosition.w = 1.0;
+    output.outWorldPos = mul(objInstance.g_MatWorld, output.outPosition);
+    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, output.outWorldPos));
+    output.outWorldPos.xyz /= output.outWorldPos.w;
+    output.outWorldPos.w = instanceIndex;
     output.outColor = uvw.x * patch[0].outColor + 
                       uvw.y * patch[1].outColor + 
                       uvw.z * patch[2].outColor;
-	output.outTexCoord = uvw.x * patch[0].outTexCoord + 
+    float3 outNormal = uvw.x * patch[0].outNormal + 
+                       uvw.y * patch[1].outNormal + 
+                       uvw.z * patch[2].outNormal;
+    output.outWorldNormal = mul((float3x3)objInstance.g_MatWorld, outNormal);
+    output.outTexCoord = uvw.x * patch[0].outTexCoord + 
                          uvw.y * patch[1].outTexCoord + 
                          uvw.z * patch[2].outTexCoord;
-    output.outWorldPos.xyz = output.outPosition.xyz;
-    output.outWorldNormal = uvw.x * patch[0].outWorldNormal + 
-                            uvw.y * patch[1].outWorldNormal + 
-                            uvw.z * patch[2].outWorldNormal;
 
 	return output;
 }

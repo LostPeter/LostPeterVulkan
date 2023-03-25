@@ -205,7 +205,7 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 16;
+static const int g_ShaderCount = 18;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
@@ -214,6 +214,8 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "vert_standard_mesh_opaque_texcubemap_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
     "vert_standard_mesh_opaque_tex2darray_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
     
+    "vert_standard_mesh_opaque_tex2d_tessellation_lit",        "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_tessellation_lit.vert.spv", //standard_mesh_opaque_tex2d_tessellation_lit vert
+
     "vert_standard_terrain_opaque_lit",                        "vert",              "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
@@ -232,7 +234,9 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "frag_standard_mesh_opaque_tex2d_lit",                     "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
     "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
     "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
-    
+
+    "frag_standard_mesh_opaque_tex2d_tessellation_lit",        "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_tessellation_lit.frag.spv", //standard_mesh_opaque_tex2d_tessellation_lit frag
+
     "frag_standard_terrain_opaque_lit",                        "frag",              "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
@@ -272,8 +276,8 @@ static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] =
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2d", //texture2D_ComputeCopyTexture
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2darray", //texture2D_ComputeCopyTextureArray
 
-    "vert_standard_mesh_opaque_tex2d_lit",                  "tesc_standard_tessellation_passthrough",       "tese_standard_tessellation_passthrough",   "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //tessellation_passthrough
-    "vert_standard_mesh_opaque_tex2d_lit",                  "tesc_standard_tessellation_pntriangles",       "tese_standard_tessellation_pntriangles",   "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //tessellation_pntriangles
+    "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_passthrough",       "tese_standard_tessellation_passthrough",   "",                         "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_passthrough
+    "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_pntriangles",       "tese_standard_tessellation_pntriangles",   "",                         "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_pntriangles
 
     "vert_standard_terrain_opaque_lit",                     "",                                             "",                                         "",                         "frag_standard_terrain_opaque_lit",                     "", //terrain
     
@@ -2235,13 +2239,13 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 TessellationConstants& tess = pModelObject->tessellationCBs[j];
                                 //tessLevel
                                 std::string nameTessLevel = "tessLevel - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
-                                if (ImGui::DragFloat(nameTessLevel.c_str(), &tess.tessLevel, 0.1f, 1.0f, 10.0f))
+                                if (ImGui::DragFloat(nameTessLevel.c_str(), &tess.tessLevel, 0.1f, 1.0f, 100.0f))
                                 {
                                     
                                 }
                                 //tessAlpha
                                 std::string nameTessAlpha = "tessAlpha - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
-                                if (ImGui::DragFloat(nameTessAlpha.c_str(), &tess.tessAlpha, 0.1f, 1.0f, 10.0f))
+                                if (ImGui::DragFloat(nameTessAlpha.c_str(), &tess.tessAlpha, 0.05f, 0.0f, 1.0f))
                                 {
                                     
                                 }
