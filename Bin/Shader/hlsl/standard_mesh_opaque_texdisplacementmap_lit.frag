@@ -7,12 +7,12 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-struct VSOutput
+struct DSOutput
 {
-    [[vk::location(0)]] float4 inColor          : COLOR0;
-    [[vk::location(1)]] float2 inTexCoord       : TEXCOORD0;
-    [[vk::location(2)]] float4 inWorldPos       : TEXCOORD1; //xyz: World Pos; w: instanceIndex
-    [[vk::location(3)]] float3 inWorldNormal    : TEXCOORD2;
+    [[vk::location(0)]] float4 inWorldPos       : POSITION0; //xyz: World Pos; w: instanceIndex
+    [[vk::location(1)]] float4 inColor          : COLOR0;
+    [[vk::location(2)]] float3 inWorldNormal    : NORMAL0;
+    [[vk::location(3)]] float2 inTexCoord       : TEXCOORD0;
 };
 
 
@@ -102,8 +102,8 @@ struct MaterialConstants
 }
 
 
-[[vk::binding(4)]] Texture2D texDisplacementMap              : register(t1);
-[[vk::binding(4)]] SamplerState texDisplacementMapSampler    : register(s1);
+[[vk::binding(5)]] Texture2D texDisplacementMap              : register(t1);
+[[vk::binding(5)]] SamplerState texDisplacementMapSampler    : register(s1);
 
 
 float3 calculate_Light_Ambient(float3 ambientGlobal, 
@@ -231,7 +231,7 @@ float3 calculate_Light(float3 ambientGlobal,
 }
 
 
-float4 main(VSOutput input) : SV_TARGET
+float4 main(DSOutput input) : SV_TARGET
 {
     float3 outColor;
 

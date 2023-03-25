@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author: LostPeter
-* Time:   2023-03-19
+* Time:   2023-03-25
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
@@ -72,10 +72,14 @@ struct TessellationConstants
     float tessAlpha;
 };
 
-[[vk::binding(5)]]cbuffer tessellationConsts        : register(b5)
+[[vk::binding(6)]]cbuffer tessellationConsts        : register(b6)
 {
     TessellationConstants tessellationConsts[MAX_OBJECT_COUNT];
 }
+
+
+[[vk::binding(4)]] Texture2D texDisplacementMap              : register(t1);
+[[vk::binding(4)]] SamplerState texDisplacementMapSampler    : register(s1);
 
 
 struct HSOutput
@@ -115,6 +119,15 @@ DSOutput main(ConstantsHSOutput input,
     output.outPosition.xyz = uvw.x * patch[0].outPosition.xyz +
                              uvw.y * patch[1].outPosition.xyz +
                              uvw.z * patch[2].outPosition.xyz;
+    float3 outNormal = uvw.x * patch[0].outNormal + 
+                       uvw.y * patch[1].outNormal + 
+                       uvw.z * patch[2].outNormal;
+    float2 outTexCoord = uvw.x * patch[0].outTexCoord + 
+                         uvw.y * patch[1].outTexCoord + 
+                         uvw.z * patch[2].outTexCoord;
+
+    TessellationConstants tessellationConst = tessellationConsts[instanceIndex];
+    output.outPosition.xyz += normalize(outNormal) * (max(texDisplacementMap.SampleLevel(texDisplacementMapSampler, outTexCoord.xy, 0).a, 0.0) * tessellationConst.tessLevel);
     output.outPosition.w = 1.0;
     output.outWorldPos = mul(objInstance.g_MatWorld, output.outPosition);
     output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, output.outWorldPos));
@@ -123,13 +136,8 @@ DSOutput main(ConstantsHSOutput input,
     output.outColor = uvw.x * patch[0].outColor + 
                       uvw.y * patch[1].outColor + 
                       uvw.z * patch[2].outColor;
-    float3 outNormal = uvw.x * patch[0].outNormal + 
-                       uvw.y * patch[1].outNormal + 
-                       uvw.z * patch[2].outNormal;
     output.outWorldNormal = mul((float3x3)objInstance.g_MatWorld, outNormal);
-    output.outTexCoord = uvw.x * patch[0].outTexCoord + 
-                         uvw.y * patch[1].outTexCoord + 
-                         uvw.z * patch[2].outTexCoord;
+    output.outTexCoord = outTexCoord;
 
 	return output;
 }

@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author: LostPeter
-* Time:   2023-03-19
+* Time:   2023-03-25
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
@@ -15,7 +15,7 @@ struct TessellationConstants
     float tessAlpha;
 };
 
-[[vk::binding(5)]]cbuffer tessellationConsts        : register(b5)
+[[vk::binding(6)]]cbuffer tessellationConsts        : register(b6)
 {
     TessellationConstants tessellationConsts[MAX_OBJECT_COUNT];
 }
@@ -48,11 +48,12 @@ struct ConstantsHSOutput
 ConstantsHSOutput ConstantsHS(InputPatch<VSOutput, 3> patch, uint InvocationID : SV_PrimitiveID)
 {
     ConstantsHSOutput output = (ConstantsHSOutput)0;
-
-	output.tessLevelInner = 1;
-    output.tessLevelOuter[0] = 1;
-    output.tessLevelOuter[1] = 1;
-    output.tessLevelOuter[2] = 1;
+    uint instanceIndex = patch[0].outPosition.w;
+    TessellationConstants tessellationConst = tessellationConsts[instanceIndex];
+	output.tessLevelOuter[0] = tessellationConst.tessLevel;
+	output.tessLevelOuter[1] = tessellationConst.tessLevel;
+	output.tessLevelOuter[2] = tessellationConst.tessLevel;
+	output.tessLevelInner = tessellationConst.tessLevel;
     
     return output;
 }

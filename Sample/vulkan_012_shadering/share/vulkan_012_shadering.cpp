@@ -187,6 +187,8 @@ const std::string c_strLayout_Instance = "Instance";
 const std::string c_strLayout_TextureCopy = "TextureCopy";
 const std::string c_strLayout_Tessellation = "Tessellation";
 const std::string c_strLayout_TextureVS = "TextureVS";
+const std::string c_strLayout_TextureTESC = "TextureTESC";
+const std::string c_strLayout_TextureTESE = "TextureTESE";
 const std::string c_strLayout_TextureFS = "TextureFS";
 const std::string c_strLayout_TextureCSR = "TextureCSR";
 const std::string c_strLayout_TextureCSRW = "TextureCSRW";
@@ -1191,7 +1193,7 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
                 passMainLayoutBinding.descriptorCount = 1;
                 passMainLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 passMainLayoutBinding.pImmutableSamplers = nullptr;
-                passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+                passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
                 bindings.push_back(passMainLayoutBinding);
             }
@@ -1202,7 +1204,7 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
                 objectLayoutBinding.descriptorCount = 1;
                 objectLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 objectLayoutBinding.pImmutableSamplers = nullptr;
-                objectLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+                objectLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
                 bindings.push_back(objectLayoutBinding);
             }
@@ -1258,6 +1260,28 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
                 samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 samplerLayoutBinding.pImmutableSamplers = nullptr;
                 samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+                bindings.push_back(samplerLayoutBinding);
+            }
+            else if (strLayout == c_strLayout_TextureTESC) //TextureTESC
+            {
+                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+                samplerLayoutBinding.binding = j;
+                samplerLayoutBinding.descriptorCount = 1;
+                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                samplerLayoutBinding.pImmutableSamplers = nullptr;
+                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+
+                bindings.push_back(samplerLayoutBinding);
+            }
+            else if (strLayout == c_strLayout_TextureTESE) //TextureTESE
+            {
+                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+                samplerLayoutBinding.binding = j;
+                samplerLayoutBinding.descriptorCount = 1;
+                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                samplerLayoutBinding.pImmutableSamplers = nullptr;
+                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 
                 bindings.push_back(samplerLayoutBinding);
             }
@@ -1594,6 +1618,8 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
             {   
                 std::vector<VkWriteDescriptorSet> descriptorWrites;
                 int nIndexTextureVS = 0;
+                int nIndexTextureTESC = 0;
+                int nIndexTextureTESE = 0;
                 int nIndexTextureFS = 0;
 
                 size_t count_names = pDescriptorSetLayoutNames->size();
@@ -1689,6 +1715,36 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                     {
                         ModelTexture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
                         nIndexTextureVS ++;
+
+                        VkWriteDescriptorSet ds = {};
+                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                        ds.dstSet = pModelObject->pPipelineGraphics->poDescriptorSets[j];
+                        ds.dstBinding = p;
+                        ds.dstArrayElement = 0;
+                        ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                        ds.descriptorCount = 1;
+                        ds.pImageInfo = &pTexture->poTextureImageInfo;
+                        descriptorWrites.push_back(ds);
+                    }
+                    else if (nameDescriptorSet == c_strLayout_TextureTESC)//TextureTESC
+                    {
+                        ModelTexture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), nIndexTextureTESC);
+                        nIndexTextureTESC ++;
+
+                        VkWriteDescriptorSet ds = {};
+                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                        ds.dstSet = pModelObject->pPipelineGraphics->poDescriptorSets[j];
+                        ds.dstBinding = p;
+                        ds.dstArrayElement = 0;
+                        ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                        ds.descriptorCount = 1;
+                        ds.pImageInfo = &pTexture->poTextureImageInfo;
+                        descriptorWrites.push_back(ds);
+                    }
+                    else if (nameDescriptorSet == c_strLayout_TextureTESE)//TextureTESE
+                    {
+                        ModelTexture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), nIndexTextureTESE);
+                        nIndexTextureTESE ++;
 
                         VkWriteDescriptorSet ds = {};
                         ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
