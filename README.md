@@ -139,3 +139,8 @@ License:
 * sample011: Vulkan basic textureSampler, texture1D, texture2D, texture2DArray, texture3D, textureCubeMap, textureAnimation, textureBumpMap, textureNormalMap, textureParallaxMap usage
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_011_texturing.png)
+
+### <012> vulkan_012_shadering
+* sample012: Vulkan Vertex Shader, Tessellation Control Shader, Tessellation Evaluation Shader, Geometry Shader, Fragment Shader, Compute Shader usage
+
+![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_012_shadering.png)
