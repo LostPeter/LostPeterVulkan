@@ -1053,10 +1053,12 @@ namespace LostPeter
 
     ////tese
         float tessAlpha;
+        float tessStrength;
 
         TessellationConstants()
             : tessLevel(3.0f)
             , tessAlpha(1.0f)
+            , tessStrength(0.1f)
         {
 
         }

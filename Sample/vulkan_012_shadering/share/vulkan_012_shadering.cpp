@@ -2290,22 +2290,35 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                             }
 
                             //TessellationConstants
-                            if (pModelObject->isUsedTessellation)
+                            std::string nameTessellation = VulkanUtilString::SaveInt(j) + " - Tessellation - " + pModelObject->nameObject;
+                            if (ImGui::CollapsingHeader(nameTessellation.c_str()))
                             {
-                                TessellationConstants& tess = pModelObject->tessellationCBs[j];
-                                //tessLevel
-                                std::string nameTessLevel = "tessLevel - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
-                                if (ImGui::DragFloat(nameTessLevel.c_str(), &tess.tessLevel, 0.1f, 1.0f, 100.0f))
+                                if (pModelObject->isUsedTessellation)
                                 {
-                                    
+                                    TessellationConstants& tess = pModelObject->tessellationCBs[j];
+                                    //tessLevel
+                                    std::string nameTessLevel = "tessLevel - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    if (ImGui::DragFloat(nameTessLevel.c_str(), &tess.tessLevel, 0.1f, 1.0f, 500.0f))
+                                    {
+                                        
+                                    }
+                                    //tessAlpha
+                                    std::string nameTessAlpha = "tessAlpha - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    if (ImGui::DragFloat(nameTessAlpha.c_str(), &tess.tessAlpha, 0.05f, 0.0f, 1.0f))
+                                    {
+                                        
+                                    }
+                                    //tessStrength
+                                    std::string nameTessStrength = "tessStrength - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    if (ImGui::DragFloat(nameTessStrength.c_str(), &tess.tessStrength, 0.025f, 0.1f, 100.0f))
+                                    {
+                                        
+                                    }
                                 }
-                                //tessAlpha
-                                std::string nameTessAlpha = "tessAlpha - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
-                                if (ImGui::DragFloat(nameTessAlpha.c_str(), &tess.tessAlpha, 0.05f, 0.0f, 1.0f))
-                                {
-                                    
-                                }
+
+                                ImGui::Spacing();
                             }
+
                         }
                     }
                 }

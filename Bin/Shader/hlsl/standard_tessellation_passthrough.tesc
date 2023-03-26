@@ -13,6 +13,7 @@ struct TessellationConstants
 {
     float tessLevel;
     float tessAlpha;
+    float tessStrength;
 };
 
 [[vk::binding(5)]]cbuffer tessellationConsts        : register(b5)

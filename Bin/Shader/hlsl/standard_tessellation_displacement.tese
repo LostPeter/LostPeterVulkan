@@ -70,6 +70,7 @@ struct TessellationConstants
 {
     float tessLevel;
     float tessAlpha;
+    float tessStrength;
 };
 
 [[vk::binding(6)]]cbuffer tessellationConsts        : register(b6)
@@ -114,7 +115,7 @@ DSOutput main(ConstantsHSOutput input,
 {
     DSOutput output = (DSOutput)0;
 
-    uint instanceIndex = patch[0].outPosition.w;
+    uint instanceIndex = uvw.x * patch[0].outPosition.w;
     ObjectConstants objInstance = objectConsts[instanceIndex];
     output.outPosition.xyz = uvw.x * patch[0].outPosition.xyz +
                              uvw.y * patch[1].outPosition.xyz +
@@ -127,7 +128,7 @@ DSOutput main(ConstantsHSOutput input,
                          uvw.z * patch[2].outTexCoord;
 
     TessellationConstants tessellationConst = tessellationConsts[instanceIndex];
-    output.outPosition.xyz += normalize(outNormal) * (max(texDisplacementMap.SampleLevel(texDisplacementMapSampler, outTexCoord.xy, 0).a, 0.0) * tessellationConst.tessLevel);
+    output.outPosition.xyz += normalize(outNormal) * (max(texDisplacementMap.SampleLevel(texDisplacementMapSampler, outTexCoord.xy, 0).a, 0.0) * tessellationConst.tessStrength);
     output.outPosition.w = 1.0;
     output.outWorldPos = mul(objInstance.g_MatWorld, output.outPosition);
     output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, output.outWorldPos));

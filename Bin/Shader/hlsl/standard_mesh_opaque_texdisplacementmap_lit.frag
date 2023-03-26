@@ -254,6 +254,7 @@ float4 main(DSOutput input) : SV_TARGET
 
     //Texture
     float3 colorTexture = texDisplacementMap.Sample(texDisplacementMapSampler, input.inTexCoord).rgb;
+    return float4(colorTexture, 1.0);
     //VertexColor
     float3 colorVertex = input.inColor.rgb;
 

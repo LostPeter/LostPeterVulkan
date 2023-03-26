@@ -140,7 +140,6 @@ struct VSOutput
 VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
 {
     VSOutput output = (VSOutput)0;
-    ObjectConstants objInstance = objectConsts[instanceIndex];
     output.outPosition = float4(input.inPosition.xyz, instanceIndex);
     output.outColor = input.inColor;
     output.outNormal = input.inNormal;

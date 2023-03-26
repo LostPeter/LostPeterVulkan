@@ -74,13 +74,12 @@ static const EnumParallaxMappingDesc s_aParallaxMappingDescs[] =
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 5;
+static const int g_MeshCount = 4;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
     "plane_nt",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane_nt
-    "plane_gltf",       "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane_gltf
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
 
@@ -89,7 +88,6 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
 {
     true, //plane
     true, //plane_nt
-    true, //plane_gltf
     false, //cube
     false, //sphere
 
@@ -98,7 +96,6 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
 {
     false, //plane  
     false, //plane_nt  
-    false, //plane_gltf  
     false, //cube
     false, //sphere
     
@@ -107,7 +104,6 @@ static glm::mat4 g_MeshTranformLocals[g_MeshCount] =
 {
     VulkanMath::ms_mat4Unit, //plane
     VulkanMath::ms_mat4Unit, //plane_nt
-    VulkanMath::ms_mat4Unit, //plane_gltf
     VulkanMath::ms_mat4Unit, //cube
     VulkanMath::ms_mat4Unit, //sphere
 
@@ -429,8 +425,8 @@ static const char* g_ObjectConfigs[8 * g_ObjectCount] =
     "textureOriginal",                  "plane",                       "",                     "",                              "",                         "",                   "texturebumpmap_diffuse",                                             "", //textureOriginal    
     "textureBumpMap",                   "plane",                       "",                     "",                              "",                         "",                   "texturebumpmap_diffuse;texturebumpmap_bumpmap",                      "", //textureBumpMap
     "textureNormalMap",                 "plane_nt",                    "",                     "",                              "",                         "",                   "texturebumpmap_diffuse;texturenormalmap_normalmap",                  "", //textureNormalMap
-    "textureParallaxMap",               "plane_gltf",                  "",                     "",                              "",                         "",                   "rocks_color;rocks_normal_height",                                    "", //textureParallaxMap
-    "textureDisplacementMap",           "plane_nt",                    "",                     "",                              "stonefloor_color_height",  "",                   "stonefloor_color_height",                                            "", //textureDisplacementMap
+    "textureParallaxMap",               "plane_nt",                    "",                     "",                              "",                         "",                   "rocks_color;rocks_normal_height",                                    "", //textureParallaxMap
+    "textureDisplacementMap",           "plane",                       "",                     "",                              "stonefloor_color_height",  "",                   "stonefloor_color_height",                                            "", //textureDisplacementMap
 
 };
 
@@ -522,7 +518,7 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
     5, //textureBumpMap 
     5, //textureNormalMap 
     5, //textureParallaxMap 
-    5, //textureDisplacementMap 
+    0, //textureDisplacementMap 
 
 };
 static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] = 
@@ -678,7 +674,7 @@ static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
     false, //textureBumpMap
     false, //textureNormalMap
     false, //textureParallaxMap
-    false, //textureDisplacementMap
+    true, //textureDisplacementMap
 
 };
 
@@ -1197,8 +1193,9 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             if (pModelObject->isUsedTessellation)
             {
                 TessellationConstants tessellationConstants;
-                tessellationConstants.tessLevel = 0.1f;
+                tessellationConstants.tessLevel = 64.0f;
                 tessellationConstants.tessAlpha = 1.0f;
+                tessellationConstants.tessStrength = 10.0f;
                 pModelObject->tessellationCBs.push_back(tessellationConstants);
             }
         }
@@ -2728,22 +2725,35 @@ bool Vulkan_011_Texturing::beginRenderImgui()
                             }
 
                             //TessellationConstants
-                            if (pModelObject->isUsedTessellation)
+                            std::string nameTessellation = VulkanUtilString::SaveInt(j) + " - Tessellation - " + pModelObject->nameObject;
+                            if (ImGui::CollapsingHeader(nameTessellation.c_str()))
                             {
-                                TessellationConstants& tess = pModelObject->tessellationCBs[j];
-                                //tessLevel
-                                std::string nameTessLevel = "tessLevel - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
-                                if (ImGui::DragFloat(nameTessLevel.c_str(), &tess.tessLevel, 0.025f, 0.1f, 3.0f))
+                                if (pModelObject->isUsedTessellation)
                                 {
-                                    
+                                    TessellationConstants& tess = pModelObject->tessellationCBs[j];
+                                    //tessLevel
+                                    std::string nameTessLevel = "tessLevel - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    if (ImGui::DragFloat(nameTessLevel.c_str(), &tess.tessLevel, 0.1f, 0.1f, 500.0f))
+                                    {
+                                        
+                                    }
+                                    //tessAlpha
+                                    std::string nameTessAlpha = "tessAlpha - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    if (ImGui::DragFloat(nameTessAlpha.c_str(), &tess.tessAlpha, 0.05f, 0.0f, 1.0f))
+                                    {
+                                        
+                                    }
+                                    //tessStrength
+                                    std::string nameTessStrength = "tessStrength - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    if (ImGui::DragFloat(nameTessStrength.c_str(), &tess.tessStrength, 0.025f, 0.1f, 100.0f))
+                                    {
+                                        
+                                    }
                                 }
-                                //tessAlpha
-                                std::string nameTessAlpha = "tessAlpha - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
-                                if (ImGui::DragFloat(nameTessAlpha.c_str(), &tess.tessAlpha, 0.05f, 0.0f, 1.0f))
-                                {
-                                    
-                                }
+
+                                ImGui::Spacing();
                             }
+                            
                         }
                     }
                 }
