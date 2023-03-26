@@ -258,8 +258,8 @@ static const char* g_ObjectConfigs[5 * g_ObjectCount] =
     "texture2Darray_TerrainNormal",             "plane",            "",                     "texture_terrain_normal",                                                       "", //texture2Darray_TerrainNormal
     "texture2Darray_TerrainControl",            "plane",            "",                     "texture_terrain_control",                                                      "", //texture2Darray_TerrainControl
 
-    "texture2D_ComputeCopyTexture",             "plane",            "",                     "texture_rt_compute_copy_tex",                                                  "default_blackwhite;texture_rt_compute_copy_tex", //texture2D_ComputeCopyTexture
-    "texture2D_ComputeCopyTextureArray",        "plane",            "",                     "texture_rt_compute_copy_texarray",                                             "texture_terrain_diffuse;texture_rt_compute_copy_texarray", //texture2D_ComputeCopyTextureArray
+    "compute_CopyTexture",                      "plane",            "",                     "texture_rt_compute_copy_tex",                                                  "default_blackwhite;texture_rt_compute_copy_tex", //compute_CopyTexture
+    "compute_CopyTextureArray",                 "plane",            "",                     "texture_rt_compute_copy_texarray",                                             "texture_terrain_diffuse;texture_rt_compute_copy_texarray", //compute_CopyTextureArray
 
     "tessellation_passthrough",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_passthrough
     "tessellation_pntriangles",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_pntriangles
@@ -275,8 +275,8 @@ static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] =
     "vert_standard_mesh_opaque_tex2darray_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainNormal
     "vert_standard_mesh_opaque_tex2darray_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainControl
 
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2d", //texture2D_ComputeCopyTexture
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2darray", //texture2D_ComputeCopyTextureArray
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2d", //compute_CopyTexture
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2darray", //compute_CopyTextureArray
 
     "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_passthrough",       "tese_standard_tessellation_passthrough",   "",                         "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_passthrough
     "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_pntriangles",       "tese_standard_tessellation_pntriangles",   "",                         "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_pntriangles
@@ -292,8 +292,8 @@ static const char* g_ObjectNameDescriptorSetLayouts[2 * g_ObjectCount] =
     "Pass-Object-Material-Instance-TextureFS",                          "", //texture2Darray_TerrainNormal
     "Pass-Object-Material-Instance-TextureFS",                          "", //texture2Darray_TerrainControl
 
-    "Pass-Object-Material-Instance-TextureFS",                          "TextureCopy-TextureCSR-TextureCSRW", //texture2D_ComputeCopyTexture
-    "Pass-Object-Material-Instance-TextureFS",                          "TextureCopy-TextureCSR-TextureCSRW", //texture2D_ComputeCopyTextureArray
+    "Pass-Object-Material-Instance-TextureFS",                          "TextureCopy-TextureCSR-TextureCSRW", //compute_CopyTexture
+    "Pass-Object-Material-Instance-TextureFS",                          "TextureCopy-TextureCSR-TextureCSRW", //compute_CopyTextureArray
 
     "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_passthrough
     "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_pntriangles
@@ -308,8 +308,8 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
     0, //texture2Darray_TerrainNormal 
     0, //texture2Darray_TerrainControl 
 
-    0, //texture2D_ComputeCopyTexture 
-    0, //texture2D_ComputeCopyTextureArray 
+    0, //compute_CopyTexture 
+    0, //compute_CopyTextureArray 
 
     0, //tessellation_passthrough 
     0, //tessellation_pntriangles 
@@ -323,8 +323,8 @@ static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] =
     glm::vec3(   0,  1.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainNormal
     glm::vec3( 2.0,  1.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainControl
 
-    glm::vec3(   0,  2.2,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D_ComputeCopyTexture
-    glm::vec3(   0,  3.4,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2D_ComputeCopyTextureArray
+    glm::vec3(   0,  2.2,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //compute_CopyTexture
+    glm::vec3(   0,  3.4,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //compute_CopyTextureArray
 
     glm::vec3(   0,  4.6,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_passthrough
     glm::vec3(   0,  5.8,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_pntriangles
@@ -339,8 +339,8 @@ static bool g_ObjectIsTransparents[g_ObjectCount] =
     false, //texture2Darray_TerrainNormal
     false, //texture2Darray_TerrainControl
 
-    false, //texture2D_ComputeCopyTexture
-    false, //texture2D_ComputeCopyTextureArray
+    false, //compute_CopyTexture
+    false, //compute_CopyTextureArray
 
     false, //tessellation_passthrough
     false, //tessellation_pntriangles
@@ -354,8 +354,8 @@ static bool g_ObjectIsShows[] =
     true, //texture2Darray_TerrainNormal
     true, //texture2Darray_TerrainControl
 
-    true, //texture2D_ComputeCopyTexture
-    true, //texture2D_ComputeCopyTextureArray
+    true, //compute_CopyTexture
+    true, //compute_CopyTextureArray
 
     true, //tessellation_passthrough
     true, //tessellation_pntriangles
@@ -369,8 +369,8 @@ static bool g_ObjectIsRotates[g_ObjectCount] =
     false, //texture2Darray_TerrainNormal
     false, //texture2Darray_TerrainControl
 
-    false, //texture2D_ComputeCopyTexture
-    false, //texture2D_ComputeCopyTextureArray
+    false, //compute_CopyTexture
+    false, //compute_CopyTextureArray
 
     false, //tessellation_passthrough
     false, //tessellation_pntriangles
@@ -384,8 +384,8 @@ static bool g_ObjectIsLightings[g_ObjectCount] =
     false, //texture2Darray_TerrainNormal
     false, //texture2Darray_TerrainControl
 
-    false, //texture2D_ComputeCopyTexture
-    false, //texture2D_ComputeCopyTextureArray
+    false, //compute_CopyTexture
+    false, //compute_CopyTextureArray
 
     false, //tessellation_passthrough
     false, //tessellation_pntriangles
@@ -399,8 +399,8 @@ static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
     false, //texture2Darray_TerrainNormal
     false, //texture2Darray_TerrainControl
 
-    false, //texture2D_ComputeCopyTexture
-    false, //texture2D_ComputeCopyTextureArray
+    false, //compute_CopyTexture
+    false, //compute_CopyTextureArray
 
     true, //tessellation_passthrough
     true, //tessellation_pntriangles
@@ -797,7 +797,8 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
             if (pModelObject->isUsedTessellation)
             {
                 TessellationConstants tessellationConstants;
-                tessellationConstants.tessLevel = 3.0f;
+                tessellationConstants.tessLevelOuter = 3.0f;
+                tessellationConstants.tessLevelInner = 3.0f;
                 tessellationConstants.tessAlpha = 1.0f;
                 pModelObject->tessellationCBs.push_back(tessellationConstants);
             }
@@ -2296,9 +2297,15 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 if (pModelObject->isUsedTessellation)
                                 {
                                     TessellationConstants& tess = pModelObject->tessellationCBs[j];
-                                    //tessLevel
-                                    std::string nameTessLevel = "tessLevel - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
-                                    if (ImGui::DragFloat(nameTessLevel.c_str(), &tess.tessLevel, 0.1f, 1.0f, 500.0f))
+                                    //tessLevelOuter
+                                    std::string nameTessLevelOuter = "tessLevelOuter - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    if (ImGui::DragFloat(nameTessLevelOuter.c_str(), &tess.tessLevelOuter, 0.1f, 0.1f, 500.0f))
+                                    {
+                                        
+                                    }
+                                    //tessLevelInner
+                                    std::string nameTessLevelInner = "tessLevelInner - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    if (ImGui::DragFloat(nameTessLevelInner.c_str(), &tess.tessLevelInner, 0.1f, 0.1f, 500.0f))
                                     {
                                         
                                     }

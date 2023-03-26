@@ -68,7 +68,8 @@ struct ObjectConstants
 
 struct TessellationConstants
 {
-    float tessLevel;
+    float tessLevelOuter;
+    float tessLevelInner;
     float tessAlpha;
     float tessStrength;
 };

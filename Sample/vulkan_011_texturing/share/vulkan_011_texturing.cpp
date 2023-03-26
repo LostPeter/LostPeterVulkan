@@ -1193,7 +1193,8 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             if (pModelObject->isUsedTessellation)
             {
                 TessellationConstants tessellationConstants;
-                tessellationConstants.tessLevel = 64.0f;
+                tessellationConstants.tessLevelOuter = 64.0f;
+                tessellationConstants.tessLevelInner = 64.0f;
                 tessellationConstants.tessAlpha = 1.0f;
                 tessellationConstants.tessStrength = 10.0f;
                 pModelObject->tessellationCBs.push_back(tessellationConstants);
@@ -2731,9 +2732,15 @@ bool Vulkan_011_Texturing::beginRenderImgui()
                                 if (pModelObject->isUsedTessellation)
                                 {
                                     TessellationConstants& tess = pModelObject->tessellationCBs[j];
-                                    //tessLevel
-                                    std::string nameTessLevel = "tessLevel - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
-                                    if (ImGui::DragFloat(nameTessLevel.c_str(), &tess.tessLevel, 0.1f, 0.1f, 500.0f))
+                                    //tessLevelOuter
+                                    std::string nameTessLevelOuter = "tessLevelOuter - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    if (ImGui::DragFloat(nameTessLevelOuter.c_str(), &tess.tessLevelOuter, 0.1f, 0.1f, 500.0f))
+                                    {
+                                        
+                                    }
+                                    //tessLevelInner
+                                    std::string nameTessLevelInner = "tessLevelInner - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    if (ImGui::DragFloat(nameTessLevelInner.c_str(), &tess.tessLevelInner, 0.1f, 0.1f, 500.0f))
                                     {
                                         
                                     }

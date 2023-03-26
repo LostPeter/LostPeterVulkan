@@ -11,7 +11,8 @@
 #define MAX_OBJECT_COUNT 1024
 struct TessellationConstants
 {
-    float tessLevel;
+    float tessLevelOuter;
+    float tessLevelInner;
     float tessAlpha;
     float tessStrength;
 };
@@ -49,7 +50,6 @@ struct ConstantsHSOutput
 ConstantsHSOutput ConstantsHS(InputPatch<VSOutput, 3> patch, uint InvocationID : SV_PrimitiveID)
 {
     ConstantsHSOutput output = (ConstantsHSOutput)0;
-
 	output.tessLevelInner = 1;
     output.tessLevelOuter[0] = 1;
     output.tessLevelOuter[1] = 1;
