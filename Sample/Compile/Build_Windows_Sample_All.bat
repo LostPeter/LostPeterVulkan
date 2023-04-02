@@ -23,3 +23,4 @@ call ./Build_Windows_Sample.bat vulkan_009_instancing %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_010_lighting %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_011_texturing %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_012_shadering %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_013_indirectdraw %debug% %rebuild%
