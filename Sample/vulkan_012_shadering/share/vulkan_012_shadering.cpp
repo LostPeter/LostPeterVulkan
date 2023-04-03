@@ -21,14 +21,14 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 3;
+static const int g_MeshCount = 4;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
-
+    "bunny",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/bunny/bunny.obj", //bunny
 
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
@@ -36,6 +36,7 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     true, //plane
     false, //cube
     false, //sphere
+    false, //bunny
 
 };
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
@@ -43,6 +44,7 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //plane  
     false, //cube
     false, //sphere
+    false, //bunny
 
 };
 static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
@@ -50,16 +52,18 @@ static glm::mat4 g_MeshTranformLocals[g_MeshCount] =
     VulkanMath::ms_mat4Unit, //plane
     VulkanMath::ms_mat4Unit, //cube
     VulkanMath::ms_mat4Unit, //sphere
+    VulkanMath::ms_mat4Unit, //bunny
 
 };
 
 
 /////////////////////////// Texture /////////////////////////////
 static const std::string g_TextureDefault = "default_blackwhite";
-static const int g_TextureCount = 10;
+static const int g_TextureCount = 11;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
+    "white",                            "2d",            "false",                  "false",                           "Assets/Texture/white.bmp", //white  
     "default_blackwhite",               "2d",            "false",                  "false",                           "Assets/Texture/default_blackwhite.png", //default_blackwhite
     "bricks_diffuse",                   "2d",            "false",                  "false",                           "Assets/Texture/bricks_diffuse.png", //bricks_diffuse
     "terrain",                          "2d",            "false",                  "false",                           "Assets/Texture/terrain.png", //terrain
@@ -77,6 +81,7 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
 };
 static VkFormat g_TextureFormats[g_TextureCount] = 
 {
+    VK_FORMAT_R8G8B8A8_SRGB, //white
     VK_FORMAT_R8G8B8A8_SRGB, //default_blackwhite
     VK_FORMAT_R8G8B8A8_SRGB, //bricks_diffuse
     VK_FORMAT_R8G8B8A8_SRGB, //terrain
@@ -94,6 +99,7 @@ static VkFormat g_TextureFormats[g_TextureCount] =
 };
 static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
+    Vulkan_TextureFilter_Bilinear, //white
     Vulkan_TextureFilter_Bilinear, //default_blackwhite
     Vulkan_TextureFilter_Bilinear, //bricks_diffuse
     Vulkan_TextureFilter_Bilinear, //terrain
@@ -111,6 +117,7 @@ static VulkanTextureFilterType g_TextureFilters[g_TextureCount] =
 };
 static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
 {
+    Vulkan_TextureAddressing_Clamp, //white
     Vulkan_TextureAddressing_Clamp, //default_blackwhite
     Vulkan_TextureAddressing_Clamp, //bricks_diffuse
     Vulkan_TextureAddressing_Clamp, //terrain
@@ -128,6 +135,7 @@ static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] =
 };
 static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
+    Vulkan_TextureBorderColor_OpaqueBlack, //white
     Vulkan_TextureBorderColor_OpaqueBlack, //default_blackwhite
     Vulkan_TextureBorderColor_OpaqueBlack, //bricks_diffuse
     Vulkan_TextureBorderColor_OpaqueBlack, //terrain
@@ -145,6 +153,7 @@ static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
 {
+     64,     64,    1, //white
     512,    512,    1, //default_blackwhite
     512,    512,    1, //bricks_diffuse
     512,    512,    1, //terrain
@@ -162,6 +171,7 @@ static int g_TextureSizes[3 * g_TextureCount] =
 };
 static float g_TextureAnimChunks[2 * g_TextureCount] = 
 {
+    0,    0, //white
     0,    0, //default_blackwhite
     0,    0, //bricks_diffuse
     0,    0, //terrain
@@ -249,7 +259,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_ObjectCount = 9;
+static const int g_ObjectCount = 10;
 static const char* g_ObjectConfigs[5 * g_ObjectCount] = 
 {
     //Object Name                               //Mesh Name         //Texture VS            //Texture FS                                                                    //Texture CS
@@ -263,6 +273,8 @@ static const char* g_ObjectConfigs[5 * g_ObjectCount] =
 
     "tessellation_passthrough",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_passthrough
     "tessellation_pntriangles",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_pntriangles
+
+    "geometry_normal",                          "bunny",            "",                     "white",                                                                        "", //geometry_normal        
 
     "terrain",                                  "plane",            "",                     "texture_terrain_diffuse;texture_terrain_normal;texture_terrain_control",       "", //terrain
 
@@ -281,6 +293,8 @@ static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] =
     "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_passthrough",       "tese_standard_tessellation_passthrough",   "",                         "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_passthrough
     "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_pntriangles",       "tese_standard_tessellation_pntriangles",   "",                         "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_pntriangles
 
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //geometry_normal
+
     "vert_standard_terrain_opaque_lit",                     "",                                             "",                                         "",                         "frag_standard_terrain_opaque_lit",                     "", //terrain
     
 };
@@ -298,6 +312,8 @@ static const char* g_ObjectNameDescriptorSetLayouts[2 * g_ObjectCount] =
     "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_passthrough
     "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_pntriangles
 
+    "Pass-Object-Material-Instance-TextureFS",                          "", //geometry_normal
+
     "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",      "", //terrain
 };
 static float g_instanceGap = 1.5f;
@@ -314,6 +330,8 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
     0, //tessellation_passthrough 
     0, //tessellation_pntriangles 
 
+    0, //geometry_normal 
+
     0, //terrain 
 };
 static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] = 
@@ -328,6 +346,8 @@ static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] =
 
     glm::vec3(   0,  4.6,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_passthrough
     glm::vec3(   0,  5.8,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_pntriangles
+
+    glm::vec3(   0,   0,  -10),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //geometry_normal
 
     glm::vec3(   0, -0.1,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //terrain
 
@@ -345,6 +365,8 @@ static bool g_ObjectIsTransparents[g_ObjectCount] =
     false, //tessellation_passthrough
     false, //tessellation_pntriangles
 
+    false, //geometry_normal
+
     false, //terrain
 };
 static bool g_ObjectIsShows[] = 
@@ -359,6 +381,8 @@ static bool g_ObjectIsShows[] =
 
     true, //tessellation_passthrough
     true, //tessellation_pntriangles
+
+    true, //geometry_normal
 
     true, //terrain
 };
@@ -375,6 +399,8 @@ static bool g_ObjectIsRotates[g_ObjectCount] =
     false, //tessellation_passthrough
     false, //tessellation_pntriangles
 
+    false, //geometry_normal
+
     false, //terrain
 };
 static bool g_ObjectIsLightings[g_ObjectCount] =
@@ -390,6 +416,8 @@ static bool g_ObjectIsLightings[g_ObjectCount] =
     false, //tessellation_passthrough
     false, //tessellation_pntriangles
 
+    false, //geometry_normal
+
     true, //terrain
 };
 static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
@@ -404,6 +432,8 @@ static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
 
     true, //tessellation_passthrough
     true, //tessellation_pntriangles
+
+    false, //geometry_normal
 
     false, //terrain
 };
