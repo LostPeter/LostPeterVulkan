@@ -1066,6 +1066,18 @@ namespace LostPeter
         }
     };
 
+    //////////////////////////////// GeometryConstants //////////////////////////////
+    struct utilExport GeometryConstants
+    {
+        float length;
+
+        GeometryConstants()
+            : length(0.02f)
+        {
+
+        }
+    };
+
 }; //LostPeter
 
 namespace std 

@@ -12,12 +12,12 @@
 set name_shader=%1
 set debug=%2
 
-set name_vert=.vert
-set name_tesc=.tesc
-set name_tese=.tese
-set name_geom=.geom
-set name_frag=.frag
-set name_comp=.comp
+set name_vert=\.vert
+set name_tesc=\.tesc
+set name_tese=\.tese
+set name_geom=\.geom
+set name_frag=\.frag
+set name_comp=\.comp
 
 echo file name: %name_shader%
 

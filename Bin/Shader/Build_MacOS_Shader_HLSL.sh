@@ -10,12 +10,12 @@
 name_shader=${1}
 debug=${2}
 
-name_vert=".vert"
-name_tesc=".tesc"
-name_tese=".tese"
-name_geom=".geom"
-name_frag=".frag"
-name_comp=".comp"
+name_vert="\.vert"
+name_tesc="\.tesc"
+name_tese="\.tese"
+name_geom="\.geom"
+name_frag="\.frag"
+name_comp="\.comp"
 
 name_profile=""
 if [[ $name_shader =~ $name_vert ]]; then

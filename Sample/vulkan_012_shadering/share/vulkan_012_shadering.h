@@ -643,6 +643,7 @@ public:
             , countInstanceExt(0)
             , countInstance(1)
             , isUsedTessellation(false)
+            , isUsedGeometry(false)
 
             //Pipeline Graphics
 
@@ -711,6 +712,15 @@ public:
             this->poBuffers_tessellationCB.clear();
             this->poBuffersMemory_tessellationCB.clear();
 
+            count = this->poBuffers_geometryCB.size();
+            for (size_t i = 0; i < count; i++) 
+            {
+                this->pWindow->destroyBuffer(this->poBuffers_geometryCB[i], this->poBuffersMemory_geometryCB[i]);
+            }
+            this->geometryCBs.clear();
+            this->poBuffers_geometryCB.clear();
+            this->poBuffersMemory_geometryCB.clear();
+
             //Shader
             this->aShaderStageCreateInfos_Graphics.clear();
             this->aShaderStageCreateInfos_Computes.clear();
@@ -775,6 +785,11 @@ public:
         std::vector<VkBuffer> poBuffers_tessellationCB;
         std::vector<VkDeviceMemory> poBuffersMemory_tessellationCB;
         bool isUsedTessellation;
+
+        std::vector<GeometryConstants> geometryCBs;
+        std::vector<VkBuffer> poBuffers_geometryCB;
+        std::vector<VkDeviceMemory> poBuffersMemory_geometryCB;
+        bool isUsedGeometry;
 
         //Pipeline Graphics
         PipelineGraphics* pPipelineGraphics;
