@@ -299,6 +299,7 @@ namespace LostPeter
     class utilExport VulkanMeshGeometry
 	{
 	public:
+        static bool CreateGeometry(MeshData& meshData, VulkanMeshGeometryType eMeshGeometry);
 		static bool CreateGeometry(MeshData& meshData, VulkanMeshGeometryType eMeshGeometry, VulkanMeshCreateParam* pParam);
 
 	 //Triangle

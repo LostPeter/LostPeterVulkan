@@ -1069,10 +1069,16 @@ namespace LostPeter
     //////////////////////////////// GeometryConstants //////////////////////////////
     struct utilExport GeometryConstants
     {
+        float width;
+        float height;
         float length;
+        float reserve;
 
         GeometryConstants()
-            : length(0.02f)
+            : width(0.05f)
+            , height(3.0f)
+            , length(0.02f)
+            , reserve(0.0f)
         {
 
         }

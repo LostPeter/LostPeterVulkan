@@ -407,6 +407,91 @@ namespace LostPeter
     }
 
     ///////////////////////////////////////// VulkanMeshGeometry //////////////////////////////////////////////
+    bool VulkanMeshGeometry::CreateGeometry(MeshData& meshData, VulkanMeshGeometryType eMeshGeometry)
+    {
+        switch ((int)eMeshGeometry)
+        {
+        case Vulkan_MeshGeometry_Triangle:
+            {
+                VulkanMeshCreateParam_Triangle param_Triangle;
+                VulkanMeshGeometry::CreateTriangle(meshData, &param_Triangle);
+                return true;
+            }
+        case Vulkan_MeshGeometry_Quad:
+            {
+                VulkanMeshCreateParam_Quad param_Quad;
+                VulkanMeshGeometry::CreateQuad(meshData, &param_Quad);
+                return true;
+            }
+        case Vulkan_MeshGeometry_Grid:
+            {
+                VulkanMeshCreateParam_Grid param_Grid;
+                VulkanMeshGeometry::CreateGrid(meshData, &param_Grid);
+                return true;
+            }
+        case Vulkan_MeshGeometry_Circle:
+            {
+                VulkanMeshCreateParam_Circle param_Circle;
+                VulkanMeshGeometry::CreateCircle(meshData, &param_Circle);
+                return true;
+            }
+        case Vulkan_MeshGeometry_AABB:
+            {
+                VulkanMeshCreateParam_AABB param_AABB;
+                VulkanMeshGeometry::CreateAABB(meshData, &param_AABB);
+                return true;
+            }
+        case Vulkan_MeshGeometry_Sphere:
+            {
+                VulkanMeshCreateParam_Sphere param_Sphere;
+                VulkanMeshGeometry::CreateSphere(meshData, &param_Sphere);
+                return true;
+            }
+         case Vulkan_MeshGeometry_GeoSphere:
+            {
+                VulkanMeshCreateParam_GeoSphere param_GeoSphere;
+                VulkanMeshGeometry::CreateGeosphere(meshData, &param_GeoSphere);
+                return true;
+            }
+        case Vulkan_MeshGeometry_Cylinder:
+            {
+                VulkanMeshCreateParam_Cylinder param_Cylinder;
+                VulkanMeshGeometry::CreateCylinder(meshData, &param_Cylinder);
+                return true;
+            }
+        case Vulkan_MeshGeometry_Capsule:
+            {
+                VulkanMeshCreateParam_Capsule param_Capsule;
+                VulkanMeshGeometry::CreateCapsule(meshData, &param_Capsule);
+                return true;
+            }
+        case Vulkan_MeshGeometry_Cone:
+            {
+                VulkanMeshCreateParam_Cone param_Cone;
+                VulkanMeshGeometry::CreateCone(meshData, &param_Cone);
+                return true;
+            }
+        case Vulkan_MeshGeometry_Torus:
+            {
+                VulkanMeshCreateParam_Torus param_Torus;
+                VulkanMeshGeometry::CreateTorus(meshData, &param_Torus);
+                return true;
+            }
+        case Vulkan_MeshGeometry_SkyBox:
+            {
+                VulkanMeshCreateParam_SkyBox param_SkyBox;
+                VulkanMeshGeometry::CreateSkyBox(meshData, &param_SkyBox);
+                return true;
+            }
+        case Vulkan_MeshGeometry_SkyDome:
+            {
+                VulkanMeshCreateParam_SkyDome param_SkyDome;
+                VulkanMeshGeometry::CreateSkyDome(meshData, &param_SkyDome);
+                return true;
+            }
+        }
+        return false;
+    }
     bool VulkanMeshGeometry::CreateGeometry(MeshData& meshData, VulkanMeshGeometryType eMeshGeometry, VulkanMeshCreateParam* pParam)
     {   
         switch ((int)eMeshGeometry)

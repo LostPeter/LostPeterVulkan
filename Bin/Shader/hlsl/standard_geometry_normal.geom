@@ -68,7 +68,10 @@ struct ObjectConstants
 //GeometryConstants
 struct GeometryConstants
 {
+	float width;
+    float height;
     float length;
+	float reserve;
 };
 
 [[vk::binding(4)]]cbuffer geometryConsts            : register(b4)

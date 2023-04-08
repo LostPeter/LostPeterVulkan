@@ -10,6 +10,7 @@
 #include "PreInclude.h"
 #include "vulkan_012_shadering.h"
 #include "VulkanMeshLoader.h"
+#include "VulkanMeshGeometry.h"
 #include "VulkanCamera.h"
 #include "VulkanTimer.h"
 
@@ -21,10 +22,12 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 4;
+static const int g_MeshCount = 5;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
+    "geo_triangle",     "Pos3Color4Normal3Tex2",                "geometry",         "triangle",                 "", //geo_triangle
+
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
@@ -33,6 +36,9 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
+    true, //geo_triangle
+
+
     true, //plane
     false, //cube
     false, //sphere
@@ -41,6 +47,8 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
 };
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
 {
+    false, //geo_triangle
+
     false, //plane  
     false, //cube
     false, //sphere
@@ -49,6 +57,8 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
 };
 static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
 {
+    VulkanMath::ms_mat4Unit, //geo_triangle
+
     VulkanMath::ms_mat4Unit, //plane
     VulkanMath::ms_mat4Unit, //cube
     VulkanMath::ms_mat4Unit, //sphere
@@ -221,7 +231,7 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 21;
+static const int g_ShaderCount = 26;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
@@ -238,11 +248,16 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
     "tesc_standard_tessellation_passthrough",                  "tesc",              "Assets/Shader/standard_tessellation_passthrough.tesc.spv", //standard_tessellation_passthrough tesc
+    "tesc_standard_tessellation_triangle_intger",              "tesc",              "Assets/Shader/standard_tessellation_triangle_intger.tesc.spv", //standard_tessellation_triangle_intger tesc
+    "tesc_standard_tessellation_triangle_fractional_even",     "tesc",              "Assets/Shader/standard_tessellation_triangle_fractional_even.tesc.spv", //standard_tessellation_triangle_fractional_even tesc
+    "tesc_standard_tessellation_triangle_fractional_odd",      "tesc",              "Assets/Shader/standard_tessellation_triangle_fractional_odd.tesc.spv", //standard_tessellation_triangle_fractional_odd tesc
+    "tesc_standard_tessellation_triangle_pow2",                "tesc",              "Assets/Shader/standard_tessellation_triangle_pow2.tesc.spv", //standard_tessellation_triangle_pow2 tesc
     "tesc_standard_tessellation_pntriangles",                  "tesc",              "Assets/Shader/standard_tessellation_pntriangles.tesc.spv", //standard_tessellation_pntriangles tesc
     "tesc_standard_tessellation_terrain",                      "tesc",              "Assets/Shader/standard_tessellation_terrain.tesc.spv", //standard_tessellation_terrain tesc
 
     ///////////////////////////////////////// tese /////////////////////////////////////////
     "tese_standard_tessellation_passthrough",                  "tese",              "Assets/Shader/standard_tessellation_passthrough.tese.spv", //standard_tessellation_passthrough tese
+    "tese_standard_tessellation_triangle",                     "tese",              "Assets/Shader/standard_tessellation_triangle.tese.spv", //standard_tessellation_triangle tese
     "tese_standard_tessellation_pntriangles",                  "tese",              "Assets/Shader/standard_tessellation_pntriangles.tese.spv", //standard_tessellation_pntriangles tese
     "tese_standard_tessellation_terrain",                      "tese",              "Assets/Shader/standard_tessellation_terrain.tese.spv", //standard_tessellation_terrain tese
 
@@ -268,7 +283,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_ObjectCount = 11;
+static const int g_ObjectCount = 15;
 static const char* g_ObjectConfigs[5 * g_ObjectCount] = 
 {
     //Object Name                               //Mesh Name         //Texture VS            //Texture FS                                                                    //Texture CS
@@ -281,32 +296,40 @@ static const char* g_ObjectConfigs[5 * g_ObjectCount] =
     "compute_CopyTextureArray",                 "plane",            "",                     "texture_rt_compute_copy_texarray",                                             "texture_terrain_diffuse;texture_rt_compute_copy_texarray", //compute_CopyTextureArray
 
     "tessellation_passthrough",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_passthrough
+    "tessellation_triangle_integer",            "geo_triangle",     "",                     "bricks_diffuse",                                                               "", //tessellation_triangle_integer
+    "tessellation_triangle_fractional_even",    "geo_triangle",     "",                     "bricks_diffuse",                                                               "", //tessellation_triangle_fractional_even
+    "tessellation_triangle_fractional_odd",     "geo_triangle",     "",                     "bricks_diffuse",                                                               "", //tessellation_triangle_fractional_odd
+    "tessellation_triangle_pow2",               "geo_triangle",     "",                     "bricks_diffuse",                                                               "", //tessellation_triangle_pow2
     "tessellation_pntriangles",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_pntriangles
 
     "geometry_show",                            "bunny",            "",                     "white",                                                                        "", //geometry_show 
-    "geometry_normal",                          "bunny",            "",                     "",                                                                             "", //geometry_normal        
+    "geometry_normal",                          "bunny",            "",                     "",                                                                             "", //geometry_normal         
 
     "terrain",                                  "plane",            "",                     "texture_terrain_diffuse;texture_terrain_normal;texture_terrain_control",       "", //terrain
 
 };
 static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] = 
 {
-    //vert                                                  //tesc                                          //tese                                      //geom                              //frag                                                  //comp
-    "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                                 "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_SkyBox
-    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                             "",                                         "",                                 "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainDiffuse
-    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                             "",                                         "",                                 "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainNormal
-    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                             "",                                         "",                                 "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainControl
+    //vert                                                  //tesc                                                  //tese                                          //geom                                  //frag                                                  //comp
+    "vert_standard_mesh_opaque_texcubemap_lit",             "",                                                     "",                                             "",                                     "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_SkyBox
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                                     "",                                             "",                                     "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainDiffuse
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                                     "",                                             "",                                     "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainNormal
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                                     "",                                             "",                                     "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainControl
 
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                                 "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2d", //compute_CopyTexture
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                                 "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2darray", //compute_CopyTextureArray
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                             "",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2d", //compute_CopyTexture
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                             "",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2darray", //compute_CopyTextureArray
 
-    "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_passthrough",       "tese_standard_tessellation_passthrough",   "",                                 "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_passthrough
-    "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_pntriangles",       "tese_standard_tessellation_pntriangles",   "",                                 "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_pntriangles
+    "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_passthrough",               "tese_standard_tessellation_passthrough",       "",                                     "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_passthrough
+    "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_triangle_intger",           "tese_standard_tessellation_triangle",          "",                                     "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_triangle_integer
+    "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_triangle_fractional_even",  "tese_standard_tessellation_triangle",          "",                                     "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_triangle_fractional_even
+    "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_triangle_fractional_odd",   "tese_standard_tessellation_triangle",          "",                                     "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_triangle_fractional_odd
+    "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_triangle_pow2",             "tese_standard_tessellation_triangle",          "",                                     "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_triangle_pow2
+    "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_pntriangles",               "tese_standard_tessellation_pntriangles",       "",                                     "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_pntriangles
 
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                                 "frag_standard_mesh_opaque_tex2d_lit",                  "", //geometry_show
-    "vert_standard_geometry_normal",                        "",                                             "",                                         "geom_standard_geometry_normal",    "frag_standard_geometry_normal",                        "", //geometry_normal
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                             "",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //geometry_show
+    "vert_standard_geometry_normal",                        "",                                                     "",                                             "geom_standard_geometry_normal",        "frag_standard_geometry_normal",                        "", //geometry_normal
 
-    "vert_standard_terrain_opaque_lit",                     "",                                             "",                                         "",                                 "frag_standard_terrain_opaque_lit",                     "", //terrain
+    "vert_standard_terrain_opaque_lit",                     "",                                                     "",                                             "",                                     "frag_standard_terrain_opaque_lit",                     "", //terrain
     
 };
 static const char* g_ObjectNameDescriptorSetLayouts[2 * g_ObjectCount] = 
@@ -321,6 +344,10 @@ static const char* g_ObjectNameDescriptorSetLayouts[2 * g_ObjectCount] =
     "Pass-Object-Material-Instance-TextureFS",                          "TextureCopy-TextureCSR-TextureCSRW", //compute_CopyTextureArray
 
     "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_passthrough
+    "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_triangle_integer
+    "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_triangle_fractional_even
+    "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_triangle_fractional_odd
+    "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_triangle_pow2
     "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_pntriangles
 
     "Pass-Object-Material-Instance-TextureFS",                          "", //geometry_show
@@ -340,6 +367,10 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
     0, //compute_CopyTextureArray 
 
     0, //tessellation_passthrough 
+    0, //tessellation_triangle_integer 
+    0, //tessellation_triangle_fractional_even 
+    0, //tessellation_triangle_fractional_odd 
+    0, //tessellation_triangle_pow2 
     0, //tessellation_pntriangles 
 
     0, //geometry_show 
@@ -358,7 +389,11 @@ static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] =
     glm::vec3(   0,  3.4,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //compute_CopyTextureArray
 
     glm::vec3(   0,  4.6,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_passthrough
-    glm::vec3(   0,  5.8,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_pntriangles
+    glm::vec3(-2.0,  5.8,   0),     glm::vec3(     0,  0,  0),    glm::vec3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_integer
+    glm::vec3(-1.0,  5.8,   0),     glm::vec3(     0,  0,  0),    glm::vec3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_fractional_even
+    glm::vec3(   0,  5.8,   0),     glm::vec3(     0,  0,  0),    glm::vec3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_fractional_odd
+    glm::vec3( 1.0,  5.8,   0),     glm::vec3(     0,  0,  0),    glm::vec3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_pow2
+    glm::vec3(   0,  7.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_pntriangles
 
     glm::vec3(   0,   0,  -10),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //geometry_show
     glm::vec3(   0,   0,  -10),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //geometry_normal
@@ -377,6 +412,10 @@ static bool g_ObjectIsTransparents[g_ObjectCount] =
     false, //compute_CopyTextureArray
 
     false, //tessellation_passthrough
+    false, //tessellation_triangle_integer
+    false, //tessellation_triangle_fractional_even
+    false, //tessellation_triangle_fractional_odd
+    false, //tessellation_triangle_pow2
     false, //tessellation_pntriangles
 
     false, //geometry_show
@@ -395,6 +434,10 @@ static bool g_ObjectIsShows[] =
     true, //compute_CopyTextureArray
 
     true, //tessellation_passthrough
+    true, //tessellation_triangle_integer
+    true, //tessellation_triangle_fractional_even
+    true, //tessellation_triangle_fractional_odd
+    true, //tessellation_triangle_pow2
     true, //tessellation_pntriangles
 
     true, //geometry_show
@@ -413,6 +456,10 @@ static bool g_ObjectIsRotates[g_ObjectCount] =
     false, //compute_CopyTextureArray
 
     false, //tessellation_passthrough
+    false, //tessellation_triangle_integer
+    false, //tessellation_triangle_fractional_even
+    false, //tessellation_triangle_fractional_odd
+    false, //tessellation_triangle_pow2
     false, //tessellation_pntriangles
 
     false, //geometry_show
@@ -431,6 +478,10 @@ static bool g_ObjectIsLightings[g_ObjectCount] =
     false, //compute_CopyTextureArray
 
     false, //tessellation_passthrough
+    false, //tessellation_triangle_integer
+    false, //tessellation_triangle_fractional_even
+    false, //tessellation_triangle_fractional_odd
+    false, //tessellation_triangle_pow2
     false, //tessellation_pntriangles
 
     false, //geometry_show
@@ -449,6 +500,10 @@ static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
     false, //compute_CopyTextureArray
 
     true, //tessellation_passthrough
+    true, //tessellation_triangle_integer
+    true, //tessellation_triangle_fractional_even
+    true, //tessellation_triangle_fractional_odd
+    true, //tessellation_triangle_pow2
     true, //tessellation_pntriangles
 
     false, //geometry_show
@@ -464,11 +519,27 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
     //1> Load
     MeshData meshData;
     meshData.bIsFlipY = isFlipY;
-    unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
-    if (!VulkanMeshLoader::LoadMeshData(this->pathMesh, meshData, eMeshParserFlags))
+    if (this->typeMesh == Vulkan_Mesh_File)
     {
-        Util_LogError("Vulkan_012_Shadering::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
-        return false; 
+        unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
+        if (!VulkanMeshLoader::LoadMeshData(this->pathMesh, meshData, eMeshParserFlags))
+        {
+            Util_LogError("Vulkan_012_Shadering::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
+            return false; 
+        }
+    }
+    else if (this->typeMesh == Vulkan_Mesh_Geometry)
+    {
+        if (!VulkanMeshGeometry::CreateGeometry(meshData, this->typeGeometryType))
+        {
+            Util_LogError("Vulkan_012_Shadering::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", Util_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
+            return false; 
+        }
+    }
+    else
+    {
+        assert(false && "Vulkan_012_Shadering::ModelMesh::LoadMesh: Wrong typeMesh !");
+        return false;
     }
 
     int count_vertex = (int)meshData.vertices.size();
@@ -854,8 +925,8 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
             if (pModelObject->isUsedTessellation)
             {
                 TessellationConstants tessellationConstants;
-                tessellationConstants.tessLevelOuter = 3.0f;
-                tessellationConstants.tessLevelInner = 3.0f;
+                tessellationConstants.tessLevelOuter = 1.0f;
+                tessellationConstants.tessLevelInner = 1.0f;
                 tessellationConstants.tessAlpha = 1.0f;
                 pModelObject->tessellationCBs.push_back(tessellationConstants);
             }
@@ -864,6 +935,8 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
             if (pModelObject->isUsedGeometry)
             {
                 GeometryConstants geometryConstants;
+                geometryConstants.width = 0.05f;
+                geometryConstants.height = 3.0f;
                 geometryConstants.length = 0.02f;
                 pModelObject->geometryCBs.push_back(geometryConstants);
             }
@@ -2453,6 +2526,18 @@ bool Vulkan_012_Shadering::beginRenderImgui()
                                 if (ImGui::CollapsingHeader(nameGeometry.c_str()))
                                 {
                                     GeometryConstants& geometry = pModelObject->geometryCBs[j];
+                                    //width
+                                    std::string nameGeometryWidth = "width - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    if (ImGui::DragFloat(nameGeometryWidth.c_str(), &geometry.width, 0.001f, 0.001f, 10.0f))
+                                    {
+                                        
+                                    }
+                                    //height
+                                    std::string nameGeometryHeight = "height - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    if (ImGui::DragFloat(nameGeometryHeight.c_str(), &geometry.height, 0.001f, 0.001f, 10.0f))
+                                    {
+                                        
+                                    }
                                     //length
                                     std::string nameGeometryLength = "length - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                     if (ImGui::DragFloat(nameGeometryLength.c_str(), &geometry.length, 0.001f, 0.001f, 10.0f))
