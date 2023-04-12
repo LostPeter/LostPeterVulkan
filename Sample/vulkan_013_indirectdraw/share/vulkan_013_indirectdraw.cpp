@@ -23,7 +23,7 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 3;
+static const int g_MeshCount = 4;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
@@ -31,6 +31,7 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
 
+    "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Obj/cliff/cliff.obj", //cliff
 
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
@@ -39,6 +40,8 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     false, //cube
     false, //sphere
 
+    false, //cliff
+
 };
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
 {
@@ -46,12 +49,16 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //cube
     false, //sphere
 
+    false, //cliff
+
 };
 static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
 {
     VulkanMath::ms_mat4Unit, //plane
     VulkanMath::ms_mat4Unit, //cube
     VulkanMath::ms_mat4Unit, //sphere
+
+    VulkanMath::ms_mat4Unit, //cliff
 
 };
 
@@ -73,8 +80,8 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
     "texture_terrain_normal",           "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png", //texture_terrain_normal
     "texture_terrain_control",          "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/terrain_control.png", //texture_terrain_control
 
-    "texture_rt_compute_copy_tex",      "2d",            "true",                   "true",                            "", //texture_rt_compute_copy_tex
-    "texture_rt_compute_copy_texarray", "2d",            "true",                   "true",                            "", //texture_rt_compute_copy_texarray
+    "cliff_diffuse",                    "2d",            "false",                  "false",                            "Assets/Model/Obj/cliff/cliff_diffuse.png", //cliff_diffuse
+    "cliff_normal",                     "2d",            "false",                  "false",                            "Assets/Model/Obj/cliff/cliff_normal.png", //cliff_normal
 
 };
 static VkFormat g_TextureFormats[g_TextureCount] = 
@@ -90,8 +97,8 @@ static VkFormat g_TextureFormats[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_UNORM, //texture_terrain_normal
     VK_FORMAT_R8G8B8A8_UNORM, //texture_terrain_control
 
-    VK_FORMAT_R8G8B8A8_UNORM, //texture_rt_compute_copy_tex
-    VK_FORMAT_R8G8B8A8_UNORM, //texture_rt_compute_copy_texarray
+    VK_FORMAT_R8G8B8A8_SRGB, //cliff_diffuse
+    VK_FORMAT_R8G8B8A8_UNORM, //cliff_normal
 
 };
 static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
@@ -107,8 +114,8 @@ static VulkanTextureFilterType g_TextureFilters[g_TextureCount] =
     Vulkan_TextureFilter_Bilinear, //texture_terrain_normal
     Vulkan_TextureFilter_Bilinear, //texture_terrain_control
 
-    Vulkan_TextureFilter_Bilinear, //texture_rt_compute_copy_tex
-    Vulkan_TextureFilter_Bilinear, //texture_rt_compute_copy_texarray
+    Vulkan_TextureFilter_Bilinear, //cliff_diffuse
+    Vulkan_TextureFilter_Bilinear, //cliff_normal
 
 };
 static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
@@ -124,8 +131,8 @@ static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] =
     Vulkan_TextureAddressing_Clamp, //texture_terrain_normal
     Vulkan_TextureAddressing_Clamp, //texture_terrain_control
 
-    Vulkan_TextureAddressing_Clamp, //texture_rt_compute_copy_tex
-    Vulkan_TextureAddressing_Clamp, //texture_rt_compute_copy_texarray
+    Vulkan_TextureAddressing_Clamp, //cliff_diffuse
+    Vulkan_TextureAddressing_Clamp, //cliff_normal
 
 };
 static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
@@ -141,8 +148,8 @@ static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
     Vulkan_TextureBorderColor_OpaqueBlack, //texture_terrain_normal
     Vulkan_TextureBorderColor_OpaqueBlack, //texture_terrain_control
 
-    Vulkan_TextureBorderColor_OpaqueBlack, //texture_rt_compute_copy_tex
-    Vulkan_TextureBorderColor_OpaqueBlack, //texture_rt_compute_copy_texarray
+    Vulkan_TextureBorderColor_OpaqueBlack, //cliff_diffuse
+    Vulkan_TextureBorderColor_OpaqueBlack, //cliff_normal
 
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
@@ -158,8 +165,8 @@ static int g_TextureSizes[3 * g_TextureCount] =
    1024,   1024,    1, //texture_terrain_normal
     512,    512,    1, //texture_terrain_control
 
-   1024,   1024,    1, //texture_rt_compute_copy_tex
-   2048,   2048,    1, //texture_rt_compute_copy_texarray
+    512,    512,    1, //cliff_diffuse
+   1024,   1024,    1, //cliff_normal
 
 };
 static float g_TextureAnimChunks[2 * g_TextureCount] = 
@@ -175,8 +182,8 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
     0,    0, //texture_terrain_normal
     0,    0, //texture_terrain_control
 
-    0,    0, //texture_rt_compute_copy_tex
-    0,    0, //texture_rt_compute_copy_texarray
+    0,    0, //cliff_diffuse
+    0,    0, //cliff_normal
 
 };
 
@@ -209,7 +216,7 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 18;
+static const int g_ShaderCount = 10;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
@@ -218,19 +225,15 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "vert_standard_mesh_opaque_texcubemap_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
     "vert_standard_mesh_opaque_tex2darray_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
     
-    "vert_standard_mesh_opaque_tex2d_tessellation_lit",        "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_tessellation_lit.vert.spv", //standard_mesh_opaque_tex2d_tessellation_lit vert
-
     "vert_standard_terrain_opaque_lit",                        "vert",              "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
 
+    "vert_standard_mesh_opaque_texnormalmap_lit",              "vert",             "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.vert.spv", //standard_mesh_opaque_texnormalmap_lit vert   
+
     ///////////////////////////////////////// tesc /////////////////////////////////////////
-    "tesc_standard_tessellation_passthrough",                  "tesc",              "Assets/Shader/standard_tessellation_passthrough.tesc.spv", //standard_tessellation_passthrough tesc
-    "tesc_standard_tessellation_pntriangles",                  "tesc",              "Assets/Shader/standard_tessellation_pntriangles.tesc.spv", //standard_tessellation_pntriangles tesc
-    "tesc_standard_tessellation_terrain",                      "tesc",              "Assets/Shader/standard_tessellation_terrain.tesc.spv", //standard_tessellation_terrain tesc
+   
 
     ///////////////////////////////////////// tese /////////////////////////////////////////
-    "tese_standard_tessellation_passthrough",                  "tese",              "Assets/Shader/standard_tessellation_passthrough.tese.spv", //standard_tessellation_passthrough tese
-    "tese_standard_tessellation_pntriangles",                  "tese",              "Assets/Shader/standard_tessellation_pntriangles.tese.spv", //standard_tessellation_pntriangles tese
-    "tese_standard_tessellation_terrain",                      "tese",              "Assets/Shader/standard_tessellation_terrain.tese.spv", //standard_tessellation_terrain tese
+   
 
     ///////////////////////////////////////// geom /////////////////////////////////////////
 
@@ -239,175 +242,102 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
     "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
 
-    "frag_standard_mesh_opaque_tex2d_tessellation_lit",        "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_tessellation_lit.frag.spv", //standard_mesh_opaque_tex2d_tessellation_lit frag
-
     "frag_standard_terrain_opaque_lit",                        "frag",              "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
 
+    "frag_standard_mesh_opaque_texnormalmap_lit",              "frag",              "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit frag
+
     ///////////////////////////////////////// comp /////////////////////////////////////////
-    "comp_standard_compute_texcopy_tex2d",                     "comp",              "Assets/Shader/standard_compute_texcopy_tex2d.comp.spv", //standard_compute_texcopy_tex2d comp
-    "comp_standard_compute_texcopy_tex2darray",                "comp",              "Assets/Shader/standard_compute_texcopy_tex2darray.comp.spv", //standard_compute_texcopy_tex2darray comp
+    
 
 };
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_ObjectCount = 9;
-static const char* g_ObjectConfigs[5 * g_ObjectCount] = 
+static const int g_ObjectCount = 3;
+static const char* g_ObjectConfigs[8 * g_ObjectCount] = 
 {
-    //Object Name                               //Mesh Name         //Texture VS            //Texture FS                                                                    //Texture CS
-    "textureCubeMap_SkyBox",                    "cube",             "",                     "texturecubemap",                                                               "", //textureCubeMap_SkyBox
-    "texture2Darray_TerrainDiffuse",            "plane",            "",                     "texture_terrain_diffuse",                                                      "", //texture2Darray_TerrainDiffuse
-    "texture2Darray_TerrainNormal",             "plane",            "",                     "texture_terrain_normal",                                                       "", //texture2Darray_TerrainNormal
-    "texture2Darray_TerrainControl",            "plane",            "",                     "texture_terrain_control",                                                      "", //texture2Darray_TerrainControl
+    //Object Name                               //Mesh Name         //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
+    "textureCubeMap_SkyBox",                    "cube",             "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //textureCubeMap_SkyBox
+    "terrain_ground",                           "plane",            "",                     "",                              "",                         "",                    "texture_terrain_diffuse;texture_terrain_normal;texture_terrain_control",       "", //terrain_ground
 
-    "compute_CopyTexture",                      "plane",            "",                     "texture_rt_compute_copy_tex",                                                  "default_blackwhite;texture_rt_compute_copy_tex", //compute_CopyTexture
-    "compute_CopyTextureArray",                 "plane",            "",                     "texture_rt_compute_copy_texarray",                                             "texture_terrain_diffuse;texture_rt_compute_copy_texarray", //compute_CopyTextureArray
-
-    "tessellation_passthrough",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_passthrough
-    "tessellation_pntriangles",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_pntriangles
-
-    "terrain",                                  "plane",            "",                     "texture_terrain_diffuse;texture_terrain_normal;texture_terrain_control",       "", //terrain
+    "cliff_rock",                               "cliff",            "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //cliff_rock
 
 };
 static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] = 
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
     "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_SkyBox
-    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainDiffuse
-    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainNormal
-    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainControl
-
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2d", //compute_CopyTexture
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2darray", //compute_CopyTextureArray
-
-    "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_passthrough",       "tese_standard_tessellation_passthrough",   "",                         "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_passthrough
-    "vert_standard_mesh_opaque_tex2d_tessellation_lit",     "tesc_standard_tessellation_pntriangles",       "tese_standard_tessellation_pntriangles",   "",                         "frag_standard_mesh_opaque_tex2d_tessellation_lit",     "", //tessellation_pntriangles
-
-    "vert_standard_terrain_opaque_lit",                     "",                                             "",                                         "",                         "frag_standard_terrain_opaque_lit",                     "", //terrain
+    "vert_standard_terrain_opaque_lit",                     "",                                             "",                                         "",                         "frag_standard_terrain_opaque_lit",                     "", //terrain_ground
     
+    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //cliff_rock
+
 };
 static const char* g_ObjectNameDescriptorSetLayouts[2 * g_ObjectCount] = 
 {
     //Pipeline Graphics                                                 //Pipeline Compute
     "Pass-Object-Material-Instance-TextureFS",                          "", //textureCubeMap_SkyBox
-    "Pass-Object-Material-Instance-TextureFS",                          "", //texture2Darray_TerrainDiffuse
-    "Pass-Object-Material-Instance-TextureFS",                          "", //texture2Darray_TerrainNormal
-    "Pass-Object-Material-Instance-TextureFS",                          "", //texture2Darray_TerrainControl
+    "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",      "", //terrain_ground
 
-    "Pass-Object-Material-Instance-TextureFS",                          "TextureCopy-TextureCSR-TextureCSRW", //compute_CopyTexture
-    "Pass-Object-Material-Instance-TextureFS",                          "TextureCopy-TextureCSR-TextureCSRW", //compute_CopyTextureArray
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //cliff_rock
 
-    "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_passthrough
-    "Pass-Object-Material-Instance-TextureFS-Tessellation",             "", //tessellation_pntriangles
-
-    "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",      "", //terrain
 };
 static float g_instanceGap = 1.5f;
 static int g_ObjectInstanceExtCount[g_ObjectCount] =
 {
     0, //textureCubeMap_SkyBox
-    0, //texture2Darray_TerrainDiffuse 
-    0, //texture2Darray_TerrainNormal 
-    0, //texture2Darray_TerrainControl 
+    0, //terrain_ground 
 
-    0, //compute_CopyTexture 
-    0, //compute_CopyTextureArray 
+    5, //cliff_rock 
 
-    0, //tessellation_passthrough 
-    0, //tessellation_pntriangles 
-
-    0, //terrain 
 };
 static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] = 
 {   
     glm::vec3(   0,    0,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
-    glm::vec3(-2.0,  1.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainDiffuse
-    glm::vec3(   0,  1.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainNormal
-    glm::vec3( 2.0,  1.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainControl
+    glm::vec3(   0, -0.1,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //terrain_ground
 
-    glm::vec3(   0,  2.2,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //compute_CopyTexture
-    glm::vec3(   0,  3.4,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //compute_CopyTextureArray
-
-    glm::vec3(   0,  4.6,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_passthrough
-    glm::vec3(   0,  5.8,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_pntriangles
-
-    glm::vec3(   0, -0.1,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //terrain
+    glm::vec3(   0,  1.0,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 0.1f,   0.1f,   0.1f), //cliff_rock
 
 };
 static bool g_ObjectIsTransparents[g_ObjectCount] = 
 {
     false, //textureCubeMap_SkyBox
-    false, //texture2Darray_TerrainDiffuse
-    false, //texture2Darray_TerrainNormal
-    false, //texture2Darray_TerrainControl
+    false, //terrain_ground
 
-    false, //compute_CopyTexture
-    false, //compute_CopyTextureArray
+    false, //cliff_rock
 
-    false, //tessellation_passthrough
-    false, //tessellation_pntriangles
-
-    false, //terrain
 };
 static bool g_ObjectIsShows[] = 
 {
     true, //textureCubeMap_SkyBox
-    true, //texture2Darray_TerrainDiffuse
-    true, //texture2Darray_TerrainNormal
-    true, //texture2Darray_TerrainControl
+    true, //terrain_ground
 
-    true, //compute_CopyTexture
-    true, //compute_CopyTextureArray
+    true, //cliff_rock
 
-    true, //tessellation_passthrough
-    true, //tessellation_pntriangles
 
-    true, //terrain
 };
 static bool g_ObjectIsRotates[g_ObjectCount] =
 {
     false, //textureCubeMap_SkyBox
-    false, //texture2Darray_TerrainDiffuse
-    false, //texture2Darray_TerrainNormal
-    false, //texture2Darray_TerrainControl
+    false, //terrain_ground
 
-    false, //compute_CopyTexture
-    false, //compute_CopyTextureArray
+    false, //cliff_rock
 
-    false, //tessellation_passthrough
-    false, //tessellation_pntriangles
-
-    false, //terrain
 };
 static bool g_ObjectIsLightings[g_ObjectCount] =
 {
     true, //textureCubeMap_SkyBox
-    false, //texture2Darray_TerrainDiffuse
-    false, //texture2Darray_TerrainNormal
-    false, //texture2Darray_TerrainControl
+    true, //terrain_ground
 
-    false, //compute_CopyTexture
-    false, //compute_CopyTextureArray
+    true, //cliff_rock
 
-    false, //tessellation_passthrough
-    false, //tessellation_pntriangles
-
-    true, //terrain
 };
 static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
 {
     false, //textureCubeMap_SkyBox
-    false, //texture2Darray_TerrainDiffuse
-    false, //texture2Darray_TerrainNormal
-    false, //texture2Darray_TerrainControl
+    false, //terrain_ground
+    
+    false, //cliff_rock
 
-    false, //compute_CopyTexture
-    false, //compute_CopyTextureArray
-
-    true, //tessellation_passthrough
-    true, //tessellation_pntriangles
-
-    false, //terrain
 };
 
 
@@ -630,8 +560,8 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
         ModelObject* pModelObject = new ModelObject(this);
 
         pModelObject->indexModel = i;
-        pModelObject->nameObject = g_ObjectConfigs[5 * i + 0]; //Object Name     
-        pModelObject->nameMesh = g_ObjectConfigs[5 * i + 1]; //Mesh Name
+        pModelObject->nameObject = g_ObjectConfigs[8 * i + 0]; 
+        pModelObject->nameMesh = g_ObjectConfigs[8 * i + 1]; 
 
         //Mesh
         {
@@ -642,7 +572,7 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
 
         //Texture VS
         {
-            std::string nameTextureVS = g_ObjectConfigs[5 * i + 2]; //Texture VS
+            std::string nameTextureVS = g_ObjectConfigs[8 * i + 2]; //Texture VS
             if (!nameTextureVS.empty())
             {
                 std::vector<std::string> aTextureVS = VulkanUtilString::Split(nameTextureVS, ";");
@@ -655,9 +585,54 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
                 }
             }
         }
+        //Texture TESC
+        {
+            std::string nameTextureTESC = g_ObjectConfigs[8 * i + 3]; //Texture TESC
+            if (!nameTextureTESC.empty())
+            {
+                std::vector<std::string> aTextureTESC = VulkanUtilString::Split(nameTextureTESC, ";");
+                size_t count_tex = aTextureTESC.size();
+                for (size_t j = 0; j < count_tex; j++)
+                {
+                    std::string nameTex = aTextureTESC[j];
+                    ModelTexture* pTextureTESC = this->findModelTexture(nameTex);
+                    pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), pTextureTESC);
+                }
+            }
+        }
+        //Texture TESE
+        {
+            std::string nameTextureTESE = g_ObjectConfigs[8 * i + 4]; //Texture TESE
+            if (!nameTextureTESE.empty())
+            {
+                std::vector<std::string> aTextureTESE = VulkanUtilString::Split(nameTextureTESE, ";");
+                size_t count_tex = aTextureTESE.size();
+                for (size_t j = 0; j < count_tex; j++)
+                {
+                    std::string nameTex = aTextureTESE[j];
+                    ModelTexture* pTextureTESE = this->findModelTexture(nameTex);
+                    pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), pTextureTESE);
+                }
+            }
+        }
+        //Texture GS
+        {
+            std::string nameTextureGS = g_ObjectConfigs[8 * i + 5]; //Texture GS
+            if (!nameTextureGS.empty())
+            {
+                std::vector<std::string> aTextureGS = VulkanUtilString::Split(nameTextureGS, ";");
+                size_t count_tex = aTextureGS.size();
+                for (size_t j = 0; j < count_tex; j++)
+                {
+                    std::string nameTex = aTextureGS[j];
+                    ModelTexture* pTextureGS = this->findModelTexture(nameTex);
+                    pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), pTextureGS);
+                }
+            }
+        }
         //Texture FS
         {
-            std::string nameTextureFS = g_ObjectConfigs[5 * i + 3]; //Texture FS
+            std::string nameTextureFS = g_ObjectConfigs[8 * i + 6]; //Texture FS
             if (!nameTextureFS.empty())
             {
                 std::vector<std::string> aTextureFS = VulkanUtilString::Split(nameTextureFS, ";");
@@ -672,7 +647,7 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
         }
         //Texture CS
         {
-            std::string nameTextureCS = g_ObjectConfigs[5 * i + 4]; //Texture CS
+            std::string nameTextureCS = g_ObjectConfigs[8 * i + 7]; //Texture CS
             if (!nameTextureCS.empty())
             {
                 std::vector<std::string> aTextureCS = VulkanUtilString::Split(nameTextureCS, ";");
@@ -2045,7 +2020,7 @@ bool Vulkan_013_IndirectDraw::beginRenderImgui()
 
         //1> Model
         float fGap = g_instanceGap;
-        if (ImGui::DragFloat("Instance Gap: ", &fGap, 0.1f, 1.0f, 5.0f))
+        if (ImGui::DragFloat("Instance Gap: ", &fGap, 0.1f, 1.0f, 100.0f))
         {
             g_instanceGap = fGap;
             rebuildInstanceCBs(false);
