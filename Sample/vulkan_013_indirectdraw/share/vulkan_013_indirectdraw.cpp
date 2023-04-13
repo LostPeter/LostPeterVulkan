@@ -23,7 +23,7 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 5;
+static const int g_MeshCount = 6;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
@@ -34,6 +34,7 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
     "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Obj/cliff/cliff.obj", //cliff
 
     "tree",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree/tree.fbx", //tree
+    "tree_spruce",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree_spruce/tree_spruce.fbx", //tree_spruce
 
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
@@ -45,6 +46,7 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     false, //cliff
 
     false, //tree
+    false, //tree_spruce
 
 };
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
@@ -56,6 +58,7 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //cliff
 
     false, //tree
+    false, //tree_spruce
 
 };
 static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
@@ -67,13 +70,14 @@ static glm::mat4 g_MeshTranformLocals[g_MeshCount] =
     VulkanMath::ms_mat4Unit, //cliff
 
     VulkanMath::ms_mat4Unit, //tree
+    VulkanMath::ms_mat4Unit, //tree_spruce
 
 };
 
 
 /////////////////////////// Texture /////////////////////////////
 static const std::string g_TextureDefault = "default_blackwhite";
-static const int g_TextureCount = 11;
+static const int g_TextureCount = 12;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
@@ -92,6 +96,7 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
     "cliff_normal",                     "2d",            "false",                  "false",                           "Assets/Model/Obj/cliff/cliff_normal.png", //cliff_normal
 
     "tree_diffuse",                     "2d",            "false",                  "false",                           "Assets/Model/Fbx/tree/tree_diffuse.png", //tree_diffuse
+    "tree_spruce_diffuse",              "2d",            "false",                  "false",                           "Assets/Model/Fbx/tree_spruce/tree_spruce_diffuse.png", //tree_spruce_diffuse
 
 };
 static VkFormat g_TextureFormats[g_TextureCount] = 
@@ -111,6 +116,7 @@ static VkFormat g_TextureFormats[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_UNORM, //cliff_normal
 
     VK_FORMAT_R8G8B8A8_SRGB, //tree_diffuse
+    VK_FORMAT_R8G8B8A8_SRGB, //tree_spruce_diffuse
 
 };
 static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
@@ -130,6 +136,7 @@ static VulkanTextureFilterType g_TextureFilters[g_TextureCount] =
     Vulkan_TextureFilter_Bilinear, //cliff_normal
 
     Vulkan_TextureFilter_Bilinear, //tree_diffuse
+    Vulkan_TextureFilter_Bilinear, //tree_spruce_diffuse
 
 };
 static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
@@ -149,6 +156,7 @@ static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] =
     Vulkan_TextureAddressing_Clamp, //cliff_normal
 
     Vulkan_TextureAddressing_Clamp, //tree_diffuse
+    Vulkan_TextureAddressing_Clamp, //tree_spruce_diffuse
 
 };
 static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
@@ -168,6 +176,7 @@ static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
     Vulkan_TextureBorderColor_OpaqueBlack, //cliff_normal
 
     Vulkan_TextureBorderColor_OpaqueBlack, //tree_diffuse
+    Vulkan_TextureBorderColor_OpaqueBlack, //tree_spruce_diffuse
 
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
@@ -187,6 +196,7 @@ static int g_TextureSizes[3 * g_TextureCount] =
    1024,   1024,    1, //cliff_normal
 
    1024,   1024,    1, //tree_diffuse
+   1024,   1024,    1, //tree_spruce_diffuse
 
 };
 static float g_TextureAnimChunks[2 * g_TextureCount] = 
@@ -206,6 +216,7 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
     0,    0, //cliff_normal
 
     0,    0, //tree_diffuse
+    0,    0, //tree_spruce_diffuse
 
 };
 
@@ -276,7 +287,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_ObjectCount = 4;
+static const int g_ObjectCount = 5;
 static const char* g_ObjectConfigs[8 * g_ObjectCount] = 
 {
     //Object Name                               //Mesh Name         //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
@@ -286,7 +297,8 @@ static const char* g_ObjectConfigs[8 * g_ObjectCount] =
     "cliff_rock",                               "cliff",            "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //cliff_rock
 
     "tree_object",                              "tree",             "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //tree_object
-
+    "tree_spruce_object",                       "tree_spruce",      "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //tree_spruce_object
+    
 };
 static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] = 
 {
@@ -297,6 +309,7 @@ static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] =
     "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //cliff_rock
 
     "vert_standard_tree_transparent_lit",                   "",                                             "",                                         "",                         "frag_standard_tree_transparent_lit",                   "", //tree_object
+    "vert_standard_tree_transparent_lit",                   "",                                             "",                                         "",                         "frag_standard_tree_transparent_lit",                   "", //tree_spruce_object
 
 };
 static const char* g_ObjectNameDescriptorSetLayouts[2 * g_ObjectCount] = 
@@ -308,6 +321,7 @@ static const char* g_ObjectNameDescriptorSetLayouts[2 * g_ObjectCount] =
     "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //cliff_rock
 
     "Pass-Object-Material-Instance-TextureFS",                          "", //tree_object
+    "Pass-Object-Material-Instance-TextureFS",                          "", //tree_spruce_object
 
 };
 static float g_instanceGap = 1.5f;
@@ -319,16 +333,18 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
     5, //cliff_rock 
 
     5, //tree_object 
+    5, //tree_spruce_object 
 
 };
 static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] = 
 {   
     glm::vec3(   0,    0,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
-    glm::vec3(   0, -0.1,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //terrain_ground
+    glm::vec3(   0, -0.1,   0),     glm::vec3(     0,  0,  0),    glm::vec3(   1.0f,    1.0f,    1.0f), //terrain_ground
 
-    glm::vec3(   0,  0.5,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 0.1f,   0.1f,   0.1f), //cliff_rock
+    glm::vec3(   0,  0.5,   0),     glm::vec3(     0,  0,  0),    glm::vec3(   0.1f,    0.1f,    0.1f), //cliff_rock
 
-    glm::vec3(   0,  0.5,  1.0),    glm::vec3(     0,  0,  0),    glm::vec3( 0.1f,   0.1f,   0.1f), //tree_object
+    glm::vec3(   0,  0.5, -5.0),    glm::vec3(     0,  0,  0),    glm::vec3(  10.0f,   10.0f,   10.0f), //tree_object
+    glm::vec3(   0,  0.5,  5.0),    glm::vec3(     0,  0,  0),    glm::vec3(  10.0f,   10.0f,   10.0f), //tree_spruce_object
 
 };
 static bool g_ObjectIsTransparents[g_ObjectCount] = 
@@ -338,7 +354,8 @@ static bool g_ObjectIsTransparents[g_ObjectCount] =
 
     false, //cliff_rock
 
-    false, //tree_object
+    true, //tree_object
+    true, //tree_spruce_object
 
 };
 static bool g_ObjectIsShows[] = 
@@ -349,6 +366,7 @@ static bool g_ObjectIsShows[] =
     true, //cliff_rock
 
     true, //tree_object
+    true, //tree_spruce_object
 
 };
 static bool g_ObjectIsRotates[g_ObjectCount] =
@@ -359,6 +377,7 @@ static bool g_ObjectIsRotates[g_ObjectCount] =
     false, //cliff_rock
 
     false, //tree_object
+    false, //tree_spruce_object
 
 };
 static bool g_ObjectIsLightings[g_ObjectCount] =
@@ -369,8 +388,9 @@ static bool g_ObjectIsLightings[g_ObjectCount] =
     true, //cliff_rock
 
     true, //tree_object
+    true, //tree_spruce_object
 
-};  
+}; 
 static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
 {
     false, //textureCubeMap_SkyBox
@@ -379,6 +399,7 @@ static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
     false, //cliff_rock
 
     false, //tree_object
+    false, //tree_spruce_object
 
 };
 
@@ -559,8 +580,6 @@ Vulkan_013_IndirectDraw::Vulkan_013_IndirectDraw(int width, int height, std::str
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
-    this->cfg_isUseComputeShader = true;
-    this->cfg_isCreateRenderComputeSycSemaphore = true;
 
     this->cfg_cameraPos = glm::vec3(-2.5f, 2.0f, -20.0f);
     this->cfg_cameraLookTarget = glm::vec3(-2.5f, 5.0f, 0.0f);
@@ -1424,14 +1443,14 @@ VkShaderModule Vulkan_013_IndirectDraw::findShaderModule(const std::string& name
     return itFind->second;
 }   
 bool Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
-                                                                const std::string& nameShaderTesc,
-                                                                const std::string& nameShaderTese,
-                                                                const std::string& nameShaderGeom,
-                                                                const std::string& nameShaderFrag,
-                                                                const std::string& nameShaderComp,
-                                                                VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
-                                                                VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
-                                                                VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
+                                                                   const std::string& nameShaderTesc,
+                                                                   const std::string& nameShaderTese,
+                                                                   const std::string& nameShaderGeom,
+                                                                   const std::string& nameShaderFrag,
+                                                                   const std::string& nameShaderComp,
+                                                                   VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
+                                                                   VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                                                   VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
 {
     if (!createPipelineShaderStageCreateInfos(nameShaderVert,
                                               nameShaderTesc,
@@ -1453,11 +1472,11 @@ bool Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos(const std::st
     return true;
 }
 bool Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
-                                                                const std::string& nameShaderTesc,
-                                                                const std::string& nameShaderTese,
-                                                                const std::string& nameShaderGeom,
-                                                                const std::string& nameShaderFrag,
-                                                                VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics)
+                                                                   const std::string& nameShaderTesc,
+                                                                   const std::string& nameShaderTese,
+                                                                   const std::string& nameShaderGeom,
+                                                                   const std::string& nameShaderFrag,
+                                                                   VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics)
 {
     //vert
     {
