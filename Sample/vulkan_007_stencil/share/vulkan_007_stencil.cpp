@@ -574,7 +574,7 @@ void Vulkan_007_Stencil::updateCBs_Custom()
         {
             ObjectConstants& objectCB = pModelObject->objectCBs[j];
             ObjectConstants_Outline& objectCB_Outline = pModelObject->objectCBs_Outline[j];
-            if (pModelObject->isRotate)
+            if (pModelObject->isRotate || this->cfg_isRotate)
             {
                 objectCB.g_MatWorld = glm::rotate(pModelObject->poMatWorld, 
                                                 time * glm::radians(90.0f), 
@@ -615,10 +615,24 @@ bool Vulkan_007_Stencil::beginRenderImgui()
     static bool windowOpened = true;
     ImGui::Begin("Vulkan_007_Stencil", &windowOpened, 0);
     {
-        ImGui::Text("Frametime: %f", this->fFPS);
-        ImGui::Separator();
+        //0> Common
+        commonConfig();
 
-        //1> Model
+        //1> Camera
+        cameraConfig();
+
+        //2> Model
+        modelConfig();
+        
+    }
+    ImGui::End();
+
+    return true;
+}
+void Vulkan_007_Stencil::modelConfig()
+{
+    if (ImGui::CollapsingHeader("Model Settings"))
+    {
         int count = this->m_aModelObjects.size();
         for (int i = 0; i < count; i++)
         {
@@ -685,16 +699,7 @@ bool Vulkan_007_Stencil::beginRenderImgui()
                 }
             }
         }
-        
-        ImGui::Separator();
-        ImGui::Spacing();
-
-        //2> Camera
-        cameraConfig();
     }
-    ImGui::End();
-
-    return true;
 }
 
 void Vulkan_007_Stencil::endRenderImgui()
@@ -720,7 +725,7 @@ void Vulkan_007_Stencil::drawMesh_Custom(VkCommandBuffer& commandBuffer)
             vkCmdBindIndexBuffer(commandBuffer, pModelObject->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
         }
 
-        if (pModelObject->isWireFrame)
+        if (pModelObject->isWireFrame || this->cfg_isWireFrame)
         {
             vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_WireFrame);
             if (pModelObject->poDescriptorSets.size() > 0)

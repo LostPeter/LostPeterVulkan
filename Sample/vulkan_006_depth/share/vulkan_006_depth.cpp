@@ -458,7 +458,7 @@ void Vulkan_006_Depth::updateCBs_Custom()
         for (size_t j = 0; j < count_object; j++)
         {
             ObjectConstants& objectCB = pModelObject->objectCBs[j];
-            if (pModelObject->isRotate)
+            if (pModelObject->isRotate || this->cfg_isRotate)
             {
                 objectCB.g_MatWorld = glm::rotate(pModelObject->poMatWorld, 
                                                   time * glm::radians(90.0f), 
@@ -487,10 +487,24 @@ bool Vulkan_006_Depth::beginRenderImgui()
     static bool windowOpened = true;
     ImGui::Begin("Vulkan_006_Depth", &windowOpened, 0);
     {
-        ImGui::Text("Frametime: %f", this->fFPS);
-        ImGui::Separator();
+        //0> Common
+        commonConfig();
 
-        //1> Model
+        //1> Camera
+        cameraConfig();
+
+        //2> Model
+        modelConfig();
+
+    }
+    ImGui::End();
+
+    return true;
+}
+void Vulkan_006_Depth::modelConfig()
+{
+    if (ImGui::CollapsingHeader("Model Settings"))
+    {
         int count = this->m_aModelObjects.size();
         for (int i = 0; i < count; i++)
         {
@@ -546,16 +560,7 @@ bool Vulkan_006_Depth::beginRenderImgui()
                 }
             }
         }
-        
-        ImGui::Separator();
-        ImGui::Spacing();
-
-        //2> Camera
-        cameraConfig();
     }
-    ImGui::End();
-
-    return true;
 }
 
 void Vulkan_006_Depth::endRenderImgui()
@@ -573,7 +578,7 @@ void Vulkan_006_Depth::drawMesh_Custom(VkCommandBuffer& commandBuffer)
         if (!pModelObject->isShow)
             continue;
         
-        if (pModelObject->isWireFrame)
+        if (pModelObject->isWireFrame || this->cfg_isWireFrame)
         {   
             vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_WireFrame);
         }

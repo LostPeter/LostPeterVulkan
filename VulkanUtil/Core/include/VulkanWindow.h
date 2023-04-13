@@ -748,14 +748,19 @@ namespace LostPeter
 
                 virtual void updateImgui();
                     virtual bool beginRenderImgui();
-                        //PassConstants
-                        virtual void passConstantsConfig();
+                        //Common
+                        virtual void commonConfig();
+                            virtual void commonOpConfig();
                         //Camera
                         virtual void cameraConfig();
-                        virtual void cameraReset();
+                            virtual void cameraReset();
                         //Light
                         virtual void lightConfig();
                             virtual void lightConfigItem(LightConstants& lc, const std::string& name, int index, bool canChangeType);
+                        //PassConstants
+                        virtual void passConstantsConfig();
+                        //Model
+                        virtual void modelConfig();
 
                     virtual void endRenderImgui();
 

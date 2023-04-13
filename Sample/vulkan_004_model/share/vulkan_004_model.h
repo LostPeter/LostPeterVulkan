@@ -33,6 +33,8 @@ protected:
 
     //Render/Update
         virtual bool beginRenderImgui();
+            virtual void modelConfig();
+            
         virtual void endRenderImgui();
 
 private:

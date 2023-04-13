@@ -111,6 +111,7 @@ Vulkan_005_Camera::Vulkan_005_Camera(int width, int height, std::string name)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
+    this->cfg_isRotate = true;
 
     this->poTypeVertex = Vulkan_Vertex_Pos3Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_tex2_ubo.vert.spv";
@@ -210,83 +211,72 @@ bool Vulkan_005_Camera::beginRenderImgui()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    static bool showDemoWindow = false;
     ImGui::Begin("Vulkan_005_Camera", &windowOpened, 0);
     {
-        ImGui::Text("Frametime: %f", this->fFPS);
-        ImGui::Separator();
+        //0> Common
+        commonConfig();
 
-        //1> Common
-        if (ImGui::CollapsingHeader("Common"))
-        {
-            ImGui::Checkbox("Is WireFrame", &cfg_isWireFrame);
-            ImGui::Checkbox("Is Rotate", &cfg_isRotate);
-        }
-        ImGui::Separator();
-        ImGui::Spacing();
-        
-        //3> Model
-        if (ImGui::CollapsingHeader("Model"))
-        {
-            static std::string s_Name = "Model - ";
-            for (int i = 0; i < g_CountLen; i++)
-            {
-                bool isShowModel = g_isShowModels[i];
-                std::string nameModel = s_Name + g_pathModels[3 * i + 0];
-                if (isShowModel)
-                {
-                    nameModel += "(" + VulkanUtilString::SaveSizeT(this->vertices.size()) + 
-                                 "/" + VulkanUtilString::SaveSizeT(this->indices.size()) +
-                                 ")";
-                }
-                ImGui::Checkbox(nameModel.c_str(), &isShowModel);
-                if (!g_isShowModels[i] && isShowModel != g_isShowModels[i])
-                {
-                    changeModel(i);
-                }
-            }
-            if (ImGui::CollapsingHeader("Model World"))
-            {
-                const glm::mat4& mat4World = this->objectCBs[0].g_MatWorld;
-                if (ImGui::BeginTable("split_model_world", 4))
-                {
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
-
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
-
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
-
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
-                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
-
-                    ImGui::EndTable();
-                }
-            }
-        }
-        ImGui::Separator();
-        ImGui::Spacing();
-
-        //2> Camera
+        //1> Camera
         cameraConfig();
+        
+        //2> Model
+        modelConfig();
+        
     }
     ImGui::End();
-    if (showDemoWindow) 
-    {
-        ImGui::ShowDemoWindow();
-    }
 
     return true;
+}
+void Vulkan_005_Camera::modelConfig()
+{
+    if (ImGui::CollapsingHeader("Model Settings"))
+    {
+        static std::string s_Name = "Model - ";
+        for (int i = 0; i < g_CountLen; i++)
+        {
+            bool isShowModel = g_isShowModels[i];
+            std::string nameModel = s_Name + g_pathModels[3 * i + 0];
+            if (isShowModel)
+            {
+                nameModel += "(" + VulkanUtilString::SaveSizeT(this->vertices.size()) + 
+                             "/" + VulkanUtilString::SaveSizeT(this->indices.size()) +
+                             ")";
+            }
+            ImGui::Checkbox(nameModel.c_str(), &isShowModel);
+            if (!g_isShowModels[i] && isShowModel != g_isShowModels[i])
+            {
+                changeModel(i);
+            }
+        }
+        if (ImGui::CollapsingHeader("Model World"))
+        {
+            const glm::mat4& mat4World = this->objectCBs[0].g_MatWorld;
+            if (ImGui::BeginTable("split_model_world", 4))
+            {
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
+
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
+
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
+
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
+                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
+
+                ImGui::EndTable();
+            }
+        }
+    }
 }
 
 void Vulkan_005_Camera::endRenderImgui()

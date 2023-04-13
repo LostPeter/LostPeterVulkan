@@ -937,6 +937,8 @@ protected:
         virtual void updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer);
 
         virtual bool beginRenderImgui();
+            virtual void modelConfig();
+            
         virtual void endRenderImgui();
 
         virtual void drawMesh_Custom(VkCommandBuffer& commandBuffer);

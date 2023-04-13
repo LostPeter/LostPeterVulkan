@@ -110,6 +110,7 @@ Vulkan_004_Model::Vulkan_004_Model(int width, int height, std::string name)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
+    this->cfg_isRotate = true;
 
     this->poTypeVertex = Vulkan_Vertex_Pos3Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_tex2_ubo.vert.spv";
@@ -202,16 +203,23 @@ bool Vulkan_004_Model::beginRenderImgui()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    static bool showDemoWindow = false;
     ImGui::Begin("Vulkan_004_Model", &windowOpened, 0);
     {
-        ImGui::Text("Frametime: %f", this->fFPS);
-        ImGui::Separator();
+        //0> Common
+        commonConfig();
 
-        ImGui::Checkbox("Is WireFrame", &cfg_isWireFrame);
-        ImGui::Checkbox("Is Rotate", &cfg_isRotate);
-        ImGui::Separator();
+        //1> Model
+        modelConfig();
 
+    }
+    ImGui::End();
+
+    return true;
+}
+void Vulkan_004_Model::modelConfig()
+{
+    if (ImGui::CollapsingHeader("Model Settings"))
+    {
         if (ImGui::BeginTable("split_model", 1))
         {
             static std::string s_Name = "Model - ";
@@ -236,13 +244,6 @@ bool Vulkan_004_Model::beginRenderImgui()
             ImGui::EndTable();
         }
     }
-    ImGui::End();
-    if (showDemoWindow) 
-    {
-        ImGui::ShowDemoWindow();
-    }
-
-    return true;
 }
 
 void Vulkan_004_Model::endRenderImgui()

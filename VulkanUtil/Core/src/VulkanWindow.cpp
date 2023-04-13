@@ -93,7 +93,7 @@ namespace LostPeter
         , cfg_isMSAA(false)
         , cfg_isImgui(false)
         , cfg_isWireFrame(false)
-        , cfg_isRotate(true)
+        , cfg_isRotate(false)
         , cfg_isNegativeViewport(true)
         , cfg_isUseComputeShader(false)
         , cfg_isCreateRenderComputeSycSemaphore(false)
@@ -388,6 +388,14 @@ namespace LostPeter
             glfwSetWindowShouldClose(this->pWindow, true);
         }
         if (key == GLFW_KEY_R)
+        {
+            cameraReset();
+        }
+        if (key == GLFW_KEY_T)
+        {
+            this->cfg_isRotate = !this->cfg_isRotate;
+        }
+        if (key == GLFW_KEY_F)
         {
             this->cfg_isWireFrame = !this->cfg_isWireFrame;
         }
@@ -5039,9 +5047,435 @@ namespace LostPeter
                     
                     return false;
                 }
+                    void VulkanWindow::commonConfig()
+                    {
+                        ImGui::Text("Frametime: %f", this->fFPS);
+                        ImGui::Text("[R - ResetCamera]; [F - WireFrame]; [T - Rotate];");
+                        ImGui::Separator();
+
+                        commonOpConfig();
+                    }
+                        void VulkanWindow::commonOpConfig()
+                        {
+                            if (ImGui::CollapsingHeader("Common Settings"))
+                            {
+                                ImGui::Checkbox("Is WireFrame", &cfg_isWireFrame);
+                                ImGui::Checkbox("Is Rotate", &cfg_isRotate);
+                            }
+                            ImGui::Separator();
+                            ImGui::Spacing();
+                        }
+                    void VulkanWindow::cameraConfig()
+                    {
+                        if (this->pCamera == nullptr)
+                            return;
+
+                        if (ImGui::CollapsingHeader("Camera Settings"))
+                        {
+                            if (ImGui::Button("Camera Reset"))
+                            {
+                                cameraReset();
+                            }
+                            if (ImGui::CollapsingHeader("Camera Transform"))
+                            {
+                                //Position
+                                glm::vec3 vPos = this->pCamera->GetPos();
+                                if (ImGui::DragFloat3("Position", &vPos[0], 0.05f, -FLT_MAX, FLT_MAX))
+                                {
+                                    this->pCamera->SetPos(vPos);
+                                    this->pCamera->UpdateViewMatrix();
+                                }
+                                //Rotation
+                                glm::vec3 vEulerAngle = this->pCamera->GetEulerAngles();
+                                if (ImGui::DragFloat3("Rotation", &vEulerAngle[0], 0.1f, -180, 180))
+                                {
+                                    this->pCamera->SetEulerAngles(vEulerAngle);
+                                    this->pCamera->UpdateViewMatrix();
+                                }
+                                ImGui::Spacing();
+                                //Right
+                                glm::vec3 vRight = this->pCamera->GetRight();
+                                if (ImGui::DragFloat3("Right (X axis)", &vRight[0], 0.1f, -1.0f, 1.0f))
+                                {
+                                    
+                                }
+                                //Up
+                                glm::vec3 vUp = this->pCamera->GetUp();
+                                if (ImGui::DragFloat3("Up (Y axis)", &vUp[0], 0.1f, -1.0f, 1.0f))
+                                {
+                                    
+                                }
+                                //Direction
+                                glm::vec3 vDir = this->pCamera->GetDir();
+                                if (ImGui::DragFloat3("Direction (Z axis)", &vDir[0], 0.1f, -1.0f, 1.0f))
+                                {
+                                    
+                                }
+                            }
+                            if (ImGui::CollapsingHeader("Camera Param"))
+                            {
+                                //FovY
+                                float fAngle = this->pCamera->GetFovY();
+                                if (ImGui::DragFloat("FovY Angle", &fAngle, 0.1f, 0.1f, 180.0f))
+                                {
+                                    this->pCamera->SetFovY(fAngle);
+                                    this->pCamera->UpdateProjectionMatrix();
+                                }
+                                //Aspect
+                                float fAspect = this->pCamera->GetAspect();
+                                if (ImGui::DragFloat("Aspect", &fAspect, 0.1f, 0.1f, 10.0f))
+                                {
+                                    this->pCamera->SetAspect(fAspect);
+                                    this->pCamera->UpdateProjectionMatrix();
+                                }
+
+                                //NearZ/FarZ
+                                float fNearDist = this->pCamera->GetNearZ();
+                                float fFarDist = this->pCamera->GetFarZ();
+                                if (ImGui::DragFloat("Near Distance", &fNearDist, 0.1f, 0.1f, fFarDist - 1.0f))
+                                {
+                                    this->pCamera->SetNearZ(fNearDist);
+                                    this->pCamera->UpdateProjectionMatrix();
+                                }
+                                if (ImGui::DragFloat("Far Distance", &fFarDist, 0.1f, fNearDist + 1.0f, FLT_MAX))
+                                {
+                                    this->pCamera->SetFarZ(fFarDist);
+                                    this->pCamera->UpdateProjectionMatrix();
+                                }
+
+                                ImGui::Separator();
+                                ImGui::Spacing();
+                                
+                                //SpeedMove
+                                if (ImGui::DragFloat("Speed Move", &cfg_cameraSpeedMove, 0.1f, 1.0f, 10000.0f))
+                                {
+                                    
+                                }
+                                //SpeedZoom
+                                if (ImGui::DragFloat("Speed Zoom", &cfg_cameraSpeedZoom, 0.001f, 0.01f, 5.0f))
+                                {
+
+                                }
+                                //SpeedRotate
+                                if (ImGui::DragFloat("Speed Rotate", &cfg_cameraSpeedRotate, 0.001f, 0.001f, 5.0f))
+                                {
+
+                                }
+                            }
+                            if (ImGui::CollapsingHeader("Camera Matrix4 World"))
+                            {
+                                glm::mat4 mat4World = this->pCamera->GetMatrix4World();
+                                if (ImGui::BeginTable("split_camera_world", 4))
+                                {
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
+
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
+
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
+
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
+                                
+                                    ImGui::EndTable();
+                                }
+                            }
+                            if (ImGui::CollapsingHeader("Camera Matrix4 View"))
+                            {
+                                const glm::mat4& mat4View = this->pCamera->GetMatrix4View();
+                                if (ImGui::BeginTable("split_camera_view", 4))
+                                {
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][3]);
+
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][3]);
+
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][3]);
+
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][3]);
+                                
+                                    ImGui::EndTable();
+                                }
+                            }
+                            if (ImGui::CollapsingHeader("Camera Matrix4 Projection"))
+                            {
+                                const glm::mat4& mat4Projection = pCamera->GetMatrix4Projection();
+                                if (ImGui::BeginTable("split_camera_projection", 4))
+                                {
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][3]);
+
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][3]);
+
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][3]);
+
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][0]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][1]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][2]);
+                                    ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][3]);
+
+                                    ImGui::EndTable();
+                                }
+                            }
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                        void VulkanWindow::cameraReset()
+                        {
+                            if (this->pCamera == nullptr)
+                                return;
+
+                            this->pCamera->LookAtLH(this->cfg_cameraPos, this->cfg_cameraLookTarget, this->cfg_cameraUp);
+                            this->pCamera->PerspectiveLH(this->cfg_cameraFov, this->aspectRatio, this->cfg_cameraNear, this->cfg_cameraFar);
+                            this->pCamera->UpdateViewMatrix();
+                        }
+
+                    void VulkanWindow::lightConfig()
+                    {
+                        if (ImGui::CollapsingHeader("Light Settings"))
+                        {
+                            //Main Light
+                            lightConfigItem(this->mainLight, "Light - Main", 0, false);
+                            
+                            //Additional Light
+                            int count_light = MAX_LIGHT_COUNT;
+                            for (int i = 0; i < count_light; i++)
+                            {
+                                LightConstants& lc = this->aAdditionalLights[i];
+                                std::string nameLight = "Light - " + VulkanUtilString::SaveInt(i);
+                                lightConfigItem(lc, nameLight, i, true);
+                            }
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                        void VulkanWindow::lightConfigItem(LightConstants& lc, const std::string& name, int index, bool canChangeType)
+                        {
+                            struct EnumLightDesc { VulkanLightType Value; const char* Name; const char* Tooltip; };
+                            static const EnumLightDesc s_aLightDescs[] =
+                            {
+                                { Vulkan_Light_Directional,     "Directional",      "Directional Light" },
+                                { Vulkan_Light_Point,           "Point",            "Point Light" },
+                                { Vulkan_Light_Spot,            "Spot",             "Spot Light" },
+                            };
+
+                            struct EnumLightingDesc { VulkanLightingType Value; const char* Name; const char* Tooltip; };
+                            static const EnumLightingDesc s_aLightingDescs[] =
+                            {
+                                { Vulkan_Lighting_Node,                                     "None",                                     "None Lighting" },
+                                { Vulkan_Lighting_Ambient,                                  "Ambient",                                  "Ambient Lighting" },
+                                { Vulkan_Lighting_DiffuseLambert,                           "DiffuseLambert",                           "DiffuseLambert Lighting" },
+                                { Vulkan_Lighting_SpecularPhong,                            "SpecularPhong",                            "SpecularPhong Lighting" },
+                                { Vulkan_Lighting_SpecularBlinnPhong,                       "SpecularBlinnPhong",                       "SpecularBlinnPhong Lighting" },
+                                { Vulkan_Lighting_AmbientDiffuseLambert,                    "AmbientDiffuseLambert",                    "AmbientDiffuseLambert Lighting" },
+                                { Vulkan_Lighting_AmbientSpecularPhong,                     "AmbientSpecularPhong",                     "AmbientSpecularPhong Lighting" },
+                                { Vulkan_Lighting_AmbientSpecularBlinnPhong,                "AmbientSpecularBlinnPhong",                "AmbientSpecularBlinnPhong Lighting" },
+                                { Vulkan_Lighting_DiffuseLambertSpecularPhong,              "DiffuseLambertSpecularPhong",              "DiffuseLambertSpecularPhong Lighting" },
+                                { Vulkan_Lighting_DiffuseLambertSpecularBlinnPhong,         "DiffuseLambertSpecularBlinnPhong",         "DiffuseLambertSpecularBlinnPhong Lighting" },
+                                { Vulkan_Lighting_AmbientDiffuseLambertSpecularPhong,       "AmbientDiffuseLambertSpecularPhong",       "AmbientDiffuseLambertSpecularPhong Lighting" },
+                                { Vulkan_Lighting_AmbientDiffuseLambertSpecularBlinnPhong,  "AmbientDiffuseLambertSpecularBlinnPhong",  "AmbientDiffuseLambertSpecularBlinnPhong Lighting" },
+                            };
+                            
+                            if (ImGui::CollapsingHeader(name.c_str()))
+                            {
+                                //Light Enable
+                                bool isEnable = lc.common.y == 0.0f ? false : true;
+                                std::string nameEnable = "LightEnable - " + VulkanUtilString::SaveInt(index);
+                                if (ImGui::Checkbox(nameEnable.c_str(), &isEnable))
+                                {   
+                                    lc.common.y = isEnable ? 1.0f : 0.0f;
+                                }
+                                ImGui::Spacing();
+
+                                //Light Type
+                                {
+                                    int nIndex = 0;
+                                    for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aLightDescs); nIndex++)
+                                    {
+                                        if (s_aLightDescs[nIndex].Value == lc.common.x)
+                                            break;
+                                    }
+                                    const char* preview_text = s_aLightDescs[nIndex].Name;
+                                    std::string nameType = "LightType - " + VulkanUtilString::SaveInt(index);
+                                    if (ImGui::BeginCombo(nameType.c_str(), preview_text))
+                                    {
+                                        for (int j = 0; j < IM_ARRAYSIZE(s_aLightDescs); j++)
+                                        {
+                                            if (ImGui::Selectable(s_aLightDescs[j].Name, nIndex == j))
+                                            {
+                                                if (canChangeType)
+                                                {
+                                                    lc.common.x = (int)s_aLightDescs[j].Value;
+                                                }
+                                                break;
+                                            }
+                                        }
+                                        ImGui::EndCombo();
+                                    }
+                                }
+                                ImGui::Spacing();
+
+                                //Lighting Type
+                                {
+                                    int nIndex = 0;
+                                    for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aLightingDescs); nIndex++)
+                                    {
+                                        if (s_aLightingDescs[nIndex].Value == lc.common.z)
+                                            break;
+                                    }
+                                    const char* preview_text = s_aLightingDescs[nIndex].Name;
+                                    std::string nameType = "LightingType - " + VulkanUtilString::SaveInt(index);
+                                    if (ImGui::BeginCombo(nameType.c_str(), preview_text))
+                                    {
+                                        for (int j = 0; j < IM_ARRAYSIZE(s_aLightingDescs); j++)
+                                        {
+                                            if (ImGui::Selectable(s_aLightingDescs[j].Name, nIndex == j))
+                                            {
+                                                lc.common.z = (int)s_aLightingDescs[j].Value;
+                                                break;
+                                            }
+                                        }
+                                        ImGui::EndCombo();
+                                    }
+                                }
+                                ImGui::Spacing();
+
+                                //position
+                                glm::vec3 vPosition = lc.position;
+                                std::string namePosition = "Position - " + VulkanUtilString::SaveInt(index);
+                                if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
+                                {
+                                    lc.position = vPosition;
+                                }
+                                ImGui::Spacing();
+
+                                //Euler Angle
+                                std::string nameEulerAngle = "EulerAngle - " + VulkanUtilString::SaveInt(index);
+                                glm::vec3 vEulerAngle = VulkanMath::ToEulerAngles(lc.direction);
+                                if (ImGui::DragFloat3(nameEulerAngle.c_str(), &vEulerAngle[0], 0.1f, -180, 180))
+                                {
+                                    lc.direction = VulkanMath::ToDirection(vEulerAngle);
+                                }
+                                //direction
+                                glm::vec3 vDirection = lc.direction;
+                                std::string nameDirection = "Direction - " + VulkanUtilString::SaveInt(index);
+                                if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
+                                {
+                                    
+                                }
+                                ImGui::Spacing();
+
+                                //ambient
+                                std::string nameAmbient = "Ambient - " + VulkanUtilString::SaveInt(index);
+                                if (ImGui::ColorEdit4(nameAmbient.c_str(), (float*)&lc.ambient))
+                                {
+
+                                }
+                                ImGui::Spacing();
+
+                                //diffuse
+                                std::string nameDiffuse = "Diffuse - " + VulkanUtilString::SaveInt(index);
+                                if (ImGui::ColorEdit4(nameDiffuse.c_str(), (float*)&lc.diffuse))
+                                {
+
+                                }
+                                ImGui::Spacing();
+
+                                //specular
+                                std::string nameSpecular = "Specular - " + VulkanUtilString::SaveInt(index);
+                                if (ImGui::ColorEdit4(nameSpecular.c_str(), (float*)&lc.specular))
+                                {
+
+                                }
+                                ImGui::Spacing();
+
+                                if (lc.common.x == (int)Vulkan_Light_Directional)
+                                {
+                                    
+                                }
+                                else if (lc.common.x == (int)Vulkan_Light_Point)
+                                {
+                                    //falloffStart
+                                    float fFalloffStart = lc.falloffStart;
+                                    std::string nameFalloffStart = "FalloffStart - " + VulkanUtilString::SaveInt(index);
+                                    if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
+                                    {
+                                        lc.falloffStart = fFalloffStart;
+                                    }
+                                    ImGui::Spacing();
+
+                                    //falloffEnd
+                                    float fFalloffEnd = lc.falloffEnd;
+                                    std::string nameFalloffEnd = "FalloffEnd - " + VulkanUtilString::SaveInt(index);
+                                    if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
+                                    {
+                                        lc.falloffEnd = fFalloffEnd;
+                                    }
+                                }
+                                else if (lc.common.x == (int)Vulkan_Light_Spot)
+                                {
+                                    //falloffStart
+                                    float fFalloffStart = lc.falloffStart;
+                                    std::string nameFalloffStart = "FalloffStart - " + VulkanUtilString::SaveInt(index);
+                                    if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
+                                    {
+                                        lc.falloffStart = fFalloffStart;
+                                    }
+                                    ImGui::Spacing();
+
+                                    //falloffEnd
+                                    float fFalloffEnd = lc.falloffEnd;
+                                    std::string nameFalloffEnd = "FalloffEnd - " + VulkanUtilString::SaveInt(index);
+                                    if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
+                                    {
+                                        lc.falloffEnd = fFalloffEnd;
+                                    }
+                                    ImGui::Spacing();
+
+                                    //spotPower
+                                    float fSpotPower = lc.common.w;
+                                    std::string nameSpotPower = "SpotPower - " + VulkanUtilString::SaveInt(index);
+                                    if (ImGui::DragFloat(nameSpotPower.c_str(), &fSpotPower, 0.01f, 0.1f, 200.0f))
+                                    {
+                                        lc.common.w = fSpotPower;
+                                    }
+                                }
+                                
+                            }
+                        }
                     void VulkanWindow::passConstantsConfig()
                     {
-                        //Material
+                        if (ImGui::CollapsingHeader("PassConstants Settings"))
                         {
                             //g_AmbientLight
                             if (ImGui::ColorEdit4("Global AmbientLight", (float*)&(this->passCB.g_AmbientLight)))
@@ -5049,407 +5483,13 @@ namespace LostPeter
                                 
                             }
                         }
-                    }
-                    void VulkanWindow::cameraConfig()
-                    {
-                        if (this->pCamera == nullptr)
-                            return;
-
-                        if (ImGui::Button("Camera Reset"))
-                        {
-                            cameraReset();
-                        }
-                        if (ImGui::CollapsingHeader("Camera Transform"))
-                        {
-                            //Position
-                            glm::vec3 vPos = this->pCamera->GetPos();
-                            if (ImGui::DragFloat3("Position", &vPos[0], 0.05f, -FLT_MAX, FLT_MAX))
-                            {
-                                this->pCamera->SetPos(vPos);
-                                this->pCamera->UpdateViewMatrix();
-                            }
-                            //Rotation
-                            glm::vec3 vEulerAngle = this->pCamera->GetEulerAngles();
-                            if (ImGui::DragFloat3("Rotation", &vEulerAngle[0], 0.1f, -180, 180))
-                            {
-                                this->pCamera->SetEulerAngles(vEulerAngle);
-                                this->pCamera->UpdateViewMatrix();
-                            }
-                            ImGui::Spacing();
-                            //Right
-                            glm::vec3 vRight = this->pCamera->GetRight();
-                            if (ImGui::DragFloat3("Right (X axis)", &vRight[0], 0.1f, -1.0f, 1.0f))
-                            {
-                                
-                            }
-                            //Up
-                            glm::vec3 vUp = this->pCamera->GetUp();
-                            if (ImGui::DragFloat3("Up (Y axis)", &vUp[0], 0.1f, -1.0f, 1.0f))
-                            {
-                                
-                            }
-                            //Direction
-                            glm::vec3 vDir = this->pCamera->GetDir();
-                            if (ImGui::DragFloat3("Direction (Z axis)", &vDir[0], 0.1f, -1.0f, 1.0f))
-                            {
-                                
-                            }
-                        }
-                        if (ImGui::CollapsingHeader("Camera Param"))
-                        {
-                            //FovY
-                            float fAngle = this->pCamera->GetFovY();
-                            if (ImGui::DragFloat("FovY Angle", &fAngle, 0.1f, 0.1f, 180.0f))
-                            {
-                                this->pCamera->SetFovY(fAngle);
-                                this->pCamera->UpdateProjectionMatrix();
-                            }
-                            //Aspect
-                            float fAspect = this->pCamera->GetAspect();
-                            if (ImGui::DragFloat("Aspect", &fAspect, 0.1f, 0.1f, 10.0f))
-                            {
-                                this->pCamera->SetAspect(fAspect);
-                                this->pCamera->UpdateProjectionMatrix();
-                            }
-
-                            //NearZ/FarZ
-                            float fNearDist = this->pCamera->GetNearZ();
-                            float fFarDist = this->pCamera->GetFarZ();
-                            if (ImGui::DragFloat("Near Distance", &fNearDist, 0.1f, 0.1f, fFarDist - 1.0f))
-                            {
-                                this->pCamera->SetNearZ(fNearDist);
-                                this->pCamera->UpdateProjectionMatrix();
-                            }
-                            if (ImGui::DragFloat("Far Distance", &fFarDist, 0.1f, fNearDist + 1.0f, FLT_MAX))
-                            {
-                                this->pCamera->SetFarZ(fFarDist);
-                                this->pCamera->UpdateProjectionMatrix();
-                            }
-
-                            ImGui::Separator();
-                            ImGui::Spacing();
-                            
-                            //SpeedMove
-                            if (ImGui::DragFloat("Speed Move", &cfg_cameraSpeedMove, 0.1f, 1.0f, 10000.0f))
-                            {
-                                
-                            }
-                            //SpeedZoom
-                            if (ImGui::DragFloat("Speed Zoom", &cfg_cameraSpeedZoom, 0.001f, 0.01f, 5.0f))
-                            {
-
-                            }
-                            //SpeedRotate
-                            if (ImGui::DragFloat("Speed Rotate", &cfg_cameraSpeedRotate, 0.001f, 0.001f, 5.0f))
-                            {
-
-                            }
-                        }
-                        if (ImGui::CollapsingHeader("Camera Matrix4 World"))
-                        {
-                            glm::mat4 mat4World = this->pCamera->GetMatrix4World();
-                            if (ImGui::BeginTable("split_camera_world", 4))
-                            {
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
-
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
-
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
-
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
-                            
-                                ImGui::EndTable();
-                            }
-                        }
-                        if (ImGui::CollapsingHeader("Camera Matrix4 View"))
-                        {
-                            const glm::mat4& mat4View = this->pCamera->GetMatrix4View();
-                            if (ImGui::BeginTable("split_camera_view", 4))
-                            {
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][0]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][1]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][2]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][3]);
-
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][0]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][1]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][2]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[1][3]);
-
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][0]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][1]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][2]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[2][3]);
-
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][0]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][1]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][2]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[3][3]);
-                            
-                                ImGui::EndTable();
-                            }
-                        }
-                        if (ImGui::CollapsingHeader("Camera Matrix4 Projection"))
-                        {
-                            const glm::mat4& mat4Projection = pCamera->GetMatrix4Projection();
-                            if (ImGui::BeginTable("split_camera_projection", 4))
-                            {
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][0]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][1]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][2]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][3]);
-
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][0]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][1]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][2]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[1][3]);
-
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][0]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][1]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][2]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[2][3]);
-
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][0]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][1]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][2]);
-                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[3][3]);
-
-                                ImGui::EndTable();
-                            }
-                        }
                         ImGui::Separator();
+                        ImGui::Spacing();
                     }
-                    void VulkanWindow::cameraReset()
+                    void VulkanWindow::modelConfig()
                     {
-                        if (this->pCamera == nullptr)
-                            return;
 
-                        this->pCamera->LookAtLH(this->cfg_cameraPos, this->cfg_cameraLookTarget, this->cfg_cameraUp);
-                        this->pCamera->PerspectiveLH(this->cfg_cameraFov, this->aspectRatio, this->cfg_cameraNear, this->cfg_cameraFar);
-                        this->pCamera->UpdateViewMatrix();
                     }
-
-                    void VulkanWindow::lightConfig()
-                    {
-                        //Main Light
-                        lightConfigItem(this->mainLight, "Light - Main", 0, false);
-                        
-                        //Additional Light
-                        int count_light = MAX_LIGHT_COUNT;
-                        for (int i = 0; i < count_light; i++)
-                        {
-                            LightConstants& lc = this->aAdditionalLights[i];
-                            std::string nameLight = "Light - " + VulkanUtilString::SaveInt(i);
-                            lightConfigItem(lc, nameLight, i, true);
-                        }
-                    }
-                    void VulkanWindow::lightConfigItem(LightConstants& lc, const std::string& name, int index, bool canChangeType)
-                    {
-                        struct EnumLightDesc { VulkanLightType Value; const char* Name; const char* Tooltip; };
-                        static const EnumLightDesc s_aLightDescs[] =
-                        {
-                            { Vulkan_Light_Directional,     "Directional",      "Directional Light" },
-                            { Vulkan_Light_Point,           "Point",            "Point Light" },
-                            { Vulkan_Light_Spot,            "Spot",             "Spot Light" },
-                        };
-
-                        struct EnumLightingDesc { VulkanLightingType Value; const char* Name; const char* Tooltip; };
-                        static const EnumLightingDesc s_aLightingDescs[] =
-                        {
-                            { Vulkan_Lighting_Node,                                     "None",                                     "None Lighting" },
-                            { Vulkan_Lighting_Ambient,                                  "Ambient",                                  "Ambient Lighting" },
-                            { Vulkan_Lighting_DiffuseLambert,                           "DiffuseLambert",                           "DiffuseLambert Lighting" },
-                            { Vulkan_Lighting_SpecularPhong,                            "SpecularPhong",                            "SpecularPhong Lighting" },
-                            { Vulkan_Lighting_SpecularBlinnPhong,                       "SpecularBlinnPhong",                       "SpecularBlinnPhong Lighting" },
-                            { Vulkan_Lighting_AmbientDiffuseLambert,                    "AmbientDiffuseLambert",                    "AmbientDiffuseLambert Lighting" },
-                            { Vulkan_Lighting_AmbientSpecularPhong,                     "AmbientSpecularPhong",                     "AmbientSpecularPhong Lighting" },
-                            { Vulkan_Lighting_AmbientSpecularBlinnPhong,                "AmbientSpecularBlinnPhong",                "AmbientSpecularBlinnPhong Lighting" },
-                            { Vulkan_Lighting_DiffuseLambertSpecularPhong,              "DiffuseLambertSpecularPhong",              "DiffuseLambertSpecularPhong Lighting" },
-                            { Vulkan_Lighting_DiffuseLambertSpecularBlinnPhong,         "DiffuseLambertSpecularBlinnPhong",         "DiffuseLambertSpecularBlinnPhong Lighting" },
-                            { Vulkan_Lighting_AmbientDiffuseLambertSpecularPhong,       "AmbientDiffuseLambertSpecularPhong",       "AmbientDiffuseLambertSpecularPhong Lighting" },
-                            { Vulkan_Lighting_AmbientDiffuseLambertSpecularBlinnPhong,  "AmbientDiffuseLambertSpecularBlinnPhong",  "AmbientDiffuseLambertSpecularBlinnPhong Lighting" },
-                        };
-                        
-                        if (ImGui::CollapsingHeader(name.c_str()))
-                        {
-                            //Light Enable
-                            bool isEnable = lc.common.y == 0.0f ? false : true;
-                            std::string nameEnable = "LightEnable - " + VulkanUtilString::SaveInt(index);
-                            if (ImGui::Checkbox(nameEnable.c_str(), &isEnable))
-                            {   
-                                lc.common.y = isEnable ? 1.0f : 0.0f;
-                            }
-                            ImGui::Spacing();
-
-                            //Light Type
-                            {
-                                int nIndex = 0;
-                                for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aLightDescs); nIndex++)
-                                {
-                                    if (s_aLightDescs[nIndex].Value == lc.common.x)
-                                        break;
-                                }
-                                const char* preview_text = s_aLightDescs[nIndex].Name;
-                                std::string nameType = "LightType - " + VulkanUtilString::SaveInt(index);
-                                if (ImGui::BeginCombo(nameType.c_str(), preview_text))
-                                {
-                                    for (int j = 0; j < IM_ARRAYSIZE(s_aLightDescs); j++)
-                                    {
-                                        if (ImGui::Selectable(s_aLightDescs[j].Name, nIndex == j))
-                                        {
-                                            if (canChangeType)
-                                            {
-                                                lc.common.x = (int)s_aLightDescs[j].Value;
-                                            }
-                                            break;
-                                        }
-                                    }
-                                    ImGui::EndCombo();
-                                }
-                            }
-                            ImGui::Spacing();
-
-                            //Lighting Type
-                            {
-                                int nIndex = 0;
-                                for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aLightingDescs); nIndex++)
-                                {
-                                    if (s_aLightingDescs[nIndex].Value == lc.common.z)
-                                        break;
-                                }
-                                const char* preview_text = s_aLightingDescs[nIndex].Name;
-                                std::string nameType = "LightingType - " + VulkanUtilString::SaveInt(index);
-                                if (ImGui::BeginCombo(nameType.c_str(), preview_text))
-                                {
-                                    for (int j = 0; j < IM_ARRAYSIZE(s_aLightingDescs); j++)
-                                    {
-                                        if (ImGui::Selectable(s_aLightingDescs[j].Name, nIndex == j))
-                                        {
-                                            lc.common.z = (int)s_aLightingDescs[j].Value;
-                                            break;
-                                        }
-                                    }
-                                    ImGui::EndCombo();
-                                }
-                            }
-                            ImGui::Spacing();
-
-                            //position
-                            glm::vec3 vPosition = lc.position;
-                            std::string namePosition = "Position - " + VulkanUtilString::SaveInt(index);
-                            if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
-                            {
-                                lc.position = vPosition;
-                            }
-                            ImGui::Spacing();
-
-                            //Euler Angle
-                            std::string nameEulerAngle = "EulerAngle - " + VulkanUtilString::SaveInt(index);
-                            glm::vec3 vEulerAngle = VulkanMath::ToEulerAngles(lc.direction);
-                            if (ImGui::DragFloat3(nameEulerAngle.c_str(), &vEulerAngle[0], 0.1f, -180, 180))
-                            {
-                                lc.direction = VulkanMath::ToDirection(vEulerAngle);
-                            }
-                            //direction
-                            glm::vec3 vDirection = lc.direction;
-                            std::string nameDirection = "Direction - " + VulkanUtilString::SaveInt(index);
-                            if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
-                            {
-                                
-                            }
-                            ImGui::Spacing();
-
-                            //ambient
-                            std::string nameAmbient = "Ambient - " + VulkanUtilString::SaveInt(index);
-                            if (ImGui::ColorEdit4(nameAmbient.c_str(), (float*)&lc.ambient))
-                            {
-
-                            }
-                            ImGui::Spacing();
-
-                            //diffuse
-                            std::string nameDiffuse = "Diffuse - " + VulkanUtilString::SaveInt(index);
-                            if (ImGui::ColorEdit4(nameDiffuse.c_str(), (float*)&lc.diffuse))
-                            {
-
-                            }
-                            ImGui::Spacing();
-
-                            //specular
-                            std::string nameSpecular = "Specular - " + VulkanUtilString::SaveInt(index);
-                            if (ImGui::ColorEdit4(nameSpecular.c_str(), (float*)&lc.specular))
-                            {
-
-                            }
-                            ImGui::Spacing();
-
-                            if (lc.common.x == (int)Vulkan_Light_Directional)
-                            {
-                                
-                            }
-                            else if (lc.common.x == (int)Vulkan_Light_Point)
-                            {
-                                //falloffStart
-                                float fFalloffStart = lc.falloffStart;
-                                std::string nameFalloffStart = "FalloffStart - " + VulkanUtilString::SaveInt(index);
-                                if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
-                                {
-                                    lc.falloffStart = fFalloffStart;
-                                }
-                                ImGui::Spacing();
-
-                                //falloffEnd
-                                float fFalloffEnd = lc.falloffEnd;
-                                std::string nameFalloffEnd = "FalloffEnd - " + VulkanUtilString::SaveInt(index);
-                                if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
-                                {
-                                    lc.falloffEnd = fFalloffEnd;
-                                }
-                            }
-                            else if (lc.common.x == (int)Vulkan_Light_Spot)
-                            {
-                                //falloffStart
-                                float fFalloffStart = lc.falloffStart;
-                                std::string nameFalloffStart = "FalloffStart - " + VulkanUtilString::SaveInt(index);
-                                if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
-                                {
-                                    lc.falloffStart = fFalloffStart;
-                                }
-                                ImGui::Spacing();
-
-                                //falloffEnd
-                                float fFalloffEnd = lc.falloffEnd;
-                                std::string nameFalloffEnd = "FalloffEnd - " + VulkanUtilString::SaveInt(index);
-                                if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
-                                {
-                                    lc.falloffEnd = fFalloffEnd;
-                                }
-                                ImGui::Spacing();
-
-                                //spotPower
-                                float fSpotPower = lc.common.w;
-                                std::string nameSpotPower = "SpotPower - " + VulkanUtilString::SaveInt(index);
-                                if (ImGui::DragFloat(nameSpotPower.c_str(), &fSpotPower, 0.01f, 0.1f, 200.0f))
-                                {
-                                    lc.common.w = fSpotPower;
-                                }
-                            }
-                            
-                        }
-                    }
-
 
                 void VulkanWindow::endRenderImgui()
                 {

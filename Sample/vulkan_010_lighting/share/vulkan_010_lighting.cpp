@@ -531,7 +531,7 @@ void Vulkan_010_Lighting::updateCBs_Custom()
         {
             //ObjectConstants
             ObjectConstants& objectCB = pModelObject->objectCBs[j];
-            if (pModelObject->isRotate)
+            if (pModelObject->isRotate || this->cfg_isRotate)
             {
                 objectCB.g_MatWorld = glm::rotate(pModelObject->instanceMatWorld[j], 
                                                   time * glm::radians(90.0f), 
@@ -576,10 +576,30 @@ bool Vulkan_010_Lighting::beginRenderImgui()
     static bool windowOpened = true;
     ImGui::Begin("Vulkan_010_Lighting", &windowOpened, 0);
     {
-        ImGui::Text("Frametime: %f", this->fFPS);
-        ImGui::Separator();
+        //0> Common
+        commonConfig();
 
-        //1> Model
+        //1> Camera
+        cameraConfig();
+
+        //2> Light
+        lightConfig();
+
+        //3> PassConstants
+        passConstantsConfig();
+
+        //4> Model
+        modelConfig();
+
+    }
+    ImGui::End();
+
+    return true;
+}
+void Vulkan_010_Lighting::modelConfig()
+{
+    if (ImGui::CollapsingHeader("Model Settings"))
+    {
         float fGap = g_instanceGap;
         if (ImGui::DragFloat("Instance Gap: ", &fGap, 0.1f, 1.0f, 5.0f))
         {
@@ -719,29 +739,7 @@ bool Vulkan_010_Lighting::beginRenderImgui()
                 }
             }
         }
-        
-        ImGui::Separator();
-        ImGui::Spacing();
-
-        //2> PassConstants
-        if (ImGui::CollapsingHeader("PassConstants Settings"))
-        {
-            passConstantsConfig();
-        }
-        //3> Camera
-        if (ImGui::CollapsingHeader("Camera Settings"))
-        {
-            cameraConfig();
-        }
-        //4> Light
-        if (ImGui::CollapsingHeader("Light Settings"))
-        {
-            lightConfig();
-        }
     }
-    ImGui::End();
-
-    return true;
 }
 
 void Vulkan_010_Lighting::endRenderImgui()
@@ -767,7 +765,7 @@ void Vulkan_010_Lighting::drawMesh_Custom(VkCommandBuffer& commandBuffer)
             vkCmdBindIndexBuffer(commandBuffer, pModelObject->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
         }
 
-        if (pModelObject->isWireFrame)
+        if (pModelObject->isWireFrame || this->cfg_isWireFrame)
         {
             vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_WireFrame);
             if (pModelObject->poDescriptorSets.size() > 0)

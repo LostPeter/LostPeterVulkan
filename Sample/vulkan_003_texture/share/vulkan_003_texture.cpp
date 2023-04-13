@@ -51,17 +51,13 @@ bool Vulkan_003_Texture::beginRenderImgui()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    static bool showDemoWindow = false;
     ImGui::Begin("Vulkan_003_Texture", &windowOpened, 0);
     {
-        ImGui::Text("Frametime: %f", this->fFPS);
-        ImGui::Checkbox("Is WireFrame", &cfg_isWireFrame);
+        //0> Common
+        commonConfig();
+        
     }
     ImGui::End();
-    if (showDemoWindow) 
-    {
-        ImGui::ShowDemoWindow();
-    }
 
     return true;
 }

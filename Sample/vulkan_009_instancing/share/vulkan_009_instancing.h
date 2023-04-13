@@ -323,6 +323,8 @@ protected:
         virtual void updateCBs_Custom();
 
         virtual bool beginRenderImgui();
+            virtual void modelConfig();
+            
         virtual void endRenderImgui();
 
         virtual void drawMesh_Custom(VkCommandBuffer& commandBuffer);
