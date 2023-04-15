@@ -22,14 +22,13 @@ public:
     Vulkan_013_IndirectDraw(int width, int height, std::string name);
 
 public:
-    /////////////////////////// ModelMesh ///////////////////////////
-    struct ModelMesh
+    /////////////////////////// ModelMeshSub ////////////////////////
+    struct ModelMesh;
+    struct ModelMeshSub
     {
-        Vulkan_013_IndirectDraw* pWindow;
-        std::string nameMesh;
-        std::string pathMesh;
-        VulkanMeshType typeMesh;
-        VulkanMeshGeometryType typeGeometryType;
+        ModelMesh* pMesh;
+        std::string nameMeshSub;
+        int indexMeshSub;
 
         //Vertex
         VulkanVertexType poTypeVertex;
@@ -50,17 +49,13 @@ public:
         VkDeviceMemory poIndexBufferMemory;
 
 
-        ModelMesh(Vulkan_013_IndirectDraw* _pWindow, 
-                  const std::string& _nameMesh,
-                  const std::string& _pathMesh,
-                  VulkanMeshType _typeMesh,
-                  VulkanMeshGeometryType _typeGeometryType,
-                  VulkanVertexType _poTypeVertex)
-            : pWindow(_pWindow)
-            , nameMesh(_nameMesh)
-            , pathMesh(_pathMesh)
-            , typeMesh(_typeMesh)
-            , typeGeometryType(_typeGeometryType)
+        ModelMeshSub(ModelMesh* _pMesh, 
+                     const std::string& _nameMeshSub,
+                     int _indexMeshSub,
+                     VulkanVertexType _poTypeVertex)
+            : pMesh(_pMesh)
+            , nameMeshSub(_nameMeshSub)
+            , indexMeshSub(_indexMeshSub)
 
             //Vertex
             , poTypeVertex(_poTypeVertex)
@@ -77,6 +72,43 @@ public:
             , poIndexBuffer(VK_NULL_HANDLE)
             , poIndexBufferMemory(VK_NULL_HANDLE)
         {
+            Destroy();
+        }
+
+        void Destroy();
+
+        bool CreateMeshSub(MeshData& meshData, bool isTranformLocal, const glm::mat4& matTransformLocal);
+    };
+    typedef std::vector<ModelMeshSub*> ModelMeshSubPtrVector;
+    typedef std::map<std::string, ModelMeshSub*> ModelMeshSubPtrMap;
+
+
+    /////////////////////////// ModelMesh ///////////////////////////
+    struct ModelMesh
+    {
+        Vulkan_013_IndirectDraw* pWindow;
+        std::string nameMesh;
+        std::string pathMesh;
+        VulkanMeshType typeMesh;
+        VulkanMeshGeometryType typeGeometryType;
+        VulkanVertexType typeVertex;
+
+        ModelMeshSubPtrVector aMeshSubs;
+        ModelMeshSubPtrMap mapMeshSubs;
+
+        ModelMesh(Vulkan_013_IndirectDraw* _pWindow, 
+                  const std::string& _nameMesh,
+                  const std::string& _pathMesh,
+                  VulkanMeshType _typeMesh,
+                  VulkanMeshGeometryType _typeGeometryType,
+                  VulkanVertexType _typeVertex)
+            : pWindow(_pWindow)
+            , nameMesh(_nameMesh)
+            , pathMesh(_pathMesh)
+            , typeMesh(_typeMesh)
+            , typeGeometryType(_typeGeometryType)
+            , typeVertex(_typeVertex)
+        {
 
         }
 
@@ -87,20 +119,19 @@ public:
 
         void Destroy()
         {
-            //Vertex
-            this->pWindow->destroyBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
-            this->poVertexBuffer = VK_NULL_HANDLE;
-            this->poVertexBufferMemory = VK_NULL_HANDLE;
-
-            //Index
-            this->pWindow->destroyBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
-            this->poIndexBuffer = VK_NULL_HANDLE;
-            this->poIndexBufferMemory = VK_NULL_HANDLE;
+            int count = (int)this->aMeshSubs.size();
+            for (int i = 0; i < count; i++)
+            {
+                ModelMeshSub* pMeshSub = this->aMeshSubs[i];
+                pMeshSub->Destroy();
+                delete pMeshSub;
+            }
+            this->aMeshSubs.clear();
+            this->mapMeshSubs.clear();
         }
 
-
+        bool AddMeshSub(ModelMeshSub* pMeshSub);
         bool LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal);
-
     };
     typedef std::vector<ModelMesh*> ModelMeshPtrVector;
     typedef std::map<std::string, ModelMesh*> ModelMeshPtrMap;
@@ -622,135 +653,14 @@ public:
     typedef std::map<std::string, PipelineCompute*> PipelineComputePtrMap;
 
 
-    /////////////////////////// ModelObject /////////////////////////
-    struct ModelObject
+    /////////////////////////// ModelObjectRend /////////////////////
+    struct ModelObject;
+    struct ModelObjectRend
     {
-        ModelObject(Vulkan_013_IndirectDraw* _pWindow)
-            //Window
-            : pWindow(_pWindow)
-
-            //Name
-            , nameObject("")
-            , nameMesh("")
-            , isShow(true)
-            , isWireFrame(false)
-            , isRotate(true)
-            , isTransparent(false)
-            , isLighting(true)
-
-            //Mesh
-            , pMesh(nullptr)
-
-            //Uniform
-            , countInstanceExt(0)
-            , countInstance(1)
-            , isUsedTessellation(false)
-
-            //Pipeline Graphics
-
-            //Pipeline Computes
-
-            //State
-            , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
-            , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
-            , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
-            , cfg_vkCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
-            , cfg_isDepthTest(VK_TRUE)
-            , cfg_isDepthWrite(VK_TRUE)
-            , cfg_DepthCompareOp(VK_COMPARE_OP_LESS_OR_EQUAL)  
-            , cfg_isStencilTest(VK_FALSE)
-            , cfg_isBlend(VK_FALSE)
-            , cfg_BlendColorFactorSrc(VK_BLEND_FACTOR_ONE)
-            , cfg_BlendColorFactorDst(VK_BLEND_FACTOR_ZERO)
-            , cfg_BlendColorOp(VK_BLEND_OP_ADD)
-            , cfg_BlendAlphaFactorSrc(VK_BLEND_FACTOR_ONE)
-            , cfg_BlendAlphaFactorDst(VK_BLEND_FACTOR_ZERO)
-            , cfg_BlendAlphaOp(VK_BLEND_OP_ADD)
-            , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
-        {
-            this->pPipelineGraphics = new PipelineGraphics(_pWindow);
-        }
-        ~ModelObject()
-        {
-            //Mesh
-            this->pMesh = nullptr;
-
-            //Texture
-            this->mapModelTexturesShaderSort.clear();
-
-            //Clean
-            CleanupSwapChain();
-            UTIL_DELETE(pPipelineGraphics)
-        }
-
-        void CleanupSwapChain()
-        {
-            //Uniform
-            size_t count = this->poBuffers_ObjectCB.size();
-            for (size_t i = 0; i < count; i++) 
-            {
-                this->pWindow->destroyBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
-            }
-            this->objectCBs.clear();
-            this->poBuffers_ObjectCB.clear();
-            this->poBuffersMemory_ObjectCB.clear();
-
-            count = this->poBuffers_materialCB.size();
-            for (size_t i = 0; i < count; i++) 
-            {
-                this->pWindow->destroyBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
-            }
-            this->materialCBs.clear();
-            this->poBuffers_materialCB.clear();
-            this->poBuffersMemory_materialCB.clear();
-
-            count = this->poBuffers_tessellationCB.size();
-            for (size_t i = 0; i < count; i++) 
-            {
-                this->pWindow->destroyBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
-            }
-            this->tessellationCBs.clear();
-            this->poBuffers_tessellationCB.clear();
-            this->poBuffersMemory_tessellationCB.clear();
-
-            //Shader
-            this->aShaderStageCreateInfos_Graphics.clear();
-            this->aShaderStageCreateInfos_Computes.clear();
-            this->mapShaderStageCreateInfos_Computes.clear();
-
-            //Pipeline Graphics
-            this->pPipelineGraphics->CleanupSwapChain();
-
-            //Pipeline Computes
-            count = this->aPipelineComputes.size();
-            for (size_t i = 0; i < count; i++)
-            {
-                PipelineCompute* p = this->aPipelineComputes[i];
-                UTIL_DELETE(p)
-            }
-            this->aPipelineComputes.clear();
-        }
-
-        void recreateSwapChain()
-        {
-
-        }
-
-        //Window
-        Vulkan_013_IndirectDraw* pWindow;
-
-        //Name
-        int indexModel;
-        std::string nameObject;
-        std::string nameMesh;
-        bool isShow;
-        bool isWireFrame;
-        bool isRotate;
+        std::string nameObjectRend;
+        ModelObject* pModelObject;
+        ModelMeshSub* pMeshSub;
         bool isTransparent;
-        bool isLighting;
-
-        //Mesh
-        ModelMesh* pMesh;
 
         //Texture
         ModelTexturePtrShaderSortMap mapModelTexturesShaderSort;
@@ -761,9 +671,6 @@ public:
         VkPipelineShaderStageCreateInfoMap mapShaderStageCreateInfos_Computes;
 
         //Uniform
-        int countInstanceExt;
-        int countInstance;
-
         std::vector<ObjectConstants> objectCBs;
         std::vector<VkBuffer> poBuffers_ObjectCB;
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
@@ -805,24 +712,108 @@ public:
         VkColorComponentFlags cfg_ColorWriteMask;
 
 
-    ////Mesh
-        void SetMesh(ModelMesh* pMesh)
+        ModelObjectRend(const std::string& _nameObjectRend,
+                        ModelObject* _pModelObject,
+                        ModelMeshSub* _pMeshSub)
+            : nameObjectRend(_nameObjectRend)
+            , pModelObject(_pModelObject)
+            , pMeshSub(_pMeshSub)
+            , isTransparent(false)
+
+            //Uniform
+            , isUsedTessellation(false)
+
+            //Pipeline Graphics
+
+            //Pipeline Computes
+
+            //State
+            , cfg_vkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
+            , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
+            , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
+            , cfg_vkCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
+            , cfg_isDepthTest(VK_TRUE)
+            , cfg_isDepthWrite(VK_TRUE)
+            , cfg_DepthCompareOp(VK_COMPARE_OP_LESS_OR_EQUAL)  
+            , cfg_isStencilTest(VK_FALSE)
+            , cfg_isBlend(VK_FALSE)
+            , cfg_BlendColorFactorSrc(VK_BLEND_FACTOR_ONE)
+            , cfg_BlendColorFactorDst(VK_BLEND_FACTOR_ZERO)
+            , cfg_BlendColorOp(VK_BLEND_OP_ADD)
+            , cfg_BlendAlphaFactorSrc(VK_BLEND_FACTOR_ONE)
+            , cfg_BlendAlphaFactorDst(VK_BLEND_FACTOR_ZERO)
+            , cfg_BlendAlphaOp(VK_BLEND_OP_ADD)
+            , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
+
+            
         {
-            this->pMesh = pMesh;
+            this->pPipelineGraphics = new PipelineGraphics(_pModelObject->pWindow);
         }
-        ModelMesh* GetMesh()
+        ~ModelObjectRend()
         {
-            return this->pMesh;
+            //MeshSub
+            this->pMeshSub = nullptr;
+
+            //Texture
+            this->mapModelTexturesShaderSort.clear();
+
+            //Clean
+            CleanupSwapChain();
+            UTIL_DELETE(pPipelineGraphics)
         }
 
-        VkBuffer GetMeshVertexBuffer()
+        void CleanupSwapChain()
         {
-            return this->pMesh->poVertexBuffer;
+            //Uniform
+            size_t count = this->poBuffers_ObjectCB.size();
+            for (size_t i = 0; i < count; i++) 
+            {
+                this->pModelObject->pWindow->destroyBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+            }
+            this->objectCBs.clear();
+            this->poBuffers_ObjectCB.clear();
+            this->poBuffersMemory_ObjectCB.clear();
+
+            count = this->poBuffers_materialCB.size();
+            for (size_t i = 0; i < count; i++) 
+            {
+                this->pModelObject->pWindow->destroyBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
+            }
+            this->materialCBs.clear();
+            this->poBuffers_materialCB.clear();
+            this->poBuffersMemory_materialCB.clear();
+
+            count = this->poBuffers_tessellationCB.size();
+            for (size_t i = 0; i < count; i++) 
+            {
+                this->pModelObject->pWindow->destroyBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
+            }
+            this->tessellationCBs.clear();
+            this->poBuffers_tessellationCB.clear();
+            this->poBuffersMemory_tessellationCB.clear();
+
+            //Shader
+            this->aShaderStageCreateInfos_Graphics.clear();
+            this->aShaderStageCreateInfos_Computes.clear();
+            this->mapShaderStageCreateInfos_Computes.clear();
+
+            //Pipeline Graphics
+            this->pPipelineGraphics->CleanupSwapChain();
+
+            //Pipeline Computes
+            count = this->aPipelineComputes.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                PipelineCompute* p = this->aPipelineComputes[i];
+                UTIL_DELETE(p)
+            }
+            this->aPipelineComputes.clear();
         }
-        VkBuffer GetMeshIndexBuffer()
+
+        void recreateSwapChain()
         {
-            return this->pMesh->poIndexBuffer;
-        }
+
+        }   
 
     ////Textures
         void AddTexture(const std::string& nameShaderSort, ModelTexture* pTexture)
@@ -859,8 +850,118 @@ public:
         }
         PipelineCompute* GetPipelineCompute(int index)
         {
-            assert (index >= 0 && index < (int)this->aPipelineComputes.size() && "ModelObject::GetPipelineCompute");
+            assert (index >= 0 && index < (int)this->aPipelineComputes.size() && "ModelObjectRend::GetPipelineCompute");
             return this->aPipelineComputes[index];
+        }
+
+    };
+    typedef std::vector<ModelObjectRend*> ModelObjectRendPtrVector;
+    typedef std::map<std::string, ModelObjectRend*> ModelObjectRendPtrMap;
+
+
+    /////////////////////////// ModelObject /////////////////////////
+    struct ModelObject
+    {
+        //Window
+        Vulkan_013_IndirectDraw* pWindow;
+        int index;
+
+        //Name
+        int indexModel;
+        std::string nameObject;
+        std::string nameMesh;
+        bool isShow;
+        bool isWireFrame;
+        bool isRotate;
+        bool isLighting;
+
+        int countInstanceExt;
+        int countInstance;
+
+        //Mesh
+        ModelMesh* pMesh;
+
+        //ModelObjectRend
+        ModelObjectRendPtrVector aRends;
+
+
+        ModelObject(Vulkan_013_IndirectDraw* _pWindow,
+                    int _index)
+            //Window
+            : pWindow(_pWindow)
+            , index(_index)
+
+            //Name
+            , nameObject("")
+            , nameMesh("")
+            , isShow(true)
+            , isWireFrame(false)
+            , isRotate(true)
+            , isLighting(true)
+
+            , countInstanceExt(0)
+            , countInstance(1)
+
+            //Mesh
+            , pMesh(nullptr)
+        {
+            
+        }
+        ~ModelObject()
+        {
+            
+        }
+
+        void Destroy()
+        {
+            //Mesh
+            this->pMesh = nullptr;
+
+            //ObjectRend
+            CleanupSwapChain();
+            size_t count = this->aRends.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                ModelObjectRend* pRend = this->aRends[i];
+                delete pRend;
+            }
+            this->aRends.clear();
+        }
+
+        void CleanupSwapChain()
+        {
+            size_t count = this->aRends.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                ModelObjectRend* pRend = this->aRends[i];
+                pRend->CleanupSwapChain();
+            }
+        }
+
+        void recreateSwapChain()
+        {
+            size_t count = this->aRends.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                ModelObjectRend* pRend = this->aRends[i];
+                pRend->recreateSwapChain();
+            }
+        }
+
+    ////Mesh
+        void SetMesh(ModelMesh* pMesh)
+        {
+            this->pMesh = pMesh;
+        }
+        ModelMesh* GetMesh()
+        {
+            return this->pMesh;
+        }
+
+    ////ModelObjectRend
+        void AddObjectRend(ModelObjectRend* pRend)
+        {
+            this->aRends.push_back(pRend);
         }
 
     };
@@ -875,8 +976,10 @@ public:
     ModelTexturePtrMap m_mapModelTexture;
 
     ModelObjectPtrVector m_aModelObjects;
-    ModelObjectPtrVector m_aModelObjects_Render;
     ModelObjectPtrMap m_mapModelObjects;
+    ModelObjectRendPtrVector m_aModelObjectRends_All;
+    ModelObjectRendPtrVector m_aModelObjectRends_Opaque;
+    ModelObjectRendPtrVector m_aModelObjectRends_Transparent;
 
     VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
     VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
@@ -923,7 +1026,7 @@ protected:
 
         virtual bool beginRenderImgui();
             virtual void modelConfig();
-            
+
         virtual void endRenderImgui();
 
         virtual void drawMesh_Custom(VkCommandBuffer& commandBuffer);
@@ -981,7 +1084,8 @@ private:
     void createPipelineLayouts();
     VkPipelineLayout findPipelineLayout(const std::string& namePipelineLayout);
 
-    void drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject);
+    void drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
+    void drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend);
 };
 
 

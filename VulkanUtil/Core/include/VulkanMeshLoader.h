@@ -23,8 +23,8 @@ namespace LostPeter
         static bool LoadMeshData(const std::string& pathMesh, MeshData& meshData, unsigned int eMeshParserFlags);
         static bool LoadMeshData(const char* szPathMesh, MeshData& meshData, unsigned int eMeshParserFlags);
 
-        static bool LoadMeshDatas(const std::string& pathMesh, std::vector<std::string>& aMaterials,  std::vector<MeshData>& aMeshDatas, unsigned int eMeshParserFlags);
-        static bool LoadMeshDatas(const char* szPathMesh, std::vector<std::string>& aMaterials,  std::vector<MeshData>& aMeshDatas, unsigned int eMeshParserFlags);
+        static bool LoadMeshDatas(const std::string& pathMesh, std::vector<MeshData>& aMeshDatas, bool isFlipY, unsigned int eMeshParserFlags);
+        static bool LoadMeshDatas(const char* szPathMesh, std::vector<MeshData>& aMeshDatas, bool isFlipY, unsigned int eMeshParserFlags);
 
 
     public:
