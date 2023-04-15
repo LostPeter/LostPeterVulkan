@@ -39,7 +39,8 @@ namespace LostPeter
     {
         if (pMesh->mNumVertices <= 0)
             return false;
-
+        
+        meshData.nameMesh = pMesh->mName.C_Str();
         aiMatrix4x4 meshTransformation = *reinterpret_cast<aiMatrix4x4*>(pTransform);
         for (unsigned int i = 0; i < pMesh->mNumVertices; ++i)
         {

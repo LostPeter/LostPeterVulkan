@@ -24,7 +24,7 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 8;
+static const int g_MeshCount = 10;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
@@ -39,6 +39,9 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
 
     "tree",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree/tree.fbx", //tree
     "tree_spruce",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree_spruce/tree_spruce.fbx", //tree_spruce
+
+    "grass",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/grass/grass.fbx", //grass
+    "flower",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/flower/flower.fbx", //flower
 
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
@@ -55,6 +58,9 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     false, //tree
     false, //tree_spruce
 
+    false, //grass
+    false, //flower
+
 };
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
 {
@@ -69,6 +75,9 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
 
     false, //tree
     false, //tree_spruce
+
+    false, //grass
+    false, //flower
 
 };
 static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
@@ -85,12 +94,15 @@ static glm::mat4 g_MeshTranformLocals[g_MeshCount] =
     VulkanMath::ms_mat4Unit, //tree
     VulkanMath::ms_mat4Unit, //tree_spruce
 
+    VulkanMath::ms_mat4Unit, //grass
+    VulkanMath::ms_mat4Unit, //flower
+
 };
 
 
 /////////////////////////// Texture /////////////////////////////
 static const std::string g_TextureDefault = "default_blackwhite";
-static const int g_TextureCount = 16;
+static const int g_TextureCount = 23;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
@@ -115,6 +127,15 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
 
     "tree_diffuse",                     "2d",            "false",                  "false",                           "Assets/Model/Fbx/tree/tree_diffuse.png", //tree_diffuse
     "tree_spruce_diffuse",              "2d",            "false",                  "false",                           "Assets/Model/Fbx/tree_spruce/tree_spruce_diffuse.png", //tree_spruce_diffuse
+
+    "grass_alien",                      "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_alien.png", //grass_alien
+    "grass_field",                      "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_field.png", //grass_field
+    "grass_pixelated",                  "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_pixelated.png", //grass_pixelated
+    "grass_tall",                       "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_tall.png", //grass_tall
+    "grass_thick",                      "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_thick.png", //grass_thick
+    "grass_thin",                       "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_thin.png", //grass_thin
+
+    "flower_atlas",                     "2d",            "false",                  "false",                           "Assets/Model/Fbx/flower/flower_atlas.png", //flower_atlas
 
 };
 static VkFormat g_TextureFormats[g_TextureCount] = 
@@ -141,6 +162,15 @@ static VkFormat g_TextureFormats[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_SRGB, //tree_diffuse
     VK_FORMAT_R8G8B8A8_SRGB, //tree_spruce_diffuse
 
+    VK_FORMAT_R8G8B8A8_SRGB, //grass_alien
+    VK_FORMAT_R8G8B8A8_SRGB, //grass_field
+    VK_FORMAT_R8G8B8A8_SRGB, //grass_pixelated
+    VK_FORMAT_R8G8B8A8_SRGB, //grass_tall
+    VK_FORMAT_R8G8B8A8_SRGB, //grass_thick
+    VK_FORMAT_R8G8B8A8_SRGB, //grass_thin
+
+    VK_FORMAT_R8G8B8A8_SRGB, //flower_atlas
+
 };
 static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
@@ -165,6 +195,15 @@ static VulkanTextureFilterType g_TextureFilters[g_TextureCount] =
 
     Vulkan_TextureFilter_Bilinear, //tree_diffuse
     Vulkan_TextureFilter_Bilinear, //tree_spruce_diffuse
+
+    Vulkan_TextureFilter_Bilinear, //grass_alien
+    Vulkan_TextureFilter_Bilinear, //grass_field
+    Vulkan_TextureFilter_Bilinear, //grass_pixelated
+    Vulkan_TextureFilter_Bilinear, //grass_tall
+    Vulkan_TextureFilter_Bilinear, //grass_thick
+    Vulkan_TextureFilter_Bilinear, //grass_thin
+
+    Vulkan_TextureFilter_Bilinear, //flower_atlas
 
 };
 static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
@@ -191,6 +230,15 @@ static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] =
     Vulkan_TextureAddressing_Clamp, //tree_diffuse
     Vulkan_TextureAddressing_Clamp, //tree_spruce_diffuse
 
+    Vulkan_TextureAddressing_Clamp, //grass_alien
+    Vulkan_TextureAddressing_Clamp, //grass_field
+    Vulkan_TextureAddressing_Clamp, //grass_pixelated
+    Vulkan_TextureAddressing_Clamp, //grass_tall
+    Vulkan_TextureAddressing_Clamp, //grass_thick
+    Vulkan_TextureAddressing_Clamp, //grass_thin
+
+    Vulkan_TextureAddressing_Clamp, //flower_atlas
+
 };
 static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
@@ -215,6 +263,15 @@ static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
 
     Vulkan_TextureBorderColor_OpaqueBlack, //tree_diffuse
     Vulkan_TextureBorderColor_OpaqueBlack, //tree_spruce_diffuse
+
+    Vulkan_TextureBorderColor_OpaqueBlack, //grass_alien
+    Vulkan_TextureBorderColor_OpaqueBlack, //grass_field
+    Vulkan_TextureBorderColor_OpaqueBlack, //grass_pixelated
+    Vulkan_TextureBorderColor_OpaqueBlack, //grass_tall
+    Vulkan_TextureBorderColor_OpaqueBlack, //grass_thick
+    Vulkan_TextureBorderColor_OpaqueBlack, //grass_thin
+
+    Vulkan_TextureBorderColor_OpaqueBlack, //flower_atlas
 
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
@@ -241,6 +298,15 @@ static int g_TextureSizes[3 * g_TextureCount] =
    1024,   1024,    1, //tree_diffuse
    1024,   1024,    1, //tree_spruce_diffuse
 
+   1024,   1024,    1, //grass_alien
+   1024,   1024,    1, //grass_field
+    128,    128,    1, //grass_pixelated
+   1024,   1024,    1, //grass_tall
+   1024,   1024,    1, //grass_thick
+   1024,   1024,    1, //grass_thin
+
+   1024,   1024,    1, //flower_atlas
+
 };
 static float g_TextureAnimChunks[2 * g_TextureCount] = 
 {
@@ -265,6 +331,15 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
 
     0,    0, //tree_diffuse
     0,    0, //tree_spruce_diffuse
+
+    0,    0, //grass_alien
+    0,    0, //grass_field
+    0,    0, //grass_pixelated
+    0,    0, //grass_tall
+    0,    0, //grass_thick
+    0,    0, //grass_thin
+
+    0,    0, //flower_atlas
 
 };
 
@@ -293,7 +368,7 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 16;
+static const int g_ShaderCount = 18;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
@@ -306,8 +381,9 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "vert_standard_terrain_opaque_lit",                        "vert",              "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
 
     "vert_standard_mesh_opaque_texnormalmap_lit",              "vert",              "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.vert.spv", //standard_mesh_opaque_texnormalmap_lit vert
-    "vert_standard_tree_transparent_lit",                      "vert",              "Assets/Shader/standard_tree_transparent_lit.vert.spv", //standard_tree_transparent_lit vert  
-    "vert_standard_tree_apphatest_lit",                        "vert",              "Assets/Shader/standard_tree_apphatest_lit.vert.spv", //standard_tree_apphatest_lit vert  
+    "vert_standard_mesh_transparent_tree_lit",                 "vert",              "Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv", //standard_mesh_transparent_tree_lit vert  
+    "vert_standard_mesh_opaque_tree_alphatest_lit",            "vert",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.vert.spv", //standard_mesh_opaque_tree_alphatest_lit vert
+    "vert_standard_mesh_opaque_grass_alphatest_lit",           "vert",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv", //standard_mesh_opaque_grass_alphatest_lit vert  
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
    
@@ -326,8 +402,9 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "frag_standard_terrain_opaque_lit",                        "frag",              "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
 
     "frag_standard_mesh_opaque_texnormalmap_lit",              "frag",              "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit frag
-    "frag_standard_tree_transparent_lit",                      "frag",              "Assets/Shader/standard_tree_transparent_lit.frag.spv", //standard_tree_transparent_lit frag
-    "frag_standard_tree_apphatest_lit",                        "frag",              "Assets/Shader/standard_tree_apphatest_lit.frag.spv", //standard_tree_apphatest_lit frag
+    "frag_standard_mesh_transparent_tree_lit",                 "frag",              "Assets/Shader/standard_mesh_transparent_tree_lit.frag.spv", //standard_mesh_transparent_tree_lit frag
+    "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",               "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
+    "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
     
@@ -336,156 +413,205 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 6;
+static const int g_Object_Count = 8;
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                          //Mesh Name                                                                    
-    "textureCubeMap_SkyBox",               "cube", //textureCubeMap_SkyBox
-    "mountain_object",                     "mountain", //mountain_object   
+    "object_skybox",                       "cube", //object_skybox
+    "object_mountain",                     "mountain", //object_mountain   
 
-    "rock_object",                         "rock", //rock_object   
-    "cliff_object",                        "cliff", //cliff_object   
+    "object_rock",                         "rock", //object_rock   
+    "object_cliff",                        "cliff", //object_cliff   
 
-    "tree_object",                         "tree", //tree_object        
-    "tree_spruce_object",                  "tree_spruce", //tree_spruce_object
+    "object_tree",                         "tree", //object_tree        
+    "object_tree_spruce",                  "tree_spruce", //object_tree_spruce
     
+    "object_grass",                        "grass", //object_grass        
+    "object_flower",                       "flower", //object_flower
+
 };
+static const char* g_Object_MeshSubsUsed[g_Object_Count] =
+{
+    "0", //object_skybox
+    "0", //object_mountain
+
+    "0", //object_rock
+    "0", //object_cliff
+
+    "0;1", //object_tree        
+    "0;1", //object_tree_spruce
+
+    "1", //object_grass
+    "0", //object_flower
+
+};  
+
 static float g_Object_InstanceGap = 3.0f;
 static int g_Object_InstanceExtCount[g_Object_Count] =
 {
-    0, //textureCubeMap_SkyBox
-    0, //mountain_object 
+    0, //object_skybox
+    0, //object_mountain 
 
-    5, //rock_object 
-    5, //cliff_object 
+    5, //object_rock 
+    5, //object_cliff 
 
-    5, //tree_object 
-    5, //tree_spruce_object 
+    5, //object_tree 
+    5, //object_tree_spruce 
+
+    5, //object_grass 
+    5, //object_flower 
 
 };
 static glm::vec3 g_Object_Tranforms[3 * g_Object_Count] = 
 {   
-    glm::vec3(   0,    0,   0),     glm::vec3(     0,  0,  0),    glm::vec3(10000.0f,  10000.0f,  10000.0f), //textureCubeMap_SkyBox
-    glm::vec3(   0,  0.0,   0),     glm::vec3(     0,  0,  0),    glm::vec3(    1.0f,      1.0f,      1.0f), //mountain_object
+    glm::vec3(   0,    0,     0),    glm::vec3(     0,  0,  0),    glm::vec3(  500.0f,    500.0f,    500.0f), //object_skybox
+    glm::vec3(   0,  0.0,     0),    glm::vec3(     0,  0,  0),    glm::vec3(    1.0f,      1.0f,      1.0f), //object_mountain
  
-    glm::vec3(   0,  0.0,  -1),     glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //rock_object
-    glm::vec3(   0,  0.0,   1),     glm::vec3(     0,  0,  0),    glm::vec3(    0.1f,      0.1f,      0.1f), //cliff_object
+    glm::vec3(   0,  0.0,  -2.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_rock
+    glm::vec3(   0,  0.0,  -4.0),    glm::vec3(     0,  0,  0),    glm::vec3(    0.1f,      0.1f,      0.1f), //object_cliff
 
-    glm::vec3(   0,  0.0, -6.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //tree_object
-    glm::vec3(   0,  0.0,  6.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //tree_spruce_object
+    glm::vec3(   0,  0.0, -10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree
+    glm::vec3(   0,  0.0,  10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree_spruce
+
+    glm::vec3(   0,  0.0,   4.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass
+    glm::vec3(   0,  0.0,   2.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower
 
 };
 static bool g_Object_IsShows[] = 
 {
-    true, //textureCubeMap_SkyBox
-    true, //mountain_object
+    true, //object_skybox
+    true, //object_mountain
 
-    true, //rock_object
-    true, //cliff_object
+    true, //object_rock
+    true, //object_cliff
 
-    true, //tree_object
-    true, //tree_spruce_object
+    true, //object_tree
+    true, //object_tree_spruce
+
+    true, //object_grass
+    true, //object_flower
 
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
-    false, //textureCubeMap_SkyBox
-    false, //mountain_object
+    false, //object_skybox
+    false, //object_mountain
 
-    false, //rock_object
-    false, //cliff_object
+    false, //object_rock
+    false, //object_cliff
 
-    false, //tree_object
-    false, //tree_spruce_object
+    false, //object_tree
+    false, //object_tree_spruce
+
+    false, //object_grass
+    false, //object_flower
 
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
-    true, //textureCubeMap_SkyBox
-    true, //mountain_object
+    true, //object_skybox
+    true, //object_mountain
 
-    true, //rock_object
-    true, //cliff_object
+    true, //object_rock
+    true, //object_cliff
 
-    true, //tree_object
-    true, //tree_spruce_object
+    true, //object_tree
+    true, //object_tree_spruce
+
+    true, //object_grass
+    true, //object_flower
 
 };
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 8;
+static const int g_ObjectRend_Count = 10;
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
-    "textureCubeMap_SkyBox-1",             "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //textureCubeMap_SkyBox-1
-    "mountain_object-1",                   "",                     "",                              "",                         "",                    "mountain_diffuse;mountain_normal",                                             "", //mountain_object-1
+    "object_skybox-1",                     "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //object_skybox-1
+    "object_mountain-1",                   "",                     "",                              "",                         "",                    "mountain_diffuse;mountain_normal",                                             "", //object_mountain-1
 
-    "rock_object-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                                                     "", //rock_object-1
-    "cliff_object-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //cliff_object-1
+    "object_rock-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                                                     "", //object_rock-1
+    "object_cliff-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //object_cliff-1
 
-    "tree_object-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //tree_object-1
-    "tree_object-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //tree_object-2
-    "tree_spruce_object-1",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //tree_spruce_object-1
-    "tree_spruce_object-2",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //tree_spruce_object-2
+    "object_tree-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-1
+    "object_tree-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-2
+    "object_tree_spruce-1",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-1
+    "object_tree_spruce-2",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-2
+
+    "object_grass-1",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-1
+    "object_flower-1",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-1
 
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
-    "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_SkyBox-1
-    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //mountain_object-1
+    "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //object_skybox-1
+    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //object_mountain-1
     
-    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //rock_object-1
-    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //cliff_object-1
+    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //object_rock-1
+    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //object_cliff-1
 
-    "vert_standard_tree_apphatest_lit",                     "",                                             "",                                         "",                         "frag_standard_tree_apphatest_lit",                     "", //tree_object-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //tree_object-2
-    "vert_standard_tree_apphatest_lit",                     "",                                             "",                                         "",                         "frag_standard_tree_apphatest_lit",                     "", //tree_spruce_object-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //tree_spruce_object-2
+    "vert_standard_mesh_opaque_tree_alphatest_lit",         "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tree_alphatest_lit",         "", //object_tree-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_tree-2
+    "vert_standard_mesh_opaque_tree_alphatest_lit",         "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tree_alphatest_lit",         "", //object_tree_spruce-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_tree_spruce-2
+
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",         "", //object_grass-1
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",         "", //object_flower-1
 
 };
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
     //Pipeline Graphics                                                 //Pipeline Compute
-    "Pass-Object-Material-Instance-TextureFS",                          "", //textureCubeMap_SkyBox-1
-    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //mountain_object-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_skybox-1
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_mountain-1
 
-    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //rock_object-1
-    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //cliff_object-1
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_rock-1
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_cliff-1
 
-    "Pass-Object-Material-Instance-TextureFS",                          "", //tree_object-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //tree_object-2
-    "Pass-Object-Material-Instance-TextureFS",                          "", //tree_spruce_object-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //tree_spruce_object-2
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree-2
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree_spruce-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree_spruce-2
+
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-1
 
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
-    false, //textureCubeMap_SkyBox-1
-    false, //mountain_object-1
+    false, //object_skybox-1
+    false, //object_mountain-1
 
-    false, //rock_object-1
-    false, //cliff_object-1
+    false, //object_rock-1
+    false, //object_cliff-1
 
-    false, //tree_object-1
-    false, //tree_object-1
-    false, //tree_spruce_object-2
-    false, //tree_spruce_object-2
+    false, //object_tree-1
+    false, //object_tree-1
+    false, //object_tree_spruce-2
+    false, //object_tree_spruce-2
+
+    false, //object_grass-1
+    false, //object_flower-1
 
 };
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
-    false, //textureCubeMap_SkyBox-1
-    false, //mountain_object-1
+    false, //object_skybox-1
+    false, //object_mountain-1
     
-    false, //rock_object-1
-    false, //cliff_object-1
+    false, //object_rock-1
+    false, //object_cliff-1
 
-    false, //tree_object-1
-    false, //tree_object-2
-    false, //tree_spruce_object-1
-    false, //tree_spruce_object-2
+    false, //object_tree-1
+    false, //object_tree-2
+    false, //object_tree_spruce-1
+    false, //object_tree_spruce-2
+
+    false, //object_grass-1
+    false, //object_flower-1
 
 };
 
@@ -539,8 +665,9 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+        Util_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                      this->nameMeshSub.c_str(),
+                     this->nameOriginal.c_str(),
                      (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
                      (int)this->indices.size());
     }
@@ -578,8 +705,9 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+        Util_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                      this->nameMeshSub.c_str(),
+                     this->nameOriginal.c_str(),
                      (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
                      (int)this->indices.size());
     }
@@ -656,6 +784,7 @@ bool Vulkan_013_IndirectDraw::ModelMesh::LoadMesh(bool isFlipY, bool isTranformL
         std::string nameMeshSub = this->nameMesh + "-" + VulkanUtilString::SaveInt(i);
         ModelMeshSub* pMeshSub = new ModelMeshSub(this,
                                                   nameMeshSub,
+                                                  meshData.nameMesh,
                                                   i,
                                                   this->typeVertex);
         if (!pMeshSub->CreateMeshSub(meshData, isTranformLocal, matTransformLocal))
@@ -791,12 +920,25 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
         {
             pModelObject->indexModel = i;
             pModelObject->nameObject = g_Object_Configs[2 * i + 0];
-            pModelObject->nameMesh = g_Object_Configs[2 * i + 1]; 
+            pModelObject->nameMesh = g_Object_Configs[2 * i + 1];
             //Mesh
             {
                 ModelMesh* pMesh = this->findModelMesh(pModelObject->nameMesh);
                 assert(pMesh != nullptr && "Vulkan_013_IndirectDraw::loadModel_Custom");
                 pModelObject->SetMesh(pMesh);
+            }
+            //MeshSub Used
+            {
+                std::string nameMeshSubUsed = g_Object_MeshSubsUsed[i];
+                std::vector<std::string> aMeshSubUsed = VulkanUtilString::Split(nameMeshSubUsed, ";");
+                pModelObject->aMeshSubUsed.clear();
+                size_t count_meshsub_used = aMeshSubUsed.size();
+                for (size_t j = 0; j < count_meshsub_used; j++)
+                {
+                    std::string& name = aMeshSubUsed[j];
+                    int indexMeshSub = VulkanUtilString::ParserInt(name);
+                    pModelObject->aMeshSubUsed.push_back(indexMeshSub);
+                }
             }
             pModelObject->isShow = g_Object_IsShows[i];
             pModelObject->isRotate = g_Object_IsRotates[i];
@@ -807,10 +949,13 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
         //ObjectRend
         {
             size_t count_mesh_sub = pModelObject->pMesh->aMeshSubs.size();
-            for (int j = 0; j < count_mesh_sub; j++)
+            size_t count_meshsub_used = pModelObject->aMeshSubUsed.size();
+            for (size_t j = 0; j < count_meshsub_used; j++)
             {
-                ModelMeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[j];
+                int indexMeshSub = pModelObject->aMeshSubUsed[j];
+                assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_013_IndirectDraw::loadModel_Custom");
 
+                ModelMeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
                 std::string nameObjectRend = g_ObjectRend_Configs[7 * nIndexObjectRend + 0];
                 ModelObjectRend* pRend = new ModelObjectRend(nameObjectRend, pModelObject, pMeshSub);
 
@@ -977,9 +1122,9 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
             //ObjectConstants
             {
                 ObjectConstants objectConstants;
-                objectConstants.g_MatWorld = VulkanMath::FromTRS(g_Object_Tranforms[3 *indexObject + 0] + glm::vec3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
-                                                                 g_Object_Tranforms[3 *indexObject + 1],
-                                                                 g_Object_Tranforms[3 *indexObject + 2]);
+                objectConstants.g_MatWorld = VulkanMath::FromTRS(g_Object_Tranforms[3 * indexObject + 0] + glm::vec3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
+                                                                 g_Object_Tranforms[3 * indexObject + 1],
+                                                                 g_Object_Tranforms[3 * indexObject + 2]);
                 pRend->objectCBs.push_back(objectConstants);
                 pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
             }
@@ -1302,8 +1447,8 @@ void Vulkan_013_IndirectDraw::createModelMeshes()
         this->m_aModelMesh.push_back(pMesh);
         this->m_mapModelMesh[nameMesh] = pMesh;
 
-        Util_LogInfo("Vulkan_013_IndirectDraw::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], path: [%s] success !", 
-                     nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), pathMesh.c_str());
+        Util_LogInfo("Vulkan_013_IndirectDraw::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
+                     nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
     }
 }
 Vulkan_013_IndirectDraw::ModelMesh* Vulkan_013_IndirectDraw::findModelMesh(const std::string& nameMesh)

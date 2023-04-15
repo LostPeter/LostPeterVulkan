@@ -259,8 +259,8 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "vert_standard_terrain_opaque_lit",                        "vert",              "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
 
     "vert_standard_mesh_opaque_texnormalmap_lit",              "vert",              "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.vert.spv", //standard_mesh_opaque_texnormalmap_lit vert
-    "vert_standard_tree_transparent_lit",                      "vert",              "Assets/Shader/standard_tree_transparent_lit.vert.spv", //standard_tree_transparent_lit vert  
-    "vert_standard_tree_apphatest_lit",                        "vert",              "Assets/Shader/standard_tree_apphatest_lit.vert.spv", //standard_tree_apphatest_lit vert  
+    "vert_standard_mesh_transparent_tree_lit",                 "vert",              "Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv", //standard_mesh_transparent_tree_lit vert  
+    "vert_standard_mesh_opaque_grass_alphatest_lit",           "vert",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv", //standard_mesh_opaque_grass_alphatest_lit vert  
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
    
@@ -279,8 +279,8 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "frag_standard_terrain_opaque_lit",                        "frag",              "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
 
     "frag_standard_mesh_opaque_texnormalmap_lit",              "frag",              "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit frag
-    "frag_standard_tree_transparent_lit",                      "frag",              "Assets/Shader/standard_tree_transparent_lit.frag.spv", //standard_tree_transparent_lit frag
-    "frag_standard_tree_apphatest_lit",                        "frag",              "Assets/Shader/standard_tree_apphatest_lit.frag.spv", //standard_tree_apphatest_lit frag
+    "frag_standard_mesh_transparent_tree_lit",                 "frag",              "Assets/Shader/standard_mesh_transparent_tree_lit.frag.spv", //standard_mesh_transparent_tree_lit frag
+    "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
     
@@ -384,9 +384,9 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
     
     "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //cliff_rock-1
 
-    "vert_standard_tree_apphatest_lit",                     "",                                             "",                                         "",                         "frag_standard_tree_apphatest_lit",                     "", //tree_object-1
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //tree_object-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //tree_object-2
-    "vert_standard_tree_apphatest_lit",                     "",                                             "",                                         "",                         "frag_standard_tree_apphatest_lit",                     "", //tree_spruce_object-1
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //tree_spruce_object-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //tree_spruce_object-2
 
 };
@@ -679,9 +679,7 @@ Vulkan_014_Terrain::Vulkan_014_Terrain(int width, int height, std::string name)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
-
-    this->cfg_cameraPos = glm::vec3(-2.5f, 2.0f, -20.0f);
-    this->cfg_cameraLookTarget = glm::vec3(-2.5f, 5.0f, 0.0f);
+        
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
@@ -713,6 +711,14 @@ void Vulkan_014_Terrain::createCamera()
 {
     this->pCamera = new VulkanCamera();
     cameraReset();
+}
+void Vulkan_014_Terrain::cameraReset()
+{
+    VulkanWindow::cameraReset();
+
+    this->pCamera->SetPos(glm::vec3(-5.0f, 25.0f, -35.0f));
+    this->pCamera->SetEulerAngles(glm::vec3(35.0f, 0.0f, 0.0f));
+    this->pCamera->SetFarZ(100000.0f);
 }
 
 void Vulkan_014_Terrain::loadModel_Custom()

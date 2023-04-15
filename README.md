@@ -85,66 +85,79 @@ License:
 
 
 ### <000> vulkan_000_window
+[vulkan_000_window](https://zhuanlan.zhihu.com/p/578806815)
 * sample000：Setup a framework, compile all sort of dependencies libraries, show a Window 
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_000_window.png)
 
 ### <001> vulkan_001_triangle
+[vulkan_001_triangle](https://zhuanlan.zhihu.com/p/580793939)
 * sample001：Render a triangle with vulkan api
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_001_triangle.png)
 
 ### <002> vulkan_002_imgui
+[vulkan_002_imgui](https://zhuanlan.zhihu.com/p/581642467)
 * sample002：Integrate imgui to vulkan
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_002_imgui.png)
 
 ### <003> vulkan_003_texture
+[vulkan_003_texture](https://zhuanlan.zhihu.com/p/582907670)
 * sample003：Render a texture with vulkan api
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_003_texture.png)
 
 ### <004> vulkan_004_model
+[vulkan_004_model](https://zhuanlan.zhihu.com/p/583125396)
 * sample004：Load different 3D models and textures and then render them
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_004_model.png)
 
 ### <005> vulkan_005_camera
+[vulkan_005_camera](https://zhuanlan.zhihu.com/p/585204474)
 * sample005: Realize a camera and use it in the scene
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_005_camera.png)
 
 ### <006> vulkan_006_depth
+[vulkan_006_depth](https://zhuanlan.zhihu.com/p/587243098)
 * sample006: Depth state test: depthTest and depthWrite 
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_006_depth.png)
 
 ### <007> vulkan_007_stencil
+[vulkan_007_stencil](https://zhuanlan.zhihu.com/p/590091632)
 * sample007: Use stencil buffer to render outline
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_007_stencil.png)
 
 ### <008> vulkan_008_blend
+[vulkan_008_blend](https://zhuanlan.zhihu.com/p/592389162)
 * sample008: Use blend state to render transparent effect
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_008_blend.png)
 
 ### <009> vulkan_009_instancing
+[vulkan_009_instancing](https://zhuanlan.zhihu.com/p/593020588)
 * sample009: Vulkan instance rendering
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_009_instancing.png)
 
 ### <010> vulkan_010_lighting
+[vulkan_010_lighting](https://zhuanlan.zhihu.com/p/593263259)
 * sample010: Vulkan classic lighting model, Ambient, Lambert Diffuse, Phong Specular, Blinn-Phong Specular
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_010_lighting.png)
 
 ### <011> vulkan_011_texturing
-* sample011: Vulkan basic textureSampler, texture1D, texture2D, texture2DArray, texture3D, textureCubeMap, textureAnimation, textureBumpMap, textureNormalMap, textureParallaxMap usage
+[vulkan_011_texturing](https://zhuanlan.zhihu.com/p/596036603)
+* sample011: Vulkan basic textureSampler, texture1D, texture2D, texture2DArray, texture3D, textureCubeMap, textureAnimation, textureBumpMap, textureNormalMap, textureParallaxMap, textureDisplacementMap usage
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_011_texturing.png)
 
 ### <012> vulkan_012_shadering
+[vulkan_012_shadering](https://zhuanlan.zhihu.com/p/600795865)
 * sample012: Vulkan Vertex Shader, Tessellation Control Shader, Tessellation Evaluation Shader, Geometry Shader, Fragment Shader, Compute Shader usage
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_012_shadering.png)

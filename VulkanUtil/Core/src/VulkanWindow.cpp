@@ -2221,8 +2221,6 @@ namespace LostPeter
 
         vkDestroyBuffer(this->poDevice, stagingBuffer, nullptr);
         vkFreeMemory(this->poDevice, stagingBufferMemory, nullptr);
-
-        Util_LogInfo("<2-2-1-2> VulkanWindow::createVertexBuffer finish !");
     }
     void VulkanWindow::createIndexBuffer(size_t bufSize, 
                                          void* pBuf, 
@@ -2252,8 +2250,6 @@ namespace LostPeter
 
         vkDestroyBuffer(this->poDevice, stagingBuffer, nullptr);
         vkFreeMemory(this->poDevice, stagingBufferMemory, nullptr);
-
-        Util_LogInfo("<2-2-1-3> VulkanWindow::createIndexBuffer finish !");
     }
         void VulkanWindow::createBuffer(VkDeviceSize size, 
                                         VkBufferUsageFlags usage, 

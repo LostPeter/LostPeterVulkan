@@ -28,6 +28,7 @@ public:
     {
         ModelMesh* pMesh;
         std::string nameMeshSub;
+        std::string nameOriginal;
         int indexMeshSub;
 
         //Vertex
@@ -51,10 +52,12 @@ public:
 
         ModelMeshSub(ModelMesh* _pMesh, 
                      const std::string& _nameMeshSub,
+                     const std::string& _nameOriginal,
                      int _indexMeshSub,
                      VulkanVertexType _poTypeVertex)
             : pMesh(_pMesh)
             , nameMeshSub(_nameMeshSub)
+            , nameOriginal(_nameOriginal)
             , indexMeshSub(_indexMeshSub)
 
             //Vertex
@@ -671,6 +674,8 @@ public:
         VkPipelineShaderStageCreateInfoMap mapShaderStageCreateInfos_Computes;
 
         //Uniform
+        int countInstance;
+
         std::vector<ObjectConstants> objectCBs;
         std::vector<VkBuffer> poBuffers_ObjectCB;
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
@@ -721,6 +726,7 @@ public:
             , isTransparent(false)
 
             //Uniform
+            , countInstance(1)
             , isUsedTessellation(false)
 
             //Pipeline Graphics
@@ -880,6 +886,7 @@ public:
 
         //Mesh
         ModelMesh* pMesh;
+        std::vector<int> aMeshSubUsed;
 
         //ModelObjectRend
         ModelObjectRendPtrVector aRends;
@@ -916,6 +923,7 @@ public:
         {
             //Mesh
             this->pMesh = nullptr;
+            this->aMeshSubUsed.clear();
 
             //ObjectRend
             CleanupSwapChain();
