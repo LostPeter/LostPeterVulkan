@@ -10,11 +10,11 @@ Target:
 
 Github Address:
 
-    [GitHub: https://github.com/LostPeter/LostPeterVulkan](https://github.com/LostPeter/LostPeterVulkan)
+    [LostPeter GitHub](https://github.com/LostPeter/LostPeterVulkan)
 
 Document Web: 
 
-    [知乎: https://www.zhihu.com/people/lostpeter](https://www.zhihu.com/people/lostpeter)
+    [LostPeter 知乎](https://www.zhihu.com/people/lostpeter)
 
 Usage:
 
