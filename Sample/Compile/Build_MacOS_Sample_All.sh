@@ -26,3 +26,4 @@ rebuild=${2}
 ./Build_MacOS_Sample.sh vulkan_011_texturing $debug $rebuild
 ./Build_MacOS_Sample.sh vulkan_012_shadering $debug $rebuild
 ./Build_MacOS_Sample.sh vulkan_013_indirectdraw $debug $rebuild
+./Build_MacOS_Sample.sh vulkan_014_terrain $debug $rebuild
