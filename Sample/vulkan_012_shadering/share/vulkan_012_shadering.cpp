@@ -739,6 +739,10 @@ void Vulkan_012_Shadering::createCamera()
     this->pCamera = new VulkanCamera();
     cameraReset();
 }
+void Vulkan_012_Shadering::cameraReset()
+{
+    VulkanWindow::cameraReset();
+}
 
 void Vulkan_012_Shadering::loadModel_Custom()
 {

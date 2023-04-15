@@ -883,6 +883,11 @@ void Vulkan_011_Texturing::createCamera()
 {
     this->pCamera = new VulkanCamera();
     cameraReset();
+}
+void Vulkan_011_Texturing::cameraReset()
+{
+    VulkanWindow::cameraReset();
+
     this->pCamera->SetPos(glm::vec3(-4.0f, 24.0f, 3.6f));
     this->pCamera->SetEulerAngles(glm::vec3(80.0f, 0.0f, 0.0f));
 }

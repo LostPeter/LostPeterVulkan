@@ -1025,6 +1025,7 @@ protected:
         virtual void updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer);
 
         virtual bool beginRenderImgui();
+            virtual void cameraReset();
             virtual void modelConfig();
 
         virtual void endRenderImgui();

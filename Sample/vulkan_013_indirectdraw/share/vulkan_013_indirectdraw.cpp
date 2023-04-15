@@ -24,7 +24,7 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 6;
+static const int g_MeshCount = 8;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
@@ -32,6 +32,9 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
 
+    "mountain",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Obj/mountain/mountain.obj", //mountain
+
+    "rock",             "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Fbx/rock/rock.fbx", //rock
     "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Obj/cliff/cliff.obj", //cliff
 
     "tree",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree/tree.fbx", //tree
@@ -44,6 +47,9 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     false, //cube
     false, //sphere
 
+    false, //mountain
+
+    false, //rock
     false, //cliff
 
     false, //tree
@@ -56,6 +62,9 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //cube
     false, //sphere
 
+    false, //mountain
+
+    false, //rock
     false, //cliff
 
     false, //tree
@@ -68,6 +77,9 @@ static glm::mat4 g_MeshTranformLocals[g_MeshCount] =
     VulkanMath::ms_mat4Unit, //cube
     VulkanMath::ms_mat4Unit, //sphere
 
+    VulkanMath::ms_mat4Unit, //mountain
+
+    VulkanMath::ms_mat4Unit, //rock
     VulkanMath::ms_mat4Unit, //cliff
 
     VulkanMath::ms_mat4Unit, //tree
@@ -78,7 +90,7 @@ static glm::mat4 g_MeshTranformLocals[g_MeshCount] =
 
 /////////////////////////// Texture /////////////////////////////
 static const std::string g_TextureDefault = "default_blackwhite";
-static const int g_TextureCount = 12;
+static const int g_TextureCount = 16;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
@@ -93,6 +105,11 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
     "texture_terrain_normal",           "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png", //texture_terrain_normal
     "texture_terrain_control",          "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/terrain_control.png", //texture_terrain_control
 
+    "mountain_diffuse",                 "2d",            "false",                  "false",                           "Assets/Model/Obj/mountain/mountain_diffuse.png", //mountain_diffuse
+    "mountain_normal",                  "2d",            "false",                  "false",                           "Assets/Model/Obj/mountain/mountain_normal.png", //mountain_normal
+
+    "rock_diffuse",                     "2d",            "false",                  "false",                           "Assets/Model/Fbx/rock/rock_diffuse.png", //rock_diffuse
+    "rock_normal",                      "2d",            "false",                  "false",                           "Assets/Model/Fbx/rock/rock_normal.png", //rock_normal
     "cliff_diffuse",                    "2d",            "false",                  "false",                           "Assets/Model/Obj/cliff/cliff_diffuse.png", //cliff_diffuse
     "cliff_normal",                     "2d",            "false",                  "false",                           "Assets/Model/Obj/cliff/cliff_normal.png", //cliff_normal
 
@@ -113,6 +130,11 @@ static VkFormat g_TextureFormats[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_UNORM, //texture_terrain_normal
     VK_FORMAT_R8G8B8A8_UNORM, //texture_terrain_control
 
+    VK_FORMAT_R8G8B8A8_SRGB, //mountain_diffuse
+    VK_FORMAT_R8G8B8A8_UNORM, //mountain_normal
+
+    VK_FORMAT_R8G8B8A8_SRGB, //rock_diffuse
+    VK_FORMAT_R8G8B8A8_UNORM, //rock_normal
     VK_FORMAT_R8G8B8A8_SRGB, //cliff_diffuse
     VK_FORMAT_R8G8B8A8_UNORM, //cliff_normal
 
@@ -133,6 +155,11 @@ static VulkanTextureFilterType g_TextureFilters[g_TextureCount] =
     Vulkan_TextureFilter_Bilinear, //texture_terrain_normal
     Vulkan_TextureFilter_Bilinear, //texture_terrain_control
 
+    Vulkan_TextureFilter_Bilinear, //mountain_diffuse
+    Vulkan_TextureFilter_Bilinear, //mountain_normal
+
+    Vulkan_TextureFilter_Bilinear, //rock_diffuse
+    Vulkan_TextureFilter_Bilinear, //rock_normal
     Vulkan_TextureFilter_Bilinear, //cliff_diffuse
     Vulkan_TextureFilter_Bilinear, //cliff_normal
 
@@ -153,6 +180,11 @@ static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] =
     Vulkan_TextureAddressing_Clamp, //texture_terrain_normal
     Vulkan_TextureAddressing_Clamp, //texture_terrain_control
 
+    Vulkan_TextureAddressing_Clamp, //mountain_diffuse
+    Vulkan_TextureAddressing_Clamp, //mountain_normal
+
+    Vulkan_TextureAddressing_Clamp, //rock_diffuse
+    Vulkan_TextureAddressing_Clamp, //rock_normal
     Vulkan_TextureAddressing_Clamp, //cliff_diffuse
     Vulkan_TextureAddressing_Clamp, //cliff_normal
 
@@ -173,6 +205,11 @@ static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
     Vulkan_TextureBorderColor_OpaqueBlack, //texture_terrain_normal
     Vulkan_TextureBorderColor_OpaqueBlack, //texture_terrain_control
 
+    Vulkan_TextureBorderColor_OpaqueBlack, //mountain_diffuse
+    Vulkan_TextureBorderColor_OpaqueBlack, //mountain_normal
+
+    Vulkan_TextureBorderColor_OpaqueBlack, //rock_diffuse
+    Vulkan_TextureBorderColor_OpaqueBlack, //rock_normal
     Vulkan_TextureBorderColor_OpaqueBlack, //cliff_diffuse
     Vulkan_TextureBorderColor_OpaqueBlack, //cliff_normal
 
@@ -193,6 +230,11 @@ static int g_TextureSizes[3 * g_TextureCount] =
    1024,   1024,    1, //texture_terrain_normal
     512,    512,    1, //texture_terrain_control
 
+   1024,   1024,    1, //mountain_diffuse
+   1024,   1024,    1, //mountain_normal
+
+    512,    512,    1, //rock_diffuse
+    512,    512,    1, //rock_normal
     512,    512,    1, //cliff_diffuse
    1024,   1024,    1, //cliff_normal
 
@@ -213,6 +255,11 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
     0,    0, //texture_terrain_normal
     0,    0, //texture_terrain_control
 
+    0,    0, //mountain_diffuse
+    0,    0, //mountain_normal
+
+    0,    0, //rock_diffuse
+    0,    0, //rock_normal
     0,    0, //cliff_diffuse
     0,    0, //cliff_normal
 
@@ -289,14 +336,15 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 5;
+static const int g_Object_Count = 6;
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                          //Mesh Name                                                                    
     "textureCubeMap_SkyBox",               "cube", //textureCubeMap_SkyBox
-    "terrain_ground",                      "plane", //terrain_ground   
+    "mountain_object",                     "mountain", //mountain_object   
 
-    "cliff_rock",                          "cliff", //cliff_rock   
+    "rock_object",                         "rock", //rock_object   
+    "cliff_object",                        "cliff", //cliff_object   
 
     "tree_object",                         "tree", //tree_object        
     "tree_spruce_object",                  "tree_spruce", //tree_spruce_object
@@ -306,9 +354,10 @@ static float g_Object_InstanceGap = 3.0f;
 static int g_Object_InstanceExtCount[g_Object_Count] =
 {
     0, //textureCubeMap_SkyBox
-    0, //terrain_ground 
+    0, //mountain_object 
 
-    5, //cliff_rock 
+    5, //rock_object 
+    5, //cliff_object 
 
     5, //tree_object 
     5, //tree_spruce_object 
@@ -316,21 +365,23 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
 };
 static glm::vec3 g_Object_Tranforms[3 * g_Object_Count] = 
 {   
-    glm::vec3(   0,    0,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
-    glm::vec3(   0, -0.1,   0),     glm::vec3(     0,  0,  0),    glm::vec3(   1.0f,    1.0f,    1.0f), //terrain_ground
+    glm::vec3(   0,    0,   0),     glm::vec3(     0,  0,  0),    glm::vec3(10000.0f,  10000.0f,  10000.0f), //textureCubeMap_SkyBox
+    glm::vec3(   0,  0.0,   0),     glm::vec3(     0,  0,  0),    glm::vec3(    1.0f,      1.0f,      1.0f), //mountain_object
+ 
+    glm::vec3(   0,  0.0,  -1),     glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //rock_object
+    glm::vec3(   0,  0.0,   1),     glm::vec3(     0,  0,  0),    glm::vec3(    0.1f,      0.1f,      0.1f), //cliff_object
 
-    glm::vec3(   0,  0.5,   0),     glm::vec3(     0,  0,  0),    glm::vec3(   0.1f,    0.1f,    0.1f), //cliff_rock
-
-    glm::vec3(   0,  0.5, -5.0),    glm::vec3(     0,  0,  0),    glm::vec3(  10.0f,   10.0f,   10.0f), //tree_object
-    glm::vec3(   0,  0.5,  5.0),    glm::vec3(     0,  0,  0),    glm::vec3(  10.0f,   10.0f,   10.0f), //tree_spruce_object
+    glm::vec3(   0,  0.0, -6.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //tree_object
+    glm::vec3(   0,  0.0,  6.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //tree_spruce_object
 
 };
 static bool g_Object_IsShows[] = 
 {
     true, //textureCubeMap_SkyBox
-    true, //terrain_ground
+    true, //mountain_object
 
-    true, //cliff_rock
+    true, //rock_object
+    true, //cliff_object
 
     true, //tree_object
     true, //tree_spruce_object
@@ -339,9 +390,10 @@ static bool g_Object_IsShows[] =
 static bool g_Object_IsRotates[g_Object_Count] =
 {
     false, //textureCubeMap_SkyBox
-    false, //terrain_ground
+    false, //mountain_object
 
-    false, //cliff_rock
+    false, //rock_object
+    false, //cliff_object
 
     false, //tree_object
     false, //tree_spruce_object
@@ -350,9 +402,10 @@ static bool g_Object_IsRotates[g_Object_Count] =
 static bool g_Object_IsLightings[g_Object_Count] =
 {
     true, //textureCubeMap_SkyBox
-    true, //terrain_ground
+    true, //mountain_object
 
-    true, //cliff_rock
+    true, //rock_object
+    true, //cliff_object
 
     true, //tree_object
     true, //tree_spruce_object
@@ -361,14 +414,15 @@ static bool g_Object_IsLightings[g_Object_Count] =
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 7;
+static const int g_ObjectRend_Count = 8;
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
     "textureCubeMap_SkyBox-1",             "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //textureCubeMap_SkyBox-1
-    "terrain_ground-1",                    "",                     "",                              "",                         "",                    "texture_terrain_diffuse;texture_terrain_normal;texture_terrain_control",       "", //terrain_ground-1
+    "mountain_object-1",                   "",                     "",                              "",                         "",                    "mountain_diffuse;mountain_normal",                                             "", //mountain_object-1
 
-    "cliff_rock-1",                        "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //cliff_rock-1
+    "rock_object-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                                                     "", //rock_object-1
+    "cliff_object-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //cliff_object-1
 
     "tree_object-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //tree_object-1
     "tree_object-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //tree_object-2
@@ -380,9 +434,10 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
     "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_SkyBox-1
-    "vert_standard_terrain_opaque_lit",                     "",                                             "",                                         "",                         "frag_standard_terrain_opaque_lit",                     "", //terrain_ground-1
+    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //mountain_object-1
     
-    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //cliff_rock-1
+    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //rock_object-1
+    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //cliff_object-1
 
     "vert_standard_tree_apphatest_lit",                     "",                                             "",                                         "",                         "frag_standard_tree_apphatest_lit",                     "", //tree_object-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //tree_object-2
@@ -394,9 +449,10 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
 {
     //Pipeline Graphics                                                 //Pipeline Compute
     "Pass-Object-Material-Instance-TextureFS",                          "", //textureCubeMap_SkyBox-1
-    "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",      "", //terrain_ground-1
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //mountain_object-1
 
-    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //cliff_rock-1
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //rock_object-1
+    "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //cliff_object-1
 
     "Pass-Object-Material-Instance-TextureFS",                          "", //tree_object-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //tree_object-2
@@ -407,9 +463,10 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
     false, //textureCubeMap_SkyBox-1
-    false, //terrain_ground-1
+    false, //mountain_object-1
 
-    false, //cliff_rock-1
+    false, //rock_object-1
+    false, //cliff_object-1
 
     false, //tree_object-1
     false, //tree_object-1
@@ -417,14 +474,13 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
     false, //tree_spruce_object-2
 
 };
-
-
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
     false, //textureCubeMap_SkyBox-1
-    false, //terrain_ground-1
+    false, //mountain_object-1
     
-    false, //cliff_rock-1
+    false, //rock_object-1
+    false, //cliff_object-1
 
     false, //tree_object-1
     false, //tree_object-2
@@ -680,8 +736,6 @@ Vulkan_013_IndirectDraw::Vulkan_013_IndirectDraw(int width, int height, std::str
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
 
-    this->cfg_cameraPos = glm::vec3(-2.5f, 2.0f, -20.0f);
-    this->cfg_cameraLookTarget = glm::vec3(-2.5f, 5.0f, 0.0f);
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
@@ -713,6 +767,14 @@ void Vulkan_013_IndirectDraw::createCamera()
 {
     this->pCamera = new VulkanCamera();
     cameraReset();
+}
+void Vulkan_013_IndirectDraw::cameraReset()
+{
+    VulkanWindow::cameraReset();
+
+    this->pCamera->SetPos(glm::vec3(-5.0f, 25.0f, -35.0f));
+    this->pCamera->SetEulerAngles(glm::vec3(35.0f, 0.0f, 0.0f));
+    this->pCamera->SetFarZ(100000.0f);
 }
 
 void Vulkan_013_IndirectDraw::loadModel_Custom()
