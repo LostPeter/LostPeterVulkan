@@ -663,6 +663,10 @@ public:
         std::string nameObjectRend;
         ModelObject* pModelObject;
         ModelMeshSub* pMeshSub;
+        bool isShow;
+        bool isWireFrame;
+        bool isRotate;
+        bool isLighting;
         bool isTransparent;
 
         //Texture
@@ -723,6 +727,10 @@ public:
             : nameObjectRend(_nameObjectRend)
             , pModelObject(_pModelObject)
             , pMeshSub(_pMeshSub)
+            , isShow(true)
+            , isWireFrame(false)
+            , isRotate(false)
+            , isLighting(true)
             , isTransparent(false)
 
             //Uniform
@@ -903,7 +911,7 @@ public:
             , nameMesh("")
             , isShow(true)
             , isWireFrame(false)
-            , isRotate(true)
+            , isRotate(false)
             , isLighting(true)
 
             , countInstanceExt(0)

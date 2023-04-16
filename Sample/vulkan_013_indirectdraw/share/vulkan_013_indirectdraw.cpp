@@ -102,7 +102,7 @@ static glm::mat4 g_MeshTranformLocals[g_MeshCount] =
 
 /////////////////////////// Texture /////////////////////////////
 static const std::string g_TextureDefault = "default_blackwhite";
-static const int g_TextureCount = 23;
+static const int g_TextureCount = 24;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
@@ -134,7 +134,8 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
     "grass_tall",                       "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_tall.png", //grass_tall
     "grass_thick",                      "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_thick.png", //grass_thick
     "grass_thin",                       "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_thin.png", //grass_thin
-
+    "grass_wheat",                      "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_wheat.png", //grass_wheat
+    
     "flower_atlas",                     "2d",            "false",                  "false",                           "Assets/Model/Fbx/flower/flower_atlas.png", //flower_atlas
 
 };
@@ -168,6 +169,7 @@ static VkFormat g_TextureFormats[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_SRGB, //grass_tall
     VK_FORMAT_R8G8B8A8_SRGB, //grass_thick
     VK_FORMAT_R8G8B8A8_SRGB, //grass_thin
+    VK_FORMAT_R8G8B8A8_SRGB, //grass_wheat
 
     VK_FORMAT_R8G8B8A8_SRGB, //flower_atlas
 
@@ -202,6 +204,7 @@ static VulkanTextureFilterType g_TextureFilters[g_TextureCount] =
     Vulkan_TextureFilter_Bilinear, //grass_tall
     Vulkan_TextureFilter_Bilinear, //grass_thick
     Vulkan_TextureFilter_Bilinear, //grass_thin
+    Vulkan_TextureFilter_Bilinear, //grass_wheat
 
     Vulkan_TextureFilter_Bilinear, //flower_atlas
 
@@ -236,6 +239,7 @@ static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] =
     Vulkan_TextureAddressing_Clamp, //grass_tall
     Vulkan_TextureAddressing_Clamp, //grass_thick
     Vulkan_TextureAddressing_Clamp, //grass_thin
+    Vulkan_TextureAddressing_Clamp, //grass_wheat
 
     Vulkan_TextureAddressing_Clamp, //flower_atlas
 
@@ -270,6 +274,7 @@ static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
     Vulkan_TextureBorderColor_OpaqueBlack, //grass_tall
     Vulkan_TextureBorderColor_OpaqueBlack, //grass_thick
     Vulkan_TextureBorderColor_OpaqueBlack, //grass_thin
+    Vulkan_TextureBorderColor_OpaqueBlack, //grass_wheat
 
     Vulkan_TextureBorderColor_OpaqueBlack, //flower_atlas
 
@@ -304,6 +309,7 @@ static int g_TextureSizes[3 * g_TextureCount] =
    1024,   1024,    1, //grass_tall
    1024,   1024,    1, //grass_thick
    1024,   1024,    1, //grass_thin
+    128,    512,    1, //grass_wheat
 
    1024,   1024,    1, //flower_atlas
 
@@ -338,6 +344,7 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
     0,    0, //grass_tall
     0,    0, //grass_thick
     0,    0, //grass_thin
+    0,    0, //grass_wheat
 
     0,    0, //flower_atlas
 
@@ -380,7 +387,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     
     "vert_standard_terrain_opaque_lit",                        "vert",              "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
 
-    "vert_standard_mesh_opaque_texnormalmap_lit",              "vert",              "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.vert.spv", //standard_mesh_opaque_texnormalmap_lit vert
+    "vert_standard_mesh_opaque_normalmap_lit",              "vert",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.vert.spv", //standard_mesh_opaque_normalmap_lit vert
     "vert_standard_mesh_transparent_tree_lit",                 "vert",              "Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv", //standard_mesh_transparent_tree_lit vert  
     "vert_standard_mesh_opaque_tree_alphatest_lit",            "vert",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.vert.spv", //standard_mesh_opaque_tree_alphatest_lit vert
     "vert_standard_mesh_opaque_grass_alphatest_lit",           "vert",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv", //standard_mesh_opaque_grass_alphatest_lit vert  
@@ -401,7 +408,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
     "frag_standard_terrain_opaque_lit",                        "frag",              "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
 
-    "frag_standard_mesh_opaque_texnormalmap_lit",              "frag",              "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit frag
+    "frag_standard_mesh_opaque_normalmap_lit",              "frag",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.frag.spv", //standard_mesh_opaque_normalmap_lit frag
     "frag_standard_mesh_transparent_tree_lit",                 "frag",              "Assets/Shader/standard_mesh_transparent_tree_lit.frag.spv", //standard_mesh_transparent_tree_lit frag
     "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",               "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
     "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
@@ -441,8 +448,8 @@ static const char* g_Object_MeshSubsUsed[g_Object_Count] =
     "0;1", //object_tree        
     "0;1", //object_tree_spruce
 
-    "1", //object_grass
-    "0", //object_flower
+    "1;4;6;9", //object_grass
+    "0;2;4;6;8;9;10;11", //object_flower
 
 };  
 
@@ -460,21 +467,6 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
 
     5, //object_grass 
     5, //object_flower 
-
-};
-static glm::vec3 g_Object_Tranforms[3 * g_Object_Count] = 
-{   
-    glm::vec3(   0,    0,     0),    glm::vec3(     0,  0,  0),    glm::vec3(  500.0f,    500.0f,    500.0f), //object_skybox
-    glm::vec3(   0,  0.0,     0),    glm::vec3(     0,  0,  0),    glm::vec3(    1.0f,      1.0f,      1.0f), //object_mountain
- 
-    glm::vec3(   0,  0.0,  -2.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_rock
-    glm::vec3(   0,  0.0,  -4.0),    glm::vec3(     0,  0,  0),    glm::vec3(    0.1f,      0.1f,      0.1f), //object_cliff
-
-    glm::vec3(   0,  0.0, -10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree
-    glm::vec3(   0,  0.0,  10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree_spruce
-
-    glm::vec3(   0,  0.0,   4.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass
-    glm::vec3(   0,  0.0,   2.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower
 
 };
 static bool g_Object_IsShows[] = 
@@ -525,7 +517,7 @@ static bool g_Object_IsLightings[g_Object_Count] =
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 10;
+static const int g_ObjectRend_Count = 20;
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
@@ -541,25 +533,45 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
     "object_tree_spruce-2",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-2
 
     "object_grass-1",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-1
+    "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_wheat",                                                                  "", //object_grass-2
+    "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_tall",                                                                   "", //object_grass-3
+    "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-4
     "object_flower-1",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-1
+    "object_flower-2",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-2
+    "object_flower-3",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-3
+    "object_flower-4",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-4
+    "object_flower-5",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-5
+    "object_flower-6",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-6
+    "object_flower-7",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-7
+    "object_flower-8",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-8
 
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
     "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //object_skybox-1
-    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //object_mountain-1
+    "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_mountain-1
     
-    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //object_rock-1
-    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //object_cliff-1
+    "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_rock-1
+    "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_cliff-1
 
     "vert_standard_mesh_opaque_tree_alphatest_lit",         "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tree_alphatest_lit",         "", //object_tree-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_tree-2
     "vert_standard_mesh_opaque_tree_alphatest_lit",         "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tree_alphatest_lit",         "", //object_tree_spruce-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_tree_spruce-2
 
-    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",         "", //object_grass-1
-    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",         "", //object_flower-1
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_grass-1
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_grass-2
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_grass-3
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_grass-4
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-1
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-2
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-3
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-4
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-5
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-6
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-7
+    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-8
 
 };
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
@@ -577,7 +589,44 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree_spruce-2
 
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass-2
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass-3
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass-4
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-2
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-3
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-4
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-5
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-6
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-7
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-8
+
+};
+static glm::vec3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
+{   
+    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(  500.0f,    500.0f,    500.0f), //object_skybox-1
+    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(    1.0f,      1.0f,      1.0f), //object_mountain-1
+ 
+    glm::vec3(   0,  0.0,   1.5),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_rock-1
+    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(    0.1f,      0.1f,      0.1f), //object_cliff-1
+
+    glm::vec3(   0,  0.0, -10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree-1
+    glm::vec3(   0,  0.0, -10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree-2
+    glm::vec3(   0,  0.0,  10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-1
+    glm::vec3(   0,  0.0,  10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-2
+
+    glm::vec3(   0,  0.0,   2.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass-1
+    glm::vec3(   0,  0.0,   2.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass-2
+    glm::vec3(   0,  0.0,   5.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass-3
+    glm::vec3(   0,  0.0,   5.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass-4
+    glm::vec3(   0,  0.0,  -1.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-1
+    glm::vec3(   0,  0.0,  -1.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-2
+    glm::vec3(   0,  0.0,  -2.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-3
+    glm::vec3(   0,  0.0,  -2.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-4
+    glm::vec3(   0,  0.0,  -3.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-5
+    glm::vec3(   0,  0.0,  -3.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-6
+    glm::vec3(   0,  0.0,  -4.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-7
+    glm::vec3(   0,  0.0,  -4.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-8
 
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
@@ -589,12 +638,22 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
     false, //object_cliff-1
 
     false, //object_tree-1
-    false, //object_tree-1
-    false, //object_tree_spruce-2
+    false, //object_tree-2
+    false, //object_tree_spruce-1
     false, //object_tree_spruce-2
 
     false, //object_grass-1
+    false, //object_grass-2
+    false, //object_grass-3
+    false, //object_grass-4
     false, //object_flower-1
+    false, //object_flower-2
+    false, //object_flower-3
+    false, //object_flower-4
+    false, //object_flower-5
+    false, //object_flower-6
+    false, //object_flower-7
+    false, //object_flower-8
 
 };
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
@@ -611,7 +670,17 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
     false, //object_tree_spruce-2
 
     false, //object_grass-1
+    false, //object_grass-2
+    false, //object_grass-3
+    false, //object_grass-4
     false, //object_flower-1
+    false, //object_flower-2
+    false, //object_flower-3
+    false, //object_flower-4
+    false, //object_flower-5
+    false, //object_flower-6
+    false, //object_flower-7
+    false, //object_flower-8
 
 };
 
@@ -901,8 +970,8 @@ void Vulkan_013_IndirectDraw::cameraReset()
 {
     VulkanWindow::cameraReset();
 
-    this->pCamera->SetPos(glm::vec3(-5.0f, 25.0f, -35.0f));
-    this->pCamera->SetEulerAngles(glm::vec3(35.0f, 0.0f, 0.0f));
+    this->pCamera->SetPos(glm::vec3(-25.0f, 13.0f, 4.0f));
+    this->pCamera->SetEulerAngles(glm::vec3(35.0f, 90.0f, 0.0f));
     this->pCamera->SetFarZ(100000.0f);
 }
 
@@ -1113,6 +1182,7 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
         int indexObject = pRend->pModelObject->index;
         int count_instance = pRend->pModelObject->countInstance;
+        bool isObjectLighting = g_Object_IsLightings[indexObject];
 
         pRend->instanceMatWorld.clear();
         pRend->objectCBs.clear();
@@ -1122,9 +1192,9 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
             //ObjectConstants
             {
                 ObjectConstants objectConstants;
-                objectConstants.g_MatWorld = VulkanMath::FromTRS(g_Object_Tranforms[3 * indexObject + 0] + glm::vec3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
-                                                                 g_Object_Tranforms[3 * indexObject + 1],
-                                                                 g_Object_Tranforms[3 * indexObject + 2]);
+                objectConstants.g_MatWorld = VulkanMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + glm::vec3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
+                                                                 g_ObjectRend_Tranforms[3 * i + 1],
+                                                                 g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);
                 pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
             }
@@ -1137,7 +1207,7 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
                 materialConstants.factorSpecular = VulkanMath::RandomColor(false);
                 materialConstants.shininess = VulkanMath::RandF(10.0f, 100.0f);
                 materialConstants.alpha = VulkanMath::RandF(0.2f, 0.9f);
-                materialConstants.lighting = g_Object_IsLightings[i];
+                materialConstants.lighting = isObjectLighting;
                 //Texture VS
                 {
                     ModelTexturePtrVector* pTextureVSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
@@ -2309,7 +2379,7 @@ void Vulkan_013_IndirectDraw::updateCBs_Custom()
         {
             //ObjectConstants
             ObjectConstants& objectCB = pRend->objectCBs[j];
-            if (pRend->pModelObject->isRotate || this->cfg_isRotate)
+            if (pRend->pModelObject->isRotate || pRend->isRotate || this->cfg_isRotate)
             {
                 objectCB.g_MatWorld = glm::rotate(pRend->instanceMatWorld[j], 
                                                   time * glm::radians(90.0f), 
@@ -2450,12 +2520,37 @@ void Vulkan_013_IndirectDraw::modelConfig()
             std::string nameObject = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameObject;
             if (ImGui::CollapsingHeader(nameObject.c_str()))
             {
+                //isShow
                 std::string nameIsShow = "Is Show - " + pModelObject->nameObject;
-                ImGui::Checkbox(nameIsShow.c_str(), &pModelObject->isShow);
+                if (ImGui::Checkbox(nameIsShow.c_str(), &pModelObject->isShow))
+                {
+                    for (int j = 0; j < count_object_rend; j++)
+                    {
+                        ModelObjectRend* pRend = pModelObject->aRends[j];
+                        pRend->isShow = pModelObject->isShow;
+                    }
+                }
+                //isWireFrame
                 std::string nameIsWireFrame = "Is WireFrame - " + pModelObject->nameObject;
-                ImGui::Checkbox(nameIsWireFrame.c_str(), &pModelObject->isWireFrame);
+                if (ImGui::Checkbox(nameIsWireFrame.c_str(), &pModelObject->isWireFrame))
+                {
+                    for (int j = 0; j < count_object_rend; j++)
+                    {
+                        ModelObjectRend* pRend = pModelObject->aRends[j];
+                        pRend->isWireFrame = pModelObject->isWireFrame;
+                    }
+                }
+                //isRotate
                 std::string nameIsRotate = "Is Rotate - " + pModelObject->nameObject;
-                ImGui::Checkbox(nameIsRotate.c_str(), &pModelObject->isRotate);
+                if (ImGui::Checkbox(nameIsRotate.c_str(), &pModelObject->isRotate))
+                {
+                    for (int j = 0; j < count_object_rend; j++)
+                    {
+                        ModelObjectRend* pRend = pModelObject->aRends[j];
+                        pRend->isRotate = pModelObject->isRotate;
+                    }
+                }
+                //isLighting
                 std::string nameIsLighting = "Is Lighting - " + pModelObject->nameObject;
                 if (ImGui::Checkbox(nameIsLighting.c_str(), &pModelObject->isLighting))
                 {
@@ -2488,6 +2583,45 @@ void Vulkan_013_IndirectDraw::modelConfig()
                     if (ImGui::CollapsingHeader(nameObjectRend.c_str()))
                     {
                         ImGui::Text("Vertex: [%d], Index: [%d]", (int)pRend->pMeshSub->poVertexCount, (int)pRend->pMeshSub->poIndexCount);
+                        //isShow
+                        std::string nameIsShowRend = "Is Show - " + nameObjectRend;
+                        if (ImGui::Checkbox(nameIsShowRend.c_str(), &pRend->isShow))
+                        {
+                            if (pRend->isShow)
+                            {
+                                pModelObject->isShow = true;
+                            }
+                        }
+                        //isWireFrame
+                        std::string nameIsWireFrameRend = "Is WireFrame - " + nameObjectRend;
+                        if (ImGui::Checkbox(nameIsWireFrameRend.c_str(), &pRend->isWireFrame))
+                        {
+                            if (!pRend->isWireFrame)
+                            {
+                                pModelObject->isWireFrame = false;
+                            }
+                        }
+                        //isRotate
+                        std::string nameIsRotateRend = "Is Rotate - " + nameObjectRend;
+                        if (ImGui::Checkbox(nameIsRotateRend.c_str(), &pRend->isRotate))
+                        {
+                            
+                        }
+                        //isLighting
+                        std::string nameIsLightingRend = "Is Lighting - " + nameObjectRend;
+                        if (ImGui::Checkbox(nameIsLightingRend.c_str(), &pRend->isLighting))
+                        {
+                            if (pRend->isLighting)
+                            {
+                                pModelObject->isLighting = true;
+                            }
+                            for (int p = 0; p < pModelObject->countInstance; p++)
+                            {
+                                MaterialConstants& mat = pRend->materialCBs[p];
+                                mat.lighting = pModelObject->isLighting;
+                            }
+                        }
+                        //isTransparent
                         std::string nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRend;
                         bool isTransparent = pRend->isTransparent;
                         ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
@@ -2766,7 +2900,7 @@ void Vulkan_013_IndirectDraw::drawModelObjectRends(VkCommandBuffer& commandBuffe
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pRend = aRends[i];
-        if (!pRend->pModelObject->isShow)
+        if (!pRend->isShow)
             continue;
         ModelMeshSub* pMeshSub = pRend->pMeshSub;
 
@@ -2778,7 +2912,7 @@ void Vulkan_013_IndirectDraw::drawModelObjectRends(VkCommandBuffer& commandBuffe
             vkCmdBindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
         }
 
-        if (pRend->pModelObject->isWireFrame || this->cfg_isWireFrame)
+        if (pRend->pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
         {
             vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
             if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
