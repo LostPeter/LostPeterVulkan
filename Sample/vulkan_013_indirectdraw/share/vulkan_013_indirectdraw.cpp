@@ -387,7 +387,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     
     "vert_standard_terrain_opaque_lit",                        "vert",              "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
 
-    "vert_standard_mesh_opaque_normalmap_lit",              "vert",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.vert.spv", //standard_mesh_opaque_normalmap_lit vert
+    "vert_standard_mesh_opaque_normalmap_lit",                 "vert",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.vert.spv", //standard_mesh_opaque_normalmap_lit vert
     "vert_standard_mesh_transparent_tree_lit",                 "vert",              "Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv", //standard_mesh_transparent_tree_lit vert  
     "vert_standard_mesh_opaque_tree_alphatest_lit",            "vert",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.vert.spv", //standard_mesh_opaque_tree_alphatest_lit vert
     "vert_standard_mesh_opaque_grass_alphatest_lit",           "vert",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv", //standard_mesh_opaque_grass_alphatest_lit vert  
@@ -408,9 +408,9 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
     "frag_standard_terrain_opaque_lit",                        "frag",              "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
 
-    "frag_standard_mesh_opaque_normalmap_lit",              "frag",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.frag.spv", //standard_mesh_opaque_normalmap_lit frag
+    "frag_standard_mesh_opaque_normalmap_lit",                 "frag",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.frag.spv", //standard_mesh_opaque_normalmap_lit frag
     "frag_standard_mesh_transparent_tree_lit",                 "frag",              "Assets/Shader/standard_mesh_transparent_tree_lit.frag.spv", //standard_mesh_transparent_tree_lit frag
-    "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",               "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
+    "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
     "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
@@ -514,6 +514,21 @@ static bool g_Object_IsLightings[g_Object_Count] =
     true, //object_flower
 
 };
+static bool g_Object_IsIndirectDraw[g_Object_Count] =
+{
+    false, //object_skybox
+    false, //object_mountain
+
+    false, //object_rock
+    false, //object_cliff
+
+    false, //object_tree
+    false, //object_tree_spruce
+
+    false, //object_grass
+    true, //object_flower
+
+};
 
 
 /////////////////////////// ObjectRend //////////////////////////
@@ -528,14 +543,14 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
     "object_cliff-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //object_cliff-1
 
     "object_tree-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-1
-    "object_tree-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-2
+    "object_tree-2",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-2
     "object_tree_spruce-1",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-1
     "object_tree_spruce-2",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-2
 
     "object_grass-1",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-1
     "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_wheat",                                                                  "", //object_grass-2
-    "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_tall",                                                                   "", //object_grass-3
-    "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-4
+    "object_grass-3",                      "",                     "",                              "",                         "",                    "grass_tall",                                                                   "", //object_grass-3
+    "object_grass-4",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-4
     "object_flower-1",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-1
     "object_flower-2",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-2
     "object_flower-3",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-3
@@ -683,6 +698,9 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
     false, //object_flower-8
 
 };
+
+
+
 
 
 /////////////////////////// ModelMeshSub ////////////////////////
@@ -924,12 +942,153 @@ void Vulkan_013_IndirectDraw::ModelTexture::updateNoiseTexture()
 }
 
 
+/////////////////////////// ModelObjectRend /////////////////////
+
+
+/////////////////////////// ModelObjectRendIndirect /////////////
+void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::Destroy()
+{
+    //Vertex
+    this->pRend->pModelObject->pWindow->destroyBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
+    this->poVertexBuffer = VK_NULL_HANDLE;
+    this->poVertexBufferMemory = VK_NULL_HANDLE;
+    UTIL_DELETE_T(this->poVertexBuffer_Data)
+
+    //Index
+    this->pRend->pModelObject->pWindow->destroyBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
+    this->poIndexBuffer = VK_NULL_HANDLE;
+    this->poIndexBufferMemory = VK_NULL_HANDLE;
+    UTIL_DELETE_T(this->poIndexBuffer_Data)
+
+    CleanupSwapChain();
+
+    this->aRends.clear();
+    this->aMeshSubs.clear();
+    this->pRend = nullptr;
+}
+
+void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::CleanupSwapChain()
+{
+    size_t count = 0;
+
+    //1> Uniform Buffer
+    count = this->poBuffers_ObjectCB.size();
+    for (size_t i = 0; i < count; i++) 
+    {
+        this->pRend->pModelObject->pWindow->destroyBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+    }
+    this->objectCBs.clear();
+    this->poBuffers_ObjectCB.clear();
+    this->poBuffersMemory_ObjectCB.clear();
+
+    count = this->poBuffers_materialCB.size();
+    for (size_t i = 0; i < count; i++) 
+    {
+        this->pRend->pModelObject->pWindow->destroyBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
+    }
+    this->materialCBs.clear();
+    this->poBuffers_materialCB.clear();
+    this->poBuffersMemory_materialCB.clear();
+
+    count = this->poBuffers_tessellationCB.size();
+    for (size_t i = 0; i < count; i++) 
+    {
+        this->pRend->pModelObject->pWindow->destroyBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
+    }
+    this->tessellationCBs.clear();
+    this->poBuffers_tessellationCB.clear();
+    this->poBuffersMemory_tessellationCB.clear();
+
+    //2> IndirectCommand Buffer
+    count = this->poBuffer_indirectCommandCB.size();
+    for (size_t i = 0; i < count; i++) 
+    {
+        this->pRend->pModelObject->pWindow->destroyBuffer(this->poBuffer_indirectCommandCB[i], this->poBuffersMemory_indirectCommandCB[i]);
+    }
+    this->indirectCommandCBs.clear();
+    this->poBuffer_indirectCommandCB.clear();
+    this->poBuffersMemory_indirectCommandCB.clear();
+}
+
+void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
+{
+    assert(_aRends.size() > 0 && "Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer");
+    this->aRends.clear();
+    this->aRends = _aRends;
+    this->pRend = _aRends[0];
+
+    //1> Vertex/Index
+    this->poTypeVertex = this->pRend->pMeshSub->poTypeVertex;
+    this->poVertexCount = 0;
+    this->poVertexSize = this->pRend->pMeshSub->GetVertexSize();
+    
+    this->poIndexCount = 0;
+    this->poIndexSize = this->pRend->pMeshSub->GetIndexSize();
+
+    this->aMeshSubs.clear();
+    size_t count_rend = this->aRends.size();
+    for (size_t i = 0; i < count_rend; i++)
+    {
+        ModelObjectRend* pR = this->aRends[i];
+        ModelMeshSub* pMeshSub = pR->pMeshSub;
+        this->poVertexCount += pMeshSub->poVertexCount;
+        this->poIndexCount += pMeshSub->poIndexCount;
+
+        this->aMeshSubs.push_back(pR->pMeshSub);
+    }
+    
+    //Vertex
+    this->poVertexBuffer_Size = this->poVertexCount * this->poVertexSize;
+    this->poVertexBuffer_Data = new uint8[this->poVertexBuffer_Size];
+    //Index
+    this->poIndexBuffer_Size = this->poIndexCount * this->poIndexSize;
+    this->poIndexBuffer_Data = new uint8[this->poIndexBuffer_Size];
+
+    size_t count_mesh_sub = this->aMeshSubs.size();
+    uint8* pDataVertex = this->poVertexBuffer_Data;
+    uint8* pDataIndex = this->poIndexBuffer_Data;
+    for (size_t i = 0; i < count_mesh_sub; i++)
+    {
+        ModelMeshSub* pMeshSub = this->aMeshSubs[i];
+        memcpy(pDataVertex, pMeshSub->poVertexBuffer_Data, pMeshSub->poVertexBuffer_Size);
+        pDataVertex += pMeshSub->poVertexBuffer_Size;
+
+        memcpy(pDataIndex, pMeshSub->poIndexBuffer_Data, pMeshSub->poIndexBuffer_Size);
+        pDataIndex += pMeshSub->poIndexBuffer_Size;
+    }
+
+    //2> createVertexBuffer
+    this->pRend->pModelObject->pWindow->createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
+
+    //3> createIndexBuffer
+    if (this->poIndexBuffer_Size > 0 &&
+        this->poIndexBuffer_Data != nullptr)
+    {
+        this->pRend->pModelObject->pWindow->createIndexBuffer(this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+    }
+}
+
+void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
+{
+    //1> Uniform Buffer
+    {
+
+    }
+
+    //2> IndirectCommand Buffer
+    {
+        this->indirectCommandCBs.clear();
+    }
+}
+
+
 /////////////////////////// ModelObject /////////////////////////
 
 
 
 Vulkan_013_IndirectDraw::Vulkan_013_IndirectDraw(int width, int height, std::string name)
     : VulkanWindow(width, height, name)
+    , m_isMultiDrawIndirect(true)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -944,16 +1103,15 @@ void Vulkan_013_IndirectDraw::setUpEnabledFeatures()
 {
     VulkanWindow::setUpEnabledFeatures();
 
-    //Tessellation Enable
-    if (this->poPhysicalDeviceFeatures.tessellationShader)
+    if (this->poPhysicalEnabledFeatures.multiDrawIndirect)
     {
-        this->poPhysicalEnabledFeatures.tessellationShader = VK_TRUE;
+        this->m_isMultiDrawIndirect = true;
     }
     else
     {
-        Util_LogError("Vulkan_013_IndirectDraw::setUpEnabledFeatures: tessellationShader is not supported !");
+        this->m_isMultiDrawIndirect = false;
+        Util_LogError("Vulkan_013_IndirectDraw::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
-
 }
 
 void Vulkan_013_IndirectDraw::createDescriptorSetLayout_Custom()
@@ -985,7 +1143,7 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
     {
         ModelObject* pModelObject = new ModelObject(this, i);
 
-        //Object
+        //1> Object
         {
             pModelObject->indexModel = i;
             pModelObject->nameObject = g_Object_Configs[2 * i + 0];
@@ -1011,11 +1169,12 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
             }
             pModelObject->isShow = g_Object_IsShows[i];
             pModelObject->isRotate = g_Object_IsRotates[i];
+            pModelObject->isIndirectDraw = g_Object_IsIndirectDraw[i];
             pModelObject->countInstanceExt = g_Object_InstanceExtCount[i];
             pModelObject->countInstance = pModelObject->countInstanceExt * 2 + 1;
         }
 
-        //ObjectRend
+        //2> ObjectRend
         {
             size_t count_mesh_sub = pModelObject->pMesh->aMeshSubs.size();
             size_t count_meshsub_used = pModelObject->aMeshSubUsed.size();
@@ -1165,7 +1324,24 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
             m_mapModelObjects[pModelObject->nameObject] = pModelObject;
         }
         
+        //3> ObjectRendIndirectDraw
+        if (pModelObject->isIndirectDraw)
+        {
+            size_t count_object_rend = pModelObject->aRends.size();
+            if (count_object_rend > 0)
+            {
+                ModelObjectRend* pRend = pModelObject->aRends[i];
+                std::string nameObjectRendIndirect = pModelObject->nameObject + " - RendIndirect";
+                pModelObject->pRendIndirect = new ModelObjectRendIndirect(nameObjectRendIndirect);
+                pModelObject->pRendIndirect->SetupVertexIndexBuffer(pModelObject->aRends);
+            }
+        }
+
     }
+}
+void Vulkan_013_IndirectDraw::createIndirectCommands()
+{
+
 }
 
 void Vulkan_013_IndirectDraw::createCustomCB()
@@ -1176,6 +1352,8 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
 {   
     VkDeviceSize bufferSize;
     size_t count_sci = this->poSwapChainImages.size();
+
+    //1> ObjectRends
     size_t count_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_rend; i++)
     {
@@ -1275,6 +1453,27 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
                 for (size_t j = 0; j < count_sci; j++) 
                 {
                     createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
+                }
+            }
+        }
+    }
+
+    //2> ObjectRendIndriect
+    if (this->m_isMultiDrawIndirect)
+    {
+        size_t count_object = this->m_aModelObjects.size();
+        for (size_t i = 0; i < count_object; i++)
+        {
+            ModelObject* pModelObject = this->m_aModelObjects[i];
+
+            if (pModelObject->isIndirectDraw &&
+                pModelObject->pRendIndirect != nullptr)
+            {
+                
+
+                if (isCreateVkBuffer)
+                {
+                    pModelObject->pRendIndirect->SetupUniformIndirectCommandBuffer();
                 }
             }
         }
@@ -2574,8 +2773,7 @@ void Vulkan_013_IndirectDraw::modelConfig()
                     pModelObject->countInstance = countInstanceExt * 2 + 1;
                     rebuildInstanceCBs(false);
                 }
-
-                
+               
                 for (int j = 0; j < count_object_rend; j++)
                 {
                     ModelObjectRend* pRend = pModelObject->aRends[j];
@@ -2884,14 +3082,20 @@ void Vulkan_013_IndirectDraw::endRenderImgui()
 
 void Vulkan_013_IndirectDraw::drawMesh_Custom(VkCommandBuffer& commandBuffer)
 {   
-    //1> Opaque
+    // if (this->m_isMultiDrawIndirect)
+    // {
+
+    // }
+    // else
     {
-        drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Opaque);
-    }
-    
-    //2> Transparent
-    {
-        drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
+        //1> Opaque
+        {
+            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Opaque);
+        }
+        //2> Transparent
+        {
+            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
+        }
     }
 }
 void Vulkan_013_IndirectDraw::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
@@ -2984,6 +3188,6 @@ void Vulkan_013_IndirectDraw::recreateSwapChain_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        pModelObject->recreateSwapChain();
+        pModelObject->RecreateSwapChain();
     }
 }

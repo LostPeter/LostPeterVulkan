@@ -80,6 +80,17 @@ public:
 
         void Destroy();
 
+        uint32_t GetVertexSize() 
+        {
+            if (vertices_Pos3Color4Normal3Tex2.size() > 0)
+                return sizeof(Vertex_Pos3Color4Normal3Tex2);
+            return sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2);
+        }
+        uint32_t GetIndexSize()
+        {
+            return sizeof(uint32_t);
+        }
+
         bool CreateMeshSub(MeshData& meshData, bool isTranformLocal, const glm::mat4& matTransformLocal);
     };
     typedef std::vector<ModelMeshSub*> ModelMeshSubPtrVector;
@@ -655,7 +666,7 @@ public:
     typedef std::vector<PipelineCompute*> PipelineComputePtrVector;
     typedef std::map<std::string, PipelineCompute*> PipelineComputePtrMap;
 
-
+    
     /////////////////////////// ModelObjectRend /////////////////////
     struct ModelObject;
     struct ModelObjectRend
@@ -824,7 +835,7 @@ public:
             this->aPipelineComputes.clear();
         }
 
-        void recreateSwapChain()
+        void RecreateSwapChain()
         {
 
         }   
@@ -873,6 +884,102 @@ public:
     typedef std::map<std::string, ModelObjectRend*> ModelObjectRendPtrMap;
 
 
+    /////////////////////////// ModelObjectRendIndirect /////////////
+    struct ModelObjectRendIndirect
+    {
+        std::string nameObjectRendIndirect;
+        ModelObjectRendPtrVector aRends;
+        ModelMeshSubPtrVector aMeshSubs;
+        ModelObjectRend* pRend;
+
+        bool isShow;
+        bool isWireFrame;
+        bool isRotate;
+        bool isLighting;
+        bool isTransparent;
+
+        //Vertex
+        VulkanVertexType poTypeVertex;
+        uint32_t poVertexCount;
+        uint32_t poVertexSize;
+        size_t poVertexBuffer_Size;
+        uint8* poVertexBuffer_Data;
+        VkBuffer poVertexBuffer;
+        VkDeviceMemory poVertexBufferMemory;
+        
+        //Index
+        uint32_t poIndexCount;
+        uint32_t poIndexSize;
+        size_t poIndexBuffer_Size;
+        uint8* poIndexBuffer_Data;
+        VkBuffer poIndexBuffer;
+        VkDeviceMemory poIndexBufferMemory;
+
+        //Uniform
+        std::vector<ObjectConstants> objectCBs;
+        std::vector<VkBuffer> poBuffers_ObjectCB;
+        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
+        std::vector<glm::mat4> instanceMatWorld;
+
+        std::vector<MaterialConstants> materialCBs;
+        std::vector<VkBuffer> poBuffers_materialCB;
+        std::vector<VkDeviceMemory> poBuffersMemory_materialCB;
+
+        std::vector<TessellationConstants> tessellationCBs;
+        std::vector<VkBuffer> poBuffers_tessellationCB;
+        std::vector<VkDeviceMemory> poBuffersMemory_tessellationCB;
+        bool isUsedTessellation;
+
+        //IndirectCommand 
+        std::vector<VkDrawIndexedIndirectCommand> indirectCommandCBs;
+        std::vector<VkBuffer> poBuffer_indirectCommandCB;
+        std::vector<VkDeviceMemory> poBuffersMemory_indirectCommandCB;
+
+
+        ModelObjectRendIndirect(const std::string& _nameObjectRendIndirect)
+            : nameObjectRendIndirect(_nameObjectRendIndirect)
+            , pRend(nullptr)
+
+            //Vertex
+            , poVertexCount(0)
+            , poVertexBuffer_Size(0)
+            , poVertexBuffer_Data(nullptr)
+            , poVertexBuffer(VK_NULL_HANDLE)
+            , poVertexBufferMemory(VK_NULL_HANDLE)
+
+            //Index
+            , poIndexCount(0)
+            , poIndexBuffer_Size(0)
+            , poIndexBuffer_Data(nullptr)
+            , poIndexBuffer(VK_NULL_HANDLE)
+            , poIndexBufferMemory(VK_NULL_HANDLE)
+        {
+            
+        }
+
+        ~ModelObjectRendIndirect()
+        {
+            Destroy();
+        }
+
+        void Destroy();
+
+        void CleanupSwapChain();
+
+        void RecreateSwapChain()
+        {
+
+        }   
+
+        void SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends);
+
+        void SetupUniformIndirectCommandBuffer();
+        
+    };
+    typedef std::vector<ModelObjectRendIndirect*> ModelObjectRendIndirectPtrVector;
+    typedef std::map<std::string, ModelObjectRendIndirect*> ModelObjectRendIndirectPtrMap;
+    
+
     /////////////////////////// ModelObject /////////////////////////
     struct ModelObject
     {
@@ -888,6 +995,8 @@ public:
         bool isWireFrame;
         bool isRotate;
         bool isLighting;
+        bool isIndirectDraw;
+        bool isIndirectDrawMulti;
 
         int countInstanceExt;
         int countInstance;
@@ -898,7 +1007,7 @@ public:
 
         //ModelObjectRend
         ModelObjectRendPtrVector aRends;
-
+        ModelObjectRendIndirect* pRendIndirect;
 
         ModelObject(Vulkan_013_IndirectDraw* _pWindow,
                     int _index)
@@ -913,12 +1022,17 @@ public:
             , isWireFrame(false)
             , isRotate(false)
             , isLighting(true)
+            , isIndirectDraw(false)
+            , isIndirectDrawMulti(true)
 
             , countInstanceExt(0)
             , countInstance(1)
 
             //Mesh
             , pMesh(nullptr)
+
+            //ModelObjectRend
+            , pRendIndirect(nullptr)
         {
             
         }
@@ -942,6 +1056,7 @@ public:
                 delete pRend;
             }
             this->aRends.clear();
+            UTIL_DELETE(pRendIndirect)
         }
 
         void CleanupSwapChain()
@@ -952,15 +1067,23 @@ public:
                 ModelObjectRend* pRend = this->aRends[i];
                 pRend->CleanupSwapChain();
             }
+            if (pRendIndirect != nullptr)
+            {
+                pRendIndirect->CleanupSwapChain();
+            }
         }
 
-        void recreateSwapChain()
+        void RecreateSwapChain()
         {
             size_t count = this->aRends.size();
             for (size_t i = 0; i < count; i++)
             {
                 ModelObjectRend* pRend = this->aRends[i];
-                pRend->recreateSwapChain();
+                pRend->RecreateSwapChain();
+            }
+            if (pRendIndirect != nullptr)
+            {
+                pRendIndirect->RecreateSwapChain();
             }
         }
 
@@ -996,6 +1119,7 @@ public:
     ModelObjectRendPtrVector m_aModelObjectRends_All;
     ModelObjectRendPtrVector m_aModelObjectRends_Opaque;
     ModelObjectRendPtrVector m_aModelObjectRends_Transparent;
+    bool m_isMultiDrawIndirect;
 
     VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
     VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
@@ -1020,6 +1144,7 @@ protected:
 
         //Geometry/Texture
         virtual void loadModel_Custom();
+            void createIndirectCommands();
 
         //ConstBuffers
         virtual void createCustomCB();

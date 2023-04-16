@@ -866,6 +866,11 @@ namespace LostPeter
             this->poPhysicalEnabledFeatures.samplerAnisotropy = VK_TRUE;
         if (this->poPhysicalDeviceFeatures.fillModeNonSolid)
             this->poPhysicalEnabledFeatures.fillModeNonSolid = VK_TRUE;
+
+        if (this->poPhysicalDeviceFeatures.tessellationShader)
+            this->poPhysicalEnabledFeatures.tessellationShader = VK_TRUE;
+        if (this->poPhysicalDeviceFeatures.multiDrawIndirect)
+            this->poPhysicalEnabledFeatures.multiDrawIndirect = VK_TRUE;
     }
     void VulkanWindow::createLogicalDevice()
     {
