@@ -563,8 +563,131 @@ namespace LostPeter
     };
 
 
+    //////////////////////////////// Vertex_Pos3Color4Normal3Tex4 ///////////////////
+    //5: Vulkan_Vertex_Pos3Color4Normal3Tex4
+    struct utilExport Vertex_Pos3Color4Normal3Tex4
+    {
+        static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
+        static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
+
+        glm::vec3 pos;
+        glm::vec4 color;
+        glm::vec3 normal;
+        glm::vec4 texCoord;
+
+        Vertex_Pos3Color4Normal3Tex4()
+        {
+            Reset();
+        }
+
+        Vertex_Pos3Color4Normal3Tex4(const glm::vec3& _pos, 
+                                     const glm::vec4& _color, 
+                                     const glm::vec3& _normal, 
+                                     const glm::vec4& _texCoord)
+            : pos(_pos)
+            , color(_color)
+            , normal(_normal)
+            , texCoord(_texCoord)
+        {
+            
+        }
+
+        static const VkVertexInputBindingDescriptionVector& GetBindingDescriptions() 
+        {
+            if (s_aBindingDescriptions.empty())
+            {
+                createBindingDescriptions();
+            }
+            return s_aBindingDescriptions;
+        } 
+        static VkVertexInputBindingDescriptionVector* GetBindingDescriptionsPtr()
+        {
+            if (s_aBindingDescriptions.empty())
+            {
+                createBindingDescriptions();
+            }
+            return &s_aBindingDescriptions;
+        }
+        static void createBindingDescriptions()
+        {
+            s_aBindingDescriptions.clear();
+
+            VkVertexInputBindingDescription bindingDescription0 = {};
+            bindingDescription0.binding = 0;
+            bindingDescription0.stride = sizeof(Vertex_Pos3Color4Normal3Tex4);
+            bindingDescription0.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+            s_aBindingDescriptions.push_back(bindingDescription0);
+        }
+
+        static const VkVertexInputAttributeDescriptionVector& GetAttributeDescriptions()
+        {
+            if (s_aAttributeDescriptions.empty())
+            {
+                createAttributeDescriptions();
+            }
+            return s_aAttributeDescriptions;
+        }
+        static VkVertexInputAttributeDescriptionVector* GetAttributeDescriptionsPtr()
+        {
+            if (s_aAttributeDescriptions.empty())
+            {
+                createAttributeDescriptions();
+            }
+            return &s_aAttributeDescriptions;
+        }
+        static void createAttributeDescriptions()
+        {
+            s_aAttributeDescriptions.clear();
+
+            VkVertexInputAttributeDescription attributeDescription0 = {};
+            attributeDescription0.binding = 0;
+            attributeDescription0.location = 0;
+            attributeDescription0.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription0.offset = offsetof(Vertex_Pos3Color4Normal3Tex4, pos);
+            s_aAttributeDescriptions.push_back(attributeDescription0);
+
+            VkVertexInputAttributeDescription attributeDescription1 = {};
+            attributeDescription1.binding = 0;
+            attributeDescription1.location = 1;
+            attributeDescription1.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            attributeDescription1.offset = offsetof(Vertex_Pos3Color4Normal3Tex4, color);
+            s_aAttributeDescriptions.push_back(attributeDescription1);
+
+            VkVertexInputAttributeDescription attributeDescription2 = {};
+            attributeDescription2.binding = 0;
+            attributeDescription2.location = 2;
+            attributeDescription2.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription2.offset = offsetof(Vertex_Pos3Color4Normal3Tex4, normal);
+            s_aAttributeDescriptions.push_back(attributeDescription2);
+
+            VkVertexInputAttributeDescription attributeDescription3 = {};
+            attributeDescription3.binding = 0;
+            attributeDescription3.location = 3;
+            attributeDescription3.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            attributeDescription3.offset = offsetof(Vertex_Pos3Color4Normal3Tex4, texCoord);
+            s_aAttributeDescriptions.push_back(attributeDescription3);
+        }
+
+        bool operator==(const Vertex_Pos3Color4Normal3Tex4& other) const 
+        {
+            return this->pos == other.pos && 
+                this->color == other.color && 
+                this->normal == other.normal && 
+                this->texCoord == other.texCoord;
+        }
+
+        void Reset()
+        {
+            this->pos = glm::vec3(0, 0, 0);
+            this->color = glm::vec4(0, 0, 0, 1);
+            this->normal = glm::vec3(0, 1, 0);
+            this->texCoord = glm::vec4(0, 0, 0, 0);
+        }
+    };
+
+
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex2 ///////////////
-    //5: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2
+    //6: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2
     struct utilExport Vertex_Pos3Color4Normal3Tangent3Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -722,6 +845,169 @@ namespace LostPeter
             this->normal = glm::vec3(0, 1, 0);
             this->tangent = glm::vec3(0, 0, 1);
             this->texCoord = glm::vec2(0, 0);
+        }
+    };
+
+
+    //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex4 ///////////////
+    //7: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4
+    struct utilExport Vertex_Pos3Color4Normal3Tangent3Tex4
+    {
+        static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
+        static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
+
+        glm::vec3 pos;
+        glm::vec4 color;
+        glm::vec3 normal;
+        glm::vec3 tangent;
+        glm::vec4 texCoord;
+
+
+        Vertex_Pos3Color4Normal3Tangent3Tex4()
+        {
+            Reset();
+        }
+
+        Vertex_Pos3Color4Normal3Tangent3Tex4(const glm::vec3& _pos, 
+                                             const glm::vec4& _color, 
+                                             const glm::vec3& _normal, 
+                                             const glm::vec3& _tangent, 
+                                             const glm::vec4& _texCoord)
+            : pos(_pos)
+            , color(_color)
+            , normal(_normal)
+            , tangent(_tangent)
+            , texCoord(_texCoord)
+        {
+            
+        }
+
+        Vertex_Pos3Color4Normal3Tangent3Tex4(float px, float py, float pz,
+                                             float nx, float ny, float nz,
+                                             float tx, float ty, float tz,
+                                             float u, float v, float w, float x)
+            : pos(px, py, pz)
+            , color(1.0f, 1.0f, 1.0f, 1.0f)
+            , normal(nx, ny, nz)
+            , tangent(tx, ty, tz)
+            , texCoord(u, v, w, x)
+        {
+
+        }
+
+        Vertex_Pos3Color4Normal3Tangent3Tex4(float px, float py, float pz,
+                                             float cx, float cy, float cz, float cw,
+                                             float nx, float ny, float nz,
+                                             float tx, float ty, float tz,
+                                             float u, float v, float w, float x)
+            : pos(px, py, pz)
+            , color(cx, cy, cz, cw)
+            , normal(nx, ny, nz)
+            , tangent(tx, ty, tz)
+            , texCoord(u, v, w, x)
+        {
+
+        }
+
+        static const VkVertexInputBindingDescriptionVector& GetBindingDescriptions() 
+        {
+            if (s_aBindingDescriptions.empty())
+            {
+                createBindingDescriptions();
+            }
+            return s_aBindingDescriptions;
+        } 
+        static VkVertexInputBindingDescriptionVector* GetBindingDescriptionsPtr()
+        {
+            if (s_aBindingDescriptions.empty())
+            {
+                createBindingDescriptions();
+            }
+            return &s_aBindingDescriptions;
+        }
+        static void createBindingDescriptions()
+        {
+            s_aBindingDescriptions.clear();
+
+            VkVertexInputBindingDescription bindingDescription0 = {};
+            bindingDescription0.binding = 0;
+            bindingDescription0.stride = sizeof(Vertex_Pos3Color4Normal3Tangent3Tex4);
+            bindingDescription0.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+            s_aBindingDescriptions.push_back(bindingDescription0);
+        }
+
+        static const VkVertexInputAttributeDescriptionVector& GetAttributeDescriptions()
+        {
+            if (s_aAttributeDescriptions.empty())
+            {
+                createAttributeDescriptions();
+            }
+            return s_aAttributeDescriptions;
+        }
+        static VkVertexInputAttributeDescriptionVector* GetAttributeDescriptionsPtr()
+        {
+            if (s_aAttributeDescriptions.empty())
+            {
+                createAttributeDescriptions();
+            }
+            return &s_aAttributeDescriptions;
+        }
+        static void createAttributeDescriptions()
+        {
+            s_aAttributeDescriptions.clear();
+
+            VkVertexInputAttributeDescription attributeDescription0 = {};
+            attributeDescription0.binding = 0;
+            attributeDescription0.location = 0;
+            attributeDescription0.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription0.offset = offsetof(Vertex_Pos3Color4Normal3Tangent3Tex4, pos);
+            s_aAttributeDescriptions.push_back(attributeDescription0);
+
+            VkVertexInputAttributeDescription attributeDescription1 = {};
+            attributeDescription1.binding = 0;
+            attributeDescription1.location = 1;
+            attributeDescription1.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            attributeDescription1.offset = offsetof(Vertex_Pos3Color4Normal3Tangent3Tex4, color);
+            s_aAttributeDescriptions.push_back(attributeDescription1);
+
+            VkVertexInputAttributeDescription attributeDescription2 = {};
+            attributeDescription2.binding = 0;
+            attributeDescription2.location = 2;
+            attributeDescription2.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription2.offset = offsetof(Vertex_Pos3Color4Normal3Tangent3Tex4, normal);
+            s_aAttributeDescriptions.push_back(attributeDescription2);
+
+            VkVertexInputAttributeDescription attributeDescription3 = {};
+            attributeDescription3.binding = 0;
+            attributeDescription3.location = 3;
+            attributeDescription3.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription3.offset = offsetof(Vertex_Pos3Color4Normal3Tangent3Tex4, tangent);
+            s_aAttributeDescriptions.push_back(attributeDescription3);
+
+            VkVertexInputAttributeDescription attributeDescription4 = {};
+            attributeDescription4.binding = 0;
+            attributeDescription4.location = 4;
+            attributeDescription4.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            attributeDescription4.offset = offsetof(Vertex_Pos3Color4Normal3Tangent3Tex4, texCoord);
+            s_aAttributeDescriptions.push_back(attributeDescription4);
+        }
+
+        bool operator==(const Vertex_Pos3Color4Normal3Tangent3Tex4& other) const 
+        {
+            return this->pos == other.pos && 
+                this->color == other.color && 
+                this->normal == other.normal && 
+                this->tangent == other.tangent && 
+                this->texCoord == other.texCoord;
+        }
+
+        void Reset()
+        {
+            this->pos = glm::vec3(0, 0, 0);
+            this->color = glm::vec4(0, 0, 0, 1);
+            this->normal = glm::vec3(0, 1, 0);
+            this->tangent = glm::vec3(0, 0, 1);
+            this->texCoord = glm::vec4(0, 0, 0, 0);
         }
     };
 
@@ -1096,7 +1382,7 @@ namespace std
         size_t operator()(LostPeter::Vertex_Pos2Color4 const& vertex) const 
         {
             size_t hash = std::hash<glm::vec2>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.color) << 1);
+            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
             hash = hash >> 1;
             return hash;
         }
@@ -1116,7 +1402,7 @@ namespace std
         size_t operator()(LostPeter::Vertex_Pos2Color4Tex2 const& vertex) const 
         {
             size_t hash = std::hash<glm::vec2>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.color) << 1);
+            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
             hash = hash >> 1;
             hash = hash ^ (std::hash<glm::vec2>()(vertex.texCoord) << 1);
             return hash;
@@ -1127,7 +1413,7 @@ namespace std
         size_t operator()(LostPeter::Vertex_Pos3Color4Tex2 const& vertex) const 
         {
             size_t hash = std::hash<glm::vec3>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.color) << 1);
+            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
             hash = hash >> 1;
             hash = hash ^ (std::hash<glm::vec2>()(vertex.texCoord) << 1);
             return hash;
@@ -1138,7 +1424,7 @@ namespace std
         size_t operator()(LostPeter::Vertex_Pos3Color4Normal3Tex2 const& vertex) const
         {
             size_t hash = std::hash<glm::vec3>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.color) << 1);
+            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
             hash = hash >> 1;
             hash = hash ^ (std::hash<glm::vec3>()(vertex.normal) << 1);
             hash = hash >> 1;
@@ -1147,11 +1433,24 @@ namespace std
         }
     };
 
+    template<> struct hash<LostPeter::Vertex_Pos3Color4Normal3Tex4> {
+        size_t operator()(LostPeter::Vertex_Pos3Color4Normal3Tex4 const& vertex) const
+        {
+            size_t hash = std::hash<glm::vec3>()(vertex.pos);
+            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
+            hash = hash >> 1;
+            hash = hash ^ (std::hash<glm::vec3>()(vertex.normal) << 1);
+            hash = hash >> 1;
+            hash = hash ^ (std::hash<glm::vec4>()(vertex.texCoord) << 1);
+            return hash;
+        }
+    };
+
     template<> struct hash<LostPeter::Vertex_Pos3Color4Normal3Tangent3Tex2> {
         size_t operator()(LostPeter::Vertex_Pos3Color4Normal3Tangent3Tex2 const& vertex) const
         {
             size_t hash = std::hash<glm::vec3>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.color) << 1);
+            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
             hash = hash >> 1;
             hash = hash ^ (std::hash<glm::vec3>()(vertex.normal) << 1);
             hash = hash >> 1;
@@ -1162,6 +1461,21 @@ namespace std
         }
     };
 
-}; //LostPeter
+    template<> struct hash<LostPeter::Vertex_Pos3Color4Normal3Tangent3Tex4> {
+        size_t operator()(LostPeter::Vertex_Pos3Color4Normal3Tangent3Tex4 const& vertex) const
+        {
+            size_t hash = std::hash<glm::vec3>()(vertex.pos);
+            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
+            hash = hash >> 1;
+            hash = hash ^ (std::hash<glm::vec3>()(vertex.normal) << 1);
+            hash = hash >> 1;
+            hash = hash ^ (std::hash<glm::vec3>()(vertex.tangent) << 1);
+            hash = hash >> 1;
+            hash = hash ^ (std::hash<glm::vec4>()(vertex.texCoord) << 1);
+            return hash;
+        }
+    };
+
+}; //std
 
 #endif

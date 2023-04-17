@@ -74,7 +74,9 @@ namespace LostPeter
         "Pos2Color4Tex2",
         "Pos3Color4Tex2",
         "Pos3Color4Normal3Tex2",
+        "Pos3Color4Normal3Tex4",
         "Pos3Color4Normal3Tangent3Tex2",
+        "Pos3Color4Normal3Tangent3Tex4",
     };
     const std::string& Util_GetVertexTypeName(VulkanVertexType type)
     {
@@ -564,8 +566,12 @@ namespace LostPeter
                 return Vertex_Pos3Color4Tex2::GetBindingDescriptions();
             case Vulkan_Vertex_Pos3Color4Normal3Tex2:
                 return Vertex_Pos3Color4Normal3Tex2::GetBindingDescriptions();
+            case Vulkan_Vertex_Pos3Color4Normal3Tex4:
+                return Vertex_Pos3Color4Normal3Tex4::GetBindingDescriptions();
             case Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2:
                 return Vertex_Pos3Color4Normal3Tangent3Tex2::GetBindingDescriptions();
+            case Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4:
+                return Vertex_Pos3Color4Normal3Tangent3Tex4::GetBindingDescriptions();
         }
         assert(false && "Util_GetVkVertexInputBindingDescriptionVector: Wrong type !");
         return Vertex_Pos3Color4Normal3Tangent3Tex2::GetBindingDescriptions();
@@ -584,8 +590,12 @@ namespace LostPeter
                 return Vertex_Pos3Color4Tex2::GetAttributeDescriptions();
             case Vulkan_Vertex_Pos3Color4Normal3Tex2:
                 return Vertex_Pos3Color4Normal3Tex2::GetAttributeDescriptions();
+            case Vulkan_Vertex_Pos3Color4Normal3Tex4:
+                return Vertex_Pos3Color4Normal3Tex4::GetAttributeDescriptions();
             case Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2:
                 return Vertex_Pos3Color4Normal3Tangent3Tex2::GetAttributeDescriptions();
+            case Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4:
+                return Vertex_Pos3Color4Normal3Tangent3Tex4::GetAttributeDescriptions();
         }
         assert(false && "Util_GetVkVertexInputAttributeDescriptionVector: Wrong type !");
         return Vertex_Pos3Color4Normal3Tangent3Tex2::GetAttributeDescriptions();
@@ -604,8 +614,12 @@ namespace LostPeter
                 return Vertex_Pos3Color4Tex2::GetBindingDescriptionsPtr();
             case Vulkan_Vertex_Pos3Color4Normal3Tex2:
                 return Vertex_Pos3Color4Normal3Tex2::GetBindingDescriptionsPtr();
+            case Vulkan_Vertex_Pos3Color4Normal3Tex4:
+                return Vertex_Pos3Color4Normal3Tex4::GetBindingDescriptionsPtr();
             case Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2:
                 return Vertex_Pos3Color4Normal3Tangent3Tex2::GetBindingDescriptionsPtr();
+            case Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4:
+                return Vertex_Pos3Color4Normal3Tangent3Tex4::GetBindingDescriptionsPtr();
         }
         assert(false && "Util_GetVkVertexInputBindingDescriptionVectorPtr: Wrong type !");
         return Vertex_Pos3Color4Normal3Tangent3Tex2::GetBindingDescriptionsPtr();
@@ -624,8 +638,12 @@ namespace LostPeter
                 return Vertex_Pos3Color4Tex2::GetAttributeDescriptionsPtr();
             case Vulkan_Vertex_Pos3Color4Normal3Tex2:
                 return Vertex_Pos3Color4Normal3Tex2::GetAttributeDescriptionsPtr();
+            case Vulkan_Vertex_Pos3Color4Normal3Tex4:
+                return Vertex_Pos3Color4Normal3Tex4::GetAttributeDescriptionsPtr();
             case Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2:
                 return Vertex_Pos3Color4Normal3Tangent3Tex2::GetAttributeDescriptionsPtr();
+            case Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4:
+                return Vertex_Pos3Color4Normal3Tangent3Tex4::GetAttributeDescriptionsPtr();
         }
         assert(false && "Util_GetVkVertexInputAttributeDescriptionVectorPtr: Wrong type !");
         return Vertex_Pos3Color4Normal3Tangent3Tex2::GetAttributeDescriptionsPtr();

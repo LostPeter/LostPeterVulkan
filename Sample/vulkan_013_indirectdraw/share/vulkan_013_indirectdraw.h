@@ -34,7 +34,9 @@ public:
         //Vertex
         VulkanVertexType poTypeVertex;
         std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
+        std::vector<Vertex_Pos3Color4Normal3Tex4> vertices_Pos3Color4Normal3Tex4;
         std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
+        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex4> vertices_Pos3Color4Normal3Tangent3Tex4;
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
@@ -82,9 +84,19 @@ public:
 
         uint32_t GetVertexSize() 
         {
-            if (vertices_Pos3Color4Normal3Tex2.size() > 0)
+            if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
                 return sizeof(Vertex_Pos3Color4Normal3Tex2);
-            return sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2);
+            else if(this->vertices_Pos3Color4Normal3Tex4.size() > 0)
+                return sizeof(Vertex_Pos3Color4Normal3Tex4);
+            else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
+                return sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2);
+            else if (this->vertices_Pos3Color4Normal3Tangent3Tex4.size() > 0)
+                return sizeof(Vertex_Pos3Color4Normal3Tangent3Tex4);
+            else
+            {
+                assert(false && "ModelMeshSub::GetVertexSize: wrong vertex type !");
+                return 0;
+            }
         }
         uint32_t GetIndexSize()
         {
@@ -92,6 +104,10 @@ public:
         }
 
         bool CreateMeshSub(MeshData& meshData, bool isTranformLocal, const glm::mat4& matTransformLocal);
+
+        void WriteVertexData(int clusterIndex,
+                             std::vector<Vertex_Pos3Color4Normal3Tex4>& aPos3Color4Normal3Tex4,
+                             std::vector<Vertex_Pos3Color4Normal3Tangent3Tex4>& aPos3Color4Normal3Tangent3Tex4);
     };
     typedef std::vector<ModelMeshSub*> ModelMeshSubPtrVector;
     typedef std::map<std::string, ModelMeshSub*> ModelMeshSubPtrMap;
@@ -899,11 +915,13 @@ public:
         bool isTransparent;
 
         //Vertex
+        std::vector<Vertex_Pos3Color4Normal3Tex4> vertices_Pos3Color4Normal3Tex4;
+        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex4> vertices_Pos3Color4Normal3Tangent3Tex4;
         VulkanVertexType poTypeVertex;
         uint32_t poVertexCount;
         uint32_t poVertexSize;
         size_t poVertexBuffer_Size;
-        uint8* poVertexBuffer_Data;
+        void* poVertexBuffer_Data;
         VkBuffer poVertexBuffer;
         VkDeviceMemory poVertexBufferMemory;
         

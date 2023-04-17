@@ -28,12 +28,15 @@ public:
     {
         ModelMesh* pMesh;
         std::string nameMeshSub;
+        std::string nameOriginal;
         int indexMeshSub;
 
         //Vertex
         VulkanVertexType poTypeVertex;
         std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
+        std::vector<Vertex_Pos3Color4Normal3Tex4> vertices_Pos3Color4Normal3Tex4;
         std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
+        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex4> vertices_Pos3Color4Normal3Tangent3Tex4;
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
@@ -51,10 +54,12 @@ public:
 
         ModelMeshSub(ModelMesh* _pMesh, 
                      const std::string& _nameMeshSub,
+                     const std::string& _nameOriginal,
                      int _indexMeshSub,
                      VulkanVertexType _poTypeVertex)
             : pMesh(_pMesh)
             , nameMeshSub(_nameMeshSub)
+            , nameOriginal(_nameOriginal)
             , indexMeshSub(_indexMeshSub)
 
             //Vertex

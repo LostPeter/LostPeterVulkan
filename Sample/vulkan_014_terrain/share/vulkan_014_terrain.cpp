@@ -34,8 +34,8 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
 
     "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Obj/cliff/cliff.obj", //cliff
 
-    "tree",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree/tree.fbx", //tree
-    "tree_spruce",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree_spruce/tree_spruce.fbx", //tree_spruce
+    "tree",             "Pos3Color4Normal3Tex4",                "file",             "",                         "Assets/Model/Fbx/tree/tree.fbx", //tree
+    "tree_spruce",      "Pos3Color4Normal3Tex4",                "file",             "",                         "Assets/Model/Fbx/tree_spruce/tree_spruce.fbx", //tree_spruce
 
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
@@ -260,7 +260,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
     "vert_standard_mesh_opaque_texnormalmap_lit",              "vert",              "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.vert.spv", //standard_mesh_opaque_texnormalmap_lit vert
     "vert_standard_mesh_transparent_tree_lit",                 "vert",              "Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv", //standard_mesh_transparent_tree_lit vert  
-    "vert_standard_mesh_opaque_grass_alphatest_lit",           "vert",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv", //standard_mesh_opaque_grass_alphatest_lit vert  
+    "vert_standard_mesh_opaque_tree_alphatest_lit",            "vert",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.vert.spv", //standard_mesh_opaque_tree_alphatest_lit vert  
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
    
@@ -280,7 +280,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
     "frag_standard_mesh_opaque_texnormalmap_lit",              "frag",              "Assets/Shader/standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit frag
     "frag_standard_mesh_transparent_tree_lit",                 "frag",              "Assets/Shader/standard_mesh_transparent_tree_lit.frag.spv", //standard_mesh_transparent_tree_lit frag
-    "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
+    "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
     
@@ -384,9 +384,9 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
     
     "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //cliff_rock-1
 
-    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //tree_object-1
+    "vert_standard_mesh_opaque_tree_alphatest_lit",         "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tree_alphatest_lit",         "", //tree_object-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //tree_object-2
-    "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //tree_spruce_object-1
+    "vert_standard_mesh_opaque_tree_alphatest_lit",         "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tree_alphatest_lit",         "", //tree_spruce_object-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //tree_spruce_object-2
 
 };
@@ -483,9 +483,49 @@ bool Vulkan_014_Terrain::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool is
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_014_Terrain::ModelMeshSub::CreateMeshSub: create mesh sub [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+        Util_LogInfo("Vulkan_014_Terrain::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                      this->nameMeshSub.c_str(),
+                     this->nameOriginal.c_str(),
                      (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
+                     (int)this->indices.size());
+    }
+    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex4)
+    {
+        this->vertices_Pos3Color4Normal3Tex4.clear();
+        this->vertices_Pos3Color4Normal3Tex4.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            MeshVertex& vertex = meshData.vertices[i];
+            Vertex_Pos3Color4Normal3Tex4 v;
+            v.pos = vertex.pos;
+            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.normal = vertex.normal;
+            v.texCoord = glm::vec4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
+            if (isTranformLocal)
+            {
+                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+            }
+            this->vertices_Pos3Color4Normal3Tex4.push_back(v);
+        }
+
+        int count_index = (int)meshData.indices32.size();
+        this->indices.clear();
+        this->indices.reserve(count_index);
+        for (int i = 0; i < count_index; i++)
+        {
+            this->indices.push_back(meshData.indices32[i]);
+        }
+        this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tex4.size();
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tex4);
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex4[0];
+        this->poIndexCount = (uint32_t)this->indices.size();
+        this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+        this->poIndexBuffer_Data = &this->indices[0];
+
+        Util_LogInfo("Vulkan_014_Terrain::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+                     this->nameMeshSub.c_str(),
+                     this->nameOriginal.c_str(),
+                     (int)this->vertices_Pos3Color4Normal3Tex4.size(), 
                      (int)this->indices.size());
     }
     else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
@@ -522,9 +562,50 @@ bool Vulkan_014_Terrain::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool is
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_014_Terrain::ModelMeshSub::CreateMeshSub: create mesh sub [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+        Util_LogInfo("Vulkan_014_Terrain::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                      this->nameMeshSub.c_str(),
+                     this->nameOriginal.c_str(),
                      (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
+                     (int)this->indices.size());
+    }
+    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4)
+    {
+        this->vertices_Pos3Color4Normal3Tangent3Tex4.clear();
+        this->vertices_Pos3Color4Normal3Tangent3Tex4.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            MeshVertex& vertex = meshData.vertices[i];
+            Vertex_Pos3Color4Normal3Tangent3Tex4 v;
+            v.pos = vertex.pos;
+            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.normal = vertex.normal;
+            v.tangent = vertex.tangent;
+            v.texCoord = glm::vec4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
+            if (isTranformLocal)
+            {
+                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+            }
+            this->vertices_Pos3Color4Normal3Tangent3Tex4.push_back(v);
+        }
+
+        int count_index = (int)meshData.indices32.size();
+        this->indices.clear();
+        this->indices.reserve(count_index);
+        for (int i = 0; i < count_index; i++)
+        {
+            this->indices.push_back(meshData.indices32[i]);
+        }
+        this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tangent3Tex4.size();
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tangent3Tex4);
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex4[0];
+        this->poIndexCount = (uint32_t)this->indices.size();
+        this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+        this->poIndexBuffer_Data = &this->indices[0];
+
+        Util_LogInfo("Vulkan_014_Terrain::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+                     this->nameMeshSub.c_str(),
+                     this->nameOriginal.c_str(),
+                     (int)this->vertices_Pos3Color4Normal3Tangent3Tex4.size(), 
                      (int)this->indices.size());
     }
     else
@@ -600,6 +681,7 @@ bool Vulkan_014_Terrain::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal,
         std::string nameMeshSub = this->nameMesh + "-" + VulkanUtilString::SaveInt(i);
         ModelMeshSub* pMeshSub = new ModelMeshSub(this,
                                                   nameMeshSub,
+                                                  meshData.nameMesh,
                                                   i,
                                                   this->typeVertex);
         if (!pMeshSub->CreateMeshSub(meshData, isTranformLocal, matTransformLocal))

@@ -82,7 +82,9 @@ namespace LostPeter
         Vulkan_Vertex_Pos2Color4Tex2,                   //2:    Pos2Color4Tex2
         Vulkan_Vertex_Pos3Color4Tex2,                   //3:    Pos3Color4Tex2
         Vulkan_Vertex_Pos3Color4Normal3Tex2,            //4:    Pos3Color4Normal3Tex2
-        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2,    //5:    Pos3Color4Normal3Tangent3Tex2
+        Vulkan_Vertex_Pos3Color4Normal3Tex4,            //5:    Pos3Color4Normal3Tex4
+        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2,    //6:    Pos3Color4Normal3Tangent3Tex2
+        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4,    //7:    Pos3Color4Normal3Tangent3Tex4
 
         Vulkan_Vertex_Count
     };
@@ -214,7 +216,7 @@ namespace LostPeter
     VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(VulkanTextureFilterPixelType type);
 
 
-     enum VulkanTextureFilterType
+    enum VulkanTextureFilterType
     {
         Vulkan_TextureFilter_None = 0,					    //0: min=Vulkan_TextureFilterPixel_Point,       mag=Vulkan_TextureFilterPixel_Point,  	   mip=Vulkan_TextureFilterPixel_None
         Vulkan_TextureFilter_Bilinear,				        //1: min=Vulkan_TextureFilterPixel_Linear,      mag=Vulkan_TextureFilterPixel_Linear, 	   mip=Vulkan_TextureFilterPixel_Point
@@ -355,7 +357,9 @@ namespace LostPeter
     struct Vertex_Pos2Color4Tex2;
     struct Vertex_Pos3Color4Tex2;
     struct Vertex_Pos3Color4Normal3Tex2;
+    struct Vertex_Pos3Color4Normal3Tex4;
     struct Vertex_Pos3Color4Normal3Tangent3Tex2;
+    struct Vertex_Pos3Color4Normal3Tangent3Tex4;
     typedef Vertex_Pos3Color4Normal3Tangent3Tex2 MeshVertex;
 
     struct MeshData;

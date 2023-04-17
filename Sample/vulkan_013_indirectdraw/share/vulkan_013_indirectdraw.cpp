@@ -37,11 +37,11 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
     "rock",             "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Fbx/rock/rock.fbx", //rock
     "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Obj/cliff/cliff.obj", //cliff
 
-    "tree",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree/tree.fbx", //tree
-    "tree_spruce",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree_spruce/tree_spruce.fbx", //tree_spruce
+    "tree",             "Pos3Color4Normal3Tex4",                "file",             "",                         "Assets/Model/Fbx/tree/tree.fbx", //tree
+    "tree_spruce",      "Pos3Color4Normal3Tex4",                "file",             "",                         "Assets/Model/Fbx/tree_spruce/tree_spruce.fbx", //tree_spruce
 
-    "grass",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/grass/grass.fbx", //grass
-    "flower",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/flower/flower.fbx", //flower
+    "grass",            "Pos3Color4Normal3Tex4",                "file",             "",                         "Assets/Model/Fbx/grass/grass.fbx", //grass
+    "flower",           "Pos3Color4Normal3Tex4",                "file",             "",                         "Assets/Model/Fbx/flower/flower.fbx", //flower
 
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
@@ -758,6 +758,45 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
                      (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
                      (int)this->indices.size());
     }
+    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex4)
+    {
+        this->vertices_Pos3Color4Normal3Tex4.clear();
+        this->vertices_Pos3Color4Normal3Tex4.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            MeshVertex& vertex = meshData.vertices[i];
+            Vertex_Pos3Color4Normal3Tex4 v;
+            v.pos = vertex.pos;
+            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.normal = vertex.normal;
+            v.texCoord = glm::vec4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
+            if (isTranformLocal)
+            {
+                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+            }
+            this->vertices_Pos3Color4Normal3Tex4.push_back(v);
+        }
+
+        int count_index = (int)meshData.indices32.size();
+        this->indices.clear();
+        this->indices.reserve(count_index);
+        for (int i = 0; i < count_index; i++)
+        {
+            this->indices.push_back(meshData.indices32[i]);
+        }
+        this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tex4.size();
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tex4);
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex4[0];
+        this->poIndexCount = (uint32_t)this->indices.size();
+        this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+        this->poIndexBuffer_Data = &this->indices[0];
+
+        Util_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+                     this->nameMeshSub.c_str(),
+                     this->nameOriginal.c_str(),
+                     (int)this->vertices_Pos3Color4Normal3Tex4.size(), 
+                     (int)this->indices.size());
+    }
     else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
     {
         this->vertices_Pos3Color4Normal3Tangent3Tex2.clear();
@@ -798,6 +837,46 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
                      (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
                      (int)this->indices.size());
     }
+    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4)
+    {
+        this->vertices_Pos3Color4Normal3Tangent3Tex4.clear();
+        this->vertices_Pos3Color4Normal3Tangent3Tex4.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            MeshVertex& vertex = meshData.vertices[i];
+            Vertex_Pos3Color4Normal3Tangent3Tex4 v;
+            v.pos = vertex.pos;
+            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.normal = vertex.normal;
+            v.tangent = vertex.tangent;
+            v.texCoord = glm::vec4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
+            if (isTranformLocal)
+            {
+                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+            }
+            this->vertices_Pos3Color4Normal3Tangent3Tex4.push_back(v);
+        }
+
+        int count_index = (int)meshData.indices32.size();
+        this->indices.clear();
+        this->indices.reserve(count_index);
+        for (int i = 0; i < count_index; i++)
+        {
+            this->indices.push_back(meshData.indices32[i]);
+        }
+        this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tangent3Tex4.size();
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tangent3Tex4);
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex4[0];
+        this->poIndexCount = (uint32_t)this->indices.size();
+        this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+        this->poIndexBuffer_Data = &this->indices[0];
+
+        Util_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+                     this->nameMeshSub.c_str(),
+                     this->nameOriginal.c_str(),
+                     (int)this->vertices_Pos3Color4Normal3Tangent3Tex4.size(), 
+                     (int)this->indices.size());
+    }
     else
     {
         Util_LogError("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub failed: [%s], wrong poTypeVertex !", this->nameMeshSub.c_str());
@@ -817,6 +896,62 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
     return true;
 }
 
+void Vulkan_013_IndirectDraw::ModelMeshSub::WriteVertexData(int clusterIndex,
+                                                            std::vector<Vertex_Pos3Color4Normal3Tex4>& aPos3Color4Normal3Tex4,
+                                                            std::vector<Vertex_Pos3Color4Normal3Tangent3Tex4>& aPos3Color4Normal3Tangent3Tex4)
+{
+    size_t count = 0;
+    if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
+    {
+        count = this->vertices_Pos3Color4Normal3Tex2.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            Vertex_Pos3Color4Normal3Tex2& vSrc = this->vertices_Pos3Color4Normal3Tex2[i];
+            aPos3Color4Normal3Tex4.push_back(Vertex_Pos3Color4Normal3Tex4(vSrc.pos,
+                                             vSrc.color,
+                                             vSrc.normal,
+                                             glm::vec4(vSrc.texCoord.x, vSrc.texCoord.y, 0, clusterIndex)));
+        }
+    }
+    else if (this->vertices_Pos3Color4Normal3Tex4.size() > 0)
+    {
+        count = this->vertices_Pos3Color4Normal3Tex4.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            Vertex_Pos3Color4Normal3Tex4& vSrc = this->vertices_Pos3Color4Normal3Tex4[i];
+            aPos3Color4Normal3Tex4.push_back(Vertex_Pos3Color4Normal3Tex4(vSrc.pos,
+                                             vSrc.color,
+                                             vSrc.normal,
+                                             glm::vec4(vSrc.texCoord.x, vSrc.texCoord.y, vSrc.texCoord.z, clusterIndex)));
+        }
+    }   
+    else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
+    {
+        count = this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            Vertex_Pos3Color4Normal3Tangent3Tex2& vSrc = this->vertices_Pos3Color4Normal3Tangent3Tex2[i];
+            aPos3Color4Normal3Tangent3Tex4.push_back(Vertex_Pos3Color4Normal3Tangent3Tex4(vSrc.pos,
+                                                     vSrc.color,
+                                                     vSrc.normal,
+                                                     vSrc.tangent,
+                                                     glm::vec4(vSrc.texCoord.x, vSrc.texCoord.y, 0, clusterIndex)));
+        }
+    }   
+    else if (this->vertices_Pos3Color4Normal3Tangent3Tex4.size() > 0)
+    {
+        count = this->vertices_Pos3Color4Normal3Tangent3Tex4.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            Vertex_Pos3Color4Normal3Tangent3Tex4& vSrc = this->vertices_Pos3Color4Normal3Tangent3Tex4[i];
+            aPos3Color4Normal3Tangent3Tex4.push_back(Vertex_Pos3Color4Normal3Tangent3Tex4(vSrc.pos,
+                                                     vSrc.color,
+                                                     vSrc.normal,
+                                                     vSrc.tangent,
+                                                     glm::vec4(vSrc.texCoord.x, vSrc.texCoord.y, vSrc.texCoord.z, clusterIndex)));
+        }
+    }
+}
 
 /////////////////////////// ModelMesh ///////////////////////////
 bool Vulkan_013_IndirectDraw::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
@@ -952,13 +1087,11 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::Destroy()
     this->pRend->pModelObject->pWindow->destroyBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
     this->poVertexBuffer = VK_NULL_HANDLE;
     this->poVertexBufferMemory = VK_NULL_HANDLE;
-    UTIL_DELETE_T(this->poVertexBuffer_Data)
 
     //Index
     this->pRend->pModelObject->pWindow->destroyBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
     this->poIndexBuffer = VK_NULL_HANDLE;
     this->poIndexBufferMemory = VK_NULL_HANDLE;
-    UTIL_DELETE_T(this->poIndexBuffer_Data)
 
     CleanupSwapChain();
 
@@ -1036,23 +1169,41 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer(co
 
         this->aMeshSubs.push_back(pR->pMeshSub);
     }
+
+    this->vertices_Pos3Color4Normal3Tex4.clear();
+    this->vertices_Pos3Color4Normal3Tangent3Tex4.clear();
+    for (size_t i = 0; i < count_rend; i++)
+    {
+        ModelObjectRend* pR = this->aRends[i];
+        ModelMeshSub* pMeshSub = pR->pMeshSub;
+        pMeshSub->WriteVertexData(i, this->vertices_Pos3Color4Normal3Tex4, this->vertices_Pos3Color4Normal3Tangent3Tex4);
+    }
     
     //Vertex
     this->poVertexBuffer_Size = this->poVertexCount * this->poVertexSize;
-    this->poVertexBuffer_Data = new uint8[this->poVertexBuffer_Size];
+    if (this->vertices_Pos3Color4Normal3Tex4.size() > 0)
+    {
+        assert(this->poVertexCount == (uint32_t)this->vertices_Pos3Color4Normal3Tex4.size() && "Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer: vertex count wrong !");
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex4[0];
+    }
+    else if (this->vertices_Pos3Color4Normal3Tangent3Tex4.size() > 0)
+    {
+        assert(this->poVertexCount == (uint32_t)this->vertices_Pos3Color4Normal3Tangent3Tex4.size() && "Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer: vertex count wrong !");
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex4[0];
+    }
+    else
+    {
+        assert(false && "Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !");
+    }
     //Index
     this->poIndexBuffer_Size = this->poIndexCount * this->poIndexSize;
     this->poIndexBuffer_Data = new uint8[this->poIndexBuffer_Size];
 
     size_t count_mesh_sub = this->aMeshSubs.size();
-    uint8* pDataVertex = this->poVertexBuffer_Data;
     uint8* pDataIndex = this->poIndexBuffer_Data;
     for (size_t i = 0; i < count_mesh_sub; i++)
     {
         ModelMeshSub* pMeshSub = this->aMeshSubs[i];
-        memcpy(pDataVertex, pMeshSub->poVertexBuffer_Data, pMeshSub->poVertexBuffer_Size);
-        pDataVertex += pMeshSub->poVertexBuffer_Size;
-
         memcpy(pDataIndex, pMeshSub->poIndexBuffer_Data, pMeshSub->poIndexBuffer_Size);
         pDataIndex += pMeshSub->poIndexBuffer_Size;
     }
