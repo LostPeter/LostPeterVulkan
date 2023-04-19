@@ -1132,15 +1132,17 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::CleanupSwapChain()
     this->poBuffers_tessellationCB.clear();
     this->poBuffersMemory_tessellationCB.clear();
 
-    //2> IndirectCommand Buffer
-    count = this->poBuffer_indirectCommandCB.size();
-    for (size_t i = 0; i < count; i++) 
+    //2> VkDescriptorSets
+    this->poDescriptorSets.clear();
+
+    //3> IndirectCommand Buffer
+    if (this->poBuffer_indirectCommandCB != VK_NULL_HANDLE)
     {
-        this->pRend->pModelObject->pWindow->destroyBuffer(this->poBuffer_indirectCommandCB[i], this->poBuffersMemory_indirectCommandCB[i]);
+        this->pRend->pModelObject->pWindow->destroyBuffer(this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
     }
     this->indirectCommandCBs.clear();
-    this->poBuffer_indirectCommandCB.clear();
-    this->poBuffersMemory_indirectCommandCB.clear();
+    this->poBuffer_indirectCommandCB = VK_NULL_HANDLE;
+    this->poBuffersMemory_indirectCommandCB = VK_NULL_HANDLE;
 }
 
 void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
@@ -1219,16 +1221,93 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer(co
     }
 }
 
+void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::UpdateUniformIndirectCommandObjects()
+{
+    this->instanceMatWorld.clear();
+    this->objectCBs.clear();
+    this->materialCBs.clear();
+    this->tessellationCBs.clear();
+    this->indirectCommandCBs.clear();
+
+    int32_t vertexOffset = 0;
+    uint32_t indexOffset = 0;
+    uint32_t instanceOffset = 0;
+    size_t count_rend = this->aRends.size();
+    for (size_t i = 0; i < count_rend; i++)
+    {
+        ModelObjectRend* pR = this->aRends[i];
+        ModelMeshSub* pMeshSub = pR->pMeshSub;
+
+        //Uniform
+        {
+            this->instanceMatWorld.insert(this->instanceMatWorld.end(), pR->instanceMatWorld.begin(), pR->instanceMatWorld.end());
+            this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
+            this->materialCBs.insert(this->materialCBs.end(), pR->materialCBs.begin(), pR->materialCBs.end());
+            if (pRend->isUsedTessellation)
+            {
+                this->tessellationCBs.insert(this->tessellationCBs.end(), pR->tessellationCBs.begin(), pR->tessellationCBs.end());
+            }
+        }
+        //IndirectCommand 
+        {
+            VkDrawIndexedIndirectCommand indirectCommand = {};
+            indirectCommand.indexCount = pMeshSub->poIndexCount;
+            indirectCommand.instanceCount = pRend->pModelObject->countInstance;
+            indirectCommand.firstIndex = indexOffset;
+            indirectCommand.vertexOffset = vertexOffset;
+            indirectCommand.firstInstance = instanceOffset;
+
+            indexOffset += pMeshSub->poIndexCount;
+            vertexOffset += pMeshSub->poVertexCount;
+            instanceOffset += pRend->pModelObject->countInstance;
+
+            this->indirectCommandCBs.push_back(indirectCommand);
+        }
+    }
+}
+
 void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
 {
+    VkDeviceSize bufferSize;
+    size_t count_sci = this->pRend->pModelObject->pWindow->poSwapChainImages.size();
+
     //1> Uniform Buffer
     {
+        //ObjectConstants
+        bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
+        this->poBuffers_ObjectCB.resize(count_sci);
+        this->poBuffersMemory_ObjectCB.resize(count_sci);
+        for (size_t j = 0; j < count_sci; j++) 
+        {
+            this->pRend->pModelObject->pWindow->createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
+        }
 
+        //MaterialConstants
+        bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
+        this->poBuffers_materialCB.resize(count_sci);
+        this->poBuffersMemory_materialCB.resize(count_sci);
+        for (size_t j = 0; j < count_sci; j++) 
+        {
+            this->pRend->pModelObject->pWindow->createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_materialCB[j], this->poBuffersMemory_materialCB[j]);
+        }
+
+        //TessellationConstants
+        if (pRend->isUsedTessellation)
+        {
+            bufferSize = sizeof(TessellationConstants) * MAX_MATERIAL_COUNT;
+            this->poBuffers_tessellationCB.resize(count_sci);
+            this->poBuffersMemory_tessellationCB.resize(count_sci);
+            for (size_t j = 0; j < count_sci; j++) 
+            {
+                this->pRend->pModelObject->pWindow->createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_tessellationCB[j], this->poBuffersMemory_tessellationCB[j]);
+            }
+        }
     }
 
     //2> IndirectCommand Buffer
     {
-        this->indirectCommandCBs.clear();
+        bufferSize = sizeof(VkDrawIndexedIndirectCommand) * this->indirectCommandCBs.size();
+        this->pRend->pModelObject->pWindow->createBuffer(bufferSize, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
     }
 }
 
@@ -1239,7 +1318,8 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupUniformIndirectComma
 
 Vulkan_013_IndirectDraw::Vulkan_013_IndirectDraw(int width, int height, std::string name)
     : VulkanWindow(width, height, name)
-    , m_isMultiDrawIndirect(true)
+    , m_isDrawIndirect(false)
+    , m_isDrawIndirectMulti(false)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -1256,11 +1336,11 @@ void Vulkan_013_IndirectDraw::setUpEnabledFeatures()
 
     if (this->poPhysicalEnabledFeatures.multiDrawIndirect)
     {
-        this->m_isMultiDrawIndirect = true;
+        this->m_isDrawIndirectMulti = true;
     }
     else
     {
-        this->m_isMultiDrawIndirect = false;
+        this->m_isDrawIndirectMulti = false;
         Util_LogError("Vulkan_013_IndirectDraw::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
 }
@@ -1610,22 +1690,19 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
     }
 
     //2> ObjectRendIndriect
-    if (this->m_isMultiDrawIndirect)
+    size_t count_object = this->m_aModelObjects.size();
+    for (size_t i = 0; i < count_object; i++)
     {
-        size_t count_object = this->m_aModelObjects.size();
-        for (size_t i = 0; i < count_object; i++)
+        ModelObject* pModelObject = this->m_aModelObjects[i];
+
+        if (pModelObject->isIndirectDraw &&
+            pModelObject->pRendIndirect != nullptr)
         {
-            ModelObject* pModelObject = this->m_aModelObjects[i];
+            pModelObject->pRendIndirect->UpdateUniformIndirectCommandObjects();
 
-            if (pModelObject->isIndirectDraw &&
-                pModelObject->pRendIndirect != nullptr)
+            if (isCreateVkBuffer)
             {
-                
-
-                if (isCreateVkBuffer)
-                {
-                    pModelObject->pRendIndirect->SetupUniformIndirectCommandBuffer();
-                }
+                pModelObject->pRendIndirect->SetupUniformIndirectCommandBuffer();
             }
         }
     }
@@ -2314,8 +2391,8 @@ bool Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos(const std::st
     return true;
 }
 bool Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos(const std::string& nameShaderComp,
-                                                                VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
-                                                                VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
+                                                                   VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                                                   VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
 {
     //comp
     if (!nameShaderComp.empty())
@@ -2396,7 +2473,7 @@ VkPipelineLayout Vulkan_013_IndirectDraw::findPipelineLayout(const std::string& 
 
 void Vulkan_013_IndirectDraw::createDescriptorSets_Custom()
 {
-    size_t count_sci = this->poSwapChainImages.size();
+    //1> Object Rend
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
     {
@@ -2404,175 +2481,8 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Custom()
 
         //Pipeline Graphics
         {
-            std::vector<std::string>* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
-            assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_013_IndirectDraw::createDescriptorSets_Custom");
             createDescriptorSets(pRend->pPipelineGraphics->poDescriptorSets, pRend->pPipelineGraphics->poDescriptorSetLayout);
-            for (size_t j = 0; j < count_sci; j++)
-            {   
-                std::vector<VkWriteDescriptorSet> descriptorWrites;
-                int nIndexTextureVS = 0;
-                int nIndexTextureTESC = 0;
-                int nIndexTextureTESE = 0;
-                int nIndexTextureFS = 0;
-
-                size_t count_names = pDescriptorSetLayoutNames->size();
-                for (size_t p = 0; p < count_names; p++)
-                {
-                    std::string& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
-                    if (nameDescriptorSet == c_strLayout_Pass) //Pass
-                    {
-                        VkDescriptorBufferInfo bufferInfo_Pass = {};
-                        bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
-                        bufferInfo_Pass.offset = 0;
-                        bufferInfo_Pass.range = sizeof(PassConstants);
-
-                        VkWriteDescriptorSet ds = {};
-                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                        ds.dstSet = pRend->pPipelineGraphics->poDescriptorSets[j];
-                        ds.dstBinding = p;
-                        ds.dstArrayElement = 0;
-                        ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                        ds.descriptorCount = 1;
-                        ds.pBufferInfo = &bufferInfo_Pass;
-                        descriptorWrites.push_back(ds);
-                    }
-                    else if (nameDescriptorSet == c_strLayout_Object) //Object
-                    {
-                        VkDescriptorBufferInfo bufferInfo_Object = {};
-                        bufferInfo_Object.buffer = pRend->poBuffers_ObjectCB[j];
-                        bufferInfo_Object.offset = 0;
-                        bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-
-                        VkWriteDescriptorSet ds = {};
-                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                        ds.dstSet = pRend->pPipelineGraphics->poDescriptorSets[j];
-                        ds.dstBinding = p;
-                        ds.dstArrayElement = 0;
-                        ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                        ds.descriptorCount = 1;
-                        ds.pBufferInfo = &bufferInfo_Object;
-                        descriptorWrites.push_back(ds);
-                    }
-                    else if (nameDescriptorSet == c_strLayout_Material) //Material
-                    {
-                        VkDescriptorBufferInfo bufferInfo_Material = {};
-                        bufferInfo_Material.buffer = pRend->poBuffers_materialCB[j];
-                        bufferInfo_Material.offset = 0;
-                        bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
-
-                        VkWriteDescriptorSet ds = {};
-                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                        ds.dstSet = pRend->pPipelineGraphics->poDescriptorSets[j];
-                        ds.dstBinding = p;
-                        ds.dstArrayElement = 0;
-                        ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                        ds.descriptorCount = 1;
-                        ds.pBufferInfo = &bufferInfo_Material;
-                        descriptorWrites.push_back(ds);
-                    }
-                    else if (nameDescriptorSet == c_strLayout_Instance) //Instance
-                    {
-                        VkDescriptorBufferInfo bufferInfo_Instance = {};
-                        bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
-                        bufferInfo_Instance.offset = 0;
-                        bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
-
-                        VkWriteDescriptorSet ds = {};
-                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                        ds.dstSet = pRend->pPipelineGraphics->poDescriptorSets[j];
-                        ds.dstBinding = p;
-                        ds.dstArrayElement = 0;
-                        ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                        ds.descriptorCount = 1;
-                        ds.pBufferInfo = &bufferInfo_Instance;
-                        descriptorWrites.push_back(ds);
-                    }
-                    else if (nameDescriptorSet == c_strLayout_Tessellation) //Tessellation
-                    {
-                        VkDescriptorBufferInfo bufferInfo_Tessellation = {};
-                        bufferInfo_Tessellation.buffer = pRend->poBuffers_tessellationCB[j];
-                        bufferInfo_Tessellation.offset = 0;
-                        bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
-
-                        VkWriteDescriptorSet ds = {};
-                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                        ds.dstSet = pRend->pPipelineGraphics->poDescriptorSets[j];
-                        ds.dstBinding = p;
-                        ds.dstArrayElement = 0;
-                        ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                        ds.descriptorCount = 1;
-                        ds.pBufferInfo = &bufferInfo_Tessellation;
-                        descriptorWrites.push_back(ds);
-                    }
-                    else if (nameDescriptorSet == c_strLayout_TextureVS) //TextureVS
-                    {
-                        ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
-                        nIndexTextureVS ++;
-
-                        VkWriteDescriptorSet ds = {};
-                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                        ds.dstSet = pRend->pPipelineGraphics->poDescriptorSets[j];
-                        ds.dstBinding = p;
-                        ds.dstArrayElement = 0;
-                        ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                        ds.descriptorCount = 1;
-                        ds.pImageInfo = &pTexture->poTextureImageInfo;
-                        descriptorWrites.push_back(ds);
-                    }
-                    else if (nameDescriptorSet == c_strLayout_TextureTESC)//TextureTESC
-                    {
-                        ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), nIndexTextureTESC);
-                        nIndexTextureTESC ++;
-
-                        VkWriteDescriptorSet ds = {};
-                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                        ds.dstSet = pRend->pPipelineGraphics->poDescriptorSets[j];
-                        ds.dstBinding = p;
-                        ds.dstArrayElement = 0;
-                        ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                        ds.descriptorCount = 1;
-                        ds.pImageInfo = &pTexture->poTextureImageInfo;
-                        descriptorWrites.push_back(ds);
-                    }
-                    else if (nameDescriptorSet == c_strLayout_TextureTESE)//TextureTESE
-                    {
-                        ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), nIndexTextureTESE);
-                        nIndexTextureTESE ++;
-
-                        VkWriteDescriptorSet ds = {};
-                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                        ds.dstSet = pRend->pPipelineGraphics->poDescriptorSets[j];
-                        ds.dstBinding = p;
-                        ds.dstArrayElement = 0;
-                        ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                        ds.descriptorCount = 1;
-                        ds.pImageInfo = &pTexture->poTextureImageInfo;
-                        descriptorWrites.push_back(ds);
-                    }
-                    else if (nameDescriptorSet == c_strLayout_TextureFS) //TextureFS
-                    {
-                        ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), nIndexTextureFS);
-                        nIndexTextureFS ++;
-
-                        VkWriteDescriptorSet ds = {};
-                        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                        ds.dstSet = pRend->pPipelineGraphics->poDescriptorSets[j];
-                        ds.dstBinding = p;
-                        ds.dstArrayElement = 0;
-                        ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                        ds.descriptorCount = 1;
-                        ds.pImageInfo = &pTexture->poTextureImageInfo;
-                        descriptorWrites.push_back(ds);
-                    }
-                    else
-                    {
-                        std::string msg = "Vulkan_013_IndirectDraw::createDescriptorSets_Custom: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
-                        Util_LogError(msg.c_str());
-                        throw std::runtime_error(msg.c_str());
-                    }
-                }
-                vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-            }
+            createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSets, pRend, nullptr);
         }   
         
         //Pipeline Computes
@@ -2580,78 +2490,268 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Custom()
         for (int j = 0; j < count_comp_rend; j++)
         {       
             PipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
-
-            std::vector<std::string>* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-            assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_013_IndirectDraw::createDescriptorSets_Custom");
-            createDescriptorSet(pPipelineCompute->poDescriptorSet, pPipelineCompute->poDescriptorSetLayout);
-
-            std::vector<VkWriteDescriptorSet> descriptorWrites;
-            int nIndexTextureCS = 0;
-            size_t count_names = pDescriptorSetLayoutNames->size();
-            for (size_t p = 0; p < count_names; p++)
-            {
-                std::string& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
-                if (nameDescriptorSet == c_strLayout_TextureCopy) //TextureCopy
-                {
-                    pPipelineCompute->CreateTextureCopy();
-
-                    VkDescriptorBufferInfo bufferInfo_TextureCopy = {};
-                    bufferInfo_TextureCopy.buffer = pPipelineCompute->poBuffer_TextureCopy;
-                    bufferInfo_TextureCopy.offset = 0;
-                    bufferInfo_TextureCopy.range = sizeof(TextureCopyConstants);
-
-                    VkWriteDescriptorSet ds = {};
-                    ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                    ds.dstSet = pPipelineCompute->poDescriptorSet;
-                    ds.dstBinding = p;
-                    ds.dstArrayElement = 0;
-                    ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                    ds.descriptorCount = 1;
-                    ds.pBufferInfo = &bufferInfo_TextureCopy;
-                    descriptorWrites.push_back(ds);
-                }   
-                else if (nameDescriptorSet == c_strLayout_TextureCSR) //TextureCSR
-                {
-                    ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
-                    nIndexTextureCS ++;
-                    pPipelineCompute->pTextureSource = pTexture;
-
-                    VkWriteDescriptorSet ds = {};
-                    ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                    ds.dstSet = pPipelineCompute->poDescriptorSet;
-                    ds.dstBinding = p;
-                    ds.dstArrayElement = 0;
-                    ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                    ds.descriptorCount = 1;
-                    ds.pImageInfo = &pTexture->poTextureImageInfo;
-                    descriptorWrites.push_back(ds);
-                }
-                else if (nameDescriptorSet == c_strLayout_TextureCSRW) //TextureCSRW
-                {
-                    ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
-                    nIndexTextureCS ++;
-                    pPipelineCompute->pTextureTarget = pTexture;
-
-                    VkWriteDescriptorSet ds = {};
-                    ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                    ds.dstSet = pPipelineCompute->poDescriptorSet;
-                    ds.dstBinding = p;
-                    ds.dstArrayElement = 0;
-                    ds.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-                    ds.descriptorCount = 1;
-                    ds.pImageInfo = &pTexture->poTextureImageInfo;
-                    descriptorWrites.push_back(ds);
-                }
-                else
-                {
-                    std::string msg = "Vulkan_013_IndirectDraw::createDescriptorSets_Custom: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
-                    Util_LogError(msg.c_str());
-                    throw std::runtime_error(msg.c_str());
-                }
-            }  
-            vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+            createDescriptorSets_Compute(pPipelineCompute, pRend);
         }
     }
+
+    //2> Object Rend Indirect
+    size_t count_object = this->m_aModelObjects.size();
+    for (size_t i = 0; i < count_object; i++)
+    {
+        ModelObject* pModelObject = this->m_aModelObjects[i];
+        if (pModelObject->pRendIndirect != nullptr)
+        {
+            createDescriptorSets(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout);
+            createDescriptorSets_Graphics(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend, pModelObject->pRendIndirect);
+        }
+    }
+}
+void Vulkan_013_IndirectDraw::createDescriptorSets_Graphics(std::vector<VkDescriptorSet>& poDescriptorSets, 
+                                                            ModelObjectRend* pRend, 
+                                                            ModelObjectRendIndirect* pRendIndirect)
+{
+    std::vector<std::string>* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
+    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_013_IndirectDraw::createDescriptorSets_Graphics");
+    size_t count_ds = poDescriptorSets.size();
+    for (size_t j = 0; j < count_ds; j++)
+    {   
+        std::vector<VkWriteDescriptorSet> descriptorWrites;
+        int nIndexTextureVS = 0;
+        int nIndexTextureTESC = 0;
+        int nIndexTextureTESE = 0;
+        int nIndexTextureFS = 0;
+
+        size_t count_names = pDescriptorSetLayoutNames->size();
+        for (size_t p = 0; p < count_names; p++)
+        {
+            std::string& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
+            if (nameDescriptorSet == c_strLayout_Pass) //Pass
+            {
+                VkDescriptorBufferInfo bufferInfo_Pass = {};
+                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
+                bufferInfo_Pass.offset = 0;
+                bufferInfo_Pass.range = sizeof(PassConstants);
+
+                VkWriteDescriptorSet ds = {};
+                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
+                ds.dstBinding = p;
+                ds.dstArrayElement = 0;
+                ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                ds.descriptorCount = 1;
+                ds.pBufferInfo = &bufferInfo_Pass;
+                descriptorWrites.push_back(ds);
+            }
+            else if (nameDescriptorSet == c_strLayout_Object) //Object
+            {
+                VkDescriptorBufferInfo bufferInfo_Object = {};
+                bufferInfo_Object.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB[j] : pRend->poBuffers_ObjectCB[j];
+                bufferInfo_Object.offset = 0;
+                bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
+
+                VkWriteDescriptorSet ds = {};
+                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
+                ds.dstBinding = p;
+                ds.dstArrayElement = 0;
+                ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                ds.descriptorCount = 1;
+                ds.pBufferInfo = &bufferInfo_Object;
+                descriptorWrites.push_back(ds);
+            }
+            else if (nameDescriptorSet == c_strLayout_Material) //Material
+            {
+                VkDescriptorBufferInfo bufferInfo_Material = {};
+                bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j] : pRend->poBuffers_materialCB[j];
+                bufferInfo_Material.offset = 0;
+                bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
+
+                VkWriteDescriptorSet ds = {};
+                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
+                ds.dstBinding = p;
+                ds.dstArrayElement = 0;
+                ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                ds.descriptorCount = 1;
+                ds.pBufferInfo = &bufferInfo_Material;
+                descriptorWrites.push_back(ds);
+            }
+            else if (nameDescriptorSet == c_strLayout_Instance) //Instance
+            {
+                VkDescriptorBufferInfo bufferInfo_Instance = {};
+                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
+                bufferInfo_Instance.offset = 0;
+                bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
+
+                VkWriteDescriptorSet ds = {};
+                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
+                ds.dstBinding = p;
+                ds.dstArrayElement = 0;
+                ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                ds.descriptorCount = 1;
+                ds.pBufferInfo = &bufferInfo_Instance;
+                descriptorWrites.push_back(ds);
+            }
+            else if (nameDescriptorSet == c_strLayout_Tessellation) //Tessellation
+            {
+                VkDescriptorBufferInfo bufferInfo_Tessellation = {};
+                bufferInfo_Tessellation.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_tessellationCB[j] : pRend->poBuffers_tessellationCB[j];
+                bufferInfo_Tessellation.offset = 0;
+                bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
+
+                VkWriteDescriptorSet ds = {};
+                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
+                ds.dstBinding = p;
+                ds.dstArrayElement = 0;
+                ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                ds.descriptorCount = 1;
+                ds.pBufferInfo = &bufferInfo_Tessellation;
+                descriptorWrites.push_back(ds);
+            }
+            else if (nameDescriptorSet == c_strLayout_TextureVS) //TextureVS
+            {
+                ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
+                nIndexTextureVS ++;
+
+                VkWriteDescriptorSet ds = {};
+                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
+                ds.dstBinding = p;
+                ds.dstArrayElement = 0;
+                ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                ds.descriptorCount = 1;
+                ds.pImageInfo = &pTexture->poTextureImageInfo;
+                descriptorWrites.push_back(ds);
+            }
+            else if (nameDescriptorSet == c_strLayout_TextureTESC)//TextureTESC
+            {
+                ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), nIndexTextureTESC);
+                nIndexTextureTESC ++;
+
+                VkWriteDescriptorSet ds = {};
+                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
+                ds.dstBinding = p;
+                ds.dstArrayElement = 0;
+                ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                ds.descriptorCount = 1;
+                ds.pImageInfo = &pTexture->poTextureImageInfo;
+                descriptorWrites.push_back(ds);
+            }
+            else if (nameDescriptorSet == c_strLayout_TextureTESE)//TextureTESE
+            {
+                ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), nIndexTextureTESE);
+                nIndexTextureTESE ++;
+
+                VkWriteDescriptorSet ds = {};
+                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
+                ds.dstBinding = p;
+                ds.dstArrayElement = 0;
+                ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                ds.descriptorCount = 1;
+                ds.pImageInfo = &pTexture->poTextureImageInfo;
+                descriptorWrites.push_back(ds);
+            }
+            else if (nameDescriptorSet == c_strLayout_TextureFS) //TextureFS
+            {
+                ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), nIndexTextureFS);
+                nIndexTextureFS ++;
+
+                VkWriteDescriptorSet ds = {};
+                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
+                ds.dstBinding = p;
+                ds.dstArrayElement = 0;
+                ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                ds.descriptorCount = 1;
+                ds.pImageInfo = &pTexture->poTextureImageInfo;
+                descriptorWrites.push_back(ds);
+            }
+            else
+            {
+                std::string msg = "Vulkan_013_IndirectDraw::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+        }
+        vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+    }
+}
+void Vulkan_013_IndirectDraw::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
+                                                           ModelObjectRend* pRend)
+{
+    std::vector<std::string>* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
+    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_013_IndirectDraw::createDescriptorSets_Compute");
+    createDescriptorSet(pPipelineCompute->poDescriptorSet, pPipelineCompute->poDescriptorSetLayout);
+
+    std::vector<VkWriteDescriptorSet> descriptorWrites;
+    int nIndexTextureCS = 0;
+    size_t count_names = pDescriptorSetLayoutNames->size();
+    for (size_t p = 0; p < count_names; p++)
+    {
+        std::string& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
+        if (nameDescriptorSet == c_strLayout_TextureCopy) //TextureCopy
+        {
+            pPipelineCompute->CreateTextureCopy();
+
+            VkDescriptorBufferInfo bufferInfo_TextureCopy = {};
+            bufferInfo_TextureCopy.buffer = pPipelineCompute->poBuffer_TextureCopy;
+            bufferInfo_TextureCopy.offset = 0;
+            bufferInfo_TextureCopy.range = sizeof(TextureCopyConstants);
+
+            VkWriteDescriptorSet ds = {};
+            ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            ds.dstSet = pPipelineCompute->poDescriptorSet;
+            ds.dstBinding = p;
+            ds.dstArrayElement = 0;
+            ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            ds.descriptorCount = 1;
+            ds.pBufferInfo = &bufferInfo_TextureCopy;
+            descriptorWrites.push_back(ds);
+        }   
+        else if (nameDescriptorSet == c_strLayout_TextureCSR) //TextureCSR
+        {
+            ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
+            nIndexTextureCS ++;
+            pPipelineCompute->pTextureSource = pTexture;
+
+            VkWriteDescriptorSet ds = {};
+            ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            ds.dstSet = pPipelineCompute->poDescriptorSet;
+            ds.dstBinding = p;
+            ds.dstArrayElement = 0;
+            ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            ds.descriptorCount = 1;
+            ds.pImageInfo = &pTexture->poTextureImageInfo;
+            descriptorWrites.push_back(ds);
+        }
+        else if (nameDescriptorSet == c_strLayout_TextureCSRW) //TextureCSRW
+        {
+            ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
+            nIndexTextureCS ++;
+            pPipelineCompute->pTextureTarget = pTexture;
+
+            VkWriteDescriptorSet ds = {};
+            ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            ds.dstSet = pPipelineCompute->poDescriptorSet;
+            ds.dstBinding = p;
+            ds.dstArrayElement = 0;
+            ds.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+            ds.descriptorCount = 1;
+            ds.pImageInfo = &pTexture->poTextureImageInfo;
+            descriptorWrites.push_back(ds);
+        }
+        else
+        {
+            std::string msg = "Vulkan_013_IndirectDraw::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg.c_str());
+        }
+    }  
+    vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }
 
 void Vulkan_013_IndirectDraw::updateCompute_Custom(VkCommandBuffer& commandBuffer)
@@ -2718,6 +2818,7 @@ void Vulkan_013_IndirectDraw::updateCompute_Custom(VkCommandBuffer& commandBuffe
 
 void Vulkan_013_IndirectDraw::updateCBs_Custom()
 {
+    //1> Object Rend
     float time = this->pTimer->GetTimeSinceStart();
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -2748,7 +2849,6 @@ void Vulkan_013_IndirectDraw::updateCBs_Custom()
             {
                 TessellationConstants& tessellationCB = pRend->tessellationCBs[j];
             }
-            
         }
 
         //ObjectConstants
@@ -2777,6 +2877,70 @@ void Vulkan_013_IndirectDraw::updateCBs_Custom()
             vkMapMemory(this->poDevice, memory, 0, sizeof(TessellationConstants) * count_object, 0, &data);
                 memcpy(data, pRend->tessellationCBs.data(), sizeof(TessellationConstants) * count_object);
             vkUnmapMemory(this->poDevice, memory);
+        }
+    }
+
+    //2> Object Rend Indirect
+    size_t count_object = this->m_aModelObjects.size();
+    for (size_t i = 0; i < count_object; i++)
+    {
+        ModelObject* pModelObject = this->m_aModelObjects[i];
+        ModelObjectRendIndirect* pRendIndirect = pModelObject->pRendIndirect;
+        if (pRendIndirect != nullptr)
+        {
+            size_t count_object = pRendIndirect->objectCBs.size();
+            for (size_t j = 0; j < count_object; j++)
+            {
+                //ObjectConstants
+                ObjectConstants& objectCB = pRendIndirect->objectCBs[j];
+                if (pModelObject->isRotate || pRendIndirect->isRotate || this->cfg_isRotate)
+                {
+                    objectCB.g_MatWorld = glm::rotate(pRendIndirect->instanceMatWorld[j], 
+                                                      time * glm::radians(90.0f), 
+                                                      glm::vec3(0.0f, 1.0f, 0.0f));
+                }
+                else
+                {
+                    objectCB.g_MatWorld = pRendIndirect->instanceMatWorld[j];
+                }
+
+                //MaterialConstants
+                MaterialConstants& materialCB = pRendIndirect->materialCBs[j];
+                
+                //TessellationConstants
+                if (pRendIndirect->pRend->isUsedTessellation)
+                {
+                    TessellationConstants& tessellationCB = pRendIndirect->tessellationCBs[j];
+                }
+            }
+
+            //ObjectConstants
+            {
+                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
+                void* data;
+                vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
+                    memcpy(data, pRendIndirect->objectCBs.data(), sizeof(ObjectConstants) * count_object);
+                vkUnmapMemory(this->poDevice, memory);
+            }
+
+            //MaterialConstants
+            {
+                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
+                void* data;
+                vkMapMemory(this->poDevice, memory, 0, sizeof(MaterialConstants) * count_object, 0, &data);
+                    memcpy(data, pRendIndirect->materialCBs.data(), sizeof(MaterialConstants) * count_object);
+                vkUnmapMemory(this->poDevice, memory);
+            }
+
+            //TessellationConstants
+            if (pRendIndirect->pRend->isUsedTessellation)
+            {
+                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
+                void* data;
+                vkMapMemory(this->poDevice, memory, 0, sizeof(TessellationConstants) * count_object, 0, &data);
+                    memcpy(data, pRendIndirect->tessellationCBs.data(), sizeof(TessellationConstants) * count_object);
+                vkUnmapMemory(this->poDevice, memory);
+            }
         }
     }
 }
@@ -2854,6 +3018,17 @@ void Vulkan_013_IndirectDraw::modelConfig()
 {
     if (ImGui::CollapsingHeader("Model Settings"))
     {
+        //m_isDrawIndirect
+        if (ImGui::Checkbox("Is DrawIndirect", &this->m_isDrawIndirect))
+        {
+            
+        }
+        //m_isDrawIndirectMulti
+        if (ImGui::Checkbox("Is DrawIndirectMulti", &this->m_isDrawIndirectMulti))
+        {
+            
+        }
+
         float fGap = g_Object_InstanceGap;
         if (ImGui::DragFloat("Instance Gap: ", &fGap, 0.1f, 1.0f, 100.0f))
         {
@@ -3233,11 +3408,18 @@ void Vulkan_013_IndirectDraw::endRenderImgui()
 
 void Vulkan_013_IndirectDraw::drawMesh_Custom(VkCommandBuffer& commandBuffer)
 {   
-    // if (this->m_isMultiDrawIndirect)
-    // {
-
-    // }
-    // else
+    if (this->m_isDrawIndirect)
+    {
+        //1> Opaque
+        {
+            drawModelObjectRendIndirects(commandBuffer, this->m_aModelObjectRends_Opaque);
+        }
+        //2> Transparent
+        {
+            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
+        }
+    }
+    else
     {
         //1> Opaque
         {
@@ -3249,6 +3431,78 @@ void Vulkan_013_IndirectDraw::drawMesh_Custom(VkCommandBuffer& commandBuffer)
         }
     }
 }
+void Vulkan_013_IndirectDraw::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+{
+    ModelObjectRendIndirect* pRendIndirect_Last = nullptr;
+    size_t count_rend = aRends.size();
+    for (size_t i = 0; i < count_rend; i++)
+    {
+        ModelObjectRend* pRend = aRends[i];
+        ModelObjectRendIndirect* pRendIndirect = pRend->pModelObject->pRendIndirect;
+        if (pRendIndirect != nullptr)
+        {
+            if (pRendIndirect_Last != nullptr && pRendIndirect_Last == pRendIndirect)
+                continue;
+            if (!pRendIndirect->isShow)
+            {
+                pRendIndirect_Last = nullptr;
+                continue;
+            }
+            drawModelObjectRendIndirect(commandBuffer, pRendIndirect);
+            pRendIndirect_Last = pRendIndirect;
+        }
+        else
+        {
+            if (!pRend->isShow)
+                continue;
+            drawModelObjectRend(commandBuffer, pRend);
+        }
+    }
+}   
+void Vulkan_013_IndirectDraw::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
+{
+    ModelObjectRend* pRend = pRendIndirect->pRend;
+    ModelObject* pModelObject = pRend->pModelObject;
+
+    VkBuffer vertexBuffers[] = { pRendIndirect->poVertexBuffer };
+    VkDeviceSize offsets[] = { 0 };
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+    if (pRendIndirect->poIndexBuffer != nullptr)
+    {
+        vkCmdBindIndexBuffer(commandBuffer, pRendIndirect->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+    }
+
+    if (pModelObject->isWireFrame || pRendIndirect->isWireFrame || this->cfg_isWireFrame)
+    {
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
+        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
+        {
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+        }
+    }
+    else
+    {
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
+        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
+        {
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+        }
+    }
+
+    uint32_t drawCount = pRendIndirect->indirectCommandCBs.size();
+    if (m_isDrawIndirectMulti)
+    {
+        vkCmdDrawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, 0, drawCount, sizeof(VkDrawIndexedIndirectCommand));
+    }
+    else
+    {
+        for (uint32_t i = 0; i < drawCount; i++)
+        {
+            vkCmdDrawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, i * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
+        }
+    }
+}
+
 void Vulkan_013_IndirectDraw::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     size_t count_rend = aRends.size();
@@ -3257,45 +3511,53 @@ void Vulkan_013_IndirectDraw::drawModelObjectRends(VkCommandBuffer& commandBuffe
         ModelObjectRend* pRend = aRends[i];
         if (!pRend->isShow)
             continue;
-        ModelMeshSub* pMeshSub = pRend->pMeshSub;
-
-        VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
-        VkDeviceSize offsets[] = { 0 };
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-        if (pMeshSub->poIndexBuffer != nullptr)
-        {
-            vkCmdBindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-        }
-
-        if (pRend->pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
-        {
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
-            if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
-            {
-                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-            }
-            drawModelObjectRend(commandBuffer, pRend);
-        }
-        else
-        {
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
-            if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
-            {
-                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
-            }
-            drawModelObjectRend(commandBuffer, pRend);
-        }
+        drawModelObjectRend(commandBuffer, pRend);
     }
 }
 void Vulkan_013_IndirectDraw::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
 {
-    if (pRend->pMeshSub->poIndexBuffer != nullptr)
+    ModelObject* pModelObject = pRend->pModelObject;
+    ModelMeshSub* pMeshSub = pRend->pMeshSub;
+
+    VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+    VkDeviceSize offsets[] = { 0 };
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+    if (pMeshSub->poIndexBuffer != nullptr)
     {
-        vkCmdDrawIndexed(commandBuffer, pRend->pMeshSub->poIndexCount, pRend->pModelObject->countInstance, 0, 0, 0);
+        vkCmdBindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+    }
+
+    if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
+    {
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
+        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
+        {
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+        }
+        if (pMeshSub->poIndexBuffer != nullptr)
+        {
+            vkCmdDrawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+        }
+        else
+        {
+            vkCmdDraw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+        }
     }
     else
     {
-        vkCmdDraw(commandBuffer, pRend->pMeshSub->poVertexCount, pRend->pModelObject->countInstance, 0, 0);
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
+        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
+        {
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+        }
+        if (pMeshSub->poIndexBuffer != nullptr)
+        {
+            vkCmdDrawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+        }
+        else
+        {
+            vkCmdDraw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+        }
     }
 }
 

@@ -948,10 +948,13 @@ public:
         std::vector<VkDeviceMemory> poBuffersMemory_tessellationCB;
         bool isUsedTessellation;
 
+        //VkDescriptorSets
+        std::vector<VkDescriptorSet> poDescriptorSets;
+
         //IndirectCommand 
         std::vector<VkDrawIndexedIndirectCommand> indirectCommandCBs;
-        std::vector<VkBuffer> poBuffer_indirectCommandCB;
-        std::vector<VkDeviceMemory> poBuffersMemory_indirectCommandCB;
+        VkBuffer poBuffer_indirectCommandCB;
+        VkDeviceMemory poBuffersMemory_indirectCommandCB;
 
 
         ModelObjectRendIndirect(const std::string& _nameObjectRendIndirect)
@@ -971,6 +974,10 @@ public:
             , poIndexBuffer_Data(nullptr)
             , poIndexBuffer(VK_NULL_HANDLE)
             , poIndexBufferMemory(VK_NULL_HANDLE)
+
+            //IndirectCommand
+            , poBuffer_indirectCommandCB(VK_NULL_HANDLE)
+            , poBuffersMemory_indirectCommandCB(VK_NULL_HANDLE)
         {
             
         }
@@ -993,6 +1000,7 @@ public:
 
         void SetupUniformIndirectCommandBuffer();
         
+        void UpdateUniformIndirectCommandObjects();
     };
     typedef std::vector<ModelObjectRendIndirect*> ModelObjectRendIndirectPtrVector;
     typedef std::map<std::string, ModelObjectRendIndirect*> ModelObjectRendIndirectPtrMap;
@@ -1137,7 +1145,8 @@ public:
     ModelObjectRendPtrVector m_aModelObjectRends_All;
     ModelObjectRendPtrVector m_aModelObjectRends_Opaque;
     ModelObjectRendPtrVector m_aModelObjectRends_Transparent;
-    bool m_isMultiDrawIndirect;
+    bool m_isDrawIndirect;
+    bool m_isDrawIndirectMulti;
 
     VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
     VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
@@ -1174,6 +1183,11 @@ protected:
 
         //DescriptorSets
         virtual void createDescriptorSets_Custom();
+            void createDescriptorSets_Graphics(std::vector<VkDescriptorSet>& poDescriptorSets, 
+                                               ModelObjectRend* pRend, 
+                                               ModelObjectRendIndirect* pRendIndirect);
+            void createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
+                                              ModelObjectRend* pRend);
 
     //Compute/Update
         virtual void updateCompute_Custom(VkCommandBuffer& commandBuffer);
@@ -1243,6 +1257,9 @@ private:
     void destroyPipelineLayouts();
     void createPipelineLayouts();
     VkPipelineLayout findPipelineLayout(const std::string& namePipelineLayout);
+
+    void drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
+    void drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect);
 
     void drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend);
