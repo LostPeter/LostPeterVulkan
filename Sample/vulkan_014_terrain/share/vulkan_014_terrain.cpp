@@ -2353,7 +2353,7 @@ void Vulkan_014_Terrain::modelConfig()
 
                 std::string nameInstances = "Instance - " + pModelObject->nameObject;
                 int countInstanceExt = pModelObject->countInstanceExt;
-                ImGui::DragInt(nameInstances.c_str(), &countInstanceExt, 1, 0, 63);
+                ImGui::DragInt(nameInstances.c_str(), &countInstanceExt, 1, 0, 10);
                 if (countInstanceExt != pModelObject->countInstanceExt)
                 {
                     pModelObject->countInstanceExt = countInstanceExt;

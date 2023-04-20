@@ -1283,7 +1283,7 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupUniformIndirectComma
         }
 
         //MaterialConstants
-        bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
+        bufferSize = sizeof(MaterialConstants) * 100;
         this->poBuffers_materialCB.resize(count_sci);
         this->poBuffersMemory_materialCB.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
@@ -1294,7 +1294,7 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupUniformIndirectComma
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
-            bufferSize = sizeof(TessellationConstants) * MAX_MATERIAL_COUNT;
+            bufferSize = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
             this->poBuffers_tessellationCB.resize(count_sci);
             this->poBuffersMemory_tessellationCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
@@ -1667,7 +1667,7 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
             }
 
             //MaterialConstants
-            bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
+            bufferSize = sizeof(MaterialConstants) * 100;
             pRend->poBuffers_materialCB.resize(count_sci);
             pRend->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
@@ -2564,7 +2564,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Graphics(std::vector<VkDescri
                 VkDescriptorBufferInfo bufferInfo_Material = {};
                 bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j] : pRend->poBuffers_materialCB[j];
                 bufferInfo_Material.offset = 0;
-                bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
+                bufferInfo_Material.range = sizeof(MaterialConstants) * 100;
 
                 VkWriteDescriptorSet ds = {};
                 ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -2941,6 +2941,15 @@ void Vulkan_013_IndirectDraw::updateCBs_Custom()
                     memcpy(data, pRendIndirect->tessellationCBs.data(), sizeof(TessellationConstants) * count_object);
                 vkUnmapMemory(this->poDevice, memory);
             }
+
+            //IndirectCommand
+            {
+                size_t count_indirectcommand = pRendIndirect->indirectCommandCBs.size();
+                void* data;
+                vkMapMemory(this->poDevice, pRendIndirect->poBuffersMemory_indirectCommandCB, 0, sizeof(VkDrawIndexedIndirectCommand) * count_indirectcommand, 0, &data);
+                    memcpy(data, pRendIndirect->indirectCommandCBs.data(), sizeof(VkDrawIndexedIndirectCommand) * count_indirectcommand);
+                vkUnmapMemory(this->poDevice, pRendIndirect->poBuffersMemory_indirectCommandCB);
+            }
         }
     }
 }
@@ -3092,7 +3101,7 @@ void Vulkan_013_IndirectDraw::modelConfig()
 
                 std::string nameInstances = "Instance - " + pModelObject->nameObject;
                 int countInstanceExt = pModelObject->countInstanceExt;
-                ImGui::DragInt(nameInstances.c_str(), &countInstanceExt, 1, 0, 63);
+                ImGui::DragInt(nameInstances.c_str(), &countInstanceExt, 1, 0, 5);
                 if (countInstanceExt != pModelObject->countInstanceExt)
                 {
                     pModelObject->countInstanceExt = countInstanceExt;

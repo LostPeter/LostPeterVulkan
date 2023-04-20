@@ -961,6 +961,12 @@ public:
             : nameObjectRendIndirect(_nameObjectRendIndirect)
             , pRend(nullptr)
 
+            , isShow(true)
+            , isWireFrame(false)
+            , isRotate(false)
+            , isLighting(true)
+            , isTransparent(false)
+
             //Vertex
             , poVertexCount(0)
             , poVertexBuffer_Size(0)
