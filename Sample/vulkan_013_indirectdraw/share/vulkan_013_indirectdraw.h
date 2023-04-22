@@ -105,9 +105,9 @@ public:
 
         bool CreateMeshSub(MeshData& meshData, bool isTranformLocal, const glm::mat4& matTransformLocal);
 
-        void WriteVertexData(int clusterIndex,
-                             std::vector<Vertex_Pos3Color4Normal3Tex4>& aPos3Color4Normal3Tex4,
-                             std::vector<Vertex_Pos3Color4Normal3Tangent3Tex4>& aPos3Color4Normal3Tangent3Tex4);
+        void WriteVertexData(std::vector<Vertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex4,
+                             std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex4);
+        void WriteIndexData(std::vector<uint32_t>& indexData);
     };
     typedef std::vector<ModelMeshSub*> ModelMeshSubPtrVector;
     typedef std::map<std::string, ModelMeshSub*> ModelMeshSubPtrMap;
@@ -915,21 +915,19 @@ public:
         bool isTransparent;
 
         //Vertex
-        std::vector<Vertex_Pos3Color4Normal3Tex4> vertices_Pos3Color4Normal3Tex4;
-        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex4> vertices_Pos3Color4Normal3Tangent3Tex4;
-        VulkanVertexType poTypeVertex;
-        uint32_t poVertexCount;
-        uint32_t poVertexSize;
+        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
+        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
+        size_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
         VkBuffer poVertexBuffer;
         VkDeviceMemory poVertexBufferMemory;
         
         //Index
-        uint32_t poIndexCount;
-        uint32_t poIndexSize;
+        std::vector<uint32_t> indices;
+        size_t poIndexCount;
         size_t poIndexBuffer_Size;
-        uint8* poIndexBuffer_Data;
+        void* poIndexBuffer_Data;
         VkBuffer poIndexBuffer;
         VkDeviceMemory poIndexBufferMemory;
 
@@ -937,7 +935,6 @@ public:
         std::vector<ObjectConstants> objectCBs;
         std::vector<VkBuffer> poBuffers_ObjectCB;
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
-        std::vector<glm::mat4> instanceMatWorld;
 
         std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_materialCB;
@@ -953,6 +950,7 @@ public:
 
         //IndirectCommand 
         std::vector<VkDrawIndexedIndirectCommand> indirectCommandCBs;
+        uint32_t countIndirectDraw;
         VkBuffer poBuffer_indirectCommandCB;
         VkDeviceMemory poBuffersMemory_indirectCommandCB;
 
@@ -982,6 +980,7 @@ public:
             , poIndexBufferMemory(VK_NULL_HANDLE)
 
             //IndirectCommand
+            , countIndirectDraw(0)
             , poBuffer_indirectCommandCB(VK_NULL_HANDLE)
             , poBuffersMemory_indirectCommandCB(VK_NULL_HANDLE)
         {
@@ -1003,10 +1002,10 @@ public:
         }   
 
         void SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends);
-
         void SetupUniformIndirectCommandBuffer();
-        
-        void UpdateUniformIndirectCommandObjects();
+
+        void UpdateUniformBuffer();
+        void UpdateIndirectCommandBuffer();
     };
     typedef std::vector<ModelObjectRendIndirect*> ModelObjectRendIndirectPtrVector;
     typedef std::map<std::string, ModelObjectRendIndirect*> ModelObjectRendIndirectPtrMap;

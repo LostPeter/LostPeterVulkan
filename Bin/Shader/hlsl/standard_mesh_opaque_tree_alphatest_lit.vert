@@ -14,7 +14,7 @@ struct VSInput
     [[vk::location(0)]]float3 inPosition    : POSITION0;
     [[vk::location(1)]]float4 inColor       : COLOR0;
     [[vk::location(2)]]float3 inNormal      : NORMAL0;
-    [[vk::location(3)]]float4 inTexCoord    : TEXCOORD0;
+    [[vk::location(3)]]float2 inTexCoord    : TEXCOORD0;
 };
 
 //LightConstants
@@ -143,15 +143,14 @@ struct VSOutput
 VSOutput main(VSInput input, uint instanceIndex : SV_InstanceID)
 {
     VSOutput output = (VSOutput)0;
-    uint instanceIndexReal = instanceIndex + input.inTexCoord.w;
-    ObjectConstants objInstance = objectConsts[instanceIndexReal];
+    ObjectConstants objInstance = objectConsts[instanceIndex];
     output.outWorldPos = mul(objInstance.g_MatWorld, float4(input.inPosition, 1.0));
     output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, output.outWorldPos));
     output.outWorldPos.xyz /= output.outWorldPos.w;
-    output.outWorldPos.w = instanceIndexReal;
+    output.outWorldPos.w = instanceIndex;
     output.outColor = input.inColor;
     output.outWorldNormal = mul((float3x3)objInstance.g_MatWorld, input.inNormal);
-    output.outTexCoord = input.inTexCoord.xy;
+    output.outTexCoord = input.inTexCoord;
 
     return output;
 }

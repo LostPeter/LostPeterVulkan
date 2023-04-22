@@ -22,7 +22,6 @@
 #include <assimp/postprocess.h>
 
 
-
 /////////////////////////// Mesh ////////////////////////////////
 static const int g_MeshCount = 10;
 static const char* g_MeshPaths[5 * g_MeshCount] =
@@ -37,11 +36,11 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
     "rock",             "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Fbx/rock/rock.fbx", //rock
     "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Obj/cliff/cliff.obj", //cliff
 
-    "tree",             "Pos3Color4Normal3Tex4",                "file",             "",                         "Assets/Model/Fbx/tree/tree.fbx", //tree
-    "tree_spruce",      "Pos3Color4Normal3Tex4",                "file",             "",                         "Assets/Model/Fbx/tree_spruce/tree_spruce.fbx", //tree_spruce
+    "tree",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree/tree.fbx", //tree
+    "tree_spruce",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree_spruce/tree_spruce.fbx", //tree_spruce
 
-    "grass",            "Pos3Color4Normal3Tex4",                "file",             "",                         "Assets/Model/Fbx/grass/grass.fbx", //grass
-    "flower",           "Pos3Color4Normal3Tex4",                "file",             "",                         "Assets/Model/Fbx/flower/flower.fbx", //flower
+    "grass",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/grass/grass.fbx", //grass
+    "flower",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/flower/flower.fbx", //flower
 
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
@@ -459,14 +458,14 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
     0, //object_skybox
     0, //object_mountain 
 
-    5, //object_rock 
-    5, //object_cliff 
+    4, //object_rock 
+    4, //object_cliff 
 
-    5, //object_tree 
-    5, //object_tree_spruce 
+    4, //object_tree 
+    4, //object_tree_spruce 
 
-    5, //object_grass 
-    5, //object_flower 
+    4, //object_grass 
+    4, //object_flower 
 
 };
 static bool g_Object_IsShows[] = 
@@ -896,9 +895,8 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
     return true;
 }
 
-void Vulkan_013_IndirectDraw::ModelMeshSub::WriteVertexData(int clusterIndex,
-                                                            std::vector<Vertex_Pos3Color4Normal3Tex4>& aPos3Color4Normal3Tex4,
-                                                            std::vector<Vertex_Pos3Color4Normal3Tangent3Tex4>& aPos3Color4Normal3Tangent3Tex4)
+void Vulkan_013_IndirectDraw::ModelMeshSub::WriteVertexData(std::vector<Vertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
+                                                            std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2)
 {
     size_t count = 0;
     if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
@@ -907,10 +905,7 @@ void Vulkan_013_IndirectDraw::ModelMeshSub::WriteVertexData(int clusterIndex,
         for (size_t i = 0; i < count; i++)
         {
             Vertex_Pos3Color4Normal3Tex2& vSrc = this->vertices_Pos3Color4Normal3Tex2[i];
-            aPos3Color4Normal3Tex4.push_back(Vertex_Pos3Color4Normal3Tex4(vSrc.pos,
-                                             vSrc.color,
-                                             vSrc.normal,
-                                             glm::vec4(vSrc.texCoord.x, vSrc.texCoord.y, 0, clusterIndex)));
+            aPos3Color4Normal3Tex2.push_back(vSrc);
         }
     }
     else if (this->vertices_Pos3Color4Normal3Tex4.size() > 0)
@@ -919,10 +914,10 @@ void Vulkan_013_IndirectDraw::ModelMeshSub::WriteVertexData(int clusterIndex,
         for (size_t i = 0; i < count; i++)
         {
             Vertex_Pos3Color4Normal3Tex4& vSrc = this->vertices_Pos3Color4Normal3Tex4[i];
-            aPos3Color4Normal3Tex4.push_back(Vertex_Pos3Color4Normal3Tex4(vSrc.pos,
+            aPos3Color4Normal3Tex2.push_back(Vertex_Pos3Color4Normal3Tex2(vSrc.pos,
                                              vSrc.color,
                                              vSrc.normal,
-                                             glm::vec4(vSrc.texCoord.x, vSrc.texCoord.y, vSrc.texCoord.z, clusterIndex)));
+                                             glm::vec2(vSrc.texCoord.x, vSrc.texCoord.y)));
         }
     }   
     else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
@@ -931,11 +926,7 @@ void Vulkan_013_IndirectDraw::ModelMeshSub::WriteVertexData(int clusterIndex,
         for (size_t i = 0; i < count; i++)
         {
             Vertex_Pos3Color4Normal3Tangent3Tex2& vSrc = this->vertices_Pos3Color4Normal3Tangent3Tex2[i];
-            aPos3Color4Normal3Tangent3Tex4.push_back(Vertex_Pos3Color4Normal3Tangent3Tex4(vSrc.pos,
-                                                     vSrc.color,
-                                                     vSrc.normal,
-                                                     vSrc.tangent,
-                                                     glm::vec4(vSrc.texCoord.x, vSrc.texCoord.y, 0, clusterIndex)));
+            aPos3Color4Normal3Tangent3Tex2.push_back(vSrc);
         }
     }   
     else if (this->vertices_Pos3Color4Normal3Tangent3Tex4.size() > 0)
@@ -944,13 +935,18 @@ void Vulkan_013_IndirectDraw::ModelMeshSub::WriteVertexData(int clusterIndex,
         for (size_t i = 0; i < count; i++)
         {
             Vertex_Pos3Color4Normal3Tangent3Tex4& vSrc = this->vertices_Pos3Color4Normal3Tangent3Tex4[i];
-            aPos3Color4Normal3Tangent3Tex4.push_back(Vertex_Pos3Color4Normal3Tangent3Tex4(vSrc.pos,
+            aPos3Color4Normal3Tangent3Tex2.push_back(Vertex_Pos3Color4Normal3Tangent3Tex2(vSrc.pos,
                                                      vSrc.color,
                                                      vSrc.normal,
                                                      vSrc.tangent,
-                                                     glm::vec4(vSrc.texCoord.x, vSrc.texCoord.y, vSrc.texCoord.z, clusterIndex)));
+                                                     glm::vec2(vSrc.texCoord.x, vSrc.texCoord.y)));
         }
     }
+}
+
+void Vulkan_013_IndirectDraw::ModelMeshSub::WriteIndexData(std::vector<uint32_t>& indexData)
+{
+    indexData.insert(indexData.end(), indices.begin(), indices.end());
 }
 
 /////////////////////////// ModelMesh ///////////////////////////
@@ -1153,62 +1149,48 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer(co
     this->pRend = _aRends[0];
 
     //1> Vertex/Index
-    this->poTypeVertex = this->pRend->pMeshSub->poTypeVertex;
-    this->poVertexCount = 0;
-    this->poVertexSize = this->pRend->pMeshSub->GetVertexSize();
-    
-    this->poIndexCount = 0;
-    this->poIndexSize = this->pRend->pMeshSub->GetIndexSize();
-
     this->aMeshSubs.clear();
     size_t count_rend = this->aRends.size();
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pR = this->aRends[i];
         ModelMeshSub* pMeshSub = pR->pMeshSub;
-        this->poVertexCount += pMeshSub->poVertexCount;
-        this->poIndexCount += pMeshSub->poIndexCount;
 
-        this->aMeshSubs.push_back(pR->pMeshSub);
+        this->aMeshSubs.push_back(pMeshSub);
     }
 
-    this->vertices_Pos3Color4Normal3Tex4.clear();
-    this->vertices_Pos3Color4Normal3Tangent3Tex4.clear();
+    this->vertices_Pos3Color4Normal3Tex2.clear();
+    this->vertices_Pos3Color4Normal3Tangent3Tex2.clear();
+    this->indices.clear();
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pR = this->aRends[i];
         ModelMeshSub* pMeshSub = pR->pMeshSub;
-        pMeshSub->WriteVertexData(i, this->vertices_Pos3Color4Normal3Tex4, this->vertices_Pos3Color4Normal3Tangent3Tex4);
+
+        pMeshSub->WriteVertexData(this->vertices_Pos3Color4Normal3Tex2, this->vertices_Pos3Color4Normal3Tangent3Tex2);
+        pMeshSub->WriteIndexData(this->indices);
     }
     
     //Vertex
-    this->poVertexBuffer_Size = this->poVertexCount * this->poVertexSize;
-    if (this->vertices_Pos3Color4Normal3Tex4.size() > 0)
+    if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
     {
-        assert(this->poVertexCount == (uint32_t)this->vertices_Pos3Color4Normal3Tex4.size() && "Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer: vertex count wrong !");
-        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex4[0];
+        this->poVertexCount = this->vertices_Pos3Color4Normal3Tex2.size();
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tex2);
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex2[0];
     }
-    else if (this->vertices_Pos3Color4Normal3Tangent3Tex4.size() > 0)
+    else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
     {
-        assert(this->poVertexCount == (uint32_t)this->vertices_Pos3Color4Normal3Tangent3Tex4.size() && "Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer: vertex count wrong !");
-        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex4[0];
+        this->poVertexCount = this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2);
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex2[0];
     }
     else
     {
         assert(false && "Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !");
     }
-    //Index
-    this->poIndexBuffer_Size = this->poIndexCount * this->poIndexSize;
-    this->poIndexBuffer_Data = new uint8[this->poIndexBuffer_Size];
-
-    size_t count_mesh_sub = this->aMeshSubs.size();
-    uint8* pDataIndex = this->poIndexBuffer_Data;
-    for (size_t i = 0; i < count_mesh_sub; i++)
-    {
-        ModelMeshSub* pMeshSub = this->aMeshSubs[i];
-        memcpy(pDataIndex, pMeshSub->poIndexBuffer_Data, pMeshSub->poIndexBuffer_Size);
-        pDataIndex += pMeshSub->poIndexBuffer_Size;
-    }
+    this->poIndexCount = this->indices.size();
+    this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+    this->poIndexBuffer_Data =  &this->indices[0];
 
     //2> createVertexBuffer
     this->pRend->pModelObject->pWindow->createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
@@ -1221,51 +1203,6 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupVertexIndexBuffer(co
     }
 }
 
-void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::UpdateUniformIndirectCommandObjects()
-{
-    this->instanceMatWorld.clear();
-    this->objectCBs.clear();
-    this->materialCBs.clear();
-    this->tessellationCBs.clear();
-    this->indirectCommandCBs.clear();
-
-    int32_t vertexOffset = 0;
-    uint32_t indexOffset = 0;
-    uint32_t instanceOffset = 0;
-    size_t count_rend = this->aRends.size();
-    for (size_t i = 0; i < count_rend; i++)
-    {
-        ModelObjectRend* pR = this->aRends[i];
-        ModelMeshSub* pMeshSub = pR->pMeshSub;
-
-        //Uniform
-        {
-            this->instanceMatWorld.insert(this->instanceMatWorld.end(), pR->instanceMatWorld.begin(), pR->instanceMatWorld.end());
-            this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
-            this->materialCBs.insert(this->materialCBs.end(), pR->materialCBs.begin(), pR->materialCBs.end());
-            if (pRend->isUsedTessellation)
-            {
-                this->tessellationCBs.insert(this->tessellationCBs.end(), pR->tessellationCBs.begin(), pR->tessellationCBs.end());
-            }
-        }
-        //IndirectCommand 
-        {
-            VkDrawIndexedIndirectCommand indirectCommand = {};
-            indirectCommand.indexCount = pMeshSub->poIndexCount;
-            indirectCommand.instanceCount = pRend->pModelObject->countInstance;
-            indirectCommand.firstIndex = indexOffset;
-            indirectCommand.vertexOffset = vertexOffset;
-            indirectCommand.firstInstance = instanceOffset;
-
-            indexOffset += pMeshSub->poIndexCount;
-            vertexOffset += pMeshSub->poVertexCount;
-            instanceOffset += pRend->pModelObject->countInstance;
-
-            this->indirectCommandCBs.push_back(indirectCommand);
-        }
-    }
-}
-
 void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
 {
     VkDeviceSize bufferSize;
@@ -1274,7 +1211,7 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupUniformIndirectComma
     //1> Uniform Buffer
     {
         //ObjectConstants
-        bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
+        bufferSize = sizeof(ObjectConstants) * this->objectCBs.size();
         this->poBuffers_ObjectCB.resize(count_sci);
         this->poBuffersMemory_ObjectCB.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
@@ -1283,7 +1220,7 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupUniformIndirectComma
         }
 
         //MaterialConstants
-        bufferSize = sizeof(MaterialConstants) * 100;
+        bufferSize = sizeof(MaterialConstants) * this->materialCBs.size();
         this->poBuffers_materialCB.resize(count_sci);
         this->poBuffersMemory_materialCB.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
@@ -1294,7 +1231,7 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupUniformIndirectComma
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
-            bufferSize = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
+            bufferSize = sizeof(TessellationConstants) * this->tessellationCBs.size();
             this->poBuffers_tessellationCB.resize(count_sci);
             this->poBuffersMemory_tessellationCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
@@ -1309,6 +1246,55 @@ void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::SetupUniformIndirectComma
         bufferSize = sizeof(VkDrawIndexedIndirectCommand) * this->indirectCommandCBs.size();
         this->pRend->pModelObject->pWindow->createBuffer(bufferSize, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
     }
+}
+
+void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::UpdateUniformBuffer()
+{
+    this->objectCBs.clear();
+    this->materialCBs.clear();
+    this->tessellationCBs.clear();
+
+    size_t count_rend = this->aRends.size();
+    for (size_t i = 0; i < count_rend; i++)
+    {
+        ModelObjectRend* pR = this->aRends[i];
+        ModelMeshSub* pMeshSub = pR->pMeshSub;
+
+        this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
+        this->materialCBs.insert(this->materialCBs.end(), pR->materialCBs.begin(), pR->materialCBs.end());
+        if (pRend->isUsedTessellation)
+        {
+            this->tessellationCBs.insert(this->tessellationCBs.end(), pR->tessellationCBs.begin(), pR->tessellationCBs.end());
+        }
+    }
+}
+
+void Vulkan_013_IndirectDraw::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
+{
+    this->indirectCommandCBs.clear();
+
+    int32_t vertexOffset = 0;
+    uint32_t indexOffset = 0;
+    uint32_t instanceOffset = 0;
+    size_t count_rend = this->aRends.size();
+    for (size_t i = 0; i < count_rend; i++)
+    {
+        ModelObjectRend* pR = this->aRends[i];
+        ModelMeshSub* pMeshSub = pR->pMeshSub;
+
+        VkDrawIndexedIndirectCommand indirectCommand = {};
+        indirectCommand.indexCount = pMeshSub->poIndexCount;
+        indirectCommand.instanceCount = pRend->pModelObject->countInstance;
+        indirectCommand.firstIndex = indexOffset;
+        indirectCommand.vertexOffset = vertexOffset;
+        indirectCommand.firstInstance = instanceOffset;
+        this->indirectCommandCBs.push_back(indirectCommand);
+
+        indexOffset += pMeshSub->poIndexCount;
+        vertexOffset += pMeshSub->poVertexCount;
+        instanceOffset += pRend->pModelObject->countInstance;
+    }
+    this->countIndirectDraw = (uint32_t)this->indirectCommandCBs.size();
 }
 
 
@@ -1667,7 +1653,7 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
             }
 
             //MaterialConstants
-            bufferSize = sizeof(MaterialConstants) * 100;
+            bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
             pRend->poBuffers_materialCB.resize(count_sci);
             pRend->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
@@ -1698,7 +1684,8 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
         if (pModelObject->isIndirectDraw &&
             pModelObject->pRendIndirect != nullptr)
         {
-            pModelObject->pRendIndirect->UpdateUniformIndirectCommandObjects();
+            pModelObject->pRendIndirect->UpdateUniformBuffer();
+            pModelObject->pRendIndirect->UpdateIndirectCommandBuffer();
 
             if (isCreateVkBuffer)
             {
@@ -2564,7 +2551,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Graphics(std::vector<VkDescri
                 VkDescriptorBufferInfo bufferInfo_Material = {};
                 bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j] : pRend->poBuffers_materialCB[j];
                 bufferInfo_Material.offset = 0;
-                bufferInfo_Material.range = sizeof(MaterialConstants) * 100;
+                bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
 
                 VkWriteDescriptorSet ds = {};
                 ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -2579,7 +2566,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Graphics(std::vector<VkDescri
             else if (nameDescriptorSet == c_strLayout_Instance) //Instance
             {
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
-                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
+                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]; 
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
 
@@ -2888,32 +2875,9 @@ void Vulkan_013_IndirectDraw::updateCBs_Custom()
         ModelObjectRendIndirect* pRendIndirect = pModelObject->pRendIndirect;
         if (pRendIndirect != nullptr)
         {
+            pRendIndirect->UpdateUniformBuffer();
             size_t count_object = pRendIndirect->objectCBs.size();
-            for (size_t j = 0; j < count_object; j++)
-            {
-                //ObjectConstants
-                ObjectConstants& objectCB = pRendIndirect->objectCBs[j];
-                if (pModelObject->isRotate || pRendIndirect->isRotate || this->cfg_isRotate)
-                {
-                    objectCB.g_MatWorld = glm::rotate(pRendIndirect->instanceMatWorld[j], 
-                                                      time * glm::radians(90.0f), 
-                                                      glm::vec3(0.0f, 1.0f, 0.0f));
-                }
-                else
-                {
-                    objectCB.g_MatWorld = pRendIndirect->instanceMatWorld[j];
-                }
-
-                //MaterialConstants
-                MaterialConstants& materialCB = pRendIndirect->materialCBs[j];
-                
-                //TessellationConstants
-                if (pRendIndirect->pRend->isUsedTessellation)
-                {
-                    TessellationConstants& tessellationCB = pRendIndirect->tessellationCBs[j];
-                }
-            }
-
+            
             //ObjectConstants
             {
                 VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
@@ -3049,8 +3013,10 @@ void Vulkan_013_IndirectDraw::modelConfig()
         for (size_t i = 0; i < count_object; i++)
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
+            ModelObjectRendIndirect* pRendIndirect = pModelObject->pRendIndirect;
             size_t count_object_rend = pModelObject->aRends.size();
 
+            //1> ModelObject
             std::string nameObject = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameObject;
             if (ImGui::CollapsingHeader(nameObject.c_str()))
             {
@@ -3101,308 +3067,385 @@ void Vulkan_013_IndirectDraw::modelConfig()
 
                 std::string nameInstances = "Instance - " + pModelObject->nameObject;
                 int countInstanceExt = pModelObject->countInstanceExt;
-                ImGui::DragInt(nameInstances.c_str(), &countInstanceExt, 1, 0, 5);
+                ImGui::DragInt(nameInstances.c_str(), &countInstanceExt, 1, 0, 3);
                 if (countInstanceExt != pModelObject->countInstanceExt)
                 {
                     pModelObject->countInstanceExt = countInstanceExt;
                     pModelObject->countInstance = countInstanceExt * 2 + 1;
                     rebuildInstanceCBs(false);
                 }
-               
-                for (int j = 0; j < count_object_rend; j++)
+
+                //2> ModelObjectRend
+                if (pRendIndirect != nullptr && this->m_isDrawIndirect)
                 {
-                    ModelObjectRend* pRend = pModelObject->aRends[j];
-                    std::string& nameObjectRend = pRend->nameObjectRend;
-                    if (ImGui::CollapsingHeader(nameObjectRend.c_str()))
+                    std::string& nameObjectRendIndirect = pRendIndirect->nameObjectRendIndirect;
+                    if (ImGui::CollapsingHeader(nameObjectRendIndirect.c_str()))
                     {
-                        ImGui::Text("Vertex: [%d], Index: [%d]", (int)pRend->pMeshSub->poVertexCount, (int)pRend->pMeshSub->poIndexCount);
+                        ImGui::Text("Rend Count: [%d], Vertex: [%d], Index: [%d]", 
+                            (int)pRendIndirect->aRends.size(), 
+                            (int)pRendIndirect->poVertexCount,
+                            (int)pRendIndirect->poIndexCount);
                         //isShow
-                        std::string nameIsShowRend = "Is Show - " + nameObjectRend;
-                        if (ImGui::Checkbox(nameIsShowRend.c_str(), &pRend->isShow))
+                        std::string nameIsShowRend = "Is Show - " + nameObjectRendIndirect;
+                        if (ImGui::Checkbox(nameIsShowRend.c_str(), &pRendIndirect->isShow))
                         {
-                            if (pRend->isShow)
+                            if (pRendIndirect->isShow)
                             {
                                 pModelObject->isShow = true;
                             }
                         }
                         //isWireFrame
-                        std::string nameIsWireFrameRend = "Is WireFrame - " + nameObjectRend;
-                        if (ImGui::Checkbox(nameIsWireFrameRend.c_str(), &pRend->isWireFrame))
+                        std::string nameIsWireFrameRend = "Is WireFrame - " + nameObjectRendIndirect;
+                        if (ImGui::Checkbox(nameIsWireFrameRend.c_str(), &pRendIndirect->isWireFrame))
                         {
-                            if (!pRend->isWireFrame)
+                            if (!pRendIndirect->isWireFrame)
                             {
                                 pModelObject->isWireFrame = false;
                             }
                         }
                         //isRotate
-                        std::string nameIsRotateRend = "Is Rotate - " + nameObjectRend;
-                        if (ImGui::Checkbox(nameIsRotateRend.c_str(), &pRend->isRotate))
+                        std::string nameIsRotateRend = "Is Rotate - " + nameObjectRendIndirect;
+                        if (ImGui::Checkbox(nameIsRotateRend.c_str(), &pRendIndirect->isRotate))
                         {
                             
                         }
                         //isLighting
-                        std::string nameIsLightingRend = "Is Lighting - " + nameObjectRend;
-                        if (ImGui::Checkbox(nameIsLightingRend.c_str(), &pRend->isLighting))
+                        std::string nameIsLightingRend = "Is Lighting - " + nameObjectRendIndirect;
+                        if (ImGui::Checkbox(nameIsLightingRend.c_str(), &pRendIndirect->isLighting))
                         {
-                            if (pRend->isLighting)
+                            if (pRendIndirect->isLighting)
                             {
                                 pModelObject->isLighting = true;
                             }
-                            for (int p = 0; p < pModelObject->countInstance; p++)
+                            for (size_t p = 0; p < pRendIndirect->materialCBs.size(); p++)
                             {
-                                MaterialConstants& mat = pRend->materialCBs[p];
-                                mat.lighting = pModelObject->isLighting;
+                                MaterialConstants& mat = pRendIndirect->materialCBs[p];
+                                mat.lighting = pRendIndirect->isLighting;
                             }
                         }
                         //isTransparent
-                        std::string nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRend;
-                        bool isTransparent = pRend->isTransparent;
+                        std::string nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRendIndirect;
+                        bool isTransparent = pRendIndirect->isTransparent;
                         ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
 
-                        std::string nameWorld = "Model Object - " + nameObjectRend;
-                        if (ImGui::CollapsingHeader(nameWorld.c_str()))
+                        //countIndirectDraw
+                        std::string nameCountIndirectDraw = "Count IndirectDraw - " + nameObjectRendIndirect;
+                        int countIndirectDraw = (int)pRendIndirect->countIndirectDraw;
+                        if (ImGui::DragInt(nameCountIndirectDraw.c_str(), &countIndirectDraw, 1, 0, (int)pRendIndirect->indirectCommandCBs.size()))
                         {
-                            int count_instance = pModelObject->countInstance;
-                            for (int p = 0; p < count_instance; p++)
+                            pRendIndirect->countIndirectDraw = (uint32_t)countIndirectDraw;
+                        }
+
+                        //ObjectRend
+                        size_t count_rend = pRendIndirect->aRends.size();
+                        for (int j = 0; j < count_rend; j++)
+                        {
+                            ModelObjectRend* pRend = pRendIndirect->aRends[j];
+
+                            ImGui::Text("[%d], Vertex: [%d], Index: [%d], - [%s]", 
+                            j,
+                            (int)pRend->pMeshSub->poVertexCount,
+                            (int)pRend->pMeshSub->poIndexCount,
+                            pRend->nameObjectRend.c_str());
+                        }
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < count_object_rend; j++)
+                    {
+                        ModelObjectRend* pRend = pModelObject->aRends[j];
+                        std::string& nameObjectRend = pRend->nameObjectRend;
+                        if (ImGui::CollapsingHeader(nameObjectRend.c_str()))
+                        {
+                            ImGui::Text("Vertex: [%d], Index: [%d]", (int)pRend->pMeshSub->poVertexCount, (int)pRend->pMeshSub->poIndexCount);
+                            //isShow
+                            std::string nameIsShowRend = "Is Show - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsShowRend.c_str(), &pRend->isShow))
                             {
-                                ObjectConstants& obj = pRend->objectCBs[p];
-                                MaterialConstants& mat = pRend->materialCBs[p];
-
-                                std::string nameModelInstance = VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                if (ImGui::CollapsingHeader(nameModelInstance.c_str()))
+                                if (pRend->isShow)
                                 {
-                                    //ObjectConstants
-                                    std::string nameObject = VulkanUtilString::SaveInt(p) + " - Object - " + nameObjectRend;
-                                    if (ImGui::CollapsingHeader(nameObject.c_str()))
+                                    pModelObject->isShow = true;
+                                }
+                            }
+                            //isWireFrame
+                            std::string nameIsWireFrameRend = "Is WireFrame - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsWireFrameRend.c_str(), &pRend->isWireFrame))
+                            {
+                                if (!pRend->isWireFrame)
+                                {
+                                    pModelObject->isWireFrame = false;
+                                }
+                            }
+                            //isRotate
+                            std::string nameIsRotateRend = "Is Rotate - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsRotateRend.c_str(), &pRend->isRotate))
+                            {
+                                
+                            }
+                            //isLighting
+                            std::string nameIsLightingRend = "Is Lighting - " + nameObjectRend;
+                            if (ImGui::Checkbox(nameIsLightingRend.c_str(), &pRend->isLighting))
+                            {
+                                if (pRend->isLighting)
+                                {
+                                    pModelObject->isLighting = true;
+                                }
+                                for (int p = 0; p < pModelObject->countInstance; p++)
+                                {
+                                    MaterialConstants& mat = pRend->materialCBs[p];
+                                    mat.lighting = pModelObject->isLighting;
+                                }
+                            }
+                            //isTransparent
+                            std::string nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRend;
+                            bool isTransparent = pRend->isTransparent;
+                            ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
+
+                            std::string nameWorld = "Model Object - " + nameObjectRend;
+                            if (ImGui::CollapsingHeader(nameWorld.c_str()))
+                            {
+                                int count_instance = pModelObject->countInstance;
+                                for (int p = 0; p < count_instance; p++)
+                                {
+                                    ObjectConstants& obj = pRend->objectCBs[p];
+                                    MaterialConstants& mat = pRend->materialCBs[p];
+
+                                    std::string nameModelInstance = VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                    if (ImGui::CollapsingHeader(nameModelInstance.c_str()))
                                     {
-                                        const glm::mat4& mat4World = obj.g_MatWorld;
-                                        std::string nameTable = VulkanUtilString::SaveInt(p) + " - matWorld - " + nameObjectRend;
-                                        if (ImGui::BeginTable(nameTable.c_str(), 4))
+                                        //ObjectConstants
+                                        std::string nameObject = VulkanUtilString::SaveInt(p) + " - Object - " + nameObjectRend;
+                                        if (ImGui::CollapsingHeader(nameObject.c_str()))
                                         {
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
+                                            const glm::mat4& mat4World = obj.g_MatWorld;
+                                            std::string nameTable = VulkanUtilString::SaveInt(p) + " - matWorld - " + nameObjectRend;
+                                            if (ImGui::BeginTable(nameTable.c_str(), 4))
+                                            {
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][1]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][2]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][3]);
 
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][0]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][1]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][2]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[1][3]);
 
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][0]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][1]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][2]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[2][3]);
 
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
-                                            ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][0]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][1]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][2]);
+                                                ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
 
-                                            ImGui::EndTable();
+                                                ImGui::EndTable();
+                                            }
                                         }
-                                    }
-                                    
-                                    //MaterialConstants
-                                    std::string nameMaterial = VulkanUtilString::SaveInt(p) + " - Material - " + nameObjectRend;
-                                    if (ImGui::CollapsingHeader(nameMaterial.c_str()))
-                                    {
-                                        //factorAmbient
-                                        std::string nameFactorAmbient = "FactorAmbient - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                        if (ImGui::ColorEdit4(nameFactorAmbient.c_str(), (float*)&mat.factorAmbient))
+                                        
+                                        //MaterialConstants
+                                        std::string nameMaterial = VulkanUtilString::SaveInt(p) + " - Material - " + nameObjectRend;
+                                        if (ImGui::CollapsingHeader(nameMaterial.c_str()))
                                         {
-
-                                        }
-                                        ImGui::Spacing();
-
-                                        //factorDiffuse
-                                        std::string nameFactorDiffuse = "FactorDiffuse - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                        if (ImGui::ColorEdit4(nameFactorDiffuse.c_str(), (float*)&mat.factorDiffuse))
-                                        {
-
-                                        }
-                                        ImGui::Spacing();
-
-                                        //factorSpecular
-                                        std::string nameFactorSpecular = "FactorSpecular - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                        if (ImGui::ColorEdit4(nameFactorSpecular.c_str(), (float*)&mat.factorSpecular))
-                                        {
-
-                                        }
-                                        ImGui::Spacing();
-
-                                        //shininess
-                                        std::string nameShininess = "Shininess - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                        if (ImGui::DragFloat(nameShininess.c_str(), &mat.shininess, 0.01f, 0.01f, 100.0f))
-                                        {
-                                            
-                                        }
-                                        ImGui::Spacing();
-
-                                        //alpha
-                                        std::string nameAlpha = "Alpha - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                        if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
-                                        {
-                                            
-                                        }
-                                        ImGui::Spacing();
-
-                                        //lighting
-                                        std::string nameLighting = "Lighting - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                        bool isLighting = mat.lighting == 1.0f ? true : false;
-                                        if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
-                                        {
-                                            mat.lighting = isLighting ? 1.0f : 0.0f;
-                                        }
-
-                                        //Texture VS
-                                        {
-                                            ModelTexturePtrVector* pTextureVSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
-                                            if (pTextureVSs != nullptr)
+                                            //factorAmbient
+                                            std::string nameFactorAmbient = "FactorAmbient - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            if (ImGui::ColorEdit4(nameFactorAmbient.c_str(), (float*)&mat.factorAmbient))
                                             {
 
                                             }
-                                        }
-                                        //Texture FS
-                                        {
-                                            ModelTexturePtrVector* pTextureFSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
-                                            if (pTextureFSs != nullptr)
+                                            ImGui::Spacing();
+
+                                            //factorDiffuse
+                                            std::string nameFactorDiffuse = "FactorDiffuse - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            if (ImGui::ColorEdit4(nameFactorDiffuse.c_str(), (float*)&mat.factorDiffuse))
                                             {
-                                                size_t count_texture = pTextureFSs->size();
-                                                for (size_t q = 0; q < count_texture; q++)
+
+                                            }
+                                            ImGui::Spacing();
+
+                                            //factorSpecular
+                                            std::string nameFactorSpecular = "FactorSpecular - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            if (ImGui::ColorEdit4(nameFactorSpecular.c_str(), (float*)&mat.factorSpecular))
+                                            {
+
+                                            }
+                                            ImGui::Spacing();
+
+                                            //shininess
+                                            std::string nameShininess = "Shininess - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            if (ImGui::DragFloat(nameShininess.c_str(), &mat.shininess, 0.01f, 0.01f, 100.0f))
+                                            {
+                                                
+                                            }
+                                            ImGui::Spacing();
+
+                                            //alpha
+                                            std::string nameAlpha = "Alpha - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
+                                            {
+                                                
+                                            }
+                                            ImGui::Spacing();
+
+                                            //lighting
+                                            std::string nameLighting = "Lighting - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            bool isLighting = mat.lighting == 1.0f ? true : false;
+                                            if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
+                                            {
+                                                mat.lighting = isLighting ? 1.0f : 0.0f;
+                                            }
+
+                                            //Texture VS
+                                            {
+                                                ModelTexturePtrVector* pTextureVSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
+                                                if (pTextureVSs != nullptr)
                                                 {
-                                                    ModelTexture* pTexture = (*pTextureFSs)[q];
 
-                                                    std::string nameMaterial_Texture = VulkanUtilString::SaveInt(p) + " - Material - " + nameObjectRend + " - TextureFS - " + VulkanUtilString::SaveInt(q);
-                                                    if (ImGui::CollapsingHeader(nameMaterial_Texture.c_str()))
+                                                }
+                                            }
+                                            //Texture FS
+                                            {
+                                                ModelTexturePtrVector* pTextureFSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                                                if (pTextureFSs != nullptr)
+                                                {
+                                                    size_t count_texture = pTextureFSs->size();
+                                                    for (size_t q = 0; q < count_texture; q++)
                                                     {
-                                                        //texWidth
-                                                        std::string nameWidth = "Width - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
-                                                        int width = pTexture->width;
-                                                        ImGui::DragInt(nameWidth.c_str(), &width, 1, 0, 4096);
+                                                        ModelTexture* pTexture = (*pTextureFSs)[q];
 
-                                                        //texHeight
-                                                        std::string nameHeight = "Height - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
-                                                        int height = pTexture->height;
-                                                        ImGui::DragInt(nameHeight.c_str(), &height, 1, 0, 4096);
-
-                                                        //texDepth
-                                                        std::string nameDepth = "Depth - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
-                                                        int depth = pTexture->depth;
-                                                        ImGui::DragInt(nameDepth.c_str(), &depth, 1, 0, 4096);
-
-                                                        //indexTextureArray
-                                                        std::string nameIndexTextureArray = "IndexTextureArray - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
-                                                        if (pTexture->typeTexture == Vulkan_Texture_2DArray)
+                                                        std::string nameMaterial_Texture = VulkanUtilString::SaveInt(p) + " - Material - " + nameObjectRend + " - TextureFS - " + VulkanUtilString::SaveInt(q);
+                                                        if (ImGui::CollapsingHeader(nameMaterial_Texture.c_str()))
                                                         {
-                                                            int count_tex = (int)pTexture->aPathTexture.size();
-                                                            int indexTextureArray = (int)mat.aTexLayers[q].indexTextureArray;
-                                                            if (ImGui::DragInt(nameIndexTextureArray.c_str(), &indexTextureArray, 1, 0, count_tex - 1))
+                                                            //texWidth
+                                                            std::string nameWidth = "Width - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            int width = pTexture->width;
+                                                            ImGui::DragInt(nameWidth.c_str(), &width, 1, 0, 4096);
+
+                                                            //texHeight
+                                                            std::string nameHeight = "Height - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            int height = pTexture->height;
+                                                            ImGui::DragInt(nameHeight.c_str(), &height, 1, 0, 4096);
+
+                                                            //texDepth
+                                                            std::string nameDepth = "Depth - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            int depth = pTexture->depth;
+                                                            ImGui::DragInt(nameDepth.c_str(), &depth, 1, 0, 4096);
+
+                                                            //indexTextureArray
+                                                            std::string nameIndexTextureArray = "IndexTextureArray - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            if (pTexture->typeTexture == Vulkan_Texture_2DArray)
                                                             {
-                                                                mat.aTexLayers[p].indexTextureArray = indexTextureArray;
+                                                                int count_tex = (int)pTexture->aPathTexture.size();
+                                                                int indexTextureArray = (int)mat.aTexLayers[q].indexTextureArray;
+                                                                if (ImGui::DragInt(nameIndexTextureArray.c_str(), &indexTextureArray, 1, 0, count_tex - 1))
+                                                                {
+                                                                    mat.aTexLayers[p].indexTextureArray = indexTextureArray;
+                                                                }
                                                             }
-                                                        }
-                                                        else 
-                                                        {
-                                                            if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[q].indexTextureArray, 0.001f, 0.0f, 1.0f))
+                                                            else 
                                                             {
+                                                                if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[q].indexTextureArray, 0.001f, 0.0f, 1.0f))
+                                                                {
 
+                                                                }
                                                             }
-                                                        }
 
-                                                        //texSpeedU
-                                                        std::string nameTexSpeedU = "TexSpeedU - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
-                                                        if (ImGui::DragFloat(nameTexSpeedU.c_str(), &mat.aTexLayers[p].texSpeedU, 0.01f, 0.0f, 100.0f))
-                                                        {
-                                                            
-                                                        }
-                                                        //texSpeedV
-                                                        std::string nameTexSpeedV = "texSpeedV - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                                        if (ImGui::DragFloat(nameTexSpeedV.c_str(), &mat.aTexLayers[p].texSpeedV, 0.01f, 0.0f, 100.0f))
-                                                        {
-                                                            
-                                                        }
-                                                        //texSpeedW
-                                                        std::string nameTexSpeedW = "texSpeedW - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                                        if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
-                                                        {
-                                                            
-                                                        }
+                                                            //texSpeedU
+                                                            std::string nameTexSpeedU = "TexSpeedU - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            if (ImGui::DragFloat(nameTexSpeedU.c_str(), &mat.aTexLayers[p].texSpeedU, 0.01f, 0.0f, 100.0f))
+                                                            {
+                                                                
+                                                            }
+                                                            //texSpeedV
+                                                            std::string nameTexSpeedV = "texSpeedV - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                            if (ImGui::DragFloat(nameTexSpeedV.c_str(), &mat.aTexLayers[p].texSpeedV, 0.01f, 0.0f, 100.0f))
+                                                            {
+                                                                
+                                                            }
+                                                            //texSpeedW
+                                                            std::string nameTexSpeedW = "texSpeedW - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                            if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
+                                                            {
+                                                                
+                                                            }
 
-                                                        //texChunkMaxX
-                                                        std::string nameTexChunkMaxX = "texChunkMaxX - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
-                                                        float fTexChunkMaxX = mat.aTexLayers[q].texChunkMaxX;
-                                                        ImGui::DragFloat(nameTexChunkMaxX.c_str(), &fTexChunkMaxX, 1.0f, 1.0f, 100.0f);
-                                                        //texChunkMaxY
-                                                        std::string nameTexChunkMaxY = "texChunkMaxY - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
-                                                        float fTexChunkMaxY = mat.aTexLayers[q].texChunkMaxY;
-                                                        ImGui::DragFloat(nameTexChunkMaxY.c_str(), &fTexChunkMaxY, 1.0f, 1.0f, 100.0f);
-                                                        //texChunkIndexX
-                                                        std::string nameTexChunkIndexX = "texChunkIndexX - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
-                                                        float fTexChunkIndexX = mat.aTexLayers[q].texChunkIndexX;
-                                                        ImGui::DragFloat(nameTexChunkIndexX.c_str(), &fTexChunkIndexX, 1.0f, 0.0f, 100.0f);
-                                                        //texChunkIndexY
-                                                        std::string nameTexChunkIndexY = "texChunkIndexY - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
-                                                        float fTexChunkIndexY = mat.aTexLayers[q].texChunkIndexY;
-                                                        ImGui::DragFloat(nameTexChunkIndexY.c_str(), &fTexChunkIndexY, 1.0f, 0.0f, 100.0f);
+                                                            //texChunkMaxX
+                                                            std::string nameTexChunkMaxX = "texChunkMaxX - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            float fTexChunkMaxX = mat.aTexLayers[q].texChunkMaxX;
+                                                            ImGui::DragFloat(nameTexChunkMaxX.c_str(), &fTexChunkMaxX, 1.0f, 1.0f, 100.0f);
+                                                            //texChunkMaxY
+                                                            std::string nameTexChunkMaxY = "texChunkMaxY - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            float fTexChunkMaxY = mat.aTexLayers[q].texChunkMaxY;
+                                                            ImGui::DragFloat(nameTexChunkMaxY.c_str(), &fTexChunkMaxY, 1.0f, 1.0f, 100.0f);
+                                                            //texChunkIndexX
+                                                            std::string nameTexChunkIndexX = "texChunkIndexX - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            float fTexChunkIndexX = mat.aTexLayers[q].texChunkIndexX;
+                                                            ImGui::DragFloat(nameTexChunkIndexX.c_str(), &fTexChunkIndexX, 1.0f, 0.0f, 100.0f);
+                                                            //texChunkIndexY
+                                                            std::string nameTexChunkIndexY = "texChunkIndexY - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            float fTexChunkIndexY = mat.aTexLayers[q].texChunkIndexY;
+                                                            ImGui::DragFloat(nameTexChunkIndexY.c_str(), &fTexChunkIndexY, 1.0f, 0.0f, 100.0f);
+                                                        }
                                                     }
                                                 }
                                             }
+                                            //Texture CS
+                                            {
+                                                ModelTexturePtrVector* pTextureCSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
+                                                if (pTextureCSs != nullptr)
+                                                {
+
+                                                }
+                                            }
+
+                                            ImGui::Spacing();
                                         }
-                                        //Texture CS
+
+                                        //TessellationConstants
+                                        std::string nameTessellation = VulkanUtilString::SaveInt(p) + " - Tessellation - " + nameObjectRend;
+                                        if (ImGui::CollapsingHeader(nameTessellation.c_str()))
                                         {
-                                            ModelTexturePtrVector* pTextureCSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
-                                            if (pTextureCSs != nullptr)
+                                            if (pRend->isUsedTessellation)
                                             {
-
+                                                TessellationConstants& tess = pRend->tessellationCBs[j];
+                                                //tessLevelOuter
+                                                std::string nameTessLevelOuter = "tessLevelOuter - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                if (ImGui::DragFloat(nameTessLevelOuter.c_str(), &tess.tessLevelOuter, 0.1f, 0.1f, 500.0f))
+                                                {
+                                                    
+                                                }
+                                                //tessLevelInner
+                                                std::string nameTessLevelInner = "tessLevelInner - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                if (ImGui::DragFloat(nameTessLevelInner.c_str(), &tess.tessLevelInner, 0.1f, 0.1f, 500.0f))
+                                                {
+                                                    
+                                                }
+                                                //tessAlpha
+                                                std::string nameTessAlpha = "tessAlpha - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                if (ImGui::DragFloat(nameTessAlpha.c_str(), &tess.tessAlpha, 0.05f, 0.0f, 1.0f))
+                                                {
+                                                    
+                                                }
+                                                //tessStrength
+                                                std::string nameTessStrength = "tessStrength - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                if (ImGui::DragFloat(nameTessStrength.c_str(), &tess.tessStrength, 0.025f, 0.1f, 100.0f))
+                                                {
+                                                    
+                                                }
                                             }
+
+                                            ImGui::Spacing();
                                         }
 
-                                        ImGui::Spacing();
                                     }
-
-                                    //TessellationConstants
-                                    std::string nameTessellation = VulkanUtilString::SaveInt(p) + " - Tessellation - " + nameObjectRend;
-                                    if (ImGui::CollapsingHeader(nameTessellation.c_str()))
-                                    {
-                                        if (pRend->isUsedTessellation)
-                                        {
-                                            TessellationConstants& tess = pRend->tessellationCBs[j];
-                                            //tessLevelOuter
-                                            std::string nameTessLevelOuter = "tessLevelOuter - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                            if (ImGui::DragFloat(nameTessLevelOuter.c_str(), &tess.tessLevelOuter, 0.1f, 0.1f, 500.0f))
-                                            {
-                                                
-                                            }
-                                            //tessLevelInner
-                                            std::string nameTessLevelInner = "tessLevelInner - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                            if (ImGui::DragFloat(nameTessLevelInner.c_str(), &tess.tessLevelInner, 0.1f, 0.1f, 500.0f))
-                                            {
-                                                
-                                            }
-                                            //tessAlpha
-                                            std::string nameTessAlpha = "tessAlpha - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                            if (ImGui::DragFloat(nameTessAlpha.c_str(), &tess.tessAlpha, 0.05f, 0.0f, 1.0f))
-                                            {
-                                                
-                                            }
-                                            //tessStrength
-                                            std::string nameTessStrength = "tessStrength - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
-                                            if (ImGui::DragFloat(nameTessStrength.c_str(), &tess.tessStrength, 0.025f, 0.1f, 100.0f))
-                                            {
-                                                
-                                            }
-                                        }
-
-                                        ImGui::Spacing();
-                                    }
-
                                 }
                             }
                         }
                     }
                 }
-
                 
             }
         }
@@ -3484,7 +3527,7 @@ void Vulkan_013_IndirectDraw::drawModelObjectRendIndirect(VkCommandBuffer& comma
     if (pModelObject->isWireFrame || pRendIndirect->isWireFrame || this->cfg_isWireFrame)
     {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
-        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
+        if (pRendIndirect->poDescriptorSets.size() > 0)
         {
             vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
@@ -3492,13 +3535,13 @@ void Vulkan_013_IndirectDraw::drawModelObjectRendIndirect(VkCommandBuffer& comma
     else
     {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
-        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
+        if (pRendIndirect->poDescriptorSets.size() > 0)
         {
             vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
     }
 
-    uint32_t drawCount = pRendIndirect->indirectCommandCBs.size();
+    uint32_t drawCount = pRendIndirect->countIndirectDraw;
     if (m_isDrawIndirectMulti)
     {
         vkCmdDrawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, 0, drawCount, sizeof(VkDrawIndexedIndirectCommand));
