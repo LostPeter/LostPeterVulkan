@@ -36,7 +36,9 @@ namespace LostPeter
         VkPhysicalDevice poPhysicalDevice;
         VkPhysicalDeviceProperties poPhysicalDeviceProperties;
         VkPhysicalDeviceFeatures poPhysicalDeviceFeatures;
+        VkPhysicalDeviceFeatures2 poPhysicalDeviceFeatures2;
         VkPhysicalDeviceFeatures poPhysicalEnabledFeatures;
+        void* poDeviceCreatepNextChain;
         VkDevice poDevice;
         VkSampleCountFlagBits poMSAASamples;
         VkQueue poQueueGraphics;
@@ -208,7 +210,7 @@ namespace LostPeter
         bool mouseButtonDownRight;
 
 
-    private:
+    protected:
         std::vector<const char*> aInstanceLayers;
         std::vector<const char*> aInstanceExtensions;
         std::vector<const char*> aDeviceLayers;

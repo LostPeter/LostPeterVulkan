@@ -1314,6 +1314,9 @@ Vulkan_014_MultiView::Vulkan_014_MultiView(int width, int height, std::string na
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
     this->mainLight.direction = glm::vec3(0, -1, 0); //y-
+
+    this->aInstanceExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+    this->aDeviceExtensions.push_back(VK_KHR_MULTIVIEW_EXTENSION_NAME);
 }
 
 void Vulkan_014_MultiView::setUpEnabledFeatures()

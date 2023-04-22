@@ -34,6 +34,7 @@ namespace LostPeter
         , poInstance(nullptr)
         , poDebugMessenger(nullptr)
         , poPhysicalDevice(nullptr)
+        , poDeviceCreatepNextChain(nullptr)
         , poDevice(nullptr)
         , poMSAASamples(VK_SAMPLE_COUNT_1_BIT)
         , poQueueGraphics(nullptr)
@@ -899,25 +900,37 @@ namespace LostPeter
 
         setUpEnabledFeatures();
     
-        VkDeviceCreateInfo createInfo = {};
-        createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
-        createInfo.pQueueCreateInfos = queueCreateInfos.data();
-        createInfo.pEnabledFeatures = &this->poPhysicalEnabledFeatures;
-        createInfo.enabledExtensionCount = static_cast<uint32_t>(this->aDeviceExtensions.size());
-        createInfo.ppEnabledExtensionNames = this->aDeviceExtensions.size() > 0 ? this->aDeviceExtensions.data() : nullptr;
+        VkDeviceCreateInfo deviceCreateInfo = {};
+        deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+        deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
         if (s_isEnableValidationLayers) 
         {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(this->aDeviceLayers.size());
-            createInfo.ppEnabledLayerNames = this->aDeviceLayers.size() > 0 ? this->aDeviceLayers.data() : nullptr;
+            deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(this->aDeviceLayers.size());
+            deviceCreateInfo.ppEnabledLayerNames = this->aDeviceLayers.size() > 0 ? this->aDeviceLayers.data() : nullptr;
         } 
         else 
         {
-            createInfo.enabledLayerCount = 0;
-            createInfo.ppEnabledLayerNames = nullptr;
+            deviceCreateInfo.enabledLayerCount = 0;
+            deviceCreateInfo.ppEnabledLayerNames = nullptr;
+        }
+        deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(this->aDeviceExtensions.size());
+        deviceCreateInfo.ppEnabledExtensionNames = this->aDeviceExtensions.size() > 0 ? this->aDeviceExtensions.data() : nullptr;
+        if (this->poDeviceCreatepNextChain == nullptr)
+        {
+            deviceCreateInfo.pEnabledFeatures = &this->poPhysicalEnabledFeatures;
+        }   
+        else
+        {
+            this->poPhysicalDeviceFeatures2 = {};
+            this->poPhysicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+			this->poPhysicalDeviceFeatures2.features = this->poPhysicalEnabledFeatures;
+			this->poPhysicalDeviceFeatures2.pNext = this->poDeviceCreatepNextChain;
+			deviceCreateInfo.pEnabledFeatures = nullptr;
+			deviceCreateInfo.pNext = &this->poPhysicalDeviceFeatures2;
         }
 
-        if (vkCreateDevice(this->poPhysicalDevice, &createInfo, nullptr, &this->poDevice) != VK_SUCCESS) 
+        if (vkCreateDevice(this->poPhysicalDevice, &deviceCreateInfo, nullptr, &this->poDevice) != VK_SUCCESS) 
         {
             std::string msg = "VulkanWindow::createLogicalDevice: Failed to create logical device !";
             Util_LogError(msg.c_str());
