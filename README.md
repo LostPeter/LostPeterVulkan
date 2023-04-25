@@ -164,5 +164,5 @@ License:
 
 ### <013> vulkan_013_indirectdraw
 * sample013: Vulkan DrawIndirect /MultiDrawIndirect usage
-
+[Vulkan学习例子013: vulkan_013_indirectdraw DrawIndirect/MultiDrawIndirect渲染](https://zhuanlan.zhihu.com/p/620624592)
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_013_indirectdraw.png)
