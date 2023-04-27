@@ -45,6 +45,10 @@ namespace LostPeter
         VkQueue poQueuePresent;
         VkQueue poQueueCompute;
 
+        VkPhysicalDeviceFeatures2KHR poPhysicalDeviceFeatures2KHR;
+        VkPhysicalDeviceMultiviewFeaturesKHR poPhysicalDeviceMultiViewFeaturesKHR;
+        VkPhysicalDeviceProperties2KHR poPhysicalDeviceProperties2KHR;
+        VkPhysicalDeviceMultiviewPropertiesKHR poPhysicalDeviceMultiViewPropertiesKHR;
         VkSurfaceKHR poSurface;
         VkSwapchainKHR poSwapChain;
         VkViewport poViewport;
