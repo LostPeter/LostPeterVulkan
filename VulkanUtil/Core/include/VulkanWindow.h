@@ -306,6 +306,18 @@ namespace LostPeter
                     virtual void createRenderPass_KhrDepthImgui();
                     virtual void createRenderPass_ColorDepthMSAA();
                     virtual void createRenderPass_ColorDepthImguiMSAA();
+                    
+                    virtual void createAttachmentDescription(VkAttachmentDescription& attachment,
+                                                             VkAttachmentDescriptionFlags flags,
+                                                             VkFormat format,
+                                                             VkSampleCountFlagBits samples,
+                                                             VkAttachmentLoadOp loadOp,
+                                                             VkAttachmentStoreOp storeOp,
+                                                             VkAttachmentLoadOp stencilLoadOp,
+                                                             VkAttachmentStoreOp stencilStoreOp,
+                                                             VkImageLayout initialLayout,
+                                                             VkImageLayout finalLayout);
+
                 virtual void createFramebuffers();
 
             virtual void createSyncObjects();

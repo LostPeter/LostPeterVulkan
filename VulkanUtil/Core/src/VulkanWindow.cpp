@@ -1607,6 +1607,27 @@ namespace LostPeter
             }
         }
     }
+    void VulkanWindow::createAttachmentDescription(VkAttachmentDescription& attachment,
+                                                   VkAttachmentDescriptionFlags flags,
+                                                   VkFormat format,
+                                                   VkSampleCountFlagBits samples,
+                                                   VkAttachmentLoadOp loadOp,
+                                                   VkAttachmentStoreOp storeOp,
+                                                   VkAttachmentLoadOp stencilLoadOp,
+                                                   VkAttachmentStoreOp stencilStoreOp,
+                                                   VkImageLayout initialLayout,
+                                                   VkImageLayout finalLayout)
+    {
+        attachment.flags = flags;
+        attachment.format = format;
+        attachment.samples = samples;
+        attachment.loadOp = loadOp;
+        attachment.storeOp = storeOp;
+        attachment.stencilLoadOp = stencilLoadOp;
+        attachment.stencilStoreOp = stencilStoreOp;
+        attachment.initialLayout = initialLayout;
+        attachment.finalLayout = finalLayout;
+    }
     void VulkanWindow::createRenderPass_KhrDepth()
     {
         std::vector<VkAttachmentDescription> attachments;
@@ -1615,26 +1636,30 @@ namespace LostPeter
 
         //1> Attachment SceneRender Color
         VkAttachmentDescription attachmentSR_Color = {};
-        attachmentSR_Color.format = this->poSwapChainImageFormat;
-        attachmentSR_Color.samples = VK_SAMPLE_COUNT_1_BIT;
-        attachmentSR_Color.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Color.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentSR_Color.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachmentSR_Color.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_Color.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        attachmentSR_Color.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        createAttachmentDescription(attachmentSR_Color,
+                                    0,
+                                    this->poSwapChainImageFormat,
+                                    VK_SAMPLE_COUNT_1_BIT,
+                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                    VK_ATTACHMENT_STORE_OP_STORE,
+                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                    VK_IMAGE_LAYOUT_UNDEFINED,
+                                    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
         attachments.push_back(attachmentSR_Color);
         
         //2> Attachment SceneRender Depth
         VkAttachmentDescription attachmentSR_Depth = {};
-        attachmentSR_Depth.format = findDepthFormat();
-        attachmentSR_Depth.samples = VK_SAMPLE_COUNT_1_BIT;
-        attachmentSR_Depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Depth.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentSR_Depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_Depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        attachmentSR_Depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        createAttachmentDescription(attachmentSR_Depth,
+                                    0,
+                                    findDepthFormat(),
+                                    VK_SAMPLE_COUNT_1_BIT,
+                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                    VK_ATTACHMENT_STORE_OP_STORE,
+                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                    VK_IMAGE_LAYOUT_UNDEFINED,
+                                    VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
         attachments.push_back(attachmentSR_Depth);
              
         //3> Subpass SceneRender
@@ -1692,38 +1717,44 @@ namespace LostPeter
 
         //1> Attachment SceneRender Color
         VkAttachmentDescription attachmentSR_Color = {};
-        attachmentSR_Color.format = this->poSwapChainImageFormat;
-        attachmentSR_Color.samples = VK_SAMPLE_COUNT_1_BIT;
-        attachmentSR_Color.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Color.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentSR_Color.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachmentSR_Color.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_Color.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        attachmentSR_Color.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        createAttachmentDescription(attachmentSR_Color,
+                                    0,
+                                    this->poSwapChainImageFormat,
+                                    VK_SAMPLE_COUNT_1_BIT,
+                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                    VK_ATTACHMENT_STORE_OP_STORE,
+                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                    VK_IMAGE_LAYOUT_UNDEFINED,
+                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
         attachments.push_back(attachmentSR_Color);
         
         //2> Attachment SceneRender Depth
         VkAttachmentDescription attachmentSR_Depth = {};
-        attachmentSR_Depth.format = findDepthFormat();
-        attachmentSR_Depth.samples = VK_SAMPLE_COUNT_1_BIT;
-        attachmentSR_Depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Depth.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentSR_Depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_Depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        attachmentSR_Depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        createAttachmentDescription(attachmentSR_Depth,
+                                    0,
+                                    findDepthFormat(),
+                                    VK_SAMPLE_COUNT_1_BIT,
+                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                    VK_ATTACHMENT_STORE_OP_STORE,
+                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                    VK_IMAGE_LAYOUT_UNDEFINED,
+                                    VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
         attachments.push_back(attachmentSR_Depth);
               
         //3> Attachment Imgui Color
         VkAttachmentDescription attachmentImgui_Color = {};
-        attachmentImgui_Color.format = this->poSwapChainImageFormat;
-        attachmentImgui_Color.samples = VK_SAMPLE_COUNT_1_BIT;
-        attachmentImgui_Color.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-        attachmentImgui_Color.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentImgui_Color.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachmentImgui_Color.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentImgui_Color.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        attachmentImgui_Color.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        createAttachmentDescription(attachmentImgui_Color,
+                                    0,
+                                    this->poSwapChainImageFormat,
+                                    VK_SAMPLE_COUNT_1_BIT,
+                                    VK_ATTACHMENT_LOAD_OP_LOAD,
+                                    VK_ATTACHMENT_STORE_OP_STORE,
+                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                    VK_IMAGE_LAYOUT_UNDEFINED,
+                                    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
         attachments.push_back(attachmentImgui_Color);
         
         //4> Subpass SceneRender
@@ -1808,38 +1839,44 @@ namespace LostPeter
 
         //1> Attachment SceneRender Color
         VkAttachmentDescription attachmentSR_Color = {};
-        attachmentSR_Color.format = this->poSwapChainImageFormat;
-        attachmentSR_Color.samples = this->poMSAASamples;
-        attachmentSR_Color.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Color.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentSR_Color.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachmentSR_Color.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_Color.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        attachmentSR_Color.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        createAttachmentDescription(attachmentSR_Color,
+                                    0,
+                                    this->poSwapChainImageFormat,
+                                    this->poMSAASamples,
+                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                    VK_ATTACHMENT_STORE_OP_STORE,
+                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                    VK_IMAGE_LAYOUT_UNDEFINED,
+                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
         attachments.push_back(attachmentSR_Color);
         
         //2> Attachment SceneRender Depth
         VkAttachmentDescription attachmentSR_Depth = {};
-        attachmentSR_Depth.format = findDepthFormat();
-        attachmentSR_Depth.samples = this->poMSAASamples;
-        attachmentSR_Depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Depth.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentSR_Depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_Depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        attachmentSR_Depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        createAttachmentDescription(attachmentSR_Depth,
+                                    0,
+                                    findDepthFormat(),
+                                    this->poMSAASamples,
+                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                    VK_ATTACHMENT_STORE_OP_STORE,
+                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                    VK_IMAGE_LAYOUT_UNDEFINED,
+                                    VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
         attachments.push_back(attachmentSR_Depth);
         
         //3> Attachment SceneRender Color Resolve
         VkAttachmentDescription attachmentSR_ColorResolve = {};
-        attachmentSR_ColorResolve.format = this->poSwapChainImageFormat;
-        attachmentSR_ColorResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-        attachmentSR_ColorResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachmentSR_ColorResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentSR_ColorResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachmentSR_ColorResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_ColorResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        attachmentSR_ColorResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; 
+        createAttachmentDescription(attachmentSR_ColorResolve,
+                                    0,
+                                    this->poSwapChainImageFormat,
+                                    VK_SAMPLE_COUNT_1_BIT,
+                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                    VK_ATTACHMENT_STORE_OP_STORE,
+                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                    VK_IMAGE_LAYOUT_UNDEFINED,
+                                    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
         attachments.push_back(attachmentSR_ColorResolve);
         
         //4> Subpass SceneRender
@@ -1902,50 +1939,58 @@ namespace LostPeter
 
         //1> Attachment SceneRender Color
         VkAttachmentDescription attachmentSR_Color = {};
-        attachmentSR_Color.format = this->poSwapChainImageFormat;
-        attachmentSR_Color.samples = this->poMSAASamples;
-        attachmentSR_Color.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Color.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentSR_Color.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachmentSR_Color.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_Color.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        attachmentSR_Color.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        createAttachmentDescription(attachmentSR_Color,
+                                    0,
+                                    this->poSwapChainImageFormat,
+                                    this->poMSAASamples,
+                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                    VK_ATTACHMENT_STORE_OP_STORE,
+                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                    VK_IMAGE_LAYOUT_UNDEFINED,
+                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
         attachments.push_back(attachmentSR_Color);
         
         //2> Attachment SceneRender Depth
         VkAttachmentDescription attachmentSR_Depth = {};
-        attachmentSR_Depth.format = findDepthFormat();
-        attachmentSR_Depth.samples = this->poMSAASamples;
-        attachmentSR_Depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Depth.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentSR_Depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        attachmentSR_Depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_Depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        attachmentSR_Depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        createAttachmentDescription(attachmentSR_Depth,
+                                    0,
+                                    findDepthFormat(),
+                                    this->poMSAASamples,
+                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                    VK_ATTACHMENT_STORE_OP_STORE,
+                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                    VK_IMAGE_LAYOUT_UNDEFINED,
+                                    VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
         attachments.push_back(attachmentSR_Depth);
         
         //3> Attachment SceneRender Color Resolve
         VkAttachmentDescription attachmentSR_ColorResolve = {};
-        attachmentSR_ColorResolve.format = this->poSwapChainImageFormat;
-        attachmentSR_ColorResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-        attachmentSR_ColorResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachmentSR_ColorResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentSR_ColorResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachmentSR_ColorResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentSR_ColorResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        attachmentSR_ColorResolve.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        createAttachmentDescription(attachmentSR_ColorResolve,
+                                    0,
+                                    this->poSwapChainImageFormat,
+                                    VK_SAMPLE_COUNT_1_BIT,
+                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                    VK_ATTACHMENT_STORE_OP_STORE,
+                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                    VK_IMAGE_LAYOUT_UNDEFINED,
+                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
         attachments.push_back(attachmentSR_ColorResolve);
         
         //4> Attachment Imgui Color
         VkAttachmentDescription attachmentImgui_Color = {};
-        attachmentImgui_Color.format = this->poSwapChainImageFormat;
-        attachmentImgui_Color.samples = VK_SAMPLE_COUNT_1_BIT;
-        attachmentImgui_Color.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-        attachmentImgui_Color.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachmentImgui_Color.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachmentImgui_Color.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachmentImgui_Color.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        attachmentImgui_Color.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        createAttachmentDescription(attachmentImgui_Color,
+                                    0,
+                                    this->poSwapChainImageFormat,
+                                    VK_SAMPLE_COUNT_1_BIT,
+                                    VK_ATTACHMENT_LOAD_OP_LOAD,
+                                    VK_ATTACHMENT_STORE_OP_STORE,
+                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
         attachments.push_back(attachmentImgui_Color);
         
         //5> Subpass SceneRender
