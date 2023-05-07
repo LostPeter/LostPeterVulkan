@@ -300,6 +300,13 @@ namespace LostPeter
     typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;
     typedef std::vector<VkVertexInputAttributeDescription> VkVertexInputAttributeDescriptionVector;
 
+    typedef std::vector<VkAttachmentDescription> VkAttachmentDescriptionVector;
+    typedef std::vector<VkSubpassDescription> VkSubpassDescriptionVector;
+    typedef std::vector<VkSubpassDependency> VkSubpassDependencyVector;
+
+    typedef std::vector<VkImageView> VkImageViewVector;
+    typedef std::vector<VkFramebuffer> VkFramebufferVector;
+
     typedef std::vector<VkViewport> VkViewportVector;
     typedef std::vector<VkRect2D> VkRect2DVector;
 

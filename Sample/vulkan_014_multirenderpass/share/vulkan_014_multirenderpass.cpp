@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "PreInclude.h"
-#include "vulkan_014_multiview.h"
+#include "vulkan_014_multirenderpass.h"
 #include "VulkanMeshLoader.h"
 #include "VulkanMeshGeometry.h"
 #include "VulkanCamera.h"
@@ -703,7 +703,7 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 
 
 /////////////////////////// ModelMeshSub ////////////////////////
-void Vulkan_014_MultiView::ModelMeshSub::Destroy()
+void Vulkan_014_MultiRenderPass::ModelMeshSub::Destroy()
 {
     //Vertex
     this->pMesh->pWindow->destroyBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
@@ -715,7 +715,7 @@ void Vulkan_014_MultiView::ModelMeshSub::Destroy()
     this->poIndexBuffer = VK_NULL_HANDLE;
     this->poIndexBufferMemory = VK_NULL_HANDLE;
 }
-bool Vulkan_014_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool isTranformLocal, const glm::mat4& matTransformLocal)
 {
     int count_vertex = (int)meshData.vertices.size();
     if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex2)
@@ -751,7 +751,7 @@ bool Vulkan_014_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool 
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_014_MultiView::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+        Util_LogInfo("Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                      this->nameMeshSub.c_str(),
                      this->nameOriginal.c_str(),
                      (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
@@ -790,7 +790,7 @@ bool Vulkan_014_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool 
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_014_MultiView::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+        Util_LogInfo("Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex4]: Vertex count: [%d], Index count: [%d] !", 
                      this->nameMeshSub.c_str(),
                      this->nameOriginal.c_str(),
                      (int)this->vertices_Pos3Color4Normal3Tex4.size(), 
@@ -830,7 +830,7 @@ bool Vulkan_014_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool 
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_014_MultiView::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+        Util_LogInfo("Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                      this->nameMeshSub.c_str(),
                      this->nameOriginal.c_str(),
                      (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
@@ -870,7 +870,7 @@ bool Vulkan_014_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool 
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_014_MultiView::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+        Util_LogInfo("Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex4]: Vertex count: [%d], Index count: [%d] !", 
                      this->nameMeshSub.c_str(),
                      this->nameOriginal.c_str(),
                      (int)this->vertices_Pos3Color4Normal3Tangent3Tex4.size(), 
@@ -878,7 +878,7 @@ bool Vulkan_014_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool 
     }
     else
     {
-        Util_LogError("Vulkan_014_MultiView::ModelMeshSub::CreateMeshSub: create mesh sub failed: [%s], wrong poTypeVertex !", this->nameMeshSub.c_str());
+        Util_LogError("Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub: create mesh sub failed: [%s], wrong poTypeVertex !", this->nameMeshSub.c_str());
         return false; 
     }
 
@@ -895,7 +895,7 @@ bool Vulkan_014_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool 
     return true;
 }
 
-void Vulkan_014_MultiView::ModelMeshSub::WriteVertexData(std::vector<Vertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
+void Vulkan_014_MultiRenderPass::ModelMeshSub::WriteVertexData(std::vector<Vertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
                                                             std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2)
 {
     size_t count = 0;
@@ -944,18 +944,18 @@ void Vulkan_014_MultiView::ModelMeshSub::WriteVertexData(std::vector<Vertex_Pos3
     }
 }
 
-void Vulkan_014_MultiView::ModelMeshSub::WriteIndexData(std::vector<uint32_t>& indexData)
+void Vulkan_014_MultiRenderPass::ModelMeshSub::WriteIndexData(std::vector<uint32_t>& indexData)
 {
     indexData.insert(indexData.end(), indices.begin(), indices.end());
 }
 
 /////////////////////////// ModelMesh ///////////////////////////
-bool Vulkan_014_MultiView::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
+bool Vulkan_014_MultiRenderPass::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
 {
     ModelMeshSubPtrMap::iterator itFind = this->mapMeshSubs.find(pMeshSub->nameMeshSub);
     if (itFind != this->mapMeshSubs.end())
     {
-        Util_LogError("Vulkan_014_MultiView::ModelMesh::AddMeshSub: Mesh sub is exist: [%s] !", pMeshSub->nameMeshSub.c_str());
+        Util_LogError("Vulkan_014_MultiRenderPass::ModelMesh::AddMeshSub: Mesh sub is exist: [%s] !", pMeshSub->nameMeshSub.c_str());
         return false;
     }
 
@@ -964,7 +964,7 @@ bool Vulkan_014_MultiView::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
     return true;
 }
 
-bool Vulkan_014_MultiView::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
 {
     //1> Load
     std::vector<MeshData> aMeshDatas;
@@ -973,7 +973,7 @@ bool Vulkan_014_MultiView::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
         unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
         if (!VulkanMeshLoader::LoadMeshDatas(this->pathMesh, aMeshDatas, isFlipY, eMeshParserFlags))
         {
-            Util_LogError("Vulkan_014_MultiView::ModelMesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
+            Util_LogError("Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
             return false; 
         }
     }
@@ -983,14 +983,14 @@ bool Vulkan_014_MultiView::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
         meshData.bIsFlipY = isFlipY;
         if (!VulkanMeshGeometry::CreateGeometry(meshData, this->typeGeometryType))
         {
-            Util_LogError("Vulkan_014_MultiView::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", Util_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
+            Util_LogError("Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", Util_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
             return false; 
         }
         aMeshDatas.push_back(meshData);
     }
     else
     {
-        assert(false && "Vulkan_014_MultiView::ModelMesh::LoadMesh: Wrong typeMesh !");
+        assert(false && "Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh: Wrong typeMesh !");
         return false;
     }
 
@@ -1007,7 +1007,7 @@ bool Vulkan_014_MultiView::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
                                                   this->typeVertex);
         if (!pMeshSub->CreateMeshSub(meshData, isTranformLocal, matTransformLocal))
         {
-            Util_LogError("Vulkan_014_MultiView::ModelMesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
+            Util_LogError("Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
             return false;
         }
         AddMeshSub(pMeshSub);
@@ -1018,14 +1018,14 @@ bool Vulkan_014_MultiView::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
 
 
 /////////////////////////// ModelTexture ////////////////////////
-void Vulkan_014_MultiView::ModelTexture::UpdateTexture()
+void Vulkan_014_MultiRenderPass::ModelTexture::UpdateTexture()
 {
     if (this->typeTexture == Vulkan_Texture_3D)
     {
         updateNoiseTexture();
     }
 }
-void Vulkan_014_MultiView::ModelTexture::updateNoiseTextureData()
+void Vulkan_014_MultiRenderPass::ModelTexture::updateNoiseTextureData()
 {
     // Perlin noise
     noise::module::Perlin modulePerlin;
@@ -1046,7 +1046,7 @@ void Vulkan_014_MultiView::ModelTexture::updateNoiseTextureData()
         }
     }
 }
-void Vulkan_014_MultiView::ModelTexture::updateNoiseTexture()
+void Vulkan_014_MultiRenderPass::ModelTexture::updateNoiseTexture()
 {
     //1> updateNoiseTextureData
     updateNoiseTextureData();
@@ -1077,7 +1077,7 @@ void Vulkan_014_MultiView::ModelTexture::updateNoiseTexture()
 
 
 /////////////////////////// ModelObjectRendIndirect /////////////
-void Vulkan_014_MultiView::ModelObjectRendIndirect::Destroy()
+void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::Destroy()
 {
     //Vertex
     this->pRend->pModelObject->pWindow->destroyBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
@@ -1096,7 +1096,7 @@ void Vulkan_014_MultiView::ModelObjectRendIndirect::Destroy()
     this->pRend = nullptr;
 }
 
-void Vulkan_014_MultiView::ModelObjectRendIndirect::CleanupSwapChain()
+void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::CleanupSwapChain()
 {
     size_t count = 0;
 
@@ -1141,9 +1141,9 @@ void Vulkan_014_MultiView::ModelObjectRendIndirect::CleanupSwapChain()
     this->poBuffersMemory_indirectCommandCB = VK_NULL_HANDLE;
 }
 
-void Vulkan_014_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
+void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
 {
-    assert(_aRends.size() > 0 && "Vulkan_014_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer");
+    assert(_aRends.size() > 0 && "Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer");
     this->aRends.clear();
     this->aRends = _aRends;
     this->pRend = _aRends[0];
@@ -1186,7 +1186,7 @@ void Vulkan_014_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer(const
     }
     else
     {
-        assert(false && "Vulkan_014_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !");
+        assert(false && "Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !");
     }
     this->poIndexCount = this->indices.size();
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -1203,7 +1203,7 @@ void Vulkan_014_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer(const
     }
 }
 
-void Vulkan_014_MultiView::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
+void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
 {
     VkDeviceSize bufferSize;
     size_t count_sci = this->pRend->pModelObject->pWindow->poSwapChainImages.size();
@@ -1248,7 +1248,7 @@ void Vulkan_014_MultiView::ModelObjectRendIndirect::SetupUniformIndirectCommandB
     }
 }
 
-void Vulkan_014_MultiView::ModelObjectRendIndirect::UpdateUniformBuffer()
+void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
     this->objectCBs.clear();
     this->materialCBs.clear();
@@ -1269,7 +1269,7 @@ void Vulkan_014_MultiView::ModelObjectRendIndirect::UpdateUniformBuffer()
     }
 }
 
-void Vulkan_014_MultiView::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
+void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 {
     this->indirectCommandCBs.clear();
 
@@ -1302,7 +1302,7 @@ void Vulkan_014_MultiView::ModelObjectRendIndirect::UpdateIndirectCommandBuffer(
 
 
 
-Vulkan_014_MultiView::Vulkan_014_MultiView(int width, int height, std::string name)
+Vulkan_014_MultiRenderPass::Vulkan_014_MultiRenderPass(int width, int height, std::string name)
     : VulkanWindow(width, height, name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
@@ -1319,7 +1319,7 @@ Vulkan_014_MultiView::Vulkan_014_MultiView(int width, int height, std::string na
     this->aDeviceExtensions.push_back(VK_KHR_MULTIVIEW_EXTENSION_NAME);
 }
 
-void Vulkan_014_MultiView::setUpEnabledFeatures()
+void Vulkan_014_MultiRenderPass::setUpEnabledFeatures()
 {
     VulkanWindow::setUpEnabledFeatures();
 
@@ -1330,21 +1330,21 @@ void Vulkan_014_MultiView::setUpEnabledFeatures()
     else
     {
         this->m_isDrawIndirectMulti = false;
-        Util_LogError("Vulkan_014_MultiView::setUpEnabledFeatures: multiDrawIndirect is not supported !");
+        Util_LogError("Vulkan_014_MultiRenderPass::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
 }
 
-void Vulkan_014_MultiView::createDescriptorSetLayout_Custom()
+void Vulkan_014_MultiRenderPass::createDescriptorSetLayout_Custom()
 {
     VulkanWindow::createDescriptorSetLayout_Custom();
 }
 
-void Vulkan_014_MultiView::createCamera()
+void Vulkan_014_MultiRenderPass::createCamera()
 {
     this->pCamera = new VulkanCamera();
     cameraReset();
 }
-void Vulkan_014_MultiView::cameraReset()
+void Vulkan_014_MultiRenderPass::cameraReset()
 {
     VulkanWindow::cameraReset();
 
@@ -1353,7 +1353,7 @@ void Vulkan_014_MultiView::cameraReset()
     this->pCamera->SetFarZ(100000.0f);
 }
 
-void Vulkan_014_MultiView::loadModel_Custom()
+void Vulkan_014_MultiRenderPass::loadModel_Custom()
 {
     createModelMeshes();
     createModelTextures();
@@ -1371,7 +1371,7 @@ void Vulkan_014_MultiView::loadModel_Custom()
             //Mesh
             {
                 ModelMesh* pMesh = this->findModelMesh(pModelObject->nameMesh);
-                assert(pMesh != nullptr && "Vulkan_014_MultiView::loadModel_Custom");
+                assert(pMesh != nullptr && "Vulkan_014_MultiRenderPass::loadModel_Custom");
                 pModelObject->SetMesh(pMesh);
             }
             //MeshSub Used
@@ -1401,7 +1401,7 @@ void Vulkan_014_MultiView::loadModel_Custom()
             for (size_t j = 0; j < count_meshsub_used; j++)
             {
                 int indexMeshSub = pModelObject->aMeshSubUsed[j];
-                assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_014_MultiView::loadModel_Custom");
+                assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_014_MultiRenderPass::loadModel_Custom");
 
                 ModelMeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
                 std::string nameObjectRend = g_ObjectRend_Configs[7 * nIndexObjectRend + 0];
@@ -1559,16 +1559,16 @@ void Vulkan_014_MultiView::loadModel_Custom()
 
     }
 }
-void Vulkan_014_MultiView::createIndirectCommands()
+void Vulkan_014_MultiRenderPass::createIndirectCommands()
 {
 
 }
 
-void Vulkan_014_MultiView::createCustomCB()
+void Vulkan_014_MultiRenderPass::createCustomCB()
 {
     rebuildInstanceCBs(true);
 }
-void Vulkan_014_MultiView::rebuildInstanceCBs(bool isCreateVkBuffer)
+void Vulkan_014_MultiRenderPass::rebuildInstanceCBs(bool isCreateVkBuffer)
 {   
     VkDeviceSize bufferSize;
     size_t count_sci = this->poSwapChainImages.size();
@@ -1698,7 +1698,7 @@ void Vulkan_014_MultiView::rebuildInstanceCBs(bool isCreateVkBuffer)
     }
 }
 
-void Vulkan_014_MultiView::createCustomBeforePipeline()
+void Vulkan_014_MultiRenderPass::createCustomBeforePipeline()
 {
     //1> DescriptorSetLayout
     createDescriptorSetLayouts();
@@ -1709,7 +1709,7 @@ void Vulkan_014_MultiView::createCustomBeforePipeline()
     //3> Shader
     createShaderModules();
 }   
-void Vulkan_014_MultiView::createGraphicsPipeline_Custom()
+void Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom()
 {
     //1> Viewport
     VkViewportVector aViewports;
@@ -1736,7 +1736,7 @@ void Vulkan_014_MultiView::createGraphicsPipeline_Custom()
                                                   nameShaderFrag,
                                                   pRend->aShaderStageCreateInfos_Graphics))
         {
-            std::string msg = "Vulkan_014_MultiView::createGraphicsPipeline_Custom: Can not find shader used !";
+            std::string msg = "Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom: Can not find shader used !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1746,21 +1746,21 @@ void Vulkan_014_MultiView::createGraphicsPipeline_Custom()
             pRend->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
             {
-                std::string msg = "Vulkan_014_MultiView::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                std::string msg = "Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_014_MultiView::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                std::string msg = "Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_014_MultiView::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                std::string msg = "Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1779,11 +1779,11 @@ void Vulkan_014_MultiView::createGraphicsPipeline_Custom()
                                                                                       pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_014_MultiView::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
+                std::string msg = "Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            Util_LogInfo("Vulkan_014_MultiView::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
+            Util_LogInfo("Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
 
             //pPipelineGraphics->poPipeline
             VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
@@ -1813,15 +1813,15 @@ void Vulkan_014_MultiView::createGraphicsPipeline_Custom()
                                                                             pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_014_MultiView::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
+                std::string msg = "Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            Util_LogInfo("Vulkan_014_MultiView::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
+            Util_LogInfo("Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
         }
     }
 }
-void Vulkan_014_MultiView::createComputePipeline_Custom()
+void Vulkan_014_MultiRenderPass::createComputePipeline_Custom()
 {
     size_t count_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -1837,7 +1837,7 @@ void Vulkan_014_MultiView::createComputePipeline_Custom()
                                                   pRend->aShaderStageCreateInfos_Computes,
                                                   pRend->mapShaderStageCreateInfos_Computes))
         {
-            std::string msg = "Vulkan_014_MultiView::createComputePipeline_Custom: Can not find shader used !";
+            std::string msg = "Vulkan_014_MultiRenderPass::createComputePipeline_Custom: Can not find shader used !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1845,7 +1845,7 @@ void Vulkan_014_MultiView::createComputePipeline_Custom()
         //[2] Pipeline Compute
         if (count_pipeline != pRend->aShaderStageCreateInfos_Computes.size())
         {
-            std::string msg = "Vulkan_014_MultiView::createComputePipeline_Custom: Pipeline count is not equal shader count !";
+            std::string msg = "Vulkan_014_MultiRenderPass::createComputePipeline_Custom: Pipeline count is not equal shader count !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1857,21 +1857,21 @@ void Vulkan_014_MultiView::createComputePipeline_Custom()
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayoutNames == nullptr)
             {
-                std::string msg = "Vulkan_014_MultiView::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
+                std::string msg = "Vulkan_014_MultiRenderPass::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_014_MultiView::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
+                std::string msg = "Vulkan_014_MultiRenderPass::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
             if (p->poPipelineLayout == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_014_MultiView::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                std::string msg = "Vulkan_014_MultiRenderPass::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1879,7 +1879,7 @@ void Vulkan_014_MultiView::createComputePipeline_Custom()
             p->poPipeline = createVkComputePipeline(shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_014_MultiView::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
+                std::string msg = "Vulkan_014_MultiRenderPass::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1887,7 +1887,7 @@ void Vulkan_014_MultiView::createComputePipeline_Custom()
     }   
 }
 
-void Vulkan_014_MultiView::destroyModelMeshes()
+void Vulkan_014_MultiRenderPass::destroyModelMeshes()
 {
     size_t count = this->m_aModelMesh.size();
     for (size_t i = 0; i < count; i++)
@@ -1898,7 +1898,7 @@ void Vulkan_014_MultiView::destroyModelMeshes()
     this->m_aModelMesh.clear();
     this->m_mapModelMesh.clear();
 }
-void Vulkan_014_MultiView::createModelMeshes()
+void Vulkan_014_MultiRenderPass::createModelMeshes()
 {
     for (int i = 0; i < g_MeshCount; i++)
     {
@@ -1926,7 +1926,7 @@ void Vulkan_014_MultiView::createModelMeshes()
         bool isTranformLocal = g_MeshIsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_MeshTranformLocals[i]))
         {
-            std::string msg = "Vulkan_014_MultiView::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
+            std::string msg = "Vulkan_014_MultiRenderPass::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1934,11 +1934,11 @@ void Vulkan_014_MultiView::createModelMeshes()
         this->m_aModelMesh.push_back(pMesh);
         this->m_mapModelMesh[nameMesh] = pMesh;
 
-        Util_LogInfo("Vulkan_014_MultiView::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
+        Util_LogInfo("Vulkan_014_MultiRenderPass::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
                      nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
     }
 }
-Vulkan_014_MultiView::ModelMesh* Vulkan_014_MultiView::findModelMesh(const std::string& nameMesh)
+Vulkan_014_MultiRenderPass::ModelMesh* Vulkan_014_MultiRenderPass::findModelMesh(const std::string& nameMesh)
 {
     ModelMeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
     if (itFind == this->m_mapModelMesh.end())
@@ -1949,7 +1949,7 @@ Vulkan_014_MultiView::ModelMesh* Vulkan_014_MultiView::findModelMesh(const std::
 }
 
 
-void Vulkan_014_MultiView::destroyModelTextures()
+void Vulkan_014_MultiRenderPass::destroyModelTextures()
 {
     size_t count = this->m_aModelTexture.size();
     for (size_t i = 0; i < count; i++)
@@ -1960,7 +1960,7 @@ void Vulkan_014_MultiView::destroyModelTextures()
     this->m_aModelTexture.clear();
     this->m_mapModelTexture.clear();
 }
-void Vulkan_014_MultiView::createModelTextures()
+void Vulkan_014_MultiRenderPass::createModelTextures()
 {
     for (int i = 0; i < g_TextureCount; i++)
     {
@@ -2003,14 +2003,14 @@ void Vulkan_014_MultiView::createModelTextures()
         this->m_aModelTexture.push_back(pTexture);
         this->m_mapModelTexture[nameTexture] = pTexture;
 
-        Util_LogInfo("Vulkan_014_MultiView::createModelTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
+        Util_LogInfo("Vulkan_014_MultiRenderPass::createModelTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
                      nameTexture.c_str(), 
                      nameType.c_str(), 
                      isRenderTarget ? "true" : "false",
                      pathTextures.c_str());
     }
 }
-Vulkan_014_MultiView::ModelTexture* Vulkan_014_MultiView::findModelTexture(const std::string& nameTexture)
+Vulkan_014_MultiRenderPass::ModelTexture* Vulkan_014_MultiRenderPass::findModelTexture(const std::string& nameTexture)
 {
     ModelTexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
     if (itFind == this->m_mapModelTexture.end())
@@ -2021,7 +2021,7 @@ Vulkan_014_MultiView::ModelTexture* Vulkan_014_MultiView::findModelTexture(const
 }
 
 
-void Vulkan_014_MultiView::destroyDescriptorSetLayouts()
+void Vulkan_014_MultiRenderPass::destroyDescriptorSetLayouts()
 {
     size_t count = this->m_aVkDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -2033,7 +2033,7 @@ void Vulkan_014_MultiView::destroyDescriptorSetLayouts()
     this->m_mapVkDescriptorSetLayout.clear();
     this->m_mapName2Layouts.clear();
 }
-void Vulkan_014_MultiView::createDescriptorSetLayouts()
+void Vulkan_014_MultiRenderPass::createDescriptorSetLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
@@ -2180,7 +2180,7 @@ void Vulkan_014_MultiView::createDescriptorSetLayouts()
             }
             else
             {
-                std::string msg = "Vulkan_014_MultiView::createDescriptorSetLayouts: Wrong DescriptorSetLayout type: " + strLayout;
+                std::string msg = "Vulkan_014_MultiRenderPass::createDescriptorSetLayouts: Wrong DescriptorSetLayout type: " + strLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2200,10 +2200,10 @@ void Vulkan_014_MultiView::createDescriptorSetLayouts()
         this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
         this->m_mapName2Layouts[nameLayout] = aLayouts;
 
-        Util_LogInfo("Vulkan_014_MultiView::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
+        Util_LogInfo("Vulkan_014_MultiRenderPass::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
-VkDescriptorSetLayout Vulkan_014_MultiView::findDescriptorSetLayout(const std::string& nameDescriptorSetLayout)
+VkDescriptorSetLayout Vulkan_014_MultiRenderPass::findDescriptorSetLayout(const std::string& nameDescriptorSetLayout)
 {
     VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapVkDescriptorSetLayout.end())
@@ -2212,7 +2212,7 @@ VkDescriptorSetLayout Vulkan_014_MultiView::findDescriptorSetLayout(const std::s
     }
     return itFind->second;
 }
-std::vector<std::string>* Vulkan_014_MultiView::findDescriptorSetLayoutNames(const std::string& nameDescriptorSetLayout)
+std::vector<std::string>* Vulkan_014_MultiRenderPass::findDescriptorSetLayoutNames(const std::string& nameDescriptorSetLayout)
 {
     std::map<std::string, std::vector<std::string>>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapName2Layouts.end())
@@ -2223,7 +2223,7 @@ std::vector<std::string>* Vulkan_014_MultiView::findDescriptorSetLayoutNames(con
 }
 
 
-void Vulkan_014_MultiView::destroyShaderModules()
+void Vulkan_014_MultiRenderPass::destroyShaderModules()
 {   
     size_t count = this->m_aVkShaderModules.size();
     for (size_t i = 0; i < count; i++)
@@ -2234,7 +2234,7 @@ void Vulkan_014_MultiView::destroyShaderModules()
     this->m_aVkShaderModules.clear();
     this->m_mapVkShaderModules.clear();
 }
-void Vulkan_014_MultiView::createShaderModules()
+void Vulkan_014_MultiRenderPass::createShaderModules()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
@@ -2245,11 +2245,11 @@ void Vulkan_014_MultiView::createShaderModules()
         VkShaderModule shaderModule = createShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
-        Util_LogInfo("Vulkan_014_MultiView::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+        Util_LogInfo("Vulkan_014_MultiRenderPass::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
                      shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
-VkShaderModule Vulkan_014_MultiView::findShaderModule(const std::string& nameShaderModule)
+VkShaderModule Vulkan_014_MultiRenderPass::findShaderModule(const std::string& nameShaderModule)
 {
     VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
     if (itFind == this->m_mapVkShaderModules.end())
@@ -2258,7 +2258,7 @@ VkShaderModule Vulkan_014_MultiView::findShaderModule(const std::string& nameSha
     }
     return itFind->second;
 }   
-bool Vulkan_014_MultiView::createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
+bool Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
                                                                    const std::string& nameShaderTesc,
                                                                    const std::string& nameShaderTese,
                                                                    const std::string& nameShaderGeom,
@@ -2287,7 +2287,7 @@ bool Vulkan_014_MultiView::createPipelineShaderStageCreateInfos(const std::strin
 
     return true;
 }
-bool Vulkan_014_MultiView::createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
+bool Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
                                                                    const std::string& nameShaderTesc,
                                                                    const std::string& nameShaderTese,
                                                                    const std::string& nameShaderGeom,
@@ -2299,7 +2299,7 @@ bool Vulkan_014_MultiView::createPipelineShaderStageCreateInfos(const std::strin
         VkShaderModule shaderModule = findShaderModule(nameShaderVert);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_014_MultiView::createPipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
+            Util_LogError("Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
             return false;
         }
 
@@ -2316,7 +2316,7 @@ bool Vulkan_014_MultiView::createPipelineShaderStageCreateInfos(const std::strin
         VkShaderModule shaderModule = findShaderModule(nameShaderTesc);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_014_MultiView::createPipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
+            Util_LogError("Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
             return false;
         }
 
@@ -2333,7 +2333,7 @@ bool Vulkan_014_MultiView::createPipelineShaderStageCreateInfos(const std::strin
         VkShaderModule shaderModule = findShaderModule(nameShaderTese);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_014_MultiView::createPipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
+            Util_LogError("Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
             return false;
         }
 
@@ -2350,7 +2350,7 @@ bool Vulkan_014_MultiView::createPipelineShaderStageCreateInfos(const std::strin
         VkShaderModule shaderModule = findShaderModule(nameShaderGeom);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_014_MultiView::createPipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
+            Util_LogError("Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
             return false;
         }
 
@@ -2366,7 +2366,7 @@ bool Vulkan_014_MultiView::createPipelineShaderStageCreateInfos(const std::strin
         VkShaderModule shaderModule = findShaderModule(nameShaderFrag);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_014_MultiView::createPipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
+            Util_LogError("Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
             return false;
         }
 
@@ -2380,7 +2380,7 @@ bool Vulkan_014_MultiView::createPipelineShaderStageCreateInfos(const std::strin
 
     return true;
 }
-bool Vulkan_014_MultiView::createPipelineShaderStageCreateInfos(const std::string& nameShaderComp,
+bool Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos(const std::string& nameShaderComp,
                                                                    VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                                                    VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
 {
@@ -2395,7 +2395,7 @@ bool Vulkan_014_MultiView::createPipelineShaderStageCreateInfos(const std::strin
             VkShaderModule shaderModule = findShaderModule(nameSC);
             if (shaderModule == VK_NULL_HANDLE)
             {
-                Util_LogError("Vulkan_014_MultiView::createPipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
+                Util_LogError("Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
                 return false;
             }
 
@@ -2413,7 +2413,7 @@ bool Vulkan_014_MultiView::createPipelineShaderStageCreateInfos(const std::strin
 }
 
 
-void Vulkan_014_MultiView::destroyPipelineLayouts()
+void Vulkan_014_MultiRenderPass::destroyPipelineLayouts()
 {
     size_t count = this->m_aVkPipelineLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -2424,7 +2424,7 @@ void Vulkan_014_MultiView::destroyPipelineLayouts()
     this->m_aVkPipelineLayouts.clear();
     this->m_mapVkPipelineLayouts.clear();
 }
-void Vulkan_014_MultiView::createPipelineLayouts()
+void Vulkan_014_MultiRenderPass::createPipelineLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
@@ -2432,7 +2432,7 @@ void Vulkan_014_MultiView::createPipelineLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            Util_LogError("*********************** Vulkan_014_MultiView::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
+            Util_LogError("*********************** Vulkan_014_MultiRenderPass::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
             return;
         }
 
@@ -2441,7 +2441,7 @@ void Vulkan_014_MultiView::createPipelineLayouts()
         VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
         if (vkPipelineLayout == VK_NULL_HANDLE)
         {
-            Util_LogError("*********************** Vulkan_014_MultiView::createPipelineLayouts: createVkPipelineLayout failed !");
+            Util_LogError("*********************** Vulkan_014_MultiRenderPass::createPipelineLayouts: createVkPipelineLayout failed !");
             return;
         }
 
@@ -2449,7 +2449,7 @@ void Vulkan_014_MultiView::createPipelineLayouts()
         this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
     }
 }
-VkPipelineLayout Vulkan_014_MultiView::findPipelineLayout(const std::string& namePipelineLayout)
+VkPipelineLayout Vulkan_014_MultiRenderPass::findPipelineLayout(const std::string& namePipelineLayout)
 {
     VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
     if (itFind == this->m_mapVkPipelineLayouts.end())
@@ -2461,7 +2461,7 @@ VkPipelineLayout Vulkan_014_MultiView::findPipelineLayout(const std::string& nam
 
 
 
-void Vulkan_014_MultiView::createDescriptorSets_Custom()
+void Vulkan_014_MultiRenderPass::createDescriptorSets_Custom()
 {
     //1> Object Rend
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
@@ -2496,12 +2496,12 @@ void Vulkan_014_MultiView::createDescriptorSets_Custom()
         }
     }
 }
-void Vulkan_014_MultiView::createDescriptorSets_Graphics(std::vector<VkDescriptorSet>& poDescriptorSets, 
+void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(std::vector<VkDescriptorSet>& poDescriptorSets, 
                                                             ModelObjectRend* pRend, 
                                                             ModelObjectRendIndirect* pRendIndirect)
 {
     std::vector<std::string>* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
-    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_014_MultiView::createDescriptorSets_Graphics");
+    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics");
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
@@ -2662,7 +2662,7 @@ void Vulkan_014_MultiView::createDescriptorSets_Graphics(std::vector<VkDescripto
             }
             else
             {
-                std::string msg = "Vulkan_014_MultiView::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                std::string msg = "Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2670,11 +2670,11 @@ void Vulkan_014_MultiView::createDescriptorSets_Graphics(std::vector<VkDescripto
         vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 }
-void Vulkan_014_MultiView::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
+void Vulkan_014_MultiRenderPass::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
                                                            ModelObjectRend* pRend)
 {
     std::vector<std::string>* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_014_MultiView::createDescriptorSets_Compute");
+    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_014_MultiRenderPass::createDescriptorSets_Compute");
     createDescriptorSet(pPipelineCompute->poDescriptorSet, pPipelineCompute->poDescriptorSetLayout);
 
     std::vector<VkWriteDescriptorSet> descriptorWrites;
@@ -2736,7 +2736,7 @@ void Vulkan_014_MultiView::createDescriptorSets_Compute(PipelineCompute* pPipeli
         }
         else
         {
-            std::string msg = "Vulkan_014_MultiView::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+            std::string msg = "Vulkan_014_MultiRenderPass::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -2744,7 +2744,7 @@ void Vulkan_014_MultiView::createDescriptorSets_Compute(PipelineCompute* pPipeli
     vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }
 
-void Vulkan_014_MultiView::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_014_MultiRenderPass::updateCompute_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -2806,7 +2806,7 @@ void Vulkan_014_MultiView::updateCompute_Custom(VkCommandBuffer& commandBuffer)
     }
 }
 
-void Vulkan_014_MultiView::updateCBs_Custom()
+void Vulkan_014_MultiRenderPass::updateCBs_Custom()
 {
     //1> Object Rend
     float time = this->pTimer->GetTimeSinceStart();
@@ -2921,7 +2921,7 @@ void Vulkan_014_MultiView::updateCBs_Custom()
     }
 }
 
-void Vulkan_014_MultiView::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
+void Vulkan_014_MultiRenderPass::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -2962,13 +2962,13 @@ void Vulkan_014_MultiView::updateRenderPass_SyncComputeGraphics(VkCommandBuffer&
     }
 }
 
-bool Vulkan_014_MultiView::beginRenderImgui()
+bool Vulkan_014_MultiRenderPass::beginRenderImgui()
 {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    ImGui::Begin("Vulkan_014_MultiView", &windowOpened, 0);
+    ImGui::Begin("Vulkan_014_MultiRenderPass", &windowOpened, 0);
     {
         //0> Common
         commonConfig();
@@ -2990,7 +2990,7 @@ bool Vulkan_014_MultiView::beginRenderImgui()
 
     return true;
 }
-void Vulkan_014_MultiView::modelConfig()
+void Vulkan_014_MultiRenderPass::modelConfig()
 {
     if (ImGui::CollapsingHeader("Model Settings"))
     {
@@ -3455,13 +3455,13 @@ void Vulkan_014_MultiView::modelConfig()
     }
 }
 
-void Vulkan_014_MultiView::endRenderImgui()
+void Vulkan_014_MultiRenderPass::endRenderImgui()
 {
     VulkanWindow::endRenderImgui();
 
 }
 
-void Vulkan_014_MultiView::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_014_MultiRenderPass::drawMesh_Custom(VkCommandBuffer& commandBuffer)
 {   
     if (this->m_isDrawIndirect)
     {
@@ -3486,7 +3486,7 @@ void Vulkan_014_MultiView::drawMesh_Custom(VkCommandBuffer& commandBuffer)
         }
     }
 }
-void Vulkan_014_MultiView::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_014_MultiRenderPass::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     ModelObjectRendIndirect* pRendIndirect_Last = nullptr;
     size_t count_rend = aRends.size();
@@ -3514,7 +3514,7 @@ void Vulkan_014_MultiView::drawModelObjectRendIndirects(VkCommandBuffer& command
         }
     }
 }   
-void Vulkan_014_MultiView::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_014_MultiRenderPass::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
 {
     ModelObjectRend* pRend = pRendIndirect->pRend;
     ModelObject* pModelObject = pRend->pModelObject;
@@ -3558,7 +3558,7 @@ void Vulkan_014_MultiView::drawModelObjectRendIndirect(VkCommandBuffer& commandB
     }
 }
 
-void Vulkan_014_MultiView::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_014_MultiRenderPass::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     size_t count_rend = aRends.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -3569,7 +3569,7 @@ void Vulkan_014_MultiView::drawModelObjectRends(VkCommandBuffer& commandBuffer, 
         drawModelObjectRend(commandBuffer, pRend);
     }
 }
-void Vulkan_014_MultiView::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
+void Vulkan_014_MultiRenderPass::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
 {
     ModelObject* pModelObject = pRend->pModelObject;
     ModelMeshSub* pMeshSub = pRend->pMeshSub;
@@ -3616,7 +3616,7 @@ void Vulkan_014_MultiView::drawModelObjectRend(VkCommandBuffer& commandBuffer, M
     }
 }
 
-void Vulkan_014_MultiView::cleanupCustom()
+void Vulkan_014_MultiRenderPass::cleanupCustom()
 {   
     destroyModelTextures();
     destroyModelMeshes();
@@ -3634,7 +3634,7 @@ void Vulkan_014_MultiView::cleanupCustom()
     this->m_aModelObjectRends_Transparent.clear();
 }
 
-void Vulkan_014_MultiView::cleanupSwapChain_Custom()
+void Vulkan_014_MultiRenderPass::cleanupSwapChain_Custom()
 {
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
@@ -3649,7 +3649,7 @@ void Vulkan_014_MultiView::cleanupSwapChain_Custom()
     destroyShaderModules();
 }
 
-void Vulkan_014_MultiView::recreateSwapChain_Custom()
+void Vulkan_014_MultiRenderPass::recreateSwapChain_Custom()
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

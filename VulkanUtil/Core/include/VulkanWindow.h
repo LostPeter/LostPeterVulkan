@@ -56,8 +56,8 @@ namespace LostPeter
         std::vector<VkImage> poSwapChainImages;
         VkFormat poSwapChainImageFormat;
         VkExtent2D poSwapChainExtent;
-        std::vector<VkImageView> poSwapChainImageViews;
-        std::vector<VkFramebuffer> poSwapChainFrameBuffers;
+        VkImageViewVector poSwapChainImageViews;
+        VkFramebufferVector poSwapChainFrameBuffers;
         VkImage poColorImage;
         VkDeviceMemory poColorImageMemory;
         VkImageView poColorImageView;
@@ -301,24 +301,42 @@ namespace LostPeter
                 virtual void createDescriptorSetLayout_Custom();
 
             virtual void createPipelineObjects();
-                virtual void createRenderPass();
-                    virtual void createRenderPass_KhrDepth();
-                    virtual void createRenderPass_KhrDepthImgui();
-                    virtual void createRenderPass_ColorDepthMSAA();
-                    virtual void createRenderPass_ColorDepthImguiMSAA();
-                    
-                    virtual void createAttachmentDescription(VkAttachmentDescription& attachment,
-                                                             VkAttachmentDescriptionFlags flags,
-                                                             VkFormat format,
-                                                             VkSampleCountFlagBits samples,
-                                                             VkAttachmentLoadOp loadOp,
-                                                             VkAttachmentStoreOp storeOp,
-                                                             VkAttachmentLoadOp stencilLoadOp,
-                                                             VkAttachmentStoreOp stencilStoreOp,
-                                                             VkImageLayout initialLayout,
-                                                             VkImageLayout finalLayout);
+                virtual void createRenderPasses();
+                    virtual void createRenderPass_Default();
+                    virtual void createRenderPass_Custom();
+                        virtual void createRenderPass_KhrDepth(VkFormat formatSwapChain, VkFormat formatDepth, VkRenderPass& vkRenderPass);
+                        virtual void createRenderPass_KhrDepthImgui(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkRenderPass& vkRenderPass);
+                        virtual void createRenderPass_ColorDepthMSAA(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkSampleCountFlagBits samples, VkRenderPass& vkRenderPass);
+                        virtual void createRenderPass_ColorDepthImguiMSAA(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkSampleCountFlagBits samples, VkRenderPass& vkRenderPass);
 
+                        virtual void createAttachmentDescription(VkAttachmentDescription& attachment,
+                                                                VkAttachmentDescriptionFlags flags,
+                                                                VkFormat format,
+                                                                VkSampleCountFlagBits samples,
+                                                                VkAttachmentLoadOp loadOp,
+                                                                VkAttachmentStoreOp storeOp,
+                                                                VkAttachmentLoadOp stencilLoadOp,
+                                                                VkAttachmentStoreOp stencilStoreOp,
+                                                                VkImageLayout initialLayout,
+                                                                VkImageLayout finalLayout);
+                        virtual bool createVkRenderPass(const std::string& nameRenderPass,
+                                                        const VkAttachmentDescriptionVector& aAttachmentDescription,
+                                                        const VkSubpassDescriptionVector& aSubpassDescription,
+                                                        const VkSubpassDependencyVector& aSubpassDependency,
+                                                        VkRenderPass& vkRenderPass);
+                    
                 virtual void createFramebuffers();
+                    virtual void createFramebuffer_Default();
+                    virtual void createFramebuffer_Custom();
+
+                    virtual bool createVkFramebuffer(const std::string& nameFramebuffer,
+                                                     const VkImageViewVector& aImageView, 
+                                                     VkRenderPass& vkRenderPass,
+                                                     VkFramebufferCreateFlags flags,
+                                                     uint32_t width,
+                                                     uint32_t height,
+                                                     uint32_t layers,
+                                                     VkFramebuffer& vkFramebuffer);
 
             virtual void createSyncObjects();
                 virtual void createPresentRenderSyncObjects();
@@ -782,7 +800,7 @@ namespace LostPeter
 
                     virtual void endRenderImgui();
 
-                virtual void updateRenderCommandBuffers();
+                virtual void updateRenderCommandBuffers_Default();
                     virtual void updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_Custom(VkCommandBuffer& commandBuffer);
@@ -790,6 +808,7 @@ namespace LostPeter
                         virtual void drawMesh(VkCommandBuffer& commandBuffer);
                         virtual void drawMesh_Custom(VkCommandBuffer& commandBuffer);
                         virtual void drawImgui(VkCommandBuffer& commandBuffer);
+                virtual void updateRenderCommandBuffers_Custom();
 
             virtual void render();
         virtual void endRender();

@@ -9,17 +9,17 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VULKAN_014_MULTI_VIEW_H_
-#define _VULKAN_014_MULTI_VIEW_H_
+#ifndef _VULKAN_014_MULTI_RENDER_PASS_H_
+#define _VULKAN_014_MULTI_RENDER_PASS_H_
 
 #include "VulkanWindow.h"
 #include "VulkanMath.h"
 using namespace LostPeter; 
 
-class Vulkan_014_MultiView : public VulkanWindow
+class Vulkan_014_MultiRenderPass : public VulkanWindow
 {
 public:
-    Vulkan_014_MultiView(int width, int height, std::string name);
+    Vulkan_014_MultiRenderPass(int width, int height, std::string name);
 
 public:
     /////////////////////////// ModelMeshSub ////////////////////////
@@ -116,7 +116,7 @@ public:
     /////////////////////////// ModelMesh ///////////////////////////
     struct ModelMesh
     {
-        Vulkan_014_MultiView* pWindow;
+        Vulkan_014_MultiRenderPass* pWindow;
         std::string nameMesh;
         std::string pathMesh;
         VulkanMeshType typeMesh;
@@ -126,7 +126,7 @@ public:
         ModelMeshSubPtrVector aMeshSubs;
         ModelMeshSubPtrMap mapMeshSubs;
 
-        ModelMesh(Vulkan_014_MultiView* _pWindow, 
+        ModelMesh(Vulkan_014_MultiRenderPass* _pWindow, 
                   const std::string& _nameMesh,
                   const std::string& _pathMesh,
                   VulkanMeshType _typeMesh,
@@ -170,7 +170,7 @@ public:
     /////////////////////////// ModelTexture ////////////////////////
     struct ModelTexture
     {
-        Vulkan_014_MultiView* pWindow;
+        Vulkan_014_MultiRenderPass* pWindow;
         std::string nameTexture;
         std::vector<std::string> aPathTexture;
         VulkanTextureType typeTexture;
@@ -211,7 +211,7 @@ public:
         VkImageUsageFlags rtImageUsage;
 
 
-        ModelTexture(Vulkan_014_MultiView* _pWindow, 
+        ModelTexture(Vulkan_014_MultiRenderPass* _pWindow, 
                      const std::string& _nameTexture,
                      VulkanTextureType _typeTexture,
                      bool _isRenderTarget,
@@ -549,7 +549,7 @@ public:
     /////////////////////////// PipelineGraphics ////////////////////
     struct PipelineGraphics
     {
-        Vulkan_014_MultiView* pWindow;
+        Vulkan_014_MultiRenderPass* pWindow;
         std::string nameDescriptorSetLayout;
         std::vector<std::string>* poDescriptorSetLayoutNames;
         VkDescriptorSetLayout poDescriptorSetLayout;
@@ -558,7 +558,7 @@ public:
         VkPipeline poPipeline;
         std::vector<VkDescriptorSet> poDescriptorSets;
 
-        PipelineGraphics(Vulkan_014_MultiView* _pWindow)
+        PipelineGraphics(Vulkan_014_MultiRenderPass* _pWindow)
             : pWindow(_pWindow)
             , nameDescriptorSetLayout("")
             , poDescriptorSetLayoutNames(nullptr)
@@ -604,7 +604,7 @@ public:
     /////////////////////////// PipelineCompute /////////////////////
     struct PipelineCompute
     {
-        Vulkan_014_MultiView* pWindow;
+        Vulkan_014_MultiRenderPass* pWindow;
         std::string nameDescriptorSetLayout;
         std::vector<std::string>* poDescriptorSetLayoutNames;
         VkDescriptorSetLayout poDescriptorSetLayout;
@@ -636,7 +636,7 @@ public:
             this->poBufferMemory_TextureCopy = VK_NULL_HANDLE;
         }
 
-        PipelineCompute(Vulkan_014_MultiView* _pWindow)
+        PipelineCompute(Vulkan_014_MultiRenderPass* _pWindow)
             : pWindow(_pWindow)
             , nameDescriptorSetLayout("")
             , poDescriptorSetLayoutNames(nullptr)
@@ -1015,7 +1015,7 @@ public:
     struct ModelObject
     {
         //Window
-        Vulkan_014_MultiView* pWindow;
+        Vulkan_014_MultiRenderPass* pWindow;
         int index;
 
         //Name
@@ -1040,7 +1040,7 @@ public:
         ModelObjectRendPtrVector aRends;
         ModelObjectRendIndirect* pRendIndirect;
 
-        ModelObject(Vulkan_014_MultiView* _pWindow,
+        ModelObject(Vulkan_014_MultiRenderPass* _pWindow,
                     int _index)
             //Window
             : pWindow(_pWindow)
@@ -1137,6 +1137,26 @@ public:
     };
     typedef std::vector<ModelObject*> ModelObjectPtrVector;
     typedef std::map<std::string, ModelObject*> ModelObjectPtrMap;
+
+
+    /////////////////////////// MultiRenderPass /////////////////////
+    struct MultiRenderPass
+    {
+        //Window
+        Vulkan_014_MultiRenderPass* pWindow;
+
+
+        MultiRenderPass(Vulkan_014_MultiRenderPass* _pWindow)
+            //Window
+            : pWindow(_pWindow)
+
+        {
+
+        }
+
+        
+    };
+
 
 public:
     ModelMeshPtrVector m_aModelMesh;

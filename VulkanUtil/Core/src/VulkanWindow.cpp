@@ -1574,566 +1574,623 @@ namespace LostPeter
     {
         Util_LogInfo("*****<1-7> VulkanWindow::createPipelineObjects start *****");
         {
-            //1> createRenderPass
-            createRenderPass();
+            //1> createRenderPasses
+            createRenderPasses();
+            Util_LogInfo("<1-7-1> VulkanWindow::createPipelineObjects: Success to create RenderPasses !");
 
             //2> createFramebuffers
             createFramebuffers();
+            Util_LogInfo("<1-7-2> VulkanWindow::createPipelineObjects: Success to create Framebuffers !");
         }
         Util_LogInfo("*****<1-7> VulkanWindow::createPipelineObjects finish *****");
     }
-    void VulkanWindow::createRenderPass()
+    void VulkanWindow::createRenderPasses()
     {
-        if (HasConfig_Imgui())
+        //1> createRenderPass_Default
+        createRenderPass_Default();
+
+        //2> createRenderPass_Custom
+        createRenderPass_Custom();
+    }
+        void VulkanWindow::createRenderPass_Default()
         {
-            if (HasConfig_MASS())
+            if (HasConfig_Imgui())
             {
-                createRenderPass_ColorDepthImguiMSAA();
-            }
-            else
-            {
-                createRenderPass_KhrDepthImgui();
-            }
-        }
-        else
-        {
-            if (HasConfig_MASS())
-            {
-                createRenderPass_ColorDepthMSAA();
-            }
-            else
-            {
-                createRenderPass_KhrDepth();
-            }
-        }
-    }
-    void VulkanWindow::createAttachmentDescription(VkAttachmentDescription& attachment,
-                                                   VkAttachmentDescriptionFlags flags,
-                                                   VkFormat format,
-                                                   VkSampleCountFlagBits samples,
-                                                   VkAttachmentLoadOp loadOp,
-                                                   VkAttachmentStoreOp storeOp,
-                                                   VkAttachmentLoadOp stencilLoadOp,
-                                                   VkAttachmentStoreOp stencilStoreOp,
-                                                   VkImageLayout initialLayout,
-                                                   VkImageLayout finalLayout)
-    {
-        attachment.flags = flags;
-        attachment.format = format;
-        attachment.samples = samples;
-        attachment.loadOp = loadOp;
-        attachment.storeOp = storeOp;
-        attachment.stencilLoadOp = stencilLoadOp;
-        attachment.stencilStoreOp = stencilStoreOp;
-        attachment.initialLayout = initialLayout;
-        attachment.finalLayout = finalLayout;
-    }
-    void VulkanWindow::createRenderPass_KhrDepth()
-    {
-        std::vector<VkAttachmentDescription> attachments;
-        std::vector<VkSubpassDescription> subpasses;
-        std::vector<VkSubpassDependency> subpassesDependencies;
-
-        //1> Attachment SceneRender Color
-        VkAttachmentDescription attachmentSR_Color = {};
-        createAttachmentDescription(attachmentSR_Color,
-                                    0,
-                                    this->poSwapChainImageFormat,
-                                    VK_SAMPLE_COUNT_1_BIT,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_UNDEFINED,
-                                    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-        attachments.push_back(attachmentSR_Color);
-        
-        //2> Attachment SceneRender Depth
-        VkAttachmentDescription attachmentSR_Depth = {};
-        createAttachmentDescription(attachmentSR_Depth,
-                                    0,
-                                    findDepthFormat(),
-                                    VK_SAMPLE_COUNT_1_BIT,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_UNDEFINED,
-                                    VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-        attachments.push_back(attachmentSR_Depth);
-             
-        //3> Subpass SceneRender
-        VkAttachmentReference attachRef_Color = {};
-        attachRef_Color.attachment = 0;
-        attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkAttachmentReference attachRef_Depth = {};
-        attachRef_Depth.attachment = 1;
-        attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-        VkSubpassDescription subpass_SceneRender = {};
-        subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass_SceneRender.colorAttachmentCount = 1;
-        subpass_SceneRender.pColorAttachments = &attachRef_Color;
-        subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
-        subpasses.push_back(subpass_SceneRender);
-          
-        //4> Subpass Dependency SceneRender
-        VkSubpassDependency subpassDependency_SceneRender = {};
-        subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
-        subpassDependency_SceneRender.dstSubpass = 0;
-        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-        subpassesDependencies.push_back(subpassDependency_SceneRender);
-
-        //5> RenderPass Create Info
-        VkRenderPassCreateInfo renderPassInfo = {};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-        renderPassInfo.pAttachments = &attachments[0];
-        renderPassInfo.subpassCount = static_cast<uint32_t>(subpasses.size());
-        renderPassInfo.pSubpasses = &subpasses[0];
-        renderPassInfo.dependencyCount = static_cast<uint32_t>(subpassesDependencies.size());
-        renderPassInfo.pDependencies = &subpassesDependencies[0];
-
-        //6> vkCreateRenderPass
-        if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &this->poRenderPass) != VK_SUCCESS) 
-        {
-            std::string msg = "VulkanWindow::createRenderPass_KhrDepth: Failed to create renderpass !";
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
-
-        Util_LogInfo("<1-7-1> VulkanWindow::createRenderPass_KhrDepth finish !");
-    }
-    void VulkanWindow::createRenderPass_KhrDepthImgui()
-    {
-        std::vector<VkAttachmentDescription> attachments;
-        std::vector<VkSubpassDescription> subpasses;
-        std::vector<VkSubpassDependency> subpassesDependencies;
-
-        //1> Attachment SceneRender Color
-        VkAttachmentDescription attachmentSR_Color = {};
-        createAttachmentDescription(attachmentSR_Color,
-                                    0,
-                                    this->poSwapChainImageFormat,
-                                    VK_SAMPLE_COUNT_1_BIT,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_UNDEFINED,
-                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-        attachments.push_back(attachmentSR_Color);
-        
-        //2> Attachment SceneRender Depth
-        VkAttachmentDescription attachmentSR_Depth = {};
-        createAttachmentDescription(attachmentSR_Depth,
-                                    0,
-                                    findDepthFormat(),
-                                    VK_SAMPLE_COUNT_1_BIT,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_UNDEFINED,
-                                    VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-        attachments.push_back(attachmentSR_Depth);
-              
-        //3> Attachment Imgui Color
-        VkAttachmentDescription attachmentImgui_Color = {};
-        createAttachmentDescription(attachmentImgui_Color,
-                                    0,
-                                    this->poSwapChainImageFormat,
-                                    VK_SAMPLE_COUNT_1_BIT,
-                                    VK_ATTACHMENT_LOAD_OP_LOAD,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_UNDEFINED,
-                                    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-        attachments.push_back(attachmentImgui_Color);
-        
-        //4> Subpass SceneRender
-        VkAttachmentReference attachRef_Color = {};
-        attachRef_Color.attachment = 0;
-        attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkAttachmentReference attachRef_Depth = {};
-        attachRef_Depth.attachment = 1;
-        attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-        VkSubpassDescription subpass_SceneRender = {};
-        subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass_SceneRender.colorAttachmentCount = 1;
-        subpass_SceneRender.pColorAttachments = &attachRef_Color;
-        subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
-        subpasses.push_back(subpass_SceneRender);
-
-        //5> Subpass Imgui
-        VkAttachmentReference attachRef_ImguiColor = {};
-        attachRef_ImguiColor.attachment = 0;
-        attachRef_ImguiColor.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkAttachmentReference attachRef_ImguiDepth = {};
-        attachRef_ImguiDepth.attachment = 1;
-        attachRef_ImguiDepth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-        VkSubpassDescription subpass_Imgui = {};
-        subpass_Imgui.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass_Imgui.colorAttachmentCount = 1;
-        subpass_Imgui.pColorAttachments = &attachRef_ImguiColor;
-        subpass_Imgui.pDepthStencilAttachment = &attachRef_ImguiDepth;
-        subpasses.push_back(subpass_Imgui);
-        
-        //6> Subpass Dependency SceneRender
-        VkSubpassDependency subpassDependency_SceneRender = {};
-        subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
-        subpassDependency_SceneRender.dstSubpass = 0;
-        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-        subpassesDependencies.push_back(subpassDependency_SceneRender);
-
-        //7> Subpass Dependency Imgui
-       	VkSubpassDependency subpassDependency_Imgui = {};
-        subpassDependency_Imgui.srcSubpass = 0;
-        subpassDependency_Imgui.dstSubpass = 1;
-        subpassDependency_Imgui.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency_Imgui.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        subpassDependency_Imgui.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        subpassDependency_Imgui.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-        subpassesDependencies.push_back(subpassDependency_Imgui);
-
-        //8> RenderPass Create Info
-        VkRenderPassCreateInfo renderPassInfo = {};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-        renderPassInfo.pAttachments = &attachments[0];
-        renderPassInfo.subpassCount = static_cast<uint32_t>(subpasses.size());
-        renderPassInfo.pSubpasses = &subpasses[0];
-        renderPassInfo.dependencyCount = static_cast<uint32_t>(subpassesDependencies.size());
-        renderPassInfo.pDependencies = &subpassesDependencies[0];
-
-        //9> vkCreateRenderPass
-        if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &this->poRenderPass) != VK_SUCCESS) 
-        {
-            std::string msg = "VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create renderpass !";
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
-
-        Util_LogInfo("<1-7-1> VulkanWindow::createRenderPass_KhrDepthImgui finish !");
-    }
-    void VulkanWindow::createRenderPass_ColorDepthMSAA()
-    {
-        std::vector<VkAttachmentDescription> attachments;
-        std::vector<VkSubpassDescription> subpasses;
-        std::vector<VkSubpassDependency> subpassesDependencies;
-
-        //1> Attachment SceneRender Color
-        VkAttachmentDescription attachmentSR_Color = {};
-        createAttachmentDescription(attachmentSR_Color,
-                                    0,
-                                    this->poSwapChainImageFormat,
-                                    this->poMSAASamples,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_UNDEFINED,
-                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-        attachments.push_back(attachmentSR_Color);
-        
-        //2> Attachment SceneRender Depth
-        VkAttachmentDescription attachmentSR_Depth = {};
-        createAttachmentDescription(attachmentSR_Depth,
-                                    0,
-                                    findDepthFormat(),
-                                    this->poMSAASamples,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_UNDEFINED,
-                                    VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-        attachments.push_back(attachmentSR_Depth);
-        
-        //3> Attachment SceneRender Color Resolve
-        VkAttachmentDescription attachmentSR_ColorResolve = {};
-        createAttachmentDescription(attachmentSR_ColorResolve,
-                                    0,
-                                    this->poSwapChainImageFormat,
-                                    VK_SAMPLE_COUNT_1_BIT,
-                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_UNDEFINED,
-                                    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-        attachments.push_back(attachmentSR_ColorResolve);
-        
-        //4> Subpass SceneRender
-        VkAttachmentReference attachRef_Color = {};
-        attachRef_Color.attachment = 0;
-        attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkAttachmentReference attachRef_Depth = {};
-        attachRef_Depth.attachment = 1;
-        attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-        VkAttachmentReference attachRef_ColorResolve = {};
-        attachRef_ColorResolve.attachment = 2;
-        attachRef_ColorResolve.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkSubpassDescription subpass_SceneRender = {};
-        subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass_SceneRender.colorAttachmentCount = 1;
-        subpass_SceneRender.pColorAttachments = &attachRef_Color;
-        subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
-        subpass_SceneRender.pResolveAttachments = &attachRef_ColorResolve;
-        subpasses.push_back(subpass_SceneRender);
-          
-        //5> Subpass Dependency SceneRender
-        VkSubpassDependency subpassDependency_SceneRender = {};
-        subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
-        subpassDependency_SceneRender.dstSubpass = 0;
-        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-        subpassesDependencies.push_back(subpassDependency_SceneRender);
-
-        //6> RenderPass Create Info
-        VkRenderPassCreateInfo renderPassInfo = {};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-        renderPassInfo.pAttachments = &attachments[0];
-        renderPassInfo.subpassCount = static_cast<uint32_t>(subpasses.size());
-        renderPassInfo.pSubpasses = &subpasses[0];
-        renderPassInfo.dependencyCount = static_cast<uint32_t>(subpassesDependencies.size());
-        renderPassInfo.pDependencies = &subpassesDependencies[0];
-
-        //7> vkCreateRenderPass
-        if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &this->poRenderPass) != VK_SUCCESS) 
-        {
-            std::string msg = "VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create renderpass !";
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
-
-        Util_LogInfo("<1-7-1> VulkanWindow::createRenderPass_ColorDepthMSAA finish !");
-    }
-    void VulkanWindow::createRenderPass_ColorDepthImguiMSAA()
-    {
-        std::vector<VkAttachmentDescription> attachments;
-        std::vector<VkSubpassDescription> subpasses;
-        std::vector<VkSubpassDependency> subpassesDependencies;
-
-        //1> Attachment SceneRender Color
-        VkAttachmentDescription attachmentSR_Color = {};
-        createAttachmentDescription(attachmentSR_Color,
-                                    0,
-                                    this->poSwapChainImageFormat,
-                                    this->poMSAASamples,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_UNDEFINED,
-                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-        attachments.push_back(attachmentSR_Color);
-        
-        //2> Attachment SceneRender Depth
-        VkAttachmentDescription attachmentSR_Depth = {};
-        createAttachmentDescription(attachmentSR_Depth,
-                                    0,
-                                    findDepthFormat(),
-                                    this->poMSAASamples,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_UNDEFINED,
-                                    VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-        attachments.push_back(attachmentSR_Depth);
-        
-        //3> Attachment SceneRender Color Resolve
-        VkAttachmentDescription attachmentSR_ColorResolve = {};
-        createAttachmentDescription(attachmentSR_ColorResolve,
-                                    0,
-                                    this->poSwapChainImageFormat,
-                                    VK_SAMPLE_COUNT_1_BIT,
-                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_UNDEFINED,
-                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-        attachments.push_back(attachmentSR_ColorResolve);
-        
-        //4> Attachment Imgui Color
-        VkAttachmentDescription attachmentImgui_Color = {};
-        createAttachmentDescription(attachmentImgui_Color,
-                                    0,
-                                    this->poSwapChainImageFormat,
-                                    VK_SAMPLE_COUNT_1_BIT,
-                                    VK_ATTACHMENT_LOAD_OP_LOAD,
-                                    VK_ATTACHMENT_STORE_OP_STORE,
-                                    VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                    VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-        attachments.push_back(attachmentImgui_Color);
-        
-        //5> Subpass SceneRender
-        VkAttachmentReference attachRef_Color = {};
-        attachRef_Color.attachment = 0;
-        attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkAttachmentReference attachRef_Depth = {};
-        attachRef_Depth.attachment = 1;
-        attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-        VkAttachmentReference attachRef_ColorResolve = {};
-        attachRef_ColorResolve.attachment = 2;
-        attachRef_ColorResolve.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkSubpassDescription subpass_SceneRender = {};
-        subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass_SceneRender.colorAttachmentCount = 1;
-        subpass_SceneRender.pColorAttachments = &attachRef_Color;
-        subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
-        subpass_SceneRender.pResolveAttachments = &attachRef_ColorResolve;
-        subpasses.push_back(subpass_SceneRender);
-
-        //6> Subpass Imgui
-        VkAttachmentReference attachRef_ImguiColor = {};
-        attachRef_ImguiColor.attachment = 0;
-        attachRef_ImguiColor.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkAttachmentReference attachRef_ImguiDepth = {};
-        attachRef_ImguiDepth.attachment = 1;
-        attachRef_ImguiDepth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-        VkAttachmentReference attachRef_ImguiColorResolve = {};
-        attachRef_ImguiColorResolve.attachment = 2;
-        attachRef_ImguiColorResolve.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkSubpassDescription subpass_Imgui = {};
-        subpass_Imgui.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass_Imgui.colorAttachmentCount = 1;
-        subpass_Imgui.pColorAttachments = &attachRef_ImguiColor;
-        subpass_Imgui.pDepthStencilAttachment = &attachRef_ImguiDepth;
-        subpass_Imgui.pResolveAttachments = &attachRef_ImguiColorResolve;
-        subpasses.push_back(subpass_Imgui);
-        
-        //7> Subpass Dependency SceneRender
-        VkSubpassDependency subpassDependency_SceneRender = {};
-        subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
-        subpassDependency_SceneRender.dstSubpass = 0;
-        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-        subpassesDependencies.push_back(subpassDependency_SceneRender);
-
-        //8> Subpass Dependency Imgui
-       	VkSubpassDependency subpassDependency_Imgui = {};
-        subpassDependency_Imgui.srcSubpass = 0;
-        subpassDependency_Imgui.dstSubpass = 1;
-        subpassDependency_Imgui.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency_Imgui.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        subpassDependency_Imgui.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        subpassesDependencies.push_back(subpassDependency_Imgui);
-
-        //9> RenderPass Create Info
-        VkRenderPassCreateInfo renderPassInfo = {};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-        renderPassInfo.pAttachments = &attachments[0];
-        renderPassInfo.subpassCount = static_cast<uint32_t>(subpasses.size());
-        renderPassInfo.pSubpasses = &subpasses[0];
-        renderPassInfo.dependencyCount = static_cast<uint32_t>(subpassesDependencies.size());
-        renderPassInfo.pDependencies = &subpassesDependencies[0];
-
-        //10> vkCreateRenderPass
-        if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &this->poRenderPass) != VK_SUCCESS) 
-        {
-            std::string msg = "VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create renderpass !";
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
-
-        Util_LogInfo("<1-7-1> VulkanWindow::createRenderPass_ColorDepthImguiMSAA finish !");
-    }
-    void VulkanWindow::createFramebuffers()
-    {
-        size_t count = this->poSwapChainImageViews.size();
-        this->poSwapChainFrameBuffers.resize(count);
-
-        for (size_t i = 0; i < count; i++)
-        {
-            std::vector<VkImageView> attachments;
-            if (!HasConfig_Imgui())
-            {
-                if (!HasConfig_MASS())
+                if (HasConfig_MASS())
                 {
-                    attachments.push_back(this->poSwapChainImageViews[i]);
-                    attachments.push_back(this->poDepthImageView);
+                    createRenderPass_ColorDepthImguiMSAA(this->poSwapChainImageFormat, findDepthFormat(), this->poSwapChainImageFormat, this->poMSAASamples, this->poRenderPass);
                 }
                 else
                 {
-                    attachments.push_back(this->poColorImageView);
-                    attachments.push_back(this->poDepthImageView);
-                    attachments.push_back(this->poSwapChainImageViews[i]);
+                    createRenderPass_KhrDepthImgui(this->poSwapChainImageFormat, findDepthFormat(), this->poSwapChainImageFormat, this->poRenderPass);
                 }
             }
             else
             {
-                if (!HasConfig_MASS())
+                if (HasConfig_MASS())
                 {
-                    attachments.push_back(this->poSwapChainImageViews[i]);
-                    attachments.push_back(this->poDepthImageView);
-                    attachments.push_back(this->poSwapChainImageViews[i]);
+                    createRenderPass_ColorDepthMSAA(this->poSwapChainImageFormat, findDepthFormat(), this->poSwapChainImageFormat, this->poMSAASamples, this->poRenderPass);
                 }
                 else
                 {
-                    attachments.push_back(this->poColorImageView);
-                    attachments.push_back(this->poDepthImageView);
-                    attachments.push_back(this->poSwapChainImageViews[i]);
-                    attachments.push_back(this->poSwapChainImageViews[i]);
+                    createRenderPass_KhrDepth(this->poSwapChainImageFormat, findDepthFormat(), this->poRenderPass);
                 }
             }
 
-            VkFramebufferCreateInfo framebufferInfo = {};
-            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            framebufferInfo.renderPass = this->poRenderPass;
-            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-            framebufferInfo.pAttachments = &attachments[0];
-            framebufferInfo.width = this->poSwapChainExtent.width;
-            framebufferInfo.height = this->poSwapChainExtent.height;
-            framebufferInfo.layers = 1;
-
-            if (vkCreateFramebuffer(this->poDevice, &framebufferInfo, nullptr, &this->poSwapChainFrameBuffers[i]) != VK_SUCCESS) 
-            {
-                std::string msg = "VulkanWindow::createFramebuffers: Failed to create framebuffer !";
-                Util_LogError(msg.c_str());
-                throw std::runtime_error(msg);
-            }
+            Util_LogInfo("VulkanWindow::createRenderPass_Default: Success to create RenderPass_Default !");
         }
+        void VulkanWindow::createRenderPass_Custom()
+        {
+            
+        }
+            void VulkanWindow::createAttachmentDescription(VkAttachmentDescription& attachment,
+                                                        VkAttachmentDescriptionFlags flags,
+                                                        VkFormat format,
+                                                        VkSampleCountFlagBits samples,
+                                                        VkAttachmentLoadOp loadOp,
+                                                        VkAttachmentStoreOp storeOp,
+                                                        VkAttachmentLoadOp stencilLoadOp,
+                                                        VkAttachmentStoreOp stencilStoreOp,
+                                                        VkImageLayout initialLayout,
+                                                        VkImageLayout finalLayout)
+            {
+                attachment.flags = flags;
+                attachment.format = format;
+                attachment.samples = samples;
+                attachment.loadOp = loadOp;
+                attachment.storeOp = storeOp;
+                attachment.stencilLoadOp = stencilLoadOp;
+                attachment.stencilStoreOp = stencilStoreOp;
+                attachment.initialLayout = initialLayout;
+                attachment.finalLayout = finalLayout;
+            }
+            bool VulkanWindow::createVkRenderPass(const std::string& nameRenderPass,
+                                                const VkAttachmentDescriptionVector& aAttachmentDescription,
+                                                const VkSubpassDescriptionVector& aSubpassDescription,
+                                                const VkSubpassDependencyVector& aSubpassDependency,
+                                                VkRenderPass& vkRenderPass)
+            {
+                VkRenderPassCreateInfo renderPassInfo = {};
+                renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+                renderPassInfo.attachmentCount = static_cast<uint32_t>(aAttachmentDescription.size());
+                renderPassInfo.pAttachments = &aAttachmentDescription[0];
+                renderPassInfo.subpassCount = static_cast<uint32_t>(aSubpassDescription.size());
+                renderPassInfo.pSubpasses = &aSubpassDescription[0];
+                renderPassInfo.dependencyCount = static_cast<uint32_t>(aSubpassDependency.size());
+                renderPassInfo.pDependencies = &aSubpassDependency[0];
 
-        Util_LogInfo("<1-7-2> VulkanWindow::createFramebuffers finish !");
-    }
+                if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &vkRenderPass) != VK_SUCCESS)
+                {
+                    Util_LogError("VulkanWindow::createVkRenderPass: vkCreateRenderPass failed: [%s] !", nameRenderPass.c_str());
+                    return false;
+                }
+
+                Util_LogInfo("VulkanWindow::createVkRenderPass: vkCreateRenderPass success: [%s] !", nameRenderPass.c_str());
+                return true;
+            }
+            void VulkanWindow::createRenderPass_KhrDepth(VkFormat formatSwapChain, VkFormat formatDepth, VkRenderPass& vkRenderPass)
+            {
+                std::vector<VkAttachmentDescription> aAttachmentDescription;
+                std::vector<VkSubpassDescription> aSubpassDescription;
+                std::vector<VkSubpassDependency> aSubpassDependency;
+
+                //1> Attachment SceneRender Color
+                VkAttachmentDescription attachmentSR_Color = {};
+                createAttachmentDescription(attachmentSR_Color,
+                                            0,
+                                            formatSwapChain,
+                                            VK_SAMPLE_COUNT_1_BIT,
+                                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
+                                            VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+                aAttachmentDescription.push_back(attachmentSR_Color);
+                
+                //2> Attachment SceneRender Depth
+                VkAttachmentDescription attachmentSR_Depth = {};
+                createAttachmentDescription(attachmentSR_Depth,
+                                            0,
+                                            formatDepth,
+                                            VK_SAMPLE_COUNT_1_BIT,
+                                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
+                                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+                aAttachmentDescription.push_back(attachmentSR_Depth);
+                    
+                //3> Subpass SceneRender
+                VkAttachmentReference attachRef_Color = {};
+                attachRef_Color.attachment = 0;
+                attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                VkAttachmentReference attachRef_Depth = {};
+                attachRef_Depth.attachment = 1;
+                attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+                VkSubpassDescription subpass_SceneRender = {};
+                subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+                subpass_SceneRender.colorAttachmentCount = 1;
+                subpass_SceneRender.pColorAttachments = &attachRef_Color;
+                subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+                aSubpassDescription.push_back(subpass_SceneRender);
+                
+                //4> Subpass Dependency SceneRender
+                VkSubpassDependency subpassDependency_SceneRender = {};
+                subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
+                subpassDependency_SceneRender.dstSubpass = 0;
+                subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+                subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+                subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+                subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+                aSubpassDependency.push_back(subpassDependency_SceneRender);
+
+                //5> createVkRenderPass
+                if (!createVkRenderPass("RenderPass_Default_KhrDepth",
+                                        aAttachmentDescription,
+                                        aSubpassDescription,
+                                        aSubpassDependency,
+                                        vkRenderPass))
+                {
+                    std::string msg = "VulkanWindow::createRenderPass_KhrDepth: Failed to create RenderPass_Default_KhrDepth !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+
+                Util_LogInfo("VulkanWindow::createRenderPass_KhrDepth: Success to create RenderPass_Default_KhrDepth !");
+            }
+            void VulkanWindow::createRenderPass_KhrDepthImgui(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkRenderPass& vkRenderPass)
+            {
+                std::vector<VkAttachmentDescription> aAttachmentDescription;
+                std::vector<VkSubpassDescription> aSubpassDescription;
+                std::vector<VkSubpassDependency> aSubpassDependency;
+
+                //1> Attachment SceneRender Color
+                VkAttachmentDescription attachmentSR_Color = {};
+                createAttachmentDescription(attachmentSR_Color,
+                                            0,
+                                            formatColor,
+                                            VK_SAMPLE_COUNT_1_BIT,
+                                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
+                                            VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+                aAttachmentDescription.push_back(attachmentSR_Color);
+                
+                //2> Attachment SceneRender Depth
+                VkAttachmentDescription attachmentSR_Depth = {};
+                createAttachmentDescription(attachmentSR_Depth,
+                                            0,
+                                            formatDepth,
+                                            VK_SAMPLE_COUNT_1_BIT,
+                                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
+                                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+                aAttachmentDescription.push_back(attachmentSR_Depth);
+                    
+                //3> Attachment Imgui Color
+                VkAttachmentDescription attachmentImgui_Color = {};
+                createAttachmentDescription(attachmentImgui_Color,
+                                            0,
+                                            formatSwapChain,
+                                            VK_SAMPLE_COUNT_1_BIT,
+                                            VK_ATTACHMENT_LOAD_OP_LOAD,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
+                                            VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+                aAttachmentDescription.push_back(attachmentImgui_Color);
+                
+                //4> Subpass SceneRender
+                VkAttachmentReference attachRef_Color = {};
+                attachRef_Color.attachment = 0;
+                attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                VkAttachmentReference attachRef_Depth = {};
+                attachRef_Depth.attachment = 1;
+                attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+                VkSubpassDescription subpass_SceneRender = {};
+                subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+                subpass_SceneRender.colorAttachmentCount = 1;
+                subpass_SceneRender.pColorAttachments = &attachRef_Color;
+                subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+                aSubpassDescription.push_back(subpass_SceneRender);
+
+                //5> Subpass Imgui
+                VkAttachmentReference attachRef_ImguiColor = {};
+                attachRef_ImguiColor.attachment = 0;
+                attachRef_ImguiColor.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                VkAttachmentReference attachRef_ImguiDepth = {};
+                attachRef_ImguiDepth.attachment = 1;
+                attachRef_ImguiDepth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+                VkSubpassDescription subpass_Imgui = {};
+                subpass_Imgui.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+                subpass_Imgui.colorAttachmentCount = 1;
+                subpass_Imgui.pColorAttachments = &attachRef_ImguiColor;
+                subpass_Imgui.pDepthStencilAttachment = &attachRef_ImguiDepth;
+                aSubpassDescription.push_back(subpass_Imgui);
+                
+                //6> Subpass Dependency SceneRender
+                VkSubpassDependency subpassDependency_SceneRender = {};
+                subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
+                subpassDependency_SceneRender.dstSubpass = 0;
+                subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+                subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+                subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+                subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+                aSubpassDependency.push_back(subpassDependency_SceneRender);
+
+                //7> Subpass Dependency Imgui
+                VkSubpassDependency subpassDependency_Imgui = {};
+                subpassDependency_Imgui.srcSubpass = 0;
+                subpassDependency_Imgui.dstSubpass = 1;
+                subpassDependency_Imgui.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+                subpassDependency_Imgui.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+                subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                subpassDependency_Imgui.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                subpassDependency_Imgui.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+                aSubpassDependency.push_back(subpassDependency_Imgui);
+
+                //8> createVkRenderPass
+                if (!createVkRenderPass("RenderPass_Default_KhrDepthImgui",
+                                        aAttachmentDescription,
+                                        aSubpassDescription,
+                                        aSubpassDependency,
+                                        vkRenderPass))
+                {
+                    std::string msg = "VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create RenderPass_Default_KhrDepthImgui !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+
+                Util_LogInfo("VulkanWindow::createRenderPass_KhrDepthImgui: Success to create RenderPass_Default_KhrDepthImgui !");
+            }
+            void VulkanWindow::createRenderPass_ColorDepthMSAA(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkSampleCountFlagBits samples, VkRenderPass& vkRenderPass)
+            {
+                std::vector<VkAttachmentDescription> aAttachmentDescription;
+                std::vector<VkSubpassDescription> aSubpassDescription;
+                std::vector<VkSubpassDependency> aSubpassDependency;
+
+                //1> Attachment SceneRender Color
+                VkAttachmentDescription attachmentSR_Color = {};
+                createAttachmentDescription(attachmentSR_Color,
+                                            0,
+                                            formatColor,
+                                            samples,
+                                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
+                                            VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+                aAttachmentDescription.push_back(attachmentSR_Color);
+                
+                //2> Attachment SceneRender Depth
+                VkAttachmentDescription attachmentSR_Depth = {};
+                createAttachmentDescription(attachmentSR_Depth,
+                                            0,
+                                            formatDepth,
+                                            samples,
+                                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
+                                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+                aAttachmentDescription.push_back(attachmentSR_Depth);
+                
+                //3> Attachment SceneRender Color Resolve
+                VkAttachmentDescription attachmentSR_ColorResolve = {};
+                createAttachmentDescription(attachmentSR_ColorResolve,
+                                            0,
+                                            formatSwapChain,
+                                            VK_SAMPLE_COUNT_1_BIT,
+                                            VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
+                                            VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+                aAttachmentDescription.push_back(attachmentSR_ColorResolve);
+                
+                //4> Subpass SceneRender
+                VkAttachmentReference attachRef_Color = {};
+                attachRef_Color.attachment = 0;
+                attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                VkAttachmentReference attachRef_Depth = {};
+                attachRef_Depth.attachment = 1;
+                attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+                VkAttachmentReference attachRef_ColorResolve = {};
+                attachRef_ColorResolve.attachment = 2;
+                attachRef_ColorResolve.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                VkSubpassDescription subpass_SceneRender = {};
+                subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+                subpass_SceneRender.colorAttachmentCount = 1;
+                subpass_SceneRender.pColorAttachments = &attachRef_Color;
+                subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+                subpass_SceneRender.pResolveAttachments = &attachRef_ColorResolve;
+                aSubpassDescription.push_back(subpass_SceneRender);
+                
+                //5> Subpass Dependency SceneRender
+                VkSubpassDependency subpassDependency_SceneRender = {};
+                subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
+                subpassDependency_SceneRender.dstSubpass = 0;
+                subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+                subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+                subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+                subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+                aSubpassDependency.push_back(subpassDependency_SceneRender);
+
+                //6> createVkRenderPass
+                if (!createVkRenderPass("RenderPass_Default_ColorDepthMSAA",
+                                        aAttachmentDescription,
+                                        aSubpassDescription,
+                                        aSubpassDependency,
+                                        vkRenderPass))
+                {
+                    std::string msg = "VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create RenderPass_Default_ColorDepthMSAA !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+
+                Util_LogInfo("VulkanWindow::createRenderPass_ColorDepthMSAA: Success to create RenderPass_Default_ColorDepthMSAA !");
+            }
+            void VulkanWindow::createRenderPass_ColorDepthImguiMSAA(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkSampleCountFlagBits samples, VkRenderPass& vkRenderPass)
+            {
+                std::vector<VkAttachmentDescription> aAttachmentDescription;
+                std::vector<VkSubpassDescription> aSubpassDescription;
+                std::vector<VkSubpassDependency> aSubpassDependency;
+
+                //1> Attachment SceneRender Color
+                VkAttachmentDescription attachmentSR_Color = {};
+                createAttachmentDescription(attachmentSR_Color,
+                                            0,
+                                            formatColor,
+                                            samples,
+                                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
+                                            VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+                aAttachmentDescription.push_back(attachmentSR_Color);
+                
+                //2> Attachment SceneRender Depth
+                VkAttachmentDescription attachmentSR_Depth = {};
+                createAttachmentDescription(attachmentSR_Depth,
+                                            0,
+                                            formatDepth,
+                                            samples,
+                                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
+                                            VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+                aAttachmentDescription.push_back(attachmentSR_Depth);
+                
+                //3> Attachment SceneRender Color Resolve
+                VkAttachmentDescription attachmentSR_ColorResolve = {};
+                createAttachmentDescription(attachmentSR_ColorResolve,
+                                            0,
+                                            formatSwapChain,
+                                            VK_SAMPLE_COUNT_1_BIT,
+                                            VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
+                                            VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+                aAttachmentDescription.push_back(attachmentSR_ColorResolve);
+                
+                //4> Attachment Imgui Color
+                VkAttachmentDescription attachmentImgui_Color = {};
+                createAttachmentDescription(attachmentImgui_Color,
+                                            0,
+                                            formatSwapChain,
+                                            VK_SAMPLE_COUNT_1_BIT,
+                                            VK_ATTACHMENT_LOAD_OP_LOAD,
+                                            VK_ATTACHMENT_STORE_OP_STORE,
+                                            VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                            VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+                aAttachmentDescription.push_back(attachmentImgui_Color);
+                
+                //5> Subpass SceneRender
+                VkAttachmentReference attachRef_Color = {};
+                attachRef_Color.attachment = 0;
+                attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                VkAttachmentReference attachRef_Depth = {};
+                attachRef_Depth.attachment = 1;
+                attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+                VkAttachmentReference attachRef_ColorResolve = {};
+                attachRef_ColorResolve.attachment = 2;
+                attachRef_ColorResolve.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                VkSubpassDescription subpass_SceneRender = {};
+                subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+                subpass_SceneRender.colorAttachmentCount = 1;
+                subpass_SceneRender.pColorAttachments = &attachRef_Color;
+                subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+                subpass_SceneRender.pResolveAttachments = &attachRef_ColorResolve;
+                aSubpassDescription.push_back(subpass_SceneRender);
+
+                //6> Subpass Imgui
+                VkAttachmentReference attachRef_ImguiColor = {};
+                attachRef_ImguiColor.attachment = 0;
+                attachRef_ImguiColor.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                VkAttachmentReference attachRef_ImguiDepth = {};
+                attachRef_ImguiDepth.attachment = 1;
+                attachRef_ImguiDepth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+                VkAttachmentReference attachRef_ImguiColorResolve = {};
+                attachRef_ImguiColorResolve.attachment = 2;
+                attachRef_ImguiColorResolve.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                VkSubpassDescription subpass_Imgui = {};
+                subpass_Imgui.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+                subpass_Imgui.colorAttachmentCount = 1;
+                subpass_Imgui.pColorAttachments = &attachRef_ImguiColor;
+                subpass_Imgui.pDepthStencilAttachment = &attachRef_ImguiDepth;
+                subpass_Imgui.pResolveAttachments = &attachRef_ImguiColorResolve;
+                aSubpassDescription.push_back(subpass_Imgui);
+                
+                //7> Subpass Dependency SceneRender
+                VkSubpassDependency subpassDependency_SceneRender = {};
+                subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
+                subpassDependency_SceneRender.dstSubpass = 0;
+                subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+                subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+                subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+                subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+                aSubpassDependency.push_back(subpassDependency_SceneRender);
+
+                //8> Subpass Dependency Imgui
+                VkSubpassDependency subpassDependency_Imgui = {};
+                subpassDependency_Imgui.srcSubpass = 0;
+                subpassDependency_Imgui.dstSubpass = 1;
+                subpassDependency_Imgui.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+                subpassDependency_Imgui.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+                subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                subpassDependency_Imgui.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                aSubpassDependency.push_back(subpassDependency_Imgui);
+
+                //9> createVkRenderPass
+                if (!createVkRenderPass("RenderPass_Default_ColorDepthImguiMSAA",
+                                        aAttachmentDescription,
+                                        aSubpassDescription,
+                                        aSubpassDependency,
+                                        vkRenderPass))
+                {
+                    std::string msg = "VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create RenderPass_Default_ColorDepthImguiMSAA !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+
+                Util_LogInfo("VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Success to create RenderPass_Default_ColorDepthImguiMSAA !");
+            }
+
+        void VulkanWindow::createFramebuffers()
+        {
+            //1> createFramebuffer_Default
+            createFramebuffer_Default();
+
+            //2> createFramebuffer_Custom
+            createFramebuffer_Custom();
+        }
+            void VulkanWindow::createFramebuffer_Default()
+            {
+                size_t count = this->poSwapChainImageViews.size();
+                this->poSwapChainFrameBuffers.resize(count);
+
+                for (size_t i = 0; i < count; i++)
+                {
+                    VkImageViewVector aImageViews;
+                    if (!HasConfig_Imgui())
+                    {
+                        if (!HasConfig_MASS())
+                        {
+                            aImageViews.push_back(this->poSwapChainImageViews[i]);
+                            aImageViews.push_back(this->poDepthImageView);
+                        }
+                        else
+                        {
+                            aImageViews.push_back(this->poColorImageView);
+                            aImageViews.push_back(this->poDepthImageView);
+                            aImageViews.push_back(this->poSwapChainImageViews[i]);
+                        }
+                    }
+                    else
+                    {
+                        if (!HasConfig_MASS())
+                        {
+                            aImageViews.push_back(this->poSwapChainImageViews[i]);
+                            aImageViews.push_back(this->poDepthImageView);
+                            aImageViews.push_back(this->poSwapChainImageViews[i]);
+                        }
+                        else
+                        {
+                            aImageViews.push_back(this->poColorImageView);
+                            aImageViews.push_back(this->poDepthImageView);
+                            aImageViews.push_back(this->poSwapChainImageViews[i]);
+                            aImageViews.push_back(this->poSwapChainImageViews[i]);
+                        }
+                    }
+
+                    std::string nameFramebuffer = "Framebuffer-" + VulkanUtilString::SaveSizeT(i);
+                    if (!createVkFramebuffer(nameFramebuffer,
+                                             aImageViews,
+                                             this->poRenderPass,
+                                             0,
+                                             this->poSwapChainExtent.width,
+                                             this->poSwapChainExtent.height,
+                                             1,
+                                             this->poSwapChainFrameBuffers[i]))
+                    {
+                        std::string msg = "VulkanWindow::createFramebuffer_Default: Failed to create framebuffer: " + nameFramebuffer;
+                        Util_LogError(msg.c_str());
+                        throw std::runtime_error(msg);
+                    }
+                }
+
+                Util_LogInfo("VulkanWindow::createFramebuffer_Default: Success to create Framebuffer_Default !");
+            }
+            void VulkanWindow::createFramebuffer_Custom()
+            {
+                
+            }
+
+                bool VulkanWindow::createVkFramebuffer(const std::string& nameFramebuffer,
+                                                       const VkImageViewVector& aImageView, 
+                                                       VkRenderPass& vkRenderPass,
+                                                       VkFramebufferCreateFlags flags,
+                                                       uint32_t width,
+                                                       uint32_t height,
+                                                       uint32_t layers,
+                                                       VkFramebuffer& vkFramebuffer)
+                {
+                    VkFramebufferCreateInfo framebufferInfo = {};
+                    framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+                    framebufferInfo.renderPass = vkRenderPass;
+                    framebufferInfo.attachmentCount = static_cast<uint32_t>(aImageView.size());
+                    framebufferInfo.pAttachments = &aImageView[0];
+                    framebufferInfo.width = width;
+                    framebufferInfo.height = height;
+                    framebufferInfo.layers = layers;
+
+                    if (vkCreateFramebuffer(this->poDevice, &framebufferInfo, nullptr, &vkFramebuffer) != VK_SUCCESS) 
+                    {
+                        Util_LogError("VulkanWindow::createVkFramebuffer: vkCreateFramebuffer failed: [%s] !", nameFramebuffer.c_str());
+                        return false;
+                    }
+
+                    Util_LogInfo("VulkanWindow::createVkFramebuffer: vkCreateFramebuffer success: [%s] !", nameFramebuffer.c_str());
+                    return true;
+                }
+
 
     void VulkanWindow::createSyncObjects()
     {
@@ -5114,7 +5171,8 @@ namespace LostPeter
             }
 
             //8> CommandBuffers
-            updateRenderCommandBuffers();
+            updateRenderCommandBuffers_Default();
+            updateRenderCommandBuffers_Custom();
         }
             void VulkanWindow::updateSceneObjects()
             {
@@ -5721,12 +5779,12 @@ namespace LostPeter
                     ImGui::Render();
                 }
 
-            void VulkanWindow::updateRenderCommandBuffers()
+            void VulkanWindow::updateRenderCommandBuffers_Default()
             {
                 VkCommandBuffer& commandBuffer = this->poCommandBuffersGraphics[this->poSwapChainImageIndex];
                 if (vkResetCommandBuffer(commandBuffer, 0) != VK_SUCCESS) 
                 {
-                    std::string msg = "VulkanWindow::updateRenderCommandBuffers: Failed to reset render command buffer !";
+                    std::string msg = "VulkanWindow::updateRenderCommandBuffers_Default: Failed to reset render command buffer !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -5738,7 +5796,7 @@ namespace LostPeter
 
                 if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
                 {
-                    std::string msg = "VulkanWindow::updateRenderCommandBuffers: vkBeginCommandBuffer: Failed to begin recording render command buffer !";
+                    std::string msg = "VulkanWindow::updateRenderCommandBuffers_Default: vkBeginCommandBuffer: Failed to begin recording render command buffer !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -5749,106 +5807,110 @@ namespace LostPeter
                 }
                 if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
                 {
-                    std::string msg = "VulkanWindow::updateRenderCommandBuffers: vkEndCommandBuffer: Failed to record render command buffer !";
+                    std::string msg = "VulkanWindow::updateRenderCommandBuffers_Default: vkEndCommandBuffer: Failed to record render command buffer !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
-            void VulkanWindow::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
-            {
-
-            }
-            void VulkanWindow::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
-            {
-                VkRenderPassBeginInfo renderPassInfo = {};
-                renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-                renderPassInfo.renderPass = this->poRenderPass;
-                renderPassInfo.framebuffer = this->poSwapChainFrameBuffers[this->poSwapChainImageIndex];
-                VkOffset2D offset;
-                offset.x = 0;
-                offset.y = 0;
-                renderPassInfo.renderArea.offset = offset;
-                renderPassInfo.renderArea.extent = this->poSwapChainExtent;
-
-                std::array<VkClearValue, 2> clearValues = {};
-                VkClearColorValue colorValue = { this->cfg_colorBackground.x, this->cfg_colorBackground.y, this->cfg_colorBackground.z, this->cfg_colorBackground.w };
-                clearValues[0].color = colorValue;
-                VkClearDepthStencilValue depthStencilValue;
-                depthStencilValue.depth = 1.0f;
-                depthStencilValue.stencil = 0;
-                clearValues[1].depthStencil = depthStencilValue;
-                renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-                renderPassInfo.pClearValues = clearValues.data();
-
-                vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+                void VulkanWindow::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
                 {
-                    //1> Viewport
-                    bindViewport(commandBuffer);
-                   
-                    //2> Normal Render Pass
-                    drawMesh(commandBuffer);
-                    drawMesh_Custom(commandBuffer);
 
-                    //3> ImGui Pass
-                    drawImgui(commandBuffer);
                 }
-                vkCmdEndRenderPass(commandBuffer);
-            }
-            void VulkanWindow::updateRenderPass_Custom(VkCommandBuffer& commandBuffer)
-            {
-
-            }
-                void VulkanWindow::bindViewport(VkCommandBuffer& commandBuffer)
+                void VulkanWindow::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
                 {
-                    VkViewport viewport = this->poViewport;
-                    if (cfg_isNegativeViewport)
-                    {
-                        viewport.y = viewport.height - viewport.y;
-                        viewport.height = -viewport.height;
-                    }   
-                    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-                    vkCmdSetScissor(commandBuffer, 0, 1, &this->poScissor);
-                }
-                void VulkanWindow::drawMesh(VkCommandBuffer& commandBuffer)
-                {
-                    if (this->poVertexBuffer == nullptr)
-                        return;
+                    VkRenderPassBeginInfo renderPassInfo = {};
+                    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+                    renderPassInfo.renderPass = this->poRenderPass;
+                    renderPassInfo.framebuffer = this->poSwapChainFrameBuffers[this->poSwapChainImageIndex];
+                    VkOffset2D offset;
+                    offset.x = 0;
+                    offset.y = 0;
+                    renderPassInfo.renderArea.offset = offset;
+                    renderPassInfo.renderArea.extent = this->poSwapChainExtent;
 
-                    if (!this->cfg_isWireFrame)
-                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics);
-                    else 
-                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics_WireFrame);
+                    std::array<VkClearValue, 2> clearValues = {};
+                    VkClearColorValue colorValue = { this->cfg_colorBackground.x, this->cfg_colorBackground.y, this->cfg_colorBackground.z, this->cfg_colorBackground.w };
+                    clearValues[0].color = colorValue;
+                    VkClearDepthStencilValue depthStencilValue;
+                    depthStencilValue.depth = 1.0f;
+                    depthStencilValue.stencil = 0;
+                    clearValues[1].depthStencil = depthStencilValue;
+                    renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+                    renderPassInfo.pClearValues = clearValues.data();
 
-                    VkBuffer vertexBuffers[] = { this->poVertexBuffer };
-                    VkDeviceSize offsets[] = { 0 };
-                    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-                    if (this->poDescriptorSets.size() > 0)
+                    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
                     {
-                        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &this->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+                        //1> Viewport
+                        bindViewport(commandBuffer);
+                    
+                        //2> Normal Render Pass
+                        drawMesh(commandBuffer);
+                        drawMesh_Custom(commandBuffer);
+
+                        //3> ImGui Pass
+                        drawImgui(commandBuffer);
                     }
-                    if (this->poIndexBuffer != nullptr)
-                    {
-                        vkCmdBindIndexBuffer(commandBuffer, this->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-                        vkCmdDrawIndexed(commandBuffer, this->poIndexCount, 1, 0, 0, 0);
-                    }
-                    else
-                    {
-                        vkCmdDraw(commandBuffer, this->poVertexCount, 1, 0, 0);
-                    }
+                    vkCmdEndRenderPass(commandBuffer);
                 }
-                void VulkanWindow::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+                void VulkanWindow::updateRenderPass_Custom(VkCommandBuffer& commandBuffer)
                 {
 
                 }
-                void VulkanWindow::drawImgui(VkCommandBuffer& commandBuffer)
-                {
-                    if (HasConfig_Imgui())
+                    void VulkanWindow::bindViewport(VkCommandBuffer& commandBuffer)
                     {
-                        ImDrawData* main_draw_data = ImGui::GetDrawData();
-                        vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
-                        ImGui_ImplVulkan_RenderDrawData(main_draw_data, commandBuffer);
+                        VkViewport viewport = this->poViewport;
+                        if (cfg_isNegativeViewport)
+                        {
+                            viewport.y = viewport.height - viewport.y;
+                            viewport.height = -viewport.height;
+                        }   
+                        vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+                        vkCmdSetScissor(commandBuffer, 0, 1, &this->poScissor);
                     }
-                }
+                    void VulkanWindow::drawMesh(VkCommandBuffer& commandBuffer)
+                    {
+                        if (this->poVertexBuffer == nullptr)
+                            return;
+
+                        if (!this->cfg_isWireFrame)
+                            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics);
+                        else 
+                            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics_WireFrame);
+
+                        VkBuffer vertexBuffers[] = { this->poVertexBuffer };
+                        VkDeviceSize offsets[] = { 0 };
+                        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+                        if (this->poDescriptorSets.size() > 0)
+                        {
+                            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &this->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+                        }
+                        if (this->poIndexBuffer != nullptr)
+                        {
+                            vkCmdBindIndexBuffer(commandBuffer, this->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+                            vkCmdDrawIndexed(commandBuffer, this->poIndexCount, 1, 0, 0, 0);
+                        }
+                        else
+                        {
+                            vkCmdDraw(commandBuffer, this->poVertexCount, 1, 0, 0);
+                        }
+                    }
+                    void VulkanWindow::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+                    {
+
+                    }
+                    void VulkanWindow::drawImgui(VkCommandBuffer& commandBuffer)
+                    {
+                        if (HasConfig_Imgui())
+                        {
+                            ImDrawData* main_draw_data = ImGui::GetDrawData();
+                            vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+                            ImGui_ImplVulkan_RenderDrawData(main_draw_data, commandBuffer);
+                        }
+                    }
+        void VulkanWindow::updateRenderCommandBuffers_Custom()
+        {   
+
+        }
 
 
         void VulkanWindow::render()
@@ -6191,7 +6253,7 @@ namespace LostPeter
             }  
             createDepthResources();
 
-            createRenderPass();
+            createRenderPasses();
             createFramebuffers();
 
             createConstBuffers();
