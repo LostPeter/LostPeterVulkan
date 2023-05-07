@@ -324,6 +324,7 @@ namespace LostPeter
                                                         const VkSubpassDescriptionVector& aSubpassDescription,
                                                         const VkSubpassDependencyVector& aSubpassDependency,
                                                         VkRenderPass& vkRenderPass);
+                        virtual void destroyVkRenderPass(VkRenderPass vkRenderPass);
                     
                 virtual void createFramebuffers();
                     virtual void createFramebuffer_Default();

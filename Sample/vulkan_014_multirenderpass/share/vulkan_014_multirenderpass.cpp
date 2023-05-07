@@ -1306,6 +1306,7 @@ Vulkan_014_MultiRenderPass::Vulkan_014_MultiRenderPass(int width, int height, st
     : VulkanWindow(width, height, name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
+    , m_pMultiRenderPass(nullptr)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -1338,6 +1339,17 @@ void Vulkan_014_MultiRenderPass::createDescriptorSetLayout_Custom()
 {
     VulkanWindow::createDescriptorSetLayout_Custom();
 }
+
+void Vulkan_014_MultiRenderPass::createRenderPass_Custom()
+{
+
+}
+
+void Vulkan_014_MultiRenderPass::createFramebuffer_Custom()
+{
+
+}
+
 
 void Vulkan_014_MultiRenderPass::createCamera()
 {
@@ -3461,6 +3473,11 @@ void Vulkan_014_MultiRenderPass::endRenderImgui()
 
 }
 
+void Vulkan_014_MultiRenderPass::updateRenderPass_Custom(VkCommandBuffer& commandBuffer)
+{
+
+}
+
 void Vulkan_014_MultiRenderPass::drawMesh_Custom(VkCommandBuffer& commandBuffer)
 {   
     if (this->m_isDrawIndirect)
@@ -3614,6 +3631,11 @@ void Vulkan_014_MultiRenderPass::drawModelObjectRend(VkCommandBuffer& commandBuf
             vkCmdDraw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
         }
     }
+}
+
+void Vulkan_014_MultiRenderPass::updateRenderCommandBuffers_Custom()
+{
+
 }
 
 void Vulkan_014_MultiRenderPass::cleanupCustom()

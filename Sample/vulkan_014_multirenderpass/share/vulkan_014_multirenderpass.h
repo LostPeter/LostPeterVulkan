@@ -1140,21 +1140,80 @@ public:
 
 
     /////////////////////////// MultiRenderPass /////////////////////
+    struct FrameBufferAttachment
+    {
+        VkImage image;
+        VkDeviceMemory memory;
+        VkImageView view;
+
+        FrameBufferAttachment()
+            : image(VK_NULL_HANDLE)
+            , memory(VK_NULL_HANDLE)
+            , view(VK_NULL_HANDLE)
+        {
+
+        }
+
+        void Destroy(Vulkan_014_MultiRenderPass* pWindow)
+        {
+            if (this->image != VK_NULL_HANDLE)
+            {
+                pWindow->destroyTexture(this->image, this->memory, this->view);
+            }
+            this->image = VK_NULL_HANDLE;
+            this->memory = VK_NULL_HANDLE;
+            this->view = VK_NULL_HANDLE;
+        }
+    };
     struct MultiRenderPass
     {
         //Window
         Vulkan_014_MultiRenderPass* pWindow;
+
+        //RenderPass
+        VkRenderPass renderPass;
+
+        //FrameBuffer
+        FrameBufferAttachment framebufferColor;
+        FrameBufferAttachment framebufferDepth;
+        VkSampler sampler;
 
 
         MultiRenderPass(Vulkan_014_MultiRenderPass* _pWindow)
             //Window
             : pWindow(_pWindow)
 
+            //RenderPass
+            , renderPass(VK_NULL_HANDLE)
+
+            //FrameBuffer
+            , sampler(VK_NULL_HANDLE)
         {
 
         }
 
-        
+        ~MultiRenderPass()
+        {
+            Destroy();
+        }
+
+        void Destroy()
+        {
+            this->framebufferColor.Destroy(this->pWindow);
+            this->framebufferDepth.Destroy(this->pWindow);
+            if (this->sampler != VK_NULL_HANDLE)
+            {
+                this->pWindow->destroyTextureSampler(this->sampler);
+            }
+            this->sampler = VK_NULL_HANDLE;
+
+            if (this->renderPass != VK_NULL_HANDLE)
+            {
+                this->pWindow->destroyVkRenderPass(this->renderPass);
+            }
+            this->renderPass = VK_NULL_HANDLE;
+        }
+
     };
 
 
@@ -1173,6 +1232,8 @@ public:
     bool m_isDrawIndirect;
     bool m_isDrawIndirectMulti;
 
+    MultiRenderPass* m_pMultiRenderPass;
+
     VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
     VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
     std::map<std::string, std::vector<std::string>> m_mapName2Layouts;
@@ -1189,6 +1250,12 @@ protected:
 
         //DescriptorSetLayout
         virtual void createDescriptorSetLayout_Custom();
+
+        //RenderPass
+        virtual void createRenderPass_Custom();
+
+        //Framebuffer
+        virtual void createFramebuffer_Custom();
 
     //Load Assets
         //Camera
@@ -1228,7 +1295,11 @@ protected:
 
         virtual void endRenderImgui();
 
-        virtual void drawMesh_Custom(VkCommandBuffer& commandBuffer);
+        virtual void updateRenderPass_Custom(VkCommandBuffer& commandBuffer);
+
+            virtual void drawMesh_Custom(VkCommandBuffer& commandBuffer);
+
+        virtual void updateRenderCommandBuffers_Custom();
 
     //cleanup
         virtual void cleanupCustom();

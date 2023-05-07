@@ -1668,6 +1668,13 @@ namespace LostPeter
                 Util_LogInfo("VulkanWindow::createVkRenderPass: vkCreateRenderPass success: [%s] !", nameRenderPass.c_str());
                 return true;
             }
+            void VulkanWindow::destroyVkRenderPass(VkRenderPass vkRenderPass)
+            {
+                if (vkRenderPass != VK_NULL_HANDLE)
+                {
+                    vkDestroyRenderPass(this->poDevice, vkRenderPass, nullptr);
+                }
+            }
             void VulkanWindow::createRenderPass_KhrDepth(VkFormat formatSwapChain, VkFormat formatDepth, VkRenderPass& vkRenderPass)
             {
                 std::vector<VkAttachmentDescription> aAttachmentDescription;
