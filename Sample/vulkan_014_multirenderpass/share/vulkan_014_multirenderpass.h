@@ -1214,6 +1214,7 @@ public:
             this->renderPass = VK_NULL_HANDLE;
         }
 
+        void Init();
     };
 
 

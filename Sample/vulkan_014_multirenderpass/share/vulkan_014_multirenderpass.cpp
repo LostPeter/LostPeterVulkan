@@ -1301,6 +1301,15 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::UpdateIndirectCommandB
 /////////////////////////// ModelObject /////////////////////////
 
 
+/////////////////////////// MultiRenderPass /////////////////////
+void Vulkan_014_MultiRenderPass::MultiRenderPass::Init()
+{
+    //RenderPass
+
+}
+
+
+
 
 Vulkan_014_MultiRenderPass::Vulkan_014_MultiRenderPass(int width, int height, std::string name)
     : VulkanWindow(width, height, name)
@@ -1342,7 +1351,8 @@ void Vulkan_014_MultiRenderPass::createDescriptorSetLayout_Custom()
 
 void Vulkan_014_MultiRenderPass::createRenderPass_Custom()
 {
-
+    m_pMultiRenderPass = new MultiRenderPass(this);
+    m_pMultiRenderPass->Init();
 }
 
 void Vulkan_014_MultiRenderPass::createFramebuffer_Custom()
@@ -3654,6 +3664,8 @@ void Vulkan_014_MultiRenderPass::cleanupCustom()
     this->m_aModelObjectRends_All.clear();
     this->m_aModelObjectRends_Opaque.clear();
     this->m_aModelObjectRends_Transparent.clear();
+
+    UTIL_DELETE(m_pMultiRenderPass)
 }
 
 void Vulkan_014_MultiRenderPass::cleanupSwapChain_Custom()
