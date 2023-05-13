@@ -3458,7 +3458,7 @@ void Vulkan_013_IndirectDraw::endRenderImgui()
 
 }
 
-void Vulkan_013_IndirectDraw::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_013_IndirectDraw::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     if (this->m_isDrawIndirect)
     {

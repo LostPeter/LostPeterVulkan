@@ -875,7 +875,7 @@ void Vulkan_009_Instancing::endRenderImgui()
 
 }
 
-void Vulkan_009_Instancing::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_009_Instancing::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     size_t count = this->m_aModelObjects_Render.size();
     for (size_t i = 0; i < count; i++)

@@ -748,7 +748,7 @@ void Vulkan_010_Lighting::endRenderImgui()
 
 }
 
-void Vulkan_010_Lighting::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_010_Lighting::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     size_t count = this->m_aModelObjects_Render.size();
     for (size_t i = 0; i < count; i++)

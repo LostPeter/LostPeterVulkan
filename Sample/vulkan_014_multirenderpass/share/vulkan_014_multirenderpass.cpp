@@ -3572,7 +3572,7 @@ void Vulkan_014_MultiRenderPass::updateRenderPass_CustomBeforeDefault(VkCommandB
 
 }
 
-void Vulkan_014_MultiRenderPass::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_014_MultiRenderPass::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     if (this->m_isDrawIndirect)
     {
@@ -3725,11 +3725,6 @@ void Vulkan_014_MultiRenderPass::drawModelObjectRend(VkCommandBuffer& commandBuf
             draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
         }
     }
-}
-
-void Vulkan_014_MultiRenderPass::updateRenderCommandBuffers_Custom()
-{
-
 }
 
 void Vulkan_014_MultiRenderPass::cleanupCustom()

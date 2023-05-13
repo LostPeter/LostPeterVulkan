@@ -5847,19 +5847,15 @@ namespace LostPeter
                         bindViewport(commandBuffer, this->poViewport);
                     
                         //2> Normal Render Pass
-                        drawMesh(commandBuffer);
-                        drawMesh_Custom(commandBuffer);
+                        drawMeshDefault(commandBuffer);
+                        drawMeshDefault_Custom(commandBuffer);
 
                         //3> ImGui Pass
-                        drawImgui(commandBuffer);
+                        drawMeshDefault_Imgui(commandBuffer);
                     }
                     endRenderPass(commandBuffer);
                 }
-                void VulkanWindow::updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer)
-                {
-
-                }
-                    void VulkanWindow::drawMesh(VkCommandBuffer& commandBuffer)
+                    void VulkanWindow::drawMeshDefault(VkCommandBuffer& commandBuffer)
                     {
                         if (this->poVertexBuffer == nullptr)
                             return;
@@ -5888,11 +5884,11 @@ namespace LostPeter
                             draw(commandBuffer, this->poVertexCount, 1, 0, 0);
                         }
                     }
-                    void VulkanWindow::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+                    void VulkanWindow::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
                     {
 
                     }
-                    void VulkanWindow::drawImgui(VkCommandBuffer& commandBuffer)
+                    void VulkanWindow::drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer)
                     {
                         if (HasConfig_Imgui())
                         {
@@ -5901,91 +5897,94 @@ namespace LostPeter
                             ImGui_ImplVulkan_RenderDrawData(main_draw_data, commandBuffer);
                         }
                     }
+                void VulkanWindow::updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer)
+                {
 
-                        void VulkanWindow::beginRenderPass(VkCommandBuffer& commandBuffer, 
-                                                           const VkRenderPass& renderPass, 
-                                                           const VkFramebuffer& frameBuffer,
-                                                           const VkOffset2D& offset,
-                                                           const VkExtent2D& extent,
-                                                           const glm::vec4& clBg,
-                                                           float depth,
-                                                           uint32_t stencil)
+                }
+                    void VulkanWindow::beginRenderPass(VkCommandBuffer& commandBuffer, 
+                                                        const VkRenderPass& renderPass, 
+                                                        const VkFramebuffer& frameBuffer,
+                                                        const VkOffset2D& offset,
+                                                        const VkExtent2D& extent,
+                                                        const glm::vec4& clBg,
+                                                        float depth,
+                                                        uint32_t stencil)
+                    {
+                        VkRenderPassBeginInfo renderPassInfo = {};
+                        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+                        renderPassInfo.renderPass = renderPass;
+                        renderPassInfo.framebuffer = frameBuffer;
+                        renderPassInfo.renderArea.offset = offset;
+                        renderPassInfo.renderArea.extent = extent;
+
+                        std::array<VkClearValue, 2> clearValues = {};
+                        VkClearColorValue colorValue = { clBg.x, clBg.y, clBg.z, clBg.w };
+                        clearValues[0].color = colorValue;
+                        VkClearDepthStencilValue depthStencilValue;
+                        depthStencilValue.depth = depth;
+                        depthStencilValue.stencil = stencil;
+                        clearValues[1].depthStencil = depthStencilValue;
+                        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+                        renderPassInfo.pClearValues = clearValues.data();
+
+                        vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+                    }
+                        void VulkanWindow::bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport)
                         {
-                            VkRenderPassBeginInfo renderPassInfo = {};
-                            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-                            renderPassInfo.renderPass = renderPass;
-                            renderPassInfo.framebuffer = frameBuffer;
-                            renderPassInfo.renderArea.offset = offset;
-                            renderPassInfo.renderArea.extent = extent;
-
-                            std::array<VkClearValue, 2> clearValues = {};
-                            VkClearColorValue colorValue = { clBg.x, clBg.y, clBg.z, clBg.w };
-                            clearValues[0].color = colorValue;
-                            VkClearDepthStencilValue depthStencilValue;
-                            depthStencilValue.depth = depth;
-                            depthStencilValue.stencil = stencil;
-                            clearValues[1].depthStencil = depthStencilValue;
-                            renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-                            renderPassInfo.pClearValues = clearValues.data();
-
-                            vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+                            VkViewport viewport = vkViewport;
+                            if (cfg_isNegativeViewport)
+                            {
+                                viewport.y = viewport.height - viewport.y;
+                                viewport.height = -viewport.height;
+                            }   
+                            vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+                            vkCmdSetScissor(commandBuffer, 0, 1, &this->poScissor);
                         }
-                            void VulkanWindow::bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport)
-                            {
-                                VkViewport viewport = vkViewport;
-                                if (cfg_isNegativeViewport)
-                                {
-                                    viewport.y = viewport.height - viewport.y;
-                                    viewport.height = -viewport.height;
-                                }   
-                                vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-                                vkCmdSetScissor(commandBuffer, 0, 1, &this->poScissor);
-                            }
-                            void VulkanWindow::bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline)
-                            {
-                                vkCmdBindPipeline(commandBuffer, pipelineBindPoint, vkPipeline);
-                            }
-                            void VulkanWindow::bindVertexBuffer(VkCommandBuffer& commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets)
-                            {
-                                vkCmdBindVertexBuffers(commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets);
-                            }
-                            void VulkanWindow::bindIndexBuffer(VkCommandBuffer& commandBuffer, const VkBuffer& vkIndexBuffer, VkDeviceSize offset, VkIndexType indexType)
-                            {
-                                vkCmdBindIndexBuffer(commandBuffer, vkIndexBuffer, offset, indexType);
-                            }
-                            void VulkanWindow::bindDescriptorSets(VkCommandBuffer& commandBuffer, const VkPipelineBindPoint& pipelineBindPoint, const VkPipelineLayout& layout, uint32_t firstSet, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets)
-                            {
-                                vkCmdBindDescriptorSets(commandBuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);
-                            }
-                            void VulkanWindow::draw(VkCommandBuffer& commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
-                            {
-                                vkCmdDraw(commandBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
-                            }
-                            void VulkanWindow::drawIndexed(VkCommandBuffer& commandBuffer, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance)
-                            {   
-                                vkCmdDrawIndexed(commandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
-                            }
-                            void VulkanWindow::drawIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride)
-                            {
-                                vkCmdDrawIndirect(commandBuffer, buffer, offset, drawCount, stride);
-                            }
-                            void VulkanWindow::drawIndexedIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride)
-                            {
-                                vkCmdDrawIndexedIndirect(commandBuffer, buffer, offset, drawCount, stride);
-                            }
-                        void VulkanWindow::endRenderPass(VkCommandBuffer& commandBuffer)
+                        void VulkanWindow::bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline)
                         {
-                            vkCmdEndRenderPass(commandBuffer);
+                            vkCmdBindPipeline(commandBuffer, pipelineBindPoint, vkPipeline);
                         }
+                        void VulkanWindow::bindVertexBuffer(VkCommandBuffer& commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets)
+                        {
+                            vkCmdBindVertexBuffers(commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets);
+                        }
+                        void VulkanWindow::bindIndexBuffer(VkCommandBuffer& commandBuffer, const VkBuffer& vkIndexBuffer, VkDeviceSize offset, VkIndexType indexType)
+                        {
+                            vkCmdBindIndexBuffer(commandBuffer, vkIndexBuffer, offset, indexType);
+                        }
+                        void VulkanWindow::bindDescriptorSets(VkCommandBuffer& commandBuffer, const VkPipelineBindPoint& pipelineBindPoint, const VkPipelineLayout& layout, uint32_t firstSet, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets)
+                        {
+                            vkCmdBindDescriptorSets(commandBuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);
+                        }
+                        void VulkanWindow::draw(VkCommandBuffer& commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
+                        {
+                            vkCmdDraw(commandBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
+                        }
+                        void VulkanWindow::drawIndexed(VkCommandBuffer& commandBuffer, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance)
+                        {   
+                            vkCmdDrawIndexed(commandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+                        }
+                        void VulkanWindow::drawIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride)
+                        {
+                            vkCmdDrawIndirect(commandBuffer, buffer, offset, drawCount, stride);
+                        }
+                        void VulkanWindow::drawIndexedIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride)
+                        {
+                            vkCmdDrawIndexedIndirect(commandBuffer, buffer, offset, drawCount, stride);
+                        }
+                    void VulkanWindow::endRenderPass(VkCommandBuffer& commandBuffer)
+                    {
+                        vkCmdEndRenderPass(commandBuffer);
+                    }
 
-                        void VulkanWindow::dispatch(VkCommandBuffer& commandBuffer, uint32_t groupCountX,  uint32_t groupCountY,  uint32_t groupCountZ)
-                        {
-                            vkCmdDispatch(commandBuffer, groupCountX, groupCountY, groupCountZ);
-                        }
-                        void VulkanWindow::dispatchIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer,  VkDeviceSize offset)
-                        {
-                            vkCmdDispatchIndirect(commandBuffer, buffer, offset);
-                        }   
+                    void VulkanWindow::dispatch(VkCommandBuffer& commandBuffer, uint32_t groupCountX,  uint32_t groupCountY,  uint32_t groupCountZ)
+                    {
+                        vkCmdDispatch(commandBuffer, groupCountX, groupCountY, groupCountZ);
+                    }
+                    void VulkanWindow::dispatchIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer,  VkDeviceSize offset)
+                    {
+                        vkCmdDispatchIndirect(commandBuffer, buffer, offset);
+                    }   
 
         void VulkanWindow::updateRenderCommandBuffers_Custom()
         {   

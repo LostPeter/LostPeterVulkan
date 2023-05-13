@@ -826,7 +826,7 @@ void Vulkan_008_Blend::endRenderImgui()
 
 }
 
-void Vulkan_008_Blend::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_008_Blend::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     size_t count = this->m_aModelObjects_Render.size();
     for (size_t i = 0; i < count; i++)

@@ -569,7 +569,7 @@ void Vulkan_006_Depth::endRenderImgui()
 
 }
 
-void Vulkan_006_Depth::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_006_Depth::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

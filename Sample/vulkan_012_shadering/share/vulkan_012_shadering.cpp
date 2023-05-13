@@ -2588,7 +2588,7 @@ void Vulkan_012_Shadering::endRenderImgui()
 
 }
 
-void Vulkan_012_Shadering::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_012_Shadering::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     size_t count = this->m_aModelObjects_Render.size();
     for (size_t i = 0; i < count; i++)

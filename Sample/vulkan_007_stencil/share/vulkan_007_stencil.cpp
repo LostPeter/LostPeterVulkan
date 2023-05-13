@@ -708,7 +708,7 @@ void Vulkan_007_Stencil::endRenderImgui()
 
 }
 
-void Vulkan_007_Stencil::drawMesh_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_007_Stencil::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

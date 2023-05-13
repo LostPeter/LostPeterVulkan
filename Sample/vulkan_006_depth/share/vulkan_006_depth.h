@@ -276,7 +276,7 @@ protected:
             
         virtual void endRenderImgui();
 
-        virtual void drawMesh_Custom(VkCommandBuffer& commandBuffer);
+        virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);
 
     //cleanup
         virtual void cleanupCustom();
