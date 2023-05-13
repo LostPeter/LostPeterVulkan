@@ -264,6 +264,8 @@ namespace LostPeter
         virtual void createPipeline();
             virtual void createWindowCallback();
             virtual void createDevice();
+                virtual void destroyVkDevice(VkDevice vkDevice);
+                virtual void destroyVkInstance(VkInstance vkInstance);
                 virtual void createInstance();
                     virtual void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
                 virtual void setUpDebugMessenger();
@@ -283,8 +285,11 @@ namespace LostPeter
                     virtual void createCommandPool_Graphics();
                     virtual void createCommandPool_Compute();
 
-                    virtual VkCommandBuffer beginSingleTimeCommands();
-                    virtual void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+                        virtual void destroyVkCommandPool(VkCommandPool vkCommandPool);
+                        virtual void freeCommandBuffers(VkCommandPool commandPool, uint32_t count, VkCommandBuffer* pCommandBuffer);
+
+                        virtual VkCommandBuffer beginSingleTimeCommands();
+                        virtual void endSingleTimeCommands(VkCommandBuffer commandBuffer);
             
             virtual void createSwapChainObjects();
                 virtual void createSwapChain();
@@ -298,6 +303,9 @@ namespace LostPeter
                         virtual VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
                         virtual VkFormat findDepthFormat();
                         virtual bool hasStencilComponent(VkFormat format);
+
+                virtual void destroyVkSurfaceKHR(VkSurfaceKHR vkSurfaceKHR);
+                virtual void destroyVkSwapchainKHR(VkSwapchainKHR vkSwapchainKHR);
 
             virtual void createDescriptorObjects();
                 virtual void createDescriptorSetLayout_Default();
@@ -341,10 +349,14 @@ namespace LostPeter
                                                      uint32_t height,
                                                      uint32_t layers,
                                                      VkFramebuffer& vkFramebuffer);
+                    virtual void destroyVkFramebuffer(VkFramebuffer vkFramebuffer);
 
             virtual void createSyncObjects();
                 virtual void createPresentRenderSyncObjects();
                 virtual void createRenderComputeSyncObjects();
+
+                    virtual void destroyVkFence(VkFence vkFence);
+                    virtual void destroyVkSemaphore(VkSemaphore vkSemaphore);
 
         //Load Assets
         virtual void loadAssets();
@@ -370,7 +382,6 @@ namespace LostPeter
                     virtual void loadModel();
                         virtual void loadModel_Assimp();
                         virtual void loadModel_Custom();
-                    virtual void destroyBuffer(VkBuffer buffer, VkDeviceMemory bufferMemory);
                     virtual void createVertexBuffer(size_t bufSize, 
                                                     void* pBuf, 
                                                     VkBuffer& vertexBuffer, 
@@ -379,17 +390,20 @@ namespace LostPeter
                                                    void* pBuf, 
                                                    VkBuffer& indexBuffer, 
                                                    VkDeviceMemory& indexBufferMemory);
-                        virtual void createBuffer(VkDeviceSize size, 
-                                                  VkBufferUsageFlags usage, 
-                                                  VkMemoryPropertyFlags properties, 
-                                                  VkBuffer& buffer, 
-                                                  VkDeviceMemory& bufferMemory);
+                        virtual void createVkBuffer(VkDeviceSize size, 
+                                                    VkBufferUsageFlags usage, 
+                                                    VkMemoryPropertyFlags properties, 
+                                                    VkBuffer& buffer, 
+                                                    VkDeviceMemory& bufferMemory);
                         virtual uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-                        virtual void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+                        virtual void copyVkBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
+                        virtual void destroyVkBuffer(VkBuffer buffer, VkDeviceMemory bufferMemory);
                 
                 virtual void loadTexture();
-                    virtual void destroyTexture(VkImage image, VkDeviceMemory imageMemory, VkImageView imageView);
-                    virtual void destroyTextureSampler(VkSampler sampler);
+                    virtual void destroyVkImage(VkImage image, VkDeviceMemory imageMemory, VkImageView imageView);
+                    virtual void destroyVkImageView(VkImageView imageView);
+                    virtual void destroyVkImageSampler(VkSampler sampler);
 
                     virtual void createTexture1D(const std::string& pathAsset_Tex, 
                                                  uint32_t& mipMapCount,
@@ -685,11 +699,14 @@ namespace LostPeter
 
                 virtual VkShaderModule createShaderModule(std::string info, std::string pathFile);
                 virtual VkPipelineLayout createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout);
-                virtual void destroyVkPipeline(VkPipeline vkPipeline);
+                    virtual void destroyVkPipelineLayout(VkPipelineLayout vkPipelineLayout);
+                    virtual void destroyVkPipeline(VkPipeline vkPipeline);
 
                 virtual void preparePipeline();
                     virtual void createVkPipelineCache();
+                    virtual void destroyVkPipelineCache(VkPipelineCache vkPipelineCache);
                     virtual void createCustomBeforePipeline();
+
 
                 virtual void createGraphicsPipeline();
                     virtual void createGraphicsPipeline_Default();
@@ -745,11 +762,16 @@ namespace LostPeter
 
                 virtual void createDescriptor();
                     virtual void createDescriptorPool();
+
+                        virtual void destroyVkDescriptorPool(VkDescriptorPool vkDescriptorPool);
+
                     virtual void createDescriptorSets_Default();
                     virtual void createDescriptorSets_Custom();
                         virtual void createDescriptorSet(VkDescriptorSet& descriptorSet, VkDescriptorSetLayout vkDescriptorSetLayout);
                         virtual void createDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout);
-                        virtual void updateDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler);
+                        virtual void updateDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler); 
+
+                        virtual void destroyVkDescriptorSetLayout(VkDescriptorSetLayout vkDescriptorSetLayout);
 
                 virtual void createCommandBuffers();
                     virtual void createCommandBuffer_Graphics();

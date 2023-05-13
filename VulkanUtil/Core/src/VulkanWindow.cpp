@@ -31,58 +31,58 @@ namespace LostPeter
 
     VulkanWindow::VulkanWindow(int width, int height, std::string name)
         : VulkanBase(width, height, name)
-        , poInstance(nullptr)
-        , poDebugMessenger(nullptr)
-        , poPhysicalDevice(nullptr)
-        , poDeviceCreatepNextChain(nullptr)
-        , poDevice(nullptr)
+        , poInstance(VK_NULL_HANDLE)
+        , poDebugMessenger(VK_NULL_HANDLE)
+        , poPhysicalDevice(VK_NULL_HANDLE)
+        , poDeviceCreatepNextChain(VK_NULL_HANDLE)
+        , poDevice(VK_NULL_HANDLE)
         , poMSAASamples(VK_SAMPLE_COUNT_1_BIT)
-        , poQueueGraphics(nullptr)
-        , poQueuePresent(nullptr)
-        , poQueueCompute(nullptr)
-        , poSurface(nullptr)
-        , poSwapChain(nullptr)
-        , poColorImage(nullptr)
-        , poColorImageMemory(nullptr)
-        , poColorImageView(nullptr)
-        , poDepthImage(nullptr)
-        , poDepthImageMemory(nullptr)
-        , poDepthImageView(nullptr)
-        , poRenderPass(nullptr)
-        , poDescriptorSetLayout(nullptr)
-        , poCommandPoolGraphics(nullptr) 
-        , poCommandPoolCompute(nullptr)
-        , poCommandBufferCompute(nullptr)
+        , poQueueGraphics(VK_NULL_HANDLE)
+        , poQueuePresent(VK_NULL_HANDLE)
+        , poQueueCompute(VK_NULL_HANDLE)
+        , poSurface(VK_NULL_HANDLE)
+        , poSwapChain(VK_NULL_HANDLE)
+        , poColorImage(VK_NULL_HANDLE)
+        , poColorImageMemory(VK_NULL_HANDLE)
+        , poColorImageView(VK_NULL_HANDLE)
+        , poDepthImage(VK_NULL_HANDLE)
+        , poDepthImageMemory(VK_NULL_HANDLE)
+        , poDepthImageView(VK_NULL_HANDLE)
+        , poRenderPass(VK_NULL_HANDLE)
+        , poDescriptorSetLayout(VK_NULL_HANDLE)
+        , poCommandPoolGraphics(VK_NULL_HANDLE) 
+        , poCommandPoolCompute(VK_NULL_HANDLE)
+        , poCommandBufferCompute(VK_NULL_HANDLE)
 
         , poVertexCount(0)
         , poVertexBuffer_Size(0)
         , poVertexBuffer_Data(nullptr)
-        , poVertexBuffer(nullptr)
-        , poVertexBufferMemory(nullptr)
+        , poVertexBuffer(VK_NULL_HANDLE)
+        , poVertexBufferMemory(VK_NULL_HANDLE)
         , poIndexCount(0)
         , poIndexBuffer_Size(0)
         , poIndexBuffer_Data(nullptr)
-        , poIndexBuffer(nullptr)
-        , poIndexBufferMemory(nullptr)
+        , poIndexBuffer(VK_NULL_HANDLE)
+        , poIndexBufferMemory(VK_NULL_HANDLE)
         , poMatWorld(VulkanMath::Identity4x4())
 
         , poTypeVertex(Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
-        , poPipelineLayout(nullptr)
-        , poPipelineCache(nullptr)
-        , poPipelineGraphics(nullptr)
-        , poPipelineGraphics_WireFrame(nullptr)
+        , poPipelineLayout(VK_NULL_HANDLE)
+        , poPipelineCache(VK_NULL_HANDLE)
+        , poPipelineGraphics(VK_NULL_HANDLE)
+        , poPipelineGraphics_WireFrame(VK_NULL_HANDLE)
 
-        , poTextureImage(nullptr)
-        , poTextureImageMemory(nullptr)
-        , poTextureImageView(nullptr)
-        , poTextureSampler(nullptr)
+        , poTextureImage(VK_NULL_HANDLE)
+        , poTextureImageMemory(VK_NULL_HANDLE)
+        , poTextureImageView(VK_NULL_HANDLE)
+        , poTextureSampler(VK_NULL_HANDLE)
 
-        , poDescriptorPool(nullptr)
+        , poDescriptorPool(VK_NULL_HANDLE)
 
         , poCurrentFrame(0)
         , poSwapChainImageIndex(0)
-        , poGraphicsWaitSemaphore(nullptr)
-        , poComputeWaitSemaphore(nullptr)
+        , poGraphicsWaitSemaphore(VK_NULL_HANDLE)
+        , poComputeWaitSemaphore(VK_NULL_HANDLE)
 
         , queueIndexGraphics(0)
         , queueIndexPresent(0)
@@ -132,7 +132,7 @@ namespace LostPeter
 
         , imgui_IsEnable(false)
         , imgui_MinimalSwapchainImages(0)
-        , imgui_DescriptorPool(nullptr)
+        , imgui_DescriptorPool(VK_NULL_HANDLE)
         , imgui_PathIni("")
         , imgui_PathLog("")
 
@@ -493,6 +493,20 @@ namespace LostPeter
             createLogicalDevice();
         }
         Util_LogInfo("*****<1-2> VulkanWindow::createDevice finish *****");
+    }
+    void VulkanWindow::destroyVkDevice(VkDevice vkDevice)
+    {
+        if (vkDevice != VK_NULL_HANDLE)
+        {
+            vkDestroyDevice(vkDevice, nullptr);
+        }
+    }
+    void VulkanWindow::destroyVkInstance(VkInstance vkInstance)
+    {
+        if (vkInstance != VK_NULL_HANDLE)
+        {
+            vkDestroyInstance(vkInstance, nullptr);
+        }
     }
     void VulkanWindow::createInstance()
     {
@@ -1170,6 +1184,22 @@ namespace LostPeter
                 throw std::runtime_error(msg);
             }
         }
+
+            void VulkanWindow::destroyVkCommandPool(VkCommandPool vkCommandPool)
+            {
+                if (vkCommandPool != VK_NULL_HANDLE)
+                {
+                    vkDestroyCommandPool(this->poDevice, vkCommandPool, nullptr);
+                }
+            }
+            void VulkanWindow::freeCommandBuffers(VkCommandPool commandPool,  uint32_t count, VkCommandBuffer* pCommandBuffer)
+            {
+                if (pCommandBuffer != nullptr)
+                {
+                    vkFreeCommandBuffers(this->poDevice, commandPool, count, pCommandBuffer);
+                }
+            }
+
         VkCommandBuffer VulkanWindow::beginSingleTimeCommands() 
         {
             VkCommandBufferAllocateInfo allocInfo = {};
@@ -1201,7 +1231,7 @@ namespace LostPeter
             vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, nullptr);
             vkQueueWaitIdle(this->poQueueGraphics);
 
-            vkFreeCommandBuffers(this->poDevice, this->poCommandPoolGraphics, 1, &commandBuffer);
+            freeCommandBuffers(this->poCommandPoolGraphics, 1, &commandBuffer);
         }
 
     void VulkanWindow::createSwapChainObjects()
@@ -1487,6 +1517,21 @@ namespace LostPeter
                 format == VK_FORMAT_D16_UNORM_S8_UINT;
         }
 
+        void VulkanWindow::destroyVkSurfaceKHR(VkSurfaceKHR vkSurfaceKHR)
+        {
+            if (vkSurfaceKHR != VK_NULL_HANDLE)
+            {
+                vkDestroySurfaceKHR(this->poInstance, vkSurfaceKHR, nullptr);
+            }
+        }
+        void VulkanWindow::destroyVkSwapchainKHR(VkSwapchainKHR vkSwapchainKHR)
+        {
+            if (vkSwapchainKHR != VK_NULL_HANDLE)
+            {
+                vkDestroySwapchainKHR(this->poDevice, vkSwapchainKHR, nullptr);
+            }
+        }
+
     void VulkanWindow::createDescriptorObjects()
     {
         Util_LogInfo("*****<1-6> VulkanWindow::createDescriptorObjects start *****");
@@ -1673,7 +1718,7 @@ namespace LostPeter
             {
                 if (vkRenderPass != VK_NULL_HANDLE)
                 {
-                    vkDestroyRenderPass(this->poDevice, vkRenderPass, nullptr);
+                    vkDestroyRenderPass(this->poDevice, vkRenderPass, nullptr);   
                 }
             }
             void VulkanWindow::createRenderPass_KhrDepth(VkFormat formatSwapChain, VkFormat formatDepth, VkRenderPass& vkRenderPass)
@@ -2198,7 +2243,13 @@ namespace LostPeter
                     Util_LogInfo("VulkanWindow::createVkFramebuffer: vkCreateFramebuffer success: [%s] !", nameFramebuffer.c_str());
                     return true;
                 }
-
+                void VulkanWindow::destroyVkFramebuffer(VkFramebuffer vkFramebuffer)
+                {
+                    if (vkFramebuffer != VK_NULL_HANDLE)
+                    {
+                        vkDestroyFramebuffer(this->poDevice, vkFramebuffer, nullptr);
+                    }
+                }
 
     void VulkanWindow::createSyncObjects()
     {
@@ -2271,6 +2322,21 @@ namespace LostPeter
 
             Util_LogInfo("<1-8-2> VulkanWindow::createRenderComputeSyncObjects finish !");
         }
+
+            void VulkanWindow::destroyVkFence(VkFence vkFence)
+            {
+                if (vkFence != VK_NULL_HANDLE)
+                {
+                    vkDestroyFence(this->poDevice, vkFence, nullptr);
+                }
+            }
+            void VulkanWindow::destroyVkSemaphore(VkSemaphore vkSemaphore)
+            {   
+                if (vkSemaphore != VK_NULL_HANDLE)
+                {
+                    vkDestroySemaphore(this->poDevice, vkSemaphore, nullptr);
+                }
+            }
 
     void VulkanWindow::loadAssets()
     {
@@ -2479,14 +2545,6 @@ namespace LostPeter
         {
 
         }
-    void VulkanWindow::destroyBuffer(VkBuffer buffer, VkDeviceMemory bufferMemory)
-    {
-        if (buffer != VK_NULL_HANDLE)
-        {
-            vkDestroyBuffer(this->poDevice, buffer, nullptr);
-            vkFreeMemory(this->poDevice, bufferMemory, nullptr);
-        }
-    }
     void VulkanWindow::createVertexBuffer(size_t bufSize, 
                                           void* pBuf, 
                                           VkBuffer& vertexBuffer, 
@@ -2494,27 +2552,26 @@ namespace LostPeter
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createBuffer(bufSize, 
-                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                     stagingBuffer, 
-                     stagingBufferMemory);
+        createVkBuffer(bufSize, 
+                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                       stagingBuffer, 
+                       stagingBufferMemory);
         {
             void* data;
             vkMapMemory(this->poDevice, stagingBufferMemory, 0, bufSize, 0, &data);
                 memcpy(data, pBuf, bufSize);
             vkUnmapMemory(this->poDevice, stagingBufferMemory);
         }
-        createBuffer(bufSize, 
-                     VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
-                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                     vertexBuffer,
-                     vertexBufferMemory);
+        createVkBuffer(bufSize, 
+                       VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
+                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                       vertexBuffer,
+                       vertexBufferMemory);
 
-        copyBuffer(stagingBuffer, vertexBuffer, bufSize);
+        copyVkBuffer(stagingBuffer, vertexBuffer, bufSize);
 
-        vkDestroyBuffer(this->poDevice, stagingBuffer, nullptr);
-        vkFreeMemory(this->poDevice, stagingBufferMemory, nullptr);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
     void VulkanWindow::createIndexBuffer(size_t bufSize, 
                                          void* pBuf, 
@@ -2523,33 +2580,32 @@ namespace LostPeter
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        createBuffer(bufSize, 
-                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                     stagingBuffer, 
-                     stagingBufferMemory);
+        createVkBuffer(bufSize, 
+                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                       stagingBuffer, 
+                       stagingBufferMemory);
         {
             void* data;
             vkMapMemory(this->poDevice, stagingBufferMemory, 0, bufSize, 0, &data);
                 memcpy(data, pBuf, bufSize);
             vkUnmapMemory(this->poDevice, stagingBufferMemory);
         }
-        createBuffer(bufSize, 
-                     VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
-                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                     indexBuffer, 
-                     indexBufferMemory);
+        createVkBuffer(bufSize, 
+                       VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
+                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                       indexBuffer, 
+                       indexBufferMemory);
 
-        copyBuffer(stagingBuffer, indexBuffer, bufSize);
+        copyVkBuffer(stagingBuffer, indexBuffer, bufSize);    
 
-        vkDestroyBuffer(this->poDevice, stagingBuffer, nullptr);
-        vkFreeMemory(this->poDevice, stagingBufferMemory, nullptr);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
-        void VulkanWindow::createBuffer(VkDeviceSize size, 
-                                        VkBufferUsageFlags usage, 
-                                        VkMemoryPropertyFlags properties, 
-                                        VkBuffer& buffer, 
-                                        VkDeviceMemory& bufferMemory)
+        void VulkanWindow::createVkBuffer(VkDeviceSize size, 
+                                          VkBufferUsageFlags usage, 
+                                          VkMemoryPropertyFlags properties, 
+                                          VkBuffer& buffer, 
+                                          VkDeviceMemory& bufferMemory)
         {
             VkBufferCreateInfo bufferInfo = {};
             bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -2559,7 +2615,7 @@ namespace LostPeter
 
             if (!Util_CheckVkResult(vkCreateBuffer(this->poDevice, &bufferInfo, nullptr, &buffer), "vkCreateBuffer")) 
             {
-                std::string msg = "VulkanWindow::createBuffer: Failed to create buffer !";
+                std::string msg = "VulkanWindow::createVkBuffer: Failed to create buffer !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -2573,7 +2629,7 @@ namespace LostPeter
 
             if (vkAllocateMemory(this->poDevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::createBuffer: Failed to allocate buffer memory !";
+                std::string msg = "VulkanWindow::createVkBuffer: Failed to allocate buffer memory !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -2596,15 +2652,23 @@ namespace LostPeter
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-            void VulkanWindow::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) 
+            void VulkanWindow::copyVkBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) 
             {
                 VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-
-                VkBufferCopy copyRegion = {};
-                copyRegion.size = size;
-                vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-
+                {
+                    VkBufferCopy copyRegion = {};
+                    copyRegion.size = size;
+                    vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+                }
                 endSingleTimeCommands(commandBuffer);
+            }
+            void VulkanWindow::destroyVkBuffer(VkBuffer buffer, VkDeviceMemory bufferMemory)
+            {
+                if (buffer != VK_NULL_HANDLE)
+                {
+                    vkDestroyBuffer(this->poDevice, buffer, nullptr);
+                    vkFreeMemory(this->poDevice, bufferMemory, nullptr);
+                }
             }
 
     void VulkanWindow::loadTexture()
@@ -2618,19 +2682,23 @@ namespace LostPeter
             Util_LogInfo("<2-2-2> VulkanWindow::loadTexture finish !");
         }
     }
-    void VulkanWindow::destroyTexture(VkImage image, VkDeviceMemory imageMemory, VkImageView imageView)
+    void VulkanWindow::destroyVkImage(VkImage image, VkDeviceMemory imageMemory, VkImageView imageView)
     {
-        if (imageView != VK_NULL_HANDLE)
-        {
-            vkDestroyImageView(this->poDevice, imageView, nullptr);
-        }
         if (image != VK_NULL_HANDLE)
         {
             vkDestroyImage(this->poDevice, image, nullptr);
             vkFreeMemory(this->poDevice, imageMemory, nullptr);
         }
+        destroyVkImageView(imageView);
     }
-    void VulkanWindow::destroyTextureSampler(VkSampler sampler)
+    void VulkanWindow::destroyVkImageView(VkImageView imageView)
+    {
+        if (imageView != VK_NULL_HANDLE)
+        {
+            vkDestroyImageView(this->poDevice, imageView, nullptr);
+        }
+    }
+    void VulkanWindow::destroyVkImageSampler(VkSampler sampler)
     {
         if (sampler != VK_NULL_HANDLE)
         {
@@ -2677,11 +2745,11 @@ namespace LostPeter
         }
 
         //2> Create Buffer and copy Texture data to buffer
-        createBuffer(imageSize, 
-                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                     buffer, 
-                     bufferMemory);
+        createVkBuffer(imageSize, 
+                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                       buffer, 
+                       bufferMemory);
 
         void* data;
         vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
@@ -2772,7 +2840,7 @@ namespace LostPeter
                         imageMemory, 
                         stagingBuffer, 
                         stagingBufferMemory);
-        destroyBuffer(stagingBuffer, stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
     void VulkanWindow::createTexture2D(const std::string& pathAsset_Tex, 
                                        uint32_t& mipMapCount,
@@ -2870,11 +2938,11 @@ namespace LostPeter
         mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
         VkDeviceSize imageSize = width * height * 4;
         VkDeviceSize imageSizeAll = imageSize * count_tex;
-        createBuffer(imageSizeAll, 
-                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                     buffer, 
-                     bufferMemory);
+        createVkBuffer(imageSizeAll, 
+                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                       buffer, 
+                       bufferMemory);
 
         for (size_t i = 0; i < count_tex; i++)
         {
@@ -2966,7 +3034,7 @@ namespace LostPeter
                              imageMemory, 
                              stagingBuffer, 
                              stagingBufferMemory);
-        destroyBuffer(stagingBuffer, stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
     void VulkanWindow::createTexture2DArray(const std::vector<std::string>& aPathAsset_Tex, 
                                             uint32_t& mipMapCount,
@@ -3010,11 +3078,11 @@ namespace LostPeter
 
         //1> Create Buffer and copy Texture data to buffer
         VkDeviceSize imageSize = size;
-        createBuffer(imageSize, 
-                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                     buffer, 
-                     bufferMemory);
+        createVkBuffer(imageSize, 
+                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                       buffer, 
+                       bufferMemory);
 
         void* data;
         vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
@@ -3100,7 +3168,7 @@ namespace LostPeter
                         imageMemory, 
                         stagingBuffer, 
                         stagingBufferMemory);
-        destroyBuffer(stagingBuffer, stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
     void VulkanWindow::createTextureCubeMap(const std::vector<std::string>& aPathAsset_Tex, 
@@ -3176,11 +3244,11 @@ namespace LostPeter
         mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
         VkDeviceSize imageSize = width * height * 4;
         VkDeviceSize imageSizeAll = imageSize * count_tex;
-        createBuffer(imageSizeAll, 
-                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                     buffer, 
-                     bufferMemory);
+        createVkBuffer(imageSizeAll, 
+                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                       buffer, 
+                       bufferMemory);
 
         for (size_t i = 0; i < count_tex; i++)
         {
@@ -3270,7 +3338,7 @@ namespace LostPeter
                              imageMemory, 
                              stagingBuffer, 
                              stagingBufferMemory);
-        destroyBuffer(stagingBuffer, stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
     void VulkanWindow::createTextureCubeMap(const std::vector<std::string>& aPathAsset_Tex,
                                             uint32_t& mipMapCount, 
@@ -3339,7 +3407,7 @@ namespace LostPeter
                                     imageMemory, 
                                     stagingBuffer, 
                                     stagingBufferMemory);
-        destroyBuffer(stagingBuffer, stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
     void VulkanWindow::createTextureRenderTarget2D(const glm::vec4& clDefault,
@@ -3359,11 +3427,11 @@ namespace LostPeter
     {
         //1> CreateBuffer
         VkDeviceSize imageSize = width * height * 4;
-        createBuffer(imageSize, 
-                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                     buffer, 
-                     bufferMemory);
+        createVkBuffer(imageSize, 
+                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                       buffer, 
+                       bufferMemory);
         if (isSetColor)
         {
             uint8 r = (uint8)(clDefault.x * 255);
@@ -3444,7 +3512,7 @@ namespace LostPeter
                                     imageMemory, 
                                     stagingBuffer, 
                                     stagingBufferMemory);
-        destroyBuffer(stagingBuffer, stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
     void VulkanWindow::createTextureRenderTarget2DArray(const glm::vec4& clDefault,
@@ -3466,11 +3534,11 @@ namespace LostPeter
         //1> CreateBuffer
         VkDeviceSize imageSize = width * height * 4;
         VkDeviceSize imageSizeAll = imageSize * numArray;
-        createBuffer(imageSizeAll, 
-                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                     buffer, 
-                     bufferMemory);
+        createVkBuffer(imageSizeAll, 
+                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                       buffer, 
+                       bufferMemory);
         if (isSetColor)
         {
             uint8 r = (uint8)(clDefault.x * 255);
@@ -3556,7 +3624,7 @@ namespace LostPeter
                                          imageMemory, 
                                          stagingBuffer, 
                                          stagingBufferMemory);
-        destroyBuffer(stagingBuffer, stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
     void VulkanWindow::createTextureRenderTarget3D(const glm::vec4& clDefault,
@@ -3576,11 +3644,11 @@ namespace LostPeter
     {
         //1> CreateBuffer
         VkDeviceSize imageSize = width * height * depth * 4;
-        createBuffer(imageSize, 
-                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                     buffer, 
-                     bufferMemory);
+        createVkBuffer(imageSize, 
+                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                       buffer, 
+                       bufferMemory);
         if (isSetColor)
         {
             uint8 r = (uint8)(clDefault.x * 255);
@@ -3660,7 +3728,7 @@ namespace LostPeter
                                     imageMemory, 
                                     stagingBuffer, 
                                     stagingBufferMemory);
-        destroyBuffer(stagingBuffer, stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
     void VulkanWindow::createTextureRenderTargetCubeMap(uint32_t width, 
@@ -3679,11 +3747,11 @@ namespace LostPeter
         //1> CreateBuffer
         VkDeviceSize imageSize = width * height * 4;
         VkDeviceSize imageSizeAll = imageSize * numArray;
-        createBuffer(imageSizeAll, 
-                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                     buffer, 
-                     bufferMemory);
+        createVkBuffer(imageSizeAll, 
+                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                       buffer, 
+                       bufferMemory);
 
         //2> CreateImage
         uint32_t depth = 1;
@@ -3737,7 +3805,7 @@ namespace LostPeter
                                          imageMemory, 
                                          stagingBuffer, 
                                          stagingBufferMemory);
-        destroyBuffer(stagingBuffer, stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }                                                     
 
 
@@ -4132,11 +4200,11 @@ namespace LostPeter
 
         for (size_t i = 0; i < count; i++) 
         {
-            createBuffer(bufferSize, 
-                         VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                         this->poBuffers_PassCB[i], 
-                         this->poBuffersMemory_PassCB[i]);
+            createVkBuffer(bufferSize, 
+                           VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                           this->poBuffers_PassCB[i], 
+                           this->poBuffersMemory_PassCB[i]);
         }
 
         Util_LogInfo("<2-2-3-1> VulkanWindow::createPassCB finish !");
@@ -4156,11 +4224,11 @@ namespace LostPeter
 
         for (size_t i = 0; i < count; i++) 
         {
-            createBuffer(bufferSize, 
-                         VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                         this->poBuffers_ObjectCB[i], 
-                         this->poBuffersMemory_ObjectCB[i]);
+            createVkBuffer(bufferSize, 
+                           VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                           this->poBuffers_ObjectCB[i], 
+                           this->poBuffersMemory_ObjectCB[i]);
         }
 
         Util_LogInfo("<2-2-3-2> VulkanWindow::createObjectCB finish !");
@@ -4181,11 +4249,11 @@ namespace LostPeter
 
         for (size_t i = 0; i < count; i++) 
         {
-            createBuffer(bufferSize, 
-                         VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                         this->poBuffers_MaterialCB[i], 
-                         this->poBuffersMemory_MaterialCB[i]);
+            createVkBuffer(bufferSize, 
+                           VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                           this->poBuffers_MaterialCB[i], 
+                           this->poBuffersMemory_MaterialCB[i]);
         }
 
         Util_LogInfo("<2-2-3-3> VulkanWindow::createMaterialCB finish !");
@@ -4206,11 +4274,11 @@ namespace LostPeter
 
         for (size_t i = 0; i < count; i++) 
         {
-            createBuffer(bufferSize, 
-                         VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                         this->poBuffers_InstanceCB[i], 
-                         this->poBuffersMemory_InstanceCB[i]);
+            createVkBuffer(bufferSize, 
+                           VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                           this->poBuffers_InstanceCB[i], 
+                           this->poBuffersMemory_InstanceCB[i]);
         }
 
         Util_LogInfo("<2-2-3-4> VulkanWindow::createInstanceCB finish !");
@@ -4275,13 +4343,20 @@ namespace LostPeter
         }
         return vkPipelineLayout;
     }
-    void VulkanWindow::destroyVkPipeline(VkPipeline vkPipeline)
-    {
-        if (vkPipeline != nullptr)
+        void VulkanWindow::destroyVkPipelineLayout(VkPipelineLayout vkPipelineLayout)
         {
-            vkDestroyPipeline(this->poDevice, vkPipeline, nullptr);
+            if (vkPipelineLayout != VK_NULL_HANDLE)
+            {
+                vkDestroyPipelineLayout(this->poDevice, vkPipelineLayout, nullptr);
+            }
         }
-    }
+        void VulkanWindow::destroyVkPipeline(VkPipeline vkPipeline)
+        {
+            if (vkPipeline != VK_NULL_HANDLE)
+            {
+                vkDestroyPipeline(this->poDevice, vkPipeline, nullptr);   
+            }
+        }
 
     void VulkanWindow::preparePipeline()
     {
@@ -4307,6 +4382,13 @@ namespace LostPeter
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
+            }
+        }
+        void VulkanWindow::destroyVkPipelineCache(VkPipelineCache vkPipelineCache)
+        {
+            if (vkPipelineCache != VK_NULL_HANDLE)
+            {
+                vkDestroyPipelineCache(this->poDevice, vkPipelineCache, nullptr);
             }
         }
         void VulkanWindow::createCustomBeforePipeline()
@@ -4758,6 +4840,14 @@ namespace LostPeter
 
             Util_LogInfo("<2-2-7-1> VulkanWindow::createDescriptorPool finish !");
         }
+            void VulkanWindow::destroyVkDescriptorPool(VkDescriptorPool vkDescriptorPool)
+            {
+                if (vkDescriptorPool != VK_NULL_HANDLE)
+                {
+                    vkDestroyDescriptorPool(this->poDevice, vkDescriptorPool, nullptr);
+                }
+            }
+
         void VulkanWindow::createDescriptorSets_Default()
         {
             createDescriptorSets(this->poDescriptorSets, this->poDescriptorSetLayout);
@@ -4895,6 +4985,11 @@ namespace LostPeter
                     
                     vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
                 }
+            }
+
+            void VulkanWindow::destroyVkDescriptorSetLayout(VkDescriptorSetLayout vkDescriptorSetLayout)
+            {
+                vkDestroyDescriptorSetLayout(this->poDevice, vkDescriptorSetLayout, nullptr);
             }
 
     void VulkanWindow::createCommandBuffers()
@@ -6075,25 +6170,18 @@ namespace LostPeter
             cleanupSwapChain();
 
             //2> imgui
-            if (this->imgui_DescriptorPool != nullptr)
-            {
-                vkDestroyDescriptorPool(this->poDevice, this->imgui_DescriptorPool, nullptr);
-            }
+            destroyVkDescriptorPool(this->imgui_DescriptorPool);
+            this->imgui_DescriptorPool = VK_NULL_HANDLE;
 
             //3> cleanupTexture
             cleanupTexture();
 
             //4> VkPipelineCache
-            if (this->poPipelineCache != nullptr)
-            {
-                vkDestroyPipelineCache(this->poDevice, this->poPipelineCache, nullptr);
-            }
+            destroyVkPipelineCache(this->poPipelineCache);
+            this->poPipelineCache = VK_NULL_HANDLE;
 
             //5> DescriptorSetLayout
-            if (this->poDescriptorSetLayout != nullptr)
-            {
-                vkDestroyDescriptorSetLayout(this->poDevice, this->poDescriptorSetLayout, nullptr);
-            }
+            destroyVkDescriptorSetLayout(this->poDescriptorSetLayout);
 
             //6> cleanupVertexIndexBuffer
             cleanupVertexIndexBuffer();
@@ -6101,18 +6189,18 @@ namespace LostPeter
             //7> Semaphores
             for (size_t i = 0; i < s_maxFramesInFight; i++) 
             {
-                vkDestroySemaphore(this->poDevice, this->poRenderCompleteSemaphores[i], nullptr);
-                vkDestroySemaphore(this->poDevice, this->poPresentCompleteSemaphores[i], nullptr);
-                vkDestroyFence(this->poDevice, this->poInFlightFences[i], nullptr);
+                destroyVkSemaphore(this->poRenderCompleteSemaphores[i]);
+                destroyVkSemaphore(this->poPresentCompleteSemaphores[i]);
+                destroyVkFence(this->poInFlightFences[i]);
             }
-            if (this->poGraphicsWaitSemaphore != nullptr)
-            {
-                vkDestroySemaphore(this->poDevice, this->poGraphicsWaitSemaphore, nullptr);
-            }
-            if (this->poComputeWaitSemaphore != nullptr)
-            {
-                vkDestroySemaphore(this->poDevice, this->poComputeWaitSemaphore, nullptr);
-            }
+            this->poRenderCompleteSemaphores.clear();
+            this->poPresentCompleteSemaphores.clear();
+            this->poInFlightFences.clear();
+
+            destroyVkSemaphore(this->poGraphicsWaitSemaphore);
+            this->poGraphicsWaitSemaphore = VK_NULL_HANDLE;
+            destroyVkSemaphore(this->poComputeWaitSemaphore);
+            this->poComputeWaitSemaphore = VK_NULL_HANDLE;
 
             //8> Imgui
             if (HasConfig_Imgui())
@@ -6122,23 +6210,23 @@ namespace LostPeter
             }
 
             //9> CommandPool
-            vkDestroyCommandPool(this->poDevice, this->poCommandPoolGraphics, nullptr);
-            if (this->poCommandPoolCompute != nullptr)
-            {
-                vkDestroyCommandPool(this->poDevice, this->poCommandPoolCompute, nullptr);
-            }
+            destroyVkCommandPool(this->poCommandPoolGraphics);
+            destroyVkCommandPool(this->poCommandPoolCompute);
             
             //10> Device
-            vkDestroyDevice(this->poDevice, nullptr);
+            destroyVkDevice(this->poDevice);
+            this->poDevice = VK_NULL_HANDLE;
             if (s_isEnableValidationLayers)
             {
                 destroyDebugUtilsMessengerEXT(this->poInstance, this->poDebugMessenger, nullptr);
             }
             //11> Surface
-            vkDestroySurfaceKHR(this->poInstance, this->poSurface, nullptr);
+            destroyVkSurfaceKHR(this->poSurface);
+            this->poSurface = VK_NULL_HANDLE;
 
             //12> Instance
-            vkDestroyInstance(this->poInstance, nullptr);
+            destroyVkInstance(this->poInstance);
+            this->poInstance = VK_NULL_HANDLE;
         }
         Util_LogInfo("---------- VulkanWindow::cleanup finish ----------");
     }
@@ -6148,34 +6236,19 @@ namespace LostPeter
         }
         void VulkanWindow::cleanupTexture()
         {
-            //1> TextureSampler
-            if (this->poTextureSampler != nullptr)
-            {
-                vkDestroySampler(this->poDevice, this->poTextureSampler, nullptr);
-            }
-            this->poTextureSampler = nullptr;
-            //2> TextureImageView
-            if (this->poTextureImageView != nullptr)
-            {
-                vkDestroyImageView(this->poDevice, this->poTextureImageView, nullptr);
-            }
-            this->poTextureImageView = nullptr;
-            //3> TextureImage
-            if (this->poTextureImage != nullptr)
-            {
-                vkDestroyImage(this->poDevice, this->poTextureImage, nullptr);
-                vkFreeMemory(this->poDevice, this->poTextureImageMemory, nullptr);
-            }
+            destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
+            destroyVkImageSampler(this->poTextureSampler);
             this->poTextureImage = nullptr;
             this->poTextureImageMemory = nullptr;
+            this->poTextureImageView = nullptr;
+            this->poTextureSampler = nullptr;            
         }
         void VulkanWindow::cleanupVertexIndexBuffer()
         {
             //1> VertexBuffer
             if (this->poVertexBuffer != nullptr)
             {
-                vkDestroyBuffer(this->poDevice, this->poVertexBuffer, nullptr);
-                vkFreeMemory(this->poDevice, this->poVertexBufferMemory, nullptr);
+                destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
             }
             this->poVertexBuffer = nullptr;
             this->poVertexBufferMemory = nullptr;
@@ -6186,8 +6259,7 @@ namespace LostPeter
             //2> IndexBuffer
             if (this->poIndexBuffer != nullptr)
             {
-                vkDestroyBuffer(this->poDevice, this->poIndexBuffer, nullptr);
-                vkFreeMemory(this->poDevice, this->poIndexBufferMemory, nullptr);
+                destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
             }
             this->poIndexBuffer = nullptr;
             this->poIndexBufferMemory = nullptr;
@@ -6203,96 +6275,88 @@ namespace LostPeter
                 cleanupSwapChain_Custom();
 
                 //1> DepthImage
-                if (this->poDepthImage != nullptr)
-                {
-                    vkDestroyImageView(this->poDevice, this->poDepthImageView, nullptr);
-                    vkDestroyImage(this->poDevice, this->poDepthImage, nullptr);
-                    vkFreeMemory(this->poDevice, this->poDepthImageMemory, nullptr);
-                }
-
+                destroyVkImage(this->poDepthImage, this->poDepthImageMemory, this->poDepthImageView);
+                
                 //2> ColorImage
-                if (this->poColorImage != nullptr)
-                {
-                    vkDestroyImageView(this->poDevice, this->poColorImageView, nullptr);
-                    vkDestroyImage(this->poDevice, this->poColorImage, nullptr);
-                    vkFreeMemory(this->poDevice, this->poColorImageMemory, nullptr);
-                }
-
+                destroyVkImage(this->poColorImage, this->poColorImageMemory, this->poColorImageView);
+                
                 //3> SwapChainFrameBuffers
                 size_t count = this->poSwapChainFrameBuffers.size();
                 for (size_t i = 0; i < count; i++)
                 {
                     VkFramebuffer& frameBuffer = this->poSwapChainFrameBuffers[i];
-                    vkDestroyFramebuffer(this->poDevice, frameBuffer, nullptr);
+                    destroyVkFramebuffer(frameBuffer);
                 }
+                this->poSwapChainFrameBuffers.clear();
 
                 //4> CommandBuffers
                 if (this->poCommandBuffersGraphics.size() > 0)
                 {
-                    vkFreeCommandBuffers(this->poDevice, this->poCommandPoolGraphics, (uint32_t)this->poCommandBuffersGraphics.size(), this->poCommandBuffersGraphics.data());
+                    freeCommandBuffers(this->poCommandPoolGraphics, (uint32_t)this->poCommandBuffersGraphics.size(), this->poCommandBuffersGraphics.data());
                 }
                 this->poCommandBuffersGraphics.clear();
                 if (this->poCommandPoolCompute != nullptr &&
                     this->poCommandBufferCompute != nullptr)
                 {
-                    vkFreeCommandBuffers(this->poDevice, this->poCommandPoolCompute, 1, &(this->poCommandBufferCompute));
+                    freeCommandBuffers(this->poCommandPoolCompute, 1, &(this->poCommandBufferCompute));
                 }
                 
                 //5> PipelineGraphics
-                if (this->poPipelineGraphics != nullptr)
-                {
-                    vkDestroyPipeline(this->poDevice, this->poPipelineGraphics, nullptr);
-                }
-                if (this->poPipelineGraphics_WireFrame != nullptr)
-                {
-                    vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_WireFrame, nullptr);
-                }
-                if (this->poPipelineLayout != nullptr)
-                {
-                    vkDestroyPipelineLayout(this->poDevice, this->poPipelineLayout, nullptr);
-                }
-                vkDestroyRenderPass(this->poDevice, this->poRenderPass, nullptr);
+                destroyVkPipeline(this->poPipelineGraphics);
+                this->poPipelineGraphics = VK_NULL_HANDLE;
+                destroyVkPipeline(this->poPipelineGraphics_WireFrame);
+                this->poPipelineGraphics_WireFrame = VK_NULL_HANDLE;
+                destroyVkPipelineLayout(this->poPipelineLayout);
+                this->poPipelineLayout = VK_NULL_HANDLE;
+                destroyVkRenderPass(this->poRenderPass);
+                this->poRenderPass = VK_NULL_HANDLE;
 
                 //6> SwapChainImageViews
                 count = this->poSwapChainImageViews.size();
                 for (size_t i = 0; i < count; i++)
                 {
-                    VkImageView& imageView = this->poSwapChainImageViews[i];
-                    vkDestroyImageView(this->poDevice, imageView, nullptr);
+                    destroyVkImageView(this->poSwapChainImageViews[i]);
                 }
-                vkDestroySwapchainKHR(this->poDevice, this->poSwapChain, nullptr);
+                this->poSwapChainImageViews.clear();
+                destroyVkSwapchainKHR(this->poSwapChain);
+                this->poSwapChain = VK_NULL_HANDLE;
 
                 //7> ConstBuffers
-                count = poBuffers_PassCB.size();
+                count = this->poBuffers_PassCB.size();
                 for (size_t i = 0; i < count; i++) 
                 {
-                    vkDestroyBuffer(this->poDevice, this->poBuffers_PassCB[i], nullptr);
-                    vkFreeMemory(this->poDevice, this->poBuffersMemory_PassCB[i], nullptr);
+                    destroyVkBuffer(this->poBuffers_PassCB[i], this->poBuffersMemory_PassCB[i]);
                 }
-                count = poBuffers_ObjectCB.size();
+                this->poBuffers_PassCB.clear();
+                this->poBuffersMemory_PassCB.clear();
+
+                count = this->poBuffers_ObjectCB.size();
                 for (size_t i = 0; i < count; i++) 
                 {
-                    vkDestroyBuffer(this->poDevice, this->poBuffers_ObjectCB[i], nullptr);
-                    vkFreeMemory(this->poDevice, this->poBuffersMemory_ObjectCB[i], nullptr);
+                    destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
                 }
-                count = poBuffers_MaterialCB.size();
+                this->poBuffers_ObjectCB.clear();
+                this->poBuffersMemory_ObjectCB.clear();
+
+                count = this->poBuffers_MaterialCB.size();
                 for (size_t i = 0; i < count; i++) 
                 {
-                    vkDestroyBuffer(this->poDevice, this->poBuffers_MaterialCB[i], nullptr);
-                    vkFreeMemory(this->poDevice, this->poBuffersMemory_MaterialCB[i], nullptr);
+                    destroyVkBuffer(this->poBuffers_MaterialCB[i], this->poBuffersMemory_MaterialCB[i]);
                 }
-                count = poBuffers_InstanceCB.size();
+                this->poBuffers_MaterialCB.clear();
+                this->poBuffersMemory_MaterialCB.clear();
+
+                count = this->poBuffers_InstanceCB.size();
                 for (size_t i = 0; i < count; i++) 
                 {
-                    vkDestroyBuffer(this->poDevice, this->poBuffers_InstanceCB[i], nullptr);
-                    vkFreeMemory(this->poDevice, this->poBuffersMemory_InstanceCB[i], nullptr);
+                    destroyVkBuffer(this->poBuffers_InstanceCB[i], this->poBuffersMemory_InstanceCB[i]);
                 }
+                this->poBuffers_InstanceCB.clear();
+                this->poBuffersMemory_InstanceCB.clear();
 
                 //8> DescriptorPool
-                if (this->poDescriptorPool != nullptr)
-                {
-                    vkDestroyDescriptorPool(this->poDevice, this->poDescriptorPool, nullptr);
-                }
+                destroyVkDescriptorPool(this->poDescriptorPool);
+                this->poDescriptorPool = VK_NULL_HANDLE;
             }
             Util_LogInfo("----- VulkanWindow::cleanupSwapChain finish -----");
         }

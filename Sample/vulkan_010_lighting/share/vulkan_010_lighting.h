@@ -23,9 +23,9 @@ public:
 public:
     struct ModelObject
     {
-        ModelObject(VkDevice device)
-            //Device
-            : poDevice(device)
+        ModelObject(Vulkan_010_Lighting* _pWindow)
+            //Common
+            : pWindow(_pWindow)
 
             //Name
             , nameModel("")
@@ -88,41 +88,22 @@ public:
         ~ModelObject()
         {
             //Vertex
-            if (this->poVertexBuffer != VK_NULL_HANDLE)
-            {
-                vkDestroyBuffer(this->poDevice, this->poVertexBuffer, nullptr);
-                vkFreeMemory(this->poDevice, this->poVertexBufferMemory, nullptr);
-            }
+            this->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
             this->poVertexBuffer = VK_NULL_HANDLE;
             this->poVertexBufferMemory = VK_NULL_HANDLE;
 
             //Index
-            if (this->poIndexBuffer != VK_NULL_HANDLE)
-            {
-                vkDestroyBuffer(this->poDevice, this->poIndexBuffer, nullptr);
-                vkFreeMemory(this->poDevice, this->poIndexBufferMemory, nullptr);
-            }
+            this->pWindow->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
             this->poIndexBuffer = VK_NULL_HANDLE;
             this->poIndexBufferMemory = VK_NULL_HANDLE;
 
             //Texture
-            if (this->poTextureSampler != VK_NULL_HANDLE)
-            {
-                vkDestroySampler(this->poDevice, this->poTextureSampler, nullptr);
-            }
-            this->poTextureSampler = VK_NULL_HANDLE;
-            if (this->poTextureImageView != VK_NULL_HANDLE)
-            {
-                vkDestroyImageView(this->poDevice, this->poTextureImageView, nullptr);
-            }
-            this->poTextureImageView = VK_NULL_HANDLE;
-            if (this->poTextureImage != VK_NULL_HANDLE)
-            {
-                vkDestroyImage(this->poDevice, this->poTextureImage, nullptr);
-                vkFreeMemory(this->poDevice, this->poTextureImageMemory, nullptr);
-            }
+            this->pWindow->destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
+            this->pWindow->destroyVkImageSampler(this->poTextureSampler);
             this->poTextureImage = VK_NULL_HANDLE;
             this->poTextureImageMemory = VK_NULL_HANDLE;
+            this->poTextureImageView = VK_NULL_HANDLE;
+            this->poTextureSampler = VK_NULL_HANDLE;
 
             CleanupSwapChain();
         }
@@ -133,8 +114,7 @@ public:
             size_t count = this->poBuffers_ObjectCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                vkDestroyBuffer(this->poDevice, this->poBuffers_ObjectCB[i], nullptr);
-                vkFreeMemory(this->poDevice, this->poBuffersMemory_ObjectCB[i], nullptr);
+                this->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
             }
             this->objectCBs.clear();
             this->poBuffers_ObjectCB.clear();
@@ -143,23 +123,16 @@ public:
             count = this->poBuffers_materialCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                vkDestroyBuffer(this->poDevice, this->poBuffers_materialCB[i], nullptr);
-                vkFreeMemory(this->poDevice, this->poBuffersMemory_materialCB[i], nullptr);
+                this->pWindow->destroyVkBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
             }
             this->materialCBs.clear();
             this->poBuffers_materialCB.clear();
             this->poBuffersMemory_materialCB.clear();
 
             //Pipeline
-            if (this->poPipelineGraphics_WireFrame != nullptr)
-            {
-                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics_WireFrame, nullptr);
-            }
+            this->pWindow->destroyVkPipeline(this->poPipelineGraphics_WireFrame);
             this->poPipelineGraphics_WireFrame = VK_NULL_HANDLE;
-            if (this->poPipelineGraphics != nullptr)
-            {
-                vkDestroyPipeline(this->poDevice, this->poPipelineGraphics, nullptr);
-            }
+            this->pWindow->destroyVkPipeline(this->poPipelineGraphics);
             this->poPipelineGraphics = VK_NULL_HANDLE;
         }
 
@@ -168,8 +141,8 @@ public:
 
         }
 
-        //Device
-        VkDevice poDevice;
+        //Common
+        Vulkan_010_Lighting* pWindow;
 
         //Name
         std::string nameModel;

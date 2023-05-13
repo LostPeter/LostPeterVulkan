@@ -280,13 +280,13 @@ public:
         {
             if (this->stagingBuffer != VK_NULL_HANDLE)
             {
-                this->pWindow->destroyBuffer(this->stagingBuffer, this->stagingBufferMemory);
+                this->pWindow->destroyVkBuffer(this->stagingBuffer, this->stagingBufferMemory);
             }
-            this->pWindow->destroyTexture(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
+            this->pWindow->destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
             this->poTextureImage = VK_NULL_HANDLE;
             this->poTextureImageMemory = VK_NULL_HANDLE;
             this->poTextureImageView = VK_NULL_HANDLE;
-            this->pWindow->destroyTextureSampler(this->poTextureSampler);
+            this->pWindow->destroyVkImageSampler(this->poTextureSampler);
             this->poTextureSampler = VK_NULL_HANDLE;
             UTIL_DELETE_T(pDataRGBA)
         }
@@ -623,14 +623,14 @@ public:
             DestroyTextureCopy();
             this->pTextureCopy = new TextureCopyConstants();
             VkDeviceSize bufferSize = sizeof(TextureCopyConstants);
-            this->pWindow->createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
+            this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
         }
         void DestroyTextureCopy()
         {
             UTIL_DELETE(this->pTextureCopy)
             if (this->poBuffer_TextureCopy != VK_NULL_HANDLE)
             {
-                this->pWindow->destroyBuffer(this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
+                this->pWindow->destroyVkBuffer(this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
             }
             this->poBuffer_TextureCopy = VK_NULL_HANDLE;
             this->poBufferMemory_TextureCopy = VK_NULL_HANDLE;
@@ -809,7 +809,7 @@ public:
             size_t count = this->poBuffers_ObjectCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                this->pModelObject->pWindow->destroyBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+                this->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
             }
             this->objectCBs.clear();
             this->poBuffers_ObjectCB.clear();
@@ -818,7 +818,7 @@ public:
             count = this->poBuffers_materialCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                this->pModelObject->pWindow->destroyBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
+                this->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
             }
             this->materialCBs.clear();
             this->poBuffers_materialCB.clear();
@@ -827,7 +827,7 @@ public:
             count = this->poBuffers_tessellationCB.size();
             for (size_t i = 0; i < count; i++) 
             {
-                this->pModelObject->pWindow->destroyBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
+                this->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
             }
             this->tessellationCBs.clear();
             this->poBuffers_tessellationCB.clear();

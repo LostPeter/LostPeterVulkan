@@ -92,7 +92,7 @@ void Vulkan_006_Depth::loadModel_Custom()
 {
     for (int i = 0; i < g_CountLen; i++)
     {
-        ModelObject* pModelObject = new ModelObject(this->poDevice);
+        ModelObject* pModelObject = new ModelObject(this);
         pModelObject->nameModel = g_pathModels[3 * i + 0];
         pModelObject->pathModel = g_pathModels[3 * i + 1];
         pModelObject->pathTexture = g_pathModels[3 * i + 2];
@@ -216,7 +216,7 @@ void Vulkan_006_Depth::createCustomCB()
         pModelObject->poBuffersMemory_ObjectCB.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
         {
-            createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
+            createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
         }
     }
 }

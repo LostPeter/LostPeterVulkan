@@ -956,7 +956,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
             pModelObject->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
+                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_ObjectCB[j], pModelObject->poBuffersMemory_ObjectCB[j]);
             }
 
             //MaterialConstants
@@ -965,7 +965,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
             pModelObject->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
+                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_materialCB[j], pModelObject->poBuffersMemory_materialCB[j]);
             }
 
             //TessellationConstants
@@ -976,7 +976,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
                 pModelObject->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
-                    createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_tessellationCB[j], pModelObject->poBuffersMemory_tessellationCB[j]);
+                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_tessellationCB[j], pModelObject->poBuffersMemory_tessellationCB[j]);
                 }
             }
 
@@ -988,7 +988,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
                 pModelObject->poBuffersMemory_geometryCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
-                    createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_geometryCB[j], pModelObject->poBuffersMemory_geometryCB[j]);
+                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pModelObject->poBuffers_geometryCB[j], pModelObject->poBuffersMemory_geometryCB[j]);
                 }
             }
         }
@@ -1323,8 +1323,7 @@ void Vulkan_012_Shadering::destroyDescriptorSetLayouts()
     size_t count = this->m_aVkDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
     {
-        VkDescriptorSetLayout& vkDescriptorSetLayout = this->m_aVkDescriptorSetLayouts[i];
-        vkDestroyDescriptorSetLayout(this->poDevice, vkDescriptorSetLayout, nullptr);
+        destroyVkDescriptorSetLayout(this->m_aVkDescriptorSetLayouts[i]);
     }
     this->m_aVkDescriptorSetLayouts.clear();
     this->m_mapVkDescriptorSetLayout.clear();
@@ -1726,8 +1725,7 @@ void Vulkan_012_Shadering::destroyPipelineLayouts()
     size_t count = this->m_aVkPipelineLayouts.size();
     for (size_t i = 0; i < count; i++)
     {
-        VkPipelineLayout& vkPipelineLayout = this->m_aVkPipelineLayouts[i];
-        vkDestroyPipelineLayout(this->poDevice, vkPipelineLayout, nullptr);
+        destroyVkPipelineLayout(this->m_aVkPipelineLayouts[i]);
     }
     this->m_aVkPipelineLayouts.clear();
     this->m_mapVkPipelineLayouts.clear();

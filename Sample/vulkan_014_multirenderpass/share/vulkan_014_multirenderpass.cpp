@@ -749,12 +749,12 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 void Vulkan_014_MultiRenderPass::ModelMeshSub::Destroy()
 {
     //Vertex
-    this->pMesh->pWindow->destroyBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
+    this->pMesh->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
     this->poVertexBuffer = VK_NULL_HANDLE;
     this->poVertexBufferMemory = VK_NULL_HANDLE;
 
     //Index
-    this->pMesh->pWindow->destroyBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
+    this->pMesh->pWindow->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
     this->poIndexBuffer = VK_NULL_HANDLE;
     this->poIndexBufferMemory = VK_NULL_HANDLE;
 }
@@ -1123,12 +1123,12 @@ void Vulkan_014_MultiRenderPass::ModelTexture::updateNoiseTexture()
 void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::Destroy()
 {
     //Vertex
-    this->pRend->pModelObject->pWindow->destroyBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
+    this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
     this->poVertexBuffer = VK_NULL_HANDLE;
     this->poVertexBufferMemory = VK_NULL_HANDLE;
 
     //Index
-    this->pRend->pModelObject->pWindow->destroyBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
+    this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
     this->poIndexBuffer = VK_NULL_HANDLE;
     this->poIndexBufferMemory = VK_NULL_HANDLE;
 
@@ -1147,7 +1147,7 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::CleanupSwapChain()
     count = this->poBuffers_ObjectCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
+        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB[i], this->poBuffersMemory_ObjectCB[i]);
     }
     this->objectCBs.clear();
     this->poBuffers_ObjectCB.clear();
@@ -1156,7 +1156,7 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::CleanupSwapChain()
     count = this->poBuffers_materialCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
+        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_materialCB[i], this->poBuffersMemory_materialCB[i]);
     }
     this->materialCBs.clear();
     this->poBuffers_materialCB.clear();
@@ -1165,7 +1165,7 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::CleanupSwapChain()
     count = this->poBuffers_tessellationCB.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
+        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_tessellationCB[i], this->poBuffersMemory_tessellationCB[i]);
     }
     this->tessellationCBs.clear();
     this->poBuffers_tessellationCB.clear();
@@ -1177,7 +1177,7 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::CleanupSwapChain()
     //3> IndirectCommand Buffer
     if (this->poBuffer_indirectCommandCB != VK_NULL_HANDLE)
     {
-        this->pRend->pModelObject->pWindow->destroyBuffer(this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
+        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
     }
     this->indirectCommandCBs.clear();
     this->poBuffer_indirectCommandCB = VK_NULL_HANDLE;
@@ -1259,7 +1259,7 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupUniformIndirectCo
         this->poBuffersMemory_ObjectCB.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
         {
-            this->pRend->pModelObject->pWindow->createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
+            this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
         }
 
         //MaterialConstants
@@ -1268,7 +1268,7 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupUniformIndirectCo
         this->poBuffersMemory_materialCB.resize(count_sci);
         for (size_t j = 0; j < count_sci; j++) 
         {
-            this->pRend->pModelObject->pWindow->createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_materialCB[j], this->poBuffersMemory_materialCB[j]);
+            this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_materialCB[j], this->poBuffersMemory_materialCB[j]);
         }
 
         //TessellationConstants
@@ -1279,7 +1279,7 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupUniformIndirectCo
             this->poBuffersMemory_tessellationCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                this->pRend->pModelObject->pWindow->createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_tessellationCB[j], this->poBuffersMemory_tessellationCB[j]);
+                this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_tessellationCB[j], this->poBuffersMemory_tessellationCB[j]);
             }
         }
     }
@@ -1287,7 +1287,7 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupUniformIndirectCo
     //2> IndirectCommand Buffer
     {
         bufferSize = sizeof(VkDrawIndexedIndirectCommand) * this->indirectCommandCBs.size();
-        this->pRend->pModelObject->pWindow->createBuffer(bufferSize, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
+        this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_indirectCommandCB, this->poBuffersMemory_indirectCommandCB);
     }
 }
 
@@ -1723,7 +1723,7 @@ void Vulkan_014_MultiRenderPass::rebuildInstanceCBs(bool isCreateVkBuffer)
             pRend->poBuffersMemory_ObjectCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
+                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
             }
 
             //MaterialConstants
@@ -1732,7 +1732,7 @@ void Vulkan_014_MultiRenderPass::rebuildInstanceCBs(bool isCreateVkBuffer)
             pRend->poBuffersMemory_materialCB.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_materialCB[j], pRend->poBuffersMemory_materialCB[j]);
+                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_materialCB[j], pRend->poBuffersMemory_materialCB[j]);
             }
 
             //TessellationConstants
@@ -1743,7 +1743,7 @@ void Vulkan_014_MultiRenderPass::rebuildInstanceCBs(bool isCreateVkBuffer)
                 pRend->poBuffersMemory_tessellationCB.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
-                    createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
+                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_tessellationCB[j], pRend->poBuffersMemory_tessellationCB[j]);
                 }
             }
         }
@@ -2097,8 +2097,7 @@ void Vulkan_014_MultiRenderPass::destroyDescriptorSetLayouts()
     size_t count = this->m_aVkDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
     {
-        VkDescriptorSetLayout& vkDescriptorSetLayout = this->m_aVkDescriptorSetLayouts[i];
-        vkDestroyDescriptorSetLayout(this->poDevice, vkDescriptorSetLayout, nullptr);
+        destroyVkDescriptorSetLayout(this->m_aVkDescriptorSetLayouts[i]);
     }
     this->m_aVkDescriptorSetLayouts.clear();
     this->m_mapVkDescriptorSetLayout.clear();
@@ -2489,8 +2488,7 @@ void Vulkan_014_MultiRenderPass::destroyPipelineLayouts()
     size_t count = this->m_aVkPipelineLayouts.size();
     for (size_t i = 0; i < count; i++)
     {
-        VkPipelineLayout& vkPipelineLayout = this->m_aVkPipelineLayouts[i];
-        vkDestroyPipelineLayout(this->poDevice, vkPipelineLayout, nullptr);
+        destroyVkPipelineLayout(this->m_aVkPipelineLayouts[i]);
     }
     this->m_aVkPipelineLayouts.clear();
     this->m_mapVkPipelineLayouts.clear();
@@ -3569,8 +3567,31 @@ void Vulkan_014_MultiRenderPass::endRenderImgui()
 
 void Vulkan_014_MultiRenderPass::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer)
 {
+    size_t count_render_pass = this->m_aMultiRenderPasses.size();
+    for (size_t i = 0; i < count_render_pass; i++)
+    {
+        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
+        if (pRenderPass->isUseDefault)
+            continue;
 
+        drawMeshCustom(commandBuffer, pRenderPass);
+    }
 }
+    void Vulkan_014_MultiRenderPass::drawMeshCustom(VkCommandBuffer& commandBuffer, MultiRenderPass* pRenderPass)
+    {
+        beginRenderPass(commandBuffer,
+                        pRenderPass->poRenderPass,
+                        pRenderPass->poFrameBuffer,
+                        this->poOffset,
+                        this->poExtent,
+                        this->cfg_colorBackground,
+                        1.0f,
+                        0);
+        {
+
+        }
+        endRenderPass(commandBuffer);
+    }
 
 void Vulkan_014_MultiRenderPass::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
