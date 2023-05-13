@@ -2792,12 +2792,12 @@ void Vulkan_013_IndirectDraw::updateCompute_Custom(VkCommandBuffer& commandBuffe
                     memcpy(data, pPipelineCompute->pTextureCopy, sizeof(TextureCopyConstants));
                 vkUnmapMemory(this->poDevice, memory);
 
-                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipeline);
-                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipelineLayout, 0, 1, &pPipelineCompute->poDescriptorSet, 0, 0);
+                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipeline);
+                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipelineLayout, 0, 1, &pPipelineCompute->poDescriptorSet, 0, 0);
                 
                 uint32_t groupX = (uint32_t)(pPipelineCompute->pTextureTarget->width / 8);
                 uint32_t groupY = (uint32_t)(pPipelineCompute->pTextureTarget->height / 8);
-                vkCmdDispatch(commandBuffer, groupX, groupY, 1);
+                dispatch(commandBuffer, groupX, groupY, 1);
             }
         }
     }
@@ -3518,39 +3518,39 @@ void Vulkan_013_IndirectDraw::drawModelObjectRendIndirect(VkCommandBuffer& comma
 
     VkBuffer vertexBuffers[] = { pRendIndirect->poVertexBuffer };
     VkDeviceSize offsets[] = { 0 };
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+    bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
     if (pRendIndirect->poIndexBuffer != nullptr)
     {
-        vkCmdBindIndexBuffer(commandBuffer, pRendIndirect->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        bindIndexBuffer(commandBuffer, pRendIndirect->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
     }
 
     if (pModelObject->isWireFrame || pRendIndirect->isWireFrame || this->cfg_isWireFrame)
     {
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
         if (pRendIndirect->poDescriptorSets.size() > 0)
         {
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
     }
     else
     {
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
         if (pRendIndirect->poDescriptorSets.size() > 0)
         {
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
     }
 
     uint32_t drawCount = pRendIndirect->countIndirectDraw;
     if (m_isDrawIndirectMulti)
     {
-        vkCmdDrawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, 0, drawCount, sizeof(VkDrawIndexedIndirectCommand));
+        drawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, 0, drawCount, sizeof(VkDrawIndexedIndirectCommand));
     }
     else
     {
         for (uint32_t i = 0; i < drawCount; i++)
         {
-            vkCmdDrawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, i * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
+            drawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, i * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
         }
     }
 }
@@ -3573,42 +3573,42 @@ void Vulkan_013_IndirectDraw::drawModelObjectRend(VkCommandBuffer& commandBuffer
 
     VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
     VkDeviceSize offsets[] = { 0 };
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+    bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
     if (pMeshSub->poIndexBuffer != nullptr)
     {
-        vkCmdBindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
     }
 
     if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
     {
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
         if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
         {
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
         if (pMeshSub->poIndexBuffer != nullptr)
         {
-            vkCmdDrawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+            drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
         }
         else
         {
-            vkCmdDraw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+            draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
         }
     }
     else
     {
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
         if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
         {
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
         if (pMeshSub->poIndexBuffer != nullptr)
         {
-            vkCmdDrawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+            drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
         }
         else
         {
-            vkCmdDraw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+            draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
         }
     }
 }

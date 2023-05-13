@@ -23,8 +23,8 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 10;
-static const char* g_MeshPaths[5 * g_MeshCount] =
+static const int g_Mesh_Count = 10;
+static const char* g_Mesh_Paths[5 * g_Mesh_Count] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
@@ -43,7 +43,7 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
     "flower",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/flower/flower.fbx", //flower
 
 };
-static bool g_MeshIsFlipYs[g_MeshCount] = 
+static bool g_Mesh_IsFlipYs[g_Mesh_Count] = 
 {
     true, //plane
     false, //cube
@@ -61,7 +61,7 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     false, //flower
 
 };
-static bool g_MeshIsTranformLocals[g_MeshCount] = 
+static bool g_Mesh_IsTranformLocals[g_Mesh_Count] = 
 {
     false, //plane  
     false, //cube
@@ -79,7 +79,7 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //flower
 
 };
-static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
+static glm::mat4 g_Mesh_TranformLocals[g_Mesh_Count] = 
 {
     VulkanMath::ms_mat4Unit, //plane
     VulkanMath::ms_mat4Unit, //cube
@@ -100,9 +100,9 @@ static glm::mat4 g_MeshTranformLocals[g_MeshCount] =
 
 
 /////////////////////////// Texture /////////////////////////////
-static const std::string g_TextureDefault = "default_blackwhite";
-static const int g_TextureCount = 24;
-static const char* g_TexturePaths[5 * g_TextureCount] = 
+static const std::string g_Texture_Default = "default_blackwhite";
+static const int g_Texture_Count = 24;
+static const char* g_Texture_Paths[5 * g_Texture_Count] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
     "default_blackwhite",               "2d",            "false",                  "false",                           "Assets/Texture/default_blackwhite.png", //default_blackwhite
@@ -138,7 +138,7 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
     "flower_atlas",                     "2d",            "false",                  "false",                           "Assets/Model/Fbx/flower/flower_atlas.png", //flower_atlas
 
 };
-static VkFormat g_TextureFormats[g_TextureCount] = 
+static VkFormat g_Texture_Formats[g_Texture_Count] = 
 {
     VK_FORMAT_R8G8B8A8_SRGB, //default_blackwhite
     VK_FORMAT_R8G8B8A8_SRGB, //bricks_diffuse
@@ -173,7 +173,7 @@ static VkFormat g_TextureFormats[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_SRGB, //flower_atlas
 
 };
-static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
+static VulkanTextureFilterType g_Texture_Filters[g_Texture_Count] = 
 {
     Vulkan_TextureFilter_Bilinear, //default_blackwhite
     Vulkan_TextureFilter_Bilinear, //bricks_diffuse
@@ -208,7 +208,7 @@ static VulkanTextureFilterType g_TextureFilters[g_TextureCount] =
     Vulkan_TextureFilter_Bilinear, //flower_atlas
 
 };
-static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
+static VulkanTextureAddressingType g_Texture_Addressings[g_Texture_Count] = 
 {
     Vulkan_TextureAddressing_Clamp, //default_blackwhite
     Vulkan_TextureAddressing_Clamp, //bricks_diffuse
@@ -243,7 +243,7 @@ static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] =
     Vulkan_TextureAddressing_Clamp, //flower_atlas
 
 };
-static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
+static VulkanTextureBorderColorType g_Texture_BorderColors[g_Texture_Count] = 
 {
     Vulkan_TextureBorderColor_OpaqueBlack, //default_blackwhite
     Vulkan_TextureBorderColor_OpaqueBlack, //bricks_diffuse
@@ -278,7 +278,7 @@ static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
     Vulkan_TextureBorderColor_OpaqueBlack, //flower_atlas
 
 };
-static int g_TextureSizes[3 * g_TextureCount] = 
+static int g_Texture_Sizes[3 * g_Texture_Count] = 
 {
     512,    512,    1, //default_blackwhite
     512,    512,    1, //bricks_diffuse
@@ -313,7 +313,7 @@ static int g_TextureSizes[3 * g_TextureCount] =
    1024,   1024,    1, //flower_atlas
 
 };
-static float g_TextureAnimChunks[2 * g_TextureCount] = 
+static float g_Texture_AnimChunks[2 * g_Texture_Count] = 
 {
     0,    0, //default_blackwhite
     0,    0, //bricks_diffuse
@@ -363,8 +363,8 @@ const std::string c_strLayout_TextureTESE = "TextureTESE";
 const std::string c_strLayout_TextureFS = "TextureFS";
 const std::string c_strLayout_TextureCSR = "TextureCSR";
 const std::string c_strLayout_TextureCSRW = "TextureCSRW";
-static const int g_DescriptorSetLayoutCount = 3;
-static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
+static const int g_DescriptorSetLayout_Count = 3;
+static const char* g_DescriptorSetLayout_Names[g_DescriptorSetLayout_Count] =
 {
     "Pass-Object-Material-Instance-TextureFS",
     "Pass-Object-Material-Instance-TextureFS-TextureFS",
@@ -374,8 +374,8 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 18;
-static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
+static const int g_Shader_Count = 18;
+static const char* g_ShaderModule_Paths[3 * g_Shader_Count] = 
 {
     //name                                                     //type               //path
     ///////////////////////////////////////// vert /////////////////////////////////////////
@@ -414,6 +414,22 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
     
+
+};
+
+
+/////////////////////////// RenderPass //////////////////////////
+static const int g_RenderPass_Count = 2;
+static const char* g_RenderPass_Names[g_RenderPass_Count] =
+{
+    "default",
+    "TreeFlower",
+
+};
+static bool g_RenderPass_IsDefault[g_RenderPass_Count] =
+{
+    true,
+    true,
 
 };
 
@@ -614,6 +630,33 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-6
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-7
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-8
+
+};
+static const char* g_ObjectRend_NameRenderPasses[g_ObjectRend_Count] = 
+{
+    "default", //object_skybox-1
+    "default", //object_mountain-1
+
+    "default", //object_rock-1
+    "default", //object_cliff-1
+
+    "default", //object_tree-1
+    "default", //object_tree-2
+    "default", //object_tree_spruce-1
+    "default", //object_tree_spruce-2
+
+    "default", //object_grass-1
+    "default", //object_grass-2
+    "default", //object_grass-3
+    "default", //object_grass-4
+    "default", //object_flower-1
+    "default", //object_flower-2
+    "default", //object_flower-3
+    "default", //object_flower-4
+    "default", //object_flower-5
+    "default", //object_flower-6
+    "default", //object_flower-7
+    "default", //object_flower-8
 
 };
 static glm::vec3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
@@ -1304,8 +1347,14 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::UpdateIndirectCommandB
 /////////////////////////// MultiRenderPass /////////////////////
 void Vulkan_014_MultiRenderPass::MultiRenderPass::Init()
 {
-    //RenderPass
+    if (this->isUseDefault)
+    {
+        this->poRenderPass = this->pWindow->poRenderPass;
+    }
+    else
+    {
 
+    }
 }
 
 
@@ -1315,7 +1364,6 @@ Vulkan_014_MultiRenderPass::Vulkan_014_MultiRenderPass(int width, int height, st
     : VulkanWindow(width, height, name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
-    , m_pMultiRenderPass(nullptr)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -1351,8 +1399,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSetLayout_Custom()
 
 void Vulkan_014_MultiRenderPass::createRenderPass_Custom()
 {
-    m_pMultiRenderPass = new MultiRenderPass(this);
-    m_pMultiRenderPass->Init();
+    createMultiRenderPasses();
 }
 
 void Vulkan_014_MultiRenderPass::createFramebuffer_Custom()
@@ -1533,6 +1580,8 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
 
                 //Pipeline Graphics - DescriptorSetLayout
                 pRend->pPipelineGraphics->nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 0];
+                std::string nameRenderPass = g_ObjectRend_NameRenderPasses[nIndexObjectRend];
+                pRend->pPipelineGraphics->pRenderPass = findMultiRenderPass(nameRenderPass);
 
                 //Pipeline Computes - DescriptorSetLayout
                 std::string nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
@@ -1792,7 +1841,7 @@ void Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom()
                                                                                       pRend->isUsedTessellation, 0, 3,
                                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                      this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                      pRend->pPipelineGraphics->pRenderPass->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                                       pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits,
                                                                                       pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
                                                                                       pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
@@ -1826,7 +1875,7 @@ void Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom()
                                                                             pRend->isUsedTessellation, 0, 3,
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                            this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                            pRend->pPipelineGraphics->pRenderPass->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                             pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                                             isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
                                                                             pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
@@ -1922,13 +1971,13 @@ void Vulkan_014_MultiRenderPass::destroyModelMeshes()
 }
 void Vulkan_014_MultiRenderPass::createModelMeshes()
 {
-    for (int i = 0; i < g_MeshCount; i++)
+    for (int i = 0; i < g_Mesh_Count; i++)
     {
-        std::string nameMesh = g_MeshPaths[5 * i + 0];
-        std::string nameVertexType = g_MeshPaths[5 * i + 1];
-        std::string nameMeshType = g_MeshPaths[5 * i + 2];
-        std::string nameGeometryType = g_MeshPaths[5 * i + 3];
-        std::string pathMesh = g_MeshPaths[5 * i + 4];
+        std::string nameMesh = g_Mesh_Paths[5 * i + 0];
+        std::string nameVertexType = g_Mesh_Paths[5 * i + 1];
+        std::string nameMeshType = g_Mesh_Paths[5 * i + 2];
+        std::string nameGeometryType = g_Mesh_Paths[5 * i + 3];
+        std::string pathMesh = g_Mesh_Paths[5 * i + 4];
         
         VulkanVertexType typeVertex = Util_ParseVertexType(nameVertexType); 
         VulkanMeshType typeMesh = Util_ParseMeshType(nameMeshType);
@@ -1944,9 +1993,9 @@ void Vulkan_014_MultiRenderPass::createModelMeshes()
                                          typeMesh,
                                          typeGeometryType,
                                          typeVertex);
-        bool isFlipY = g_MeshIsFlipYs[i];
-        bool isTranformLocal = g_MeshIsTranformLocals[i];
-        if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_MeshTranformLocals[i]))
+        bool isFlipY = g_Mesh_IsFlipYs[i];
+        bool isTranformLocal = g_Mesh_IsTranformLocals[i];
+        if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_Mesh_TranformLocals[i]))
         {
             std::string msg = "Vulkan_014_MultiRenderPass::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
             Util_LogError(msg.c_str());
@@ -1984,16 +2033,16 @@ void Vulkan_014_MultiRenderPass::destroyModelTextures()
 }
 void Vulkan_014_MultiRenderPass::createModelTextures()
 {
-    for (int i = 0; i < g_TextureCount; i++)
+    for (int i = 0; i < g_Texture_Count; i++)
     {
-        std::string nameTexture = g_TexturePaths[5 * i + 0];
-        std::string nameType = g_TexturePaths[5 * i + 1];
+        std::string nameTexture = g_Texture_Paths[5 * i + 0];
+        std::string nameType = g_Texture_Paths[5 * i + 1];
         VulkanTextureType typeTexture = Util_ParseTextureType(nameType);
-        std::string nameIsRenderTarget = g_TexturePaths[5 * i + 2];
+        std::string nameIsRenderTarget = g_Texture_Paths[5 * i + 2];
         bool isRenderTarget = VulkanUtilString::ParserBool(nameIsRenderTarget);
-        std::string nameIsGraphicsComputeShared = g_TexturePaths[5 * i + 3];
+        std::string nameIsGraphicsComputeShared = g_Texture_Paths[5 * i + 3];
         bool isGraphicsComputeShared = VulkanUtilString::ParserBool(nameIsGraphicsComputeShared);
-        std::string pathTextures = g_TexturePaths[5 * i + 4];
+        std::string pathTextures = g_Texture_Paths[5 * i + 4];
 
         std::vector<std::string> aPathTexture = VulkanUtilString::Split(pathTextures, ";");
         ModelTexture* pTexture = new ModelTexture(this, 
@@ -2001,13 +2050,13 @@ void Vulkan_014_MultiRenderPass::createModelTextures()
                                                   typeTexture,
                                                   isRenderTarget,
                                                   isGraphicsComputeShared,
-                                                  g_TextureFormats[i],
-                                                  g_TextureFilters[i],
-                                                  g_TextureAddressings[i],
-                                                  g_TextureBorderColors[i],
+                                                  g_Texture_Formats[i],
+                                                  g_Texture_Filters[i],
+                                                  g_Texture_Addressings[i],
+                                                  g_Texture_BorderColors[i],
                                                   aPathTexture);
-        pTexture->texChunkMaxX = g_TextureAnimChunks[i * 2 + 0];
-        pTexture->texChunkMaxY = g_TextureAnimChunks[i * 2 + 1];
+        pTexture->texChunkMaxX = g_Texture_AnimChunks[i * 2 + 0];
+        pTexture->texChunkMaxY = g_Texture_AnimChunks[i * 2 + 1];
         if (pTexture->texChunkMaxX > 0 && 
             pTexture->texChunkMaxY > 0)
         {
@@ -2015,9 +2064,9 @@ void Vulkan_014_MultiRenderPass::createModelTextures()
         }
         pTexture->AddRef();
 
-        int width = g_TextureSizes[3 * i + 0];
-        int height = g_TextureSizes[3 * i + 1];
-        int depth = g_TextureSizes[3 * i + 1];
+        int width = g_Texture_Sizes[3 * i + 0];
+        int height = g_Texture_Sizes[3 * i + 1];
+        int depth = g_Texture_Sizes[3 * i + 1];
         pTexture->LoadTexture(width, 
                               height,
                               depth);
@@ -2057,9 +2106,9 @@ void Vulkan_014_MultiRenderPass::destroyDescriptorSetLayouts()
 }
 void Vulkan_014_MultiRenderPass::createDescriptorSetLayouts()
 {
-    for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
+    for (int i = 0; i < g_DescriptorSetLayout_Count; i++)
     {
-        std::string nameLayout(g_DescriptorSetLayoutNames[i]);
+        std::string nameLayout(g_DescriptorSetLayout_Names[i]);
         std::vector<std::string> aLayouts = VulkanUtilString::Split(nameLayout, "-");
         size_t count_layout = aLayouts.size();
 
@@ -2258,11 +2307,11 @@ void Vulkan_014_MultiRenderPass::destroyShaderModules()
 }
 void Vulkan_014_MultiRenderPass::createShaderModules()
 {
-    for (int i = 0; i < g_ShaderCount; i++)
+    for (int i = 0; i < g_Shader_Count; i++)
     {
-        std::string shaderName = g_ShaderModulePaths[3 * i + 0];
-        std::string shaderType = g_ShaderModulePaths[3 * i + 1];
-        std::string shaderPath = g_ShaderModulePaths[3 * i + 2];
+        std::string shaderName = g_ShaderModule_Paths[3 * i + 0];
+        std::string shaderType = g_ShaderModule_Paths[3 * i + 1];
+        std::string shaderPath = g_ShaderModule_Paths[3 * i + 2];
 
         VkShaderModule shaderModule = createShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
@@ -2448,9 +2497,9 @@ void Vulkan_014_MultiRenderPass::destroyPipelineLayouts()
 }
 void Vulkan_014_MultiRenderPass::createPipelineLayouts()
 {
-    for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
+    for (int i = 0; i < g_DescriptorSetLayout_Count; i++)
     {
-        std::string nameDescriptorSetLayout(g_DescriptorSetLayoutNames[i]);
+        std::string nameDescriptorSetLayout(g_DescriptorSetLayout_Names[i]);
         VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
@@ -2481,6 +2530,41 @@ VkPipelineLayout Vulkan_014_MultiRenderPass::findPipelineLayout(const std::strin
     return itFind->second;
 }
 
+
+void Vulkan_014_MultiRenderPass::destroyMultiRenderPasses()
+{
+    size_t count_render_pass = this->m_aMultiRenderPasses.size();
+    for (size_t i = 0; i < count_render_pass; i++)
+    {
+        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
+        UTIL_DELETE(pRenderPass)
+    }
+    this->m_aMultiRenderPasses.clear();
+    this->m_mapMultiRenderPasses.clear();
+}
+void Vulkan_014_MultiRenderPass::createMultiRenderPasses()
+{
+    for (int i = 0; i < g_RenderPass_Count; i++)
+    {
+        std::string nameRenderPass = g_RenderPass_Names[i];
+        bool isDefault = g_RenderPass_IsDefault[i];
+
+        MultiRenderPass* pMultiRenderPass = new MultiRenderPass(this, nameRenderPass, isDefault);
+        pMultiRenderPass->Init();
+
+        this->m_aMultiRenderPasses.push_back(pMultiRenderPass);
+        this->m_mapMultiRenderPasses[nameRenderPass] = pMultiRenderPass;
+    }
+}
+Vulkan_014_MultiRenderPass::MultiRenderPass* Vulkan_014_MultiRenderPass::findMultiRenderPass(const std::string& nameRenderPass)
+{
+    MultiRenderPassPtrMap::iterator itFind = this->m_mapMultiRenderPasses.find(nameRenderPass);
+    if (itFind == this->m_mapMultiRenderPasses.end())
+    {
+        return nullptr;
+    }
+    return itFind->second;
+}
 
 
 void Vulkan_014_MultiRenderPass::createDescriptorSets_Custom()
@@ -2817,12 +2901,12 @@ void Vulkan_014_MultiRenderPass::updateCompute_Custom(VkCommandBuffer& commandBu
                     memcpy(data, pPipelineCompute->pTextureCopy, sizeof(TextureCopyConstants));
                 vkUnmapMemory(this->poDevice, memory);
 
-                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipeline);
-                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipelineLayout, 0, 1, &pPipelineCompute->poDescriptorSet, 0, 0);
+                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipeline);
+                bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipelineLayout, 0, 1, &pPipelineCompute->poDescriptorSet, 0, 0);
                 
                 uint32_t groupX = (uint32_t)(pPipelineCompute->pTextureTarget->width / 8);
                 uint32_t groupY = (uint32_t)(pPipelineCompute->pTextureTarget->height / 8);
-                vkCmdDispatch(commandBuffer, groupX, groupY, 1);
+                dispatch(commandBuffer, groupX, groupY, 1);
             }
         }
     }
@@ -3483,7 +3567,7 @@ void Vulkan_014_MultiRenderPass::endRenderImgui()
 
 }
 
-void Vulkan_014_MultiRenderPass::updateRenderPass_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_014_MultiRenderPass::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer)
 {
 
 }
@@ -3548,39 +3632,39 @@ void Vulkan_014_MultiRenderPass::drawModelObjectRendIndirect(VkCommandBuffer& co
 
     VkBuffer vertexBuffers[] = { pRendIndirect->poVertexBuffer };
     VkDeviceSize offsets[] = { 0 };
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+    bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
     if (pRendIndirect->poIndexBuffer != nullptr)
     {
-        vkCmdBindIndexBuffer(commandBuffer, pRendIndirect->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        bindIndexBuffer(commandBuffer, pRendIndirect->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
     }
 
     if (pModelObject->isWireFrame || pRendIndirect->isWireFrame || this->cfg_isWireFrame)
     {
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
         if (pRendIndirect->poDescriptorSets.size() > 0)
         {
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
     }
     else
     {
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
         if (pRendIndirect->poDescriptorSets.size() > 0)
         {
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRendIndirect->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
     }
 
     uint32_t drawCount = pRendIndirect->countIndirectDraw;
     if (m_isDrawIndirectMulti)
     {
-        vkCmdDrawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, 0, drawCount, sizeof(VkDrawIndexedIndirectCommand));
+        drawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, 0, drawCount, sizeof(VkDrawIndexedIndirectCommand));
     }
     else
     {
         for (uint32_t i = 0; i < drawCount; i++)
         {
-            vkCmdDrawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, i * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
+            drawIndexedIndirect(commandBuffer, pRendIndirect->poBuffer_indirectCommandCB, i * sizeof(VkDrawIndexedIndirectCommand), 1, sizeof(VkDrawIndexedIndirectCommand));
         }
     }
 }
@@ -3603,42 +3687,42 @@ void Vulkan_014_MultiRenderPass::drawModelObjectRend(VkCommandBuffer& commandBuf
 
     VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
     VkDeviceSize offsets[] = { 0 };
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+    bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
     if (pMeshSub->poIndexBuffer != nullptr)
     {
-        vkCmdBindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
     }
 
     if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
     {
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline_WireFrame);
         if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
         {
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
         if (pMeshSub->poIndexBuffer != nullptr)
         {
-            vkCmdDrawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+            drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
         }
         else
         {
-            vkCmdDraw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+            draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
         }
     }
     else
     {
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipeline);
         if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
         {
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
         if (pMeshSub->poIndexBuffer != nullptr)
         {
-            vkCmdDrawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+            drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
         }
         else
         {
-            vkCmdDraw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+            draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
         }
     }
 }
@@ -3664,8 +3748,6 @@ void Vulkan_014_MultiRenderPass::cleanupCustom()
     this->m_aModelObjectRends_All.clear();
     this->m_aModelObjectRends_Opaque.clear();
     this->m_aModelObjectRends_Transparent.clear();
-
-    UTIL_DELETE(m_pMultiRenderPass)
 }
 
 void Vulkan_014_MultiRenderPass::cleanupSwapChain_Custom()
@@ -3678,6 +3760,7 @@ void Vulkan_014_MultiRenderPass::cleanupSwapChain_Custom()
         pModelObject->CleanupSwapChain();
     }
 
+    destroyMultiRenderPasses();
     destroyDescriptorSetLayouts();
     destroyPipelineLayouts();
     destroyShaderModules();

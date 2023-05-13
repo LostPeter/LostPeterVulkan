@@ -1290,6 +1290,7 @@ namespace LostPeter
 
         this->poSwapChainImageFormat = surfaceFormat.format;
         this->poSwapChainExtent = extent;
+        this->poDepthImageFormat = findDepthFormat();
 
         int width, height;
         glfwGetFramebufferSize(this->pWindow, &width, &height);
@@ -1359,11 +1360,11 @@ namespace LostPeter
             this->poViewport.maxDepth = 1.0f;
 
             this->poScissor = {};
-            VkOffset2D offset;
-            offset.x = 0;
-            offset.y = 0;
-            this->poScissor.offset = offset;
-            this->poScissor.extent = this->poSwapChainExtent;
+            this->poOffset.x = 0;
+            this->poOffset.y = 0;
+            this->poExtent = this->poSwapChainExtent;
+            this->poScissor.offset = this->poOffset;
+            this->poScissor.extent = this->poExtent;
         }
 
     void VulkanWindow::createSwapChainImageViews()
@@ -1417,7 +1418,7 @@ namespace LostPeter
         }
         void VulkanWindow::createDepthResources()
         {
-            VkFormat depthFormat = findDepthFormat();
+            VkFormat depthFormat = this->poDepthImageFormat;
 
             createImage(this->poSwapChainExtent.width, 
                         this->poSwapChainExtent.height, 
@@ -1598,22 +1599,22 @@ namespace LostPeter
             {
                 if (HasConfig_MASS())
                 {
-                    createRenderPass_ColorDepthImguiMSAA(this->poSwapChainImageFormat, findDepthFormat(), this->poSwapChainImageFormat, this->poMSAASamples, this->poRenderPass);
+                    createRenderPass_ColorDepthImguiMSAA(this->poSwapChainImageFormat, this->poDepthImageFormat, this->poSwapChainImageFormat, this->poMSAASamples, this->poRenderPass);
                 }
                 else
                 {
-                    createRenderPass_KhrDepthImgui(this->poSwapChainImageFormat, findDepthFormat(), this->poSwapChainImageFormat, this->poRenderPass);
+                    createRenderPass_KhrDepthImgui(this->poSwapChainImageFormat, this->poDepthImageFormat, this->poSwapChainImageFormat, this->poRenderPass);
                 }
             }
             else
             {
                 if (HasConfig_MASS())
                 {
-                    createRenderPass_ColorDepthMSAA(this->poSwapChainImageFormat, findDepthFormat(), this->poSwapChainImageFormat, this->poMSAASamples, this->poRenderPass);
+                    createRenderPass_ColorDepthMSAA(this->poSwapChainImageFormat, this->poDepthImageFormat, this->poSwapChainImageFormat, this->poMSAASamples, this->poRenderPass);
                 }
                 else
                 {
-                    createRenderPass_KhrDepth(this->poSwapChainImageFormat, findDepthFormat(), this->poRenderPass);
+                    createRenderPass_KhrDepth(this->poSwapChainImageFormat, this->poDepthImageFormat, this->poRenderPass);
                 }
             }
 
@@ -5809,8 +5810,12 @@ namespace LostPeter
                 }
                 {
                     updateRenderPass_SyncComputeGraphics(commandBuffer);
-                    updateRenderPass_Default(commandBuffer);
-                    updateRenderPass_Custom(commandBuffer);
+
+                    updateRenderPass_CustomBeforeDefault(commandBuffer);
+                    {
+                        updateRenderPass_Default(commandBuffer);
+                    }
+                    updateRenderPass_CustomAfterDefault(commandBuffer);
                 }
                 if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
                 {
@@ -5823,32 +5828,23 @@ namespace LostPeter
                 {
 
                 }
+                void  VulkanWindow::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer)
+                {
+
+                }
                 void VulkanWindow::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
                 {
-                    VkRenderPassBeginInfo renderPassInfo = {};
-                    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-                    renderPassInfo.renderPass = this->poRenderPass;
-                    renderPassInfo.framebuffer = this->poSwapChainFrameBuffers[this->poSwapChainImageIndex];
-                    VkOffset2D offset;
-                    offset.x = 0;
-                    offset.y = 0;
-                    renderPassInfo.renderArea.offset = offset;
-                    renderPassInfo.renderArea.extent = this->poSwapChainExtent;
-
-                    std::array<VkClearValue, 2> clearValues = {};
-                    VkClearColorValue colorValue = { this->cfg_colorBackground.x, this->cfg_colorBackground.y, this->cfg_colorBackground.z, this->cfg_colorBackground.w };
-                    clearValues[0].color = colorValue;
-                    VkClearDepthStencilValue depthStencilValue;
-                    depthStencilValue.depth = 1.0f;
-                    depthStencilValue.stencil = 0;
-                    clearValues[1].depthStencil = depthStencilValue;
-                    renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-                    renderPassInfo.pClearValues = clearValues.data();
-
-                    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+                    beginRenderPass(commandBuffer,
+                                    this->poRenderPass,
+                                    this->poSwapChainFrameBuffers[this->poSwapChainImageIndex],
+                                    this->poOffset,
+                                    this->poExtent,
+                                    this->cfg_colorBackground,
+                                    1.0f,
+                                    0);
                     {
                         //1> Viewport
-                        bindViewport(commandBuffer);
+                        bindViewport(commandBuffer, this->poViewport);
                     
                         //2> Normal Render Pass
                         drawMesh(commandBuffer);
@@ -5857,48 +5853,39 @@ namespace LostPeter
                         //3> ImGui Pass
                         drawImgui(commandBuffer);
                     }
-                    vkCmdEndRenderPass(commandBuffer);
+                    endRenderPass(commandBuffer);
                 }
-                void VulkanWindow::updateRenderPass_Custom(VkCommandBuffer& commandBuffer)
+                void VulkanWindow::updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer)
                 {
 
                 }
-                    void VulkanWindow::bindViewport(VkCommandBuffer& commandBuffer)
-                    {
-                        VkViewport viewport = this->poViewport;
-                        if (cfg_isNegativeViewport)
-                        {
-                            viewport.y = viewport.height - viewport.y;
-                            viewport.height = -viewport.height;
-                        }   
-                        vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-                        vkCmdSetScissor(commandBuffer, 0, 1, &this->poScissor);
-                    }
                     void VulkanWindow::drawMesh(VkCommandBuffer& commandBuffer)
                     {
                         if (this->poVertexBuffer == nullptr)
                             return;
 
-                        if (!this->cfg_isWireFrame)
-                            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics);
-                        else 
-                            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineGraphics_WireFrame);
+                        VkPipeline vkPipeline = this->poPipelineGraphics;
+                        if (this->cfg_isWireFrame)
+                            vkPipeline = this->poPipelineGraphics_WireFrame;
+                        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
 
                         VkBuffer vertexBuffers[] = { this->poVertexBuffer };
                         VkDeviceSize offsets[] = { 0 };
-                        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+                        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+
                         if (this->poDescriptorSets.size() > 0)
                         {
-                            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &this->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+                            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &this->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
                         }
                         if (this->poIndexBuffer != nullptr)
                         {
-                            vkCmdBindIndexBuffer(commandBuffer, this->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-                            vkCmdDrawIndexed(commandBuffer, this->poIndexCount, 1, 0, 0, 0);
+                            bindIndexBuffer(commandBuffer, this->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
+                            drawIndexed(commandBuffer, this->poIndexCount, 1, 0, 0, 0);
                         }
                         else
                         {
-                            vkCmdDraw(commandBuffer, this->poVertexCount, 1, 0, 0);
+                            draw(commandBuffer, this->poVertexCount, 1, 0, 0);
                         }
                     }
                     void VulkanWindow::drawMesh_Custom(VkCommandBuffer& commandBuffer)
@@ -5914,6 +5901,92 @@ namespace LostPeter
                             ImGui_ImplVulkan_RenderDrawData(main_draw_data, commandBuffer);
                         }
                     }
+
+                        void VulkanWindow::beginRenderPass(VkCommandBuffer& commandBuffer, 
+                                                           const VkRenderPass& renderPass, 
+                                                           const VkFramebuffer& frameBuffer,
+                                                           const VkOffset2D& offset,
+                                                           const VkExtent2D& extent,
+                                                           const glm::vec4& clBg,
+                                                           float depth,
+                                                           uint32_t stencil)
+                        {
+                            VkRenderPassBeginInfo renderPassInfo = {};
+                            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+                            renderPassInfo.renderPass = renderPass;
+                            renderPassInfo.framebuffer = frameBuffer;
+                            renderPassInfo.renderArea.offset = offset;
+                            renderPassInfo.renderArea.extent = extent;
+
+                            std::array<VkClearValue, 2> clearValues = {};
+                            VkClearColorValue colorValue = { clBg.x, clBg.y, clBg.z, clBg.w };
+                            clearValues[0].color = colorValue;
+                            VkClearDepthStencilValue depthStencilValue;
+                            depthStencilValue.depth = depth;
+                            depthStencilValue.stencil = stencil;
+                            clearValues[1].depthStencil = depthStencilValue;
+                            renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+                            renderPassInfo.pClearValues = clearValues.data();
+
+                            vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+                        }
+                            void VulkanWindow::bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport)
+                            {
+                                VkViewport viewport = vkViewport;
+                                if (cfg_isNegativeViewport)
+                                {
+                                    viewport.y = viewport.height - viewport.y;
+                                    viewport.height = -viewport.height;
+                                }   
+                                vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+                                vkCmdSetScissor(commandBuffer, 0, 1, &this->poScissor);
+                            }
+                            void VulkanWindow::bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline)
+                            {
+                                vkCmdBindPipeline(commandBuffer, pipelineBindPoint, vkPipeline);
+                            }
+                            void VulkanWindow::bindVertexBuffer(VkCommandBuffer& commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets)
+                            {
+                                vkCmdBindVertexBuffers(commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets);
+                            }
+                            void VulkanWindow::bindIndexBuffer(VkCommandBuffer& commandBuffer, const VkBuffer& vkIndexBuffer, VkDeviceSize offset, VkIndexType indexType)
+                            {
+                                vkCmdBindIndexBuffer(commandBuffer, vkIndexBuffer, offset, indexType);
+                            }
+                            void VulkanWindow::bindDescriptorSets(VkCommandBuffer& commandBuffer, const VkPipelineBindPoint& pipelineBindPoint, const VkPipelineLayout& layout, uint32_t firstSet, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets)
+                            {
+                                vkCmdBindDescriptorSets(commandBuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);
+                            }
+                            void VulkanWindow::draw(VkCommandBuffer& commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
+                            {
+                                vkCmdDraw(commandBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
+                            }
+                            void VulkanWindow::drawIndexed(VkCommandBuffer& commandBuffer, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance)
+                            {   
+                                vkCmdDrawIndexed(commandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+                            }
+                            void VulkanWindow::drawIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride)
+                            {
+                                vkCmdDrawIndirect(commandBuffer, buffer, offset, drawCount, stride);
+                            }
+                            void VulkanWindow::drawIndexedIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride)
+                            {
+                                vkCmdDrawIndexedIndirect(commandBuffer, buffer, offset, drawCount, stride);
+                            }
+                        void VulkanWindow::endRenderPass(VkCommandBuffer& commandBuffer)
+                        {
+                            vkCmdEndRenderPass(commandBuffer);
+                        }
+
+                        void VulkanWindow::dispatch(VkCommandBuffer& commandBuffer, uint32_t groupCountX,  uint32_t groupCountY,  uint32_t groupCountZ)
+                        {
+                            vkCmdDispatch(commandBuffer, groupCountX, groupCountY, groupCountZ);
+                        }
+                        void VulkanWindow::dispatchIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer,  VkDeviceSize offset)
+                        {
+                            vkCmdDispatchIndirect(commandBuffer, buffer, offset);
+                        }   
+
         void VulkanWindow::updateRenderCommandBuffers_Custom()
         {   
 

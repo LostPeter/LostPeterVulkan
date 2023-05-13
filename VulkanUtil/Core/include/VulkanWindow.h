@@ -52,12 +52,15 @@ namespace LostPeter
         VkSurfaceKHR poSurface;
         VkSwapchainKHR poSwapChain;
         VkViewport poViewport;
+        VkOffset2D poOffset;
+        VkExtent2D poExtent;
         VkRect2D poScissor;
         std::vector<VkImage> poSwapChainImages;
         VkFormat poSwapChainImageFormat;
         VkExtent2D poSwapChainExtent;
         VkImageViewVector poSwapChainImageViews;
         VkFramebufferVector poSwapChainFrameBuffers;
+        VkFormat poDepthImageFormat;
         VkImage poColorImage;
         VkDeviceMemory poColorImageMemory;
         VkImageView poColorImageView;
@@ -803,12 +806,35 @@ namespace LostPeter
 
                 virtual void updateRenderCommandBuffers_Default();
                     virtual void updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer);
+                    virtual void updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
-                    virtual void updateRenderPass_Custom(VkCommandBuffer& commandBuffer);
-                        virtual void bindViewport(VkCommandBuffer& commandBuffer);
+                    virtual void updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer);
                         virtual void drawMesh(VkCommandBuffer& commandBuffer);
                         virtual void drawMesh_Custom(VkCommandBuffer& commandBuffer);
                         virtual void drawImgui(VkCommandBuffer& commandBuffer);
+
+                            virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 
+                                                         const VkRenderPass& renderPass, 
+                                                         const VkFramebuffer& frameBuffer,
+                                                         const VkOffset2D& offset,
+                                                         const VkExtent2D& extent,
+                                                         const glm::vec4& clBg,
+                                                         float depth,
+                                                         uint32_t stencil);
+                                virtual void bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport);
+                                virtual void bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline);
+                                virtual void bindVertexBuffer(VkCommandBuffer& commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets);
+                                virtual void bindIndexBuffer(VkCommandBuffer& commandBuffer, const VkBuffer& vkIndexBuffer, VkDeviceSize offset, VkIndexType indexType);
+                                virtual void bindDescriptorSets(VkCommandBuffer& commandBuffer, const VkPipelineBindPoint& pipelineBindPoint, const VkPipelineLayout& layout, uint32_t firstSet, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets);
+                                virtual void draw(VkCommandBuffer& commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance);
+                                virtual void drawIndexed(VkCommandBuffer& commandBuffer, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance);
+                                virtual void drawIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride);
+                                virtual void drawIndexedIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride);
+                            virtual void endRenderPass(VkCommandBuffer& commandBuffer);
+
+                            virtual void dispatch(VkCommandBuffer& commandBuffer, uint32_t groupCountX,  uint32_t groupCountY,  uint32_t groupCountZ);
+                            virtual void dispatchIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer,  VkDeviceSize offset);
+
                 virtual void updateRenderCommandBuffers_Custom();
 
             virtual void render();

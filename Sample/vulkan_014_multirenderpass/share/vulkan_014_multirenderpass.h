@@ -546,6 +546,94 @@ public:
     typedef std::map<std::string, ModelTexturePtrVector> ModelTexturePtrShaderSortMap;
 
 
+    /////////////////////////// MultiRenderPass /////////////////////
+    struct FrameBufferAttachment
+    {
+        VkImage image;
+        VkDeviceMemory memory;
+        VkImageView view;
+
+        FrameBufferAttachment()
+            : image(VK_NULL_HANDLE)
+            , memory(VK_NULL_HANDLE)
+            , view(VK_NULL_HANDLE)
+        {
+
+        }
+
+        void Destroy(Vulkan_014_MultiRenderPass* pWindow)
+        {
+            if (this->image != VK_NULL_HANDLE)
+            {
+                pWindow->destroyTexture(this->image, this->memory, this->view);
+            }
+            this->image = VK_NULL_HANDLE;
+            this->memory = VK_NULL_HANDLE;
+            this->view = VK_NULL_HANDLE;
+        }
+    };
+    struct MultiRenderPass
+    {
+        //Window
+        Vulkan_014_MultiRenderPass* pWindow;
+        std::string nameRenderPass;
+        bool isUseDefault;
+
+        //RenderPass
+        VkRenderPass poRenderPass;
+
+        //FrameBuffer
+        FrameBufferAttachment framebufferColor;
+        FrameBufferAttachment framebufferDepth;
+        VkSampler sampler;
+
+
+        MultiRenderPass(Vulkan_014_MultiRenderPass* _pWindow, 
+                        const std::string& _nameRenderPass,
+                        bool _isUseDefault)
+            //Window
+            : pWindow(_pWindow)
+            , nameRenderPass(_nameRenderPass)
+            , isUseDefault(_isUseDefault)
+
+            //RenderPass
+            , poRenderPass(VK_NULL_HANDLE)
+
+            //FrameBuffer
+            , sampler(VK_NULL_HANDLE)
+        {
+
+        }
+
+        ~MultiRenderPass()
+        {
+            Destroy();
+        }
+
+        void Destroy()
+        {
+            this->framebufferColor.Destroy(this->pWindow);
+            this->framebufferDepth.Destroy(this->pWindow);
+            if (this->sampler != VK_NULL_HANDLE)
+            {
+                this->pWindow->destroyTextureSampler(this->sampler);
+            }
+            this->sampler = VK_NULL_HANDLE;
+
+            if (this->poRenderPass != VK_NULL_HANDLE &&
+                !this->isUseDefault)
+            {
+                this->pWindow->destroyVkRenderPass(this->poRenderPass);
+            }
+            this->poRenderPass = VK_NULL_HANDLE;
+        }
+
+        void Init();
+    };
+    typedef std::vector<MultiRenderPass*> MultiRenderPassPtrVector;
+    typedef std::map<std::string, MultiRenderPass*> MultiRenderPassPtrMap;
+    
+
     /////////////////////////// PipelineGraphics ////////////////////
     struct PipelineGraphics
     {
@@ -558,6 +646,8 @@ public:
         VkPipeline poPipeline;
         std::vector<VkDescriptorSet> poDescriptorSets;
 
+        MultiRenderPass* pRenderPass;
+
         PipelineGraphics(Vulkan_014_MultiRenderPass* _pWindow)
             : pWindow(_pWindow)
             , nameDescriptorSetLayout("")
@@ -566,6 +656,8 @@ public:
             , poPipelineLayout(VK_NULL_HANDLE)
             , poPipeline_WireFrame(VK_NULL_HANDLE)
             , poPipeline(VK_NULL_HANDLE)
+
+            , pRenderPass(nullptr)
         {
 
         }
@@ -597,6 +689,8 @@ public:
             }
             this->poPipeline = VK_NULL_HANDLE;
             this->poDescriptorSets.clear();
+
+            this->pRenderPass = nullptr;
         }  
     };
 
@@ -1139,85 +1233,6 @@ public:
     typedef std::map<std::string, ModelObject*> ModelObjectPtrMap;
 
 
-    /////////////////////////// MultiRenderPass /////////////////////
-    struct FrameBufferAttachment
-    {
-        VkImage image;
-        VkDeviceMemory memory;
-        VkImageView view;
-
-        FrameBufferAttachment()
-            : image(VK_NULL_HANDLE)
-            , memory(VK_NULL_HANDLE)
-            , view(VK_NULL_HANDLE)
-        {
-
-        }
-
-        void Destroy(Vulkan_014_MultiRenderPass* pWindow)
-        {
-            if (this->image != VK_NULL_HANDLE)
-            {
-                pWindow->destroyTexture(this->image, this->memory, this->view);
-            }
-            this->image = VK_NULL_HANDLE;
-            this->memory = VK_NULL_HANDLE;
-            this->view = VK_NULL_HANDLE;
-        }
-    };
-    struct MultiRenderPass
-    {
-        //Window
-        Vulkan_014_MultiRenderPass* pWindow;
-
-        //RenderPass
-        VkRenderPass renderPass;
-
-        //FrameBuffer
-        FrameBufferAttachment framebufferColor;
-        FrameBufferAttachment framebufferDepth;
-        VkSampler sampler;
-
-
-        MultiRenderPass(Vulkan_014_MultiRenderPass* _pWindow)
-            //Window
-            : pWindow(_pWindow)
-
-            //RenderPass
-            , renderPass(VK_NULL_HANDLE)
-
-            //FrameBuffer
-            , sampler(VK_NULL_HANDLE)
-        {
-
-        }
-
-        ~MultiRenderPass()
-        {
-            Destroy();
-        }
-
-        void Destroy()
-        {
-            this->framebufferColor.Destroy(this->pWindow);
-            this->framebufferDepth.Destroy(this->pWindow);
-            if (this->sampler != VK_NULL_HANDLE)
-            {
-                this->pWindow->destroyTextureSampler(this->sampler);
-            }
-            this->sampler = VK_NULL_HANDLE;
-
-            if (this->renderPass != VK_NULL_HANDLE)
-            {
-                this->pWindow->destroyVkRenderPass(this->renderPass);
-            }
-            this->renderPass = VK_NULL_HANDLE;
-        }
-
-        void Init();
-    };
-
-
 public:
     ModelMeshPtrVector m_aModelMesh;
     ModelMeshPtrMap m_mapModelMesh;    
@@ -1233,8 +1248,6 @@ public:
     bool m_isDrawIndirect;
     bool m_isDrawIndirectMulti;
 
-    MultiRenderPass* m_pMultiRenderPass;
-
     VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
     VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
     std::map<std::string, std::vector<std::string>> m_mapName2Layouts;
@@ -1244,6 +1257,9 @@ public:
 
     VkPipelineLayoutVector m_aVkPipelineLayouts;
     VkPipelineLayoutMap m_mapVkPipelineLayouts;
+
+    MultiRenderPassPtrVector m_aMultiRenderPasses;
+    MultiRenderPassPtrMap m_mapMultiRenderPasses;
 
 protected:
     //Create Pipeline
@@ -1296,7 +1312,7 @@ protected:
 
         virtual void endRenderImgui();
 
-        virtual void updateRenderPass_Custom(VkCommandBuffer& commandBuffer);
+        virtual void updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer);
 
             virtual void drawMesh_Custom(VkCommandBuffer& commandBuffer);
 
@@ -1355,6 +1371,12 @@ private:
     void createPipelineLayouts();
     VkPipelineLayout findPipelineLayout(const std::string& namePipelineLayout);
 
+////RenderPass
+    void destroyMultiRenderPasses();
+    void createMultiRenderPasses();
+    MultiRenderPass* findMultiRenderPass(const std::string& nameRenderPass);
+
+////Draw
     void drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect);
 

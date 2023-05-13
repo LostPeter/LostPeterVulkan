@@ -580,43 +580,43 @@ void Vulkan_006_Depth::drawMesh_Custom(VkCommandBuffer& commandBuffer)
         
         if (pModelObject->isWireFrame || this->cfg_isWireFrame)
         {   
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_WireFrame);
+            bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_WireFrame);
         }
         else 
         {
             if (pModelObject->isNoDepthTestWrite)
             {
-                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_NoDepthTestWrite);
+                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_NoDepthTestWrite);
             }
             else if (pModelObject->isNoDepthWrite)
             {
-                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_NoDepthWrite);
+                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_NoDepthWrite);
             }
             else if (pModelObject->isNoDepthTest)
             {
-                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_NoDepthTest);
+                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics_NoDepthTest);
             }
             else
             {
-                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics);
+                bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pModelObject->poPipelineGraphics);
             }
         }
         
         VkBuffer vertexBuffers[] = { pModelObject->poVertexBuffer };
         VkDeviceSize offsets[] = { 0 };
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
         if (pModelObject->poDescriptorSets.size() > 0)
         {
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &pModelObject->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &pModelObject->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
         if (pModelObject->poIndexBuffer != nullptr)
         {
-            vkCmdBindIndexBuffer(commandBuffer, pModelObject->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-            vkCmdDrawIndexed(commandBuffer, pModelObject->poIndexCount, 1, 0, 0, 0);
+            bindIndexBuffer(commandBuffer, pModelObject->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            drawIndexed(commandBuffer, pModelObject->poIndexCount, 1, 0, 0, 0);
         }
         else
         {
-            vkCmdDraw(commandBuffer, pModelObject->poVertexCount, 1, 0, 0);
+            draw(commandBuffer, pModelObject->poVertexCount, 1, 0, 0);
         }
     }
 }
