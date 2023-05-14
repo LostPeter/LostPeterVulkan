@@ -1116,6 +1116,30 @@ void Vulkan_014_MultiRenderPass::ModelTexture::updateNoiseTexture()
 }
 
 
+/////////////////////////// MultiRenderPass /////////////////////
+void Vulkan_014_MultiRenderPass::MultiRenderPass::Init()
+{
+    if (this->isUseDefault)
+    {
+        this->poRenderPass = this->pWindow->poRenderPass;
+    }
+    else
+    {
+
+    }
+}
+
+void Vulkan_014_MultiRenderPass::MultiRenderPass::CleanupSwapChain()
+{
+    Destroy();
+}
+
+void Vulkan_014_MultiRenderPass::MultiRenderPass::RecreateSwapChain()
+{
+    Init();
+}  
+
+
 /////////////////////////// ModelObjectRend /////////////////////
 
 
@@ -1344,18 +1368,6 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::UpdateIndirectCommandB
 /////////////////////////// ModelObject /////////////////////////
 
 
-/////////////////////////// MultiRenderPass /////////////////////
-void Vulkan_014_MultiRenderPass::MultiRenderPass::Init()
-{
-    if (this->isUseDefault)
-    {
-        this->poRenderPass = this->pWindow->poRenderPass;
-    }
-    else
-    {
-
-    }
-}
 
 
 
@@ -1580,8 +1592,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
 
                 //Pipeline Graphics - DescriptorSetLayout
                 pRend->pPipelineGraphics->nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 0];
-                std::string nameRenderPass = g_ObjectRend_NameRenderPasses[nIndexObjectRend];
-                pRend->pPipelineGraphics->pRenderPass = findMultiRenderPass(nameRenderPass);
+                pRend->pPipelineGraphics->nameRenderPass = g_ObjectRend_NameRenderPasses[nIndexObjectRend];
 
                 //Pipeline Computes - DescriptorSetLayout
                 std::string nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
@@ -1832,6 +1843,13 @@ void Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom()
             if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
             {
                 std::string msg = "Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+            pRend->pPipelineGraphics->pRenderPass = findMultiRenderPass(pRend->pPipelineGraphics->nameRenderPass);
+            if (pRend->pPipelineGraphics->pRenderPass == VK_NULL_HANDLE)
+            {
+                std::string msg = "Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom: Can not find MultiRenderPass by name: " + pRend->pPipelineGraphics->nameRenderPass;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2541,7 +2559,7 @@ void Vulkan_014_MultiRenderPass::destroyMultiRenderPasses()
     this->m_mapMultiRenderPasses.clear();
 }
 void Vulkan_014_MultiRenderPass::createMultiRenderPasses()
-{
+{    
     for (int i = 0; i < g_RenderPass_Count; i++)
     {
         std::string nameRenderPass = g_RenderPass_Names[i];
@@ -3749,7 +3767,7 @@ void Vulkan_014_MultiRenderPass::drawModelObjectRend(VkCommandBuffer& commandBuf
 }
 
 void Vulkan_014_MultiRenderPass::cleanupCustom()
-{   
+{
     destroyModelTextures();
     destroyModelMeshes();
 
@@ -3772,10 +3790,16 @@ void Vulkan_014_MultiRenderPass::cleanupSwapChain_Custom()
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
-
         pModelObject->CleanupSwapChain();
     }
-
+    
+    count = this->m_aMultiRenderPasses.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
+        pRenderPass->CleanupSwapChain();
+    }
+    
     destroyMultiRenderPasses();
     destroyDescriptorSetLayouts();
     destroyPipelineLayouts();
@@ -3788,7 +3812,13 @@ void Vulkan_014_MultiRenderPass::recreateSwapChain_Custom()
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
-
         pModelObject->RecreateSwapChain();
+    }
+
+    count = this->m_aMultiRenderPasses.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
+        pRenderPass->RecreateSwapChain();
     }
 }

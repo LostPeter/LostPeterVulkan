@@ -624,17 +624,17 @@ public:
             //FrameBuffer
             this->framebufferColor.Destroy(this->pWindow);
             this->framebufferDepth.Destroy(this->pWindow);
-            if (this->sampler != VK_NULL_HANDLE)
-            {
-                this->pWindow->destroyVkImageSampler(this->sampler);
-            }
+            this->pWindow->destroyVkImageSampler(this->sampler);
             this->sampler = VK_NULL_HANDLE;
 
             this->pWindow->destroyVkFramebuffer(this->poFrameBuffer);
             this->poFrameBuffer = VK_NULL_HANDLE;
-        }
+        } 
 
         void Init();
+        
+        void CleanupSwapChain();
+        void RecreateSwapChain();
     };
     typedef std::vector<MultiRenderPass*> MultiRenderPassPtrVector;
     typedef std::map<std::string, MultiRenderPass*> MultiRenderPassPtrMap;
@@ -652,6 +652,7 @@ public:
         VkPipeline poPipeline;
         std::vector<VkDescriptorSet> poDescriptorSets;
 
+        std::string nameRenderPass;
         MultiRenderPass* pRenderPass;
 
         PipelineGraphics(Vulkan_014_MultiRenderPass* _pWindow)
