@@ -807,6 +807,9 @@ public:
         bool isLighting;
         bool isTransparent;
 
+        //RenderPass
+        MultiRenderPassPtrVector aRenderPassesRef;
+
         //Texture
         ModelTexturePtrShaderSortMap mapModelTexturesShaderSort;
 
@@ -906,6 +909,9 @@ public:
             //MeshSub
             this->pMeshSub = nullptr;
 
+            //RenderPass
+            this->aRenderPassesRef.clear();
+
             //Texture
             this->mapModelTexturesShaderSort.clear();
 
@@ -966,6 +972,16 @@ public:
         {
 
         }   
+
+    ////RenderPasses
+        void AddRenderPass(MultiRenderPass* pRenderPass)
+        {
+            this->aRenderPassesRef.push_back(pRenderPass);
+        }
+        MultiRenderPass* GetRenderPass(int index)
+        {
+            return this->aRenderPassesRef[index];
+        }
 
     ////Textures
         void AddTexture(const std::string& nameShaderSort, ModelTexture* pTexture)
@@ -1144,6 +1160,7 @@ public:
 
         int countInstanceExt;
         int countInstance;
+        bool canChangeInstance;
 
         //Mesh
         ModelMesh* pMesh;
@@ -1171,6 +1188,7 @@ public:
 
             , countInstanceExt(0)
             , countInstance(1)
+            , canChangeInstance(true)
 
             //Mesh
             , pMesh(nullptr)
@@ -1289,9 +1307,6 @@ protected:
 
         //RenderPass
         virtual void createRenderPass_Custom();
-
-        //Framebuffer
-        virtual void createFramebuffer_Custom();
 
     //Load Assets
         //Camera

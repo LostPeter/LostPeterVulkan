@@ -497,6 +497,22 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
 
     0, //copy_frame
 };
+static bool g_Object_CanChangeInstance[g_Object_Count] = 
+{
+    true, //object_skybox
+    true, //object_mountain 
+
+    true, //object_rock 
+    true, //object_cliff 
+
+    true, //object_tree 
+    true, //object_tree_spruce 
+
+    true, //object_grass 
+    true, //object_flower 
+
+    false, //copy_frame
+};
 static bool g_Object_IsShows[] = 
 {
     true, //object_skybox
@@ -565,34 +581,34 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
 
 /////////////////////////// ObjectRend //////////////////////////
 static const int g_ObjectRend_Count = 21;
-static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
+static const char* g_ObjectRend_Configs[8 * g_ObjectRend_Count] = 
 {
-    //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
-    "object_skybox-1",                     "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //object_skybox-1
-    "object_mountain-1",                   "",                     "",                              "",                         "",                    "mountain_diffuse;mountain_normal",                                             "", //object_mountain-1
+    //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                       //Texture FrameColor                  //Texture CS
+    "object_skybox-1",                     "",                     "",                              "",                         "",                    "texturecubemap",                                  "",                                   "", //object_skybox-1
+    "object_mountain-1",                   "",                     "",                              "",                         "",                    "mountain_diffuse;mountain_normal",                "",                                   "", //object_mountain-1
 
-    "object_rock-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                                                     "", //object_rock-1
-    "object_cliff-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //object_cliff-1
+    "object_rock-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                        "",                                   "", //object_rock-1
+    "object_cliff-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                      "",                                   "", //object_cliff-1
 
-    "object_tree-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-1
-    "object_tree-2",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-2
-    "object_tree_spruce-1",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-1
-    "object_tree_spruce-2",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-2
+    "object_tree-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                    "",                                   "", //object_tree-1
+    "object_tree-2",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                    "",                                   "", //object_tree-2
+    "object_tree_spruce-1",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                             "",                                   "", //object_tree_spruce-1
+    "object_tree_spruce-2",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                             "",                                   "", //object_tree_spruce-2
 
-    "object_grass-1",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-1
-    "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_wheat",                                                                  "", //object_grass-2
-    "object_grass-3",                      "",                     "",                              "",                         "",                    "grass_tall",                                                                   "", //object_grass-3
-    "object_grass-4",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-4
-    "object_flower-1",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-1
-    "object_flower-2",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-2
-    "object_flower-3",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-3
-    "object_flower-4",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-4
-    "object_flower-5",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-5
-    "object_flower-6",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-6
-    "object_flower-7",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-7
-    "object_flower-8",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-8
+    "object_grass-1",                      "",                     "",                              "",                         "",                    "grass_field",                                     "",                                   "", //object_grass-1
+    "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_wheat",                                     "",                                   "", //object_grass-2
+    "object_grass-3",                      "",                     "",                              "",                         "",                    "grass_tall",                                      "",                                   "", //object_grass-3
+    "object_grass-4",                      "",                     "",                              "",                         "",                    "grass_field",                                     "",                                   "", //object_grass-4
+    "object_flower-1",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-1
+    "object_flower-2",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-2
+    "object_flower-3",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-3
+    "object_flower-4",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-4
+    "object_flower-5",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-5
+    "object_flower-6",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-6
+    "object_flower-7",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-7
+    "object_flower-8",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-8
 
-    "copy_frame-1",                        "",                     "",                              "",                         "",                    "",                                                                             "", //copy_frame-1
+    "copy_frame-1",                        "",                     "",                              "",                         "",                    "",                                                "rp_object",                          "", //copy_frame-1
 
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
@@ -1643,12 +1659,6 @@ void Vulkan_014_MultiRenderPass::createRenderPass_Custom()
     createMultiRenderPasses();
 }
 
-void Vulkan_014_MultiRenderPass::createFramebuffer_Custom()
-{
-
-}
-
-
 void Vulkan_014_MultiRenderPass::createCamera()
 {
     this->pCamera = new VulkanCamera();
@@ -1702,6 +1712,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
             pModelObject->isIndirectDraw = g_Object_IsIndirectDraw[i];
             pModelObject->countInstanceExt = g_Object_InstanceExtCount[i];
             pModelObject->countInstance = pModelObject->countInstanceExt * 2 + 1;
+            pModelObject->canChangeInstance = g_Object_CanChangeInstance[i];
         }
 
         //2> ObjectRend
@@ -1714,12 +1725,12 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                 assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_014_MultiRenderPass::loadModel_Custom");
 
                 ModelMeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
-                std::string nameObjectRend = g_ObjectRend_Configs[7 * nIndexObjectRend + 0];
+                std::string nameObjectRend = g_ObjectRend_Configs[8 * nIndexObjectRend + 0];
                 ModelObjectRend* pRend = new ModelObjectRend(nameObjectRend, pModelObject, pMeshSub);
 
                 //Texture VS
                 {
-                    std::string nameTextureVS = g_ObjectRend_Configs[7 * nIndexObjectRend + 1]; //Texture VS
+                    std::string nameTextureVS = g_ObjectRend_Configs[8 * nIndexObjectRend + 1]; //Texture VS
                     if (!nameTextureVS.empty())
                     {
                         std::vector<std::string> aTextureVS = VulkanUtilString::Split(nameTextureVS, ";");
@@ -1734,7 +1745,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                 }
                 //Texture TESC
                 {
-                    std::string nameTextureTESC = g_ObjectRend_Configs[7 * nIndexObjectRend + 2]; //Texture TESC
+                    std::string nameTextureTESC = g_ObjectRend_Configs[8 * nIndexObjectRend + 2]; //Texture TESC
                     if (!nameTextureTESC.empty())
                     {
                         std::vector<std::string> aTextureTESC = VulkanUtilString::Split(nameTextureTESC, ";");
@@ -1749,7 +1760,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                 }
                 //Texture TESE
                 {
-                    std::string nameTextureTESE = g_ObjectRend_Configs[7 * nIndexObjectRend + 3]; //Texture TESE
+                    std::string nameTextureTESE = g_ObjectRend_Configs[8 * nIndexObjectRend + 3]; //Texture TESE
                     if (!nameTextureTESE.empty())
                     {
                         std::vector<std::string> aTextureTESE = VulkanUtilString::Split(nameTextureTESE, ";");
@@ -1764,7 +1775,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                 }
                 //Texture GS
                 {
-                    std::string nameTextureGS = g_ObjectRend_Configs[7 * nIndexObjectRend + 4]; //Texture GS
+                    std::string nameTextureGS = g_ObjectRend_Configs[8 * nIndexObjectRend + 4]; //Texture GS
                     if (!nameTextureGS.empty())
                     {
                         std::vector<std::string> aTextureGS = VulkanUtilString::Split(nameTextureGS, ";");
@@ -1779,7 +1790,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                 }
                 //Texture FS
                 {
-                    std::string nameTextureFS = g_ObjectRend_Configs[7 * nIndexObjectRend + 5]; //Texture FS
+                    std::string nameTextureFS = g_ObjectRend_Configs[8 * nIndexObjectRend + 5]; //Texture FS
                     if (!nameTextureFS.empty())
                     {
                         std::vector<std::string> aTextureFS = VulkanUtilString::Split(nameTextureFS, ";");
@@ -1792,10 +1803,24 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                         }
                     }
                 }
-                
+                //Texture FrameColor
+                {
+                    std::string nameTextureFrameColor = g_ObjectRend_Configs[8 * nIndexObjectRend + 6]; //Texture FrameColor
+                    if (!nameTextureFrameColor.empty())
+                    {
+                        std::vector<std::string> aTextureFrameColor = VulkanUtilString::Split(nameTextureFrameColor, ";");
+                        size_t count_render_pass = aTextureFrameColor.size();
+                        for (size_t p = 0; p < count_render_pass; p++)
+                        {
+                            std::string nameRenderPass = aTextureFrameColor[p];
+                            MultiRenderPass* pRenderPass = this->findMultiRenderPass(nameRenderPass);
+                            pRend->AddRenderPass(pRenderPass);
+                        }
+                    }
+                }
                 //Texture CS
                 {
-                    std::string nameTextureCS = g_ObjectRend_Configs[7 * nIndexObjectRend + 6]; //Texture CS
+                    std::string nameTextureCS = g_ObjectRend_Configs[8 * nIndexObjectRend + 7]; //Texture CS
                     if (!nameTextureCS.empty())
                     {
                         std::vector<std::string> aTextureCS = VulkanUtilString::Split(nameTextureCS, ";");
@@ -2588,14 +2613,14 @@ VkShaderModule Vulkan_014_MultiRenderPass::findShaderModule(const std::string& n
     return itFind->second;
 }   
 bool Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
-                                                                   const std::string& nameShaderTesc,
-                                                                   const std::string& nameShaderTese,
-                                                                   const std::string& nameShaderGeom,
-                                                                   const std::string& nameShaderFrag,
-                                                                   const std::string& nameShaderComp,
-                                                                   VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
-                                                                   VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
-                                                                   VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
+                                                                      const std::string& nameShaderTesc,
+                                                                      const std::string& nameShaderTese,
+                                                                      const std::string& nameShaderGeom,
+                                                                      const std::string& nameShaderFrag,
+                                                                      const std::string& nameShaderComp,
+                                                                      VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
+                                                                      VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                                                      VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
 {
     if (!createPipelineShaderStageCreateInfos(nameShaderVert,
                                               nameShaderTesc,
@@ -2617,11 +2642,11 @@ bool Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos(const std:
     return true;
 }
 bool Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
-                                                                   const std::string& nameShaderTesc,
-                                                                   const std::string& nameShaderTese,
-                                                                   const std::string& nameShaderGeom,
-                                                                   const std::string& nameShaderFrag,
-                                                                   VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics)
+                                                                      const std::string& nameShaderTesc,
+                                                                      const std::string& nameShaderTese,
+                                                                      const std::string& nameShaderGeom,
+                                                                      const std::string& nameShaderFrag,
+                                                                      VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics)
 {
     //vert
     {
@@ -2710,8 +2735,8 @@ bool Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos(const std:
     return true;
 }
 bool Vulkan_014_MultiRenderPass::createPipelineShaderStageCreateInfos(const std::string& nameShaderComp,
-                                                                   VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
-                                                                   VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
+                                                                      VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                                                      VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
 {
     //comp
     if (!nameShaderComp.empty())
@@ -2860,8 +2885,8 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Custom()
     }
 }
 void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(std::vector<VkDescriptorSet>& poDescriptorSets, 
-                                                            ModelObjectRend* pRend, 
-                                                            ModelObjectRendIndirect* pRendIndirect)
+                                                               ModelObjectRend* pRend, 
+                                                               ModelObjectRendIndirect* pRendIndirect)
 {
     std::vector<std::string>* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
     assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics");
@@ -2873,6 +2898,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(std::vector<VkDes
         int nIndexTextureTESC = 0;
         int nIndexTextureTESE = 0;
         int nIndexTextureFS = 0;
+        int nIndexTextureFrameColor = 0;
 
         size_t count_names = pDescriptorSetLayoutNames->size();
         for (size_t p = 0; p < count_names; p++)
@@ -3025,6 +3051,9 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(std::vector<VkDes
             }
             else if (nameDescriptorSet == c_strLayout_TextureFrameColor) //TextureFrameColor
             {
+                MultiRenderPass* pRenderPass = pRend->GetRenderPass(nIndexTextureFrameColor);
+                nIndexTextureFrameColor ++;
+
                 VkWriteDescriptorSet ds = {};
                 ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
                 ds.dstSet = pRend->pPipelineGraphics->poDescriptorSets[j];
@@ -3032,7 +3061,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(std::vector<VkDes
                 ds.dstArrayElement = 0;
                 ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 ds.descriptorCount = 1;
-                ds.pImageInfo = &pRend->pPipelineGraphics->pRenderPass->imageInfo;
+                ds.pImageInfo = &pRenderPass->imageInfo;
                 descriptorWrites.push_back(ds);
             }
             else
@@ -3046,7 +3075,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(std::vector<VkDes
     }
 }
 void Vulkan_014_MultiRenderPass::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
-                                                           ModelObjectRend* pRend)
+                                                              ModelObjectRend* pRend)
 {
     std::vector<std::string>* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
     assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_014_MultiRenderPass::createDescriptorSets_Compute");
@@ -3448,9 +3477,12 @@ void Vulkan_014_MultiRenderPass::modelConfig()
                 ImGui::DragInt(nameInstances.c_str(), &countInstanceExt, 1, 0, 3);
                 if (countInstanceExt != pModelObject->countInstanceExt)
                 {
-                    pModelObject->countInstanceExt = countInstanceExt;
-                    pModelObject->countInstance = countInstanceExt * 2 + 1;
-                    rebuildInstanceCBs(false);
+                    if (pModelObject->canChangeInstance)
+                    {
+                        pModelObject->countInstanceExt = countInstanceExt;
+                        pModelObject->countInstance = countInstanceExt * 2 + 1;
+                        rebuildInstanceCBs(false);
+                    }
                 }
 
                 //2> ModelObjectRend
