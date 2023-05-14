@@ -1670,15 +1670,15 @@ namespace LostPeter
             
         }
             void VulkanWindow::createAttachmentDescription(VkAttachmentDescription& attachment,
-                                                        VkAttachmentDescriptionFlags flags,
-                                                        VkFormat format,
-                                                        VkSampleCountFlagBits samples,
-                                                        VkAttachmentLoadOp loadOp,
-                                                        VkAttachmentStoreOp storeOp,
-                                                        VkAttachmentLoadOp stencilLoadOp,
-                                                        VkAttachmentStoreOp stencilStoreOp,
-                                                        VkImageLayout initialLayout,
-                                                        VkImageLayout finalLayout)
+                                                           VkAttachmentDescriptionFlags flags,
+                                                           VkFormat format,
+                                                           VkSampleCountFlagBits samples,
+                                                           VkAttachmentLoadOp loadOp,
+                                                           VkAttachmentStoreOp storeOp,
+                                                           VkAttachmentLoadOp stencilLoadOp,
+                                                           VkAttachmentStoreOp stencilStoreOp,
+                                                           VkImageLayout initialLayout,
+                                                           VkImageLayout finalLayout)
             {
                 attachment.flags = flags;
                 attachment.format = format;
@@ -1691,10 +1691,10 @@ namespace LostPeter
                 attachment.finalLayout = finalLayout;
             }
             bool VulkanWindow::createVkRenderPass(const std::string& nameRenderPass,
-                                                const VkAttachmentDescriptionVector& aAttachmentDescription,
-                                                const VkSubpassDescriptionVector& aSubpassDescription,
-                                                const VkSubpassDependencyVector& aSubpassDependency,
-                                                VkRenderPass& vkRenderPass)
+                                                  const VkAttachmentDescriptionVector& aAttachmentDescription,
+                                                  const VkSubpassDescriptionVector& aSubpassDescription,
+                                                  const VkSubpassDependencyVector& aSubpassDependency,
+                                                  VkRenderPass& vkRenderPass)
             {
                 VkRenderPassCreateInfo renderPassInfo = {};
                 renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -5997,13 +5997,13 @@ namespace LostPeter
 
                 }
                     void VulkanWindow::beginRenderPass(VkCommandBuffer& commandBuffer, 
-                                                        const VkRenderPass& renderPass, 
-                                                        const VkFramebuffer& frameBuffer,
-                                                        const VkOffset2D& offset,
-                                                        const VkExtent2D& extent,
-                                                        const glm::vec4& clBg,
-                                                        float depth,
-                                                        uint32_t stencil)
+                                                       const VkRenderPass& renderPass, 
+                                                       const VkFramebuffer& frameBuffer,
+                                                       const VkOffset2D& offset,
+                                                       const VkExtent2D& extent,
+                                                       const glm::vec4& clBg,
+                                                       float depth,
+                                                       uint32_t stencil)
                     {
                         VkRenderPassBeginInfo renderPassInfo = {};
                         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

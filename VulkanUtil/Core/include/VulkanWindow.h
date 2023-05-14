@@ -321,15 +321,15 @@ namespace LostPeter
                         virtual void createRenderPass_ColorDepthImguiMSAA(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkSampleCountFlagBits samples, VkRenderPass& vkRenderPass);
 
                         virtual void createAttachmentDescription(VkAttachmentDescription& attachment,
-                                                                VkAttachmentDescriptionFlags flags,
-                                                                VkFormat format,
-                                                                VkSampleCountFlagBits samples,
-                                                                VkAttachmentLoadOp loadOp,
-                                                                VkAttachmentStoreOp storeOp,
-                                                                VkAttachmentLoadOp stencilLoadOp,
-                                                                VkAttachmentStoreOp stencilStoreOp,
-                                                                VkImageLayout initialLayout,
-                                                                VkImageLayout finalLayout);
+                                                                 VkAttachmentDescriptionFlags flags,
+                                                                 VkFormat format,
+                                                                 VkSampleCountFlagBits samples,
+                                                                 VkAttachmentLoadOp loadOp,
+                                                                 VkAttachmentStoreOp storeOp,
+                                                                 VkAttachmentLoadOp stencilLoadOp,
+                                                                 VkAttachmentStoreOp stencilStoreOp,
+                                                                 VkImageLayout initialLayout,
+                                                                 VkImageLayout finalLayout);
                         virtual bool createVkRenderPass(const std::string& nameRenderPass,
                                                         const VkAttachmentDescriptionVector& aAttachmentDescription,
                                                         const VkSubpassDescriptionVector& aSubpassDescription,
@@ -836,13 +836,13 @@ namespace LostPeter
                     virtual void updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer);
 
                         virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 
-                                                        const VkRenderPass& renderPass, 
-                                                        const VkFramebuffer& frameBuffer,
-                                                        const VkOffset2D& offset,
-                                                        const VkExtent2D& extent,
-                                                        const glm::vec4& clBg,
-                                                        float depth,
-                                                        uint32_t stencil);
+                                                     const VkRenderPass& renderPass, 
+                                                     const VkFramebuffer& frameBuffer,
+                                                     const VkOffset2D& offset,
+                                                     const VkExtent2D& extent,
+                                                     const glm::vec4& clBg,
+                                                     float depth,
+                                                     uint32_t stencil);
                             virtual void bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport);
                             virtual void bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline);
                             virtual void bindVertexBuffer(VkCommandBuffer& commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets);

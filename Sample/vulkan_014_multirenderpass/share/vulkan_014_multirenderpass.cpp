@@ -23,10 +23,11 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_Mesh_Count = 10;
+static const int g_Mesh_Count = 11;
 static const char* g_Mesh_Paths[5 * g_Mesh_Count] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
+    "quad",             "Pos3Color4Tex2",                       "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
@@ -45,6 +46,7 @@ static const char* g_Mesh_Paths[5 * g_Mesh_Count] =
 };
 static bool g_Mesh_IsFlipYs[g_Mesh_Count] = 
 {
+    true, //quad
     true, //plane
     false, //cube
     false, //sphere
@@ -63,6 +65,7 @@ static bool g_Mesh_IsFlipYs[g_Mesh_Count] =
 };
 static bool g_Mesh_IsTranformLocals[g_Mesh_Count] = 
 {
+    false, //quad
     false, //plane  
     false, //cube
     false, //sphere
@@ -81,6 +84,7 @@ static bool g_Mesh_IsTranformLocals[g_Mesh_Count] =
 };
 static glm::mat4 g_Mesh_TranformLocals[g_Mesh_Count] = 
 {
+    VulkanMath::ms_mat4Unit, //quad
     VulkanMath::ms_mat4Unit, //plane
     VulkanMath::ms_mat4Unit, //cube
     VulkanMath::ms_mat4Unit, //sphere
@@ -361,20 +365,22 @@ const std::string c_strLayout_TextureVS = "TextureVS";
 const std::string c_strLayout_TextureTESC = "TextureTESC";
 const std::string c_strLayout_TextureTESE = "TextureTESE";
 const std::string c_strLayout_TextureFS = "TextureFS";
+const std::string c_strLayout_TextureFrameColor = "TextureFrameColor";
 const std::string c_strLayout_TextureCSR = "TextureCSR";
 const std::string c_strLayout_TextureCSRW = "TextureCSRW";
-static const int g_DescriptorSetLayout_Count = 3;
+static const int g_DescriptorSetLayout_Count = 4;
 static const char* g_DescriptorSetLayout_Names[g_DescriptorSetLayout_Count] =
 {
     "Pass-Object-Material-Instance-TextureFS",
     "Pass-Object-Material-Instance-TextureFS-TextureFS",
     "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",
 
+    "TextureFrameColor",
 };
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_Shader_Count = 18;
+static const int g_Shader_Count = 20;
 static const char* g_ShaderModule_Paths[3 * g_Shader_Count] = 
 {
     //name                                                     //type               //path
@@ -390,6 +396,8 @@ static const char* g_ShaderModule_Paths[3 * g_Shader_Count] =
     "vert_standard_mesh_transparent_tree_lit",                 "vert",              "Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv", //standard_mesh_transparent_tree_lit vert  
     "vert_standard_mesh_opaque_tree_alphatest_lit",            "vert",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.vert.spv", //standard_mesh_opaque_tree_alphatest_lit vert
     "vert_standard_mesh_opaque_grass_alphatest_lit",           "vert",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv", //standard_mesh_opaque_grass_alphatest_lit vert  
+
+    "vert_standard_copy_frame",                                "vert",              "Assets/Shader/standard_copy_frame.vert.spv", //standard_copy_frame vert
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
    
@@ -412,6 +420,8 @@ static const char* g_ShaderModule_Paths[3 * g_Shader_Count] =
     "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
     "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
 
+    "frag_standard_copy_frame",                                "frag",              "Assets/Shader/standard_copy_frame.frag.spv", //standard_copy_frame frag
+
     ///////////////////////////////////////// comp /////////////////////////////////////////
     
 
@@ -422,20 +432,20 @@ static const char* g_ShaderModule_Paths[3 * g_Shader_Count] =
 static const int g_RenderPass_Count = 2;
 static const char* g_RenderPass_Names[g_RenderPass_Count] =
 {
-    "default",
-    "TreeFlower",
+    "rp_default",
+    "rp_object",
 
 };
 static bool g_RenderPass_IsDefault[g_RenderPass_Count] =
 {
     true,
-    true,
+    false,
 
 };
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 8;
+static const int g_Object_Count = 9;
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                          //Mesh Name                                                                    
@@ -451,6 +461,7 @@ static const char* g_Object_Configs[2 * g_Object_Count] =
     "object_grass",                        "grass", //object_grass        
     "object_flower",                       "flower", //object_flower
 
+    "copy_frame",                          "quad", //copy_frame
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {
@@ -466,6 +477,7 @@ static const char* g_Object_MeshSubsUsed[g_Object_Count] =
     "1;4;6;9", //object_grass
     "0;2;4;6;8;9;10;11", //object_flower
 
+    "0", //copy_frame
 };  
 
 static float g_Object_InstanceGap = 3.0f;
@@ -483,6 +495,7 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
     4, //object_grass 
     4, //object_flower 
 
+    0, //copy_frame
 };
 static bool g_Object_IsShows[] = 
 {
@@ -498,6 +511,7 @@ static bool g_Object_IsShows[] =
     true, //object_grass
     true, //object_flower
 
+    true, //copy_frame
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
@@ -513,6 +527,7 @@ static bool g_Object_IsRotates[g_Object_Count] =
     false, //object_grass
     false, //object_flower
 
+    false, //copy_frame
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
@@ -528,6 +543,7 @@ static bool g_Object_IsLightings[g_Object_Count] =
     true, //object_grass
     true, //object_flower
 
+    false, //copy_frame
 };
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
@@ -543,11 +559,12 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
     false, //object_grass
     true, //object_flower
 
+    false, //copy_frame
 };
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 20;
+static const int g_ObjectRend_Count = 21;
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
@@ -574,6 +591,8 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
     "object_flower-6",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-6
     "object_flower-7",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-7
     "object_flower-8",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-8
+
+    "copy_frame-1",                        "",                     "",                              "",                         "",                    "",                                                                             "", //copy_frame-1
 
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
@@ -603,6 +622,8 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
     "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-7
     "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-8
 
+    "vert_standard_copy_frame",                             "",                                             "",                                         "",                         "frag_standard_copy_frame",                             "", //copy_frame-1
+
 };
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
@@ -631,33 +652,36 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-7
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-8
 
+    "TextureFrameColor",                                                "", //copy_frame-1
+
 };
 static const char* g_ObjectRend_NameRenderPasses[g_ObjectRend_Count] = 
 {
-    "default", //object_skybox-1
-    "default", //object_mountain-1
+    "rp_object", //object_skybox-1
+    "rp_object", //object_mountain-1
 
-    "default", //object_rock-1
-    "default", //object_cliff-1
+    "rp_object", //object_rock-1
+    "rp_object", //object_cliff-1
 
-    "default", //object_tree-1
-    "default", //object_tree-2
-    "default", //object_tree_spruce-1
-    "default", //object_tree_spruce-2
+    "rp_object", //object_tree-1
+    "rp_object", //object_tree-2
+    "rp_object", //object_tree_spruce-1
+    "rp_object", //object_tree_spruce-2
 
-    "default", //object_grass-1
-    "default", //object_grass-2
-    "default", //object_grass-3
-    "default", //object_grass-4
-    "default", //object_flower-1
-    "default", //object_flower-2
-    "default", //object_flower-3
-    "default", //object_flower-4
-    "default", //object_flower-5
-    "default", //object_flower-6
-    "default", //object_flower-7
-    "default", //object_flower-8
+    "rp_object", //object_grass-1
+    "rp_object", //object_grass-2
+    "rp_object", //object_grass-3
+    "rp_object", //object_grass-4
+    "rp_object", //object_flower-1
+    "rp_object", //object_flower-2
+    "rp_object", //object_flower-3
+    "rp_object", //object_flower-4
+    "rp_object", //object_flower-5
+    "rp_object", //object_flower-6
+    "rp_object", //object_flower-7
+    "rp_object", //object_flower-8
 
+    "rp_default", //copy_frame-1
 };
 static glm::vec3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
@@ -685,6 +709,7 @@ static glm::vec3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     glm::vec3(   0,  0.0,  -4.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-7
     glm::vec3(   0,  0.0,  -4.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-8
 
+    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(    1.0f,      1.0f,      1.0f), //copy_frame-1
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
@@ -712,6 +737,7 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
     false, //object_flower-7
     false, //object_flower-8
 
+    false, //copy_frame-1
 };
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
@@ -739,6 +765,7 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
     false, //object_flower-7
     false, //object_flower-8
 
+    false, //copy_frame-1
 };
 
 
@@ -761,7 +788,45 @@ void Vulkan_014_MultiRenderPass::ModelMeshSub::Destroy()
 bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool isTranformLocal, const glm::mat4& matTransformLocal)
 {
     int count_vertex = (int)meshData.vertices.size();
-    if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex2)
+    if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Tex2)
+    {   
+        this->vertices_Pos3Color4Tex2.clear();
+        this->vertices_Pos3Color4Tex2.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            MeshVertex& vertex = meshData.vertices[i];
+            Vertex_Pos3Color4Tex2 v;
+            v.pos = vertex.pos;
+            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.texCoord = vertex.texCoord;
+            if (isTranformLocal)
+            {
+                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+            }
+            this->vertices_Pos3Color4Tex2.push_back(v);
+        }
+
+        int count_index = (int)meshData.indices32.size();
+        this->indices.clear();
+        this->indices.reserve(count_index);
+        for (int i = 0; i < count_index; i++)
+        {
+            this->indices.push_back(meshData.indices32[i]);
+        }
+        this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Tex2.size();
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Tex2);
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Tex2[0];
+        this->poIndexCount = (uint32_t)this->indices.size();
+        this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+        this->poIndexBuffer_Data = &this->indices[0];
+
+        Util_LogInfo("Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                     this->nameMeshSub.c_str(),
+                     this->nameOriginal.c_str(),
+                     (int)this->vertices_Pos3Color4Tex2.size(), 
+                     (int)this->indices.size());
+    }
+    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex2)
     {
         this->vertices_Pos3Color4Normal3Tex2.clear();
         this->vertices_Pos3Color4Normal3Tex2.reserve(count_vertex);
@@ -939,7 +1004,7 @@ bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData,
 }
 
 void Vulkan_014_MultiRenderPass::ModelMeshSub::WriteVertexData(std::vector<Vertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
-                                                            std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2)
+                                                               std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2)
 {
     size_t count = 0;
     if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
@@ -1117,6 +1182,60 @@ void Vulkan_014_MultiRenderPass::ModelTexture::updateNoiseTexture()
 
 
 /////////////////////////// MultiRenderPass /////////////////////
+void Vulkan_014_MultiRenderPass::FrameBufferAttachment::Init(Vulkan_014_MultiRenderPass* pWindow, bool _isDepth)
+{
+    this->isDepth = _isDepth;
+
+    uint32_t width = pWindow->poSwapChainExtent.width;
+    uint32_t height = pWindow->poSwapChainExtent.height; 
+    uint32_t depth = 1;
+    uint32_t numArray = 1;
+    uint32_t mipMapCount = 1;
+    VkImageType imageType = VK_IMAGE_TYPE_2D;
+    VkSampleCountFlagBits numSamples = pWindow->poMSAASamples;
+    VkFormat format = pWindow->poSwapChainImageFormat;
+    VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
+    VkImageUsageFlags usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+    VkImageViewType imageViewType = VK_IMAGE_VIEW_TYPE_2D; 
+    VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+
+    if (_isDepth)
+    {
+        format = pWindow->poDepthImageFormat;
+        usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+        aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+    }
+
+    pWindow->createImage(width, 
+                         height, 
+                         depth,
+                         numArray,
+                         mipMapCount,
+                         imageType, 
+                         false,
+                         numSamples, 
+                         format, 
+                         tiling, 
+                         usage,
+                         sharingMode,
+                         false,
+                         properties, 
+                         this->image, 
+                         this->memory);
+    
+    pWindow->createImageView(this->image, 
+                             imageViewType,
+                             format, 
+                             aspectFlags, 
+                             mipMapCount,
+                             numArray,
+                             this->view);
+}
+
+
 void Vulkan_014_MultiRenderPass::MultiRenderPass::Init()
 {
     if (this->isUseDefault)
@@ -1125,7 +1244,117 @@ void Vulkan_014_MultiRenderPass::MultiRenderPass::Init()
     }
     else
     {
+        //1> Attachment
+        {
+            this->framebufferColor.Init(this->pWindow, false);
+            this->framebufferDepth.Init(this->pWindow, true);
+            this->pWindow->createSampler(Vulkan_TextureFilter_Bilinear, 
+                                         Vulkan_TextureAddressing_Clamp,
+                                         Vulkan_TextureBorderColor_OpaqueWhite,
+                                         false,
+                                         1.0f,
+                                         0.0f,
+                                         1.0f,
+                                         0.0f,
+                                         this->sampler);
+            
+            this->imageInfo.sampler = this->sampler;
+            this->imageInfo.imageView = this->framebufferColor.view;
+            this->imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        }
 
+        //2> RenderPass
+        {
+            std::vector<VkAttachmentDescription> aAttachmentDescription;
+            std::vector<VkSubpassDescription> aSubpassDescription;
+            std::vector<VkSubpassDependency> aSubpassDependency;
+            
+            //VkAttachmentDescription Color
+            VkAttachmentDescription attachmentSR_Color = {};
+            this->pWindow->createAttachmentDescription(attachmentSR_Color,
+                                                       0,
+                                                       pWindow->poSwapChainImageFormat,
+                                                       VK_SAMPLE_COUNT_1_BIT,
+                                                       VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                       VK_ATTACHMENT_STORE_OP_STORE,
+                                                       VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                                       VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                       VK_IMAGE_LAYOUT_UNDEFINED,
+                                                       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            aAttachmentDescription.push_back(attachmentSR_Color);
+
+            //VkAttachmentDescription Depth
+            VkAttachmentDescription attachmentSR_Depth = {};
+            this->pWindow->createAttachmentDescription(attachmentSR_Depth,
+                                                       0,
+                                                       pWindow->poDepthImageFormat,
+                                                       VK_SAMPLE_COUNT_1_BIT,
+                                                       VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                       VK_ATTACHMENT_STORE_OP_STORE,
+                                                       VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                       VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                       VK_IMAGE_LAYOUT_UNDEFINED,
+                                                       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+            aAttachmentDescription.push_back(attachmentSR_Depth);
+
+            //VkSubpassDescription 
+            VkAttachmentReference attachRef_Color = {};
+            attachRef_Color.attachment = 0;
+            attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+            VkAttachmentReference attachRef_Depth = {};
+            attachRef_Depth.attachment = 1;
+            attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+            VkSubpassDescription subpass_SceneRender = {};
+            subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+            subpass_SceneRender.colorAttachmentCount = 1;
+            subpass_SceneRender.pColorAttachments = &attachRef_Color;
+            subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+            aSubpassDescription.push_back(subpass_SceneRender);
+            
+            //VkSubpassDependency
+            VkSubpassDependency subpassDependency_SceneRender = {};
+            subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
+            subpassDependency_SceneRender.dstSubpass = 0;
+            subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+            subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+            subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+            subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+            aSubpassDependency.push_back(subpassDependency_SceneRender);
+
+            if (!this->pWindow->createVkRenderPass(this->nameRenderPass,
+                                                   aAttachmentDescription,
+                                                   aSubpassDescription,
+                                                   aSubpassDependency,
+                                                   this->poRenderPass))
+            {
+                std::string msg = "Vulkan_014_MultiRenderPass::MultiRenderPass::Init: Failed to create renderpass: " + this->nameRenderPass;
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+        }
+
+        //3> Framebuffer
+        {
+            VkImageViewVector aImageViews;
+            aImageViews.push_back(this->framebufferColor.view);
+            aImageViews.push_back(this->framebufferDepth.view);
+            if (!this->pWindow->createVkFramebuffer(this->nameRenderPass,
+                                                    aImageViews, 
+                                                    this->poRenderPass,
+                                                    0,
+                                                    this->pWindow->poSwapChainExtent.width,
+                                                    this->pWindow->poSwapChainExtent.height,
+                                                    1,
+                                                    this->poFrameBuffer))
+            {
+                std::string msg = "Vulkan_014_MultiRenderPass::MultiRenderPass::Init: Failed to create framebuffer: " + this->nameRenderPass;
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+        }
     }
 }
 
@@ -1563,6 +1792,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                         }
                     }
                 }
+                
                 //Texture CS
                 {
                     std::string nameTextureCS = g_ObjectRend_Configs[7 * nIndexObjectRend + 6]; //Texture CS
@@ -1594,6 +1824,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                 pRend->pPipelineGraphics->nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 0];
                 pRend->pPipelineGraphics->nameRenderPass = g_ObjectRend_NameRenderPasses[nIndexObjectRend];
 
+
                 //Pipeline Computes - DescriptorSetLayout
                 std::string nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
                 if (!nameDescriptorSetLayout.empty())
@@ -1614,10 +1845,6 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
 
                 pModelObject->AddObjectRend(pRend);
                 m_aModelObjectRends_All.push_back(pRend);
-                if (pRend->isTransparent)
-                    m_aModelObjectRends_Transparent.push_back(pRend);
-                else 
-                    m_aModelObjectRends_Opaque.push_back(pRend);
 
                 nIndexObjectRend ++;
             }
@@ -1800,6 +2027,8 @@ void Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom()
     aScissors.push_back(this->poScissor);
 
     //2> Pipeline
+    this->m_mapRenderPass2ObjectRends_Opaque.clear();
+    this->m_mapRenderPass2ObjectRends_Transparent.clear();
     size_t count_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_rend; i++)
     {
@@ -1853,6 +2082,7 @@ void Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom()
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
+            addRenderPass2ModelObjectRendMap(pRend->pPipelineGraphics->pRenderPass, pRend);
 
             //pPipelineGraphics->poPipeline_WireFrame
             pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
@@ -2234,6 +2464,17 @@ void Vulkan_014_MultiRenderPass::createDescriptorSetLayouts()
                 bindings.push_back(samplerLayoutBinding);
             }
             else if (strLayout == c_strLayout_TextureFS) //TextureFS
+            {
+                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+                samplerLayoutBinding.binding = j;
+                samplerLayoutBinding.descriptorCount = 1;
+                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                samplerLayoutBinding.pImmutableSamplers = nullptr;
+                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+                bindings.push_back(samplerLayoutBinding);
+            }
+            else if (strLayout == c_strLayout_TextureFrameColor) //TextureFrameColor
             {
                 VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
                 samplerLayoutBinding.binding = j;
@@ -2780,6 +3021,18 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(std::vector<VkDes
                 ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 ds.descriptorCount = 1;
                 ds.pImageInfo = &pTexture->poTextureImageInfo;
+                descriptorWrites.push_back(ds);
+            }
+            else if (nameDescriptorSet == c_strLayout_TextureFrameColor) //TextureFrameColor
+            {
+                VkWriteDescriptorSet ds = {};
+                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                ds.dstSet = pRend->pPipelineGraphics->poDescriptorSets[j];
+                ds.dstBinding = p;
+                ds.dstArrayElement = 0;
+                ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                ds.descriptorCount = 1;
+                ds.pImageInfo = &pRend->pPipelineGraphics->pRenderPass->imageInfo;
                 descriptorWrites.push_back(ds);
             }
             else
@@ -3606,36 +3859,90 @@ void Vulkan_014_MultiRenderPass::updateRenderPass_CustomBeforeDefault(VkCommandB
                         1.0f,
                         0);
         {
+            //1> Viewport
+            bindViewport(commandBuffer, this->poViewport);
+            
+            //2> Render Pass
+            drawModelObjectRendByRenderPass(commandBuffer, pRenderPass);
 
         }
         endRenderPass(commandBuffer);
     }
 
+
 void Vulkan_014_MultiRenderPass::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
+{       
+    size_t count_render_pass = this->m_aMultiRenderPasses.size();
+    for (size_t i = 0; i < count_render_pass; i++)
+    {
+        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
+        if (!pRenderPass->isUseDefault)
+            continue;
+
+        drawModelObjectRendByRenderPass(commandBuffer, pRenderPass);
+    }
+}
+
+
+void Vulkan_014_MultiRenderPass::addRenderPass2ModelObjectRendMap(MultiRenderPass* pRenderPass, ModelObjectRend* pRend)
 {   
+    if (pRend->isTransparent)
+    {
+        addRenderPass2ModelObjectRendMap(m_mapRenderPass2ObjectRends_Transparent, pRenderPass, pRend);
+    }
+    else 
+    {
+        addRenderPass2ModelObjectRendMap(m_mapRenderPass2ObjectRends_Opaque, pRenderPass, pRend);
+    }
+}
+void Vulkan_014_MultiRenderPass::addRenderPass2ModelObjectRendMap(MultiRenderPass2ObjectRendsMap& mapRP2OR, MultiRenderPass* pRenderPass, ModelObjectRend* pRend)
+{
+    MultiRenderPass2ObjectRendsMap::iterator itFind = mapRP2OR.find(pRenderPass);
+    if (itFind == mapRP2OR.end())
+    {
+        ModelObjectRendPtrVector aORs;
+        aORs.push_back(pRend);
+        mapRP2OR[pRenderPass] = aORs;
+    }
+    else
+    {
+        itFind->second.push_back(pRend);
+    }
+}
+
+void Vulkan_014_MultiRenderPass::drawModelObjectRendByRenderPass(VkCommandBuffer& commandBuffer, MultiRenderPass* pRenderPass)
+{
+    MultiRenderPass2ObjectRendsMap::iterator itFind_Opaque = m_mapRenderPass2ObjectRends_Opaque.find(pRenderPass);
+    MultiRenderPass2ObjectRendsMap::iterator itFind_Transparent = m_mapRenderPass2ObjectRends_Transparent.find(pRenderPass);
+
     if (this->m_isDrawIndirect)
     {
         //1> Opaque
+        if (itFind_Opaque != m_mapRenderPass2ObjectRends_Opaque.end())
         {
-            drawModelObjectRendIndirects(commandBuffer, this->m_aModelObjectRends_Opaque);
+            drawModelObjectRendIndirects(commandBuffer, itFind_Opaque->second);
         }
         //2> Transparent
+        if (itFind_Transparent != m_mapRenderPass2ObjectRends_Transparent.end())
         {
-            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
+            drawModelObjectRendIndirects(commandBuffer, itFind_Transparent->second);
         }
     }
     else
     {
         //1> Opaque
+        if (itFind_Opaque != m_mapRenderPass2ObjectRends_Opaque.end())
         {
-            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Opaque);
+            drawModelObjectRends(commandBuffer, itFind_Opaque->second);
         }
         //2> Transparent
+        if (itFind_Transparent != m_mapRenderPass2ObjectRends_Transparent.end())
         {
-            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
+            drawModelObjectRends(commandBuffer, itFind_Transparent->second);
         }
     }
 }
+
 void Vulkan_014_MultiRenderPass::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     ModelObjectRendIndirect* pRendIndirect_Last = nullptr;
@@ -3780,8 +4087,8 @@ void Vulkan_014_MultiRenderPass::cleanupCustom()
     this->m_aModelObjects.clear();
     this->m_mapModelObjects.clear();
     this->m_aModelObjectRends_All.clear();
-    this->m_aModelObjectRends_Opaque.clear();
-    this->m_aModelObjectRends_Transparent.clear();
+    this->m_mapRenderPass2ObjectRends_Opaque.clear();
+    this->m_mapRenderPass2ObjectRends_Transparent.clear();
 }
 
 void Vulkan_014_MultiRenderPass::cleanupSwapChain_Custom()

@@ -33,6 +33,8 @@ public:
 
         //Vertex
         VulkanVertexType poTypeVertex;
+
+        std::vector<Vertex_Pos3Color4Tex2> vertices_Pos3Color4Tex2;
         std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
         std::vector<Vertex_Pos3Color4Normal3Tex4> vertices_Pos3Color4Normal3Tex4;
         std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
@@ -84,7 +86,9 @@ public:
 
         uint32_t GetVertexSize() 
         {
-            if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
+            if (this->vertices_Pos3Color4Tex2.size() > 0)
+                return sizeof(Vertex_Pos3Color4Tex2);
+            else if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
                 return sizeof(Vertex_Pos3Color4Normal3Tex2);
             else if(this->vertices_Pos3Color4Normal3Tex4.size() > 0)
                 return sizeof(Vertex_Pos3Color4Normal3Tex4);
@@ -529,7 +533,6 @@ public:
                                          0.0f,
                                          this->poTextureSampler);
 
-            this->poTextureImageInfo = {};
             this->poTextureImageInfo.imageLayout = this->poTextureImageLayout;
             this->poTextureImageInfo.imageView = this->poTextureImageView;
             this->poTextureImageInfo.sampler = this->poTextureSampler;
@@ -549,6 +552,8 @@ public:
     /////////////////////////// MultiRenderPass /////////////////////
     struct FrameBufferAttachment
     {
+        bool isDepth;
+
         VkImage image;
         VkDeviceMemory memory;
         VkImageView view;
@@ -571,6 +576,8 @@ public:
             this->memory = VK_NULL_HANDLE;
             this->view = VK_NULL_HANDLE;
         }
+
+        void Init(Vulkan_014_MultiRenderPass* pWindow, bool _isDepth);
     };
     struct MultiRenderPass
     {
@@ -579,13 +586,16 @@ public:
         std::string nameRenderPass;
         bool isUseDefault;
 
+        //Attachment
+        FrameBufferAttachment framebufferColor;
+        FrameBufferAttachment framebufferDepth;
+        VkSampler sampler;
+        VkDescriptorImageInfo imageInfo;
+        
         //RenderPass
         VkRenderPass poRenderPass;
 
         //FrameBuffer
-        FrameBufferAttachment framebufferColor;
-        FrameBufferAttachment framebufferDepth;
-        VkSampler sampler;
         VkFramebuffer poFrameBuffer;
 
         MultiRenderPass(Vulkan_014_MultiRenderPass* _pWindow, 
@@ -1000,6 +1010,8 @@ public:
     typedef std::vector<ModelObjectRend*> ModelObjectRendPtrVector;
     typedef std::map<std::string, ModelObjectRend*> ModelObjectRendPtrMap;
 
+    typedef std::map<MultiRenderPass*, ModelObjectRendPtrVector> MultiRenderPass2ObjectRendsMap;
+
 
     /////////////////////////// ModelObjectRendIndirect /////////////
     struct ModelObjectRendIndirect
@@ -1250,8 +1262,8 @@ public:
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrMap m_mapModelObjects;
     ModelObjectRendPtrVector m_aModelObjectRends_All;
-    ModelObjectRendPtrVector m_aModelObjectRends_Opaque;
-    ModelObjectRendPtrVector m_aModelObjectRends_Transparent;
+    MultiRenderPass2ObjectRendsMap m_mapRenderPass2ObjectRends_Opaque;
+    MultiRenderPass2ObjectRendsMap m_mapRenderPass2ObjectRends_Transparent;
     bool m_isDrawIndirect;
     bool m_isDrawIndirectMulti;
 
@@ -1383,6 +1395,11 @@ private:
     MultiRenderPass* findMultiRenderPass(const std::string& nameRenderPass);
 
 ////Draw
+    void addRenderPass2ModelObjectRendMap(MultiRenderPass* pRenderPass, ModelObjectRend* pRend);
+    void addRenderPass2ModelObjectRendMap(MultiRenderPass2ObjectRendsMap& mapRP2OR, MultiRenderPass* pRenderPass, ModelObjectRend* pRend);
+
+    void drawModelObjectRendByRenderPass(VkCommandBuffer& commandBuffer, MultiRenderPass* pRenderPass);
+
     void drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect);
 
