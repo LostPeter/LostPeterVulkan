@@ -1342,6 +1342,7 @@ protected:
 
         virtual bool beginRenderImgui();
             virtual void cameraReset();
+            virtual void passConstantsConfig();
             virtual void modelConfig();
 
         virtual void endRenderImgui();

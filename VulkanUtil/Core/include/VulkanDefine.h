@@ -1187,7 +1187,7 @@ namespace LostPeter
 
         //Camera
         glm::vec3 g_EyePosW;    
-        float g_cbPerObjectPad1;
+        float g_Pad1;
         float g_NearZ;
         float g_FarZ;
         float g_TotalTime;
@@ -1212,7 +1212,7 @@ namespace LostPeter
             , g_MatViewProj(VulkanMath::Identity4x4())
             , g_MatViewProj_Inv(VulkanMath::Identity4x4())
             , g_EyePosW(0.0f, 0.0f, 0.0f)
-            , g_cbPerObjectPad1(0.0f)
+            , g_Pad1(1.0f)
             , g_NearZ(0.0f)
             , g_FarZ(0.0f)
             , g_TotalTime(0.0f)

@@ -34,7 +34,7 @@ layout(binding = 0) uniform PassConstants
     mat4 g_MatViewProj_Inv;
     
     vec3 g_EyePosW;
-    float g_cbPerObjectPad1;
+    float g_Pad1;
     float g_NearZ;
     float g_FarZ;
     float g_TotalTime;

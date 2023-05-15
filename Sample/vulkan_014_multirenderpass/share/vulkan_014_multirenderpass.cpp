@@ -375,7 +375,7 @@ static const char* g_DescriptorSetLayout_Names[g_DescriptorSetLayout_Count] =
     "Pass-Object-Material-Instance-TextureFS-TextureFS",
     "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",
 
-    "TextureFrameColor",
+    "Pass-TextureFrameColor",
 };
 
 
@@ -668,7 +668,7 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-7
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-8
 
-    "TextureFrameColor",                                                "", //copy_frame-1
+    "Pass-TextureFrameColor",                                           "", //copy_frame-1
 
 };
 static const char* g_ObjectRend_NameRenderPasses[g_ObjectRend_Count] = 
@@ -3393,6 +3393,25 @@ bool Vulkan_014_MultiRenderPass::beginRenderImgui()
     ImGui::End();
 
     return true;
+}
+void Vulkan_014_MultiRenderPass::passConstantsConfig()
+{
+    if (ImGui::CollapsingHeader("PassConstants Settings"))
+    {
+        //g_Pad1
+        if (ImGui::DragFloat("Global Frame Scale", (float*)&(this->passCB.g_Pad1), 0.1f, 0.1f, 2.0f))
+        {
+
+        }
+
+        //g_AmbientLight
+        if (ImGui::ColorEdit4("Global AmbientLight", (float*)&(this->passCB.g_AmbientLight)))
+        {
+            
+        }
+    }
+    ImGui::Separator();
+    ImGui::Spacing();
 }
 void Vulkan_014_MultiRenderPass::modelConfig()
 {
