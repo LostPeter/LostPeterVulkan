@@ -1629,9 +1629,6 @@ Vulkan_014_MultiRenderPass::Vulkan_014_MultiRenderPass(int width, int height, st
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
     this->mainLight.direction = glm::vec3(0, -1, 0); //y-
-
-    this->aInstanceExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-    this->aDeviceExtensions.push_back(VK_KHR_MULTIVIEW_EXTENSION_NAME);
 }
 
 void Vulkan_014_MultiRenderPass::setUpEnabledFeatures()

@@ -5274,8 +5274,11 @@ namespace LostPeter
             }
 
             //8> CommandBuffers
-            updateRenderCommandBuffers_Default();
-            updateRenderCommandBuffers_Custom();
+            updateRenderCommandBuffers_CustomBeforeDefault();
+            {
+                updateRenderCommandBuffers_Default();
+            }
+            updateRenderCommandBuffers_CustomAfterDefault();
         }
             void VulkanWindow::updateSceneObjects()
             {
@@ -5882,6 +5885,10 @@ namespace LostPeter
                     ImGui::Render();
                 }
 
+            void VulkanWindow::updateRenderCommandBuffers_CustomBeforeDefault()
+            {
+                
+            }
             void VulkanWindow::updateRenderCommandBuffers_Default()
             {
                 VkCommandBuffer& commandBuffer = this->poCommandBuffersGraphics[this->poSwapChainImageIndex];
@@ -6081,7 +6088,7 @@ namespace LostPeter
                         vkCmdDispatchIndirect(commandBuffer, buffer, offset);
                     }   
 
-        void VulkanWindow::updateRenderCommandBuffers_Custom()
+        void VulkanWindow::updateRenderCommandBuffers_CustomAfterDefault()
         {   
 
         }

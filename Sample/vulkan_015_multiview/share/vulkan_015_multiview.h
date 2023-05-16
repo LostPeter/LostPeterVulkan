@@ -642,7 +642,6 @@ public:
 
             this->imageInfo.imageView = VK_NULL_HANDLE;
             this->imageInfo.sampler = VK_NULL_HANDLE;
-
         } 
 
         void Init();

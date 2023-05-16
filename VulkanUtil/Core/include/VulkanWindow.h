@@ -826,6 +826,7 @@ namespace LostPeter
 
                     virtual void endRenderImgui();
 
+                virtual void updateRenderCommandBuffers_CustomBeforeDefault();
                 virtual void updateRenderCommandBuffers_Default();
                     virtual void updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer);
@@ -857,7 +858,7 @@ namespace LostPeter
                         virtual void dispatch(VkCommandBuffer& commandBuffer, uint32_t groupCountX,  uint32_t groupCountY,  uint32_t groupCountZ);
                         virtual void dispatchIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer,  VkDeviceSize offset);
 
-                virtual void updateRenderCommandBuffers_Custom();
+                virtual void updateRenderCommandBuffers_CustomAfterDefault();
 
             virtual void render();
         virtual void endRender();
