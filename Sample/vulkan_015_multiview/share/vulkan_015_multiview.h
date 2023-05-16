@@ -639,6 +639,10 @@ public:
 
             this->pWindow->destroyVkFramebuffer(this->poFrameBuffer);
             this->poFrameBuffer = VK_NULL_HANDLE;
+
+            this->imageInfo.imageView = VK_NULL_HANDLE;
+            this->imageInfo.sampler = VK_NULL_HANDLE;
+
         } 
 
         void Init();
@@ -909,9 +913,6 @@ public:
             //MeshSub
             this->pMeshSub = nullptr;
 
-            //RenderPass
-            this->aRenderPassesRef.clear();
-
             //Texture
             this->mapModelTexturesShaderSort.clear();
 
@@ -954,6 +955,9 @@ public:
             this->aShaderStageCreateInfos_Graphics.clear();
             this->aShaderStageCreateInfos_Computes.clear();
             this->mapShaderStageCreateInfos_Computes.clear();
+
+            //RenderPass
+            this->aRenderPassesRef.clear();
 
             //Pipeline Graphics
             this->pPipelineGraphics->CleanupSwapChain();

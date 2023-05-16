@@ -1381,7 +1381,7 @@ void Vulkan_014_MultiRenderPass::MultiRenderPass::CleanupSwapChain()
 
 void Vulkan_014_MultiRenderPass::MultiRenderPass::RecreateSwapChain()
 {
-    Init();
+    
 }  
 
 
@@ -1803,21 +1803,6 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                         }
                     }
                 }
-                //Texture FrameColor
-                {
-                    std::string nameTextureFrameColor = g_ObjectRend_Configs[8 * nIndexObjectRend + 6]; //Texture FrameColor
-                    if (!nameTextureFrameColor.empty())
-                    {
-                        std::vector<std::string> aTextureFrameColor = VulkanUtilString::Split(nameTextureFrameColor, ";");
-                        size_t count_render_pass = aTextureFrameColor.size();
-                        for (size_t p = 0; p < count_render_pass; p++)
-                        {
-                            std::string nameRenderPass = aTextureFrameColor[p];
-                            MultiRenderPass* pRenderPass = this->findMultiRenderPass(nameRenderPass);
-                            pRend->AddRenderPass(pRenderPass);
-                        }
-                    }
-                }
                 //Texture CS
                 {
                     std::string nameTextureCS = g_ObjectRend_Configs[8 * nIndexObjectRend + 7]; //Texture CS
@@ -2108,6 +2093,22 @@ void Vulkan_014_MultiRenderPass::createGraphicsPipeline_Custom()
                 throw std::runtime_error(msg.c_str());
             }
             addRenderPass2ModelObjectRendMap(pRend->pPipelineGraphics->pRenderPass, pRend);
+
+            //Texture FrameColor
+            {
+                std::string nameTextureFrameColor = g_ObjectRend_Configs[8 * i + 6]; //Texture FrameColor
+                if (!nameTextureFrameColor.empty())
+                {
+                    std::vector<std::string> aTextureFrameColor = VulkanUtilString::Split(nameTextureFrameColor, ";");
+                    size_t count_render_pass = aTextureFrameColor.size();
+                    for (size_t p = 0; p < count_render_pass; p++)
+                    {
+                        std::string nameRenderPass = aTextureFrameColor[p];
+                        MultiRenderPass* pRenderPass = this->findMultiRenderPass(nameRenderPass);
+                        pRend->AddRenderPass(pRenderPass);
+                    }
+                }
+            }
 
             //pPipelineGraphics->poPipeline_WireFrame
             pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
