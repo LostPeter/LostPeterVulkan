@@ -844,7 +844,7 @@ namespace LostPeter
                                                      const glm::vec4& clBg,
                                                      float depth,
                                                      uint32_t stencil);
-                            virtual void bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport);
+                            virtual void bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport, const VkRect2D& scissor);
                             virtual void bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline);
                             virtual void bindVertexBuffer(VkCommandBuffer& commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets);
                             virtual void bindIndexBuffer(VkCommandBuffer& commandBuffer, const VkBuffer& vkIndexBuffer, VkDeviceSize offset, VkIndexType indexType);

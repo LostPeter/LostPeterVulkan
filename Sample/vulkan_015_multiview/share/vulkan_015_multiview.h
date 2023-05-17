@@ -1353,7 +1353,8 @@ protected:
         virtual void updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer);
             virtual void drawMeshCustom(VkCommandBuffer& commandBuffer, MultiRenderPass* pRenderPass); 
 
-            virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);
+        virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
+            
 
     //cleanup
         virtual void cleanupCustom();

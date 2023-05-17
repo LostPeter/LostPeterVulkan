@@ -3909,7 +3909,7 @@ void Vulkan_014_MultiRenderPass::updateRenderPass_CustomBeforeDefault(VkCommandB
                         0);
         {
             //1> Viewport
-            bindViewport(commandBuffer, this->poViewport);
+            bindViewport(commandBuffer, this->poViewport, this->poScissor);
             
             //2> Render Pass
             drawModelObjectRendByRenderPass(commandBuffer, pRenderPass);

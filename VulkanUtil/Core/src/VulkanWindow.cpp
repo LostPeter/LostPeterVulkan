@@ -5946,7 +5946,7 @@ namespace LostPeter
                                     0);
                     {
                         //1> Viewport
-                        bindViewport(commandBuffer, this->poViewport);
+                        bindViewport(commandBuffer, this->poViewport, this->poScissor);
                     
                         //2> Normal Render Pass
                         drawMeshDefault(commandBuffer);
@@ -6031,7 +6031,7 @@ namespace LostPeter
 
                         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
                     }
-                        void VulkanWindow::bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport)
+                        void VulkanWindow::bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport, const VkRect2D& scissor)
                         {
                             VkViewport viewport = vkViewport;
                             if (cfg_isNegativeViewport)
@@ -6040,7 +6040,7 @@ namespace LostPeter
                                 viewport.height = -viewport.height;
                             }   
                             vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-                            vkCmdSetScissor(commandBuffer, 0, 1, &this->poScissor);
+                            vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
                         }
                         void VulkanWindow::bindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline)
                         {

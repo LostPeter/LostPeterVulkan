@@ -3912,7 +3912,7 @@ void Vulkan_015_MultiView::updateRenderPass_CustomBeforeDefault(VkCommandBuffer&
                         0);
         {
             //1> Viewport
-            bindViewport(commandBuffer, this->poViewport);
+            bindViewport(commandBuffer, this->poViewport, this->poScissor);
             
             //2> Render Pass
             drawModelObjectRendByRenderPass(commandBuffer, pRenderPass);
@@ -3922,17 +3922,57 @@ void Vulkan_015_MultiView::updateRenderPass_CustomBeforeDefault(VkCommandBuffer&
     }
 
 
-void Vulkan_015_MultiView::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
-{       
-    size_t count_render_pass = this->m_aMultiRenderPasses.size();
-    for (size_t i = 0; i < count_render_pass; i++)
+void Vulkan_015_MultiView::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
+{
+    beginRenderPass(commandBuffer,
+                    this->poRenderPass,
+                    this->poSwapChainFrameBuffers[this->poSwapChainImageIndex],
+                    this->poOffset,
+                    this->poExtent,
+                    this->cfg_colorBackground,
+                    1.0f,
+                    0);
     {
-        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
-        if (!pRenderPass->isUseDefault)
-            continue;
+        VkViewport viewport = this->poViewport;
+        viewport.width = this->poViewport.width / 2.0f; 
+        VkRect2D scissor = this->poScissor;
+        scissor.extent.width = this->poScissor.extent.width / 2.0f;
 
-        drawModelObjectRendByRenderPass(commandBuffer, pRenderPass);
+        size_t count_render_pass = this->m_aMultiRenderPasses.size();
+        //1> Viewport Left
+        {
+			bindViewport(commandBuffer, viewport, poScissor);
+
+            for (size_t i = 0; i < count_render_pass; i++)
+            {
+                MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
+                if (!pRenderPass->isUseDefault)
+                    continue;
+
+                drawModelObjectRendByRenderPass(commandBuffer, pRenderPass);
+            }
+        }
+        //2> Viewport Right
+        {
+            viewport.x = this->poViewport.width / 2.0f; 
+            scissor.offset.x = this->poScissor.extent.width / 2.0f;
+            
+			bindViewport(commandBuffer, viewport, poScissor);
+
+            for (size_t i = 0; i < count_render_pass; i++)
+            {
+                MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
+                if (!pRenderPass->isUseDefault)
+                    continue;
+
+                drawModelObjectRendByRenderPass(commandBuffer, pRenderPass);
+            }
+        }
+
+        //3> ImGui Pass
+        drawMeshDefault_Imgui(commandBuffer);
     }
+    endRenderPass(commandBuffer);
 }
 
 
