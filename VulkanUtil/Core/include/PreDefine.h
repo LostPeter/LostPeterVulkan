@@ -304,6 +304,7 @@ namespace LostPeter
     typedef std::vector<VkSubpassDescription> VkSubpassDescriptionVector;
     typedef std::vector<VkSubpassDependency> VkSubpassDependencyVector;
 
+    typedef std::vector<VkImage> VkImageVector;
     typedef std::vector<VkImageView> VkImageViewVector;
     typedef std::vector<VkFramebuffer> VkFramebufferVector;
 
@@ -352,6 +353,7 @@ namespace LostPeter
     class VulkanMeshSub;
     class VulkanObject;
     class VulkanQueue;
+    class VulkanSample;
     class VulkanSceneManager;
     class VulkanSceneObject;
     class VulkanSwapChain;

@@ -18,16 +18,46 @@ namespace LostPeter
 {
     class utilExport VulkanInstance
     {
-    public:
+    private:
         VulkanInstance();
+    public:
         ~VulkanInstance();
 
     public:
-        
+    protected:
+        VkInstance m_vkInstance;
+        VkDebugReportCallbackEXT m_vkDebugReport;
+        std::vector<const char*> m_aInstanceLayers;
+        std::vector<const char*> m_aInstanceExtensions;
+        std::vector<const char*> m_aAppInstanceExtensions;
+        std::vector<const char*> m_aAppDeviceExtensions;
+        int32 m_nPreferredVendorID;
+        VkPhysicalDeviceFeatures2* m_pVkPhysicalDeviceFeatures2;
+        uint32 m_nDesiredNumSwapChainImages;
+
+        bool m_bIsEnableValidationLayers;
+        VulkanDevice* m_pDevice;
+
+        VulkanPixelFormatType m_eSwapChainImagePixelFormat;
+
 
     public:
+        void Destroy();
+        bool Init();
 
+    public:
+    protected:
+        bool createInstance();
+        bool createDebugReport();
+        bool createDevice();
 
+    private:
+        void getInstanceLayersAndExtensions(bool bIsEnableValidationLayers,
+                                            std::vector<const char*>& outInstanceLayers, 
+                                            std::vector<const char*>& outInstanceExtensions);
+
+        VkDebugReportCallbackCreateInfoEXT createReportCallbackInfo();
+        void destroyReportCallbackInfo();
     };
 
 }; //LostPeter
