@@ -28,3 +28,4 @@ call ./Build_Windows_Sample.bat vulkan_012_shadering %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_013_indirectdraw %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_014_multirenderpass %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_015_multiview %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_016_multiwindow %debug% %rebuild%
