@@ -1017,7 +1017,7 @@ namespace LostPeter
     {
         const size_t c_nMaxUint16 = std::numeric_limits<unsigned short>::max();
 
-        std::string nameMesh;
+        String nameMesh;
         std::vector<MeshVertex> vertices;
         std::vector<unsigned short> indices16;
         std::vector<unsigned int> indices32;
@@ -1145,7 +1145,7 @@ namespace LostPeter
     //////////////////////////////// MeshGeometry ///////////////////////////////////
     struct utilExport MeshGeometry
     {
-        std::string name;
+        String name;
     };
 
     //////////////////////////////// LightConstants /////////////////////////////////

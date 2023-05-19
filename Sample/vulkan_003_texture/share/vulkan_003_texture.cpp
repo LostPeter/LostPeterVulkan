@@ -13,7 +13,7 @@
 #include "vulkan_003_texture.h"
 
 
-Vulkan_003_Texture::Vulkan_003_Texture(int width, int height, std::string name)
+Vulkan_003_Texture::Vulkan_003_Texture(int width, int height, String name)
     : VulkanWindow(width, height, name)
 {
     this->cfg_isImgui = true;

@@ -30,8 +30,8 @@ namespace LostPeter
         VulkanLogPtrMap m_mapLogs;
 
     public:
-        static const std::string ms_strLogDefault_Console;
-        static const std::string ms_strLogDefault_File;
+        static const String ms_strLogDefault_Console;
+        static const String ms_strLogDefault_File;
 
         static VulkanLogManager* GetInstance()
         {
@@ -57,8 +57,8 @@ namespace LostPeter
         const VulkanLogPtrMap& GetLogPtrMap() const { return m_mapLogs; }
         VulkanLogPtrMap& GetLogPtrMap() { return m_mapLogs; }
 
-        VulkanLog* GetLogPtr(const std::string& strName);
-        VulkanLog* CreateLogPtr(const std::string& strName, VulkanLogType eLog);
+        VulkanLog* GetLogPtr(const String& strName);
+        VulkanLog* CreateLogPtr(const String& strName, VulkanLogType eLog);
         void InsertLogPtr(VulkanLog* pLog);
         void RemoveLogPtr(VulkanLog* pLog);
         void RemoveAllLogPtr();

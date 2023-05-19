@@ -18,19 +18,18 @@ namespace LostPeter
 {
     class utilExport VulkanInstance
     {
-    private:
-        VulkanInstance();
     public:
+        VulkanInstance();
         ~VulkanInstance();
 
     public:
     protected:
         VkInstance m_vkInstance;
         VkDebugReportCallbackEXT m_vkDebugReport;
-        std::vector<const char*> m_aInstanceLayers;
-        std::vector<const char*> m_aInstanceExtensions;
-        std::vector<const char*> m_aAppInstanceExtensions;
-        std::vector<const char*> m_aAppDeviceExtensions;
+        ConstCharPtrVector m_aInstanceLayers;
+        ConstCharPtrVector m_aInstanceExtensions;
+        ConstCharPtrVector m_aAppInstanceExtensions;
+        ConstCharPtrVector m_aAppDeviceExtensions;
         int32 m_nPreferredVendorID;
         VkPhysicalDeviceFeatures2* m_pVkPhysicalDeviceFeatures2;
         uint32 m_nDesiredNumSwapChainImages;
@@ -40,6 +39,26 @@ namespace LostPeter
 
         VulkanPixelFormatType m_eSwapChainImagePixelFormat;
 
+    public:
+        UTIL_FORCEINLINE const VkInstance& GetVkInstance() const { return m_vkInstance; }
+        UTIL_FORCEINLINE const VkDebugReportCallbackEXT& GetVkDebugReportCallbackEXT() const { return m_vkDebugReport; }
+        UTIL_FORCEINLINE const ConstCharPtrVector& GetInstanceLayers() const { return m_aInstanceLayers; }
+        UTIL_FORCEINLINE const ConstCharPtrVector& GetInstanceExtensions() const { return m_aInstanceExtensions; }
+        UTIL_FORCEINLINE const ConstCharPtrVector& GetAppInstanceExtensions() const { return m_aAppInstanceExtensions; }
+        UTIL_FORCEINLINE const ConstCharPtrVector& GetAppDeviceExtensions() const { return m_aAppDeviceExtensions; }
+        UTIL_FORCEINLINE void AddAppInstanceExtensions(const char* szName) { m_aAppInstanceExtensions.push_back(szName); }
+        UTIL_FORCEINLINE void AddAppDeviceExtensions(const char* szName) { m_aAppDeviceExtensions.push_back(szName); }
+        UTIL_FORCEINLINE int32 GetPreferredVendorID() const { return m_nPreferredVendorID; }
+        UTIL_FORCEINLINE void SetPreferredVendorID(int32 vendorID) { m_nPreferredVendorID = vendorID; }
+        UTIL_FORCEINLINE VkPhysicalDeviceFeatures2* GetVkPhysicalDeviceFeatures2() const { return m_pVkPhysicalDeviceFeatures2; }
+        UTIL_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
+        UTIL_FORCEINLINE uint32 GetDesiredNumSwapChainImages() const { return m_nDesiredNumSwapChainImages; }
+        UTIL_FORCEINLINE void SetDesiredNumSwapChainImages(uint32 num) { m_nDesiredNumSwapChainImages = num; }
+        
+        UTIL_FORCEINLINE bool IsEnableValidationLayers() const { return m_bIsEnableValidationLayers; }
+        UTIL_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
+
+        UTIL_FORCEINLINE VulkanPixelFormatType GetVkSwapChainImagePixelFormatType() const { return m_eSwapChainImagePixelFormat; }
 
     public:
         void Destroy();
@@ -53,8 +72,8 @@ namespace LostPeter
 
     private:
         void getInstanceLayersAndExtensions(bool bIsEnableValidationLayers,
-                                            std::vector<const char*>& outInstanceLayers, 
-                                            std::vector<const char*>& outInstanceExtensions);
+                                            ConstCharPtrVector& outInstanceLayers, 
+                                            ConstCharPtrVector& outInstanceExtensions);
 
         VkDebugReportCallbackCreateInfoEXT createReportCallbackInfo();
         void destroyReportCallbackInfo();

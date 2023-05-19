@@ -20,33 +20,33 @@ namespace LostPeter
     {
     public:
     ////Path
-        static std::string GetPathExecute();
-        static std::string GetPathBin();
-        static std::string GetPathAssets();
-        static std::string GetPathReal(const char* szFile);
-        static std::string GetPathReal(const std::string& strPath);
+        static String GetPathExecute();
+        static String GetPathBin();
+        static String GetPathAssets();
+        static String GetPathReal(const char* szFile);
+        static String GetPathReal(const String& strPath);
 
     ////File
-        static bool FileIsExist(const std::string& strPath);
-        static bool DeleteFile(const std::string& strPath);
-        static bool ClearFile(const std::string& strPath);
-        static bool CopyFile(const std::string& strSrcPath, const std::string& strDstPath);
+        static bool FileIsExist(const String& strPath);
+        static bool DeleteFile(const String& strPath);
+        static bool ClearFile(const String& strPath);
+        static bool CopyFile(const String& strSrcPath, const String& strDstPath);
 
     ////Folder
-        static bool IsDirectory(const std::string& strPath);
-		static bool CreateDirectory(const std::string& strPath);
-		static bool EnumFiles(const std::string& strFolderPath, std::vector<std::string>& aFiles, bool bFilePath);
-		static bool EnumFiles(const std::string& strFolderPath, std::map<std::string, std::string>& mapFiles, bool bIsRecursive);
-		static bool EnumFolders(const std::string& strFolderPath, std::vector<std::string>& aFolders, bool bFolderPath, bool bIsRecursive);
+        static bool IsDirectory(const String& strPath);
+		static bool CreateDirectory(const String& strPath);
+		static bool EnumFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath);
+		static bool EnumFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive);
+		static bool EnumFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive);
 
     ////LoadFile
-        static bool LoadFileContent(const char* szFile, std::vector<char>& content, bool addEnd0 = false);
+        static bool LoadFileContent(const char* szFile, CharVector& content, bool addEnd0 = false);
         static bool LoadFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 = false);
-        static bool LoadFileToString(const char* szFile, std::string& contentFile);
+        static bool LoadFileToString(const char* szFile, String& contentFile);
 
-        static bool LoadAssetFileContent(const char* szFile, std::vector<char>& content, bool addEnd0 = false);
+        static bool LoadAssetFileContent(const char* szFile, CharVector& content, bool addEnd0 = false);
         static bool LoadAssetFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 = false);
-        static bool LoadAssetFileToString(const char* szFile, std::string& contentFile);
+        static bool LoadAssetFileToString(const char* szFile, String& contentFile);
     };
 
 }; //LostPeter

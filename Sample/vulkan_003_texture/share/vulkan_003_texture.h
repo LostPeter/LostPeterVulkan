@@ -18,7 +18,7 @@ using namespace LostPeter;
 class Vulkan_003_Texture : public VulkanWindow
 {
 public:
-    Vulkan_003_Texture(int width, int height, std::string name);
+    Vulkan_003_Texture(int width, int height, String name);
 
 public:
 

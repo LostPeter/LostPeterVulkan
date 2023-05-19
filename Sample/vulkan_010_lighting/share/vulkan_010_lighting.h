@@ -18,7 +18,7 @@ using namespace LostPeter;
 class Vulkan_010_Lighting : public VulkanWindow
 {
 public:
-    Vulkan_010_Lighting(int width, int height, std::string name);
+    Vulkan_010_Lighting(int width, int height, String name);
 
 public:
     struct ModelObject
@@ -145,9 +145,9 @@ public:
         Vulkan_010_Lighting* pWindow;
 
         //Name
-        std::string nameModel;
-        std::string pathModel;
-        std::string pathTexture;
+        String nameModel;
+        String pathModel;
+        String pathTexture;
         bool isShow;
         bool isWireFrame;
         bool isRotate;
@@ -217,7 +217,7 @@ public:
         VkColorComponentFlags cfg_ColorWriteMask;
     };
     typedef std::vector<ModelObject*> ModelObjectPtrVector;
-    typedef std::map<std::string, ModelObject*> ModelObjectPtrMap;
+    typedef std::map<String, ModelObject*> ModelObjectPtrMap;
 
 public:
     ModelObjectPtrVector m_aModelObjects;
@@ -270,7 +270,7 @@ private:
 
     void destroyShaderModules();
     void createShaderModules();
-    VkShaderModule findShaderModule(const std::string& pathShaderModule);
+    VkShaderModule findShaderModule(const String& pathShaderModule);
 
     void drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject);
 };

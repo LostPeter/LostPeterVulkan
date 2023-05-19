@@ -18,7 +18,7 @@ using namespace LostPeter;
 class Vulkan_001_Triangle : public VulkanWindow
 {
 public:
-    Vulkan_001_Triangle(int width, int height, std::string name);
+    Vulkan_001_Triangle(int width, int height, String name);
 
 public:
     std::vector<Vertex_Pos2Color4> vertices;

@@ -149,8 +149,8 @@ namespace LostPeter
     }
 
     void VulkanInstance::getInstanceLayersAndExtensions(bool bIsEnableValidationLayers,
-                                                        std::vector<const char*>& outInstanceLayers, 
-                                                        std::vector<const char*>& outInstanceExtensions)
+                                                        ConstCharPtrVector& outInstanceLayers, 
+                                                        ConstCharPtrVector& outInstanceExtensions)
     {
 
     }

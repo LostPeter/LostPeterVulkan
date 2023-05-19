@@ -18,7 +18,7 @@ using namespace LostPeter;
 class Vulkan_005_Camera : public VulkanWindow
 {
 public:
-    Vulkan_005_Camera(int width, int height, std::string name);
+    Vulkan_005_Camera(int width, int height, String name);
 
 public:
     std::vector<Vertex_Pos3Color4Tex2> vertices;

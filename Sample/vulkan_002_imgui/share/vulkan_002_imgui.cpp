@@ -13,7 +13,7 @@
 #include "vulkan_002_imgui.h"
 
 
-Vulkan_002_Imgui::Vulkan_002_Imgui(int width, int height, std::string name)
+Vulkan_002_Imgui::Vulkan_002_Imgui(int width, int height, String name)
     : VulkanWindow(width, height, name)
 {
     this->cfg_isImgui = true;

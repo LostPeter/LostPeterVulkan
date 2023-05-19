@@ -28,7 +28,7 @@ namespace LostPeter
         bool rightHand;
         
     public:
-        virtual std::string ToName() = 0;
+        virtual String ToName() = 0;
     };
 
     //Triangle
@@ -40,11 +40,11 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_Triangle();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
     //Quad
@@ -62,7 +62,7 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_Quad();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
         float centerX;
         float centerY;
@@ -71,7 +71,7 @@ namespace LostPeter
         float depth;
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
     //Grid
@@ -88,7 +88,7 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_Grid();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
         float width;
         float height;
@@ -96,7 +96,7 @@ namespace LostPeter
         uint32 n;
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
     //Circle
@@ -111,13 +111,13 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_Circle();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
         float radius;
         uint32 segment;
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
     //AABB
@@ -134,7 +134,7 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_AABB();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
         float width;
         float height;
@@ -142,7 +142,7 @@ namespace LostPeter
         uint32 numSubdivisions;
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
     //Sphere
@@ -158,14 +158,14 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_Sphere();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
         float radius;
         uint32 sliceCount;
         uint32 stackCount;
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
     //GeoSphere
@@ -180,13 +180,13 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_GeoSphere();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
         float radius;
         uint32 numSubdivisions;
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
     //Cylinder
@@ -204,7 +204,7 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_Cylinder();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
         float bottomRadius;
         float topRadius;
@@ -213,7 +213,7 @@ namespace LostPeter
         uint32 stackCount;
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
     //Capsule
@@ -224,12 +224,12 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_Capsule();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
         
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
     //Cone
@@ -240,12 +240,12 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_Cone();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
         
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
     //Torus
@@ -256,12 +256,12 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_Torus();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
         
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
     //SkyBox
@@ -272,12 +272,12 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_SkyBox();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
         
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
     //SkyDome
@@ -288,12 +288,12 @@ namespace LostPeter
         virtual ~VulkanMeshCreateParam_SkyDome();
 
     public:
-        static std::string ms_nameType;
+        static String ms_nameType;
     public:
         
 
     public:
-        virtual std::string ToName();
+        virtual String ToName();
     };
 
 

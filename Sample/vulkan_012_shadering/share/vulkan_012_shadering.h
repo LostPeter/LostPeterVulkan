@@ -19,15 +19,15 @@ using namespace LostPeter;
 class Vulkan_012_Shadering : public VulkanWindow
 {
 public:
-    Vulkan_012_Shadering(int width, int height, std::string name);
+    Vulkan_012_Shadering(int width, int height, String name);
 
 public:
     /////////////////////////// ModelMesh ///////////////////////////
     struct ModelMesh
     {
         Vulkan_012_Shadering* pWindow;
-        std::string nameMesh;
-        std::string pathMesh;
+        String nameMesh;
+        String pathMesh;
         VulkanMeshType typeMesh;
         VulkanMeshGeometryType typeGeometryType;
 
@@ -51,8 +51,8 @@ public:
 
 
         ModelMesh(Vulkan_012_Shadering* _pWindow, 
-                  const std::string& _nameMesh,
-                  const std::string& _pathMesh,
+                  const String& _nameMesh,
+                  const String& _pathMesh,
                   VulkanMeshType _typeMesh,
                   VulkanMeshGeometryType _typeGeometryType,
                   VulkanVertexType _poTypeVertex)
@@ -103,15 +103,15 @@ public:
 
     };
     typedef std::vector<ModelMesh*> ModelMeshPtrVector;
-    typedef std::map<std::string, ModelMesh*> ModelMeshPtrMap;
+    typedef std::map<String, ModelMesh*> ModelMeshPtrMap;
 
 
     /////////////////////////// ModelTexture ////////////////////////
     struct ModelTexture
     {
         Vulkan_012_Shadering* pWindow;
-        std::string nameTexture;
-        std::vector<std::string> aPathTexture;
+        String nameTexture;
+        StringVector aPathTexture;
         VulkanTextureType typeTexture;
         bool isRenderTarget;
         bool isGraphicsComputeShared;
@@ -151,7 +151,7 @@ public:
 
 
         ModelTexture(Vulkan_012_Shadering* _pWindow, 
-                     const std::string& _nameTexture,
+                     const String& _nameTexture,
                      VulkanTextureType _typeTexture,
                      bool _isRenderTarget,
                      bool _isGraphicsComputeShared,
@@ -159,7 +159,7 @@ public:
                      VulkanTextureFilterType _typeFilter,
                      VulkanTextureAddressingType _typeAddressing,
                      VulkanTextureBorderColorType _typeBorderColor,
-                     const std::vector<std::string>& _aPathTexture)
+                     const StringVector& _aPathTexture)
             : pWindow(_pWindow)
             , nameTexture(_nameTexture)
             , typeTexture(_typeTexture)
@@ -339,7 +339,7 @@ public:
                 }   
                 else
                 {
-                    std::string msg = "ModelTexture::LoadTexture: Wrong texture type, Create from file, name: [" + this->nameTexture + "] !";
+                    String msg = "ModelTexture::LoadTexture: Wrong texture type, Create from file, name: [" + this->nameTexture + "] !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -452,7 +452,7 @@ public:
                 }
                 else
                 {
-                    std::string msg = "ModelTexture::LoadTexture: Wrong texture type, Create render target, name: [" + this->nameTexture + "] !";
+                    String msg = "ModelTexture::LoadTexture: Wrong texture type, Create render target, name: [" + this->nameTexture + "] !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -481,16 +481,16 @@ public:
         void updateNoiseTexture();
     };
     typedef std::vector<ModelTexture*> ModelTexturePtrVector;
-    typedef std::map<std::string, ModelTexture*> ModelTexturePtrMap;
-    typedef std::map<std::string, ModelTexturePtrVector> ModelTexturePtrShaderSortMap;
+    typedef std::map<String, ModelTexture*> ModelTexturePtrMap;
+    typedef std::map<String, ModelTexturePtrVector> ModelTexturePtrShaderSortMap;
 
 
     /////////////////////////// PipelineGraphics ////////////////////
     struct PipelineGraphics
     {
         Vulkan_012_Shadering* pWindow;
-        std::string nameDescriptorSetLayout;
-        std::vector<std::string>* poDescriptorSetLayoutNames;
+        String nameDescriptorSetLayout;
+        StringVector* poDescriptorSetLayoutNames;
         VkDescriptorSetLayout poDescriptorSetLayout;
         VkPipelineLayout poPipelineLayout;
         VkPipeline poPipeline_WireFrame;
@@ -544,8 +544,8 @@ public:
     struct PipelineCompute
     {
         Vulkan_012_Shadering* pWindow;
-        std::string nameDescriptorSetLayout;
-        std::vector<std::string>* poDescriptorSetLayoutNames;
+        String nameDescriptorSetLayout;
+        StringVector* poDescriptorSetLayoutNames;
         VkDescriptorSetLayout poDescriptorSetLayout;
         VkPipelineLayout poPipelineLayout;
         VkPipeline poPipeline;
@@ -619,7 +619,7 @@ public:
         }  
     };
     typedef std::vector<PipelineCompute*> PipelineComputePtrVector;
-    typedef std::map<std::string, PipelineCompute*> PipelineComputePtrMap;
+    typedef std::map<String, PipelineCompute*> PipelineComputePtrMap;
 
 
     /////////////////////////// ModelObject /////////////////////////
@@ -751,8 +751,8 @@ public:
 
         //Name
         int indexModel;
-        std::string nameObject;
-        std::string nameMesh;
+        String nameObject;
+        String nameMesh;
         bool isShow;
         bool isWireFrame;
         bool isRotate;
@@ -840,7 +840,7 @@ public:
         }
 
     ////Textures
-        void AddTexture(const std::string& nameShaderSort, ModelTexture* pTexture)
+        void AddTexture(const String& nameShaderSort, ModelTexture* pTexture)
         {
             ModelTexturePtrVector* pVector = nullptr;
             ModelTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
@@ -852,14 +852,14 @@ public:
             }
             itFind->second.push_back(pTexture);
         }
-        ModelTexture* GetTexture(const std::string& nameShaderSort, int index)
+        ModelTexture* GetTexture(const String& nameShaderSort, int index)
         {
             ModelTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
             if (itFind == this->mapModelTexturesShaderSort.end())
                 return nullptr;
             return itFind->second.at(index);
         }
-        ModelTexturePtrVector* GetTextures(const std::string& nameShaderSort)
+        ModelTexturePtrVector* GetTextures(const String& nameShaderSort)
         {
             ModelTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
             if (itFind == this->mapModelTexturesShaderSort.end())
@@ -880,7 +880,7 @@ public:
 
     };
     typedef std::vector<ModelObject*> ModelObjectPtrVector;
-    typedef std::map<std::string, ModelObject*> ModelObjectPtrMap;
+    typedef std::map<String, ModelObject*> ModelObjectPtrMap;
 
 public:
     ModelMeshPtrVector m_aModelMesh;
@@ -895,7 +895,7 @@ public:
 
     VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
     VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
-    std::map<std::string, std::vector<std::string>> m_mapName2Layouts;
+    std::map<String, StringVector> m_mapName2Layouts;
     
     VkShaderModuleVector m_aVkShaderModules;
     VkShaderModuleMap m_mapVkShaderModules;
@@ -956,46 +956,46 @@ private:
 ////ModelMesh
     void destroyModelMeshes();
     void createModelMeshes();
-    ModelMesh* findModelMesh(const std::string& nameMesh);
+    ModelMesh* findModelMesh(const String& nameMesh);
 
 ////ModelTexture
     void destroyModelTextures();
     void createModelTextures();
-    ModelTexture* findModelTexture(const std::string& nameTexture);
+    ModelTexture* findModelTexture(const String& nameTexture);
 
 ////DescriptorSetLayout
     void destroyDescriptorSetLayouts();
     void createDescriptorSetLayouts();
-    VkDescriptorSetLayout findDescriptorSetLayout(const std::string& nameDescriptorSetLayout);
-    std::vector<std::string>* findDescriptorSetLayoutNames(const std::string& nameDescriptorSetLayout);
+    VkDescriptorSetLayout findDescriptorSetLayout(const String& nameDescriptorSetLayout);
+    StringVector* findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout);
 
 ////ShaderModule
     void destroyShaderModules();
     void createShaderModules();
-    VkShaderModule findShaderModule(const std::string& nameShaderModule);
-    bool createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
-                                              const std::string& nameShaderTesc,
-                                              const std::string& nameShaderTese,
-                                              const std::string& nameShaderGeom,
-                                              const std::string& nameShaderFrag,
-                                              const std::string& nameShaderComp,
+    VkShaderModule findShaderModule(const String& nameShaderModule);
+    bool createPipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                              const String& nameShaderTesc,
+                                              const String& nameShaderTese,
+                                              const String& nameShaderGeom,
+                                              const String& nameShaderFrag,
+                                              const String& nameShaderComp,
                                               VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
                                               VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                               VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
-    bool createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
-                                              const std::string& nameShaderTesc,
-                                              const std::string& nameShaderTese,
-                                              const std::string& nameShaderGeom,
-                                              const std::string& nameShaderFrag,
+    bool createPipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                              const String& nameShaderTesc,
+                                              const String& nameShaderTese,
+                                              const String& nameShaderGeom,
+                                              const String& nameShaderFrag,
                                               VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics);
-    bool createPipelineShaderStageCreateInfos(const std::string& nameShaderComp,
+    bool createPipelineShaderStageCreateInfos(const String& nameShaderComp,
                                               VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                               VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
 
 ////PipelineLayout
     void destroyPipelineLayouts();
     void createPipelineLayouts();
-    VkPipelineLayout findPipelineLayout(const std::string& namePipelineLayout);
+    VkPipelineLayout findPipelineLayout(const String& namePipelineLayout);
 
     void drawModelObject(VkCommandBuffer& commandBuffer, ModelObject* pModelObject);
 };

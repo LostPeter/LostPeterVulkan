@@ -106,7 +106,7 @@ static float g_fCameraFov[g_CountLen] =
 };
 
 
-Vulkan_005_Camera::Vulkan_005_Camera(int width, int height, std::string name)
+Vulkan_005_Camera::Vulkan_005_Camera(int width, int height, String name)
     : VulkanWindow(width, height, name)
 {
     this->cfg_isImgui = true;
@@ -231,11 +231,11 @@ void Vulkan_005_Camera::modelConfig()
 {
     if (ImGui::CollapsingHeader("Model Settings"))
     {
-        static std::string s_Name = "Model - ";
+        static String s_Name = "Model - ";
         for (int i = 0; i < g_CountLen; i++)
         {
             bool isShowModel = g_isShowModels[i];
-            std::string nameModel = s_Name + g_pathModels[3 * i + 0];
+            String nameModel = s_Name + g_pathModels[3 * i + 0];
             if (isShowModel)
             {
                 nameModel += "(" + VulkanUtilString::SaveSizeT(this->vertices.size()) + 

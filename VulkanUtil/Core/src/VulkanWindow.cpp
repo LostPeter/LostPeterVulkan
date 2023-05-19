@@ -29,7 +29,7 @@ namespace LostPeter
 
     int VulkanWindow::s_maxFramesInFight = 2;
 
-    VulkanWindow::VulkanWindow(int width, int height, std::string name)
+    VulkanWindow::VulkanWindow(int width, int height, String name)
         : VulkanBase(width, height, name)
         , poInstance(VK_NULL_HANDLE)
         , poDebugMessenger(VK_NULL_HANDLE)
@@ -521,7 +521,7 @@ namespace LostPeter
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-        std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+        ConstCharPtrVector extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
         size_t count_extensions = this->aInstanceExtensions.size();
         size_t count_glfw = extensions.size();
         for (size_t i = 0; i < count_glfw; i++)
@@ -573,7 +573,7 @@ namespace LostPeter
         }
         else if (result == VK_ERROR_EXTENSION_NOT_PRESENT)
         {
-            std::string missingExtensions;
+            String missingExtensions;
             uint32 propertyCount = 0;
             vkEnumerateInstanceExtensionProperties(nullptr, &propertyCount, nullptr);
             std::vector<VkExtensionProperties> properties(propertyCount);
@@ -593,7 +593,7 @@ namespace LostPeter
                 }
                 if (!found) 
                 {
-                    std::string extensionStr(extension);
+                    String extensionStr(extension);
                     missingExtensions += extensionStr + "\n";
                 }
             }
@@ -611,7 +611,7 @@ namespace LostPeter
 
         if (result != VK_SUCCESS)
         {
-            std::string msg = "VulkanWindow::createInstance: Failed to create vulkan instance !";
+            String msg = "VulkanWindow::createInstance: Failed to create vulkan instance !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -640,7 +640,7 @@ namespace LostPeter
                 
             if (createDebugUtilsMessengerEXT(this->poInstance, &createInfo, nullptr, &this->poDebugMessenger) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::setUpDebugMessenger: Failed to set up debug messenger !";
+                String msg = "VulkanWindow::setUpDebugMessenger: Failed to set up debug messenger !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -656,7 +656,7 @@ namespace LostPeter
         {
             std::ostringstream os;
             os << (int)result;
-            std::string msg = "VulkanWindow::createSurface: Failed to create window surface, result: " + os.str();
+            String msg = "VulkanWindow::createSurface: Failed to create window surface, result: " + os.str();
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -671,7 +671,7 @@ namespace LostPeter
 
         if (deviceCount == 0)
         {
-            std::string msg = "VulkanWindow::pickPhysicalDevice: Failed to find GPUs width Vulkan support !";
+            String msg = "VulkanWindow::pickPhysicalDevice: Failed to find GPUs width Vulkan support !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -703,7 +703,7 @@ namespace LostPeter
 
         if (this->poPhysicalDevice == nullptr) 
         {
-            std::string msg = "VulkanWindow::pickPhysicalDevice: Failed to find a suitable GPU !";
+            String msg = "VulkanWindow::pickPhysicalDevice: Failed to find a suitable GPU !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1112,7 +1112,7 @@ namespace LostPeter
 
         if (vkCreateDevice(this->poPhysicalDevice, &deviceCreateInfo, nullptr, &this->poDevice) != VK_SUCCESS) 
         {
-            std::string msg = "VulkanWindow::createLogicalDevice: Failed to create logical device !";
+            String msg = "VulkanWindow::createLogicalDevice: Failed to create logical device !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1165,7 +1165,7 @@ namespace LostPeter
 
             if (vkCreateCommandPool(this->poDevice, &poolGraphicsInfo, nullptr, &this->poCommandPoolGraphics) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::createCommandPool_Graphics: Failed to create command pool graphics !";
+                String msg = "VulkanWindow::createCommandPool_Graphics: Failed to create command pool graphics !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -1179,7 +1179,7 @@ namespace LostPeter
 
             if (vkCreateCommandPool(this->poDevice, &poolComputeInfo, nullptr, &this->poCommandPoolCompute) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::createCommandPool_Compute: Failed to create command pool compute !";
+                String msg = "VulkanWindow::createCommandPool_Compute: Failed to create command pool compute !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -1309,7 +1309,7 @@ namespace LostPeter
         {
             std::ostringstream os;
             os << (int)result;
-            std::string msg = "VulkanWindow::createSwapChain: Failed to create swap chain, result: " + os.str();
+            String msg = "VulkanWindow::createSwapChain: Failed to create swap chain, result: " + os.str();
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1496,7 +1496,7 @@ namespace LostPeter
                 }
             }
 
-            std::string msg = "VulkanWindow::findSupportedFormat: Failed to find supported format !";
+            String msg = "VulkanWindow::findSupportedFormat: Failed to find supported format !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1602,7 +1602,7 @@ namespace LostPeter
 
         if (vkCreateDescriptorSetLayout(this->poDevice, &layoutInfo, nullptr, &this->poDescriptorSetLayout) != VK_SUCCESS) 
         {
-            std::string msg = "VulkanWindow::createDescriptorSetLayout_Default: Failed to create descriptor set layout !";
+            String msg = "VulkanWindow::createDescriptorSetLayout_Default: Failed to create descriptor set layout !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1690,7 +1690,7 @@ namespace LostPeter
                 attachment.initialLayout = initialLayout;
                 attachment.finalLayout = finalLayout;
             }
-            bool VulkanWindow::createVkRenderPass(const std::string& nameRenderPass,
+            bool VulkanWindow::createVkRenderPass(const String& nameRenderPass,
                                                   const VkAttachmentDescriptionVector& aAttachmentDescription,
                                                   const VkSubpassDescriptionVector& aSubpassDescription,
                                                   const VkSubpassDependencyVector& aSubpassDependency,
@@ -1789,7 +1789,7 @@ namespace LostPeter
                                         aSubpassDependency,
                                         vkRenderPass))
                 {
-                    std::string msg = "VulkanWindow::createRenderPass_KhrDepth: Failed to create RenderPass_Default_KhrDepth !";
+                    String msg = "VulkanWindow::createRenderPass_KhrDepth: Failed to create RenderPass_Default_KhrDepth !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -1905,7 +1905,7 @@ namespace LostPeter
                                         aSubpassDependency,
                                         vkRenderPass))
                 {
-                    std::string msg = "VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create RenderPass_Default_KhrDepthImgui !";
+                    String msg = "VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create RenderPass_Default_KhrDepthImgui !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -1999,7 +1999,7 @@ namespace LostPeter
                                         aSubpassDependency,
                                         vkRenderPass))
                 {
-                    std::string msg = "VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create RenderPass_Default_ColorDepthMSAA !";
+                    String msg = "VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create RenderPass_Default_ColorDepthMSAA !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -2138,7 +2138,7 @@ namespace LostPeter
                                         aSubpassDependency,
                                         vkRenderPass))
                 {
-                    std::string msg = "VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create RenderPass_Default_ColorDepthImguiMSAA !";
+                    String msg = "VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create RenderPass_Default_ColorDepthImguiMSAA !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -2193,7 +2193,7 @@ namespace LostPeter
                         }
                     }
 
-                    std::string nameFramebuffer = "Framebuffer-" + VulkanUtilString::SaveSizeT(i);
+                    String nameFramebuffer = "Framebuffer-" + VulkanUtilString::SaveSizeT(i);
                     if (!createVkFramebuffer(nameFramebuffer,
                                              aImageViews,
                                              this->poRenderPass,
@@ -2203,7 +2203,7 @@ namespace LostPeter
                                              1,
                                              this->poSwapChainFrameBuffers[i]))
                     {
-                        std::string msg = "VulkanWindow::createFramebuffer_Default: Failed to create framebuffer: " + nameFramebuffer;
+                        String msg = "VulkanWindow::createFramebuffer_Default: Failed to create framebuffer: " + nameFramebuffer;
                         Util_LogError(msg.c_str());
                         throw std::runtime_error(msg);
                     }
@@ -2216,7 +2216,7 @@ namespace LostPeter
                 
             }
 
-                bool VulkanWindow::createVkFramebuffer(const std::string& nameFramebuffer,
+                bool VulkanWindow::createVkFramebuffer(const String& nameFramebuffer,
                                                        const VkImageViewVector& aImageView, 
                                                        VkRenderPass& vkRenderPass,
                                                        VkFramebufferCreateFlags flags,
@@ -2284,7 +2284,7 @@ namespace LostPeter
                     vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poRenderCompleteSemaphores[i]) != VK_SUCCESS ||
                     vkCreateFence(this->poDevice, &fenceInfo, nullptr, &this->poInFlightFences[i]) != VK_SUCCESS) 
                 {
-                    std::string msg = "VulkanWindow::createPresentRenderSyncObjects: Failed to create present/render synchronization objects for a frame !";
+                    String msg = "VulkanWindow::createPresentRenderSyncObjects: Failed to create present/render synchronization objects for a frame !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -2300,7 +2300,7 @@ namespace LostPeter
             //1> poGraphicsWaitSemaphore
             if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poGraphicsWaitSemaphore) != VK_SUCCESS)
             {
-                std::string msg = "VulkanWindow::createRenderComputeSyncObjects: Failed to create GraphicsWaitSemaphore !";
+                String msg = "VulkanWindow::createRenderComputeSyncObjects: Failed to create GraphicsWaitSemaphore !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -2315,7 +2315,7 @@ namespace LostPeter
             //2> poComputeWaitSemaphore
             if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poComputeWaitSemaphore) != VK_SUCCESS)
             {
-                std::string msg = "VulkanWindow::createRenderComputeSyncObjects: Failed to create ComputeWaitSemaphore!";
+                String msg = "VulkanWindow::createRenderComputeSyncObjects: Failed to create ComputeWaitSemaphore!";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -2615,7 +2615,7 @@ namespace LostPeter
 
             if (!Util_CheckVkResult(vkCreateBuffer(this->poDevice, &bufferInfo, nullptr, &buffer), "vkCreateBuffer")) 
             {
-                std::string msg = "VulkanWindow::createVkBuffer: Failed to create buffer !";
+                String msg = "VulkanWindow::createVkBuffer: Failed to create buffer !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -2629,7 +2629,7 @@ namespace LostPeter
 
             if (vkAllocateMemory(this->poDevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::createVkBuffer: Failed to allocate buffer memory !";
+                String msg = "VulkanWindow::createVkBuffer: Failed to allocate buffer memory !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -2648,7 +2648,7 @@ namespace LostPeter
                     }
                 }
 
-                std::string msg = "VulkanWindow::findMemoryType: Failed to find suitable memory type !";
+                String msg = "VulkanWindow::findMemoryType: Failed to find suitable memory type !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -2705,7 +2705,7 @@ namespace LostPeter
             vkDestroySampler(this->poDevice, sampler, nullptr);
         }
     }
-    void VulkanWindow::createTexture1D(const std::string& pathAsset_Tex, 
+    void VulkanWindow::createTexture1D(const String& pathAsset_Tex, 
                                        uint32_t& mipMapCount,
                                        VkImage& image, 
                                        VkDeviceMemory& imageMemory)
@@ -2720,7 +2720,7 @@ namespace LostPeter
                         imageMemory);
     }
     
-    void VulkanWindow::createTexture2D(const std::string& pathAsset_Tex, 
+    void VulkanWindow::createTexture2D(const String& pathAsset_Tex, 
                                        VkImageType type,
                                        VkSampleCountFlagBits numSamples,
                                        VkFormat format,
@@ -2732,14 +2732,14 @@ namespace LostPeter
                                        VkDeviceMemory& bufferMemory)
     {
         //1> Load Texture From File
-        std::string pathTexture = GetAssetFullPath(pathAsset_Tex);
+        String pathTexture = GetAssetFullPath(pathAsset_Tex);
         int width, height, texChannels;
         stbi_uc* pixels = stbi_load(pathTexture.c_str(), &width, &height, &texChannels, STBI_rgb_alpha);
         VkDeviceSize imageSize = width * height * 4;
         mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
         if (!pixels) 
         {
-            std::string msg = "VulkanWindow::createTexture2D: Failed to load texture image: " + pathAsset_Tex;
+            String msg = "VulkanWindow::createTexture2D: Failed to load texture image: " + pathAsset_Tex;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -2819,7 +2819,7 @@ namespace LostPeter
         }
         endSingleTimeCommands(cmdBuffer);
     }
-    void VulkanWindow::createTexture2D(const std::string& pathAsset_Tex, 
+    void VulkanWindow::createTexture2D(const String& pathAsset_Tex, 
                                        VkImageType type,
                                        VkSampleCountFlagBits numSamples,
                                        VkFormat format,
@@ -2842,7 +2842,7 @@ namespace LostPeter
                         stagingBufferMemory);
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
-    void VulkanWindow::createTexture2D(const std::string& pathAsset_Tex, 
+    void VulkanWindow::createTexture2D(const String& pathAsset_Tex, 
                                        uint32_t& mipMapCount,
                                        VkImage& image, 
                                        VkDeviceMemory& imageMemory)
@@ -2866,7 +2866,7 @@ namespace LostPeter
             stbi_image_free(pixels);
         }
     }
-    void VulkanWindow::createTexture2DArray(const std::vector<std::string>& aPathAsset_Tex, 
+    void VulkanWindow::createTexture2DArray(const StringVector& aPathAsset_Tex, 
                                             VkImageType type,
                                             VkSampleCountFlagBits numSamples,
                                             VkFormat format,
@@ -2890,14 +2890,14 @@ namespace LostPeter
         }
         for (size_t i = 0; i < count_tex; i++)
         {
-            const std::string& pathAsset_Tex = aPathAsset_Tex[i];
-            std::string pathTexture = GetAssetFullPath(pathAsset_Tex);
+            const String& pathAsset_Tex = aPathAsset_Tex[i];
+            String pathTexture = GetAssetFullPath(pathAsset_Tex);
             int width, height, texChannels;
             stbi_uc* pixels = stbi_load(pathTexture.c_str(), &width, &height, &texChannels, STBI_rgb_alpha);
             if (!pixels) 
             {
                 s_DeletePixels(aPixels);
-                std::string msg = "VulkanWindow::createTexture2DArray: Failed to load texture image: " + pathTexture;
+                String msg = "VulkanWindow::createTexture2DArray: Failed to load texture image: " + pathTexture;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -2914,14 +2914,14 @@ namespace LostPeter
             if (aWidth[i] != width)
             {
                 s_DeletePixels(aPixels);
-                std::string msg = "VulkanWindow::createTexture2DArray: Texture image's all width must the same !";
+                String msg = "VulkanWindow::createTexture2DArray: Texture image's all width must the same !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
             if (aHeight[i] != height)
             {
                 s_DeletePixels(aPixels);
-                std::string msg = "VulkanWindow::createTexture2DArray: Texture image's all height must the same !";
+                String msg = "VulkanWindow::createTexture2DArray: Texture image's all height must the same !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -3013,7 +3013,7 @@ namespace LostPeter
         }
         endSingleTimeCommands(cmdBuffer);
     }
-    void VulkanWindow::createTexture2DArray(const std::vector<std::string>& aPathAsset_Tex, 
+    void VulkanWindow::createTexture2DArray(const StringVector& aPathAsset_Tex, 
                                             VkImageType type,
                                             VkSampleCountFlagBits numSamples,
                                             VkFormat format,
@@ -3036,7 +3036,7 @@ namespace LostPeter
                              stagingBufferMemory);
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
-    void VulkanWindow::createTexture2DArray(const std::vector<std::string>& aPathAsset_Tex, 
+    void VulkanWindow::createTexture2DArray(const StringVector& aPathAsset_Tex, 
                                             uint32_t& mipMapCount,
                                             VkImage& image, 
                                             VkDeviceMemory& imageMemory)
@@ -3171,7 +3171,7 @@ namespace LostPeter
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
-    void VulkanWindow::createTextureCubeMap(const std::vector<std::string>& aPathAsset_Tex, 
+    void VulkanWindow::createTextureCubeMap(const StringVector& aPathAsset_Tex, 
                                             VkSampleCountFlagBits numSamples,
                                             VkFormat format,
                                             bool autoMipMap, 
@@ -3200,14 +3200,14 @@ namespace LostPeter
 
         for (size_t i = 0; i < count_tex; i++)
         {
-            const std::string& pathAsset_Tex = aPathAsset_Tex[i];
-            std::string pathTexture = GetAssetFullPath(pathAsset_Tex);
+            const String& pathAsset_Tex = aPathAsset_Tex[i];
+            String pathTexture = GetAssetFullPath(pathAsset_Tex);
             int width, height, texChannels;
             stbi_uc* pixels = stbi_load(pathTexture.c_str(), &width, &height, &texChannels, STBI_rgb_alpha);
             if (!pixels) 
             {
                 s_DeletePixels(aPixels);
-                std::string msg = "VulkanWindow::createTextureCubeMap: Failed to load texture image: " + pathTexture;
+                String msg = "VulkanWindow::createTextureCubeMap: Failed to load texture image: " + pathTexture;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -3224,14 +3224,14 @@ namespace LostPeter
             if (aWidth[i] != width)
             {
                 s_DeletePixels(aPixels);
-                std::string msg = "VulkanWindow::createTextureCubeMap: Texture image's all width must the same !";
+                String msg = "VulkanWindow::createTextureCubeMap: Texture image's all width must the same !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
             if (aHeight[i] != height)
             {
                 s_DeletePixels(aPixels);
-                std::string msg = "VulkanWindow::createTextureCubeMap: Texture image's all height must the same !";
+                String msg = "VulkanWindow::createTextureCubeMap: Texture image's all height must the same !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -3319,7 +3319,7 @@ namespace LostPeter
         }
         endSingleTimeCommands(cmdBuffer);
     }
-    void VulkanWindow::createTextureCubeMap(const std::vector<std::string>& aPathAsset_Tex, 
+    void VulkanWindow::createTextureCubeMap(const StringVector& aPathAsset_Tex, 
                                             VkSampleCountFlagBits numSamples,
                                             VkFormat format,
                                             bool autoMipMap, 
@@ -3340,7 +3340,7 @@ namespace LostPeter
                              stagingBufferMemory);
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
-    void VulkanWindow::createTextureCubeMap(const std::vector<std::string>& aPathAsset_Tex,
+    void VulkanWindow::createTextureCubeMap(const StringVector& aPathAsset_Tex,
                                             uint32_t& mipMapCount, 
                                             VkImage& image, 
                                             VkDeviceMemory& imageMemory)
@@ -3857,7 +3857,7 @@ namespace LostPeter
 
             if (vkCreateImage(this->poDevice, &imageCreateInfo, nullptr, &image) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::createImage: Failed to create image !";
+                String msg = "VulkanWindow::createImage: Failed to create image !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -3872,7 +3872,7 @@ namespace LostPeter
 
             if (vkAllocateMemory(this->poDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::createImage: Failed to allocate image memory !";
+                String msg = "VulkanWindow::createImage: Failed to allocate image memory !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -3900,7 +3900,7 @@ namespace LostPeter
 
             if (vkCreateImageView(this->poDevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::createImageView: Failed to create texture image view !";
+                String msg = "VulkanWindow::createImageView: Failed to create texture image view !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -3948,7 +3948,7 @@ namespace LostPeter
 
             if (vkCreateSampler(this->poDevice, &samplerInfo, nullptr, &sampler) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::createSampler: Failed to create texture sampler !";
+                String msg = "VulkanWindow::createSampler: Failed to create texture sampler !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -4295,12 +4295,12 @@ namespace LostPeter
     }
 
 
-    VkShaderModule VulkanWindow::createShaderModule(std::string info, std::string pathFile)
+    VkShaderModule VulkanWindow::createShaderModule(String info, String pathFile)
     {
         if (pathFile.empty())
             return nullptr;
 
-        std::vector<char> code;
+        CharVector code;
         if (!VulkanUtil::LoadAssetFileContent(pathFile.c_str(), code))
         {
             Util_LogError("VulkanWindow::createShaderModule failed, path: [%s] !", pathFile.c_str());
@@ -4319,7 +4319,7 @@ namespace LostPeter
         VkShaderModule shaderModule;
         if (vkCreateShaderModule(this->poDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) 
         {
-            std::string msg = "VulkanWindow::createShaderModule: Failed to create shader module: " + info;
+            String msg = "VulkanWindow::createShaderModule: Failed to create shader module: " + info;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -4337,7 +4337,7 @@ namespace LostPeter
         VkPipelineLayout vkPipelineLayout = VK_NULL_HANDLE;
         if (vkCreatePipelineLayout(this->poDevice, &pipelineLayoutInfo, nullptr, &vkPipelineLayout) != VK_SUCCESS) 
         {
-            std::string msg = "VulkanWindow::createVkPipelineLayout: Failed to create pipeline layout !";
+            String msg = "VulkanWindow::createVkPipelineLayout: Failed to create pipeline layout !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -4378,7 +4378,7 @@ namespace LostPeter
                 pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
                 if (vkCreatePipelineCache(this->poDevice, &pipelineCacheCreateInfo, nullptr, &this->poPipelineCache) != VK_SUCCESS) 
                 {
-                    std::string msg = "VulkanWindow::createVkPipelineCache: Failed to create pipeline cache !";
+                    String msg = "VulkanWindow::createVkPipelineCache: Failed to create pipeline cache !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -4488,8 +4488,8 @@ namespace LostPeter
         {
 
         }
-            VkPipeline VulkanWindow::createVkGraphicsPipeline(VkShaderModule vertShaderModule, const std::string& vertMain,
-                                                              VkShaderModule fragShaderModule, const std::string& fragMain,
+            VkPipeline VulkanWindow::createVkGraphicsPipeline(VkShaderModule vertShaderModule, const String& vertMain,
+                                                              VkShaderModule fragShaderModule, const String& fragMain,
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                               VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
@@ -4530,10 +4530,10 @@ namespace LostPeter
                                                 blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
                                                 colorWriteMask);
             }
-            VkPipeline VulkanWindow::createVkGraphicsPipeline(VkShaderModule vertShaderModule, const std::string& vertMain,
-                                                              VkShaderModule tescShaderModule, const std::string& tescMain,
-                                                              VkShaderModule teseShaderModule, const std::string& teseMain,
-                                                              VkShaderModule fragShaderModule, const std::string& fragMain,
+            VkPipeline VulkanWindow::createVkGraphicsPipeline(VkShaderModule vertShaderModule, const String& vertMain,
+                                                              VkShaderModule tescShaderModule, const String& tescMain,
+                                                              VkShaderModule teseShaderModule, const String& teseMain,
+                                                              VkShaderModule fragShaderModule, const String& fragMain,
                                                               VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
@@ -4757,7 +4757,7 @@ namespace LostPeter
 
         }
             VkPipeline VulkanWindow::createVkComputePipeline(VkShaderModule compShaderModule,
-                                                             const std::string& compMain,
+                                                             const String& compMain,
                                                              VkPipelineLayout pipelineLayout, 
                                                              VkPipelineCreateFlags flags /*= 0*/)
             {
@@ -4833,7 +4833,7 @@ namespace LostPeter
 
             if (vkCreateDescriptorPool(this->poDevice, &poolInfo, nullptr, &this->poDescriptorPool) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::createDescriptorPool: Failed to create descriptor pool !";
+                String msg = "VulkanWindow::createDescriptorPool: Failed to create descriptor pool !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -4870,7 +4870,7 @@ namespace LostPeter
 
                 if (vkAllocateDescriptorSets(this->poDevice, &allocInfo, &descriptorSet) != VK_SUCCESS) 
                 {
-                    std::string msg = "VulkanWindow::createDescriptorSet: Failed to allocate descriptor set !";
+                    String msg = "VulkanWindow::createDescriptorSet: Failed to allocate descriptor set !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -4888,7 +4888,7 @@ namespace LostPeter
                 aDescriptorSets.resize(count);
                 if (vkAllocateDescriptorSets(this->poDevice, &allocInfo, aDescriptorSets.data()) != VK_SUCCESS) 
                 {
-                    std::string msg = "VulkanWindow::createDescriptorSets: Failed to allocate descriptor sets !";
+                    String msg = "VulkanWindow::createDescriptorSets: Failed to allocate descriptor sets !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -5017,7 +5017,7 @@ namespace LostPeter
             allocInfo.commandBufferCount = (uint32_t)this->poCommandBuffersGraphics.size();
             if (vkAllocateCommandBuffers(this->poDevice, &allocInfo, this->poCommandBuffersGraphics.data()) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::createCommandBuffer_Graphics: Failed to allocate command buffers graphics !";
+                String msg = "VulkanWindow::createCommandBuffer_Graphics: Failed to allocate command buffers graphics !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -5034,7 +5034,7 @@ namespace LostPeter
                 allocInfo.commandBufferCount = 1;
                 if (vkAllocateCommandBuffers(this->poDevice, &allocInfo, &this->poCommandBufferCompute) != VK_SUCCESS) 
                 {
-                    std::string msg = "VulkanWindow::createCommandBuffer_Compute: Failed to allocate command buffer compute !";
+                    String msg = "VulkanWindow::createCommandBuffer_Compute: Failed to allocate command buffer compute !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -5080,7 +5080,7 @@ namespace LostPeter
 
             if (vkCreateDescriptorPool(this->poDevice, &pool_info, nullptr, &this->imgui_DescriptorPool) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::createImgui_DescriptorPool: Imgui descriptor pool creation failed !";
+                String msg = "VulkanWindow::createImgui_DescriptorPool: Imgui descriptor pool creation failed !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -5177,7 +5177,7 @@ namespace LostPeter
 
                     if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
                     {
-                        std::string msg = "VulkanWindow::updateComputeCommandBuffer: vkBeginCommandBuffer: Failed to begin recording compute command buffer !";
+                        String msg = "VulkanWindow::updateComputeCommandBuffer: vkBeginCommandBuffer: Failed to begin recording compute command buffer !";
                         Util_LogError(msg.c_str());
                         throw std::runtime_error(msg);
                     }
@@ -5187,7 +5187,7 @@ namespace LostPeter
                     }
                     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
                     {
-                        std::string msg = "VulkanWindow::updateComputeCommandBuffer: vkEndCommandBuffer: Failed to record compute command buffer !";
+                        String msg = "VulkanWindow::updateComputeCommandBuffer: vkEndCommandBuffer: Failed to record compute command buffer !";
                         Util_LogError(msg.c_str());
                         throw std::runtime_error(msg);
                     }
@@ -5217,7 +5217,7 @@ namespace LostPeter
             
             if (vkQueueSubmit(this->poQueueCompute, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::compute: Failed to submit compute command buffer !";
+                String msg = "VulkanWindow::compute: Failed to submit compute command buffer !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -5240,7 +5240,7 @@ namespace LostPeter
         }
         else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
         {
-            std::string msg = "VulkanWindow::beginRender: Failed to acquire swap chain image !";
+            String msg = "VulkanWindow::beginRender: Failed to acquire swap chain image !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
             return false;
@@ -5661,14 +5661,14 @@ namespace LostPeter
                             for (int i = 0; i < count_light; i++)
                             {
                                 LightConstants& lc = this->aAdditionalLights[i];
-                                std::string nameLight = "Light - " + VulkanUtilString::SaveInt(i);
+                                String nameLight = "Light - " + VulkanUtilString::SaveInt(i);
                                 lightConfigItem(lc, nameLight, i, true);
                             }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
                     }
-                        void VulkanWindow::lightConfigItem(LightConstants& lc, const std::string& name, int index, bool canChangeType)
+                        void VulkanWindow::lightConfigItem(LightConstants& lc, const String& name, int index, bool canChangeType)
                         {
                             struct EnumLightDesc { VulkanLightType Value; const char* Name; const char* Tooltip; };
                             static const EnumLightDesc s_aLightDescs[] =
@@ -5699,7 +5699,7 @@ namespace LostPeter
                             {
                                 //Light Enable
                                 bool isEnable = lc.common.y == 0.0f ? false : true;
-                                std::string nameEnable = "LightEnable - " + VulkanUtilString::SaveInt(index);
+                                String nameEnable = "LightEnable - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::Checkbox(nameEnable.c_str(), &isEnable))
                                 {   
                                     lc.common.y = isEnable ? 1.0f : 0.0f;
@@ -5715,7 +5715,7 @@ namespace LostPeter
                                             break;
                                     }
                                     const char* preview_text = s_aLightDescs[nIndex].Name;
-                                    std::string nameType = "LightType - " + VulkanUtilString::SaveInt(index);
+                                    String nameType = "LightType - " + VulkanUtilString::SaveInt(index);
                                     if (ImGui::BeginCombo(nameType.c_str(), preview_text))
                                     {
                                         for (int j = 0; j < IM_ARRAYSIZE(s_aLightDescs); j++)
@@ -5743,7 +5743,7 @@ namespace LostPeter
                                             break;
                                     }
                                     const char* preview_text = s_aLightingDescs[nIndex].Name;
-                                    std::string nameType = "LightingType - " + VulkanUtilString::SaveInt(index);
+                                    String nameType = "LightingType - " + VulkanUtilString::SaveInt(index);
                                     if (ImGui::BeginCombo(nameType.c_str(), preview_text))
                                     {
                                         for (int j = 0; j < IM_ARRAYSIZE(s_aLightingDescs); j++)
@@ -5761,7 +5761,7 @@ namespace LostPeter
 
                                 //position
                                 glm::vec3 vPosition = lc.position;
-                                std::string namePosition = "Position - " + VulkanUtilString::SaveInt(index);
+                                String namePosition = "Position - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
                                 {
                                     lc.position = vPosition;
@@ -5769,7 +5769,7 @@ namespace LostPeter
                                 ImGui::Spacing();
 
                                 //Euler Angle
-                                std::string nameEulerAngle = "EulerAngle - " + VulkanUtilString::SaveInt(index);
+                                String nameEulerAngle = "EulerAngle - " + VulkanUtilString::SaveInt(index);
                                 glm::vec3 vEulerAngle = VulkanMath::ToEulerAngles(lc.direction);
                                 if (ImGui::DragFloat3(nameEulerAngle.c_str(), &vEulerAngle[0], 0.1f, -180, 180))
                                 {
@@ -5777,7 +5777,7 @@ namespace LostPeter
                                 }
                                 //direction
                                 glm::vec3 vDirection = lc.direction;
-                                std::string nameDirection = "Direction - " + VulkanUtilString::SaveInt(index);
+                                String nameDirection = "Direction - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
                                 {
                                     
@@ -5785,7 +5785,7 @@ namespace LostPeter
                                 ImGui::Spacing();
 
                                 //ambient
-                                std::string nameAmbient = "Ambient - " + VulkanUtilString::SaveInt(index);
+                                String nameAmbient = "Ambient - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::ColorEdit4(nameAmbient.c_str(), (float*)&lc.ambient))
                                 {
 
@@ -5793,7 +5793,7 @@ namespace LostPeter
                                 ImGui::Spacing();
 
                                 //diffuse
-                                std::string nameDiffuse = "Diffuse - " + VulkanUtilString::SaveInt(index);
+                                String nameDiffuse = "Diffuse - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::ColorEdit4(nameDiffuse.c_str(), (float*)&lc.diffuse))
                                 {
 
@@ -5801,7 +5801,7 @@ namespace LostPeter
                                 ImGui::Spacing();
 
                                 //specular
-                                std::string nameSpecular = "Specular - " + VulkanUtilString::SaveInt(index);
+                                String nameSpecular = "Specular - " + VulkanUtilString::SaveInt(index);
                                 if (ImGui::ColorEdit4(nameSpecular.c_str(), (float*)&lc.specular))
                                 {
 
@@ -5816,7 +5816,7 @@ namespace LostPeter
                                 {
                                     //falloffStart
                                     float fFalloffStart = lc.falloffStart;
-                                    std::string nameFalloffStart = "FalloffStart - " + VulkanUtilString::SaveInt(index);
+                                    String nameFalloffStart = "FalloffStart - " + VulkanUtilString::SaveInt(index);
                                     if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
                                     {
                                         lc.falloffStart = fFalloffStart;
@@ -5825,7 +5825,7 @@ namespace LostPeter
 
                                     //falloffEnd
                                     float fFalloffEnd = lc.falloffEnd;
-                                    std::string nameFalloffEnd = "FalloffEnd - " + VulkanUtilString::SaveInt(index);
+                                    String nameFalloffEnd = "FalloffEnd - " + VulkanUtilString::SaveInt(index);
                                     if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
                                     {
                                         lc.falloffEnd = fFalloffEnd;
@@ -5835,7 +5835,7 @@ namespace LostPeter
                                 {
                                     //falloffStart
                                     float fFalloffStart = lc.falloffStart;
-                                    std::string nameFalloffStart = "FalloffStart - " + VulkanUtilString::SaveInt(index);
+                                    String nameFalloffStart = "FalloffStart - " + VulkanUtilString::SaveInt(index);
                                     if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
                                     {
                                         lc.falloffStart = fFalloffStart;
@@ -5844,7 +5844,7 @@ namespace LostPeter
 
                                     //falloffEnd
                                     float fFalloffEnd = lc.falloffEnd;
-                                    std::string nameFalloffEnd = "FalloffEnd - " + VulkanUtilString::SaveInt(index);
+                                    String nameFalloffEnd = "FalloffEnd - " + VulkanUtilString::SaveInt(index);
                                     if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
                                     {
                                         lc.falloffEnd = fFalloffEnd;
@@ -5853,7 +5853,7 @@ namespace LostPeter
 
                                     //spotPower
                                     float fSpotPower = lc.common.w;
-                                    std::string nameSpotPower = "SpotPower - " + VulkanUtilString::SaveInt(index);
+                                    String nameSpotPower = "SpotPower - " + VulkanUtilString::SaveInt(index);
                                     if (ImGui::DragFloat(nameSpotPower.c_str(), &fSpotPower, 0.01f, 0.1f, 200.0f))
                                     {
                                         lc.common.w = fSpotPower;
@@ -5894,7 +5894,7 @@ namespace LostPeter
                 VkCommandBuffer& commandBuffer = this->poCommandBuffersGraphics[this->poSwapChainImageIndex];
                 if (vkResetCommandBuffer(commandBuffer, 0) != VK_SUCCESS) 
                 {
-                    std::string msg = "VulkanWindow::updateRenderCommandBuffers_Default: Failed to reset render command buffer !";
+                    String msg = "VulkanWindow::updateRenderCommandBuffers_Default: Failed to reset render command buffer !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -5906,7 +5906,7 @@ namespace LostPeter
 
                 if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
                 {
-                    std::string msg = "VulkanWindow::updateRenderCommandBuffers_Default: vkBeginCommandBuffer: Failed to begin recording render command buffer !";
+                    String msg = "VulkanWindow::updateRenderCommandBuffers_Default: vkBeginCommandBuffer: Failed to begin recording render command buffer !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -5921,7 +5921,7 @@ namespace LostPeter
                 }
                 if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
                 {
-                    std::string msg = "VulkanWindow::updateRenderCommandBuffers_Default: vkEndCommandBuffer: Failed to record render command buffer !";
+                    String msg = "VulkanWindow::updateRenderCommandBuffers_Default: vkEndCommandBuffer: Failed to record render command buffer !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -6134,7 +6134,7 @@ namespace LostPeter
             vkResetFences(this->poDevice, 1, &this->poInFlightFences[this->poCurrentFrame]);
             if (vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, this->poInFlightFences[this->poCurrentFrame]) != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::render: Failed to submit render command buffer !";
+                String msg = "VulkanWindow::render: Failed to submit render command buffer !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -6156,7 +6156,7 @@ namespace LostPeter
             } 
             else if (result != VK_SUCCESS) 
             {
-                std::string msg = "VulkanWindow::render: Failed to present swap chain image !";
+                String msg = "VulkanWindow::render: Failed to present swap chain image !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }

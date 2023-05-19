@@ -16,7 +16,7 @@
 namespace LostPeter
 {
     VulkanManager* VulkanObject::ms_pVulkanManager = nullptr;
-    VulkanObject::VulkanObject(const std::string& strName)
+    VulkanObject::VulkanObject(const String& strName)
         : m_strName(strName)
         , m_nRefCount(0)
         , m_bIsInit(false)

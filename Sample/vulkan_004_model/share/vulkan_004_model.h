@@ -18,7 +18,7 @@ using namespace LostPeter;
 class Vulkan_004_Model : public VulkanWindow
 {
 public:
-    Vulkan_004_Model(int width, int height, std::string name);
+    Vulkan_004_Model(int width, int height, String name);
 
 public:
     std::vector<Vertex_Pos3Color4Tex2> vertices;

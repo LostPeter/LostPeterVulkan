@@ -19,7 +19,7 @@ using namespace LostPeter;
 class Vulkan_013_IndirectDraw : public VulkanWindow
 {
 public:
-    Vulkan_013_IndirectDraw(int width, int height, std::string name);
+    Vulkan_013_IndirectDraw(int width, int height, String name);
 
 public:
     /////////////////////////// ModelMeshSub ////////////////////////
@@ -27,8 +27,8 @@ public:
     struct ModelMeshSub
     {
         ModelMesh* pMesh;
-        std::string nameMeshSub;
-        std::string nameOriginal;
+        String nameMeshSub;
+        String nameOriginal;
         int indexMeshSub;
 
         //Vertex
@@ -53,8 +53,8 @@ public:
 
 
         ModelMeshSub(ModelMesh* _pMesh, 
-                     const std::string& _nameMeshSub,
-                     const std::string& _nameOriginal,
+                     const String& _nameMeshSub,
+                     const String& _nameOriginal,
                      int _indexMeshSub,
                      VulkanVertexType _poTypeVertex)
             : pMesh(_pMesh)
@@ -110,15 +110,15 @@ public:
         void WriteIndexData(std::vector<uint32_t>& indexData);
     };
     typedef std::vector<ModelMeshSub*> ModelMeshSubPtrVector;
-    typedef std::map<std::string, ModelMeshSub*> ModelMeshSubPtrMap;
+    typedef std::map<String, ModelMeshSub*> ModelMeshSubPtrMap;
 
 
     /////////////////////////// ModelMesh ///////////////////////////
     struct ModelMesh
     {
         Vulkan_013_IndirectDraw* pWindow;
-        std::string nameMesh;
-        std::string pathMesh;
+        String nameMesh;
+        String pathMesh;
         VulkanMeshType typeMesh;
         VulkanMeshGeometryType typeGeometryType;
         VulkanVertexType typeVertex;
@@ -127,8 +127,8 @@ public:
         ModelMeshSubPtrMap mapMeshSubs;
 
         ModelMesh(Vulkan_013_IndirectDraw* _pWindow, 
-                  const std::string& _nameMesh,
-                  const std::string& _pathMesh,
+                  const String& _nameMesh,
+                  const String& _pathMesh,
                   VulkanMeshType _typeMesh,
                   VulkanMeshGeometryType _typeGeometryType,
                   VulkanVertexType _typeVertex)
@@ -164,15 +164,15 @@ public:
         bool LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal);
     };
     typedef std::vector<ModelMesh*> ModelMeshPtrVector;
-    typedef std::map<std::string, ModelMesh*> ModelMeshPtrMap;
+    typedef std::map<String, ModelMesh*> ModelMeshPtrMap;
 
 
     /////////////////////////// ModelTexture ////////////////////////
     struct ModelTexture
     {
         Vulkan_013_IndirectDraw* pWindow;
-        std::string nameTexture;
-        std::vector<std::string> aPathTexture;
+        String nameTexture;
+        StringVector aPathTexture;
         VulkanTextureType typeTexture;
         bool isRenderTarget;
         bool isGraphicsComputeShared;
@@ -212,7 +212,7 @@ public:
 
 
         ModelTexture(Vulkan_013_IndirectDraw* _pWindow, 
-                     const std::string& _nameTexture,
+                     const String& _nameTexture,
                      VulkanTextureType _typeTexture,
                      bool _isRenderTarget,
                      bool _isGraphicsComputeShared,
@@ -220,7 +220,7 @@ public:
                      VulkanTextureFilterType _typeFilter,
                      VulkanTextureAddressingType _typeAddressing,
                      VulkanTextureBorderColorType _typeBorderColor,
-                     const std::vector<std::string>& _aPathTexture)
+                     const StringVector& _aPathTexture)
             : pWindow(_pWindow)
             , nameTexture(_nameTexture)
             , typeTexture(_typeTexture)
@@ -400,7 +400,7 @@ public:
                 }   
                 else
                 {
-                    std::string msg = "ModelTexture::LoadTexture: Wrong texture type, Create from file, name: [" + this->nameTexture + "] !";
+                    String msg = "ModelTexture::LoadTexture: Wrong texture type, Create from file, name: [" + this->nameTexture + "] !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -513,7 +513,7 @@ public:
                 }
                 else
                 {
-                    std::string msg = "ModelTexture::LoadTexture: Wrong texture type, Create render target, name: [" + this->nameTexture + "] !";
+                    String msg = "ModelTexture::LoadTexture: Wrong texture type, Create render target, name: [" + this->nameTexture + "] !";
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -542,16 +542,16 @@ public:
         void updateNoiseTexture();
     };
     typedef std::vector<ModelTexture*> ModelTexturePtrVector;
-    typedef std::map<std::string, ModelTexture*> ModelTexturePtrMap;
-    typedef std::map<std::string, ModelTexturePtrVector> ModelTexturePtrShaderSortMap;
+    typedef std::map<String, ModelTexture*> ModelTexturePtrMap;
+    typedef std::map<String, ModelTexturePtrVector> ModelTexturePtrShaderSortMap;
 
 
     /////////////////////////// PipelineGraphics ////////////////////
     struct PipelineGraphics
     {
         Vulkan_013_IndirectDraw* pWindow;
-        std::string nameDescriptorSetLayout;
-        std::vector<std::string>* poDescriptorSetLayoutNames;
+        String nameDescriptorSetLayout;
+        StringVector* poDescriptorSetLayoutNames;
         VkDescriptorSetLayout poDescriptorSetLayout;
         VkPipelineLayout poPipelineLayout;
         VkPipeline poPipeline_WireFrame;
@@ -605,8 +605,8 @@ public:
     struct PipelineCompute
     {
         Vulkan_013_IndirectDraw* pWindow;
-        std::string nameDescriptorSetLayout;
-        std::vector<std::string>* poDescriptorSetLayoutNames;
+        String nameDescriptorSetLayout;
+        StringVector* poDescriptorSetLayoutNames;
         VkDescriptorSetLayout poDescriptorSetLayout;
         VkPipelineLayout poPipelineLayout;
         VkPipeline poPipeline;
@@ -680,14 +680,14 @@ public:
         }  
     };
     typedef std::vector<PipelineCompute*> PipelineComputePtrVector;
-    typedef std::map<std::string, PipelineCompute*> PipelineComputePtrMap;
+    typedef std::map<String, PipelineCompute*> PipelineComputePtrMap;
 
     
     /////////////////////////// ModelObjectRend /////////////////////
     struct ModelObject;
     struct ModelObjectRend
     {
-        std::string nameObjectRend;
+        String nameObjectRend;
         ModelObject* pModelObject;
         ModelMeshSub* pMeshSub;
         bool isShow;
@@ -748,7 +748,7 @@ public:
         VkColorComponentFlags cfg_ColorWriteMask;
 
 
-        ModelObjectRend(const std::string& _nameObjectRend,
+        ModelObjectRend(const String& _nameObjectRend,
                         ModelObject* _pModelObject,
                         ModelMeshSub* _pMeshSub)
             : nameObjectRend(_nameObjectRend)
@@ -857,7 +857,7 @@ public:
         }   
 
     ////Textures
-        void AddTexture(const std::string& nameShaderSort, ModelTexture* pTexture)
+        void AddTexture(const String& nameShaderSort, ModelTexture* pTexture)
         {
             ModelTexturePtrVector* pVector = nullptr;
             ModelTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
@@ -869,14 +869,14 @@ public:
             }
             itFind->second.push_back(pTexture);
         }
-        ModelTexture* GetTexture(const std::string& nameShaderSort, int index)
+        ModelTexture* GetTexture(const String& nameShaderSort, int index)
         {
             ModelTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
             if (itFind == this->mapModelTexturesShaderSort.end())
                 return nullptr;
             return itFind->second.at(index);
         }
-        ModelTexturePtrVector* GetTextures(const std::string& nameShaderSort)
+        ModelTexturePtrVector* GetTextures(const String& nameShaderSort)
         {
             ModelTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
             if (itFind == this->mapModelTexturesShaderSort.end())
@@ -897,13 +897,13 @@ public:
 
     };
     typedef std::vector<ModelObjectRend*> ModelObjectRendPtrVector;
-    typedef std::map<std::string, ModelObjectRend*> ModelObjectRendPtrMap;
+    typedef std::map<String, ModelObjectRend*> ModelObjectRendPtrMap;
 
 
     /////////////////////////// ModelObjectRendIndirect /////////////
     struct ModelObjectRendIndirect
     {
-        std::string nameObjectRendIndirect;
+        String nameObjectRendIndirect;
         ModelObjectRendPtrVector aRends;
         ModelMeshSubPtrVector aMeshSubs;
         ModelObjectRend* pRend;
@@ -955,7 +955,7 @@ public:
         VkDeviceMemory poBuffersMemory_indirectCommandCB;
 
 
-        ModelObjectRendIndirect(const std::string& _nameObjectRendIndirect)
+        ModelObjectRendIndirect(const String& _nameObjectRendIndirect)
             : nameObjectRendIndirect(_nameObjectRendIndirect)
             , pRend(nullptr)
 
@@ -1008,7 +1008,7 @@ public:
         void UpdateIndirectCommandBuffer();
     };
     typedef std::vector<ModelObjectRendIndirect*> ModelObjectRendIndirectPtrVector;
-    typedef std::map<std::string, ModelObjectRendIndirect*> ModelObjectRendIndirectPtrMap;
+    typedef std::map<String, ModelObjectRendIndirect*> ModelObjectRendIndirectPtrMap;
     
 
     /////////////////////////// ModelObject /////////////////////////
@@ -1020,8 +1020,8 @@ public:
 
         //Name
         int indexModel;
-        std::string nameObject;
-        std::string nameMesh;
+        String nameObject;
+        String nameMesh;
         bool isShow;
         bool isWireFrame;
         bool isRotate;
@@ -1136,7 +1136,7 @@ public:
 
     };
     typedef std::vector<ModelObject*> ModelObjectPtrVector;
-    typedef std::map<std::string, ModelObject*> ModelObjectPtrMap;
+    typedef std::map<String, ModelObject*> ModelObjectPtrMap;
 
 public:
     ModelMeshPtrVector m_aModelMesh;
@@ -1155,7 +1155,7 @@ public:
 
     VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
     VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
-    std::map<std::string, std::vector<std::string>> m_mapName2Layouts;
+    std::map<String, StringVector> m_mapName2Layouts;
     
     VkShaderModuleVector m_aVkShaderModules;
     VkShaderModuleMap m_mapVkShaderModules;
@@ -1222,46 +1222,46 @@ private:
 ////ModelMesh
     void destroyModelMeshes();
     void createModelMeshes();
-    ModelMesh* findModelMesh(const std::string& nameMesh);
+    ModelMesh* findModelMesh(const String& nameMesh);
 
 ////ModelTexture
     void destroyModelTextures();
     void createModelTextures();
-    ModelTexture* findModelTexture(const std::string& nameTexture);
+    ModelTexture* findModelTexture(const String& nameTexture);
 
 ////DescriptorSetLayout
     void destroyDescriptorSetLayouts();
     void createDescriptorSetLayouts();
-    VkDescriptorSetLayout findDescriptorSetLayout(const std::string& nameDescriptorSetLayout);
-    std::vector<std::string>* findDescriptorSetLayoutNames(const std::string& nameDescriptorSetLayout);
+    VkDescriptorSetLayout findDescriptorSetLayout(const String& nameDescriptorSetLayout);
+    StringVector* findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout);
 
 ////ShaderModule
     void destroyShaderModules();
     void createShaderModules();
-    VkShaderModule findShaderModule(const std::string& nameShaderModule);
-    bool createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
-                                              const std::string& nameShaderTesc,
-                                              const std::string& nameShaderTese,
-                                              const std::string& nameShaderGeom,
-                                              const std::string& nameShaderFrag,
-                                              const std::string& nameShaderComp,
+    VkShaderModule findShaderModule(const String& nameShaderModule);
+    bool createPipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                              const String& nameShaderTesc,
+                                              const String& nameShaderTese,
+                                              const String& nameShaderGeom,
+                                              const String& nameShaderFrag,
+                                              const String& nameShaderComp,
                                               VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
                                               VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                               VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
-    bool createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
-                                              const std::string& nameShaderTesc,
-                                              const std::string& nameShaderTese,
-                                              const std::string& nameShaderGeom,
-                                              const std::string& nameShaderFrag,
+    bool createPipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                              const String& nameShaderTesc,
+                                              const String& nameShaderTese,
+                                              const String& nameShaderGeom,
+                                              const String& nameShaderFrag,
                                               VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics);
-    bool createPipelineShaderStageCreateInfos(const std::string& nameShaderComp,
+    bool createPipelineShaderStageCreateInfos(const String& nameShaderComp,
                                               VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                               VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
 
 ////PipelineLayout
     void destroyPipelineLayouts();
     void createPipelineLayouts();
-    VkPipelineLayout findPipelineLayout(const std::string& namePipelineLayout);
+    VkPipelineLayout findPipelineLayout(const String& namePipelineLayout);
 
     void drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect);

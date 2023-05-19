@@ -21,8 +21,8 @@
 #include <assimp/postprocess.h>
 
 
-const std::string c_strVert = ".vert.spv";
-const std::string c_strFrag = ".frag.spv";
+const String c_strVert = ".vert.spv";
+const String c_strFrag = ".frag.spv";
 
 static const int g_ShaderCount = 3;
 static const char* g_pathShaderModules[2 * g_ShaderCount] = 
@@ -98,7 +98,7 @@ static glm::vec4 g_OutlineColor[g_CountLen] =
 
 
 
-Vulkan_009_Instancing::Vulkan_009_Instancing(int width, int height, std::string name)
+Vulkan_009_Instancing::Vulkan_009_Instancing(int width, int height, String name)
     : VulkanWindow(width, height, name)
     , poPipelineLayout_Outline(VK_NULL_HANDLE)
 {
@@ -135,7 +135,7 @@ void Vulkan_009_Instancing::loadModel_Custom()
         //Model
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTranformLocal, g_tranformLocalModels[i]))
         {
-            std::string msg = "Vulkan_009_Instancing::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
+            String msg = "Vulkan_009_Instancing::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -143,7 +143,7 @@ void Vulkan_009_Instancing::loadModel_Custom()
         //Texture
         if (!loadModel_Texture(pModelObject))
         {   
-            std::string msg = "Vulkan_009_Instancing::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
+            String msg = "Vulkan_009_Instancing::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -339,13 +339,13 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        std::string pathVertShaderBase = g_pathModelShaderModules[2 * i + 0] + c_strVert;
-        std::string pathFragShaderBase = g_pathModelShaderModules[2 * i + 0] + c_strFrag;
+        String pathVertShaderBase = g_pathModelShaderModules[2 * i + 0] + c_strVert;
+        String pathFragShaderBase = g_pathModelShaderModules[2 * i + 0] + c_strFrag;
         VkShaderModule vertShaderBase = findShaderModule(pathVertShaderBase);
         VkShaderModule fragShaderBase = findShaderModule(pathFragShaderBase);
 
-        std::string pathVertShaderOutline = g_pathModelShaderModules[2 * i + 1] + c_strVert;
-        std::string pathFragShaderOutline = g_pathModelShaderModules[2 * i + 1] + c_strFrag;
+        String pathVertShaderOutline = g_pathModelShaderModules[2 * i + 1] + c_strVert;
+        String pathFragShaderOutline = g_pathModelShaderModules[2 * i + 1] + c_strFrag;
         VkShaderModule vertShaderOutline = findShaderModule(pathVertShaderOutline);
         VkShaderModule fragShaderOutline = findShaderModule(pathFragShaderOutline);
 
@@ -363,7 +363,7 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
                                                                               pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_009_Instancing::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
+            String msg = "Vulkan_009_Instancing::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -406,7 +406,7 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
                                                                             pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_Stencil == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_009_Instancing::createGraphicsPipeline_Custom: Failed to create pipeline stencil !";
+            String msg = "Vulkan_009_Instancing::createGraphicsPipeline_Custom: Failed to create pipeline stencil !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -430,7 +430,7 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
                                                                             pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_Outline == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_009_Instancing::createGraphicsPipeline_Custom: Failed to create pipeline outline !";
+            String msg = "Vulkan_009_Instancing::createGraphicsPipeline_Custom: Failed to create pipeline outline !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -444,7 +444,7 @@ void Vulkan_009_Instancing::createPipelineLayout_Outline()
     this->poPipelineLayout_Outline = createVkPipelineLayout(aDescriptorSetLayout);
     if (this->poPipelineLayout_Outline == VK_NULL_HANDLE)
     {
-        std::string msg = "Vulkan_009_Instancing::createPipelineLayout_Outline: createVkPipelineLayout failed !";
+        String msg = "Vulkan_009_Instancing::createPipelineLayout_Outline: createVkPipelineLayout failed !";
         Util_LogError(msg.c_str());
         throw std::runtime_error(msg.c_str());
     }
@@ -464,8 +464,8 @@ void Vulkan_009_Instancing::createShaderModules()
 {
     for (int i = 0; i < g_ShaderCount; i++)
     {
-        std::string pathVert = g_pathShaderModules[2 * i + 0];
-        std::string pathFrag = g_pathShaderModules[2 * i + 1];
+        String pathVert = g_pathShaderModules[2 * i + 0];
+        String pathFrag = g_pathShaderModules[2 * i + 1];
 
         //vert
         VkShaderModule vertShaderModule = createShaderModule("VertexShader: ", pathVert);
@@ -480,7 +480,7 @@ void Vulkan_009_Instancing::createShaderModules()
         Util_LogInfo("Vulkan_009_Instancing::createShaderModules: create shader [%s] success !", pathFrag.c_str());
     }
 }
-VkShaderModule Vulkan_009_Instancing::findShaderModule(const std::string& pathShaderModule)
+VkShaderModule Vulkan_009_Instancing::findShaderModule(const String& pathShaderModule)
 {
     VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(pathShaderModule);
     if (itFind == this->m_mapVkShaderModules.end())
@@ -779,31 +779,31 @@ void Vulkan_009_Instancing::modelConfig()
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
 
-            std::string nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
+            String nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
             if (ImGui::CollapsingHeader(nameModel.c_str()))
             {
-                std::string nameIsShow = "Is Show - " + pModelObject->nameModel;
+                String nameIsShow = "Is Show - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsShow.c_str(), &pModelObject->isShow);
-                std::string nameIsWireFrame = "Is WireFrame - " + pModelObject->nameModel;
+                String nameIsWireFrame = "Is WireFrame - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsWireFrame.c_str(), &pModelObject->isWireFrame);
-                std::string nameIsRotate = "Is Rotate - " + pModelObject->nameModel;
+                String nameIsRotate = "Is Rotate - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsRotate.c_str(), &pModelObject->isRotate);
-                std::string nameIsOutline = "Is Outline - " + pModelObject->nameModel;
+                String nameIsOutline = "Is Outline - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsOutline.c_str(), &pModelObject->isOutline);   
-                std::string nameIsTransparent = "Is Transparent - " + pModelObject->nameModel;
+                String nameIsTransparent = "Is Transparent - " + pModelObject->nameModel;
                 bool isTransparent = pModelObject->isTransparent;
                 ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
                 if (pModelObject->isTransparent)
                 {
                     //alpha
-                    std::string nameAlpha = "Alpha - " + pModelObject->nameModel;
+                    String nameAlpha = "Alpha - " + pModelObject->nameModel;
                     float fAlpha = pModelObject->alpha;
                     if (ImGui::DragFloat(nameAlpha.c_str(), &fAlpha, 0.001f, 0.0f, 1.0f))
                     {
                         pModelObject->alpha = fAlpha;
                     }
                 }
-                std::string nameInstances = "Instance - " + pModelObject->nameModel;
+                String nameInstances = "Instance - " + pModelObject->nameModel;
                 int countInstanceExt = pModelObject->countInstanceExt;
                 ImGui::DragInt(nameInstances.c_str(), &countInstanceExt, 1, 0, 10);
                 if (countInstanceExt != pModelObject->countInstanceExt)
@@ -815,7 +815,7 @@ void Vulkan_009_Instancing::modelConfig()
 
                 ImGui::Text("Vertex: [%d], Index: [%d]", (int)pModelObject->poVertexCount, (int)pModelObject->poIndexCount);
                 
-                std::string nameWorld = "Model Object - " + pModelObject->nameModel;
+                String nameWorld = "Model Object - " + pModelObject->nameModel;
                 if (ImGui::CollapsingHeader(nameWorld.c_str()))
                 {
                     int count_instance = pModelObject->countInstance;
@@ -824,7 +824,7 @@ void Vulkan_009_Instancing::modelConfig()
                         ObjectConstants_Outline& obj = pModelObject->objectCBs_Outline[j];
                         //Mat
                         const glm::mat4& mat4World = obj.g_MatWorld;
-                        std::string nameTable = VulkanUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
+                        String nameTable = VulkanUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
                         if (ImGui::BeginTable(nameTable.c_str(), 4))
                         {
                             ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
@@ -850,14 +850,14 @@ void Vulkan_009_Instancing::modelConfig()
                             ImGui::EndTable();
                         }
                         //OutlineWidth
-                        std::string nameOutlineWidth = "Outline Width - " + pModelObject->nameModel;
+                        String nameOutlineWidth = "Outline Width - " + pModelObject->nameModel;
                         float fOutlineWidth = obj.g_OutlineWidth.x;
                         if (ImGui::DragFloat(nameOutlineWidth.c_str(), &fOutlineWidth, 0.01f, 0.01f, 1.0f))
                         {
                             obj.g_OutlineWidth = glm::vec4(fOutlineWidth,fOutlineWidth,fOutlineWidth,fOutlineWidth);
                         }
                         //OutlineColor
-                        std::string nameOutlineColor = "Outline Color - " + pModelObject->nameModel;
+                        String nameOutlineColor = "Outline Color - " + pModelObject->nameModel;
                         if (ImGui::ColorEdit4(nameOutlineColor.c_str(), (float*)&(obj.g_OutlineColor)))
                         {
 

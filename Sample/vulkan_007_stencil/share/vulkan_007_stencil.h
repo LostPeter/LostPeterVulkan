@@ -18,7 +18,7 @@ using namespace LostPeter;
 class Vulkan_007_Stencil : public VulkanWindow
 {
 public:
-    Vulkan_007_Stencil(int width, int height, std::string name);
+    Vulkan_007_Stencil(int width, int height, String name);
 
 public:
     struct ObjectConstants_Outline
@@ -162,9 +162,9 @@ public:
         Vulkan_007_Stencil* pWindow;
 
         //Name
-        std::string nameModel;
-        std::string pathModel;
-        std::string pathTexture;
+        String nameModel;
+        String pathModel;
+        String pathTexture;
         bool isShow;
         bool isWireFrame;
         bool isRotate;
@@ -233,14 +233,14 @@ public:
         VkColorComponentFlags cfg_ColorWriteMask;
     };
     typedef std::vector<ModelObject*> ModelObjectPtrVector;
-    typedef std::map<std::string, ModelObject*> ModelObjectPtrMap;
+    typedef std::map<String, ModelObject*> ModelObjectPtrMap;
 
 public:
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrMap m_mapModelObjects;
 
-    std::string pathShaderVertex_Outline;
-    std::string pathShaderFragment_Outline;
+    String pathShaderVertex_Outline;
+    String pathShaderFragment_Outline;
     
     VulkanVertexType poTypeVertex_Outline;
     VkPipelineLayout poPipelineLayout_Outline;

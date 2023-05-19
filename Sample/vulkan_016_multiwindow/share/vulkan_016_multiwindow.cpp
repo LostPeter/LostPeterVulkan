@@ -104,7 +104,7 @@ static glm::mat4 g_Mesh_TranformLocals[g_Mesh_Count] =
 
 
 /////////////////////////// Texture /////////////////////////////
-static const std::string g_Texture_Default = "default_blackwhite";
+static const String g_Texture_Default = "default_blackwhite";
 static const int g_Texture_Count = 24;
 static const char* g_Texture_Paths[5 * g_Texture_Count] = 
 {
@@ -355,19 +355,19 @@ static float g_Texture_AnimChunks[2 * g_Texture_Count] =
 
 
 /////////////////////////// DescriptorSetLayout /////////////////
-const std::string c_strLayout_Pass = "Pass";
-const std::string c_strLayout_Object = "Object";
-const std::string c_strLayout_Material = "Material";
-const std::string c_strLayout_Instance = "Instance";
-const std::string c_strLayout_TextureCopy = "TextureCopy";
-const std::string c_strLayout_Tessellation = "Tessellation";
-const std::string c_strLayout_TextureVS = "TextureVS";
-const std::string c_strLayout_TextureTESC = "TextureTESC";
-const std::string c_strLayout_TextureTESE = "TextureTESE";
-const std::string c_strLayout_TextureFS = "TextureFS";
-const std::string c_strLayout_TextureFrameColor = "TextureFrameColor";
-const std::string c_strLayout_TextureCSR = "TextureCSR";
-const std::string c_strLayout_TextureCSRW = "TextureCSRW";
+const String c_strLayout_Pass = "Pass";
+const String c_strLayout_Object = "Object";
+const String c_strLayout_Material = "Material";
+const String c_strLayout_Instance = "Instance";
+const String c_strLayout_TextureCopy = "TextureCopy";
+const String c_strLayout_Tessellation = "Tessellation";
+const String c_strLayout_TextureVS = "TextureVS";
+const String c_strLayout_TextureTESC = "TextureTESC";
+const String c_strLayout_TextureTESE = "TextureTESE";
+const String c_strLayout_TextureFS = "TextureFS";
+const String c_strLayout_TextureFrameColor = "TextureFrameColor";
+const String c_strLayout_TextureCSR = "TextureCSR";
+const String c_strLayout_TextureCSRW = "TextureCSRW";
 static const int g_DescriptorSetLayout_Count = 4;
 static const char* g_DescriptorSetLayout_Names[g_DescriptorSetLayout_Count] =
 {
@@ -1123,7 +1123,7 @@ bool Vulkan_016_MultiWindow::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLo
     {
         MeshData& meshData = aMeshDatas[i];
         
-        std::string nameMeshSub = this->nameMesh + "-" + VulkanUtilString::SaveInt(i);
+        String nameMeshSub = this->nameMesh + "-" + VulkanUtilString::SaveInt(i);
         ModelMeshSub* pMeshSub = new ModelMeshSub(this,
                                                   nameMeshSub,
                                                   meshData.nameMesh,
@@ -1346,7 +1346,7 @@ void Vulkan_016_MultiWindow::MultiRenderPass::Init()
                                                    aSubpassDependency,
                                                    this->poRenderPass))
             {
-                std::string msg = "Vulkan_016_MultiWindow::MultiRenderPass::Init: Failed to create renderpass: " + this->nameRenderPass;
+                String msg = "Vulkan_016_MultiWindow::MultiRenderPass::Init: Failed to create renderpass: " + this->nameRenderPass;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -1366,7 +1366,7 @@ void Vulkan_016_MultiWindow::MultiRenderPass::Init()
                                                     1,
                                                     this->poFrameBuffer))
             {
-                std::string msg = "Vulkan_016_MultiWindow::MultiRenderPass::Init: Failed to create framebuffer: " + this->nameRenderPass;
+                String msg = "Vulkan_016_MultiWindow::MultiRenderPass::Init: Failed to create framebuffer: " + this->nameRenderPass;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -1617,7 +1617,7 @@ void Vulkan_016_MultiWindow::ModelObjectRendIndirect::UpdateIndirectCommandBuffe
 
 
 
-Vulkan_016_MultiWindow::Vulkan_016_MultiWindow(int width, int height, std::string name)
+Vulkan_016_MultiWindow::Vulkan_016_MultiWindow(int width, int height, String name)
     : VulkanWindow(width, height, name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
@@ -1697,13 +1697,13 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
             }
             //MeshSub Used
             {
-                std::string nameMeshSubUsed = g_Object_MeshSubsUsed[i];
-                std::vector<std::string> aMeshSubUsed = VulkanUtilString::Split(nameMeshSubUsed, ";");
+                String nameMeshSubUsed = g_Object_MeshSubsUsed[i];
+                StringVector aMeshSubUsed = VulkanUtilString::Split(nameMeshSubUsed, ";");
                 pModelObject->aMeshSubUsed.clear();
                 size_t count_meshsub_used = aMeshSubUsed.size();
                 for (size_t j = 0; j < count_meshsub_used; j++)
                 {
-                    std::string& name = aMeshSubUsed[j];
+                    String& name = aMeshSubUsed[j];
                     int indexMeshSub = VulkanUtilString::ParserInt(name);
                     pModelObject->aMeshSubUsed.push_back(indexMeshSub);
                 }
@@ -1726,19 +1726,19 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
                 assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_016_MultiWindow::loadModel_Custom");
 
                 ModelMeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
-                std::string nameObjectRend = g_ObjectRend_Configs[8 * nIndexObjectRend + 0];
+                String nameObjectRend = g_ObjectRend_Configs[8 * nIndexObjectRend + 0];
                 ModelObjectRend* pRend = new ModelObjectRend(nameObjectRend, pModelObject, pMeshSub);
 
                 //Texture VS
                 {
-                    std::string nameTextureVS = g_ObjectRend_Configs[8 * nIndexObjectRend + 1]; //Texture VS
+                    String nameTextureVS = g_ObjectRend_Configs[8 * nIndexObjectRend + 1]; //Texture VS
                     if (!nameTextureVS.empty())
                     {
-                        std::vector<std::string> aTextureVS = VulkanUtilString::Split(nameTextureVS, ";");
+                        StringVector aTextureVS = VulkanUtilString::Split(nameTextureVS, ";");
                         size_t count_tex = aTextureVS.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
-                            std::string nameTex = aTextureVS[p];
+                            String nameTex = aTextureVS[p];
                             ModelTexture* pTextureVS = this->findModelTexture(nameTex);
                             pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), pTextureVS);
                         }
@@ -1746,14 +1746,14 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
                 }
                 //Texture TESC
                 {
-                    std::string nameTextureTESC = g_ObjectRend_Configs[8 * nIndexObjectRend + 2]; //Texture TESC
+                    String nameTextureTESC = g_ObjectRend_Configs[8 * nIndexObjectRend + 2]; //Texture TESC
                     if (!nameTextureTESC.empty())
                     {
-                        std::vector<std::string> aTextureTESC = VulkanUtilString::Split(nameTextureTESC, ";");
+                        StringVector aTextureTESC = VulkanUtilString::Split(nameTextureTESC, ";");
                         size_t count_tex = aTextureTESC.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
-                            std::string nameTex = aTextureTESC[p];
+                            String nameTex = aTextureTESC[p];
                             ModelTexture* pTextureTESC = this->findModelTexture(nameTex);
                             pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), pTextureTESC);
                         }
@@ -1761,14 +1761,14 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
                 }
                 //Texture TESE
                 {
-                    std::string nameTextureTESE = g_ObjectRend_Configs[8 * nIndexObjectRend + 3]; //Texture TESE
+                    String nameTextureTESE = g_ObjectRend_Configs[8 * nIndexObjectRend + 3]; //Texture TESE
                     if (!nameTextureTESE.empty())
                     {
-                        std::vector<std::string> aTextureTESE = VulkanUtilString::Split(nameTextureTESE, ";");
+                        StringVector aTextureTESE = VulkanUtilString::Split(nameTextureTESE, ";");
                         size_t count_tex = aTextureTESE.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
-                            std::string nameTex = aTextureTESE[p];
+                            String nameTex = aTextureTESE[p];
                             ModelTexture* pTextureTESE = this->findModelTexture(nameTex);
                             pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), pTextureTESE);
                         }
@@ -1776,14 +1776,14 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
                 }
                 //Texture GS
                 {
-                    std::string nameTextureGS = g_ObjectRend_Configs[8 * nIndexObjectRend + 4]; //Texture GS
+                    String nameTextureGS = g_ObjectRend_Configs[8 * nIndexObjectRend + 4]; //Texture GS
                     if (!nameTextureGS.empty())
                     {
-                        std::vector<std::string> aTextureGS = VulkanUtilString::Split(nameTextureGS, ";");
+                        StringVector aTextureGS = VulkanUtilString::Split(nameTextureGS, ";");
                         size_t count_tex = aTextureGS.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
-                            std::string nameTex = aTextureGS[p];
+                            String nameTex = aTextureGS[p];
                             ModelTexture* pTextureGS = this->findModelTexture(nameTex);
                             pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), pTextureGS);
                         }
@@ -1791,14 +1791,14 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
                 }
                 //Texture FS
                 {
-                    std::string nameTextureFS = g_ObjectRend_Configs[8 * nIndexObjectRend + 5]; //Texture FS
+                    String nameTextureFS = g_ObjectRend_Configs[8 * nIndexObjectRend + 5]; //Texture FS
                     if (!nameTextureFS.empty())
                     {
-                        std::vector<std::string> aTextureFS = VulkanUtilString::Split(nameTextureFS, ";");
+                        StringVector aTextureFS = VulkanUtilString::Split(nameTextureFS, ";");
                         size_t count_tex = aTextureFS.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
-                            std::string nameTex = aTextureFS[p];
+                            String nameTex = aTextureFS[p];
                             ModelTexture* pTextureFS = this->findModelTexture(nameTex);
                             pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), pTextureFS);
                         }
@@ -1806,22 +1806,22 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
                 }
                 //Texture CS
                 {
-                    std::string nameTextureCS = g_ObjectRend_Configs[8 * nIndexObjectRend + 7]; //Texture CS
+                    String nameTextureCS = g_ObjectRend_Configs[8 * nIndexObjectRend + 7]; //Texture CS
                     if (!nameTextureCS.empty())
                     {
-                        std::vector<std::string> aTextureCS = VulkanUtilString::Split(nameTextureCS, ";");
+                        StringVector aTextureCS = VulkanUtilString::Split(nameTextureCS, ";");
                         size_t count_tex = aTextureCS.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
-                            std::string nameTex = aTextureCS[p];
+                            String nameTex = aTextureCS[p];
                             ModelTexture* pTextureCS = this->findModelTexture(nameTex);
                             pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), pTextureCS);
                         }
                     }
                 }
 
-                std::string nameShaderTesc = g_ObjectRend_NameShaderModules[6 * nIndexObjectRend + 1];
-                std::string nameShaderTese = g_ObjectRend_NameShaderModules[6 * nIndexObjectRend + 2];
+                String nameShaderTesc = g_ObjectRend_NameShaderModules[6 * nIndexObjectRend + 1];
+                String nameShaderTese = g_ObjectRend_NameShaderModules[6 * nIndexObjectRend + 2];
                 if (!nameShaderTesc.empty() || !nameShaderTese.empty())
                 {
                     pRend->isUsedTessellation = true;
@@ -1837,14 +1837,14 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
 
 
                 //Pipeline Computes - DescriptorSetLayout
-                std::string nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
+                String nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
                 if (!nameDescriptorSetLayout.empty())
                 {
-                    std::vector<std::string> aDescriptorSetLayout = VulkanUtilString::Split(nameDescriptorSetLayout, ";");
+                    StringVector aDescriptorSetLayout = VulkanUtilString::Split(nameDescriptorSetLayout, ";");
                     size_t count_dsl = aDescriptorSetLayout.size();
                     for (size_t p = 0; p < count_dsl; p++)
                     {
-                        const std::string& nameDescriptorSetLayout = aDescriptorSetLayout[p];
+                        const String& nameDescriptorSetLayout = aDescriptorSetLayout[p];
                         PipelineCompute* pPipelineCompute = new PipelineCompute(this);
                         pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
                         pRend->AddPipelineCompute(pPipelineCompute);
@@ -1871,7 +1871,7 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
             if (count_object_rend > 0)
             {
                 ModelObjectRend* pRend = pModelObject->aRends[i];
-                std::string nameObjectRendIndirect = pModelObject->nameObject + " - RendIndirect";
+                String nameObjectRendIndirect = pModelObject->nameObject + " - RendIndirect";
                 pModelObject->pRendIndirect = new ModelObjectRendIndirect(nameObjectRendIndirect);
                 pModelObject->pRendIndirect->SetupVertexIndexBuffer(pModelObject->aRends);
             }
@@ -2046,11 +2046,11 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
 
         //[1] Shaders
-        std::string nameShaderVert = g_ObjectRend_NameShaderModules[6 * i + 0];
-        std::string nameShaderTesc = g_ObjectRend_NameShaderModules[6 * i + 1];
-        std::string nameShaderTese = g_ObjectRend_NameShaderModules[6 * i + 2];
-        std::string nameShaderGeom = g_ObjectRend_NameShaderModules[6 * i + 3];
-        std::string nameShaderFrag = g_ObjectRend_NameShaderModules[6 * i + 4];
+        String nameShaderVert = g_ObjectRend_NameShaderModules[6 * i + 0];
+        String nameShaderTesc = g_ObjectRend_NameShaderModules[6 * i + 1];
+        String nameShaderTese = g_ObjectRend_NameShaderModules[6 * i + 2];
+        String nameShaderGeom = g_ObjectRend_NameShaderModules[6 * i + 3];
+        String nameShaderFrag = g_ObjectRend_NameShaderModules[6 * i + 4];
         if (!createPipelineShaderStageCreateInfos(nameShaderVert,
                                                   nameShaderTesc,
                                                   nameShaderTese,
@@ -2058,7 +2058,7 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
                                                   nameShaderFrag,
                                                   pRend->aShaderStageCreateInfos_Graphics))
         {
-            std::string msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find shader used !";
+            String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find shader used !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -2068,28 +2068,28 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
             pRend->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
             {
-                std::string msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->pRenderPass = findMultiRenderPass(pRend->pPipelineGraphics->nameRenderPass);
             if (pRend->pPipelineGraphics->pRenderPass == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find MultiRenderPass by name: " + pRend->pPipelineGraphics->nameRenderPass;
+                String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find MultiRenderPass by name: " + pRend->pPipelineGraphics->nameRenderPass;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2097,14 +2097,14 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
 
             //Texture FrameColor
             {
-                std::string nameTextureFrameColor = g_ObjectRend_Configs[8 * i + 6]; //Texture FrameColor
+                String nameTextureFrameColor = g_ObjectRend_Configs[8 * i + 6]; //Texture FrameColor
                 if (!nameTextureFrameColor.empty())
                 {
-                    std::vector<std::string> aTextureFrameColor = VulkanUtilString::Split(nameTextureFrameColor, ";");
+                    StringVector aTextureFrameColor = VulkanUtilString::Split(nameTextureFrameColor, ";");
                     size_t count_render_pass = aTextureFrameColor.size();
                     for (size_t p = 0; p < count_render_pass; p++)
                     {
-                        std::string nameRenderPass = aTextureFrameColor[p];
+                        String nameRenderPass = aTextureFrameColor[p];
                         MultiRenderPass* pRenderPass = this->findMultiRenderPass(nameRenderPass);
                         pRend->AddRenderPass(pRenderPass);
                     }
@@ -2125,7 +2125,7 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
                                                                                       pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
+                String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2159,7 +2159,7 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
                                                                             pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
+                String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2178,12 +2178,12 @@ void Vulkan_016_MultiWindow::createComputePipeline_Custom()
             continue;
 
         //[1] Shaders
-        std::string nameShaderComp = g_ObjectRend_NameShaderModules[6 * i + 5];
+        String nameShaderComp = g_ObjectRend_NameShaderModules[6 * i + 5];
         if (!createPipelineShaderStageCreateInfos(nameShaderComp,
                                                   pRend->aShaderStageCreateInfos_Computes,
                                                   pRend->mapShaderStageCreateInfos_Computes))
         {
-            std::string msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Can not find shader used !";
+            String msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Can not find shader used !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -2191,7 +2191,7 @@ void Vulkan_016_MultiWindow::createComputePipeline_Custom()
         //[2] Pipeline Compute
         if (count_pipeline != pRend->aShaderStageCreateInfos_Computes.size())
         {
-            std::string msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Pipeline count is not equal shader count !";
+            String msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Pipeline count is not equal shader count !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -2203,21 +2203,21 @@ void Vulkan_016_MultiWindow::createComputePipeline_Custom()
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayoutNames == nullptr)
             {
-                std::string msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
             if (p->poPipelineLayout == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2225,7 +2225,7 @@ void Vulkan_016_MultiWindow::createComputePipeline_Custom()
             p->poPipeline = createVkComputePipeline(shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
-                std::string msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2248,11 +2248,11 @@ void Vulkan_016_MultiWindow::createModelMeshes()
 {
     for (int i = 0; i < g_Mesh_Count; i++)
     {
-        std::string nameMesh = g_Mesh_Paths[5 * i + 0];
-        std::string nameVertexType = g_Mesh_Paths[5 * i + 1];
-        std::string nameMeshType = g_Mesh_Paths[5 * i + 2];
-        std::string nameGeometryType = g_Mesh_Paths[5 * i + 3];
-        std::string pathMesh = g_Mesh_Paths[5 * i + 4];
+        String nameMesh = g_Mesh_Paths[5 * i + 0];
+        String nameVertexType = g_Mesh_Paths[5 * i + 1];
+        String nameMeshType = g_Mesh_Paths[5 * i + 2];
+        String nameGeometryType = g_Mesh_Paths[5 * i + 3];
+        String pathMesh = g_Mesh_Paths[5 * i + 4];
         
         VulkanVertexType typeVertex = Util_ParseVertexType(nameVertexType); 
         VulkanMeshType typeMesh = Util_ParseMeshType(nameMeshType);
@@ -2272,7 +2272,7 @@ void Vulkan_016_MultiWindow::createModelMeshes()
         bool isTranformLocal = g_Mesh_IsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_Mesh_TranformLocals[i]))
         {
-            std::string msg = "Vulkan_016_MultiWindow::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
+            String msg = "Vulkan_016_MultiWindow::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -2284,7 +2284,7 @@ void Vulkan_016_MultiWindow::createModelMeshes()
                      nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
     }
 }
-Vulkan_016_MultiWindow::ModelMesh* Vulkan_016_MultiWindow::findModelMesh(const std::string& nameMesh)
+Vulkan_016_MultiWindow::ModelMesh* Vulkan_016_MultiWindow::findModelMesh(const String& nameMesh)
 {
     ModelMeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
     if (itFind == this->m_mapModelMesh.end())
@@ -2310,16 +2310,16 @@ void Vulkan_016_MultiWindow::createModelTextures()
 {
     for (int i = 0; i < g_Texture_Count; i++)
     {
-        std::string nameTexture = g_Texture_Paths[5 * i + 0];
-        std::string nameType = g_Texture_Paths[5 * i + 1];
+        String nameTexture = g_Texture_Paths[5 * i + 0];
+        String nameType = g_Texture_Paths[5 * i + 1];
         VulkanTextureType typeTexture = Util_ParseTextureType(nameType);
-        std::string nameIsRenderTarget = g_Texture_Paths[5 * i + 2];
+        String nameIsRenderTarget = g_Texture_Paths[5 * i + 2];
         bool isRenderTarget = VulkanUtilString::ParserBool(nameIsRenderTarget);
-        std::string nameIsGraphicsComputeShared = g_Texture_Paths[5 * i + 3];
+        String nameIsGraphicsComputeShared = g_Texture_Paths[5 * i + 3];
         bool isGraphicsComputeShared = VulkanUtilString::ParserBool(nameIsGraphicsComputeShared);
-        std::string pathTextures = g_Texture_Paths[5 * i + 4];
+        String pathTextures = g_Texture_Paths[5 * i + 4];
 
-        std::vector<std::string> aPathTexture = VulkanUtilString::Split(pathTextures, ";");
+        StringVector aPathTexture = VulkanUtilString::Split(pathTextures, ";");
         ModelTexture* pTexture = new ModelTexture(this, 
                                                   nameTexture,
                                                   typeTexture,
@@ -2356,7 +2356,7 @@ void Vulkan_016_MultiWindow::createModelTextures()
                      pathTextures.c_str());
     }
 }
-Vulkan_016_MultiWindow::ModelTexture* Vulkan_016_MultiWindow::findModelTexture(const std::string& nameTexture)
+Vulkan_016_MultiWindow::ModelTexture* Vulkan_016_MultiWindow::findModelTexture(const String& nameTexture)
 {
     ModelTexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
     if (itFind == this->m_mapModelTexture.end())
@@ -2382,15 +2382,15 @@ void Vulkan_016_MultiWindow::createDescriptorSetLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayout_Count; i++)
     {
-        std::string nameLayout(g_DescriptorSetLayout_Names[i]);
-        std::vector<std::string> aLayouts = VulkanUtilString::Split(nameLayout, "-");
+        String nameLayout(g_DescriptorSetLayout_Names[i]);
+        StringVector aLayouts = VulkanUtilString::Split(nameLayout, "-");
         size_t count_layout = aLayouts.size();
 
         VkDescriptorSetLayout vkDescriptorSetLayout;
         std::vector<VkDescriptorSetLayoutBinding> bindings;
         for (size_t j = 0; j < count_layout; j++)
         {
-            std::string& strLayout = aLayouts[j];
+            String& strLayout = aLayouts[j];
             if (strLayout == c_strLayout_Pass) //Pass
             {
                 VkDescriptorSetLayoutBinding passMainLayoutBinding = {};
@@ -2536,7 +2536,7 @@ void Vulkan_016_MultiWindow::createDescriptorSetLayouts()
             }
             else
             {
-                std::string msg = "Vulkan_016_MultiWindow::createDescriptorSetLayouts: Wrong DescriptorSetLayout type: " + strLayout;
+                String msg = "Vulkan_016_MultiWindow::createDescriptorSetLayouts: Wrong DescriptorSetLayout type: " + strLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2548,7 +2548,7 @@ void Vulkan_016_MultiWindow::createDescriptorSetLayouts()
         layoutInfo.pBindings = bindings.data();
         if (vkCreateDescriptorSetLayout(this->poDevice, &layoutInfo, nullptr, &vkDescriptorSetLayout) != VK_SUCCESS) 
         {
-            std::string msg = "VulkanWindow::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
+            String msg = "VulkanWindow::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -2559,7 +2559,7 @@ void Vulkan_016_MultiWindow::createDescriptorSetLayouts()
         Util_LogInfo("Vulkan_016_MultiWindow::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
-VkDescriptorSetLayout Vulkan_016_MultiWindow::findDescriptorSetLayout(const std::string& nameDescriptorSetLayout)
+VkDescriptorSetLayout Vulkan_016_MultiWindow::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
 {
     VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapVkDescriptorSetLayout.end())
@@ -2568,9 +2568,9 @@ VkDescriptorSetLayout Vulkan_016_MultiWindow::findDescriptorSetLayout(const std:
     }
     return itFind->second;
 }
-std::vector<std::string>* Vulkan_016_MultiWindow::findDescriptorSetLayoutNames(const std::string& nameDescriptorSetLayout)
+StringVector* Vulkan_016_MultiWindow::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
 {
-    std::map<std::string, std::vector<std::string>>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
+    std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapName2Layouts.end())
     {
         return nullptr;
@@ -2594,9 +2594,9 @@ void Vulkan_016_MultiWindow::createShaderModules()
 {
     for (int i = 0; i < g_Shader_Count; i++)
     {
-        std::string shaderName = g_ShaderModule_Paths[3 * i + 0];
-        std::string shaderType = g_ShaderModule_Paths[3 * i + 1];
-        std::string shaderPath = g_ShaderModule_Paths[3 * i + 2];
+        String shaderName = g_ShaderModule_Paths[3 * i + 0];
+        String shaderType = g_ShaderModule_Paths[3 * i + 1];
+        String shaderPath = g_ShaderModule_Paths[3 * i + 2];
 
         VkShaderModule shaderModule = createShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
@@ -2605,7 +2605,7 @@ void Vulkan_016_MultiWindow::createShaderModules()
                      shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
-VkShaderModule Vulkan_016_MultiWindow::findShaderModule(const std::string& nameShaderModule)
+VkShaderModule Vulkan_016_MultiWindow::findShaderModule(const String& nameShaderModule)
 {
     VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
     if (itFind == this->m_mapVkShaderModules.end())
@@ -2614,12 +2614,12 @@ VkShaderModule Vulkan_016_MultiWindow::findShaderModule(const std::string& nameS
     }
     return itFind->second;
 }   
-bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
-                                                                      const std::string& nameShaderTesc,
-                                                                      const std::string& nameShaderTese,
-                                                                      const std::string& nameShaderGeom,
-                                                                      const std::string& nameShaderFrag,
-                                                                      const std::string& nameShaderComp,
+bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                                                      const String& nameShaderTesc,
+                                                                      const String& nameShaderTese,
+                                                                      const String& nameShaderGeom,
+                                                                      const String& nameShaderFrag,
+                                                                      const String& nameShaderComp,
                                                                       VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
                                                                       VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                                                       VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
@@ -2643,11 +2643,11 @@ bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const std::str
 
     return true;
 }
-bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const std::string& nameShaderVert,
-                                                                      const std::string& nameShaderTesc,
-                                                                      const std::string& nameShaderTese,
-                                                                      const std::string& nameShaderGeom,
-                                                                      const std::string& nameShaderFrag,
+bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                                                      const String& nameShaderTesc,
+                                                                      const String& nameShaderTese,
+                                                                      const String& nameShaderGeom,
+                                                                      const String& nameShaderFrag,
                                                                       VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics)
 {
     //vert
@@ -2736,18 +2736,18 @@ bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const std::str
 
     return true;
 }
-bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const std::string& nameShaderComp,
+bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& nameShaderComp,
                                                                       VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                                                       VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
 {
     //comp
     if (!nameShaderComp.empty())
     {
-        std::vector<std::string> aShaderComps = VulkanUtilString::Split(nameShaderComp, ";");
+        StringVector aShaderComps = VulkanUtilString::Split(nameShaderComp, ";");
         int count_comp = (int)aShaderComps.size();
         for (int i = 0; i < count_comp; i++)
         {
-            std::string nameSC = aShaderComps[i];
+            String nameSC = aShaderComps[i];
             VkShaderModule shaderModule = findShaderModule(nameSC);
             if (shaderModule == VK_NULL_HANDLE)
             {
@@ -2783,7 +2783,7 @@ void Vulkan_016_MultiWindow::createPipelineLayouts()
 {
     for (int i = 0; i < g_DescriptorSetLayout_Count; i++)
     {
-        std::string nameDescriptorSetLayout(g_DescriptorSetLayout_Names[i]);
+        String nameDescriptorSetLayout(g_DescriptorSetLayout_Names[i]);
         VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
@@ -2804,7 +2804,7 @@ void Vulkan_016_MultiWindow::createPipelineLayouts()
         this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
     }
 }
-VkPipelineLayout Vulkan_016_MultiWindow::findPipelineLayout(const std::string& namePipelineLayout)
+VkPipelineLayout Vulkan_016_MultiWindow::findPipelineLayout(const String& namePipelineLayout)
 {
     VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
     if (itFind == this->m_mapVkPipelineLayouts.end())
@@ -2830,7 +2830,7 @@ void Vulkan_016_MultiWindow::createMultiRenderPasses()
 {    
     for (int i = 0; i < g_RenderPass_Count; i++)
     {
-        std::string nameRenderPass = g_RenderPass_Names[i];
+        String nameRenderPass = g_RenderPass_Names[i];
         bool isDefault = g_RenderPass_IsDefault[i];
 
         MultiRenderPass* pMultiRenderPass = new MultiRenderPass(this, nameRenderPass, isDefault);
@@ -2840,7 +2840,7 @@ void Vulkan_016_MultiWindow::createMultiRenderPasses()
         this->m_mapMultiRenderPasses[nameRenderPass] = pMultiRenderPass;
     }
 }
-Vulkan_016_MultiWindow::MultiRenderPass* Vulkan_016_MultiWindow::findMultiRenderPass(const std::string& nameRenderPass)
+Vulkan_016_MultiWindow::MultiRenderPass* Vulkan_016_MultiWindow::findMultiRenderPass(const String& nameRenderPass)
 {
     MultiRenderPassPtrMap::iterator itFind = this->m_mapMultiRenderPasses.find(nameRenderPass);
     if (itFind == this->m_mapMultiRenderPasses.end())
@@ -2890,7 +2890,7 @@ void Vulkan_016_MultiWindow::createDescriptorSets_Graphics(std::vector<VkDescrip
                                                                ModelObjectRend* pRend, 
                                                                ModelObjectRendIndirect* pRendIndirect)
 {
-    std::vector<std::string>* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
+    StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
     assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_016_MultiWindow::createDescriptorSets_Graphics");
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
@@ -2905,7 +2905,7 @@ void Vulkan_016_MultiWindow::createDescriptorSets_Graphics(std::vector<VkDescrip
         size_t count_names = pDescriptorSetLayoutNames->size();
         for (size_t p = 0; p < count_names; p++)
         {
-            std::string& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
+            String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
             if (nameDescriptorSet == c_strLayout_Pass) //Pass
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
@@ -3068,7 +3068,7 @@ void Vulkan_016_MultiWindow::createDescriptorSets_Graphics(std::vector<VkDescrip
             }
             else
             {
-                std::string msg = "Vulkan_016_MultiWindow::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                String msg = "Vulkan_016_MultiWindow::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -3079,7 +3079,7 @@ void Vulkan_016_MultiWindow::createDescriptorSets_Graphics(std::vector<VkDescrip
 void Vulkan_016_MultiWindow::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
                                                               ModelObjectRend* pRend)
 {
-    std::vector<std::string>* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
+    StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
     assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_016_MultiWindow::createDescriptorSets_Compute");
     createDescriptorSet(pPipelineCompute->poDescriptorSet, pPipelineCompute->poDescriptorSetLayout);
 
@@ -3088,7 +3088,7 @@ void Vulkan_016_MultiWindow::createDescriptorSets_Compute(PipelineCompute* pPipe
     size_t count_names = pDescriptorSetLayoutNames->size();
     for (size_t p = 0; p < count_names; p++)
     {
-        std::string& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
+        String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
         if (nameDescriptorSet == c_strLayout_TextureCopy) //TextureCopy
         {
             pPipelineCompute->CreateTextureCopy();
@@ -3142,7 +3142,7 @@ void Vulkan_016_MultiWindow::createDescriptorSets_Compute(PipelineCompute* pPipe
         }
         else
         {
-            std::string msg = "Vulkan_016_MultiWindow::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+            String msg = "Vulkan_016_MultiWindow::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -3445,11 +3445,11 @@ void Vulkan_016_MultiWindow::modelConfig()
             size_t count_object_rend = pModelObject->aRends.size();
 
             //1> ModelObject
-            std::string nameObject = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameObject;
+            String nameObject = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameObject;
             if (ImGui::CollapsingHeader(nameObject.c_str()))
             {
                 //isShow
-                std::string nameIsShow = "Is Show - " + pModelObject->nameObject;
+                String nameIsShow = "Is Show - " + pModelObject->nameObject;
                 if (ImGui::Checkbox(nameIsShow.c_str(), &pModelObject->isShow))
                 {
                     for (int j = 0; j < count_object_rend; j++)
@@ -3459,7 +3459,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                     }
                 }
                 //isWireFrame
-                std::string nameIsWireFrame = "Is WireFrame - " + pModelObject->nameObject;
+                String nameIsWireFrame = "Is WireFrame - " + pModelObject->nameObject;
                 if (ImGui::Checkbox(nameIsWireFrame.c_str(), &pModelObject->isWireFrame))
                 {
                     for (int j = 0; j < count_object_rend; j++)
@@ -3469,7 +3469,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                     }
                 }
                 //isRotate
-                std::string nameIsRotate = "Is Rotate - " + pModelObject->nameObject;
+                String nameIsRotate = "Is Rotate - " + pModelObject->nameObject;
                 if (ImGui::Checkbox(nameIsRotate.c_str(), &pModelObject->isRotate))
                 {
                     for (int j = 0; j < count_object_rend; j++)
@@ -3479,7 +3479,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                     }
                 }
                 //isLighting
-                std::string nameIsLighting = "Is Lighting - " + pModelObject->nameObject;
+                String nameIsLighting = "Is Lighting - " + pModelObject->nameObject;
                 if (ImGui::Checkbox(nameIsLighting.c_str(), &pModelObject->isLighting))
                 {
                     for (int j = 0; j < count_object_rend; j++)
@@ -3493,7 +3493,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                     }
                 }
 
-                std::string nameInstances = "Instance - " + pModelObject->nameObject;
+                String nameInstances = "Instance - " + pModelObject->nameObject;
                 int countInstanceExt = pModelObject->countInstanceExt;
                 ImGui::DragInt(nameInstances.c_str(), &countInstanceExt, 1, 0, 3);
                 if (countInstanceExt != pModelObject->countInstanceExt)
@@ -3509,7 +3509,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                 //2> ModelObjectRend
                 if (pRendIndirect != nullptr && this->m_isDrawIndirect)
                 {
-                    std::string& nameObjectRendIndirect = pRendIndirect->nameObjectRendIndirect;
+                    String& nameObjectRendIndirect = pRendIndirect->nameObjectRendIndirect;
                     if (ImGui::CollapsingHeader(nameObjectRendIndirect.c_str()))
                     {
                         ImGui::Text("Rend Count: [%d], Vertex: [%d], Index: [%d]", 
@@ -3517,7 +3517,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                             (int)pRendIndirect->poVertexCount,
                             (int)pRendIndirect->poIndexCount);
                         //isShow
-                        std::string nameIsShowRend = "Is Show - " + nameObjectRendIndirect;
+                        String nameIsShowRend = "Is Show - " + nameObjectRendIndirect;
                         if (ImGui::Checkbox(nameIsShowRend.c_str(), &pRendIndirect->isShow))
                         {
                             if (pRendIndirect->isShow)
@@ -3526,7 +3526,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                             }
                         }
                         //isWireFrame
-                        std::string nameIsWireFrameRend = "Is WireFrame - " + nameObjectRendIndirect;
+                        String nameIsWireFrameRend = "Is WireFrame - " + nameObjectRendIndirect;
                         if (ImGui::Checkbox(nameIsWireFrameRend.c_str(), &pRendIndirect->isWireFrame))
                         {
                             if (!pRendIndirect->isWireFrame)
@@ -3535,13 +3535,13 @@ void Vulkan_016_MultiWindow::modelConfig()
                             }
                         }
                         //isRotate
-                        std::string nameIsRotateRend = "Is Rotate - " + nameObjectRendIndirect;
+                        String nameIsRotateRend = "Is Rotate - " + nameObjectRendIndirect;
                         if (ImGui::Checkbox(nameIsRotateRend.c_str(), &pRendIndirect->isRotate))
                         {
                             
                         }
                         //isLighting
-                        std::string nameIsLightingRend = "Is Lighting - " + nameObjectRendIndirect;
+                        String nameIsLightingRend = "Is Lighting - " + nameObjectRendIndirect;
                         if (ImGui::Checkbox(nameIsLightingRend.c_str(), &pRendIndirect->isLighting))
                         {
                             if (pRendIndirect->isLighting)
@@ -3555,12 +3555,12 @@ void Vulkan_016_MultiWindow::modelConfig()
                             }
                         }
                         //isTransparent
-                        std::string nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRendIndirect;
+                        String nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRendIndirect;
                         bool isTransparent = pRendIndirect->isTransparent;
                         ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
 
                         //countIndirectDraw
-                        std::string nameCountIndirectDraw = "Count IndirectDraw - " + nameObjectRendIndirect;
+                        String nameCountIndirectDraw = "Count IndirectDraw - " + nameObjectRendIndirect;
                         int countIndirectDraw = (int)pRendIndirect->countIndirectDraw;
                         if (ImGui::DragInt(nameCountIndirectDraw.c_str(), &countIndirectDraw, 1, 0, (int)pRendIndirect->indirectCommandCBs.size()))
                         {
@@ -3586,12 +3586,12 @@ void Vulkan_016_MultiWindow::modelConfig()
                     for (int j = 0; j < count_object_rend; j++)
                     {
                         ModelObjectRend* pRend = pModelObject->aRends[j];
-                        std::string& nameObjectRend = pRend->nameObjectRend;
+                        String& nameObjectRend = pRend->nameObjectRend;
                         if (ImGui::CollapsingHeader(nameObjectRend.c_str()))
                         {
                             ImGui::Text("Vertex: [%d], Index: [%d]", (int)pRend->pMeshSub->poVertexCount, (int)pRend->pMeshSub->poIndexCount);
                             //isShow
-                            std::string nameIsShowRend = "Is Show - " + nameObjectRend;
+                            String nameIsShowRend = "Is Show - " + nameObjectRend;
                             if (ImGui::Checkbox(nameIsShowRend.c_str(), &pRend->isShow))
                             {
                                 if (pRend->isShow)
@@ -3600,7 +3600,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                                 }
                             }
                             //isWireFrame
-                            std::string nameIsWireFrameRend = "Is WireFrame - " + nameObjectRend;
+                            String nameIsWireFrameRend = "Is WireFrame - " + nameObjectRend;
                             if (ImGui::Checkbox(nameIsWireFrameRend.c_str(), &pRend->isWireFrame))
                             {
                                 if (!pRend->isWireFrame)
@@ -3609,13 +3609,13 @@ void Vulkan_016_MultiWindow::modelConfig()
                                 }
                             }
                             //isRotate
-                            std::string nameIsRotateRend = "Is Rotate - " + nameObjectRend;
+                            String nameIsRotateRend = "Is Rotate - " + nameObjectRend;
                             if (ImGui::Checkbox(nameIsRotateRend.c_str(), &pRend->isRotate))
                             {
                                 
                             }
                             //isLighting
-                            std::string nameIsLightingRend = "Is Lighting - " + nameObjectRend;
+                            String nameIsLightingRend = "Is Lighting - " + nameObjectRend;
                             if (ImGui::Checkbox(nameIsLightingRend.c_str(), &pRend->isLighting))
                             {
                                 if (pRend->isLighting)
@@ -3629,11 +3629,11 @@ void Vulkan_016_MultiWindow::modelConfig()
                                 }
                             }
                             //isTransparent
-                            std::string nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRend;
+                            String nameIsTransparent = "Is Transparent(Read Only) - " + nameObjectRend;
                             bool isTransparent = pRend->isTransparent;
                             ImGui::Checkbox(nameIsTransparent.c_str(), &isTransparent);
 
-                            std::string nameWorld = "Model Object - " + nameObjectRend;
+                            String nameWorld = "Model Object - " + nameObjectRend;
                             if (ImGui::CollapsingHeader(nameWorld.c_str()))
                             {
                                 int count_instance = pModelObject->countInstance;
@@ -3642,15 +3642,15 @@ void Vulkan_016_MultiWindow::modelConfig()
                                     ObjectConstants& obj = pRend->objectCBs[p];
                                     MaterialConstants& mat = pRend->materialCBs[p];
 
-                                    std::string nameModelInstance = VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                    String nameModelInstance = VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                     if (ImGui::CollapsingHeader(nameModelInstance.c_str()))
                                     {
                                         //ObjectConstants
-                                        std::string nameObject = VulkanUtilString::SaveInt(p) + " - Object - " + nameObjectRend;
+                                        String nameObject = VulkanUtilString::SaveInt(p) + " - Object - " + nameObjectRend;
                                         if (ImGui::CollapsingHeader(nameObject.c_str()))
                                         {
                                             const glm::mat4& mat4World = obj.g_MatWorld;
-                                            std::string nameTable = VulkanUtilString::SaveInt(p) + " - matWorld - " + nameObjectRend;
+                                            String nameTable = VulkanUtilString::SaveInt(p) + " - matWorld - " + nameObjectRend;
                                             if (ImGui::BeginTable(nameTable.c_str(), 4))
                                             {
                                                 ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
@@ -3678,11 +3678,11 @@ void Vulkan_016_MultiWindow::modelConfig()
                                         }
                                         
                                         //MaterialConstants
-                                        std::string nameMaterial = VulkanUtilString::SaveInt(p) + " - Material - " + nameObjectRend;
+                                        String nameMaterial = VulkanUtilString::SaveInt(p) + " - Material - " + nameObjectRend;
                                         if (ImGui::CollapsingHeader(nameMaterial.c_str()))
                                         {
                                             //factorAmbient
-                                            std::string nameFactorAmbient = "FactorAmbient - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            String nameFactorAmbient = "FactorAmbient - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                             if (ImGui::ColorEdit4(nameFactorAmbient.c_str(), (float*)&mat.factorAmbient))
                                             {
 
@@ -3690,7 +3690,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                                             ImGui::Spacing();
 
                                             //factorDiffuse
-                                            std::string nameFactorDiffuse = "FactorDiffuse - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            String nameFactorDiffuse = "FactorDiffuse - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                             if (ImGui::ColorEdit4(nameFactorDiffuse.c_str(), (float*)&mat.factorDiffuse))
                                             {
 
@@ -3698,7 +3698,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                                             ImGui::Spacing();
 
                                             //factorSpecular
-                                            std::string nameFactorSpecular = "FactorSpecular - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            String nameFactorSpecular = "FactorSpecular - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                             if (ImGui::ColorEdit4(nameFactorSpecular.c_str(), (float*)&mat.factorSpecular))
                                             {
 
@@ -3706,7 +3706,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                                             ImGui::Spacing();
 
                                             //shininess
-                                            std::string nameShininess = "Shininess - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            String nameShininess = "Shininess - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                             if (ImGui::DragFloat(nameShininess.c_str(), &mat.shininess, 0.01f, 0.01f, 100.0f))
                                             {
                                                 
@@ -3714,7 +3714,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                                             ImGui::Spacing();
 
                                             //alpha
-                                            std::string nameAlpha = "Alpha - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            String nameAlpha = "Alpha - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                             if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
                                             {
                                                 
@@ -3722,7 +3722,7 @@ void Vulkan_016_MultiWindow::modelConfig()
                                             ImGui::Spacing();
 
                                             //lighting
-                                            std::string nameLighting = "Lighting - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            String nameLighting = "Lighting - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                             bool isLighting = mat.lighting == 1.0f ? true : false;
                                             if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
                                             {
@@ -3747,26 +3747,26 @@ void Vulkan_016_MultiWindow::modelConfig()
                                                     {
                                                         ModelTexture* pTexture = (*pTextureFSs)[q];
 
-                                                        std::string nameMaterial_Texture = VulkanUtilString::SaveInt(p) + " - Material - " + nameObjectRend + " - TextureFS - " + VulkanUtilString::SaveInt(q);
+                                                        String nameMaterial_Texture = VulkanUtilString::SaveInt(p) + " - Material - " + nameObjectRend + " - TextureFS - " + VulkanUtilString::SaveInt(q);
                                                         if (ImGui::CollapsingHeader(nameMaterial_Texture.c_str()))
                                                         {
                                                             //texWidth
-                                                            std::string nameWidth = "Width - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameWidth = "Width - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             int width = pTexture->width;
                                                             ImGui::DragInt(nameWidth.c_str(), &width, 1, 0, 4096);
 
                                                             //texHeight
-                                                            std::string nameHeight = "Height - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameHeight = "Height - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             int height = pTexture->height;
                                                             ImGui::DragInt(nameHeight.c_str(), &height, 1, 0, 4096);
 
                                                             //texDepth
-                                                            std::string nameDepth = "Depth - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameDepth = "Depth - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             int depth = pTexture->depth;
                                                             ImGui::DragInt(nameDepth.c_str(), &depth, 1, 0, 4096);
 
                                                             //indexTextureArray
-                                                            std::string nameIndexTextureArray = "IndexTextureArray - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameIndexTextureArray = "IndexTextureArray - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             if (pTexture->typeTexture == Vulkan_Texture_2DArray)
                                                             {
                                                                 int count_tex = (int)pTexture->aPathTexture.size();
@@ -3785,38 +3785,38 @@ void Vulkan_016_MultiWindow::modelConfig()
                                                             }
 
                                                             //texSpeedU
-                                                            std::string nameTexSpeedU = "TexSpeedU - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameTexSpeedU = "TexSpeedU - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             if (ImGui::DragFloat(nameTexSpeedU.c_str(), &mat.aTexLayers[p].texSpeedU, 0.01f, 0.0f, 100.0f))
                                                             {
                                                                 
                                                             }
                                                             //texSpeedV
-                                                            std::string nameTexSpeedV = "texSpeedV - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                            String nameTexSpeedV = "texSpeedV - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                                             if (ImGui::DragFloat(nameTexSpeedV.c_str(), &mat.aTexLayers[p].texSpeedV, 0.01f, 0.0f, 100.0f))
                                                             {
                                                                 
                                                             }
                                                             //texSpeedW
-                                                            std::string nameTexSpeedW = "texSpeedW - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                            String nameTexSpeedW = "texSpeedW - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                                             if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
                                                             {
                                                                 
                                                             }
 
                                                             //texChunkMaxX
-                                                            std::string nameTexChunkMaxX = "texChunkMaxX - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameTexChunkMaxX = "texChunkMaxX - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             float fTexChunkMaxX = mat.aTexLayers[q].texChunkMaxX;
                                                             ImGui::DragFloat(nameTexChunkMaxX.c_str(), &fTexChunkMaxX, 1.0f, 1.0f, 100.0f);
                                                             //texChunkMaxY
-                                                            std::string nameTexChunkMaxY = "texChunkMaxY - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameTexChunkMaxY = "texChunkMaxY - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             float fTexChunkMaxY = mat.aTexLayers[q].texChunkMaxY;
                                                             ImGui::DragFloat(nameTexChunkMaxY.c_str(), &fTexChunkMaxY, 1.0f, 1.0f, 100.0f);
                                                             //texChunkIndexX
-                                                            std::string nameTexChunkIndexX = "texChunkIndexX - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameTexChunkIndexX = "texChunkIndexX - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             float fTexChunkIndexX = mat.aTexLayers[q].texChunkIndexX;
                                                             ImGui::DragFloat(nameTexChunkIndexX.c_str(), &fTexChunkIndexX, 1.0f, 0.0f, 100.0f);
                                                             //texChunkIndexY
-                                                            std::string nameTexChunkIndexY = "texChunkIndexY - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameTexChunkIndexY = "texChunkIndexY - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             float fTexChunkIndexY = mat.aTexLayers[q].texChunkIndexY;
                                                             ImGui::DragFloat(nameTexChunkIndexY.c_str(), &fTexChunkIndexY, 1.0f, 0.0f, 100.0f);
                                                         }
@@ -3836,32 +3836,32 @@ void Vulkan_016_MultiWindow::modelConfig()
                                         }
 
                                         //TessellationConstants
-                                        std::string nameTessellation = VulkanUtilString::SaveInt(p) + " - Tessellation - " + nameObjectRend;
+                                        String nameTessellation = VulkanUtilString::SaveInt(p) + " - Tessellation - " + nameObjectRend;
                                         if (ImGui::CollapsingHeader(nameTessellation.c_str()))
                                         {
                                             if (pRend->isUsedTessellation)
                                             {
                                                 TessellationConstants& tess = pRend->tessellationCBs[j];
                                                 //tessLevelOuter
-                                                std::string nameTessLevelOuter = "tessLevelOuter - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                String nameTessLevelOuter = "tessLevelOuter - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                                 if (ImGui::DragFloat(nameTessLevelOuter.c_str(), &tess.tessLevelOuter, 0.1f, 0.1f, 500.0f))
                                                 {
                                                     
                                                 }
                                                 //tessLevelInner
-                                                std::string nameTessLevelInner = "tessLevelInner - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                String nameTessLevelInner = "tessLevelInner - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                                 if (ImGui::DragFloat(nameTessLevelInner.c_str(), &tess.tessLevelInner, 0.1f, 0.1f, 500.0f))
                                                 {
                                                     
                                                 }
                                                 //tessAlpha
-                                                std::string nameTessAlpha = "tessAlpha - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                String nameTessAlpha = "tessAlpha - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                                 if (ImGui::DragFloat(nameTessAlpha.c_str(), &tess.tessAlpha, 0.05f, 0.0f, 1.0f))
                                                 {
                                                     
                                                 }
                                                 //tessStrength
-                                                std::string nameTessStrength = "tessStrength - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                String nameTessStrength = "tessStrength - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
                                                 if (ImGui::DragFloat(nameTessStrength.c_str(), &tess.tessStrength, 0.025f, 0.1f, 100.0f))
                                                 {
                                                     

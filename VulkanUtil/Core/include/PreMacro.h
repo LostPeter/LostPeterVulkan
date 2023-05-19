@@ -29,6 +29,48 @@
 #define UTIL_ARCHITECTURE_32			1
 #define UTIL_ARCHITECTURE_64			2
 
+
+///////////////////////////// Compiler type and version /////////////////////////////
+#if (defined( __WIN32__ ) || defined( _WIN32 )) && defined(__ANDROID__)
+	#define UTIL_COMPILER					UTIL_COMPILER_GNUC
+	#define UTIL_COMPILER_VERSION			470
+#elif defined( __GCCE__ )
+	#define UTIL_COMPILER					UTIL_COMPILER_GCCE
+	#define UTIL_COMPILER_VERSION			_MSC_VER
+#elif defined( __WINSCW__ )
+	#define UTIL_COMPILER					UTIL_COMPILER_WINSCW
+	#define UTIL_COMPILER_VERSION			_MSC_VER
+#elif defined( _MSC_VER )
+	#define UTIL_COMPILER					UTIL_COMPILER_MSVC
+	#define UTIL_COMPILER_VERSION			_MSC_VER
+#elif defined( __clang__ )
+	#define UTIL_COMPILER					UTIL_COMPILER_CLANG
+	#define UTIL_COMPILER_VERSION (((__clang_major__)*100) + \
+	(__clang_minor__ * 10) + \
+	__clang_patchlevel__)
+#elif defined( __GNUC__ )
+	#define UTIL_COMPILER					UTIL_COMPILER_GNUC
+	#define UTIL_COMPILER_VERSION (((__GNUC__)*100) + \
+	(__GNUC_MINOR__ * 10) + \
+	__GNUC_PATCHLEVEL__)
+#else
+	#pragma error "UnKnown compiler! Abort! Abort!"
+#endif
+
+//Forceinline
+#if UTIL_COMPILER == UTIL_COMPILER_MSVC
+	#if UTIL_COMPILER_VERSION >= 1200
+		#define UTIL_FORCEINLINE			__forceinline
+	#endif
+#elif defined(__MINGW32__)
+	#if !defined(UTIL_FORCEINLINE)
+		#define UTIL_FORCEINLINE			__inline
+	#endif
+#else
+	#define UTIL_FORCEINLINE				__inline
+#endif
+
+
 ///////////////////////////// Platform //////////////////////////////////////////////
 #if defined(__APPLE_CC__)				//ios
 	#undef  UTIL_PLATFORM

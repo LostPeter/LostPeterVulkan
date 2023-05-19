@@ -29,7 +29,7 @@ namespace LostPeter
     }
 
     //Triangle
-    std::string VulkanMeshCreateParam_Triangle::ms_nameType = "MeshTriangle";
+    String VulkanMeshCreateParam_Triangle::ms_nameType = "MeshTriangle";
     VulkanMeshCreateParam_Triangle::VulkanMeshCreateParam_Triangle()
         : VulkanMeshCreateParam(true, false)
     {
@@ -45,7 +45,7 @@ namespace LostPeter
     {
 
     }
-    std::string VulkanMeshCreateParam_Triangle::ToName()
+    String VulkanMeshCreateParam_Triangle::ToName()
     {
         return VulkanUtilString::FormatString("%s_%d_%d", 
 											  ms_nameType.c_str(), 
@@ -54,7 +54,7 @@ namespace LostPeter
     }
 
     //Quad
-    std::string VulkanMeshCreateParam_Quad::ms_nameType = "MeshQuad";
+    String VulkanMeshCreateParam_Quad::ms_nameType = "MeshQuad";
     VulkanMeshCreateParam_Quad::VulkanMeshCreateParam_Quad()
         : VulkanMeshCreateParam(false, false)
         , centerX(0)
@@ -85,7 +85,7 @@ namespace LostPeter
     {
         
     }
-    std::string VulkanMeshCreateParam_Quad::ToName()
+    String VulkanMeshCreateParam_Quad::ToName()
     {
         return VulkanUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%f", 
 											  ms_nameType.c_str(), 
@@ -99,7 +99,7 @@ namespace LostPeter
     }
 
     //Grid
-    std::string VulkanMeshCreateParam_Grid::ms_nameType = "MeshGrid";
+    String VulkanMeshCreateParam_Grid::ms_nameType = "MeshGrid";
     VulkanMeshCreateParam_Grid::VulkanMeshCreateParam_Grid()
         : VulkanMeshCreateParam(false, false)
         , width(1)
@@ -127,7 +127,7 @@ namespace LostPeter
     {
         
     }
-    std::string VulkanMeshCreateParam_Grid::ToName()
+    String VulkanMeshCreateParam_Grid::ToName()
     {
         return VulkanUtilString::FormatString("%s_%d-%d-%f-%f-%u-%u", 
 											  ms_nameType.c_str(), 
@@ -140,7 +140,7 @@ namespace LostPeter
     }
 
     //Circle
-    std::string VulkanMeshCreateParam_Circle::ms_nameType = "MeshCircle";
+    String VulkanMeshCreateParam_Circle::ms_nameType = "MeshCircle";
     VulkanMeshCreateParam_Circle::VulkanMeshCreateParam_Circle()
         : VulkanMeshCreateParam(false, false)
         , radius(1)
@@ -162,7 +162,7 @@ namespace LostPeter
     {
         
     }
-    std::string VulkanMeshCreateParam_Circle::ToName()
+    String VulkanMeshCreateParam_Circle::ToName()
     {
         return VulkanUtilString::FormatString("%s_%d-%d-%f-%u", 
 											  ms_nameType.c_str(), 
@@ -173,7 +173,7 @@ namespace LostPeter
     }
 
     //AABB
-    std::string VulkanMeshCreateParam_AABB::ms_nameType = "MeshAABB";
+    String VulkanMeshCreateParam_AABB::ms_nameType = "MeshAABB";
     VulkanMeshCreateParam_AABB::VulkanMeshCreateParam_AABB()
         : VulkanMeshCreateParam(false, false)
         , width(1)
@@ -201,7 +201,7 @@ namespace LostPeter
     {
         
     }
-    std::string VulkanMeshCreateParam_AABB::ToName()
+    String VulkanMeshCreateParam_AABB::ToName()
     {
         return VulkanUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u", 
 											  ms_nameType.c_str(), 
@@ -214,7 +214,7 @@ namespace LostPeter
     }
 
     //Sphere
-    std::string VulkanMeshCreateParam_Sphere::ms_nameType = "MeshSphere";
+    String VulkanMeshCreateParam_Sphere::ms_nameType = "MeshSphere";
     VulkanMeshCreateParam_Sphere::VulkanMeshCreateParam_Sphere()
         : VulkanMeshCreateParam(false, false)
         , radius(1)
@@ -239,7 +239,7 @@ namespace LostPeter
     {
         
     }
-    std::string VulkanMeshCreateParam_Sphere::ToName()
+    String VulkanMeshCreateParam_Sphere::ToName()
     {
         return VulkanUtilString::FormatString("%s_%d-%d-%f-%u-%u", 
 											  ms_nameType.c_str(), 
@@ -251,7 +251,7 @@ namespace LostPeter
     }
 
     //GeoSphere
-    std::string VulkanMeshCreateParam_GeoSphere::ms_nameType = "MeshGeoSphere";
+    String VulkanMeshCreateParam_GeoSphere::ms_nameType = "MeshGeoSphere";
     VulkanMeshCreateParam_GeoSphere::VulkanMeshCreateParam_GeoSphere()
         : VulkanMeshCreateParam(false, false)
         , radius(1)
@@ -273,7 +273,7 @@ namespace LostPeter
     {
         
     }
-    std::string VulkanMeshCreateParam_GeoSphere::ToName()
+    String VulkanMeshCreateParam_GeoSphere::ToName()
     {
         return VulkanUtilString::FormatString("%s_%d-%d-%f-%u", 
 											  ms_nameType.c_str(), 
@@ -284,7 +284,7 @@ namespace LostPeter
     }
 
     //Cylinder
-    std::string VulkanMeshCreateParam_Cylinder::ms_nameType = "MeshCylinder";
+    String VulkanMeshCreateParam_Cylinder::ms_nameType = "MeshCylinder";
     VulkanMeshCreateParam_Cylinder::VulkanMeshCreateParam_Cylinder()
         : VulkanMeshCreateParam(false, false)
         , bottomRadius(0.5f)
@@ -315,7 +315,7 @@ namespace LostPeter
     {
         
     }
-    std::string VulkanMeshCreateParam_Cylinder::ToName()
+    String VulkanMeshCreateParam_Cylinder::ToName()
     {
         return VulkanUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u-%u", 
 										 	  ms_nameType.c_str(), 
@@ -329,7 +329,7 @@ namespace LostPeter
     }
 
     //Capsule
-    std::string VulkanMeshCreateParam_Capsule::ms_nameType = "MeshCapsule";
+    String VulkanMeshCreateParam_Capsule::ms_nameType = "MeshCapsule";
     VulkanMeshCreateParam_Capsule::VulkanMeshCreateParam_Capsule()
         : VulkanMeshCreateParam(false, false)
     {
@@ -339,13 +339,13 @@ namespace LostPeter
     {
         
     }
-    std::string VulkanMeshCreateParam_Capsule::ToName()
+    String VulkanMeshCreateParam_Capsule::ToName()
     {
         return "";
     }
 
     //Cone
-    std::string VulkanMeshCreateParam_Cone::ms_nameType = "MeshCone";
+    String VulkanMeshCreateParam_Cone::ms_nameType = "MeshCone";
     VulkanMeshCreateParam_Cone::VulkanMeshCreateParam_Cone()
         : VulkanMeshCreateParam(false, false)
     {
@@ -355,13 +355,13 @@ namespace LostPeter
     {
         
     }
-    std::string VulkanMeshCreateParam_Cone::ToName()
+    String VulkanMeshCreateParam_Cone::ToName()
     {
         return "";
     }
 
     //Torus
-    std::string VulkanMeshCreateParam_Torus::ms_nameType = "MeshTorus";
+    String VulkanMeshCreateParam_Torus::ms_nameType = "MeshTorus";
     VulkanMeshCreateParam_Torus::VulkanMeshCreateParam_Torus()
         : VulkanMeshCreateParam(false, false)
     {
@@ -371,13 +371,13 @@ namespace LostPeter
     {
         
     }
-    std::string VulkanMeshCreateParam_Torus::ToName()
+    String VulkanMeshCreateParam_Torus::ToName()
     {
         return "";
     }
 
     //SkyBox
-    std::string VulkanMeshCreateParam_SkyBox::ms_nameType = "MeshSkyBox";
+    String VulkanMeshCreateParam_SkyBox::ms_nameType = "MeshSkyBox";
     VulkanMeshCreateParam_SkyBox::VulkanMeshCreateParam_SkyBox()
         : VulkanMeshCreateParam(false, false)
     {
@@ -387,13 +387,13 @@ namespace LostPeter
     {
         
     }
-    std::string VulkanMeshCreateParam_SkyBox::ToName()
+    String VulkanMeshCreateParam_SkyBox::ToName()
     {
         return "";
     }   
 
     //SkyDome
-    std::string VulkanMeshCreateParam_SkyDome::ms_nameType = "MeshSkyDome";
+    String VulkanMeshCreateParam_SkyDome::ms_nameType = "MeshSkyDome";
     VulkanMeshCreateParam_SkyDome::VulkanMeshCreateParam_SkyDome()
         : VulkanMeshCreateParam(false, false)
     {
@@ -403,7 +403,7 @@ namespace LostPeter
     {
         
     }
-    std::string VulkanMeshCreateParam_SkyDome::ToName()
+    String VulkanMeshCreateParam_SkyDome::ToName()
     {
         return "";
     }

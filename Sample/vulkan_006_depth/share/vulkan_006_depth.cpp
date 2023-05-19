@@ -68,7 +68,7 @@ static bool g_isFlipYModels[g_CountLen] =
 };
 
 
-Vulkan_006_Depth::Vulkan_006_Depth(int width, int height, std::string name)
+Vulkan_006_Depth::Vulkan_006_Depth(int width, int height, String name)
     : VulkanWindow(width, height, name)
 {
     this->cfg_isImgui = true;
@@ -103,7 +103,7 @@ void Vulkan_006_Depth::loadModel_Custom()
         //Model
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTranformLocal, g_tranformLocalModels[i]))
         {
-            std::string msg = "Vulkan_006_Depth::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
+            String msg = "Vulkan_006_Depth::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -114,7 +114,7 @@ void Vulkan_006_Depth::loadModel_Custom()
         //Texture
         if (!loadModel_Texture(pModelObject))
         {   
-            std::string msg = "Vulkan_006_Depth::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
+            String msg = "Vulkan_006_Depth::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -261,7 +261,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
                                                                     pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline !";
+            String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -280,7 +280,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
                                                                               pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
+            String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -299,7 +299,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
                                                                                 pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_NoDepthTest == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth test !";
+            String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth test !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -318,7 +318,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
                                                                                  pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_NoDepthWrite == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth write !";
+            String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth write !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -337,7 +337,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
                                                                                      pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_NoDepthTestWrite == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth test and write !";
+            String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth test and write !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -510,29 +510,29 @@ void Vulkan_006_Depth::modelConfig()
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
 
-            std::string nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
+            String nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
             if (ImGui::CollapsingHeader(nameModel.c_str()))
             {
-                std::string nameIsShow = "Is Show - " + pModelObject->nameModel;
+                String nameIsShow = "Is Show - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsShow.c_str(), &pModelObject->isShow);
-                std::string nameIsRotate = "Is Rotate - " + pModelObject->nameModel;
+                String nameIsRotate = "Is Rotate - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsRotate.c_str(), &pModelObject->isRotate);
-                std::string nameIsWireFrame = "Is WireFrame - " + pModelObject->nameModel;
+                String nameIsWireFrame = "Is WireFrame - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsWireFrame.c_str(), &pModelObject->isWireFrame);
-                std::string nameIsNoDepthTest = "Is NoDepthTest - " + pModelObject->nameModel;
+                String nameIsNoDepthTest = "Is NoDepthTest - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsNoDepthTest.c_str(), &pModelObject->isNoDepthTest);
-                std::string nameIsNoDepthWrite = "Is NoDepthWrite - " + pModelObject->nameModel;
+                String nameIsNoDepthWrite = "Is NoDepthWrite - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsNoDepthWrite.c_str(), &pModelObject->isNoDepthWrite);
-                std::string nameIsNoDepthTestWrite = "Is NoDepthTestWrite - " + pModelObject->nameModel;
+                String nameIsNoDepthTestWrite = "Is NoDepthTestWrite - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsNoDepthTestWrite.c_str(), &pModelObject->isNoDepthTestWrite);
 
                 ImGui::Text("Vertex: [%d], Index: [%d]", (int)pModelObject->poVertexCount, (int)pModelObject->poIndexCount);
 
-                std::string nameWorld = "Model World - " + pModelObject->nameModel;
+                String nameWorld = "Model World - " + pModelObject->nameModel;
                 if (ImGui::CollapsingHeader(nameWorld.c_str()))
                 {
                     const glm::mat4& mat4World = pModelObject->objectCBs[0].g_MatWorld;
-                    std::string nameTable = VulkanUtilString::SaveInt(i) + " - split_model_world";
+                    String nameTable = VulkanUtilString::SaveInt(i) + " - split_model_world";
                     if (ImGui::BeginTable(nameTable.c_str(), 4))
                     {
                         ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);

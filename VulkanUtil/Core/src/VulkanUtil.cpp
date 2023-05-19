@@ -27,9 +27,9 @@ namespace LostPeter
 
 
 ////Path
-    std::string VulkanUtil::GetPathExecute()
+    String VulkanUtil::GetPathExecute()
     {
-        std::string path;
+        String path;
 
     #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32
         wchar_t szBuf[512];
@@ -56,39 +56,39 @@ namespace LostPeter
 
         return path;
     }
-    std::string VulkanUtil::GetPathBin()
+    String VulkanUtil::GetPathBin()
     {
-        std::string pathBin = GetPathExecute();
-        std::string::size_type pos = pathBin.find_last_of('/');
-        if (pos != std::string::npos)
+        String pathBin = GetPathExecute();
+        String::size_type pos = pathBin.find_last_of('/');
+        if (pos != String::npos)
             pathBin = pathBin.substr(0, pos);
         return pathBin;
     }
-    std::string VulkanUtil::GetPathAssets()
+    String VulkanUtil::GetPathAssets()
     {
-        const std::string& pathBin = GetPathBin();
+        const String& pathBin = GetPathBin();
     #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
-        std::string pathAssets = pathBin + "/Assets/";
+        String pathAssets = pathBin + "/Assets/";
     #else
-        std::string pathAssets = pathBin + "/";
+        String pathAssets = pathBin + "/";
     #endif
         return pathAssets;
     }
-    std::string VulkanUtil::GetPathReal(const char* szFile)
+    String VulkanUtil::GetPathReal(const char* szFile)
     {
-        return GetPathReal(std::string(szFile));
+        return GetPathReal(String(szFile));
     }
-    std::string VulkanUtil::GetPathReal(const std::string& strPath)
+    String VulkanUtil::GetPathReal(const String& strPath)
     {
         return GetPathBin() + "/" + strPath;
     }
 
 
 ////File
-    bool VulkanUtil::FileIsExist(const std::string& strPath)
+    bool VulkanUtil::FileIsExist(const String& strPath)
     {
     #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
-        std::string pathReal = GetPathReal(strPath);
+        String pathReal = GetPathReal(strPath);
         std::ifstream file(pathReal.c_str(), std::ios::ate | std::ios::binary);
         if (!file.is_open())
         {
@@ -101,7 +101,7 @@ namespace LostPeter
     #endif
     return false;
     }
-    bool VulkanUtil::DeleteFile(const std::string& strPath)
+    bool VulkanUtil::DeleteFile(const String& strPath)
     {
     #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
 
@@ -110,7 +110,7 @@ namespace LostPeter
     #endif
     return false;
     }
-    bool VulkanUtil::ClearFile(const std::string& strPath)
+    bool VulkanUtil::ClearFile(const String& strPath)
     {
     #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
 
@@ -119,7 +119,7 @@ namespace LostPeter
     #endif
     return false;
     }
-    bool VulkanUtil::CopyFile(const std::string& strSrcPath, const std::string& strDstPath)
+    bool VulkanUtil::CopyFile(const String& strSrcPath, const String& strDstPath)
     {
     #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
 
@@ -131,7 +131,7 @@ namespace LostPeter
 
 
 ////Folder
-    bool VulkanUtil::IsDirectory(const std::string& strPath)
+    bool VulkanUtil::IsDirectory(const String& strPath)
     {
     #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
 
@@ -140,7 +140,7 @@ namespace LostPeter
     #endif
     return false;
     }
-    bool VulkanUtil::CreateDirectory(const std::string& strPath)
+    bool VulkanUtil::CreateDirectory(const String& strPath)
     {
     #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
 
@@ -149,7 +149,7 @@ namespace LostPeter
     #endif
     return false;
     }
-    bool VulkanUtil::EnumFiles(const std::string& strFolderPath, std::vector<std::string>& aFiles, bool bFilePath)
+    bool VulkanUtil::EnumFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath)
     {
     #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
 
@@ -158,7 +158,7 @@ namespace LostPeter
     #endif
     return false;
     }
-    bool VulkanUtil::EnumFiles(const std::string& strFolderPath, std::map<std::string, std::string>& mapFiles, bool bIsRecursive)
+    bool VulkanUtil::EnumFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive)
     {
     #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
 
@@ -167,7 +167,7 @@ namespace LostPeter
     #endif
     return false;
     }
-    bool VulkanUtil::EnumFolders(const std::string& strFolderPath, std::vector<std::string>& aFolders, bool bFolderPath, bool bIsRecursive)
+    bool VulkanUtil::EnumFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive)
     {
     #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
 
@@ -179,7 +179,7 @@ namespace LostPeter
 
 
 ////LoadFile
-    bool VulkanUtil::LoadFileContent(const char* szFile, std::vector<char>& content, bool addEnd0 /*= false*/)
+    bool VulkanUtil::LoadFileContent(const char* szFile, CharVector& content, bool addEnd0 /*= false*/)
     {
         std::ifstream file(szFile, std::ios::ate | std::ios::binary);
         if (!file.is_open())
@@ -223,7 +223,7 @@ namespace LostPeter
         sizeData = (int32)fileSize;
         return true;
     }
-    bool VulkanUtil::LoadFileToString(const char* szFile, std::string& contentFile)
+    bool VulkanUtil::LoadFileToString(const char* szFile, String& contentFile)
     {
         std::ifstream file;
         file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -243,19 +243,19 @@ namespace LostPeter
         return true;
     }
 
-    bool VulkanUtil::LoadAssetFileContent(const char* szFile, std::vector<char>& content, bool addEnd0 /*= false*/)
+    bool VulkanUtil::LoadAssetFileContent(const char* szFile, CharVector& content, bool addEnd0 /*= false*/)
     {
-        std::string pathReal = GetPathReal(szFile);
+        String pathReal = GetPathReal(szFile);
         return LoadFileContent(pathReal.c_str(), content, addEnd0); 
     }
     bool VulkanUtil::LoadAssetFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 /*= false*/)
     {
-        std::string pathReal = GetPathReal(szFile);
+        String pathReal = GetPathReal(szFile);
         return LoadFileToBuffer(pathReal.c_str(), ppData, sizeData, addEnd0);
     }
-    bool VulkanUtil::LoadAssetFileToString(const char* szFile, std::string& contentFile)
+    bool VulkanUtil::LoadAssetFileToString(const char* szFile, String& contentFile)
     {
-        std::string pathReal = GetPathReal(szFile);
+        String pathReal = GetPathReal(szFile);
         return LoadFileToString(pathReal.c_str(), contentFile); 
     }
 

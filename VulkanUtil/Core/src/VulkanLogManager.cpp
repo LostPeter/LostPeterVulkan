@@ -14,8 +14,8 @@
 
 namespace LostPeter
 {
-    const std::string VulkanLogManager::ms_strLogDefault_Console = "console";
-    const std::string VulkanLogManager::ms_strLogDefault_File = "file";
+    const String VulkanLogManager::ms_strLogDefault_Console = "console";
+    const String VulkanLogManager::ms_strLogDefault_File = "file";
     VulkanLogManager* VulkanLogManager::ms_pLogManager = nullptr;
     VulkanLogManager::VulkanLogManager()
     {
@@ -34,14 +34,14 @@ namespace LostPeter
 
 
 ////VulkanLog
-    VulkanLog* VulkanLogManager::GetLogPtr(const std::string& strName)
+    VulkanLog* VulkanLogManager::GetLogPtr(const String& strName)
     {
         VulkanLogPtrMap::iterator itFind = m_mapLogs.find(strName);
         if (itFind == m_mapLogs.end())
             return nullptr;
         return itFind->second;
     }
-    VulkanLog* VulkanLogManager::CreateLogPtr(const std::string& strName, VulkanLogType eLog)
+    VulkanLog* VulkanLogManager::CreateLogPtr(const String& strName, VulkanLogType eLog)
     {
         VulkanLog* pLog = GetLogPtr(strName);
         if (pLog != nullptr)

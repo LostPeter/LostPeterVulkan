@@ -17,7 +17,7 @@
 namespace LostPeter
 {
     VulkanLogManager* VulkanBase::ms_pLogManager = VulkanLogManager::GetInstance();
-    VulkanBase::VulkanBase(int width, int height, std::string name)
+    VulkanBase::VulkanBase(int width, int height, String name)
         : width(width)
         , height(height)
         , nameTitle(name)
@@ -74,7 +74,7 @@ namespace LostPeter
         }
     }
 
-    std::string VulkanBase::GetAssetFullPath(const std::string& assetName)
+    String VulkanBase::GetAssetFullPath(const String& assetName)
     {
         return this->pathBin + assetName;
     }

@@ -16,7 +16,7 @@ namespace LostPeter
 {   
 
 ////////////////////////////// Typedef /////////////////////////////
-    std::string Utile_VkResult2String(VkResult result)
+    String Utile_VkResult2String(VkResult result)
     {   
         switch ((int)result)
         {
@@ -49,14 +49,14 @@ namespace LostPeter
             case VK_ERROR_INVALID_SHADER_NV:        return "VK_ERROR_INVALID_SHADER_NV";
             case VK_ERROR_NOT_PERMITTED_EXT:        return "VK_ERROR_NOT_PERMITTED_EXT";            
         }
-        return std::string("Unknow !");
+        return String("Unknow !");
     }
 
-    bool Util_CheckVkResult(VkResult result, const std::string& nameFunc)
+    bool Util_CheckVkResult(VkResult result, const String& nameFunc)
     {
         if (result != VK_SUCCESS)
         {
-            std::string msg = "UTIL_VK_CHECK: " + nameFunc + " failed with: " + Utile_VkResult2String(result);
+            String msg = "UTIL_VK_CHECK: " + nameFunc + " failed with: " + Utile_VkResult2String(result);
             Util_LogError("%s", msg.c_str());
             return false;
         }
@@ -67,7 +67,7 @@ namespace LostPeter
 ////////////////////////////// Enum ////////////////////////////////
 
     //VulkanVertexType
-    static std::string s_nameVertices[] = 
+    static String s_nameVertices[] = 
     {
         "Pos2Color4",
         "Pos3Normal3",
@@ -78,15 +78,15 @@ namespace LostPeter
         "Pos3Color4Normal3Tangent3Tex2",
         "Pos3Color4Normal3Tangent3Tex4",
     };
-    const std::string& Util_GetVertexTypeName(VulkanVertexType type)
+    const String& Util_GetVertexTypeName(VulkanVertexType type)
     {
         return s_nameVertices[(int)type];
     }
-    const std::string& Util_GetVertexTypeName(int type)
+    const String& Util_GetVertexTypeName(int type)
     {
         return s_nameVertices[(int)type];
     }
-    VulkanVertexType Util_ParseVertexType(const std::string& strName)
+    VulkanVertexType Util_ParseVertexType(const String& strName)
     {
         for (size_t i = 0; i < (int)Vulkan_Vertex_Count; i++)
         {
@@ -99,20 +99,20 @@ namespace LostPeter
 
 
     //VulkanMeshType
-    static std::string s_nameMeshes[] = 
+    static String s_nameMeshes[] = 
     {
         "file",
         "geometry",
     };
-    const std::string& Util_GetMeshTypeName(VulkanMeshType type)
+    const String& Util_GetMeshTypeName(VulkanMeshType type)
     {
         return s_nameMeshes[(int)type];
     }
-    const std::string& Util_GetMeshTypeName(int type)
+    const String& Util_GetMeshTypeName(int type)
     {
         return s_nameMeshes[(int)type];
     }
-    VulkanMeshType Util_ParseMeshType(const std::string& strName)
+    VulkanMeshType Util_ParseMeshType(const String& strName)
     {
         for (size_t i = 0; i < (int)Vulkan_Mesh_Count; i++)
         {
@@ -125,7 +125,7 @@ namespace LostPeter
 
 
     //VulkanMeshGeometryType
-    static std::string s_nameMeshGeometries[] = 
+    static String s_nameMeshGeometries[] = 
     {
         "triangle",
         "quad",
@@ -141,15 +141,15 @@ namespace LostPeter
         "skybox",
         "skydome",
     };
-    const std::string& Util_GetMeshGeometryTypeName(VulkanMeshGeometryType type)
+    const String& Util_GetMeshGeometryTypeName(VulkanMeshGeometryType type)
     {
         return s_nameMeshGeometries[(int)type];
     }
-    const std::string& Util_GetMeshGeometryTypeName(int type)
+    const String& Util_GetMeshGeometryTypeName(int type)
     {
         return s_nameMeshGeometries[type];
     }
-    VulkanMeshGeometryType Util_ParseMeshGeometryType(const std::string& strName)
+    VulkanMeshGeometryType Util_ParseMeshGeometryType(const String& strName)
     {
         for (size_t i = 0; i < (int)Vulkan_MeshGeometry_Count; i++)
         {
@@ -161,8 +161,61 @@ namespace LostPeter
     }
 
 
+    //VulkanPixelFormatType
+    VkFormat Util_Transform2VkFormat(VulkanPixelFormatType type)
+    {
+        switch ((int32)type)
+        {
+            case Vulkan_PixelFormat_BYTE_A8R8G8B8_UNORM:            return VK_FORMAT_B8G8R8A8_UNORM; 
+        }
+
+        return VK_FORMAT_UNDEFINED;
+    }
+    VkComponentMapping Util_Transform2VkComponentMapping(VulkanPixelFormatType type)
+    {
+        VkComponentMapping componentMapping;
+        componentMapping.r = VK_COMPONENT_SWIZZLE_R;
+		componentMapping.g = VK_COMPONENT_SWIZZLE_G;
+		componentMapping.b = VK_COMPONENT_SWIZZLE_B;
+		componentMapping.a = VK_COMPONENT_SWIZZLE_A;
+        
+        switch ((int32)type)
+        {
+        case Vulkan_PixelFormat_BYTE_A8R8G8B8_UNORM:                
+            break;
+        }
+
+        return componentMapping;
+    }
+
+
+    //VulkanPixelFormatComponentType
+    static String s_namePixelFormatComponents[] = 
+    {
+        "ByteU",
+        "ByteS",
+        "ShortU",
+        "ShortS",
+        "IntU",
+        "IntS",
+        "LongU",
+        "LongS",
+        "Float16",
+        "Float32",
+        "Double"
+    };
+    const String& Util_GetPixelFormatComponentTypeName(VulkanPixelFormatComponentType type)
+    {   
+        return s_namePixelFormatComponents[(int)type];
+    }
+    const String& Util_GetPixelFormatComponentTypeName(int type)
+    {
+        return s_namePixelFormatComponents[type];
+    }
+
+
     //VulkanTextureType
-    static std::string s_nameTextures[] = 
+    static String s_nameTextures[] = 
     {
         "1d",
         "2d",
@@ -170,15 +223,15 @@ namespace LostPeter
         "3d",
         "cubemap"
     };
-    const std::string& Util_GetTextureTypeName(VulkanTextureType type)
+    const String& Util_GetTextureTypeName(VulkanTextureType type)
     {
         return s_nameTextures[(int)type];
     }
-    const std::string& Util_GetTextureTypeName(int type)
+    const String& Util_GetTextureTypeName(int type)
     {
         return s_nameTextures[type];
     }
-    VulkanTextureType Util_ParseTextureType(const std::string& strName)
+    VulkanTextureType Util_ParseTextureType(const String& strName)
     {
         for (size_t i = 0; i < (int)Vulkan_Texture_Count; i++)
         {
@@ -217,21 +270,21 @@ namespace LostPeter
 
 
     //VulkanTextureFilterSizeType
-    static std::string s_nameTextureFilterSizes[] = 
+    static String s_nameTextureFilterSizes[] = 
     {
         "min",
         "mag",
         "mip",
     };
-    const std::string& Util_GetTextureFilterSizeTypeName(VulkanTextureFilterSizeType type)
+    const String& Util_GetTextureFilterSizeTypeName(VulkanTextureFilterSizeType type)
     {
         return s_nameTextureFilterSizes[(int)type];
     }
-    const std::string& Util_GetTextureFilterSizeTypeName(int type)
+    const String& Util_GetTextureFilterSizeTypeName(int type)
     {
         return s_nameTextureFilterSizes[type];
     }
-    VulkanTextureFilterSizeType Util_ParseTextureFilterSizeType(const std::string& strName)
+    VulkanTextureFilterSizeType Util_ParseTextureFilterSizeType(const String& strName)
     {
         for (size_t i = 0; i < (int)Vulkan_TextureFilterSize_Count; i++)
         {
@@ -244,22 +297,22 @@ namespace LostPeter
 
 
     //VulkanTextureFilterPixelType
-    static std::string s_nameTextureFilterPixels[] = 
+    static String s_nameTextureFilterPixels[] = 
     {
         "none",
         "point",
         "linear",
         "anisotropic",
     };
-    const std::string& Util_GetTextureFilterPixelTypeName(VulkanTextureFilterPixelType type)
+    const String& Util_GetTextureFilterPixelTypeName(VulkanTextureFilterPixelType type)
     {
         return s_nameTextureFilterPixels[(int)type];
     }
-    const std::string& Util_GetTextureFilterPixelTypeName(int type)
+    const String& Util_GetTextureFilterPixelTypeName(int type)
     {
         return s_nameTextureFilterPixels[type];
     }
-    VulkanTextureFilterPixelType Util_ParseTextureFilterPixelType(const std::string& strName)
+    VulkanTextureFilterPixelType Util_ParseTextureFilterPixelType(const String& strName)
     {
         for (size_t i = 0; i < (int)Vulkan_TextureFilterPixel_Count; i++)
         {
@@ -296,22 +349,22 @@ namespace LostPeter
 
 
     //VulkanTextureFilterType
-    static std::string s_nameTextureFilters[] = 
+    static String s_nameTextureFilters[] = 
     {
         "none",
         "bilinear",
         "trilinear",
         "anisotropic",
     };
-    const std::string& Util_GetTextureFilterTypeName(VulkanTextureFilterType type)
+    const String& Util_GetTextureFilterTypeName(VulkanTextureFilterType type)
     {
         return s_nameTextureFilters[(int)type];
     }
-    const std::string& Util_GetTextureFilterTypeName(int type)
+    const String& Util_GetTextureFilterTypeName(int type)
     {
         return s_nameTextureFilters[type];
     }
-    VulkanTextureFilterType Util_ParseTextureFilterType(const std::string& strName)
+    VulkanTextureFilterType Util_ParseTextureFilterType(const String& strName)
     {
         for (size_t i = 0; i < (int)Vulkan_TextureFilter_Count; i++)
         {
@@ -384,22 +437,22 @@ namespace LostPeter
 
 
     //VulkanTextureAddressingType
-    static std::string s_nameTextureAddressings[] = 
+    static String s_nameTextureAddressings[] = 
     {
         "wrap",
         "mirror",
         "clamp",
         "border",
     };
-    const std::string& Util_GetTextureAddressingTypeName(VulkanTextureAddressingType type)
+    const String& Util_GetTextureAddressingTypeName(VulkanTextureAddressingType type)
     {
         return s_nameTextureAddressings[(int)type];
     }
-    const std::string& Util_GetTextureAddressingTypeName(int type)
+    const String& Util_GetTextureAddressingTypeName(int type)
     {
         return s_nameTextureAddressings[type];
     }
-    VulkanTextureAddressingType Util_ParseTextureAddressingType(const std::string& strName)
+    VulkanTextureAddressingType Util_ParseTextureAddressingType(const String& strName)
     {
         for (size_t i = 0; i < (int)Vulkan_TextureAddressing_Count; i++)
         {
@@ -424,21 +477,21 @@ namespace LostPeter
 
 
     //VulkanTextureBorderColorType
-    static std::string s_nameTextureBorderColors[] = 
+    static String s_nameTextureBorderColors[] = 
     {
         "opaque_black",
         "opaque_white",
         "transparent_black",
     };
-    const std::string& Util_GetTextureBorderColorTypeName(VulkanTextureBorderColorType type)
+    const String& Util_GetTextureBorderColorTypeName(VulkanTextureBorderColorType type)
     {
         return s_nameTextureBorderColors[(int)type];
     }
-    const std::string& Util_GetTextureBorderColorTypeName(int type)
+    const String& Util_GetTextureBorderColorTypeName(int type)
     {
         return s_nameTextureBorderColors[type];
     }
-    VulkanTextureBorderColorType Util_ParseTextureBorderColorType(const std::string& strName)
+    VulkanTextureBorderColorType Util_ParseTextureBorderColorType(const String& strName)
     {
         for (size_t i = 0; i < (int)Vulkan_TextureBorderColor_Count; i++)
         {
@@ -462,7 +515,7 @@ namespace LostPeter
 
 
     //VulkanMSAASampleCountType
-    static std::string s_nameMSAASampleCounts[] = 
+    static String s_nameMSAASampleCounts[] = 
     {
         "1-Bit",
         "2-Bit",
@@ -472,15 +525,15 @@ namespace LostPeter
         "32-Bit",
         "64-Bit",
     };
-    const std::string& Util_GetMSAASampleCountTypeName(VulkanMSAASampleCountType type)
+    const String& Util_GetMSAASampleCountTypeName(VulkanMSAASampleCountType type)
     {
         return s_nameMSAASampleCounts[(int)type];
     }
-    const std::string& Util_GetMSAASampleCountTypeName(int type)
+    const String& Util_GetMSAASampleCountTypeName(int type)
     {
         return s_nameMSAASampleCounts[type];
     }
-    VulkanMSAASampleCountType Util_ParseMSAASampleCountType(const std::string& strName)
+    VulkanMSAASampleCountType Util_ParseMSAASampleCountType(const String& strName)
     {
         for (size_t i = 0; i < (int)Vulkan_MSAASampleCount_Count; i++)
         {
@@ -508,7 +561,7 @@ namespace LostPeter
 
 
     //VulkanShaderType
-    static std::string s_nameShaders[] = 
+    static String s_nameShaders[] = 
     {
         "vert",
         "tesc",
@@ -517,15 +570,15 @@ namespace LostPeter
         "frag",
         "comp",
     };
-    const std::string& Util_GetShaderTypeName(VulkanShaderType type)
+    const String& Util_GetShaderTypeName(VulkanShaderType type)
     {
         return s_nameShaders[(int)type];
     }
-    const std::string& Util_GetShaderTypeName(int type)
+    const String& Util_GetShaderTypeName(int type)
     {
         return s_nameShaders[type];
     }
-    VulkanShaderType Util_ParseShaderType(const std::string& strName)
+    VulkanShaderType Util_ParseShaderType(const String& strName)
     {
         for (size_t i = 0; i < (int)Vulkan_Shader_Count; i++)
         {

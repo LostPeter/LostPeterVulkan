@@ -13,7 +13,7 @@
 #include "vulkan_001_triangle.h"
 
 
-Vulkan_001_Triangle::Vulkan_001_Triangle(int width, int height, std::string name)
+Vulkan_001_Triangle::Vulkan_001_Triangle(int width, int height, String name)
     : VulkanWindow(width, height, name)
 {
     this->cfg_isNegativeViewport = false;

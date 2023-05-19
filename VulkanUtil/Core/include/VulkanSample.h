@@ -24,11 +24,18 @@ namespace LostPeter
 
     public:
     protected:
-        
+        VulkanInstance* m_pInstance;
+        VulkanDevice* m_pDevice;
 
+    public:
+        void Destroy();
+        bool Init();
 
     public:
 
+
+    protected:
+        
 
     };
 

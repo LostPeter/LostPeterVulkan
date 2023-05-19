@@ -19,7 +19,7 @@ namespace LostPeter
     class utilExport VulkanBase
     {
     public:
-        VulkanBase(int width, int height, std::string name);
+        VulkanBase(int width, int height, String name);
         virtual ~VulkanBase();
 
     public:
@@ -48,15 +48,15 @@ namespace LostPeter
         uint64 nFrameTotal;
 
     protected:
-        std::string nameTitle;
-        std::string pathBin; 
+        String nameTitle;
+        String pathBin; 
 
     public:
         int GetWidth() const { return this->width; }
         int GetHeight() const { return this->height; }
         float RefreshAspectRatio();
 
-        const std::string& GetTitle() const { return this->nameTitle; }
+        const String& GetTitle() const { return this->nameTitle; }
 
 
     public:
@@ -94,7 +94,7 @@ namespace LostPeter
         virtual void UpdateTimer();
 
     protected:
-        std::string GetAssetFullPath(const std::string& assetName);
+        String GetAssetFullPath(const String& assetName);
 
     };
 

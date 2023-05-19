@@ -15,7 +15,7 @@
 
 namespace LostPeter
 {
-    VulkanLog::VulkanLog(const std::string& strName)
+    VulkanLog::VulkanLog(const String& strName)
         : m_strName(strName)
     {
 
@@ -92,7 +92,7 @@ namespace LostPeter
         LogErrorString(szTemp);
     }
 
-    VulkanLogConsole::VulkanLogConsole(const std::string& strName)
+    VulkanLogConsole::VulkanLogConsole(const String& strName)
         : VulkanLog(strName)
     {
 
@@ -114,13 +114,13 @@ namespace LostPeter
 
         return true;
     }
-    bool VulkanLogConsole::InitLogFile(const std::string& path, bool isTruncate)
+    bool VulkanLogConsole::InitLogFile(const String& path, bool isTruncate)
     {
         return true;
     }
 
 
-    VulkanLogFile::VulkanLogFile(const std::string& strName)
+    VulkanLogFile::VulkanLogFile(const String& strName)
         : VulkanLog(strName)
     {
 
@@ -140,10 +140,10 @@ namespace LostPeter
     {
         return true;
     }
-    bool VulkanLogFile::InitLogFile(const std::string& path, bool isTruncate)
+    bool VulkanLogFile::InitLogFile(const String& path, bool isTruncate)
     {
-        std::string strBin = VulkanUtil::GetPathBin();
-        std::string strPath = strBin + "/" + path;
+        String strBin = VulkanUtil::GetPathBin();
+        String strPath = strBin + "/" + path;
         m_pLogger = spdlog::basic_logger_mt(m_strName, strPath, isTruncate);
 
         return true;

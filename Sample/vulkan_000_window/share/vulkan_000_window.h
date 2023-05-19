@@ -18,7 +18,7 @@ using namespace LostPeter;
 class Vulkan_000_Window : public VulkanWindow
 {
 public:
-    Vulkan_000_Window(int width, int height, std::string name);
+    Vulkan_000_Window(int width, int height, String name);
 
 public:
 

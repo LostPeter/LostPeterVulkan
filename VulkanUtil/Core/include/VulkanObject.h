@@ -19,7 +19,7 @@ namespace LostPeter
     class utilExport VulkanObject
     {
     public:
-        VulkanObject(const std::string& strName);
+        VulkanObject(const String& strName);
         virtual ~VulkanObject();
 
     public:
@@ -32,7 +32,7 @@ namespace LostPeter
 
     public:
     protected:
-        std::string m_strName;
+        String m_strName;
 
         int m_nRefCount;
 
@@ -41,8 +41,8 @@ namespace LostPeter
 		bool m_bIsShowAABB;
 
     public:
-        const std::string& GetName() const { return m_strName; }
-        void SetName(const std::string& strName) { m_strName = strName; }
+        const String& GetName() const { return m_strName; }
+        void SetName(const String& strName) { m_strName = strName; }
 
         int GetRef() const { return m_nRefCount; }
         bool HasRef() const { return m_nRefCount <= 0 ? false : true; }

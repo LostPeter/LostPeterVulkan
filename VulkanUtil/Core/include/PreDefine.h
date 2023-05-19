@@ -32,6 +32,7 @@ namespace LostPeter
     #define SHADER_NAME_Fragment                    "frag"
     #define SHADER_NAME_Compute                     "comp"
 
+    #define UTIL_CPU_ALLOCATOR              nullptr
 
 ////////////////////////////// Typedef /////////////////////////////
     using int8 = std::int8_t;
@@ -42,7 +43,28 @@ namespace LostPeter
     using uint32 = std::uint32_t;
     using int64 = std::int64_t;
     using uint64 = std::uint64_t;
+
     typedef std::chrono::steady_clock::time_point TimePoint;
+    typedef std::string String;
+    typedef std::vector<String> StringVector;
+    typedef std::list<String> StringList;
+    typedef std::map<String, String> String2StringMap;
+    typedef std::vector<const char*> ConstCharPtrVector;
+    typedef std::vector<char> CharVector;
+    typedef std::vector<uint16> Indices16Vector;
+    typedef std::vector<uint32> Indices32Vector;
+    
+    typedef std::vector<bool> BoolVector;
+	typedef std::vector<int8> Int8Vector;
+	typedef std::vector<uint8> Uint8Vector;
+	typedef std::vector<int16> Int16Vector;
+	typedef std::vector<uint16> Uint16Vector;
+	typedef std::vector<int32> Int32Vector;
+	typedef std::vector<uint32> Uint32Vector;
+	typedef std::vector<float> FloatVector;
+	typedef std::vector<double>	DoubleVector;
+
+    typedef std::deque<TimePoint> FrameTimePointQueue;
 
     
     #define UTIL_ARRAYSIZE(_ARR)            ((int)(sizeof(_ARR)/sizeof(*_ARR)))    
@@ -51,20 +73,27 @@ namespace LostPeter
     #define UTIL_DELETE(p)                  { if(p) { delete p; p=nullptr; }}
     #define UTIL_DELETE_T(p)                { if(p) { delete[] p; p=nullptr; }}
 
-    std::string Utile_VkResult2String(VkResult result);
+    String Utile_VkResult2String(VkResult result);
 
     #define UTIL_VK_CHECK(vkcall) \
     { \
         VkResult result = vkcall; \
         if (result != VK_SUCCESS) \
         { \
-            std::string vkfunc = #vkcall; \
+            String vkfunc = #vkcall; \
             vkfunc = vkfunc.substr(0, vkfunc.find('(')); \
             Util_LogError("UTIL_VK_CHECK: [%s] failed with: %s", vkfunc.c_str(), Utile_VkResult2String(result).c_str()); \
         } \
     }
 
-    bool Util_CheckVkResult(VkResult result, const std::string& nameFunc);
+    bool Util_CheckVkResult(VkResult result, const String& nameFunc);
+
+    template<class T>
+    static UTIL_FORCEINLINE void Util_ZeroStruct(T& vkStruct, VkStructureType vkType)
+    {
+        vkStruct.sType = vkType;
+        memset(((uint8*)&vkStruct) + sizeof(VkStructureType), 0, sizeof(T) - sizeof(VkStructureType));
+    }
 
 
 ////////////////////////////// Enum ////////////////////////////////
@@ -72,6 +101,13 @@ namespace LostPeter
     {
         Vulkan_Log_Console = 0,                         //0:    Console
         Vulkan_Log_File,                                //0:    File
+    };
+
+
+    enum VulkanFenceStateType
+    {
+        Vulkan_FenceState_NotReady = 0,
+        Vulkan_FenceState_Signaled,
     };
 
 
@@ -88,9 +124,9 @@ namespace LostPeter
 
         Vulkan_Vertex_Count
     };
-    const std::string& Util_GetVertexTypeName(VulkanVertexType type);
-    const std::string& Util_GetVertexTypeName(int type);
-    VulkanVertexType Util_ParseVertexType(const std::string& strName);
+    const String& Util_GetVertexTypeName(VulkanVertexType type);
+    const String& Util_GetVertexTypeName(int type);
+    VulkanVertexType Util_ParseVertexType(const String& strName);
 
 
     enum VulkanMeshType
@@ -100,9 +136,9 @@ namespace LostPeter
 
         Vulkan_Mesh_Count
     };
-    const std::string& Util_GetMeshTypeName(VulkanMeshType type);
-    const std::string& Util_GetMeshTypeName(int type);
-    VulkanMeshType Util_ParseMeshType(const std::string& strName);
+    const String& Util_GetMeshTypeName(VulkanMeshType type);
+    const String& Util_GetMeshTypeName(int type);
+    VulkanMeshType Util_ParseMeshType(const String& strName);
 
 
     enum VulkanMeshGeometryType
@@ -123,9 +159,9 @@ namespace LostPeter
 
         Vulkan_MeshGeometry_Count,
     };
-    const std::string& Util_GetMeshGeometryTypeName(VulkanMeshGeometryType type);
-    const std::string& Util_GetMeshGeometryTypeName(int type);
-    VulkanMeshGeometryType Util_ParseMeshGeometryType(const std::string& strName);
+    const String& Util_GetMeshGeometryTypeName(VulkanMeshGeometryType type);
+    const String& Util_GetMeshGeometryTypeName(int type);
+    VulkanMeshGeometryType Util_ParseMeshGeometryType(const String& strName);
 
 
     enum VulkanSwapStatusType
@@ -142,7 +178,68 @@ namespace LostPeter
         Vulkan_PixelFormat_Unknown = 0,
 
         Vulkan_PixelFormat_BYTE_A8R8G8B8_UNORM,
+
+        Vulkan_PixelFormat_Count,                           
     };
+    VkFormat Util_Transform2VkFormat(VulkanPixelFormatType type);
+    VkComponentMapping Util_Transform2VkComponentMapping(VulkanPixelFormatType type);
+
+    struct utilExport VulkanPixelFormatDes
+	{
+		String name;
+		uint8 nElemBytes;
+		uint32 eFlags;
+		uint32 eComponentType;
+		uint32 nComponentCount;
+        bool isSupported;
+		
+		uint8 nRbits;
+		uint8 nGbits;
+		uint8 nBbits;
+		uint8 nAbits;
+		
+		uint64 nRmask;
+		uint64 nGmask;
+		uint64 nBmask;
+		uint64 nAmask;
+	
+		uint8 nRshift;
+		uint8 nGshift;
+		uint8 nBshift;
+		uint8 nAshift;
+	};
+
+
+    enum VulkanPixelFormatFlagType
+	{
+        Vulkan_PixelFormatFlag_IsNative		    = 0x00000001,   //0: IsNative
+        Vulkan_PixelFormatFlag_IsCompressed	    = 0x00000002,   //1: IsCompressed
+        Vulkan_PixelFormatFlag_IsInteger	    = 0x00000004,   //2: IsInteger
+        Vulkan_PixelFormatFlag_IsFloat	        = 0x00000008,   //3: IsFloat
+		Vulkan_PixelFormatFlag_IsLuminance	    = 0x00000010,   //4: IsLuminance
+        Vulkan_PixelFormatFlag_IsStencil        = 0x00000020,   //5: IsStencil
+		Vulkan_PixelFormatFlag_IsDepth		    = 0x00000040,   //6: IsDepth
+        Vulkan_PixelFormatFlag_IsDepthStencil   = 0x00000080,   //7: IsDepthStencil
+		Vulkan_PixelFormatFlag_HasAlpha		    = 0x00000100,   //8: HasAlpha
+	};
+
+
+    enum VulkanPixelFormatComponentType
+	{
+		Vulkan_PixelFormatComponent_ByteU = 0,              //0: Byte unsigned
+        Vulkan_PixelFormatComponent_ByteS,                  //1: Byte signed
+		Vulkan_PixelFormatComponent_ShortU,                 //2: Short unsigned
+        Vulkan_PixelFormatComponent_ShortS,                 //3: Short signed
+        Vulkan_PixelFormatComponent_IntU,					//4: Int unsigned
+		Vulkan_PixelFormatComponent_IntS,					//5: Int signed
+        Vulkan_PixelFormatComponent_LongU,					//6: Long unsigned
+		Vulkan_PixelFormatComponent_LongS,					//7: Long signed
+		Vulkan_PixelFormatComponent_Float16,                //8: Float 16
+		Vulkan_PixelFormatComponent_Float32,                //9: Float 32
+        Vulkan_PixelFormatComponent_Double,                 //10: Double
+	};
+    const String& Util_GetPixelFormatComponentTypeName(VulkanPixelFormatComponentType type);
+    const String& Util_GetPixelFormatComponentTypeName(int type);
 
 
     enum VulkanLightType
@@ -180,9 +277,9 @@ namespace LostPeter
 
         Vulkan_Texture_Count,
     };
-    const std::string& Util_GetTextureTypeName(VulkanTextureType type);
-    const std::string& Util_GetTextureTypeName(int type);
-    VulkanTextureType Util_ParseTextureType(const std::string& strName);
+    const String& Util_GetTextureTypeName(VulkanTextureType type);
+    const String& Util_GetTextureTypeName(int type);
+    VulkanTextureType Util_ParseTextureType(const String& strName);
     VkImageType Util_Transform2VkImageType(VulkanTextureType type);
     VkImageViewType Util_Transform2VkImageViewType(VulkanTextureType type);
 
@@ -195,9 +292,9 @@ namespace LostPeter
 
         Vulkan_TextureFilterSize_Count,
     };
-    const std::string& Util_GetTextureFilterSizeTypeName(VulkanTextureFilterSizeType type);
-    const std::string& Util_GetTextureFilterSizeTypeName(int type);
-    VulkanTextureFilterSizeType Util_ParseTextureFilterSizeType(const std::string& strName);
+    const String& Util_GetTextureFilterSizeTypeName(VulkanTextureFilterSizeType type);
+    const String& Util_GetTextureFilterSizeTypeName(int type);
+    VulkanTextureFilterSizeType Util_ParseTextureFilterSizeType(const String& strName);
 
 
     enum VulkanTextureFilterPixelType
@@ -209,9 +306,9 @@ namespace LostPeter
 
         Vulkan_TextureFilterPixel_Count,
     };
-    const std::string& Util_GetTextureFilterPixelTypeName(VulkanTextureFilterPixelType type);
-    const std::string& Util_GetTextureFilterPixelTypeName(int type);
-    VulkanTextureFilterPixelType Util_ParseTextureFilterPixelType(const std::string& strName);
+    const String& Util_GetTextureFilterPixelTypeName(VulkanTextureFilterPixelType type);
+    const String& Util_GetTextureFilterPixelTypeName(int type);
+    VulkanTextureFilterPixelType Util_ParseTextureFilterPixelType(const String& strName);
     VkFilter Util_Transform2VkFilter(VulkanTextureFilterPixelType type);
     VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(VulkanTextureFilterPixelType type);
 
@@ -225,9 +322,9 @@ namespace LostPeter
 
         Vulkan_TextureFilter_Count,
     };
-    const std::string& Util_GetTextureFilterTypeName(VulkanTextureFilterType type);
-    const std::string& Util_GetTextureFilterTypeName(int type);
-    VulkanTextureFilterType Util_ParseTextureFilterType(const std::string& strName);
+    const String& Util_GetTextureFilterTypeName(VulkanTextureFilterType type);
+    const String& Util_GetTextureFilterTypeName(int type);
+    VulkanTextureFilterType Util_ParseTextureFilterType(const String& strName);
     VkFilter Util_Transform2VkFilter(VulkanTextureFilterType typeFilter, VulkanTextureFilterSizeType typeFilterSize);
     VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(VulkanTextureFilterType typeFilter);
 
@@ -241,9 +338,9 @@ namespace LostPeter
 
         Vulkan_TextureAddressing_Count,
     };
-    const std::string& Util_GetTextureAddressingTypeName(VulkanTextureAddressingType type);
-    const std::string& Util_GetTextureAddressingTypeName(int type);
-    VulkanTextureAddressingType Util_ParseTextureAddressingType(const std::string& strName);
+    const String& Util_GetTextureAddressingTypeName(VulkanTextureAddressingType type);
+    const String& Util_GetTextureAddressingTypeName(int type);
+    VulkanTextureAddressingType Util_ParseTextureAddressingType(const String& strName);
     VkSamplerAddressMode Util_Transform2VkSamplerAddressMode(VulkanTextureAddressingType type);
 
 
@@ -255,9 +352,9 @@ namespace LostPeter
 
         Vulkan_TextureBorderColor_Count,
     };
-    const std::string& Util_GetTextureBorderColorTypeName(VulkanTextureBorderColorType type);
-    const std::string& Util_GetTextureBorderColorTypeName(int type);
-    VulkanTextureBorderColorType Util_ParseTextureBorderColorType(const std::string& strName);
+    const String& Util_GetTextureBorderColorTypeName(VulkanTextureBorderColorType type);
+    const String& Util_GetTextureBorderColorTypeName(int type);
+    VulkanTextureBorderColorType Util_ParseTextureBorderColorType(const String& strName);
     VkBorderColor Util_Transform2VkBorderColor(VulkanTextureBorderColorType type);
 
 
@@ -273,9 +370,9 @@ namespace LostPeter
 
         Vulkan_MSAASampleCount_Count,
     };
-    const std::string& Util_GetMSAASampleCountTypeName(VulkanMSAASampleCountType type);
-    const std::string& Util_GetMSAASampleCountTypeName(int type);
-    VulkanMSAASampleCountType Util_ParseMSAASampleCountType(const std::string& strName);
+    const String& Util_GetMSAASampleCountTypeName(VulkanMSAASampleCountType type);
+    const String& Util_GetMSAASampleCountTypeName(int type);
+    VulkanMSAASampleCountType Util_ParseMSAASampleCountType(const String& strName);
     VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(VulkanMSAASampleCountType type);
 
     
@@ -290,13 +387,22 @@ namespace LostPeter
 
         Vulkan_Shader_Count,
     };
-    const std::string& Util_GetShaderTypeName(VulkanShaderType type);
-    const std::string& Util_GetShaderTypeName(int type);
-    VulkanShaderType Util_ParseShaderType(const std::string& strName);
+    const String& Util_GetShaderTypeName(VulkanShaderType type);
+    const String& Util_GetShaderTypeName(int type);
+    VulkanShaderType Util_ParseShaderType(const String& strName);
     VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(VulkanShaderType type);
 
 
 ////////////////////////////// Vulkan //////////////////////////////
+    typedef std::vector<VkFormat> VkFormatVector;
+    typedef std::map<VkFormat, VkFormatProperties> VkFormat2PropertiesMap;
+    typedef std::vector<VkClearValue> VkClearValueVector;
+    
+    typedef std::vector<VkQueueFamilyProperties> VkQueueFamilyPropertiesVector;
+
+    typedef std::vector<VkBuffer> VkBufferVector;
+    typedef std::vector<VkDeviceMemory> VkDeviceMemoryVector;
+
     typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;
     typedef std::vector<VkVertexInputAttributeDescription> VkVertexInputAttributeDescriptionVector;
 
@@ -315,24 +421,24 @@ namespace LostPeter
     typedef std::vector<VkFence> VkFenceVector;
         
     typedef std::vector<VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoVector;
-    typedef std::map<std::string, VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoMap;
+    typedef std::map<String, VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoMap;
+
+    typedef std::vector<VkDescriptorSetLayout> VkDescriptorSetLayoutVector;
+    typedef std::map<String, VkDescriptorSetLayout> VkDescriptorSetLayoutMap;
+
+    typedef std::vector<VkShaderModule> VkShaderModuleVector;
+    typedef std::map<String, VkShaderModule> VkShaderModuleMap;
+
+    typedef std::vector<VkPipelineLayout> VkPipelineLayoutVector;
+    typedef std::map<String, VkPipelineLayout> VkPipelineLayoutMap;
+
+    typedef std::vector<VkPipeline> VkPipelineVector;
+    typedef std::map<String, VkPipeline> VkPipelineMap;
 
     const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(VulkanVertexType type);
     const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(VulkanVertexType type);
     VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(VulkanVertexType type);
     VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(VulkanVertexType type);
-
-    typedef std::vector<VkDescriptorSetLayout> VkDescriptorSetLayoutVector;
-    typedef std::map<std::string, VkDescriptorSetLayout> VkDescriptorSetLayoutMap;
-
-    typedef std::vector<VkShaderModule> VkShaderModuleVector;
-    typedef std::map<std::string, VkShaderModule> VkShaderModuleMap;
-
-    typedef std::vector<VkPipelineLayout> VkPipelineLayoutVector;
-    typedef std::map<std::string, VkPipelineLayout> VkPipelineLayoutMap;
-
-    typedef std::vector<VkPipeline> VkPipelineVector;
-    typedef std::map<std::string, VkPipeline> VkPipelineMap;
 
 
 ////////////////////////////// Class ///////////////////////////////
@@ -341,6 +447,10 @@ namespace LostPeter
     class VulkanBase;
     class VulkanCamera;
     class VulkanDevice;
+    class VulkanDeviceMemoryAllocation;
+    class VulkanDeviceMemoryManager;
+    class VulkanFence;
+    class VulkanFenceManager;
     class VulkanInstance;
     class VulkanLight;
     class VulkanLog;
@@ -349,9 +459,13 @@ namespace LostPeter
     class VulkanLogManager;
     class VulkanManager;
     class VulkanMaterial;
+    class VulkanMath;
+    class VulkanMathBox;
     class VulkanMesh;
     class VulkanMeshSub;
     class VulkanObject;
+    class VulkanPixelBox;
+    class VulkanPixelFormat;
     class VulkanQueue;
     class VulkanSample;
     class VulkanSceneManager;
@@ -381,9 +495,22 @@ namespace LostPeter
     struct MaterialConstants;
     struct InstanceConstants;
 
-    typedef std::vector<VulkanLog*> VulkanLogPtrVector;
-    typedef std::map<std::string, VulkanLog*> VulkanLogPtrMap;
+    typedef glm::vec2 Point;
+    typedef glm::vec2 Size;
+    typedef glm::vec2 Vector2;
+    typedef glm::vec3 Vector3;
+    typedef glm::vec4 Vector4;
+    typedef glm::mat3 Matrix3;
+    typedef glm::mat4 Matrix4;
+    typedef glm::quat Quaternion;
+    typedef glm::vec4 Color;
 
+    typedef std::vector<VulkanLog*> VulkanLogPtrVector;
+    typedef std::map<String, VulkanLog*> VulkanLogPtrMap;
+
+    typedef std::vector<VulkanFence*> VulkanFencePtrVector;
+
+    typedef std::vector<VulkanDeviceMemoryAllocation*> VulkanDeviceMemoryAllocationPtrVector;
 
 }; //LostPeter
 

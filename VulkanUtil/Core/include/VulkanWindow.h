@@ -19,7 +19,7 @@ namespace LostPeter
     class utilExport VulkanWindow : public VulkanBase
     {
     public:
-        VulkanWindow(int width, int height, std::string name);
+        VulkanWindow(int width, int height, String name);
         virtual ~VulkanWindow();
 
     public:
@@ -172,17 +172,17 @@ namespace LostPeter
         float cfg_cameraSpeedRotate;
 
         //Custom
-        std::string cfg_model_Path;
-        std::string cfg_shaderVertex_Path;
-        std::string cfg_shaderFragment_Path;
-        std::string cfg_texture_Path;
+        String cfg_model_Path;
+        String cfg_shaderVertex_Path;
+        String cfg_shaderFragment_Path;
+        String cfg_texture_Path;
 
         //Imgui
         bool imgui_IsEnable;
         int	imgui_MinimalSwapchainImages;
 	    VkDescriptorPool imgui_DescriptorPool;
-        std::string imgui_PathIni;
-        std::string imgui_PathLog;
+        String imgui_PathIni;
+        String imgui_PathLog;
 
         //Multi object use, top priority
         VulkanSceneManager* pSceneManager;
@@ -218,10 +218,10 @@ namespace LostPeter
 
 
     protected:
-        std::vector<const char*> aInstanceLayers;
-        std::vector<const char*> aInstanceExtensions;
-        std::vector<const char*> aDeviceLayers;
-        std::vector<const char*> aDeviceExtensions;
+        ConstCharPtrVector aInstanceLayers;
+        ConstCharPtrVector aInstanceExtensions;
+        ConstCharPtrVector aDeviceLayers;
+        ConstCharPtrVector aDeviceExtensions;
 
     public:
         virtual void OnInit();
@@ -330,7 +330,7 @@ namespace LostPeter
                                                                  VkAttachmentStoreOp stencilStoreOp,
                                                                  VkImageLayout initialLayout,
                                                                  VkImageLayout finalLayout);
-                        virtual bool createVkRenderPass(const std::string& nameRenderPass,
+                        virtual bool createVkRenderPass(const String& nameRenderPass,
                                                         const VkAttachmentDescriptionVector& aAttachmentDescription,
                                                         const VkSubpassDescriptionVector& aSubpassDescription,
                                                         const VkSubpassDependencyVector& aSubpassDependency,
@@ -341,7 +341,7 @@ namespace LostPeter
                     virtual void createFramebuffer_Default();
                     virtual void createFramebuffer_Custom();
 
-                    virtual bool createVkFramebuffer(const std::string& nameFramebuffer,
+                    virtual bool createVkFramebuffer(const String& nameFramebuffer,
                                                      const VkImageViewVector& aImageView, 
                                                      VkRenderPass& vkRenderPass,
                                                      VkFramebufferCreateFlags flags,
@@ -405,12 +405,12 @@ namespace LostPeter
                     virtual void destroyVkImageView(VkImageView imageView);
                     virtual void destroyVkImageSampler(VkSampler sampler);
 
-                    virtual void createTexture1D(const std::string& pathAsset_Tex, 
+                    virtual void createTexture1D(const String& pathAsset_Tex, 
                                                  uint32_t& mipMapCount,
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
 
-                    virtual void createTexture2D(const std::string& pathAsset_Tex, 
+                    virtual void createTexture2D(const String& pathAsset_Tex, 
                                                  VkImageType type,
                                                  VkSampleCountFlagBits numSamples,
                                                  VkFormat format,
@@ -420,7 +420,7 @@ namespace LostPeter
                                                  VkDeviceMemory& imageMemory,
                                                  VkBuffer& buffer, 
                                                  VkDeviceMemory& bufferMemory);
-                    virtual void createTexture2D(const std::string& pathAsset_Tex, 
+                    virtual void createTexture2D(const String& pathAsset_Tex, 
                                                  VkImageType type,
                                                  VkSampleCountFlagBits numSamples,
                                                  VkFormat format,
@@ -428,12 +428,12 @@ namespace LostPeter
                                                  uint32_t& mipMapCount, 
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
-                    virtual void createTexture2D(const std::string& pathAsset_Tex, 
+                    virtual void createTexture2D(const String& pathAsset_Tex, 
                                                  uint32_t& mipMapCount,
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
                     
-                    virtual void createTexture2DArray(const std::vector<std::string>& aPathAsset_Tex, 
+                    virtual void createTexture2DArray(const StringVector& aPathAsset_Tex, 
                                                       VkImageType type,
                                                       VkSampleCountFlagBits numSamples,
                                                       VkFormat format,
@@ -443,7 +443,7 @@ namespace LostPeter
                                                       VkDeviceMemory& imageMemory,
                                                       VkBuffer& buffer, 
                                                       VkDeviceMemory& bufferMemory);
-                    virtual void createTexture2DArray(const std::vector<std::string>& aPathAsset_Tex, 
+                    virtual void createTexture2DArray(const StringVector& aPathAsset_Tex, 
                                                       VkImageType type,
                                                       VkSampleCountFlagBits numSamples,
                                                       VkFormat format,
@@ -451,7 +451,7 @@ namespace LostPeter
                                                       uint32_t& mipMapCount, 
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
-                    virtual void createTexture2DArray(const std::vector<std::string>& aPathAsset_Tex, 
+                    virtual void createTexture2DArray(const StringVector& aPathAsset_Tex, 
                                                       uint32_t& mipMapCount,
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
@@ -475,7 +475,7 @@ namespace LostPeter
                                                  VkImage& image, 
                                                  VkDeviceMemory& imageMemory);
                     
-                    virtual void createTextureCubeMap(const std::vector<std::string>& aPathAsset_Tex, 
+                    virtual void createTextureCubeMap(const StringVector& aPathAsset_Tex, 
                                                       VkSampleCountFlagBits numSamples,
                                                       VkFormat format,
                                                       bool autoMipMap, 
@@ -484,14 +484,14 @@ namespace LostPeter
                                                       VkDeviceMemory& imageMemory,
                                                       VkBuffer& buffer, 
                                                       VkDeviceMemory& bufferMemory);
-                    virtual void createTextureCubeMap(const std::vector<std::string>& aPathAsset_Tex, 
+                    virtual void createTextureCubeMap(const StringVector& aPathAsset_Tex, 
                                                       VkSampleCountFlagBits numSamples,
                                                       VkFormat format,
                                                       bool autoMipMap, 
                                                       uint32_t& mipMapCount, 
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
-                    virtual void createTextureCubeMap(const std::vector<std::string>& aPathAsset_Tex,
+                    virtual void createTextureCubeMap(const StringVector& aPathAsset_Tex,
                                                       uint32_t& mipMapCount, 
                                                       VkImage& image, 
                                                       VkDeviceMemory& imageMemory);
@@ -697,7 +697,7 @@ namespace LostPeter
                     virtual void createCustomCB();
 
 
-                virtual VkShaderModule createShaderModule(std::string info, std::string pathFile);
+                virtual VkShaderModule createShaderModule(String info, String pathFile);
                 virtual VkPipelineLayout createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout);
                     virtual void destroyVkPipelineLayout(VkPipelineLayout vkPipelineLayout);
                     virtual void destroyVkPipeline(VkPipeline vkPipeline);
@@ -711,8 +711,8 @@ namespace LostPeter
                 virtual void createGraphicsPipeline();
                     virtual void createGraphicsPipeline_Default();
                     virtual void createGraphicsPipeline_Custom();
-                        virtual VkPipeline createVkGraphicsPipeline(VkShaderModule vertShaderModule, const std::string& vertMain,
-                                                                    VkShaderModule fragShaderModule, const std::string& fragMain,
+                        virtual VkPipeline createVkGraphicsPipeline(VkShaderModule vertShaderModule, const String& vertMain,
+                                                                    VkShaderModule fragShaderModule, const String& fragMain,
                                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                                     VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
@@ -722,10 +722,10 @@ namespace LostPeter
                                                                     VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
                                                                     VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
                                                                     VkColorComponentFlags colorWriteMask);
-                        virtual VkPipeline createVkGraphicsPipeline(VkShaderModule vertShaderModule, const std::string& vertMain,
-                                                                    VkShaderModule tescShaderModule, const std::string& tescMain,
-                                                                    VkShaderModule teseShaderModule, const std::string& teseMain,
-                                                                    VkShaderModule fragShaderModule, const std::string& fragMain,
+                        virtual VkPipeline createVkGraphicsPipeline(VkShaderModule vertShaderModule, const String& vertMain,
+                                                                    VkShaderModule tescShaderModule, const String& tescMain,
+                                                                    VkShaderModule teseShaderModule, const String& teseMain,
+                                                                    VkShaderModule fragShaderModule, const String& fragMain,
                                                                     VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
                                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
@@ -752,7 +752,7 @@ namespace LostPeter
                     virtual void createComputePipeline_Default();
                     virtual void createComputePipeline_Custom();
                         virtual VkPipeline createVkComputePipeline(VkShaderModule compShaderModule,
-                                                                   const std::string& compMain,
+                                                                   const String& compMain,
                                                                    VkPipelineLayout pipelineLayout, 
                                                                    VkPipelineCreateFlags flags = 0);
                         virtual VkPipeline createVkComputePipeline(const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
@@ -818,7 +818,7 @@ namespace LostPeter
                             virtual void cameraReset();
                         //Light
                         virtual void lightConfig();
-                            virtual void lightConfigItem(LightConstants& lc, const std::string& name, int index, bool canChangeType);
+                            virtual void lightConfigItem(LightConstants& lc, const String& name, int index, bool canChangeType);
                         //PassConstants
                         virtual void passConstantsConfig();
                         //Model
@@ -884,11 +884,11 @@ namespace LostPeter
                                            const VkAllocationCallbacks* pAllocator);
         
         void getInstanceLayersAndExtensions(bool bIsEnableValidationLayers,
-                                            std::vector<const char*>& outInstanceLayers, 
-                                            std::vector<const char*>& outInstanceExtensions);
+                                            ConstCharPtrVector& outInstanceLayers, 
+                                            ConstCharPtrVector& outInstanceExtensions);
         void getDeviceLayersAndExtensions(bool bIsEnableValidationLayers,
-                                          std::vector<const char*>& outDeviceLayers, 
-                                          std::vector<const char*>& outDeviceExtensions);
+                                          ConstCharPtrVector& outDeviceLayers, 
+                                          ConstCharPtrVector& outDeviceExtensions);
     };
 
 }; //LostPeter

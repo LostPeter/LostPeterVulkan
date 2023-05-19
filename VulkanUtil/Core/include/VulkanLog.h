@@ -19,16 +19,16 @@ namespace LostPeter
     class utilExport VulkanLog
     {
     public:
-        VulkanLog(const std::string& strName);
+        VulkanLog(const String& strName);
         virtual ~VulkanLog();
 
     public:
     protected:
-        std::string m_strName;
+        String m_strName;
         std::shared_ptr<spdlog::logger> m_pLogger;
 
     public:
-        const std::string& GetName() const { return m_strName; }
+        const String& GetName() const { return m_strName; }
         spdlog::logger* GetLogger() const { return m_pLogger.get(); }
 
     public:
@@ -44,13 +44,13 @@ namespace LostPeter
     public:
         virtual void Destroy() = 0;
         virtual bool InitLogConsole() = 0;
-        virtual bool InitLogFile(const std::string& path, bool isTruncate) = 0;  
+        virtual bool InitLogFile(const String& path, bool isTruncate) = 0;  
     };
 
     class utilExport VulkanLogConsole : public VulkanLog
     {
     public:
-        VulkanLogConsole(const std::string& strName);
+        VulkanLogConsole(const String& strName);
         virtual ~VulkanLogConsole();
 
     public:
@@ -59,13 +59,13 @@ namespace LostPeter
     public:
         virtual void Destroy();
         virtual bool InitLogConsole();
-        virtual bool InitLogFile(const std::string& path, bool isTruncate);  
+        virtual bool InitLogFile(const String& path, bool isTruncate);  
     };
 
     class utilExport VulkanLogFile : public VulkanLog
     {
     public:
-        VulkanLogFile(const std::string& strName);
+        VulkanLogFile(const String& strName);
         virtual ~VulkanLogFile();
 
     public:
@@ -74,7 +74,7 @@ namespace LostPeter
     public:
         virtual void Destroy();
         virtual bool InitLogConsole();
-        virtual bool InitLogFile(const std::string& path, bool isTruncate);  
+        virtual bool InitLogFile(const String& path, bool isTruncate);  
     };
 
 }; //LostPeter

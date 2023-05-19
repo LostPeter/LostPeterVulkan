@@ -20,7 +20,7 @@
 namespace LostPeter
 {
     //Materials
-    static void s_ProcessMaterials(const struct aiScene* pScene, std::vector<std::string>& aMaterials)
+    static void s_ProcessMaterials(const struct aiScene* pScene, StringVector& aMaterials)
     {
         for (unsigned int i = 0; i < pScene->mNumMaterials; ++i)
         {
@@ -112,14 +112,14 @@ namespace LostPeter
     }
 
 
-    bool VulkanMeshLoader::LoadMeshData(const std::string& pathMesh, MeshData& meshData, unsigned int eMeshParserFlags)
+    bool VulkanMeshLoader::LoadMeshData(const String& pathMesh, MeshData& meshData, unsigned int eMeshParserFlags)
     {
         return LoadMeshData(pathMesh.c_str(), meshData, eMeshParserFlags);
     }
     bool VulkanMeshLoader::LoadMeshData(const char* szPathMesh, MeshData& meshData, unsigned int eMeshParserFlags)
     {
         //1> LoadAssetFileContent
-        std::vector<char> content;
+        CharVector content;
         if (!VulkanUtil::LoadAssetFileContent(szPathMesh, content))
         {
             Util_LogError("*********************** VulkanMeshLoader::LoadMeshData: 1> VulkanUtil::LoadAssetFileContent failed, mesh path: [%s] !", szPathMesh);
@@ -147,14 +147,14 @@ namespace LostPeter
         return true;
     }
 
-    bool VulkanMeshLoader::LoadMeshDatas(const std::string& pathMesh, std::vector<MeshData>& aMeshDatas, bool isFlipY, unsigned int eMeshParserFlags)
+    bool VulkanMeshLoader::LoadMeshDatas(const String& pathMesh, std::vector<MeshData>& aMeshDatas, bool isFlipY, unsigned int eMeshParserFlags)
     {
         return LoadMeshDatas(pathMesh.c_str(), aMeshDatas, isFlipY, eMeshParserFlags);
     }
     bool VulkanMeshLoader::LoadMeshDatas(const char* szPathMesh, std::vector<MeshData>& aMeshDatas, bool isFlipY, unsigned int eMeshParserFlags)
     {
         //1> LoadAssetFileContent
-        std::vector<char> content;
+        CharVector content;
         if (!VulkanUtil::LoadAssetFileContent(szPathMesh, content))
         {
             Util_LogError("*********************** VulkanMeshLoader::LoadMeshDatas: 1> VulkanUtil::LoadAssetFileContent failed, mesh path: [%s] !", szPathMesh);

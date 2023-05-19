@@ -23,7 +23,7 @@ namespace LostPeter
         ~VulkanMaterial();
 
     public:
-        std::string name;
+        String name;
         int matCBIndex;
         int diffuseSrvHeapIndex;
         int normalSrvHeapIndex;

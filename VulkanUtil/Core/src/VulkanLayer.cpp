@@ -22,8 +22,8 @@ namespace LostPeter
 
         VulkanLayerExtension();
 
-        void AddUniqueExtensionNames(std::vector<std::string>& outExtensions);
-        void AddUniqueExtensionNames(std::vector<const char*>& outExtensions);
+        void AddUniqueExtensionNames(StringVector& outExtensions);
+        void AddUniqueExtensionNames(ConstCharPtrVector& outExtensions);
     };
     typedef std::vector<VulkanLayerExtension> VulkanLayerExtensionVector;
 
@@ -31,14 +31,14 @@ namespace LostPeter
     {
         memset(&layerProps, 0, sizeof(VkLayerProperties));
     }
-    void VulkanLayerExtension::AddUniqueExtensionNames(std::vector<std::string>& outExtensions)
+    void VulkanLayerExtension::AddUniqueExtensionNames(StringVector& outExtensions)
     {
         for (int32 i = 0; i < extensionProps.size(); ++i) 
         {
             VulkanUtilString::AddUnique(outExtensions, extensionProps[i].extensionName);
         }
     }
-    void VulkanLayerExtension::AddUniqueExtensionNames(std::vector<const char*>& outExtensions)
+    void VulkanLayerExtension::AddUniqueExtensionNames(ConstCharPtrVector& outExtensions)
     {
         for (int32 i = 0; i < extensionProps.size(); ++i) 
         {
@@ -207,7 +207,7 @@ namespace LostPeter
         return FindLayerExtensionInList(layers, extensionName, dummy);
     }
 
-    static void TrimDuplicates(std::vector<const char*>& arr)
+    static void TrimDuplicates(ConstCharPtrVector& arr)
     {
         for (int32 i = (int32)arr.size() - 1; i >= 0; --i)
         {
@@ -229,13 +229,13 @@ namespace LostPeter
     }
 
     void VulkanWindow::getInstanceLayersAndExtensions(bool bIsEnableValidationLayers,
-                                                      std::vector<const char*>& outInstanceLayers, 
-                                                      std::vector<const char*>& outInstanceExtensions)
+                                                      ConstCharPtrVector& outInstanceLayers, 
+                                                      ConstCharPtrVector& outInstanceExtensions)
     {
         VulkanLayerExtensionVector globalLayerExtensions(1);
 	    EnumerateInstanceExtensionProperties(nullptr, globalLayerExtensions[0]);
 
-        std::vector<std::string> foundUniqueExtensions;
+        StringVector foundUniqueExtensions;
         for (size_t i = 0; i < globalLayerExtensions[0].extensionProps.size(); ++i) 
         {
             VulkanUtilString::AddUnique(foundUniqueExtensions, globalLayerExtensions[0].extensionProps[i].extensionName);
@@ -246,7 +246,7 @@ namespace LostPeter
         std::vector<VkLayerProperties> globalLayerProperties(instanceLayerCount);
         vkEnumerateInstanceLayerProperties(&instanceLayerCount, globalLayerProperties.data());
 
-        std::vector<std::string> foundUniqueLayers;
+        StringVector foundUniqueLayers;
         for (size_t i = 0; i < globalLayerProperties.size(); ++i) 
         {
             VulkanLayerExtension layer;
@@ -261,7 +261,7 @@ namespace LostPeter
         Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Found unique layer count: %d", layerCount);
         for (int i = 0; i < layerCount; i++)
         {
-            const std::string& nameLayer = foundUniqueLayers[i];
+            const String& nameLayer = foundUniqueLayers[i];
             Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Layer index: %d, Layer name: %s, Layer count: %d", i, nameLayer.c_str(), layerCount);
         }
 
@@ -269,7 +269,7 @@ namespace LostPeter
         Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Found unique instance extension count: %d", extensionsCount);
         for (int i = 0; i < extensionsCount; i++) 
         {
-            const std::string& nameExtension = foundUniqueExtensions[i];
+            const String& nameExtension = foundUniqueExtensions[i];
             Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Instance Extension index: %d, Extension name: %s, Extension count: %d", i, nameExtension.c_str(), extensionsCount);
         }
 
@@ -341,8 +341,8 @@ namespace LostPeter
     }
 
     void VulkanWindow::getDeviceLayersAndExtensions(bool bIsEnableValidationLayers,
-                                                    std::vector<const char*>& outDeviceLayers, 
-                                                    std::vector<const char*>& outDeviceExtensions)
+                                                    ConstCharPtrVector& outDeviceLayers, 
+                                                    ConstCharPtrVector& outDeviceExtensions)
     {
         uint32 count = 0;
         vkEnumerateDeviceLayerProperties(this->poPhysicalDevice, &count, nullptr);
@@ -355,8 +355,8 @@ namespace LostPeter
             deviceLayerExtensions[i].layerProps = properties[i - 1];
         }
         
-        std::vector<std::string> foundUniqueLayers;
-        std::vector<std::string> foundUniqueExtensions;
+        StringVector foundUniqueLayers;
+        StringVector foundUniqueExtensions;
         for (size_t i = 0; i < deviceLayerExtensions.size(); ++i)
         {
             if (i == 0) 
@@ -376,7 +376,7 @@ namespace LostPeter
         Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Found unique layer count: %d", layerCount);
         for (int i = 0; i < layerCount; i++)
         {
-            const std::string& nameLayer = foundUniqueLayers[i];
+            const String& nameLayer = foundUniqueLayers[i];
             Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Layer index: %d, Layer name: %s, Layer count: %d", i, nameLayer.c_str(), layerCount);
         }
 
@@ -384,7 +384,7 @@ namespace LostPeter
         Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Found unique device extension count: %d", extensionsCount);
         for (int i = 0; i < extensionsCount; i++) 
         {
-            const std::string& nameExtension = foundUniqueExtensions[i];
+            const String& nameExtension = foundUniqueExtensions[i];
             Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Device Extension index: %d, Extension name: %s, Extension count: %d", i, nameExtension.c_str(), extensionsCount);
         }
 
@@ -411,7 +411,7 @@ namespace LostPeter
             }
         }
 
-        std::vector<const char*> availableExtensions;
+        ConstCharPtrVector availableExtensions;
         for (size_t i = 0; i < deviceLayerExtensions[0].extensionProps.size(); ++i) 
         {
             availableExtensions.push_back(deviceLayerExtensions[0].extensionProps[i].extensionName);
@@ -436,7 +436,7 @@ namespace LostPeter
         
         TrimDuplicates(availableExtensions);
         
-        auto ListContains = [](const std::vector<const char*>& arr, const char* name) -> bool
+        auto ListContains = [](const ConstCharPtrVector& arr, const char* name) -> bool
         {
             for (const char* element : arr)
             {

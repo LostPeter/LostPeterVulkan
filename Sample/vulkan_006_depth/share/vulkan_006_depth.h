@@ -18,7 +18,7 @@ using namespace LostPeter;
 class Vulkan_006_Depth : public VulkanWindow
 {
 public:
-    Vulkan_006_Depth(int width, int height, std::string name);
+    Vulkan_006_Depth(int width, int height, String name);
 
 public:
     struct ModelObject
@@ -136,9 +136,9 @@ public:
         Vulkan_006_Depth* pWindow;
 
         //Name
-        std::string nameModel;
-        std::string pathModel;
-        std::string pathTexture;
+        String nameModel;
+        String pathModel;
+        String pathTexture;
         bool isShow;
         bool isRotate;
         bool isWireFrame;
@@ -206,7 +206,7 @@ public:
         VkColorComponentFlags cfg_ColorWriteMask;
     };
     typedef std::vector<ModelObject*> ModelObjectPtrVector;
-    typedef std::map<std::string, ModelObject*> ModelObjectPtrMap;
+    typedef std::map<String, ModelObject*> ModelObjectPtrMap;
 
 public:
     ModelObjectPtrVector m_aModelObjects;

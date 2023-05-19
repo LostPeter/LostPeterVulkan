@@ -15,6 +15,8 @@
 namespace LostPeter
 {
     VulkanSample::VulkanSample()
+        : m_pInstance(nullptr)
+        , m_pDevice(nullptr)
     {
 
     }
@@ -23,5 +25,20 @@ namespace LostPeter
     {
         
     }
+
+    void VulkanSample::Destroy()
+    {
+        m_pDevice = nullptr;
+        UTIL_DELETE(m_pInstance)
+    }
+
+    bool VulkanSample::Init()
+    {
+
+
+        return true;
+    }
+
+    
 
 }; //LostPeter

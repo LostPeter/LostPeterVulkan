@@ -65,7 +65,7 @@ static glm::vec4 g_OutlineColor[g_CountLen] =
 };
 
 
-Vulkan_007_Stencil::Vulkan_007_Stencil(int width, int height, std::string name)
+Vulkan_007_Stencil::Vulkan_007_Stencil(int width, int height, String name)
     : VulkanWindow(width, height, name)
     , poPipelineLayout_Outline(VK_NULL_HANDLE)
 {
@@ -105,7 +105,7 @@ void Vulkan_007_Stencil::loadModel_Custom()
         //Model
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTranformLocal, g_tranformLocalModels[i]))
         {
-            std::string msg = "Vulkan_007_Stencil::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
+            String msg = "Vulkan_007_Stencil::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -116,7 +116,7 @@ void Vulkan_007_Stencil::loadModel_Custom()
         //Texture
         if (!loadModel_Texture(pModelObject))
         {   
-            std::string msg = "Vulkan_007_Stencil::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
+            String msg = "Vulkan_007_Stencil::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -294,7 +294,7 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
                                                                               pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
+            String msg = "Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -322,7 +322,7 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
                                                                             pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_Stencil == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline stencil !";
+            String msg = "Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline stencil !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -346,7 +346,7 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
                                                                             pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_Outline == VK_NULL_HANDLE)
         {
-            std::string msg = "Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline outline !";
+            String msg = "Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline outline !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -365,7 +365,7 @@ void Vulkan_007_Stencil::createPipelineLayout_Outline()
     this->poPipelineLayout_Outline = createVkPipelineLayout(aDescriptorSetLayout);
     if (this->poPipelineLayout_Outline == VK_NULL_HANDLE)
     {
-        std::string msg = "Vulkan_007_Stencil::createPipelineLayout_Outline: createVkPipelineLayout failed !";
+        String msg = "Vulkan_007_Stencil::createPipelineLayout_Outline: createVkPipelineLayout failed !";
         Util_LogError(msg.c_str());
         throw std::runtime_error(msg.c_str());
     }
@@ -638,27 +638,27 @@ void Vulkan_007_Stencil::modelConfig()
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
 
-            std::string nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
+            String nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
             if (ImGui::CollapsingHeader(nameModel.c_str()))
             {
-                std::string nameIsShow = "Is Show - " + pModelObject->nameModel;
+                String nameIsShow = "Is Show - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsShow.c_str(), &pModelObject->isShow);
-                std::string nameIsWireFrame = "Is WireFrame - " + pModelObject->nameModel;
+                String nameIsWireFrame = "Is WireFrame - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsWireFrame.c_str(), &pModelObject->isWireFrame);
-                std::string nameIsRotate = "Is Rotate - " + pModelObject->nameModel;
+                String nameIsRotate = "Is Rotate - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsRotate.c_str(), &pModelObject->isRotate);
-                std::string nameIsOutline = "Is Outline - " + pModelObject->nameModel;
+                String nameIsOutline = "Is Outline - " + pModelObject->nameModel;
                 ImGui::Checkbox(nameIsOutline.c_str(), &pModelObject->isOutline);   
 
                 ImGui::Text("Vertex: [%d], Index: [%d]", (int)pModelObject->poVertexCount, (int)pModelObject->poIndexCount);
                 
-                std::string nameWorld = "Model Object - " + pModelObject->nameModel;
+                String nameWorld = "Model Object - " + pModelObject->nameModel;
                 if (ImGui::CollapsingHeader(nameWorld.c_str()))
                 {
                     ObjectConstants_Outline& obj = pModelObject->objectCBs_Outline[0];
                     //Mat
                     const glm::mat4& mat4World = obj.g_MatWorld;
-                    std::string nameTable = VulkanUtilString::SaveInt(i) + " - split_model_world";
+                    String nameTable = VulkanUtilString::SaveInt(i) + " - split_model_world";
                     if (ImGui::BeginTable(nameTable.c_str(), 4))
                     {
                         ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
@@ -684,14 +684,14 @@ void Vulkan_007_Stencil::modelConfig()
                         ImGui::EndTable();
                     }
                     //OutlineWidth
-                    std::string nameOutlineWidth = "Outline Width - " + pModelObject->nameModel;
+                    String nameOutlineWidth = "Outline Width - " + pModelObject->nameModel;
                     float fOutlineWidth = obj.g_OutlineWidth;
                     if (ImGui::DragFloat(nameOutlineWidth.c_str(), &fOutlineWidth, 0.01f, 0.01f, 1.0f))
                     {
                         obj.g_OutlineWidth = fOutlineWidth;
                     }
                     //OutlineColor
-                    std::string nameOutlineColor = "Outline Color - " + pModelObject->nameModel;
+                    String nameOutlineColor = "Outline Color - " + pModelObject->nameModel;
                     if (ImGui::ColorEdit4(nameOutlineColor.c_str(), (float*)&(obj.g_OutlineColor)))
                     {
 

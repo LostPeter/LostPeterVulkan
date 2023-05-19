@@ -13,7 +13,7 @@
 #include "vulkan_000_window.h"
 
 
-Vulkan_000_Window::Vulkan_000_Window(int width, int height, std::string name)
+Vulkan_000_Window::Vulkan_000_Window(int width, int height, String name)
     : VulkanWindow(width, height, name)
 {
     
