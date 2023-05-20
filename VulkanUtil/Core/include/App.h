@@ -23,7 +23,7 @@ namespace LostPeter
         static VulkanBase* s_pBase;
 
     public:
-        static int Run(VulkanBase* pBase, int vulkanVersionMajor, int vulkanVersionMinor);
+        static int Run(VulkanBase* pBase);
         static GLFWwindow* GetGLFWwindow() { return s_pWindow; }
         
     protected:

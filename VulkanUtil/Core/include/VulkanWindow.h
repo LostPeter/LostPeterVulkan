@@ -22,10 +22,7 @@ namespace LostPeter
         VulkanWindow(int width, int height, String name);
         virtual ~VulkanWindow();
 
-    public:
-        static int versionVulkan_Major;
-        static int versionVulkan_Minor;    
-
+    public: 
         static bool s_isEnableValidationLayers;
         static int s_maxFramesInFight;
 

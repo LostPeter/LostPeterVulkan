@@ -16,5 +16,5 @@
 int main()
 {
     Vulkan_005_Camera sample(1280, 720, "LostPeter - Vulkan_005_Camera");
-    return App::Run(&sample, VulkanWindow::versionVulkan_Major, VulkanWindow::versionVulkan_Minor);
+    return App::Run(&sample);
 }

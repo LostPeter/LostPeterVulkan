@@ -18,9 +18,6 @@
 
 namespace LostPeter
 {
-    int VulkanWindow::versionVulkan_Major = 1;
-    int VulkanWindow::versionVulkan_Minor = 2;
-
 #if UTIL_DEBUG == 1
     bool VulkanWindow::s_isEnableValidationLayers = true;
 #else

@@ -16,5 +16,5 @@
 int main()
 {
     Vulkan_016_MultiWindow sample(1280, 720, "LostPeter - Vulkan_016_MultiWindow");
-    return App::Run(&sample, VulkanWindow::versionVulkan_Major, VulkanWindow::versionVulkan_Minor);
+    return App::Run(&sample);
 }

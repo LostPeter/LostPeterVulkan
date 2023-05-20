@@ -10,7 +10,6 @@
 ****************************************************************************/
 
 #include "../include/PreInclude.h"
-#include "../include/PreInclude.h"
 #include "../include/App.h"
 #include "../include/VulkanBase.h"
 
@@ -19,7 +18,7 @@ namespace LostPeter
     GLFWwindow* App::s_pWindow = nullptr;
     VulkanBase* App::s_pBase = nullptr;
 
-    int App::Run(VulkanBase* pBase, int vulkanVersionMajor, int vulkanVersionMinor)
+    int App::Run(VulkanBase* pBase)
     {
         s_pBase = pBase;
 

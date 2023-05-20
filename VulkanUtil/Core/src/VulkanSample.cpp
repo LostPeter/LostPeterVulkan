@@ -11,6 +11,8 @@
 
 #include "../include/PreInclude.h"
 #include "../include/VulkanSample.h"
+#include "../include/VulkanInstance.h"
+#include "../include/VulkanDevice.h"
 
 namespace LostPeter
 {
@@ -39,6 +41,6 @@ namespace LostPeter
         return true;
     }
 
-    
+
 
 }; //LostPeter
