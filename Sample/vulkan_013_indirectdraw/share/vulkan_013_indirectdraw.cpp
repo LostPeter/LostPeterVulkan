@@ -1376,8 +1376,8 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
                 String nameMeshSubUsed = g_Object_MeshSubsUsed[i];
                 StringVector aMeshSubUsed = VulkanUtilString::Split(nameMeshSubUsed, ";");
                 pModelObject->aMeshSubUsed.clear();
-                size_t count_meshsub_used = aMeshSubUsed.size();
-                for (size_t j = 0; j < count_meshsub_used; j++)
+                size_t count_mesh_sub_used = aMeshSubUsed.size();
+                for (size_t j = 0; j < count_mesh_sub_used; j++)
                 {
                     String& name = aMeshSubUsed[j];
                     int indexMeshSub = VulkanUtilString::ParserInt(name);
@@ -1394,8 +1394,8 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
         //2> ObjectRend
         {
             size_t count_mesh_sub = pModelObject->pMesh->aMeshSubs.size();
-            size_t count_meshsub_used = pModelObject->aMeshSubUsed.size();
-            for (size_t j = 0; j < count_meshsub_used; j++)
+            size_t count_mesh_sub_used = pModelObject->aMeshSubUsed.size();
+            for (size_t j = 0; j < count_mesh_sub_used; j++)
             {
                 int indexMeshSub = pModelObject->aMeshSubUsed[j];
                 assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_013_IndirectDraw::loadModel_Custom");

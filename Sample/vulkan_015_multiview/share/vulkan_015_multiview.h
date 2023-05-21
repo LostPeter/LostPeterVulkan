@@ -665,6 +665,10 @@ public:
         VkPipeline poPipeline;
         std::vector<VkDescriptorSet> poDescriptorSets;
 
+        bool isMultiView;
+        VkPipeline poPipeline_WireFrame2;
+        VkPipeline poPipeline2;
+
         String nameRenderPass;
         MultiRenderPass* pRenderPass;
 
@@ -676,6 +680,10 @@ public:
             , poPipelineLayout(VK_NULL_HANDLE)
             , poPipeline_WireFrame(VK_NULL_HANDLE)
             , poPipeline(VK_NULL_HANDLE)
+
+            , isMultiView(false)
+            , poPipeline_WireFrame2(VK_NULL_HANDLE)
+            , poPipeline2(VK_NULL_HANDLE)
 
             , pRenderPass(nullptr)
         {
@@ -702,13 +710,23 @@ public:
                 this->pWindow->destroyVkPipeline(this->poPipeline_WireFrame);
             }
             this->poPipeline_WireFrame = VK_NULL_HANDLE;
-
             if (this->poPipeline != VK_NULL_HANDLE)
             {
                 this->pWindow->destroyVkPipeline(this->poPipeline);
             }
             this->poPipeline = VK_NULL_HANDLE;
             this->poDescriptorSets.clear();
+
+            if (this->poPipeline_WireFrame2 != VK_NULL_HANDLE)
+            {
+                this->pWindow->destroyVkPipeline(this->poPipeline_WireFrame2);
+            }
+            this->poPipeline_WireFrame2 = VK_NULL_HANDLE;
+            if (this->poPipeline2 != VK_NULL_HANDLE)
+            {
+                this->pWindow->destroyVkPipeline(this->poPipeline2);
+            }
+            this->poPipeline2 = VK_NULL_HANDLE;
 
             this->pRenderPass = nullptr;
         }  
@@ -1285,6 +1303,7 @@ public:
     ModelObjectRendPtrVector m_aModelObjectRends_All;
     MultiRenderPass2ObjectRendsMap m_mapRenderPass2ObjectRends_Opaque;
     MultiRenderPass2ObjectRendsMap m_mapRenderPass2ObjectRends_Transparent;
+    ModelObjectRend* m_pRenderMultiView;
     bool m_isDrawIndirect;
     bool m_isDrawIndirectMulti;
 
@@ -1422,9 +1441,10 @@ private:
 
     void drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect);
-
+    
     void drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend);
+    void drawModelObjectRendView(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend, VkPipeline vkPipeline, VkPipeline vkPipelineWire);
 };
 
 

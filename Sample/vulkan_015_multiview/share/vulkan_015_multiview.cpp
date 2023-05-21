@@ -463,7 +463,7 @@ static const char* g_Object_Configs[2 * g_Object_Count] =
     "object_grass",                        "grass", //object_grass        
     "object_flower",                       "flower", //object_flower
 
-    "copy_frame",                          "quad", //copy_frame
+    "copy_view",                           "", //copy_view
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {
@@ -479,7 +479,7 @@ static const char* g_Object_MeshSubsUsed[g_Object_Count] =
     "1;4;6;9", //object_grass
     "0;2;4;6;8;9;10;11", //object_flower
 
-    "0", //copy_frame
+    "0", //copy_view
 };  
 
 static float g_Object_InstanceGap = 3.0f;
@@ -497,7 +497,7 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
     4, //object_grass 
     4, //object_flower 
 
-    0, //copy_frame
+    0, //copy_view
 };
 static bool g_Object_CanChangeInstance[g_Object_Count] = 
 {
@@ -513,7 +513,7 @@ static bool g_Object_CanChangeInstance[g_Object_Count] =
     true, //object_grass 
     true, //object_flower 
 
-    false, //copy_frame
+    false, //copy_view
 };
 static bool g_Object_IsShows[] = 
 {
@@ -529,7 +529,7 @@ static bool g_Object_IsShows[] =
     true, //object_grass
     true, //object_flower
 
-    true, //copy_frame
+    true, //copy_view
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
@@ -545,7 +545,7 @@ static bool g_Object_IsRotates[g_Object_Count] =
     false, //object_grass
     false, //object_flower
 
-    false, //copy_frame
+    false, //copy_view
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
@@ -561,7 +561,7 @@ static bool g_Object_IsLightings[g_Object_Count] =
     true, //object_grass
     true, //object_flower
 
-    false, //copy_frame
+    false, //copy_view
 };
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
@@ -577,7 +577,7 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
     false, //object_grass
     true, //object_flower
 
-    false, //copy_frame
+    false, //copy_view
 };
 
 
@@ -610,7 +610,7 @@ static const char* g_ObjectRend_Configs[8 * g_ObjectRend_Count] =
     "object_flower-7",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-7
     "object_flower-8",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-8
 
-    "copy_frame-1",                        "",                     "",                              "",                         "",                    "",                                                "rp_object",                          "", //copy_frame-1
+    "copy_view-1",                         "",                     "",                              "",                         "",                    "",                                                "rp_object",                          "", //copy_view-1
 
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
@@ -640,7 +640,7 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
     "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-7
     "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-8
 
-    "vert_standard_copy_frame",                             "",                                             "",                                         "",                         "frag_standard_copy_frame",                             "", //copy_frame-1
+    "vert_standard_copy_view",                              "",                                             "",                                         "",                         "frag_standard_copy_view",                              "", //copy_view-1
 
 };
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
@@ -670,7 +670,7 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-7
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-8
 
-    "Pass-TextureFrameColor",                                           "", //copy_frame-1
+    "Pass-TextureFrameColor",                                           "", //copy_view-1
 
 };
 static const char* g_ObjectRend_NameRenderPasses[g_ObjectRend_Count] = 
@@ -699,7 +699,7 @@ static const char* g_ObjectRend_NameRenderPasses[g_ObjectRend_Count] =
     "rp_object", //object_flower-7
     "rp_object", //object_flower-8
 
-    "rp_default", //copy_frame-1
+    "rp_default", //copy_view-1
 };
 static glm::vec3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
@@ -727,7 +727,7 @@ static glm::vec3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     glm::vec3(   0,  0.0,  -4.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-7
     glm::vec3(   0,  0.0,  -4.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-8
 
-    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(    1.0f,      1.0f,      1.0f), //copy_frame-1
+    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(    1.0f,      1.0f,      1.0f), //copy_view-1
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
@@ -755,7 +755,7 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
     false, //object_flower-7
     false, //object_flower-8
 
-    false, //copy_frame-1
+    false, //copy_view-1
 };
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
@@ -783,7 +783,7 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
     false, //object_flower-7
     false, //object_flower-8
 
-    false, //copy_frame-1
+    false, //copy_view-1
 };
 
 
@@ -1207,7 +1207,7 @@ void Vulkan_015_MultiView::FrameBufferAttachment::Init(Vulkan_015_MultiView* pWi
     uint32_t width = pWindow->poSwapChainExtent.width;
     uint32_t height = pWindow->poSwapChainExtent.height; 
     uint32_t depth = 1;
-    uint32_t numArray = 1;
+    uint32_t numArray = 2;
     uint32_t mipMapCount = 1;
     VkImageType imageType = VK_IMAGE_TYPE_2D;
     VkSampleCountFlagBits numSamples = pWindow->poMSAASamples;
@@ -1217,7 +1217,7 @@ void Vulkan_015_MultiView::FrameBufferAttachment::Init(Vulkan_015_MultiView* pWi
     VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE;
     VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
-    VkImageViewType imageViewType = VK_IMAGE_VIEW_TYPE_2D; 
+    VkImageViewType imageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY; 
     VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 
     if (_isDepth)
@@ -1342,10 +1342,23 @@ void Vulkan_015_MultiView::MultiRenderPass::Init()
             subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
             aSubpassDependency.push_back(subpassDependency_SceneRender);
 
+            //VkRenderPassMultiviewCreateInfo
+            //Bit mask that specifies which view rendering is broadcast to 0011 = Broadcast to first and second view (layer)
+            const uint32_t viewMask = 0b00000011; 
+            //Bit mask that specifies correlation between views, An implementation may use this for optimizations (concurrent render)
+            const uint32_t correlationMask = 0b00000011;
+            VkRenderPassMultiviewCreateInfo renderPassMultiviewCI = {};
+			renderPassMultiviewCI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO;
+			renderPassMultiviewCI.subpassCount = 1;
+			renderPassMultiviewCI.pViewMasks = &viewMask;
+			renderPassMultiviewCI.correlationMaskCount = 1;
+			renderPassMultiviewCI.pCorrelationMasks = &correlationMask;
+
             if (!this->pWindow->createVkRenderPass(this->nameRenderPass,
                                                    aAttachmentDescription,
                                                    aSubpassDescription,
                                                    aSubpassDependency,
+                                                   &renderPassMultiviewCI,
                                                    this->poRenderPass))
             {
                 String msg = "Vulkan_015_MultiView::MultiRenderPass::Init: Failed to create renderpass: " + this->nameRenderPass;
@@ -1621,6 +1634,7 @@ void Vulkan_015_MultiView::ModelObjectRendIndirect::UpdateIndirectCommandBuffer(
 
 Vulkan_015_MultiView::Vulkan_015_MultiView(int width, int height, String name)
     : VulkanWindow(width, height, name)
+    , m_pRenderMultiView(nullptr)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
 {
@@ -1693,7 +1707,6 @@ void Vulkan_015_MultiView::loadModel_Custom()
             //Mesh
             {
                 ModelMesh* pMesh = this->findModelMesh(pModelObject->nameMesh);
-                assert(pMesh != nullptr && "Vulkan_015_MultiView::loadModel_Custom");
                 pModelObject->SetMesh(pMesh);
             }
             //MeshSub Used
@@ -1701,8 +1714,8 @@ void Vulkan_015_MultiView::loadModel_Custom()
                 String nameMeshSubUsed = g_Object_MeshSubsUsed[i];
                 StringVector aMeshSubUsed = VulkanUtilString::Split(nameMeshSubUsed, ";");
                 pModelObject->aMeshSubUsed.clear();
-                size_t count_meshsub_used = aMeshSubUsed.size();
-                for (size_t j = 0; j < count_meshsub_used; j++)
+                size_t count_mesh_sub_used = aMeshSubUsed.size();
+                for (size_t j = 0; j < count_mesh_sub_used; j++)
                 {
                     String& name = aMeshSubUsed[j];
                     int indexMeshSub = VulkanUtilString::ParserInt(name);
@@ -1719,16 +1732,29 @@ void Vulkan_015_MultiView::loadModel_Custom()
 
         //2> ObjectRend
         {
-            size_t count_mesh_sub = pModelObject->pMesh->aMeshSubs.size();
-            size_t count_meshsub_used = pModelObject->aMeshSubUsed.size();
-            for (size_t j = 0; j < count_meshsub_used; j++)
+            size_t count_mesh_sub = 1;
+            if (pModelObject->pMesh != nullptr)
             {
-                int indexMeshSub = pModelObject->aMeshSubUsed[j];
-                assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_015_MultiView::loadModel_Custom");
-
-                ModelMeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
+                count_mesh_sub = pModelObject->pMesh->aMeshSubs.size();
+            }
+            size_t count_mesh_sub_used = pModelObject->aMeshSubUsed.size();
+            for (size_t j = 0; j < count_mesh_sub_used; j++)
+            {
+                ModelMeshSub* pMeshSub = nullptr;
+                if (pModelObject->pMesh != nullptr)
+                {   
+                    int indexMeshSub = pModelObject->aMeshSubUsed[j];
+                    assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_015_MultiView::loadModel_Custom");
+                    pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
+                }
                 String nameObjectRend = g_ObjectRend_Configs[8 * nIndexObjectRend + 0];
                 ModelObjectRend* pRend = new ModelObjectRend(nameObjectRend, pModelObject, pMeshSub);
+
+                if (pModelObject->pMesh == nullptr)
+                {
+                    m_pRenderMultiView = pRend;
+                    pRend->pPipelineGraphics->isMultiView = true;
+                }
 
                 //Texture VS
                 {
@@ -2112,11 +2138,33 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
                 }
             }
 
+            VkVertexInputBindingDescriptionVector* pBindingDescriptions = nullptr;
+            VkVertexInputAttributeDescriptionVector* pAttributeDescriptions = nullptr;
+            if (pRend->pMeshSub != nullptr)
+            {
+                pBindingDescriptions = Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex);
+                pAttributeDescriptions = Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex);
+            }
+
+            VkSpecializationMapEntry specializationMapEntry = { 0, 0, sizeof(float) };
+            VkSpecializationInfo specializationInfo = {};
+            specializationInfo.dataSize = sizeof(float);
+            specializationInfo.mapEntryCount = 1;
+            specializationInfo.pMapEntries = &specializationMapEntry;
+            float multiviewArrayLayer = 0.0f;
+            specializationInfo.pData = &multiviewArrayLayer;
+
+            if (pRend->pPipelineGraphics->isMultiView)
+            {
+                //Fragment Shader
+                pRend->aShaderStageCreateInfos_Graphics[1].pSpecializationInfo = &specializationInfo;
+            }
+
             //pPipelineGraphics->poPipeline_WireFrame
             pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
                                                                                       pRend->isUsedTessellation, 0, 3,
-                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
+                                                                                      pBindingDescriptions,
+                                                                                      pAttributeDescriptions,
                                                                                       pRend->pPipelineGraphics->pRenderPass->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                                       pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits,
                                                                                       pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
@@ -2149,8 +2197,8 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
             }
             pRend->pPipelineGraphics->poPipeline = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
                                                                             pRend->isUsedTessellation, 0, 3,
-                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
-                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
+                                                                            pBindingDescriptions,
+                                                                            pAttributeDescriptions,
                                                                             pRend->pPipelineGraphics->pRenderPass->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                             pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                                             isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
@@ -2164,7 +2212,63 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            Util_LogInfo("Vulkan_015_MultiView::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
+            Util_LogInfo("Vulkan_015_MultiView::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics success !", pRend->nameObjectRend.c_str());
+
+            if (pRend->pPipelineGraphics->isMultiView)
+            {
+                //Fragment Shader
+                multiviewArrayLayer = 1.0f;
+                pRend->aShaderStageCreateInfos_Graphics[1].pSpecializationInfo = &specializationInfo;
+
+                //pPipelineGraphics->poPipeline_WireFrame2
+                pRend->pPipelineGraphics->poPipeline_WireFrame2 = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
+                                                                                           pRend->isUsedTessellation, 0, 3,
+                                                                                           pBindingDescriptions,
+                                                                                           pAttributeDescriptions,
+                                                                                           pRend->pPipelineGraphics->pRenderPass->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                           pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits,
+                                                                                           pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
+                                                                                           pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
+                                                                                           pRend->cfg_isBlend, pRend->cfg_BlendColorFactorSrc, pRend->cfg_BlendColorFactorDst, pRend->cfg_BlendColorOp,
+                                                                                           pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
+                                                                                           pRend->cfg_ColorWriteMask);
+                if (pRend->pPipelineGraphics->poPipeline_WireFrame2 == VK_NULL_HANDLE)
+                {
+                    String msg = "Vulkan_015_MultiView::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame2: " + pRend->nameObjectRend;
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                Util_LogInfo("Vulkan_015_MultiView::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame2 success !", pRend->nameObjectRend.c_str());
+
+                //pPipelineGraphics->poPipeline2
+                if (pRend->isTransparent)
+                {
+                    isDepthTestEnable = VK_FALSE;
+                    isDepthWriteEnable = VK_FALSE;
+
+                    isBlend = VK_TRUE;
+                    blendColorFactorSrc = VK_BLEND_FACTOR_SRC_ALPHA;
+                    blendColorFactorDst = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+                }
+                pRend->pPipelineGraphics->poPipeline2 = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
+                                                                                 pRend->isUsedTessellation, 0, 3,
+                                                                                 pBindingDescriptions,
+                                                                                 pAttributeDescriptions,
+                                                                                 pRend->pPipelineGraphics->pRenderPass->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                 pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
+                                                                                 isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
+                                                                                 pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
+                                                                                 isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->cfg_BlendColorOp,
+                                                                                 pRend->cfg_BlendAlphaFactorSrc, pRend->cfg_BlendAlphaFactorDst, pRend->cfg_BlendAlphaOp,
+                                                                                 pRend->cfg_ColorWriteMask);
+                if (pRend->pPipelineGraphics->poPipeline2 == VK_NULL_HANDLE)
+                {
+                    String msg = "Vulkan_015_MultiView::createGraphicsPipeline_Custom: Failed to create pipeline graphics:2 " + pRend->nameObjectRend;
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+                Util_LogInfo("Vulkan_015_MultiView::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics2 success !", pRend->nameObjectRend.c_str());
+            }
         }
     }
 }
@@ -3944,31 +4048,16 @@ void Vulkan_015_MultiView::updateRenderPass_Default(VkCommandBuffer& commandBuff
         //1> Viewport Left
         {
 			bindViewport(commandBuffer, viewport, poScissor);
-
-            for (size_t i = 0; i < count_render_pass; i++)
-            {
-                MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
-                if (!pRenderPass->isUseDefault)
-                    continue;
-
-                drawModelObjectRendByRenderPass(commandBuffer, pRenderPass);
-            }
+            drawModelObjectRendView(commandBuffer, m_pRenderMultiView, m_pRenderMultiView->pPipelineGraphics->poPipeline, m_pRenderMultiView->pPipelineGraphics->poPipeline_WireFrame);
         }
+
         //2> Viewport Right
         {
             viewport.x = this->poViewport.width / 2.0f; 
             scissor.offset.x = this->poScissor.extent.width / 2.0f;
             
 			bindViewport(commandBuffer, viewport, poScissor);
-
-            for (size_t i = 0; i < count_render_pass; i++)
-            {
-                MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
-                if (!pRenderPass->isUseDefault)
-                    continue;
-
-                drawModelObjectRendByRenderPass(commandBuffer, pRenderPass);
-            }
+            drawModelObjectRendView(commandBuffer, m_pRenderMultiView, m_pRenderMultiView->pPipelineGraphics->poPipeline2, m_pRenderMultiView->pPipelineGraphics->poPipeline_WireFrame2);
         }
 
         //3> ImGui Pass
@@ -4117,6 +4206,8 @@ void Vulkan_015_MultiView::drawModelObjectRends(VkCommandBuffer& commandBuffer, 
         ModelObjectRend* pRend = aRends[i];
         if (!pRend->isShow)
             continue;
+        
+
         drawModelObjectRend(commandBuffer, pRend);
     }
 }
@@ -4125,12 +4216,15 @@ void Vulkan_015_MultiView::drawModelObjectRend(VkCommandBuffer& commandBuffer, M
     ModelObject* pModelObject = pRend->pModelObject;
     ModelMeshSub* pMeshSub = pRend->pMeshSub;
 
-    VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
-    VkDeviceSize offsets[] = { 0 };
-    bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-    if (pMeshSub->poIndexBuffer != nullptr)
+    if (pMeshSub != nullptr)
     {
-        bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+        VkDeviceSize offsets[] = { 0 };
+        bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+        if (pMeshSub->poIndexBuffer != nullptr)
+        {
+            bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        }
     }
 
     if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
@@ -4140,13 +4234,21 @@ void Vulkan_015_MultiView::drawModelObjectRend(VkCommandBuffer& commandBuffer, M
         {
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
-        if (pMeshSub->poIndexBuffer != nullptr)
+
+        if (pMeshSub != nullptr)
         {
-            drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+            if (pMeshSub->poIndexBuffer != nullptr)
+            {
+                drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+            }
+            else
+            {
+                draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+            }
         }
         else
         {
-            draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+            vkCmdDraw(commandBuffer, 3, 1, 0, 0);
         }
     }
     else
@@ -4156,14 +4258,46 @@ void Vulkan_015_MultiView::drawModelObjectRend(VkCommandBuffer& commandBuffer, M
         {
             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
         }
-        if (pMeshSub->poIndexBuffer != nullptr)
+
+        if (pMeshSub != nullptr)
         {
-            drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+            if (pMeshSub->poIndexBuffer != nullptr)
+            {
+                drawIndexed(commandBuffer, pMeshSub->poIndexCount, pModelObject->countInstance, 0, 0, 0);
+            }
+            else
+            {
+                draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+            }
         }
         else
         {
-            draw(commandBuffer, pMeshSub->poVertexCount, pModelObject->countInstance, 0, 0);
+            vkCmdDraw(commandBuffer, 3, 1, 0, 0);
         }
+    }
+}
+
+void Vulkan_015_MultiView::drawModelObjectRendView(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend, VkPipeline vkPipeline, VkPipeline vkPipelineWire)
+{
+    ModelObject* pModelObject = pRend->pModelObject;
+
+    if (pModelObject->isWireFrame || pRend->isWireFrame || this->cfg_isWireFrame)
+    {
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineWire);
+        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
+        {
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+        }
+        draw(commandBuffer, 3, 1, 0, 0);
+    }
+    else
+    {
+        bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
+        if (pRend->pPipelineGraphics->poDescriptorSets.size() > 0)
+        {
+            bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pRend->pPipelineGraphics->poPipelineLayout, 0, 1, &pRend->pPipelineGraphics->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
+        }
+        draw(commandBuffer, 3, 1, 0, 0);
     }
 }
 

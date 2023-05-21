@@ -1691,6 +1691,7 @@ namespace LostPeter
                                                   const VkAttachmentDescriptionVector& aAttachmentDescription,
                                                   const VkSubpassDescriptionVector& aSubpassDescription,
                                                   const VkSubpassDependencyVector& aSubpassDependency,
+                                                  VkRenderPassMultiviewCreateInfo* pMultiviewCI,
                                                   VkRenderPass& vkRenderPass)
             {
                 VkRenderPassCreateInfo renderPassInfo = {};
@@ -1701,6 +1702,8 @@ namespace LostPeter
                 renderPassInfo.pSubpasses = &aSubpassDescription[0];
                 renderPassInfo.dependencyCount = static_cast<uint32_t>(aSubpassDependency.size());
                 renderPassInfo.pDependencies = &aSubpassDependency[0];
+                if (pMultiviewCI != nullptr)
+                    renderPassInfo.pNext = pMultiviewCI;
 
                 if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &vkRenderPass) != VK_SUCCESS)
                 {
@@ -1784,6 +1787,7 @@ namespace LostPeter
                                         aAttachmentDescription,
                                         aSubpassDescription,
                                         aSubpassDependency,
+                                        nullptr,
                                         vkRenderPass))
                 {
                     String msg = "VulkanWindow::createRenderPass_KhrDepth: Failed to create RenderPass_Default_KhrDepth !";
@@ -1900,6 +1904,7 @@ namespace LostPeter
                                         aAttachmentDescription,
                                         aSubpassDescription,
                                         aSubpassDependency,
+                                        nullptr,
                                         vkRenderPass))
                 {
                     String msg = "VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create RenderPass_Default_KhrDepthImgui !";
@@ -1994,6 +1999,7 @@ namespace LostPeter
                                         aAttachmentDescription,
                                         aSubpassDescription,
                                         aSubpassDependency,
+                                        nullptr,
                                         vkRenderPass))
                 {
                     String msg = "VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create RenderPass_Default_ColorDepthMSAA !";
@@ -2133,6 +2139,7 @@ namespace LostPeter
                                         aAttachmentDescription,
                                         aSubpassDescription,
                                         aSubpassDependency,
+                                        nullptr,
                                         vkRenderPass))
                 {
                     String msg = "VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create RenderPass_Default_ColorDepthImguiMSAA !";
@@ -4603,10 +4610,16 @@ namespace LostPeter
                 //1> Pipeline VertexInput State
                 VkPipelineVertexInputStateCreateInfo vertexInputStateInfo = {};
                 vertexInputStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-                vertexInputStateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(pBindingDescriptions->size());
-                vertexInputStateInfo.pVertexBindingDescriptions = pBindingDescriptions->data();
-                vertexInputStateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
-                vertexInputStateInfo.pVertexAttributeDescriptions = pAttributeDescriptions->data();
+                if (pBindingDescriptions != nullptr)
+                {   
+                    vertexInputStateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(pBindingDescriptions->size());
+                    vertexInputStateInfo.pVertexBindingDescriptions = pBindingDescriptions->data();
+                }
+                if (pAttributeDescriptions != nullptr)
+                {
+                    vertexInputStateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
+                    vertexInputStateInfo.pVertexAttributeDescriptions = pAttributeDescriptions->data();
+                }
 
                 //2> Pipeline InputAssembly
                 VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateInfo = {};
@@ -5289,7 +5302,12 @@ namespace LostPeter
                 //TransformConstants/CameraConstants
                 if (this->pCamera != nullptr)
                 {
-                    updateCBs_PassTransformAndCamera(this->pCamera, 0);   
+                    updateCBs_PassTransformAndCamera(this->pCamera, 0);
+                    if (this->pCameraRight == nullptr)
+                    {
+                        this->passCB.g_Transforms[1] = this->passCB.g_Transforms[0];
+                        this->passCB.g_Cameras[1] = this->passCB.g_Cameras[0];
+                    }
                 }
                 else
                 {

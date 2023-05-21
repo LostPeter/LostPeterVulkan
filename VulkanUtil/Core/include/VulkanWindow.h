@@ -332,6 +332,7 @@ namespace LostPeter
                                                         const VkAttachmentDescriptionVector& aAttachmentDescription,
                                                         const VkSubpassDescriptionVector& aSubpassDescription,
                                                         const VkSubpassDependencyVector& aSubpassDependency,
+                                                        VkRenderPassMultiviewCreateInfo* pMultiviewCI,
                                                         VkRenderPass& vkRenderPass);
                         virtual void destroyVkRenderPass(VkRenderPass vkRenderPass);
                     
@@ -799,7 +800,6 @@ namespace LostPeter
                 virtual void updateSceneObjects();
                 virtual void updateCBs_Pass();
                     virtual void updateCBs_PassTransformAndCamera(VulkanCamera* pCam, int nIndex);
-
                 virtual void updateCBs_Objects();
                     virtual void updateCBs_ObjectsContent();
                 virtual void updateCBs_Materials();
