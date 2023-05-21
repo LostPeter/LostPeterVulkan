@@ -1148,6 +1148,50 @@ namespace LostPeter
         String name;
     };
 
+    //////////////////////////////// TransformConstants /////////////////////////////
+    struct utilExport TransformConstants
+    {
+        glm::mat4 mat4View;
+        glm::mat4 mat4View_Inv;
+        glm::mat4 mat4Proj;
+        glm::mat4 mat4Proj_Inv;
+        glm::mat4 mat4ViewProj;
+        glm::mat4 mat4ViewProj_Inv;
+
+        TransformConstants()
+            : mat4View(VulkanMath::Identity4x4())
+            , mat4View_Inv(VulkanMath::Identity4x4())
+            , mat4Proj(VulkanMath::Identity4x4())
+            , mat4Proj_Inv(VulkanMath::Identity4x4())
+            , mat4ViewProj(VulkanMath::Identity4x4())
+            , mat4ViewProj_Inv(VulkanMath::Identity4x4())
+        {
+
+        }
+    };
+
+    //////////////////////////////// CameraConstants ////////////////////////////////
+    struct utilExport CameraConstants
+    {
+        glm::vec3 posEyeWorld;    
+        float fNearZ;
+        float fFarZ;
+        float fReserved1;
+        float fReserved2;
+        float fReserved3;
+
+        CameraConstants()
+            : posEyeWorld(0.0f, 0.0f, 0.0f)
+            , fNearZ(0.0f)
+            , fFarZ(0.0f)
+            , fReserved1(0.0f)
+            , fReserved2(0.0f)
+            , fReserved3(0.0f)
+        {
+
+        }
+    }; 
+
     //////////////////////////////// LightConstants /////////////////////////////////
     struct utilExport LightConstants
     {
@@ -1177,21 +1221,16 @@ namespace LostPeter
     //////////////////////////////// PassConstants //////////////////////////////////
     struct utilExport PassConstants
     {
-        //Matrix4
-        glm::mat4 g_MatView;
-        glm::mat4 g_MatView_Inv;
-        glm::mat4 g_MatProj;
-        glm::mat4 g_MatProj_Inv;
-        glm::mat4 g_MatViewProj;
-        glm::mat4 g_MatViewProj_Inv;
-
-        //Camera
-        glm::vec3 g_EyePosW;    
-        float g_Pad1;
-        float g_NearZ;
-        float g_FarZ;
+        //TransformConstants
+        TransformConstants g_Transforms[2]; //0: Eye Left(Main); 1: Eye Right
+        //CameraConstants
+        CameraConstants g_Cameras[2]; //0: Eye Left(Main); 1: Eye Right
+        
+        //TimeConstants
         float g_TotalTime;
         float g_DeltaTime;
+        float g_Pad1;
+        float g_Pad2;
 
         //RenderTarget
         glm::vec2 g_RenderTargetSize;   
@@ -1205,18 +1244,10 @@ namespace LostPeter
         LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 
         PassConstants()
-            : g_MatView(VulkanMath::Identity4x4())
-            , g_MatView_Inv(VulkanMath::Identity4x4())
-            , g_MatProj(VulkanMath::Identity4x4())
-            , g_MatProj_Inv(VulkanMath::Identity4x4())
-            , g_MatViewProj(VulkanMath::Identity4x4())
-            , g_MatViewProj_Inv(VulkanMath::Identity4x4())
-            , g_EyePosW(0.0f, 0.0f, 0.0f)
-            , g_Pad1(1.0f)
-            , g_NearZ(0.0f)
-            , g_FarZ(0.0f)
-            , g_TotalTime(0.0f)
+            : g_TotalTime(0.0f)
             , g_DeltaTime(0.0f)
+            , g_Pad1(1.0f)
+            , g_Pad2(1.0f)
             , g_RenderTargetSize(0.0f, 0.0f)
             , g_RenderTargetSize_Inv(0.0f, 0.0f)
             , g_AmbientLight(1.0f, 1.0f, 1.0f, 1.0f)

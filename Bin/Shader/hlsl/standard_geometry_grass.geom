@@ -13,6 +13,27 @@
 #define PI_HALF 1.570796
 static const float oscillateDelta = 0.05;
 
+
+//TransformConstants
+struct TransformConstants
+{
+    float4x4 mat4View;
+    float4x4 mat4View_Inv;
+    float4x4 mat4Proj;
+    float4x4 mat4Proj_Inv;
+    float4x4 mat4ViewProj;
+    float4x4 mat4ViewProj_Inv;
+};
+//CameraConstants
+struct CameraConstants
+{
+    float3 posEyeWorld;    
+    float fNearZ;
+    float fFarZ;
+    float fReserved1;
+    float fReserved2;
+    float fReserved3;
+};
 //LightConstants
 #define MAX_LIGHT_COUNT 16
 struct LightConstants
@@ -29,25 +50,25 @@ struct LightConstants
 //PassConstants
 struct PassConstants
 {
-    float4x4 g_MatView;
-	float4x4 g_MatView_Inv;
-    float4x4 g_MatProj;
-    float4x4 g_MatProj_Inv;
-    float4x4 g_MatViewProj;
-    float4x4 g_MatViewProj_Inv;
-
-    float3 g_EyePosW;
-    float g_Pad1;
-    float g_NearZ;
-    float g_FarZ;
+    //TransformConstants
+    TransformConstants g_Transforms[2]; //0: Eye Left(Main); 1: Eye Right
+    //CameraConstants
+    CameraConstants g_Cameras[2]; //0: Eye Left(Main); 1: Eye Right
+    
+    //TimeConstants
     float g_TotalTime;
     float g_DeltaTime;
+    float g_Pad1;
+    float g_Pad2;
 
+    //RenderTarget
     float2 g_RenderTargetSize;
     float2 g_RenderTargetSize_Inv;
 
+    //Material
     float4 g_AmbientLight;
     
+    //Light
     LightConstants g_MainLight;
     LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 };
@@ -116,11 +137,12 @@ GSOutput createGSOut()
 }
 
 [maxvertexcount(30)]
-void main(point VSOutput input[1], inout TriangleStream<GSOutput> output)
+void main(point VSOutput input[1], inout TriangleStream<GSOutput> output, uint viewIndex : SV_ViewID)
 {
+    TransformConstants trans = passConsts.g_Transforms[viewIndex];
     float4 root = input[0].outPosition;
     uint instanceIndex = root.w;
-    ObjectConstants objInstance = objectConsts[instanceIndex];
+    ObjectConstants obj = objectConsts[instanceIndex];
     GeometryConstants geometryConst = geometryConsts[instanceIndex];
 
     const int vertexCount = 12;
@@ -185,11 +207,11 @@ void main(point VSOutput input[1], inout TriangleStream<GSOutput> output)
 
         v[i].outPosition.xz += wind.xy * windCoEff;
         v[i].outPosition.y -= windForce * windCoEff * 0.8;
-        float4 finalPos = mul(objInstance.g_MatWorld, float4(v[i].outPosition.xyz, 1.0));
-        v[i].outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, finalPos));
+        float4 finalPos = mul(obj.g_MatWorld, float4(v[i].outPosition.xyz, 1.0));
+        v[i].outPosition = mul(trans.mat4Proj, mul(trans.mat4View, finalPos));
         v[i].outWorldPos.xyz = v[i].outPosition.xyz / v[i].outPosition.w;
         v[i].outWorldPos.w = instanceIndex;
-        v[i].outWorldNormal = mul((float3x3)objInstance.g_MatWorld, v[i].outWorldNormal);
+        v[i].outWorldNormal = mul((float3x3)obj.g_MatWorld, v[i].outWorldNormal);
 
         if (fmod(i, 2) == 1)
         {

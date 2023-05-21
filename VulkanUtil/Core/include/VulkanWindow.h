@@ -202,7 +202,8 @@ namespace LostPeter
         std::vector<VkDeviceMemory> poBuffersMemory_InstanceCB;
 
         //Camera
-        VulkanCamera* pCamera;
+        VulkanCamera* pCamera; //Eye Left
+        VulkanCamera* pCameraRight; //Eye Right
 
         //Light
         LightConstants mainLight; //common.x == Vulkan_Light_Directional, can not change
@@ -797,6 +798,8 @@ namespace LostPeter
             virtual void updateRender();
                 virtual void updateSceneObjects();
                 virtual void updateCBs_Pass();
+                    virtual void updateCBs_PassTransformAndCamera(VulkanCamera* pCam, int nIndex);
+
                 virtual void updateCBs_Objects();
                     virtual void updateCBs_ObjectsContent();
                 virtual void updateCBs_Materials();

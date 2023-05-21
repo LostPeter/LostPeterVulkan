@@ -10,6 +10,26 @@
 ****************************************************************************/
 
 
+//TransformConstants
+struct TransformConstants
+{
+    float4x4 mat4View;
+    float4x4 mat4View_Inv;
+    float4x4 mat4Proj;
+    float4x4 mat4Proj_Inv;
+    float4x4 mat4ViewProj;
+    float4x4 mat4ViewProj_Inv;
+};
+//CameraConstants
+struct CameraConstants
+{
+    float3 posEyeWorld;    
+    float fNearZ;
+    float fFarZ;
+    float fReserved1;
+    float fReserved2;
+    float fReserved3;
+};
 //LightConstants
 #define MAX_LIGHT_COUNT 16
 struct LightConstants
@@ -26,25 +46,25 @@ struct LightConstants
 //PassConstants
 struct PassConstants
 {
-    float4x4 g_MatView;
-	float4x4 g_MatView_Inv;
-    float4x4 g_MatProj;
-    float4x4 g_MatProj_Inv;
-    float4x4 g_MatViewProj;
-    float4x4 g_MatViewProj_Inv;
-
-    float3 g_EyePosW;
-    float g_Pad1;
-    float g_NearZ;
-    float g_FarZ;
+    //TransformConstants
+    TransformConstants g_Transforms[2]; //0: Eye Left(Main); 1: Eye Right
+    //CameraConstants
+    CameraConstants g_Cameras[2]; //0: Eye Left(Main); 1: Eye Right
+    
+    //TimeConstants
     float g_TotalTime;
     float g_DeltaTime;
+    float g_Pad1;
+    float g_Pad2;
 
+    //RenderTarget
     float2 g_RenderTargetSize;
     float2 g_RenderTargetSize_Inv;
 
+    //Material
     float4 g_AmbientLight;
     
+    //Light
     LightConstants g_MainLight;
     LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 };
@@ -141,12 +161,14 @@ PnPatch GetPnPatch(float pnPatch[10])
 [domain("tri")]
 DSOutput main(ConstantsHSOutput input, 
               float3 uvw                            : SV_DomainLocation, 
-              const OutputPatch<HSOutput, 3> patch)
+              const OutputPatch<HSOutput, 3> patch,
+              uint viewIndex : SV_ViewID)
 {
     DSOutput output = (DSOutput)0;
 
+    TransformConstants trans = passConsts.g_Transforms[viewIndex];
     uint instanceIndex = patch[0].outPosition.w;
-    ObjectConstants objInstance = objectConsts[instanceIndex];
+    ObjectConstants obj = objectConsts[instanceIndex];
     
     PnPatch pnPatch[3];
     pnPatch[0] = GetPnPatch(patch[0].pnPatch);
@@ -205,14 +227,14 @@ DSOutput main(ConstantsHSOutput input,
 
     // final position and normal
     float3 finalPos = tessellationConsts[0].tessAlpha * pnPos + (1.0 - tessellationConsts[0].tessAlpha) * barPos;
-    output.outWorldPos = mul(objInstance.g_MatWorld, float4(finalPos.xyz, 1.0));
-    output.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, output.outWorldPos));
+    output.outWorldPos = mul(obj.g_MatWorld, float4(finalPos.xyz, 1.0));
+    output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, output.outWorldPos));
     output.outWorldPos.xyz /= output.outWorldPos.w;
     output.outWorldPos.w = instanceIndex;
     output.outColor = uvw[2] * patch[0].outColor + 
                       uvw[0] * patch[1].outColor + 
                       uvw[1] * patch[2].outColor;
-    output.outWorldNormal = mul((float3x3)objInstance.g_MatWorld, outNormal);
+    output.outWorldNormal = mul((float3x3)obj.g_MatWorld, outNormal);
     output.outTexCoord  = uvw[2] * patch[0].outTexCoord + 
                           uvw[0] * patch[1].outTexCoord + 
                           uvw[1] * patch[2].outTexCoord;

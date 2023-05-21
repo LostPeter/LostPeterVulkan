@@ -9,6 +9,26 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
+//TransformConstants
+struct TransformConstants
+{
+    float4x4 mat4View;
+    float4x4 mat4View_Inv;
+    float4x4 mat4Proj;
+    float4x4 mat4Proj_Inv;
+    float4x4 mat4ViewProj;
+    float4x4 mat4ViewProj_Inv;
+};
+//CameraConstants
+struct CameraConstants
+{
+    float3 posEyeWorld;    
+    float fNearZ;
+    float fFarZ;
+    float fReserved1;
+    float fReserved2;
+    float fReserved3;
+};
 //LightConstants
 #define MAX_LIGHT_COUNT 16
 struct LightConstants
@@ -25,27 +45,27 @@ struct LightConstants
 //PassConstants
 struct PassConstants
 {
-	float4x4 g_MatView;
-	float4x4 g_MatView_Inv;
-	float4x4 g_MatProj;
-	float4x4 g_MatProj_Inv;
-	float4x4 g_MatViewProj;
-	float4x4 g_MatViewProj_Inv;
+	//TransformConstants
+    TransformConstants g_Transforms[2]; //0: Eye Left(Main); 1: Eye Right
+    //CameraConstants
+    CameraConstants g_Cameras[2]; //0: Eye Left(Main); 1: Eye Right
+    
+    //TimeConstants
+    float g_TotalTime;
+    float g_DeltaTime;
+    float g_Pad1;
+    float g_Pad2;
 
-	float3 g_EyePosW;
-	float g_Pad1;
-	float g_NearZ;
-	float g_FarZ;
-	float g_TotalTime;
-	float g_DeltaTime;
+    //RenderTarget
+    float2 g_RenderTargetSize;
+    float2 g_RenderTargetSize_Inv;
 
-	float2 g_RenderTargetSize;
-	float2 g_RenderTargetSize_Inv;
-
-	float4 g_AmbientLight;
-
-	LightConstants g_MainLight;
-	LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
+    //Material
+    float4 g_AmbientLight;
+    
+    //Light
+    LightConstants g_MainLight;
+    LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 };
 
 [[vk::binding(0)]]cbuffer passConsts                : register(b0)
@@ -95,10 +115,11 @@ struct GSOutput
 };
 
 [maxvertexcount(6)]
-void main(triangle VSOutput input[3], inout LineStream<GSOutput> output)
+void main(triangle VSOutput input[3], inout LineStream<GSOutput> output, uint viewIndex : SV_ViewID)
 {
+	TransformConstants trans = passConsts.g_Transforms[viewIndex];
     uint instanceIndex = input[0].outPosition.w;
-    ObjectConstants objInstance = objectConsts[instanceIndex];
+    ObjectConstants obj = objectConsts[instanceIndex];
     GeometryConstants geometryConst = geometryConsts[instanceIndex];
 	float normalLength = geometryConst.length;
 	for (int i = 0; i < 3; i++)
@@ -109,8 +130,8 @@ void main(triangle VSOutput input[3], inout LineStream<GSOutput> output)
         //0
         {
             GSOutput gsOutput0 = (GSOutput)0;
-            float4 finalPos0 = mul(objInstance.g_MatWorld, float4(pos, 1.0));
-            gsOutput0.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, finalPos0));
+            float4 finalPos0 = mul(obj.g_MatWorld, float4(pos, 1.0));
+            gsOutput0.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, finalPos0));
             gsOutput0.outColor = float3(1.0, 0.0, 0.0);
 
             output.Append(gsOutput0);
@@ -119,8 +140,8 @@ void main(triangle VSOutput input[3], inout LineStream<GSOutput> output)
         //1
         {
             GSOutput gsOutput1 = (GSOutput)0;
-            float4 finalPos1 = mul(objInstance.g_MatWorld, float4(pos + normal * normalLength, 1.0));
-            gsOutput1.outPosition = mul(passConsts.g_MatProj, mul(passConsts.g_MatView, finalPos1));
+            float4 finalPos1 = mul(obj.g_MatWorld, float4(pos + normal * normalLength, 1.0));
+            gsOutput1.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, finalPos1));
             gsOutput1.outColor = float3(0.0, 0.0, 1.0);
 
             output.Append(gsOutput1);

@@ -5286,33 +5286,38 @@ namespace LostPeter
                 if (this->poBuffersMemory_PassCB.size() <= 0)
                     return;
 
-                //Camera Settings
+                //TransformConstants/CameraConstants
                 if (this->pCamera != nullptr)
                 {
-                    this->passCB.g_MatView = this->pCamera->GetMatrix4View();
-                    this->passCB.g_MatProj = this->pCamera->GetMatrix4Projection();
-
-                    this->passCB.g_EyePosW = this->pCamera->GetPos();
-                    this->passCB.g_NearZ = this->pCamera->GetNearZ();
-                    this->passCB.g_FarZ = this->pCamera->GetFarZ();
+                    updateCBs_PassTransformAndCamera(this->pCamera, 0);   
                 }
                 else
                 {
-                    this->passCB.g_MatView = glm::lookAtLH(this->cfg_cameraPos, 
-                                                           this->cfg_cameraLookTarget,
-                                                           this->cfg_cameraUp);
-                    this->passCB.g_MatProj = glm::perspectiveLH(glm::radians(this->cfg_cameraFov), 
-                                                                this->poSwapChainExtent.width / (float)this->poSwapChainExtent.height,
-                                                                this->cfg_cameraNear, 
-                                                                this->cfg_cameraFar);
-                    this->passCB.g_EyePosW = this->cfg_cameraPos;
-                    this->passCB.g_NearZ = this->cfg_cameraNear;
-                    this->passCB.g_FarZ = this->cfg_cameraFar;
+                    TransformConstants& transformConstants = this->passCB.g_Transforms[0];
+                    transformConstants.mat4View = glm::lookAtLH(this->cfg_cameraPos, 
+                                                                this->cfg_cameraLookTarget,
+                                                                this->cfg_cameraUp);
+                    transformConstants.mat4View_Inv = VulkanMath::InverseMatrix4(transformConstants.mat4View);
+                    transformConstants.mat4Proj = glm::perspectiveLH(glm::radians(this->cfg_cameraFov), 
+                                                                     this->poSwapChainExtent.width / (float)this->poSwapChainExtent.height,
+                                                                     this->cfg_cameraNear, 
+                                                                     this->cfg_cameraFar);
+                    transformConstants.mat4Proj_Inv = VulkanMath::InverseMatrix4(transformConstants.mat4Proj);
+                    transformConstants.mat4ViewProj = transformConstants.mat4Proj * transformConstants.mat4View;
+                    transformConstants.mat4ViewProj_Inv = VulkanMath::InverseMatrix4(transformConstants.mat4ViewProj);
+                    
+                    //CameraConstants
+                    CameraConstants& cameraConstants = this->passCB.g_Cameras[0];
+                    cameraConstants.posEyeWorld = this->cfg_cameraPos;
+                    cameraConstants.fNearZ = this->cfg_cameraNear;
+                    cameraConstants.fFarZ = this->cfg_cameraFar;
                 }   
-                this->passCB.g_MatView_Inv = VulkanMath::InverseMatrix4(this->passCB.g_MatView);
-                this->passCB.g_MatProj_Inv = VulkanMath::InverseMatrix4(this->passCB.g_MatProj);
-                this->passCB.g_MatViewProj = this->passCB.g_MatProj * this->passCB.g_MatView;
-                this->passCB.g_MatViewProj_Inv = VulkanMath::InverseMatrix4(this->passCB.g_MatViewProj);
+                if (this->pCameraRight != nullptr)
+                {
+                    updateCBs_PassTransformAndCamera(this->pCameraRight, 1); 
+                }
+
+                //TimeConstants
                 this->passCB.g_TotalTime = this->pTimer->GetTimeSinceStart();
                 this->passCB.g_DeltaTime = this->pTimer->GetTimeDelta();
 
@@ -5334,6 +5339,23 @@ namespace LostPeter
                     memcpy(data, &this->passCB, sizeof(PassConstants));
                 vkUnmapMemory(this->poDevice, memory);
             }
+                void VulkanWindow::updateCBs_PassTransformAndCamera(VulkanCamera* pCam, int nIndex)
+                {
+                    //TransformConstants
+                    TransformConstants& transformConstants = this->passCB.g_Transforms[nIndex];
+                    transformConstants.mat4View = pCam->GetMatrix4View();
+                    transformConstants.mat4View_Inv = VulkanMath::InverseMatrix4(transformConstants.mat4View);
+                    transformConstants.mat4Proj = pCam->GetMatrix4Projection();
+                    transformConstants.mat4Proj_Inv = VulkanMath::InverseMatrix4(transformConstants.mat4Proj);
+                    transformConstants.mat4ViewProj = transformConstants.mat4Proj * transformConstants.mat4View;
+                    transformConstants.mat4ViewProj_Inv = VulkanMath::InverseMatrix4(transformConstants.mat4ViewProj);
+
+                    //CameraConstants
+                    CameraConstants& cameraConstants = this->passCB.g_Cameras[nIndex];
+                    cameraConstants.posEyeWorld = pCam->GetPos();
+                    cameraConstants.fNearZ = pCam->GetNearZ();
+                    cameraConstants.fFarZ = pCam->GetFarZ();
+                }   
             void VulkanWindow::updateCBs_Objects()
             {
                 if (this->poBuffersMemory_ObjectCB.size() <= 0)

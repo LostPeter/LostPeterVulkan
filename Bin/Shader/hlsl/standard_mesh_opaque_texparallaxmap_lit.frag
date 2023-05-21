@@ -21,6 +21,26 @@ struct VSOutput
 };
 
 
+//TransformConstants
+struct TransformConstants
+{
+    float4x4 mat4View;
+    float4x4 mat4View_Inv;
+    float4x4 mat4Proj;
+    float4x4 mat4Proj_Inv;
+    float4x4 mat4ViewProj;
+    float4x4 mat4ViewProj_Inv;
+};
+//CameraConstants
+struct CameraConstants
+{
+    float3 posEyeWorld;    
+    float fNearZ;
+    float fFarZ;
+    float fReserved1;
+    float fReserved2;
+    float fReserved3;
+};
 //LightConstants
 #define MAX_LIGHT_COUNT 16
 struct LightConstants
@@ -37,25 +57,25 @@ struct LightConstants
 //PassConstants
 struct PassConstants
 {
-    float4x4 g_MatView;
-	float4x4 g_MatView_Inv;
-    float4x4 g_MatProj;
-    float4x4 g_MatProj_Inv;
-    float4x4 g_MatViewProj;
-    float4x4 g_MatViewProj_Inv;
-
-    float3 g_EyePosW;
-    float g_Pad1;
-    float g_NearZ;
-    float g_FarZ;
+    //TransformConstants
+    TransformConstants g_Transforms[2]; //0: Eye Left(Main); 1: Eye Right
+    //CameraConstants
+    CameraConstants g_Cameras[2]; //0: Eye Left(Main); 1: Eye Right
+    
+    //TimeConstants
     float g_TotalTime;
     float g_DeltaTime;
+    float g_Pad1;
+    float g_Pad2;
 
+    //RenderTarget
     float2 g_RenderTargetSize;
     float2 g_RenderTargetSize_Inv;
 
+    //Material
     float4 g_AmbientLight;
-
+    
+    //Light
     LightConstants g_MainLight;
     LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 };
@@ -356,12 +376,13 @@ float3 calculate_Light(float3 ambientGlobal,
 }
 
 
-float4 main(VSOutput input) : SV_TARGET
+float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
 {
     float3 outColor;
 
+    CameraConstants cam = passConsts.g_Cameras[viewIndex];
     MaterialConstants mat = materialConsts[(uint)input.inWorldPos.w];
-    float3 V = normalize(passConsts.g_EyePosW - input.inWorldPos.xyz);
+    float3 V = normalize(cam.posEyeWorld - input.inWorldPos.xyz);
     float3 VT = normalize(input.inTSEyePos - input.inTSPos);
     float3 N = float3(0,0,1);
     float parallaxMapFlag = mat.aTexLayers[1].indexTextureArray;  
@@ -421,7 +442,7 @@ float4 main(VSOutput input) : SV_TARGET
                                             passConsts.g_MainLight,
                                             mat,
                                             input.inWorldPos.xyz,
-                                            passConsts.g_EyePosW,
+                                            cam.posEyeWorld, 
                                             N);
     colorLight = colorMainLight;
 

@@ -380,7 +380,7 @@ static const char* g_DescriptorSetLayout_Names[g_DescriptorSetLayout_Count] =
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_Shader_Count = 20;
+static const int g_Shader_Count = 22;
 static const char* g_ShaderModule_Paths[3 * g_Shader_Count] = 
 {
     //name                                                     //type               //path
@@ -398,6 +398,7 @@ static const char* g_ShaderModule_Paths[3 * g_Shader_Count] =
     "vert_standard_mesh_opaque_grass_alphatest_lit",           "vert",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv", //standard_mesh_opaque_grass_alphatest_lit vert  
 
     "vert_standard_copy_frame",                                "vert",              "Assets/Shader/standard_copy_frame.vert.spv", //standard_copy_frame vert
+    "vert_standard_copy_view",                                 "vert",              "Assets/Shader/standard_copy_view.vert.spv", //standard_copy_view vert
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
    
@@ -421,6 +422,7 @@ static const char* g_ShaderModule_Paths[3 * g_Shader_Count] =
     "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
 
     "frag_standard_copy_frame",                                "frag",              "Assets/Shader/standard_copy_frame.frag.spv", //standard_copy_frame frag
+    "frag_standard_copy_view",                                 "frag",              "Assets/Shader/standard_copy_view.frag.spv", //standard_copy_view frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
     
