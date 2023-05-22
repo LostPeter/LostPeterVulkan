@@ -16,15 +16,14 @@
 
 namespace LostPeter
 {
-    VulkanFence::VulkanFence(VulkanDevice* pDevice, VulkanFenceManager* pFenceManager, bool bCreateSignaled)
-        : m_vkFence(VK_NULL_HANDLE)
+    VulkanFence::VulkanFence(VulkanFenceManager* pFenceManager, bool bCreateSignaled)
+        : m_pFenceManager(pFenceManager)
+        , m_vkFence(VK_NULL_HANDLE)
         , m_eFenceState(bCreateSignaled ? Vulkan_FenceState_Signaled : Vulkan_FenceState_NotReady)
-        , m_pFenceManager(pFenceManager)
     {
-        VkFenceCreateInfo createInfo;
-        Util_ZeroStruct(createInfo, VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
-        createInfo.flags = bCreateSignaled ? VK_FENCE_CREATE_SIGNALED_BIT : 0;
-        vkCreateFence(pDevice->GetVkDevice(), &createInfo, UTIL_CPU_ALLOCATOR, &m_vkFence);
+        assert(m_pFenceManager != nullptr && "VulkanFence::VulkanFence");
+        m_vkFence = m_pFenceManager->GetDevice()->CreateVkFence(bCreateSignaled);
+        assert(m_vkFence != VK_NULL_HANDLE && "VulkanFence::VulkanFence");
     }
 
     VulkanFence::~VulkanFence()
@@ -34,10 +33,7 @@ namespace LostPeter
 
     void VulkanFence::Destroy()
     {
-        if (m_vkFence != VK_NULL_HANDLE)
-        {
-            vkDestroyFence(m_pFenceManager->GetDevice()->GetVkDevice(), m_vkFence, UTIL_CPU_ALLOCATOR);
-        }
+        m_pFenceManager->GetDevice()->DestroyVkFence(m_vkFence);
         m_vkFence = VK_NULL_HANDLE;
     }
 

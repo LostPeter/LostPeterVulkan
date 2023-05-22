@@ -19,11 +19,12 @@
 
 namespace LostPeter
 {
-    VulkanDevice::VulkanDevice(VkPhysicalDevice vkPhysicalDevice)
+    VulkanDevice::VulkanDevice(VulkanInstance* pInstance, VkPhysicalDevice vkPhysicalDevice)
         : m_vkDevice(VK_NULL_HANDLE)
         , m_vkPhysicalDevice(vkPhysicalDevice)
         , m_pVkPhysicalDeviceFeatures2(nullptr)
         , m_vkMaxMSAASamples(VK_SAMPLE_COUNT_1_BIT)
+        , m_pInstance(pInstance)
         , m_pQueueGraphics(nullptr)
         , m_pQueueCompute(nullptr)
         , m_pQueueTransfer(nullptr)
@@ -431,5 +432,48 @@ namespace LostPeter
         }
         return (supportsPresent == VK_TRUE);
     }
+
+    /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
+    VkSemaphore VulkanDevice::CreateVkSemaphore()
+    {
+        VkSemaphore vkSemaphore;
+        CreateVkSemaphore(vkSemaphore);
+        return vkSemaphore;
+    }
+    void VulkanDevice::CreateVkSemaphore(VkSemaphore& vkSemaphore)
+    {
+        VkSemaphoreCreateInfo semaphoreCreateInfo;
+        Util_ZeroStruct(semaphoreCreateInfo, VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
+        vkCreateSemaphore(m_vkDevice, &semaphoreCreateInfo, UTIL_CPU_ALLOCATOR, &vkSemaphore);
+    }
+    void VulkanDevice::DestroyVkSemaphore(VkSemaphore vkSemaphore)
+    {
+        if (vkSemaphore != VK_NULL_HANDLE)
+        {
+            vkDestroySemaphore(m_vkDevice, vkSemaphore, UTIL_CPU_ALLOCATOR);
+        }
+    }
+
+    VkFence VulkanDevice::CreateVkFence(bool isCreateSignaled)
+    {
+        VkFence vkFence;
+        CreateVkFence(isCreateSignaled, vkFence);
+        return vkFence;
+    }
+    void VulkanDevice::CreateVkFence(bool isCreateSignaled, VkFence& vkFence)
+    {
+        VkFenceCreateInfo fenceCreateInfo;
+        Util_ZeroStruct(fenceCreateInfo, VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
+        fenceCreateInfo.flags = isCreateSignaled ? VK_FENCE_CREATE_SIGNALED_BIT : 0;
+        vkCreateFence(m_vkDevice, &fenceCreateInfo, UTIL_CPU_ALLOCATOR, &vkFence);
+    }
+    void VulkanDevice::DestroyVkFence(VkFence vkFence)
+    {
+        if (vkFence != VK_NULL_HANDLE)
+        {
+            vkDestroyFence(m_vkDevice, vkFence, UTIL_CPU_ALLOCATOR);
+        }
+    }
+
 
 }; //LostPeter

@@ -19,7 +19,7 @@ namespace LostPeter
     class utilExport VulkanDevice
     {
     public:
-        VulkanDevice(VkPhysicalDevice vkPhysicalDevice);
+        VulkanDevice(VulkanInstance* pInstance, VkPhysicalDevice vkPhysicalDevice);
         ~VulkanDevice();
 
     public:
@@ -33,6 +33,7 @@ namespace LostPeter
         VkFormat2PropertiesMap m_mapExtensionFormatProperties;
         VkSampleCountFlagBits m_vkMaxMSAASamples;
 
+        VulkanInstance* m_pInstance;
         VulkanQueue* m_pQueueGraphics;
         VulkanQueue* m_pQueueCompute;
         VulkanQueue* m_pQueueTransfer;
@@ -53,6 +54,7 @@ namespace LostPeter
         UTIL_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
         UTIL_FORCEINLINE VkSampleCountFlagBits GetVkMaxMSAASamples() const { return m_vkMaxMSAASamples; }
 
+        UTIL_FORCEINLINE VulkanInstance* GetInstance() const { return m_pInstance; }
         UTIL_FORCEINLINE VulkanQueue* GetQueueGraphics() const { return m_pQueueGraphics; }
         UTIL_FORCEINLINE VulkanQueue* GetQueueCompute() const { return m_pQueueCompute; }
         UTIL_FORCEINLINE VulkanQueue* GetQueueTransfer() const { return m_pQueueTransfer; }
@@ -91,6 +93,20 @@ namespace LostPeter
                                           ConstCharPtrVector& outDeviceExtensions);
 
         bool isSupportPresent(VulkanQueue* pQueue, VkSurfaceKHR surface);
+
+
+    /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
+    public:
+        //VkSemaphore
+        VkSemaphore CreateVkSemaphore();
+        void CreateVkSemaphore(VkSemaphore& vkSemaphore);
+        void DestroyVkSemaphore(VkSemaphore vkSemaphore);
+        
+        //VkFence
+        VkFence CreateVkFence(bool isCreateSignaled);
+        void CreateVkFence(bool isCreateSignaled, VkFence& vkFence);
+        void DestroyVkFence(VkFence vkFence);
+
     };
 
 }; //LostPeter

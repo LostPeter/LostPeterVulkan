@@ -136,6 +136,7 @@ namespace LostPeter
         , pSceneManager(nullptr)
 
         , pCamera(nullptr)
+        , pCameraRight(nullptr)
 
         , mouseButtonDownLeft(false)
         , mouseButtonDownRight(false)

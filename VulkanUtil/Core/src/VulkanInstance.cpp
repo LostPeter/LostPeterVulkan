@@ -86,12 +86,6 @@ namespace LostPeter
 
     bool VulkanInstance::Init()
     {
-
-        return true;
-    }
-
-    bool VulkanInstance::createInstance()
-    {
         //1> LoadVulkanLibrary
         //if (!VulkanLauncher::GetPlatform()->LoadVulkanLibrary())
         // {
@@ -127,6 +121,90 @@ namespace LostPeter
         return true;
     }
 
+    bool VulkanInstance::createInstance()
+    {
+        getInstanceLayersAndExtensions(m_bIsEnableValidationLayers, 
+                                       m_aInstanceLayers, 
+                                       m_aInstanceExtensions);
+
+        int countAppInstanceExtensions = (int)m_aAppInstanceExtensions.size();
+        if (countAppInstanceExtensions > 0)
+        {
+            Util_LogInfo("VulkanInstance::createInstance: Using app instance extensions count: %d", countAppInstanceExtensions);
+            for (int32 i = 0; i < countAppInstanceExtensions; ++i)
+            {
+                m_aInstanceExtensions.push_back(m_aAppInstanceExtensions[i]);
+                Util_LogInfo("VulkanInstance::createInstance: Using app instance extension: %s", m_aAppInstanceExtensions[i]);
+            }
+        }
+
+        VkApplicationInfo appInfo = {};
+        appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+        appInfo.pApplicationName = "LostPeterVulkan";
+        appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+        appInfo.pEngineName = "LostPeter Engine";
+        appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    #if UTIL_PLATFORM == UTIL_PLATFORM_IOS || UTIL_PLATFORM == UTIL_PLATFORM_ANDROID
+        appInfo.apiVersion         = VK_API_VERSION_1_0;
+    #else
+        appInfo.apiVersion         = VK_API_VERSION_1_1;
+    #endif
+
+        VkInstanceCreateInfo instanceCreateInfo;
+        Util_ZeroStruct(instanceCreateInfo, VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO);
+        instanceCreateInfo.pApplicationInfo = &appInfo;
+        instanceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(m_aInstanceExtensions.size());
+        instanceCreateInfo.ppEnabledExtensionNames = m_aInstanceExtensions.size() > 0 ? m_aInstanceExtensions.data() : nullptr;
+        instanceCreateInfo.enabledLayerCount = uint32_t(m_aInstanceLayers.size());
+	    instanceCreateInfo.ppEnabledLayerNames = m_aInstanceLayers.size() > 0 ? m_aInstanceLayers.data() : nullptr;
+
+        VkResult result = vkCreateInstance(&instanceCreateInfo, nullptr, &m_vkInstance);
+        if (result == VK_ERROR_INCOMPATIBLE_DRIVER) 
+        {
+            Util_LogError("*********************** VulkanInstance::createInstance: Can not find a compatible Vulkan driver (ICD) !");
+        }
+        else if (result == VK_ERROR_EXTENSION_NOT_PRESENT)
+        {
+            String missingExtensions;
+            uint32 propertyCount = 0;
+            vkEnumerateInstanceExtensionProperties(nullptr, &propertyCount, nullptr);
+            std::vector<VkExtensionProperties> properties(propertyCount);
+            vkEnumerateInstanceExtensionProperties(nullptr, &propertyCount, properties.data());
+
+            for (const char* extension : m_aInstanceExtensions)
+            {
+                bool found = false;
+                for (uint32 i = 0; i < propertyCount; ++i)
+                {
+                    const char* propExtension = properties[i].extensionName;
+                    if (strcmp(propExtension, extension) == 0) 
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) 
+                {
+                    String extensionStr(extension);
+                    missingExtensions += extensionStr + "\n";
+                }
+            }
+
+            Util_LogError("*********************** VulkanInstance::createInstance: Vulkan driver doesn't contain specified extensions: %s !", missingExtensions.c_str());
+        }
+        else if (result != VK_SUCCESS) 
+        {
+            Util_LogError("*********************** VulkanInstance::createInstance: Create vulkan instance failed !");
+        }
+        else 
+        {
+            Util_LogInfo("VulkanInstance::createInstance: Create vulkan instance success !");
+        }
+
+        //volkLoadInstanceOnly(m_vkInstance);
+        return true;
+    }
+
     bool VulkanInstance::createDebugReport()
     {
         if (!m_bIsEnableValidationLayers)
@@ -144,8 +222,97 @@ namespace LostPeter
 
     bool VulkanInstance::createDevice()
     {
+        uint32_t physicalDevicesCount = 0;
+        VkResult result = vkEnumeratePhysicalDevices(m_vkInstance, &physicalDevicesCount, nullptr);
+        if (result == VK_ERROR_INITIALIZATION_FAILED)
+        {
+            Util_LogError("*********************** VulkanInstance::createDevice: Can not find a compatible Vulkan device or driver !");
+            return false;
+        }
+        if (physicalDevicesCount == 0)
+        {
+            Util_LogError("*********************** VulkanInstance::createDevice: Can not enumerate physical devices, count is 0 !");
+            return false;
+        }
 
-        return true;
+        std::vector<VkPhysicalDevice> physicalDevices(physicalDevicesCount);
+        vkEnumeratePhysicalDevices(m_vkInstance, &physicalDevicesCount, physicalDevices.data());
+
+        struct DeviceInfo
+        {
+            VulkanDevice* pDevice;
+            int32 deviceIndex;
+        };
+        std::vector<DeviceInfo> aDevices_Discrete;
+	    std::vector<DeviceInfo> aDevices_Integrated;
+        std::vector<VulkanDevice*> aDevices;
+
+        for (uint32 i = 0; i < physicalDevicesCount; i++)
+        {
+            VulkanDevice* pDevice = new VulkanDevice(this, physicalDevices[i]);
+            bool isDiscrete = pDevice->QueryGPU(i);
+            if (isDiscrete) 
+            {
+                aDevices_Discrete.push_back({pDevice, (int32)i});
+            }
+            else 
+            {
+                aDevices_Integrated.push_back({pDevice, (int32)i});
+            }
+            aDevices.push_back(pDevice);
+        }
+
+        for (size_t i = 0; i < aDevices_Integrated.size(); ++i) 
+        {
+            aDevices_Discrete.push_back(aDevices_Integrated[i]);
+        }
+
+        int32 deviceIndex = -1;
+        int32 countDevice = (int)aDevices_Discrete.size();
+        if (countDevice > 0)
+        {
+            if (countDevice > 1 && m_nPreferredVendorID != -1)
+            {
+                for (int32 i = 0; i < countDevice; ++i)
+                {
+                    if (aDevices_Discrete[i].pDevice->GetVkPhysicalDeviceProperties().vendorID == (uint32_t)m_nPreferredVendorID)
+                    {
+                        m_pDevice = aDevices_Discrete[i].pDevice;
+                        deviceIndex = aDevices_Discrete[i].deviceIndex;
+                        break;
+                    }
+                }
+            }
+            if (deviceIndex == -1)
+            {
+                m_pDevice = aDevices_Discrete[0].pDevice;
+                deviceIndex = aDevices_Discrete[0].deviceIndex;
+            }
+
+            size_t count_dev = aDevices.size();
+            for (size_t i = 0; i < count_dev; i++)
+            {
+                if (aDevices[i] == m_pDevice)
+                    continue;
+                UTIL_DELETE(aDevices[i])
+            }
+            aDevices.clear();
+        }
+        else
+        {
+            Util_LogError("*********************** VulkanInstance::createDevice: Can not find device !");
+            deviceIndex = -1;
+            return false;
+        }
+
+        size_t count_extension = m_aAppDeviceExtensions.size(); 
+        for (size_t i = 0; i < count_extension; ++i)
+        {
+            m_pDevice->AddAppDeviceExtensions(m_aAppDeviceExtensions[i]);
+        }
+
+        m_pDevice->SetVkPhysicalDeviceFeatures2(m_pVkPhysicalDeviceFeatures2);
+        return m_pDevice->Init(deviceIndex, m_bIsEnableValidationLayers);
     }
 
     void VulkanInstance::getInstanceLayersAndExtensions(bool bIsEnableValidationLayers,

@@ -21,26 +21,25 @@ namespace LostPeter
         friend class VulkanFenceManager;
 
     public:
-        VulkanFence(VulkanDevice* pDevice, VulkanFenceManager* pFenceManager, bool bCreateSignaled);
+        VulkanFence(VulkanFenceManager* pFenceManager, bool bCreateSignaled);
         ~VulkanFence();
 
     public:
     protected:
+        VulkanFenceManager* m_pFenceManager;
         VkFence m_vkFence;
         VulkanFenceStateType m_eFenceState;
-        VulkanFenceManager* m_pFenceManager;
 
     public:
+         UTIL_FORCEINLINE VulkanFenceManager* GetFenceManager() { return m_pFenceManager; }
         UTIL_FORCEINLINE const VkFence& GetVkFence() const { return m_vkFence; }
         UTIL_FORCEINLINE VkFence GetVkFence() { return m_vkFence; }
         UTIL_FORCEINLINE bool IsSignaled() const { return m_eFenceState == Vulkan_FenceState_Signaled; }
         UTIL_FORCEINLINE VulkanFenceStateType GetFenceStateType() const { return m_eFenceState; }
         UTIL_FORCEINLINE void SetFenceStateType(VulkanFenceStateType eFenceState) { m_eFenceState = eFenceState; }
-        UTIL_FORCEINLINE VulkanFenceManager* GetFenceManager() { return m_pFenceManager; }
 
     public:
         void Destroy();
-        
     };
 
 }; //LostPeter

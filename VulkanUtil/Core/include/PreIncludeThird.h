@@ -12,7 +12,6 @@
 #ifndef _PRE_INCLUDE_THIRD_H_
 #define _PRE_INCLUDE_THIRD_H_
 
-
 #include "PreMacro.h"
 
 
@@ -49,7 +48,7 @@
 #include <noise/noise.h>
 #include <noiseutils/noiseutils.h>
 
-// spdlog
+//spdlog
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>

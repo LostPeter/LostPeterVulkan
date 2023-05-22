@@ -64,7 +64,7 @@ namespace LostPeter
             return pFence;
         }
 
-        VulkanFence* pFenceNew = new VulkanFence(m_pDevice, this, bCreateSignaled);
+        VulkanFence* pFenceNew = new VulkanFence(this, bCreateSignaled);
         m_aFences_Used.push_back(pFenceNew);
         return pFenceNew;
     }

@@ -32,6 +32,83 @@ namespace LostPeter
     #define SHADER_NAME_Fragment                    "frag"
     #define SHADER_NAME_Compute                     "comp"
 
+    #define C_PI                            3.14159265f                                         // PI
+    #define C_PI_HALF				        1.57079632f                                         // 0.5 * PI
+    #define	C_PI_TWO					    6.28318530717958647692							    // 2.0 * PI
+    #define C_PI_INV				        0.31830988618379067154                              // 1.0 / PI
+    #define	C_EXP					        2.71828182845904523536							    // e
+	#define	C_LOG2_INVERT			        3.32192809488736234787								// 1.0 / log10(2)
+	#define	C_LN2					        0.693147180559945									// ln(2)
+	#define	C_LN2_INVERT				    1.44269504089										// 1.0f / ln(2)
+			
+	#define	C_INV3					        0.33333333333333333333							    // 1/3
+	#define	C_INV6					        0.16666666666666666666								// 1/6
+	#define	C_INV7					        0.14285714285714285714								// 1/7
+	#define	C_INV9					        0.11111111111111111111								// 1/9
+	#define	C_INV255					    0.00392156862745098039								// 1/255
+
+	#define	C_SQRT2					        1.4142135623730950488							    // sqrt(2)
+	#define	C_INVSQRT2				        0.707106781188										// 1 / sqrt(2)
+			
+	#define	C_SQRT3					        1.7320508075688772935								// sqrt(3)
+	#define	C_INVSQRT3				        0.577350269189										// 1 / sqrt(3)             
+    
+    #define C_MIN_INT8		                ((int8)		-128)
+    #define C_MAX_INT8		                ((int8)		0x7f)
+    #define C_MIN_UINT8		                ((uint8)	0x00)
+    #define C_MAX_UINT8		                ((uint8)	0xff)
+    #define C_MIN_INT16		                ((int16)	-32768)
+    #define C_MAX_INT16		                ((int16)	0x7fff)
+    #define	C_MIN_UINT16		            ((uint16)	0x0000)
+    #define C_MAX_UINT16		            ((uint16)	0xffff)
+    #define C_MIN_INT32		                ((int32)	0x80000000)
+    #define C_MAX_INT32		                ((int32)	0x7fffffff)
+    #define	C_MIN_UINT32		            ((uint32)	0x00000000)
+    #define C_MAX_UINT32		            ((uint32)	0xffffffff)
+    #define C_MIN_INT64		                ((int64)	0x8000000000000000)
+    #define C_MAX_INT64		                ((int64)	0x7fffffffffffffff)
+    #define C_MIN_UINT64		            ((uint64)	0x0000000000000000)
+    #define C_MAX_UINT64		            ((uint64)	0xffffffffffffffff)
+    #define	C_MIN_FLOAT				        (-FLT_MAX)	
+    #define	C_MAX_FLOAT				        FLT_MAX		
+    
+    #define C_POS_INFINITY_NEG              (-FLT_MAX)
+    #define C_POS_INFINITY                  FLT_MAX
+
+    #define C_DELTA				            0.00001f
+
+    #define C_NUMBER_SMALL		            1.e-8f
+    #define C_NUMBER_SMALL_KINDA	        1.e-4f
+    #define C_NUMBER_BIG			        3.4e+38f
+    #define C_NUMBER_EULERS                 2.71828182845904523536f
+
+    #define C_THRESH_POINT_ON_PLANE			0.10f
+    #define C_THRESH_POINT_ON_SIDE			0.20f
+    #define C_THRESH_POINTS_ARE_SAME		0.00002f	
+    #define C_THRESH_POINTS_ARE_NEAR		0.015f
+    #define C_THRESH_NORMALS_ARE_SAME		0.00002f
+    #define C_THRESH_UVS_ARE_SAME			0.0009765625f
+    #define C_THRESH_VECTORS_ARE_NEAR		0.0004f
+    #define C_THRESH_SPLIT_POLY_WITH_PLANE	0.25f	
+    #define C_THRESH_SPLIT_POLY_PRECISELY	0.01f
+    #define C_THRESH_ZERO_NORM_SQUARED		0.0001f	
+    #define C_THRESH_NORMALS_ARE_PARALLEL	0.999845f	
+    #define C_THRESH_NORMALS_ARE_ORTHOGONAL	0.017455f
+    #define C_THRESH_VECTOR_NORMALIZED		0.01f
+    #define C_THRESH_QUAT_NORMALIZED		0.01f
+
+    #define C_CONFIG_MAX_RENDER_TARGET_MULTIPLE_COUNT       8
+    #define C_CONFIG_MAX_TEXTURE_UNIT_COUNT				    16
+    #define C_CONFIG_MAX_TEXTURE_COORD_SETS_COUNT		    8
+    #define	C_CONFIG_MAX_TEXTURE_UV_SCROLL_ANIM_COUNT	    4
+    #define C_CONFIG_MAX_BONE_BLEND_WEIGHTS_COUNT	        4
+    #define C_CONFIG_MAX_BONE_COUNT					        256
+    #define C_CONFIG_MAX_BUFFER_SOURCE_COUNT				16
+    #define C_CONFIG_MAX_LIGHT_COUNT						8
+    #define C_CONFIG_MAX_SHADER_PARAM_COUNT				    32
+    #define C_CONFIG_MAX_GLYPHS_COUNT				        (9030 - 32)
+    #define C_CONFIG_GLYPH_INDEX(c)					        c - 33
+
     #define UTIL_CPU_ALLOCATOR              nullptr
 
 ////////////////////////////// Typedef /////////////////////////////
@@ -470,6 +547,7 @@ namespace LostPeter
     class VulkanSample;
     class VulkanSceneManager;
     class VulkanSceneObject;
+    class VulkanSemaphore;
     class VulkanSwapChain;
     class VulkanTexture;
     class VulkanTimer;
