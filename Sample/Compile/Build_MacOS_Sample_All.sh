@@ -29,3 +29,4 @@ rebuild=${2}
 ./Build_MacOS_Sample.sh vulkan_014_multirenderpass $debug $rebuild
 ./Build_MacOS_Sample.sh vulkan_015_multiview $debug $rebuild
 ./Build_MacOS_Sample.sh vulkan_016_multiwindow $debug $rebuild
+./Build_MacOS_Sample.sh vulkan_017_terrain $debug $rebuild

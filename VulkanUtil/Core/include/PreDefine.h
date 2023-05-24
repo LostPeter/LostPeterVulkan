@@ -192,12 +192,13 @@ namespace LostPeter
     {
         Vulkan_Vertex_Pos2Color4 = 0,                   //0:    Pos2Color4
         Vulkan_Vertex_Pos3Normal3,                      //1:    Pos3Normal3
-        Vulkan_Vertex_Pos2Color4Tex2,                   //2:    Pos2Color4Tex2
-        Vulkan_Vertex_Pos3Color4Tex2,                   //3:    Pos3Color4Tex2
-        Vulkan_Vertex_Pos3Color4Normal3Tex2,            //4:    Pos3Color4Normal3Tex2
-        Vulkan_Vertex_Pos3Color4Normal3Tex4,            //5:    Pos3Color4Normal3Tex4
-        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2,    //6:    Pos3Color4Normal3Tangent3Tex2
-        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4,    //7:    Pos3Color4Normal3Tangent3Tex4
+        Vulkan_Vertex_Pos3Normal3Tex2,                  //2:    Pos3Normal3Tex2
+        Vulkan_Vertex_Pos2Color4Tex2,                   //3:    Pos2Color4Tex2
+        Vulkan_Vertex_Pos3Color4Tex2,                   //4:    Pos3Color4Tex2
+        Vulkan_Vertex_Pos3Color4Normal3Tex2,            //5:    Pos3Color4Normal3Tex2
+        Vulkan_Vertex_Pos3Color4Normal3Tex4,            //6:    Pos3Color4Normal3Tex4
+        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2,    //7:    Pos3Color4Normal3Tangent3Tex2
+        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4,    //8:    Pos3Color4Normal3Tangent3Tex4
 
         Vulkan_Vertex_Count
     };
@@ -233,6 +234,7 @@ namespace LostPeter
         Vulkan_MeshGeometry_Torus,                      //10:   Torus
         Vulkan_MeshGeometry_SkyBox,                     //11:   SkyBox
         Vulkan_MeshGeometry_SkyDome,                    //12:   SkyDome
+        Vulkan_MeshGeometry_Terrain,                    //13:   Terrain
 
         Vulkan_MeshGeometry_Count,
     };

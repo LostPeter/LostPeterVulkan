@@ -296,6 +296,34 @@ namespace LostPeter
         virtual String ToName();
     };
 
+    //Terrain
+    class utilExport VulkanMeshCreateParam_Terrain : public VulkanMeshCreateParam
+    {
+    public:
+        VulkanMeshCreateParam_Terrain();
+        VulkanMeshCreateParam_Terrain(float _offsetX,
+                                      float _offsetZ,
+                                      float _width,
+                                      float _height,
+                                      uint32 _vertexX,
+                                      uint32 _vertexZ,
+                                      bool _flipV,
+                                      bool _rightHand);    
+        virtual ~VulkanMeshCreateParam_Terrain();
+
+    public:
+        static String ms_nameType;
+    public:
+        float offsetX;
+        float offsetZ;
+        float width;
+        float height;
+        uint32 vertexX;
+        uint32 vertexZ;
+
+    public:
+        virtual String ToName();
+    };
 
     ///////////////////////////////////////// VulkanMeshGeometry //////////////////////////////////////////////
     class utilExport VulkanMeshGeometry
@@ -443,6 +471,21 @@ namespace LostPeter
             CreateSkyDome(meshData, pParam->flipV, pParam->rightHand);
         }
         static void CreateSkyDome(MeshData& meshData,
+                                  bool flipV,
+                                  bool rightHand);
+
+        //Terrain
+        static void CreateTerrain(MeshData& meshData, VulkanMeshCreateParam_Terrain* pParam)
+        {
+            CreateTerrain(meshData, pParam->offsetX, pParam->offsetZ, pParam->width, pParam->height, pParam->vertexX, pParam->vertexZ, pParam->flipV, pParam->rightHand);
+        }
+        static void CreateTerrain(MeshData& meshData,
+                                  float offsetX,
+                                  float offsetZ,
+                                  float width,
+                                  float height,
+                                  uint32 vertexX,
+                                  uint32 vertexZ,
                                   bool flipV,
                                   bool rightHand);
 

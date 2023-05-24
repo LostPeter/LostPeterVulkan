@@ -118,6 +118,7 @@ namespace LostPeter
         }
     };
 
+
     //////////////////////////////// Vertex_Pos3Normal3 /////////////////////////////
     //1: Vulkan_Vertex_Pos3Normal3
     struct utilExport Vertex_Pos3Normal3
@@ -218,8 +219,122 @@ namespace LostPeter
         }
     };
 
+
+    //////////////////////////////// Vertex_Pos3Normal3Tex2 /////////////////////////
+    //2: Vulkan_Vertex_Pos3Normal3Tex2
+    struct utilExport Vertex_Pos3Normal3Tex2
+    {
+        static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
+        static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
+
+        glm::vec3 pos;
+        glm::vec3 normal;
+        glm::vec2 texCoord;
+
+
+        Vertex_Pos3Normal3Tex2()
+        {
+            Reset();
+        }
+
+        Vertex_Pos3Normal3Tex2(const glm::vec3& _pos, 
+                               const glm::vec3& _normal,
+                               const glm::vec2& _texCoord)
+            : pos(_pos)
+            , normal(_normal)
+            , texCoord(_texCoord)
+        {
+
+        }
+
+        static const VkVertexInputBindingDescriptionVector& GetBindingDescriptions()
+        {
+            if (s_aBindingDescriptions.empty())
+            {
+                createBindingDescriptions();
+            }
+            return s_aBindingDescriptions;
+        } 
+        static VkVertexInputBindingDescriptionVector* GetBindingDescriptionsPtr()
+        {
+            if (s_aBindingDescriptions.empty())
+            {
+                createBindingDescriptions();
+            }
+            return &s_aBindingDescriptions;
+        }
+        static void createBindingDescriptions()
+        {
+            s_aBindingDescriptions.clear();
+
+            VkVertexInputBindingDescription bindingDescription0 = {};
+            bindingDescription0.binding = 0;
+            bindingDescription0.stride = sizeof(Vertex_Pos3Normal3Tex2);
+            bindingDescription0.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+            s_aBindingDescriptions.push_back(bindingDescription0);
+        }
+
+        static const VkVertexInputAttributeDescriptionVector& GetAttributeDescriptions()
+        {
+            if (s_aAttributeDescriptions.empty())
+            {
+                createAttributeDescriptions();
+            }
+            return s_aAttributeDescriptions;
+        }
+        static VkVertexInputAttributeDescriptionVector* GetAttributeDescriptionsPtr()
+        {
+            if (s_aAttributeDescriptions.empty())
+            {
+                createAttributeDescriptions();
+            }
+            return &s_aAttributeDescriptions;
+        }
+        static void createAttributeDescriptions()
+        {
+            s_aAttributeDescriptions.clear();
+
+            VkVertexInputAttributeDescription attributeDescription0 = {};
+            attributeDescription0.binding = 0;
+            attributeDescription0.location = 0;
+            attributeDescription0.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription0.offset = offsetof(Vertex_Pos3Normal3Tex2, pos);
+            s_aAttributeDescriptions.push_back(attributeDescription0);
+
+            VkVertexInputAttributeDescription attributeDescription1 = {};
+            attributeDescription1.binding = 0;
+            attributeDescription1.location = 1;
+            attributeDescription1.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription1.offset = offsetof(Vertex_Pos3Normal3Tex2, normal);
+            s_aAttributeDescriptions.push_back(attributeDescription1);
+
+            VkVertexInputAttributeDescription attributeDescription2 = {};
+            attributeDescription2.binding = 0;
+            attributeDescription2.location = 2;
+            attributeDescription2.format = VK_FORMAT_R32G32_SFLOAT;
+            attributeDescription2.offset = offsetof(Vertex_Pos3Normal3Tex2, texCoord);
+            s_aAttributeDescriptions.push_back(attributeDescription2);
+        }
+
+
+        bool operator==(const Vertex_Pos3Normal3Tex2& other) const 
+        {
+            return this->pos == other.pos && 
+                this->normal == other.normal &&
+                this->texCoord == other.texCoord;
+        }
+
+        void Reset()
+        {
+            this->pos = glm::vec3(0, 0, 0);
+            this->normal = glm::vec3(0, 1, 0);
+            this->texCoord = glm::vec2(0, 0);
+        }
+    };
+
+
     //////////////////////////////// Vertex_Pos2Color4Tex2 //////////////////////////
-    //2: Vulkan_Vertex_Pos2Color4Tex2
+    //3: Vulkan_Vertex_Pos2Color4Tex2
     struct utilExport Vertex_Pos2Color4Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -329,8 +444,9 @@ namespace LostPeter
         }
     };
 
+
     //////////////////////////////// Vertex_Pos3Color4Tex2 //////////////////////////
-    //3: Vulkan_Vertex_Pos3Color4Tex2
+    //4: Vulkan_Vertex_Pos3Color4Tex2
     struct utilExport Vertex_Pos3Color4Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -441,7 +557,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tex2 ///////////////////
-    //4: Vulkan_Vertex_Pos3Color4Normal3Tex2
+    //5: Vulkan_Vertex_Pos3Color4Normal3Tex2
     struct utilExport Vertex_Pos3Color4Normal3Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -564,7 +680,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tex4 ///////////////////
-    //5: Vulkan_Vertex_Pos3Color4Normal3Tex4
+    //6: Vulkan_Vertex_Pos3Color4Normal3Tex4
     struct utilExport Vertex_Pos3Color4Normal3Tex4
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -687,7 +803,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex2 ///////////////
-    //6: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2
+    //7: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2
     struct utilExport Vertex_Pos3Color4Normal3Tangent3Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -850,7 +966,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex4 ///////////////
-    //7: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4
+    //8: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4
     struct utilExport Vertex_Pos3Color4Normal3Tangent3Tex4
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -1425,6 +1541,17 @@ namespace std
             size_t hash = std::hash<glm::vec2>()(vertex.pos);
             hash = hash ^ (std::hash<glm::vec3>()(vertex.normal) << 1);
             hash = hash >> 1;
+            return hash;
+        }
+    };
+
+    template<> struct hash<LostPeter::Vertex_Pos3Normal3Tex2> {
+        size_t operator()(LostPeter::Vertex_Pos3Normal3Tex2 const& vertex) const 
+        {
+            size_t hash = std::hash<glm::vec2>()(vertex.pos);
+            hash = hash ^ (std::hash<glm::vec3>()(vertex.normal) << 1);
+            hash = hash >> 1;
+            hash = hash ^ (std::hash<glm::vec2>()(vertex.texCoord) << 1);
             return hash;
         }
     };

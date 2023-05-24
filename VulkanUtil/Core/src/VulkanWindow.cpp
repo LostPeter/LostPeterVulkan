@@ -12,6 +12,7 @@
 #include "../include/PreInclude.h"
 #include "../include/VulkanWindow.h"
 #include "../include/VulkanMeshLoader.h"
+#include "../include/VulkanMeshGeometry.h"
 #include "../include/VulkanCamera.h"
 #include "../include/VulkanTimer.h"
 #include "../include/VulkanUtilString.h"
@@ -126,6 +127,7 @@ namespace LostPeter
         , cfg_shaderVertex_Path("")
         , cfg_shaderFragment_Path("")
         , cfg_texture_Path("")
+        , cfg_terrain_Path("")
 
         , imgui_IsEnable(false)
         , imgui_MinimalSwapchainImages(0)
@@ -134,6 +136,21 @@ namespace LostPeter
         , imgui_PathLog("")
 
         , pSceneManager(nullptr)
+
+        , poTerrainHeightMapData(nullptr)
+        , poTerrainHeightMapDataSize(0)
+        , poTerrainHeightMapSize(0)
+
+        , poTerrainVertexCount(0)
+        , poTerrainVertexBuffer_Size(0)
+        , poTerrainVertexBuffer_Data(nullptr)
+        , poTerrainVertexBuffer(VK_NULL_HANDLE)
+        , poTerrainVertexBufferMemory(VK_NULL_HANDLE)
+        , poTerrainIndexCount(0)
+        , poTerrainIndexBuffer_Size(0)
+        , poTerrainIndexBuffer_Data(nullptr)
+        , poTerrainIndexBuffer(VK_NULL_HANDLE)
+        , poTerrainIndexBufferMemory(VK_NULL_HANDLE)
 
         , pCamera(nullptr)
         , pCameraRight(nullptr)
@@ -699,7 +716,7 @@ namespace LostPeter
             }
         } 
 
-        if (this->poPhysicalDevice == nullptr) 
+        if (this->poPhysicalDevice == VK_NULL_HANDLE) 
         {
             String msg = "VulkanWindow::pickPhysicalDevice: Failed to find a suitable GPU !";
             Util_LogError(msg.c_str());
@@ -2347,8 +2364,9 @@ namespace LostPeter
     {
         Util_LogInfo("**********<2> VulkanWindow::loadAssets start **********");
         {
-            //1> Create Scene/Camera
+            //1> Create Scene/Terrain/Camera
             createScene();
+            createTerrain();
             createCamera();
 
             //2> - 3> 
@@ -2375,13 +2393,13 @@ namespace LostPeter
     }
     void VulkanWindow::createScene()
     {
-        Util_LogInfo("*****<2-1> VulkanWindow::createScene start *****");
+        Util_LogInfo("*****<2-1-1> VulkanWindow::createScene start *****");
         {
             //1> createSceneManager
             createSceneManager();
 
         }
-        Util_LogInfo("*****<2-1> VulkanWindow::createScene finish *****");
+        Util_LogInfo("*****<2-1-1> VulkanWindow::createScene finish *****");
     }
     void VulkanWindow::createSceneManager()
     {
@@ -2460,6 +2478,123 @@ namespace LostPeter
 
             Util_LogInfo("<2-3-8> VulkanWindow::buildScene_PipelineStates finish !");
         }
+
+    void VulkanWindow::createTerrain()
+    {
+         Util_LogInfo("*****<2-1-2> VulkanWindow::createTerrain start *****");
+        {
+            //1> loadTerrainData
+            if (loadTerrainData())
+            {
+                //2> setupTerrainGeometry
+                setupTerrainGeometry();
+            }
+        }
+        Util_LogInfo("*****<2-1-2> VulkanWindow::createTerrain finish *****");
+    }
+        bool VulkanWindow::loadTerrainData()
+        {
+            if (this->cfg_terrain_Path.empty())
+                return false;
+
+            this->poTerrainHeightMapData = nullptr;
+            this->poTerrainHeightMapDataSize = 0;
+            this->poTerrainHeightMapSize = 0;
+            if (!VulkanUtil::LoadAssetFileToBuffer(this->cfg_terrain_Path.c_str(), &this->poTerrainHeightMapData, this->poTerrainHeightMapDataSize, false))
+            {
+                Util_LogError("VulkanWindow::loadTerrainData failed, path: [%s] !", this->cfg_terrain_Path.c_str());
+                return false;
+            }
+            
+            this->poTerrainHeightMapSize = (int32)VulkanMath::Sqrt(this->poTerrainHeightMapDataSize / 2);
+
+            Util_LogInfo("VulkanWindow::loadTerrainData: Load terrain data: [%s] success, heightmap data size: [%d], heightmap size: [%d] !", 
+                         this->cfg_terrain_Path.c_str(), this->poTerrainHeightMapDataSize, this->poTerrainHeightMapSize);
+            return true;
+        }
+        void VulkanWindow::setupTerrainGeometry()
+        {   
+            //1> Mesh Geometry
+            MeshData meshData;
+            float fSize = (float)(this->poTerrainHeightMapSize - 1.0f);
+            uint32 nVertexCount = (uint32)this->poTerrainHeightMapSize;
+            VulkanMeshGeometry::CreateTerrain(meshData,
+                                              0.0f,
+                                              0.0f,
+                                              fSize,
+                                              fSize,
+                                              nVertexCount,
+                                              nVertexCount,
+                                              false,
+                                              false);
+
+            int count_vertex = (int)meshData.vertices.size();
+            this->poTerrain_Pos3Normal3Tex2.clear();
+            this->poTerrain_Pos3Normal3Tex2.reserve(count_vertex);
+            for (int i = 0; i < count_vertex; i++)
+            {
+                MeshVertex& vertex = meshData.vertices[i];
+                Vertex_Pos3Normal3Tex2 v;
+                v.pos = vertex.pos;
+                v.normal = vertex.normal;
+                v.texCoord = vertex.texCoord;
+                this->poTerrain_Pos3Normal3Tex2.push_back(v);
+            }
+
+            int count_index = (int)meshData.indices32.size();
+            this->poTerrain_Indices.clear();
+            this->poTerrain_Indices.reserve(count_index);
+            for (int i = 0; i < count_index; i++)
+            {
+                this->poTerrain_Indices.push_back(meshData.indices32[i]);
+            }
+
+            this->poTerrainVertexCount = (uint32_t)this->poTerrain_Pos3Normal3Tex2.size();
+            this->poTerrainVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Normal3Tex2);
+            this->poTerrainVertexBuffer_Data = &this->poTerrain_Pos3Normal3Tex2[0];
+            this->poTerrainIndexCount = (uint32_t)this->poTerrain_Indices.size();
+            this->poTerrainIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+            this->poTerrainIndexBuffer_Data = &this->poTerrain_Indices[0];
+
+            Util_LogInfo("VulkanWindow::setupTerrainGeometry: create terrain mesh: [Pos3Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                     (int)this->poTerrain_Pos3Normal3Tex2.size(), 
+                     (int)this->poTerrain_Indices.size());
+
+            //2> createVertexBuffer
+            createVertexBuffer(this->poTerrainVertexBuffer_Size, this->poTerrainVertexBuffer_Data, this->poTerrainVertexBuffer, this->poTerrainVertexBufferMemory);
+
+            //3> createIndexBuffer
+            createIndexBuffer(this->poTerrainIndexBuffer_Size, this->poTerrainIndexBuffer_Data, this->poTerrainIndexBuffer, this->poTerrainIndexBufferMemory);
+            
+        }
+    void VulkanWindow::destroyTerrain()
+    {
+        UTIL_DELETE_T(this->poTerrainHeightMapData)
+        this->poTerrainHeightMapDataSize = 0;
+        this->poTerrainHeightMapSize = 0;
+        
+        this->poTerrain_Pos3Normal3Tex2.clear();
+        if (this->poTerrainVertexBuffer != VK_NULL_HANDLE)
+        {
+            destroyVkBuffer(this->poTerrainVertexBuffer, this->poTerrainVertexBufferMemory);
+        }
+        this->poTerrainVertexBuffer = VK_NULL_HANDLE;
+        this->poTerrainVertexBufferMemory = VK_NULL_HANDLE;
+        this->poTerrainVertexCount = 0;
+        this->poTerrainVertexBuffer_Size = 0;
+        this->poTerrainVertexBuffer_Data = nullptr;
+
+        this->poTerrain_Indices.clear();
+        if (this->poTerrainIndexBuffer != VK_NULL_HANDLE)
+        {
+            destroyVkBuffer(this->poTerrainIndexBuffer, this->poTerrainIndexBufferMemory);
+        }
+        this->poTerrainIndexBuffer = VK_NULL_HANDLE;
+        this->poTerrainIndexBufferMemory = VK_NULL_HANDLE;
+        this->poTerrainIndexCount = 0;
+        this->poTerrainIndexBuffer_Size = 0;
+        this->poTerrainIndexBuffer_Data = nullptr;
+    }
 
     void VulkanWindow::createCamera()
     {
@@ -4377,7 +4512,7 @@ namespace LostPeter
     }
         void VulkanWindow::createVkPipelineCache()
         {
-            if (this->poPipelineCache == nullptr)
+            if (this->poPipelineCache == VK_NULL_HANDLE)
             {
                 VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
                 pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
@@ -4741,7 +4876,7 @@ namespace LostPeter
                 VkPipeline pipeline;
                 if (!Util_CheckVkResult(vkCreateGraphicsPipelines(this->poDevice, this->poPipelineCache, 1, &pipelineInfo, nullptr, &pipeline), "vkCreateGraphicsPipelines"))
                 {
-                    Util_LogError("*********************** VulkanUtil::createVkGraphicsPipeline: vkCreateGraphicsPipelines failed !");
+                    Util_LogError("*********************** VulkanWindow::createVkGraphicsPipeline: vkCreateGraphicsPipelines failed !");
                     return VK_NULL_HANDLE;
                 }
                 return pipeline;
@@ -4796,7 +4931,7 @@ namespace LostPeter
                 VkPipeline pipeline;
                 if (!Util_CheckVkResult(vkCreateComputePipelines(this->poDevice, this->poPipelineCache, 1, &pipelineInfo, nullptr, &pipeline), "vkCreateComputePipelines"))
                 {
-                    Util_LogError("*********************** VulkanUtil::createVkComputePipeline: vkCreateComputePipelines failed !");
+                    Util_LogError("*********************** VulkanWindow::createVkComputePipeline: vkCreateComputePipelines failed !");
                     return VK_NULL_HANDLE;
                 }
                 return pipeline;
@@ -5160,10 +5295,10 @@ namespace LostPeter
 
     bool VulkanWindow::beginCompute()
     {
-        if (this->poQueueCompute == nullptr ||
-            this->poCommandBufferCompute == nullptr ||
-            this->poGraphicsWaitSemaphore == nullptr ||
-            this->poComputeWaitSemaphore == nullptr)
+        if (this->poQueueCompute == VK_NULL_HANDLE ||
+            this->poCommandBufferCompute == VK_NULL_HANDLE ||
+            this->poGraphicsWaitSemaphore == VK_NULL_HANDLE ||
+            this->poComputeWaitSemaphore == VK_NULL_HANDLE)
         {
             return false;
         }
@@ -6013,7 +6148,7 @@ namespace LostPeter
                         {
                             bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->poPipelineLayout, 0, 1, &this->poDescriptorSets[this->poSwapChainImageIndex], 0, nullptr);
                         }
-                        if (this->poIndexBuffer != nullptr)
+                        if (this->poIndexBuffer != VK_NULL_HANDLE)
                         {
                             bindIndexBuffer(commandBuffer, this->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
@@ -6135,7 +6270,7 @@ namespace LostPeter
         void VulkanWindow::render()
         {
             //1> Wait
-            if (this->poImagesInFlight[this->poSwapChainImageIndex] != nullptr)
+            if (this->poImagesInFlight[this->poSwapChainImageIndex] != VK_NULL_HANDLE)
             {
                 vkWaitForFences(this->poDevice, 1, &this->poImagesInFlight[this->poSwapChainImageIndex], VK_TRUE, UINT64_MAX);
             }
@@ -6145,13 +6280,13 @@ namespace LostPeter
             VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
             VkSemaphoreVector aWaitSemaphores;
-            if (this->poComputeWaitSemaphore != nullptr)
+            if (this->poComputeWaitSemaphore != VK_NULL_HANDLE)
                 aWaitSemaphores.push_back(this->poComputeWaitSemaphore);
             VkSemaphore presentCompleteSemaphore = this->poPresentCompleteSemaphores[this->poCurrentFrame];
             aWaitSemaphores.push_back(presentCompleteSemaphore);
 
             VkSemaphoreVector aSignalSemaphores;
-            if (this->poGraphicsWaitSemaphore != nullptr)
+            if (this->poGraphicsWaitSemaphore != VK_NULL_HANDLE)
                 aSignalSemaphores.push_back(this->poGraphicsWaitSemaphore);
             VkSemaphore renderCompleteSemaphore = this->poRenderCompleteSemaphores[this->poCurrentFrame];
             aSignalSemaphores.push_back(renderCompleteSemaphore);
@@ -6230,8 +6365,11 @@ namespace LostPeter
 
             //6> cleanupVertexIndexBuffer
             cleanupVertexIndexBuffer();
+
+            //7> destroyTerrain
+            destroyTerrain();
             
-            //7> Semaphores
+            //8> Semaphores
             for (size_t i = 0; i < s_maxFramesInFight; i++) 
             {
                 destroyVkSemaphore(this->poRenderCompleteSemaphores[i]);
@@ -6247,29 +6385,29 @@ namespace LostPeter
             destroyVkSemaphore(this->poComputeWaitSemaphore);
             this->poComputeWaitSemaphore = VK_NULL_HANDLE;
 
-            //8> Imgui
+            //9> Imgui
             if (HasConfig_Imgui())
             {
                 ImGui_ImplVulkan_Shutdown();
 	            ImGui_ImplGlfw_Shutdown();
             }
 
-            //9> CommandPool
+            //10> CommandPool
             destroyVkCommandPool(this->poCommandPoolGraphics);
             destroyVkCommandPool(this->poCommandPoolCompute);
             
-            //10> Device
+            //11> Device
             destroyVkDevice(this->poDevice);
             this->poDevice = VK_NULL_HANDLE;
             if (s_isEnableValidationLayers)
             {
                 destroyDebugUtilsMessengerEXT(this->poInstance, this->poDebugMessenger, nullptr);
             }
-            //11> Surface
+            //12> Surface
             destroyVkSurfaceKHR(this->poSurface);
             this->poSurface = VK_NULL_HANDLE;
 
-            //12> Instance
+            //13> Instance
             destroyVkInstance(this->poInstance);
             this->poInstance = VK_NULL_HANDLE;
         }
@@ -6283,31 +6421,31 @@ namespace LostPeter
         {
             destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
             destroyVkImageSampler(this->poTextureSampler);
-            this->poTextureImage = nullptr;
-            this->poTextureImageMemory = nullptr;
-            this->poTextureImageView = nullptr;
-            this->poTextureSampler = nullptr;            
+            this->poTextureImage = VK_NULL_HANDLE;
+            this->poTextureImageMemory = VK_NULL_HANDLE;
+            this->poTextureImageView = VK_NULL_HANDLE;
+            this->poTextureSampler = VK_NULL_HANDLE;            
         }
         void VulkanWindow::cleanupVertexIndexBuffer()
         {
             //1> VertexBuffer
-            if (this->poVertexBuffer != nullptr)
+            if (this->poVertexBuffer != VK_NULL_HANDLE)
             {
                 destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
             }
-            this->poVertexBuffer = nullptr;
-            this->poVertexBufferMemory = nullptr;
+            this->poVertexBuffer = VK_NULL_HANDLE;
+            this->poVertexBufferMemory = VK_NULL_HANDLE;
             this->poVertexCount = 0;
             this->poVertexBuffer_Size = 0;
             this->poVertexBuffer_Data = nullptr;
 
             //2> IndexBuffer
-            if (this->poIndexBuffer != nullptr)
+            if (this->poIndexBuffer != VK_NULL_HANDLE)
             {
                 destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
             }
-            this->poIndexBuffer = nullptr;
-            this->poIndexBufferMemory = nullptr;
+            this->poIndexBuffer = VK_NULL_HANDLE;
+            this->poIndexBufferMemory = VK_NULL_HANDLE;
             this->poIndexCount = 0;
             this->poIndexBuffer_Size = 0;
             this->poIndexBuffer_Data = nullptr;
@@ -6340,8 +6478,8 @@ namespace LostPeter
                     freeCommandBuffers(this->poCommandPoolGraphics, (uint32_t)this->poCommandBuffersGraphics.size(), this->poCommandBuffersGraphics.data());
                 }
                 this->poCommandBuffersGraphics.clear();
-                if (this->poCommandPoolCompute != nullptr &&
-                    this->poCommandBufferCompute != nullptr)
+                if (this->poCommandPoolCompute != VK_NULL_HANDLE &&
+                    this->poCommandBufferCompute != VK_NULL_HANDLE)
                 {
                     freeCommandBuffers(this->poCommandPoolCompute, 1, &(this->poCommandBufferCompute));
                 }

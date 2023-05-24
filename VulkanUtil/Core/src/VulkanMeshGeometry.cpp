@@ -408,6 +408,55 @@ namespace LostPeter
         return "";
     }
 
+    //Terrain
+    String VulkanMeshCreateParam_Terrain::ms_nameType = "MeshTerrain";
+    VulkanMeshCreateParam_Terrain::VulkanMeshCreateParam_Terrain()
+        : VulkanMeshCreateParam(false, false)
+        , offsetX(0)
+        , offsetZ(0)
+        , width(1024)
+        , height(1024)
+        , vertexX(1025)
+        , vertexZ(1025)
+    {
+
+    }
+    VulkanMeshCreateParam_Terrain::VulkanMeshCreateParam_Terrain(float _offsetX,
+                                                                 float _offsetZ,
+                                                                 float _width,
+                                                                 float _height,
+                                                                 uint32 _vertexX,
+                                                                 uint32 _vertexZ,
+                                                                 bool _flipV,
+                                                                 bool _rightHand)    
+        : VulkanMeshCreateParam(_flipV, _rightHand)
+        , offsetX(_offsetX)
+        , offsetZ(_offsetZ)
+        , width(_width)
+        , height(_height)
+        , vertexX(_vertexX)
+        , vertexZ(_vertexZ)
+    {
+
+    }
+    VulkanMeshCreateParam_Terrain::~VulkanMeshCreateParam_Terrain()
+    {
+        
+    }
+    String VulkanMeshCreateParam_Terrain::ToName()
+    {
+        return VulkanUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%u-%u", 
+											  ms_nameType.c_str(), 
+											  flipV ? 1 : 0, 
+											  rightHand ? 1 : 0,
+                                              offsetX,
+											  offsetZ,
+											  width,
+											  height,
+                                              vertexX,
+											  vertexZ);
+    }
+
     ///////////////////////////////////////// VulkanMeshGeometry //////////////////////////////////////////////
     bool VulkanMeshGeometry::CreateGeometry(MeshData& meshData, VulkanMeshGeometryType eMeshGeometry)
     {
@@ -491,6 +540,12 @@ namespace LostPeter
                 VulkanMeshGeometry::CreateSkyDome(meshData, &param_SkyDome);
                 return true;
             }
+        case Vulkan_MeshGeometry_Terrain:
+            {
+                VulkanMeshCreateParam_Terrain param_Terrain;
+                VulkanMeshGeometry::CreateTerrain(meshData, &param_Terrain);
+                return true;
+            }
         }
         return false;
     }
@@ -534,7 +589,7 @@ namespace LostPeter
                 VulkanMeshGeometry::CreateSphere(meshData, pParam_Sphere);
                 return true;
             }
-         case Vulkan_MeshGeometry_GeoSphere:
+        case Vulkan_MeshGeometry_GeoSphere:
             {
                 VulkanMeshCreateParam_GeoSphere* pParam_GeoSphere = static_cast<VulkanMeshCreateParam_GeoSphere*>(pParam);
                 VulkanMeshGeometry::CreateGeosphere(meshData, pParam_GeoSphere);
@@ -574,6 +629,12 @@ namespace LostPeter
             {
                 VulkanMeshCreateParam_SkyDome* pParam_SkyDome = static_cast<VulkanMeshCreateParam_SkyDome*>(pParam);
                 VulkanMeshGeometry::CreateSkyDome(meshData, pParam_SkyDome);
+                return true;
+            }
+        case Vulkan_MeshGeometry_Terrain:
+            {
+                VulkanMeshCreateParam_Terrain* pParam_Terrain = static_cast<VulkanMeshCreateParam_Terrain*>(pParam);
+                VulkanMeshGeometry::CreateTerrain(meshData, pParam_Terrain);
                 return true;
             }
         }
@@ -1222,6 +1283,77 @@ namespace LostPeter
 
     }
 
+    void VulkanMeshGeometry::CreateTerrain(MeshData& meshData,
+                                           float offsetX,
+                                           float offsetZ,
+                                           float width,
+                                           float height,
+                                           uint32 vertexX,
+                                           uint32 vertexZ,
+                                           bool flipV,
+                                           bool rightHand)
+    {
+        uint32 vertexCount = vertexX * vertexZ;
+        uint32 faceCount = (vertexX - 1) * (vertexZ - 1) * 2;
+
+        //MeshVertex
+        float halfW = 0.5f * width;
+        float halfH = 0.5f * height;
+
+        float dx = width / (vertexX - 1);
+        float dz = height / (vertexZ - 1);
+
+        float du = 1.0f / (vertexX - 1);
+        float dv = 1.0f / (vertexZ - 1);
+
+        meshData.vertices.resize(vertexCount);
+        for (uint32 i = 0; i < vertexZ; ++i)
+        {
+            float z = halfH - i * dz + offsetZ;
+            for (uint32 j = 0; j < vertexX; ++j)
+            {
+                float x = -halfW + j * dx + offsetX;
+                MeshVertex vertex = MeshVertex(
+                    x, 0.0f, z,
+                    0.0f, 0.0f, 1.0f,
+                    1.0f, 0.0f, 0.0f,
+                    j * du, flipV ? (1.0f - i * dv) : (i * dv));
+                meshData.vertices[i * vertexZ + j] = vertex;
+            }
+        }
+
+        //Index
+        meshData.indices32.resize(faceCount * 3);
+        uint32 k = 0;
+        for (uint32 i = 0; i < vertexZ - 1; ++i)
+        {
+            for (uint32 j = 0; j < vertexX - 1; ++j)
+            {
+                if (rightHand)
+                {
+                    meshData.indices32[k + 0] = i * vertexZ + j;
+                    meshData.indices32[k + 1] = (i + 1) * vertexZ + j;
+                    meshData.indices32[k + 2] = (i + 1) * vertexZ + j + 1;
+                    
+                    meshData.indices32[k + 3] = (i + 1) * vertexZ + j + 1;
+                    meshData.indices32[k + 4] = i * vertexZ + j + 1;
+                    meshData.indices32[k + 5] = i * vertexZ + j;
+                }
+                else
+                {
+                    meshData.indices32[k + 0] = i * vertexZ + j;
+                    meshData.indices32[k + 1] = i * vertexZ + j + 1;
+                    meshData.indices32[k + 2] = (i + 1) * vertexZ + j + 1;
+                    
+                    meshData.indices32[k + 3] = (i + 1) * vertexZ + j + 1;
+                    meshData.indices32[k + 4] = (i + 1) * vertexZ + j;
+                    meshData.indices32[k + 5] = i * vertexZ + j;
+                }
+
+                k += 6;
+            }
+        }
+    }
 
     void VulkanMeshGeometry::subdivide(MeshData& meshData, bool rightHand)
     {

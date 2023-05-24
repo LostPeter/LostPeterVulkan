@@ -173,6 +173,7 @@ namespace LostPeter
         String cfg_shaderVertex_Path;
         String cfg_shaderFragment_Path;
         String cfg_texture_Path;
+        String cfg_terrain_Path;
 
         //Imgui
         bool imgui_IsEnable;
@@ -200,6 +201,25 @@ namespace LostPeter
         std::vector<InstanceConstants> instanceCBs;
         std::vector<VkBuffer> poBuffers_InstanceCB;
         std::vector<VkDeviceMemory> poBuffersMemory_InstanceCB;
+
+        //Terrain
+        uint8* poTerrainHeightMapData;
+        int32 poTerrainHeightMapDataSize;
+        int32 poTerrainHeightMapSize;
+
+        std::vector<Vertex_Pos3Normal3Tex2> poTerrain_Pos3Normal3Tex2;
+        uint32_t poTerrainVertexCount;
+        size_t poTerrainVertexBuffer_Size;
+        void* poTerrainVertexBuffer_Data;
+        VkBuffer poTerrainVertexBuffer;
+        VkDeviceMemory poTerrainVertexBufferMemory;
+
+        std::vector<uint32_t> poTerrain_Indices;
+        uint32_t poTerrainIndexCount;
+        size_t poTerrainIndexBuffer_Size;
+        void* poTerrainIndexBuffer_Data;
+        VkBuffer poTerrainIndexBuffer;
+        VkDeviceMemory poTerrainIndexBufferMemory;
 
         //Camera
         VulkanCamera* pCamera; //Eye Left
@@ -371,6 +391,12 @@ namespace LostPeter
                 virtual void buildScene_FrameResources();
                 virtual void buildScene_ConstantBufferViews();
                 virtual void buildScene_PipelineStates();
+
+            //Terrain
+            virtual void createTerrain();
+                virtual bool loadTerrainData();
+                virtual void setupTerrainGeometry();
+            virtual void destroyTerrain();
 
             //Camera
             virtual void createCamera();

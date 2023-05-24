@@ -69,14 +69,15 @@ namespace LostPeter
     //VulkanVertexType
     static String s_nameVertices[] = 
     {
-        "Pos2Color4",
-        "Pos3Normal3",
-        "Pos2Color4Tex2",
-        "Pos3Color4Tex2",
-        "Pos3Color4Normal3Tex2",
-        "Pos3Color4Normal3Tex4",
-        "Pos3Color4Normal3Tangent3Tex2",
-        "Pos3Color4Normal3Tangent3Tex4",
+        "Pos2Color4",                       //0:    Pos2Color4
+        "Pos3Normal3",                      //1:    Pos3Normal3
+        "Pos3Normal3Tex2",                  //2:    Pos3Normal3Tex2
+        "Pos2Color4Tex2",                   //3:    Pos2Color4Tex2
+        "Pos3Color4Tex2",                   //4:    Pos3Color4Tex2
+        "Pos3Color4Normal3Tex2",            //5:    Pos3Color4Normal3Tex2
+        "Pos3Color4Normal3Tex4",            //6:    Pos3Color4Normal3Tex4
+        "Pos3Color4Normal3Tangent3Tex2",    //7:    Pos3Color4Normal3Tangent3Tex2
+        "Pos3Color4Normal3Tangent3Tex4",    //8:    Pos3Color4Normal3Tangent3Tex4
     };
     const String& Util_GetVertexTypeName(VulkanVertexType type)
     {
@@ -101,8 +102,8 @@ namespace LostPeter
     //VulkanMeshType
     static String s_nameMeshes[] = 
     {
-        "file",
-        "geometry",
+        "file",             //0:    File
+        "geometry",         //1:    Geometry
     };
     const String& Util_GetMeshTypeName(VulkanMeshType type)
     {
@@ -127,19 +128,20 @@ namespace LostPeter
     //VulkanMeshGeometryType
     static String s_nameMeshGeometries[] = 
     {
-        "triangle",
-        "quad",
-        "grid",
-        "circle",
-        "aabb",
-        "sphere",
-        "geosphere",
-        "cylinder",
-        "capsule",
-        "cone",
-        "torus",
-        "skybox",
-        "skydome",
+        "triangle",         //0:    Triangle
+        "quad",             //1:    Quad
+        "grid",             //2:    Grid
+        "circle",           //3:    Circle
+        "aabb",             //4:    AABB
+        "sphere",           //5:    Sphere
+        "geosphere",        //6:    GeoSphere
+        "cylinder",         //7:    Cylinder
+        "capsule",          //8:    Capsule
+        "cone",             //9:    Cone
+        "torus",            //10:   Torus
+        "skybox",           //11:   SkyBox
+        "skydome",          //12:   SkyDome
+        "terrain",          //13:   Terrain
     };
     const String& Util_GetMeshGeometryTypeName(VulkanMeshGeometryType type)
     {
@@ -192,17 +194,17 @@ namespace LostPeter
     //VulkanPixelFormatComponentType
     static String s_namePixelFormatComponents[] = 
     {
-        "ByteU",
-        "ByteS",
-        "ShortU",
-        "ShortS",
-        "IntU",
-        "IntS",
-        "LongU",
-        "LongS",
-        "Float16",
-        "Float32",
-        "Double"
+        "ByteU",            //0: Byte unsigned
+        "ByteS",            //1: Byte signed
+        "ShortU",           //2: Short unsigned
+        "ShortS",           //3: Short signed
+        "IntU",             //4: Int unsigned
+        "IntS",             //5: Int signed
+        "LongU",            //6: Long unsigned
+        "LongS",            //7: Long signed
+        "Float16",          //8: Float 16
+        "Float32",          //9: Float 32
+        "Double"            //10: Double
     };
     const String& Util_GetPixelFormatComponentTypeName(VulkanPixelFormatComponentType type)
     {   
@@ -217,11 +219,11 @@ namespace LostPeter
     //VulkanTextureType
     static String s_nameTextures[] = 
     {
-        "1d",
-        "2d",
-        "2darray",
-        "3d",
-        "cubemap"
+        "1d",                   //0: 1D
+        "2d",                   //1: 2D
+        "2darray",              //2: 2DArray        
+        "3d",                   //3: 3D
+        "cubemap"               //4: CubeMap
     };
     const String& Util_GetTextureTypeName(VulkanTextureType type)
     {
@@ -272,9 +274,9 @@ namespace LostPeter
     //VulkanTextureFilterSizeType
     static String s_nameTextureFilterSizes[] = 
     {
-        "min",
-        "mag",
-        "mip",
+        "min",          //0: Min		
+        "mag",          //1: Mag
+        "mip",          //2: Mip
     };
     const String& Util_GetTextureFilterSizeTypeName(VulkanTextureFilterSizeType type)
     {
@@ -299,10 +301,10 @@ namespace LostPeter
     //VulkanTextureFilterPixelType
     static String s_nameTextureFilterPixels[] = 
     {
-        "none",
-        "point",
-        "linear",
-        "anisotropic",
+        "none",             //0: None
+        "point",            //1: Point
+        "linear",           //2: Linear
+        "anisotropic",      //3: Anisotropic
     };
     const String& Util_GetTextureFilterPixelTypeName(VulkanTextureFilterPixelType type)
     {
@@ -351,10 +353,10 @@ namespace LostPeter
     //VulkanTextureFilterType
     static String s_nameTextureFilters[] = 
     {
-        "none",
-        "bilinear",
-        "trilinear",
-        "anisotropic",
+        "none",             //0: None
+        "bilinear",         //1: Point
+        "trilinear",        //2: Linear
+        "anisotropic",      //3: Anisotropic
     };
     const String& Util_GetTextureFilterTypeName(VulkanTextureFilterType type)
     {
@@ -439,10 +441,10 @@ namespace LostPeter
     //VulkanTextureAddressingType
     static String s_nameTextureAddressings[] = 
     {
-        "wrap",
-        "mirror",
-        "clamp",
-        "border",
+        "wrap",             //0: Wrap
+        "mirror",           //1: Mirror
+        "clamp",            //2: Clamp
+        "border",           //3: Border
     };
     const String& Util_GetTextureAddressingTypeName(VulkanTextureAddressingType type)
     {
@@ -479,9 +481,9 @@ namespace LostPeter
     //VulkanTextureBorderColorType
     static String s_nameTextureBorderColors[] = 
     {
-        "opaque_black",
-        "opaque_white",
-        "transparent_black",
+        "opaque_black",             //0: OpaqueBlack
+        "opaque_white",             //1: OpaqueWhite
+        "transparent_black",        //2: TransparentBlack
     };
     const String& Util_GetTextureBorderColorTypeName(VulkanTextureBorderColorType type)
     {
@@ -613,6 +615,8 @@ namespace LostPeter
                 return Vertex_Pos2Color4::GetBindingDescriptions();
             case Vulkan_Vertex_Pos3Normal3:
                 return Vertex_Pos3Normal3::GetBindingDescriptions();
+            case Vulkan_Vertex_Pos3Normal3Tex2:
+                return Vertex_Pos3Normal3Tex2::GetBindingDescriptions();
             case Vulkan_Vertex_Pos2Color4Tex2:
                 return Vertex_Pos2Color4Tex2::GetBindingDescriptions();
             case Vulkan_Vertex_Pos3Color4Tex2:
@@ -637,6 +641,8 @@ namespace LostPeter
                 return Vertex_Pos2Color4::GetAttributeDescriptions();
             case Vulkan_Vertex_Pos3Normal3:
                 return Vertex_Pos3Normal3::GetAttributeDescriptions();
+            case Vulkan_Vertex_Pos3Normal3Tex2:
+                return Vertex_Pos3Normal3Tex2::GetAttributeDescriptions();
             case Vulkan_Vertex_Pos2Color4Tex2:
                 return Vertex_Pos2Color4Tex2::GetAttributeDescriptions();
             case Vulkan_Vertex_Pos3Color4Tex2:
@@ -661,6 +667,8 @@ namespace LostPeter
                 return Vertex_Pos2Color4::GetBindingDescriptionsPtr();
             case Vulkan_Vertex_Pos3Normal3:
                 return Vertex_Pos3Normal3::GetBindingDescriptionsPtr();
+            case Vulkan_Vertex_Pos3Normal3Tex2:
+                return Vertex_Pos3Normal3Tex2::GetBindingDescriptionsPtr();
             case Vulkan_Vertex_Pos2Color4Tex2:
                 return Vertex_Pos2Color4Tex2::GetBindingDescriptionsPtr();
             case Vulkan_Vertex_Pos3Color4Tex2:
@@ -685,6 +693,8 @@ namespace LostPeter
                 return Vertex_Pos2Color4::GetAttributeDescriptionsPtr();
             case Vulkan_Vertex_Pos3Normal3:
                 return Vertex_Pos3Normal3::GetAttributeDescriptionsPtr();
+            case Vulkan_Vertex_Pos3Normal3Tex2:
+                return Vertex_Pos3Normal3Tex2::GetAttributeDescriptionsPtr();
             case Vulkan_Vertex_Pos2Color4Tex2:
                 return Vertex_Pos2Color4Tex2::GetAttributeDescriptionsPtr();
             case Vulkan_Vertex_Pos3Color4Tex2:

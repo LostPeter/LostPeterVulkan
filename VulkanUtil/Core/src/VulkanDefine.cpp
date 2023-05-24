@@ -25,33 +25,38 @@ namespace LostPeter
     VkVertexInputBindingDescriptionVector Vertex_Pos3Normal3::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Normal3::s_aAttributeDescriptions;
 
+    //////////////////////////////// Vertex_Pos3Normal3Tex2 /////////////////////////
+    //2: Vulkan_Vertex_Pos3Normal3Tex2
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Normal3Tex2::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Normal3Tex2::s_aAttributeDescriptions;
+
     //////////////////////////////// Vertex_Pos2Color4Tex2 //////////////////////////
-    //2: Vulkan_Vertex_Pos2Color4Tex2
+    //3: Vulkan_Vertex_Pos2Color4Tex2
     VkVertexInputBindingDescriptionVector Vertex_Pos2Color4Tex2::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos2Color4Tex2::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos3Color4Tex2 //////////////////////////
-    //3: Vulkan_Vertex_Pos3Color4Tex2
+    //4: Vulkan_Vertex_Pos3Color4Tex2
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Tex2::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Tex2::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tex2 ///////////////////
-    //4: Vulkan_Vertex_Pos3Color4Normal3Tex2
+    //5: Vulkan_Vertex_Pos3Color4Normal3Tex2
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tex2::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tex2::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tex4 ///////////////////
-    //5: Vulkan_Vertex_Pos3Color4Normal3Tex2
+    //6: Vulkan_Vertex_Pos3Color4Normal3Tex2
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tex4::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tex4::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex2 ///////////
-    //6: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2
+    //7: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex2::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex2::s_aAttributeDescriptions;
     
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex4 ///////////
-    //7: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4
+    //8: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex4::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex4::s_aAttributeDescriptions;
 
