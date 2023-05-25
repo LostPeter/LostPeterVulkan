@@ -418,6 +418,8 @@ namespace LostPeter
         , height(1024)
         , vertexX(1025)
         , vertexZ(1025)
+        , pHeight(nullptr)
+        , heightDataGap(1)
     {
 
     }
@@ -427,6 +429,8 @@ namespace LostPeter
                                                                  float _height,
                                                                  uint32 _vertexX,
                                                                  uint32 _vertexZ,
+                                                                 float* _pHeight,
+                                                                 uint32 _heightDataGap,
                                                                  bool _flipV,
                                                                  bool _rightHand)    
         : VulkanMeshCreateParam(_flipV, _rightHand)
@@ -436,6 +440,8 @@ namespace LostPeter
         , height(_height)
         , vertexX(_vertexX)
         , vertexZ(_vertexZ)
+        , pHeight(_pHeight)
+        , heightDataGap(_heightDataGap)
     {
 
     }
@@ -1290,6 +1296,8 @@ namespace LostPeter
                                            float height,
                                            uint32 vertexX,
                                            uint32 vertexZ,
+                                           float* pHeight,
+                                           uint32 heightDataGap,
                                            bool flipV,
                                            bool rightHand)
     {
@@ -1312,9 +1320,15 @@ namespace LostPeter
             float z = halfH - i * dz + offsetZ;
             for (uint32 j = 0; j < vertexX; ++j)
             {
+                float height = 0.0f;
+                if (pHeight != nullptr)
+                {
+                    height = pHeight[i * vertexX * heightDataGap + j * heightDataGap];
+                }
+                
                 float x = -halfW + j * dx + offsetX;
                 MeshVertex vertex = MeshVertex(
-                    x, 0.0f, z,
+                    x, height, z,
                     0.0f, 0.0f, 1.0f,
                     1.0f, 0.0f, 0.0f,
                     j * du, flipV ? (1.0f - i * dv) : (i * dv));

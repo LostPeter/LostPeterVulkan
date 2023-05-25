@@ -193,8 +193,8 @@ bool Vulkan_007_Stencil::loadModel_Texture(ModelObject* pModelObject)
     if (!pModelObject->pathTexture.empty())
     {
         createTexture2D(pModelObject->pathTexture, pModelObject->poMipMapCount, pModelObject->poTextureImage, pModelObject->poTextureImageMemory);
-        createImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
-        createSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
+        createVkImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
+        createVkSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
 
         Util_LogInfo("Vulkan_007_Stencil::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
@@ -246,23 +246,23 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
     VkShaderModule vertShaderModule_Stencil;
     if (!this->cfg_shaderVertex_Path.empty())
     {
-        vertShaderModule_Stencil = createShaderModule("VertexShader: ", this->cfg_shaderVertex_Path);
+        vertShaderModule_Stencil = createVkShaderModule("VertexShader: ", this->cfg_shaderVertex_Path);
     }
     VkShaderModule fragShaderModule_Stencil;
     if (!this->cfg_shaderFragment_Path.empty())
     {
-        fragShaderModule_Stencil = createShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
+        fragShaderModule_Stencil = createVkShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
     }
 
     VkShaderModule vertShaderModule_Outline;
     if (!this->pathShaderVertex_Outline.empty())
     {
-        vertShaderModule_Outline = createShaderModule("VertexShader: ", this->pathShaderVertex_Outline);
+        vertShaderModule_Outline = createVkShaderModule("VertexShader: ", this->pathShaderVertex_Outline);
     }
     VkShaderModule fragShaderModule_Outline;
     if (!this->pathShaderFragment_Outline.empty())
     {
-        fragShaderModule_Outline = createShaderModule("FragmentShader: ", this->pathShaderFragment_Outline);
+        fragShaderModule_Outline = createVkShaderModule("FragmentShader: ", this->pathShaderFragment_Outline);
     }
 
     //2> Viewport
@@ -353,10 +353,10 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
     }
 
     //5> Destroy Shader
-    vkDestroyShaderModule(this->poDevice, vertShaderModule_Stencil, nullptr);
-    vkDestroyShaderModule(this->poDevice, fragShaderModule_Stencil, nullptr);
-    vkDestroyShaderModule(this->poDevice, vertShaderModule_Outline, nullptr);
-    vkDestroyShaderModule(this->poDevice, fragShaderModule_Outline, nullptr);
+    destroyVkShaderModule(vertShaderModule_Stencil);
+    destroyVkShaderModule(fragShaderModule_Stencil);
+    destroyVkShaderModule(vertShaderModule_Outline);
+    destroyVkShaderModule(fragShaderModule_Outline);
 }
 void Vulkan_007_Stencil::createPipelineLayout_Outline()
 {
@@ -379,8 +379,8 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        createDescriptorSets(pModelObject->poDescriptorSets, this->poDescriptorSetLayout);
-        createDescriptorSets(pModelObject->poDescriptorSets_Outline, this->poDescriptorSetLayout);
+        createVkDescriptorSets(pModelObject->poDescriptorSets, this->poDescriptorSetLayout);
+        createVkDescriptorSets(pModelObject->poDescriptorSets_Outline, this->poDescriptorSetLayout);
         for (size_t j = 0; j < count_sci; j++)
         {
             //1> Stencil
@@ -410,7 +410,7 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
                 imageInfo.imageView = pModelObject->poTextureImageView;
                 imageInfo.sampler = pModelObject->poTextureSampler;
                 
-                std::vector<VkWriteDescriptorSet> descriptorWrites;
+                VkWriteDescriptorSetVector descriptorWrites;
 
                 //0
                 VkWriteDescriptorSet ds0 = {};
@@ -467,7 +467,7 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
                 ds4.pImageInfo = &imageInfo;
                 descriptorWrites.push_back(ds4);
 
-                vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+                updateVkDescriptorSets(descriptorWrites);
             }
 
             //2> Outline
@@ -497,7 +497,7 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
                 imageInfo_Outline.imageView = pModelObject->poTextureImageView;
                 imageInfo_Outline.sampler = pModelObject->poTextureSampler;
 
-                std::vector<VkWriteDescriptorSet> descriptorWrites_Outline;
+                VkWriteDescriptorSetVector descriptorWrites_Outline;
 
                 //0
                 VkWriteDescriptorSet ds0_Outline  = {};
@@ -554,7 +554,7 @@ void Vulkan_007_Stencil::createDescriptorSets_Custom()
                 ds4_Outline.pImageInfo = &imageInfo_Outline;
                 descriptorWrites_Outline.push_back(ds4_Outline);
 
-                vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites_Outline.size()), descriptorWrites_Outline.data(), 0, nullptr);
+                updateVkDescriptorSets(descriptorWrites_Outline);
             }
         }
     }

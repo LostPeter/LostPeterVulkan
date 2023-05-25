@@ -502,6 +502,8 @@ namespace LostPeter
     typedef std::vector<VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoVector;
     typedef std::map<String, VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoMap;
 
+    typedef std::vector<VkDescriptorSetLayoutBinding> VkDescriptorSetLayoutBindingVector;
+
     typedef std::vector<VkDescriptorSetLayout> VkDescriptorSetLayoutVector;
     typedef std::map<String, VkDescriptorSetLayout> VkDescriptorSetLayoutMap;
 
@@ -513,6 +515,9 @@ namespace LostPeter
 
     typedef std::vector<VkPipeline> VkPipelineVector;
     typedef std::map<String, VkPipeline> VkPipelineMap;
+    
+    typedef std::vector<VkDescriptorSet> VkDescriptorSetVector;
+    typedef std::vector<VkWriteDescriptorSet> VkWriteDescriptorSetVector;
 
     const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(VulkanVertexType type);
     const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(VulkanVertexType type);

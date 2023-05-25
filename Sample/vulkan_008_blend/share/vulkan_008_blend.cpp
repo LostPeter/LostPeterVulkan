@@ -225,8 +225,8 @@ bool Vulkan_008_Blend::loadModel_Texture(ModelObject* pModelObject)
     if (!pModelObject->pathTexture.empty())
     {
         createTexture2D(pModelObject->pathTexture, pModelObject->poMipMapCount, pModelObject->poTextureImage, pModelObject->poTextureImageMemory);
-        createImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
-        createSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
+        createVkImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
+        createVkSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
 
         Util_LogInfo("Vulkan_008_Blend::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
@@ -426,7 +426,7 @@ void Vulkan_008_Blend::destroyShaderModules()
     for (size_t i = 0; i < count; i++)
     {
         VkShaderModule& vkShaderModule= this->m_aVkShaderModules[i];
-        vkDestroyShaderModule(this->poDevice, vkShaderModule, nullptr);
+        destroyVkShaderModule(vkShaderModule);
     }
     this->m_aVkShaderModules.clear();
     this->m_mapVkShaderModules.clear();
@@ -439,13 +439,13 @@ void Vulkan_008_Blend::createShaderModules()
         String pathFrag = g_pathShaderModules[2 * i + 1];
 
         //vert
-        VkShaderModule vertShaderModule = createShaderModule("VertexShader: ", pathVert);
+        VkShaderModule vertShaderModule = createVkShaderModule("VertexShader: ", pathVert);
         this->m_aVkShaderModules.push_back(vertShaderModule);
         this->m_mapVkShaderModules[pathVert] = vertShaderModule;
         Util_LogInfo("Vulkan_008_Blend::createShaderModules: create shader [%s] success !", pathVert.c_str());
 
         //frag
-        VkShaderModule fragShaderModule = createShaderModule("FragmentShader: ", pathFrag);
+        VkShaderModule fragShaderModule = createVkShaderModule("FragmentShader: ", pathFrag);
         this->m_aVkShaderModules.push_back(fragShaderModule);
         this->m_mapVkShaderModules[pathFrag] = fragShaderModule;
         Util_LogInfo("Vulkan_008_Blend::createShaderModules: create shader [%s] success !", pathFrag.c_str());
@@ -469,8 +469,8 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        createDescriptorSets(pModelObject->poDescriptorSets, this->poDescriptorSetLayout);
-        createDescriptorSets(pModelObject->poDescriptorSets_Outline, this->poDescriptorSetLayout);
+        createVkDescriptorSets(pModelObject->poDescriptorSets, this->poDescriptorSetLayout);
+        createVkDescriptorSets(pModelObject->poDescriptorSets_Outline, this->poDescriptorSetLayout);
         for (size_t j = 0; j < count_sci; j++)
         {
             //1> Stencil
@@ -500,7 +500,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                 imageInfo.imageView = pModelObject->poTextureImageView;
                 imageInfo.sampler = pModelObject->poTextureSampler;
                 
-                std::vector<VkWriteDescriptorSet> descriptorWrites;
+                VkWriteDescriptorSetVector descriptorWrites;
 
                 //0
                 VkWriteDescriptorSet ds0 = {};
@@ -557,7 +557,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                 ds4.pImageInfo = &imageInfo;
                 descriptorWrites.push_back(ds4);
 
-                vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+                updateVkDescriptorSets(descriptorWrites);
             }
 
             //2> Outline
@@ -587,7 +587,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                 imageInfo_Outline.imageView = pModelObject->poTextureImageView;
                 imageInfo_Outline.sampler = pModelObject->poTextureSampler;
 
-                std::vector<VkWriteDescriptorSet> descriptorWrites_Outline;
+                VkWriteDescriptorSetVector descriptorWrites_Outline;
 
                 //0
                 VkWriteDescriptorSet ds0_Outline  = {};
@@ -644,7 +644,7 @@ void Vulkan_008_Blend::createDescriptorSets_Custom()
                 ds4_Outline.pImageInfo = &imageInfo_Outline;
                 descriptorWrites_Outline.push_back(ds4_Outline);
 
-                vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites_Outline.size()), descriptorWrites_Outline.data(), 0, nullptr);
+                updateVkDescriptorSets(descriptorWrites_Outline);
             }
         }
     }

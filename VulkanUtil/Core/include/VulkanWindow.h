@@ -99,7 +99,7 @@ namespace LostPeter
         VkSampler poTextureSampler;
 
         VkDescriptorPool poDescriptorPool;
-        std::vector<VkDescriptorSet> poDescriptorSets;
+        VkDescriptorSetVector poDescriptorSets;
 
 
         //Synchronization Objects
@@ -174,6 +174,7 @@ namespace LostPeter
         String cfg_shaderFragment_Path;
         String cfg_texture_Path;
         String cfg_terrain_Path;
+        String cfg_shaderTerrainNormalMapGen_Path;
 
         //Imgui
         bool imgui_IsEnable;
@@ -204,8 +205,12 @@ namespace LostPeter
 
         //Terrain
         uint8* poTerrainHeightMapData;
+        float* poTerrainHeightMapDataFloat;
         int32 poTerrainHeightMapDataSize;
         int32 poTerrainHeightMapSize;
+        int32 poTerrainGridVertexCount;
+        int32 poTerrainGridInstanceVertexCount;
+        bool poTerrainIsDrawInstance;
 
         std::vector<Vertex_Pos3Normal3Tex2> poTerrain_Pos3Normal3Tex2;
         uint32_t poTerrainVertexCount;
@@ -213,7 +218,6 @@ namespace LostPeter
         void* poTerrainVertexBuffer_Data;
         VkBuffer poTerrainVertexBuffer;
         VkDeviceMemory poTerrainVertexBufferMemory;
-
         std::vector<uint32_t> poTerrain_Indices;
         uint32_t poTerrainIndexCount;
         size_t poTerrainIndexBuffer_Size;
@@ -221,6 +225,27 @@ namespace LostPeter
         VkBuffer poTerrainIndexBuffer;
         VkDeviceMemory poTerrainIndexBufferMemory;
 
+        VkImage poTerrainHeightMapImage;
+        VkDeviceMemory poTerrainHeightMapImageMemory;
+        VkImageView poTerrainHeightMapImageView;
+        VkImage poTerrainNormalMapImage;
+        VkDeviceMemory poTerrainNormalMapImageMemory;
+        VkImageView poTerrainNormalMapImageView;
+        VkSampler poTerrainImageSampler;
+        VkDescriptorImageInfo poTerrainHeightMapImageInfo;
+        VkDescriptorImageInfo poTerrainNormalMapImageInfo;
+
+        TextureCopyConstants poTerrainTextureCopy;
+        VkBuffer poBuffer_TerrainTextureCopy;
+        VkDeviceMemory poBufferMemory_TerrainTextureCopy;
+
+        VkDescriptorSetLayout poTerrainComputeDescriptorSetLayout;
+        VkPipelineLayout poTerrainComputePipelineLayout;
+        VkShaderModule poTerrainComputeShaderModuleNormalGen;
+        VkPipeline poTerrainComputePipeline;
+        VkDescriptorSet poTerrainComputeDescriptorSet;
+        
+        
         //Camera
         VulkanCamera* pCamera; //Eye Left
         VulkanCamera* pCameraRight; //Eye Right
@@ -325,6 +350,9 @@ namespace LostPeter
                 virtual void destroyVkSurfaceKHR(VkSurfaceKHR vkSurfaceKHR);
                 virtual void destroyVkSwapchainKHR(VkSwapchainKHR vkSwapchainKHR);
 
+            virtual void createDescriptorPool();
+                virtual void destroyVkDescriptorPool(VkDescriptorPool vkDescriptorPool);
+
             virtual void createDescriptorObjects();
                 virtual void createDescriptorSetLayout_Default();
                 virtual void createDescriptorSetLayout_Custom();
@@ -396,6 +424,9 @@ namespace LostPeter
             virtual void createTerrain();
                 virtual bool loadTerrainData();
                 virtual void setupTerrainGeometry();
+                virtual void setupTerrainTexture();
+                virtual void setupTerrainComputePipeline();
+                virtual void setupTerrainGraphicsPipeline();
             virtual void destroyTerrain();
 
             //Camera
@@ -570,6 +601,30 @@ namespace LostPeter
                                                              bool isGraphicsComputeShared,
                                                              VkImage& image, 
                                                              VkDeviceMemory& imageMemory);
+
+                    virtual void createTextureRenderTarget2D(uint8* pData,
+                                                             uint32_t width, 
+                                                             uint32_t height,
+                                                             uint32_t mipMapCount,
+                                                             VkImageType type,
+                                                             VkSampleCountFlagBits numSamples,
+                                                             VkFormat format,
+                                                             VkImageUsageFlags usage, 
+                                                             bool isGraphicsComputeShared,
+                                                             VkImage& image, 
+                                                             VkDeviceMemory& imageMemory,
+                                                             VkBuffer& buffer, 
+                                                             VkDeviceMemory& bufferMemory);
+                    virtual void createTextureRenderTarget2D(uint8* pData,
+                                                             uint32_t width, 
+                                                             uint32_t height,
+                                                             uint32_t mipMapCount,
+                                                             VkSampleCountFlagBits numSamples,
+                                                             VkFormat format,
+                                                             VkImageUsageFlags usage, 
+                                                             bool isGraphicsComputeShared,
+                                                             VkImage& image, 
+                                                             VkDeviceMemory& imageMemory);
                     
                     virtual void createTextureRenderTarget2DArray(const glm::vec4& clDefault,
                                                                   bool isSetColor,
@@ -648,41 +703,41 @@ namespace LostPeter
                                                                   VkDeviceMemory& imageMemory);
                     
 
-                        virtual void createImage(uint32_t width, 
-                                                 uint32_t height, 
-                                                 uint32_t depth, 
-                                                 uint32_t numArray,
-                                                 uint32_t mipMapCount, 
-                                                 VkImageType type, 
-                                                 bool isCubeMap,
-                                                 VkSampleCountFlagBits numSamples, 
-                                                 VkFormat format, 
-                                                 VkImageTiling tiling, 
-                                                 VkImageUsageFlags usage, 
-                                                 VkSharingMode sharingMode,
-                                                 bool isGraphicsComputeShared,
-                                                 VkMemoryPropertyFlags properties, 
-                                                 VkImage& image, 
-                                                 VkDeviceMemory& imageMemory);
-                        virtual void createImageView(VkImage image, 
-                                                     VkImageViewType type, 
-                                                     VkFormat format, 
-                                                     VkImageAspectFlags aspectFlags, 
-                                                     uint32_t mipMapCount,
-                                                     uint32_t numArray,
-                                                     VkImageView& imageView);
+                        virtual void createVkImage(uint32_t width, 
+                                                   uint32_t height, 
+                                                   uint32_t depth, 
+                                                   uint32_t numArray,
+                                                   uint32_t mipMapCount, 
+                                                   VkImageType type, 
+                                                   bool isCubeMap,
+                                                   VkSampleCountFlagBits numSamples, 
+                                                   VkFormat format, 
+                                                   VkImageTiling tiling, 
+                                                   VkImageUsageFlags usage, 
+                                                   VkSharingMode sharingMode,
+                                                   bool isGraphicsComputeShared,
+                                                   VkMemoryPropertyFlags properties, 
+                                                   VkImage& image, 
+                                                   VkDeviceMemory& imageMemory);
+                        virtual void createVkImageView(VkImage image, 
+                                                       VkImageViewType type, 
+                                                       VkFormat format, 
+                                                       VkImageAspectFlags aspectFlags, 
+                                                       uint32_t mipMapCount,
+                                                       uint32_t numArray,
+                                                       VkImageView& imageView);
                                                      
-                        virtual void createSampler(uint32_t mipMapCount, 
-                                                   VkSampler& sampler);
-                        virtual void createSampler(VulkanTextureFilterType eTextureFilter,
-                                                   VulkanTextureAddressingType eTextureAddressing,
-                                                   VulkanTextureBorderColorType eTextureBorderColor,
-                                                   bool enableAnisotropy,
-                                                   float maxAnisotropy,
-                                                   float minLod, 
-                                                   float maxLod, 
-                                                   float mipLodBias,
-                                                   VkSampler& sampler);
+                        virtual void createVkSampler(uint32_t mipMapCount, 
+                                                     VkSampler& sampler);
+                        virtual void createVkSampler(VulkanTextureFilterType eTextureFilter,
+                                                     VulkanTextureAddressingType eTextureAddressing,
+                                                     VulkanTextureBorderColorType eTextureBorderColor,
+                                                     bool enableAnisotropy,
+                                                     float maxAnisotropy,
+                                                     float minLod, 
+                                                     float maxLod, 
+                                                     float mipLodBias,
+                                                     VkSampler& sampler);
                         
                         virtual void transitionImageLayout(VkCommandBuffer cmdBuffer,
                                                            VkImage image, 
@@ -721,17 +776,21 @@ namespace LostPeter
                         virtual void buildInstanceCB();
                     virtual void createCustomCB();
 
+                virtual VkShaderModule createVkShaderModule(const String& info, const String& pathFile);
+                    virtual void destroyVkShaderModule(VkShaderModule vkShaderModule);
 
-                virtual VkShaderModule createShaderModule(String info, String pathFile);
+                virtual bool createVkDescriptorSetLayout(const VkDescriptorSetLayoutBindingVector& aDescriptorSetLayoutBinding, VkDescriptorSetLayout& vkDescriptorSetLayout);
+                    virtual void destroyVkDescriptorSetLayout(VkDescriptorSetLayout vkDescriptorSetLayout);
+
                 virtual VkPipelineLayout createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout);
                     virtual void destroyVkPipelineLayout(VkPipelineLayout vkPipelineLayout);
                     virtual void destroyVkPipeline(VkPipeline vkPipeline);
 
-                virtual void preparePipeline();
-                    virtual void createVkPipelineCache();
-                    virtual void destroyVkPipelineCache(VkPipelineCache vkPipelineCache);
-                    virtual void createCustomBeforePipeline();
+                virtual void createVkPipelineCache();
+                virtual void destroyVkPipelineCache(VkPipelineCache vkPipelineCache);
 
+                virtual void preparePipeline();
+                    virtual void createCustomBeforePipeline();
 
                 virtual void createGraphicsPipeline();
                     virtual void createGraphicsPipeline_Default();
@@ -786,17 +845,13 @@ namespace LostPeter
 
 
                 virtual void createDescriptor();
-                    virtual void createDescriptorPool();
-
-                        virtual void destroyVkDescriptorPool(VkDescriptorPool vkDescriptorPool);
-
                     virtual void createDescriptorSets_Default();
                     virtual void createDescriptorSets_Custom();
-                        virtual void createDescriptorSet(VkDescriptorSet& descriptorSet, VkDescriptorSetLayout vkDescriptorSetLayout);
-                        virtual void createDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout);
-                        virtual void updateDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler); 
+                        virtual void updateDescriptorSets(VkDescriptorSetVector& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler); 
 
-                        virtual void destroyVkDescriptorSetLayout(VkDescriptorSetLayout vkDescriptorSetLayout);
+                        virtual void createVkDescriptorSet(VkDescriptorSet& vkDescriptorSet, VkDescriptorSetLayout vkDescriptorSetLayout);
+                        virtual void createVkDescriptorSets(VkDescriptorSetVector& aDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout);
+                        virtual void updateVkDescriptorSets(VkWriteDescriptorSetVector& aWriteDescriptorSets);
 
                 virtual void createCommandBuffers();
                     virtual void createCommandBuffer_Graphics();

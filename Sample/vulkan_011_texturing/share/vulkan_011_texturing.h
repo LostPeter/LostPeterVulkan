@@ -256,13 +256,13 @@ public:
                                                    this->poMipMapCount, 
                                                    this->poTextureImage, 
                                                    this->poTextureImageMemory);
-                    this->pWindow->createImageView(this->poTextureImage, 
-                                                   VK_IMAGE_VIEW_TYPE_1D, 
-                                                   this->typeFormat, 
-                                                   VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                   this->poMipMapCount, 
-                                                   1, 
-                                                   this->poTextureImageView);
+                    this->pWindow->createVkImageView(this->poTextureImage, 
+                                                     VK_IMAGE_VIEW_TYPE_1D, 
+                                                     this->typeFormat, 
+                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                     this->poMipMapCount, 
+                                                     1, 
+                                                     this->poTextureImageView);
                 }
                 else if (this->typeTexture == Vulkan_Texture_2D)
                 {
@@ -274,13 +274,13 @@ public:
                                                    this->poMipMapCount, 
                                                    this->poTextureImage, 
                                                    this->poTextureImageMemory);
-                    this->pWindow->createImageView(this->poTextureImage, 
-                                                   VK_IMAGE_VIEW_TYPE_2D, 
-                                                   this->typeFormat, 
-                                                   VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                   this->poMipMapCount, 
-                                                   1, 
-                                                   this->poTextureImageView);
+                    this->pWindow->createVkImageView(this->poTextureImage, 
+                                                     VK_IMAGE_VIEW_TYPE_2D, 
+                                                     this->typeFormat, 
+                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                     this->poMipMapCount, 
+                                                     1, 
+                                                     this->poTextureImageView);
                 }
                 else if (this->typeTexture == Vulkan_Texture_2DArray)
                 {
@@ -292,13 +292,13 @@ public:
                                                         this->poMipMapCount, 
                                                         this->poTextureImage, 
                                                         this->poTextureImageMemory);
-                    this->pWindow->createImageView(this->poTextureImage, 
-                                                   VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
-                                                   this->typeFormat, 
-                                                   VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                   this->poMipMapCount, 
-                                                   (int)this->aPathTexture.size(), 
-                                                   this->poTextureImageView);
+                    this->pWindow->createVkImageView(this->poTextureImage, 
+                                                     VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
+                                                     this->typeFormat, 
+                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                     this->poMipMapCount, 
+                                                     (int)this->aPathTexture.size(), 
+                                                     this->poTextureImageView);
                 }
                 else if (this->typeTexture == Vulkan_Texture_3D)
                 {
@@ -316,13 +316,13 @@ public:
                                                    this->poTextureImageMemory, 
                                                    this->stagingBuffer, 
                                                    this->stagingBufferMemory);
-                    this->pWindow->createImageView(this->poTextureImage, 
-                                                   VK_IMAGE_VIEW_TYPE_3D, 
-                                                   this->typeFormat, 
-                                                   VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                   this->poMipMapCount, 
-                                                   1, 
-                                                   this->poTextureImageView);
+                    this->pWindow->createVkImageView(this->poTextureImage, 
+                                                     VK_IMAGE_VIEW_TYPE_3D, 
+                                                     this->typeFormat, 
+                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                     this->poMipMapCount, 
+                                                     1, 
+                                                     this->poTextureImageView);
                 }
                 else if (this->typeTexture == Vulkan_Texture_CubeMap)
                 {
@@ -330,13 +330,13 @@ public:
                                                         this->poMipMapCount, 
                                                         this->poTextureImage, 
                                                         this->poTextureImageMemory);
-                    this->pWindow->createImageView(this->poTextureImage, 
-                                                   VK_IMAGE_VIEW_TYPE_CUBE, 
-                                                   this->typeFormat, 
-                                                   VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                   this->poMipMapCount, 
-                                                   (int)this->aPathTexture.size(), 
-                                                   this->poTextureImageView);
+                    this->pWindow->createVkImageView(this->poTextureImage, 
+                                                     VK_IMAGE_VIEW_TYPE_CUBE, 
+                                                     this->typeFormat, 
+                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                     this->poMipMapCount, 
+                                                     (int)this->aPathTexture.size(), 
+                                                     this->poTextureImageView);
                 }   
                 else
                 {
@@ -359,13 +359,13 @@ public:
                                                                this->isGraphicsComputeShared,
                                                                this->poTextureImage, 
                                                                this->poTextureImageMemory);
-                    this->pWindow->createImageView(this->poTextureImage, 
-                                                   VK_IMAGE_VIEW_TYPE_1D, 
-                                                   this->typeFormat, 
-                                                   VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                   this->poMipMapCount, 
-                                                   1, 
-                                                   this->poTextureImageView);
+                    this->pWindow->createVkImageView(this->poTextureImage, 
+                                                     VK_IMAGE_VIEW_TYPE_1D, 
+                                                     this->typeFormat, 
+                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                     this->poMipMapCount, 
+                                                     1, 
+                                                     this->poTextureImageView);
                 }
                 else if (this->typeTexture == Vulkan_Texture_2D)
                 {
@@ -380,13 +380,13 @@ public:
                                                                this->isGraphicsComputeShared,
                                                                this->poTextureImage, 
                                                                this->poTextureImageMemory);
-                    this->pWindow->createImageView(this->poTextureImage, 
-                                                   VK_IMAGE_VIEW_TYPE_2D, 
-                                                   this->typeFormat, 
-                                                   VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                   this->poMipMapCount, 
-                                                   1, 
-                                                   this->poTextureImageView);
+                    this->pWindow->createVkImageView(this->poTextureImage, 
+                                                     VK_IMAGE_VIEW_TYPE_2D, 
+                                                     this->typeFormat, 
+                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                     this->poMipMapCount, 
+                                                     1, 
+                                                     this->poTextureImageView);
                 }
                 else if (this->typeTexture == Vulkan_Texture_2DArray)
                 {
@@ -402,13 +402,13 @@ public:
                                                                     this->isGraphicsComputeShared,
                                                                     this->poTextureImage, 
                                                                     this->poTextureImageMemory);
-                    this->pWindow->createImageView(this->poTextureImage, 
-                                                   VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
-                                                   this->typeFormat, 
-                                                   VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                   this->poMipMapCount, 
-                                                   (int)this->aPathTexture.size(), 
-                                                   this->poTextureImageView);
+                    this->pWindow->createVkImageView(this->poTextureImage, 
+                                                     VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
+                                                     this->typeFormat, 
+                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                     this->poMipMapCount, 
+                                                     (int)this->aPathTexture.size(), 
+                                                     this->poTextureImageView);
                 }
                 else if (this->typeTexture == Vulkan_Texture_3D)
                 {
@@ -424,13 +424,13 @@ public:
                                                                this->isGraphicsComputeShared,
                                                                this->poTextureImage, 
                                                                this->poTextureImageMemory);
-                    this->pWindow->createImageView(this->poTextureImage, 
-                                                   VK_IMAGE_VIEW_TYPE_3D, 
-                                                   this->typeFormat, 
-                                                   VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                   this->poMipMapCount, 
-                                                   1, 
-                                                   this->poTextureImageView);
+                    this->pWindow->createVkImageView(this->poTextureImage, 
+                                                     VK_IMAGE_VIEW_TYPE_3D, 
+                                                     this->typeFormat, 
+                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                     this->poMipMapCount, 
+                                                     1, 
+                                                     this->poTextureImageView);
                 }
                 else if (this->typeTexture == Vulkan_Texture_CubeMap)
                 {
@@ -443,13 +443,13 @@ public:
                                                                     this->isGraphicsComputeShared,
                                                                     this->poTextureImage, 
                                                                     this->poTextureImageMemory);
-                    this->pWindow->createImageView(this->poTextureImage, 
-                                                   VK_IMAGE_VIEW_TYPE_CUBE, 
-                                                   this->typeFormat, 
-                                                   VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                   this->poMipMapCount, 
-                                                   6, 
-                                                   this->poTextureImageView);
+                    this->pWindow->createVkImageView(this->poTextureImage, 
+                                                     VK_IMAGE_VIEW_TYPE_CUBE, 
+                                                     this->typeFormat, 
+                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                     this->poMipMapCount, 
+                                                     6, 
+                                                     this->poTextureImageView);
                 }
                 else
                 {
@@ -459,15 +459,15 @@ public:
                 }
             }
 
-            this->pWindow->createSampler(this->typeFilter, 
-                                         this->typeAddressing,
-                                         this->typeBorderColor,
-                                         true,
-                                         this->pWindow->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
-                                         0.0f,
-                                         static_cast<float>(this->poMipMapCount),
-                                         0.0f,
-                                         this->poTextureSampler);
+            this->pWindow->createVkSampler(this->typeFilter, 
+                                           this->typeAddressing,
+                                           this->typeBorderColor,
+                                           true,
+                                           this->pWindow->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+                                           0.0f,
+                                           static_cast<float>(this->poMipMapCount),
+                                           0.0f,
+                                           this->poTextureSampler);
 
             this->poTextureImageInfo = {};
             this->poTextureImageInfo.imageLayout = this->poTextureImageLayout;
@@ -496,7 +496,7 @@ public:
         VkPipelineLayout poPipelineLayout;
         VkPipeline poPipeline_WireFrame;
         VkPipeline poPipeline;
-        std::vector<VkDescriptorSet> poDescriptorSets;
+        VkDescriptorSetVector poDescriptorSets;
 
         PipelineGraphics(Vulkan_011_Texturing* _pWindow)
             : pWindow(_pWindow)

@@ -2038,7 +2038,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSetLayouts()
         size_t count_layout = aLayouts.size();
 
         VkDescriptorSetLayout vkDescriptorSetLayout;
-        std::vector<VkDescriptorSetLayoutBinding> bindings;
+        VkDescriptorSetLayoutBindingVector bindings;
         for (size_t j = 0; j < count_layout; j++)
         {
             String& strLayout = aLayouts[j];
@@ -2182,13 +2182,9 @@ void Vulkan_013_IndirectDraw::createDescriptorSetLayouts()
             }
         }
 
-        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-        layoutInfo.pBindings = bindings.data();
-        if (vkCreateDescriptorSetLayout(this->poDevice, &layoutInfo, nullptr, &vkDescriptorSetLayout) != VK_SUCCESS) 
+        if (!createVkDescriptorSetLayout(bindings, vkDescriptorSetLayout))
         {
-            String msg = "VulkanWindow::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
+            String msg = "Vulkan_013_IndirectDraw::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -2225,7 +2221,7 @@ void Vulkan_013_IndirectDraw::destroyShaderModules()
     for (size_t i = 0; i < count; i++)
     {
         VkShaderModule& vkShaderModule= this->m_aVkShaderModules[i];
-        vkDestroyShaderModule(this->poDevice, vkShaderModule, nullptr);
+        destroyVkShaderModule(vkShaderModule);
     }
     this->m_aVkShaderModules.clear();
     this->m_mapVkShaderModules.clear();
@@ -2238,7 +2234,7 @@ void Vulkan_013_IndirectDraw::createShaderModules()
         String shaderType = g_ShaderModulePaths[3 * i + 1];
         String shaderPath = g_ShaderModulePaths[3 * i + 2];
 
-        VkShaderModule shaderModule = createShaderModule(shaderType, shaderPath);
+        VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
         Util_LogInfo("Vulkan_013_IndirectDraw::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
@@ -2466,7 +2462,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Custom()
 
         //Pipeline Graphics
         {
-            createDescriptorSets(pRend->pPipelineGraphics->poDescriptorSets, pRend->pPipelineGraphics->poDescriptorSetLayout);
+            createVkDescriptorSets(pRend->pPipelineGraphics->poDescriptorSets, pRend->pPipelineGraphics->poDescriptorSetLayout);
             createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSets, pRend, nullptr);
         }   
         
@@ -2486,12 +2482,12 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
         if (pModelObject->pRendIndirect != nullptr)
         {
-            createDescriptorSets(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout);
+            createVkDescriptorSets(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout);
             createDescriptorSets_Graphics(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend, pModelObject->pRendIndirect);
         }
     }
 }
-void Vulkan_013_IndirectDraw::createDescriptorSets_Graphics(std::vector<VkDescriptorSet>& poDescriptorSets, 
+void Vulkan_013_IndirectDraw::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
                                                             ModelObjectRend* pRend, 
                                                             ModelObjectRendIndirect* pRendIndirect)
 {
@@ -2500,7 +2496,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Graphics(std::vector<VkDescri
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
-        std::vector<VkWriteDescriptorSet> descriptorWrites;
+        VkWriteDescriptorSetVector descriptorWrites;
         int nIndexTextureVS = 0;
         int nIndexTextureTESC = 0;
         int nIndexTextureTESE = 0;
@@ -2662,7 +2658,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Graphics(std::vector<VkDescri
                 throw std::runtime_error(msg.c_str());
             }
         }
-        vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+        updateVkDescriptorSets(descriptorWrites);
     }
 }
 void Vulkan_013_IndirectDraw::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
@@ -2670,9 +2666,9 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Compute(PipelineCompute* pPip
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
     assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_013_IndirectDraw::createDescriptorSets_Compute");
-    createDescriptorSet(pPipelineCompute->poDescriptorSet, pPipelineCompute->poDescriptorSetLayout);
+    createVkDescriptorSet(pPipelineCompute->poDescriptorSet, pPipelineCompute->poDescriptorSetLayout);
 
-    std::vector<VkWriteDescriptorSet> descriptorWrites;
+    VkWriteDescriptorSetVector descriptorWrites;
     int nIndexTextureCS = 0;
     size_t count_names = pDescriptorSetLayoutNames->size();
     for (size_t p = 0; p < count_names; p++)
@@ -2736,7 +2732,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Compute(PipelineCompute* pPip
             throw std::runtime_error(msg.c_str());
         }
     }  
-    vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+    updateVkDescriptorSets(descriptorWrites);
 }
 
 void Vulkan_013_IndirectDraw::updateCompute_Custom(VkCommandBuffer& commandBuffer)

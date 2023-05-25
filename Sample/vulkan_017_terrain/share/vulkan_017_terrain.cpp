@@ -1315,7 +1315,7 @@ Vulkan_017_Terrain::Vulkan_017_Terrain(int width, int height, String name)
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
     this->mainLight.direction = glm::vec3(0, -1, 0); //y-
 
-    //this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
+    this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
 }
 
 void Vulkan_017_Terrain::setUpEnabledFeatures()
@@ -2040,7 +2040,7 @@ void Vulkan_017_Terrain::createDescriptorSetLayouts()
         size_t count_layout = aLayouts.size();
 
         VkDescriptorSetLayout vkDescriptorSetLayout;
-        std::vector<VkDescriptorSetLayoutBinding> bindings;
+        VkDescriptorSetLayoutBindingVector bindings;
         for (size_t j = 0; j < count_layout; j++)
         {
             String& strLayout = aLayouts[j];
@@ -2184,13 +2184,9 @@ void Vulkan_017_Terrain::createDescriptorSetLayouts()
             }
         }
 
-        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-        layoutInfo.pBindings = bindings.data();
-        if (vkCreateDescriptorSetLayout(this->poDevice, &layoutInfo, nullptr, &vkDescriptorSetLayout) != VK_SUCCESS) 
+        if (!createVkDescriptorSetLayout(bindings, vkDescriptorSetLayout))
         {
-            String msg = "VulkanWindow::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
+            String msg = "Vulkan_017_Terrain::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -2227,7 +2223,7 @@ void Vulkan_017_Terrain::destroyShaderModules()
     for (size_t i = 0; i < count; i++)
     {
         VkShaderModule& vkShaderModule= this->m_aVkShaderModules[i];
-        vkDestroyShaderModule(this->poDevice, vkShaderModule, nullptr);
+        destroyVkShaderModule(vkShaderModule);
     }
     this->m_aVkShaderModules.clear();
     this->m_mapVkShaderModules.clear();
@@ -2240,7 +2236,7 @@ void Vulkan_017_Terrain::createShaderModules()
         String shaderType = g_ShaderModulePaths[3 * i + 1];
         String shaderPath = g_ShaderModulePaths[3 * i + 2];
 
-        VkShaderModule shaderModule = createShaderModule(shaderType, shaderPath);
+        VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
         Util_LogInfo("Vulkan_017_Terrain::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
@@ -2468,7 +2464,7 @@ void Vulkan_017_Terrain::createDescriptorSets_Custom()
 
         //Pipeline Graphics
         {
-            createDescriptorSets(pRend->pPipelineGraphics->poDescriptorSets, pRend->pPipelineGraphics->poDescriptorSetLayout);
+            createVkDescriptorSets(pRend->pPipelineGraphics->poDescriptorSets, pRend->pPipelineGraphics->poDescriptorSetLayout);
             createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSets, pRend, nullptr);
         }   
         
@@ -2488,21 +2484,21 @@ void Vulkan_017_Terrain::createDescriptorSets_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
         if (pModelObject->pRendIndirect != nullptr)
         {
-            createDescriptorSets(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout);
+            createVkDescriptorSets(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout);
             createDescriptorSets_Graphics(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend, pModelObject->pRendIndirect);
         }
     }
 }
-void Vulkan_017_Terrain::createDescriptorSets_Graphics(std::vector<VkDescriptorSet>& poDescriptorSets, 
-                                                            ModelObjectRend* pRend, 
-                                                            ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_017_Terrain::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
+                                                       ModelObjectRend* pRend, 
+                                                       ModelObjectRendIndirect* pRendIndirect)
 {
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
     assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_017_Terrain::createDescriptorSets_Graphics");
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
-        std::vector<VkWriteDescriptorSet> descriptorWrites;
+        VkWriteDescriptorSetVector descriptorWrites;
         int nIndexTextureVS = 0;
         int nIndexTextureTESC = 0;
         int nIndexTextureTESE = 0;
@@ -2664,7 +2660,7 @@ void Vulkan_017_Terrain::createDescriptorSets_Graphics(std::vector<VkDescriptorS
                 throw std::runtime_error(msg.c_str());
             }
         }
-        vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+        updateVkDescriptorSets(descriptorWrites);
     }
 }
 void Vulkan_017_Terrain::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
@@ -2672,9 +2668,9 @@ void Vulkan_017_Terrain::createDescriptorSets_Compute(PipelineCompute* pPipeline
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
     assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_017_Terrain::createDescriptorSets_Compute");
-    createDescriptorSet(pPipelineCompute->poDescriptorSet, pPipelineCompute->poDescriptorSetLayout);
+    createVkDescriptorSet(pPipelineCompute->poDescriptorSet, pPipelineCompute->poDescriptorSetLayout);
 
-    std::vector<VkWriteDescriptorSet> descriptorWrites;
+    VkWriteDescriptorSetVector descriptorWrites;
     int nIndexTextureCS = 0;
     size_t count_names = pDescriptorSetLayoutNames->size();
     for (size_t p = 0; p < count_names; p++)
@@ -2738,7 +2734,7 @@ void Vulkan_017_Terrain::createDescriptorSets_Compute(PipelineCompute* pPipeline
             throw std::runtime_error(msg.c_str());
         }
     }  
-    vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+    updateVkDescriptorSets(descriptorWrites);
 }
 
 void Vulkan_017_Terrain::updateCompute_Custom(VkCommandBuffer& commandBuffer)

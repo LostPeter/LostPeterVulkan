@@ -226,8 +226,8 @@ public:
         VkPipeline poPipelineGraphics_Outline;
 
         //DescriptorSets
-        std::vector<VkDescriptorSet> poDescriptorSets;
-        std::vector<VkDescriptorSet> poDescriptorSets_Outline;
+        VkDescriptorSetVector poDescriptorSets;
+        VkDescriptorSetVector poDescriptorSets_Outline;
 
         //State
         VkPrimitiveTopology cfg_vkPrimitiveTopology;

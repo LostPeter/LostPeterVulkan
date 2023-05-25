@@ -1338,7 +1338,7 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
         size_t count_layout = aLayouts.size();
 
         VkDescriptorSetLayout vkDescriptorSetLayout;
-        std::vector<VkDescriptorSetLayoutBinding> bindings;
+        VkDescriptorSetLayoutBindingVector bindings;
         for (size_t j = 0; j < count_layout; j++)
         {
             String& strLayout = aLayouts[j];
@@ -1493,13 +1493,9 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
             }
         }
 
-        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-        layoutInfo.pBindings = bindings.data();
-        if (vkCreateDescriptorSetLayout(this->poDevice, &layoutInfo, nullptr, &vkDescriptorSetLayout) != VK_SUCCESS) 
+        if (!createVkDescriptorSetLayout(bindings, vkDescriptorSetLayout))
         {
-            String msg = "VulkanWindow::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
+            String msg = "Vulkan_012_Shadering::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1536,7 +1532,7 @@ void Vulkan_012_Shadering::destroyShaderModules()
     for (size_t i = 0; i < count; i++)
     {
         VkShaderModule& vkShaderModule= this->m_aVkShaderModules[i];
-        vkDestroyShaderModule(this->poDevice, vkShaderModule, nullptr);
+        destroyVkShaderModule(vkShaderModule);
     }
     this->m_aVkShaderModules.clear();
     this->m_mapVkShaderModules.clear();
@@ -1549,7 +1545,7 @@ void Vulkan_012_Shadering::createShaderModules()
         String shaderType = g_ShaderModulePaths[3 * i + 1];
         String shaderPath = g_ShaderModulePaths[3 * i + 2];
 
-        VkShaderModule shaderModule = createShaderModule(shaderType, shaderPath);
+        VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
         Util_LogInfo("Vulkan_012_Shadering::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
@@ -1779,10 +1775,10 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
         {
             StringVector* pDescriptorSetLayoutNames = pModelObject->pPipelineGraphics->poDescriptorSetLayoutNames;
             assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_012_Shadering::createDescriptorSets_Custom");
-            createDescriptorSets(pModelObject->pPipelineGraphics->poDescriptorSets, pModelObject->pPipelineGraphics->poDescriptorSetLayout);
+            createVkDescriptorSets(pModelObject->pPipelineGraphics->poDescriptorSets, pModelObject->pPipelineGraphics->poDescriptorSetLayout);
             for (size_t j = 0; j < count_sci; j++)
             {   
-                std::vector<VkWriteDescriptorSet> descriptorWrites;
+                VkWriteDescriptorSetVector descriptorWrites;
                 int nIndexTextureVS = 0;
                 int nIndexTextureTESC = 0;
                 int nIndexTextureTESE = 0;
@@ -1961,7 +1957,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                         throw std::runtime_error(msg.c_str());
                     }
                 }
-                vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+                updateVkDescriptorSets(descriptorWrites);
             }
         }   
         
@@ -1973,9 +1969,9 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
 
             StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
             assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_012_Shadering::createDescriptorSets_Custom");
-            createDescriptorSet(pPipelineCompute->poDescriptorSet, pPipelineCompute->poDescriptorSetLayout);
+            createVkDescriptorSet(pPipelineCompute->poDescriptorSet, pPipelineCompute->poDescriptorSetLayout);
 
-            std::vector<VkWriteDescriptorSet> descriptorWrites;
+            VkWriteDescriptorSetVector descriptorWrites;
             int nIndexTextureCS = 0;
             size_t count_names = pDescriptorSetLayoutNames->size();
             for (size_t p = 0; p < count_names; p++)
@@ -2039,7 +2035,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                     throw std::runtime_error(msg.c_str());
                 }
             }  
-            vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+            updateVkDescriptorSets(descriptorWrites);
         }
     }
 }

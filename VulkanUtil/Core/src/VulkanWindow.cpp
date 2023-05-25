@@ -128,6 +128,7 @@ namespace LostPeter
         , cfg_shaderFragment_Path("")
         , cfg_texture_Path("")
         , cfg_terrain_Path("")
+        , cfg_shaderTerrainNormalMapGen_Path("Assets/Shader/standard_compute_texgen_normalmap.comp.spv")
 
         , imgui_IsEnable(false)
         , imgui_MinimalSwapchainImages(0)
@@ -138,9 +139,12 @@ namespace LostPeter
         , pSceneManager(nullptr)
 
         , poTerrainHeightMapData(nullptr)
+        , poTerrainHeightMapDataFloat(nullptr)
         , poTerrainHeightMapDataSize(0)
         , poTerrainHeightMapSize(0)
-
+        , poTerrainGridVertexCount(129)
+        , poTerrainGridInstanceVertexCount(17)
+        , poTerrainIsDrawInstance(false)
         , poTerrainVertexCount(0)
         , poTerrainVertexBuffer_Size(0)
         , poTerrainVertexBuffer_Data(nullptr)
@@ -151,6 +155,21 @@ namespace LostPeter
         , poTerrainIndexBuffer_Data(nullptr)
         , poTerrainIndexBuffer(VK_NULL_HANDLE)
         , poTerrainIndexBufferMemory(VK_NULL_HANDLE)
+        , poTerrainHeightMapImage(VK_NULL_HANDLE)
+        , poTerrainHeightMapImageMemory(VK_NULL_HANDLE)
+        , poTerrainHeightMapImageView(VK_NULL_HANDLE)
+        , poTerrainNormalMapImage(VK_NULL_HANDLE)
+        , poTerrainNormalMapImageMemory(VK_NULL_HANDLE)
+        , poTerrainNormalMapImageView(VK_NULL_HANDLE)
+        , poTerrainImageSampler(VK_NULL_HANDLE)
+
+        , poBuffer_TerrainTextureCopy(VK_NULL_HANDLE)
+        , poBufferMemory_TerrainTextureCopy(VK_NULL_HANDLE)
+        , poTerrainComputeDescriptorSetLayout(VK_NULL_HANDLE)
+        , poTerrainComputePipelineLayout(VK_NULL_HANDLE)
+        , poTerrainComputeShaderModuleNormalGen(VK_NULL_HANDLE)
+        , poTerrainComputePipeline(VK_NULL_HANDLE)
+        , poTerrainComputeDescriptorSet(VK_NULL_HANDLE)
 
         , pCamera(nullptr)
         , pCameraRight(nullptr)
@@ -460,16 +479,19 @@ namespace LostPeter
             //5> Create Swap Chain Objects
             createSwapChainObjects();
 
-            //6> createDescriptorObjects
+            //6> createDescriptorPool
+            createDescriptorPool();
+
+            //7> createDescriptorObjects
             createDescriptorObjects();
             
-            //7> Create Pipeline Objects
+            //8> Create Pipeline Objects
             createPipelineObjects();
 
-            //8> Create Sync Objects
+            //9> Create Sync Objects
             createSyncObjects();
 
-            //9> isCreateDevice
+            //10> isCreateDevice
             this->isCreateDevice = true;
         }
         Util_LogInfo("**********<1> VulkanWindow::createPipeline finish **********");
@@ -1419,13 +1441,13 @@ namespace LostPeter
 
         for (int i = 0; i < count; i++)
         {
-            createImageView(this->poSwapChainImages[i], 
-                            VK_IMAGE_VIEW_TYPE_2D,
-                            this->poSwapChainImageFormat, 
-                            VK_IMAGE_ASPECT_COLOR_BIT, 
-                            1,
-                            1,
-                            this->poSwapChainImageViews[i]);
+            createVkImageView(this->poSwapChainImages[i], 
+                              VK_IMAGE_VIEW_TYPE_2D,
+                              this->poSwapChainImageFormat, 
+                              VK_IMAGE_ASPECT_COLOR_BIT, 
+                              1,
+                              1,
+                              this->poSwapChainImageViews[i]);
         }
 
         Util_LogInfo("<1-5-2> VulkanWindow::createSwapChainImageViews finish !");
@@ -1434,30 +1456,30 @@ namespace LostPeter
         {
             VkFormat colorFormat = this->poSwapChainImageFormat;
 
-            createImage(this->poSwapChainExtent.width, 
-                        this->poSwapChainExtent.height, 
-                        1,
-                        1,
-                        1,
-                        VK_IMAGE_TYPE_2D, 
-                        false,
-                        this->poMSAASamples, 
-                        colorFormat, 
-                        VK_IMAGE_TILING_OPTIMAL, 
-                        VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, 
-                        VK_SHARING_MODE_EXCLUSIVE,
-                        false,
-                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                        this->poColorImage, 
-                        this->poColorImageMemory);
+            createVkImage(this->poSwapChainExtent.width, 
+                          this->poSwapChainExtent.height, 
+                          1,
+                          1,
+                          1,
+                          VK_IMAGE_TYPE_2D, 
+                          false,
+                          this->poMSAASamples, 
+                          colorFormat, 
+                          VK_IMAGE_TILING_OPTIMAL, 
+                          VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, 
+                          VK_SHARING_MODE_EXCLUSIVE,
+                          false,
+                          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                          this->poColorImage, 
+                          this->poColorImageMemory);
 
-            createImageView(this->poColorImage, 
-                            VK_IMAGE_VIEW_TYPE_2D,
-                            colorFormat, 
-                            VK_IMAGE_ASPECT_COLOR_BIT, 
-                            1, 
-                            1,
-                            this->poColorImageView);
+            createVkImageView(this->poColorImage, 
+                              VK_IMAGE_VIEW_TYPE_2D,
+                              colorFormat, 
+                              VK_IMAGE_ASPECT_COLOR_BIT, 
+                              1, 
+                              1,
+                              this->poColorImageView);
 
             Util_LogInfo("<1-5-3> VulkanWindow::createColorResources finish !");
         }
@@ -1465,30 +1487,30 @@ namespace LostPeter
         {
             VkFormat depthFormat = this->poDepthImageFormat;
 
-            createImage(this->poSwapChainExtent.width, 
-                        this->poSwapChainExtent.height, 
-                        1, 
-                        1,
-                        1,
-                        VK_IMAGE_TYPE_2D, 
-                        false,
-                        this->poMSAASamples, 
-                        depthFormat, 
-                        VK_IMAGE_TILING_OPTIMAL, 
-                        VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, 
-                        VK_SHARING_MODE_EXCLUSIVE,
-                        false,
-                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                        this->poDepthImage, 
-                        this->poDepthImageMemory);
+            createVkImage(this->poSwapChainExtent.width, 
+                          this->poSwapChainExtent.height, 
+                          1, 
+                          1,
+                          1,
+                          VK_IMAGE_TYPE_2D, 
+                          false,
+                          this->poMSAASamples, 
+                          depthFormat, 
+                          VK_IMAGE_TILING_OPTIMAL, 
+                          VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, 
+                          VK_SHARING_MODE_EXCLUSIVE,
+                          false,
+                          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                          this->poDepthImage, 
+                          this->poDepthImageMemory);
 
-            createImageView(this->poDepthImage, 
-                            VK_IMAGE_VIEW_TYPE_2D,
-                            depthFormat, 
-                            VK_IMAGE_ASPECT_DEPTH_BIT, 
-                            1,
-                            1,
-                            this->poDepthImageView);
+            createVkImageView(this->poDepthImage, 
+                              VK_IMAGE_VIEW_TYPE_2D,
+                              depthFormat, 
+                              VK_IMAGE_ASPECT_DEPTH_BIT, 
+                              1,
+                              1,
+                              this->poDepthImageView);
 
             Util_LogInfo("<1-5-4> VulkanWindow::createDepthResources finish !");
         }
@@ -1547,9 +1569,50 @@ namespace LostPeter
             }
         }
 
+    void VulkanWindow::createDescriptorPool()
+    {
+        VkDescriptorPoolSize pool_sizes[] =
+        {
+            { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
+            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
+            { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+            { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+        };
+
+        VkDescriptorPoolCreateInfo poolInfo = {};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        poolInfo.maxSets = 1000 * UTIL_ARRAYSIZE(pool_sizes);
+        poolInfo.poolSizeCount = (uint32_t)UTIL_ARRAYSIZE(pool_sizes);
+        poolInfo.pPoolSizes = pool_sizes;
+
+        if (vkCreateDescriptorPool(this->poDevice, &poolInfo, nullptr, &this->poDescriptorPool) != VK_SUCCESS) 
+        {
+            String msg = "VulkanWindow::createDescriptorPool: Failed to create descriptor pool !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+
+        Util_LogInfo("<1-6> VulkanWindow::createDescriptorPool finish !");
+    }
+        void VulkanWindow::destroyVkDescriptorPool(VkDescriptorPool vkDescriptorPool)
+        {
+            if (vkDescriptorPool != VK_NULL_HANDLE)
+            {
+                vkDestroyDescriptorPool(this->poDevice, vkDescriptorPool, nullptr);
+            }
+        }
+
     void VulkanWindow::createDescriptorObjects()
     {
-        Util_LogInfo("*****<1-6> VulkanWindow::createDescriptorObjects start *****");
+        Util_LogInfo("*****<1-7> VulkanWindow::createDescriptorObjects start *****");
         {
             //1> createDescriptorSetLayout_Default
             createDescriptorSetLayout_Default();
@@ -1557,7 +1620,7 @@ namespace LostPeter
             //2> void createDescriptorSetLayout_Custom
             createDescriptorSetLayout_Custom();
         }
-        Util_LogInfo("*****<1-6> VulkanWindow::createDescriptorObjects finish *****");
+        Util_LogInfo("*****<1-7> VulkanWindow::createDescriptorObjects finish *****");
     }
     void VulkanWindow::createDescriptorSetLayout_Default()
     {
@@ -1601,7 +1664,7 @@ namespace LostPeter
         samplerLayoutBinding.pImmutableSamplers = nullptr;
         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        std::vector<VkDescriptorSetLayoutBinding> bindings;
+        VkDescriptorSetLayoutBindingVector bindings;
         bindings.push_back(passMainLayoutBinding);
         bindings.push_back(objectLayoutBinding);
         bindings.push_back(materialLayoutBinding);
@@ -1610,40 +1673,36 @@ namespace LostPeter
         {
             bindings.push_back(samplerLayoutBinding);
         }
-        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-        layoutInfo.pBindings = bindings.data();
-
-        if (vkCreateDescriptorSetLayout(this->poDevice, &layoutInfo, nullptr, &this->poDescriptorSetLayout) != VK_SUCCESS) 
+        
+        if (!createVkDescriptorSetLayout(bindings, this->poDescriptorSetLayout))
         {
             String msg = "VulkanWindow::createDescriptorSetLayout_Default: Failed to create descriptor set layout !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
-        Util_LogInfo("<1-6-1> VulkanWindow::createDescriptorSetLayout_Default finish !");
+        Util_LogInfo("<1-7-1> VulkanWindow::createDescriptorSetLayout_Default finish !");
     }
     void VulkanWindow::createDescriptorSetLayout_Custom()
     {
         
 
-        Util_LogInfo("<1-6-2> VulkanWindow::createDescriptorSetLayout_Custom finish !");
+        Util_LogInfo("<1-7-2> VulkanWindow::createDescriptorSetLayout_Custom finish !");
     }
 
     void VulkanWindow::createPipelineObjects()
     {
-        Util_LogInfo("*****<1-7> VulkanWindow::createPipelineObjects start *****");
+        Util_LogInfo("*****<1-8> VulkanWindow::createPipelineObjects start *****");
         {
             //1> createRenderPasses
             createRenderPasses();
-            Util_LogInfo("<1-7-1> VulkanWindow::createPipelineObjects: Success to create RenderPasses !");
+            Util_LogInfo("<1-8-1> VulkanWindow::createPipelineObjects: Success to create RenderPasses !");
 
             //2> createFramebuffers
             createFramebuffers();
-            Util_LogInfo("<1-7-2> VulkanWindow::createPipelineObjects: Success to create Framebuffers !");
+            Util_LogInfo("<1-8-2> VulkanWindow::createPipelineObjects: Success to create Framebuffers !");
         }
-        Util_LogInfo("*****<1-7> VulkanWindow::createPipelineObjects finish *****");
+        Util_LogInfo("*****<1-8> VulkanWindow::createPipelineObjects finish *****");
     }
     void VulkanWindow::createRenderPasses()
     {
@@ -2284,7 +2343,7 @@ namespace LostPeter
             createRenderComputeSyncObjects();
         }
 
-        Util_LogInfo("*****<1-8> VulkanWindow::createSyncObjects finish *****");
+        Util_LogInfo("*****<1-9> VulkanWindow::createSyncObjects finish *****");
     }
         void VulkanWindow::createPresentRenderSyncObjects()
         {
@@ -2312,7 +2371,7 @@ namespace LostPeter
                 }
             }
             
-            Util_LogInfo("<1-8-1> VulkanWindow::createPresentRenderSyncObjects finish !");
+            Util_LogInfo("<1-9-1> VulkanWindow::createPresentRenderSyncObjects finish !");
         }
         void VulkanWindow::createRenderComputeSyncObjects()
         {
@@ -2342,7 +2401,7 @@ namespace LostPeter
                 throw std::runtime_error(msg);
             }
 
-            Util_LogInfo("<1-8-2> VulkanWindow::createRenderComputeSyncObjects finish !");
+            Util_LogInfo("<1-9-2> VulkanWindow::createRenderComputeSyncObjects finish !");
         }
 
             void VulkanWindow::destroyVkFence(VkFence vkFence)
@@ -2488,6 +2547,12 @@ namespace LostPeter
             {
                 //2> setupTerrainGeometry
                 setupTerrainGeometry();
+                //3> setupTerrainTexture
+                setupTerrainTexture();
+                //4> setupTerrainComputePipeline
+                setupTerrainComputePipeline();
+                //5> setupTerrainGraphicsPipeline
+                setupTerrainGraphicsPipeline();
             }
         }
         Util_LogInfo("*****<2-1-2> VulkanWindow::createTerrain finish *****");
@@ -2498,6 +2563,7 @@ namespace LostPeter
                 return false;
 
             this->poTerrainHeightMapData = nullptr;
+            this->poTerrainHeightMapDataFloat = nullptr;
             this->poTerrainHeightMapDataSize = 0;
             this->poTerrainHeightMapSize = 0;
             if (!VulkanUtil::LoadAssetFileToBuffer(this->cfg_terrain_Path.c_str(), &this->poTerrainHeightMapData, this->poTerrainHeightMapDataSize, false))
@@ -2505,8 +2571,19 @@ namespace LostPeter
                 Util_LogError("VulkanWindow::loadTerrainData failed, path: [%s] !", this->cfg_terrain_Path.c_str());
                 return false;
             }
-            
             this->poTerrainHeightMapSize = (int32)VulkanMath::Sqrt(this->poTerrainHeightMapDataSize / 2);
+
+            int nSize = this->poTerrainHeightMapSize;
+            this->poTerrainHeightMapDataFloat = new float[nSize * nSize];
+            for (int i = 0; i < nSize; i++)
+            {
+                for (int j = 0; j < nSize; j++)
+                {
+                    uint8* pStart = this->poTerrainHeightMapData + i * nSize * 2 + j * 2;
+                    uint16 v = *((uint16*)pStart);
+					this->poTerrainHeightMapDataFloat[i * nSize + j] = (float)v / 0xFFFF;
+                }
+            }
 
             Util_LogInfo("VulkanWindow::loadTerrainData: Load terrain data: [%s] success, heightmap data size: [%d], heightmap size: [%d] !", 
                          this->cfg_terrain_Path.c_str(), this->poTerrainHeightMapDataSize, this->poTerrainHeightMapSize);
@@ -2517,7 +2594,23 @@ namespace LostPeter
             //1> Mesh Geometry
             MeshData meshData;
             float fSize = (float)(this->poTerrainHeightMapSize - 1.0f);
-            uint32 nVertexCount = (uint32)this->poTerrainHeightMapSize;
+            uint32 nSizeVertex = (uint32)(this->poTerrainHeightMapSize);
+            uint32 nVertexCount = 0;
+            float* pHeight = nullptr;
+            uint32 heightDataGap = 1;
+            if (this->poTerrainIsDrawInstance)
+            {
+                nVertexCount = this->poTerrainGridInstanceVertexCount;
+            }
+            else
+            {
+                nVertexCount = nSizeVertex;
+                if (nVertexCount > this->poTerrainGridVertexCount)
+                    nVertexCount = this->poTerrainGridVertexCount;
+                
+                pHeight = this->poTerrainHeightMapDataFloat;
+                heightDataGap = (nSizeVertex - 1) / (nVertexCount - 1);
+            }
             VulkanMeshGeometry::CreateTerrain(meshData,
                                               0.0f,
                                               0.0f,
@@ -2525,6 +2618,8 @@ namespace LostPeter
                                               fSize,
                                               nVertexCount,
                                               nVertexCount,
+                                              pHeight,
+                                              heightDataGap,
                                               false,
                                               false);
 
@@ -2550,13 +2645,14 @@ namespace LostPeter
             }
 
             this->poTerrainVertexCount = (uint32_t)this->poTerrain_Pos3Normal3Tex2.size();
-            this->poTerrainVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Normal3Tex2);
+            this->poTerrainVertexBuffer_Size = this->poTerrainVertexCount * sizeof(Vertex_Pos3Normal3Tex2);
             this->poTerrainVertexBuffer_Data = &this->poTerrain_Pos3Normal3Tex2[0];
             this->poTerrainIndexCount = (uint32_t)this->poTerrain_Indices.size();
-            this->poTerrainIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+            this->poTerrainIndexBuffer_Size = this->poTerrainIndexCount * sizeof(uint32_t);
             this->poTerrainIndexBuffer_Data = &this->poTerrain_Indices[0];
 
-            Util_LogInfo("VulkanWindow::setupTerrainGeometry: create terrain mesh: [Pos3Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+            Util_LogInfo("VulkanWindow::setupTerrainGeometry: create terrain mesh: [Pos3Normal3Tex2]: Terrain Grid: [%d - %d], Vertex count: [%d], Index count: [%d] success !", 
+                     nVertexCount, nVertexCount,
                      (int)this->poTerrain_Pos3Normal3Tex2.size(), 
                      (int)this->poTerrain_Indices.size());
 
@@ -2567,12 +2663,225 @@ namespace LostPeter
             createIndexBuffer(this->poTerrainIndexBuffer_Size, this->poTerrainIndexBuffer_Data, this->poTerrainIndexBuffer, this->poTerrainIndexBufferMemory);
             
         }
+        void VulkanWindow::setupTerrainTexture()
+        {
+            //1> TerrainHeightMap Texture
+            {
+                createTextureRenderTarget2D(this->poTerrainHeightMapData,
+                                            this->poTerrainHeightMapSize,
+                                            this->poTerrainHeightMapSize,
+                                            1,
+                                            VK_SAMPLE_COUNT_1_BIT,
+                                            VK_FORMAT_R16_UNORM,
+                                            VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT,
+                                            true,
+                                            this->poTerrainHeightMapImage,
+                                            this->poTerrainHeightMapImageMemory);
+                createVkImageView(this->poTerrainHeightMapImage, 
+                                  VK_IMAGE_VIEW_TYPE_2D, 
+                                  VK_FORMAT_R16_UNORM, 
+                                  VK_IMAGE_ASPECT_COLOR_BIT, 
+                                  1, 
+                                  1, 
+                                  this->poTerrainHeightMapImageView);
+            }
+            //2> TerrainNormalMap Texture
+            {
+                createTextureRenderTarget2D(nullptr,
+                                            this->poTerrainHeightMapSize,
+                                            this->poTerrainHeightMapSize,
+                                            1,
+                                            VK_SAMPLE_COUNT_1_BIT,
+                                            VK_FORMAT_R8G8B8A8_UNORM,
+                                            VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT,
+                                            true,
+                                            this->poTerrainNormalMapImage,
+                                            this->poTerrainNormalMapImageMemory);
+                createVkImageView(this->poTerrainNormalMapImage, 
+                                  VK_IMAGE_VIEW_TYPE_2D, 
+                                  VK_FORMAT_R8G8B8A8_UNORM, 
+                                  VK_IMAGE_ASPECT_COLOR_BIT, 
+                                  1, 
+                                  1, 
+                                  this->poTerrainNormalMapImageView);
+            }
+            //3> Terrain ImageSampler
+            {
+                createVkSampler(Vulkan_TextureFilter_Bilinear, 
+                                Vulkan_TextureAddressing_Clamp,
+                                Vulkan_TextureBorderColor_OpaqueBlack,
+                                true,
+                                this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+                                0.0f,
+                                1.0f,
+                                0.0f,
+                                this->poTerrainImageSampler);
+            }
+            //4> ImageInfo
+            {
+                this->poTerrainHeightMapImageInfo = {};
+                this->poTerrainHeightMapImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                this->poTerrainHeightMapImageInfo.imageView = this->poTerrainHeightMapImageView;
+                this->poTerrainHeightMapImageInfo.sampler = this->poTerrainImageSampler;
+
+                this->poTerrainNormalMapImageInfo = {};
+                this->poTerrainNormalMapImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+                this->poTerrainNormalMapImageInfo.imageView = this->poTerrainNormalMapImageView;
+                this->poTerrainNormalMapImageInfo.sampler = this->poTerrainImageSampler;
+            }
+        }
+        void VulkanWindow::setupTerrainComputePipeline()
+        {
+            //0> poBuffer_TerrainTextureCopy
+            {
+                this->poTerrainTextureCopy.texInfo.x = this->poTerrainHeightMapSize;
+                this->poTerrainTextureCopy.texInfo.y = this->poTerrainHeightMapSize;
+                VkDeviceSize bufferSize = sizeof(TextureCopyConstants);
+                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TerrainTextureCopy, this->poBufferMemory_TerrainTextureCopy);
+                void* data;
+                vkMapMemory(this->poDevice, this->poBufferMemory_TerrainTextureCopy, 0, sizeof(TextureCopyConstants), 0, &data);
+                    memcpy(data, &this->poTerrainTextureCopy, sizeof(TextureCopyConstants));
+                vkUnmapMemory(this->poDevice, this->poBufferMemory_TerrainTextureCopy);
+            }
+
+            //1> poTerrainComputeDescriptorSetLayout
+            {
+                VkDescriptorSetLayoutBindingVector bindings;
+                //(0) TextureCopyConstants
+                {
+                    VkDescriptorSetLayoutBinding textureCopyLayoutBinding = {};
+                    textureCopyLayoutBinding.binding = 0;
+                    textureCopyLayoutBinding.descriptorCount = 1;
+                    textureCopyLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    textureCopyLayoutBinding.pImmutableSamplers = nullptr;
+                    textureCopyLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+                    bindings.push_back(textureCopyLayoutBinding);
+                }
+                //(1) TextureCSR
+                {
+                    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+                    samplerLayoutBinding.binding = 1;
+                    samplerLayoutBinding.descriptorCount = 1;
+                    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                    samplerLayoutBinding.pImmutableSamplers = nullptr;
+                    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+                    bindings.push_back(samplerLayoutBinding);
+                }
+                //(2) TextureCSRW
+                {
+                    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+                    samplerLayoutBinding.binding = 2;
+                    samplerLayoutBinding.descriptorCount = 1;
+                    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+                    samplerLayoutBinding.pImmutableSamplers = nullptr;
+                    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+                    bindings.push_back(samplerLayoutBinding);
+                }
+
+                if (!createVkDescriptorSetLayout(bindings, this->poTerrainComputeDescriptorSetLayout))
+                {
+                    String msg = "*********************** VulkanWindow::setupTerrainComputePipeline: Failed to create descriptor set layout !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+
+            //2> poTerrainComputePipelineLayout
+            {
+                VkDescriptorSetLayoutVector aDescriptorSetLayout;
+                aDescriptorSetLayout.push_back(this->poTerrainComputeDescriptorSetLayout);
+                this->poTerrainComputePipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
+                if (this->poTerrainComputePipelineLayout == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** VulkanWindow::setupTerrainComputePipeline: createVkPipelineLayout failed !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+
+            //3> poTerrainComputeShaderModuleNormalGen
+            {
+                this->poTerrainComputeShaderModuleNormalGen = createVkShaderModule("comp", this->cfg_shaderTerrainNormalMapGen_Path);
+                if (this->poTerrainComputeShaderModuleNormalGen == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** VulkanWindow::setupTerrainComputePipeline: createVkShaderModule failed !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+
+            //4> poTerrainComputePipeline
+            {
+                this->poTerrainComputePipeline = createVkComputePipeline(this->poTerrainComputeShaderModuleNormalGen, "main", this->poTerrainComputePipelineLayout);
+                if (this->poTerrainComputePipeline == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** VulkanWindow::setupTerrainComputePipeline: createVkComputePipeline failed !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+
+            //5> poTerrainComputeDescriptorSet
+            {
+                createVkDescriptorSet(this->poTerrainComputeDescriptorSet, this->poTerrainComputeDescriptorSetLayout);
+                
+                VkWriteDescriptorSetVector descriptorWrites;
+                //(0) TextureCopyConstants
+                {
+                    VkDescriptorBufferInfo bufferInfo_TextureCopy = {};
+                    bufferInfo_TextureCopy.buffer = this->poBuffer_TerrainTextureCopy;
+                    bufferInfo_TextureCopy.offset = 0;
+                    bufferInfo_TextureCopy.range = sizeof(TextureCopyConstants);
+
+                    VkWriteDescriptorSet ds0 = {};
+                    ds0.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    ds0.dstSet = this->poTerrainComputeDescriptorSet;
+                    ds0.dstBinding = 0;
+                    ds0.dstArrayElement = 0;
+                    ds0.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    ds0.descriptorCount = 1;
+                    ds0.pBufferInfo = &bufferInfo_TextureCopy;
+                    descriptorWrites.push_back(ds0);
+                }
+                //(1) TextureCSR
+                {
+                    VkWriteDescriptorSet ds1 = {};
+                    ds1.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    ds1.dstSet = this->poTerrainComputeDescriptorSet;
+                    ds1.dstBinding = 1;
+                    ds1.dstArrayElement = 0;
+                    ds1.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                    ds1.descriptorCount = 1;
+                    ds1.pImageInfo = &this->poTerrainHeightMapImageInfo;
+                    descriptorWrites.push_back(ds1);
+                }
+                //(2) TextureCSRW
+                {
+                    VkWriteDescriptorSet ds2 = {};
+                    ds2.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    ds2.dstSet = this->poTerrainComputeDescriptorSet;
+                    ds2.dstBinding = 2;
+                    ds2.dstArrayElement = 0;
+                    ds2.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+                    ds2.descriptorCount = 1;
+                    ds2.pImageInfo = &this->poTerrainNormalMapImageInfo;
+                    descriptorWrites.push_back(ds2);
+                }
+                updateVkDescriptorSets(descriptorWrites);
+            }
+        }
+        void VulkanWindow::setupTerrainGraphicsPipeline()
+        {
+
+        }
     void VulkanWindow::destroyTerrain()
     {
         UTIL_DELETE_T(this->poTerrainHeightMapData)
+        UTIL_DELETE_T(this->poTerrainHeightMapDataFloat)
         this->poTerrainHeightMapDataSize = 0;
         this->poTerrainHeightMapSize = 0;
-        
+
+        //Vertex/Index   
         this->poTerrain_Pos3Normal3Tex2.clear();
         if (this->poTerrainVertexBuffer != VK_NULL_HANDLE)
         {
@@ -2594,6 +2903,59 @@ namespace LostPeter
         this->poTerrainIndexCount = 0;
         this->poTerrainIndexBuffer_Size = 0;
         this->poTerrainIndexBuffer_Data = nullptr;
+
+        //Texture
+        if (this->poTerrainHeightMapImage != VK_NULL_HANDLE)
+        {
+            destroyVkImage(this->poTerrainHeightMapImage, this->poTerrainHeightMapImageMemory, this->poTerrainHeightMapImageView);
+        }
+        this->poTerrainHeightMapImage = VK_NULL_HANDLE;
+        this->poTerrainHeightMapImageMemory = VK_NULL_HANDLE;
+        this->poTerrainHeightMapImageView = VK_NULL_HANDLE;
+        if (this->poTerrainNormalMapImage != VK_NULL_HANDLE)
+        {
+            destroyVkImage(this->poTerrainNormalMapImage, this->poTerrainNormalMapImageMemory, this->poTerrainNormalMapImageView);
+        }
+        this->poTerrainNormalMapImage = VK_NULL_HANDLE;
+        this->poTerrainNormalMapImageMemory = VK_NULL_HANDLE;
+        this->poTerrainNormalMapImageView = VK_NULL_HANDLE;
+        if (this->poTerrainImageSampler != VK_NULL_HANDLE)
+        {
+            destroyVkImageSampler(this->poTerrainImageSampler);
+        }
+        this->poTerrainImageSampler = VK_NULL_HANDLE;
+
+        //Compute
+        if (this->poBuffer_TerrainTextureCopy != VK_NULL_HANDLE)
+        {
+            destroyVkBuffer(this->poBuffer_TerrainTextureCopy, this->poBufferMemory_TerrainTextureCopy);
+        }
+        this->poBuffer_TerrainTextureCopy = VK_NULL_HANDLE;
+        this->poBufferMemory_TerrainTextureCopy = VK_NULL_HANDLE;
+        if (this->poTerrainComputeDescriptorSetLayout != VK_NULL_HANDLE)
+        {
+            destroyVkDescriptorSetLayout(this->poTerrainComputeDescriptorSetLayout);
+        }
+        this->poTerrainComputeDescriptorSetLayout = VK_NULL_HANDLE;
+        if (this->poTerrainComputePipelineLayout != VK_NULL_HANDLE)
+        {
+            destroyVkPipelineLayout(this->poTerrainComputePipelineLayout);
+        }
+        this->poTerrainComputePipelineLayout = VK_NULL_HANDLE;
+        if (this->poTerrainComputePipeline != VK_NULL_HANDLE)
+        {
+            destroyVkPipeline(this->poTerrainComputePipeline);
+        }
+        this->poTerrainComputePipeline = VK_NULL_HANDLE;
+         if (this->poTerrainComputeShaderModuleNormalGen != VK_NULL_HANDLE)
+        {
+            destroyVkShaderModule(this->poTerrainComputeShaderModuleNormalGen);
+        }
+        this->poTerrainComputeShaderModuleNormalGen = VK_NULL_HANDLE;
+        this->poTerrainComputeDescriptorSet = VK_NULL_HANDLE;
+        
+        //Graphics
+
     }
 
     void VulkanWindow::createCamera()
@@ -2816,8 +3178,8 @@ namespace LostPeter
         if (!this->cfg_texture_Path.empty())
         {
             createTexture2D(this->cfg_texture_Path, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
-            createImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
-            createSampler(this->poMipMapCount, this->poTextureSampler);
+            createVkImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
+            createVkSampler(this->poMipMapCount, this->poTextureSampler);
 
             Util_LogInfo("<2-2-2> VulkanWindow::loadTexture finish !");
         }
@@ -2902,22 +3264,22 @@ namespace LostPeter
         uint32_t numArray = 1;
 
         //3> CreateImage
-        createImage(width, 
-                    height, 
-                    depth,
-                    numArray,
-                    mipMapCount, 
-                    type,
-                    false,
-                    numSamples, 
-                    format, 
-                    VK_IMAGE_TILING_OPTIMAL, 
-                    VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
-                    VK_SHARING_MODE_EXCLUSIVE,
-                    false,
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                    image, 
-                    imageMemory);
+        createVkImage(width, 
+                      height, 
+                      depth,
+                      numArray,
+                      mipMapCount, 
+                      type,
+                      false,
+                      numSamples, 
+                      format, 
+                      VK_IMAGE_TILING_OPTIMAL, 
+                      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                      VK_SHARING_MODE_EXCLUSIVE,
+                      false,
+                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                      image, 
+                      imageMemory);
 
         //4> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
         VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
@@ -3096,22 +3458,22 @@ namespace LostPeter
         s_DeletePixels(aPixels);
 
         //3> CreateImage, TransitionImageLayout and CopyBufferToImage
-        createImage(width, 
-                    height, 
-                    depth,
-                    numArray,
-                    mipMapCount, 
-                    type,
-                    false,
-                    numSamples, 
-                    format, 
-                    VK_IMAGE_TILING_OPTIMAL, 
-                    VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
-                    VK_SHARING_MODE_EXCLUSIVE,
-                    false,
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                    image, 
-                    imageMemory);
+        createVkImage(width, 
+                      height, 
+                      depth,
+                      numArray,
+                      mipMapCount, 
+                      type,
+                      false,
+                      numSamples, 
+                      format, 
+                      VK_IMAGE_TILING_OPTIMAL, 
+                      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                      VK_SHARING_MODE_EXCLUSIVE,
+                      false,
+                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                      image, 
+                      imageMemory);
 
         //4> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
         VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
@@ -3230,22 +3592,22 @@ namespace LostPeter
         vkUnmapMemory(this->poDevice, bufferMemory);
 
         //2> CreateImage
-        createImage(width, 
-                    height, 
-                    depth,
-                    1,
-                    1, 
-                    VK_IMAGE_TYPE_3D,
-                    false,
-                    VK_SAMPLE_COUNT_1_BIT, 
-                    format, 
-                    VK_IMAGE_TILING_OPTIMAL, 
-                    VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
-                    VK_SHARING_MODE_EXCLUSIVE,
-                    false,
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                    image, 
-                    imageMemory);
+        createVkImage(width, 
+                      height, 
+                      depth,
+                      1,
+                      1, 
+                      VK_IMAGE_TYPE_3D,
+                      false,
+                      VK_SAMPLE_COUNT_1_BIT, 
+                      format, 
+                      VK_IMAGE_TILING_OPTIMAL, 
+                      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                      VK_SHARING_MODE_EXCLUSIVE,
+                      false,
+                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                      image, 
+                      imageMemory);
 
         //3> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
         VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
@@ -3402,22 +3764,22 @@ namespace LostPeter
         s_DeletePixels(aPixels);
 
         //3> CreateImage, TransitionImageLayout and CopyBufferToImage
-        createImage(width, 
-                    height, 
-                    depth,
-                    numArray,
-                    mipMapCount, 
-                    VK_IMAGE_TYPE_2D,
-                    true,
-                    numSamples, 
-                    format, 
-                    VK_IMAGE_TILING_OPTIMAL, 
-                    VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
-                    VK_SHARING_MODE_EXCLUSIVE,
-                    false,
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                    image, 
-                    imageMemory);
+        createVkImage(width, 
+                      height, 
+                      depth,
+                      numArray,
+                      mipMapCount, 
+                      VK_IMAGE_TYPE_2D,
+                      true,
+                      numSamples, 
+                      format, 
+                      VK_IMAGE_TILING_OPTIMAL, 
+                      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                      VK_SHARING_MODE_EXCLUSIVE,
+                      false,
+                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                      image, 
+                      imageMemory);
 
         //4> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
         VkCommandBuffer cmdBuffer = beginSingleTimeCommands();
@@ -3597,22 +3959,22 @@ namespace LostPeter
         //2> CreateImage
         uint32_t depth = 1;
         uint32_t numArray = 1;
-        createImage(width, 
-                    height, 
-                    depth,
-                    numArray,
-                    mipMapCount, 
-                    type,
-                    false,
-                    numSamples, 
-                    format, 
-                    VK_IMAGE_TILING_OPTIMAL, 
-                    usage, 
-                    VK_SHARING_MODE_EXCLUSIVE,
-                    isGraphicsComputeShared,
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                    image, 
-                    imageMemory);
+        createVkImage(width, 
+                      height, 
+                      depth,
+                      numArray,
+                      mipMapCount, 
+                      type,
+                      false,
+                      numSamples, 
+                      format, 
+                      VK_IMAGE_TILING_OPTIMAL, 
+                      usage, 
+                      VK_SHARING_MODE_EXCLUSIVE,
+                      isGraphicsComputeShared,
+                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                      image, 
+                      imageMemory);
 
         //3> TransitionImageLayout
         transitionImageLayout(VK_NULL_HANDLE,
@@ -3640,6 +4002,105 @@ namespace LostPeter
         VkDeviceMemory stagingBufferMemory;
         createTextureRenderTarget2D(clDefault, 
                                     isSetColor,
+                                    width, 
+                                    height,
+                                    mipMapCount,
+                                    VK_IMAGE_TYPE_2D,
+                                    numSamples,
+                                    format,
+                                    usage,
+                                    isGraphicsComputeShared,
+                                    image, 
+                                    imageMemory, 
+                                    stagingBuffer, 
+                                    stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
+    }
+
+    void VulkanWindow::createTextureRenderTarget2D(uint8* pData,
+                                                   uint32_t width, 
+                                                   uint32_t height,
+                                                   uint32_t mipMapCount,
+                                                   VkImageType type,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& image, 
+                                                   VkDeviceMemory& imageMemory,
+                                                   VkBuffer& buffer, 
+                                                   VkDeviceMemory& bufferMemory)
+    {
+        uint32_t sizeFormat = 4;
+        if (format == VK_FORMAT_R8_UNORM)
+        {
+            sizeFormat = 1;
+        }
+        else if (format == VK_FORMAT_R16_UNORM)
+        {
+            sizeFormat = 2;
+        }
+        //1> CreateBuffer
+        VkDeviceSize imageSize = width * height * sizeFormat;
+        createVkBuffer(imageSize, 
+                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                       buffer, 
+                       bufferMemory);
+        if (pData != nullptr)
+        {
+            void* data;
+            vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
+            {
+                memcpy(data, pData, imageSize);
+            }
+            vkUnmapMemory(this->poDevice, bufferMemory);
+        }
+        
+        //2> CreateImage
+        uint32_t depth = 1;
+        uint32_t numArray = 1;
+        createVkImage(width, 
+                      height, 
+                      depth,
+                      numArray,
+                      mipMapCount, 
+                      type,
+                      false,
+                      numSamples, 
+                      format, 
+                      VK_IMAGE_TILING_OPTIMAL, 
+                      usage, 
+                      VK_SHARING_MODE_EXCLUSIVE,
+                      isGraphicsComputeShared,
+                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                      image, 
+                      imageMemory);
+
+        //3> TransitionImageLayout
+        transitionImageLayout(VK_NULL_HANDLE,
+                              image, 
+                              VK_IMAGE_LAYOUT_UNDEFINED, 
+                              VK_IMAGE_LAYOUT_GENERAL,
+                              0,
+                              mipMapCount,
+                              0,
+                              numArray);
+    }
+    void VulkanWindow::createTextureRenderTarget2D(uint8* pData,
+                                                   uint32_t width, 
+                                                   uint32_t height,
+                                                   uint32_t mipMapCount,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& image, 
+                                                   VkDeviceMemory& imageMemory)
+    {
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createTextureRenderTarget2D(pData,
                                     width, 
                                     height,
                                     mipMapCount,
@@ -3707,22 +4168,22 @@ namespace LostPeter
         {
             depth = 0;
         }
-        createImage(width, 
-                    height, 
-                    depth,
-                    numArray,
-                    mipMapCount, 
-                    type,
-                    false,
-                    numSamples, 
-                    format, 
-                    VK_IMAGE_TILING_OPTIMAL, 
-                    usage, 
-                    VK_SHARING_MODE_EXCLUSIVE,
-                    isGraphicsComputeShared,
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                    image, 
-                    imageMemory);
+        createVkImage(width, 
+                      height, 
+                      depth,
+                      numArray,
+                      mipMapCount, 
+                      type,
+                      false,
+                      numSamples, 
+                      format, 
+                      VK_IMAGE_TILING_OPTIMAL, 
+                      usage, 
+                      VK_SHARING_MODE_EXCLUSIVE,
+                      isGraphicsComputeShared,
+                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                      image, 
+                      imageMemory);
 
         //3> TransitionImageLayout
         transitionImageLayout(VK_NULL_HANDLE,
@@ -3812,22 +4273,22 @@ namespace LostPeter
         }
 
         //2> CreateImage
-        createImage(width, 
-                    height, 
-                    depth,
-                    1,
-                    mipMapCount, 
-                    VK_IMAGE_TYPE_3D,
-                    false,
-                    numSamples, 
-                    format, 
-                    VK_IMAGE_TILING_OPTIMAL, 
-                    usage, 
-                    VK_SHARING_MODE_EXCLUSIVE,
-                    isGraphicsComputeShared,
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                    image, 
-                    imageMemory);
+        createVkImage(width, 
+                      height, 
+                      depth,
+                      1,
+                      mipMapCount, 
+                      VK_IMAGE_TYPE_3D,
+                      false,
+                      numSamples, 
+                      format, 
+                      VK_IMAGE_TILING_OPTIMAL, 
+                      usage, 
+                      VK_SHARING_MODE_EXCLUSIVE,
+                      isGraphicsComputeShared,
+                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                      image, 
+                      imageMemory);
 
         //3> TransitionImageLayout
         transitionImageLayout(VK_NULL_HANDLE,
@@ -3895,22 +4356,22 @@ namespace LostPeter
 
         //2> CreateImage
         uint32_t depth = 1;
-        createImage(width, 
-                    height, 
-                    depth,
-                    numArray,
-                    mipMapCount, 
-                    VK_IMAGE_TYPE_2D,
-                    true,
-                    numSamples, 
-                    format, 
-                    VK_IMAGE_TILING_OPTIMAL, 
-                    usage, 
-                    VK_SHARING_MODE_EXCLUSIVE,
-                    isGraphicsComputeShared,
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-                    image, 
-                    imageMemory);
+        createVkImage(width, 
+                      height, 
+                      depth,
+                      numArray,
+                      mipMapCount, 
+                      VK_IMAGE_TYPE_2D,
+                      true,
+                      numSamples, 
+                      format, 
+                      VK_IMAGE_TILING_OPTIMAL, 
+                      usage, 
+                      VK_SHARING_MODE_EXCLUSIVE,
+                      isGraphicsComputeShared,
+                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                      image, 
+                      imageMemory);
 
         //3> TransitionImageLayout
         transitionImageLayout(VK_NULL_HANDLE,
@@ -3949,22 +4410,22 @@ namespace LostPeter
     }                                                     
 
 
-        void VulkanWindow::createImage(uint32_t width, 
-                                       uint32_t height, 
-                                       uint32_t depth, 
-                                       uint32_t numArray,
-                                       uint32_t mipMapCount, 
-                                       VkImageType type, 
-                                       bool isCubeMap,
-                                       VkSampleCountFlagBits numSamples, 
-                                       VkFormat format, 
-                                       VkImageTiling tiling, 
-                                       VkImageUsageFlags usage, 
-                                       VkSharingMode sharingMode,
-                                       bool isGraphicsComputeShared,
-                                       VkMemoryPropertyFlags properties, 
-                                       VkImage& image, 
-                                       VkDeviceMemory& imageMemory) 
+        void VulkanWindow::createVkImage(uint32_t width, 
+                                         uint32_t height, 
+                                         uint32_t depth, 
+                                         uint32_t numArray,
+                                         uint32_t mipMapCount, 
+                                         VkImageType type, 
+                                         bool isCubeMap,
+                                         VkSampleCountFlagBits numSamples, 
+                                         VkFormat format, 
+                                         VkImageTiling tiling, 
+                                         VkImageUsageFlags usage, 
+                                         VkSharingMode sharingMode,
+                                         bool isGraphicsComputeShared,
+                                         VkMemoryPropertyFlags properties, 
+                                         VkImage& image, 
+                                         VkDeviceMemory& imageMemory) 
         {
             VkImageCreateInfo imageCreateInfo = {};
             imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -3997,7 +4458,7 @@ namespace LostPeter
 
             if (vkCreateImage(this->poDevice, &imageCreateInfo, nullptr, &image) != VK_SUCCESS) 
             {
-                String msg = "VulkanWindow::createImage: Failed to create image !";
+                String msg = "VulkanWindow::createVkImage: Failed to create image !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -4012,19 +4473,19 @@ namespace LostPeter
 
             if (vkAllocateMemory(this->poDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) 
             {
-                String msg = "VulkanWindow::createImage: Failed to allocate image memory !";
+                String msg = "VulkanWindow::createVkImage: Failed to allocate image memory !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
             vkBindImageMemory(this->poDevice, image, imageMemory, 0);
         }
-        void VulkanWindow::createImageView(VkImage image, 
-                                           VkImageViewType type, 
-                                           VkFormat format, 
-                                           VkImageAspectFlags aspectFlags, 
-                                           uint32_t mipMapCount,
-                                           uint32_t numArray,
-                                           VkImageView& imageView) 
+        void VulkanWindow::createVkImageView(VkImage image, 
+                                             VkImageViewType type, 
+                                             VkFormat format, 
+                                             VkImageAspectFlags aspectFlags, 
+                                             uint32_t mipMapCount,
+                                             uint32_t numArray,
+                                             VkImageView& imageView) 
         {
             VkImageViewCreateInfo viewInfo = {};
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -4040,33 +4501,33 @@ namespace LostPeter
 
             if (vkCreateImageView(this->poDevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS) 
             {
-                String msg = "VulkanWindow::createImageView: Failed to create texture image view !";
+                String msg = "VulkanWindow::createVkImageView: Failed to create texture image view !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
-        void VulkanWindow::createSampler(uint32_t mipMapCount, 
-                                         VkSampler& sampler)
+        void VulkanWindow::createVkSampler(uint32_t mipMapCount, 
+                                           VkSampler& sampler)
         {
-            createSampler(Vulkan_TextureFilter_Bilinear,
-                          Vulkan_TextureAddressing_Clamp,
-                          Vulkan_TextureBorderColor_OpaqueBlack,
-                          true,
-                          this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
-                          0.0f,
-                          static_cast<float>(mipMapCount),
-                          0.0f,
-                          sampler);
+            createVkSampler(Vulkan_TextureFilter_Bilinear,
+                            Vulkan_TextureAddressing_Clamp,
+                            Vulkan_TextureBorderColor_OpaqueBlack,
+                            true,
+                            this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+                            0.0f,
+                            static_cast<float>(mipMapCount),
+                            0.0f,
+                            sampler);
         }
-        void VulkanWindow::createSampler(VulkanTextureFilterType eTextureFilter,
-                                         VulkanTextureAddressingType eTextureAddressing,
-                                         VulkanTextureBorderColorType eTextureBorderColor,
-                                         bool enableAnisotropy,
-                                         float maxAnisotropy,
-                                         float minLod, 
-                                         float maxLod, 
-                                         float mipLodBias,
-                                         VkSampler& sampler)
+        void VulkanWindow::createVkSampler(VulkanTextureFilterType eTextureFilter,
+                                           VulkanTextureAddressingType eTextureAddressing,
+                                           VulkanTextureBorderColorType eTextureBorderColor,
+                                           bool enableAnisotropy,
+                                           float maxAnisotropy,
+                                           float minLod, 
+                                           float maxLod, 
+                                           float mipLodBias,
+                                           VkSampler& sampler)
         {
             VkSamplerCreateInfo samplerInfo = {};
             samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -4088,7 +4549,7 @@ namespace LostPeter
 
             if (vkCreateSampler(this->poDevice, &samplerInfo, nullptr, &sampler) != VK_SUCCESS) 
             {
-                String msg = "VulkanWindow::createSampler: Failed to create texture sampler !";
+                String msg = "VulkanWindow::createVkSampler: Failed to create texture sampler !";
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -4434,8 +4895,7 @@ namespace LostPeter
         Util_LogInfo("<2-2-3-5> VulkanWindow::createCustomCB finish !");
     }
 
-
-    VkShaderModule VulkanWindow::createShaderModule(String info, String pathFile)
+    VkShaderModule VulkanWindow::createVkShaderModule(const String& info, const String& pathFile)
     {
         if (pathFile.empty())
             return nullptr;
@@ -4443,7 +4903,7 @@ namespace LostPeter
         CharVector code;
         if (!VulkanUtil::LoadAssetFileContent(pathFile.c_str(), code))
         {
-            Util_LogError("VulkanWindow::createShaderModule failed, path: [%s] !", pathFile.c_str());
+            Util_LogError("VulkanWindow::createVkShaderModule failed, path: [%s] !", pathFile.c_str());
             return nullptr;
         }
         if (code.size() <= 0)
@@ -4459,13 +4919,43 @@ namespace LostPeter
         VkShaderModule shaderModule;
         if (vkCreateShaderModule(this->poDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) 
         {
-            String msg = "VulkanWindow::createShaderModule: Failed to create shader module: " + info;
+            String msg = "VulkanWindow::createVkShaderModule: Failed to create shader module: " + info;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
         return shaderModule;
     }
+        void VulkanWindow::destroyVkShaderModule(VkShaderModule vkShaderModule)
+        {
+            if (vkShaderModule != VK_NULL_HANDLE)
+            {
+                vkDestroyShaderModule(this->poDevice, vkShaderModule, nullptr);
+            }
+        }
+
+    bool VulkanWindow::createVkDescriptorSetLayout(const VkDescriptorSetLayoutBindingVector& aDescriptorSetLayoutBinding, VkDescriptorSetLayout& vkDescriptorSetLayout)
+    {
+        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.bindingCount = static_cast<uint32_t>(aDescriptorSetLayoutBinding.size());
+        layoutInfo.pBindings = aDescriptorSetLayoutBinding.data();
+        if (vkCreateDescriptorSetLayout(this->poDevice, &layoutInfo, nullptr, &vkDescriptorSetLayout) != VK_SUCCESS) 
+        {
+            Util_LogError("VulkanWindow::createVkDescriptorSetLayout: Failed to create descriptor set layout !");
+            return false;
+        }
+        return true;
+    }
+        void VulkanWindow::destroyVkDescriptorSetLayout(VkDescriptorSetLayout vkDescriptorSetLayout)
+        {
+            if (vkDescriptorSetLayout != VK_NULL_HANDLE)
+            {
+                vkDestroyDescriptorSetLayout(this->poDevice, vkDescriptorSetLayout, nullptr);
+            }
+        }
+
+
     VkPipelineLayout VulkanWindow::createVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout)
     {
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
@@ -4498,6 +4988,28 @@ namespace LostPeter
             }
         }
 
+    void VulkanWindow::createVkPipelineCache()
+    {
+        if (this->poPipelineCache == VK_NULL_HANDLE)
+        {
+            VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
+            pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+            if (vkCreatePipelineCache(this->poDevice, &pipelineCacheCreateInfo, nullptr, &this->poPipelineCache) != VK_SUCCESS) 
+            {
+                String msg = "VulkanWindow::createVkPipelineCache: Failed to create pipeline cache !";
+                Util_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+        }
+    }
+        void VulkanWindow::destroyVkPipelineCache(VkPipelineCache vkPipelineCache)
+        {
+            if (vkPipelineCache != VK_NULL_HANDLE)
+            {
+                vkDestroyPipelineCache(this->poDevice, vkPipelineCache, nullptr);
+            }
+        }
+
     void VulkanWindow::preparePipeline()
     {
         Util_LogInfo("**<2-2-4> VulkanWindow::preparePipeline start **");
@@ -4510,27 +5022,6 @@ namespace LostPeter
         }
         Util_LogInfo("**<2-2-4> VulkanWindow::preparePipeline end **");
     }
-        void VulkanWindow::createVkPipelineCache()
-        {
-            if (this->poPipelineCache == VK_NULL_HANDLE)
-            {
-                VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
-                pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
-                if (vkCreatePipelineCache(this->poDevice, &pipelineCacheCreateInfo, nullptr, &this->poPipelineCache) != VK_SUCCESS) 
-                {
-                    String msg = "VulkanWindow::createVkPipelineCache: Failed to create pipeline cache !";
-                    Util_LogError(msg.c_str());
-                    throw std::runtime_error(msg);
-                }
-            }
-        }
-        void VulkanWindow::destroyVkPipelineCache(VkPipelineCache vkPipelineCache)
-        {
-            if (vkPipelineCache != VK_NULL_HANDLE)
-            {
-                vkDestroyPipelineCache(this->poDevice, vkPipelineCache, nullptr);
-            }
-        }
         void VulkanWindow::createCustomBeforePipeline()
         {
             
@@ -4554,12 +5045,12 @@ namespace LostPeter
             VkShaderModule vertShaderModule = VK_NULL_HANDLE;
             if (!this->cfg_shaderVertex_Path.empty())
             {
-                vertShaderModule = createShaderModule("VertexShader: ", this->cfg_shaderVertex_Path);
+                vertShaderModule = createVkShaderModule("VertexShader: ", this->cfg_shaderVertex_Path);
             }
             VkShaderModule fragShaderModule = VK_NULL_HANDLE;
             if (!this->cfg_shaderFragment_Path.empty())
             {
-                fragShaderModule = createShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
+                fragShaderModule = createVkShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
             }
 
             if (vertShaderModule == VK_NULL_HANDLE || 
@@ -4621,8 +5112,8 @@ namespace LostPeter
             }
 
             //6> Destroy Shader
-            vkDestroyShaderModule(this->poDevice, fragShaderModule, nullptr);
-            vkDestroyShaderModule(this->poDevice, vertShaderModule, nullptr);
+            destroyVkShaderModule(fragShaderModule);
+            destroyVkShaderModule(vertShaderModule);
         }
         void VulkanWindow::createGraphicsPipeline_Custom()
         {
@@ -4942,61 +5433,17 @@ namespace LostPeter
     {
         Util_LogInfo("**<2-2-7> VulkanWindow::createDescriptor start **");
         {
-            //1> createDescriptorPool
-            createDescriptorPool();
-
-            //2> createDescriptorSets_Default
+            //1> createDescriptorSets_Default
             createDescriptorSets_Default();
 
-            //3> createDescriptorSets_Custom
+            //2> createDescriptorSets_Custom
             createDescriptorSets_Custom();
         }
         Util_LogInfo("**<2-2-7> VulkanWindow::createDescriptor finish **");
     }
-        void VulkanWindow::createDescriptorPool()
-        {
-            VkDescriptorPoolSize pool_sizes[] =
-            {
-                { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
-                { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
-                { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
-                { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
-                { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
-                { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
-                { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
-                { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
-                { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
-                { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
-                { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
-            };
-
-            VkDescriptorPoolCreateInfo poolInfo = {};
-            poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-            poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-            poolInfo.maxSets = 1000 * UTIL_ARRAYSIZE(pool_sizes);
-            poolInfo.poolSizeCount = (uint32_t)UTIL_ARRAYSIZE(pool_sizes);
-            poolInfo.pPoolSizes = pool_sizes;
-
-            if (vkCreateDescriptorPool(this->poDevice, &poolInfo, nullptr, &this->poDescriptorPool) != VK_SUCCESS) 
-            {
-                String msg = "VulkanWindow::createDescriptorPool: Failed to create descriptor pool !";
-                Util_LogError(msg.c_str());
-                throw std::runtime_error(msg);
-            }
-
-            Util_LogInfo("<2-2-7-1> VulkanWindow::createDescriptorPool finish !");
-        }
-            void VulkanWindow::destroyVkDescriptorPool(VkDescriptorPool vkDescriptorPool)
-            {
-                if (vkDescriptorPool != VK_NULL_HANDLE)
-                {
-                    vkDestroyDescriptorPool(this->poDevice, vkDescriptorPool, nullptr);
-                }
-            }
-
         void VulkanWindow::createDescriptorSets_Default()
         {
-            createDescriptorSets(this->poDescriptorSets, this->poDescriptorSetLayout);
+            createVkDescriptorSets(this->poDescriptorSets, this->poDescriptorSetLayout);
             updateDescriptorSets(this->poDescriptorSets, this->poTextureImageView, this->poTextureSampler);
 
             Util_LogInfo("<2-2-7-2> VulkanWindow::createDescriptorSets_Default finish !");
@@ -5006,40 +5453,7 @@ namespace LostPeter
 
             Util_LogInfo("<2-2-7-3> VulkanWindow::createDescriptorSets_Custom finish !");
         }
-            void VulkanWindow::createDescriptorSet(VkDescriptorSet& descriptorSet, VkDescriptorSetLayout vkDescriptorSetLayout)
-            {
-                VkDescriptorSetAllocateInfo allocInfo = {};
-                allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-                allocInfo.descriptorPool = this->poDescriptorPool;
-                allocInfo.descriptorSetCount = 1;
-                allocInfo.pSetLayouts = &vkDescriptorSetLayout;
-
-                if (vkAllocateDescriptorSets(this->poDevice, &allocInfo, &descriptorSet) != VK_SUCCESS) 
-                {
-                    String msg = "VulkanWindow::createDescriptorSet: Failed to allocate descriptor set !";
-                    Util_LogError(msg.c_str());
-                    throw std::runtime_error(msg);
-                }
-            }
-            void VulkanWindow::createDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout)
-            {
-                std::vector<VkDescriptorSetLayout> layouts(this->poSwapChainImages.size(), vkDescriptorSetLayout);
-                VkDescriptorSetAllocateInfo allocInfo = {};
-                allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-                allocInfo.descriptorPool = this->poDescriptorPool;
-                allocInfo.descriptorSetCount = static_cast<uint32_t>(this->poSwapChainImages.size());
-                allocInfo.pSetLayouts = layouts.data();
-
-                size_t count = this->poSwapChainImages.size();
-                aDescriptorSets.resize(count);
-                if (vkAllocateDescriptorSets(this->poDevice, &allocInfo, aDescriptorSets.data()) != VK_SUCCESS) 
-                {
-                    String msg = "VulkanWindow::createDescriptorSets: Failed to allocate descriptor sets !";
-                    Util_LogError(msg.c_str());
-                    throw std::runtime_error(msg);
-                }
-            }
-            void VulkanWindow::updateDescriptorSets(std::vector<VkDescriptorSet>& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler)
+            void VulkanWindow::updateDescriptorSets(VkDescriptorSetVector& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler)
             {
                 size_t count = aDescriptorSets.size();
                 for (size_t i = 0; i < count; i++)
@@ -5069,7 +5483,7 @@ namespace LostPeter
                     imageInfo.imageView = vkTextureView;
                     imageInfo.sampler = vkSampler;
                     
-                    std::vector<VkWriteDescriptorSet> descriptorWrites;
+                    VkWriteDescriptorSetVector descriptorWrites;
 
                     //0
                     VkWriteDescriptorSet ds0 = {};
@@ -5128,14 +5542,46 @@ namespace LostPeter
                         ds4.pImageInfo = &imageInfo;
                         descriptorWrites.push_back(ds4);
                     }
-                    
-                    vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+                    updateVkDescriptorSets(descriptorWrites);
                 }
             }
 
-            void VulkanWindow::destroyVkDescriptorSetLayout(VkDescriptorSetLayout vkDescriptorSetLayout)
+            void VulkanWindow::createVkDescriptorSet(VkDescriptorSet& vkDescriptorSet, VkDescriptorSetLayout vkDescriptorSetLayout)
             {
-                vkDestroyDescriptorSetLayout(this->poDevice, vkDescriptorSetLayout, nullptr);
+                VkDescriptorSetAllocateInfo allocInfo = {};
+                allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+                allocInfo.descriptorPool = this->poDescriptorPool;
+                allocInfo.descriptorSetCount = 1;
+                allocInfo.pSetLayouts = &vkDescriptorSetLayout;
+
+                if (vkAllocateDescriptorSets(this->poDevice, &allocInfo, &vkDescriptorSet) != VK_SUCCESS) 
+                {
+                    String msg = "VulkanWindow::createVkDescriptorSet: Failed to allocate descriptor set !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+            void VulkanWindow::createVkDescriptorSets(VkDescriptorSetVector& aDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout)
+            {
+                std::vector<VkDescriptorSetLayout> layouts(this->poSwapChainImages.size(), vkDescriptorSetLayout);
+                VkDescriptorSetAllocateInfo allocInfo = {};
+                allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+                allocInfo.descriptorPool = this->poDescriptorPool;
+                allocInfo.descriptorSetCount = static_cast<uint32_t>(this->poSwapChainImages.size());
+                allocInfo.pSetLayouts = layouts.data();
+
+                size_t count = this->poSwapChainImages.size();
+                aDescriptorSets.resize(count);
+                if (vkAllocateDescriptorSets(this->poDevice, &allocInfo, aDescriptorSets.data()) != VK_SUCCESS) 
+                {
+                    String msg = "VulkanWindow::createVkDescriptorSets: Failed to allocate descriptor sets !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+            void VulkanWindow::updateVkDescriptorSets(VkWriteDescriptorSetVector& aWriteDescriptorSets)
+            {
+                vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(aWriteDescriptorSets.size()), aWriteDescriptorSets.data(), 0, nullptr);
             }
 
     void VulkanWindow::createCommandBuffers()

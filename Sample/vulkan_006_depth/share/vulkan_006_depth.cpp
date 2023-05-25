@@ -190,8 +190,8 @@ bool Vulkan_006_Depth::loadModel_Texture(ModelObject* pModelObject)
     if (!pModelObject->pathTexture.empty())
     {
         createTexture2D(pModelObject->pathTexture, pModelObject->poMipMapCount, pModelObject->poTextureImage, pModelObject->poTextureImageMemory);
-        createImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
-        createSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
+        createVkImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
+        createVkSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
 
         Util_LogInfo("Vulkan_006_Depth::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
@@ -227,12 +227,12 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
     VkShaderModule vertShaderModule;
     if (!this->cfg_shaderVertex_Path.empty())
     {
-        vertShaderModule = createShaderModule("VertexShader: ", this->cfg_shaderVertex_Path);
+        vertShaderModule = createVkShaderModule("VertexShader: ", this->cfg_shaderVertex_Path);
     }
     VkShaderModule fragShaderModule;
     if (!this->cfg_shaderFragment_Path.empty())
     {
-        fragShaderModule = createShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
+        fragShaderModule = createVkShaderModule("FragmentShader: ", this->cfg_shaderFragment_Path);
     }
 
     //2> Viewport
@@ -344,8 +344,8 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
     }
 
     //4> Destroy Shader
-    vkDestroyShaderModule(this->poDevice, fragShaderModule, nullptr);
-    vkDestroyShaderModule(this->poDevice, vertShaderModule, nullptr);
+    destroyVkShaderModule(fragShaderModule);
+    destroyVkShaderModule(vertShaderModule);
 }
 
 void Vulkan_006_Depth::createDescriptorSets_Custom()
@@ -356,7 +356,7 @@ void Vulkan_006_Depth::createDescriptorSets_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        createDescriptorSets(pModelObject->poDescriptorSets, this->poDescriptorSetLayout);
+        createVkDescriptorSets(pModelObject->poDescriptorSets, this->poDescriptorSetLayout);
         for (size_t j = 0; j < count_sci; j++)
         {
             VkDescriptorBufferInfo bufferInfo_Pass = {};
@@ -384,7 +384,7 @@ void Vulkan_006_Depth::createDescriptorSets_Custom()
             imageInfo.imageView = pModelObject->poTextureImageView;
             imageInfo.sampler = pModelObject->poTextureSampler;
             
-            std::vector<VkWriteDescriptorSet> descriptorWrites;
+            VkWriteDescriptorSetVector descriptorWrites;
 
             //0
             VkWriteDescriptorSet ds0 = {};
@@ -441,7 +441,7 @@ void Vulkan_006_Depth::createDescriptorSets_Custom()
             ds4.pImageInfo = &imageInfo;
             descriptorWrites.push_back(ds4);
 
-            vkUpdateDescriptorSets(this->poDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+            updateVkDescriptorSets(descriptorWrites);
         }
     }
 }

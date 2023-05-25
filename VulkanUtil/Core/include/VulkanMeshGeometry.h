@@ -307,6 +307,8 @@ namespace LostPeter
                                       float _height,
                                       uint32 _vertexX,
                                       uint32 _vertexZ,
+                                      float* _pHeight,
+                                      uint32 _heightDataGap,
                                       bool _flipV,
                                       bool _rightHand);    
         virtual ~VulkanMeshCreateParam_Terrain();
@@ -320,6 +322,8 @@ namespace LostPeter
         float height;
         uint32 vertexX;
         uint32 vertexZ;
+        float* pHeight;
+        uint32 heightDataGap;
 
     public:
         virtual String ToName();
@@ -477,7 +481,17 @@ namespace LostPeter
         //Terrain
         static void CreateTerrain(MeshData& meshData, VulkanMeshCreateParam_Terrain* pParam)
         {
-            CreateTerrain(meshData, pParam->offsetX, pParam->offsetZ, pParam->width, pParam->height, pParam->vertexX, pParam->vertexZ, pParam->flipV, pParam->rightHand);
+            CreateTerrain(meshData, 
+                          pParam->offsetX, 
+                          pParam->offsetZ, 
+                          pParam->width, 
+                          pParam->height, 
+                          pParam->vertexX, 
+                          pParam->vertexZ, 
+                          pParam->pHeight, 
+                          pParam->heightDataGap, 
+                          pParam->flipV, 
+                          pParam->rightHand);
         }
         static void CreateTerrain(MeshData& meshData,
                                   float offsetX,
@@ -486,6 +500,8 @@ namespace LostPeter
                                   float height,
                                   uint32 vertexX,
                                   uint32 vertexZ,
+                                  float* pHeight,
+                                  uint32 heightDataGap,
                                   bool flipV,
                                   bool rightHand);
 
