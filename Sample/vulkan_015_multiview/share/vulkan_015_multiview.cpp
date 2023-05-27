@@ -1648,6 +1648,8 @@ Vulkan_015_MultiView::Vulkan_015_MultiView(int width, int height, String name)
 
     this->aInstanceExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
     this->aDeviceExtensions.push_back(VK_KHR_MULTIVIEW_EXTENSION_NAME);
+
+    this->passCB.g_Pad1 = 0.2f;
 }
 
 void Vulkan_015_MultiView::setUpEnabledFeatures()
@@ -1662,6 +1664,11 @@ void Vulkan_015_MultiView::setUpEnabledFeatures()
     {
         this->m_isDrawIndirectMulti = false;
         Util_LogError("Vulkan_015_MultiView::setUpEnabledFeatures: multiDrawIndirect is not supported !");
+    }
+    
+    if (this->poPhysicalDeviceMultiViewFeaturesKHR.multiview)
+    {
+        this->poDeviceCreatepNextChain = &this->poPhysicalDeviceMultiViewFeaturesKHR;
     }
 }
 
@@ -3502,7 +3509,7 @@ void Vulkan_015_MultiView::passConstantsConfig()
     if (ImGui::CollapsingHeader("PassConstants Settings"))
     {
         //g_Pad1
-        if (ImGui::DragFloat("Global Frame Scale", (float*)&(this->passCB.g_Pad1), 0.1f, 0.1f, 2.0f))
+        if (ImGui::DragFloat("Global Frame Scale", (float*)&(this->passCB.g_Pad1), 0.05f, -0.6f, 0.6f))
         {
 
         }

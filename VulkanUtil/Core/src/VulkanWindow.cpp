@@ -128,7 +128,12 @@ namespace LostPeter
         , cfg_shaderFragment_Path("")
         , cfg_texture_Path("")
         , cfg_terrain_Path("")
-        , cfg_shaderTerrainNormalMapGen_Path("Assets/Shader/standard_compute_texgen_normalmap.comp.spv")
+        , cfg_terrainShaderNormalMapGen_Path("Assets/Shader/standard_compute_texgen_normalmap.comp.spv")
+        , cfg_terrainShaderVertex_Path("Assets/Shader/standard_terrain_opaque_lit.vert.spv")
+        , cfg_terrainShaderFragment_Path("Assets/Shader/standard_terrain_opaque_lit.frag.spv")
+        , cfg_terrainTextureDiffuse_Path("Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png")
+        , cfg_terrainTextureNormal_Path("Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png")
+        , cfg_terrainTextureControl_Path("Assets/Texture/Terrain/terrain_control.png")
 
         , imgui_IsEnable(false)
         , imgui_MinimalSwapchainImages(0)
@@ -144,6 +149,7 @@ namespace LostPeter
         , poTerrainHeightMapSize(0)
         , poTerrainGridVertexCount(129)
         , poTerrainGridInstanceVertexCount(17)
+        , poTerrainGridInstanceCount(0)
         , poTerrainIsDrawInstance(false)
         , poTerrainVertexCount(0)
         , poTerrainVertexBuffer_Size(0)
@@ -155,6 +161,7 @@ namespace LostPeter
         , poTerrainIndexBuffer_Data(nullptr)
         , poTerrainIndexBuffer(VK_NULL_HANDLE)
         , poTerrainIndexBufferMemory(VK_NULL_HANDLE)
+
         , poTerrainHeightMapImage(VK_NULL_HANDLE)
         , poTerrainHeightMapImageMemory(VK_NULL_HANDLE)
         , poTerrainHeightMapImageView(VK_NULL_HANDLE)
@@ -162,7 +169,6 @@ namespace LostPeter
         , poTerrainNormalMapImageMemory(VK_NULL_HANDLE)
         , poTerrainNormalMapImageView(VK_NULL_HANDLE)
         , poTerrainImageSampler(VK_NULL_HANDLE)
-
         , poBuffer_TerrainTextureCopy(VK_NULL_HANDLE)
         , poBufferMemory_TerrainTextureCopy(VK_NULL_HANDLE)
         , poTerrainComputeDescriptorSetLayout(VK_NULL_HANDLE)
@@ -170,6 +176,28 @@ namespace LostPeter
         , poTerrainComputeShaderModuleNormalGen(VK_NULL_HANDLE)
         , poTerrainComputePipeline(VK_NULL_HANDLE)
         , poTerrainComputeDescriptorSet(VK_NULL_HANDLE)
+
+        , poTerrainDiffuseImage(VK_NULL_HANDLE)
+        , poTerrainDiffuseImageMemory(VK_NULL_HANDLE)
+        , poTerrainDiffuseImageView(VK_NULL_HANDLE)
+        , poTerrainDiffuseImageSampler(VK_NULL_HANDLE)
+        , poTerrainNormalImage(VK_NULL_HANDLE)
+        , poTerrainNormalImageMemory(VK_NULL_HANDLE)
+        , poTerrainNormalImageView(VK_NULL_HANDLE)
+        , poTerrainNormalImageSampler(VK_NULL_HANDLE)
+        , poTerrainControlImage(VK_NULL_HANDLE)
+        , poTerrainControlImageMemory(VK_NULL_HANDLE)
+        , poTerrainControlImageView(VK_NULL_HANDLE)
+        , poTerrainControlImageSampler(VK_NULL_HANDLE)
+        , poBuffers_TerrainObjectCB(VK_NULL_HANDLE)
+        , poBuffersMemory_TerrainObjectCB(VK_NULL_HANDLE)
+        , poTerrainGraphicsDescriptorSetLayout(VK_NULL_HANDLE)
+        , poTerrainGraphicsPipelineLayout(VK_NULL_HANDLE)
+        , poTerrainGraphicsShaderModuleVertex(VK_NULL_HANDLE)
+        , poTerrainGraphicsShaderModuleFragment(VK_NULL_HANDLE)
+        , poTerrainGraphicsPipeline(VK_NULL_HANDLE)
+        , poTerrainGraphicsPipeline_WireFrame(VK_NULL_HANDLE)
+        , poTerrainGraphicsDescriptorSet(VK_NULL_HANDLE)
 
         , pCamera(nullptr)
         , pCameraRight(nullptr)
@@ -2584,6 +2612,7 @@ namespace LostPeter
 					this->poTerrainHeightMapDataFloat[i * nSize + j] = (float)v / 0xFFFF;
                 }
             }
+            this->poTerrainGridInstanceCount = (nSize - 1) / (this->poTerrainGridInstanceVertexCount - 1);
 
             Util_LogInfo("VulkanWindow::loadTerrainData: Load terrain data: [%s] success, heightmap data size: [%d], heightmap size: [%d] !", 
                          this->cfg_terrain_Path.c_str(), this->poTerrainHeightMapDataSize, this->poTerrainHeightMapSize);
@@ -2651,10 +2680,12 @@ namespace LostPeter
             this->poTerrainIndexBuffer_Size = this->poTerrainIndexCount * sizeof(uint32_t);
             this->poTerrainIndexBuffer_Data = &this->poTerrain_Indices[0];
 
-            Util_LogInfo("VulkanWindow::setupTerrainGeometry: create terrain mesh: [Pos3Normal3Tex2]: Terrain Grid: [%d - %d], Vertex count: [%d], Index count: [%d] success !", 
+            Util_LogInfo("VulkanWindow::setupTerrainGeometry: create terrain mesh: [Pos3Normal3Tex2]: Grid: [%d - %d], Vertex-Index: [%d - %d], Instance-Grid: [%d - %d] success !", 
                      nVertexCount, nVertexCount,
                      (int)this->poTerrain_Pos3Normal3Tex2.size(), 
-                     (int)this->poTerrain_Indices.size());
+                     (int)this->poTerrain_Indices.size(),
+                     (int)this->poTerrainGridInstanceCount,
+                     (int)this->poTerrainGridInstanceVertexCount);
 
             //2> createVertexBuffer
             createVertexBuffer(this->poTerrainVertexBuffer_Size, this->poTerrainVertexBuffer_Data, this->poTerrainVertexBuffer, this->poTerrainVertexBufferMemory);
@@ -2665,69 +2696,189 @@ namespace LostPeter
         }
         void VulkanWindow::setupTerrainTexture()
         {
-            //1> TerrainHeightMap Texture
+            //Compute
             {
-                createTextureRenderTarget2D(this->poTerrainHeightMapData,
-                                            this->poTerrainHeightMapSize,
-                                            this->poTerrainHeightMapSize,
-                                            1,
-                                            VK_SAMPLE_COUNT_1_BIT,
-                                            VK_FORMAT_R16_UNORM,
-                                            VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT,
-                                            true,
-                                            this->poTerrainHeightMapImage,
-                                            this->poTerrainHeightMapImageMemory);
-                createVkImageView(this->poTerrainHeightMapImage, 
-                                  VK_IMAGE_VIEW_TYPE_2D, 
-                                  VK_FORMAT_R16_UNORM, 
-                                  VK_IMAGE_ASPECT_COLOR_BIT, 
-                                  1, 
-                                  1, 
-                                  this->poTerrainHeightMapImageView);
-            }
-            //2> TerrainNormalMap Texture
-            {
-                createTextureRenderTarget2D(nullptr,
-                                            this->poTerrainHeightMapSize,
-                                            this->poTerrainHeightMapSize,
-                                            1,
-                                            VK_SAMPLE_COUNT_1_BIT,
-                                            VK_FORMAT_R8G8B8A8_UNORM,
-                                            VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT,
-                                            true,
-                                            this->poTerrainNormalMapImage,
-                                            this->poTerrainNormalMapImageMemory);
-                createVkImageView(this->poTerrainNormalMapImage, 
-                                  VK_IMAGE_VIEW_TYPE_2D, 
-                                  VK_FORMAT_R8G8B8A8_UNORM, 
-                                  VK_IMAGE_ASPECT_COLOR_BIT, 
-                                  1, 
-                                  1, 
-                                  this->poTerrainNormalMapImageView);
-            }
-            //3> Terrain ImageSampler
-            {
-                createVkSampler(Vulkan_TextureFilter_Bilinear, 
-                                Vulkan_TextureAddressing_Clamp,
-                                Vulkan_TextureBorderColor_OpaqueBlack,
-                                true,
-                                this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
-                                0.0f,
-                                1.0f,
-                                0.0f,
-                                this->poTerrainImageSampler);
-            }
-            //4> ImageInfo
-            {
-                this->poTerrainHeightMapImageInfo = {};
-                this->poTerrainHeightMapImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                this->poTerrainHeightMapImageInfo.imageView = this->poTerrainHeightMapImageView;
-                this->poTerrainHeightMapImageInfo.sampler = this->poTerrainImageSampler;
+                //1> TerrainHeightMap Texture
+                {
+                    createTextureRenderTarget2D(this->poTerrainHeightMapData,
+                                                this->poTerrainHeightMapSize,
+                                                this->poTerrainHeightMapSize,
+                                                1,
+                                                VK_SAMPLE_COUNT_1_BIT,
+                                                VK_FORMAT_R16_UNORM,
+                                                VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT,
+                                                true,
+                                                this->poTerrainHeightMapImage,
+                                                this->poTerrainHeightMapImageMemory);
+                    createVkImageView(this->poTerrainHeightMapImage, 
+                                      VK_IMAGE_VIEW_TYPE_2D, 
+                                      VK_FORMAT_R16_UNORM, 
+                                      VK_IMAGE_ASPECT_COLOR_BIT, 
+                                      1, 
+                                      1, 
+                                      this->poTerrainHeightMapImageView);
+                    Util_LogInfo("VulkanWindow::setupTerrainTexture: Compute: Create render texture [TerrainHeightMap] - [%d, %d] success !",
+                                (int)this->poTerrainHeightMapSize, (int)this->poTerrainHeightMapSize);
+                }
+                //2> TerrainNormalMap Texture
+                {
+                    createTextureRenderTarget2D(nullptr,
+                                                this->poTerrainHeightMapSize,
+                                                this->poTerrainHeightMapSize,
+                                                1,
+                                                VK_SAMPLE_COUNT_1_BIT,
+                                                VK_FORMAT_R8G8B8A8_UNORM,
+                                                VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT,
+                                                true,
+                                                this->poTerrainNormalMapImage,
+                                                this->poTerrainNormalMapImageMemory);
+                    createVkImageView(this->poTerrainNormalMapImage, 
+                                    VK_IMAGE_VIEW_TYPE_2D, 
+                                    VK_FORMAT_R8G8B8A8_UNORM, 
+                                    VK_IMAGE_ASPECT_COLOR_BIT, 
+                                    1, 
+                                    1, 
+                                    this->poTerrainNormalMapImageView);
+                    Util_LogInfo("VulkanWindow::setupTerrainTexture: Compute: Create render texture [TerrainNormalMap] - [%d, %d] success !",
+                                (int)this->poTerrainHeightMapSize, (int)this->poTerrainHeightMapSize);
+                }
+                //3> Terrain ImageSampler
+                {
+                    createVkSampler(Vulkan_TextureFilter_Bilinear, 
+                                    Vulkan_TextureAddressing_Clamp,
+                                    Vulkan_TextureBorderColor_OpaqueBlack,
+                                    true,
+                                    this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+                                    0.0f,
+                                    1.0f,
+                                    0.0f,
+                                    this->poTerrainImageSampler);
+                }
+                //4> ImageInfo
+                {
+                    this->poTerrainHeightMapImageInfo = {};
+                    this->poTerrainHeightMapImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    this->poTerrainHeightMapImageInfo.imageView = this->poTerrainHeightMapImageView;
+                    this->poTerrainHeightMapImageInfo.sampler = this->poTerrainImageSampler;
 
-                this->poTerrainNormalMapImageInfo = {};
-                this->poTerrainNormalMapImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-                this->poTerrainNormalMapImageInfo.imageView = this->poTerrainNormalMapImageView;
-                this->poTerrainNormalMapImageInfo.sampler = this->poTerrainImageSampler;
+                    this->poTerrainNormalMapImageInfo = {};
+                    this->poTerrainNormalMapImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+                    this->poTerrainNormalMapImageInfo.imageView = this->poTerrainNormalMapImageView;
+                    this->poTerrainNormalMapImageInfo.sampler = this->poTerrainImageSampler;
+                }
+            }
+
+            //Graphics
+            {
+                uint32_t mipMapCount = 1;
+                //1> Terrain Diffuse
+                {
+                    StringVector aPathTextureDiffuse = VulkanUtilString::Split(this->cfg_terrainTextureDiffuse_Path, ";");
+                    createTexture2DArray(aPathTextureDiffuse, 
+                                         VK_IMAGE_TYPE_2D,
+                                         VK_SAMPLE_COUNT_1_BIT, 
+                                         VK_FORMAT_R8G8B8A8_SRGB, 
+                                         true, 
+                                         mipMapCount, 
+                                         this->poTerrainDiffuseImage, 
+                                         this->poTerrainDiffuseImageMemory);
+                    createVkImageView(this->poTerrainDiffuseImage, 
+                                      VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
+                                      VK_FORMAT_R8G8B8A8_SRGB, 
+                                      VK_IMAGE_ASPECT_COLOR_BIT, 
+                                      mipMapCount, 
+                                      (int)aPathTextureDiffuse.size(), 
+                                      this->poTerrainDiffuseImageView);
+                    createVkSampler(Vulkan_TextureFilter_Bilinear, 
+                                    Vulkan_TextureAddressing_Clamp,
+                                    Vulkan_TextureBorderColor_OpaqueBlack,
+                                    true,
+                                    this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+                                    0.0f,
+                                    static_cast<float>(mipMapCount),
+                                    0.0f,
+                                    this->poTerrainDiffuseImageSampler);
+
+                    this->poTerrainDiffuseImageInfo = {};
+                    this->poTerrainDiffuseImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    this->poTerrainDiffuseImageInfo.imageView = this->poTerrainDiffuseImageView;
+                    this->poTerrainDiffuseImageInfo.sampler = this->poTerrainDiffuseImageSampler;
+
+                    Util_LogInfo("VulkanWindow::setupTerrainTexture: Graphics: Create terrain diffuse texture array: [%s] success !",
+                                 this->cfg_terrainTextureDiffuse_Path.c_str());
+                }
+                //2> Terrain Normal
+                {
+                    StringVector aPathTextureNormal = VulkanUtilString::Split(this->cfg_terrainTextureNormal_Path, ";");
+                    createTexture2DArray(aPathTextureNormal, 
+                                         VK_IMAGE_TYPE_2D,
+                                         VK_SAMPLE_COUNT_1_BIT, 
+                                         VK_FORMAT_R8G8B8A8_UNORM, 
+                                         true, 
+                                         mipMapCount, 
+                                         this->poTerrainNormalImage, 
+                                         this->poTerrainNormalImageMemory);
+                    createVkImageView(this->poTerrainNormalImage, 
+                                      VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
+                                      VK_FORMAT_R8G8B8A8_UNORM, 
+                                      VK_IMAGE_ASPECT_COLOR_BIT, 
+                                      mipMapCount, 
+                                      (int)aPathTextureNormal.size(), 
+                                      this->poTerrainNormalImageView);
+                    createVkSampler(Vulkan_TextureFilter_Bilinear, 
+                                    Vulkan_TextureAddressing_Clamp,
+                                    Vulkan_TextureBorderColor_OpaqueBlack,
+                                    true,
+                                    this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+                                    0.0f,
+                                    static_cast<float>(mipMapCount),
+                                    0.0f,
+                                    this->poTerrainNormalImageSampler);
+
+                    this->poTerrainNormalImageInfo = {};
+                    this->poTerrainNormalImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    this->poTerrainNormalImageInfo.imageView = this->poTerrainNormalImageView;
+                    this->poTerrainNormalImageInfo.sampler = this->poTerrainNormalImageSampler;
+
+                    Util_LogInfo("VulkanWindow::setupTerrainTexture: Graphics: Create terrain normal texture array: [%s] success !",
+                                 this->cfg_terrainTextureNormal_Path.c_str());
+                }
+                //3> Terrain Control
+                {
+                    StringVector aPathTextureControl = VulkanUtilString::Split(this->cfg_terrainTextureControl_Path, ";");
+                    createTexture2DArray(aPathTextureControl, 
+                                         VK_IMAGE_TYPE_2D,
+                                         VK_SAMPLE_COUNT_1_BIT, 
+                                         VK_FORMAT_R8G8B8A8_UNORM, 
+                                         true, 
+                                         mipMapCount, 
+                                         this->poTerrainControlImage, 
+                                         this->poTerrainControlImageMemory);
+                    createVkImageView(this->poTerrainControlImage, 
+                                      VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
+                                      VK_FORMAT_R8G8B8A8_UNORM, 
+                                      VK_IMAGE_ASPECT_COLOR_BIT, 
+                                      mipMapCount, 
+                                      (int)aPathTextureControl.size(), 
+                                      this->poTerrainControlImageView);
+                    createVkSampler(Vulkan_TextureFilter_Bilinear, 
+                                    Vulkan_TextureAddressing_Clamp,
+                                    Vulkan_TextureBorderColor_OpaqueBlack,
+                                    true,
+                                    this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+                                    0.0f,
+                                    static_cast<float>(mipMapCount),
+                                    0.0f,
+                                    this->poTerrainControlImageSampler);
+
+                    this->poTerrainControlImageInfo = {};
+                    this->poTerrainControlImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    this->poTerrainControlImageInfo.imageView = this->poTerrainControlImageView;
+                    this->poTerrainControlImageInfo.sampler = this->poTerrainControlImageSampler;
+
+                    Util_LogInfo("VulkanWindow::setupTerrainTexture: Graphics: Create terrain control texture array: [%s] success !",
+                                 this->cfg_terrainTextureControl_Path.c_str());
+                }
             }
         }
         void VulkanWindow::setupTerrainComputePipeline()
@@ -2801,13 +2952,15 @@ namespace LostPeter
 
             //3> poTerrainComputeShaderModuleNormalGen
             {
-                this->poTerrainComputeShaderModuleNormalGen = createVkShaderModule("comp", this->cfg_shaderTerrainNormalMapGen_Path);
+                this->poTerrainComputeShaderModuleNormalGen = createVkShaderModule("TerrainComputeShaderModuleNormalGen", this->cfg_terrainShaderNormalMapGen_Path);
                 if (this->poTerrainComputeShaderModuleNormalGen == VK_NULL_HANDLE)
                 {
-                    String msg = "*********************** VulkanWindow::setupTerrainComputePipeline: createVkShaderModule failed !";
+                    String msg = "*********************** VulkanWindow::setupTerrainComputePipeline: createVkShaderModule failed: " + this->cfg_terrainShaderNormalMapGen_Path;
                     Util_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
+                Util_LogInfo("VulkanWindow::setupTerrainComputePipeline: Compute: Create terrain normal gen shader: [%s] success !",
+                             this->cfg_terrainShaderNormalMapGen_Path.c_str());
             }
 
             //4> poTerrainComputePipeline
@@ -2872,7 +3025,220 @@ namespace LostPeter
         }
         void VulkanWindow::setupTerrainGraphicsPipeline()
         {
+            //0> poBuffers_TerrainObjectCB
+            {
+                this->terrainObjectCBs.clear();
+                TerrainObjectConstants toWhole;
+                this->terrainObjectCBs.push_back(toWhole);
+                float fTerrainSize = (float)(this->poTerrainHeightMapSize - 1.0f);
+                float fTerrainSizeHalf = fTerrainSize / 2.0f;
+                float fTerrainInstanceSize = (float)(this->poTerrainGridInstanceVertexCount - 1.0f);
+                float fTerrainInstanceSizeHalf = fTerrainInstanceSize / 2.0f;
+                int nHalfInstanceCount = this->poTerrainGridInstanceCount / 2;
+                for (int i = 0; i < this->poTerrainGridInstanceCount; i++)
+                {
+                    for (int j = 0; j < this->poTerrainGridInstanceCount; j++)
+                    {
+                        glm::vec3 vPos = glm::vec3(j * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf,
+                                                   0.0f,
+                                                   i * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf);
+                        TerrainObjectConstants toInstance;
+                        toInstance.g_MatWorld = VulkanMath::Translate(vPos);
+                        this->terrainObjectCBs.push_back(toWhole);
+                    }
+                }
+                VkDeviceSize bufferSize = sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size();
+                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_TerrainObjectCB, this->poBuffersMemory_TerrainObjectCB);
+                void* data;
+                vkMapMemory(this->poDevice, this->poBuffersMemory_TerrainObjectCB, 0, bufferSize, 0, &data);
+                    memcpy(data, &this->terrainObjectCBs[0], bufferSize);
+                vkUnmapMemory(this->poDevice, this->poBuffersMemory_TerrainObjectCB);
+            }
 
+            //1> poTerrainGraphicsDescriptorSetLayout
+            {
+                VkDescriptorSetLayoutBindingVector bindings;
+                //(0) PassConstants
+                {
+                    VkDescriptorSetLayoutBinding passConstants = {};
+                    passConstants.binding = 0;
+                    passConstants.descriptorCount = 1;
+                    passConstants.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    passConstants.pImmutableSamplers = nullptr;
+                    passConstants.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+                    bindings.push_back(passConstants);
+                }
+                //(1) TerrainObjectConstants
+                {
+                    VkDescriptorSetLayoutBinding terrainObjectConstants = {};
+                    terrainObjectConstants.binding = 1;
+                    terrainObjectConstants.descriptorCount = 1;
+                    terrainObjectConstants.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    terrainObjectConstants.pImmutableSamplers = nullptr;
+                    terrainObjectConstants.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+                    bindings.push_back(terrainObjectConstants);
+                }
+                //(2) MaterialConstants
+                {
+                    VkDescriptorSetLayoutBinding materialConstants = {};
+                    materialConstants.binding = 2;
+                    materialConstants.descriptorCount = 1;
+                    materialConstants.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    materialConstants.pImmutableSamplers = nullptr;
+                    materialConstants.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+                    bindings.push_back(materialConstants);
+                }
+                //(3) InstanceConstants
+                {
+                    VkDescriptorSetLayoutBinding instanceConstants = {};
+                    instanceConstants.binding = 3;
+                    instanceConstants.descriptorCount = 1;
+                    instanceConstants.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    instanceConstants.pImmutableSamplers = nullptr;
+                    instanceConstants.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+                    bindings.push_back(instanceConstants);
+                }
+                //(4) texture2DArrayDiffuse
+                {
+                    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+                    samplerLayoutBinding.binding = 4;
+                    samplerLayoutBinding.descriptorCount = 1;
+                    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                    samplerLayoutBinding.pImmutableSamplers = nullptr;
+                    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+                    bindings.push_back(samplerLayoutBinding);
+                }
+                //(5) texture2DArrayNormal
+                {
+                    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+                    samplerLayoutBinding.binding = 5;
+                    samplerLayoutBinding.descriptorCount = 1;
+                    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                    samplerLayoutBinding.pImmutableSamplers = nullptr;
+                    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+                    bindings.push_back(samplerLayoutBinding);
+                }
+                //(6) texture2DArrayControl
+                {
+                    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+                    samplerLayoutBinding.binding = 6;
+                    samplerLayoutBinding.descriptorCount = 1;
+                    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                    samplerLayoutBinding.pImmutableSamplers = nullptr;
+                    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+                    bindings.push_back(samplerLayoutBinding);
+                }
+
+                if (!createVkDescriptorSetLayout(bindings, this->poTerrainGraphicsDescriptorSetLayout))
+                {
+                    String msg = "*********************** VulkanWindow::setupTerrainGraphicsPipeline: Failed to create descriptor set layout !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+
+            //2> poTerrainGraphicsPipelineLayout
+            {
+                VkDescriptorSetLayoutVector aDescriptorSetLayout;
+                aDescriptorSetLayout.push_back(this->poTerrainGraphicsDescriptorSetLayout);
+                this->poTerrainGraphicsPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
+                if (this->poTerrainGraphicsPipelineLayout == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** VulkanWindow::setupTerrainGraphicsPipeline: createVkPipelineLayout failed !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+
+            //3> poTerrainGraphicsShaderModuleVertex/poTerrainGraphicsShaderModuleFragment
+            {
+                this->poTerrainGraphicsShaderModuleVertex = createVkShaderModule("TerrainGraphicsShaderModuleVertex", this->cfg_terrainShaderVertex_Path);
+                if (this->poTerrainGraphicsShaderModuleVertex == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** VulkanWindow::setupTerrainGraphicsPipeline: createVkShaderModule failed: " + this->cfg_terrainShaderVertex_Path;
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+                Util_LogInfo("VulkanWindow::setupTerrainComputePipeline: Graphics: Create terrain vertex shader: [%s] success !",
+                             this->cfg_terrainShaderVertex_Path.c_str());
+
+                this->poTerrainGraphicsShaderModuleFragment = createVkShaderModule("TerrainGraphicsShaderModuleFragment", this->cfg_terrainShaderFragment_Path);
+                if (this->poTerrainGraphicsShaderModuleFragment == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** VulkanWindow::setupTerrainGraphicsPipeline: createVkShaderModule failed: " + this->cfg_terrainShaderFragment_Path;
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+                Util_LogInfo("VulkanWindow::setupTerrainComputePipeline: Graphics: Create terrain fragment shader: [%s] success !",
+                             this->cfg_terrainShaderFragment_Path.c_str());
+            }
+
+            //4> poTerrainGraphicsPipeline/poTerrainGraphicsPipeline_WireFrame
+            {
+                VkViewportVector aViewports;
+                aViewports.push_back(this->poViewport);
+                VkRect2DVector aScissors;
+                aScissors.push_back(this->poScissor);
+
+                VkPrimitiveTopology vkPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+                VkFrontFace vkFrontFace = VK_FRONT_FACE_CLOCKWISE;
+                VkPolygonMode vkPolygonMode = VK_POLYGON_MODE_FILL;
+                VkCullModeFlagBits vkCullModeFlagBits = VK_CULL_MODE_BACK_BIT;
+                VkBool32 isDepthTest = VK_TRUE;
+                VkBool32 isDepthWrite = VK_TRUE; 
+                VkCompareOp vkDepthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL; 
+                VkBool32 isStencilTest = VK_FALSE;
+                VkStencilOpState vkStencilOpFront; 
+                VkStencilOpState vkStencilOpBack; 
+                VkBool32 isBlend = VK_FALSE;
+                VkBlendFactor vkBlendColorFactorSrc = VK_BLEND_FACTOR_ONE; 
+                VkBlendFactor vkBlendColorFactorDst = VK_BLEND_FACTOR_ZERO; 
+                VkBlendOp vkBlendColorOp = VK_BLEND_OP_ADD;
+                VkBlendFactor vkBlendAlphaFactorSrc = VK_BLEND_FACTOR_ONE;
+                VkBlendFactor vkBlendAlphaFactorDst = VK_BLEND_FACTOR_ZERO; 
+                VkBlendOp vkBlendAlphaOp = VK_BLEND_OP_ADD;
+                VkColorComponentFlags vkColorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+                this->poTerrainGraphicsPipeline = createVkGraphicsPipeline(this->poTerrainGraphicsShaderModuleVertex, "main", 
+                                                                           this->poTerrainGraphicsShaderModuleFragment, "main", 
+                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(Vulkan_Vertex_Pos3Normal3Tex2),
+                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(Vulkan_Vertex_Pos3Normal3Tex2),
+                                                                           this->poRenderPass, this->poTerrainGraphicsPipelineLayout, aViewports, aScissors,
+                                                                           vkPrimitiveTopology, vkFrontFace, vkPolygonMode, vkCullModeFlagBits,
+                                                                           isDepthTest, isDepthWrite, vkDepthCompareOp,
+                                                                           isStencilTest, vkStencilOpFront, vkStencilOpBack, 
+                                                                           isBlend, vkBlendColorFactorSrc, vkBlendColorFactorDst, vkBlendColorOp,
+                                                                           vkBlendAlphaFactorSrc, vkBlendAlphaFactorDst, vkBlendAlphaOp,
+                                                                           vkColorWriteMask);
+                if (this->poTerrainGraphicsPipeline == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** VulkanWindow::setupTerrainGraphicsPipeline: createVkGraphicsPipeline failed !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+                this->poTerrainGraphicsPipeline_WireFrame = createVkGraphicsPipeline(this->poTerrainGraphicsShaderModuleVertex, "main", 
+                                                                                     this->poTerrainGraphicsShaderModuleFragment, "main", 
+                                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(Vulkan_Vertex_Pos3Normal3Tex2),
+                                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(Vulkan_Vertex_Pos3Normal3Tex2),
+                                                                                     this->poRenderPass, this->poTerrainGraphicsPipelineLayout, aViewports, aScissors,
+                                                                                     vkPrimitiveTopology, vkFrontFace, VK_POLYGON_MODE_LINE, vkCullModeFlagBits,
+                                                                                     isDepthTest, isDepthWrite, vkDepthCompareOp,
+                                                                                     isStencilTest, vkStencilOpFront, vkStencilOpBack, 
+                                                                                     isBlend, vkBlendColorFactorSrc, vkBlendColorFactorDst, vkBlendColorOp,
+                                                                                     vkBlendAlphaFactorSrc, vkBlendAlphaFactorDst, vkBlendAlphaOp,
+                                                                                     vkColorWriteMask);
+                if (this->poTerrainGraphicsPipeline_WireFrame == VK_NULL_HANDLE)
+                {
+                    String msg = "*********************** VulkanWindow::setupTerrainGraphicsPipeline: createVkGraphicsPipeline wire frame failed !";
+                    Util_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+
+            //5> poTerrainGraphicsDescriptorSet
+            {
+
+            }
         }
     void VulkanWindow::destroyTerrain()
     {
@@ -2955,7 +3321,43 @@ namespace LostPeter
         this->poTerrainComputeDescriptorSet = VK_NULL_HANDLE;
         
         //Graphics
-
+        if (this->poBuffers_TerrainObjectCB != VK_NULL_HANDLE)
+        {
+            destroyVkBuffer(this->poBuffers_TerrainObjectCB, this->poBuffersMemory_TerrainObjectCB);
+        }
+        this->poBuffers_TerrainObjectCB = VK_NULL_HANDLE;
+        this->poBuffersMemory_TerrainObjectCB = VK_NULL_HANDLE;
+        if (this->poTerrainGraphicsDescriptorSetLayout != VK_NULL_HANDLE)
+        {
+            destroyVkDescriptorSetLayout(this->poTerrainGraphicsDescriptorSetLayout);
+        }
+        this->poTerrainGraphicsDescriptorSetLayout = VK_NULL_HANDLE;
+        if (this->poTerrainGraphicsPipelineLayout != VK_NULL_HANDLE)
+        {
+            destroyVkPipelineLayout(this->poTerrainGraphicsPipelineLayout);
+        }
+        this->poTerrainGraphicsPipelineLayout = VK_NULL_HANDLE;
+        if (this->poTerrainGraphicsPipeline != VK_NULL_HANDLE)
+        {
+            destroyVkPipeline(this->poTerrainGraphicsPipeline);
+        }
+        this->poTerrainGraphicsPipeline = VK_NULL_HANDLE;
+        if (this->poTerrainGraphicsPipeline_WireFrame != VK_NULL_HANDLE)
+        {
+            destroyVkPipeline(this->poTerrainGraphicsPipeline_WireFrame);
+        }
+        this->poTerrainGraphicsPipeline_WireFrame = VK_NULL_HANDLE;
+        if (this->poTerrainGraphicsShaderModuleVertex != VK_NULL_HANDLE)
+        {
+            destroyVkShaderModule(this->poTerrainGraphicsShaderModuleVertex);
+        }
+        this->poTerrainGraphicsShaderModuleVertex = VK_NULL_HANDLE;
+        if (this->poTerrainGraphicsShaderModuleFragment != VK_NULL_HANDLE)
+        {
+            destroyVkShaderModule(this->poTerrainGraphicsShaderModuleFragment);
+        }
+        this->poTerrainGraphicsShaderModuleFragment = VK_NULL_HANDLE;
+        this->poTerrainGraphicsDescriptorSet = VK_NULL_HANDLE;
     }
 
     void VulkanWindow::createCamera()

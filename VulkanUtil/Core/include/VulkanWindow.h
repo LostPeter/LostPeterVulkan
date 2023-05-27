@@ -174,7 +174,12 @@ namespace LostPeter
         String cfg_shaderFragment_Path;
         String cfg_texture_Path;
         String cfg_terrain_Path;
-        String cfg_shaderTerrainNormalMapGen_Path;
+        String cfg_terrainShaderNormalMapGen_Path;
+        String cfg_terrainShaderVertex_Path;
+        String cfg_terrainShaderFragment_Path;
+        String cfg_terrainTextureDiffuse_Path;
+        String cfg_terrainTextureNormal_Path;
+        String cfg_terrainTextureControl_Path;
 
         //Imgui
         bool imgui_IsEnable;
@@ -210,6 +215,7 @@ namespace LostPeter
         int32 poTerrainHeightMapSize;
         int32 poTerrainGridVertexCount;
         int32 poTerrainGridInstanceVertexCount;
+        int32 poTerrainGridInstanceCount;
         bool poTerrainIsDrawInstance;
 
         std::vector<Vertex_Pos3Normal3Tex2> poTerrain_Pos3Normal3Tex2;
@@ -228,12 +234,12 @@ namespace LostPeter
         VkImage poTerrainHeightMapImage;
         VkDeviceMemory poTerrainHeightMapImageMemory;
         VkImageView poTerrainHeightMapImageView;
+        VkDescriptorImageInfo poTerrainHeightMapImageInfo;
         VkImage poTerrainNormalMapImage;
         VkDeviceMemory poTerrainNormalMapImageMemory;
         VkImageView poTerrainNormalMapImageView;
-        VkSampler poTerrainImageSampler;
-        VkDescriptorImageInfo poTerrainHeightMapImageInfo;
         VkDescriptorImageInfo poTerrainNormalMapImageInfo;
+        VkSampler poTerrainImageSampler;
 
         TextureCopyConstants poTerrainTextureCopy;
         VkBuffer poBuffer_TerrainTextureCopy;
@@ -245,6 +251,44 @@ namespace LostPeter
         VkPipeline poTerrainComputePipeline;
         VkDescriptorSet poTerrainComputeDescriptorSet;
         
+        VkImage poTerrainDiffuseImage;
+        VkDeviceMemory poTerrainDiffuseImageMemory;
+        VkImageView poTerrainDiffuseImageView;
+        VkSampler poTerrainDiffuseImageSampler;
+        VkDescriptorImageInfo poTerrainDiffuseImageInfo;
+        VkImage poTerrainNormalImage;
+        VkDeviceMemory poTerrainNormalImageMemory;
+        VkImageView poTerrainNormalImageView;
+        VkSampler poTerrainNormalImageSampler;
+        VkDescriptorImageInfo poTerrainNormalImageInfo;
+        VkImage poTerrainControlImage;
+        VkDeviceMemory poTerrainControlImageMemory;
+        VkImageView poTerrainControlImageView;
+        VkSampler poTerrainControlImageSampler;
+        VkDescriptorImageInfo poTerrainControlImageInfo;
+
+        struct TerrainObjectConstants
+        {
+            glm::mat4 g_MatWorld;
+        
+
+            TerrainObjectConstants()
+                : g_MatWorld(VulkanMath::Identity4x4())
+            {
+
+            }
+        };
+        std::vector<TerrainObjectConstants> terrainObjectCBs;
+        VkBuffer poBuffers_TerrainObjectCB;
+        VkDeviceMemory poBuffersMemory_TerrainObjectCB;
+
+        VkDescriptorSetLayout poTerrainGraphicsDescriptorSetLayout;
+        VkPipelineLayout poTerrainGraphicsPipelineLayout;
+        VkShaderModule poTerrainGraphicsShaderModuleVertex;
+        VkShaderModule poTerrainGraphicsShaderModuleFragment;
+        VkPipeline poTerrainGraphicsPipeline;
+        VkPipeline poTerrainGraphicsPipeline_WireFrame;
+        VkDescriptorSet poTerrainGraphicsDescriptorSet;
         
         //Camera
         VulkanCamera* pCamera; //Eye Left
