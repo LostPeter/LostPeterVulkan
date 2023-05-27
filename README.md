@@ -176,6 +176,6 @@ License:
 
 ### <015> vulkan_015_multiview
 [Vulkan学习例子015: vulkan_015_multiview 多视口渲染](https://zhuanlan.zhihu.com/p/624939246)
-* sample014: Vulkan RenderPass，Multi RenderPass usage
+* sample015: Vulkan RenderPass，Multi RenderPass usage
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_015_multiview.png)
