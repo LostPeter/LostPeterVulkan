@@ -427,91 +427,76 @@ void Vulkan_010_Lighting::createDescriptorSets_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        createVkDescriptorSets(pModelObject->poDescriptorSets, this->poDescriptorSetLayout);
+        createVkDescriptorSets(this->poDescriptorSetLayout, pModelObject->poDescriptorSets);
         for (size_t j = 0; j < count_sci; j++)
         {   
-            VkDescriptorBufferInfo bufferInfo_Pass = {};
-            bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
-            bufferInfo_Pass.offset = 0;
-            bufferInfo_Pass.range = sizeof(PassConstants);
-
-            VkDescriptorBufferInfo bufferInfo_Object = {};
-            bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j];
-            bufferInfo_Object.offset = 0;
-            bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-
-            VkDescriptorBufferInfo bufferInfo_Material = {};
-            bufferInfo_Material.buffer = pModelObject->poBuffers_materialCB[j];
-            bufferInfo_Material.offset = 0;
-            bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
-
-            VkDescriptorBufferInfo bufferInfo_Instance = {};
-            bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
-            bufferInfo_Instance.offset = 0;
-            bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
-
-            VkDescriptorImageInfo imageInfo = {};
-            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = pModelObject->poTextureImageView;
-            imageInfo.sampler = pModelObject->poTextureSampler;
-            
             VkWriteDescriptorSetVector descriptorWrites;
-
-            //0
-            VkWriteDescriptorSet ds0 = {};
-            ds0.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds0.dstSet = pModelObject->poDescriptorSets[j];
-            ds0.dstBinding = 0;
-            ds0.dstArrayElement = 0;
-            ds0.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            ds0.descriptorCount = 1;
-            ds0.pBufferInfo = &bufferInfo_Pass;
-            descriptorWrites.push_back(ds0);
-
-            //1
-            VkWriteDescriptorSet ds1 = {};
-            ds1.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds1.dstSet = pModelObject->poDescriptorSets[j];
-            ds1.dstBinding = 1;
-            ds1.dstArrayElement = 0;
-            ds1.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            ds1.descriptorCount = 1;
-            ds1.pBufferInfo = &bufferInfo_Object;
-            descriptorWrites.push_back(ds1);
-
-            //2
-            VkWriteDescriptorSet ds2 = {};
-            ds2.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds2.dstSet = pModelObject->poDescriptorSets[j];
-            ds2.dstBinding = 2;
-            ds2.dstArrayElement = 0;
-            ds2.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            ds2.descriptorCount = 1;
-            ds2.pBufferInfo = &bufferInfo_Material;
-            descriptorWrites.push_back(ds2);
-
-            //3
-            VkWriteDescriptorSet ds3 = {};
-            ds3.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds3.dstSet = pModelObject->poDescriptorSets[j];
-            ds3.dstBinding = 3;
-            ds3.dstArrayElement = 0;
-            ds3.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            ds3.descriptorCount = 1;
-            ds3.pBufferInfo = &bufferInfo_Instance;
-            descriptorWrites.push_back(ds3);
-            
-            //4
-            VkWriteDescriptorSet ds4 = {};
-            ds4.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds4.dstSet = pModelObject->poDescriptorSets[j];
-            ds4.dstBinding = 4;
-            ds4.dstArrayElement = 0;
-            ds4.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            ds4.descriptorCount = 1;
-            ds4.pImageInfo = &imageInfo;
-            descriptorWrites.push_back(ds4);
-
+            //(0) PassConstants
+            {
+                VkDescriptorBufferInfo bufferInfo_Pass = {};
+                bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
+                bufferInfo_Pass.offset = 0;
+                bufferInfo_Pass.range = sizeof(PassConstants);
+                pushVkDescriptorSet_Uniform(descriptorWrites,
+                                            pModelObject->poDescriptorSets[j],
+                                            0,
+                                            0,
+                                            1,
+                                            bufferInfo_Pass);
+            }
+            //(1) ObjectConstants
+            {
+                VkDescriptorBufferInfo bufferInfo_Object = {};
+                bufferInfo_Object.buffer = pModelObject->poBuffers_ObjectCB[j];
+                bufferInfo_Object.offset = 0;
+                bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
+                pushVkDescriptorSet_Uniform(descriptorWrites,
+                                            pModelObject->poDescriptorSets[j],
+                                            1,
+                                            0,
+                                            1,
+                                            bufferInfo_Object);
+            }
+            //(2) MaterialConstants
+            {
+                VkDescriptorBufferInfo bufferInfo_Material = {};
+                bufferInfo_Material.buffer = pModelObject->poBuffers_materialCB[j];
+                bufferInfo_Material.offset = 0;
+                bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
+                pushVkDescriptorSet_Uniform(descriptorWrites,
+                                            pModelObject->poDescriptorSets[j],
+                                            2,
+                                            0,
+                                            1,
+                                            bufferInfo_Material);
+            }
+            //(3) InstanceConstants
+            {
+                VkDescriptorBufferInfo bufferInfo_Instance = {};
+                bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j];
+                bufferInfo_Instance.offset = 0;
+                bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
+                pushVkDescriptorSet_Uniform(descriptorWrites,
+                                            pModelObject->poDescriptorSets[j],
+                                            3,
+                                            0,
+                                            1,
+                                            bufferInfo_Instance);
+            }
+            //(4) Image
+            {
+                VkDescriptorImageInfo imageInfo = {};
+                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.imageView = pModelObject->poTextureImageView;
+                imageInfo.sampler = pModelObject->poTextureSampler;
+                pushVkDescriptorSet_Image(descriptorWrites,
+                                          pModelObject->poDescriptorSets[j],
+                                          4,
+                                          0,
+                                          1,
+                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                          imageInfo);
+            }
             updateVkDescriptorSets(descriptorWrites);
         }
     }

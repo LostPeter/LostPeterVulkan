@@ -2969,7 +2969,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Custom()
 
         //Pipeline Graphics
         {
-            createVkDescriptorSets(pRend->pPipelineGraphics->poDescriptorSets, pRend->pPipelineGraphics->poDescriptorSetLayout);
+            createVkDescriptorSets(pRend->pPipelineGraphics->poDescriptorSetLayout, pRend->pPipelineGraphics->poDescriptorSets);
             createDescriptorSets_Graphics(pRend->pPipelineGraphics->poDescriptorSets, pRend, nullptr);
         }   
         
@@ -2989,7 +2989,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Custom()
         ModelObject* pModelObject = this->m_aModelObjects[i];
         if (pModelObject->pRendIndirect != nullptr)
         {
-            createVkDescriptorSets(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout);
+            createVkDescriptorSets(pModelObject->pRendIndirect->pRend->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pRendIndirect->poDescriptorSets);
             createDescriptorSets_Graphics(pModelObject->pRendIndirect->poDescriptorSets, pModelObject->pRendIndirect->pRend, pModelObject->pRendIndirect);
         }
     }
@@ -3020,16 +3020,12 @@ void Vulkan_015_MultiView::createDescriptorSets_Graphics(VkDescriptorSetVector& 
                 bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
                 bufferInfo_Pass.offset = 0;
                 bufferInfo_Pass.range = sizeof(PassConstants);
-
-                VkWriteDescriptorSet ds = {};
-                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
-                ds.dstBinding = p;
-                ds.dstArrayElement = 0;
-                ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds.descriptorCount = 1;
-                ds.pBufferInfo = &bufferInfo_Pass;
-                descriptorWrites.push_back(ds);
+                pushVkDescriptorSet_Uniform(descriptorWrites,
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            p,
+                                            0,
+                                            1,
+                                            bufferInfo_Pass);
             }
             else if (nameDescriptorSet == c_strLayout_Object) //Object
             {
@@ -3037,16 +3033,12 @@ void Vulkan_015_MultiView::createDescriptorSets_Graphics(VkDescriptorSetVector& 
                 bufferInfo_Object.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB[j] : pRend->poBuffers_ObjectCB[j];
                 bufferInfo_Object.offset = 0;
                 bufferInfo_Object.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-
-                VkWriteDescriptorSet ds = {};
-                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
-                ds.dstBinding = p;
-                ds.dstArrayElement = 0;
-                ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds.descriptorCount = 1;
-                ds.pBufferInfo = &bufferInfo_Object;
-                descriptorWrites.push_back(ds);
+                pushVkDescriptorSet_Uniform(descriptorWrites,
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            p,
+                                            0,
+                                            1,
+                                            bufferInfo_Object);
             }
             else if (nameDescriptorSet == c_strLayout_Material) //Material
             {
@@ -3054,16 +3046,12 @@ void Vulkan_015_MultiView::createDescriptorSets_Graphics(VkDescriptorSetVector& 
                 bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j] : pRend->poBuffers_materialCB[j];
                 bufferInfo_Material.offset = 0;
                 bufferInfo_Material.range = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
-
-                VkWriteDescriptorSet ds = {};
-                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
-                ds.dstBinding = p;
-                ds.dstArrayElement = 0;
-                ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds.descriptorCount = 1;
-                ds.pBufferInfo = &bufferInfo_Material;
-                descriptorWrites.push_back(ds);
+                pushVkDescriptorSet_Uniform(descriptorWrites,
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            p,
+                                            0,
+                                            1,
+                                            bufferInfo_Material);
             }
             else if (nameDescriptorSet == c_strLayout_Instance) //Instance
             {
@@ -3071,16 +3059,12 @@ void Vulkan_015_MultiView::createDescriptorSets_Graphics(VkDescriptorSetVector& 
                 bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]; 
                 bufferInfo_Instance.offset = 0;
                 bufferInfo_Instance.range = sizeof(InstanceConstants) * this->instanceCBs.size();
-
-                VkWriteDescriptorSet ds = {};
-                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
-                ds.dstBinding = p;
-                ds.dstArrayElement = 0;
-                ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds.descriptorCount = 1;
-                ds.pBufferInfo = &bufferInfo_Instance;
-                descriptorWrites.push_back(ds);
+                pushVkDescriptorSet_Uniform(descriptorWrites,
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            p,
+                                            0,
+                                            1,
+                                            bufferInfo_Instance);
             }
             else if (nameDescriptorSet == c_strLayout_Tessellation) //Tessellation
             {
@@ -3088,91 +3072,72 @@ void Vulkan_015_MultiView::createDescriptorSets_Graphics(VkDescriptorSetVector& 
                 bufferInfo_Tessellation.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_tessellationCB[j] : pRend->poBuffers_tessellationCB[j];
                 bufferInfo_Tessellation.offset = 0;
                 bufferInfo_Tessellation.range = sizeof(TessellationConstants) * MAX_OBJECT_COUNT;
-
-                VkWriteDescriptorSet ds = {};
-                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
-                ds.dstBinding = p;
-                ds.dstArrayElement = 0;
-                ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                ds.descriptorCount = 1;
-                ds.pBufferInfo = &bufferInfo_Tessellation;
-                descriptorWrites.push_back(ds);
+                pushVkDescriptorSet_Uniform(descriptorWrites,
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            p,
+                                            0,
+                                            1,
+                                            bufferInfo_Tessellation);
             }
             else if (nameDescriptorSet == c_strLayout_TextureVS) //TextureVS
             {
                 ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
                 nIndexTextureVS ++;
-
-                VkWriteDescriptorSet ds = {};
-                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
-                ds.dstBinding = p;
-                ds.dstArrayElement = 0;
-                ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                ds.descriptorCount = 1;
-                ds.pImageInfo = &pTexture->poTextureImageInfo;
-                descriptorWrites.push_back(ds);
+                pushVkDescriptorSet_Image(descriptorWrites,
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          p,
+                                          0,
+                                          1,
+                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                          pTexture->poTextureImageInfo);
             }
             else if (nameDescriptorSet == c_strLayout_TextureTESC)//TextureTESC
             {
                 ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), nIndexTextureTESC);
                 nIndexTextureTESC ++;
-
-                VkWriteDescriptorSet ds = {};
-                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
-                ds.dstBinding = p;
-                ds.dstArrayElement = 0;
-                ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                ds.descriptorCount = 1;
-                ds.pImageInfo = &pTexture->poTextureImageInfo;
-                descriptorWrites.push_back(ds);
+                pushVkDescriptorSet_Image(descriptorWrites,
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          p,
+                                          0,
+                                          1,
+                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                          pTexture->poTextureImageInfo);
             }
             else if (nameDescriptorSet == c_strLayout_TextureTESE)//TextureTESE
             {
                 ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), nIndexTextureTESE);
                 nIndexTextureTESE ++;
-
-                VkWriteDescriptorSet ds = {};
-                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
-                ds.dstBinding = p;
-                ds.dstArrayElement = 0;
-                ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                ds.descriptorCount = 1;
-                ds.pImageInfo = &pTexture->poTextureImageInfo;
-                descriptorWrites.push_back(ds);
+                pushVkDescriptorSet_Image(descriptorWrites,
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          p,
+                                          0,
+                                          1,
+                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                          pTexture->poTextureImageInfo);
             }
             else if (nameDescriptorSet == c_strLayout_TextureFS) //TextureFS
             {
                 ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), nIndexTextureFS);
                 nIndexTextureFS ++;
-
-                VkWriteDescriptorSet ds = {};
-                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds.dstSet = pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j];
-                ds.dstBinding = p;
-                ds.dstArrayElement = 0;
-                ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                ds.descriptorCount = 1;
-                ds.pImageInfo = &pTexture->poTextureImageInfo;
-                descriptorWrites.push_back(ds);
+                pushVkDescriptorSet_Image(descriptorWrites,
+                                          pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          p,
+                                          0,
+                                          1,
+                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                          pTexture->poTextureImageInfo);
             }
             else if (nameDescriptorSet == c_strLayout_TextureFrameColor) //TextureFrameColor
             {
                 MultiRenderPass* pRenderPass = pRend->GetRenderPass(nIndexTextureFrameColor);
                 nIndexTextureFrameColor ++;
-
-                VkWriteDescriptorSet ds = {};
-                ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                ds.dstSet = pRend->pPipelineGraphics->poDescriptorSets[j];
-                ds.dstBinding = p;
-                ds.dstArrayElement = 0;
-                ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                ds.descriptorCount = 1;
-                ds.pImageInfo = &pRenderPass->imageInfo;
-                descriptorWrites.push_back(ds);
+                pushVkDescriptorSet_Image(descriptorWrites,
+                                          pRend->pPipelineGraphics->poDescriptorSets[j],
+                                          p,
+                                          0,
+                                          1,
+                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                          pRenderPass->imageInfo);
             }
             else
             {
@@ -3189,7 +3154,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Compute(PipelineCompute* pPipeli
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
     assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_015_MultiView::createDescriptorSets_Compute");
-    createVkDescriptorSet(pPipelineCompute->poDescriptorSet, pPipelineCompute->poDescriptorSetLayout);
+    createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
     VkWriteDescriptorSetVector descriptorWrites;
     int nIndexTextureCS = 0;
@@ -3205,48 +3170,38 @@ void Vulkan_015_MultiView::createDescriptorSets_Compute(PipelineCompute* pPipeli
             bufferInfo_TextureCopy.buffer = pPipelineCompute->poBuffer_TextureCopy;
             bufferInfo_TextureCopy.offset = 0;
             bufferInfo_TextureCopy.range = sizeof(TextureCopyConstants);
-
-            VkWriteDescriptorSet ds = {};
-            ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds.dstSet = pPipelineCompute->poDescriptorSet;
-            ds.dstBinding = p;
-            ds.dstArrayElement = 0;
-            ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            ds.descriptorCount = 1;
-            ds.pBufferInfo = &bufferInfo_TextureCopy;
-            descriptorWrites.push_back(ds);
+            pushVkDescriptorSet_Uniform(descriptorWrites,
+                                        pPipelineCompute->poDescriptorSet,
+                                        p,
+                                        0,
+                                        1,
+                                        bufferInfo_TextureCopy);
         }   
         else if (nameDescriptorSet == c_strLayout_TextureCSR) //TextureCSR
         {
             ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
             pPipelineCompute->pTextureSource = pTexture;
-
-            VkWriteDescriptorSet ds = {};
-            ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds.dstSet = pPipelineCompute->poDescriptorSet;
-            ds.dstBinding = p;
-            ds.dstArrayElement = 0;
-            ds.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            ds.descriptorCount = 1;
-            ds.pImageInfo = &pTexture->poTextureImageInfo;
-            descriptorWrites.push_back(ds);
+            pushVkDescriptorSet_Image(descriptorWrites,
+                                      pPipelineCompute->poDescriptorSet,
+                                      p,
+                                      0,
+                                      1,
+                                      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                      pTexture->poTextureImageInfo);
         }
         else if (nameDescriptorSet == c_strLayout_TextureCSRW) //TextureCSRW
         {
             ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
             pPipelineCompute->pTextureTarget = pTexture;
-
-            VkWriteDescriptorSet ds = {};
-            ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            ds.dstSet = pPipelineCompute->poDescriptorSet;
-            ds.dstBinding = p;
-            ds.dstArrayElement = 0;
-            ds.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-            ds.descriptorCount = 1;
-            ds.pImageInfo = &pTexture->poTextureImageInfo;
-            descriptorWrites.push_back(ds);
+            pushVkDescriptorSet_Image(descriptorWrites,
+                                      pPipelineCompute->poDescriptorSet,
+                                      p,
+                                      0,
+                                      1,
+                                      VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                                      pTexture->poTextureImageInfo);
         }
         else
         {

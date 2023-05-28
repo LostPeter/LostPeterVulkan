@@ -241,13 +241,14 @@ namespace LostPeter
         VkDescriptorImageInfo poTerrainNormalMapImageInfo;
         VkSampler poTerrainImageSampler;
 
+        VkShaderModule poTerrainComputeShaderModuleNormalGen;
+
         TextureCopyConstants poTerrainTextureCopy;
         VkBuffer poBuffer_TerrainTextureCopy;
         VkDeviceMemory poBufferMemory_TerrainTextureCopy;
 
         VkDescriptorSetLayout poTerrainComputeDescriptorSetLayout;
         VkPipelineLayout poTerrainComputePipelineLayout;
-        VkShaderModule poTerrainComputeShaderModuleNormalGen;
         VkPipeline poTerrainComputePipeline;
         VkDescriptorSet poTerrainComputeDescriptorSet;
         
@@ -279,8 +280,8 @@ namespace LostPeter
             }
         };
         std::vector<TerrainObjectConstants> terrainObjectCBs;
-        VkBuffer poBuffers_TerrainObjectCB;
-        VkDeviceMemory poBuffersMemory_TerrainObjectCB;
+        VkBuffer poBuffer_TerrainObjectCB;
+        VkDeviceMemory poBufferMemory_TerrainObjectCB;
 
         VkDescriptorSetLayout poTerrainGraphicsDescriptorSetLayout;
         VkPipelineLayout poTerrainGraphicsPipelineLayout;
@@ -288,7 +289,7 @@ namespace LostPeter
         VkShaderModule poTerrainGraphicsShaderModuleFragment;
         VkPipeline poTerrainGraphicsPipeline;
         VkPipeline poTerrainGraphicsPipeline_WireFrame;
-        VkDescriptorSet poTerrainGraphicsDescriptorSet;
+        VkDescriptorSetVector poTerrainGraphicsDescriptorSets; 
         
         //Camera
         VulkanCamera* pCamera; //Eye Left
@@ -397,7 +398,7 @@ namespace LostPeter
             virtual void createDescriptorPool();
                 virtual void destroyVkDescriptorPool(VkDescriptorPool vkDescriptorPool);
 
-            virtual void createDescriptorObjects();
+            virtual void createDescriptorSetLayouts();
                 virtual void createDescriptorSetLayout_Default();
                 virtual void createDescriptorSetLayout_Custom();
 
@@ -469,8 +470,16 @@ namespace LostPeter
                 virtual bool loadTerrainData();
                 virtual void setupTerrainGeometry();
                 virtual void setupTerrainTexture();
+                virtual void setupTerrainShader();
                 virtual void setupTerrainComputePipeline();
+                    virtual void createTerrainComputeDescriptorSet();
+                    virtual void destroyTerrainComputeDescriptorSet();
+
                 virtual void setupTerrainGraphicsPipeline();
+                    virtual void createTerrainGraphicsDescriptorSet();
+                    virtual void destroyTerrainGraphicsDescriptorSet();
+                    virtual void createTerrainGraphicsPipeline();
+                    virtual void destroyTerrainGraphicsPipeline();
             virtual void destroyTerrain();
 
             //Camera
@@ -838,6 +847,7 @@ namespace LostPeter
 
                 virtual void createGraphicsPipeline();
                     virtual void createGraphicsPipeline_Default();
+                    virtual void createGraphicsPipeline_Terrain();
                     virtual void createGraphicsPipeline_Custom();
                         virtual VkPipeline createVkGraphicsPipeline(VkShaderModule vertShaderModule, const String& vertMain,
                                                                     VkShaderModule fragShaderModule, const String& fragMain,
@@ -888,13 +898,29 @@ namespace LostPeter
                                                                    VkPipelineCreateFlags flags = 0);
 
 
-                virtual void createDescriptor();
+                virtual void createDescriptorSets();
                     virtual void createDescriptorSets_Default();
+                    virtual void createDescriptorSets_Terrain();
                     virtual void createDescriptorSets_Custom();
                         virtual void updateDescriptorSets(VkDescriptorSetVector& aDescriptorSets, VkImageView vkTextureView, VkSampler vkSampler); 
 
-                        virtual void createVkDescriptorSet(VkDescriptorSet& vkDescriptorSet, VkDescriptorSetLayout vkDescriptorSetLayout);
-                        virtual void createVkDescriptorSets(VkDescriptorSetVector& aDescriptorSets, VkDescriptorSetLayout vkDescriptorSetLayout);
+                        virtual void createVkDescriptorSet(VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSet& vkDescriptorSet);
+                        virtual void createVkDescriptorSets(VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSetVector& aDescriptorSets);
+
+                        virtual void pushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                                 VkDescriptorSet dstSet,
+                                                                 uint32_t dstBinding,
+                                                                 uint32_t dstArrayElement,
+                                                                 uint32_t descriptorCount,
+                                                                 VkDescriptorBufferInfo& bufferInfo);
+                        virtual void pushVkDescriptorSet_Image(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                               VkDescriptorSet dstSet,
+                                                               uint32_t dstBinding,
+                                                               uint32_t dstArrayElement,
+                                                               uint32_t descriptorCount,
+                                                               VkDescriptorType descriptorType,
+                                                               VkDescriptorImageInfo& imageInfo);
+
                         virtual void updateVkDescriptorSets(VkWriteDescriptorSetVector& aWriteDescriptorSets);
 
                 virtual void createCommandBuffers();
