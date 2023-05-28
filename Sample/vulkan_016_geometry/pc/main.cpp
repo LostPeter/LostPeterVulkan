@@ -10,11 +10,11 @@
 ****************************************************************************/
 
 #include "PreInclude.h"
-#include "vulkan_016_multiwindow.h"
+#include "vulkan_016_geometry.h"
 
 
 int main()
 {
-    Vulkan_016_MultiWindow sample(1280, 720, "LostPeter - Vulkan_016_MultiWindow");
+    Vulkan_016_Geometry sample(1280, 720, "LostPeter - Vulkan_016_Geometry");
     return App::Run(&sample);
 }

@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "PreInclude.h"
-#include "vulkan_016_multiwindow.h"
+#include "vulkan_016_geometry.h"
 #include "VulkanMeshLoader.h"
 #include "VulkanMeshGeometry.h"
 #include "VulkanCamera.h"
@@ -23,11 +23,10 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_Mesh_Count = 11;
-static const char* g_Mesh_Paths[5 * g_Mesh_Count] =
+static const int g_MeshCount = 10;
+static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
-    "quad",             "Pos3Color4Tex2",                       "geometry",         "quad",                     "", //plane
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
@@ -44,9 +43,8 @@ static const char* g_Mesh_Paths[5 * g_Mesh_Count] =
     "flower",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/flower/flower.fbx", //flower
 
 };
-static bool g_Mesh_IsFlipYs[g_Mesh_Count] = 
+static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
-    true, //quad
     true, //plane
     false, //cube
     false, //sphere
@@ -63,9 +61,8 @@ static bool g_Mesh_IsFlipYs[g_Mesh_Count] =
     false, //flower
 
 };
-static bool g_Mesh_IsTranformLocals[g_Mesh_Count] = 
+static bool g_MeshIsTranformLocals[g_MeshCount] = 
 {
-    false, //quad
     false, //plane  
     false, //cube
     false, //sphere
@@ -82,9 +79,8 @@ static bool g_Mesh_IsTranformLocals[g_Mesh_Count] =
     false, //flower
 
 };
-static glm::mat4 g_Mesh_TranformLocals[g_Mesh_Count] = 
+static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
 {
-    VulkanMath::ms_mat4Unit, //quad
     VulkanMath::ms_mat4Unit, //plane
     VulkanMath::ms_mat4Unit, //cube
     VulkanMath::ms_mat4Unit, //sphere
@@ -104,9 +100,9 @@ static glm::mat4 g_Mesh_TranformLocals[g_Mesh_Count] =
 
 
 /////////////////////////// Texture /////////////////////////////
-static const String g_Texture_Default = "default_blackwhite";
-static const int g_Texture_Count = 24;
-static const char* g_Texture_Paths[5 * g_Texture_Count] = 
+static const String g_TextureDefault = "default_blackwhite";
+static const int g_TextureCount = 24;
+static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
     "default_blackwhite",               "2d",            "false",                  "false",                           "Assets/Texture/default_blackwhite.png", //default_blackwhite
@@ -142,7 +138,7 @@ static const char* g_Texture_Paths[5 * g_Texture_Count] =
     "flower_atlas",                     "2d",            "false",                  "false",                           "Assets/Model/Fbx/flower/flower_atlas.png", //flower_atlas
 
 };
-static VkFormat g_Texture_Formats[g_Texture_Count] = 
+static VkFormat g_TextureFormats[g_TextureCount] = 
 {
     VK_FORMAT_R8G8B8A8_SRGB, //default_blackwhite
     VK_FORMAT_R8G8B8A8_SRGB, //bricks_diffuse
@@ -177,7 +173,7 @@ static VkFormat g_Texture_Formats[g_Texture_Count] =
     VK_FORMAT_R8G8B8A8_SRGB, //flower_atlas
 
 };
-static VulkanTextureFilterType g_Texture_Filters[g_Texture_Count] = 
+static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
     Vulkan_TextureFilter_Bilinear, //default_blackwhite
     Vulkan_TextureFilter_Bilinear, //bricks_diffuse
@@ -212,7 +208,7 @@ static VulkanTextureFilterType g_Texture_Filters[g_Texture_Count] =
     Vulkan_TextureFilter_Bilinear, //flower_atlas
 
 };
-static VulkanTextureAddressingType g_Texture_Addressings[g_Texture_Count] = 
+static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
 {
     Vulkan_TextureAddressing_Clamp, //default_blackwhite
     Vulkan_TextureAddressing_Clamp, //bricks_diffuse
@@ -247,7 +243,7 @@ static VulkanTextureAddressingType g_Texture_Addressings[g_Texture_Count] =
     Vulkan_TextureAddressing_Clamp, //flower_atlas
 
 };
-static VulkanTextureBorderColorType g_Texture_BorderColors[g_Texture_Count] = 
+static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
     Vulkan_TextureBorderColor_OpaqueBlack, //default_blackwhite
     Vulkan_TextureBorderColor_OpaqueBlack, //bricks_diffuse
@@ -282,7 +278,7 @@ static VulkanTextureBorderColorType g_Texture_BorderColors[g_Texture_Count] =
     Vulkan_TextureBorderColor_OpaqueBlack, //flower_atlas
 
 };
-static int g_Texture_Sizes[3 * g_Texture_Count] = 
+static int g_TextureSizes[3 * g_TextureCount] = 
 {
     512,    512,    1, //default_blackwhite
     512,    512,    1, //bricks_diffuse
@@ -317,7 +313,7 @@ static int g_Texture_Sizes[3 * g_Texture_Count] =
    1024,   1024,    1, //flower_atlas
 
 };
-static float g_Texture_AnimChunks[2 * g_Texture_Count] = 
+static float g_TextureAnimChunks[2 * g_TextureCount] = 
 {
     0,    0, //default_blackwhite
     0,    0, //bricks_diffuse
@@ -365,23 +361,21 @@ const String c_strLayout_TextureVS = "TextureVS";
 const String c_strLayout_TextureTESC = "TextureTESC";
 const String c_strLayout_TextureTESE = "TextureTESE";
 const String c_strLayout_TextureFS = "TextureFS";
-const String c_strLayout_TextureFrameColor = "TextureFrameColor";
 const String c_strLayout_TextureCSR = "TextureCSR";
 const String c_strLayout_TextureCSRW = "TextureCSRW";
-static const int g_DescriptorSetLayout_Count = 4;
-static const char* g_DescriptorSetLayout_Names[g_DescriptorSetLayout_Count] =
+static const int g_DescriptorSetLayoutCount = 3;
+static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
     "Pass-Object-Material-Instance-TextureFS",
     "Pass-Object-Material-Instance-TextureFS-TextureFS",
     "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",
 
-    "Pass-TextureFrameColor",
 };
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_Shader_Count = 20;
-static const char* g_ShaderModule_Paths[3 * g_Shader_Count] = 
+static const int g_ShaderCount = 18;
+static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
     ///////////////////////////////////////// vert /////////////////////////////////////////
@@ -396,8 +390,6 @@ static const char* g_ShaderModule_Paths[3 * g_Shader_Count] =
     "vert_standard_mesh_transparent_tree_lit",                 "vert",              "Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv", //standard_mesh_transparent_tree_lit vert  
     "vert_standard_mesh_opaque_tree_alphatest_lit",            "vert",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.vert.spv", //standard_mesh_opaque_tree_alphatest_lit vert
     "vert_standard_mesh_opaque_grass_alphatest_lit",           "vert",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv", //standard_mesh_opaque_grass_alphatest_lit vert  
-
-    "vert_standard_copy_frame",                                "vert",              "Assets/Shader/standard_copy_frame.vert.spv", //standard_copy_frame vert
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
    
@@ -420,32 +412,14 @@ static const char* g_ShaderModule_Paths[3 * g_Shader_Count] =
     "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
     "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
 
-    "frag_standard_copy_frame",                                "frag",              "Assets/Shader/standard_copy_frame.frag.spv", //standard_copy_frame frag
-
     ///////////////////////////////////////// comp /////////////////////////////////////////
     
 
 };
 
 
-/////////////////////////// RenderPass //////////////////////////
-static const int g_RenderPass_Count = 2;
-static const char* g_RenderPass_Names[g_RenderPass_Count] =
-{
-    "rp_default",
-    "rp_object",
-
-};
-static bool g_RenderPass_IsDefault[g_RenderPass_Count] =
-{
-    true,
-    false,
-
-};
-
-
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 9;
+static const int g_Object_Count = 8;
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                          //Mesh Name                                                                    
@@ -461,7 +435,6 @@ static const char* g_Object_Configs[2 * g_Object_Count] =
     "object_grass",                        "grass", //object_grass        
     "object_flower",                       "flower", //object_flower
 
-    "copy_frame",                          "quad", //copy_frame
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {
@@ -477,7 +450,6 @@ static const char* g_Object_MeshSubsUsed[g_Object_Count] =
     "1;4;6;9", //object_grass
     "0;2;4;6;8;9;10;11", //object_flower
 
-    "0", //copy_frame
 };  
 
 static float g_Object_InstanceGap = 3.0f;
@@ -495,23 +467,6 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
     4, //object_grass 
     4, //object_flower 
 
-    0, //copy_frame
-};
-static bool g_Object_CanChangeInstance[g_Object_Count] = 
-{
-    true, //object_skybox
-    true, //object_mountain 
-
-    true, //object_rock 
-    true, //object_cliff 
-
-    true, //object_tree 
-    true, //object_tree_spruce 
-
-    true, //object_grass 
-    true, //object_flower 
-
-    false, //copy_frame
 };
 static bool g_Object_IsShows[] = 
 {
@@ -527,7 +482,6 @@ static bool g_Object_IsShows[] =
     true, //object_grass
     true, //object_flower
 
-    true, //copy_frame
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
@@ -543,7 +497,6 @@ static bool g_Object_IsRotates[g_Object_Count] =
     false, //object_grass
     false, //object_flower
 
-    false, //copy_frame
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
@@ -559,7 +512,6 @@ static bool g_Object_IsLightings[g_Object_Count] =
     true, //object_grass
     true, //object_flower
 
-    false, //copy_frame
 };
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
@@ -575,40 +527,37 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
     false, //object_grass
     true, //object_flower
 
-    false, //copy_frame
 };
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 21;
-static const char* g_ObjectRend_Configs[8 * g_ObjectRend_Count] = 
+static const int g_ObjectRend_Count = 20;
+static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
-    //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                       //Texture FrameColor                  //Texture CS
-    "object_skybox-1",                     "",                     "",                              "",                         "",                    "texturecubemap",                                  "",                                   "", //object_skybox-1
-    "object_mountain-1",                   "",                     "",                              "",                         "",                    "mountain_diffuse;mountain_normal",                "",                                   "", //object_mountain-1
+    //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
+    "object_skybox-1",                     "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //object_skybox-1
+    "object_mountain-1",                   "",                     "",                              "",                         "",                    "mountain_diffuse;mountain_normal",                                             "", //object_mountain-1
 
-    "object_rock-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                        "",                                   "", //object_rock-1
-    "object_cliff-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                      "",                                   "", //object_cliff-1
+    "object_rock-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                                                     "", //object_rock-1
+    "object_cliff-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //object_cliff-1
 
-    "object_tree-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                    "",                                   "", //object_tree-1
-    "object_tree-2",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                    "",                                   "", //object_tree-2
-    "object_tree_spruce-1",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                             "",                                   "", //object_tree_spruce-1
-    "object_tree_spruce-2",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                             "",                                   "", //object_tree_spruce-2
+    "object_tree-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-1
+    "object_tree-2",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-2
+    "object_tree_spruce-1",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-1
+    "object_tree_spruce-2",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-2
 
-    "object_grass-1",                      "",                     "",                              "",                         "",                    "grass_field",                                     "",                                   "", //object_grass-1
-    "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_wheat",                                     "",                                   "", //object_grass-2
-    "object_grass-3",                      "",                     "",                              "",                         "",                    "grass_tall",                                      "",                                   "", //object_grass-3
-    "object_grass-4",                      "",                     "",                              "",                         "",                    "grass_field",                                     "",                                   "", //object_grass-4
-    "object_flower-1",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-1
-    "object_flower-2",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-2
-    "object_flower-3",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-3
-    "object_flower-4",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-4
-    "object_flower-5",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-5
-    "object_flower-6",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-6
-    "object_flower-7",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-7
-    "object_flower-8",                     "",                     "",                              "",                         "",                    "flower_atlas",                                    "",                                   "", //object_flower-8
-
-    "copy_frame-1",                        "",                     "",                              "",                         "",                    "",                                                "rp_object",                          "", //copy_frame-1
+    "object_grass-1",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-1
+    "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_wheat",                                                                  "", //object_grass-2
+    "object_grass-3",                      "",                     "",                              "",                         "",                    "grass_tall",                                                                   "", //object_grass-3
+    "object_grass-4",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-4
+    "object_flower-1",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-1
+    "object_flower-2",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-2
+    "object_flower-3",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-3
+    "object_flower-4",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-4
+    "object_flower-5",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-5
+    "object_flower-6",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-6
+    "object_flower-7",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-7
+    "object_flower-8",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-8
 
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
@@ -638,8 +587,6 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
     "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-7
     "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-8
 
-    "vert_standard_copy_frame",                             "",                                             "",                                         "",                         "frag_standard_copy_frame",                             "", //copy_frame-1
-
 };
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
@@ -668,36 +615,6 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-7
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-8
 
-    "Pass-TextureFrameColor",                                           "", //copy_frame-1
-
-};
-static const char* g_ObjectRend_NameRenderPasses[g_ObjectRend_Count] = 
-{
-    "rp_object", //object_skybox-1
-    "rp_object", //object_mountain-1
-
-    "rp_object", //object_rock-1
-    "rp_object", //object_cliff-1
-
-    "rp_object", //object_tree-1
-    "rp_object", //object_tree-2
-    "rp_object", //object_tree_spruce-1
-    "rp_object", //object_tree_spruce-2
-
-    "rp_object", //object_grass-1
-    "rp_object", //object_grass-2
-    "rp_object", //object_grass-3
-    "rp_object", //object_grass-4
-    "rp_object", //object_flower-1
-    "rp_object", //object_flower-2
-    "rp_object", //object_flower-3
-    "rp_object", //object_flower-4
-    "rp_object", //object_flower-5
-    "rp_object", //object_flower-6
-    "rp_object", //object_flower-7
-    "rp_object", //object_flower-8
-
-    "rp_default", //copy_frame-1
 };
 static glm::vec3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
@@ -725,7 +642,6 @@ static glm::vec3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     glm::vec3(   0,  0.0,  -4.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-7
     glm::vec3(   0,  0.0,  -4.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-8
 
-    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(    1.0f,      1.0f,      1.0f), //copy_frame-1
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
@@ -753,7 +669,6 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
     false, //object_flower-7
     false, //object_flower-8
 
-    false, //copy_frame-1
 };
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
@@ -781,7 +696,6 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
     false, //object_flower-7
     false, //object_flower-8
 
-    false, //copy_frame-1
 };
 
 
@@ -789,7 +703,7 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 
 
 /////////////////////////// ModelMeshSub ////////////////////////
-void Vulkan_016_MultiWindow::ModelMeshSub::Destroy()
+void Vulkan_016_Geometry::ModelMeshSub::Destroy()
 {
     //Vertex
     this->pMesh->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
@@ -801,48 +715,10 @@ void Vulkan_016_MultiWindow::ModelMeshSub::Destroy()
     this->poIndexBuffer = VK_NULL_HANDLE;
     this->poIndexBufferMemory = VK_NULL_HANDLE;
 }
-bool Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_016_Geometry::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool isTranformLocal, const glm::mat4& matTransformLocal)
 {
     int count_vertex = (int)meshData.vertices.size();
-    if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Tex2)
-    {   
-        this->vertices_Pos3Color4Tex2.clear();
-        this->vertices_Pos3Color4Tex2.reserve(count_vertex);
-        for (int i = 0; i < count_vertex; i++)
-        {
-            MeshVertex& vertex = meshData.vertices[i];
-            Vertex_Pos3Color4Tex2 v;
-            v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-            v.texCoord = vertex.texCoord;
-            if (isTranformLocal)
-            {
-                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
-            }
-            this->vertices_Pos3Color4Tex2.push_back(v);
-        }
-
-        int count_index = (int)meshData.indices32.size();
-        this->indices.clear();
-        this->indices.reserve(count_index);
-        for (int i = 0; i < count_index; i++)
-        {
-            this->indices.push_back(meshData.indices32[i]);
-        }
-        this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Tex2.size();
-        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Tex2);
-        this->poVertexBuffer_Data = &this->vertices_Pos3Color4Tex2[0];
-        this->poIndexCount = (uint32_t)this->indices.size();
-        this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
-        this->poIndexBuffer_Data = &this->indices[0];
-
-        Util_LogInfo("Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Tex2]: Vertex count: [%d], Index count: [%d] !", 
-                     this->nameMeshSub.c_str(),
-                     this->nameOriginal.c_str(),
-                     (int)this->vertices_Pos3Color4Tex2.size(), 
-                     (int)this->indices.size());
-    }
-    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex2)
+    if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex2)
     {
         this->vertices_Pos3Color4Normal3Tex2.clear();
         this->vertices_Pos3Color4Normal3Tex2.reserve(count_vertex);
@@ -875,7 +751,7 @@ bool Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub(MeshData& meshData, boo
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+        Util_LogInfo("Vulkan_016_Geometry::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                      this->nameMeshSub.c_str(),
                      this->nameOriginal.c_str(),
                      (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
@@ -914,7 +790,7 @@ bool Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub(MeshData& meshData, boo
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+        Util_LogInfo("Vulkan_016_Geometry::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex4]: Vertex count: [%d], Index count: [%d] !", 
                      this->nameMeshSub.c_str(),
                      this->nameOriginal.c_str(),
                      (int)this->vertices_Pos3Color4Normal3Tex4.size(), 
@@ -954,7 +830,7 @@ bool Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub(MeshData& meshData, boo
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+        Util_LogInfo("Vulkan_016_Geometry::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                      this->nameMeshSub.c_str(),
                      this->nameOriginal.c_str(),
                      (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
@@ -994,7 +870,7 @@ bool Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub(MeshData& meshData, boo
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+        Util_LogInfo("Vulkan_016_Geometry::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex4]: Vertex count: [%d], Index count: [%d] !", 
                      this->nameMeshSub.c_str(),
                      this->nameOriginal.c_str(),
                      (int)this->vertices_Pos3Color4Normal3Tangent3Tex4.size(), 
@@ -1002,7 +878,7 @@ bool Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub(MeshData& meshData, boo
     }
     else
     {
-        Util_LogError("Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub: create mesh sub failed: [%s], wrong poTypeVertex !", this->nameMeshSub.c_str());
+        Util_LogError("Vulkan_016_Geometry::ModelMeshSub::CreateMeshSub: create mesh sub failed: [%s], wrong poTypeVertex !", this->nameMeshSub.c_str());
         return false; 
     }
 
@@ -1019,8 +895,8 @@ bool Vulkan_016_MultiWindow::ModelMeshSub::CreateMeshSub(MeshData& meshData, boo
     return true;
 }
 
-void Vulkan_016_MultiWindow::ModelMeshSub::WriteVertexData(std::vector<Vertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
-                                                               std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2)
+void Vulkan_016_Geometry::ModelMeshSub::WriteVertexData(std::vector<Vertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
+                                                            std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2)
 {
     size_t count = 0;
     if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
@@ -1068,18 +944,18 @@ void Vulkan_016_MultiWindow::ModelMeshSub::WriteVertexData(std::vector<Vertex_Po
     }
 }
 
-void Vulkan_016_MultiWindow::ModelMeshSub::WriteIndexData(std::vector<uint32_t>& indexData)
+void Vulkan_016_Geometry::ModelMeshSub::WriteIndexData(std::vector<uint32_t>& indexData)
 {
     indexData.insert(indexData.end(), indices.begin(), indices.end());
 }
 
 /////////////////////////// ModelMesh ///////////////////////////
-bool Vulkan_016_MultiWindow::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
+bool Vulkan_016_Geometry::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
 {
     ModelMeshSubPtrMap::iterator itFind = this->mapMeshSubs.find(pMeshSub->nameMeshSub);
     if (itFind != this->mapMeshSubs.end())
     {
-        Util_LogError("Vulkan_016_MultiWindow::ModelMesh::AddMeshSub: Mesh sub is exist: [%s] !", pMeshSub->nameMeshSub.c_str());
+        Util_LogError("Vulkan_016_Geometry::ModelMesh::AddMeshSub: Mesh sub is exist: [%s] !", pMeshSub->nameMeshSub.c_str());
         return false;
     }
 
@@ -1088,7 +964,7 @@ bool Vulkan_016_MultiWindow::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
     return true;
 }
 
-bool Vulkan_016_MultiWindow::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_016_Geometry::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
 {
     //1> Load
     std::vector<MeshData> aMeshDatas;
@@ -1097,7 +973,7 @@ bool Vulkan_016_MultiWindow::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLo
         unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
         if (!VulkanMeshLoader::LoadMeshDatas(this->pathMesh, aMeshDatas, isFlipY, eMeshParserFlags))
         {
-            Util_LogError("Vulkan_016_MultiWindow::ModelMesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
+            Util_LogError("Vulkan_016_Geometry::ModelMesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
             return false; 
         }
     }
@@ -1107,14 +983,14 @@ bool Vulkan_016_MultiWindow::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLo
         meshData.bIsFlipY = isFlipY;
         if (!VulkanMeshGeometry::CreateGeometry(meshData, this->typeGeometryType))
         {
-            Util_LogError("Vulkan_016_MultiWindow::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", Util_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
+            Util_LogError("Vulkan_016_Geometry::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", Util_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
             return false; 
         }
         aMeshDatas.push_back(meshData);
     }
     else
     {
-        assert(false && "Vulkan_016_MultiWindow::ModelMesh::LoadMesh: Wrong typeMesh !");
+        assert(false && "Vulkan_016_Geometry::ModelMesh::LoadMesh: Wrong typeMesh !");
         return false;
     }
 
@@ -1131,7 +1007,7 @@ bool Vulkan_016_MultiWindow::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLo
                                                   this->typeVertex);
         if (!pMeshSub->CreateMeshSub(meshData, isTranformLocal, matTransformLocal))
         {
-            Util_LogError("Vulkan_016_MultiWindow::ModelMesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
+            Util_LogError("Vulkan_016_Geometry::ModelMesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
             return false;
         }
         AddMeshSub(pMeshSub);
@@ -1142,14 +1018,14 @@ bool Vulkan_016_MultiWindow::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLo
 
 
 /////////////////////////// ModelTexture ////////////////////////
-void Vulkan_016_MultiWindow::ModelTexture::UpdateTexture()
+void Vulkan_016_Geometry::ModelTexture::UpdateTexture()
 {
     if (this->typeTexture == Vulkan_Texture_3D)
     {
         updateNoiseTexture();
     }
 }
-void Vulkan_016_MultiWindow::ModelTexture::updateNoiseTextureData()
+void Vulkan_016_Geometry::ModelTexture::updateNoiseTextureData()
 {
     // Perlin noise
     noise::module::Perlin modulePerlin;
@@ -1170,7 +1046,7 @@ void Vulkan_016_MultiWindow::ModelTexture::updateNoiseTextureData()
         }
     }
 }
-void Vulkan_016_MultiWindow::ModelTexture::updateNoiseTexture()
+void Vulkan_016_Geometry::ModelTexture::updateNoiseTexture()
 {
     //1> updateNoiseTextureData
     updateNoiseTextureData();
@@ -1197,200 +1073,11 @@ void Vulkan_016_MultiWindow::ModelTexture::updateNoiseTexture()
 }
 
 
-/////////////////////////// MultiRenderPass /////////////////////
-void Vulkan_016_MultiWindow::FrameBufferAttachment::Init(Vulkan_016_MultiWindow* pWindow, bool _isDepth)
-{
-    this->isDepth = _isDepth;
-
-    uint32_t width = pWindow->poSwapChainExtent.width;
-    uint32_t height = pWindow->poSwapChainExtent.height; 
-    uint32_t depth = 1;
-    uint32_t numArray = 1;
-    uint32_t mipMapCount = 1;
-    VkImageType imageType = VK_IMAGE_TYPE_2D;
-    VkSampleCountFlagBits numSamples = pWindow->poMSAASamples;
-    VkFormat format = pWindow->poSwapChainImageFormat;
-    VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
-    VkImageUsageFlags usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-    VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-
-    VkImageViewType imageViewType = VK_IMAGE_VIEW_TYPE_2D; 
-    VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-
-    if (_isDepth)
-    {
-        format = pWindow->poDepthImageFormat;
-        usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-        aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
-    }
-
-    pWindow->createVkImage(width, 
-                           height, 
-                           depth,
-                           numArray,
-                           mipMapCount,
-                           imageType, 
-                           false,
-                           numSamples, 
-                           format, 
-                           tiling, 
-                           usage,
-                           sharingMode,
-                           false,
-                           properties, 
-                           this->image, 
-                           this->memory);
-    
-    pWindow->createVkImageView(this->image, 
-                               imageViewType,
-                               format, 
-                               aspectFlags, 
-                               mipMapCount,
-                               numArray,
-                               this->view);
-}
-
-
-void Vulkan_016_MultiWindow::MultiRenderPass::Init()
-{
-    if (this->isUseDefault)
-    {
-        this->poRenderPass = this->pWindow->poRenderPass;
-    }
-    else
-    {
-        //1> Attachment
-        {
-            this->framebufferColor.Init(this->pWindow, false);
-            this->framebufferDepth.Init(this->pWindow, true);
-            this->pWindow->createVkSampler(Vulkan_TextureFilter_Bilinear, 
-                                           Vulkan_TextureAddressing_Clamp,
-                                           Vulkan_TextureBorderColor_OpaqueWhite,
-                                           false,
-                                           1.0f,
-                                           0.0f,
-                                           1.0f,
-                                           0.0f,
-                                           this->sampler);
-            
-            this->imageInfo.sampler = this->sampler;
-            this->imageInfo.imageView = this->framebufferColor.view;
-            this->imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        }
-
-        //2> RenderPass
-        {
-            std::vector<VkAttachmentDescription> aAttachmentDescription;
-            std::vector<VkSubpassDescription> aSubpassDescription;
-            std::vector<VkSubpassDependency> aSubpassDependency;
-            
-            //VkAttachmentDescription Color
-            VkAttachmentDescription attachmentSR_Color = {};
-            this->pWindow->createAttachmentDescription(attachmentSR_Color,
-                                                       0,
-                                                       pWindow->poSwapChainImageFormat,
-                                                       VK_SAMPLE_COUNT_1_BIT,
-                                                       VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                                       VK_ATTACHMENT_STORE_OP_STORE,
-                                                       VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                                       VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                                       VK_IMAGE_LAYOUT_UNDEFINED,
-                                                       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-            aAttachmentDescription.push_back(attachmentSR_Color);
-
-            //VkAttachmentDescription Depth
-            VkAttachmentDescription attachmentSR_Depth = {};
-            this->pWindow->createAttachmentDescription(attachmentSR_Depth,
-                                                       0,
-                                                       pWindow->poDepthImageFormat,
-                                                       VK_SAMPLE_COUNT_1_BIT,
-                                                       VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                                       VK_ATTACHMENT_STORE_OP_STORE,
-                                                       VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                                       VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                                       VK_IMAGE_LAYOUT_UNDEFINED,
-                                                       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-            aAttachmentDescription.push_back(attachmentSR_Depth);
-
-            //VkSubpassDescription 
-            VkAttachmentReference attachRef_Color = {};
-            attachRef_Color.attachment = 0;
-            attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-            VkAttachmentReference attachRef_Depth = {};
-            attachRef_Depth.attachment = 1;
-            attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-            VkSubpassDescription subpass_SceneRender = {};
-            subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-            subpass_SceneRender.colorAttachmentCount = 1;
-            subpass_SceneRender.pColorAttachments = &attachRef_Color;
-            subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
-            aSubpassDescription.push_back(subpass_SceneRender);
-            
-            //VkSubpassDependency
-            VkSubpassDependency subpassDependency_SceneRender = {};
-            subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
-            subpassDependency_SceneRender.dstSubpass = 0;
-            subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-            subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-            subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-            subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-            subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-            aSubpassDependency.push_back(subpassDependency_SceneRender);
-
-            if (!this->pWindow->createVkRenderPass(this->nameRenderPass,
-                                                   aAttachmentDescription,
-                                                   aSubpassDescription,
-                                                   aSubpassDependency,
-                                                   nullptr,
-                                                   this->poRenderPass))
-            {
-                String msg = "Vulkan_016_MultiWindow::MultiRenderPass::Init: Failed to create renderpass: " + this->nameRenderPass;
-                Util_LogError(msg.c_str());
-                throw std::runtime_error(msg);
-            }
-        }
-
-        //3> Framebuffer
-        {
-            VkImageViewVector aImageViews;
-            aImageViews.push_back(this->framebufferColor.view);
-            aImageViews.push_back(this->framebufferDepth.view);
-            if (!this->pWindow->createVkFramebuffer(this->nameRenderPass,
-                                                    aImageViews, 
-                                                    this->poRenderPass,
-                                                    0,
-                                                    this->pWindow->poSwapChainExtent.width,
-                                                    this->pWindow->poSwapChainExtent.height,
-                                                    1,
-                                                    this->poFrameBuffer))
-            {
-                String msg = "Vulkan_016_MultiWindow::MultiRenderPass::Init: Failed to create framebuffer: " + this->nameRenderPass;
-                Util_LogError(msg.c_str());
-                throw std::runtime_error(msg);
-            }
-        }
-    }
-}
-
-void Vulkan_016_MultiWindow::MultiRenderPass::CleanupSwapChain()
-{
-    Destroy();
-}
-
-void Vulkan_016_MultiWindow::MultiRenderPass::RecreateSwapChain()
-{
-
-}  
-
-
 /////////////////////////// ModelObjectRend /////////////////////
 
 
 /////////////////////////// ModelObjectRendIndirect /////////////
-void Vulkan_016_MultiWindow::ModelObjectRendIndirect::Destroy()
+void Vulkan_016_Geometry::ModelObjectRendIndirect::Destroy()
 {
     //Vertex
     this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
@@ -1409,7 +1096,7 @@ void Vulkan_016_MultiWindow::ModelObjectRendIndirect::Destroy()
     this->pRend = nullptr;
 }
 
-void Vulkan_016_MultiWindow::ModelObjectRendIndirect::CleanupSwapChain()
+void Vulkan_016_Geometry::ModelObjectRendIndirect::CleanupSwapChain()
 {
     size_t count = 0;
 
@@ -1454,9 +1141,9 @@ void Vulkan_016_MultiWindow::ModelObjectRendIndirect::CleanupSwapChain()
     this->poBuffersMemory_indirectCommandCB = VK_NULL_HANDLE;
 }
 
-void Vulkan_016_MultiWindow::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
+void Vulkan_016_Geometry::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
 {
-    assert(_aRends.size() > 0 && "Vulkan_016_MultiWindow::ModelObjectRendIndirect::SetupVertexIndexBuffer");
+    assert(_aRends.size() > 0 && "Vulkan_016_Geometry::ModelObjectRendIndirect::SetupVertexIndexBuffer");
     this->aRends.clear();
     this->aRends = _aRends;
     this->pRend = _aRends[0];
@@ -1499,7 +1186,7 @@ void Vulkan_016_MultiWindow::ModelObjectRendIndirect::SetupVertexIndexBuffer(con
     }
     else
     {
-        assert(false && "Vulkan_016_MultiWindow::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !");
+        assert(false && "Vulkan_016_Geometry::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !");
     }
     this->poIndexCount = this->indices.size();
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -1516,7 +1203,7 @@ void Vulkan_016_MultiWindow::ModelObjectRendIndirect::SetupVertexIndexBuffer(con
     }
 }
 
-void Vulkan_016_MultiWindow::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
+void Vulkan_016_Geometry::ModelObjectRendIndirect::SetupUniformIndirectCommandBuffer()
 {
     VkDeviceSize bufferSize;
     size_t count_sci = this->pRend->pModelObject->pWindow->poSwapChainImages.size();
@@ -1561,7 +1248,7 @@ void Vulkan_016_MultiWindow::ModelObjectRendIndirect::SetupUniformIndirectComman
     }
 }
 
-void Vulkan_016_MultiWindow::ModelObjectRendIndirect::UpdateUniformBuffer()
+void Vulkan_016_Geometry::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
     this->objectCBs.clear();
     this->materialCBs.clear();
@@ -1582,7 +1269,7 @@ void Vulkan_016_MultiWindow::ModelObjectRendIndirect::UpdateUniformBuffer()
     }
 }
 
-void Vulkan_016_MultiWindow::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
+void Vulkan_016_Geometry::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 {
     this->indirectCommandCBs.clear();
 
@@ -1615,15 +1302,11 @@ void Vulkan_016_MultiWindow::ModelObjectRendIndirect::UpdateIndirectCommandBuffe
 
 
 
-
-
-
-Vulkan_016_MultiWindow::Vulkan_016_MultiWindow(int width, int height, String name)
+Vulkan_016_Geometry::Vulkan_016_Geometry(int width, int height, String name)
     : VulkanWindow(width, height, name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
 {
-    //this->isUseWindowScene = true;
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
 
@@ -1631,12 +1314,9 @@ Vulkan_016_MultiWindow::Vulkan_016_MultiWindow(int width, int height, String nam
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
     this->mainLight.direction = glm::vec3(0, -1, 0); //y-
-
-    this->aInstanceExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-    this->aDeviceExtensions.push_back(VK_KHR_MULTIVIEW_EXTENSION_NAME);
 }
 
-void Vulkan_016_MultiWindow::setUpEnabledFeatures()
+void Vulkan_016_Geometry::setUpEnabledFeatures()
 {
     VulkanWindow::setUpEnabledFeatures();
 
@@ -1647,26 +1327,21 @@ void Vulkan_016_MultiWindow::setUpEnabledFeatures()
     else
     {
         this->m_isDrawIndirectMulti = false;
-        Util_LogError("Vulkan_016_MultiWindow::setUpEnabledFeatures: multiDrawIndirect is not supported !");
+        Util_LogError("Vulkan_016_Geometry::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
 }
 
-void Vulkan_016_MultiWindow::createDescriptorSetLayout_Custom()
+void Vulkan_016_Geometry::createDescriptorSetLayout_Custom()
 {
     VulkanWindow::createDescriptorSetLayout_Custom();
 }
 
-void Vulkan_016_MultiWindow::createRenderPass_Custom()
-{
-    createMultiRenderPasses();
-}
-
-void Vulkan_016_MultiWindow::createCamera()
+void Vulkan_016_Geometry::createCamera()
 {
     this->pCamera = new VulkanCamera();
     cameraReset();
 }
-void Vulkan_016_MultiWindow::cameraReset()
+void Vulkan_016_Geometry::cameraReset()
 {
     VulkanWindow::cameraReset();
 
@@ -1675,7 +1350,7 @@ void Vulkan_016_MultiWindow::cameraReset()
     this->pCamera->SetFarZ(100000.0f);
 }
 
-void Vulkan_016_MultiWindow::loadModel_Custom()
+void Vulkan_016_Geometry::loadModel_Custom()
 {
     createModelMeshes();
     createModelTextures();
@@ -1693,7 +1368,7 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
             //Mesh
             {
                 ModelMesh* pMesh = this->findModelMesh(pModelObject->nameMesh);
-                assert(pMesh != nullptr && "Vulkan_016_MultiWindow::loadModel_Custom");
+                assert(pMesh != nullptr && "Vulkan_016_Geometry::loadModel_Custom");
                 pModelObject->SetMesh(pMesh);
             }
             //MeshSub Used
@@ -1714,7 +1389,6 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
             pModelObject->isIndirectDraw = g_Object_IsIndirectDraw[i];
             pModelObject->countInstanceExt = g_Object_InstanceExtCount[i];
             pModelObject->countInstance = pModelObject->countInstanceExt * 2 + 1;
-            pModelObject->canChangeInstance = g_Object_CanChangeInstance[i];
         }
 
         //2> ObjectRend
@@ -1724,15 +1398,15 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
             for (size_t j = 0; j < count_mesh_sub_used; j++)
             {
                 int indexMeshSub = pModelObject->aMeshSubUsed[j];
-                assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_016_MultiWindow::loadModel_Custom");
+                assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_016_Geometry::loadModel_Custom");
 
                 ModelMeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
-                String nameObjectRend = g_ObjectRend_Configs[8 * nIndexObjectRend + 0];
+                String nameObjectRend = g_ObjectRend_Configs[7 * nIndexObjectRend + 0];
                 ModelObjectRend* pRend = new ModelObjectRend(nameObjectRend, pModelObject, pMeshSub);
 
                 //Texture VS
                 {
-                    String nameTextureVS = g_ObjectRend_Configs[8 * nIndexObjectRend + 1]; //Texture VS
+                    String nameTextureVS = g_ObjectRend_Configs[7 * nIndexObjectRend + 1]; //Texture VS
                     if (!nameTextureVS.empty())
                     {
                         StringVector aTextureVS = VulkanUtilString::Split(nameTextureVS, ";");
@@ -1747,7 +1421,7 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
                 }
                 //Texture TESC
                 {
-                    String nameTextureTESC = g_ObjectRend_Configs[8 * nIndexObjectRend + 2]; //Texture TESC
+                    String nameTextureTESC = g_ObjectRend_Configs[7 * nIndexObjectRend + 2]; //Texture TESC
                     if (!nameTextureTESC.empty())
                     {
                         StringVector aTextureTESC = VulkanUtilString::Split(nameTextureTESC, ";");
@@ -1762,7 +1436,7 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
                 }
                 //Texture TESE
                 {
-                    String nameTextureTESE = g_ObjectRend_Configs[8 * nIndexObjectRend + 3]; //Texture TESE
+                    String nameTextureTESE = g_ObjectRend_Configs[7 * nIndexObjectRend + 3]; //Texture TESE
                     if (!nameTextureTESE.empty())
                     {
                         StringVector aTextureTESE = VulkanUtilString::Split(nameTextureTESE, ";");
@@ -1777,7 +1451,7 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
                 }
                 //Texture GS
                 {
-                    String nameTextureGS = g_ObjectRend_Configs[8 * nIndexObjectRend + 4]; //Texture GS
+                    String nameTextureGS = g_ObjectRend_Configs[7 * nIndexObjectRend + 4]; //Texture GS
                     if (!nameTextureGS.empty())
                     {
                         StringVector aTextureGS = VulkanUtilString::Split(nameTextureGS, ";");
@@ -1792,7 +1466,7 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
                 }
                 //Texture FS
                 {
-                    String nameTextureFS = g_ObjectRend_Configs[8 * nIndexObjectRend + 5]; //Texture FS
+                    String nameTextureFS = g_ObjectRend_Configs[7 * nIndexObjectRend + 5]; //Texture FS
                     if (!nameTextureFS.empty())
                     {
                         StringVector aTextureFS = VulkanUtilString::Split(nameTextureFS, ";");
@@ -1807,7 +1481,7 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
                 }
                 //Texture CS
                 {
-                    String nameTextureCS = g_ObjectRend_Configs[8 * nIndexObjectRend + 7]; //Texture CS
+                    String nameTextureCS = g_ObjectRend_Configs[7 * nIndexObjectRend + 6]; //Texture CS
                     if (!nameTextureCS.empty())
                     {
                         StringVector aTextureCS = VulkanUtilString::Split(nameTextureCS, ";");
@@ -1834,8 +1508,6 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
 
                 //Pipeline Graphics - DescriptorSetLayout
                 pRend->pPipelineGraphics->nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 0];
-                pRend->pPipelineGraphics->nameRenderPass = g_ObjectRend_NameRenderPasses[nIndexObjectRend];
-
 
                 //Pipeline Computes - DescriptorSetLayout
                 String nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
@@ -1857,6 +1529,10 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
 
                 pModelObject->AddObjectRend(pRend);
                 m_aModelObjectRends_All.push_back(pRend);
+                if (pRend->isTransparent)
+                    m_aModelObjectRends_Transparent.push_back(pRend);
+                else 
+                    m_aModelObjectRends_Opaque.push_back(pRend);
 
                 nIndexObjectRend ++;
             }
@@ -1880,16 +1556,16 @@ void Vulkan_016_MultiWindow::loadModel_Custom()
 
     }
 }
-void Vulkan_016_MultiWindow::createIndirectCommands()
+void Vulkan_016_Geometry::createIndirectCommands()
 {
 
 }
 
-void Vulkan_016_MultiWindow::createCustomCB()
+void Vulkan_016_Geometry::createCustomCB()
 {
     rebuildInstanceCBs(true);
 }
-void Vulkan_016_MultiWindow::rebuildInstanceCBs(bool isCreateVkBuffer)
+void Vulkan_016_Geometry::rebuildInstanceCBs(bool isCreateVkBuffer)
 {   
     VkDeviceSize bufferSize;
     size_t count_sci = this->poSwapChainImages.size();
@@ -2019,7 +1695,7 @@ void Vulkan_016_MultiWindow::rebuildInstanceCBs(bool isCreateVkBuffer)
     }
 }
 
-void Vulkan_016_MultiWindow::createCustomBeforePipeline()
+void Vulkan_016_Geometry::createCustomBeforePipeline()
 {
     //1> DescriptorSetLayout
     createDescriptorSetLayouts();
@@ -2030,7 +1706,7 @@ void Vulkan_016_MultiWindow::createCustomBeforePipeline()
     //3> Shader
     createShaderModules();
 }   
-void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
+void Vulkan_016_Geometry::createGraphicsPipeline_Custom()
 {
     //1> Viewport
     VkViewportVector aViewports;
@@ -2039,8 +1715,6 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
     aScissors.push_back(this->poScissor);
 
     //2> Pipeline
-    this->m_mapRenderPass2ObjectRends_Opaque.clear();
-    this->m_mapRenderPass2ObjectRends_Transparent.clear();
     size_t count_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_rend; i++)
     {
@@ -2059,7 +1733,7 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
                                                   nameShaderFrag,
                                                   pRend->aShaderStageCreateInfos_Graphics))
         {
-            String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find shader used !";
+            String msg = "Vulkan_016_Geometry::createGraphicsPipeline_Custom: Can not find shader used !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -2069,47 +1743,23 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
             pRend->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_Geometry::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_Geometry::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_Geometry::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
-            }
-            pRend->pPipelineGraphics->pRenderPass = findMultiRenderPass(pRend->pPipelineGraphics->nameRenderPass);
-            if (pRend->pPipelineGraphics->pRenderPass == VK_NULL_HANDLE)
-            {
-                String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Can not find MultiRenderPass by name: " + pRend->pPipelineGraphics->nameRenderPass;
-                Util_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-            addRenderPass2ModelObjectRendMap(pRend->pPipelineGraphics->pRenderPass, pRend);
-
-            //Texture FrameColor
-            {
-                String nameTextureFrameColor = g_ObjectRend_Configs[8 * i + 6]; //Texture FrameColor
-                if (!nameTextureFrameColor.empty())
-                {
-                    StringVector aTextureFrameColor = VulkanUtilString::Split(nameTextureFrameColor, ";");
-                    size_t count_render_pass = aTextureFrameColor.size();
-                    for (size_t p = 0; p < count_render_pass; p++)
-                    {
-                        String nameRenderPass = aTextureFrameColor[p];
-                        MultiRenderPass* pRenderPass = this->findMultiRenderPass(nameRenderPass);
-                        pRend->AddRenderPass(pRenderPass);
-                    }
-                }
             }
 
             //pPipelineGraphics->poPipeline_WireFrame
@@ -2117,7 +1767,7 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
                                                                                       pRend->isUsedTessellation, 0, 3,
                                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                                      pRend->pPipelineGraphics->pRenderPass->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                      this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                                       pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits,
                                                                                       pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
                                                                                       pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
@@ -2126,11 +1776,11 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
                                                                                       pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
+                String msg = "Vulkan_016_Geometry::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            Util_LogInfo("Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
+            Util_LogInfo("Vulkan_016_Geometry::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
 
             //pPipelineGraphics->poPipeline
             VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
@@ -2151,7 +1801,7 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
                                                                             pRend->isUsedTessellation, 0, 3,
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
-                                                                            pRend->pPipelineGraphics->pRenderPass->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                            this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                             pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
                                                                             isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
                                                                             pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
@@ -2160,15 +1810,15 @@ void Vulkan_016_MultiWindow::createGraphicsPipeline_Custom()
                                                                             pRend->cfg_ColorWriteMask);
             if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
+                String msg = "Vulkan_016_Geometry::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            Util_LogInfo("Vulkan_016_MultiWindow::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
+            Util_LogInfo("Vulkan_016_Geometry::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
         }
     }
 }
-void Vulkan_016_MultiWindow::createComputePipeline_Custom()
+void Vulkan_016_Geometry::createComputePipeline_Custom()
 {
     size_t count_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -2184,7 +1834,7 @@ void Vulkan_016_MultiWindow::createComputePipeline_Custom()
                                                   pRend->aShaderStageCreateInfos_Computes,
                                                   pRend->mapShaderStageCreateInfos_Computes))
         {
-            String msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Can not find shader used !";
+            String msg = "Vulkan_016_Geometry::createComputePipeline_Custom: Can not find shader used !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -2192,7 +1842,7 @@ void Vulkan_016_MultiWindow::createComputePipeline_Custom()
         //[2] Pipeline Compute
         if (count_pipeline != pRend->aShaderStageCreateInfos_Computes.size())
         {
-            String msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Pipeline count is not equal shader count !";
+            String msg = "Vulkan_016_Geometry::createComputePipeline_Custom: Pipeline count is not equal shader count !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -2204,21 +1854,21 @@ void Vulkan_016_MultiWindow::createComputePipeline_Custom()
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_Geometry::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_Geometry::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
             if (p->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_Geometry::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2226,7 +1876,7 @@ void Vulkan_016_MultiWindow::createComputePipeline_Custom()
             p->poPipeline = createVkComputePipeline(shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_016_MultiWindow::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
+                String msg = "Vulkan_016_Geometry::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2234,7 +1884,7 @@ void Vulkan_016_MultiWindow::createComputePipeline_Custom()
     }   
 }
 
-void Vulkan_016_MultiWindow::destroyModelMeshes()
+void Vulkan_016_Geometry::destroyModelMeshes()
 {
     size_t count = this->m_aModelMesh.size();
     for (size_t i = 0; i < count; i++)
@@ -2245,15 +1895,15 @@ void Vulkan_016_MultiWindow::destroyModelMeshes()
     this->m_aModelMesh.clear();
     this->m_mapModelMesh.clear();
 }
-void Vulkan_016_MultiWindow::createModelMeshes()
+void Vulkan_016_Geometry::createModelMeshes()
 {
-    for (int i = 0; i < g_Mesh_Count; i++)
+    for (int i = 0; i < g_MeshCount; i++)
     {
-        String nameMesh = g_Mesh_Paths[5 * i + 0];
-        String nameVertexType = g_Mesh_Paths[5 * i + 1];
-        String nameMeshType = g_Mesh_Paths[5 * i + 2];
-        String nameGeometryType = g_Mesh_Paths[5 * i + 3];
-        String pathMesh = g_Mesh_Paths[5 * i + 4];
+        String nameMesh = g_MeshPaths[5 * i + 0];
+        String nameVertexType = g_MeshPaths[5 * i + 1];
+        String nameMeshType = g_MeshPaths[5 * i + 2];
+        String nameGeometryType = g_MeshPaths[5 * i + 3];
+        String pathMesh = g_MeshPaths[5 * i + 4];
         
         VulkanVertexType typeVertex = Util_ParseVertexType(nameVertexType); 
         VulkanMeshType typeMesh = Util_ParseMeshType(nameMeshType);
@@ -2269,11 +1919,11 @@ void Vulkan_016_MultiWindow::createModelMeshes()
                                          typeMesh,
                                          typeGeometryType,
                                          typeVertex);
-        bool isFlipY = g_Mesh_IsFlipYs[i];
-        bool isTranformLocal = g_Mesh_IsTranformLocals[i];
-        if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_Mesh_TranformLocals[i]))
+        bool isFlipY = g_MeshIsFlipYs[i];
+        bool isTranformLocal = g_MeshIsTranformLocals[i];
+        if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_MeshTranformLocals[i]))
         {
-            String msg = "Vulkan_016_MultiWindow::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
+            String msg = "Vulkan_016_Geometry::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -2281,11 +1931,11 @@ void Vulkan_016_MultiWindow::createModelMeshes()
         this->m_aModelMesh.push_back(pMesh);
         this->m_mapModelMesh[nameMesh] = pMesh;
 
-        Util_LogInfo("Vulkan_016_MultiWindow::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
+        Util_LogInfo("Vulkan_016_Geometry::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
                      nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
     }
 }
-Vulkan_016_MultiWindow::ModelMesh* Vulkan_016_MultiWindow::findModelMesh(const String& nameMesh)
+Vulkan_016_Geometry::ModelMesh* Vulkan_016_Geometry::findModelMesh(const String& nameMesh)
 {
     ModelMeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
     if (itFind == this->m_mapModelMesh.end())
@@ -2296,7 +1946,7 @@ Vulkan_016_MultiWindow::ModelMesh* Vulkan_016_MultiWindow::findModelMesh(const S
 }
 
 
-void Vulkan_016_MultiWindow::destroyModelTextures()
+void Vulkan_016_Geometry::destroyModelTextures()
 {
     size_t count = this->m_aModelTexture.size();
     for (size_t i = 0; i < count; i++)
@@ -2307,18 +1957,18 @@ void Vulkan_016_MultiWindow::destroyModelTextures()
     this->m_aModelTexture.clear();
     this->m_mapModelTexture.clear();
 }
-void Vulkan_016_MultiWindow::createModelTextures()
+void Vulkan_016_Geometry::createModelTextures()
 {
-    for (int i = 0; i < g_Texture_Count; i++)
+    for (int i = 0; i < g_TextureCount; i++)
     {
-        String nameTexture = g_Texture_Paths[5 * i + 0];
-        String nameType = g_Texture_Paths[5 * i + 1];
+        String nameTexture = g_TexturePaths[5 * i + 0];
+        String nameType = g_TexturePaths[5 * i + 1];
         VulkanTextureType typeTexture = Util_ParseTextureType(nameType);
-        String nameIsRenderTarget = g_Texture_Paths[5 * i + 2];
+        String nameIsRenderTarget = g_TexturePaths[5 * i + 2];
         bool isRenderTarget = VulkanUtilString::ParserBool(nameIsRenderTarget);
-        String nameIsGraphicsComputeShared = g_Texture_Paths[5 * i + 3];
+        String nameIsGraphicsComputeShared = g_TexturePaths[5 * i + 3];
         bool isGraphicsComputeShared = VulkanUtilString::ParserBool(nameIsGraphicsComputeShared);
-        String pathTextures = g_Texture_Paths[5 * i + 4];
+        String pathTextures = g_TexturePaths[5 * i + 4];
 
         StringVector aPathTexture = VulkanUtilString::Split(pathTextures, ";");
         ModelTexture* pTexture = new ModelTexture(this, 
@@ -2326,13 +1976,13 @@ void Vulkan_016_MultiWindow::createModelTextures()
                                                   typeTexture,
                                                   isRenderTarget,
                                                   isGraphicsComputeShared,
-                                                  g_Texture_Formats[i],
-                                                  g_Texture_Filters[i],
-                                                  g_Texture_Addressings[i],
-                                                  g_Texture_BorderColors[i],
+                                                  g_TextureFormats[i],
+                                                  g_TextureFilters[i],
+                                                  g_TextureAddressings[i],
+                                                  g_TextureBorderColors[i],
                                                   aPathTexture);
-        pTexture->texChunkMaxX = g_Texture_AnimChunks[i * 2 + 0];
-        pTexture->texChunkMaxY = g_Texture_AnimChunks[i * 2 + 1];
+        pTexture->texChunkMaxX = g_TextureAnimChunks[i * 2 + 0];
+        pTexture->texChunkMaxY = g_TextureAnimChunks[i * 2 + 1];
         if (pTexture->texChunkMaxX > 0 && 
             pTexture->texChunkMaxY > 0)
         {
@@ -2340,9 +1990,9 @@ void Vulkan_016_MultiWindow::createModelTextures()
         }
         pTexture->AddRef();
 
-        int width = g_Texture_Sizes[3 * i + 0];
-        int height = g_Texture_Sizes[3 * i + 1];
-        int depth = g_Texture_Sizes[3 * i + 1];
+        int width = g_TextureSizes[3 * i + 0];
+        int height = g_TextureSizes[3 * i + 1];
+        int depth = g_TextureSizes[3 * i + 1];
         pTexture->LoadTexture(width, 
                               height,
                               depth);
@@ -2350,14 +2000,14 @@ void Vulkan_016_MultiWindow::createModelTextures()
         this->m_aModelTexture.push_back(pTexture);
         this->m_mapModelTexture[nameTexture] = pTexture;
 
-        Util_LogInfo("Vulkan_016_MultiWindow::createModelTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
+        Util_LogInfo("Vulkan_016_Geometry::createModelTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
                      nameTexture.c_str(), 
                      nameType.c_str(), 
                      isRenderTarget ? "true" : "false",
                      pathTextures.c_str());
     }
 }
-Vulkan_016_MultiWindow::ModelTexture* Vulkan_016_MultiWindow::findModelTexture(const String& nameTexture)
+Vulkan_016_Geometry::ModelTexture* Vulkan_016_Geometry::findModelTexture(const String& nameTexture)
 {
     ModelTexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
     if (itFind == this->m_mapModelTexture.end())
@@ -2368,7 +2018,7 @@ Vulkan_016_MultiWindow::ModelTexture* Vulkan_016_MultiWindow::findModelTexture(c
 }
 
 
-void Vulkan_016_MultiWindow::destroyDescriptorSetLayouts()
+void Vulkan_016_Geometry::destroyDescriptorSetLayouts()
 {
     size_t count = this->m_aVkDescriptorSetLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -2379,11 +2029,11 @@ void Vulkan_016_MultiWindow::destroyDescriptorSetLayouts()
     this->m_mapVkDescriptorSetLayout.clear();
     this->m_mapName2Layouts.clear();
 }
-void Vulkan_016_MultiWindow::createDescriptorSetLayouts()
+void Vulkan_016_Geometry::createDescriptorSetLayouts()
 {
-    for (int i = 0; i < g_DescriptorSetLayout_Count; i++)
+    for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
-        String nameLayout(g_DescriptorSetLayout_Names[i]);
+        String nameLayout(g_DescriptorSetLayoutNames[i]);
         StringVector aLayouts = VulkanUtilString::Split(nameLayout, "-");
         size_t count_layout = aLayouts.size();
 
@@ -2502,17 +2152,6 @@ void Vulkan_016_MultiWindow::createDescriptorSetLayouts()
 
                 bindings.push_back(samplerLayoutBinding);
             }
-            else if (strLayout == c_strLayout_TextureFrameColor) //TextureFrameColor
-            {
-                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                samplerLayoutBinding.binding = j;
-                samplerLayoutBinding.descriptorCount = 1;
-                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                samplerLayoutBinding.pImmutableSamplers = nullptr;
-                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-                bindings.push_back(samplerLayoutBinding);
-            }
             else if (strLayout == c_strLayout_TextureCSR) //TextureCSR
             {
                 VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
@@ -2537,7 +2176,7 @@ void Vulkan_016_MultiWindow::createDescriptorSetLayouts()
             }
             else
             {
-                String msg = "Vulkan_016_MultiWindow::createDescriptorSetLayouts: Wrong DescriptorSetLayout type: " + strLayout;
+                String msg = "Vulkan_016_Geometry::createDescriptorSetLayouts: Wrong DescriptorSetLayout type: " + strLayout;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -2545,7 +2184,7 @@ void Vulkan_016_MultiWindow::createDescriptorSetLayouts()
 
         if (!createVkDescriptorSetLayout(bindings, vkDescriptorSetLayout))
         {
-            String msg = "Vulkan_016_MultiWindow::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
+            String msg = "Vulkan_016_Geometry::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -2553,10 +2192,10 @@ void Vulkan_016_MultiWindow::createDescriptorSetLayouts()
         this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
         this->m_mapName2Layouts[nameLayout] = aLayouts;
 
-        Util_LogInfo("Vulkan_016_MultiWindow::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
+        Util_LogInfo("Vulkan_016_Geometry::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
-VkDescriptorSetLayout Vulkan_016_MultiWindow::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
+VkDescriptorSetLayout Vulkan_016_Geometry::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
 {
     VkDescriptorSetLayoutMap::iterator itFind = this->m_mapVkDescriptorSetLayout.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapVkDescriptorSetLayout.end())
@@ -2565,7 +2204,7 @@ VkDescriptorSetLayout Vulkan_016_MultiWindow::findDescriptorSetLayout(const Stri
     }
     return itFind->second;
 }
-StringVector* Vulkan_016_MultiWindow::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
+StringVector* Vulkan_016_Geometry::findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout)
 {
     std::map<String, StringVector>::iterator itFind = this->m_mapName2Layouts.find(nameDescriptorSetLayout);
     if (itFind == this->m_mapName2Layouts.end())
@@ -2576,7 +2215,7 @@ StringVector* Vulkan_016_MultiWindow::findDescriptorSetLayoutNames(const String&
 }
 
 
-void Vulkan_016_MultiWindow::destroyShaderModules()
+void Vulkan_016_Geometry::destroyShaderModules()
 {   
     size_t count = this->m_aVkShaderModules.size();
     for (size_t i = 0; i < count; i++)
@@ -2587,22 +2226,22 @@ void Vulkan_016_MultiWindow::destroyShaderModules()
     this->m_aVkShaderModules.clear();
     this->m_mapVkShaderModules.clear();
 }
-void Vulkan_016_MultiWindow::createShaderModules()
+void Vulkan_016_Geometry::createShaderModules()
 {
-    for (int i = 0; i < g_Shader_Count; i++)
+    for (int i = 0; i < g_ShaderCount; i++)
     {
-        String shaderName = g_ShaderModule_Paths[3 * i + 0];
-        String shaderType = g_ShaderModule_Paths[3 * i + 1];
-        String shaderPath = g_ShaderModule_Paths[3 * i + 2];
+        String shaderName = g_ShaderModulePaths[3 * i + 0];
+        String shaderType = g_ShaderModulePaths[3 * i + 1];
+        String shaderPath = g_ShaderModulePaths[3 * i + 2];
 
         VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
-        Util_LogInfo("Vulkan_016_MultiWindow::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+        Util_LogInfo("Vulkan_016_Geometry::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
                      shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
-VkShaderModule Vulkan_016_MultiWindow::findShaderModule(const String& nameShaderModule)
+VkShaderModule Vulkan_016_Geometry::findShaderModule(const String& nameShaderModule)
 {
     VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
     if (itFind == this->m_mapVkShaderModules.end())
@@ -2611,15 +2250,15 @@ VkShaderModule Vulkan_016_MultiWindow::findShaderModule(const String& nameShader
     }
     return itFind->second;
 }   
-bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& nameShaderVert,
-                                                                      const String& nameShaderTesc,
-                                                                      const String& nameShaderTese,
-                                                                      const String& nameShaderGeom,
-                                                                      const String& nameShaderFrag,
-                                                                      const String& nameShaderComp,
-                                                                      VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
-                                                                      VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
-                                                                      VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
+bool Vulkan_016_Geometry::createPipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                                                   const String& nameShaderTesc,
+                                                                   const String& nameShaderTese,
+                                                                   const String& nameShaderGeom,
+                                                                   const String& nameShaderFrag,
+                                                                   const String& nameShaderComp,
+                                                                   VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
+                                                                   VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                                                   VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
 {
     if (!createPipelineShaderStageCreateInfos(nameShaderVert,
                                               nameShaderTesc,
@@ -2640,19 +2279,19 @@ bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& 
 
     return true;
 }
-bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& nameShaderVert,
-                                                                      const String& nameShaderTesc,
-                                                                      const String& nameShaderTese,
-                                                                      const String& nameShaderGeom,
-                                                                      const String& nameShaderFrag,
-                                                                      VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics)
+bool Vulkan_016_Geometry::createPipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                                                   const String& nameShaderTesc,
+                                                                   const String& nameShaderTese,
+                                                                   const String& nameShaderGeom,
+                                                                   const String& nameShaderFrag,
+                                                                   VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics)
 {
     //vert
     {
         VkShaderModule shaderModule = findShaderModule(nameShaderVert);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
+            Util_LogError("Vulkan_016_Geometry::createPipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
             return false;
         }
 
@@ -2669,7 +2308,7 @@ bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& 
         VkShaderModule shaderModule = findShaderModule(nameShaderTesc);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
+            Util_LogError("Vulkan_016_Geometry::createPipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
             return false;
         }
 
@@ -2686,7 +2325,7 @@ bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& 
         VkShaderModule shaderModule = findShaderModule(nameShaderTese);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
+            Util_LogError("Vulkan_016_Geometry::createPipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
             return false;
         }
 
@@ -2703,7 +2342,7 @@ bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& 
         VkShaderModule shaderModule = findShaderModule(nameShaderGeom);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
+            Util_LogError("Vulkan_016_Geometry::createPipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
             return false;
         }
 
@@ -2719,7 +2358,7 @@ bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& 
         VkShaderModule shaderModule = findShaderModule(nameShaderFrag);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
+            Util_LogError("Vulkan_016_Geometry::createPipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
             return false;
         }
 
@@ -2733,9 +2372,9 @@ bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& 
 
     return true;
 }
-bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& nameShaderComp,
-                                                                      VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
-                                                                      VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
+bool Vulkan_016_Geometry::createPipelineShaderStageCreateInfos(const String& nameShaderComp,
+                                                                   VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                                                   VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
 {
     //comp
     if (!nameShaderComp.empty())
@@ -2748,7 +2387,7 @@ bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& 
             VkShaderModule shaderModule = findShaderModule(nameSC);
             if (shaderModule == VK_NULL_HANDLE)
             {
-                Util_LogError("Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
+                Util_LogError("Vulkan_016_Geometry::createPipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
                 return false;
             }
 
@@ -2766,7 +2405,7 @@ bool Vulkan_016_MultiWindow::createPipelineShaderStageCreateInfos(const String& 
 }
 
 
-void Vulkan_016_MultiWindow::destroyPipelineLayouts()
+void Vulkan_016_Geometry::destroyPipelineLayouts()
 {
     size_t count = this->m_aVkPipelineLayouts.size();
     for (size_t i = 0; i < count; i++)
@@ -2776,15 +2415,15 @@ void Vulkan_016_MultiWindow::destroyPipelineLayouts()
     this->m_aVkPipelineLayouts.clear();
     this->m_mapVkPipelineLayouts.clear();
 }
-void Vulkan_016_MultiWindow::createPipelineLayouts()
+void Vulkan_016_Geometry::createPipelineLayouts()
 {
-    for (int i = 0; i < g_DescriptorSetLayout_Count; i++)
+    for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
-        String nameDescriptorSetLayout(g_DescriptorSetLayout_Names[i]);
+        String nameDescriptorSetLayout(g_DescriptorSetLayoutNames[i]);
         VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            Util_LogError("*********************** Vulkan_016_MultiWindow::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
+            Util_LogError("*********************** Vulkan_016_Geometry::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
             return;
         }
 
@@ -2793,7 +2432,7 @@ void Vulkan_016_MultiWindow::createPipelineLayouts()
         VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
         if (vkPipelineLayout == VK_NULL_HANDLE)
         {
-            Util_LogError("*********************** Vulkan_016_MultiWindow::createPipelineLayouts: createVkPipelineLayout failed !");
+            Util_LogError("*********************** Vulkan_016_Geometry::createPipelineLayouts: createVkPipelineLayout failed !");
             return;
         }
 
@@ -2801,7 +2440,7 @@ void Vulkan_016_MultiWindow::createPipelineLayouts()
         this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
     }
 }
-VkPipelineLayout Vulkan_016_MultiWindow::findPipelineLayout(const String& namePipelineLayout)
+VkPipelineLayout Vulkan_016_Geometry::findPipelineLayout(const String& namePipelineLayout)
 {
     VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
     if (itFind == this->m_mapVkPipelineLayouts.end())
@@ -2812,43 +2451,8 @@ VkPipelineLayout Vulkan_016_MultiWindow::findPipelineLayout(const String& namePi
 }
 
 
-void Vulkan_016_MultiWindow::destroyMultiRenderPasses()
-{
-    size_t count_render_pass = this->m_aMultiRenderPasses.size();
-    for (size_t i = 0; i < count_render_pass; i++)
-    {
-        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
-        UTIL_DELETE(pRenderPass)
-    }
-    this->m_aMultiRenderPasses.clear();
-    this->m_mapMultiRenderPasses.clear();
-}
-void Vulkan_016_MultiWindow::createMultiRenderPasses()
-{    
-    for (int i = 0; i < g_RenderPass_Count; i++)
-    {
-        String nameRenderPass = g_RenderPass_Names[i];
-        bool isDefault = g_RenderPass_IsDefault[i];
 
-        MultiRenderPass* pMultiRenderPass = new MultiRenderPass(this, nameRenderPass, isDefault);
-        pMultiRenderPass->Init();
-
-        this->m_aMultiRenderPasses.push_back(pMultiRenderPass);
-        this->m_mapMultiRenderPasses[nameRenderPass] = pMultiRenderPass;
-    }
-}
-Vulkan_016_MultiWindow::MultiRenderPass* Vulkan_016_MultiWindow::findMultiRenderPass(const String& nameRenderPass)
-{
-    MultiRenderPassPtrMap::iterator itFind = this->m_mapMultiRenderPasses.find(nameRenderPass);
-    if (itFind == this->m_mapMultiRenderPasses.end())
-    {
-        return nullptr;
-    }
-    return itFind->second;
-}
-
-
-void Vulkan_016_MultiWindow::createDescriptorSets_Custom()
+void Vulkan_016_Geometry::createDescriptorSets_Custom()
 {
     //1> Object Rend
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
@@ -2883,12 +2487,12 @@ void Vulkan_016_MultiWindow::createDescriptorSets_Custom()
         }
     }
 }
-void Vulkan_016_MultiWindow::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
-                                                           ModelObjectRend* pRend, 
-                                                           ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_016_Geometry::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
+                                                            ModelObjectRend* pRend, 
+                                                            ModelObjectRendIndirect* pRendIndirect)
 {
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
-    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_016_MultiWindow::createDescriptorSets_Graphics");
+    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_016_Geometry::createDescriptorSets_Graphics");
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
@@ -2897,7 +2501,6 @@ void Vulkan_016_MultiWindow::createDescriptorSets_Graphics(VkDescriptorSetVector
         int nIndexTextureTESC = 0;
         int nIndexTextureTESE = 0;
         int nIndexTextureFS = 0;
-        int nIndexTextureFrameColor = 0;
 
         size_t count_names = pDescriptorSetLayoutNames->size();
         for (size_t p = 0; p < count_names; p++)
@@ -3016,21 +2619,9 @@ void Vulkan_016_MultiWindow::createDescriptorSets_Graphics(VkDescriptorSetVector
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                           pTexture->poTextureImageInfo);
             }
-            else if (nameDescriptorSet == c_strLayout_TextureFrameColor) //TextureFrameColor
-            {
-                MultiRenderPass* pRenderPass = pRend->GetRenderPass(nIndexTextureFrameColor);
-                nIndexTextureFrameColor ++;
-                pushVkDescriptorSet_Image(descriptorWrites,
-                                          pRend->pPipelineGraphics->poDescriptorSets[j],
-                                          p,
-                                          0,
-                                          1,
-                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                          pRenderPass->imageInfo);
-            }
             else
             {
-                String msg = "Vulkan_016_MultiWindow::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                String msg = "Vulkan_016_Geometry::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                 Util_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -3038,11 +2629,11 @@ void Vulkan_016_MultiWindow::createDescriptorSets_Graphics(VkDescriptorSetVector
         updateVkDescriptorSets(descriptorWrites);
     }
 }
-void Vulkan_016_MultiWindow::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
-                                                              ModelObjectRend* pRend)
+void Vulkan_016_Geometry::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
+                                                           ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_016_MultiWindow::createDescriptorSets_Compute");
+    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_016_Geometry::createDescriptorSets_Compute");
     createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
     VkWriteDescriptorSetVector descriptorWrites;
@@ -3094,7 +2685,7 @@ void Vulkan_016_MultiWindow::createDescriptorSets_Compute(PipelineCompute* pPipe
         }
         else
         {
-            String msg = "Vulkan_016_MultiWindow::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+            String msg = "Vulkan_016_Geometry::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
             Util_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -3102,7 +2693,7 @@ void Vulkan_016_MultiWindow::createDescriptorSets_Compute(PipelineCompute* pPipe
     updateVkDescriptorSets(descriptorWrites);
 }
 
-void Vulkan_016_MultiWindow::updateCompute_Custom(VkCommandBuffer& commandBuffer)
+void Vulkan_016_Geometry::updateCompute_Custom(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -3164,7 +2755,7 @@ void Vulkan_016_MultiWindow::updateCompute_Custom(VkCommandBuffer& commandBuffer
     }
 }
 
-void Vulkan_016_MultiWindow::updateCBs_Custom()
+void Vulkan_016_Geometry::updateCBs_Custom()
 {
     //1> Object Rend
     float time = this->pTimer->GetTimeSinceStart();
@@ -3279,7 +2870,7 @@ void Vulkan_016_MultiWindow::updateCBs_Custom()
     }
 }
 
-void Vulkan_016_MultiWindow::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
+void Vulkan_016_Geometry::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer)
 {
     size_t count_object_rend = this->m_aModelObjectRends_All.size();
     for (size_t i = 0; i < count_object_rend; i++)
@@ -3320,13 +2911,13 @@ void Vulkan_016_MultiWindow::updateRenderPass_SyncComputeGraphics(VkCommandBuffe
     }
 }
 
-bool Vulkan_016_MultiWindow::beginRenderImgui()
+bool Vulkan_016_Geometry::beginRenderImgui()
 {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    ImGui::Begin("Vulkan_016_MultiWindow", &windowOpened, 0);
+    ImGui::Begin("Vulkan_016_Geometry", &windowOpened, 0);
     {
         //0> Common
         commonConfig();
@@ -3348,26 +2939,7 @@ bool Vulkan_016_MultiWindow::beginRenderImgui()
 
     return true;
 }
-void Vulkan_016_MultiWindow::passConstantsConfig()
-{
-    if (ImGui::CollapsingHeader("PassConstants Settings"))
-    {
-        //g_Pad1
-        if (ImGui::DragFloat("Global Frame Scale", (float*)&(this->passCB.g_Pad1), 0.1f, 0.1f, 2.0f))
-        {
-
-        }
-
-        //g_AmbientLight
-        if (ImGui::ColorEdit4("Global AmbientLight", (float*)&(this->passCB.g_AmbientLight)))
-        {
-            
-        }
-    }
-    ImGui::Separator();
-    ImGui::Spacing();
-}
-void Vulkan_016_MultiWindow::modelConfig()
+void Vulkan_016_Geometry::modelConfig()
 {
     if (ImGui::CollapsingHeader("Model Settings"))
     {
@@ -3450,12 +3022,9 @@ void Vulkan_016_MultiWindow::modelConfig()
                 ImGui::DragInt(nameInstances.c_str(), &countInstanceExt, 1, 0, 3);
                 if (countInstanceExt != pModelObject->countInstanceExt)
                 {
-                    if (pModelObject->canChangeInstance)
-                    {
-                        pModelObject->countInstanceExt = countInstanceExt;
-                        pModelObject->countInstance = countInstanceExt * 2 + 1;
-                        rebuildInstanceCBs(false);
-                    }
+                    pModelObject->countInstanceExt = countInstanceExt;
+                    pModelObject->countInstance = countInstanceExt * 2 + 1;
+                    rebuildInstanceCBs(false);
                 }
 
                 //2> ModelObjectRend
@@ -3835,160 +3404,38 @@ void Vulkan_016_MultiWindow::modelConfig()
     }
 }
 
-void Vulkan_016_MultiWindow::endRenderImgui()
+void Vulkan_016_Geometry::endRenderImgui()
 {
     VulkanWindow::endRenderImgui();
 
 }
 
-void Vulkan_016_MultiWindow::updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer)
-{
-    size_t count_render_pass = this->m_aMultiRenderPasses.size();
-    for (size_t i = 0; i < count_render_pass; i++)
-    {
-        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
-        if (pRenderPass->isUseDefault)
-            continue;
-
-        drawMeshCustom(commandBuffer, pRenderPass);
-    }
-}
-    void Vulkan_016_MultiWindow::drawMeshCustom(VkCommandBuffer& commandBuffer, MultiRenderPass* pRenderPass)
-    {
-        beginRenderPass(commandBuffer,
-                        pRenderPass->poRenderPass,
-                        pRenderPass->poFrameBuffer,
-                        this->poOffset,
-                        this->poExtent,
-                        this->cfg_colorBackground,
-                        1.0f,
-                        0);
-        {
-            //1> Viewport
-            bindViewport(commandBuffer, this->poViewport, this->poScissor);
-            
-            //2> Render Pass
-            drawModelObjectRendByRenderPass(commandBuffer, pRenderPass);
-
-        }
-        endRenderPass(commandBuffer);
-    }
-
-
-void Vulkan_016_MultiWindow::updateRenderPass_Default(VkCommandBuffer& commandBuffer)
-{
-    beginRenderPass(commandBuffer,
-                    this->poRenderPass,
-                    this->poSwapChainFrameBuffers[this->poSwapChainImageIndex],
-                    this->poOffset,
-                    this->poExtent,
-                    this->cfg_colorBackground,
-                    1.0f,
-                    0);
-    {
-        VkViewport viewport = this->poViewport;
-        viewport.width = this->poViewport.width / 2.0f; 
-        VkRect2D scissor = this->poScissor;
-        scissor.extent.width = this->poScissor.extent.width / 2.0f;
-
-        size_t count_render_pass = this->m_aMultiRenderPasses.size();
-        //1> Viewport Left
-        {
-			bindViewport(commandBuffer, viewport, poScissor);
-
-            for (size_t i = 0; i < count_render_pass; i++)
-            {
-                MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
-                if (!pRenderPass->isUseDefault)
-                    continue;
-
-                drawModelObjectRendByRenderPass(commandBuffer, pRenderPass);
-            }
-        }
-        //2> Viewport Right
-        {
-            viewport.x = this->poViewport.width / 2.0f; 
-            scissor.offset.x = this->poScissor.extent.width / 2.0f;
-            
-			bindViewport(commandBuffer, viewport, poScissor);
-
-            for (size_t i = 0; i < count_render_pass; i++)
-            {
-                MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
-                if (!pRenderPass->isUseDefault)
-                    continue;
-
-                drawModelObjectRendByRenderPass(commandBuffer, pRenderPass);
-            }
-        }
-
-        //3> ImGui Pass
-        drawMeshDefault_Imgui(commandBuffer);
-    }
-    endRenderPass(commandBuffer);
-}
-
-
-void Vulkan_016_MultiWindow::addRenderPass2ModelObjectRendMap(MultiRenderPass* pRenderPass, ModelObjectRend* pRend)
+void Vulkan_016_Geometry::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer)
 {   
-    if (pRend->isTransparent)
-    {
-        addRenderPass2ModelObjectRendMap(m_mapRenderPass2ObjectRends_Transparent, pRenderPass, pRend);
-    }
-    else 
-    {
-        addRenderPass2ModelObjectRendMap(m_mapRenderPass2ObjectRends_Opaque, pRenderPass, pRend);
-    }
-}
-void Vulkan_016_MultiWindow::addRenderPass2ModelObjectRendMap(MultiRenderPass2ObjectRendsMap& mapRP2OR, MultiRenderPass* pRenderPass, ModelObjectRend* pRend)
-{
-    MultiRenderPass2ObjectRendsMap::iterator itFind = mapRP2OR.find(pRenderPass);
-    if (itFind == mapRP2OR.end())
-    {
-        ModelObjectRendPtrVector aORs;
-        aORs.push_back(pRend);
-        mapRP2OR[pRenderPass] = aORs;
-    }
-    else
-    {
-        itFind->second.push_back(pRend);
-    }
-}
-
-void Vulkan_016_MultiWindow::drawModelObjectRendByRenderPass(VkCommandBuffer& commandBuffer, MultiRenderPass* pRenderPass)
-{
-    MultiRenderPass2ObjectRendsMap::iterator itFind_Opaque = m_mapRenderPass2ObjectRends_Opaque.find(pRenderPass);
-    MultiRenderPass2ObjectRendsMap::iterator itFind_Transparent = m_mapRenderPass2ObjectRends_Transparent.find(pRenderPass);
-
     if (this->m_isDrawIndirect)
     {
         //1> Opaque
-        if (itFind_Opaque != m_mapRenderPass2ObjectRends_Opaque.end())
         {
-            drawModelObjectRendIndirects(commandBuffer, itFind_Opaque->second);
+            drawModelObjectRendIndirects(commandBuffer, this->m_aModelObjectRends_Opaque);
         }
         //2> Transparent
-        if (itFind_Transparent != m_mapRenderPass2ObjectRends_Transparent.end())
         {
-            drawModelObjectRendIndirects(commandBuffer, itFind_Transparent->second);
+            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
         }
     }
     else
     {
         //1> Opaque
-        if (itFind_Opaque != m_mapRenderPass2ObjectRends_Opaque.end())
         {
-            drawModelObjectRends(commandBuffer, itFind_Opaque->second);
+            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Opaque);
         }
         //2> Transparent
-        if (itFind_Transparent != m_mapRenderPass2ObjectRends_Transparent.end())
         {
-            drawModelObjectRends(commandBuffer, itFind_Transparent->second);
+            drawModelObjectRends(commandBuffer, this->m_aModelObjectRends_Transparent);
         }
     }
 }
-
-void Vulkan_016_MultiWindow::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_016_Geometry::drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     ModelObjectRendIndirect* pRendIndirect_Last = nullptr;
     size_t count_rend = aRends.size();
@@ -4016,7 +3463,7 @@ void Vulkan_016_MultiWindow::drawModelObjectRendIndirects(VkCommandBuffer& comma
         }
     }
 }   
-void Vulkan_016_MultiWindow::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
+void Vulkan_016_Geometry::drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect)
 {
     ModelObjectRend* pRend = pRendIndirect->pRend;
     ModelObject* pModelObject = pRend->pModelObject;
@@ -4060,7 +3507,7 @@ void Vulkan_016_MultiWindow::drawModelObjectRendIndirect(VkCommandBuffer& comman
     }
 }
 
-void Vulkan_016_MultiWindow::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
+void Vulkan_016_Geometry::drawModelObjectRends(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends)
 {
     size_t count_rend = aRends.size();
     for (size_t i = 0; i < count_rend; i++)
@@ -4071,7 +3518,7 @@ void Vulkan_016_MultiWindow::drawModelObjectRends(VkCommandBuffer& commandBuffer
         drawModelObjectRend(commandBuffer, pRend);
     }
 }
-void Vulkan_016_MultiWindow::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
+void Vulkan_016_Geometry::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
 {
     ModelObject* pModelObject = pRend->pModelObject;
     ModelMeshSub* pMeshSub = pRend->pMeshSub;
@@ -4118,8 +3565,8 @@ void Vulkan_016_MultiWindow::drawModelObjectRend(VkCommandBuffer& commandBuffer,
     }
 }
 
-void Vulkan_016_MultiWindow::cleanupCustom()
-{
+void Vulkan_016_Geometry::cleanupCustom()
+{   
     destroyModelTextures();
     destroyModelMeshes();
 
@@ -4132,45 +3579,32 @@ void Vulkan_016_MultiWindow::cleanupCustom()
     this->m_aModelObjects.clear();
     this->m_mapModelObjects.clear();
     this->m_aModelObjectRends_All.clear();
-    this->m_mapRenderPass2ObjectRends_Opaque.clear();
-    this->m_mapRenderPass2ObjectRends_Transparent.clear();
+    this->m_aModelObjectRends_Opaque.clear();
+    this->m_aModelObjectRends_Transparent.clear();
 }
 
-void Vulkan_016_MultiWindow::cleanupSwapChain_Custom()
+void Vulkan_016_Geometry::cleanupSwapChain_Custom()
 {
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
+
         pModelObject->CleanupSwapChain();
     }
-    
-    count = this->m_aMultiRenderPasses.size();
-    for (size_t i = 0; i < count; i++)
-    {
-        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
-        pRenderPass->CleanupSwapChain();
-    }
-    
-    destroyMultiRenderPasses();
+
     destroyDescriptorSetLayouts();
     destroyPipelineLayouts();
     destroyShaderModules();
 }
 
-void Vulkan_016_MultiWindow::recreateSwapChain_Custom()
+void Vulkan_016_Geometry::recreateSwapChain_Custom()
 {   
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
-        pModelObject->RecreateSwapChain();
-    }
 
-    count = this->m_aMultiRenderPasses.size();
-    for (size_t i = 0; i < count; i++)
-    {
-        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
-        pRenderPass->RecreateSwapChain();
+        pModelObject->RecreateSwapChain();
     }
 }

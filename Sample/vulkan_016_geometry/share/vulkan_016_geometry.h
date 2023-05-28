@@ -9,17 +9,17 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VULKAN_016_MULTI_WINDOW_H_
-#define _VULKAN_016_MULTI_WINDOW_H_
+#ifndef _VULKAN_016_GEOMETRY_H_
+#define _VULKAN_016_GEOMETRY_H_
 
 #include "VulkanWindow.h"
 #include "VulkanMath.h"
 using namespace LostPeter; 
 
-class Vulkan_016_MultiWindow : public VulkanWindow
+class Vulkan_016_Geometry : public VulkanWindow
 {
 public:
-    Vulkan_016_MultiWindow(int width, int height, String name);
+    Vulkan_016_Geometry(int width, int height, String name);
 
 public:
     /////////////////////////// ModelMeshSub ////////////////////////
@@ -33,8 +33,6 @@ public:
 
         //Vertex
         VulkanVertexType poTypeVertex;
-
-        std::vector<Vertex_Pos3Color4Tex2> vertices_Pos3Color4Tex2;
         std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
         std::vector<Vertex_Pos3Color4Normal3Tex4> vertices_Pos3Color4Normal3Tex4;
         std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
@@ -86,9 +84,7 @@ public:
 
         uint32_t GetVertexSize() 
         {
-            if (this->vertices_Pos3Color4Tex2.size() > 0)
-                return sizeof(Vertex_Pos3Color4Tex2);
-            else if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
+            if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
                 return sizeof(Vertex_Pos3Color4Normal3Tex2);
             else if(this->vertices_Pos3Color4Normal3Tex4.size() > 0)
                 return sizeof(Vertex_Pos3Color4Normal3Tex4);
@@ -120,7 +116,7 @@ public:
     /////////////////////////// ModelMesh ///////////////////////////
     struct ModelMesh
     {
-        Vulkan_016_MultiWindow* pWindow;
+        Vulkan_016_Geometry* pWindow;
         String nameMesh;
         String pathMesh;
         VulkanMeshType typeMesh;
@@ -130,7 +126,7 @@ public:
         ModelMeshSubPtrVector aMeshSubs;
         ModelMeshSubPtrMap mapMeshSubs;
 
-        ModelMesh(Vulkan_016_MultiWindow* _pWindow, 
+        ModelMesh(Vulkan_016_Geometry* _pWindow, 
                   const String& _nameMesh,
                   const String& _pathMesh,
                   VulkanMeshType _typeMesh,
@@ -174,7 +170,7 @@ public:
     /////////////////////////// ModelTexture ////////////////////////
     struct ModelTexture
     {
-        Vulkan_016_MultiWindow* pWindow;
+        Vulkan_016_Geometry* pWindow;
         String nameTexture;
         StringVector aPathTexture;
         VulkanTextureType typeTexture;
@@ -215,7 +211,7 @@ public:
         VkImageUsageFlags rtImageUsage;
 
 
-        ModelTexture(Vulkan_016_MultiWindow* _pWindow, 
+        ModelTexture(Vulkan_016_Geometry* _pWindow, 
                      const String& _nameTexture,
                      VulkanTextureType _typeTexture,
                      bool _isRenderTarget,
@@ -430,7 +426,7 @@ public:
                                                      this->poMipMapCount, 
                                                      1, 
                                                      this->poTextureImageView);
-                }
+                } 
                 else if (this->typeTexture == Vulkan_Texture_2D)
                 {
                     this->pWindow->createTextureRenderTarget2D(this->rtColorDefault, 
@@ -533,6 +529,7 @@ public:
                                            0.0f,
                                            this->poTextureSampler);
 
+            this->poTextureImageInfo = {};
             this->poTextureImageInfo.imageLayout = this->poTextureImageLayout;
             this->poTextureImageInfo.imageView = this->poTextureImageView;
             this->poTextureImageInfo.sampler = this->poTextureSampler;
@@ -549,114 +546,10 @@ public:
     typedef std::map<String, ModelTexturePtrVector> ModelTexturePtrShaderSortMap;
 
 
-    /////////////////////////// MultiRenderPass /////////////////////
-    struct FrameBufferAttachment
-    {
-        bool isDepth;
-
-        VkImage image;
-        VkDeviceMemory memory;
-        VkImageView view;
-
-        FrameBufferAttachment()
-            : image(VK_NULL_HANDLE)
-            , memory(VK_NULL_HANDLE)
-            , view(VK_NULL_HANDLE)
-        {
-
-        }
-
-        void Destroy(Vulkan_016_MultiWindow* pWindow)
-        {
-            if (this->image != VK_NULL_HANDLE)
-            {
-                pWindow->destroyVkImage(this->image, this->memory, this->view);
-            }
-            this->image = VK_NULL_HANDLE;
-            this->memory = VK_NULL_HANDLE;
-            this->view = VK_NULL_HANDLE;
-        }
-
-        void Init(Vulkan_016_MultiWindow* pWindow, bool _isDepth);
-    };
-    struct MultiRenderPass
-    {
-        //Window
-        Vulkan_016_MultiWindow* pWindow;
-        String nameRenderPass;
-        bool isUseDefault;
-
-        //Attachment
-        FrameBufferAttachment framebufferColor;
-        FrameBufferAttachment framebufferDepth;
-        VkSampler sampler;
-        VkDescriptorImageInfo imageInfo;
-        
-        //RenderPass
-        VkRenderPass poRenderPass;
-
-        //FrameBuffer
-        VkFramebuffer poFrameBuffer;
-
-        MultiRenderPass(Vulkan_016_MultiWindow* _pWindow, 
-                        const String& _nameRenderPass,
-                        bool _isUseDefault)
-            //Window
-            : pWindow(_pWindow)
-            , nameRenderPass(_nameRenderPass)
-            , isUseDefault(_isUseDefault)
-
-            //RenderPass
-            , poRenderPass(VK_NULL_HANDLE)
-
-            //FrameBuffer
-            , sampler(VK_NULL_HANDLE)
-            , poFrameBuffer(VK_NULL_HANDLE)
-        {
-
-        }
-
-        ~MultiRenderPass()
-        {
-            Destroy();
-        }
-
-        void Destroy()
-        {
-            //RenderPass
-            if (this->poRenderPass != VK_NULL_HANDLE &&
-                !this->isUseDefault)
-            {
-                this->pWindow->destroyVkRenderPass(this->poRenderPass);
-            }
-            this->poRenderPass = VK_NULL_HANDLE;
-
-            //FrameBuffer
-            this->framebufferColor.Destroy(this->pWindow);
-            this->framebufferDepth.Destroy(this->pWindow);
-            this->pWindow->destroyVkImageSampler(this->sampler);
-            this->sampler = VK_NULL_HANDLE;
-
-            this->pWindow->destroyVkFramebuffer(this->poFrameBuffer);
-            this->poFrameBuffer = VK_NULL_HANDLE;
-
-            this->imageInfo.imageView = VK_NULL_HANDLE;
-            this->imageInfo.sampler = VK_NULL_HANDLE;
-        } 
-
-        void Init();
-        
-        void CleanupSwapChain();
-        void RecreateSwapChain();
-    };
-    typedef std::vector<MultiRenderPass*> MultiRenderPassPtrVector;
-    typedef std::map<String, MultiRenderPass*> MultiRenderPassPtrMap;
-    
-
     /////////////////////////// PipelineGraphics ////////////////////
     struct PipelineGraphics
     {
-        Vulkan_016_MultiWindow* pWindow;
+        Vulkan_016_Geometry* pWindow;
         String nameDescriptorSetLayout;
         StringVector* poDescriptorSetLayoutNames;
         VkDescriptorSetLayout poDescriptorSetLayout;
@@ -665,10 +558,7 @@ public:
         VkPipeline poPipeline;
         VkDescriptorSetVector poDescriptorSets;
 
-        String nameRenderPass;
-        MultiRenderPass* pRenderPass;
-
-        PipelineGraphics(Vulkan_016_MultiWindow* _pWindow)
+        PipelineGraphics(Vulkan_016_Geometry* _pWindow)
             : pWindow(_pWindow)
             , nameDescriptorSetLayout("")
             , poDescriptorSetLayoutNames(nullptr)
@@ -676,8 +566,6 @@ public:
             , poPipelineLayout(VK_NULL_HANDLE)
             , poPipeline_WireFrame(VK_NULL_HANDLE)
             , poPipeline(VK_NULL_HANDLE)
-
-            , pRenderPass(nullptr)
         {
 
         }
@@ -709,8 +597,6 @@ public:
             }
             this->poPipeline = VK_NULL_HANDLE;
             this->poDescriptorSets.clear();
-
-            this->pRenderPass = nullptr;
         }  
     };
 
@@ -718,7 +604,7 @@ public:
     /////////////////////////// PipelineCompute /////////////////////
     struct PipelineCompute
     {
-        Vulkan_016_MultiWindow* pWindow;
+        Vulkan_016_Geometry* pWindow;
         String nameDescriptorSetLayout;
         StringVector* poDescriptorSetLayoutNames;
         VkDescriptorSetLayout poDescriptorSetLayout;
@@ -750,7 +636,7 @@ public:
             this->poBufferMemory_TextureCopy = VK_NULL_HANDLE;
         }
 
-        PipelineCompute(Vulkan_016_MultiWindow* _pWindow)
+        PipelineCompute(Vulkan_016_Geometry* _pWindow)
             : pWindow(_pWindow)
             , nameDescriptorSetLayout("")
             , poDescriptorSetLayoutNames(nullptr)
@@ -809,9 +695,6 @@ public:
         bool isRotate;
         bool isLighting;
         bool isTransparent;
-
-        //RenderPass
-        MultiRenderPassPtrVector aRenderPassesRef;
 
         //Texture
         ModelTexturePtrShaderSortMap mapModelTexturesShaderSort;
@@ -955,9 +838,6 @@ public:
             this->aShaderStageCreateInfos_Computes.clear();
             this->mapShaderStageCreateInfos_Computes.clear();
 
-            //RenderPass
-            this->aRenderPassesRef.clear();
-
             //Pipeline Graphics
             this->pPipelineGraphics->CleanupSwapChain();
 
@@ -975,16 +855,6 @@ public:
         {
 
         }   
-
-    ////RenderPasses
-        void AddRenderPass(MultiRenderPass* pRenderPass)
-        {
-            this->aRenderPassesRef.push_back(pRenderPass);
-        }
-        MultiRenderPass* GetRenderPass(int index)
-        {
-            return this->aRenderPassesRef[index];
-        }
 
     ////Textures
         void AddTexture(const String& nameShaderSort, ModelTexture* pTexture)
@@ -1028,8 +898,6 @@ public:
     };
     typedef std::vector<ModelObjectRend*> ModelObjectRendPtrVector;
     typedef std::map<String, ModelObjectRend*> ModelObjectRendPtrMap;
-
-    typedef std::map<MultiRenderPass*, ModelObjectRendPtrVector> MultiRenderPass2ObjectRendsMap;
 
 
     /////////////////////////// ModelObjectRendIndirect /////////////
@@ -1147,7 +1015,7 @@ public:
     struct ModelObject
     {
         //Window
-        Vulkan_016_MultiWindow* pWindow;
+        Vulkan_016_Geometry* pWindow;
         int index;
 
         //Name
@@ -1163,7 +1031,6 @@ public:
 
         int countInstanceExt;
         int countInstance;
-        bool canChangeInstance;
 
         //Mesh
         ModelMesh* pMesh;
@@ -1173,7 +1040,7 @@ public:
         ModelObjectRendPtrVector aRends;
         ModelObjectRendIndirect* pRendIndirect;
 
-        ModelObject(Vulkan_016_MultiWindow* _pWindow,
+        ModelObject(Vulkan_016_Geometry* _pWindow,
                     int _index)
             //Window
             : pWindow(_pWindow)
@@ -1191,7 +1058,6 @@ public:
 
             , countInstanceExt(0)
             , countInstance(1)
-            , canChangeInstance(true)
 
             //Mesh
             , pMesh(nullptr)
@@ -1272,7 +1138,6 @@ public:
     typedef std::vector<ModelObject*> ModelObjectPtrVector;
     typedef std::map<String, ModelObject*> ModelObjectPtrMap;
 
-
 public:
     ModelMeshPtrVector m_aModelMesh;
     ModelMeshPtrMap m_mapModelMesh;    
@@ -1283,8 +1148,8 @@ public:
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrMap m_mapModelObjects;
     ModelObjectRendPtrVector m_aModelObjectRends_All;
-    MultiRenderPass2ObjectRendsMap m_mapRenderPass2ObjectRends_Opaque;
-    MultiRenderPass2ObjectRendsMap m_mapRenderPass2ObjectRends_Transparent;
+    ModelObjectRendPtrVector m_aModelObjectRends_Opaque;
+    ModelObjectRendPtrVector m_aModelObjectRends_Transparent;
     bool m_isDrawIndirect;
     bool m_isDrawIndirectMulti;
 
@@ -1298,18 +1163,12 @@ public:
     VkPipelineLayoutVector m_aVkPipelineLayouts;
     VkPipelineLayoutMap m_mapVkPipelineLayouts;
 
-    MultiRenderPassPtrVector m_aMultiRenderPasses;
-    MultiRenderPassPtrMap m_mapMultiRenderPasses;
-
 protected:
     //Create Pipeline
         virtual void setUpEnabledFeatures();
 
         //DescriptorSetLayout
         virtual void createDescriptorSetLayout_Custom();
-
-        //RenderPass
-        virtual void createRenderPass_Custom();
 
     //Load Assets
         //Camera
@@ -1345,16 +1204,11 @@ protected:
 
         virtual bool beginRenderImgui();
             virtual void cameraReset();
-            virtual void passConstantsConfig();
             virtual void modelConfig();
 
         virtual void endRenderImgui();
 
-        virtual void updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer);
-            virtual void drawMeshCustom(VkCommandBuffer& commandBuffer, MultiRenderPass* pRenderPass); 
-
-        virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
-            
+        virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);
 
     //cleanup
         virtual void cleanupCustom();
@@ -1408,17 +1262,6 @@ private:
     void destroyPipelineLayouts();
     void createPipelineLayouts();
     VkPipelineLayout findPipelineLayout(const String& namePipelineLayout);
-
-////RenderPass
-    void destroyMultiRenderPasses();
-    void createMultiRenderPasses();
-    MultiRenderPass* findMultiRenderPass(const String& nameRenderPass);
-
-////Draw
-    void addRenderPass2ModelObjectRendMap(MultiRenderPass* pRenderPass, ModelObjectRend* pRend);
-    void addRenderPass2ModelObjectRendMap(MultiRenderPass2ObjectRendsMap& mapRP2OR, MultiRenderPass* pRenderPass, ModelObjectRend* pRend);
-
-    void drawModelObjectRendByRenderPass(VkCommandBuffer& commandBuffer, MultiRenderPass* pRenderPass);
 
     void drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect);

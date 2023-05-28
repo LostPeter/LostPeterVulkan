@@ -7617,6 +7617,7 @@ namespace LostPeter
             {
                 ImGui_ImplVulkan_SetMinImageCount(this->imgui_MinimalSwapchainImages);
             }
+            cameraReset();
         }
         Util_LogInfo("++++++++++ VulkanWindow::recreateSwapChain finish ++++++++++");
     }
