@@ -33,29 +33,28 @@ namespace LostPeter
     public:
     protected:
         String m_strName;
-
         int m_nRefCount;
 
-        bool m_bIsInit;
-        bool m_bIsShowSphere;
-		bool m_bIsShowAABB;
+        // bool m_bIsInit;
+        // bool m_bIsShowSphere;
+		// bool m_bIsShowAABB;
 
     public:
-        const String& GetName() const { return m_strName; }
-        void SetName(const String& strName) { m_strName = strName; }
+        UTIL_FORCEINLINE const String& GetName() const { return m_strName; }
+        UTIL_FORCEINLINE void SetName(const String& strName) { m_strName = strName; }
 
-        int GetRef() const { return m_nRefCount; }
-        bool HasRef() const { return m_nRefCount <= 0 ? false : true; }
+        UTIL_FORCEINLINE int GetRef() const { return m_nRefCount; }
+        UTIL_FORCEINLINE bool HasRef() const { return m_nRefCount <= 0 ? false : true; }
+        UTIL_FORCEINLINE int AddRef() { return ++m_nRefCount; }
+        UTIL_FORCEINLINE int DelRef() { return --m_nRefCount; }
 
-        int AddRef() { return ++m_nRefCount; }
-        int DelRef() { return --m_nRefCount; }
-
-        bool IsInit() const { return m_bIsInit; }
-        void SetIsInit(bool b) { m_bIsInit = b; }
-        bool IsShowSphere() const { return m_bIsShowSphere; }
-        void SetIsShowSphere(bool bIsShowSphere) { m_bIsShowSphere = bIsShowSphere; }
-        bool IsShowAABB() const { return m_bIsShowAABB; }
-        void SetIsShowAABB(bool bIsShowAABB) { m_bIsShowAABB = bIsShowAABB; }
+    public:
+        virtual bool IsInit() const = 0;
+        virtual void SetIsInit(bool b) = 0;
+        virtual bool IsShowSphere() const = 0;
+        virtual void SetIsShowSphere(bool bIsShowSphere) = 0;
+        virtual bool IsShowAABB() const = 0;
+        virtual void SetIsShowAABB(bool bIsShowAABB) = 0;
     };
 
 }; //LostPeter

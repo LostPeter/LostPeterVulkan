@@ -330,8 +330,6 @@ namespace LostPeter
             Util_LogError("*********************** VulkanDevice::createDevice: vkCreateDevice create a Vulkan device failed !");
             return false;
         }
-        //volkLoadDevice(m_vkDevice);
-
 
         m_pQueueGraphics = new VulkanQueue();
         m_pQueueGraphics->Init(this, queueFamilyIndex_Graphics);
@@ -433,6 +431,24 @@ namespace LostPeter
         return (supportsPresent == VK_TRUE);
     }
 
+    uint32_t VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
+    {
+        VkPhysicalDeviceMemoryProperties memProperties;
+        vkGetPhysicalDeviceMemoryProperties(m_vkPhysicalDevice, &memProperties);
+
+        for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) 
+        {
+            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) 
+            {
+                return i;
+            }
+        }
+
+        String msg = "*********************** VulkanDevice::findMemoryType: Failed to find suitable memory type !";
+        Util_LogError(msg.c_str());
+        throw std::runtime_error(msg);
+    }
+
     /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
     VkSemaphore VulkanDevice::CreateVkSemaphore()
     {
@@ -444,15 +460,21 @@ namespace LostPeter
     {
         VkSemaphoreCreateInfo semaphoreCreateInfo;
         Util_ZeroStruct(semaphoreCreateInfo, VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
-        vkCreateSemaphore(m_vkDevice, &semaphoreCreateInfo, UTIL_CPU_ALLOCATOR, &vkSemaphore);
+        if (!Util_CheckVkResult(vkCreateSemaphore(m_vkDevice, &semaphoreCreateInfo, UTIL_CPU_ALLOCATOR, &vkSemaphore), "vkCreateSemaphore")) 
+        {
+            String msg = "*********************** VulkanDevice::CreateVkSemaphore: Failed to create VkSemaphore !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
     }
-    void VulkanDevice::DestroyVkSemaphore(VkSemaphore vkSemaphore)
+    void VulkanDevice::DestroyVkSemaphore(const VkSemaphore& vkSemaphore)
     {
         if (vkSemaphore != VK_NULL_HANDLE)
         {
             vkDestroySemaphore(m_vkDevice, vkSemaphore, UTIL_CPU_ALLOCATOR);
         }
     }
+
 
     VkFence VulkanDevice::CreateVkFence(bool isCreateSignaled)
     {
@@ -465,9 +487,14 @@ namespace LostPeter
         VkFenceCreateInfo fenceCreateInfo;
         Util_ZeroStruct(fenceCreateInfo, VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
         fenceCreateInfo.flags = isCreateSignaled ? VK_FENCE_CREATE_SIGNALED_BIT : 0;
-        vkCreateFence(m_vkDevice, &fenceCreateInfo, UTIL_CPU_ALLOCATOR, &vkFence);
+        if (!Util_CheckVkResult(vkCreateFence(m_vkDevice, &fenceCreateInfo, UTIL_CPU_ALLOCATOR, &vkFence), "vkCreateFence")) 
+        {
+            String msg = "*********************** VulkanDevice::CreateVkFence: Failed to create VkFence !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
     }
-    void VulkanDevice::DestroyVkFence(VkFence vkFence)
+    void VulkanDevice::DestroyVkFence(const VkFence& vkFence)
     {
         if (vkFence != VK_NULL_HANDLE)
         {
@@ -475,5 +502,53 @@ namespace LostPeter
         }
     }
 
+
+    void VulkanDevice::CreateVkBuffer(VkDeviceSize size, 
+                                      VkBufferUsageFlags usage, 
+                                      VkMemoryPropertyFlags properties, 
+                                      VkBuffer& vkBuffer, 
+                                      VkDeviceMemory& vkBufferMemory)
+    {
+        VkBufferCreateInfo bufferInfo = {};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferInfo.size = size;
+        bufferInfo.usage = usage;
+        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        if (!Util_CheckVkResult(vkCreateBuffer(m_vkDevice, &bufferInfo, UTIL_CPU_ALLOCATOR, &vkBuffer), "vkCreateBuffer")) 
+        {
+            String msg = "*********************** VulkanDevice::CreateVkBuffer: Failed to create VkBuffer !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+
+        VkMemoryRequirements memRequirements = { };
+        vkGetBufferMemoryRequirements(m_vkDevice, vkBuffer, &memRequirements);
+        VkMemoryAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+        if (vkAllocateMemory(m_vkDevice, &allocInfo, UTIL_CPU_ALLOCATOR, &vkBufferMemory) != VK_SUCCESS) 
+        {
+            String msg = "*********************** VulkanDevice::CreateVkBuffer: Failed to allocate VkDeviceMemory !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+        vkBindBufferMemory(m_vkDevice, vkBuffer, vkBufferMemory, 0);
+    }
+    void VulkanDevice::CopyVkBuffer(const VkCommandBuffer& vkCommandBuffer, const VkBuffer& vkBufferSrc, const VkBuffer& vkBufferDst, VkDeviceSize size)
+    {
+        VkBufferCopy copyRegion = {};
+        copyRegion.size = size;
+        vkCmdCopyBuffer(vkCommandBuffer, vkBufferSrc, vkBufferDst, 1, &copyRegion);
+    }
+    void VulkanDevice::DestroyVkBuffer(const VkBuffer& vkBuffer, const VkDeviceMemory& vkBufferMemory)
+    {
+        if (vkBuffer != VK_NULL_HANDLE)
+        {
+            vkDestroyBuffer(m_vkDevice, vkBuffer, UTIL_CPU_ALLOCATOR);
+            vkFreeMemory(m_vkDevice, vkBufferMemory, UTIL_CPU_ALLOCATOR);
+        }
+    }
 
 }; //LostPeter

@@ -200,8 +200,7 @@ namespace LostPeter
         {
             Util_LogInfo("VulkanInstance::createInstance: Create vulkan instance success !");
         }
-
-        //volkLoadInstanceOnly(m_vkInstance);
+        
         return true;
     }
 

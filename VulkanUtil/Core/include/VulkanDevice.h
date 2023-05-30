@@ -94,18 +94,28 @@ namespace LostPeter
 
         bool isSupportPresent(VulkanQueue* pQueue, VkSurfaceKHR surface);
 
+        uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
     /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
     public:
         //VkSemaphore
         VkSemaphore CreateVkSemaphore();
         void CreateVkSemaphore(VkSemaphore& vkSemaphore);
-        void DestroyVkSemaphore(VkSemaphore vkSemaphore);
+        void DestroyVkSemaphore(const VkSemaphore& vkSemaphore);
         
         //VkFence
         VkFence CreateVkFence(bool isCreateSignaled);
         void CreateVkFence(bool isCreateSignaled, VkFence& vkFence);
-        void DestroyVkFence(VkFence vkFence);
+        void DestroyVkFence(const VkFence& vkFence);
+
+        //VkBuffer
+        void CreateVkBuffer(VkDeviceSize size, 
+                            VkBufferUsageFlags usage, 
+                            VkMemoryPropertyFlags properties, 
+                            VkBuffer& vkBuffer, 
+                            VkDeviceMemory& vkBufferMemory);
+        void CopyVkBuffer(const VkCommandBuffer& vkCommandBuffer, const VkBuffer& vkBufferSrc, const VkBuffer& vkBufferDst, VkDeviceSize size);
+        void DestroyVkBuffer(const VkBuffer& vkBuffer, const VkDeviceMemory& vkBufferMemory);
 
     };
 

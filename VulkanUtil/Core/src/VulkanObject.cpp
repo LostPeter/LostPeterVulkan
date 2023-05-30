@@ -19,9 +19,9 @@ namespace LostPeter
     VulkanObject::VulkanObject(const String& strName)
         : m_strName(strName)
         , m_nRefCount(0)
-        , m_bIsInit(false)
-        , m_bIsShowSphere(false)
-		, m_bIsShowAABB(false)
+        // , m_bIsInit(false)
+        // , m_bIsShowSphere(false)
+		// , m_bIsShowAABB(false)
     {
         
     }

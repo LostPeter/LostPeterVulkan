@@ -27,7 +27,8 @@ namespace LostPeter
         VulkanDevice* m_pDevice;
 
     public:
-
+        UTIL_FORCEINLINE VulkanInstance* GetInstance() const { return m_pInstance; }
+        UTIL_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
 
     public:
         void Destroy();
