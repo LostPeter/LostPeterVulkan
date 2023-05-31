@@ -190,15 +190,17 @@ namespace LostPeter
 
     enum VulkanVertexType
     {
-        Vulkan_Vertex_Pos2Color4 = 0,                   //0:    Pos2Color4
-        Vulkan_Vertex_Pos3Normal3,                      //1:    Pos3Normal3
-        Vulkan_Vertex_Pos3Normal3Tex2,                  //2:    Pos3Normal3Tex2
-        Vulkan_Vertex_Pos2Color4Tex2,                   //3:    Pos2Color4Tex2
-        Vulkan_Vertex_Pos3Color4Tex2,                   //4:    Pos3Color4Tex2
-        Vulkan_Vertex_Pos3Color4Normal3Tex2,            //5:    Pos3Color4Normal3Tex2
-        Vulkan_Vertex_Pos3Color4Normal3Tex4,            //6:    Pos3Color4Normal3Tex4
-        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2,    //7:    Pos3Color4Normal3Tangent3Tex2
-        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4,    //8:    Pos3Color4Normal3Tangent3Tex4
+        Vulkan_Vertex_Pos2Color4 = 0,                           //0:    Pos2Color4
+        Vulkan_Vertex_Pos3Normal3,                              //1:    Pos3Normal3
+        Vulkan_Vertex_Pos3Normal3Tex2,                          //2:    Pos3Normal3Tex2
+        Vulkan_Vertex_Pos2Color4Tex2,                           //3:    Pos2Color4Tex2
+        Vulkan_Vertex_Pos3Color4Tex2,                           //4:    Pos3Color4Tex2                          (MeshVertexPCT)
+        Vulkan_Vertex_Pos3Color4Normal3Tex2,                    //5:    Pos3Color4Normal3Tex2
+        Vulkan_Vertex_Pos3Color4Normal3Tex4,                    //6:    Pos3Color4Normal3Tex4
+        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2,            //7:    Pos3Color4Normal3Tangent3Tex2           (MeshVertex)
+        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4,            //8:    Pos3Color4Normal3Tangent3Tex4           (MeshVertexUV2)
+        Vulkan_Vertex_Pos3Normal3Tangent3BlendWI8Tex2,          //9:    Pos3Normal3Tangent3BlendWI8Tex2 
+        Vulkan_Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2,    //10:   Pos3Color4Normal3Tangent3BlendWI8Tex2   (SkinMeshVertex)
 
         Vulkan_Vertex_Count
     };
@@ -564,13 +566,26 @@ namespace LostPeter
     struct Vertex_Pos3Normal3;
     struct Vertex_Pos2Color4Tex2;
     struct Vertex_Pos3Color4Tex2;
+    typedef Vertex_Pos3Color4Tex2 MeshVertexPCT;
+    typedef std::vector<MeshVertexPCT> MeshVertexPCTVector;
     struct Vertex_Pos3Color4Normal3Tex2;
     struct Vertex_Pos3Color4Normal3Tex4;
     struct Vertex_Pos3Color4Normal3Tangent3Tex2;
-    struct Vertex_Pos3Color4Normal3Tangent3Tex4;
     typedef Vertex_Pos3Color4Normal3Tangent3Tex2 MeshVertex;
+    typedef std::vector<MeshVertex> MeshVertexVector;
+    struct Vertex_Pos3Color4Normal3Tangent3Tex4;
+    typedef Vertex_Pos3Color4Normal3Tangent3Tex4 MeshVertexUV2;
+    typedef std::vector<MeshVertexUV2> MeshVertexUV2Vector;
+    struct Vertex_Pos3Normal3Tangent3BlendWI8Tex2;
+    struct Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2;
+    typedef Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 SkinMeshVertex;
+    typedef std::vector<SkinMeshVertex> SkinMeshVertexVector;
 
+    struct MeshPCTData;
     struct MeshData;
+    struct MeshUV2Data;
+    struct SkinMeshData;
+    
     struct SubmeshGeometry;
     struct MeshGeometry;
 

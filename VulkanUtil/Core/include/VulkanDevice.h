@@ -32,6 +32,7 @@ namespace LostPeter
         VkQueueFamilyPropertiesVector m_aVkQueueFamilyProperties;
         VkFormat2PropertiesMap m_mapExtensionFormatProperties;
         VkSampleCountFlagBits m_vkMaxMSAASamples;
+        VkCommandPool m_vkCommandPoolTransfer;
 
         VulkanInstance* m_pInstance;
         VulkanQueue* m_pQueueGraphics;
@@ -108,14 +109,106 @@ namespace LostPeter
         void CreateVkFence(bool isCreateSignaled, VkFence& vkFence);
         void DestroyVkFence(const VkFence& vkFence);
 
+        //VkCommandPool
+        VkCommandPool CreateVkCommandPool(VkCommandPoolCreateFlags flags,
+                                          uint32_t queueFamilyIndex);
+        void CreateVkCommandPool(VkCommandPoolCreateFlags flags,
+                                 uint32_t queueFamilyIndex, 
+                                 VkCommandPool& vkCommandPool);
+        
+        void DestroyVkCommandPool(const VkCommandPool& vkCommandPool);
+
+        //VkCommandBuffer
+        VkCommandBuffer AllocateVkCommandBuffer(const VkCommandPool& vkCommandPool,
+                                                VkCommandBufferLevel level);
+        void AllocateVkCommandBuffers(const VkCommandPool& vkCommandPool,
+                                      VkCommandBufferLevel level,
+                                      uint32_t commandBufferCount,
+                                      VkCommandBuffer* pCommandBuffers);
+        void FreeVkCommandBuffers(const VkCommandPool& vkCommandPool, 
+                                  uint32_t commandBufferCount, 
+                                  VkCommandBuffer* pCommandBuffer);
+        
+        void BeginVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer,
+                                  VkCommandBufferUsageFlags flags);
+        void EndVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer);
+        
+        //VkQueue
+        VkQueue GetVkQueue(uint32 queueFamilyIndex, uint32_t queueIndex);
+        void QueueSubmitVkCommandBuffers(const VkQueue& vkQueue,
+                                         uint32_t commandBufferCount, 
+                                         VkCommandBuffer* pCommandBuffer,
+                                         VkFence vkFence);
+        void QueueWaitIdle(const VkQueue& vkQueue);
+
         //VkBuffer
-        void CreateVkBuffer(VkDeviceSize size, 
+        bool CreateVkBuffer(VkDeviceSize size, 
                             VkBufferUsageFlags usage, 
                             VkMemoryPropertyFlags properties, 
                             VkBuffer& vkBuffer, 
                             VkDeviceMemory& vkBufferMemory);
-        void CopyVkBuffer(const VkCommandBuffer& vkCommandBuffer, const VkBuffer& vkBufferSrc, const VkBuffer& vkBufferDst, VkDeviceSize size);
+        bool CreateVkBufferVertex(void* pData, 
+                                  uint32_t bufSize, 
+                                  VkBuffer& vkBuffer, 
+                                  VkDeviceMemory& vkBufferMemory);
+        bool CreateVkBufferVertex(void* pData, 
+                                  uint32_t bufSize, 
+                                  VkBuffer& vkBuffer, 
+                                  VkDeviceMemory& vkBufferMemory, 
+                                  VkBuffer& vkBufferTransfer, 
+                                  VkDeviceMemory& vkBufferMemoryTransfer);
+        bool CreateVkBufferIndex(void* pData, 
+                                 uint32_t bufSize, 
+                                 VkBuffer& vkBuffer, 
+                                 VkDeviceMemory& vkBufferMemory);
+        bool CreateVkBufferIndex(void* pData, 
+                                 uint32_t bufSize, 
+                                 VkBuffer& vkBuffer, 
+                                 VkDeviceMemory& vkBufferMemory,
+                                 VkBuffer& vkBufferTransfer, 
+                                 VkDeviceMemory& vkBufferMemoryTransfer);
+        bool CreateVkUniformBuffer(VkDeviceSize bufSize, 
+                                   VkBuffer& vkBuffer, 
+                                   VkDeviceMemory& vkBufferMemory);
+        bool CreateVkUniformBuffers(VkDeviceSize bufSize, 
+                                    int bufCount,
+                                    VkBufferVector& aBuffer, 
+                                    VkDeviceMemoryVector& aBufferMemory);
+        void CopyVkBuffer(const VkCommandBuffer& vkCommandBuffer, 
+                          const VkBuffer& vkBufferSrc, 
+                          const VkBuffer& vkBufferDst, 
+                          VkDeviceSize size);
+        void CopyVkBuffer(const VkBuffer& vkBufferSrc, 
+                          const VkBuffer& vkBufferDst, 
+                          VkDeviceSize size);
+        void WriteVkBuffer(VkDeviceMemory& vkBufferMemory, 
+                           void* pData, 
+                           uint32_t nDataSize, 
+                           uint32_t nDataOffset,
+                           VkMemoryMapFlags flags = 0);
         void DestroyVkBuffer(const VkBuffer& vkBuffer, const VkDeviceMemory& vkBufferMemory);
+        void DestroyVkBuffers(VkBufferVector& aBuffer, VkDeviceMemoryVector& aBufferMemory);
+
+        void* MapVkDeviceMemory(const VkDeviceMemory& vkBufferMemory,
+                                uint32_t nDataSize, 
+                                uint32_t nDataOffset,
+                                VkMemoryMapFlags flags = 0);
+        bool MapVkDeviceMemory(const VkDeviceMemory& vkBufferMemory,
+                               uint32_t nDataSize, 
+                               uint32_t nDataOffset,
+                               VkMemoryMapFlags flags,
+                               void** ppData);
+        void UnmapVkDeviceMemory(const VkDeviceMemory& vkBufferMemory);
+
+        //VkImage
+
+
+    /////////////////////////////////////// Vulkan Utility Wrapper ////////////////////////////////////////
+    public:
+        //Command
+        VkCommandBuffer BeginSingleTimeCommands();
+        void EndSingleTimeCommands(VkCommandBuffer& vkCommandBuffer);
+
 
     };
 

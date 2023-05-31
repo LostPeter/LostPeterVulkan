@@ -69,15 +69,17 @@ namespace LostPeter
     //VulkanVertexType
     static String s_nameVertices[] = 
     {
-        "Pos2Color4",                       //0:    Pos2Color4
-        "Pos3Normal3",                      //1:    Pos3Normal3
-        "Pos3Normal3Tex2",                  //2:    Pos3Normal3Tex2
-        "Pos2Color4Tex2",                   //3:    Pos2Color4Tex2
-        "Pos3Color4Tex2",                   //4:    Pos3Color4Tex2
-        "Pos3Color4Normal3Tex2",            //5:    Pos3Color4Normal3Tex2
-        "Pos3Color4Normal3Tex4",            //6:    Pos3Color4Normal3Tex4
-        "Pos3Color4Normal3Tangent3Tex2",    //7:    Pos3Color4Normal3Tangent3Tex2
-        "Pos3Color4Normal3Tangent3Tex4",    //8:    Pos3Color4Normal3Tangent3Tex4
+        "Pos2Color4",                               //0:    Pos2Color4
+        "Pos3Normal3",                              //1:    Pos3Normal3
+        "Pos3Normal3Tex2",                          //2:    Pos3Normal3Tex2
+        "Pos2Color4Tex2",                           //3:    Pos2Color4Tex2
+        "Pos3Color4Tex2",                           //4:    Pos3Color4Tex2
+        "Pos3Color4Normal3Tex2",                    //5:    Pos3Color4Normal3Tex2
+        "Pos3Color4Normal3Tex4",                    //6:    Pos3Color4Normal3Tex4
+        "Pos3Color4Normal3Tangent3Tex2",            //7:    Pos3Color4Normal3Tangent3Tex2
+        "Pos3Color4Normal3Tangent3Tex4",            //8:    Pos3Color4Normal3Tangent3Tex4
+        "Pos3Normal3Tangent3BlendWI8Tex2",          //9:    Pos3Normal3Tangent3BlendWI8Tex2
+        "Pos3Color4Normal3Tangent3BlendWI8Tex2",    //10:   Pos3Color4Normal3Tangent3BlendWI8Tex2
     };
     const String& Util_GetVertexTypeName(VulkanVertexType type)
     {

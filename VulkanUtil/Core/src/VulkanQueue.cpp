@@ -39,14 +39,14 @@ namespace LostPeter
 
     bool VulkanQueue::Init(VulkanDevice* pDevice, uint32 nFamilyIndex)
     {
-        // m_pDevice = pDevice;
-        // m_nFamilyIndex = nFamilyIndex;
-        // vkGetDeviceQueue(m_pDevice->GetVkDevice(), m_nFamilyIndex, 0, &m_vkQueue);
-        // if (m_vkQueue == VK_NULL_HANDLE)
-        // {
-        //     Util_LogError("*********************** VulkanQueue::Init: vkGetDeviceQueue failed !");
-        //     return false;
-        // }
+        m_pDevice = pDevice;
+        m_nFamilyIndex = nFamilyIndex;
+        m_vkQueue = m_pDevice->GetVkQueue(m_nFamilyIndex, 0);
+        if (m_vkQueue == VK_NULL_HANDLE)
+        {
+            Util_LogError("*********************** VulkanQueue::Init: GetVkQueue failed !");
+            return false;
+        }
 
         return true;
     }

@@ -54,10 +54,10 @@ namespace LostPeter
                           uint32_t countData,
                           bool bIsDeleteData,
                           bool bIsUpdateData) = 0;
-        // virtual bool Init(MeshPCTData& data, bool bIsUpdateData) = 0;
-        // virtual bool Init(MeshData& data, bool bIsUpdateData) = 0;
-        // virtual bool Init(MeshUV2Data& data, bool bIsUpdateData) = 0;
-        // virtual bool Init(SkinMeshData& data, bool bIsUpdateData) = 0;
+        virtual bool Init(MeshPCTData& data, bool bIsUpdateData) = 0;
+        virtual bool Init(MeshData& data, bool bIsUpdateData) = 0;
+        virtual bool Init(MeshUV2Data& data, bool bIsUpdateData) = 0;
+        virtual bool Init(SkinMeshData& data, bool bIsUpdateData) = 0;
 
         virtual bool UpdateData(void* pData, uint32_t sizeDataByte, uint32_t countData, bool bIsDeleteData, bool bIsUpdateData) = 0;
 

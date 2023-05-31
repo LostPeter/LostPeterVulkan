@@ -60,4 +60,14 @@ namespace LostPeter
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex4::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex4::s_aAttributeDescriptions;
 
+    //////////////////////////////// Vertex_Pos3Normal3Tangent3BlendWI8Tex2 //////////
+    //9: Vulkan_Vertex_Pos3Normal3Tangent3BlendWI8Tex2
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Normal3Tangent3BlendWI8Tex2::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Normal3Tangent3BlendWI8Tex2::s_aAttributeDescriptions;
+
+    //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 ////
+    //10: Vulkan_Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2
+    VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2::s_aBindingDescriptions;
+    VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2::s_aAttributeDescriptions;
+
 }; //LostPeter

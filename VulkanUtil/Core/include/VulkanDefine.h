@@ -1128,16 +1128,482 @@ namespace LostPeter
     };
 
 
+    //////////////////////////////// Vertex_Pos3Normal3Tangent3BlendWI8Tex2 //////////
+    //9:    Vulkan_Vertex_Pos3Normal3Tangent3BlendWI8Tex2
+    struct Vertex_Pos3Normal3Tangent3BlendWI8Tex2
+    {
+        static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
+        static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
+
+        Vector3 pos;
+        Vector3 normal;
+        Vector3 tangent;
+        Vector4 blendweight;
+        Vector4 blendindex;
+        Vector2 texCoord;
+
+
+        Vertex_Pos3Normal3Tangent3BlendWI8Tex2()
+        {
+            Reset();
+        }
+
+        Vertex_Pos3Normal3Tangent3BlendWI8Tex2(const Vector3& _pos, 
+                                               const Vector3& _normal, 
+                                               const Vector3& _tangent, 
+                                               const Vector4& _blendweight,
+                                               const Vector4& _blendindex,
+                                               const Vector2& _texCoord)
+            : pos(_pos)
+            , normal(_normal)
+            , tangent(_tangent)
+            , blendweight(_blendweight)
+            , blendindex(_blendindex)
+            , texCoord(_texCoord)
+        {
+            
+        }
+
+        Vertex_Pos3Normal3Tangent3BlendWI8Tex2(float px, float py, float pz,
+                                               float nx, float ny, float nz,
+                                               float tx, float ty, float tz,
+                                               float bwx, float bwy, float bwz, float bww,
+                                               float bix, float biy, float biz, float biw,  
+                                               float u, float v)
+            : pos(px, py, pz)
+            , normal(nx, ny, nz)
+            , tangent(tx, ty, tz)
+            , blendweight(bwx, bwy, bwz, bww)
+            , blendindex(bix, biy, biz, biw)
+            , texCoord(u, v)
+        {
+
+        }
+
+        static const VkVertexInputBindingDescriptionVector& GetBindingDescriptions() 
+        {
+            if (s_aBindingDescriptions.empty())
+            {
+                createBindingDescriptions();
+            }
+            return s_aBindingDescriptions;
+        } 
+        static VkVertexInputBindingDescriptionVector* GetBindingDescriptionsPtr()
+        {
+            if (s_aBindingDescriptions.empty())
+            {
+                createBindingDescriptions();
+            }
+            return &s_aBindingDescriptions;
+        }
+        static void createBindingDescriptions()
+        {
+            s_aBindingDescriptions.clear();
+
+            VkVertexInputBindingDescription bindingDescription0 = {};
+            bindingDescription0.binding = 0;
+            bindingDescription0.stride = sizeof(Vertex_Pos3Normal3Tangent3BlendWI8Tex2);
+            bindingDescription0.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+            s_aBindingDescriptions.push_back(bindingDescription0);
+        }
+
+        static const VkVertexInputAttributeDescriptionVector& GetAttributeDescriptions()
+        {
+            if (s_aAttributeDescriptions.empty())
+            {
+                createAttributeDescriptions();
+            }
+            return s_aAttributeDescriptions;
+        }
+        static VkVertexInputAttributeDescriptionVector* GetAttributeDescriptionsPtr()
+        {
+            if (s_aAttributeDescriptions.empty())
+            {
+                createAttributeDescriptions();
+            }
+            return &s_aAttributeDescriptions;
+        }
+        static void createAttributeDescriptions()
+        {
+            s_aAttributeDescriptions.clear();
+
+            VkVertexInputAttributeDescription attributeDescription0 = {};
+            attributeDescription0.binding = 0;
+            attributeDescription0.location = 0;
+            attributeDescription0.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription0.offset = offsetof(Vertex_Pos3Normal3Tangent3BlendWI8Tex2, pos);
+            s_aAttributeDescriptions.push_back(attributeDescription0);
+
+            VkVertexInputAttributeDescription attributeDescription1 = {};
+            attributeDescription1.binding = 0;
+            attributeDescription1.location = 1;
+            attributeDescription1.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription1.offset = offsetof(Vertex_Pos3Normal3Tangent3BlendWI8Tex2, normal);
+            s_aAttributeDescriptions.push_back(attributeDescription1);
+
+            VkVertexInputAttributeDescription attributeDescription2 = {};
+            attributeDescription2.binding = 0;
+            attributeDescription2.location = 2;
+            attributeDescription2.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription2.offset = offsetof(Vertex_Pos3Normal3Tangent3BlendWI8Tex2, tangent);
+            s_aAttributeDescriptions.push_back(attributeDescription2);
+
+            VkVertexInputAttributeDescription attributeDescription3 = {};
+            attributeDescription3.binding = 0;
+            attributeDescription3.location = 3;
+            attributeDescription3.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            attributeDescription3.offset = offsetof(Vertex_Pos3Normal3Tangent3BlendWI8Tex2, blendweight);
+            s_aAttributeDescriptions.push_back(attributeDescription3);
+
+            VkVertexInputAttributeDescription attributeDescription4 = {};
+            attributeDescription4.binding = 0;
+            attributeDescription4.location = 4;
+            attributeDescription4.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            attributeDescription4.offset = offsetof(Vertex_Pos3Normal3Tangent3BlendWI8Tex2, blendindex);
+            s_aAttributeDescriptions.push_back(attributeDescription4);
+
+            VkVertexInputAttributeDescription attributeDescription5 = {};
+            attributeDescription5.binding = 0;
+            attributeDescription5.location = 5;
+            attributeDescription5.format = VK_FORMAT_R32G32_SFLOAT;
+            attributeDescription5.offset = offsetof(Vertex_Pos3Normal3Tangent3BlendWI8Tex2, texCoord);
+            s_aAttributeDescriptions.push_back(attributeDescription5);
+        }
+
+        bool operator==(const Vertex_Pos3Normal3Tangent3BlendWI8Tex2& other) const 
+        {
+            return this->pos == other.pos && 
+                this->normal == other.normal && 
+                this->tangent == other.tangent && 
+                this->blendweight == other.blendweight &&
+                this->blendindex == other.blendindex &&
+                this->texCoord == other.texCoord;
+        }
+
+        void Reset()
+        {
+            this->pos = Vector3(0, 0, 0);
+            this->normal = Vector3(0, 1, 0);
+            this->tangent = Vector3(0, 0, 1);
+            this->blendweight = Vector4(0, 0, 0, 0);
+            this->blendindex = Vector4(0, 0, 0, 0);
+            this->texCoord = Vector2(0, 0);
+        }
+    };
+
+
+    //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 ////
+    //10:    Vulkan_Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2
+    struct Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2     //SkinMeshVertex
+    {
+        static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
+        static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
+
+        Vector3 pos;
+        Vector4 color;
+        Vector3 normal;
+        Vector3 tangent;
+        Vector4 blendweight;
+        Vector4 blendindex;
+        Vector2 texCoord;
+
+
+        Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2()
+        {
+            Reset();
+        }
+
+        Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2(const Vector3& _pos, 
+                                                     const Vector4& _color, 
+                                                     const Vector3& _normal, 
+                                                     const Vector3& _tangent, 
+                                                     const Vector4& _blendweight,
+                                                     const Vector4& _blendindex,
+                                                     const Vector2& _texCoord)
+            : pos(_pos)
+            , color(_color)
+            , normal(_normal)
+            , tangent(_tangent)
+            , blendweight(_blendweight)
+            , blendindex(_blendindex)
+            , texCoord(_texCoord)
+        {
+            
+        }
+
+        Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2(float px, float py, float pz,
+                                                     float cx, float cy, float cz, float cw,
+                                                     float nx, float ny, float nz,
+                                                     float tx, float ty, float tz,
+                                                     float bwx, float bwy, float bwz, float bww,
+                                                     float bix, float biy, float biz, float biw,  
+                                                     float u, float v)
+            : pos(px, py, pz)
+            , color(cx, cy, cz, cw)
+            , normal(nx, ny, nz)
+            , tangent(tx, ty, tz)
+            , blendweight(bwx, bwy, bwz, bww)
+            , blendindex(bix, biy, biz, biw)
+            , texCoord(u, v)
+        {
+
+        }
+
+        static const VkVertexInputBindingDescriptionVector& GetBindingDescriptions() 
+        {
+            if (s_aBindingDescriptions.empty())
+            {
+                createBindingDescriptions();
+            }
+            return s_aBindingDescriptions;
+        } 
+        static VkVertexInputBindingDescriptionVector* GetBindingDescriptionsPtr()
+        {
+            if (s_aBindingDescriptions.empty())
+            {
+                createBindingDescriptions();
+            }
+            return &s_aBindingDescriptions;
+        }
+        static void createBindingDescriptions()
+        {
+            s_aBindingDescriptions.clear();
+
+            VkVertexInputBindingDescription bindingDescription0 = {};
+            bindingDescription0.binding = 0;
+            bindingDescription0.stride = sizeof(Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2);
+            bindingDescription0.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+            s_aBindingDescriptions.push_back(bindingDescription0);
+        }
+
+        static const VkVertexInputAttributeDescriptionVector& GetAttributeDescriptions()
+        {
+            if (s_aAttributeDescriptions.empty())
+            {
+                createAttributeDescriptions();
+            }
+            return s_aAttributeDescriptions;
+        }
+        static VkVertexInputAttributeDescriptionVector* GetAttributeDescriptionsPtr()
+        {
+            if (s_aAttributeDescriptions.empty())
+            {
+                createAttributeDescriptions();
+            }
+            return &s_aAttributeDescriptions;
+        }
+        static void createAttributeDescriptions()
+        {
+            s_aAttributeDescriptions.clear();
+
+            VkVertexInputAttributeDescription attributeDescription0 = {};
+            attributeDescription0.binding = 0;
+            attributeDescription0.location = 0;
+            attributeDescription0.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription0.offset = offsetof(Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2, pos);
+            s_aAttributeDescriptions.push_back(attributeDescription0);
+
+            VkVertexInputAttributeDescription attributeDescription1 = {};
+            attributeDescription1.binding = 0;
+            attributeDescription1.location = 1;
+            attributeDescription1.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            attributeDescription1.offset = offsetof(Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2, color);
+            s_aAttributeDescriptions.push_back(attributeDescription1);
+
+            VkVertexInputAttributeDescription attributeDescription2 = {};
+            attributeDescription2.binding = 0;
+            attributeDescription2.location = 2;
+            attributeDescription2.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription2.offset = offsetof(Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2, normal);
+            s_aAttributeDescriptions.push_back(attributeDescription2);
+
+            VkVertexInputAttributeDescription attributeDescription3 = {};
+            attributeDescription3.binding = 0;
+            attributeDescription3.location = 3;
+            attributeDescription3.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription3.offset = offsetof(Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2, tangent);
+            s_aAttributeDescriptions.push_back(attributeDescription3);
+
+            VkVertexInputAttributeDescription attributeDescription4 = {};
+            attributeDescription4.binding = 0;
+            attributeDescription4.location = 4;
+            attributeDescription4.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            attributeDescription4.offset = offsetof(Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2, blendweight);
+            s_aAttributeDescriptions.push_back(attributeDescription4);
+
+            VkVertexInputAttributeDescription attributeDescription5 = {};
+            attributeDescription5.binding = 0;
+            attributeDescription5.location = 5;
+            attributeDescription5.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            attributeDescription5.offset = offsetof(Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2, blendindex);
+            s_aAttributeDescriptions.push_back(attributeDescription5);
+
+            VkVertexInputAttributeDescription attributeDescription6 = {};
+            attributeDescription6.binding = 0;
+            attributeDescription6.location = 6;
+            attributeDescription6.format = VK_FORMAT_R32G32_SFLOAT;
+            attributeDescription6.offset = offsetof(Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2, texCoord);
+            s_aAttributeDescriptions.push_back(attributeDescription6);
+        }
+
+        bool operator==(const Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2& other) const 
+        {
+            return this->pos == other.pos && 
+                this->color == other.color && 
+                this->normal == other.normal && 
+                this->tangent == other.tangent && 
+                this->blendweight == other.blendweight &&
+                this->blendindex == other.blendindex &&
+                this->texCoord == other.texCoord;
+        }
+
+        void Reset()
+        {
+            this->pos = Vector3(0, 0, 0);
+            this->color = Vector4(0, 0, 0, 1);
+            this->normal = Vector3(0, 1, 0);
+            this->tangent = Vector3(0, 0, 1);
+            this->blendweight = Vector4(0, 0, 0, 0);
+            this->blendindex = Vector4(0, 0, 0, 0);
+            this->texCoord = Vector2(0, 0);
+        }
+    };
+
+    //////////////////////////////// MeshPCTData ////////////////////////////////////
+    struct MeshPCTData
+    {
+        const size_t c_nMaxUint16 = std::numeric_limits<uint16>::max();
+
+        MeshVertexPCTVector vertices;
+        Indices16Vector indices16;
+        Indices32Vector indices32;
+        bool bIsFlipY;
+        //VulkanAABB aabb;
+
+        MeshPCTData()
+            : bIsFlipY(true)
+        {
+
+        }
+
+        void Clear()
+        {
+            vertices.clear();
+            indices16.clear();
+            indices32.clear();
+        }
+
+        void ReserveVertexCount(size_t nCount)
+        {
+            vertices.reserve(nCount);
+        }
+        void ResizeVertexCount(size_t nCount)
+        {
+            vertices.resize(nCount);
+        }
+        void AddVertex(const MeshVertexPCT& meshVertex)
+        {
+            //aabb.Merge(meshVertex.pos);
+            vertices.push_back(meshVertex);
+        }
+
+        void ReserveIndexCount(size_t nCount)
+        {
+            indices32.reserve(nCount);
+        }
+        void ResizeIndexCount(size_t nCount)
+        {
+            indices32.resize(nCount);
+        }
+        void AddIndex(uint32 nIndex)
+        {
+            indices32.push_back(nIndex);
+        }
+        void AddIndexTriangle(uint32 nIndex1, uint32 nIndex2, uint32 nIndex3)
+        {
+            indices32.push_back(nIndex1);
+            indices32.push_back(nIndex2);
+            indices32.push_back(nIndex3);
+        }
+
+
+        Indices16Vector& GetIndices16()
+        {
+            return indices16;
+        }
+        Indices32Vector& GetIndices32()
+        {
+            return indices32;
+        }
+
+        void* GetVertexData()
+        {
+            return (void*)vertices.data();
+        }
+        uint32 GetVertexCount()
+        {
+            return (uint32)vertices.size();
+        }
+        uint32 GetVertexDataSize()
+        {
+            return (uint32)(vertices.size() * sizeof(MeshVertexPCT));
+        }
+
+        void* GetIndexData()
+        {
+            EnsureIndices16();
+            if (!indices16.empty())
+            {
+                return (void*)indices16.data();
+            }
+            return (void*)indices32.data();
+        }
+        uint32 GetIndexCount()
+        {
+            return (uint32)indices32.size();
+        }
+        uint32 GetIndexDataSize()
+        {
+            EnsureIndices16();
+            if (!indices16.empty())
+            {
+                return (uint32)(indices16.size() * sizeof(uint16));
+            }
+            return (uint32)(indices32.size() * sizeof(uint32));
+        }
+        
+
+        bool IsIndices16()
+        {
+            return indices32.size() < c_nMaxUint16;
+        }
+        void EnsureIndices16()
+        {
+            if (IsIndices16() && indices16.empty())
+            {
+                indices16.clear();
+                indices16.resize(indices32.size());
+                for (size_t i = 0; i < indices32.size(); i++)
+                {
+                    indices16[i] = (uint16)indices32[i];
+                }
+            }
+        }
+    };
+    typedef std::vector<MeshPCTData> MeshPCTDataVector;
+
+
 	//////////////////////////////// MeshData ///////////////////////////////////////
     struct utilExport MeshData
     {
-        const size_t c_nMaxUint16 = std::numeric_limits<unsigned short>::max();
+        const size_t c_nMaxUint16 = std::numeric_limits<uint16>::max();
 
         String nameMesh;
         std::vector<MeshVertex> vertices;
-        std::vector<unsigned short> indices16;
-        std::vector<unsigned int> indices32;
+        Indices16Vector indices16;
+        Indices32Vector indices32;
         bool bIsFlipY;
+        //VulkanAABB aabb;
 
         MeshData()
             : bIsFlipY(true)
@@ -1163,6 +1629,7 @@ namespace LostPeter
         }
         void AddVertex(const MeshVertex& meshVertex)
         {
+            //aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
         }
 
@@ -1174,23 +1641,23 @@ namespace LostPeter
         {
             indices32.resize(nCount);
         }
-        void AddIndex(unsigned int nIndex)
+        void AddIndex(uint32 nIndex)
         {
             indices32.push_back(nIndex);
         }
-        void AddIndexTriangle(unsigned int nIndex1, unsigned int nIndex2, unsigned int nIndex3)
+        void AddIndexTriangle(uint32 nIndex1, uint32 nIndex2, uint32 nIndex3)
         {
             indices32.push_back(nIndex1);
             indices32.push_back(nIndex2);
             indices32.push_back(nIndex3);
         }
 
-        std::vector<unsigned short>& GetIndices16()
+        Indices16Vector& GetIndices16()
         {
             return indices16;
         }
 
-        std::vector<unsigned int>& GetIndices32()
+        Indices32Vector& GetIndices32()
         {
             return indices32;
         }
@@ -1199,13 +1666,13 @@ namespace LostPeter
         {
             return (void*)vertices.data();
         }
-        unsigned int GetVertexCount()
+        uint32 GetVertexCount()
         {
-            return (unsigned int)vertices.size();
+            return (uint32)vertices.size();
         }
-        unsigned int GetVertexDataSize()
+        uint32 GetVertexDataSize()
         {
-            return (unsigned int)(vertices.size() * sizeof(MeshVertex));
+            return (uint32)(vertices.size() * sizeof(MeshVertex));
         }
 
         void* GetIndexData()
@@ -1217,18 +1684,18 @@ namespace LostPeter
             }
             return (void*)indices32.data();
         }
-        unsigned int GetIndexCount()
+        uint32 GetIndexCount()
         {
-            return (unsigned int)indices32.size();
+            return (uint32)indices32.size();
         }
-        unsigned int GetIndexDataSize()
+        uint32 GetIndexDataSize()
         {
             EnsureIndices16();
             if (!indices16.empty())
             {
-                return (unsigned int)(indices16.size() * sizeof(unsigned short));
+                return (uint32)(indices16.size() * sizeof(uint16));
             }
-            return (unsigned int)(indices32.size() * sizeof(unsigned int));
+            return (uint32)(indices32.size() * sizeof(uint32));
         }
         
 
@@ -1244,17 +1711,267 @@ namespace LostPeter
                 indices16.resize(indices32.size());
                 for (size_t i = 0; i < indices32.size(); i++)
                 {
-                    indices16[i] = (unsigned short)indices32[i];
+                    indices16[i] = (uint16)indices32[i];
                 }
             }
         }
     };
+    typedef std::vector<MeshData> MeshDataVector;
+
+
+    //////////////////////////////// MeshUV2Data ////////////////////////////////////
+    struct MeshUV2Data
+    {
+        const size_t c_nMaxUint16 = std::numeric_limits<uint16>::max();
+
+        MeshVertexUV2Vector vertices;
+        Indices16Vector indices16;
+        Indices32Vector indices32;
+        bool bIsFlipY;
+        //VulkanAABB aabb;
+
+        MeshUV2Data()
+            : bIsFlipY(true)
+        {
+
+        }
+
+        void Clear()
+        {
+            vertices.clear();
+            indices16.clear();
+            indices32.clear();
+        }
+
+        void ReserveVertexCount(size_t nCount)
+        {
+            vertices.reserve(nCount);
+        }
+        void ResizeVertexCount(size_t nCount)
+        {
+            vertices.resize(nCount);
+        }
+        void AddVertex(const MeshVertexUV2& meshVertex)
+        {
+            //aabb.Merge(meshVertex.pos);
+            vertices.push_back(meshVertex);
+        }
+
+        void ReserveIndexCount(size_t nCount)
+        {
+            indices32.reserve(nCount);
+        }
+        void ResizeIndexCount(size_t nCount)
+        {
+            indices32.resize(nCount);
+        }
+        void AddIndex(uint32 nIndex)
+        {
+            indices32.push_back(nIndex);
+        }
+        void AddIndexTriangle(uint32 nIndex1, uint32 nIndex2, uint32 nIndex3)
+        {
+            indices32.push_back(nIndex1);
+            indices32.push_back(nIndex2);
+            indices32.push_back(nIndex3);
+        }
+
+
+        Indices16Vector& GetIndices16()
+        {
+            return indices16;
+        }
+        Indices32Vector& GetIndices32()
+        {
+            return indices32;
+        }
+
+        void* GetVertexData()
+        {
+            return (void*)vertices.data();
+        }
+        uint32 GetVertexCount()
+        {
+            return (uint32)vertices.size();
+        }
+        uint32 GetVertexDataSize()
+        {
+            return (uint32)(vertices.size() * sizeof(MeshVertexUV2));
+        }
+
+        void* GetIndexData()
+        {
+            EnsureIndices16();
+            if (!indices16.empty())
+            {
+                return (void*)indices16.data();
+            }
+            return (void*)indices32.data();
+        }
+        uint32 GetIndexCount()
+        {
+            return (uint32)indices32.size();
+        }
+        uint32 GetIndexDataSize()
+        {
+            EnsureIndices16();
+            if (!indices16.empty())
+            {
+                return (uint32)(indices16.size() * sizeof(uint16));
+            }
+            return (uint32)(indices32.size() * sizeof(uint32));
+        }
+        
+
+        bool IsIndices16()
+        {
+            return indices32.size() < c_nMaxUint16;
+        }
+        void EnsureIndices16()
+        {
+            if (IsIndices16() && indices16.empty())
+            {
+                indices16.clear();
+                indices16.resize(indices32.size());
+                for (size_t i = 0; i < indices32.size(); i++)
+                {
+                    indices16[i] = (uint16)indices32[i];
+                }
+            }
+        }
+    };
+    typedef std::vector<MeshUV2Data> MeshUV2DataVector;
+
+
+    //////////////////////////////// MeshSkinData ///////////////////////////////////
+    struct SkinMeshData
+    {
+        const size_t c_nMaxUint16 = std::numeric_limits<uint16>::max();
+
+        SkinMeshVertexVector vertices;
+        Indices16Vector indices16;
+        Indices32Vector indices32;
+        bool bIsFlipY;
+        //VulkanAABB aabb;
+
+        SkinMeshData()
+            : bIsFlipY(true)
+        {
+
+        }
+
+        void Clear()
+        {
+            vertices.clear();
+            indices16.clear();
+            indices32.clear();
+        }
+
+        void ReserveVertexCount(size_t nCount)
+        {
+            vertices.reserve(nCount);
+        }
+        void ResizeVertexCount(size_t nCount)
+        {
+            vertices.resize(nCount);
+        }
+        void AddVertex(const SkinMeshVertex& meshVertex)
+        {
+            //aabb.Merge(meshVertex.pos);
+            vertices.push_back(meshVertex);
+        }
+
+        void ReserveIndexCount(size_t nCount)
+        {
+            indices32.reserve(nCount);
+        }
+        void ResizeIndexCount(size_t nCount)
+        {
+            indices32.resize(nCount);
+        }
+        void AddIndex(uint32 nIndex)
+        {
+            indices32.push_back(nIndex);
+        }
+        void AddIndexTriangle(uint32 nIndex1, uint32 nIndex2, uint32 nIndex3)
+        {
+            indices32.push_back(nIndex1);
+            indices32.push_back(nIndex2);
+            indices32.push_back(nIndex3);
+        }
+
+
+        Indices16Vector& GetIndices16()
+        {
+            return indices16;
+        }
+        Indices32Vector& GetIndices32()
+        {
+            return indices32;
+        }
+
+        void* GetVertexData()
+        {
+            return (void*)vertices.data();
+        }
+        uint32 GetVertexCount()
+        {
+            return (uint32)vertices.size();
+        }
+        uint32 GetVertexDataSize()
+        {
+            return (uint32)(vertices.size() * sizeof(SkinMeshVertex));
+        }
+
+        void* GetIndexData()
+        {
+            EnsureIndices16();
+            if (!indices16.empty())
+            {
+                return (void*)indices16.data();
+            }
+            return (void*)indices32.data();
+        }
+        uint32 GetIndexCount()
+        {
+            return (uint32)indices32.size();
+        }
+        uint32 GetIndexDataSize()
+        {
+            EnsureIndices16();
+            if (!indices16.empty())
+            {
+                return (uint32)(indices16.size() * sizeof(uint16));
+            }
+            return (uint32)(indices32.size() * sizeof(uint32));
+        }
+
+
+        bool IsIndices16()
+        {
+            return indices32.size() < c_nMaxUint16;
+        }
+        void EnsureIndices16()
+        {
+            if (IsIndices16() && indices16.empty())
+            {
+                indices16.clear();
+                indices16.resize(indices32.size());
+                for (size_t i = 0; i < indices32.size(); i++)
+                {
+                    indices16[i] = (uint16)indices32[i];
+                }
+            }
+        }
+    };
+    typedef std::vector<SkinMeshData> SkinMeshDataVector;
+
 
 	//////////////////////////////// SubmeshGeometry ////////////////////////////////
     struct utilExport SubmeshGeometry
     {
-        unsigned int indexCount = 0;
-        unsigned int startIndexLocation = 0;
+        uint32 indexCount = 0;
+        uint32 startIndexLocation = 0;
         int32 baseVertexLocation = 0;
     };
 
@@ -1522,118 +2239,5 @@ namespace LostPeter
     };
 
 }; //LostPeter
-
-namespace std 
-{
-    template<> struct hash<LostPeter::Vertex_Pos2Color4> {
-        size_t operator()(LostPeter::Vertex_Pos2Color4 const& vertex) const 
-        {
-            size_t hash = std::hash<glm::vec2>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
-            hash = hash >> 1;
-            return hash;
-        }
-    };
-
-    template<> struct hash<LostPeter::Vertex_Pos3Normal3> {
-        size_t operator()(LostPeter::Vertex_Pos3Normal3 const& vertex) const 
-        {
-            size_t hash = std::hash<glm::vec2>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.normal) << 1);
-            hash = hash >> 1;
-            return hash;
-        }
-    };
-
-    template<> struct hash<LostPeter::Vertex_Pos3Normal3Tex2> {
-        size_t operator()(LostPeter::Vertex_Pos3Normal3Tex2 const& vertex) const 
-        {
-            size_t hash = std::hash<glm::vec2>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.normal) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec2>()(vertex.texCoord) << 1);
-            return hash;
-        }
-    };
-
-    template<> struct hash<LostPeter::Vertex_Pos2Color4Tex2> {
-        size_t operator()(LostPeter::Vertex_Pos2Color4Tex2 const& vertex) const 
-        {
-            size_t hash = std::hash<glm::vec2>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec2>()(vertex.texCoord) << 1);
-            return hash;
-        }
-    };
-
-    template<> struct hash<LostPeter::Vertex_Pos3Color4Tex2> {
-        size_t operator()(LostPeter::Vertex_Pos3Color4Tex2 const& vertex) const 
-        {
-            size_t hash = std::hash<glm::vec3>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec2>()(vertex.texCoord) << 1);
-            return hash;
-        }
-    };
-
-    template<> struct hash<LostPeter::Vertex_Pos3Color4Normal3Tex2> {
-        size_t operator()(LostPeter::Vertex_Pos3Color4Normal3Tex2 const& vertex) const
-        {
-            size_t hash = std::hash<glm::vec3>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.normal) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec2>()(vertex.texCoord) << 1);
-            return hash;
-        }
-    };
-
-    template<> struct hash<LostPeter::Vertex_Pos3Color4Normal3Tex4> {
-        size_t operator()(LostPeter::Vertex_Pos3Color4Normal3Tex4 const& vertex) const
-        {
-            size_t hash = std::hash<glm::vec3>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.normal) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec4>()(vertex.texCoord) << 1);
-            return hash;
-        }
-    };
-
-    template<> struct hash<LostPeter::Vertex_Pos3Color4Normal3Tangent3Tex2> {
-        size_t operator()(LostPeter::Vertex_Pos3Color4Normal3Tangent3Tex2 const& vertex) const
-        {
-            size_t hash = std::hash<glm::vec3>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.normal) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.tangent) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec2>()(vertex.texCoord) << 1);
-            return hash;
-        }
-    };
-
-    template<> struct hash<LostPeter::Vertex_Pos3Color4Normal3Tangent3Tex4> {
-        size_t operator()(LostPeter::Vertex_Pos3Color4Normal3Tangent3Tex4 const& vertex) const
-        {
-            size_t hash = std::hash<glm::vec3>()(vertex.pos);
-            hash = hash ^ (std::hash<glm::vec4>()(vertex.color) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.normal) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec3>()(vertex.tangent) << 1);
-            hash = hash >> 1;
-            hash = hash ^ (std::hash<glm::vec4>()(vertex.texCoord) << 1);
-            return hash;
-        }
-    };
-
-}; //std
 
 #endif

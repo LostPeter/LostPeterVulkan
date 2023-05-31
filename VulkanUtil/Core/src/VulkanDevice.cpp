@@ -24,6 +24,7 @@ namespace LostPeter
         , m_vkPhysicalDevice(vkPhysicalDevice)
         , m_pVkPhysicalDeviceFeatures2(nullptr)
         , m_vkMaxMSAASamples(VK_SAMPLE_COUNT_1_BIT)
+        , m_vkCommandPoolTransfer(VK_NULL_HANDLE)
         , m_pInstance(pInstance)
         , m_pQueueGraphics(nullptr)
         , m_pQueueCompute(nullptr)
@@ -348,6 +349,8 @@ namespace LostPeter
         m_pQueueTransfer = new VulkanQueue();
         m_pQueueTransfer->Init(this, queueFamilyIndex_Transfer);
 
+        m_vkCommandPoolTransfer = CreateVkCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, (uint32_t)queueFamilyIndex_Transfer);
+
         return true;
     }
     bool VulkanDevice::checkPixelFormats()
@@ -450,6 +453,7 @@ namespace LostPeter
     }
 
     /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
+    //VkSemaphore
     VkSemaphore VulkanDevice::CreateVkSemaphore()
     {
         VkSemaphore vkSemaphore;
@@ -476,6 +480,7 @@ namespace LostPeter
     }
 
 
+    //VkFence
     VkFence VulkanDevice::CreateVkFence(bool isCreateSignaled)
     {
         VkFence vkFence;
@@ -503,7 +508,138 @@ namespace LostPeter
     }
 
 
-    void VulkanDevice::CreateVkBuffer(VkDeviceSize size, 
+    //VkCommandPool
+    VkCommandPool VulkanDevice::CreateVkCommandPool(VkCommandPoolCreateFlags flags,
+                                                    uint32_t queueFamilyIndex)
+    {
+        VkCommandPool vkCommandPool;
+        CreateVkCommandPool(flags, 
+                            queueFamilyIndex,
+                            vkCommandPool);
+        return vkCommandPool;
+    }                                   
+    void VulkanDevice::CreateVkCommandPool(VkCommandPoolCreateFlags flags,
+                                           uint32_t queueFamilyIndex, 
+                                           VkCommandPool& vkCommandPool)
+    {
+        VkCommandPoolCreateInfo commandPoolInfo = {};
+        commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        commandPoolInfo.flags = flags;
+        commandPoolInfo.queueFamilyIndex = queueFamilyIndex;
+        if (!Util_CheckVkResult(vkCreateCommandPool(m_vkDevice, &commandPoolInfo, UTIL_CPU_ALLOCATOR, &vkCommandPool), "vkCreateCommandPool")) 
+        {
+            String msg = "*********************** VulkanWindow::CreateVkCommandPool: Failed to create command pool !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+    }
+    void VulkanDevice::DestroyVkCommandPool(const VkCommandPool& vkCommandPool)
+    {   
+        if (vkCommandPool != VK_NULL_HANDLE)
+        {
+            vkDestroyCommandPool(m_vkDevice, vkCommandPool, UTIL_CPU_ALLOCATOR);
+        }
+    }
+
+
+    //VkCommandBuffer
+    VkCommandBuffer VulkanDevice::AllocateVkCommandBuffer(const VkCommandPool& vkCommandPool,
+                                                          VkCommandBufferLevel level)
+    {
+        VkCommandBuffer vkCommandBuffer;
+        AllocateVkCommandBuffers(vkCommandPool,
+                                 level,
+                                 1,
+                                 &vkCommandBuffer);
+        return vkCommandBuffer;
+    }
+    void VulkanDevice::AllocateVkCommandBuffers(const VkCommandPool& vkCommandPool,
+                                                VkCommandBufferLevel level,
+                                                uint32_t commandBufferCount,
+                                                VkCommandBuffer* pCommandBuffers)
+    {
+        VkCommandBufferAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level = level;
+        allocInfo.commandPool = vkCommandPool;
+        allocInfo.commandBufferCount = commandBufferCount;
+        if (!Util_CheckVkResult(vkAllocateCommandBuffers(m_vkDevice, &allocInfo, pCommandBuffers), "vkAllocateCommandBuffers")) 
+        {
+            String msg = "*********************** VulkanDevice::AllocateVkCommandBuffers: Failed to allocate VkCommandBuffers !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+    }
+    void VulkanDevice::FreeVkCommandBuffers(const VkCommandPool& vkCommandPool, 
+                                            uint32_t commandBufferCount, 
+                                            VkCommandBuffer* pCommandBuffer)
+    {
+        if (pCommandBuffer != nullptr)
+        {
+            vkFreeCommandBuffers(m_vkDevice, vkCommandPool, commandBufferCount, pCommandBuffer);
+        }
+    }
+    
+    void VulkanDevice::BeginVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer,
+                                            VkCommandBufferUsageFlags flags)
+    {
+        VkCommandBufferBeginInfo beginInfo = {};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = flags;
+        if (!Util_CheckVkResult(vkBeginCommandBuffer(vkCommandBuffer, &beginInfo), "vkBeginCommandBuffer")) 
+        {
+            String msg = "*********************** VulkanDevice::BeginVkCommandBuffer: Failed to call vkBeginCommandBuffer !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+    }
+    void VulkanDevice::EndVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer)
+    {
+        if (!Util_CheckVkResult(vkEndCommandBuffer(vkCommandBuffer), "vkEndCommandBuffer")) 
+        {
+            String msg = "*********************** VulkanDevice::EndVkCommandBuffer: Failed to call vkEndCommandBuffer !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+    }
+
+
+    //VkQueue
+    VkQueue VulkanDevice::GetVkQueue(uint32 queueFamilyIndex, uint32_t queueIndex)
+    {
+        VkQueue vkQueue;
+        vkGetDeviceQueue(m_vkDevice, queueFamilyIndex, queueIndex, &vkQueue);
+        return vkQueue;
+    }
+    void VulkanDevice::QueueSubmitVkCommandBuffers(const VkQueue& vkQueue,
+                                                   uint32_t commandBufferCount, 
+                                                   VkCommandBuffer* pCommandBuffer,
+                                                   VkFence vkFence)
+    {
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = commandBufferCount;
+        submitInfo.pCommandBuffers = pCommandBuffer;
+        if (!Util_CheckVkResult(vkQueueSubmit(vkQueue, commandBufferCount, &submitInfo, vkFence), "vkQueueSubmit")) 
+        {
+            String msg = "*********************** VulkanDevice::QueueSubmitVkCommandBuffers: Failed to call vkQueueSubmit !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+    }
+    void VulkanDevice::QueueWaitIdle(const VkQueue& vkQueue)
+    {
+        if (!Util_CheckVkResult(vkQueueWaitIdle(vkQueue), "vkQueueWaitIdle")) 
+        {
+            String msg = "*********************** VulkanDevice::QueueWaitIdle: Failed to call vkQueueWaitIdle !";
+            Util_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+    }
+
+
+    //VkBuffer
+    bool VulkanDevice::CreateVkBuffer(VkDeviceSize size, 
                                       VkBufferUsageFlags usage, 
                                       VkMemoryPropertyFlags properties, 
                                       VkBuffer& vkBuffer, 
@@ -516,9 +652,8 @@ namespace LostPeter
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         if (!Util_CheckVkResult(vkCreateBuffer(m_vkDevice, &bufferInfo, UTIL_CPU_ALLOCATOR, &vkBuffer), "vkCreateBuffer")) 
         {
-            String msg = "*********************** VulkanDevice::CreateVkBuffer: Failed to create VkBuffer !";
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg);
+            Util_LogError("*********************** VulkanDevice::CreateVkBuffer: Failed to create VkBuffer !");
+            return false;
         }
 
         VkMemoryRequirements memRequirements = { };
@@ -527,21 +662,189 @@ namespace LostPeter
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
         allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
-
         if (vkAllocateMemory(m_vkDevice, &allocInfo, UTIL_CPU_ALLOCATOR, &vkBufferMemory) != VK_SUCCESS) 
         {
-            String msg = "*********************** VulkanDevice::CreateVkBuffer: Failed to allocate VkDeviceMemory !";
-            Util_LogError(msg.c_str());
-            throw std::runtime_error(msg);
+            Util_LogError("*********************** VulkanDevice::CreateVkBuffer: Failed to allocate VkDeviceMemory !");
+            return false;
         }
         vkBindBufferMemory(m_vkDevice, vkBuffer, vkBufferMemory, 0);
+
+        return true;
     }
-    void VulkanDevice::CopyVkBuffer(const VkCommandBuffer& vkCommandBuffer, const VkBuffer& vkBufferSrc, const VkBuffer& vkBufferDst, VkDeviceSize size)
+    bool VulkanDevice::CreateVkBufferVertex(void* pData, 
+                                            uint32_t bufSize, 
+                                            VkBuffer& vkBuffer, 
+                                            VkDeviceMemory& vkBufferMemory)
+    {
+        VkBuffer vkBufferTransfer;
+        VkDeviceMemory vkBufferMemoryTransfer;
+        if (!CreateVkBufferVertex(pData,  
+                                  bufSize, 
+                                  vkBuffer, 
+                                  vkBufferMemory, 
+                                  vkBufferTransfer, 
+                                  vkBufferMemoryTransfer))
+        {
+            Util_LogError("*********************** VulkanDevice::CreateVkBufferVertex: CreateVkBufferVertex failed !");
+            return false;
+        }
+        DestroyVkBuffer(vkBufferTransfer, vkBufferMemoryTransfer);
+
+        return true;
+    }
+    bool VulkanDevice::CreateVkBufferVertex(void* pData, 
+                                            uint32_t bufSize,
+                                            VkBuffer& vkBuffer, 
+                                            VkDeviceMemory& vkBufferMemory,
+                                            VkBuffer& vkBufferTransfer, 
+                                            VkDeviceMemory& vkBufferMemoryTransfer)
+    {
+        if (!CreateVkBuffer(bufSize, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                            vkBufferTransfer, 
+                            vkBufferMemoryTransfer))
+        {
+            Util_LogError("*********************** VulkanDevice::CreateVkBufferVertex: 1 CreateVkBuffer failed !");
+            return false;
+        }
+        WriteVkBuffer(vkBufferMemoryTransfer, pData, bufSize, 0);
+
+        if (!CreateVkBuffer(bufSize, 
+                            VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
+                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                            vkBuffer,
+                            vkBufferMemory))
+        {
+            Util_LogError("*********************** VulkanDevice::CreateVkBufferVertex: 2 CreateVkBuffer failed !");
+            return false;
+        }
+        CopyVkBuffer(vkBufferTransfer, vkBuffer, bufSize);
+
+        return true;
+    }
+    bool VulkanDevice::CreateVkBufferIndex(void* pData, 
+                                           uint32_t bufSize, 
+                                           VkBuffer& vkBuffer, 
+                                           VkDeviceMemory& vkBufferMemory)
+    {
+        VkBuffer vkBufferTransfer;
+        VkDeviceMemory vkBufferMemoryTransfer;
+        if (!CreateVkBufferIndex(pData, 
+                                 bufSize, 
+                                 vkBuffer, 
+                                 vkBufferMemory, 
+                                 vkBufferTransfer, 
+                                 vkBufferMemoryTransfer))
+        {
+            Util_LogError("*********************** VulkanDevice::CreateVkBufferIndex: CreateVkBufferIndex failed !");
+            return false;
+        }
+        DestroyVkBuffer(vkBufferTransfer, vkBufferMemoryTransfer);
+
+        return true;
+    }
+    bool VulkanDevice::CreateVkBufferIndex(void* pData, 
+                                           uint32_t bufSize,  
+                                           VkBuffer& vkBuffer, 
+                                           VkDeviceMemory& vkBufferMemory,
+                                           VkBuffer& vkBufferTransfer, 
+                                           VkDeviceMemory& vkBufferMemoryTransfer)
+    {
+        if (!CreateVkBuffer(bufSize, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBufferTransfer, 
+                            vkBufferMemoryTransfer))
+        {
+            Util_LogError("*********************** VulkanDevice::CreateVkBufferIndex: 1 CreateVkBuffer failed !");
+            return false;
+        }
+        WriteVkBuffer(vkBufferMemoryTransfer, pData, bufSize, 0);
+        
+        if (!CreateVkBuffer(bufSize, 
+                            VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
+                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            Util_LogError("*********************** VulkanDevice::CreateVkBufferIndex: 2 CreateVkBuffer failed !");
+            return false;
+        }
+        CopyVkBuffer(vkBufferTransfer, vkBuffer, bufSize);
+
+        return true;
+    }
+    bool VulkanDevice::CreateVkUniformBuffer(VkDeviceSize bufSize, 
+                                             VkBuffer& vkBuffer, 
+                                             VkDeviceMemory& vkBufferMemory)
+    {
+        if (!CreateVkBuffer(bufSize, 
+                            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            Util_LogError("*********************** VulkanDevice::CreateVkUniformBuffer: CreateVkBuffer failed !");
+            return false;
+        }
+
+        return true;
+    }
+    bool VulkanDevice::CreateVkUniformBuffers(VkDeviceSize bufSize, 
+                                              int bufCount,
+                                              VkBufferVector& aBuffer, 
+                                              VkDeviceMemoryVector& aBufferMemory)
+    {
+        aBuffer.clear();
+        aBuffer.resize(bufCount);
+        aBufferMemory.clear();
+        aBufferMemory.resize(bufCount);
+        for (int32 i = 0; i < bufCount; i++) 
+        {
+            if (!CreateVkUniformBuffer(bufSize, 
+                                       aBuffer[i], 
+                                       aBufferMemory[i]))
+            {
+                Util_LogError("*********************** VulkanDevice::CreateVkUniformBuffers: CreateVkUniformBuffer failed !");
+                return false;
+            }
+        }
+
+        return true;
+    }
+    void VulkanDevice::CopyVkBuffer(const VkCommandBuffer& vkCommandBuffer, 
+                                    const VkBuffer& vkBufferSrc, 
+                                    const VkBuffer& vkBufferDst, 
+                                    VkDeviceSize size)
     {
         VkBufferCopy copyRegion = {};
         copyRegion.size = size;
         vkCmdCopyBuffer(vkCommandBuffer, vkBufferSrc, vkBufferDst, 1, &copyRegion);
     }
+    void VulkanDevice::CopyVkBuffer(const VkBuffer& vkBufferSrc, 
+                                    const VkBuffer& vkBufferDst, 
+                                    VkDeviceSize size)
+    {
+        VkCommandBuffer vkCommandBuffer = BeginSingleTimeCommands();
+        {
+            CopyVkBuffer(vkCommandBuffer, vkBufferSrc, vkBufferDst, size);
+        }
+        EndSingleTimeCommands(vkCommandBuffer);
+    }
+    void VulkanDevice::WriteVkBuffer(VkDeviceMemory& vkBufferMemory, 
+                                     void* pData, 
+                                     uint32_t nDataSize, 
+                                     uint32_t nDataOffset,
+                                     VkMemoryMapFlags flags /*= 0*/)
+    {
+        void* pDataDst = MapVkDeviceMemory(vkBufferMemory, nDataSize, nDataOffset, flags);
+        if (pDataDst != nullptr)
+        {
+            memcpy(pDataDst, pData, nDataSize);
+            UnmapVkDeviceMemory(vkBufferMemory);
+        }
+    }                      
     void VulkanDevice::DestroyVkBuffer(const VkBuffer& vkBuffer, const VkDeviceMemory& vkBufferMemory)
     {
         if (vkBuffer != VK_NULL_HANDLE)
@@ -549,6 +852,66 @@ namespace LostPeter
             vkDestroyBuffer(m_vkDevice, vkBuffer, UTIL_CPU_ALLOCATOR);
             vkFreeMemory(m_vkDevice, vkBufferMemory, UTIL_CPU_ALLOCATOR);
         }
+    }
+    void VulkanDevice::DestroyVkBuffers(VkBufferVector& aBuffer, VkDeviceMemoryVector& aBufferMemory)
+    {
+        size_t count = aBuffer.size();
+        for (size_t i = 0; i < count; i++) 
+        {
+            DestroyVkBuffer(aBuffer[i], aBufferMemory[i]);
+        }
+    }
+
+    void* VulkanDevice::MapVkDeviceMemory(const VkDeviceMemory& vkBufferMemory,
+                                          uint32_t nDataSize, 
+                                          uint32_t nDataOffset,
+                                          VkMemoryMapFlags flags /*= 0*/)
+    {
+        void* pData = nullptr;
+        if (!MapVkDeviceMemory(vkBufferMemory,
+                               nDataSize,
+                               nDataOffset,
+                               flags,
+                               &pData))
+        {
+            Util_LogError("*********************** VulkanDevice::MapVkDeviceMemory: MapVkDeviceMemory failed !");
+            return nullptr;
+        }
+
+        return pData;
+    }
+    bool VulkanDevice::MapVkDeviceMemory(const VkDeviceMemory& vkBufferMemory,
+                                         uint32_t nDataSize, 
+                                         uint32_t nDataOffset,
+                                         VkMemoryMapFlags flags,
+                                         void** ppData)
+    {
+        if (!Util_CheckVkResult(vkMapMemory(m_vkDevice, vkBufferMemory, nDataOffset, nDataSize, flags, ppData), "vkMapMemory")) 
+        {
+            Util_LogError("*********************** VulkanDevice::MapVkDeviceMemory: Failed to call vkMapMemory !");
+            return false;
+        }
+
+        return true;
+    }
+    void VulkanDevice::UnmapVkDeviceMemory(const VkDeviceMemory& vkBufferMemory)
+    {
+        vkUnmapMemory(m_vkDevice, vkBufferMemory);
+    }
+
+
+    VkCommandBuffer VulkanDevice::BeginSingleTimeCommands()
+    {
+        VkCommandBuffer vkCommandBuffer = AllocateVkCommandBuffer(m_vkCommandPoolTransfer, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+        BeginVkCommandBuffer(vkCommandBuffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+        return vkCommandBuffer;
+    }
+    void VulkanDevice::EndSingleTimeCommands(VkCommandBuffer& vkCommandBuffer)
+    {
+        EndVkCommandBuffer(vkCommandBuffer);
+        QueueSubmitVkCommandBuffers(m_pQueueTransfer->GetVkQueue(), 1, &vkCommandBuffer, nullptr);
+        QueueWaitIdle(m_pQueueTransfer->GetVkQueue());
+        FreeVkCommandBuffers(m_vkCommandPoolTransfer, 1, &vkCommandBuffer);
     }
 
 }; //LostPeter
