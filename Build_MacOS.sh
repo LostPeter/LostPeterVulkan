@@ -36,11 +36,11 @@ cd ..
 cd ..
 
 
-#3> VulkanUtil
-cd VulkanUtil
+#3> LostPeterVulkan
+cd LostPeterVulkan
 cd Compile
 
-./Build_MacOS_VulkanUtil.sh $debug $rebuild
+./Build_MacOS_LostPeterVulkan.sh $debug $rebuild
 
 cd ..
 cd ..

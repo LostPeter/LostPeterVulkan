@@ -45,7 +45,7 @@ Bin/Windows
 Bin/Android
 Bin/iOS
 Plugins
-VulkanUtil/Build
+LostPeterVulkan/Build
 Sample/Build
 Sample/Lib
 Sample/*/android/app/build

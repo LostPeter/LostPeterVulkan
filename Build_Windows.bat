@@ -36,11 +36,11 @@ cd ..
 cd ..
 
 
-@REM 3> VulkanUtil
-cd VulkanUtil
+@REM 3> LostPeterVulkan
+cd LostPeterVulkan
 cd Compile
 
-call ./Build_Windows_VulkanUtil.bat %debug% %rebuild%
+call ./Build_Windows_LostPeterVulkan.bat %debug% %rebuild%
 
 cd ..
 cd ..

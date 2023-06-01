@@ -67,11 +67,11 @@ Usage:
 
         Always prefer using hlsl shader, glsl shader maybe delay or not to realize and commit.
 
-    3> Compile VulkanUtil
-        cd VulkanUtil
+    3> Compile LostPeterVulkan
+        cd LostPeterVulkan
         cd Compile
-        MacOS:      ./Build_MacOS_VulkanUtil.sh debug rebuild
-        Windows:    ./Build_Windows_VulkanUtil.bat debug rebuild
+        MacOS:      ./Build_MacOS_LostPeterVulkan.sh debug rebuild
+        Windows:    ./Build_Windows_LostPeterVulkan.bat debug rebuild
 
     4> Compile Samples
         cd Sample

@@ -53,7 +53,7 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/zlib-1.2.11"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../VulkanUtil/Core/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterVulkan/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../share")
 
 elseif (ANDROID)        
@@ -69,7 +69,7 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/zlib-1.2.11"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../VulkanUtil/Core/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterVulkan/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../share")
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
@@ -120,7 +120,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
-                       ${PLUGINS_DIR}/VulkanUtil_d.lib
+                       ${PLUGINS_DIR}/LostPeterVulkan_d.lib
                        ${SHARE_DIR}/share_${NAME_PROJECT}_d.lib)
     else ()
         LINK_LIBRARIES(shlwapi.lib 
@@ -131,7 +131,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
-                       ${PLUGINS_DIR}/VulkanUtil.lib
+                       ${PLUGINS_DIR}/LostPeterVulkan.lib
                        ${SHARE_DIR}/share_${NAME_PROJECT}.lib)
     endif()
     ADD_EXECUTABLE(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES_CPP})
@@ -152,7 +152,7 @@ elseif (APPLE)
                               ${LIB_VULKAN_DIR}/libvulkan.1.dylib
                               ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib
                               ${SYS_VULKAN_LIBS}
-                              ${PLUGINS_DIR}/libVulkanUtil_d.dylib
+                              ${PLUGINS_DIR}/libLostPeterVulkan_d.dylib
                               ${SHARE_DIR}/libshare_${NAME_PROJECT}_d.dylib)
     else ()
         TARGET_LINK_LIBRARIES(${PROJECT_NAME}
@@ -162,7 +162,7 @@ elseif (APPLE)
                               ${LIB_VULKAN_DIR}/libvulkan.1.dylib
                               ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib
                               ${SYS_VULKAN_LIBS}
-                              ${PLUGINS_DIR}/libVulkanUtil.dylib
+                              ${PLUGINS_DIR}/libLostPeterVulkan.dylib
                               ${SHARE_DIR}/libshare_${NAME_PROJECT}.dylib)
     endif()
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup \
