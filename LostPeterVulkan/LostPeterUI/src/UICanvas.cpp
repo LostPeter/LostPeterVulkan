@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "../include/UIPreInclude.h"
-#include "../include/UIButtonCanvas.h"
+#include "../include/UICanvas.h"
 
 namespace LostPeterUI
 {
