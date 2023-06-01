@@ -314,13 +314,6 @@ namespace LostPeter
         return m_pDevice->Init(deviceIndex, m_bIsEnableValidationLayers);
     }
 
-    void VulkanInstance::getInstanceLayersAndExtensions(bool bIsEnableValidationLayers,
-                                                        ConstCharPtrVector& outInstanceLayers, 
-                                                        ConstCharPtrVector& outInstanceExtensions)
-    {
-
-    }
-
     VkDebugReportCallbackCreateInfoEXT VulkanInstance::createReportCallbackInfo()
     {
         VkDebugReportCallbackCreateInfoEXT createInfo = {};

@@ -177,8 +177,21 @@ namespace LostPeter
     enum VulkanLogType
     {
         Vulkan_Log_Console = 0,                         //0:    Console
-        Vulkan_Log_File,                                //0:    File
+        Vulkan_Log_File,                                //1:    File
     };
+
+
+    enum VulkanWindowType
+    {
+        Vulkan_Window_Main = 0,                         //0:    Main
+        Vulkan_Window_Game,                             //1:    Game
+        Vulkan_Window_Scene,                            //2:    Scene
+
+        Vulkan_Window_Count,
+    };
+    const String& Util_GetWindowTypeName(VulkanWindowType type);
+    const String& Util_GetWindowTypeName(int type);
+    VulkanWindowType Util_ParseWindowType(const String& strName);
 
 
     enum VulkanFenceStateType
@@ -529,6 +542,7 @@ namespace LostPeter
 
 ////////////////////////////// Class ///////////////////////////////
     class App;
+    class AppEx;
     
     class VulkanBase;
     class VulkanCamera;
@@ -561,6 +575,7 @@ namespace LostPeter
     class VulkanTexture;
     class VulkanTimer;
     class VulkanWindow;
+    class VulkanWindowEx;
     
     struct Vertex_Pos2Color4;
     struct Vertex_Pos3Normal3;
@@ -608,9 +623,14 @@ namespace LostPeter
     typedef std::vector<VulkanLog*> VulkanLogPtrVector;
     typedef std::map<String, VulkanLog*> VulkanLogPtrMap;
 
+    typedef std::vector<VulkanWindowEx*> VulkanWindowExPtrVector;
+    typedef std::map<String, VulkanWindowEx*> VulkanWindowExPtrMap;
+
     typedef std::vector<VulkanFence*> VulkanFencePtrVector;
 
     typedef std::vector<VulkanDeviceMemoryAllocation*> VulkanDeviceMemoryAllocationPtrVector;
+
+    
 
 }; //LostPeter
 

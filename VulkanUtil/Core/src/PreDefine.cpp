@@ -65,6 +65,32 @@ namespace LostPeter
 
 
 ////////////////////////////// Enum ////////////////////////////////
+    //VulkanWindowType
+    static String s_nameWindows[] = 
+    {
+        "Main",             //0:    Main
+        "Game",             //1:    Game
+        "Scene",            //2:    Scene
+    };
+    const String& Util_GetWindowTypeName(VulkanWindowType type)
+    {
+        return s_nameWindows[(int)type];
+    }
+    const String& Util_GetWindowTypeName(int type)
+    {
+        return s_nameWindows[(int)type];
+    }
+    VulkanWindowType Util_ParseWindowType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)Vulkan_Window_Count; i++)
+        {
+            if (s_nameWindows[i] == strName)
+                return (VulkanWindowType)(i);
+        }
+        assert(false && "Util_ParseWindowType: Wrong type name !");
+        return Vulkan_Window_Main;
+    }
+
 
     //VulkanVertexType
     static String s_nameVertices[] = 
