@@ -53,45 +53,58 @@ endif ()
 
 #LIB_INCLUDE
 if (WIN32)
-    SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glm-0.9.9.8"
+    SET(LIB_INCLUDE "$ENV{VULKAN_SDK}/Include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glfw-3.3.6"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/imgui-1.85_glfw_vulkan"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/zlib-1.2.11"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Components/LostPeterFoundation/include")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterFoundation/include")
 
 elseif (ANDROID) 
 
 
 elseif (APPLE)
-    SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glm-0.9.9.8"
+    SET(LIB_INCLUDE "$ENV{VULKAN_HOME}/macOS/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glfw-3.3.6"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/imgui-1.85_glfw_vulkan"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/zlib-1.2.11"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Components/LostPeterFoundation/include")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterFoundation/include")
+
+    SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
+    SET(COCOA_LIBS ${SYS_FRAMEWORKS_DIR}/Cocoa.framework)
+    SET(COREVIDEO_LIBS ${SYS_FRAMEWORKS_DIR}/CoreVideo.framework)
+    SET(IOKIT_LIBS ${SYS_FRAMEWORKS_DIR}/IOKit.framework)
+    SET(SYS_VULKAN_LIBS "$ENV{VULKAN_HOME}/macOS/Frameworks/vulkan.framework")
 
 endif ()
 MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
 INCLUDE_DIRECTORIES(${LIB_INCLUDE})
 
-#LIB_DEPENDENCIES_DIR, PLUGINS_DIR
+#LIB_VULKAN_DIR, LIB_DEPENDENCIES_DIR, LIB_PLUGINS_DIR
 if (WIN32)
-    SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Lib/Windows") 
-    SET(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Plugins/Windows")
+    SET(LIB_VULKAN_DIR "$ENV{VULKAN_SDK}/Lib")
+    SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Lib/Windows")
+    SET(LIB_PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Plugins/Windows")
     
 elseif (ANDROID)  
 
 
 elseif (APPLE)
+    SET(LIB_VULKAN_DIR "$ENV{VULKAN_HOME}/macOS/lib")
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Lib/MacOS")
-    SET(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Plugins/MacOS")
+    SET(LIB_PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Plugins/MacOS")
 
 endif ()
+MESSAGE(STATUS "LIB_VULKAN_DIR dir: ${LIB_VULKAN_DIR}")
 MESSAGE(STATUS "LIB_DEPENDENCIES_DIR dir: ${LIB_DEPENDENCIES_DIR}")
-MESSAGE(STATUS "PLUGINS dir: ${PLUGINS_DIR}")
+MESSAGE(STATUS "LIB_PLUGINS_DIR dir: ${LIB_PLUGINS_DIR}")
 
 
 function(ASSIGN_SOURCE_GROUP)
@@ -124,19 +137,22 @@ if (WIN32)
     endif()
     if (DEBUG)
         LINK_LIBRARIES(shlwapi.lib
+                       ${LIB_VULKAN_DIR}/vulkan-1.lib
+                       ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6_d.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
-                       ${PLUGINS_DIR}/LostPeterUI_d.lib)
+                       ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib)
         
     else ()
         LINK_LIBRARIES(shlwapi.lib
+                       ${LIB_VULKAN_DIR}/vulkan-1.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
-                       ${PLUGINS_DIR}/LostPeterUI.lib)
+                       ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib)
         
     endif()
     MY_ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
@@ -154,18 +170,25 @@ elseif (APPLE)
     MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom MacOS !")
 
     if (DEBUG)
-        LINK_LIBRARIES("-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan_d.a -Wl,-noall_load"
+        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6_d.a
+                       "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan_d.a -Wl,-noall_load"
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
-                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a)
+                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a
+                       ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib)
     else ()
-        LINK_LIBRARIES("-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan.a -Wl,-noall_load"
+        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6.a
+                       "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan.a -Wl,-noall_load"
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
-                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a)
+                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a
+                       ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib)
     endif()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+                          ${LIB_VULKAN_DIR}/libvulkan.1.dylib 
+                          ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib 
+                          ${SYS_VULKAN_LIBS})
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES CMAKE_ENABLE_EXPORTS TRUE)   

@@ -82,12 +82,12 @@ endif ()
 MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
 INCLUDE_DIRECTORIES(${LIB_INCLUDE})
 
-#LIB_VULKAN_DIR, PLUGINS_DIR, SHARE_DIR
+#LIB_VULKAN_DIR, LIB_DEPENDENCIES_DIR, LIB_PLUGINS_DIR, LIB_SHARE_DIR
 if (WIN32)
     SET(LIB_VULKAN_DIR "$ENV{VULKAN_SDK}/Lib")
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Lib/Windows")
-    SET(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Plugins/Windows")
-    SET(SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Lib/Windows")
+    SET(LIB_PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Plugins/Windows")
+    SET(LIB_SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Lib/Windows")
 
 elseif (ANDROID) 
 
@@ -95,14 +95,14 @@ elseif (ANDROID)
 elseif (APPLE)
     SET(LIB_VULKAN_DIR "$ENV{VULKAN_HOME}/macOS/lib")
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Lib/MacOS")
-    SET(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Plugins/MacOS")
-    SET(SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Lib/MacOS")
+    SET(LIB_PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Plugins/MacOS")
+    SET(LIB_SHARE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Lib/MacOS")
 
 endif ()
 MESSAGE(STATUS "LIB_VULKAN_DIR dir: ${LIB_VULKAN_DIR}")
-MESSAGE(STATUS "DEPENDENCIES dir: ${LIB_DEPENDENCIES_DIR}")
-MESSAGE(STATUS "PLUGINS dir: ${PLUGINS_DIR}")
-MESSAGE(STATUS "SHARE dir: ${SHARE_DIR}")
+MESSAGE(STATUS "LIB_DEPENDENCIES_DIR dir: ${LIB_DEPENDENCIES_DIR}")
+MESSAGE(STATUS "LIB_PLUGINS_DIR dir: ${LIB_PLUGINS_DIR}")
+MESSAGE(STATUS "LIB_SHARE_DIR dir: ${LIB_SHARE_DIR}")
 
 if (WIN32)
     MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Win32 !")
@@ -120,8 +120,10 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
-                       ${PLUGINS_DIR}/LostPeterVulkan_d.lib
-                       ${SHARE_DIR}/share_${NAME_PROJECT}_d.lib)
+                       ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterUI_d.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterVulkan_d.lib
+                       ${LIB_SHARE_DIR}/share_${NAME_PROJECT}_d.lib)
     else ()
         LINK_LIBRARIES(shlwapi.lib 
                        ${LIB_VULKAN_DIR}/vulkan-1.lib
@@ -131,8 +133,10 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
-                       ${PLUGINS_DIR}/LostPeterVulkan.lib
-                       ${SHARE_DIR}/share_${NAME_PROJECT}.lib)
+                       ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterUI.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterVulkan.lib
+                       ${LIB_SHARE_DIR}/share_${NAME_PROJECT}.lib)
     endif()
     ADD_EXECUTABLE(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES_CPP})
 
@@ -152,8 +156,10 @@ elseif (APPLE)
                               ${LIB_VULKAN_DIR}/libvulkan.1.dylib
                               ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib
                               ${SYS_VULKAN_LIBS}
-                              ${PLUGINS_DIR}/libLostPeterVulkan_d.dylib
-                              ${SHARE_DIR}/libshare_${NAME_PROJECT}_d.dylib)
+                              ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
+                              ${LIB_PLUGINS_DIR}/libLostPeterUI_d.dylib
+                              ${LIB_PLUGINS_DIR}/libLostPeterVulkan_d.dylib
+                              ${LIB_SHARE_DIR}/libshare_${NAME_PROJECT}_d.dylib)
     else ()
         TARGET_LINK_LIBRARIES(${PROJECT_NAME}
                               ${COCOA_LIBS}
@@ -162,8 +168,10 @@ elseif (APPLE)
                               ${LIB_VULKAN_DIR}/libvulkan.1.dylib
                               ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib
                               ${SYS_VULKAN_LIBS}
-                              ${PLUGINS_DIR}/libLostPeterVulkan.dylib
-                              ${SHARE_DIR}/libshare_${NAME_PROJECT}.dylib)
+                              ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
+                              ${LIB_PLUGINS_DIR}/libLostPeterUI.dylib
+                              ${LIB_PLUGINS_DIR}/libLostPeterVulkan.dylib
+                              ${LIB_SHARE_DIR}/libshare_${NAME_PROJECT}.dylib)
     endif()
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup \
         -Wl,-no_pie \

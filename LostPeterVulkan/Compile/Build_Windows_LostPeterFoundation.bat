@@ -22,7 +22,7 @@ if "%debug%" == "debug" (
     @REM set name_dll=%name%"_"%mode%"_d.dll"
 ) else (
     set name_project="LostPeterFoundation"
-    set name_lib="VulkanUtil.lib"
+    set name_lib="LostPeterFoundation.lib"
     @REM set name_dll=%name%"_"%mode%".dll"
 )
 

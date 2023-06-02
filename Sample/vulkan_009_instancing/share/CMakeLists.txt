@@ -62,6 +62,8 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/zlib-1.2.11"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterFoundation/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterUI/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterVulkan/include")
 
 elseif (ANDROID)     
@@ -77,6 +79,8 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/zlib-1.2.11"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterFoundation/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterUI/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterVulkan/include")
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
@@ -89,11 +93,11 @@ endif ()
 MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
 INCLUDE_DIRECTORIES(${LIB_INCLUDE})
 
-#LIB_VULKAN_DIR, PLUGINS_DIR
+#LIB_VULKAN_DIR, LIB_PLUGINS_DIR
 if (WIN32)
     SET(LIB_VULKAN_DIR "$ENV{VULKAN_SDK}/Lib")
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Lib/Windows")
-    SET(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Plugins/Windows")
+    SET(LIB_PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Plugins/Windows")
 
 elseif (ANDROID)  
 
@@ -101,12 +105,12 @@ elseif (ANDROID)
 elseif (APPLE)
     SET(LIB_VULKAN_DIR "$ENV{VULKAN_HOME}/macOS/lib")
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Lib/MacOS")
-    SET(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Plugins/MacOS")
+    SET(LIB_PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Plugins/MacOS")
 
 endif ()
 MESSAGE(STATUS "LIB_VULKAN_DIR dir: ${LIB_VULKAN_DIR}")
-MESSAGE(STATUS "DEPENDENCIES dir: ${LIB_DEPENDENCIES_DIR}")
-MESSAGE(STATUS "PLUGINS dir: ${PLUGINS_DIR}")
+MESSAGE(STATUS "LIB_DEPENDENCIES_DIR dir: ${LIB_DEPENDENCIES_DIR}")
+MESSAGE(STATUS "LIB_PLUGINS_DIR dir: ${LIB_PLUGINS_DIR}")
 
 function(ASSIGN_SOURCE_GROUP)
     foreach(_source IN ITEMS ${ARGN})
@@ -144,7 +148,9 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
-                       ${PLUGINS_DIR}/LostPeterVulkan_d.lib)
+                       ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterUI_d.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterVulkan_d.lib)
     else ()
         LINK_LIBRARIES(shlwapi.lib 
                        ${LIB_VULKAN_DIR}/vulkan-1.lib
@@ -154,7 +160,9 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
-                       ${PLUGINS_DIR}/LostPeterVulkan.lib)
+                       ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterUI.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterVulkan.lib)
     endif ()
     MY_ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
 
@@ -168,10 +176,14 @@ elseif (APPLE)
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
     if (DEBUG)
         TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
-                              ${PLUGINS_DIR}/libLostPeterVulkan_d.dylib)
+                              ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
+                              ${LIB_PLUGINS_DIR}/libLostPeterUI_d.dylib
+                              ${LIB_PLUGINS_DIR}/libLostPeterVulkan_d.dylib)
     else ()
         TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
-                              ${PLUGINS_DIR}/libLostPeterVulkan.dylib)
+                              ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
+                              ${LIB_PLUGINS_DIR}/libLostPeterUI.dylib
+                              ${LIB_PLUGINS_DIR}/libLostPeterVulkan.dylib)
     endif ()
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)

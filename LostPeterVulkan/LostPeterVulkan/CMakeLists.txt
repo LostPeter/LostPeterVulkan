@@ -61,7 +61,9 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/stb-0.02"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/zlib-1.2.11")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/zlib-1.2.11"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterFoundation/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterUI/include")
 
 elseif (ANDROID) 
 
@@ -75,7 +77,9 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/stb-0.02"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/zlib-1.2.11")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/zlib-1.2.11"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterFoundation/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterUI/include")
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
     SET(COCOA_LIBS ${SYS_FRAMEWORKS_DIR}/Cocoa.framework)
@@ -87,10 +91,11 @@ endif ()
 MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
 INCLUDE_DIRECTORIES(${LIB_INCLUDE})
 
-#LIB_VULKAN_DIR, LIB_DEPENDENCIES_DIR
+#LIB_VULKAN_DIR, LIB_DEPENDENCIES_DIR, LIB_PLUGINS_DIR
 if (WIN32)
     SET(LIB_VULKAN_DIR "$ENV{VULKAN_SDK}/Lib")
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Lib/Windows") 
+    SET(LIB_PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Plugins/Windows")
 
 elseif (ANDROID)  
 
@@ -98,10 +103,12 @@ elseif (ANDROID)
 elseif (APPLE)
     SET(LIB_VULKAN_DIR "$ENV{VULKAN_HOME}/macOS/lib")
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Lib/MacOS")
+    SET(LIB_PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Plugins/MacOS")
 
 endif ()
 MESSAGE(STATUS "LIB_VULKAN_DIR dir: ${LIB_VULKAN_DIR}")
 MESSAGE(STATUS "LIB_DEPENDENCIES_DIR dir: ${LIB_DEPENDENCIES_DIR}")
+MESSAGE(STATUS "LIB_PLUGINS_DIR dir: ${LIB_PLUGINS_DIR}")
 
 
 function(ASSIGN_SOURCE_GROUP)
@@ -140,7 +147,9 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
-                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib)
+                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterUI_d.lib)
         
     else ()
         LINK_LIBRARIES(shlwapi.lib
@@ -150,7 +159,9 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
-                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib)
+                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterUI.lib)
         
     endif()
     MY_ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
@@ -173,14 +184,18 @@ elseif (APPLE)
                        "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan_d.a -Wl,-noall_load"
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
-                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a)
+                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a
+                       ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
+                       ${LIB_PLUGINS_DIR}/libLostPeterUI_d.dylib)
     else ()
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4.a
                        ${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6.a
                        "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan.a -Wl,-noall_load"
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
-                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a)
+                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a
+                       ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
+                       ${LIB_PLUGINS_DIR}/libLostPeterUI.dylib)
     endif()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
     TARGET_LINK_LIBRARIES(${PROJECT_NAME} 

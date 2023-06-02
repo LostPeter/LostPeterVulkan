@@ -23,7 +23,7 @@ if "%debug%" == "debug" (
     set name_lib="share_"%name_sample%"_d.lib"
 ) else (
     set name_project="share_"%name_sample%
-    set name_lib="share"%name_sample%".lib"
+    set name_lib="share_"%name_sample%".lib"
 )
 
 echo %name_project%
