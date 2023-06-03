@@ -14,8 +14,6 @@
 #include "../include/VulkanMeshLoader.h"
 #include "../include/VulkanMeshGeometry.h"
 #include "../include/VulkanCamera.h"
-#include "../include/VulkanTimer.h"
-#include "../include/VulkanUtilString.h"
 
 namespace LostPeter
 {
@@ -62,7 +60,7 @@ namespace LostPeter
         , poIndexBuffer_Data(nullptr)
         , poIndexBuffer(VK_NULL_HANDLE)
         , poIndexBufferMemory(VK_NULL_HANDLE)
-        , poMatWorld(VulkanMath::Identity4x4())
+        , poMatWorld(FMath::Identity4x4())
 
         , poTypeVertex(Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
         , poPipelineLayout(VK_NULL_HANDLE)
@@ -223,7 +221,7 @@ namespace LostPeter
 
     VulkanWindow::~VulkanWindow()
     {
-        UTIL_DELETE(pCamera)
+        F_DELETE(pCamera)
     }
 
     void VulkanWindow::OnInit()
@@ -489,7 +487,7 @@ namespace LostPeter
 
     void VulkanWindow::createPipeline()
     {   
-        Util_LogInfo("**********<1> VulkanWindow::createPipeline start **********");
+        F_LogInfo("**********<1> VulkanWindow::createPipeline start **********");
         {
             //1> Create Resize callback
             createWindowCallback();
@@ -521,7 +519,7 @@ namespace LostPeter
             //10> isCreateDevice
             this->isCreateDevice = true;
         }
-        Util_LogInfo("**********<1> VulkanWindow::createPipeline finish **********");
+        F_LogInfo("**********<1> VulkanWindow::createPipeline finish **********");
     }
     //glfw: whenever the window size changed (by OS or user resize) this callback function executes
     void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -535,11 +533,11 @@ namespace LostPeter
         glfwSetWindowUserPointer(this->pWindow, this);
         glfwSetFramebufferSizeCallback(this->pWindow, framebuffer_size_callback);
 
-        Util_LogInfo("*****<1-1> VulkanWindow::createWindowCallback finish *****");
+        F_LogInfo("*****<1-1> VulkanWindow::createWindowCallback finish *****");
     }
     void VulkanWindow::createDevice()
     {
-        Util_LogInfo("*****<1-2> VulkanWindow::createDevice start *****");
+        F_LogInfo("*****<1-2> VulkanWindow::createDevice start *****");
         {
             //1> createInstance
             createInstance();
@@ -556,7 +554,7 @@ namespace LostPeter
             //5> createLogicalDevice
             createLogicalDevice();
         }
-        Util_LogInfo("*****<1-2> VulkanWindow::createDevice finish *****");
+        F_LogInfo("*****<1-2> VulkanWindow::createDevice finish *****");
     }
     void VulkanWindow::destroyVkDevice(VkDevice vkDevice)
     {
@@ -633,7 +631,7 @@ namespace LostPeter
         VkResult result = vkCreateInstance(&createInfo, nullptr, &this->poInstance);
         if (result == VK_ERROR_INCOMPATIBLE_DRIVER) 
         {
-            Util_LogError("*********************** VulkanWindow::createInstance: Cannot find a compatible Vulkan driver (ICD)");
+            F_LogError("*********************** VulkanWindow::createInstance: Cannot find a compatible Vulkan driver (ICD)");
         }
         else if (result == VK_ERROR_EXTENSION_NOT_PRESENT)
         {
@@ -662,29 +660,29 @@ namespace LostPeter
                 }
             }
 
-            Util_LogError("*********************** VulkanWindow::createInstance: Vulkan driver doesn't contain specified extensions: [%s] !", missingExtensions.c_str());
+            F_LogError("*********************** VulkanWindow::createInstance: Vulkan driver doesn't contain specified extensions: [%s] !", missingExtensions.c_str());
         }
         else if (result != VK_SUCCESS) 
         {
-            Util_LogError("*********************** VulkanWindow::createInstance: Create vulkan instance failed !");
+            F_LogError("*********************** VulkanWindow::createInstance: Create vulkan instance failed !");
         }
         else 
         {
-            Util_LogInfo("VulkanWindow::createInstance: Create vulkan instance successed !");
+            F_LogInfo("VulkanWindow::createInstance: Create vulkan instance successed !");
         }
 
         if (result != VK_SUCCESS)
         {
             String msg = "*********************** VulkanWindow::createInstance: Failed to create vulkan instance !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
-        Util_LogInfo("<1-2-1> VulkanWindow::createInstance finish !");
+        F_LogInfo("<1-2-1> VulkanWindow::createInstance finish !");
     }
         static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) 
         {
-            Util_LogInfo("VulkanWindow.debugCallback: Validation layer: [%s] !", pCallbackData->pMessage);
+            F_LogInfo("VulkanWindow.debugCallback: Validation layer: [%s] !", pCallbackData->pMessage);
             return VK_FALSE;
         }
         void VulkanWindow::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) 
@@ -705,12 +703,12 @@ namespace LostPeter
             if (createDebugUtilsMessengerEXT(this->poInstance, &createInfo, nullptr, &this->poDebugMessenger) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::setUpDebugMessenger: Failed to set up debug messenger !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
         
-        Util_LogInfo("<1-2-2> VulkanWindow::setUpDebugMessenger finish !");
+        F_LogInfo("<1-2-2> VulkanWindow::setUpDebugMessenger finish !");
     }
 
     void VulkanWindow::createSurface()
@@ -721,11 +719,11 @@ namespace LostPeter
             std::ostringstream os;
             os << (int)result;
             String msg = "*********************** VulkanWindow::createSurface: Failed to create window surface, result: " + os.str();
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
-        Util_LogInfo("<1-2-3> VulkanWindow::createSurface finish !");
+        F_LogInfo("<1-2-3> VulkanWindow::createSurface finish !");
     }
 
     void VulkanWindow::pickPhysicalDevice()
@@ -736,7 +734,7 @@ namespace LostPeter
         if (deviceCount == 0)
         {
             String msg = "*********************** VulkanWindow::pickPhysicalDevice: Failed to find GPUs width Vulkan support !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
@@ -768,199 +766,199 @@ namespace LostPeter
         if (this->poPhysicalDevice == VK_NULL_HANDLE) 
         {
             String msg = "*********************** VulkanWindow::pickPhysicalDevice: Failed to find a suitable GPU !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
         vkGetPhysicalDeviceProperties(this->poPhysicalDevice, &this->poPhysicalDeviceProperties);
         vkGetPhysicalDeviceFeatures(this->poPhysicalDevice, &this->poPhysicalDeviceFeatures);
 
-        Util_LogInfo("**************** VulkanWindow::pickPhysicalDevice: PhysicalDeviceProperties ****************");
+        F_LogInfo("**************** VulkanWindow::pickPhysicalDevice: PhysicalDeviceProperties ****************");
         {
-            Util_LogInfo("  apiVersion: [%u]", this->poPhysicalDeviceProperties.apiVersion);
-            Util_LogInfo("  driverVersion: [%u]", this->poPhysicalDeviceProperties.driverVersion);
-            Util_LogInfo("  vendorID: [%u]", this->poPhysicalDeviceProperties.vendorID);
-            Util_LogInfo("  deviceID: [%u]", this->poPhysicalDeviceProperties.deviceID);
+            F_LogInfo("  apiVersion: [%u]", this->poPhysicalDeviceProperties.apiVersion);
+            F_LogInfo("  driverVersion: [%u]", this->poPhysicalDeviceProperties.driverVersion);
+            F_LogInfo("  vendorID: [%u]", this->poPhysicalDeviceProperties.vendorID);
+            F_LogInfo("  deviceID: [%u]", this->poPhysicalDeviceProperties.deviceID);
             if (this->poPhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_OTHER)
-                Util_LogInfo("  deviceType: VK_PHYSICAL_DEVICE_TYPE_OTHER");
+                F_LogInfo("  deviceType: VK_PHYSICAL_DEVICE_TYPE_OTHER");
             else if (this->poPhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
-                Util_LogInfo("  deviceType: VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU");
+                F_LogInfo("  deviceType: VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU");
             else if (this->poPhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-                Util_LogInfo("  deviceType: VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU");
+                F_LogInfo("  deviceType: VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU");
             else if (this->poPhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU)
-                Util_LogInfo("  deviceType: VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU");
+                F_LogInfo("  deviceType: VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU");
             else if (this->poPhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU)
-                Util_LogInfo("  deviceType: VK_PHYSICAL_DEVICE_TYPE_CPU");
-            Util_LogInfo("  deviceName: [%s] \n", this->poPhysicalDeviceProperties.deviceName);
+                F_LogInfo("  deviceType: VK_PHYSICAL_DEVICE_TYPE_CPU");
+            F_LogInfo("  deviceName: [%s] \n", this->poPhysicalDeviceProperties.deviceName);
 
-            Util_LogInfo("  maxImageDimension1D: [%u]", this->poPhysicalDeviceProperties.limits.maxImageDimension1D);
-            Util_LogInfo("  maxImageDimension2D: [%u]", this->poPhysicalDeviceProperties.limits.maxImageDimension2D);
-            Util_LogInfo("  maxImageDimension3D: [%u]", this->poPhysicalDeviceProperties.limits.maxImageDimension3D);
-            Util_LogInfo("  maxImageDimensionCube: [%u]", this->poPhysicalDeviceProperties.limits.maxImageDimensionCube);
-            Util_LogInfo("  maxImageArrayLayers: [%u]", this->poPhysicalDeviceProperties.limits.maxImageArrayLayers);
-            Util_LogInfo("  maxTexelBufferElements: [%u]", this->poPhysicalDeviceProperties.limits.maxTexelBufferElements);
-            Util_LogInfo("  maxUniformBufferRange: [%u]", this->poPhysicalDeviceProperties.limits.maxUniformBufferRange);
-            Util_LogInfo("  maxStorageBufferRange: [%u]", this->poPhysicalDeviceProperties.limits.maxStorageBufferRange);
-            Util_LogInfo("  maxPushConstantsSize: [%u]", this->poPhysicalDeviceProperties.limits.maxPushConstantsSize);
-            Util_LogInfo("  maxMemoryAllocationCount: [%u]", this->poPhysicalDeviceProperties.limits.maxMemoryAllocationCount);
-            Util_LogInfo("  maxSamplerAllocationCount: [%u]", this->poPhysicalDeviceProperties.limits.maxSamplerAllocationCount);
-            Util_LogInfo("  bufferImageGranularity: [%u]", this->poPhysicalDeviceProperties.limits.bufferImageGranularity);
-            Util_LogInfo("  sparseAddressSpaceSize: [%u]", this->poPhysicalDeviceProperties.limits.sparseAddressSpaceSize);
-            Util_LogInfo("  maxBoundDescriptorSets: [%u]", this->poPhysicalDeviceProperties.limits.maxBoundDescriptorSets);
-            Util_LogInfo("  maxPerStageDescriptorSamplers: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageDescriptorSamplers);
-            Util_LogInfo("  maxPerStageDescriptorUniformBuffers: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageDescriptorUniformBuffers);
-            Util_LogInfo("  maxPerStageDescriptorStorageBuffers: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageDescriptorStorageBuffers);
-            Util_LogInfo("  maxPerStageDescriptorSampledImages: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageDescriptorSampledImages);
-            Util_LogInfo("  maxPerStageDescriptorStorageImages: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageDescriptorStorageImages);
-            Util_LogInfo("  maxPerStageDescriptorInputAttachments: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageDescriptorInputAttachments);
-            Util_LogInfo("  maxPerStageResources: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageResources);
-            Util_LogInfo("  maxDescriptorSetSamplers: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetSamplers);
-            Util_LogInfo("  maxDescriptorSetUniformBuffers: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetUniformBuffers);
-            Util_LogInfo("  maxDescriptorSetUniformBuffersDynamic: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetUniformBuffersDynamic);
-            Util_LogInfo("  maxDescriptorSetStorageBuffers: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetStorageBuffers);
-            Util_LogInfo("  maxDescriptorSetStorageBuffersDynamic: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetStorageBuffersDynamic);
-            Util_LogInfo("  maxDescriptorSetSampledImages: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetSampledImages);
-            Util_LogInfo("  maxDescriptorSetStorageImages: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetStorageImages);
-            Util_LogInfo("  maxDescriptorSetInputAttachments: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetInputAttachments);
-            Util_LogInfo("  maxVertexInputAttributes: [%u]", this->poPhysicalDeviceProperties.limits.maxVertexInputAttributes);
-            Util_LogInfo("  maxVertexInputBindings: [%u]", this->poPhysicalDeviceProperties.limits.maxVertexInputBindings);
-            Util_LogInfo("  maxVertexInputAttributeOffset: [%u]", this->poPhysicalDeviceProperties.limits.maxVertexInputAttributeOffset);
-            Util_LogInfo("  maxVertexInputBindingStride: [%u]", this->poPhysicalDeviceProperties.limits.maxVertexInputBindingStride);
-            Util_LogInfo("  maxVertexOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxVertexOutputComponents);
-            Util_LogInfo("  maxTessellationGenerationLevel: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationGenerationLevel);
-            Util_LogInfo("  maxTessellationPatchSize: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationPatchSize);
-            Util_LogInfo("  maxTessellationControlPerVertexInputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationControlPerVertexInputComponents);
-            Util_LogInfo("  maxTessellationControlPerVertexOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationControlPerVertexOutputComponents);
-            Util_LogInfo("  maxTessellationControlPerPatchOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationControlPerPatchOutputComponents);
-            Util_LogInfo("  maxTessellationControlTotalOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationControlTotalOutputComponents);
-            Util_LogInfo("  maxTessellationEvaluationInputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationEvaluationInputComponents);
-            Util_LogInfo("  maxTessellationEvaluationOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationEvaluationOutputComponents);
-            Util_LogInfo("  maxGeometryShaderInvocations: [%u]", this->poPhysicalDeviceProperties.limits.maxGeometryShaderInvocations);
-            Util_LogInfo("  maxGeometryInputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxGeometryInputComponents);
-            Util_LogInfo("  maxGeometryOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxGeometryOutputComponents);
-            Util_LogInfo("  maxGeometryOutputVertices: [%u]", this->poPhysicalDeviceProperties.limits.maxGeometryOutputVertices);
-            Util_LogInfo("  maxGeometryTotalOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxGeometryTotalOutputComponents);
-            Util_LogInfo("  maxFragmentInputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxFragmentInputComponents);
-            Util_LogInfo("  maxFragmentOutputAttachments: [%u]", this->poPhysicalDeviceProperties.limits.maxFragmentOutputAttachments);
-            Util_LogInfo("  maxFragmentDualSrcAttachments: [%u]", this->poPhysicalDeviceProperties.limits.maxFragmentDualSrcAttachments);
-            Util_LogInfo("  maxFragmentCombinedOutputResources: [%u]", this->poPhysicalDeviceProperties.limits.maxFragmentCombinedOutputResources);
-            Util_LogInfo("  maxComputeSharedMemorySize: [%u]", this->poPhysicalDeviceProperties.limits.maxComputeSharedMemorySize);
-            Util_LogInfo("  maxComputeWorkGroupCount: [%u] - [%u] - [%u]", this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupCount[0], this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupCount[1], this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupCount[2]);
-            Util_LogInfo("  maxComputeWorkGroupInvocations: [%u]", this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupInvocations);
-            Util_LogInfo("  maxComputeWorkGroupSize: [%u] - [%u] - [%u]", this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupSize[0], this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupSize[1], this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupSize[2]);
-            Util_LogInfo("  subPixelPrecisionBits: [%u]", this->poPhysicalDeviceProperties.limits.subPixelPrecisionBits);
-            Util_LogInfo("  subTexelPrecisionBits: [%u]", this->poPhysicalDeviceProperties.limits.subTexelPrecisionBits);
-            Util_LogInfo("  mipmapPrecisionBits: [%u]", this->poPhysicalDeviceProperties.limits.mipmapPrecisionBits);
-            Util_LogInfo("  maxDrawIndexedIndexValue: [%u]", this->poPhysicalDeviceProperties.limits.maxDrawIndexedIndexValue);
-            Util_LogInfo("  maxDrawIndirectCount: [%u]", this->poPhysicalDeviceProperties.limits.maxDrawIndirectCount);
-            Util_LogInfo("  maxSamplerLodBias: [%f]", this->poPhysicalDeviceProperties.limits.maxSamplerLodBias);
-            Util_LogInfo("  maxSamplerAnisotropy: [%f]", this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy);
-            Util_LogInfo("  maxViewports: [%u]", this->poPhysicalDeviceProperties.limits.maxViewports);
-            Util_LogInfo("  maxViewportDimensions: [%u] - [%u]", this->poPhysicalDeviceProperties.limits.maxViewportDimensions[0], this->poPhysicalDeviceProperties.limits.maxViewportDimensions[1]);
-            Util_LogInfo("  viewportBoundsRange: [%f] - [%f]", this->poPhysicalDeviceProperties.limits.viewportBoundsRange[0], this->poPhysicalDeviceProperties.limits.viewportBoundsRange[1]);
-            Util_LogInfo("  viewportSubPixelBits: [%u]", this->poPhysicalDeviceProperties.limits.viewportSubPixelBits);
-            Util_LogInfo("  minMemoryMapAlignment: [%u]", this->poPhysicalDeviceProperties.limits.minMemoryMapAlignment);
-            Util_LogInfo("  minTexelBufferOffsetAlignment: [%u]", this->poPhysicalDeviceProperties.limits.minTexelBufferOffsetAlignment);
-            Util_LogInfo("  minUniformBufferOffsetAlignment: [%u]", this->poPhysicalDeviceProperties.limits.minUniformBufferOffsetAlignment);
-            Util_LogInfo("  minStorageBufferOffsetAlignment: [%u]", this->poPhysicalDeviceProperties.limits.minStorageBufferOffsetAlignment);
-            Util_LogInfo("  minTexelOffset: [%d]", this->poPhysicalDeviceProperties.limits.minTexelOffset);
-            Util_LogInfo("  maxTexelOffset: [%u]", this->poPhysicalDeviceProperties.limits.maxTexelOffset);
-            Util_LogInfo("  minTexelGatherOffset: [%d]", this->poPhysicalDeviceProperties.limits.minTexelGatherOffset);
-            Util_LogInfo("  maxTexelGatherOffset: [%u]", this->poPhysicalDeviceProperties.limits.maxTexelGatherOffset);
-            Util_LogInfo("  minInterpolationOffset: [%f]", this->poPhysicalDeviceProperties.limits.minInterpolationOffset);
-            Util_LogInfo("  maxInterpolationOffset: [%f]", this->poPhysicalDeviceProperties.limits.maxInterpolationOffset);
-            Util_LogInfo("  subPixelInterpolationOffsetBits: [%u]", this->poPhysicalDeviceProperties.limits.subPixelInterpolationOffsetBits);
-            Util_LogInfo("  maxFramebufferWidth: [%u]", this->poPhysicalDeviceProperties.limits.maxFramebufferWidth);
-            Util_LogInfo("  maxFramebufferHeight: [%u]", this->poPhysicalDeviceProperties.limits.maxFramebufferHeight);
-            Util_LogInfo("  maxFramebufferLayers: [%u]", this->poPhysicalDeviceProperties.limits.maxFramebufferLayers);
-            Util_LogInfo("  framebufferColorSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.framebufferColorSampleCounts);
-            Util_LogInfo("  framebufferDepthSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.framebufferDepthSampleCounts);
-            Util_LogInfo("  framebufferStencilSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.framebufferStencilSampleCounts);
-            Util_LogInfo("  framebufferNoAttachmentsSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.framebufferNoAttachmentsSampleCounts);
-            Util_LogInfo("  maxColorAttachments: [%u]", this->poPhysicalDeviceProperties.limits.maxColorAttachments);
-            Util_LogInfo("  sampledImageColorSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.sampledImageColorSampleCounts);
-            Util_LogInfo("  sampledImageIntegerSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.sampledImageIntegerSampleCounts);
-            Util_LogInfo("  sampledImageDepthSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.sampledImageDepthSampleCounts);
-            Util_LogInfo("  sampledImageStencilSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.sampledImageStencilSampleCounts);
-            Util_LogInfo("  storageImageSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.storageImageSampleCounts);
-            Util_LogInfo("  maxSampleMaskWords: [%u]", this->poPhysicalDeviceProperties.limits.maxSampleMaskWords);
-            Util_LogInfo("  timestampComputeAndGraphics: [%s]", this->poPhysicalDeviceProperties.limits.timestampComputeAndGraphics ? "true" : "false");
-            Util_LogInfo("  timestampPeriod: [%f]", this->poPhysicalDeviceProperties.limits.timestampPeriod);
-            Util_LogInfo("  maxClipDistances: [%u]", this->poPhysicalDeviceProperties.limits.maxClipDistances);
-            Util_LogInfo("  maxCullDistances: [%u]", this->poPhysicalDeviceProperties.limits.maxCullDistances);
-            Util_LogInfo("  maxCombinedClipAndCullDistances: [%u]", this->poPhysicalDeviceProperties.limits.maxCombinedClipAndCullDistances);
-            Util_LogInfo("  discreteQueuePriorities: [%u]", this->poPhysicalDeviceProperties.limits.discreteQueuePriorities);
-            Util_LogInfo("  pointSizeRange: [%f] - [%f]", this->poPhysicalDeviceProperties.limits.pointSizeRange[0], this->poPhysicalDeviceProperties.limits.pointSizeRange[1]);
-            Util_LogInfo("  lineWidthRange: [%f] - [%f]", this->poPhysicalDeviceProperties.limits.lineWidthRange[0], this->poPhysicalDeviceProperties.limits.lineWidthRange[1]);
-            Util_LogInfo("  pointSizeGranularity: [%f]", this->poPhysicalDeviceProperties.limits.pointSizeGranularity);
-            Util_LogInfo("  lineWidthGranularity: [%f]", this->poPhysicalDeviceProperties.limits.lineWidthGranularity);
-            Util_LogInfo("  strictLines: [%s]", this->poPhysicalDeviceProperties.limits.strictLines ? "true" : "false");
-            Util_LogInfo("  standardSampleLocations: [%s]", this->poPhysicalDeviceProperties.limits.standardSampleLocations ? "true" : "false");
-            Util_LogInfo("  optimalBufferCopyOffsetAlignment: [%u]", this->poPhysicalDeviceProperties.limits.optimalBufferCopyOffsetAlignment);
-            Util_LogInfo("  optimalBufferCopyRowPitchAlignment: [%u]", this->poPhysicalDeviceProperties.limits.optimalBufferCopyRowPitchAlignment);
-            Util_LogInfo("  nonCoherentAtomSize: [%u]", this->poPhysicalDeviceProperties.limits.nonCoherentAtomSize);
+            F_LogInfo("  maxImageDimension1D: [%u]", this->poPhysicalDeviceProperties.limits.maxImageDimension1D);
+            F_LogInfo("  maxImageDimension2D: [%u]", this->poPhysicalDeviceProperties.limits.maxImageDimension2D);
+            F_LogInfo("  maxImageDimension3D: [%u]", this->poPhysicalDeviceProperties.limits.maxImageDimension3D);
+            F_LogInfo("  maxImageDimensionCube: [%u]", this->poPhysicalDeviceProperties.limits.maxImageDimensionCube);
+            F_LogInfo("  maxImageArrayLayers: [%u]", this->poPhysicalDeviceProperties.limits.maxImageArrayLayers);
+            F_LogInfo("  maxTexelBufferElements: [%u]", this->poPhysicalDeviceProperties.limits.maxTexelBufferElements);
+            F_LogInfo("  maxUniformBufferRange: [%u]", this->poPhysicalDeviceProperties.limits.maxUniformBufferRange);
+            F_LogInfo("  maxStorageBufferRange: [%u]", this->poPhysicalDeviceProperties.limits.maxStorageBufferRange);
+            F_LogInfo("  maxPushConstantsSize: [%u]", this->poPhysicalDeviceProperties.limits.maxPushConstantsSize);
+            F_LogInfo("  maxMemoryAllocationCount: [%u]", this->poPhysicalDeviceProperties.limits.maxMemoryAllocationCount);
+            F_LogInfo("  maxSamplerAllocationCount: [%u]", this->poPhysicalDeviceProperties.limits.maxSamplerAllocationCount);
+            F_LogInfo("  bufferImageGranularity: [%u]", this->poPhysicalDeviceProperties.limits.bufferImageGranularity);
+            F_LogInfo("  sparseAddressSpaceSize: [%u]", this->poPhysicalDeviceProperties.limits.sparseAddressSpaceSize);
+            F_LogInfo("  maxBoundDescriptorSets: [%u]", this->poPhysicalDeviceProperties.limits.maxBoundDescriptorSets);
+            F_LogInfo("  maxPerStageDescriptorSamplers: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageDescriptorSamplers);
+            F_LogInfo("  maxPerStageDescriptorUniformBuffers: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageDescriptorUniformBuffers);
+            F_LogInfo("  maxPerStageDescriptorStorageBuffers: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageDescriptorStorageBuffers);
+            F_LogInfo("  maxPerStageDescriptorSampledImages: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageDescriptorSampledImages);
+            F_LogInfo("  maxPerStageDescriptorStorageImages: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageDescriptorStorageImages);
+            F_LogInfo("  maxPerStageDescriptorInputAttachments: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageDescriptorInputAttachments);
+            F_LogInfo("  maxPerStageResources: [%u]", this->poPhysicalDeviceProperties.limits.maxPerStageResources);
+            F_LogInfo("  maxDescriptorSetSamplers: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetSamplers);
+            F_LogInfo("  maxDescriptorSetUniformBuffers: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetUniformBuffers);
+            F_LogInfo("  maxDescriptorSetUniformBuffersDynamic: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetUniformBuffersDynamic);
+            F_LogInfo("  maxDescriptorSetStorageBuffers: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetStorageBuffers);
+            F_LogInfo("  maxDescriptorSetStorageBuffersDynamic: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetStorageBuffersDynamic);
+            F_LogInfo("  maxDescriptorSetSampledImages: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetSampledImages);
+            F_LogInfo("  maxDescriptorSetStorageImages: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetStorageImages);
+            F_LogInfo("  maxDescriptorSetInputAttachments: [%u]", this->poPhysicalDeviceProperties.limits.maxDescriptorSetInputAttachments);
+            F_LogInfo("  maxVertexInputAttributes: [%u]", this->poPhysicalDeviceProperties.limits.maxVertexInputAttributes);
+            F_LogInfo("  maxVertexInputBindings: [%u]", this->poPhysicalDeviceProperties.limits.maxVertexInputBindings);
+            F_LogInfo("  maxVertexInputAttributeOffset: [%u]", this->poPhysicalDeviceProperties.limits.maxVertexInputAttributeOffset);
+            F_LogInfo("  maxVertexInputBindingStride: [%u]", this->poPhysicalDeviceProperties.limits.maxVertexInputBindingStride);
+            F_LogInfo("  maxVertexOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxVertexOutputComponents);
+            F_LogInfo("  maxTessellationGenerationLevel: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationGenerationLevel);
+            F_LogInfo("  maxTessellationPatchSize: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationPatchSize);
+            F_LogInfo("  maxTessellationControlPerVertexInputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationControlPerVertexInputComponents);
+            F_LogInfo("  maxTessellationControlPerVertexOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationControlPerVertexOutputComponents);
+            F_LogInfo("  maxTessellationControlPerPatchOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationControlPerPatchOutputComponents);
+            F_LogInfo("  maxTessellationControlTotalOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationControlTotalOutputComponents);
+            F_LogInfo("  maxTessellationEvaluationInputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationEvaluationInputComponents);
+            F_LogInfo("  maxTessellationEvaluationOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxTessellationEvaluationOutputComponents);
+            F_LogInfo("  maxGeometryShaderInvocations: [%u]", this->poPhysicalDeviceProperties.limits.maxGeometryShaderInvocations);
+            F_LogInfo("  maxGeometryInputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxGeometryInputComponents);
+            F_LogInfo("  maxGeometryOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxGeometryOutputComponents);
+            F_LogInfo("  maxGeometryOutputVertices: [%u]", this->poPhysicalDeviceProperties.limits.maxGeometryOutputVertices);
+            F_LogInfo("  maxGeometryTotalOutputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxGeometryTotalOutputComponents);
+            F_LogInfo("  maxFragmentInputComponents: [%u]", this->poPhysicalDeviceProperties.limits.maxFragmentInputComponents);
+            F_LogInfo("  maxFragmentOutputAttachments: [%u]", this->poPhysicalDeviceProperties.limits.maxFragmentOutputAttachments);
+            F_LogInfo("  maxFragmentDualSrcAttachments: [%u]", this->poPhysicalDeviceProperties.limits.maxFragmentDualSrcAttachments);
+            F_LogInfo("  maxFragmentCombinedOutputResources: [%u]", this->poPhysicalDeviceProperties.limits.maxFragmentCombinedOutputResources);
+            F_LogInfo("  maxComputeSharedMemorySize: [%u]", this->poPhysicalDeviceProperties.limits.maxComputeSharedMemorySize);
+            F_LogInfo("  maxComputeWorkGroupCount: [%u] - [%u] - [%u]", this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupCount[0], this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupCount[1], this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupCount[2]);
+            F_LogInfo("  maxComputeWorkGroupInvocations: [%u]", this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupInvocations);
+            F_LogInfo("  maxComputeWorkGroupSize: [%u] - [%u] - [%u]", this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupSize[0], this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupSize[1], this->poPhysicalDeviceProperties.limits.maxComputeWorkGroupSize[2]);
+            F_LogInfo("  subPixelPrecisionBits: [%u]", this->poPhysicalDeviceProperties.limits.subPixelPrecisionBits);
+            F_LogInfo("  subTexelPrecisionBits: [%u]", this->poPhysicalDeviceProperties.limits.subTexelPrecisionBits);
+            F_LogInfo("  mipmapPrecisionBits: [%u]", this->poPhysicalDeviceProperties.limits.mipmapPrecisionBits);
+            F_LogInfo("  maxDrawIndexedIndexValue: [%u]", this->poPhysicalDeviceProperties.limits.maxDrawIndexedIndexValue);
+            F_LogInfo("  maxDrawIndirectCount: [%u]", this->poPhysicalDeviceProperties.limits.maxDrawIndirectCount);
+            F_LogInfo("  maxSamplerLodBias: [%f]", this->poPhysicalDeviceProperties.limits.maxSamplerLodBias);
+            F_LogInfo("  maxSamplerAnisotropy: [%f]", this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy);
+            F_LogInfo("  maxViewports: [%u]", this->poPhysicalDeviceProperties.limits.maxViewports);
+            F_LogInfo("  maxViewportDimensions: [%u] - [%u]", this->poPhysicalDeviceProperties.limits.maxViewportDimensions[0], this->poPhysicalDeviceProperties.limits.maxViewportDimensions[1]);
+            F_LogInfo("  viewportBoundsRange: [%f] - [%f]", this->poPhysicalDeviceProperties.limits.viewportBoundsRange[0], this->poPhysicalDeviceProperties.limits.viewportBoundsRange[1]);
+            F_LogInfo("  viewportSubPixelBits: [%u]", this->poPhysicalDeviceProperties.limits.viewportSubPixelBits);
+            F_LogInfo("  minMemoryMapAlignment: [%u]", this->poPhysicalDeviceProperties.limits.minMemoryMapAlignment);
+            F_LogInfo("  minTexelBufferOffsetAlignment: [%u]", this->poPhysicalDeviceProperties.limits.minTexelBufferOffsetAlignment);
+            F_LogInfo("  minUniformBufferOffsetAlignment: [%u]", this->poPhysicalDeviceProperties.limits.minUniformBufferOffsetAlignment);
+            F_LogInfo("  minStorageBufferOffsetAlignment: [%u]", this->poPhysicalDeviceProperties.limits.minStorageBufferOffsetAlignment);
+            F_LogInfo("  minTexelOffset: [%d]", this->poPhysicalDeviceProperties.limits.minTexelOffset);
+            F_LogInfo("  maxTexelOffset: [%u]", this->poPhysicalDeviceProperties.limits.maxTexelOffset);
+            F_LogInfo("  minTexelGatherOffset: [%d]", this->poPhysicalDeviceProperties.limits.minTexelGatherOffset);
+            F_LogInfo("  maxTexelGatherOffset: [%u]", this->poPhysicalDeviceProperties.limits.maxTexelGatherOffset);
+            F_LogInfo("  minInterpolationOffset: [%f]", this->poPhysicalDeviceProperties.limits.minInterpolationOffset);
+            F_LogInfo("  maxInterpolationOffset: [%f]", this->poPhysicalDeviceProperties.limits.maxInterpolationOffset);
+            F_LogInfo("  subPixelInterpolationOffsetBits: [%u]", this->poPhysicalDeviceProperties.limits.subPixelInterpolationOffsetBits);
+            F_LogInfo("  maxFramebufferWidth: [%u]", this->poPhysicalDeviceProperties.limits.maxFramebufferWidth);
+            F_LogInfo("  maxFramebufferHeight: [%u]", this->poPhysicalDeviceProperties.limits.maxFramebufferHeight);
+            F_LogInfo("  maxFramebufferLayers: [%u]", this->poPhysicalDeviceProperties.limits.maxFramebufferLayers);
+            F_LogInfo("  framebufferColorSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.framebufferColorSampleCounts);
+            F_LogInfo("  framebufferDepthSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.framebufferDepthSampleCounts);
+            F_LogInfo("  framebufferStencilSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.framebufferStencilSampleCounts);
+            F_LogInfo("  framebufferNoAttachmentsSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.framebufferNoAttachmentsSampleCounts);
+            F_LogInfo("  maxColorAttachments: [%u]", this->poPhysicalDeviceProperties.limits.maxColorAttachments);
+            F_LogInfo("  sampledImageColorSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.sampledImageColorSampleCounts);
+            F_LogInfo("  sampledImageIntegerSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.sampledImageIntegerSampleCounts);
+            F_LogInfo("  sampledImageDepthSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.sampledImageDepthSampleCounts);
+            F_LogInfo("  sampledImageStencilSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.sampledImageStencilSampleCounts);
+            F_LogInfo("  storageImageSampleCounts: [%u]", this->poPhysicalDeviceProperties.limits.storageImageSampleCounts);
+            F_LogInfo("  maxSampleMaskWords: [%u]", this->poPhysicalDeviceProperties.limits.maxSampleMaskWords);
+            F_LogInfo("  timestampComputeAndGraphics: [%s]", this->poPhysicalDeviceProperties.limits.timestampComputeAndGraphics ? "true" : "false");
+            F_LogInfo("  timestampPeriod: [%f]", this->poPhysicalDeviceProperties.limits.timestampPeriod);
+            F_LogInfo("  maxClipDistances: [%u]", this->poPhysicalDeviceProperties.limits.maxClipDistances);
+            F_LogInfo("  maxCullDistances: [%u]", this->poPhysicalDeviceProperties.limits.maxCullDistances);
+            F_LogInfo("  maxCombinedClipAndCullDistances: [%u]", this->poPhysicalDeviceProperties.limits.maxCombinedClipAndCullDistances);
+            F_LogInfo("  discreteQueuePriorities: [%u]", this->poPhysicalDeviceProperties.limits.discreteQueuePriorities);
+            F_LogInfo("  pointSizeRange: [%f] - [%f]", this->poPhysicalDeviceProperties.limits.pointSizeRange[0], this->poPhysicalDeviceProperties.limits.pointSizeRange[1]);
+            F_LogInfo("  lineWidthRange: [%f] - [%f]", this->poPhysicalDeviceProperties.limits.lineWidthRange[0], this->poPhysicalDeviceProperties.limits.lineWidthRange[1]);
+            F_LogInfo("  pointSizeGranularity: [%f]", this->poPhysicalDeviceProperties.limits.pointSizeGranularity);
+            F_LogInfo("  lineWidthGranularity: [%f]", this->poPhysicalDeviceProperties.limits.lineWidthGranularity);
+            F_LogInfo("  strictLines: [%s]", this->poPhysicalDeviceProperties.limits.strictLines ? "true" : "false");
+            F_LogInfo("  standardSampleLocations: [%s]", this->poPhysicalDeviceProperties.limits.standardSampleLocations ? "true" : "false");
+            F_LogInfo("  optimalBufferCopyOffsetAlignment: [%u]", this->poPhysicalDeviceProperties.limits.optimalBufferCopyOffsetAlignment);
+            F_LogInfo("  optimalBufferCopyRowPitchAlignment: [%u]", this->poPhysicalDeviceProperties.limits.optimalBufferCopyRowPitchAlignment);
+            F_LogInfo("  nonCoherentAtomSize: [%u]", this->poPhysicalDeviceProperties.limits.nonCoherentAtomSize);
         }
-        Util_LogInfo("**************** VulkanWindow::pickPhysicalDevice: PhysicalDeviceProperties ****************");
+        F_LogInfo("**************** VulkanWindow::pickPhysicalDevice: PhysicalDeviceProperties ****************");
 
-        Util_LogInfo("**************** VulkanWindow::pickPhysicalDevice: PhysicalDeviceFeatures ****************");
+        F_LogInfo("**************** VulkanWindow::pickPhysicalDevice: PhysicalDeviceFeatures ****************");
         {
-            Util_LogInfo("  robustBufferAccess: [%s]", this->poPhysicalDeviceFeatures.robustBufferAccess ? "true" : "false");
-            Util_LogInfo("  fullDrawIndexUint32: [%s]", this->poPhysicalDeviceFeatures.fullDrawIndexUint32 ? "true" : "false");
-            Util_LogInfo("  imageCubeArray: [%s]", this->poPhysicalDeviceFeatures.imageCubeArray ? "true" : "false");
-            Util_LogInfo("  independentBlend: [%s]", this->poPhysicalDeviceFeatures.independentBlend ? "true" : "false");
-            Util_LogInfo("  geometryShader: [%s]", this->poPhysicalDeviceFeatures.geometryShader ? "true" : "false");
-            Util_LogInfo("  tessellationShader: [%s]", this->poPhysicalDeviceFeatures.tessellationShader ? "true" : "false");
-            Util_LogInfo("  sampleRateShading: [%s]", this->poPhysicalDeviceFeatures.sampleRateShading ? "true" : "false");
-            Util_LogInfo("  dualSrcBlend: [%s]", this->poPhysicalDeviceFeatures.dualSrcBlend ? "true" : "false");
-            Util_LogInfo("  logicOp: [%s]", this->poPhysicalDeviceFeatures.logicOp ? "true" : "false");
-            Util_LogInfo("  multiDrawIndirect: [%s]", this->poPhysicalDeviceFeatures.multiDrawIndirect ? "true" : "false");
-            Util_LogInfo("  drawIndirectFirstInstance: [%s]", this->poPhysicalDeviceFeatures.drawIndirectFirstInstance ? "true" : "false");
-            Util_LogInfo("  depthClamp: [%s]", this->poPhysicalDeviceFeatures.depthClamp ? "true" : "false");
-            Util_LogInfo("  depthBiasClamp: [%s]", this->poPhysicalDeviceFeatures.depthBiasClamp ? "true" : "false");
-            Util_LogInfo("  fillModeNonSolid: [%s]", this->poPhysicalDeviceFeatures.fillModeNonSolid ? "true" : "false");
-            Util_LogInfo("  depthBounds: [%s]", this->poPhysicalDeviceFeatures.depthBounds ? "true" : "false");
-            Util_LogInfo("  wideLines: [%s]", this->poPhysicalDeviceFeatures.wideLines ? "true" : "false");
-            Util_LogInfo("  largePoints: [%s]", this->poPhysicalDeviceFeatures.largePoints ? "true" : "false");
-            Util_LogInfo("  alphaToOne: [%s]", this->poPhysicalDeviceFeatures.alphaToOne ? "true" : "false");
-            Util_LogInfo("  multiViewport: [%s]", this->poPhysicalDeviceFeatures.multiViewport ? "true" : "false");
-            Util_LogInfo("  samplerAnisotropy: [%s]", this->poPhysicalDeviceFeatures.samplerAnisotropy ? "true" : "false");
-            Util_LogInfo("  textureCompressionETC2: [%s]", this->poPhysicalDeviceFeatures.textureCompressionETC2 ? "true" : "false");
-            Util_LogInfo("  textureCompressionASTC_LDR: [%s]", this->poPhysicalDeviceFeatures.textureCompressionASTC_LDR ? "true" : "false");
-            Util_LogInfo("  textureCompressionBC: [%s]", this->poPhysicalDeviceFeatures.textureCompressionBC ? "true" : "false");
-            Util_LogInfo("  occlusionQueryPrecise: [%s]", this->poPhysicalDeviceFeatures.occlusionQueryPrecise ? "true" : "false");
-            Util_LogInfo("  pipelineStatisticsQuery: [%s]", this->poPhysicalDeviceFeatures.pipelineStatisticsQuery ? "true" : "false");
-            Util_LogInfo("  vertexPipelineStoresAndAtomics: [%s]", this->poPhysicalDeviceFeatures.vertexPipelineStoresAndAtomics ? "true" : "false");
-            Util_LogInfo("  fragmentStoresAndAtomics: [%s]", this->poPhysicalDeviceFeatures.fragmentStoresAndAtomics ? "true" : "false");
-            Util_LogInfo("  shaderTessellationAndGeometryPointSize: [%s]", this->poPhysicalDeviceFeatures.shaderTessellationAndGeometryPointSize ? "true" : "false");
-            Util_LogInfo("  shaderImageGatherExtended: [%s]", this->poPhysicalDeviceFeatures.shaderImageGatherExtended ? "true" : "false");
-            Util_LogInfo("  shaderStorageImageExtendedFormats: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageExtendedFormats ? "true" : "false");
-            Util_LogInfo("  shaderStorageImageMultisample: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageMultisample ? "true" : "false");
-            Util_LogInfo("  shaderStorageImageReadWithoutFormat: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageReadWithoutFormat ? "true" : "false");
-            Util_LogInfo("  shaderStorageImageWriteWithoutFormat: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageWriteWithoutFormat ? "true" : "false");
-            Util_LogInfo("  shaderUniformBufferArrayDynamicIndexing: [%s]", this->poPhysicalDeviceFeatures.shaderUniformBufferArrayDynamicIndexing ? "true" : "false");
-            Util_LogInfo("  shaderSampledImageArrayDynamicIndexing: [%s]", this->poPhysicalDeviceFeatures.shaderSampledImageArrayDynamicIndexing ? "true" : "false");
-            Util_LogInfo("  shaderStorageBufferArrayDynamicIndexing: [%s]", this->poPhysicalDeviceFeatures.shaderStorageBufferArrayDynamicIndexing ? "true" : "false");
-            Util_LogInfo("  shaderStorageImageArrayDynamicIndexing: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageArrayDynamicIndexing ? "true" : "false");
-            Util_LogInfo("  shaderClipDistance: [%s]", this->poPhysicalDeviceFeatures.shaderClipDistance ? "true" : "false");
-            Util_LogInfo("  shaderCullDistance: [%s]", this->poPhysicalDeviceFeatures.shaderCullDistance ? "true" : "false");
-            Util_LogInfo("  shaderFloat64: [%s]", this->poPhysicalDeviceFeatures.shaderFloat64 ? "true" : "false");
-            Util_LogInfo("  shaderInt64: [%s]", this->poPhysicalDeviceFeatures.shaderInt64 ? "true" : "false");
-            Util_LogInfo("  shaderInt16: [%s]", this->poPhysicalDeviceFeatures.shaderInt16 ? "true" : "false");
-            Util_LogInfo("  shaderResourceResidency: [%s]", this->poPhysicalDeviceFeatures.shaderResourceResidency ? "true" : "false");
-            Util_LogInfo("  shaderResourceMinLod: [%s]", this->poPhysicalDeviceFeatures.shaderResourceMinLod ? "true" : "false");
-            Util_LogInfo("  sparseBinding: [%s]", this->poPhysicalDeviceFeatures.sparseBinding ? "true" : "false");
-            Util_LogInfo("  sparseResidencyBuffer: [%s]", this->poPhysicalDeviceFeatures.sparseResidencyBuffer ? "true" : "false");
-            Util_LogInfo("  sparseResidencyImage2D: [%s]", this->poPhysicalDeviceFeatures.sparseResidencyImage2D ? "true" : "false");
-            Util_LogInfo("  sparseResidencyImage3D: [%s]", this->poPhysicalDeviceFeatures.sparseResidencyImage3D ? "true" : "false");
-            Util_LogInfo("  sparseResidency2Samples: [%s]", this->poPhysicalDeviceFeatures.sparseResidency2Samples ? "true" : "false");
-            Util_LogInfo("  sparseResidency4Samples: [%s]", this->poPhysicalDeviceFeatures.sparseResidency4Samples ? "true" : "false");
-            Util_LogInfo("  sparseResidency8Samples: [%s]", this->poPhysicalDeviceFeatures.sparseResidency8Samples ? "true" : "false");
-            Util_LogInfo("  sparseResidency16Samples: [%s]", this->poPhysicalDeviceFeatures.sparseResidency16Samples ? "true" : "false");
-            Util_LogInfo("  sparseResidencyAliased: [%s]", this->poPhysicalDeviceFeatures.sparseResidencyAliased ? "true" : "false");
-            Util_LogInfo("  variableMultisampleRate: [%s]", this->poPhysicalDeviceFeatures.variableMultisampleRate ? "true" : "false");
-            Util_LogInfo("  inheritedQueries: [%s]", this->poPhysicalDeviceFeatures.inheritedQueries ? "true" : "false");
+            F_LogInfo("  robustBufferAccess: [%s]", this->poPhysicalDeviceFeatures.robustBufferAccess ? "true" : "false");
+            F_LogInfo("  fullDrawIndexUint32: [%s]", this->poPhysicalDeviceFeatures.fullDrawIndexUint32 ? "true" : "false");
+            F_LogInfo("  imageCubeArray: [%s]", this->poPhysicalDeviceFeatures.imageCubeArray ? "true" : "false");
+            F_LogInfo("  independentBlend: [%s]", this->poPhysicalDeviceFeatures.independentBlend ? "true" : "false");
+            F_LogInfo("  geometryShader: [%s]", this->poPhysicalDeviceFeatures.geometryShader ? "true" : "false");
+            F_LogInfo("  tessellationShader: [%s]", this->poPhysicalDeviceFeatures.tessellationShader ? "true" : "false");
+            F_LogInfo("  sampleRateShading: [%s]", this->poPhysicalDeviceFeatures.sampleRateShading ? "true" : "false");
+            F_LogInfo("  dualSrcBlend: [%s]", this->poPhysicalDeviceFeatures.dualSrcBlend ? "true" : "false");
+            F_LogInfo("  logicOp: [%s]", this->poPhysicalDeviceFeatures.logicOp ? "true" : "false");
+            F_LogInfo("  multiDrawIndirect: [%s]", this->poPhysicalDeviceFeatures.multiDrawIndirect ? "true" : "false");
+            F_LogInfo("  drawIndirectFirstInstance: [%s]", this->poPhysicalDeviceFeatures.drawIndirectFirstInstance ? "true" : "false");
+            F_LogInfo("  depthClamp: [%s]", this->poPhysicalDeviceFeatures.depthClamp ? "true" : "false");
+            F_LogInfo("  depthBiasClamp: [%s]", this->poPhysicalDeviceFeatures.depthBiasClamp ? "true" : "false");
+            F_LogInfo("  fillModeNonSolid: [%s]", this->poPhysicalDeviceFeatures.fillModeNonSolid ? "true" : "false");
+            F_LogInfo("  depthBounds: [%s]", this->poPhysicalDeviceFeatures.depthBounds ? "true" : "false");
+            F_LogInfo("  wideLines: [%s]", this->poPhysicalDeviceFeatures.wideLines ? "true" : "false");
+            F_LogInfo("  largePoints: [%s]", this->poPhysicalDeviceFeatures.largePoints ? "true" : "false");
+            F_LogInfo("  alphaToOne: [%s]", this->poPhysicalDeviceFeatures.alphaToOne ? "true" : "false");
+            F_LogInfo("  multiViewport: [%s]", this->poPhysicalDeviceFeatures.multiViewport ? "true" : "false");
+            F_LogInfo("  samplerAnisotropy: [%s]", this->poPhysicalDeviceFeatures.samplerAnisotropy ? "true" : "false");
+            F_LogInfo("  textureCompressionETC2: [%s]", this->poPhysicalDeviceFeatures.textureCompressionETC2 ? "true" : "false");
+            F_LogInfo("  textureCompressionASTC_LDR: [%s]", this->poPhysicalDeviceFeatures.textureCompressionASTC_LDR ? "true" : "false");
+            F_LogInfo("  textureCompressionBC: [%s]", this->poPhysicalDeviceFeatures.textureCompressionBC ? "true" : "false");
+            F_LogInfo("  occlusionQueryPrecise: [%s]", this->poPhysicalDeviceFeatures.occlusionQueryPrecise ? "true" : "false");
+            F_LogInfo("  pipelineStatisticsQuery: [%s]", this->poPhysicalDeviceFeatures.pipelineStatisticsQuery ? "true" : "false");
+            F_LogInfo("  vertexPipelineStoresAndAtomics: [%s]", this->poPhysicalDeviceFeatures.vertexPipelineStoresAndAtomics ? "true" : "false");
+            F_LogInfo("  fragmentStoresAndAtomics: [%s]", this->poPhysicalDeviceFeatures.fragmentStoresAndAtomics ? "true" : "false");
+            F_LogInfo("  shaderTessellationAndGeometryPointSize: [%s]", this->poPhysicalDeviceFeatures.shaderTessellationAndGeometryPointSize ? "true" : "false");
+            F_LogInfo("  shaderImageGatherExtended: [%s]", this->poPhysicalDeviceFeatures.shaderImageGatherExtended ? "true" : "false");
+            F_LogInfo("  shaderStorageImageExtendedFormats: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageExtendedFormats ? "true" : "false");
+            F_LogInfo("  shaderStorageImageMultisample: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageMultisample ? "true" : "false");
+            F_LogInfo("  shaderStorageImageReadWithoutFormat: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageReadWithoutFormat ? "true" : "false");
+            F_LogInfo("  shaderStorageImageWriteWithoutFormat: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageWriteWithoutFormat ? "true" : "false");
+            F_LogInfo("  shaderUniformBufferArrayDynamicIndexing: [%s]", this->poPhysicalDeviceFeatures.shaderUniformBufferArrayDynamicIndexing ? "true" : "false");
+            F_LogInfo("  shaderSampledImageArrayDynamicIndexing: [%s]", this->poPhysicalDeviceFeatures.shaderSampledImageArrayDynamicIndexing ? "true" : "false");
+            F_LogInfo("  shaderStorageBufferArrayDynamicIndexing: [%s]", this->poPhysicalDeviceFeatures.shaderStorageBufferArrayDynamicIndexing ? "true" : "false");
+            F_LogInfo("  shaderStorageImageArrayDynamicIndexing: [%s]", this->poPhysicalDeviceFeatures.shaderStorageImageArrayDynamicIndexing ? "true" : "false");
+            F_LogInfo("  shaderClipDistance: [%s]", this->poPhysicalDeviceFeatures.shaderClipDistance ? "true" : "false");
+            F_LogInfo("  shaderCullDistance: [%s]", this->poPhysicalDeviceFeatures.shaderCullDistance ? "true" : "false");
+            F_LogInfo("  shaderFloat64: [%s]", this->poPhysicalDeviceFeatures.shaderFloat64 ? "true" : "false");
+            F_LogInfo("  shaderInt64: [%s]", this->poPhysicalDeviceFeatures.shaderInt64 ? "true" : "false");
+            F_LogInfo("  shaderInt16: [%s]", this->poPhysicalDeviceFeatures.shaderInt16 ? "true" : "false");
+            F_LogInfo("  shaderResourceResidency: [%s]", this->poPhysicalDeviceFeatures.shaderResourceResidency ? "true" : "false");
+            F_LogInfo("  shaderResourceMinLod: [%s]", this->poPhysicalDeviceFeatures.shaderResourceMinLod ? "true" : "false");
+            F_LogInfo("  sparseBinding: [%s]", this->poPhysicalDeviceFeatures.sparseBinding ? "true" : "false");
+            F_LogInfo("  sparseResidencyBuffer: [%s]", this->poPhysicalDeviceFeatures.sparseResidencyBuffer ? "true" : "false");
+            F_LogInfo("  sparseResidencyImage2D: [%s]", this->poPhysicalDeviceFeatures.sparseResidencyImage2D ? "true" : "false");
+            F_LogInfo("  sparseResidencyImage3D: [%s]", this->poPhysicalDeviceFeatures.sparseResidencyImage3D ? "true" : "false");
+            F_LogInfo("  sparseResidency2Samples: [%s]", this->poPhysicalDeviceFeatures.sparseResidency2Samples ? "true" : "false");
+            F_LogInfo("  sparseResidency4Samples: [%s]", this->poPhysicalDeviceFeatures.sparseResidency4Samples ? "true" : "false");
+            F_LogInfo("  sparseResidency8Samples: [%s]", this->poPhysicalDeviceFeatures.sparseResidency8Samples ? "true" : "false");
+            F_LogInfo("  sparseResidency16Samples: [%s]", this->poPhysicalDeviceFeatures.sparseResidency16Samples ? "true" : "false");
+            F_LogInfo("  sparseResidencyAliased: [%s]", this->poPhysicalDeviceFeatures.sparseResidencyAliased ? "true" : "false");
+            F_LogInfo("  variableMultisampleRate: [%s]", this->poPhysicalDeviceFeatures.variableMultisampleRate ? "true" : "false");
+            F_LogInfo("  inheritedQueries: [%s]", this->poPhysicalDeviceFeatures.inheritedQueries ? "true" : "false");
         }       
-        Util_LogInfo("**************** VulkanWindow::pickPhysicalDevice: PhysicalDeviceFeatures ****************");
+        F_LogInfo("**************** VulkanWindow::pickPhysicalDevice: PhysicalDeviceFeatures ****************");
 
         this->poPhysicalDeviceMultiViewFeaturesKHR = {};
         this->poPhysicalDeviceMultiViewFeaturesKHR .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR;
@@ -984,23 +982,23 @@ namespace LostPeter
             pFuncGetPhysicalDeviceProperties2KHR(this->poPhysicalDevice, &this->poPhysicalDeviceProperties2KHR);
         }
 
-        Util_LogInfo("**************** VulkanWindow::pickPhysicalDevice: MultiViewFeatures ****************");
+        F_LogInfo("**************** VulkanWindow::pickPhysicalDevice: MultiViewFeatures ****************");
         {
             if (pFuncGetPhysicalDeviceFeatures2KHR != nullptr)
             {
-                Util_LogInfo("  multiview: [%s]", this->poPhysicalDeviceMultiViewFeaturesKHR.multiview ? "true" : "false");
-                Util_LogInfo("  multiviewGeometryShader: [%s]", this->poPhysicalDeviceMultiViewFeaturesKHR.multiviewGeometryShader ? "true" : "false");
-                Util_LogInfo("  multiviewTessellationShader: [%s]", this->poPhysicalDeviceMultiViewFeaturesKHR.multiviewTessellationShader ? "true" : "false");
+                F_LogInfo("  multiview: [%s]", this->poPhysicalDeviceMultiViewFeaturesKHR.multiview ? "true" : "false");
+                F_LogInfo("  multiviewGeometryShader: [%s]", this->poPhysicalDeviceMultiViewFeaturesKHR.multiviewGeometryShader ? "true" : "false");
+                F_LogInfo("  multiviewTessellationShader: [%s]", this->poPhysicalDeviceMultiViewFeaturesKHR.multiviewTessellationShader ? "true" : "false");
             }
             if (pFuncGetPhysicalDeviceProperties2KHR != nullptr)
             {   
-                Util_LogInfo("  maxMultiviewViewCount: [%u]", this->poPhysicalDeviceMultiViewPropertiesKHR.maxMultiviewViewCount);
-                Util_LogInfo("  maxMultiviewInstanceIndex: [%u]", this->poPhysicalDeviceMultiViewPropertiesKHR.maxMultiviewInstanceIndex);
+                F_LogInfo("  maxMultiviewViewCount: [%u]", this->poPhysicalDeviceMultiViewPropertiesKHR.maxMultiviewViewCount);
+                F_LogInfo("  maxMultiviewInstanceIndex: [%u]", this->poPhysicalDeviceMultiViewPropertiesKHR.maxMultiviewInstanceIndex);
             }
         }
-        Util_LogInfo("**************** VulkanWindow::pickPhysicalDevice: MultiViewFeatures ****************");
+        F_LogInfo("**************** VulkanWindow::pickPhysicalDevice: MultiViewFeatures ****************");
 
-        Util_LogInfo("<1-2-4> VulkanWindow::pickPhysicalDevice finish !");
+        F_LogInfo("<1-2-4> VulkanWindow::pickPhysicalDevice finish !");
     }
         void VulkanWindow::findQueueFamilies(VkPhysicalDevice device, int& indexGraphics, int& indexPresent, int& indexCompute)
         {
@@ -1177,7 +1175,7 @@ namespace LostPeter
         if (vkCreateDevice(this->poPhysicalDevice, &deviceCreateInfo, nullptr, &this->poDevice) != VK_SUCCESS) 
         {
             String msg = "*********************** VulkanWindow::createLogicalDevice: Failed to create logical device !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
@@ -1186,39 +1184,39 @@ namespace LostPeter
         if (this->cfg_isUseComputeShader)
             vkGetDeviceQueue(this->poDevice, this->queueIndexCompute, 0, &this->poQueueCompute);
 
-        Util_LogInfo("<1-2-5> VulkanWindow::createLogicalDevice finish !");
+        F_LogInfo("<1-2-5> VulkanWindow::createLogicalDevice finish !");
     }
 
     void VulkanWindow::createFeatureSupport()
     {
 
-        Util_LogInfo("*****<1-3> VulkanWindow::createFeatureSupport finish *****");
+        F_LogInfo("*****<1-3> VulkanWindow::createFeatureSupport finish *****");
     }
 
     void VulkanWindow::createCommandObjects()
     {
-        Util_LogInfo("*****<1-4> VulkanWindow::createCommandObjects start *****");
+        F_LogInfo("*****<1-4> VulkanWindow::createCommandObjects start *****");
         {
             //1> createCommandPool
             createCommandPool();
 
         }
-        Util_LogInfo("*****<1-4> VulkanWindow::createCommandObjects finish *****");
+        F_LogInfo("*****<1-4> VulkanWindow::createCommandObjects finish *****");
     }
     void VulkanWindow::createCommandPool()
     {
         //1> poCommandPoolGraphics
         createCommandPool_Graphics();
-        Util_LogInfo("<1-4-1> VulkanWindow::createCommandPool: Create CommandPoolGraphics success !");
+        F_LogInfo("<1-4-1> VulkanWindow::createCommandPool: Create CommandPoolGraphics success !");
 
         //2> poCommandPoolCompute
         if (this->cfg_isUseComputeShader)
         {
             createCommandPool_Compute();
-            Util_LogInfo("<1-4-2> VulkanWindow::createCommandPool: Create CommandPoolCompute success !");
+            F_LogInfo("<1-4-2> VulkanWindow::createCommandPool: Create CommandPoolCompute success !");
         }
 
-        Util_LogInfo("<1-4> VulkanWindow::createCommandPool finish, create CommandPoolGraphics: [true], create CommandPoolCompute: [%s]", this->cfg_isUseComputeShader ? "true" : "false");
+        F_LogInfo("<1-4> VulkanWindow::createCommandPool finish, create CommandPoolGraphics: [true], create CommandPoolCompute: [%s]", this->cfg_isUseComputeShader ? "true" : "false");
     }
         void VulkanWindow::createCommandPool_Graphics()
         {
@@ -1230,7 +1228,7 @@ namespace LostPeter
             if (vkCreateCommandPool(this->poDevice, &poolGraphicsInfo, nullptr, &this->poCommandPoolGraphics) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::createCommandPool_Graphics: Failed to create command pool graphics !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
@@ -1244,7 +1242,7 @@ namespace LostPeter
             if (vkCreateCommandPool(this->poDevice, &poolComputeInfo, nullptr, &this->poCommandPoolCompute) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::createCommandPool_Compute: Failed to create command pool compute !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
@@ -1300,7 +1298,7 @@ namespace LostPeter
 
     void VulkanWindow::createSwapChainObjects()
     {
-        Util_LogInfo("*****<1-5> VulkanWindow::createSwapChainObjects start *****");
+        F_LogInfo("*****<1-5> VulkanWindow::createSwapChainObjects start *****");
         {
             //1> createSwapChain
             createSwapChain();
@@ -1317,7 +1315,7 @@ namespace LostPeter
             //4> createDepthResources
             createDepthResources();
         }
-        Util_LogInfo("*****<1-5> VulkanWindow::createSwapChainObjects finish *****");
+        F_LogInfo("*****<1-5> VulkanWindow::createSwapChainObjects finish *****");
     }
     void VulkanWindow::createSwapChain()
     {
@@ -1333,7 +1331,7 @@ namespace LostPeter
         {
             imageCount = this->swapChainSupport.capabilities.maxImageCount;
         }
-        Util_LogInfo("**************** image count: [%d]", (int)imageCount);
+        F_LogInfo("**************** image count: [%d]", (int)imageCount);
 
         VkSwapchainCreateInfoKHR createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -1374,7 +1372,7 @@ namespace LostPeter
             std::ostringstream os;
             os << (int)result;
             String msg = "*********************** VulkanWindow::createSwapChain: Failed to create swap chain, result: " + os.str();
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
@@ -1388,7 +1386,7 @@ namespace LostPeter
 
         int width, height;
         glfwGetFramebufferSize(this->pWindow, &width, &height);
-        Util_LogInfo("<1-5-1> VulkanWindow::createSwapChain finish, Swapchain size: [%d,%d], window size: [%d,%d]", 
+        F_LogInfo("<1-5-1> VulkanWindow::createSwapChain finish, Swapchain size: [%d,%d], window size: [%d,%d]", 
                     (int)extent.width, (int)extent.height, (int)width, (int)height);
 
         createViewport();
@@ -1437,8 +1435,8 @@ namespace LostPeter
                     static_cast<uint32_t>(height)
                 };
 
-                actualExtent.width = VulkanMath::Clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-                actualExtent.height = VulkanMath::Clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+                actualExtent.width = FMath::Clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+                actualExtent.height = FMath::Clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 
                 return actualExtent;
             }
@@ -1477,7 +1475,7 @@ namespace LostPeter
                               this->poSwapChainImageViews[i]);
         }
 
-        Util_LogInfo("<1-5-2> VulkanWindow::createSwapChainImageViews finish !");
+        F_LogInfo("<1-5-2> VulkanWindow::createSwapChainImageViews finish !");
     }
         void VulkanWindow::createColorResources()
         {
@@ -1508,7 +1506,7 @@ namespace LostPeter
                               1,
                               this->poColorImageView);
 
-            Util_LogInfo("<1-5-3> VulkanWindow::createColorResources finish !");
+            F_LogInfo("<1-5-3> VulkanWindow::createColorResources finish !");
         }
         void VulkanWindow::createDepthResources()
         {
@@ -1539,7 +1537,7 @@ namespace LostPeter
                               1,
                               this->poDepthImageView);
 
-            Util_LogInfo("<1-5-4> VulkanWindow::createDepthResources finish !");
+            F_LogInfo("<1-5-4> VulkanWindow::createDepthResources finish !");
         }
         VkFormat VulkanWindow::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) 
         {
@@ -1561,7 +1559,7 @@ namespace LostPeter
             }
 
             String msg = "*********************** VulkanWindow::findSupportedFormat: Failed to find supported format !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
         VkFormat VulkanWindow::findDepthFormat() 
@@ -1616,18 +1614,18 @@ namespace LostPeter
         VkDescriptorPoolCreateInfo poolInfo = {};
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-        poolInfo.maxSets = 1000 * UTIL_ARRAYSIZE(pool_sizes);
-        poolInfo.poolSizeCount = (uint32_t)UTIL_ARRAYSIZE(pool_sizes);
+        poolInfo.maxSets = 1000 * F_ARRAYSIZE(pool_sizes);
+        poolInfo.poolSizeCount = (uint32_t)F_ARRAYSIZE(pool_sizes);
         poolInfo.pPoolSizes = pool_sizes;
 
         if (vkCreateDescriptorPool(this->poDevice, &poolInfo, nullptr, &this->poDescriptorPool) != VK_SUCCESS) 
         {
             String msg = "*********************** VulkanWindow::createDescriptorPool: Failed to create descriptor pool !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
-        Util_LogInfo("<1-6> VulkanWindow::createDescriptorPool finish !");
+        F_LogInfo("<1-6> VulkanWindow::createDescriptorPool finish !");
     }
         void VulkanWindow::destroyVkDescriptorPool(VkDescriptorPool vkDescriptorPool)
         {
@@ -1639,17 +1637,17 @@ namespace LostPeter
 
     void VulkanWindow::createDescriptorSetLayouts()
     {
-        Util_LogInfo("*****<1-7> VulkanWindow::createDescriptorSetLayouts start *****");
+        F_LogInfo("*****<1-7> VulkanWindow::createDescriptorSetLayouts start *****");
         {
             //1> createDescriptorSetLayout_Default
             createDescriptorSetLayout_Default();
-            Util_LogInfo("<1-7-1> VulkanWindow::createDescriptorSetLayouts finish !");
+            F_LogInfo("<1-7-1> VulkanWindow::createDescriptorSetLayouts finish !");
 
             //3> createDescriptorSetLayout_Custom
             createDescriptorSetLayout_Custom();
-            Util_LogInfo("<1-7-2> VulkanWindow::createDescriptorSetLayouts finish !");
+            F_LogInfo("<1-7-2> VulkanWindow::createDescriptorSetLayouts finish !");
         }
-        Util_LogInfo("*****<1-7> VulkanWindow::createDescriptorSetLayouts finish *****");
+        F_LogInfo("*****<1-7> VulkanWindow::createDescriptorSetLayouts finish *****");
     }
     void VulkanWindow::createDescriptorSetLayout_Default()
     {   
@@ -1712,7 +1710,7 @@ namespace LostPeter
         if (!createVkDescriptorSetLayout(bindings, this->poDescriptorSetLayout))
         {
             String msg = "*********************** VulkanWindow::createDescriptorSetLayout_Default: Failed to create descriptor set layout !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
     }
@@ -1723,17 +1721,17 @@ namespace LostPeter
 
     void VulkanWindow::createPipelineObjects()
     {
-        Util_LogInfo("*****<1-8> VulkanWindow::createPipelineObjects start *****");
+        F_LogInfo("*****<1-8> VulkanWindow::createPipelineObjects start *****");
         {
             //1> createRenderPasses
             createRenderPasses();
-            Util_LogInfo("<1-8-1> VulkanWindow::createPipelineObjects: Success to create RenderPasses !");
+            F_LogInfo("<1-8-1> VulkanWindow::createPipelineObjects: Success to create RenderPasses !");
 
             //2> createFramebuffers
             createFramebuffers();
-            Util_LogInfo("<1-8-2> VulkanWindow::createPipelineObjects: Success to create Framebuffers !");
+            F_LogInfo("<1-8-2> VulkanWindow::createPipelineObjects: Success to create Framebuffers !");
         }
-        Util_LogInfo("*****<1-8> VulkanWindow::createPipelineObjects finish *****");
+        F_LogInfo("*****<1-8> VulkanWindow::createPipelineObjects finish *****");
     }
     void VulkanWindow::createRenderPasses()
     {
@@ -1768,7 +1766,7 @@ namespace LostPeter
                 }
             }
 
-            Util_LogInfo("VulkanWindow::createRenderPass_Default: Success to create RenderPass_Default !");
+            F_LogInfo("VulkanWindow::createRenderPass_Default: Success to create RenderPass_Default !");
         }
         void VulkanWindow::createRenderPass_Custom()
         {
@@ -1815,11 +1813,11 @@ namespace LostPeter
 
                 if (vkCreateRenderPass(this->poDevice, &renderPassInfo, nullptr, &vkRenderPass) != VK_SUCCESS)
                 {
-                    Util_LogError("*********************** VulkanWindow::createVkRenderPass: vkCreateRenderPass failed: [%s] !", nameRenderPass.c_str());
+                    F_LogError("*********************** VulkanWindow::createVkRenderPass: vkCreateRenderPass failed: [%s] !", nameRenderPass.c_str());
                     return false;
                 }
 
-                Util_LogInfo("VulkanWindow::createVkRenderPass: vkCreateRenderPass success: [%s] !", nameRenderPass.c_str());
+                F_LogInfo("VulkanWindow::createVkRenderPass: vkCreateRenderPass success: [%s] !", nameRenderPass.c_str());
                 return true;
             }
             void VulkanWindow::destroyVkRenderPass(VkRenderPass vkRenderPass)
@@ -1899,11 +1897,11 @@ namespace LostPeter
                                         vkRenderPass))
                 {
                     String msg = "*********************** VulkanWindow::createRenderPass_KhrDepth: Failed to create RenderPass_Default_KhrDepth !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
 
-                Util_LogInfo("VulkanWindow::createRenderPass_KhrDepth: Success to create RenderPass_Default_KhrDepth !");
+                F_LogInfo("VulkanWindow::createRenderPass_KhrDepth: Success to create RenderPass_Default_KhrDepth !");
             }
             void VulkanWindow::createRenderPass_KhrDepthImgui(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkRenderPass& vkRenderPass)
             {
@@ -2016,11 +2014,11 @@ namespace LostPeter
                                         vkRenderPass))
                 {
                     String msg = "*********************** VulkanWindow::createRenderPass_KhrDepthImgui: Failed to create RenderPass_Default_KhrDepthImgui !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
 
-                Util_LogInfo("VulkanWindow::createRenderPass_KhrDepthImgui: Success to create RenderPass_Default_KhrDepthImgui !");
+                F_LogInfo("VulkanWindow::createRenderPass_KhrDepthImgui: Success to create RenderPass_Default_KhrDepthImgui !");
             }
             void VulkanWindow::createRenderPass_ColorDepthMSAA(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkSampleCountFlagBits samples, VkRenderPass& vkRenderPass)
             {
@@ -2111,11 +2109,11 @@ namespace LostPeter
                                         vkRenderPass))
                 {
                     String msg = "*********************** VulkanWindow::createRenderPass_ColorDepthMSAA: Failed to create RenderPass_Default_ColorDepthMSAA !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
 
-                Util_LogInfo("VulkanWindow::createRenderPass_ColorDepthMSAA: Success to create RenderPass_Default_ColorDepthMSAA !");
+                F_LogInfo("VulkanWindow::createRenderPass_ColorDepthMSAA: Success to create RenderPass_Default_ColorDepthMSAA !");
             }
             void VulkanWindow::createRenderPass_ColorDepthImguiMSAA(VkFormat formatColor, VkFormat formatDepth, VkFormat formatSwapChain, VkSampleCountFlagBits samples, VkRenderPass& vkRenderPass)
             {
@@ -2251,11 +2249,11 @@ namespace LostPeter
                                         vkRenderPass))
                 {
                     String msg = "*********************** VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Failed to create RenderPass_Default_ColorDepthImguiMSAA !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
 
-                Util_LogInfo("VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Success to create RenderPass_Default_ColorDepthImguiMSAA !");
+                F_LogInfo("VulkanWindow::createRenderPass_ColorDepthImguiMSAA: Success to create RenderPass_Default_ColorDepthImguiMSAA !");
             }
 
         void VulkanWindow::createFramebuffers()
@@ -2305,7 +2303,7 @@ namespace LostPeter
                         }
                     }
 
-                    String nameFramebuffer = "Framebuffer-" + VulkanUtilString::SaveSizeT(i);
+                    String nameFramebuffer = "Framebuffer-" + FUtilString::SaveSizeT(i);
                     if (!createVkFramebuffer(nameFramebuffer,
                                              aImageViews,
                                              this->poRenderPass,
@@ -2316,12 +2314,12 @@ namespace LostPeter
                                              this->poSwapChainFrameBuffers[i]))
                     {
                         String msg = "*********************** VulkanWindow::createFramebuffer_Default: Failed to create framebuffer: " + nameFramebuffer;
-                        Util_LogError(msg.c_str());
+                        F_LogError(msg.c_str());
                         throw std::runtime_error(msg);
                     }
                 }
 
-                Util_LogInfo("VulkanWindow::createFramebuffer_Default: Success to create Framebuffer_Default !");
+                F_LogInfo("VulkanWindow::createFramebuffer_Default: Success to create Framebuffer_Default !");
             }
             void VulkanWindow::createFramebuffer_Custom()
             {
@@ -2348,11 +2346,11 @@ namespace LostPeter
 
                     if (vkCreateFramebuffer(this->poDevice, &framebufferInfo, nullptr, &vkFramebuffer) != VK_SUCCESS) 
                     {
-                        Util_LogError("*********************** VulkanWindow::createVkFramebuffer: vkCreateFramebuffer failed: [%s] !", nameFramebuffer.c_str());
+                        F_LogError("*********************** VulkanWindow::createVkFramebuffer: vkCreateFramebuffer failed: [%s] !", nameFramebuffer.c_str());
                         return false;
                     }
 
-                    Util_LogInfo("VulkanWindow::createVkFramebuffer: vkCreateFramebuffer success: [%s] !", nameFramebuffer.c_str());
+                    F_LogInfo("VulkanWindow::createVkFramebuffer: vkCreateFramebuffer success: [%s] !", nameFramebuffer.c_str());
                     return true;
                 }
                 void VulkanWindow::destroyVkFramebuffer(VkFramebuffer vkFramebuffer)
@@ -2374,7 +2372,7 @@ namespace LostPeter
             createRenderComputeSyncObjects();
         }
 
-        Util_LogInfo("*****<1-9> VulkanWindow::createSyncObjects finish *****");
+        F_LogInfo("*****<1-9> VulkanWindow::createSyncObjects finish *****");
     }
         void VulkanWindow::createPresentRenderSyncObjects()
         {
@@ -2397,12 +2395,12 @@ namespace LostPeter
                     vkCreateFence(this->poDevice, &fenceInfo, nullptr, &this->poInFlightFences[i]) != VK_SUCCESS) 
                 {
                     String msg = "*********************** VulkanWindow::createPresentRenderSyncObjects: Failed to create present/render synchronization objects for a frame !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
             
-            Util_LogInfo("<1-9-1> VulkanWindow::createPresentRenderSyncObjects finish !");
+            F_LogInfo("<1-9-1> VulkanWindow::createPresentRenderSyncObjects finish !");
         }
         void VulkanWindow::createRenderComputeSyncObjects()
         {
@@ -2413,7 +2411,7 @@ namespace LostPeter
             if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poGraphicsWaitSemaphore) != VK_SUCCESS)
             {
                 String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create GraphicsWaitSemaphore !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
             //Signal the semaphore
@@ -2428,11 +2426,11 @@ namespace LostPeter
             if (vkCreateSemaphore(this->poDevice, &semaphoreInfo, nullptr, &this->poComputeWaitSemaphore) != VK_SUCCESS)
             {
                 String msg = "*********************** VulkanWindow::createRenderComputeSyncObjects: Failed to create ComputeWaitSemaphore!";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
 
-            Util_LogInfo("<1-9-2> VulkanWindow::createRenderComputeSyncObjects finish !");
+            F_LogInfo("<1-9-2> VulkanWindow::createRenderComputeSyncObjects finish !");
         }
 
             void VulkanWindow::destroyVkFence(VkFence vkFence)
@@ -2452,7 +2450,7 @@ namespace LostPeter
 
     void VulkanWindow::loadAssets()
     {
-        Util_LogInfo("**********<2> VulkanWindow::loadAssets start **********");
+        F_LogInfo("**********<2> VulkanWindow::loadAssets start **********");
         {
             //1> Create Scene/Terrain/Camera
             createScene();
@@ -2479,17 +2477,17 @@ namespace LostPeter
 
             this->isLoadAsset = true;
         }
-        Util_LogInfo("**********<2> VulkanWindow::loadAssets finish **********");
+        F_LogInfo("**********<2> VulkanWindow::loadAssets finish **********");
     }
     void VulkanWindow::createScene()
     {
-        Util_LogInfo("*****<2-1-1> VulkanWindow::createScene start *****");
+        F_LogInfo("*****<2-1-1> VulkanWindow::createScene start *****");
         {
             //1> createSceneManager
             createSceneManager();
 
         }
-        Util_LogInfo("*****<2-1-1> VulkanWindow::createScene finish *****");
+        F_LogInfo("*****<2-1-1> VulkanWindow::createScene finish *****");
     }
     void VulkanWindow::createSceneManager()
     {
@@ -2500,7 +2498,7 @@ namespace LostPeter
         if (this->pSceneManager == nullptr)
             return;
 
-        Util_LogInfo("*****<2-3> VulkanWindow::buildScene start *****");
+        F_LogInfo("*****<2-3> VulkanWindow::buildScene start *****");
         {
             //1> build shaders
             buildScene_Shaders();
@@ -2526,52 +2524,52 @@ namespace LostPeter
             //8> build pipeline state
             buildScene_PipelineStates();
         }
-        Util_LogInfo("*****<2-3> VulkanWindow::buildScene finish *****");
+        F_LogInfo("*****<2-3> VulkanWindow::buildScene finish *****");
     }
         void VulkanWindow::buildScene_Shaders()
         {
 
-            Util_LogInfo("<2-3-1> VulkanWindow::buildScene_Shaders finish !");
+            F_LogInfo("<2-3-1> VulkanWindow::buildScene_Shaders finish !");
         }
         void VulkanWindow::buildScene_InputLayouts()
         {
 
-            Util_LogInfo("<2-3-2> VulkanWindow::buildScene_InputLayouts finish !");
+            F_LogInfo("<2-3-2> VulkanWindow::buildScene_InputLayouts finish !");
         }
         void VulkanWindow::buildScene_Meshes()
         {
 
-            Util_LogInfo("<2-3-3> VulkanWindow::buildScene_Meshes finish !");
+            F_LogInfo("<2-3-3> VulkanWindow::buildScene_Meshes finish !");
         }
         void VulkanWindow::buildScene_SceneObjects()
         {
 
-            Util_LogInfo("<2-3-4> VulkanWindow::buildScene_SceneObjects finish !");
+            F_LogInfo("<2-3-4> VulkanWindow::buildScene_SceneObjects finish !");
         }
         void VulkanWindow::buildScene_Materials()
         {
 
-            Util_LogInfo("<2-3-5> VulkanWindow::buildScene_Materials finish !");
+            F_LogInfo("<2-3-5> VulkanWindow::buildScene_Materials finish !");
         }
         void VulkanWindow::buildScene_FrameResources()
         {
 
-            Util_LogInfo("<2-3-6> VulkanWindow::buildScene_FrameResources finish !");
+            F_LogInfo("<2-3-6> VulkanWindow::buildScene_FrameResources finish !");
         }
         void VulkanWindow::buildScene_ConstantBufferViews()
         {
 
-            Util_LogInfo("<2-3-7> VulkanWindow::buildScene_ConstantBufferViews finish !");
+            F_LogInfo("<2-3-7> VulkanWindow::buildScene_ConstantBufferViews finish !");
         }
         void VulkanWindow::buildScene_PipelineStates()
         {
 
-            Util_LogInfo("<2-3-8> VulkanWindow::buildScene_PipelineStates finish !");
+            F_LogInfo("<2-3-8> VulkanWindow::buildScene_PipelineStates finish !");
         }
 
     void VulkanWindow::createTerrain()
     {
-         Util_LogInfo("*****<2-1-2> VulkanWindow::createTerrain start *****");
+         F_LogInfo("*****<2-1-2> VulkanWindow::createTerrain start *****");
         {
             //1> loadTerrainData
             if (loadTerrainData())
@@ -2586,7 +2584,7 @@ namespace LostPeter
                 setupTerrainGraphicsPipeline();
             }
         }
-        Util_LogInfo("*****<2-1-2> VulkanWindow::createTerrain finish *****");
+        F_LogInfo("*****<2-1-2> VulkanWindow::createTerrain finish *****");
     }
         bool VulkanWindow::loadTerrainData()
         {
@@ -2597,12 +2595,12 @@ namespace LostPeter
             this->poTerrainHeightMapDataFloat = nullptr;
             this->poTerrainHeightMapDataSize = 0;
             this->poTerrainHeightMapSize = 0;
-            if (!VulkanUtil::LoadAssetFileToBuffer(this->cfg_terrain_Path.c_str(), &this->poTerrainHeightMapData, this->poTerrainHeightMapDataSize, false))
+            if (!FUtil::LoadAssetFileToBuffer(this->cfg_terrain_Path.c_str(), &this->poTerrainHeightMapData, this->poTerrainHeightMapDataSize, false))
             {
-                Util_LogError("*********************** VulkanWindow::loadTerrainData failed, path: [%s] !", this->cfg_terrain_Path.c_str());
+                F_LogError("*********************** VulkanWindow::loadTerrainData failed, path: [%s] !", this->cfg_terrain_Path.c_str());
                 return false;
             }
-            this->poTerrainHeightMapSize = (int32)VulkanMath::Sqrt(this->poTerrainHeightMapDataSize / 2);
+            this->poTerrainHeightMapSize = (int32)FMath::Sqrt(this->poTerrainHeightMapDataSize / 2);
 
             int nSize = this->poTerrainHeightMapSize;
             this->poTerrainHeightMapDataFloat = new float[nSize * nSize];
@@ -2617,7 +2615,7 @@ namespace LostPeter
             }
             this->poTerrainGridInstanceCount = (nSize - 1) / (this->poTerrainGridInstanceVertexCount - 1);
 
-            Util_LogInfo("VulkanWindow::loadTerrainData: Load terrain data: [%s] success, heightmap data size: [%d], heightmap size: [%d] !", 
+            F_LogInfo("VulkanWindow::loadTerrainData: Load terrain data: [%s] success, heightmap data size: [%d], heightmap size: [%d] !", 
                          this->cfg_terrain_Path.c_str(), this->poTerrainHeightMapDataSize, this->poTerrainHeightMapSize);
             return true;
         }
@@ -2683,7 +2681,7 @@ namespace LostPeter
             this->poTerrainIndexBuffer_Size = this->poTerrainIndexCount * sizeof(uint32_t);
             this->poTerrainIndexBuffer_Data = &this->poTerrain_Indices[0];
 
-            Util_LogInfo("VulkanWindow::setupTerrainGeometry: create terrain mesh: [Pos3Normal3Tex2]: Grid: [%d - %d], Vertex-Index: [%d - %d], Instance-Grid: [%d - %d] success !", 
+            F_LogInfo("VulkanWindow::setupTerrainGeometry: create terrain mesh: [Pos3Normal3Tex2]: Grid: [%d - %d], Vertex-Index: [%d - %d], Instance-Grid: [%d - %d] success !", 
                      nVertexCount, nVertexCount,
                      (int)this->poTerrain_Pos3Normal3Tex2.size(), 
                      (int)this->poTerrain_Indices.size(),
@@ -2720,7 +2718,7 @@ namespace LostPeter
                                       1, 
                                       1, 
                                       this->poTerrainHeightMapImageView);
-                    Util_LogInfo("VulkanWindow::setupTerrainTexture: Compute: Create render texture [TerrainHeightMap] - [%d, %d] success !",
+                    F_LogInfo("VulkanWindow::setupTerrainTexture: Compute: Create render texture [TerrainHeightMap] - [%d, %d] success !",
                                 (int)this->poTerrainHeightMapSize, (int)this->poTerrainHeightMapSize);
                 }
                 //2> TerrainNormalMap Texture
@@ -2742,7 +2740,7 @@ namespace LostPeter
                                     1, 
                                     1, 
                                     this->poTerrainNormalMapImageView);
-                    Util_LogInfo("VulkanWindow::setupTerrainTexture: Compute: Create render texture [TerrainNormalMap] - [%d, %d] success !",
+                    F_LogInfo("VulkanWindow::setupTerrainTexture: Compute: Create render texture [TerrainNormalMap] - [%d, %d] success !",
                                 (int)this->poTerrainHeightMapSize, (int)this->poTerrainHeightMapSize);
                 }
                 //3> Terrain ImageSampler
@@ -2776,7 +2774,7 @@ namespace LostPeter
                 uint32_t mipMapCount = 1;
                 //1> Terrain Diffuse
                 {
-                    StringVector aPathTextureDiffuse = VulkanUtilString::Split(this->cfg_terrainTextureDiffuse_Path, ";");
+                    StringVector aPathTextureDiffuse = FUtilString::Split(this->cfg_terrainTextureDiffuse_Path, ";");
                     createTexture2DArray(aPathTextureDiffuse, 
                                          VK_IMAGE_TYPE_2D,
                                          VK_SAMPLE_COUNT_1_BIT, 
@@ -2807,12 +2805,12 @@ namespace LostPeter
                     this->poTerrainDiffuseImageInfo.imageView = this->poTerrainDiffuseImageView;
                     this->poTerrainDiffuseImageInfo.sampler = this->poTerrainDiffuseImageSampler;
 
-                    Util_LogInfo("VulkanWindow::setupTerrainTexture: Graphics: Create terrain diffuse texture array: [%s] success !",
+                    F_LogInfo("VulkanWindow::setupTerrainTexture: Graphics: Create terrain diffuse texture array: [%s] success !",
                                  this->cfg_terrainTextureDiffuse_Path.c_str());
                 }
                 //2> Terrain Normal
                 {
-                    StringVector aPathTextureNormal = VulkanUtilString::Split(this->cfg_terrainTextureNormal_Path, ";");
+                    StringVector aPathTextureNormal = FUtilString::Split(this->cfg_terrainTextureNormal_Path, ";");
                     createTexture2DArray(aPathTextureNormal, 
                                          VK_IMAGE_TYPE_2D,
                                          VK_SAMPLE_COUNT_1_BIT, 
@@ -2843,12 +2841,12 @@ namespace LostPeter
                     this->poTerrainNormalImageInfo.imageView = this->poTerrainNormalImageView;
                     this->poTerrainNormalImageInfo.sampler = this->poTerrainNormalImageSampler;
 
-                    Util_LogInfo("VulkanWindow::setupTerrainTexture: Graphics: Create terrain normal texture array: [%s] success !",
+                    F_LogInfo("VulkanWindow::setupTerrainTexture: Graphics: Create terrain normal texture array: [%s] success !",
                                  this->cfg_terrainTextureNormal_Path.c_str());
                 }
                 //3> Terrain Control
                 {
-                    StringVector aPathTextureControl = VulkanUtilString::Split(this->cfg_terrainTextureControl_Path, ";");
+                    StringVector aPathTextureControl = FUtilString::Split(this->cfg_terrainTextureControl_Path, ";");
                     createTexture2DArray(aPathTextureControl, 
                                          VK_IMAGE_TYPE_2D,
                                          VK_SAMPLE_COUNT_1_BIT, 
@@ -2879,7 +2877,7 @@ namespace LostPeter
                     this->poTerrainControlImageInfo.imageView = this->poTerrainControlImageView;
                     this->poTerrainControlImageInfo.sampler = this->poTerrainControlImageSampler;
 
-                    Util_LogInfo("VulkanWindow::setupTerrainTexture: Graphics: Create terrain control texture array: [%s] success !",
+                    F_LogInfo("VulkanWindow::setupTerrainTexture: Graphics: Create terrain control texture array: [%s] success !",
                                  this->cfg_terrainTextureControl_Path.c_str());
                 }
             }
@@ -2892,10 +2890,10 @@ namespace LostPeter
                 if (this->poTerrainComputeShaderModuleNormalGen == VK_NULL_HANDLE)
                 {
                     String msg = "*********************** VulkanWindow::setupTerrainShader: Compute: createVkShaderModule failed: " + this->cfg_terrainShaderNormalMapGen_Path;
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
-                Util_LogInfo("VulkanWindow::setupTerrainShader: Compute: Create terrain normal gen shader: [%s] success !",
+                F_LogInfo("VulkanWindow::setupTerrainShader: Compute: Create terrain normal gen shader: [%s] success !",
                              this->cfg_terrainShaderNormalMapGen_Path.c_str());
             }
 
@@ -2905,20 +2903,20 @@ namespace LostPeter
                 if (this->poTerrainGraphicsShaderModuleVertex == VK_NULL_HANDLE)
                 {
                     String msg = "*********************** VulkanWindow::setupTerrainShader: Graphics: createVkShaderModule failed: " + this->cfg_terrainShaderVertex_Path;
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
-                Util_LogInfo("VulkanWindow::setupTerrainShader: Graphics: Create terrain vertex shader: [%s] success !",
+                F_LogInfo("VulkanWindow::setupTerrainShader: Graphics: Create terrain vertex shader: [%s] success !",
                              this->cfg_terrainShaderVertex_Path.c_str());
 
                 this->poTerrainGraphicsShaderModuleFragment = createVkShaderModule("TerrainGraphicsShaderModuleFragment", this->cfg_terrainShaderFragment_Path);
                 if (this->poTerrainGraphicsShaderModuleFragment == VK_NULL_HANDLE)
                 {
                     String msg = "*********************** VulkanWindow::setupTerrainShader: Graphics: createVkShaderModule failed: " + this->cfg_terrainShaderFragment_Path;
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
-                Util_LogInfo("VulkanWindow::setupTerrainShader: Graphics: Create terrain fragment shader: [%s] success !",
+                F_LogInfo("VulkanWindow::setupTerrainShader: Graphics: Create terrain fragment shader: [%s] success !",
                              this->cfg_terrainShaderFragment_Path.c_str());
             }
         }
@@ -2973,7 +2971,7 @@ namespace LostPeter
                 if (!createVkDescriptorSetLayout(bindings, this->poTerrainComputeDescriptorSetLayout))
                 {
                     String msg = "*********************** VulkanWindow::setupTerrainComputePipeline: Failed to create descriptor set layout !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
@@ -2986,7 +2984,7 @@ namespace LostPeter
                 if (this->poTerrainComputePipelineLayout == VK_NULL_HANDLE)
                 {
                     String msg = "*********************** VulkanWindow::setupTerrainComputePipeline: createVkPipelineLayout failed !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
@@ -2997,7 +2995,7 @@ namespace LostPeter
                 if (this->poTerrainComputePipeline == VK_NULL_HANDLE)
                 {
                     String msg = "*********************** VulkanWindow::setupTerrainComputePipeline: createVkComputePipeline failed !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
@@ -3072,7 +3070,7 @@ namespace LostPeter
                                                    0.0f,
                                                    i * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf);
                         TerrainObjectConstants toInstance;
-                        toInstance.g_MatWorld = VulkanMath::Translate(vPos);
+                        toInstance.g_MatWorld = FMath::Translate(vPos);
                         this->terrainObjectCBs.push_back(toWhole);
                     }
                 }
@@ -3161,7 +3159,7 @@ namespace LostPeter
                 if (!createVkDescriptorSetLayout(bindings, this->poTerrainGraphicsDescriptorSetLayout))
                 {
                     String msg = "*********************** VulkanWindow::setupTerrainGraphicsPipeline: Failed to create descriptor set layout !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
@@ -3174,7 +3172,7 @@ namespace LostPeter
                 if (this->poTerrainGraphicsPipelineLayout == VK_NULL_HANDLE)
                 {
                     String msg = "*********************** VulkanWindow::setupTerrainGraphicsPipeline: createVkPipelineLayout failed !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
@@ -3329,10 +3327,10 @@ namespace LostPeter
             if (this->poTerrainGraphicsPipeline == VK_NULL_HANDLE)
             {
                 String msg = "*********************** VulkanWindow::createTerrainGraphicsPipeline: createVkGraphicsPipeline failed !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-            Util_LogInfo("VulkanWindow::createTerrainGraphicsPipeline: Graphics: Create terrain pipeline success !");
+            F_LogInfo("VulkanWindow::createTerrainGraphicsPipeline: Graphics: Create terrain pipeline success !");
             
             this->poTerrainGraphicsPipeline_WireFrame = createVkGraphicsPipeline(this->poTerrainGraphicsShaderModuleVertex, "main", 
                                                                                  this->poTerrainGraphicsShaderModuleFragment, "main", 
@@ -3348,10 +3346,10 @@ namespace LostPeter
             if (this->poTerrainGraphicsPipeline_WireFrame == VK_NULL_HANDLE)
             {
                 String msg = "*********************** VulkanWindow::createTerrainGraphicsPipeline: createVkGraphicsPipeline wire frame failed !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-            Util_LogInfo("VulkanWindow::createTerrainGraphicsPipeline: Graphics: Create terrain pipeline wire frame success !");
+            F_LogInfo("VulkanWindow::createTerrainGraphicsPipeline: Graphics: Create terrain pipeline wire frame success !");
         }
         void VulkanWindow::destroyTerrainGraphicsPipeline()
         {
@@ -3370,8 +3368,8 @@ namespace LostPeter
 
     void VulkanWindow::destroyTerrain()
     {
-        UTIL_DELETE_T(this->poTerrainHeightMapData)
-        UTIL_DELETE_T(this->poTerrainHeightMapDataFloat)
+        F_DELETE_T(this->poTerrainHeightMapData)
+        F_DELETE_T(this->poTerrainHeightMapDataFloat)
         this->poTerrainHeightMapDataSize = 0;
         this->poTerrainHeightMapSize = 0;
 
@@ -3486,7 +3484,7 @@ namespace LostPeter
 
     void VulkanWindow::loadGeometry()
     {
-        Util_LogInfo("*****<2-2> VulkanWindow::loadGeometry start *****");
+        F_LogInfo("*****<2-2> VulkanWindow::loadGeometry start *****");
         {
             //1> loadVertexIndexBuffer
             loadVertexIndexBuffer();
@@ -3512,11 +3510,11 @@ namespace LostPeter
             //8> createCommandBuffers
             createCommandBuffers();    
         }
-        Util_LogInfo("*****<2-2> VulkanWindow::loadGeometry finish *****");
+        F_LogInfo("*****<2-2> VulkanWindow::loadGeometry finish *****");
     }
     void VulkanWindow::loadVertexIndexBuffer()
     {
-        Util_LogInfo("**<2-2-1> VulkanWindow::loadVertexIndexBuffer start **");
+        F_LogInfo("**<2-2-1> VulkanWindow::loadVertexIndexBuffer start **");
         {
             //1> loadModel
             loadModel();
@@ -3541,11 +3539,11 @@ namespace LostPeter
                                   this->poIndexBufferMemory);
             }
         }
-        Util_LogInfo("**<2-2-1> VulkanWindow::loadVertexIndexBuffer finish **");
+        F_LogInfo("**<2-2-1> VulkanWindow::loadVertexIndexBuffer finish **");
     }
     void VulkanWindow::loadModel()
     {
-        Util_LogInfo("**<2-2-1-1> VulkanWindow::loadModel start **");
+        F_LogInfo("**<2-2-1-1> VulkanWindow::loadModel start **");
         {
             //1> model 
             if (!this->cfg_model_Path.empty())
@@ -3558,7 +3556,7 @@ namespace LostPeter
                 loadModel_Custom();
             }
         }
-        Util_LogInfo("**<2-2-1-1> VulkanWindow::loadModel finish **");
+        F_LogInfo("**<2-2-1-1> VulkanWindow::loadModel finish **");
     }
         void VulkanWindow::loadModel_Assimp()
         {
@@ -3639,7 +3637,7 @@ namespace LostPeter
             if (!Util_CheckVkResult(vkCreateBuffer(this->poDevice, &bufferInfo, nullptr, &buffer), "vkCreateBuffer")) 
             {
                 String msg = "*********************** VulkanWindow::createVkBuffer: Failed to create buffer !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
 
@@ -3653,7 +3651,7 @@ namespace LostPeter
             if (vkAllocateMemory(this->poDevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::createVkBuffer: Failed to allocate buffer memory !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
             vkBindBufferMemory(this->poDevice, buffer, bufferMemory, 0);
@@ -3672,7 +3670,7 @@ namespace LostPeter
                 }
 
                 String msg = "*********************** VulkanWindow::findMemoryType: Failed to find suitable memory type !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
             void VulkanWindow::copyVkBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) 
@@ -3702,7 +3700,7 @@ namespace LostPeter
             createVkImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
             createVkSampler(this->poMipMapCount, this->poTextureSampler);
 
-            Util_LogInfo("<2-2-2> VulkanWindow::loadTexture finish !");
+            F_LogInfo("<2-2-2> VulkanWindow::loadTexture finish !");
         }
     }
     void VulkanWindow::destroyVkImage(VkImage image, VkDeviceMemory imageMemory, VkImageView imageView)
@@ -3763,7 +3761,7 @@ namespace LostPeter
         if (!pixels) 
         {
             String msg = "*********************** VulkanWindow::createTexture2D: Failed to load texture image: " + pathAsset_Tex;
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
@@ -3908,7 +3906,7 @@ namespace LostPeter
         size_t count_tex = aPathAsset_Tex.size();
         if (count_tex <= 0)
         {
-            Util_LogError("*********************** VulkanWindow::createTexture2DArray: Texture path count <= 0 !");
+            F_LogError("*********************** VulkanWindow::createTexture2DArray: Texture path count <= 0 !");
             return;
         }
         for (size_t i = 0; i < count_tex; i++)
@@ -3921,7 +3919,7 @@ namespace LostPeter
             {
                 s_DeletePixels(aPixels);
                 String msg = "*********************** VulkanWindow::createTexture2DArray: Failed to load texture image: " + pathTexture;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
 
@@ -3938,14 +3936,14 @@ namespace LostPeter
             {
                 s_DeletePixels(aPixels);
                 String msg = "*********************** VulkanWindow::createTexture2DArray: Texture image's all width must the same !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
             if (aHeight[i] != height)
             {
                 s_DeletePixels(aPixels);
                 String msg = "*********************** VulkanWindow::createTexture2DArray: Texture image's all height must the same !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
@@ -4089,13 +4087,13 @@ namespace LostPeter
 		vkGetPhysicalDeviceFormatProperties(this->poPhysicalDevice, format, &formatProperties);
 		if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_TRANSFER_DST_BIT))
 		{
-            Util_LogError("*********************** VulkanWindow::createTexture3D: Physical device does not support flag 'VK_FORMAT_FEATURE_TRANSFER_DST_BIT' for selected texture format !");
+            F_LogError("*********************** VulkanWindow::createTexture3D: Physical device does not support flag 'VK_FORMAT_FEATURE_TRANSFER_DST_BIT' for selected texture format !");
             return;
 		}
 		uint32_t maxImageDimension3D(this->poPhysicalDeviceProperties.limits.maxImageDimension3D);
 		if (width > maxImageDimension3D || height > maxImageDimension3D || depth > maxImageDimension3D)
 		{
-            Util_LogError("*********************** VulkanWindow::createTexture3D: Requested texture dimensions is greater than supported 3D texture dimension !");
+            F_LogError("*********************** VulkanWindow::createTexture3D: Requested texture dimensions is greater than supported 3D texture dimension !");
 			return;
 		}
 
@@ -4212,12 +4210,12 @@ namespace LostPeter
         size_t count_tex = aPathAsset_Tex.size();
         if (count_tex <= 0)
         {
-            Util_LogError("*********************** VulkanWindow::createTextureCubeMap: Texture path count <= 0 !");
+            F_LogError("*********************** VulkanWindow::createTextureCubeMap: Texture path count <= 0 !");
             return;
         }
         if (count_tex != 6)
         {
-            Util_LogError("*********************** VulkanWindow::createTextureCubeMap: Texture path count != 6 !");
+            F_LogError("*********************** VulkanWindow::createTextureCubeMap: Texture path count != 6 !");
             return;
         }
 
@@ -4231,7 +4229,7 @@ namespace LostPeter
             {
                 s_DeletePixels(aPixels);
                 String msg = "*********************** VulkanWindow::createTextureCubeMap: Failed to load texture image: " + pathTexture;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
 
@@ -4248,14 +4246,14 @@ namespace LostPeter
             {
                 s_DeletePixels(aPixels);
                 String msg = "*********************** VulkanWindow::createTextureCubeMap: Texture image's all width must the same !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
             if (aHeight[i] != height)
             {
                 s_DeletePixels(aPixels);
                 String msg = "*********************** VulkanWindow::createTextureCubeMap: Texture image's all height must the same !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
@@ -4980,7 +4978,7 @@ namespace LostPeter
             if (vkCreateImage(this->poDevice, &imageCreateInfo, nullptr, &image) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::createVkImage: Failed to create image !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
 
@@ -4995,7 +4993,7 @@ namespace LostPeter
             if (vkAllocateMemory(this->poDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::createVkImage: Failed to allocate image memory !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
             vkBindImageMemory(this->poDevice, image, imageMemory, 0);
@@ -5023,7 +5021,7 @@ namespace LostPeter
             if (vkCreateImageView(this->poDevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::createVkImageView: Failed to create texture image view !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
@@ -5071,7 +5069,7 @@ namespace LostPeter
             if (vkCreateSampler(this->poDevice, &samplerInfo, nullptr, &sampler) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::createVkSampler: Failed to create texture sampler !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
@@ -5292,7 +5290,7 @@ namespace LostPeter
 
     void VulkanWindow::createConstBuffers()
     {
-        Util_LogInfo("**<2-2-3> VulkanWindow::createConstBuffers start **");
+        F_LogInfo("**<2-2-3> VulkanWindow::createConstBuffers start **");
         {
             //1> createPassCB
             createPassCB();
@@ -5309,7 +5307,7 @@ namespace LostPeter
             //5> createCustomCB
             createCustomCB();
         }
-        Util_LogInfo("**<2-2-3> VulkanWindow::createConstBuffers finish **");
+        F_LogInfo("**<2-2-3> VulkanWindow::createConstBuffers finish **");
     }
     void VulkanWindow::createPassCB()
     {
@@ -5329,7 +5327,7 @@ namespace LostPeter
                            this->poBuffersMemory_PassCB[i]);
         }
 
-        Util_LogInfo("<2-2-3-1> VulkanWindow::createPassCB finish !");
+        F_LogInfo("<2-2-3-1> VulkanWindow::createPassCB finish !");
     }
         void VulkanWindow::buildPassCB()
         {
@@ -5353,7 +5351,7 @@ namespace LostPeter
                            this->poBuffersMemory_ObjectCB[i]);
         }
 
-        Util_LogInfo("<2-2-3-2> VulkanWindow::createObjectCB finish !");
+        F_LogInfo("<2-2-3-2> VulkanWindow::createObjectCB finish !");
     }
         void VulkanWindow::buildObjectCB()
         {
@@ -5378,7 +5376,7 @@ namespace LostPeter
                            this->poBuffersMemory_MaterialCB[i]);
         }
 
-        Util_LogInfo("<2-2-3-3> VulkanWindow::createMaterialCB finish !");
+        F_LogInfo("<2-2-3-3> VulkanWindow::createMaterialCB finish !");
     }
         void VulkanWindow::buildMaterialCB()
         {
@@ -5403,7 +5401,7 @@ namespace LostPeter
                            this->poBuffersMemory_InstanceCB[i]);
         }
 
-        Util_LogInfo("<2-2-3-4> VulkanWindow::createInstanceCB finish !");
+        F_LogInfo("<2-2-3-4> VulkanWindow::createInstanceCB finish !");
     }
         void VulkanWindow::buildInstanceCB()
         {
@@ -5413,7 +5411,7 @@ namespace LostPeter
     void VulkanWindow::createCustomCB()
     {
         
-        Util_LogInfo("<2-2-3-5> VulkanWindow::createCustomCB finish !");
+        F_LogInfo("<2-2-3-5> VulkanWindow::createCustomCB finish !");
     }
 
     VkShaderModule VulkanWindow::createVkShaderModule(const String& info, const String& pathFile)
@@ -5422,9 +5420,9 @@ namespace LostPeter
             return nullptr;
 
         CharVector code;
-        if (!VulkanUtil::LoadAssetFileContent(pathFile.c_str(), code))
+        if (!FUtil::LoadAssetFileContent(pathFile.c_str(), code))
         {
-            Util_LogError("*********************** VulkanWindow::createVkShaderModule failed, path: [%s] !", pathFile.c_str());
+            F_LogError("*********************** VulkanWindow::createVkShaderModule failed, path: [%s] !", pathFile.c_str());
             return nullptr;
         }
         if (code.size() <= 0)
@@ -5441,7 +5439,7 @@ namespace LostPeter
         if (vkCreateShaderModule(this->poDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) 
         {
             String msg = "*********************** VulkanWindow::createVkShaderModule: Failed to create shader module: " + info;
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
@@ -5463,7 +5461,7 @@ namespace LostPeter
         layoutInfo.pBindings = aDescriptorSetLayoutBinding.data();
         if (vkCreateDescriptorSetLayout(this->poDevice, &layoutInfo, nullptr, &vkDescriptorSetLayout) != VK_SUCCESS) 
         {
-            Util_LogError("*********************** VulkanWindow::createVkDescriptorSetLayout: Failed to create descriptor set layout !");
+            F_LogError("*********************** VulkanWindow::createVkDescriptorSetLayout: Failed to create descriptor set layout !");
             return false;
         }
         return true;
@@ -5489,7 +5487,7 @@ namespace LostPeter
         if (vkCreatePipelineLayout(this->poDevice, &pipelineLayoutInfo, nullptr, &vkPipelineLayout) != VK_SUCCESS) 
         {
             String msg = "*********************** VulkanWindow::createVkPipelineLayout: Failed to create pipeline layout !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
         return vkPipelineLayout;
@@ -5518,7 +5516,7 @@ namespace LostPeter
             if (vkCreatePipelineCache(this->poDevice, &pipelineCacheCreateInfo, nullptr, &this->poPipelineCache) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::createVkPipelineCache: Failed to create pipeline cache !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
@@ -5533,7 +5531,7 @@ namespace LostPeter
 
     void VulkanWindow::preparePipeline()
     {
-        Util_LogInfo("**<2-2-4> VulkanWindow::preparePipeline start **");
+        F_LogInfo("**<2-2-4> VulkanWindow::preparePipeline start **");
         {
             //1> createVkPipelineCache
             createVkPipelineCache();
@@ -5541,7 +5539,7 @@ namespace LostPeter
             //2> createCustomBeforePipeline
             createCustomBeforePipeline();
         }
-        Util_LogInfo("**<2-2-4> VulkanWindow::preparePipeline end **");
+        F_LogInfo("**<2-2-4> VulkanWindow::preparePipeline end **");
     }
         void VulkanWindow::createCustomBeforePipeline()
         {
@@ -5550,21 +5548,21 @@ namespace LostPeter
 
     void VulkanWindow::createGraphicsPipeline()
     {
-        Util_LogInfo("**<2-2-5> VulkanWindow::createGraphicsPipeline start **");
+        F_LogInfo("**<2-2-5> VulkanWindow::createGraphicsPipeline start **");
         {
             //1> createGraphicsPipeline_Default
             createGraphicsPipeline_Default();
-            Util_LogInfo("<2-2-5-1> VulkanWindow::createGraphicsPipeline: createGraphicsPipeline_Default finish !");
+            F_LogInfo("<2-2-5-1> VulkanWindow::createGraphicsPipeline: createGraphicsPipeline_Default finish !");
 
             //2> createGraphicsPipeline_Terrain
             createGraphicsPipeline_Terrain();
-            Util_LogInfo("<2-2-5-2> VulkanWindow::createGraphicsPipeline: createGraphicsPipeline_Terrain finish !");
+            F_LogInfo("<2-2-5-2> VulkanWindow::createGraphicsPipeline: createGraphicsPipeline_Terrain finish !");
 
             //3> createGraphicsPipeline_Custom
             createGraphicsPipeline_Custom();
-            Util_LogInfo("<2-2-5-3> VulkanWindow::createGraphicsPipeline: createGraphicsPipeline_Custom finish !");
+            F_LogInfo("<2-2-5-3> VulkanWindow::createGraphicsPipeline: createGraphicsPipeline_Custom finish !");
         }
-        Util_LogInfo("**<2-2-5> VulkanWindow::createGraphicsPipeline finish **");
+        F_LogInfo("**<2-2-5> VulkanWindow::createGraphicsPipeline finish **");
     }
         void VulkanWindow::createGraphicsPipeline_Default()
         {
@@ -5580,7 +5578,7 @@ namespace LostPeter
             if (vertShaderModule == VK_NULL_HANDLE)
             {
                 String msg = "*********************** VulkanWindow::createGraphicsPipeline_Default: Failed to create shader module: " + this->cfg_shaderVertex_Path;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
             
@@ -5588,7 +5586,7 @@ namespace LostPeter
             if (fragShaderModule == VK_NULL_HANDLE)
             {
                 String msg = "*********************** VulkanWindow::createGraphicsPipeline_Default: Failed to create shader module: " + this->cfg_shaderFragment_Path;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
 
@@ -5604,7 +5602,7 @@ namespace LostPeter
             this->poPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
             if (this->poPipelineLayout == VK_NULL_HANDLE)
             {
-                Util_LogError("*********************** VulkanPipeline::createGraphicsPipeline_Default: createVkPipelineLayout failed !");
+                F_LogError("*********************** VulkanPipeline::createGraphicsPipeline_Default: createVkPipelineLayout failed !");
                 return;
             }
 
@@ -5622,7 +5620,7 @@ namespace LostPeter
                                                                 this->cfg_ColorWriteMask);
             if (this->poPipelineGraphics == VK_NULL_HANDLE)
             {
-                Util_LogError("*********************** VulkanPipeline::createGraphicsPipeline_Default: createVkGraphicsPipeline failed !");
+                F_LogError("*********************** VulkanPipeline::createGraphicsPipeline_Default: createVkGraphicsPipeline failed !");
                 return;
             }
 
@@ -5640,7 +5638,7 @@ namespace LostPeter
                                                                           this->cfg_ColorWriteMask);
             if (this->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
             {
-                Util_LogError("*********************** VulkanPipeline::createGraphicsPipeline_Default: createVkGraphicsPipeline wire frame failed !");
+                F_LogError("*********************** VulkanPipeline::createGraphicsPipeline_Default: createVkGraphicsPipeline wire frame failed !");
                 return;
             }
 
@@ -5904,7 +5902,7 @@ namespace LostPeter
                 VkPipeline pipeline;
                 if (!Util_CheckVkResult(vkCreateGraphicsPipelines(this->poDevice, this->poPipelineCache, 1, &pipelineInfo, nullptr, &pipeline), "vkCreateGraphicsPipelines"))
                 {
-                    Util_LogError("*********************** VulkanWindow::createVkGraphicsPipeline: vkCreateGraphicsPipelines failed !");
+                    F_LogError("*********************** VulkanWindow::createVkGraphicsPipeline: vkCreateGraphicsPipelines failed !");
                     return VK_NULL_HANDLE;
                 }
                 return pipeline;
@@ -5912,7 +5910,7 @@ namespace LostPeter
 
     void VulkanWindow::createComputePipeline()
     {
-        Util_LogInfo("**<2-2-6> VulkanWindow::createComputePipeline start **");
+        F_LogInfo("**<2-2-6> VulkanWindow::createComputePipeline start **");
         {
             //1> createComputePipeline_Default
             createComputePipeline_Default();
@@ -5920,7 +5918,7 @@ namespace LostPeter
             //2> createComputePipeline_Custom
             createComputePipeline_Custom();
         }
-        Util_LogInfo("**<2-2-6> VulkanWindow::createComputePipeline finish **");
+        F_LogInfo("**<2-2-6> VulkanWindow::createComputePipeline finish **");
     }
         void VulkanWindow::createComputePipeline_Default()
         {
@@ -5959,7 +5957,7 @@ namespace LostPeter
                 VkPipeline pipeline;
                 if (!Util_CheckVkResult(vkCreateComputePipelines(this->poDevice, this->poPipelineCache, 1, &pipelineInfo, nullptr, &pipeline), "vkCreateComputePipelines"))
                 {
-                    Util_LogError("*********************** VulkanWindow::createVkComputePipeline: vkCreateComputePipelines failed !");
+                    F_LogError("*********************** VulkanWindow::createVkComputePipeline: vkCreateComputePipelines failed !");
                     return VK_NULL_HANDLE;
                 }
                 return pipeline;
@@ -5968,21 +5966,21 @@ namespace LostPeter
 
     void VulkanWindow::createDescriptorSets()
     {
-        Util_LogInfo("**<2-2-7> VulkanWindow::createDescriptorSets start **");
+        F_LogInfo("**<2-2-7> VulkanWindow::createDescriptorSets start **");
         {
             //1> createDescriptorSets_Default
             createDescriptorSets_Default();
-            Util_LogInfo("<2-2-7-1> VulkanWindow::createDescriptorSets: createDescriptorSets_Default finish !");
+            F_LogInfo("<2-2-7-1> VulkanWindow::createDescriptorSets: createDescriptorSets_Default finish !");
 
             //2> createDescriptorSets_Terrain
             createDescriptorSets_Terrain();
-            Util_LogInfo("<2-2-7-2> VulkanWindow::createDescriptorSets: createDescriptorSets_Terrain finish !");
+            F_LogInfo("<2-2-7-2> VulkanWindow::createDescriptorSets: createDescriptorSets_Terrain finish !");
 
             //3> createDescriptorSets_Custom
             createDescriptorSets_Custom();
-            Util_LogInfo("<2-2-7-3> VulkanWindow::createDescriptorSets: createDescriptorSets_Custom finish !");
+            F_LogInfo("<2-2-7-3> VulkanWindow::createDescriptorSets: createDescriptorSets_Custom finish !");
         }
-        Util_LogInfo("**<2-2-7> VulkanWindow::createDescriptorSets finish **");
+        F_LogInfo("**<2-2-7> VulkanWindow::createDescriptorSets finish **");
     }
         void VulkanWindow::createDescriptorSets_Default()
         {
@@ -6089,7 +6087,7 @@ namespace LostPeter
                 if (vkAllocateDescriptorSets(this->poDevice, &allocInfo, &vkDescriptorSet) != VK_SUCCESS) 
                 {
                     String msg = "*********************** VulkanWindow::createVkDescriptorSet: Failed to allocate descriptor set !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
@@ -6107,7 +6105,7 @@ namespace LostPeter
                 if (vkAllocateDescriptorSets(this->poDevice, &allocInfo, aDescriptorSets.data()) != VK_SUCCESS) 
                 {
                     String msg = "*********************** VulkanWindow::createVkDescriptorSets: Failed to allocate descriptor sets !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
@@ -6156,7 +6154,7 @@ namespace LostPeter
 
     void VulkanWindow::createCommandBuffers()
     {
-        Util_LogInfo("**<2-2-8> VulkanWindow::createCommandBuffers start **");
+        F_LogInfo("**<2-2-8> VulkanWindow::createCommandBuffers start **");
         {
             //1> createCommandBuffer_Graphics
             createCommandBuffer_Graphics();
@@ -6165,9 +6163,9 @@ namespace LostPeter
             createCommandBuffer_Compute();
 
 
-            Util_LogInfo("<2-2-8> VulkanWindow::createCommandBuffers finish, create CommandBuffersGraphics: [true], create CommandBufferCompute: [%s]", this->cfg_isUseComputeShader ? "true" : "false");
+            F_LogInfo("<2-2-8> VulkanWindow::createCommandBuffers finish, create CommandBuffersGraphics: [true], create CommandBufferCompute: [%s]", this->cfg_isUseComputeShader ? "true" : "false");
         }
-        Util_LogInfo("**<2-2-8> VulkanWindow::createCommandBuffers finish **");
+        F_LogInfo("**<2-2-8> VulkanWindow::createCommandBuffers finish **");
     }
         void VulkanWindow::createCommandBuffer_Graphics()
         {
@@ -6180,10 +6178,10 @@ namespace LostPeter
             if (vkAllocateCommandBuffers(this->poDevice, &allocInfo, this->poCommandBuffersGraphics.data()) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::createCommandBuffer_Graphics: Failed to allocate command buffers graphics !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
-            Util_LogInfo("<2-2-8-1> VulkanWindow::createCommandBuffer_Graphics: Create CommandBuffersGraphics success !");
+            F_LogInfo("<2-2-8-1> VulkanWindow::createCommandBuffer_Graphics: Create CommandBuffersGraphics success !");
         }
         void VulkanWindow::createCommandBuffer_Compute()
         {
@@ -6197,16 +6195,16 @@ namespace LostPeter
                 if (vkAllocateCommandBuffers(this->poDevice, &allocInfo, &this->poCommandBufferCompute) != VK_SUCCESS) 
                 {
                     String msg = "*********************** VulkanWindow::createCommandBuffer_Compute: Failed to allocate command buffer compute !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
-                Util_LogInfo("<2-2-8-2> VulkanWindow::createCommandBuffer_Compute: Create CommandBufferCompute success !");
+                F_LogInfo("<2-2-8-2> VulkanWindow::createCommandBuffer_Compute: Create CommandBufferCompute success !");
             }
         }
 
     void VulkanWindow::createImgui()
     {
-        Util_LogInfo("**********<2-4> VulkanWindow::createImgui start **********");
+        F_LogInfo("**********<2-4> VulkanWindow::createImgui start **********");
         {
             //1> createImgui_DescriptorPool
             createImgui_DescriptorPool();
@@ -6214,7 +6212,7 @@ namespace LostPeter
             //2> createImgui_Init
             createImgui_Init();
         }
-        Util_LogInfo("**********<2-4> VulkanWindow::createImgui finish **********");
+        F_LogInfo("**********<2-4> VulkanWindow::createImgui finish **********");
     }
         void VulkanWindow::createImgui_DescriptorPool()
         {   
@@ -6243,11 +6241,11 @@ namespace LostPeter
             if (vkCreateDescriptorPool(this->poDevice, &pool_info, nullptr, &this->imgui_DescriptorPool) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::createImgui_DescriptorPool: Imgui descriptor pool creation failed !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
 
-            Util_LogInfo("<2-4-1> VulkanWindow::createImgui_DescriptorPool finish !");
+            F_LogInfo("<2-4-1> VulkanWindow::createImgui_DescriptorPool finish !");
         }
         void checkImguiError(VkResult err)
         {
@@ -6292,7 +6290,7 @@ namespace LostPeter
             endSingleTimeCommands(commandBuffer);
             ImGui_ImplVulkan_DestroyFontUploadObjects();
 
-            Util_LogInfo("<2-4-2> VulkanWindow::createImgui_Init finish !");
+            F_LogInfo("<2-4-2> VulkanWindow::createImgui_Init finish !");
         }
 
     void VulkanWindow::resizeWindow(int w, int h, bool force)
@@ -6340,7 +6338,7 @@ namespace LostPeter
                     if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
                     {
                         String msg = "*********************** VulkanWindow::updateComputeCommandBuffer: vkBeginCommandBuffer: Failed to begin recording compute command buffer !";
-                        Util_LogError(msg.c_str());
+                        F_LogError(msg.c_str());
                         throw std::runtime_error(msg);
                     }
                     {
@@ -6350,7 +6348,7 @@ namespace LostPeter
                     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
                     {
                         String msg = "*********************** VulkanWindow::updateComputeCommandBuffer: vkEndCommandBuffer: Failed to record compute command buffer !";
-                        Util_LogError(msg.c_str());
+                        F_LogError(msg.c_str());
                         throw std::runtime_error(msg);
                     }
                 }
@@ -6380,7 +6378,7 @@ namespace LostPeter
             if (vkQueueSubmit(this->poQueueCompute, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::compute: Failed to submit compute command buffer !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
@@ -6403,7 +6401,7 @@ namespace LostPeter
         else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
         {
             String msg = "*********************** VulkanWindow::beginRender: Failed to acquire swap chain image !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
             return false;
         }
@@ -6467,14 +6465,14 @@ namespace LostPeter
                     transformConstants.mat4View = glm::lookAtLH(this->cfg_cameraPos, 
                                                                 this->cfg_cameraLookTarget,
                                                                 this->cfg_cameraUp);
-                    transformConstants.mat4View_Inv = VulkanMath::InverseMatrix4(transformConstants.mat4View);
+                    transformConstants.mat4View_Inv = FMath::InverseMatrix4(transformConstants.mat4View);
                     transformConstants.mat4Proj = glm::perspectiveLH(glm::radians(this->cfg_cameraFov), 
                                                                      this->poSwapChainExtent.width / (float)this->poSwapChainExtent.height,
                                                                      this->cfg_cameraNear, 
                                                                      this->cfg_cameraFar);
-                    transformConstants.mat4Proj_Inv = VulkanMath::InverseMatrix4(transformConstants.mat4Proj);
+                    transformConstants.mat4Proj_Inv = FMath::InverseMatrix4(transformConstants.mat4Proj);
                     transformConstants.mat4ViewProj = transformConstants.mat4Proj * transformConstants.mat4View;
-                    transformConstants.mat4ViewProj_Inv = VulkanMath::InverseMatrix4(transformConstants.mat4ViewProj);
+                    transformConstants.mat4ViewProj_Inv = FMath::InverseMatrix4(transformConstants.mat4ViewProj);
                     
                     //CameraConstants
                     CameraConstants& cameraConstants = this->passCB.g_Cameras[0];
@@ -6514,11 +6512,11 @@ namespace LostPeter
                     //TransformConstants
                     TransformConstants& transformConstants = this->passCB.g_Transforms[nIndex];
                     transformConstants.mat4View = pCam->GetMatrix4View();
-                    transformConstants.mat4View_Inv = VulkanMath::InverseMatrix4(transformConstants.mat4View);
+                    transformConstants.mat4View_Inv = FMath::InverseMatrix4(transformConstants.mat4View);
                     transformConstants.mat4Proj = pCam->GetMatrix4Projection();
-                    transformConstants.mat4Proj_Inv = VulkanMath::InverseMatrix4(transformConstants.mat4Proj);
+                    transformConstants.mat4Proj_Inv = FMath::InverseMatrix4(transformConstants.mat4Proj);
                     transformConstants.mat4ViewProj = transformConstants.mat4Proj * transformConstants.mat4View;
-                    transformConstants.mat4ViewProj_Inv = VulkanMath::InverseMatrix4(transformConstants.mat4ViewProj);
+                    transformConstants.mat4ViewProj_Inv = FMath::InverseMatrix4(transformConstants.mat4ViewProj);
 
                     //CameraConstants
                     CameraConstants& cameraConstants = this->passCB.g_Cameras[nIndex];
@@ -6533,7 +6531,7 @@ namespace LostPeter
                 size_t count = this->objectCBs.size();
                 if (count >= MAX_OBJECT_COUNT)
                 {
-                    Util_LogError("*********************** VulkanWindow::updateCBs_Objects: Max object count can not > [%d]", MAX_OBJECT_COUNT);
+                    F_LogError("*********************** VulkanWindow::updateCBs_Objects: Max object count can not > [%d]", MAX_OBJECT_COUNT);
                     return;
                 }
 
@@ -6567,7 +6565,7 @@ namespace LostPeter
                 size_t count = this->materialCBs.size();
                 if (count >= MAX_MATERIAL_COUNT)
                 {
-                    Util_LogError("*********************** VulkanWindow::updateCBs_Materials: Max material count can not > [%d]", MAX_MATERIAL_COUNT);
+                    F_LogError("*********************** VulkanWindow::updateCBs_Materials: Max material count can not > [%d]", MAX_MATERIAL_COUNT);
                     return;
                 }
 
@@ -6590,7 +6588,7 @@ namespace LostPeter
                 size_t count = this->instanceCBs.size();
                 if (count >= MAX_INSTANCE_COUNT)
                 {
-                    Util_LogError("*********************** VulkanWindow::updateCBs_Instances: Max instance count can not > [%d]", MAX_INSTANCE_COUNT);
+                    F_LogError("*********************** VulkanWindow::updateCBs_Instances: Max instance count can not > [%d]", MAX_INSTANCE_COUNT);
                     return;
                 }
 
@@ -6850,7 +6848,7 @@ namespace LostPeter
                             for (int i = 0; i < count_light; i++)
                             {
                                 LightConstants& lc = this->aAdditionalLights[i];
-                                String nameLight = "Light - " + VulkanUtilString::SaveInt(i);
+                                String nameLight = "Light - " + FUtilString::SaveInt(i);
                                 lightConfigItem(lc, nameLight, i, true);
                             }
                         }
@@ -6888,7 +6886,7 @@ namespace LostPeter
                             {
                                 //Light Enable
                                 bool isEnable = lc.common.y == 0.0f ? false : true;
-                                String nameEnable = "LightEnable - " + VulkanUtilString::SaveInt(index);
+                                String nameEnable = "LightEnable - " + FUtilString::SaveInt(index);
                                 if (ImGui::Checkbox(nameEnable.c_str(), &isEnable))
                                 {   
                                     lc.common.y = isEnable ? 1.0f : 0.0f;
@@ -6904,7 +6902,7 @@ namespace LostPeter
                                             break;
                                     }
                                     const char* preview_text = s_aLightDescs[nIndex].Name;
-                                    String nameType = "LightType - " + VulkanUtilString::SaveInt(index);
+                                    String nameType = "LightType - " + FUtilString::SaveInt(index);
                                     if (ImGui::BeginCombo(nameType.c_str(), preview_text))
                                     {
                                         for (int j = 0; j < IM_ARRAYSIZE(s_aLightDescs); j++)
@@ -6932,7 +6930,7 @@ namespace LostPeter
                                             break;
                                     }
                                     const char* preview_text = s_aLightingDescs[nIndex].Name;
-                                    String nameType = "LightingType - " + VulkanUtilString::SaveInt(index);
+                                    String nameType = "LightingType - " + FUtilString::SaveInt(index);
                                     if (ImGui::BeginCombo(nameType.c_str(), preview_text))
                                     {
                                         for (int j = 0; j < IM_ARRAYSIZE(s_aLightingDescs); j++)
@@ -6950,7 +6948,7 @@ namespace LostPeter
 
                                 //position
                                 glm::vec3 vPosition = lc.position;
-                                String namePosition = "Position - " + VulkanUtilString::SaveInt(index);
+                                String namePosition = "Position - " + FUtilString::SaveInt(index);
                                 if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
                                 {
                                     lc.position = vPosition;
@@ -6958,15 +6956,15 @@ namespace LostPeter
                                 ImGui::Spacing();
 
                                 //Euler Angle
-                                String nameEulerAngle = "EulerAngle - " + VulkanUtilString::SaveInt(index);
-                                glm::vec3 vEulerAngle = VulkanMath::ToEulerAngles(lc.direction);
+                                String nameEulerAngle = "EulerAngle - " + FUtilString::SaveInt(index);
+                                glm::vec3 vEulerAngle = FMath::ToEulerAngles(lc.direction);
                                 if (ImGui::DragFloat3(nameEulerAngle.c_str(), &vEulerAngle[0], 0.1f, -180, 180))
                                 {
-                                    lc.direction = VulkanMath::ToDirection(vEulerAngle);
+                                    lc.direction = FMath::ToDirection(vEulerAngle);
                                 }
                                 //direction
                                 glm::vec3 vDirection = lc.direction;
-                                String nameDirection = "Direction - " + VulkanUtilString::SaveInt(index);
+                                String nameDirection = "Direction - " + FUtilString::SaveInt(index);
                                 if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
                                 {
                                     
@@ -6974,7 +6972,7 @@ namespace LostPeter
                                 ImGui::Spacing();
 
                                 //ambient
-                                String nameAmbient = "Ambient - " + VulkanUtilString::SaveInt(index);
+                                String nameAmbient = "Ambient - " + FUtilString::SaveInt(index);
                                 if (ImGui::ColorEdit4(nameAmbient.c_str(), (float*)&lc.ambient))
                                 {
 
@@ -6982,7 +6980,7 @@ namespace LostPeter
                                 ImGui::Spacing();
 
                                 //diffuse
-                                String nameDiffuse = "Diffuse - " + VulkanUtilString::SaveInt(index);
+                                String nameDiffuse = "Diffuse - " + FUtilString::SaveInt(index);
                                 if (ImGui::ColorEdit4(nameDiffuse.c_str(), (float*)&lc.diffuse))
                                 {
 
@@ -6990,7 +6988,7 @@ namespace LostPeter
                                 ImGui::Spacing();
 
                                 //specular
-                                String nameSpecular = "Specular - " + VulkanUtilString::SaveInt(index);
+                                String nameSpecular = "Specular - " + FUtilString::SaveInt(index);
                                 if (ImGui::ColorEdit4(nameSpecular.c_str(), (float*)&lc.specular))
                                 {
 
@@ -7005,7 +7003,7 @@ namespace LostPeter
                                 {
                                     //falloffStart
                                     float fFalloffStart = lc.falloffStart;
-                                    String nameFalloffStart = "FalloffStart - " + VulkanUtilString::SaveInt(index);
+                                    String nameFalloffStart = "FalloffStart - " + FUtilString::SaveInt(index);
                                     if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
                                     {
                                         lc.falloffStart = fFalloffStart;
@@ -7014,7 +7012,7 @@ namespace LostPeter
 
                                     //falloffEnd
                                     float fFalloffEnd = lc.falloffEnd;
-                                    String nameFalloffEnd = "FalloffEnd - " + VulkanUtilString::SaveInt(index);
+                                    String nameFalloffEnd = "FalloffEnd - " + FUtilString::SaveInt(index);
                                     if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
                                     {
                                         lc.falloffEnd = fFalloffEnd;
@@ -7024,7 +7022,7 @@ namespace LostPeter
                                 {
                                     //falloffStart
                                     float fFalloffStart = lc.falloffStart;
-                                    String nameFalloffStart = "FalloffStart - " + VulkanUtilString::SaveInt(index);
+                                    String nameFalloffStart = "FalloffStart - " + FUtilString::SaveInt(index);
                                     if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
                                     {
                                         lc.falloffStart = fFalloffStart;
@@ -7033,7 +7031,7 @@ namespace LostPeter
 
                                     //falloffEnd
                                     float fFalloffEnd = lc.falloffEnd;
-                                    String nameFalloffEnd = "FalloffEnd - " + VulkanUtilString::SaveInt(index);
+                                    String nameFalloffEnd = "FalloffEnd - " + FUtilString::SaveInt(index);
                                     if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
                                     {
                                         lc.falloffEnd = fFalloffEnd;
@@ -7042,7 +7040,7 @@ namespace LostPeter
 
                                     //spotPower
                                     float fSpotPower = lc.common.w;
-                                    String nameSpotPower = "SpotPower - " + VulkanUtilString::SaveInt(index);
+                                    String nameSpotPower = "SpotPower - " + FUtilString::SaveInt(index);
                                     if (ImGui::DragFloat(nameSpotPower.c_str(), &fSpotPower, 0.01f, 0.1f, 200.0f))
                                     {
                                         lc.common.w = fSpotPower;
@@ -7084,7 +7082,7 @@ namespace LostPeter
                 if (vkResetCommandBuffer(commandBuffer, 0) != VK_SUCCESS) 
                 {
                     String msg = "*********************** VulkanWindow::updateRenderCommandBuffers_Default: Failed to reset render command buffer !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
 
@@ -7096,7 +7094,7 @@ namespace LostPeter
                 if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
                 {
                     String msg = "*********************** VulkanWindow::updateRenderCommandBuffers_Default: vkBeginCommandBuffer: Failed to begin recording render command buffer !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
                 {
@@ -7111,7 +7109,7 @@ namespace LostPeter
                 if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
                 {
                     String msg = "*********************** VulkanWindow::updateRenderCommandBuffers_Default: vkEndCommandBuffer: Failed to record render command buffer !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
@@ -7324,7 +7322,7 @@ namespace LostPeter
             if (vkQueueSubmit(this->poQueueGraphics, 1, &submitInfo, this->poInFlightFences[this->poCurrentFrame]) != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::render: Failed to submit render command buffer !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
 
@@ -7346,7 +7344,7 @@ namespace LostPeter
             else if (result != VK_SUCCESS) 
             {
                 String msg = "*********************** VulkanWindow::render: Failed to present swap chain image !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
@@ -7357,7 +7355,7 @@ namespace LostPeter
 
     void VulkanWindow::cleanup()
     {
-        Util_LogInfo("---------- VulkanWindow::cleanup start ----------");
+        F_LogInfo("---------- VulkanWindow::cleanup start ----------");
         {
             //0> cleanupCustom
             cleanupCustom();
@@ -7427,7 +7425,7 @@ namespace LostPeter
             destroyVkInstance(this->poInstance);
             this->poInstance = VK_NULL_HANDLE;
         }
-        Util_LogInfo("---------- VulkanWindow::cleanup finish ----------");
+        F_LogInfo("---------- VulkanWindow::cleanup finish ----------");
     }
         void VulkanWindow::cleanupCustom()
         {
@@ -7468,7 +7466,7 @@ namespace LostPeter
         }
         void VulkanWindow::cleanupSwapChain()
         {
-            Util_LogInfo("----- VulkanWindow::cleanupSwapChain start -----");
+            F_LogInfo("----- VulkanWindow::cleanupSwapChain start -----");
             {
                 //0> Custom
                 cleanupSwapChain_Custom();
@@ -7560,7 +7558,7 @@ namespace LostPeter
                 destroyVkDescriptorPool(this->poDescriptorPool);
                 this->poDescriptorPool = VK_NULL_HANDLE;
             }
-            Util_LogInfo("----- VulkanWindow::cleanupSwapChain finish -----");
+            F_LogInfo("----- VulkanWindow::cleanupSwapChain finish -----");
         }
             void VulkanWindow::cleanupSwapChain_Custom()
             {
@@ -7568,7 +7566,7 @@ namespace LostPeter
             }
     void VulkanWindow::recreateSwapChain()
     {
-        Util_LogInfo("++++++++++ VulkanWindow::recreateSwapChain start ++++++++++");
+        F_LogInfo("++++++++++ VulkanWindow::recreateSwapChain start ++++++++++");
         {
             int width = 0;
             int height = 0;
@@ -7619,7 +7617,7 @@ namespace LostPeter
             }
             cameraReset();
         }
-        Util_LogInfo("++++++++++ VulkanWindow::recreateSwapChain finish ++++++++++");
+        F_LogInfo("++++++++++ VulkanWindow::recreateSwapChain finish ++++++++++");
     }
         void VulkanWindow::recreateSwapChain_Custom()
         {

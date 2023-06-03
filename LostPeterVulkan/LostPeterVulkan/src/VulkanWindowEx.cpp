@@ -46,7 +46,7 @@ namespace LostPeter
 
         m_pWindow = glfwCreateWindow(m_nWidth, m_nHeight, m_strNameTitle.c_str(), NULL, NULL);
         if (!m_pWindow) {
-            Util_LogError("VulkanWindowEx::Init: glfwCreateWindow failed, [%s]", m_strNameTitle.c_str());
+            F_LogError("VulkanWindowEx::Init: glfwCreateWindow failed, [%s]", m_strNameTitle.c_str());
             return false;
         }
 

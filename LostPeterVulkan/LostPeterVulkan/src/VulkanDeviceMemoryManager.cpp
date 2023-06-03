@@ -12,7 +12,6 @@
 #include "../include/PreInclude.h"
 #include "../include/VulkanDeviceMemoryManager.h"
 #include "../include/VulkanDevice.h"
-#include "../include/VulkanMath.h"
 
 
 namespace LostPeter
@@ -38,7 +37,7 @@ namespace LostPeter
         {
             if (m_aHeapInfos[i].allocations.size() > 0)
             {
-                Util_LogInfo("VulkanDeviceMemoryManager::Destroy: Found [%d] freed allocations !", (int32)m_aHeapInfos[i].allocations.size());
+                F_LogInfo("VulkanDeviceMemoryManager::Destroy: Found [%d] freed allocations !", (int32)m_aHeapInfos[i].allocations.size());
 
                 DumpMemory();
             }
@@ -114,10 +113,10 @@ namespace LostPeter
         {
             if (canFail)
             {
-                Util_LogError("*********************** VulkanDeviceMemoryManager::Alloc: Failed to allocate Device Memory, Requested: [%fKb], MemTypeIndex: [%d]", (float)allocInfo.allocationSize / 1024.0f, allocInfo.memoryTypeIndex);
+                F_LogError("*********************** VulkanDeviceMemoryManager::Alloc: Failed to allocate Device Memory, Requested: [%fKb], MemTypeIndex: [%d]", (float)allocInfo.allocationSize / 1024.0f, allocInfo.memoryTypeIndex);
                 return nullptr;
             }
-            Util_LogInfo("VulkanDeviceMemoryManager::Alloc: Out of Device Memory, Requested: [%fKb], MemTypeIndex: [%d]", (float)allocInfo.allocationSize / 1024.0f, allocInfo.memoryTypeIndex);
+            F_LogInfo("VulkanDeviceMemoryManager::Alloc: Out of Device Memory, Requested: [%fKb], MemTypeIndex: [%d]", (float)allocInfo.allocationSize / 1024.0f, allocInfo.memoryTypeIndex);
 
             DumpMemory();
         }
@@ -125,10 +124,10 @@ namespace LostPeter
         {
             if (canFail)
             {
-                Util_LogError("*********************** VulkanDeviceMemoryManager::Alloc: Failed to allocate Host Memory, Requested: [%fKb], MemTypeIndex: [%d]", (float)allocInfo.allocationSize / 1024.0f, allocInfo.memoryTypeIndex);
+                F_LogError("*********************** VulkanDeviceMemoryManager::Alloc: Failed to allocate Host Memory, Requested: [%fKb], MemTypeIndex: [%d]", (float)allocInfo.allocationSize / 1024.0f, allocInfo.memoryTypeIndex);
                 return nullptr;
             }
-            Util_LogInfo("VulkanDeviceMemoryManager::Alloc: Out of Host Memory, Requested: [%fKb], MemTypeIndex: [%d]", (float)allocInfo.allocationSize / 1024.0f, allocInfo.memoryTypeIndex);
+            F_LogInfo("VulkanDeviceMemoryManager::Alloc: Out of Host Memory, Requested: [%fKb], MemTypeIndex: [%d]", (float)allocInfo.allocationSize / 1024.0f, allocInfo.memoryTypeIndex);
   
             DumpMemory();
         }
@@ -138,16 +137,16 @@ namespace LostPeter
         }
         
         m_nNumAllocations     += 1;
-        m_nNumPeakAllocations = VulkanMath::Max(m_nNumAllocations, m_nNumPeakAllocations);
+        m_nNumPeakAllocations = FMath::Max(m_nNumAllocations, m_nNumPeakAllocations);
         if (m_nNumAllocations == m_pDevice->GetVkPhysicalDeviceLimits().maxMemoryAllocationCount) 
         {
-            Util_LogInfo("VulkanDeviceMemoryManager::Alloc: Hit Maximum # of allocations: [%d] reported by device !", m_nNumAllocations);
+            F_LogInfo("VulkanDeviceMemoryManager::Alloc: Hit Maximum # of allocations: [%d] reported by device !", m_nNumAllocations);
         }
         
         uint32 heapIndex = m_vkPhysicalDeviceMemoryProperties.memoryTypes[memoryTypeIndex].heapIndex;
         m_aHeapInfos[heapIndex].allocations.push_back(newAllocation);
         m_aHeapInfos[heapIndex].usedSize += allocationSize;
-        m_aHeapInfos[heapIndex].peakSize = VulkanMath::Max(m_aHeapInfos[heapIndex].peakSize, m_aHeapInfos[heapIndex].usedSize);
+        m_aHeapInfos[heapIndex].peakSize = FMath::Max(m_aHeapInfos[heapIndex].peakSize, m_aHeapInfos[heapIndex].usedSize);
         
         return newAllocation;
     }
@@ -176,30 +175,30 @@ namespace LostPeter
         setupAndPrintMemInfo();
 
         int32 count = (int32)m_aHeapInfos.size();
-        Util_LogInfo("VulkanDeviceMemoryManager::DumpMemory: Device Memory: [%d], allocations on [%lu] heaps", m_nNumAllocations, (uint32)count);
+        F_LogInfo("VulkanDeviceMemoryManager::DumpMemory: Device Memory: [%d], allocations on [%lu] heaps", m_nNumAllocations, (uint32)count);
         for (int32 index = 0; index < count; ++index)
         {
             HeapInfo& heapInfo = m_aHeapInfos[index];
-            Util_LogInfo("*********** VulkanDeviceMemoryManager::DumpMemory: \tHeap: [%d], [%lu] allocations", index, (uint32)heapInfo.allocations.size());
+            F_LogInfo("*********** VulkanDeviceMemoryManager::DumpMemory: \tHeap: [%d], [%lu] allocations", index, (uint32)heapInfo.allocations.size());
             uint64 totalSize = 0;
             for (int32 subIndex = 0; subIndex < heapInfo.allocations.size(); ++subIndex)
             {
                 VulkanDeviceMemoryAllocation* allocation = heapInfo.allocations[subIndex];
-                Util_LogInfo("VulkanDeviceMemoryManager::DumpMemory: \t\t[%d], Size [%llu], Handle [%p]", subIndex, (uint64)allocation->m_nSize, (void*)allocation->m_vkDeviceMemory);
+                F_LogInfo("VulkanDeviceMemoryManager::DumpMemory: \t\t[%d], Size [%llu], Handle [%p]", subIndex, (uint64)allocation->m_nSize, (void*)allocation->m_vkDeviceMemory);
                 totalSize += allocation->m_nSize;
             }
-            Util_LogInfo("*********** VulkanDeviceMemoryManager::DumpMemory: \t\tTotal Allocated: [%.2f MB], Peak: [%.2f MB]", totalSize / 1024.0f / 1024.0f, heapInfo.peakSize / 1024.0f / 1024.0f);
+            F_LogInfo("*********** VulkanDeviceMemoryManager::DumpMemory: \t\tTotal Allocated: [%.2f MB], Peak: [%.2f MB]", totalSize / 1024.0f / 1024.0f, heapInfo.peakSize / 1024.0f / 1024.0f);
         }
     }
 
     void VulkanDeviceMemoryManager::setupAndPrintMemInfo()
     {
         const uint32 maxAllocations = m_pDevice->GetVkPhysicalDeviceLimits().maxMemoryAllocationCount;
-        Util_LogInfo("VulkanDeviceMemoryManager::setupAndPrintMemInfo: [%d] Device Memory Heaps, Max memory allocations [%d]", m_vkPhysicalDeviceMemoryProperties.memoryHeapCount, maxAllocations);
+        F_LogInfo("VulkanDeviceMemoryManager::setupAndPrintMemInfo: [%d] Device Memory Heaps, Max memory allocations [%d]", m_vkPhysicalDeviceMemoryProperties.memoryHeapCount, maxAllocations);
         for (uint32 index = 0; index < m_vkPhysicalDeviceMemoryProperties.memoryHeapCount; ++index)
         {
             bool isGPUHeap = ((m_vkPhysicalDeviceMemoryProperties.memoryHeaps[index].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) == VK_MEMORY_HEAP_DEVICE_LOCAL_BIT);
-            Util_LogInfo("VulkanDeviceMemoryManager::setupAndPrintMemInfo: [%d]: Flags: [0x%x], Size: [%llu] [%.2f MB] [%s]",
+            F_LogInfo("VulkanDeviceMemoryManager::setupAndPrintMemInfo: [%d]: Flags: [0x%x], Size: [%llu] [%.2f MB] [%s]",
                 index,
                 m_vkPhysicalDeviceMemoryProperties.memoryHeaps[index].flags,
                 (uint64)(m_vkPhysicalDeviceMemoryProperties.memoryHeaps[index].size),
@@ -210,7 +209,7 @@ namespace LostPeter
         }
         
         m_bHasUnifiedMemory = false;
-        Util_LogInfo("VulkanDeviceMemoryManager::setupAndPrintMemInfo: [%d] Device Memory Types: [%sunified]", m_vkPhysicalDeviceMemoryProperties.memoryTypeCount, m_bHasUnifiedMemory ? "" : "Not");
+        F_LogInfo("VulkanDeviceMemoryManager::setupAndPrintMemInfo: [%d] Device Memory Types: [%sunified]", m_vkPhysicalDeviceMemoryProperties.memoryTypeCount, m_bHasUnifiedMemory ? "" : "Not");
         for (uint32 index = 0; index < m_vkPhysicalDeviceMemoryProperties.memoryTypeCount; ++index)
         {
             auto GetFlagsString = [](VkMemoryPropertyFlags flags)
@@ -234,7 +233,7 @@ namespace LostPeter
                 return str;
             };
             
-            Util_LogInfo("VulkanDeviceMemoryManager::setupAndPrintMemInfo: [%d]: Flags: [0x%x], Heap: [%d] [%s]",
+            F_LogInfo("VulkanDeviceMemoryManager::setupAndPrintMemInfo: [%d]: Flags: [0x%x], Heap: [%d] [%s]",
                 index,
                 m_vkPhysicalDeviceMemoryProperties.memoryTypes[index].propertyFlags,
                 m_vkPhysicalDeviceMemoryProperties.memoryTypes[index].heapIndex,

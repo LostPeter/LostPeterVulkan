@@ -1,26 +1,26 @@
 /****************************************************************************
-* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterFoundation - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2022-10-30
+* Time:     2023-06-03
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VULKAN_TIMER_H_
-#define _VULKAN_TIMER_H_
+#ifndef _F_TIMER_H_
+#define _F_TIMER_H_
 
-#include "PreDefine.h"
+#include "FPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterFoundation
 {
-    class utilExport VulkanTimer
+    class LPF_Export FTimer
     {
     public:
-        VulkanTimer();
-        ~VulkanTimer();
+        FTimer();
+        ~FTimer();
 
     public:
     protected:
@@ -28,8 +28,8 @@ namespace LostPeter
         TimePoint m_tpLast;
 
     public:
-        const TimePoint& GetTimePointStart() const { return m_tpStart; }
-        const TimePoint& GetTimePointLast() const { return m_tpLast; }
+        LP_FORCEINLINE const TimePoint& GetTimePointStart() const { return m_tpStart; }
+        LP_FORCEINLINE const TimePoint& GetTimePointLast() const { return m_tpLast; }
 
     public:
         TimePoint Now();
@@ -41,6 +41,6 @@ namespace LostPeter
         void Tick();
     };
 
-}; //LostPeter
+}; //LostPeterFoundation
 
 #endif

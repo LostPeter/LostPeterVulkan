@@ -274,7 +274,7 @@ namespace LostPeter
         
 
             TerrainObjectConstants()
-                : g_MatWorld(VulkanMath::Identity4x4())
+                : g_MatWorld(FMath::Identity4x4())
             {
 
             }

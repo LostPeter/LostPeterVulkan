@@ -23,7 +23,7 @@ namespace LostPeter
         virtual ~VulkanSample();
 
     public:
-        static VulkanLogManager* ms_pLogManager;
+        static FLogManager* ms_pLogManager;
 
     protected:
         String m_strNameSample;
@@ -32,7 +32,7 @@ namespace LostPeter
         int m_nHeight;
         float m_fAspectRatio;
 
-        VulkanTimer* m_pTimer;
+        FTimer* m_pTimer;
         float m_fTimeLastFPS;
         float m_fFPS;
         int m_nFrameFPS;

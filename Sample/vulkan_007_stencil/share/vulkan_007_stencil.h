@@ -28,7 +28,7 @@ public:
         float g_OutlineWidth;
 
         ObjectConstants_Outline()
-            : g_MatWorld(VulkanMath::Identity4x4())
+            : g_MatWorld(FMath::Identity4x4())
             , g_OutlineColor(1, 1, 1, 1)
             , g_OutlineWidth(0.02f)
         {

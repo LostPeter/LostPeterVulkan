@@ -13,7 +13,6 @@
 #include "vulkan_006_depth.h"
 #include "VulkanMeshLoader.h"
 #include "VulkanCamera.h"
-#include "VulkanTimer.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -42,11 +41,11 @@ static glm::vec3 g_tranformModels[3 * g_CountLen] =
 
 static glm::mat4 g_tranformLocalModels[g_CountLen] = 
 {
-    VulkanMath::RotateX(-90.0f), //viking_room
-    VulkanMath::ms_mat4Unit, //bunny
+    FMath::RotateX(-90.0f), //viking_room
+    FMath::ms_mat4Unit, //bunny
 
-    VulkanMath::ms_mat4Unit, //plane
-    VulkanMath::ms_mat4Unit, //cube
+    FMath::ms_mat4Unit, //plane
+    FMath::ms_mat4Unit, //cube
 };
 
 static bool g_isTranformLocalModels[g_CountLen] = 
@@ -104,10 +103,10 @@ void Vulkan_006_Depth::loadModel_Custom()
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTranformLocal, g_tranformLocalModels[i]))
         {
             String msg = "Vulkan_006_Depth::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
-        pModelObject->poMatWorld = VulkanMath::FromTRS(g_tranformModels[i * 3 + 0],
+        pModelObject->poMatWorld = FMath::FromTRS(g_tranformModels[i * 3 + 0],
                                                      g_tranformModels[i * 3 + 1],
                                                      g_tranformModels[i * 3 + 2]); 
 
@@ -115,7 +114,7 @@ void Vulkan_006_Depth::loadModel_Custom()
         if (!loadModel_Texture(pModelObject))
         {   
             String msg = "Vulkan_006_Depth::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -131,7 +130,7 @@ bool Vulkan_006_Depth::loadModel_VertexIndex(ModelObject* pModelObject, bool isF
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!VulkanMeshLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
     {
-        Util_LogError("Vulkan_006_Depth::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
+        F_LogError("Vulkan_006_Depth::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
         return false; 
     }
 
@@ -148,7 +147,7 @@ bool Vulkan_006_Depth::loadModel_VertexIndex(ModelObject* pModelObject, bool isF
 
         if (isTranformLocal)
         {
-            v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+            v.pos = FMath::Transform(matTransformLocal, v.pos);
         }
 
         pModelObject->vertices.push_back(v);
@@ -168,10 +167,10 @@ bool Vulkan_006_Depth::loadModel_VertexIndex(ModelObject* pModelObject, bool isF
     pModelObject->poIndexBuffer_Size = pModelObject->poIndexCount * sizeof(uint32_t);
     pModelObject->poIndexBuffer_Data = &pModelObject->indices[0];
 
-    Util_LogInfo("Vulkan_006_Depth::loadModel_VertexIndex: load model [%s] success, Vertex count: [%d], Index count: [%d] !", 
-                 pModelObject->nameModel.c_str(),
-                 (int)pModelObject->vertices.size(), 
-                 (int)pModelObject->indices.size());
+    F_LogInfo("Vulkan_006_Depth::loadModel_VertexIndex: load model [%s] success, Vertex count: [%d], Index count: [%d] !", 
+              pModelObject->nameModel.c_str(),
+              (int)pModelObject->vertices.size(), 
+              (int)pModelObject->indices.size());
 
     //2> createVertexBuffer
     createVertexBuffer(pModelObject->poVertexBuffer_Size, pModelObject->poVertexBuffer_Data, pModelObject->poVertexBuffer, pModelObject->poVertexBufferMemory);
@@ -193,7 +192,7 @@ bool Vulkan_006_Depth::loadModel_Texture(ModelObject* pModelObject)
         createVkImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
         createVkSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
 
-        Util_LogInfo("Vulkan_006_Depth::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
+        F_LogInfo("Vulkan_006_Depth::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
 
     return true;
@@ -262,7 +261,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         if (pModelObject->poPipelineGraphics == VK_NULL_HANDLE)
         {
             String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -281,7 +280,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
         {
             String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -300,7 +299,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         if (pModelObject->poPipelineGraphics_NoDepthTest == VK_NULL_HANDLE)
         {
             String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth test !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -319,7 +318,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         if (pModelObject->poPipelineGraphics_NoDepthWrite == VK_NULL_HANDLE)
         {
             String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth write !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -338,7 +337,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
         if (pModelObject->poPipelineGraphics_NoDepthTestWrite == VK_NULL_HANDLE)
         {
             String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth test and write !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
     }
@@ -495,7 +494,7 @@ void Vulkan_006_Depth::modelConfig()
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
 
-            String nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
+            String nameModel = FUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
             if (ImGui::CollapsingHeader(nameModel.c_str()))
             {
                 String nameIsShow = "Is Show - " + pModelObject->nameModel;
@@ -517,7 +516,7 @@ void Vulkan_006_Depth::modelConfig()
                 if (ImGui::CollapsingHeader(nameWorld.c_str()))
                 {
                     const glm::mat4& mat4World = pModelObject->objectCBs[0].g_MatWorld;
-                    String nameTable = VulkanUtilString::SaveInt(i) + " - split_model_world";
+                    String nameTable = FUtilString::SaveInt(i) + " - split_model_world";
                     if (ImGui::BeginTable(nameTable.c_str(), 4))
                     {
                         ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
@@ -612,7 +611,7 @@ void Vulkan_006_Depth::cleanupCustom()
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
-        UTIL_DELETE(pModelObject)
+        F_DELETE(pModelObject)
     }
     this->m_aModelObjects.clear();
     this->m_mapModelObjects.clear();

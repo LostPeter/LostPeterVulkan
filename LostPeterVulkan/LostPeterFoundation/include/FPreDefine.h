@@ -75,6 +75,14 @@ namespace LostPeterFoundation
     #define F_DELETE_T(p)                       { if(p) { delete[] p; p=nullptr; }}
 
 
+////////////////////////////// Enum ////////////////////////////////
+    enum FLogType
+    {
+        F_Log_Console = 0,                         //0:    Console
+        F_Log_File,                                //1:    File
+    };
+
+
 ////////////////////////////// Typedef /////////////////////////////
     using int8 = std::int8_t;
     using uint8 = std::uint8_t;
@@ -125,6 +133,22 @@ namespace LostPeterFoundation
     typedef std::vector<FQuaternion> FQuaternionVector;
     typedef std::vector<FColor> FColorVector;
     typedef std::map<size_t, FVector3> FIndex2Vector3Map;
+
+
+    class FBitwise;
+    class FBox;
+    class FMath;
+    class FLog;
+    class FLogConsole;
+    class FLogFile;
+    class FLogManager;
+    class FTimer;
+    class FUtil;
+    class FUtilString;
+
+
+    typedef std::vector<FLog*> FLogPtrVector;
+    typedef std::map<String, FLog*> VFLogPtrMap;
 
 
 }; //LostPeterFoundation

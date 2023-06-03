@@ -13,7 +13,6 @@
 #include "../include/VulkanBufferVertex.h"
 #include "../include/VulkanManager.h"
 #include "../include/VulkanDevice.h"
-#include "../include/VulkanUtilString.h"
 
 namespace LostPeter
 {
@@ -91,7 +90,7 @@ namespace LostPeter
         {
             if (!bIsUpdateData || m_vkBufferMemory_Transfer == VK_NULL_HANDLE)
             {
-                Util_LogError("*********************** VulkanBufferVertex::UpdateData: UpdateData failed, not update data buffer !");
+                F_LogError("*********************** VulkanBufferVertex::UpdateData: UpdateData failed, not update data buffer !");
                 return false;
             }
 
@@ -109,7 +108,7 @@ namespace LostPeter
                                                                                         m_vkBuffer_Transfer, 
                                                                                         m_vkBufferMemory_Transfer))
                 {
-                    Util_LogError("*********************** VulkanBufferVertex::UpdateData: 1 CreateVkBufferVertex failed !");
+                    F_LogError("*********************** VulkanBufferVertex::UpdateData: 1 CreateVkBufferVertex failed !");
                     return false;
                 }
             }
@@ -120,7 +119,7 @@ namespace LostPeter
                                                                                         m_vkBuffer, 
                                                                                         m_vkBufferMemory))
                 {
-                    Util_LogError("*********************** VulkanBufferVertex::UpdateData: 2 CreateVkBufferVertex failed !");
+                    F_LogError("*********************** VulkanBufferVertex::UpdateData: 2 CreateVkBufferVertex failed !");
                     return false;
                 }
             }
@@ -132,12 +131,12 @@ namespace LostPeter
 
     VulkanBufferVertex* VulkanBufferVertex::Clone()
     {
-        String strName =  VulkanUtilString::FormatString("%s_Copy_%d", m_strName.c_str(), GetNextID());
+        String strName =  FUtilString::FormatString("%s_Copy_%d", m_strName.c_str(), GetNextID());
         VulkanBufferVertex* pBufferVertex = new VulkanBufferVertex(strName);
         void* pData = CloneData();
         if (!pBufferVertex->Init(pData, m_nDataSize, m_nVertexCount, true, m_bIsUpdateData))
         {
-            UTIL_DELETE(pBufferVertex)
+            F_DELETE(pBufferVertex)
             return nullptr;
         }
         return pBufferVertex;

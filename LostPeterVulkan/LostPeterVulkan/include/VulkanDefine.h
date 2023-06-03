@@ -13,7 +13,7 @@
 #define _VULKAN_DEFINE_H_
 
 #include "PreDefine.h"
-#include "VulkanMath.h"
+#include "FMath.h"
 
 namespace LostPeter
 {
@@ -1992,12 +1992,12 @@ namespace LostPeter
         glm::mat4 mat4ViewProj_Inv;
 
         TransformConstants()
-            : mat4View(VulkanMath::Identity4x4())
-            , mat4View_Inv(VulkanMath::Identity4x4())
-            , mat4Proj(VulkanMath::Identity4x4())
-            , mat4Proj_Inv(VulkanMath::Identity4x4())
-            , mat4ViewProj(VulkanMath::Identity4x4())
-            , mat4ViewProj_Inv(VulkanMath::Identity4x4())
+            : mat4View(FMath::Identity4x4())
+            , mat4View_Inv(FMath::Identity4x4())
+            , mat4Proj(FMath::Identity4x4())
+            , mat4Proj_Inv(FMath::Identity4x4())
+            , mat4ViewProj(FMath::Identity4x4())
+            , mat4ViewProj_Inv(FMath::Identity4x4())
         {
 
         }
@@ -2096,7 +2096,7 @@ namespace LostPeter
         
 
         ObjectConstants()
-            : g_MatWorld(VulkanMath::Identity4x4())
+            : g_MatWorld(FMath::Identity4x4())
         {
 
         }

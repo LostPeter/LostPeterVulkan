@@ -44,7 +44,7 @@ namespace LostPeter
                                                                 VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location,
                                                                 int32_t code, const char* layerPrefix, const char* message, void* userData) 
     {
-        Util_LogError("*********************** g_DebugReportCallback: %s", message);
+        F_LogError("*********************** g_DebugReportCallback: %s", message);
 
         return VK_FALSE;
     }
@@ -74,14 +74,14 @@ namespace LostPeter
     void VulkanInstance::Destroy()
     {
         destroyReportCallbackInfo();
-        UTIL_DELETE(m_pDevice)
+        F_DELETE(m_pDevice)
         if (m_vkInstance != VK_NULL_HANDLE)
         {
             vkDestroyInstance(m_vkInstance, nullptr);
         }
         m_vkInstance = VK_NULL_HANDLE;
         
-        Util_LogInfo("VulkanInstance::Destroy: Destroy success !");
+        F_LogInfo("VulkanInstance::Destroy: Destroy success !");
     }
 
     bool VulkanInstance::Init()
@@ -89,34 +89,34 @@ namespace LostPeter
         //1> LoadVulkanLibrary
         //if (!VulkanLauncher::GetPlatform()->LoadVulkanLibrary())
         // {
-        //     Util_LogError("*********************** VulkanInstance::Init: 1> LoadVulkanLibrary failed !");
+        //     F_LogError("*********************** VulkanInstance::Init: 1> LoadVulkanLibrary failed !");
         //     return false;
         // }
-        Util_LogInfo("VulkanInstance::Init: 1> LoadVulkanLibrary success !");
+        F_LogInfo("VulkanInstance::Init: 1> LoadVulkanLibrary success !");
 
         //2> createInstance
         if (!createInstance())
         {
-            Util_LogError("*********************** VulkanInstance::Init: 2> createInstance failed !");
+            F_LogError("*********************** VulkanInstance::Init: 2> createInstance failed !");
             return false;
         }
-        Util_LogInfo("VulkanInstance::Init: 2> createInstance success !");
+        F_LogInfo("VulkanInstance::Init: 2> createInstance success !");
 
         //3> createDebugReport
         if (!createDebugReport())
         {
-            Util_LogError("*********************** VulkanInstance::Init: 3> createDebugReport failed !");
+            F_LogError("*********************** VulkanInstance::Init: 3> createDebugReport failed !");
             return false;
         }
-        Util_LogInfo("VulkanInstance::Init: 3> createDebugReport success, Enable Debug: [%s] ", m_bIsEnableValidationLayers ? "true" : "false");
+        F_LogInfo("VulkanInstance::Init: 3> createDebugReport success, Enable Debug: [%s] ", m_bIsEnableValidationLayers ? "true" : "false");
 
         //4> createDevice
         if (!createDevice())
         {
-            Util_LogError("*********************** VulkanInstance::Init: 4> createDevice failed !");
+            F_LogError("*********************** VulkanInstance::Init: 4> createDevice failed !");
             return false;
         }
-        Util_LogInfo("VulkanInstance::Init: 4> createDevice success !");
+        F_LogInfo("VulkanInstance::Init: 4> createDevice success !");
 
         return true;
     }
@@ -130,11 +130,11 @@ namespace LostPeter
         int countAppInstanceExtensions = (int)m_aAppInstanceExtensions.size();
         if (countAppInstanceExtensions > 0)
         {
-            Util_LogInfo("VulkanInstance::createInstance: Using app instance extensions count: %d", countAppInstanceExtensions);
+            F_LogInfo("VulkanInstance::createInstance: Using app instance extensions count: %d", countAppInstanceExtensions);
             for (int32 i = 0; i < countAppInstanceExtensions; ++i)
             {
                 m_aInstanceExtensions.push_back(m_aAppInstanceExtensions[i]);
-                Util_LogInfo("VulkanInstance::createInstance: Using app instance extension: %s", m_aAppInstanceExtensions[i]);
+                F_LogInfo("VulkanInstance::createInstance: Using app instance extension: %s", m_aAppInstanceExtensions[i]);
             }
         }
 
@@ -161,7 +161,7 @@ namespace LostPeter
         VkResult result = vkCreateInstance(&instanceCreateInfo, nullptr, &m_vkInstance);
         if (result == VK_ERROR_INCOMPATIBLE_DRIVER) 
         {
-            Util_LogError("*********************** VulkanInstance::createInstance: Can not find a compatible Vulkan driver (ICD) !");
+            F_LogError("*********************** VulkanInstance::createInstance: Can not find a compatible Vulkan driver (ICD) !");
         }
         else if (result == VK_ERROR_EXTENSION_NOT_PRESENT)
         {
@@ -190,15 +190,15 @@ namespace LostPeter
                 }
             }
 
-            Util_LogError("*********************** VulkanInstance::createInstance: Vulkan driver doesn't contain specified extensions: %s !", missingExtensions.c_str());
+            F_LogError("*********************** VulkanInstance::createInstance: Vulkan driver doesn't contain specified extensions: %s !", missingExtensions.c_str());
         }
         else if (result != VK_SUCCESS) 
         {
-            Util_LogError("*********************** VulkanInstance::createInstance: Create vulkan instance failed !");
+            F_LogError("*********************** VulkanInstance::createInstance: Create vulkan instance failed !");
         }
         else 
         {
-            Util_LogInfo("VulkanInstance::createInstance: Create vulkan instance success !");
+            F_LogInfo("VulkanInstance::createInstance: Create vulkan instance success !");
         }
         
         return true;
@@ -212,7 +212,7 @@ namespace LostPeter
         VkDebugReportCallbackCreateInfoEXT createInfo = createReportCallbackInfo();
         if (!Util_CheckVkResult(g_CreateDebugReportCallback(m_vkInstance, &createInfo, nullptr, &m_vkDebugReport), "g_CreateDebugReportCallback"))
         {
-            Util_LogError("*********************** VulkanInstance::createDebugReport: g_CreateDebugReportCallback failed !");
+            F_LogError("*********************** VulkanInstance::createDebugReport: g_CreateDebugReportCallback failed !");
             return false;
         }
 
@@ -225,12 +225,12 @@ namespace LostPeter
         VkResult result = vkEnumeratePhysicalDevices(m_vkInstance, &physicalDevicesCount, nullptr);
         if (result == VK_ERROR_INITIALIZATION_FAILED)
         {
-            Util_LogError("*********************** VulkanInstance::createDevice: Can not find a compatible Vulkan device or driver !");
+            F_LogError("*********************** VulkanInstance::createDevice: Can not find a compatible Vulkan device or driver !");
             return false;
         }
         if (physicalDevicesCount == 0)
         {
-            Util_LogError("*********************** VulkanInstance::createDevice: Can not enumerate physical devices, count is 0 !");
+            F_LogError("*********************** VulkanInstance::createDevice: Can not enumerate physical devices, count is 0 !");
             return false;
         }
 
@@ -293,13 +293,13 @@ namespace LostPeter
             {
                 if (aDevices[i] == m_pDevice)
                     continue;
-                UTIL_DELETE(aDevices[i])
+                F_DELETE(aDevices[i])
             }
             aDevices.clear();
         }
         else
         {
-            Util_LogError("*********************** VulkanInstance::createDevice: Can not find device !");
+            F_LogError("*********************** VulkanInstance::createDevice: Can not find device !");
             deviceIndex = -1;
             return false;
         }

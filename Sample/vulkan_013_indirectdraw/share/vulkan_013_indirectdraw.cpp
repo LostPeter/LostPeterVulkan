@@ -14,7 +14,6 @@
 #include "VulkanMeshLoader.h"
 #include "VulkanMeshGeometry.h"
 #include "VulkanCamera.h"
-#include "VulkanTimer.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -81,20 +80,20 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
 };
 static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
 {
-    VulkanMath::ms_mat4Unit, //plane
-    VulkanMath::ms_mat4Unit, //cube
-    VulkanMath::ms_mat4Unit, //sphere
+    FMath::ms_mat4Unit, //plane
+    FMath::ms_mat4Unit, //cube
+    FMath::ms_mat4Unit, //sphere
 
-    VulkanMath::ms_mat4Unit, //mountain
+    FMath::ms_mat4Unit, //mountain
 
-    VulkanMath::ms_mat4Unit, //rock
-    VulkanMath::ms_mat4Unit, //cliff
+    FMath::ms_mat4Unit, //rock
+    FMath::ms_mat4Unit, //cliff
 
-    VulkanMath::ms_mat4Unit, //tree
-    VulkanMath::ms_mat4Unit, //tree_spruce
+    FMath::ms_mat4Unit, //tree
+    FMath::ms_mat4Unit, //tree_spruce
 
-    VulkanMath::ms_mat4Unit, //grass
-    VulkanMath::ms_mat4Unit, //flower
+    FMath::ms_mat4Unit, //grass
+    FMath::ms_mat4Unit, //flower
 
 };
 
@@ -732,7 +731,7 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
             v.texCoord = vertex.texCoord;
             if (isTranformLocal)
             {
-                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+                v.pos = FMath::Transform(matTransformLocal, v.pos);
             }
             this->vertices_Pos3Color4Normal3Tex2.push_back(v);
         }
@@ -751,11 +750,11 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
-                     this->nameMeshSub.c_str(),
-                     this->nameOriginal.c_str(),
-                     (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
-                     (int)this->indices.size());
+        F_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                  this->nameMeshSub.c_str(),
+                  this->nameOriginal.c_str(),
+                  (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
+                  (int)this->indices.size());
     }
     else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex4)
     {
@@ -771,7 +770,7 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
             v.texCoord = glm::vec4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
             if (isTranformLocal)
             {
-                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+                v.pos = FMath::Transform(matTransformLocal, v.pos);
             }
             this->vertices_Pos3Color4Normal3Tex4.push_back(v);
         }
@@ -790,11 +789,11 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex4]: Vertex count: [%d], Index count: [%d] !", 
-                     this->nameMeshSub.c_str(),
-                     this->nameOriginal.c_str(),
-                     (int)this->vertices_Pos3Color4Normal3Tex4.size(), 
-                     (int)this->indices.size());
+        F_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+                  this->nameMeshSub.c_str(),
+                  this->nameOriginal.c_str(),
+                  (int)this->vertices_Pos3Color4Normal3Tex4.size(), 
+                  (int)this->indices.size());
     }
     else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
     {
@@ -811,7 +810,7 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
             v.texCoord = vertex.texCoord;
             if (isTranformLocal)
             {
-                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+                v.pos = FMath::Transform(matTransformLocal, v.pos);
             }
             this->vertices_Pos3Color4Normal3Tangent3Tex2.push_back(v);
         }
@@ -830,11 +829,11 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
-                     this->nameMeshSub.c_str(),
-                     this->nameOriginal.c_str(),
-                     (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
-                     (int)this->indices.size());
+        F_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                  this->nameMeshSub.c_str(),
+                  this->nameOriginal.c_str(),
+                  (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
+                  (int)this->indices.size());
     }
     else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4)
     {
@@ -851,7 +850,7 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
             v.texCoord = glm::vec4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
             if (isTranformLocal)
             {
-                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+                v.pos = FMath::Transform(matTransformLocal, v.pos);
             }
             this->vertices_Pos3Color4Normal3Tangent3Tex4.push_back(v);
         }
@@ -870,15 +869,15 @@ bool Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub(MeshData& meshData, bo
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex4]: Vertex count: [%d], Index count: [%d] !", 
-                     this->nameMeshSub.c_str(),
-                     this->nameOriginal.c_str(),
-                     (int)this->vertices_Pos3Color4Normal3Tangent3Tex4.size(), 
-                     (int)this->indices.size());
+        F_LogInfo("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+                  this->nameMeshSub.c_str(),
+                  this->nameOriginal.c_str(),
+                  (int)this->vertices_Pos3Color4Normal3Tangent3Tex4.size(), 
+                  (int)this->indices.size());
     }
     else
     {
-        Util_LogError("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub failed: [%s], wrong poTypeVertex !", this->nameMeshSub.c_str());
+        F_LogError("Vulkan_013_IndirectDraw::ModelMeshSub::CreateMeshSub: create mesh sub failed: [%s], wrong poTypeVertex !", this->nameMeshSub.c_str());
         return false; 
     }
 
@@ -955,7 +954,7 @@ bool Vulkan_013_IndirectDraw::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
     ModelMeshSubPtrMap::iterator itFind = this->mapMeshSubs.find(pMeshSub->nameMeshSub);
     if (itFind != this->mapMeshSubs.end())
     {
-        Util_LogError("Vulkan_013_IndirectDraw::ModelMesh::AddMeshSub: Mesh sub is exist: [%s] !", pMeshSub->nameMeshSub.c_str());
+        F_LogError("Vulkan_013_IndirectDraw::ModelMesh::AddMeshSub: Mesh sub is exist: [%s] !", pMeshSub->nameMeshSub.c_str());
         return false;
     }
 
@@ -973,7 +972,7 @@ bool Vulkan_013_IndirectDraw::ModelMesh::LoadMesh(bool isFlipY, bool isTranformL
         unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
         if (!VulkanMeshLoader::LoadMeshDatas(this->pathMesh, aMeshDatas, isFlipY, eMeshParserFlags))
         {
-            Util_LogError("Vulkan_013_IndirectDraw::ModelMesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
+            F_LogError("Vulkan_013_IndirectDraw::ModelMesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
             return false; 
         }
     }
@@ -983,7 +982,7 @@ bool Vulkan_013_IndirectDraw::ModelMesh::LoadMesh(bool isFlipY, bool isTranformL
         meshData.bIsFlipY = isFlipY;
         if (!VulkanMeshGeometry::CreateGeometry(meshData, this->typeGeometryType))
         {
-            Util_LogError("Vulkan_013_IndirectDraw::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", Util_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
+            F_LogError("Vulkan_013_IndirectDraw::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", Util_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
             return false; 
         }
         aMeshDatas.push_back(meshData);
@@ -999,7 +998,7 @@ bool Vulkan_013_IndirectDraw::ModelMesh::LoadMesh(bool isFlipY, bool isTranformL
     {
         MeshData& meshData = aMeshDatas[i];
         
-        String nameMeshSub = this->nameMesh + "-" + VulkanUtilString::SaveInt(i);
+        String nameMeshSub = this->nameMesh + "-" + FUtilString::SaveInt(i);
         ModelMeshSub* pMeshSub = new ModelMeshSub(this,
                                                   nameMeshSub,
                                                   meshData.nameMesh,
@@ -1007,7 +1006,7 @@ bool Vulkan_013_IndirectDraw::ModelMesh::LoadMesh(bool isFlipY, bool isTranformL
                                                   this->typeVertex);
         if (!pMeshSub->CreateMeshSub(meshData, isTranformLocal, matTransformLocal))
         {
-            Util_LogError("Vulkan_013_IndirectDraw::ModelMesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
+            F_LogError("Vulkan_013_IndirectDraw::ModelMesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
             return false;
         }
         AddMeshSub(pMeshSub);
@@ -1327,7 +1326,7 @@ void Vulkan_013_IndirectDraw::setUpEnabledFeatures()
     else
     {
         this->m_isDrawIndirectMulti = false;
-        Util_LogError("Vulkan_013_IndirectDraw::setUpEnabledFeatures: multiDrawIndirect is not supported !");
+        F_LogError("Vulkan_013_IndirectDraw::setUpEnabledFeatures: multiDrawIndirect is not supported !");
     }
 }
 
@@ -1374,13 +1373,13 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
             //MeshSub Used
             {
                 String nameMeshSubUsed = g_Object_MeshSubsUsed[i];
-                StringVector aMeshSubUsed = VulkanUtilString::Split(nameMeshSubUsed, ";");
+                StringVector aMeshSubUsed = FUtilString::Split(nameMeshSubUsed, ";");
                 pModelObject->aMeshSubUsed.clear();
                 size_t count_mesh_sub_used = aMeshSubUsed.size();
                 for (size_t j = 0; j < count_mesh_sub_used; j++)
                 {
                     String& name = aMeshSubUsed[j];
-                    int indexMeshSub = VulkanUtilString::ParserInt(name);
+                    int indexMeshSub = FUtilString::ParserInt(name);
                     pModelObject->aMeshSubUsed.push_back(indexMeshSub);
                 }
             }
@@ -1409,7 +1408,7 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
                     String nameTextureVS = g_ObjectRend_Configs[7 * nIndexObjectRend + 1]; //Texture VS
                     if (!nameTextureVS.empty())
                     {
-                        StringVector aTextureVS = VulkanUtilString::Split(nameTextureVS, ";");
+                        StringVector aTextureVS = FUtilString::Split(nameTextureVS, ";");
                         size_t count_tex = aTextureVS.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
@@ -1424,7 +1423,7 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
                     String nameTextureTESC = g_ObjectRend_Configs[7 * nIndexObjectRend + 2]; //Texture TESC
                     if (!nameTextureTESC.empty())
                     {
-                        StringVector aTextureTESC = VulkanUtilString::Split(nameTextureTESC, ";");
+                        StringVector aTextureTESC = FUtilString::Split(nameTextureTESC, ";");
                         size_t count_tex = aTextureTESC.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
@@ -1439,7 +1438,7 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
                     String nameTextureTESE = g_ObjectRend_Configs[7 * nIndexObjectRend + 3]; //Texture TESE
                     if (!nameTextureTESE.empty())
                     {
-                        StringVector aTextureTESE = VulkanUtilString::Split(nameTextureTESE, ";");
+                        StringVector aTextureTESE = FUtilString::Split(nameTextureTESE, ";");
                         size_t count_tex = aTextureTESE.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
@@ -1454,7 +1453,7 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
                     String nameTextureGS = g_ObjectRend_Configs[7 * nIndexObjectRend + 4]; //Texture GS
                     if (!nameTextureGS.empty())
                     {
-                        StringVector aTextureGS = VulkanUtilString::Split(nameTextureGS, ";");
+                        StringVector aTextureGS = FUtilString::Split(nameTextureGS, ";");
                         size_t count_tex = aTextureGS.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
@@ -1469,7 +1468,7 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
                     String nameTextureFS = g_ObjectRend_Configs[7 * nIndexObjectRend + 5]; //Texture FS
                     if (!nameTextureFS.empty())
                     {
-                        StringVector aTextureFS = VulkanUtilString::Split(nameTextureFS, ";");
+                        StringVector aTextureFS = FUtilString::Split(nameTextureFS, ";");
                         size_t count_tex = aTextureFS.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
@@ -1484,7 +1483,7 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
                     String nameTextureCS = g_ObjectRend_Configs[7 * nIndexObjectRend + 6]; //Texture CS
                     if (!nameTextureCS.empty())
                     {
-                        StringVector aTextureCS = VulkanUtilString::Split(nameTextureCS, ";");
+                        StringVector aTextureCS = FUtilString::Split(nameTextureCS, ";");
                         size_t count_tex = aTextureCS.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
@@ -1513,7 +1512,7 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
                 String nameDescriptorSetLayout = g_ObjectRend_NameDescriptorSetLayouts[2 * nIndexObjectRend + 1];
                 if (!nameDescriptorSetLayout.empty())
                 {
-                    StringVector aDescriptorSetLayout = VulkanUtilString::Split(nameDescriptorSetLayout, ";");
+                    StringVector aDescriptorSetLayout = FUtilString::Split(nameDescriptorSetLayout, ";");
                     size_t count_dsl = aDescriptorSetLayout.size();
                     for (size_t p = 0; p < count_dsl; p++)
                     {
@@ -1587,7 +1586,7 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
             //ObjectConstants
             {
                 ObjectConstants objectConstants;
-                objectConstants.g_MatWorld = VulkanMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + glm::vec3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
+                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + glm::vec3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
                                                                  g_ObjectRend_Tranforms[3 * i + 1],
                                                                  g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);
@@ -1597,11 +1596,11 @@ void Vulkan_013_IndirectDraw::rebuildInstanceCBs(bool isCreateVkBuffer)
             //MaterialConstants
             {
                 MaterialConstants materialConstants;
-                materialConstants.factorAmbient = VulkanMath::RandomColor(false);
-                materialConstants.factorDiffuse = VulkanMath::RandomColor(false);
-                materialConstants.factorSpecular = VulkanMath::RandomColor(false);
-                materialConstants.shininess = VulkanMath::RandF(10.0f, 100.0f);
-                materialConstants.alpha = VulkanMath::RandF(0.2f, 0.9f);
+                materialConstants.factorAmbient = FMath::RandomColor(false);
+                materialConstants.factorDiffuse = FMath::RandomColor(false);
+                materialConstants.factorSpecular = FMath::RandomColor(false);
+                materialConstants.shininess = FMath::RandF(10.0f, 100.0f);
+                materialConstants.alpha = FMath::RandF(0.2f, 0.9f);
                 materialConstants.lighting = isObjectLighting;
                 //Texture VS
                 {
@@ -1734,7 +1733,7 @@ void Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom()
                                                   pRend->aShaderStageCreateInfos_Graphics))
         {
             String msg = "Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom: Can not find shader used !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -1744,21 +1743,21 @@ void Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom()
             if (pRend->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
             {
                 String msg = "Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
             if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
 
@@ -1777,10 +1776,10 @@ void Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom()
             if (pRend->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame: " + pRend->nameObjectRend;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            Util_LogInfo("Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
+            F_LogInfo("Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pRend->nameObjectRend.c_str());
 
             //pPipelineGraphics->poPipeline
             VkBool32 isDepthTestEnable = pRend->cfg_isDepthTest;
@@ -1811,10 +1810,10 @@ void Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom()
             if (pRend->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom: Failed to create pipeline graphics: " + pRend->nameObjectRend;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            Util_LogInfo("Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
+            F_LogInfo("Vulkan_013_IndirectDraw::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pRend->nameObjectRend.c_str());
         }
     }
 }
@@ -1835,7 +1834,7 @@ void Vulkan_013_IndirectDraw::createComputePipeline_Custom()
                                                   pRend->mapShaderStageCreateInfos_Computes))
         {
             String msg = "Vulkan_013_IndirectDraw::createComputePipeline_Custom: Can not find shader used !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -1843,7 +1842,7 @@ void Vulkan_013_IndirectDraw::createComputePipeline_Custom()
         if (count_pipeline != pRend->aShaderStageCreateInfos_Computes.size())
         {
             String msg = "Vulkan_013_IndirectDraw::createComputePipeline_Custom: Pipeline count is not equal shader count !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
         for (size_t j = 0; j < count_pipeline; j ++)
@@ -1855,21 +1854,21 @@ void Vulkan_013_IndirectDraw::createComputePipeline_Custom()
             if (p->poDescriptorSetLayoutNames == nullptr)
             {
                 String msg = "Vulkan_013_IndirectDraw::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_013_IndirectDraw::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
             if (p->poPipelineLayout == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_013_IndirectDraw::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
 
@@ -1877,7 +1876,7 @@ void Vulkan_013_IndirectDraw::createComputePipeline_Custom()
             if (p->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_013_IndirectDraw::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
         }
@@ -1924,15 +1923,15 @@ void Vulkan_013_IndirectDraw::createModelMeshes()
         if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_MeshTranformLocals[i]))
         {
             String msg = "Vulkan_013_IndirectDraw::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
         this->m_aModelMesh.push_back(pMesh);
         this->m_mapModelMesh[nameMesh] = pMesh;
 
-        Util_LogInfo("Vulkan_013_IndirectDraw::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
-                     nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
+        F_LogInfo("Vulkan_013_IndirectDraw::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
+                  nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
     }
 }
 Vulkan_013_IndirectDraw::ModelMesh* Vulkan_013_IndirectDraw::findModelMesh(const String& nameMesh)
@@ -1965,12 +1964,12 @@ void Vulkan_013_IndirectDraw::createModelTextures()
         String nameType = g_TexturePaths[5 * i + 1];
         VulkanTextureType typeTexture = Util_ParseTextureType(nameType);
         String nameIsRenderTarget = g_TexturePaths[5 * i + 2];
-        bool isRenderTarget = VulkanUtilString::ParserBool(nameIsRenderTarget);
+        bool isRenderTarget = FUtilString::ParserBool(nameIsRenderTarget);
         String nameIsGraphicsComputeShared = g_TexturePaths[5 * i + 3];
-        bool isGraphicsComputeShared = VulkanUtilString::ParserBool(nameIsGraphicsComputeShared);
+        bool isGraphicsComputeShared = FUtilString::ParserBool(nameIsGraphicsComputeShared);
         String pathTextures = g_TexturePaths[5 * i + 4];
 
-        StringVector aPathTexture = VulkanUtilString::Split(pathTextures, ";");
+        StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
         ModelTexture* pTexture = new ModelTexture(this, 
                                                   nameTexture,
                                                   typeTexture,
@@ -1986,7 +1985,7 @@ void Vulkan_013_IndirectDraw::createModelTextures()
         if (pTexture->texChunkMaxX > 0 && 
             pTexture->texChunkMaxY > 0)
         {
-            pTexture->texChunkIndex = VulkanMath::Rand(0, pTexture->texChunkMaxX * pTexture->texChunkMaxY - 1);
+            pTexture->texChunkIndex = FMath::Rand(0, pTexture->texChunkMaxX * pTexture->texChunkMaxY - 1);
         }
         pTexture->AddRef();
 
@@ -2000,11 +1999,11 @@ void Vulkan_013_IndirectDraw::createModelTextures()
         this->m_aModelTexture.push_back(pTexture);
         this->m_mapModelTexture[nameTexture] = pTexture;
 
-        Util_LogInfo("Vulkan_013_IndirectDraw::createModelTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
-                     nameTexture.c_str(), 
-                     nameType.c_str(), 
-                     isRenderTarget ? "true" : "false",
-                     pathTextures.c_str());
+        F_LogInfo("Vulkan_013_IndirectDraw::createModelTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
+                  nameTexture.c_str(), 
+                  nameType.c_str(), 
+                  isRenderTarget ? "true" : "false",
+                  pathTextures.c_str());
     }
 }
 Vulkan_013_IndirectDraw::ModelTexture* Vulkan_013_IndirectDraw::findModelTexture(const String& nameTexture)
@@ -2034,7 +2033,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSetLayouts()
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
         String nameLayout(g_DescriptorSetLayoutNames[i]);
-        StringVector aLayouts = VulkanUtilString::Split(nameLayout, "-");
+        StringVector aLayouts = FUtilString::Split(nameLayout, "-");
         size_t count_layout = aLayouts.size();
 
         VkDescriptorSetLayout vkDescriptorSetLayout;
@@ -2177,7 +2176,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSetLayouts()
             else
             {
                 String msg = "Vulkan_013_IndirectDraw::createDescriptorSetLayouts: Wrong DescriptorSetLayout type: " + strLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
         }
@@ -2185,14 +2184,14 @@ void Vulkan_013_IndirectDraw::createDescriptorSetLayouts()
         if (!createVkDescriptorSetLayout(bindings, vkDescriptorSetLayout))
         {
             String msg = "Vulkan_013_IndirectDraw::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
         this->m_aVkDescriptorSetLayouts.push_back(vkDescriptorSetLayout);
         this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
         this->m_mapName2Layouts[nameLayout] = aLayouts;
 
-        Util_LogInfo("Vulkan_013_IndirectDraw::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
+        F_LogInfo("Vulkan_013_IndirectDraw::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
 VkDescriptorSetLayout Vulkan_013_IndirectDraw::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
@@ -2237,8 +2236,8 @@ void Vulkan_013_IndirectDraw::createShaderModules()
         VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
-        Util_LogInfo("Vulkan_013_IndirectDraw::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
-                     shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
+        F_LogInfo("Vulkan_013_IndirectDraw::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+                  shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
 VkShaderModule Vulkan_013_IndirectDraw::findShaderModule(const String& nameShaderModule)
@@ -2291,7 +2290,7 @@ bool Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos(const String&
         VkShaderModule shaderModule = findShaderModule(nameShaderVert);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
+            F_LogError("Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
             return false;
         }
 
@@ -2308,7 +2307,7 @@ bool Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos(const String&
         VkShaderModule shaderModule = findShaderModule(nameShaderTesc);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
+            F_LogError("Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
             return false;
         }
 
@@ -2325,7 +2324,7 @@ bool Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos(const String&
         VkShaderModule shaderModule = findShaderModule(nameShaderTese);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
+            F_LogError("Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
             return false;
         }
 
@@ -2342,7 +2341,7 @@ bool Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos(const String&
         VkShaderModule shaderModule = findShaderModule(nameShaderGeom);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
+            F_LogError("Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
             return false;
         }
 
@@ -2358,7 +2357,7 @@ bool Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos(const String&
         VkShaderModule shaderModule = findShaderModule(nameShaderFrag);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
+            F_LogError("Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
             return false;
         }
 
@@ -2379,7 +2378,7 @@ bool Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos(const String&
     //comp
     if (!nameShaderComp.empty())
     {
-        StringVector aShaderComps = VulkanUtilString::Split(nameShaderComp, ";");
+        StringVector aShaderComps = FUtilString::Split(nameShaderComp, ";");
         int count_comp = (int)aShaderComps.size();
         for (int i = 0; i < count_comp; i++)
         {
@@ -2387,7 +2386,7 @@ bool Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos(const String&
             VkShaderModule shaderModule = findShaderModule(nameSC);
             if (shaderModule == VK_NULL_HANDLE)
             {
-                Util_LogError("Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
+                F_LogError("Vulkan_013_IndirectDraw::createPipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
                 return false;
             }
 
@@ -2423,7 +2422,7 @@ void Vulkan_013_IndirectDraw::createPipelineLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            Util_LogError("*********************** Vulkan_013_IndirectDraw::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
+            F_LogError("*********************** Vulkan_013_IndirectDraw::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
             return;
         }
 
@@ -2432,7 +2431,7 @@ void Vulkan_013_IndirectDraw::createPipelineLayouts()
         VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
         if (vkPipelineLayout == VK_NULL_HANDLE)
         {
-            Util_LogError("*********************** Vulkan_013_IndirectDraw::createPipelineLayouts: createVkPipelineLayout failed !");
+            F_LogError("*********************** Vulkan_013_IndirectDraw::createPipelineLayouts: createVkPipelineLayout failed !");
             return;
         }
 
@@ -2622,7 +2621,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Graphics(VkDescriptorSetVecto
             else
             {
                 String msg = "Vulkan_013_IndirectDraw::createDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
         }
@@ -2686,7 +2685,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Compute(PipelineCompute* pPip
         else
         {
             String msg = "Vulkan_013_IndirectDraw::createDescriptorSets_Compute: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
     }  
@@ -2721,12 +2720,12 @@ void Vulkan_013_IndirectDraw::updateCompute_Custom(VkCommandBuffer& commandBuffe
                 pPipelineCompute->pTextureCopy->texInfo.w = 0;
                 if (isRand)
                 {
-                    pPipelineCompute->pTextureCopy->texOffset.x = VulkanMath::Rand(0, 1) * pPipelineCompute->pTextureSource->width;
-                    pPipelineCompute->pTextureCopy->texOffset.y = VulkanMath::Rand(0, 1) * pPipelineCompute->pTextureSource->height;
+                    pPipelineCompute->pTextureCopy->texOffset.x = FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->width;
+                    pPipelineCompute->pTextureCopy->texOffset.y = FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->height;
                     pPipelineCompute->pTextureCopy->texOffset.z = 0;
                     pPipelineCompute->pTextureCopy->texOffset.w = 0;
 
-                    int seed = VulkanMath::Rand(0, 10000);
+                    int seed = FMath::Rand(0, 10000);
                     int start = seed % 4;
                     pPipelineCompute->pTextureCopy->texIndexArray.x = start;
                     pPipelineCompute->pTextureCopy->texIndexArray.y = ++start % 4;
@@ -2969,7 +2968,7 @@ void Vulkan_013_IndirectDraw::modelConfig()
             size_t count_object_rend = pModelObject->aRends.size();
 
             //1> ModelObject
-            String nameObject = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameObject;
+            String nameObject = FUtilString::SaveInt(i) + " - " + pModelObject->nameObject;
             if (ImGui::CollapsingHeader(nameObject.c_str()))
             {
                 //isShow
@@ -3163,15 +3162,15 @@ void Vulkan_013_IndirectDraw::modelConfig()
                                     ObjectConstants& obj = pRend->objectCBs[p];
                                     MaterialConstants& mat = pRend->materialCBs[p];
 
-                                    String nameModelInstance = VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                    String nameModelInstance = FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                     if (ImGui::CollapsingHeader(nameModelInstance.c_str()))
                                     {
                                         //ObjectConstants
-                                        String nameObject = VulkanUtilString::SaveInt(p) + " - Object - " + nameObjectRend;
+                                        String nameObject = FUtilString::SaveInt(p) + " - Object - " + nameObjectRend;
                                         if (ImGui::CollapsingHeader(nameObject.c_str()))
                                         {
                                             const glm::mat4& mat4World = obj.g_MatWorld;
-                                            String nameTable = VulkanUtilString::SaveInt(p) + " - matWorld - " + nameObjectRend;
+                                            String nameTable = FUtilString::SaveInt(p) + " - matWorld - " + nameObjectRend;
                                             if (ImGui::BeginTable(nameTable.c_str(), 4))
                                             {
                                                 ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
@@ -3199,11 +3198,11 @@ void Vulkan_013_IndirectDraw::modelConfig()
                                         }
                                         
                                         //MaterialConstants
-                                        String nameMaterial = VulkanUtilString::SaveInt(p) + " - Material - " + nameObjectRend;
+                                        String nameMaterial = FUtilString::SaveInt(p) + " - Material - " + nameObjectRend;
                                         if (ImGui::CollapsingHeader(nameMaterial.c_str()))
                                         {
                                             //factorAmbient
-                                            String nameFactorAmbient = "FactorAmbient - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            String nameFactorAmbient = "FactorAmbient - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                             if (ImGui::ColorEdit4(nameFactorAmbient.c_str(), (float*)&mat.factorAmbient))
                                             {
 
@@ -3211,7 +3210,7 @@ void Vulkan_013_IndirectDraw::modelConfig()
                                             ImGui::Spacing();
 
                                             //factorDiffuse
-                                            String nameFactorDiffuse = "FactorDiffuse - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            String nameFactorDiffuse = "FactorDiffuse - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                             if (ImGui::ColorEdit4(nameFactorDiffuse.c_str(), (float*)&mat.factorDiffuse))
                                             {
 
@@ -3219,7 +3218,7 @@ void Vulkan_013_IndirectDraw::modelConfig()
                                             ImGui::Spacing();
 
                                             //factorSpecular
-                                            String nameFactorSpecular = "FactorSpecular - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            String nameFactorSpecular = "FactorSpecular - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                             if (ImGui::ColorEdit4(nameFactorSpecular.c_str(), (float*)&mat.factorSpecular))
                                             {
 
@@ -3227,7 +3226,7 @@ void Vulkan_013_IndirectDraw::modelConfig()
                                             ImGui::Spacing();
 
                                             //shininess
-                                            String nameShininess = "Shininess - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            String nameShininess = "Shininess - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                             if (ImGui::DragFloat(nameShininess.c_str(), &mat.shininess, 0.01f, 0.01f, 100.0f))
                                             {
                                                 
@@ -3235,7 +3234,7 @@ void Vulkan_013_IndirectDraw::modelConfig()
                                             ImGui::Spacing();
 
                                             //alpha
-                                            String nameAlpha = "Alpha - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            String nameAlpha = "Alpha - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                             if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
                                             {
                                                 
@@ -3243,7 +3242,7 @@ void Vulkan_013_IndirectDraw::modelConfig()
                                             ImGui::Spacing();
 
                                             //lighting
-                                            String nameLighting = "Lighting - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                            String nameLighting = "Lighting - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                             bool isLighting = mat.lighting == 1.0f ? true : false;
                                             if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
                                             {
@@ -3268,26 +3267,26 @@ void Vulkan_013_IndirectDraw::modelConfig()
                                                     {
                                                         ModelTexture* pTexture = (*pTextureFSs)[q];
 
-                                                        String nameMaterial_Texture = VulkanUtilString::SaveInt(p) + " - Material - " + nameObjectRend + " - TextureFS - " + VulkanUtilString::SaveInt(q);
+                                                        String nameMaterial_Texture = FUtilString::SaveInt(p) + " - Material - " + nameObjectRend + " - TextureFS - " + FUtilString::SaveInt(q);
                                                         if (ImGui::CollapsingHeader(nameMaterial_Texture.c_str()))
                                                         {
                                                             //texWidth
-                                                            String nameWidth = "Width - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameWidth = "Width - " + FUtilString::SaveInt(p) + " - " + FUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             int width = pTexture->width;
                                                             ImGui::DragInt(nameWidth.c_str(), &width, 1, 0, 4096);
 
                                                             //texHeight
-                                                            String nameHeight = "Height - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameHeight = "Height - " + FUtilString::SaveInt(p) + " - " + FUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             int height = pTexture->height;
                                                             ImGui::DragInt(nameHeight.c_str(), &height, 1, 0, 4096);
 
                                                             //texDepth
-                                                            String nameDepth = "Depth - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameDepth = "Depth - " + FUtilString::SaveInt(p) + " - " + FUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             int depth = pTexture->depth;
                                                             ImGui::DragInt(nameDepth.c_str(), &depth, 1, 0, 4096);
 
                                                             //indexTextureArray
-                                                            String nameIndexTextureArray = "IndexTextureArray - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameIndexTextureArray = "IndexTextureArray - " + FUtilString::SaveInt(p) + " - " + FUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             if (pTexture->typeTexture == Vulkan_Texture_2DArray)
                                                             {
                                                                 int count_tex = (int)pTexture->aPathTexture.size();
@@ -3306,38 +3305,38 @@ void Vulkan_013_IndirectDraw::modelConfig()
                                                             }
 
                                                             //texSpeedU
-                                                            String nameTexSpeedU = "TexSpeedU - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameTexSpeedU = "TexSpeedU - " + FUtilString::SaveInt(p) + " - " + FUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             if (ImGui::DragFloat(nameTexSpeedU.c_str(), &mat.aTexLayers[p].texSpeedU, 0.01f, 0.0f, 100.0f))
                                                             {
                                                                 
                                                             }
                                                             //texSpeedV
-                                                            String nameTexSpeedV = "texSpeedV - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                            String nameTexSpeedV = "texSpeedV - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                                             if (ImGui::DragFloat(nameTexSpeedV.c_str(), &mat.aTexLayers[p].texSpeedV, 0.01f, 0.0f, 100.0f))
                                                             {
                                                                 
                                                             }
                                                             //texSpeedW
-                                                            String nameTexSpeedW = "texSpeedW - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                            String nameTexSpeedW = "texSpeedW - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                                             if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
                                                             {
                                                                 
                                                             }
 
                                                             //texChunkMaxX
-                                                            String nameTexChunkMaxX = "texChunkMaxX - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameTexChunkMaxX = "texChunkMaxX - " + FUtilString::SaveInt(p) + " - " + FUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             float fTexChunkMaxX = mat.aTexLayers[q].texChunkMaxX;
                                                             ImGui::DragFloat(nameTexChunkMaxX.c_str(), &fTexChunkMaxX, 1.0f, 1.0f, 100.0f);
                                                             //texChunkMaxY
-                                                            String nameTexChunkMaxY = "texChunkMaxY - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameTexChunkMaxY = "texChunkMaxY - " + FUtilString::SaveInt(p) + " - " + FUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             float fTexChunkMaxY = mat.aTexLayers[q].texChunkMaxY;
                                                             ImGui::DragFloat(nameTexChunkMaxY.c_str(), &fTexChunkMaxY, 1.0f, 1.0f, 100.0f);
                                                             //texChunkIndexX
-                                                            String nameTexChunkIndexX = "texChunkIndexX - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameTexChunkIndexX = "texChunkIndexX - " + FUtilString::SaveInt(p) + " - " + FUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             float fTexChunkIndexX = mat.aTexLayers[q].texChunkIndexX;
                                                             ImGui::DragFloat(nameTexChunkIndexX.c_str(), &fTexChunkIndexX, 1.0f, 0.0f, 100.0f);
                                                             //texChunkIndexY
-                                                            String nameTexChunkIndexY = "texChunkIndexY - " + VulkanUtilString::SaveInt(p) + " - " + VulkanUtilString::SaveInt(q) + " - " + nameObjectRend;
+                                                            String nameTexChunkIndexY = "texChunkIndexY - " + FUtilString::SaveInt(p) + " - " + FUtilString::SaveInt(q) + " - " + nameObjectRend;
                                                             float fTexChunkIndexY = mat.aTexLayers[q].texChunkIndexY;
                                                             ImGui::DragFloat(nameTexChunkIndexY.c_str(), &fTexChunkIndexY, 1.0f, 0.0f, 100.0f);
                                                         }
@@ -3357,32 +3356,32 @@ void Vulkan_013_IndirectDraw::modelConfig()
                                         }
 
                                         //TessellationConstants
-                                        String nameTessellation = VulkanUtilString::SaveInt(p) + " - Tessellation - " + nameObjectRend;
+                                        String nameTessellation = FUtilString::SaveInt(p) + " - Tessellation - " + nameObjectRend;
                                         if (ImGui::CollapsingHeader(nameTessellation.c_str()))
                                         {
                                             if (pRend->isUsedTessellation)
                                             {
                                                 TessellationConstants& tess = pRend->tessellationCBs[j];
                                                 //tessLevelOuter
-                                                String nameTessLevelOuter = "tessLevelOuter - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                String nameTessLevelOuter = "tessLevelOuter - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                                 if (ImGui::DragFloat(nameTessLevelOuter.c_str(), &tess.tessLevelOuter, 0.1f, 0.1f, 500.0f))
                                                 {
                                                     
                                                 }
                                                 //tessLevelInner
-                                                String nameTessLevelInner = "tessLevelInner - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                String nameTessLevelInner = "tessLevelInner - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                                 if (ImGui::DragFloat(nameTessLevelInner.c_str(), &tess.tessLevelInner, 0.1f, 0.1f, 500.0f))
                                                 {
                                                     
                                                 }
                                                 //tessAlpha
-                                                String nameTessAlpha = "tessAlpha - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                String nameTessAlpha = "tessAlpha - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                                 if (ImGui::DragFloat(nameTessAlpha.c_str(), &tess.tessAlpha, 0.05f, 0.0f, 1.0f))
                                                 {
                                                     
                                                 }
                                                 //tessStrength
-                                                String nameTessStrength = "tessStrength - " + VulkanUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                String nameTessStrength = "tessStrength - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
                                                 if (ImGui::DragFloat(nameTessStrength.c_str(), &tess.tessStrength, 0.025f, 0.1f, 100.0f))
                                                 {
                                                     
@@ -3574,7 +3573,7 @@ void Vulkan_013_IndirectDraw::cleanupCustom()
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
-        UTIL_DELETE(pModelObject)
+        F_DELETE(pModelObject)
     }
     this->m_aModelObjects.clear();
     this->m_mapModelObjects.clear();

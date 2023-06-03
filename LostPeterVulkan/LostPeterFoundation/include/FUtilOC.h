@@ -1,23 +1,24 @@
 /****************************************************************************
-* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterFoundation - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2022-10-30
+* Time:     2023-06-01
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#if UTIL_PLATFORM == UTIL_PLATFORM_MAC
+#if LP_PLATFORM == LP_PLATFORM_MAC
 
-#ifndef _OC_UTIL_H_
-#define _OC_UTIL_H_
+#ifndef _F_UTIL_OC_H_
+#define _F_UTIL_OC_H_
 
 #include <string>
 
-std::string OCUtil_GetPathExecute();
+std::string F_OCGetPathExecute();
 
 #endif
 
 #endif
+

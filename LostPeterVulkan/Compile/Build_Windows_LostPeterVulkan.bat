@@ -26,6 +26,12 @@ if "%debug%" == "debug" (
     @REM set name_dll=%name%"_"%mode%".dll"
 )
 
+
+@REM 1) Build LostPeterUI
+call ./Build_Windows_LostPeterUI.bat %debug% %rebuild%
+
+
+@REM #2) Build LostPeterVulkan
 @rem build folder
 set build_folder="../Build/Windows/"%name_project%
 if exist %build_folder% (

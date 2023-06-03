@@ -1,26 +1,26 @@
 /****************************************************************************
-* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterFoundation - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2022-12-03
+* Time:     2023-06-03
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VULKAN_LOG_H_
-#define _VULKAN_LOG_H_
+#ifndef _F_LOG_H_
+#define _F_LOG_H_
 
-#include "PreDefine.h"
+#include "FPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterFoundation
 {
-    class utilExport VulkanLog
+    class LPF_Export FLog
     {
     public:
-        VulkanLog(const String& strName);
-        virtual ~VulkanLog();
+        FLog(const String& strName);
+        virtual ~FLog();
 
     public:
     protected:
@@ -47,11 +47,11 @@ namespace LostPeter
         virtual bool InitLogFile(const String& path, bool isTruncate) = 0;  
     };
 
-    class utilExport VulkanLogConsole : public VulkanLog
+    class LPF_Export FLogConsole : public FLog
     {
     public:
-        VulkanLogConsole(const String& strName);
-        virtual ~VulkanLogConsole();
+        FLogConsole(const String& strName);
+        virtual ~FLogConsole();
 
     public:
         
@@ -62,11 +62,11 @@ namespace LostPeter
         virtual bool InitLogFile(const String& path, bool isTruncate);  
     };
 
-    class utilExport VulkanLogFile : public VulkanLog
+    class LPF_Export FLogFile : public FLog
     {
     public:
-        VulkanLogFile(const String& strName);
-        virtual ~VulkanLogFile();
+        FLogFile(const String& strName);
+        virtual ~FLogFile();
 
     public:
 
@@ -77,6 +77,6 @@ namespace LostPeter
         virtual bool InitLogFile(const String& path, bool isTruncate);  
     };
 
-}; //LostPeter
+}; //LostPeterFoundation
 
 #endif

@@ -12,11 +12,11 @@
 #ifndef _PRE_INCLUDE_H_
 #define _PRE_INCLUDE_H_
 
+#include "FPreInclude.h"
+#include "UIPreInclude.h"
+
 #include "PreDefine.h"
 #include "VulkanDefine.h"
-#include "VulkanMath.h"
-#include "VulkanUtil.h"
-#include "VulkanUtilString.h"
 #include "App.h"
 
 namespace LostPeter

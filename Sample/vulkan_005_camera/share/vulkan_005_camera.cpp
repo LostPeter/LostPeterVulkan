@@ -41,13 +41,13 @@ static glm::vec3 g_tranformModels[3 * g_CountLen] =
 
 static glm::mat4 g_tranformLocalModels[g_CountLen] = 
 {
-    VulkanMath::ms_mat4Unit, //plane
-    VulkanMath::ms_mat4Unit, //cube
+    FMath::ms_mat4Unit, //plane
+    FMath::ms_mat4Unit, //cube
 
-    VulkanMath::RotateX(-90.0f), //viking_room
-    VulkanMath::ms_mat4Unit, //bunny
+    FMath::RotateX(-90.0f), //viking_room
+    FMath::ms_mat4Unit, //bunny
 };
-static glm::mat4 g_tranformLocal = VulkanMath::ms_mat4Unit;
+static glm::mat4 g_tranformLocal = FMath::ms_mat4Unit;
 static bool g_isTranformLocalModels[] = 
 {
     false, //plane
@@ -130,7 +130,7 @@ void Vulkan_005_Camera::resetSetting(int index)
     this->cfg_cameraPos = g_vCameraPos[index];
     this->cfg_cameraFov = g_fCameraFov[index];
 
-    this->poMatWorld = VulkanMath::FromTRS(g_tranformModels[index * 3 + 0],
+    this->poMatWorld = FMath::FromTRS(g_tranformModels[index * 3 + 0],
                                          g_tranformModels[index * 3 + 1],
                                          g_tranformModels[index * 3 + 2]); 
     this->cfg_model_Path = g_pathModels[index * 3 + 1]; 
@@ -164,7 +164,7 @@ void Vulkan_005_Camera::loadModel_Assimp()
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!VulkanMeshLoader::LoadMeshData(this->cfg_model_Path, meshData, eMeshParserFlags))
     {
-        Util_LogError("Vulkan_005_Camera::loadModel_Assimp load model failed: [%s] !", this->cfg_model_Path.c_str());
+        F_LogError("Vulkan_005_Camera::loadModel_Assimp load model failed: [%s] !", this->cfg_model_Path.c_str());
         return;
     }
 
@@ -181,7 +181,7 @@ void Vulkan_005_Camera::loadModel_Assimp()
 
         if (g_isTranformLocal)
         {
-            v.pos = VulkanMath::Transform(g_tranformLocal, v.pos);
+            v.pos = FMath::Transform(g_tranformLocal, v.pos);
         }
 
         this->vertices.push_back(v);
@@ -202,7 +202,7 @@ void Vulkan_005_Camera::loadModel_Assimp()
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
     this->poIndexBuffer_Data = &this->indices[0];
 
-    Util_LogInfo("Vertex count: [%d], Index count: [%d] !", (int)this->vertices.size(), (int)this->indices.size());
+    F_LogInfo("Vertex count: [%d], Index count: [%d] !", (int)this->vertices.size(), (int)this->indices.size());
 }
 
 bool Vulkan_005_Camera::beginRenderImgui()
@@ -238,8 +238,8 @@ void Vulkan_005_Camera::modelConfig()
             String nameModel = s_Name + g_pathModels[3 * i + 0];
             if (isShowModel)
             {
-                nameModel += "(" + VulkanUtilString::SaveSizeT(this->vertices.size()) + 
-                             "/" + VulkanUtilString::SaveSizeT(this->indices.size()) +
+                nameModel += "(" + FUtilString::SaveSizeT(this->vertices.size()) + 
+                             "/" + FUtilString::SaveSizeT(this->indices.size()) +
                              ")";
             }
             ImGui::Checkbox(nameModel.c_str(), &isShowModel);

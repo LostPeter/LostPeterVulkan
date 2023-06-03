@@ -14,19 +14,17 @@
 #include "../include/VulkanWindowEx.h"
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanDevice.h"
-#include "../include/VulkanTimer.h"
-#include "../include/VulkanLogManager.h"
 
 namespace LostPeter
 {
-    VulkanLogManager* VulkanSample::ms_pLogManager = VulkanLogManager::GetInstance();
+    FLogManager* VulkanSample::ms_pLogManager = FLogManager::GetInstance();
     VulkanSample::VulkanSample(const String& nameSample, int nWidth, int nHeight)
         : m_strNameSample(nameSample)
         , m_nWidth(nWidth)
         , m_nHeight(nHeight)
         , m_fAspectRatio(1.0f)
         
-        , m_pTimer(new VulkanTimer())
+        , m_pTimer(new FTimer())
         , m_fFPS(0.0f)
         , m_nFrameFPS(0)
         , m_nFrameTotal(0)
@@ -40,8 +38,8 @@ namespace LostPeter
         , m_pWindow_Game(nullptr)
         , m_pWindow_Scene(nullptr)
     {
-        m_strPathBin = VulkanUtil::GetPathBin() + "/";
-        Util_LogInfo("Path Bin: [%s] !", m_strPathBin.c_str());
+        m_strPathBin = FUtil::GetPathBin() + "/";
+        F_LogInfo("Path Bin: [%s] !", m_strPathBin.c_str());
 
         RefreshAspectRatio();
         m_fTimeLastFPS = m_pTimer->GetTimeSinceStart();
@@ -84,10 +82,10 @@ namespace LostPeter
                 m_pWindow_Main = createWindow(nameMain);
                 if (m_pWindow_Main == nullptr)
                 {
-                    Util_LogError("*********************** VulkanSample::createWindows: Create window main failed !");
+                    F_LogError("*********************** VulkanSample::createWindows: Create window main failed !");
                     return false;
                 }
-                Util_LogInfo("VulkanSample::createWindows: Create window main success !");
+                F_LogInfo("VulkanSample::createWindows: Create window main success !");
             }
             //1> Window Game
             if (m_bIsWindowGameUsed)
@@ -96,10 +94,10 @@ namespace LostPeter
                 m_pWindow_Game = createWindow(nameGame);
                 if (m_pWindow_Game == nullptr)
                 {
-                    Util_LogError("*********************** VulkanSample::createWindows: Create window game failed !");
+                    F_LogError("*********************** VulkanSample::createWindows: Create window game failed !");
                     return false;
                 }
-                Util_LogInfo("VulkanSample::createWindows: Create window game success !");
+                F_LogInfo("VulkanSample::createWindows: Create window game success !");
             }
             //2> Window Scene
             if (m_bIsWindowSceneUsed)
@@ -108,10 +106,10 @@ namespace LostPeter
                 m_pWindow_Scene = createWindow(nameScene);
                 if (m_pWindow_Scene == nullptr)
                 {
-                    Util_LogError("*********************** VulkanSample::createWindows: Create window scene failed !");
+                    F_LogError("*********************** VulkanSample::createWindows: Create window scene failed !");
                     return false;
                 }
-                Util_LogInfo("VulkanSample::createWindows: Create window scene success !");
+                F_LogInfo("VulkanSample::createWindows: Create window scene success !");
             }
 
             return true;
@@ -121,8 +119,8 @@ namespace LostPeter
                 VulkanWindowEx* pWindow = new VulkanWindowEx();
                 if (!pWindow->Init(nameTitle, m_nWidth, m_nHeight))
                 {
-                    Util_LogError("*********************** VulkanSample::createWindow: pWindow->Init failed !");
-                    UTIL_DELETE(pWindow)
+                    F_LogError("*********************** VulkanSample::createWindow: pWindow->Init failed !");
+                    F_DELETE(pWindow)
                     return nullptr;
                 }
                 m_aWindows.push_back(pWindow);
@@ -155,7 +153,7 @@ namespace LostPeter
             void VulkanSample::destroyVulkan()
             {
                 m_pDevice = nullptr;
-                UTIL_DELETE(m_pInstance)
+                F_DELETE(m_pInstance)
             }
             void VulkanSample::destroyWindows()
             {
@@ -163,7 +161,7 @@ namespace LostPeter
                 for (size_t i = 0; i < count; i++)
                 {
                     VulkanWindowEx* pWindow = m_aWindows[i];
-                    UTIL_DELETE(pWindow)
+                    F_DELETE(pWindow)
                 }
                 m_aWindows.clear();
                 m_mapWindows.clear();

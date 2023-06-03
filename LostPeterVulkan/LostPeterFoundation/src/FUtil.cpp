@@ -1,21 +1,20 @@
 /****************************************************************************
-* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterFoundation - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2022-10-30
+* Time:     2023-06-03
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/PreInclude.h"
-#include "../include/VulkanUtil.h"
-#include "../include/OCUtil.h"
+#include "../include/FPreInclude.h"
+#include "../include/FUtil.h"
 
-namespace LostPeter
+namespace LostPeterFoundation
 {
-#if UTIL_PLATFORM == UTIL_PLATFORM_WIN32
+#if LP_PLATFORM == LP_PLATFORM_WIN32
     char* Unicode2Utf8(wchar_t* unicodeStr) {
         int cStrLen = WideCharToMultiByte(CP_UTF8, 0, unicodeStr, -1, NULL, 0, NULL, NULL);
         char* cStr = (char*)malloc(sizeof(char) * (cStrLen + 1));
@@ -27,11 +26,11 @@ namespace LostPeter
 
 
 ////Path
-    String VulkanUtil::GetPathExecute()
+    String FUtil::GetPathExecute()
     {
         String path;
 
-    #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32
+    #if LP_PLATFORM == LP_PLATFORM_WIN32
         wchar_t szBuf[512];
         ::GetModuleFileNameW(NULL, szBuf, 512);
         ::PathRemoveFileSpecW(szBuf);
@@ -42,8 +41,8 @@ namespace LostPeter
 
         std::replace(path.begin(), path.end(), '\\', '/');
 
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_MAC
-        path = OCUtil_GetPathExecute();
+    #elif LP_PLATFORM == LP_PLATFORM_MAC
+        path = F_OCGetPathExecute();
         
     #endif
         if (path[path.size() - 1] == '.')
@@ -56,7 +55,7 @@ namespace LostPeter
 
         return path;
     }
-    String VulkanUtil::GetPathBin()
+    String FUtil::GetPathBin()
     {
         String pathBin = GetPathExecute();
         String::size_type pos = pathBin.find_last_of('/');
@@ -64,30 +63,30 @@ namespace LostPeter
             pathBin = pathBin.substr(0, pos);
         return pathBin;
     }
-    String VulkanUtil::GetPathAssets()
+    String FUtil::GetPathAssets()
     {
         const String& pathBin = GetPathBin();
-    #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
         String pathAssets = pathBin + "/Assets/";
     #else
         String pathAssets = pathBin + "/";
     #endif
         return pathAssets;
     }
-    String VulkanUtil::GetPathReal(const char* szFile)
+    String FUtil::GetPathReal(const char* szFile)
     {
         return GetPathReal(String(szFile));
     }
-    String VulkanUtil::GetPathReal(const String& strPath)
+    String FUtil::GetPathReal(const String& strPath)
     {
         return GetPathBin() + "/" + strPath;
     }
 
 
 ////File
-    bool VulkanUtil::FileIsExist(const String& strPath)
+    bool FUtil::FileIsExist(const String& strPath)
     {
-    #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
         String pathReal = GetPathReal(strPath);
         std::ifstream file(pathReal.c_str(), std::ios::ate | std::ios::binary);
         if (!file.is_open())
@@ -101,27 +100,27 @@ namespace LostPeter
     #endif
     return false;
     }
-    bool VulkanUtil::DeleteFile(const String& strPath)
+    bool FUtil::DeleteFile(const String& strPath)
     {
-    #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
 
     #else
 
     #endif
     return false;
     }
-    bool VulkanUtil::ClearFile(const String& strPath)
+    bool FUtil::ClearFile(const String& strPath)
     {
-    #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
 
     #else
     
     #endif
     return false;
     }
-    bool VulkanUtil::CopyFile(const String& strSrcPath, const String& strDstPath)
+    bool FUtil::CopyFile(const String& strSrcPath, const String& strDstPath)
     {
-    #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
 
     #else
     
@@ -131,45 +130,45 @@ namespace LostPeter
 
 
 ////Folder
-    bool VulkanUtil::IsDirectory(const String& strPath)
+    bool FUtil::IsDirectory(const String& strPath)
     {
-    #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
 
     #else
     
     #endif
     return false;
     }
-    bool VulkanUtil::CreateDirectory(const String& strPath)
+    bool FUtil::CreateDirectory(const String& strPath)
     {
-    #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
 
     #else
     
     #endif
     return false;
     }
-    bool VulkanUtil::EnumFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath)
+    bool FUtil::EnumFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath)
     {
-    #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
 
     #else
     
     #endif
     return false;
     }
-    bool VulkanUtil::EnumFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive)
+    bool FUtil::EnumFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive)
     {
-    #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
 
     #else
     
     #endif
     return false;
     }
-    bool VulkanUtil::EnumFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive)
+    bool FUtil::EnumFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive)
     {
-    #if UTIL_PLATFORM == UTIL_PLATFORM_WIN32 || UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
 
     #else
     
@@ -179,12 +178,12 @@ namespace LostPeter
 
 
 ////LoadFile
-    bool VulkanUtil::LoadFileContent(const char* szFile, CharVector& content, bool addEnd0 /*= false*/)
+    bool FUtil::LoadFileContent(const char* szFile, CharVector& content, bool addEnd0 /*= false*/)
     {
         std::ifstream file(szFile, std::ios::ate | std::ios::binary);
         if (!file.is_open())
         {
-            Util_LogError("*********************** VulkanUtil::LoadFileContent: Read file failed: [%s] !", szFile);
+            F_LogError("*********************** FUtil::LoadFileContent: Read file failed: [%s] !", szFile);
             return false;
         }
 
@@ -200,12 +199,12 @@ namespace LostPeter
             content[fileSize] = 0;
         return true;
     }
-    bool VulkanUtil::LoadFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 /*= false*/)
+    bool FUtil::LoadFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 /*= false*/)
     {
         std::ifstream file(szFile, std::ios::ate | std::ios::binary);
         if (!file.is_open())
         {
-            Util_LogError("*********************** VulkanUtil::LoadFileToBuffer: Read file failed: [%s] !", szFile);
+            F_LogError("*********************** FUtil::LoadFileToBuffer: Read file failed: [%s] !", szFile);
             return false;
         }
 
@@ -223,7 +222,7 @@ namespace LostPeter
         sizeData = (int32)fileSize;
         return true;
     }
-    bool VulkanUtil::LoadFileToString(const char* szFile, String& contentFile)
+    bool FUtil::LoadFileToString(const char* szFile, String& contentFile)
     {
         std::ifstream file;
         file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -237,26 +236,26 @@ namespace LostPeter
         }
         catch(std::ifstream::failure e)
         {
-            Util_LogError("*********************** VulkanUtil::LoadFileToString: Read file failed: [%s] !", szFile);
+            F_LogError("*********************** FUtil::LoadFileToString: Read file failed: [%s] !", szFile);
             return false;
         }
         return true;
     }
 
-    bool VulkanUtil::LoadAssetFileContent(const char* szFile, CharVector& content, bool addEnd0 /*= false*/)
+    bool FUtil::LoadAssetFileContent(const char* szFile, CharVector& content, bool addEnd0 /*= false*/)
     {
         String pathReal = GetPathReal(szFile);
         return LoadFileContent(pathReal.c_str(), content, addEnd0); 
     }
-    bool VulkanUtil::LoadAssetFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 /*= false*/)
+    bool FUtil::LoadAssetFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 /*= false*/)
     {
         String pathReal = GetPathReal(szFile);
         return LoadFileToBuffer(pathReal.c_str(), ppData, sizeData, addEnd0);
     }
-    bool VulkanUtil::LoadAssetFileToString(const char* szFile, String& contentFile)
+    bool FUtil::LoadAssetFileToString(const char* szFile, String& contentFile)
     {
         String pathReal = GetPathReal(szFile);
         return LoadFileToString(pathReal.c_str(), contentFile); 
     }
 
-}; //LostPeter
+}; //LostPeterFoundation

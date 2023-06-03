@@ -54,7 +54,7 @@ namespace LostPeter
     {
         if (m_bIsDeleteData)
         {
-            UTIL_DELETE_T(m_pData)
+            F_DELETE_T(m_pData)
         }
         m_pData = nullptr;
         m_nDataSize = 0;

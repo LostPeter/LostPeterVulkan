@@ -1,37 +1,37 @@
 /****************************************************************************
-* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterFoundation - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2022-12-03
+* Time:     2023-06-03
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/PreInclude.h"
-#include "../include/VulkanLog.h"
-#include "../include/VulkanUtil.h"
+#include "../include/FPreInclude.h"
+#include "../include/FLog.h"
+#include "../include/FUtil.h"
 
-namespace LostPeter
+namespace LostPeterFoundation
 {
-    VulkanLog::VulkanLog(const String& strName)
+    FLog::FLog(const String& strName)
         : m_strName(strName)
     {
 
     }
 
-    VulkanLog::~VulkanLog()
+    FLog::~FLog()
     {
         
     }
 
-    void VulkanLog::LogInfoString(const char* szContent)
+    void FLog::LogInfoString(const char* szContent)
     {
-        assert(m_pLogger.get() != nullptr && "VulkanLog::LogInfoString");
+        assert(m_pLogger.get() != nullptr && "FLog::LogInfoString");
         m_pLogger->info("{0}", szContent);
     }
-    void VulkanLog::LogInfo(const char* fmt, ...)
+    void FLog::LogInfo(const char* fmt, ...)
     {
         const int buffer_len = 2048;
         char szTemp[buffer_len] = {0};
@@ -48,12 +48,12 @@ namespace LostPeter
         LogInfoString(szTemp);
     }
 
-    void VulkanLog::LogWarnString(const char* szContent)
+    void FLog::LogWarnString(const char* szContent)
     {
-        assert(m_pLogger.get() != nullptr && "VulkanLog::LogWarnString");
+        assert(m_pLogger.get() != nullptr && "FLog::LogWarnString");
         m_pLogger->warn("{0}", szContent);
     }
-    void VulkanLog::LogWarn(const char* fmt, ...)
+    void FLog::LogWarn(const char* fmt, ...)
     {
          const int buffer_len = 2048;
         char szTemp[buffer_len] = {0};
@@ -70,12 +70,12 @@ namespace LostPeter
         LogWarnString(szTemp);
     }
 
-    void VulkanLog::LogErrorString(const char* szContent)
+    void FLog::LogErrorString(const char* szContent)
     {
-        assert(m_pLogger.get() != nullptr && "VulkanLog::LogErrorString");
+        assert(m_pLogger.get() != nullptr && "FLog::LogErrorString");
         m_pLogger->error("{0}", szContent);
     }
-    void VulkanLog::LogError(const char* fmt, ...)
+    void FLog::LogError(const char* fmt, ...)
     {
         const int buffer_len = 2048;
         char szTemp[buffer_len] = {0};
@@ -92,61 +92,61 @@ namespace LostPeter
         LogErrorString(szTemp);
     }
 
-    VulkanLogConsole::VulkanLogConsole(const String& strName)
-        : VulkanLog(strName)
+    FLogConsole::FLogConsole(const String& strName)
+        : FLog(strName)
     {
 
     }
 
-    VulkanLogConsole::~VulkanLogConsole()
+    FLogConsole::~FLogConsole()
     {
         Destroy();
     }
 
-    void VulkanLogConsole::Destroy()
+    void FLogConsole::Destroy()
     {
 
     }
 
-    bool VulkanLogConsole::InitLogConsole()
+    bool FLogConsole::InitLogConsole()
     {
         m_pLogger = spdlog::stdout_color_mt(m_strName);
 
         return true;
     }
-    bool VulkanLogConsole::InitLogFile(const String& path, bool isTruncate)
+    bool FLogConsole::InitLogFile(const String& path, bool isTruncate)
     {
         return true;
     }
 
 
-    VulkanLogFile::VulkanLogFile(const String& strName)
-        : VulkanLog(strName)
+    FLogFile::FLogFile(const String& strName)
+        : FLog(strName)
     {
 
     }
 
-    VulkanLogFile::~VulkanLogFile()
+    FLogFile::~FLogFile()
     {
         Destroy();
     }
 
-    void VulkanLogFile::Destroy()
+    void FLogFile::Destroy()
     {
 
     }
 
-    bool VulkanLogFile::InitLogConsole()
+    bool FLogFile::InitLogConsole()
     {
         return true;
     }
-    bool VulkanLogFile::InitLogFile(const String& path, bool isTruncate)
+    bool FLogFile::InitLogFile(const String& path, bool isTruncate)
     {
-        String strBin = VulkanUtil::GetPathBin();
+        String strBin = FUtil::GetPathBin();
         String strPath = strBin + "/" + path;
         m_pLogger = spdlog::basic_logger_mt(m_strName, strPath, isTruncate);
 
         return true;
     }
 
-}; //LostPeter
+}; //LostPeterFoundation

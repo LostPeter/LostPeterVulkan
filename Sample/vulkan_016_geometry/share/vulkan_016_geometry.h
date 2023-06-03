@@ -13,7 +13,7 @@
 #define _VULKAN_016_GEOMETRY_H_
 
 #include "VulkanWindow.h"
-#include "VulkanMath.h"
+#include "FMath.h"
 using namespace LostPeter; 
 
 class Vulkan_016_Geometry : public VulkanWindow
@@ -288,7 +288,7 @@ public:
             this->poTextureImageView = VK_NULL_HANDLE;
             this->pWindow->destroyVkImageSampler(this->poTextureSampler);
             this->poTextureSampler = VK_NULL_HANDLE;
-            UTIL_DELETE_T(pDataRGBA)
+            F_DELETE_T(pDataRGBA)
         }
 
         int RandomTextureIndex()
@@ -296,7 +296,7 @@ public:
             if (this->typeTexture == Vulkan_Texture_2DArray)
             {
                 int count = (int)this->aPathTexture.size();
-                return VulkanMath::Rand(0, count - 1);
+                return FMath::Rand(0, count - 1);
             }
             return 0;
         }
@@ -401,7 +401,7 @@ public:
                 else
                 {
                     String msg = "ModelTexture::LoadTexture: Wrong texture type, Create from file, name: [" + this->nameTexture + "] !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
@@ -514,7 +514,7 @@ public:
                 else
                 {
                     String msg = "ModelTexture::LoadTexture: Wrong texture type, Create render target, name: [" + this->nameTexture + "] !";
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
@@ -627,7 +627,7 @@ public:
         }
         void DestroyTextureCopy()
         {
-            UTIL_DELETE(this->pTextureCopy)
+            F_DELETE(this->pTextureCopy)
             if (this->poBuffer_TextureCopy != VK_NULL_HANDLE)
             {
                 this->pWindow->destroyVkBuffer(this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
@@ -800,7 +800,7 @@ public:
 
             //Clean
             CleanupSwapChain();
-            UTIL_DELETE(pPipelineGraphics)
+            F_DELETE(pPipelineGraphics)
         }
 
         void CleanupSwapChain()
@@ -846,7 +846,7 @@ public:
             for (size_t i = 0; i < count; i++)
             {
                 PipelineCompute* p = this->aPipelineComputes[i];
-                UTIL_DELETE(p)
+                F_DELETE(p)
             }
             this->aPipelineComputes.clear();
         }
@@ -1087,7 +1087,7 @@ public:
                 delete pRend;
             }
             this->aRends.clear();
-            UTIL_DELETE(pRendIndirect)
+            F_DELETE(pRendIndirect)
         }
 
         void CleanupSwapChain()

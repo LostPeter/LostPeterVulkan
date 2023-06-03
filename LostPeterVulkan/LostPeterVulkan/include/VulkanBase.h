@@ -23,7 +23,7 @@ namespace LostPeter
         virtual ~VulkanBase();
 
     public:
-        static VulkanLogManager* ms_pLogManager;
+        static FLogManager* ms_pLogManager;
 
     public:
         int width;
@@ -41,7 +41,7 @@ namespace LostPeter
         bool isCreateDevice;        //is create device
         bool isLoadAsset;           //is load asset
 
-        VulkanTimer* pTimer;
+        FTimer* pTimer;
         float fTimeLastFPS;
         float fFPS;
         int nFrameFPS;

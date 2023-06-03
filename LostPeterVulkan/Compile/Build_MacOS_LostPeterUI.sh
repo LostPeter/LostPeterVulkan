@@ -20,6 +20,12 @@ else
     name_dylib="libLostPeterUI.dylib"
 fi
 
+
+#1> Build LostPeterFoundation
+sh ./Build_MacOS_LostPeterFoundation.sh $debug $rebuild
+
+
+#2> Build LostPeterUI
 if [ "$rebuild" == "rebuild" ]; then
     rm -rf "../Build/MacOS/"$name_project
 fi

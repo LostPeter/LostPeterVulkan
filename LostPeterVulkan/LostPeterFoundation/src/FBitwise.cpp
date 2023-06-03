@@ -1,20 +1,20 @@
 /****************************************************************************
-* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterFoundation - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-05-19
+* Time:     2023-06-03
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/PreInclude.h"
-#include "../include/VulkanBitwise.h"
+#include "../include/FPreInclude.h"
+#include "../include/FBitwise.h"
 
-namespace LostPeter
+namespace LostPeterFoundation
 {
-    uint32 VulkanBitwise::MostSignificantBitSet(uint32 nValue)
+    uint32 FBitwise::MostSignificantBitSet(uint32 nValue)
 	{
 		uint32 result = 0;	
 		while (nValue != 0) 
@@ -25,7 +25,7 @@ namespace LostPeter
 		return result-1;
 	}
 
-	uint32 VulkanBitwise::FirstPow2From(uint32 n)									
+	uint32 FBitwise::FirstPow2From(uint32 n)									
 	{
 		--n;            
 		n |= n >> 16;
@@ -38,7 +38,7 @@ namespace LostPeter
 		return n;
 	}
 
-	uint32 VulkanBitwise::FixedToFixed(uint32 value, uint32 n, uint32 p)
+	uint32 FBitwise::FixedToFixed(uint32 value, uint32 n, uint32 p)
 	{
 		if(n > p) 
 		{
@@ -59,7 +59,7 @@ namespace LostPeter
 		return value; 
 	}
 
-	uint32 VulkanBitwise::FloatToFixed(const float value, const uint32 bits)	
+	uint32 FBitwise::FloatToFixed(const float value, const uint32 bits)	
 	{
 		if(value <= 0.0f) 
 			return 0;
@@ -69,12 +69,12 @@ namespace LostPeter
 			return (uint32)(value * (1<<bits));   
 	}
 
-	float VulkanBitwise::FixedToFloat(unsigned value, uint32 bits)				
+	float FBitwise::FixedToFloat(unsigned value, uint32 bits)				
 	{
 		return (float)value/(float)((1<<bits)-1);
 	}
 
-	void VulkanBitwise::IntWrite(void* dest, const int32 n, const uint32 value)	
+	void FBitwise::IntWrite(void* dest, const int32 n, const uint32 value)	
 	{
 		switch(n) 
 		{
@@ -85,7 +85,7 @@ namespace LostPeter
 			((uint16*)dest)[0] = (uint16)value;
 			break;
 		case 3:
-#if VULKAN_ENDIAN == VULKAN_ENDIAN_BIG
+#if LP_ENDIAN == LP_ENDIAN_BIG
 			((uint8*)dest)[0] = (uint8)((value >> 16) & 0xFF);
 			((uint8*)dest)[1] = (uint8)((value >> 8) & 0xFF);
 			((uint8*)dest)[2] = (uint8)(value & 0xFF);
@@ -101,7 +101,7 @@ namespace LostPeter
 		}        
 	}
 
-	uint32 VulkanBitwise::IntRead(const void* src,int32 n)							
+	uint32 FBitwise::IntRead(const void* src,int32 n)							
 	{
 		switch(n) 
 		{
@@ -110,7 +110,7 @@ namespace LostPeter
 		case 2:
 			return ((uint16*)src)[0];
 		case 3:
-#if VULKAN_ENDIAN == VULKAN_ENDIAN_BIG      
+#if LP_ENDIAN == LP_ENDIAN_BIG      
 			return ((uint32)((uint8*)src)[0]<<16) |
 				((uint32)((uint8*)src)[1]<<8) |
 				((uint32)((uint8*)src)[2]);
@@ -125,14 +125,14 @@ namespace LostPeter
 		return 0; 
 	}
 
-	uint16 VulkanBitwise::FloatToHalf(float i)									
+	uint16 FBitwise::FloatToHalf(float i)									
 	{
 		union { float f; uint32 i; } v;
 		v.f = i;
 		return FloatToHalfI(v.i);
 	}
 
-	uint16 VulkanBitwise::FloatToHalfI(uint32 i)							
+	uint16 FBitwise::FloatToHalfI(uint32 i)							
 	{
 		int32 s =  (i >> 16) & 0x00008000;
 		int32 e =  ((i >> 23) & 0x000000ff) - (127 - 15);
@@ -171,14 +171,14 @@ namespace LostPeter
 		}
 	}
 
-	float VulkanBitwise::HalfToFloat(uint16 y)								
+	float FBitwise::HalfToFloat(uint16 y)								
 	{
 		union { float f; uint32 i; } v;
 		v.i = HalfToFloatI(y);
 		return v.f;
 	}
 
-	uint32 VulkanBitwise::HalfToFloatI(uint16 y)				
+	uint32 FBitwise::HalfToFloatI(uint16 y)				
 	{
 		int32 s = (y >> 15) & 0x00000001;
 		int32 e = (y >> 10) & 0x0000001f;
@@ -220,4 +220,4 @@ namespace LostPeter
 		return (s << 31) | (e << 23) | m;
 	}
 
-}; //LostPeter
+}; //LostPeterFoundation

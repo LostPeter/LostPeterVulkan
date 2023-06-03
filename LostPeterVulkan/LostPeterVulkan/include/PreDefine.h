@@ -15,6 +15,10 @@
 #include "PreIncludeStd.h"
 #include "PreIncludeThird.h"
 
+#include "FPreDefine.h"
+using namespace LostPeterFoundation;
+#include "UIPreDefine.h"
+using namespace LostPeterUI;
 
 namespace LostPeter
 {
@@ -32,55 +36,6 @@ namespace LostPeter
     #define SHADER_NAME_Fragment                    "frag"
     #define SHADER_NAME_Compute                     "comp"
 
-    #define C_PI                            3.14159265f                                         // PI
-    #define C_PI_HALF				        1.57079632f                                         // 0.5 * PI
-    #define	C_PI_TWO					    6.28318530717958647692							    // 2.0 * PI
-    #define C_PI_INV				        0.31830988618379067154                              // 1.0 / PI
-    #define	C_EXP					        2.71828182845904523536							    // e
-	#define	C_LOG2_INVERT			        3.32192809488736234787								// 1.0 / log10(2)
-	#define	C_LN2					        0.693147180559945									// ln(2)
-	#define	C_LN2_INVERT				    1.44269504089										// 1.0f / ln(2)
-			
-	#define	C_INV3					        0.33333333333333333333							    // 1/3
-	#define	C_INV6					        0.16666666666666666666								// 1/6
-	#define	C_INV7					        0.14285714285714285714								// 1/7
-	#define	C_INV9					        0.11111111111111111111								// 1/9
-	#define	C_INV255					    0.00392156862745098039								// 1/255
-
-	#define	C_SQRT2					        1.4142135623730950488							    // sqrt(2)
-	#define	C_INVSQRT2				        0.707106781188										// 1 / sqrt(2)
-			
-	#define	C_SQRT3					        1.7320508075688772935								// sqrt(3)
-	#define	C_INVSQRT3				        0.577350269189										// 1 / sqrt(3)             
-    
-    #define C_MIN_INT8		                ((int8)		-128)
-    #define C_MAX_INT8		                ((int8)		0x7f)
-    #define C_MIN_UINT8		                ((uint8)	0x00)
-    #define C_MAX_UINT8		                ((uint8)	0xff)
-    #define C_MIN_INT16		                ((int16)	-32768)
-    #define C_MAX_INT16		                ((int16)	0x7fff)
-    #define	C_MIN_UINT16		            ((uint16)	0x0000)
-    #define C_MAX_UINT16		            ((uint16)	0xffff)
-    #define C_MIN_INT32		                ((int32)	0x80000000)
-    #define C_MAX_INT32		                ((int32)	0x7fffffff)
-    #define	C_MIN_UINT32		            ((uint32)	0x00000000)
-    #define C_MAX_UINT32		            ((uint32)	0xffffffff)
-    #define C_MIN_INT64		                ((int64)	0x8000000000000000)
-    #define C_MAX_INT64		                ((int64)	0x7fffffffffffffff)
-    #define C_MIN_UINT64		            ((uint64)	0x0000000000000000)
-    #define C_MAX_UINT64		            ((uint64)	0xffffffffffffffff)
-    #define	C_MIN_FLOAT				        (-FLT_MAX)	
-    #define	C_MAX_FLOAT				        FLT_MAX		
-    
-    #define C_POS_INFINITY_NEG              (-FLT_MAX)
-    #define C_POS_INFINITY                  FLT_MAX
-
-    #define C_DELTA				            0.00001f
-
-    #define C_NUMBER_SMALL		            1.e-8f
-    #define C_NUMBER_SMALL_KINDA	        1.e-4f
-    #define C_NUMBER_BIG			        3.4e+38f
-    #define C_NUMBER_EULERS                 2.71828182845904523536f
 
     #define C_THRESH_POINT_ON_PLANE			0.10f
     #define C_THRESH_POINT_ON_SIDE			0.20f
@@ -112,44 +67,6 @@ namespace LostPeter
     #define UTIL_CPU_ALLOCATOR              nullptr
 
 ////////////////////////////// Typedef /////////////////////////////
-    using int8 = std::int8_t;
-    using uint8 = std::uint8_t;
-    using int16 = std::int16_t;
-    using int32 = std::int32_t;
-    using uint16 = std::uint16_t;
-    using uint32 = std::uint32_t;
-    using int64 = std::int64_t;
-    using uint64 = std::uint64_t;
-
-    typedef std::chrono::steady_clock::time_point TimePoint;
-    typedef std::string String;
-    typedef std::vector<String> StringVector;
-    typedef std::list<String> StringList;
-    typedef std::map<String, String> String2StringMap;
-    typedef std::vector<const char*> ConstCharPtrVector;
-    typedef std::vector<char> CharVector;
-    typedef std::vector<uint16> Indices16Vector;
-    typedef std::vector<uint32> Indices32Vector;
-    
-    typedef std::vector<bool> BoolVector;
-	typedef std::vector<int8> Int8Vector;
-	typedef std::vector<uint8> Uint8Vector;
-	typedef std::vector<int16> Int16Vector;
-	typedef std::vector<uint16> Uint16Vector;
-	typedef std::vector<int32> Int32Vector;
-	typedef std::vector<uint32> Uint32Vector;
-	typedef std::vector<float> FloatVector;
-	typedef std::vector<double>	DoubleVector;
-
-    typedef std::deque<TimePoint> FrameTimePointQueue;
-
-    
-    #define UTIL_ARRAYSIZE(_ARR)            ((int)(sizeof(_ARR)/sizeof(*_ARR)))    
-    #define UTIL_OFFSETOF(_TYPE,_MEMBER)    ((size_t)&(((_TYPE*)0)->_MEMBER))     
-    
-    #define UTIL_DELETE(p)                  { if(p) { delete p; p=nullptr; }}
-    #define UTIL_DELETE_T(p)                { if(p) { delete[] p; p=nullptr; }}
-
     String Utile_VkResult2String(VkResult result);
 
     #define UTIL_VK_CHECK(vkcall) \
@@ -159,7 +76,7 @@ namespace LostPeter
         { \
             String vkfunc = #vkcall; \
             vkfunc = vkfunc.substr(0, vkfunc.find('(')); \
-            Util_LogError("UTIL_VK_CHECK: [%s] failed with: %s", vkfunc.c_str(), Utile_VkResult2String(result).c_str()); \
+            F_LogError("UTIL_VK_CHECK: [%s] failed with: %s", vkfunc.c_str(), Utile_VkResult2String(result).c_str()); \
         } \
     }
 
@@ -174,11 +91,7 @@ namespace LostPeter
 
 
 ////////////////////////////// Enum ////////////////////////////////
-    enum VulkanLogType
-    {
-        Vulkan_Log_Console = 0,                         //0:    Console
-        Vulkan_Log_File,                                //1:    File
-    };
+   
 
 
     enum VulkanWindowType
@@ -553,14 +466,8 @@ namespace LostPeter
     class VulkanFenceManager;
     class VulkanInstance;
     class VulkanLight;
-    class VulkanLog;
-    class VulkanLogConsole;
-    class VulkanLogFile;
-    class VulkanLogManager;
     class VulkanManager;
     class VulkanMaterial;
-    class VulkanMath;
-    class VulkanMathBox;
     class VulkanMesh;
     class VulkanMeshSub;
     class VulkanObject;
@@ -573,7 +480,6 @@ namespace LostPeter
     class VulkanSemaphore;
     class VulkanSwapChain;
     class VulkanTexture;
-    class VulkanTimer;
     class VulkanWindow;
     class VulkanWindowEx;
     
@@ -619,9 +525,6 @@ namespace LostPeter
     typedef glm::mat4 Matrix4;
     typedef glm::quat Quaternion;
     typedef glm::vec4 Color;
-
-    typedef std::vector<VulkanLog*> VulkanLogPtrVector;
-    typedef std::map<String, VulkanLog*> VulkanLogPtrMap;
 
     typedef std::vector<VulkanWindowEx*> VulkanWindowExPtrVector;
     typedef std::map<String, VulkanWindowEx*> VulkanWindowExPtrMap;

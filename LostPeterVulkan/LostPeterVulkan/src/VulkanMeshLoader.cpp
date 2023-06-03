@@ -120,9 +120,9 @@ namespace LostPeter
     {
         //1> LoadAssetFileContent
         CharVector content;
-        if (!VulkanUtil::LoadAssetFileContent(szPathMesh, content))
+        if (!FUtil::LoadAssetFileContent(szPathMesh, content))
         {
-            Util_LogError("*********************** VulkanMeshLoader::LoadMeshData: 1> VulkanUtil::LoadAssetFileContent failed, mesh path: [%s] !", szPathMesh);
+            F_LogError("*********************** VulkanMeshLoader::LoadMeshData: 1> FUtil::LoadAssetFileContent failed, mesh path: [%s] !", szPathMesh);
             return false;
         }
 
@@ -132,7 +132,7 @@ namespace LostPeter
         const aiScene* pScene = import.ReadFileFromMemory(pBuffer, content.size(), static_cast<unsigned int>(eMeshParserFlags));
         if (pScene == nullptr)
         {
-            Util_LogError("*********************** VulkanMeshLoader::LoadMeshData: 2> import.ReadFileFromMemory failed, mesh path: [%s] !", szPathMesh);
+            F_LogError("*********************** VulkanMeshLoader::LoadMeshData: 2> import.ReadFileFromMemory failed, mesh path: [%s] !", szPathMesh);
             return false;
         }
 
@@ -140,7 +140,7 @@ namespace LostPeter
         aiMatrix4x4 identity;
         if (!s_ProcessMesh(&identity, pScene->mRootNode, pScene, meshData))
         {
-            Util_LogError("*********************** VulkanMeshLoader::LoadMeshData: 3> s_ProcessMesh failed, mesh path: [%s] !", szPathMesh);
+            F_LogError("*********************** VulkanMeshLoader::LoadMeshData: 3> s_ProcessMesh failed, mesh path: [%s] !", szPathMesh);
             return false;
         }
 
@@ -155,9 +155,9 @@ namespace LostPeter
     {
         //1> LoadAssetFileContent
         CharVector content;
-        if (!VulkanUtil::LoadAssetFileContent(szPathMesh, content))
+        if (!FUtil::LoadAssetFileContent(szPathMesh, content))
         {
-            Util_LogError("*********************** VulkanMeshLoader::LoadMeshDatas: 1> VulkanUtil::LoadAssetFileContent failed, mesh path: [%s] !", szPathMesh);
+            F_LogError("*********************** VulkanMeshLoader::LoadMeshDatas: 1> FUtil::LoadAssetFileContent failed, mesh path: [%s] !", szPathMesh);
             return false;
         }
 
@@ -167,7 +167,7 @@ namespace LostPeter
         const aiScene* pScene = import.ReadFileFromMemory(pBuffer, content.size(), static_cast<unsigned int>(eMeshParserFlags));
         if (pScene == nullptr)
         {
-            Util_LogError("*********************** VulkanMeshLoader::LoadMeshDatas: 2> import.ReadFileFromMemory failed, mesh path: [%s] !", szPathMesh);
+            F_LogError("*********************** VulkanMeshLoader::LoadMeshDatas: 2> import.ReadFileFromMemory failed, mesh path: [%s] !", szPathMesh);
             return false;
         }
 

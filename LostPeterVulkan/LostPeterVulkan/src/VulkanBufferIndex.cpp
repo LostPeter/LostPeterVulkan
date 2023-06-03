@@ -13,7 +13,6 @@
 #include "../include/VulkanBufferIndex.h"
 #include "../include/VulkanManager.h"
 #include "../include/VulkanDevice.h"
-#include "../include/VulkanUtilString.h"
 
 namespace LostPeter
 {
@@ -96,7 +95,7 @@ namespace LostPeter
         }
         else
         {
-            Util_LogError("*********************** VulkanBufferIndex::Init: Wrong data size !");
+            F_LogError("*********************** VulkanBufferIndex::Init: Wrong data size !");
             return false;
         }
         m_nTriangleCount = m_nIndexCount / 3;
@@ -108,7 +107,7 @@ namespace LostPeter
         {
             if (!bIsUpdateData || m_vkBufferMemory_Transfer == VK_NULL_HANDLE)
             {
-                Util_LogError("*********************** VulkanBufferIndex::UpdateData: UpdateData failed, not update data buffer !");
+                F_LogError("*********************** VulkanBufferIndex::UpdateData: UpdateData failed, not update data buffer !");
                 return false;
             }
 
@@ -126,7 +125,7 @@ namespace LostPeter
                                                                                        m_vkBuffer_Transfer, 
                                                                                        m_vkBufferMemory_Transfer))
                 {
-                    Util_LogError("*********************** VulkanBufferIndex::Init: 1 CreateVkBufferIndex failed !");
+                    F_LogError("*********************** VulkanBufferIndex::Init: 1 CreateVkBufferIndex failed !");
                     return false;
                 }
             }
@@ -137,7 +136,7 @@ namespace LostPeter
                                                                                        m_vkBuffer, 
                                                                                        m_vkBufferMemory))
                 {
-                    Util_LogError("*********************** VulkanBufferIndex::Init: 2 CreateVkBufferIndex failed !");
+                    F_LogError("*********************** VulkanBufferIndex::Init: 2 CreateVkBufferIndex failed !");
                     return false;
                 }
             }
@@ -149,12 +148,12 @@ namespace LostPeter
 
     VulkanBufferIndex* VulkanBufferIndex::Clone()
     {
-        String strName =  VulkanUtilString::FormatString("%s_Copy_%d", m_strName.c_str(), GetNextID());
+        String strName =  FUtilString::FormatString("%s_Copy_%d", m_strName.c_str(), GetNextID());
         VulkanBufferIndex* pBufferIndex = new VulkanBufferIndex(strName);
         void* pData = CloneData();
         if (!pBufferIndex->Init(pData, m_nDataSize, m_nIndexCount, true, m_bIsUpdateData))
         {
-            UTIL_DELETE(pBufferIndex)
+            F_DELETE(pBufferIndex)
             return nullptr;
         }
         return pBufferIndex;

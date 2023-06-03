@@ -31,7 +31,7 @@ namespace LostPeter
     {
         if (m_aFences_Used.size() > 0) 
         {
-		    Util_LogError("VulkanFenceManager::Destroy: Not all fences are done !");
+		    F_LogError("VulkanFenceManager::Destroy: Not all fences are done !");
         }
 
         size_t count = m_aFences_Free.size();
@@ -71,7 +71,7 @@ namespace LostPeter
 
     void VulkanFenceManager::DestoryFence(VulkanFence* pFence)
     {   
-        UTIL_DELETE(pFence)
+        F_DELETE(pFence)
     }
 
     bool VulkanFenceManager::WaitForFence(VulkanFence* pFence, uint64 timeInNanoseconds)
@@ -85,7 +85,7 @@ namespace LostPeter
         case VK_TIMEOUT:
             return false;
         }
-        Util_LogError("VulkanFenceManager::WaitForFence: Unkow error: [%d]", (int32)result);
+        F_LogError("VulkanFenceManager::WaitForFence: Unkow error: [%d]", (int32)result);
         return false;
     }
 

@@ -11,9 +11,6 @@
 
 #include "../include/PreInclude.h"
 #include "../include/VulkanPixelFormat.h"
-#include "../include/VulkanBitwise.h"
-#include "../include/VulkanMath.h"
-#include "../include/VulkanUtilString.h"
 
 
 namespace LostPeter
@@ -239,7 +236,7 @@ namespace LostPeter
 		String tmp = strName;
 		if (!caseSensitive)
 		{
-			VulkanUtilString::ToUpperCase(tmp);
+			FUtilString::ToUpperCase(tmp);
 		}
 
         int32 count = (int32)Vulkan_PixelFormat_Count;
@@ -376,11 +373,11 @@ namespace LostPeter
 		const VulkanPixelFormatDes& des = GetPixelFormatDes(format);
 		if(des.eFlags & Vulkan_PixelFormatFlag_IsNative) 
 		{
-			uint32 value = ((VulkanBitwise::FixedToFixed(r, 8, des.nRbits)<<des.nRshift) & des.nRmask) |
-						   ((VulkanBitwise::FixedToFixed(g, 8, des.nGbits)<<des.nGshift) & des.nGmask) |
-						   ((VulkanBitwise::FixedToFixed(b, 8, des.nBbits)<<des.nBshift) & des.nBmask) |
-						   ((VulkanBitwise::FixedToFixed(a, 8, des.nAbits)<<des.nAshift) & des.nAmask);
-			VulkanBitwise::IntWrite(dest,des.nElemBytes,value);
+			uint32 value = ((FBitwise::FixedToFixed(r, 8, des.nRbits)<<des.nRshift) & des.nRmask) |
+						   ((FBitwise::FixedToFixed(g, 8, des.nGbits)<<des.nGshift) & des.nGmask) |
+						   ((FBitwise::FixedToFixed(b, 8, des.nBbits)<<des.nBshift) & des.nBmask) |
+						   ((FBitwise::FixedToFixed(a, 8, des.nAbits)<<des.nAshift) & des.nAmask);
+			FBitwise::IntWrite(dest,des.nElemBytes,value);
 		}
 		else
 		{
@@ -393,11 +390,11 @@ namespace LostPeter
 		const VulkanPixelFormatDes& des = GetPixelFormatDes(format);
 		if (des.eFlags & Vulkan_PixelFormatFlag_IsNative) 
 		{
-			const uint32 value = ((VulkanBitwise::FloatToFixed(r, des.nRbits)<<des.nRshift) & des.nRmask) |
-								 ((VulkanBitwise::FloatToFixed(g, des.nGbits)<<des.nGshift) & des.nGmask) |
-								 ((VulkanBitwise::FloatToFixed(b, des.nBbits)<<des.nBshift) & des.nBmask) |
-								 ((VulkanBitwise::FloatToFixed(a, des.nAbits)<<des.nAshift) & des.nAmask);
-			VulkanBitwise::IntWrite(dest, des.nElemBytes, value);
+			const uint32 value = ((FBitwise::FloatToFixed(r, des.nRbits)<<des.nRshift) & des.nRmask) |
+								 ((FBitwise::FloatToFixed(g, des.nGbits)<<des.nGshift) & des.nGmask) |
+								 ((FBitwise::FloatToFixed(b, des.nBbits)<<des.nBshift) & des.nBmask) |
+								 ((FBitwise::FloatToFixed(a, des.nAbits)<<des.nAshift) & des.nAmask);
+			FBitwise::IntWrite(dest, des.nElemBytes, value);
 		} 
 		else 
 		{
@@ -423,54 +420,54 @@ namespace LostPeter
 			// 	break;
 			// case Vulkan_PixelFormat_DEPTH_D16_UNORM:
 			// case Vulkan_PixelFormat_SHORT_R16_SFLOAT:
-			// 	((uint16*)dest)[0] = VulkanBitwise::FloatToHalf(r);
+			// 	((uint16*)dest)[0] = FBitwise::FloatToHalf(r);
 			// 	break;
 			// case Vulkan_PixelFormat_SHORT_G16R16_SFLOAT:
-			// 	((uint16*)dest)[0] = VulkanBitwise::FloatToHalf(r);
-			// 	((uint16*)dest)[1] = VulkanBitwise::FloatToHalf(g);
+			// 	((uint16*)dest)[0] = FBitwise::FloatToHalf(r);
+			// 	((uint16*)dest)[1] = FBitwise::FloatToHalf(g);
 			// 	break;
 			// case Vulkan_PixelFormat_SHORT_B16G16R16_SFLOAT:
-			// 	((uint16*)dest)[0] = VulkanBitwise::FloatToHalf(r);
-			// 	((uint16*)dest)[1] = VulkanBitwise::FloatToHalf(g);
-			// 	((uint16*)dest)[2] = VulkanBitwise::FloatToHalf(b);
+			// 	((uint16*)dest)[0] = FBitwise::FloatToHalf(r);
+			// 	((uint16*)dest)[1] = FBitwise::FloatToHalf(g);
+			// 	((uint16*)dest)[2] = FBitwise::FloatToHalf(b);
 			// 	break;
 			// case Vulkan_PixelFormat_SHORT_A16B16G16R16_SFLOAT:
-			// 	((uint16*)dest)[0] = VulkanBitwise::FloatToHalf(r);
-			// 	((uint16*)dest)[1] = VulkanBitwise::FloatToHalf(g);
-			// 	((uint16*)dest)[2] = VulkanBitwise::FloatToHalf(b);
-			// 	((uint16*)dest)[3] = VulkanBitwise::FloatToHalf(a);
+			// 	((uint16*)dest)[0] = FBitwise::FloatToHalf(r);
+			// 	((uint16*)dest)[1] = FBitwise::FloatToHalf(g);
+			// 	((uint16*)dest)[2] = FBitwise::FloatToHalf(b);
+			// 	((uint16*)dest)[3] = FBitwise::FloatToHalf(a);
 			// 	break;
 			// case Vulkan_PixelFormat_SHORT_B16G16R16_UNORM:
-			// 	((uint16*)dest)[0] = (uint16)VulkanBitwise::FloatToFixed(r, 16);
-			// 	((uint16*)dest)[1] = (uint16)VulkanBitwise::FloatToFixed(g, 16);
-			// 	((uint16*)dest)[2] = (uint16)VulkanBitwise::FloatToFixed(b, 16);
+			// 	((uint16*)dest)[0] = (uint16)FBitwise::FloatToFixed(r, 16);
+			// 	((uint16*)dest)[1] = (uint16)FBitwise::FloatToFixed(g, 16);
+			// 	((uint16*)dest)[2] = (uint16)FBitwise::FloatToFixed(b, 16);
 			// 	break;
 			// case Vulkan_PixelFormat_SHORT_A16B16G16R16_UNORM:
-			// 	((uint16*)dest)[0] = (uint16)VulkanBitwise::FloatToFixed(r, 16);
-			// 	((uint16*)dest)[1] = (uint16)VulkanBitwise::FloatToFixed(g, 16);
-			// 	((uint16*)dest)[2] = (uint16)VulkanBitwise::FloatToFixed(b, 16);
-			// 	((uint16*)dest)[3] = (uint16)VulkanBitwise::FloatToFixed(a, 16);
+			// 	((uint16*)dest)[0] = (uint16)FBitwise::FloatToFixed(r, 16);
+			// 	((uint16*)dest)[1] = (uint16)FBitwise::FloatToFixed(g, 16);
+			// 	((uint16*)dest)[2] = (uint16)FBitwise::FloatToFixed(b, 16);
+			// 	((uint16*)dest)[3] = (uint16)FBitwise::FloatToFixed(a, 16);
 			// 	break;
 			// case Vulkan_PixelFormat_BYTE_AL_UNORM:
-			// 	((uint8*)dest)[0] = (uint8)VulkanBitwise::FloatToFixed(r, 8);
-			// 	((uint8*)dest)[1] = (uint8)VulkanBitwise::FloatToFixed(a, 8);
+			// 	((uint8*)dest)[0] = (uint8)FBitwise::FloatToFixed(r, 8);
+			// 	((uint8*)dest)[1] = (uint8)FBitwise::FloatToFixed(a, 8);
 			// 	break;
 			// case Vulkan_PixelFormat_BYTE_A8_UNORM:
-			// 	((uint8*)dest)[0] = (uint8)VulkanBitwise::FloatToFixed(r, 8);
+			// 	((uint8*)dest)[0] = (uint8)FBitwise::FloatToFixed(r, 8);
             //     break;
             // case Vulkan_PixelFormat_BYTE_A2R10G10B10_UNORM_PACK32:
             // {
-            //     const uint16 ir = static_cast<uint16>(VulkanMath::Saturate(r) * 1023.0f + 0.5f);
-            //     const uint16 ig = static_cast<uint16>(VulkanMath::Saturate(g) * 1023.0f + 0.5f);
-            //     const uint16 ib = static_cast<uint16>(VulkanMath::Saturate(b) * 1023.0f + 0.5f);
-            //     const uint16 ia = static_cast<uint16>(VulkanMath::Saturate(a) * 3.0f + 0.5f);
+            //     const uint16 ir = static_cast<uint16>(FMath::Saturate(r) * 1023.0f + 0.5f);
+            //     const uint16 ig = static_cast<uint16>(FMath::Saturate(g) * 1023.0f + 0.5f);
+            //     const uint16 ib = static_cast<uint16>(FMath::Saturate(b) * 1023.0f + 0.5f);
+            //     const uint16 ia = static_cast<uint16>(FMath::Saturate(a) * 3.0f + 0.5f);
 
             //     ((uint32*)dest)[0] = (ia << 30u) | (ir << 20u) | (ig << 10u) | (ib);
             //     break;
             // }
 			default:
 				{
-					Util_LogError("VulkanPixelFormat::PackColor: pack to [%s] not implemented", GetPixelFormatName(format).c_str());
+					F_LogError("VulkanPixelFormat::PackColor: pack to [%s] not implemented", GetPixelFormatName(format).c_str());
 					assert(false && "VulkanPixelFormat::PackColor");
 				}
 				break;
@@ -493,20 +490,20 @@ namespace LostPeter
 		const VulkanPixelFormatDes& des = GetPixelFormatDes(format);
 		if (des.eFlags & Vulkan_PixelFormatFlag_IsNative) 
 		{
-			const uint32 value = VulkanBitwise::IntRead(src, des.nElemBytes);
+			const uint32 value = FBitwise::IntRead(src, des.nElemBytes);
 			if (des.eFlags & Vulkan_PixelFormatFlag_IsLuminance)
 			{
-				*r = *g = *b = (uint8)VulkanBitwise::FixedToFixed((value & des.nRmask)>>des.nRshift, des.nRbits, 8);
+				*r = *g = *b = (uint8)FBitwise::FixedToFixed((value & des.nRmask)>>des.nRshift, des.nRbits, 8);
 			}
 			else
 			{
-				*r = (uint8)VulkanBitwise::FixedToFixed((value & des.nRmask)>>des.nRshift, des.nRbits, 8);
-				*g = (uint8)VulkanBitwise::FixedToFixed((value & des.nGmask)>>des.nGshift, des.nGbits, 8);
-				*b = (uint8)VulkanBitwise::FixedToFixed((value & des.nBmask)>>des.nBshift, des.nBbits, 8);
+				*r = (uint8)FBitwise::FixedToFixed((value & des.nRmask)>>des.nRshift, des.nRbits, 8);
+				*g = (uint8)FBitwise::FixedToFixed((value & des.nGmask)>>des.nGshift, des.nGbits, 8);
+				*b = (uint8)FBitwise::FixedToFixed((value & des.nBmask)>>des.nBshift, des.nBbits, 8);
 			}
 			if (des.eFlags & Vulkan_PixelFormatFlag_HasAlpha)
 			{
-				*a = (uint8)VulkanBitwise::FixedToFixed((value & des.nAmask)>>des.nAshift, des.nAbits, 8);
+				*a = (uint8)FBitwise::FixedToFixed((value & des.nAmask)>>des.nAshift, des.nAbits, 8);
 			}
 			else
 			{
@@ -517,10 +514,10 @@ namespace LostPeter
 		{
 			float rr, gg, bb, aa;
 			UnpackColor(&rr, &gg, &bb, &aa, format, src);
-			*r = (uint8)VulkanBitwise::FloatToFixed(rr, 8);
-			*g = (uint8)VulkanBitwise::FloatToFixed(gg, 8);
-			*b = (uint8)VulkanBitwise::FloatToFixed(bb, 8);
-			*a = (uint8)VulkanBitwise::FloatToFixed(aa, 8);
+			*r = (uint8)FBitwise::FloatToFixed(rr, 8);
+			*g = (uint8)FBitwise::FloatToFixed(gg, 8);
+			*b = (uint8)FBitwise::FloatToFixed(bb, 8);
+			*a = (uint8)FBitwise::FloatToFixed(aa, 8);
 		}
 	}
 
@@ -529,20 +526,20 @@ namespace LostPeter
 		const VulkanPixelFormatDes& des = GetPixelFormatDes(format);
 		if (des.eFlags & Vulkan_PixelFormatFlag_IsNative) 
 		{
-			const uint32 value = VulkanBitwise::IntRead(src, des.nElemBytes);
+			const uint32 value = FBitwise::IntRead(src, des.nElemBytes);
 			if (des.eFlags & Vulkan_PixelFormatFlag_IsLuminance)
 			{
-				*r = *g = *b = VulkanBitwise::FixedToFloat((value & des.nRmask)>>des.nRshift, des.nRbits);
+				*r = *g = *b = FBitwise::FixedToFloat((value & des.nRmask)>>des.nRshift, des.nRbits);
 			}
 			else
 			{
-				*r = VulkanBitwise::FixedToFloat((value & des.nRmask)>>des.nRshift, des.nRbits);
-				*g = VulkanBitwise::FixedToFloat((value & des.nGmask)>>des.nGshift, des.nGbits);
-				*b = VulkanBitwise::FixedToFloat((value & des.nBmask)>>des.nBshift, des.nBbits);
+				*r = FBitwise::FixedToFloat((value & des.nRmask)>>des.nRshift, des.nRbits);
+				*g = FBitwise::FixedToFloat((value & des.nGmask)>>des.nGshift, des.nGbits);
+				*b = FBitwise::FixedToFloat((value & des.nBmask)>>des.nBshift, des.nBbits);
 			}
 			if (des.eFlags & Vulkan_PixelFormatFlag_HasAlpha)
 			{
-				*a = VulkanBitwise::FixedToFloat((value & des.nAmask)>>des.nAshift, des.nAbits);
+				*a = FBitwise::FixedToFloat((value & des.nAmask)>>des.nAshift, des.nAbits);
 			}
 			else
 			{
@@ -575,45 +572,45 @@ namespace LostPeter
 			// 	*a = ((float*)src)[3];
 			// 	break;
 			// case Vulkan_PixelFormat_SHORT_R16_SFLOAT:
-			// 	*r = *g = *b = VulkanBitwise::HalfToFloat(((uint16*)src)[0]);
+			// 	*r = *g = *b = FBitwise::HalfToFloat(((uint16*)src)[0]);
 			// 	*a = 1.0f;
 			// 	break;
 			// case Vulkan_PixelFormat_SHORT_G16R16_SFLOAT:
-			// 	*r = VulkanBitwise::HalfToFloat(((uint16*)src)[0]);
-			// 	*g = *b = VulkanBitwise::HalfToFloat(((uint16*)src)[1]);
+			// 	*r = FBitwise::HalfToFloat(((uint16*)src)[0]);
+			// 	*g = *b = FBitwise::HalfToFloat(((uint16*)src)[1]);
 			// 	*a = 1.0f;
 			// 	break;
 			// case Vulkan_PixelFormat_SHORT_B16G16R16_SFLOAT:
-			// 	*r = VulkanBitwise::HalfToFloat(((uint16*)src)[0]);
-			// 	*g = VulkanBitwise::HalfToFloat(((uint16*)src)[1]);
-			// 	*b = VulkanBitwise::HalfToFloat(((uint16*)src)[2]);
+			// 	*r = FBitwise::HalfToFloat(((uint16*)src)[0]);
+			// 	*g = FBitwise::HalfToFloat(((uint16*)src)[1]);
+			// 	*b = FBitwise::HalfToFloat(((uint16*)src)[2]);
 			// 	*a = 1.0f;
 			// 	break;
 			// case Vulkan_PixelFormat_SHORT_A16B16G16R16_SFLOAT:
-			// 	*r = VulkanBitwise::HalfToFloat(((uint16*)src)[0]);
-			// 	*g = VulkanBitwise::HalfToFloat(((uint16*)src)[1]);
-			// 	*b = VulkanBitwise::HalfToFloat(((uint16*)src)[2]);
-			// 	*a = VulkanBitwise::HalfToFloat(((uint16*)src)[3]);
+			// 	*r = FBitwise::HalfToFloat(((uint16*)src)[0]);
+			// 	*g = FBitwise::HalfToFloat(((uint16*)src)[1]);
+			// 	*b = FBitwise::HalfToFloat(((uint16*)src)[2]);
+			// 	*a = FBitwise::HalfToFloat(((uint16*)src)[3]);
 			// 	break;
 			// case Vulkan_PixelFormat_SHORT_B16G16R16_UNORM:
-			// 	*r = VulkanBitwise::FixedToFloat(((uint16*)src)[0], 16);
-			// 	*g = VulkanBitwise::FixedToFloat(((uint16*)src)[1], 16);
-			// 	*b = VulkanBitwise::FixedToFloat(((uint16*)src)[2], 16);
+			// 	*r = FBitwise::FixedToFloat(((uint16*)src)[0], 16);
+			// 	*g = FBitwise::FixedToFloat(((uint16*)src)[1], 16);
+			// 	*b = FBitwise::FixedToFloat(((uint16*)src)[2], 16);
 			// 	*a = 1.0f;
 			// 	break;
 			// case Vulkan_PixelFormat_SHORT_A16B16G16R16_UNORM:
-			// 	*r = VulkanBitwise::FixedToFloat(((uint16*)src)[0], 16);
-			// 	*g = VulkanBitwise::FixedToFloat(((uint16*)src)[1], 16);
-			// 	*b = VulkanBitwise::FixedToFloat(((uint16*)src)[2], 16);
-			// 	*a = VulkanBitwise::FixedToFloat(((uint16*)src)[3], 16);
+			// 	*r = FBitwise::FixedToFloat(((uint16*)src)[0], 16);
+			// 	*g = FBitwise::FixedToFloat(((uint16*)src)[1], 16);
+			// 	*b = FBitwise::FixedToFloat(((uint16*)src)[2], 16);
+			// 	*a = FBitwise::FixedToFloat(((uint16*)src)[3], 16);
 			// 	break;
 			// case Vulkan_PixelFormat_BYTE_AL_UNORM:
-			// 	*r = *g = *b = VulkanBitwise::FixedToFloat(((uint8*)src)[0], 8);
-			// 	*a = VulkanBitwise::FixedToFloat(((uint8*)src)[1], 8);
+			// 	*r = *g = *b = FBitwise::FixedToFloat(((uint8*)src)[0], 8);
+			// 	*a = FBitwise::FixedToFloat(((uint8*)src)[1], 8);
 			// 	break;
 			default:
 				{
-					Util_LogError("VulkanPixelFormat::UnpackColor: unpack from [%s] not implemented", GetPixelFormatName(format).c_str());
+					F_LogError("VulkanPixelFormat::UnpackColor: unpack from [%s] not implemented", GetPixelFormatName(format).c_str());
 					assert(false && "VulkanPixelFormat::UnpackColor");
 				}
 				break;
@@ -648,7 +645,7 @@ namespace LostPeter
 			}
 			else
 			{
-				Util_LogError("VulkanPixelFormat::BulkPixelConversion: This method can not be used to compress or decompress images");
+				F_LogError("VulkanPixelFormat::BulkPixelConversion: This method can not be used to compress or decompress images");
 				assert(false && "VulkanPixelFormat::BulkPixelConversion");
 			}
 		}

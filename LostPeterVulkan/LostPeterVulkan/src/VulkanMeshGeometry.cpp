@@ -11,8 +11,6 @@
 
 #include "../include/PreInclude.h"
 #include "../include/VulkanMeshGeometry.h"
-#include "../include/VulkanMath.h"
-#include "../include/VulkanUtilString.h"
 
 namespace LostPeter
 {
@@ -47,10 +45,10 @@ namespace LostPeter
     }
     String VulkanMeshCreateParam_Triangle::ToName()
     {
-        return VulkanUtilString::FormatString("%s_%d_%d", 
-											  ms_nameType.c_str(), 
-											  flipV ? 1 : 0,
-											  rightHand ? 1 : 0);
+        return FUtilString::FormatString("%s_%d_%d", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0,
+                                         rightHand ? 1 : 0);
     }
 
     //Quad
@@ -87,15 +85,15 @@ namespace LostPeter
     }
     String VulkanMeshCreateParam_Quad::ToName()
     {
-        return VulkanUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%f", 
-											  ms_nameType.c_str(), 
-											  flipV ? 1 : 0, 
-											  rightHand ? 1 : 0,
-											  centerX,
-											  centerY,
-											  width,
-											  height,
-											  depth);
+        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%f", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0, 
+                                         rightHand ? 1 : 0,
+                                         centerX,
+                                         centerY,
+                                         width,
+                                         height,
+                                         depth);
     }
 
     //Grid
@@ -129,14 +127,14 @@ namespace LostPeter
     }
     String VulkanMeshCreateParam_Grid::ToName()
     {
-        return VulkanUtilString::FormatString("%s_%d-%d-%f-%f-%u-%u", 
-											  ms_nameType.c_str(), 
-											  flipV ? 1 : 0, 
-											  rightHand ? 1 : 0,
-											  width,
-											  height,
-											  m,
-											  n);
+        return FUtilString::FormatString("%s_%d-%d-%f-%f-%u-%u", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0, 
+                                         rightHand ? 1 : 0,
+                                         width,
+                                         height,
+                                         m,
+                                         n);
     }
 
     //Circle
@@ -164,12 +162,12 @@ namespace LostPeter
     }
     String VulkanMeshCreateParam_Circle::ToName()
     {
-        return VulkanUtilString::FormatString("%s_%d-%d-%f-%u", 
-											  ms_nameType.c_str(), 
-											  flipV ? 1 : 0, 
-											  rightHand ? 1 : 0,
-											  radius,
-											  segment);
+        return FUtilString::FormatString("%s_%d-%d-%f-%u", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0, 
+                                         rightHand ? 1 : 0,
+                                         radius,
+                                         segment);
     }
 
     //AABB
@@ -203,14 +201,14 @@ namespace LostPeter
     }
     String VulkanMeshCreateParam_AABB::ToName()
     {
-        return VulkanUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u", 
-											  ms_nameType.c_str(), 
-											  flipV ? 1 : 0, 
-											  rightHand ? 1 : 0,
-											  width,
-											  height,
-											  depth,
-											  numSubdivisions);
+        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0, 
+                                         rightHand ? 1 : 0,
+                                         width,
+                                         height,
+                                         depth,
+                                         numSubdivisions);
     }
 
     //Sphere
@@ -241,13 +239,13 @@ namespace LostPeter
     }
     String VulkanMeshCreateParam_Sphere::ToName()
     {
-        return VulkanUtilString::FormatString("%s_%d-%d-%f-%u-%u", 
-											  ms_nameType.c_str(), 
-											  flipV ? 1 : 0, 
-											  rightHand ? 1 : 0,
-											  radius,
-											  sliceCount,
-											  stackCount);
+        return FUtilString::FormatString("%s_%d-%d-%f-%u-%u", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0, 
+                                         rightHand ? 1 : 0,
+                                         radius,
+                                         sliceCount,
+                                         stackCount);
     }
 
     //GeoSphere
@@ -275,12 +273,12 @@ namespace LostPeter
     }
     String VulkanMeshCreateParam_GeoSphere::ToName()
     {
-        return VulkanUtilString::FormatString("%s_%d-%d-%f-%u", 
-											  ms_nameType.c_str(), 
-											  flipV ? 1 : 0, 
-											  rightHand ? 1 : 0,
-											  radius,
-											  numSubdivisions);
+        return FUtilString::FormatString("%s_%d-%d-%f-%u", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0, 
+                                         rightHand ? 1 : 0,
+                                         radius,
+                                         numSubdivisions);
     }
 
     //Cylinder
@@ -317,15 +315,15 @@ namespace LostPeter
     }
     String VulkanMeshCreateParam_Cylinder::ToName()
     {
-        return VulkanUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u-%u", 
-										 	  ms_nameType.c_str(), 
-											  flipV ? 1 : 0, 
-											  rightHand ? 1 : 0,
-											  bottomRadius,
-											  topRadius,
-											  height,
-											  sliceCount,
-											  stackCount);
+        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u-%u", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0, 
+                                         rightHand ? 1 : 0,
+                                         bottomRadius,
+                                         topRadius,
+                                         height,
+                                         sliceCount,
+                                         stackCount);
     }
 
     //Capsule
@@ -451,16 +449,16 @@ namespace LostPeter
     }
     String VulkanMeshCreateParam_Terrain::ToName()
     {
-        return VulkanUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%u-%u", 
-											  ms_nameType.c_str(), 
-											  flipV ? 1 : 0, 
-											  rightHand ? 1 : 0,
-                                              offsetX,
-											  offsetZ,
-											  width,
-											  height,
-                                              vertexX,
-											  vertexZ);
+        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%u-%u", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0, 
+                                         rightHand ? 1 : 0,
+                                         offsetX,
+                                         offsetZ,
+                                         width,
+                                         height,
+                                         vertexX,
+                                         vertexZ);
     }
 
     ///////////////////////////////////////// VulkanMeshGeometry //////////////////////////////////////////////
@@ -824,7 +822,7 @@ namespace LostPeter
         uint32 faceCount = segment;
 
         //MeshVertex
-        float thetaStep = 2.0f * VulkanMath::ms_fPI / segment;
+        float thetaStep = 2.0f * FMath::ms_fPI / segment;
         meshData.vertices.resize(vertexCount);
         meshData.vertices[0] = MeshVertex(
                     0.0f, 0.0f, 0.0f,
@@ -997,8 +995,8 @@ namespace LostPeter
         MeshVertex bottomVertex(0.0f, -radius, 0.0f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, flipV ? 0.0f : 1.0f);
         meshData.AddVertex(topVertex);
 
-        float phiStep = VulkanMath::ms_fPI / stackCount;
-        float thetaStep = 2.0f * VulkanMath::ms_fPI / sliceCount;
+        float phiStep = FMath::ms_fPI / stackCount;
+        float thetaStep = 2.0f * FMath::ms_fPI / sliceCount;
         for (uint32 i = 1; i <= stackCount - 1; ++i)
         {
             float phi = i * phiStep;
@@ -1021,8 +1019,8 @@ namespace LostPeter
                 v.tangent.z = +radius * sinf(phi) * cosf(theta);
                 v.tangent = glm::normalize(v.tangent);
                 //texCoord
-                v.texCoord.x = theta / VulkanMath::ms_fPI_Two;
-                v.texCoord.y = flipV ? (1.0f - phi / VulkanMath::ms_fPI) : (phi / VulkanMath::ms_fPI);
+                v.texCoord.x = theta / FMath::ms_fPI_Two;
+                v.texCoord.y = flipV ? (1.0f - phi / FMath::ms_fPI) : (phi / FMath::ms_fPI);
 
                 meshData.AddVertex(v);
             }
@@ -1140,12 +1138,12 @@ namespace LostPeter
 
             float theta = atan2f(meshData.vertices[i].pos.z, meshData.vertices[i].pos.x);
             if (theta < 0.0f)
-                theta += VulkanMath::ms_fPI_Two;
+                theta += FMath::ms_fPI_Two;
 
             float phi = acosf(meshData.vertices[i].pos.y / radius);
 
-            meshData.vertices[i].texCoord.x = theta / VulkanMath::ms_fPI_Two;
-            meshData.vertices[i].texCoord.y = phi / VulkanMath::ms_fPI;
+            meshData.vertices[i].texCoord.x = theta / FMath::ms_fPI_Two;
+            meshData.vertices[i].texCoord.y = phi / FMath::ms_fPI;
 
             meshData.vertices[i].tangent.x = -radius * sinf(phi) * sinf(theta);
             meshData.vertices[i].tangent.y = 0.0f;
@@ -1174,7 +1172,7 @@ namespace LostPeter
             float y = -0.5f * height + i * stackHeight;
             float r = bottomRadius + i * radiusStep;
 
-            float dTheta = 2.0f * VulkanMath::ms_fPI / sliceCount;
+            float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
             for (uint32 j = 0; j <= sliceCount; ++j)
             {
                 MeshVertex vertex;
@@ -1462,7 +1460,7 @@ namespace LostPeter
         uint32 baseIndex = (uint32)meshData.vertices.size();
 
         float y = 0.5f * height;
-        float dTheta = 2.0f * VulkanMath::ms_fPI / sliceCount;
+        float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
 
         for (uint32 i = 0; i <= sliceCount; ++i)
         {
@@ -1499,7 +1497,7 @@ namespace LostPeter
         uint32 baseIndex = (uint32)meshData.vertices.size();
         float y = -0.5f * height;
 
-        float dTheta = 2.0f * VulkanMath::ms_fPI / sliceCount;
+        float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
         for (uint32 i = 0; i <= sliceCount; ++i)
         {
             float x = bottomRadius * cosf(i * dTheta);

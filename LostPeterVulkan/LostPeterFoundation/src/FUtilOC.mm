@@ -1,8 +1,8 @@
 /****************************************************************************
-* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterFoundation - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2022-10-30
+* Time:     2023-06-03
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -11,9 +11,9 @@
 
 #import <Foundation/Foundation.h>
 #include <mach-o/dyld.h>
-#include "../include/OCUtil.h"
+#include "../include/FUtilOC.h"
 
-std::string OCUtil_GetPathExecute()
+std::string F_OCGetPathExecute()
 {   
     char buf[0];
     uint32_t size = 0;

@@ -12,15 +12,15 @@
 #ifndef _VULKAN_PIXEL_BOX_H_
 #define _VULKAN_PIXEL_BOX_H_
 
-#include "VulkanMathBox.h"
+#include "FBox.h"
 
 namespace LostPeter
 {
-    class VulkanPixelBox : public VulkanMathBox
+    class VulkanPixelBox : public FBox
     {
     public:
         VulkanPixelBox();
-        VulkanPixelBox(const VulkanMathBox& extents, VulkanPixelFormatType ePixelFormat, void* pPixelData = nullptr);
+        VulkanPixelBox(const FBox& extents, VulkanPixelFormatType ePixelFormat, void* pPixelData = nullptr);
 		VulkanPixelBox(size_t width, size_t height, size_t depth, VulkanPixelFormatType ePixelFormat, void* pPixelData = nullptr);
         virtual ~VulkanPixelBox();
 
@@ -53,7 +53,7 @@ namespace LostPeter
 
     public:
 		size_t GetConsecutiveSize() const;
-		VulkanPixelBox GetSubVolume(const VulkanMathBox& def, bool resetOrigin = true) const;
+		VulkanPixelBox GetSubVolume(const FBox& def, bool resetOrigin = true) const;
 		uint8* GetTopLeftFrontPixelPtr() const;
 
 		Color GetColorAt(size_t x, size_t y, size_t z) const;

@@ -11,12 +11,10 @@
 
 #include "../include/PreInclude.h"
 #include "../include/VulkanBase.h"
-#include "../include/VulkanTimer.h"
-#include "../include/VulkanLogManager.h"
 
 namespace LostPeter
 {
-    VulkanLogManager* VulkanBase::ms_pLogManager = VulkanLogManager::GetInstance();
+    FLogManager* VulkanBase::ms_pLogManager = FLogManager::GetInstance();
     VulkanBase::VulkanBase(int width, int height, String name)
         : width(width)
         , height(height)
@@ -33,13 +31,13 @@ namespace LostPeter
         , isCreateDevice(false)
         , isLoadAsset(false)
 
-        , pTimer(new VulkanTimer())
+        , pTimer(new FTimer())
         , fFPS(0.0f)
         , nFrameFPS(0)
         , nFrameTotal(0)
     {
-        this->pathBin = VulkanUtil::GetPathBin() + "/";
-        Util_LogInfo("Path Bin: [%s] !", this->pathBin.c_str());
+        this->pathBin = FUtil::GetPathBin() + "/";
+        F_LogInfo("Path Bin: [%s] !", this->pathBin.c_str());
 
         RefreshAspectRatio();
         fTimeLastFPS = pTimer->GetTimeSinceStart();
@@ -47,7 +45,7 @@ namespace LostPeter
 
     VulkanBase::~VulkanBase()
     {
-        UTIL_DELETE(pTimer)
+        F_DELETE(pTimer)
     }
 
     float VulkanBase::RefreshAspectRatio()

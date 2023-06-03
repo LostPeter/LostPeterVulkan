@@ -14,6 +14,14 @@
 
 namespace LostPeterFoundation
 {
-    
+    bool FBox::Contains(const FBox& box) const
+	{
+		return (box.m_nLeft >= m_nLeft && 
+                box.m_nTop >= m_nTop && 
+                box.m_nFront >= m_nFront &&
+			    box.m_nRight <= m_nRight && 
+                box.m_nBottom <= m_nBottom && 
+                box.m_nBack <= m_nBack);
+	}
     
 }; //LostPeterFoundation

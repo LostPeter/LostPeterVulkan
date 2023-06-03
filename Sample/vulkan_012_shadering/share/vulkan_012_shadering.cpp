@@ -14,7 +14,6 @@
 #include "VulkanMeshLoader.h"
 #include "VulkanMeshGeometry.h"
 #include "VulkanCamera.h"
-#include "VulkanTimer.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -59,12 +58,12 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
 };
 static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
 {
-    VulkanMath::ms_mat4Unit, //geo_triangle
+    FMath::ms_mat4Unit, //geo_triangle
 
-    VulkanMath::ms_mat4Unit, //plane
-    VulkanMath::ms_mat4Unit, //cube
-    VulkanMath::ms_mat4Unit, //sphere
-    VulkanMath::ms_mat4Unit, //bunny
+    FMath::ms_mat4Unit, //plane
+    FMath::ms_mat4Unit, //cube
+    FMath::ms_mat4Unit, //sphere
+    FMath::ms_mat4Unit, //bunny
 
 };
 
@@ -526,7 +525,7 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
         unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
         if (!VulkanMeshLoader::LoadMeshData(this->pathMesh, meshData, eMeshParserFlags))
         {
-            Util_LogError("Vulkan_012_Shadering::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
+            F_LogError("Vulkan_012_Shadering::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
             return false; 
         }
     }
@@ -534,7 +533,7 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
     {
         if (!VulkanMeshGeometry::CreateGeometry(meshData, this->typeGeometryType))
         {
-            Util_LogError("Vulkan_012_Shadering::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", Util_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
+            F_LogError("Vulkan_012_Shadering::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", Util_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
             return false; 
         }
     }
@@ -559,7 +558,7 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
             v.texCoord = vertex.texCoord;
             if (isTranformLocal)
             {
-                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+                v.pos = FMath::Transform(matTransformLocal, v.pos);
             }
             this->vertices_Pos3Color4Normal3Tex2.push_back(v);
         }
@@ -578,10 +577,10 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_012_Shadering::ModelMesh::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
-                     this->nameMesh.c_str(),
-                     (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
-                     (int)this->indices.size());
+        F_LogInfo("Vulkan_012_Shadering::ModelMesh::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                  this->nameMesh.c_str(),
+                  (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
+                  (int)this->indices.size());
     }
     else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
     {
@@ -598,7 +597,7 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
             v.texCoord = vertex.texCoord;
             if (isTranformLocal)
             {
-                v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+                v.pos = FMath::Transform(matTransformLocal, v.pos);
             }
             this->vertices_Pos3Color4Normal3Tangent3Tex2.push_back(v);
         }
@@ -617,10 +616,10 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        Util_LogInfo("Vulkan_012_Shadering::ModelMesh::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
-                     this->nameMesh.c_str(),
-                     (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
-                     (int)this->indices.size());
+        F_LogInfo("Vulkan_012_Shadering::ModelMesh::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                  this->nameMesh.c_str(),
+                  (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
+                  (int)this->indices.size());
     }
 
     //2> createVertexBuffer
@@ -724,7 +723,7 @@ void Vulkan_012_Shadering::setUpEnabledFeatures()
     }
     else
     {
-        Util_LogError("Vulkan_012_Shadering::setUpEnabledFeatures: tessellationShader is not supported !");
+        F_LogError("Vulkan_012_Shadering::setUpEnabledFeatures: tessellationShader is not supported !");
     }
 
 }
@@ -769,7 +768,7 @@ void Vulkan_012_Shadering::loadModel_Custom()
             String nameTextureVS = g_ObjectConfigs[5 * i + 2]; //Texture VS
             if (!nameTextureVS.empty())
             {
-                StringVector aTextureVS = VulkanUtilString::Split(nameTextureVS, ";");
+                StringVector aTextureVS = FUtilString::Split(nameTextureVS, ";");
                 size_t count_tex = aTextureVS.size();
                 for (size_t j = 0; j < count_tex; j++)
                 {
@@ -784,7 +783,7 @@ void Vulkan_012_Shadering::loadModel_Custom()
             String nameTextureFS = g_ObjectConfigs[5 * i + 3]; //Texture FS
             if (!nameTextureFS.empty())
             {
-                StringVector aTextureFS = VulkanUtilString::Split(nameTextureFS, ";");
+                StringVector aTextureFS = FUtilString::Split(nameTextureFS, ";");
                 size_t count_tex = aTextureFS.size();
                 for (size_t j = 0; j < count_tex; j++)
                 {
@@ -799,7 +798,7 @@ void Vulkan_012_Shadering::loadModel_Custom()
             String nameTextureCS = g_ObjectConfigs[5 * i + 4]; //Texture CS
             if (!nameTextureCS.empty())
             {
-                StringVector aTextureCS = VulkanUtilString::Split(nameTextureCS, ";");
+                StringVector aTextureCS = FUtilString::Split(nameTextureCS, ";");
                 size_t count_tex = aTextureCS.size();
                 for (size_t j = 0; j < count_tex; j++)
                 {
@@ -836,7 +835,7 @@ void Vulkan_012_Shadering::loadModel_Custom()
         String nameDescriptorSetLayout = g_ObjectNameDescriptorSetLayouts[2 * i + 1];
         if (!nameDescriptorSetLayout.empty())
         {
-            StringVector aDescriptorSetLayout = VulkanUtilString::Split(nameDescriptorSetLayout, ";");
+            StringVector aDescriptorSetLayout = FUtilString::Split(nameDescriptorSetLayout, ";");
             size_t count_dsl = aDescriptorSetLayout.size();
             for (size_t j = 0; j < count_dsl; j++)
             {
@@ -884,7 +883,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
             //ObjectConstants
             {
                 ObjectConstants objectConstants;
-                objectConstants.g_MatWorld = VulkanMath::FromTRS(g_ObjectTranforms[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectTranforms[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
                                                                  g_ObjectTranforms[i * 3 + 1],
                                                                  g_ObjectTranforms[i * 3 + 2]);
                 pModelObject->objectCBs.push_back(objectConstants);
@@ -894,11 +893,11 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
             //MaterialConstants
             {
                 MaterialConstants materialConstants;
-                materialConstants.factorAmbient = VulkanMath::RandomColor(false);
-                materialConstants.factorDiffuse = VulkanMath::RandomColor(false);
-                materialConstants.factorSpecular = VulkanMath::RandomColor(false);
-                materialConstants.shininess = VulkanMath::RandF(10.0f, 100.0f);
-                materialConstants.alpha = VulkanMath::RandF(0.2f, 0.9f);
+                materialConstants.factorAmbient = FMath::RandomColor(false);
+                materialConstants.factorDiffuse = FMath::RandomColor(false);
+                materialConstants.factorSpecular = FMath::RandomColor(false);
+                materialConstants.shininess = FMath::RandF(10.0f, 100.0f);
+                materialConstants.alpha = FMath::RandF(0.2f, 0.9f);
                 materialConstants.lighting = g_ObjectIsLightings[i];
                 //Texture VS
                 {
@@ -1034,7 +1033,7 @@ void Vulkan_012_Shadering::createGraphicsPipeline_Custom()
                                                   pModelObject->aShaderStageCreateInfos_Graphics))
         {
             String msg = "Vulkan_012_Shadering::createGraphicsPipeline_Custom: Can not find shader used !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -1044,21 +1043,21 @@ void Vulkan_012_Shadering::createGraphicsPipeline_Custom()
             if (pModelObject->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
             {
                 String msg = "Vulkan_012_Shadering::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pModelObject->pPipelineGraphics->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pModelObject->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pModelObject->pPipelineGraphics->nameDescriptorSetLayout);
             if (pModelObject->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_012_Shadering::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pModelObject->pPipelineGraphics->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pModelObject->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pModelObject->pPipelineGraphics->nameDescriptorSetLayout);
             if (pModelObject->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_012_Shadering::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pModelObject->pPipelineGraphics->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
 
@@ -1077,10 +1076,10 @@ void Vulkan_012_Shadering::createGraphicsPipeline_Custom()
             if (pModelObject->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_012_Shadering::createGraphicsPipeline_Custom: Failed to create pipeline graphics wire frame !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            Util_LogInfo("Vulkan_012_Shadering::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pModelObject->nameObject.c_str());
+            F_LogInfo("Vulkan_012_Shadering::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics wire frame success !", pModelObject->nameObject.c_str());
 
             //pPipelineGraphics->poPipeline
             VkBool32 isDepthTestEnable = pModelObject->cfg_isDepthTest;
@@ -1111,10 +1110,10 @@ void Vulkan_012_Shadering::createGraphicsPipeline_Custom()
             if (pModelObject->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_012_Shadering::createGraphicsPipeline_Custom: Failed to create pipeline graphics !";
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            Util_LogInfo("Vulkan_012_Shadering::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pModelObject->nameObject.c_str());
+            F_LogInfo("Vulkan_012_Shadering::createGraphicsPipeline_Custom: Object: [%s] Create pipeline graphics graphics success !", pModelObject->nameObject.c_str());
         }
     }
 }
@@ -1135,7 +1134,7 @@ void Vulkan_012_Shadering::createComputePipeline_Custom()
                                                   pModelObject->mapShaderStageCreateInfos_Computes))
         {
             String msg = "Vulkan_012_Shadering::createComputePipeline_Custom: Can not find shader used !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -1143,7 +1142,7 @@ void Vulkan_012_Shadering::createComputePipeline_Custom()
         if (count_pipeline != pModelObject->aShaderStageCreateInfos_Computes.size())
         {
             String msg = "Vulkan_012_Shadering::createComputePipeline_Custom: Pipeline count is not equal shader count !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
         for (size_t j = 0; j < count_pipeline; j ++)
@@ -1155,21 +1154,21 @@ void Vulkan_012_Shadering::createComputePipeline_Custom()
             if (p->poDescriptorSetLayoutNames == nullptr)
             {
                 String msg = "Vulkan_012_Shadering::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_012_Shadering::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
             if (p->poPipelineLayout == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_012_Shadering::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
 
@@ -1177,7 +1176,7 @@ void Vulkan_012_Shadering::createComputePipeline_Custom()
             if (p->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "Vulkan_012_Shadering::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
         }
@@ -1224,15 +1223,15 @@ void Vulkan_012_Shadering::createModelMeshes()
         if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_MeshTranformLocals[i]))
         {
             String msg = "Vulkan_012_Shadering::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
         this->m_aModelMesh.push_back(pMesh);
         this->m_mapModelMesh[nameMesh] = pMesh;
 
-        Util_LogInfo("Vulkan_012_Shadering::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], path: [%s] success !", 
-                     nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), pathMesh.c_str());
+        F_LogInfo("Vulkan_012_Shadering::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], path: [%s] success !", 
+                  nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), pathMesh.c_str());
     }
 }
 Vulkan_012_Shadering::ModelMesh* Vulkan_012_Shadering::findModelMesh(const String& nameMesh)
@@ -1265,12 +1264,12 @@ void Vulkan_012_Shadering::createModelTextures()
         String nameType = g_TexturePaths[5 * i + 1];
         VulkanTextureType typeTexture = Util_ParseTextureType(nameType);
         String nameIsRenderTarget = g_TexturePaths[5 * i + 2];
-        bool isRenderTarget = VulkanUtilString::ParserBool(nameIsRenderTarget);
+        bool isRenderTarget = FUtilString::ParserBool(nameIsRenderTarget);
         String nameIsGraphicsComputeShared = g_TexturePaths[5 * i + 3];
-        bool isGraphicsComputeShared = VulkanUtilString::ParserBool(nameIsGraphicsComputeShared);
+        bool isGraphicsComputeShared = FUtilString::ParserBool(nameIsGraphicsComputeShared);
         String pathTextures = g_TexturePaths[5 * i + 4];
 
-        StringVector aPathTexture = VulkanUtilString::Split(pathTextures, ";");
+        StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
         ModelTexture* pTexture = new ModelTexture(this, 
                                                   nameTexture,
                                                   typeTexture,
@@ -1286,7 +1285,7 @@ void Vulkan_012_Shadering::createModelTextures()
         if (pTexture->texChunkMaxX > 0 && 
             pTexture->texChunkMaxY > 0)
         {
-            pTexture->texChunkIndex = VulkanMath::Rand(0, pTexture->texChunkMaxX * pTexture->texChunkMaxY - 1);
+            pTexture->texChunkIndex = FMath::Rand(0, pTexture->texChunkMaxX * pTexture->texChunkMaxY - 1);
         }
         pTexture->AddRef();
 
@@ -1300,11 +1299,11 @@ void Vulkan_012_Shadering::createModelTextures()
         this->m_aModelTexture.push_back(pTexture);
         this->m_mapModelTexture[nameTexture] = pTexture;
 
-        Util_LogInfo("Vulkan_012_Shadering::createModelTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
-                     nameTexture.c_str(), 
-                     nameType.c_str(), 
-                     isRenderTarget ? "true" : "false",
-                     pathTextures.c_str());
+        F_LogInfo("Vulkan_012_Shadering::createModelTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
+                  nameTexture.c_str(), 
+                  nameType.c_str(), 
+                  isRenderTarget ? "true" : "false",
+                  pathTextures.c_str());
     }
 }
 Vulkan_012_Shadering::ModelTexture* Vulkan_012_Shadering::findModelTexture(const String& nameTexture)
@@ -1334,7 +1333,7 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
     for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
     {
         String nameLayout(g_DescriptorSetLayoutNames[i]);
-        StringVector aLayouts = VulkanUtilString::Split(nameLayout, "-");
+        StringVector aLayouts = FUtilString::Split(nameLayout, "-");
         size_t count_layout = aLayouts.size();
 
         VkDescriptorSetLayout vkDescriptorSetLayout;
@@ -1488,7 +1487,7 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
             else
             {
                 String msg = "Vulkan_012_Shadering::createDescriptorSetLayouts: Wrong DescriptorSetLayout type: " + strLayout;
-                Util_LogError(msg.c_str());
+                F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
         }
@@ -1496,14 +1495,14 @@ void Vulkan_012_Shadering::createDescriptorSetLayouts()
         if (!createVkDescriptorSetLayout(bindings, vkDescriptorSetLayout))
         {
             String msg = "Vulkan_012_Shadering::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
         this->m_aVkDescriptorSetLayouts.push_back(vkDescriptorSetLayout);
         this->m_mapVkDescriptorSetLayout[nameLayout] = vkDescriptorSetLayout;
         this->m_mapName2Layouts[nameLayout] = aLayouts;
 
-        Util_LogInfo("Vulkan_012_Shadering::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
+        F_LogInfo("Vulkan_012_Shadering::createDescriptorSetLayouts: create DescriptorSetLayout: [%s] success !", nameLayout.c_str());
     }
 }
 VkDescriptorSetLayout Vulkan_012_Shadering::findDescriptorSetLayout(const String& nameDescriptorSetLayout)
@@ -1548,8 +1547,8 @@ void Vulkan_012_Shadering::createShaderModules()
         VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
         this->m_aVkShaderModules.push_back(shaderModule);
         this->m_mapVkShaderModules[shaderName] = shaderModule;
-        Util_LogInfo("Vulkan_012_Shadering::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
-                     shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
+        F_LogInfo("Vulkan_012_Shadering::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
+                  shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
     }
 }
 VkShaderModule Vulkan_012_Shadering::findShaderModule(const String& nameShaderModule)
@@ -1602,7 +1601,7 @@ bool Vulkan_012_Shadering::createPipelineShaderStageCreateInfos(const String& na
         VkShaderModule shaderModule = findShaderModule(nameShaderVert);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
+            F_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
             return false;
         }
 
@@ -1619,7 +1618,7 @@ bool Vulkan_012_Shadering::createPipelineShaderStageCreateInfos(const String& na
         VkShaderModule shaderModule = findShaderModule(nameShaderTesc);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
+            F_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
             return false;
         }
 
@@ -1636,7 +1635,7 @@ bool Vulkan_012_Shadering::createPipelineShaderStageCreateInfos(const String& na
         VkShaderModule shaderModule = findShaderModule(nameShaderTese);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
+            F_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
             return false;
         }
 
@@ -1653,7 +1652,7 @@ bool Vulkan_012_Shadering::createPipelineShaderStageCreateInfos(const String& na
         VkShaderModule shaderModule = findShaderModule(nameShaderGeom);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
+            F_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
             return false;
         }
 
@@ -1669,7 +1668,7 @@ bool Vulkan_012_Shadering::createPipelineShaderStageCreateInfos(const String& na
         VkShaderModule shaderModule = findShaderModule(nameShaderFrag);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            Util_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
+            F_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
             return false;
         }
 
@@ -1690,7 +1689,7 @@ bool Vulkan_012_Shadering::createPipelineShaderStageCreateInfos(const String& na
     //comp
     if (!nameShaderComp.empty())
     {
-        StringVector aShaderComps = VulkanUtilString::Split(nameShaderComp, ";");
+        StringVector aShaderComps = FUtilString::Split(nameShaderComp, ";");
         int count_comp = (int)aShaderComps.size();
         for (int i = 0; i < count_comp; i++)
         {
@@ -1698,7 +1697,7 @@ bool Vulkan_012_Shadering::createPipelineShaderStageCreateInfos(const String& na
             VkShaderModule shaderModule = findShaderModule(nameSC);
             if (shaderModule == VK_NULL_HANDLE)
             {
-                Util_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
+                F_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
                 return false;
             }
 
@@ -1734,7 +1733,7 @@ void Vulkan_012_Shadering::createPipelineLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = findDescriptorSetLayout(nameDescriptorSetLayout);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            Util_LogError("*********************** Vulkan_012_Shadering::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
+            F_LogError("*********************** Vulkan_012_Shadering::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
             return;
         }
 
@@ -1743,7 +1742,7 @@ void Vulkan_012_Shadering::createPipelineLayouts()
         VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
         if (vkPipelineLayout == VK_NULL_HANDLE)
         {
-            Util_LogError("*********************** Vulkan_012_Shadering::createPipelineLayouts: createVkPipelineLayout failed !");
+            F_LogError("*********************** Vulkan_012_Shadering::createPipelineLayouts: createVkPipelineLayout failed !");
             return;
         }
 
@@ -1917,7 +1916,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                     else
                     {
                         String msg = "Vulkan_012_Shadering::createDescriptorSets_Custom: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
-                        Util_LogError(msg.c_str());
+                        F_LogError(msg.c_str());
                         throw std::runtime_error(msg.c_str());
                     }
                 }
@@ -1985,7 +1984,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                 else
                 {
                     String msg = "Vulkan_012_Shadering::createDescriptorSets_Custom: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
-                    Util_LogError(msg.c_str());
+                    F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }
             }  
@@ -2022,12 +2021,12 @@ void Vulkan_012_Shadering::updateCompute_Custom(VkCommandBuffer& commandBuffer)
                 pPipelineCompute->pTextureCopy->texInfo.w = 0;
                 if (isRand)
                 {
-                    pPipelineCompute->pTextureCopy->texOffset.x = VulkanMath::Rand(0, 1) * pPipelineCompute->pTextureSource->width;
-                    pPipelineCompute->pTextureCopy->texOffset.y = VulkanMath::Rand(0, 1) * pPipelineCompute->pTextureSource->height;
+                    pPipelineCompute->pTextureCopy->texOffset.x = FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->width;
+                    pPipelineCompute->pTextureCopy->texOffset.y = FMath::Rand(0, 1) * pPipelineCompute->pTextureSource->height;
                     pPipelineCompute->pTextureCopy->texOffset.z = 0;
                     pPipelineCompute->pTextureCopy->texOffset.w = 0;
 
-                    int seed = VulkanMath::Rand(0, 10000);
+                    int seed = FMath::Rand(0, 10000);
                     int start = seed % 4;
                     pPipelineCompute->pTextureCopy->texIndexArray.x = start;
                     pPipelineCompute->pTextureCopy->texIndexArray.y = ++start % 4;
@@ -2221,7 +2220,7 @@ void Vulkan_012_Shadering::modelConfig()
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
 
-            String nameObject = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameObject;
+            String nameObject = FUtilString::SaveInt(i) + " - " + pModelObject->nameObject;
             if (ImGui::CollapsingHeader(nameObject.c_str()))
             {
                 String nameIsShow = "Is Show - " + pModelObject->nameObject;
@@ -2264,15 +2263,15 @@ void Vulkan_012_Shadering::modelConfig()
                         ObjectConstants& obj = pModelObject->objectCBs[j];
                         MaterialConstants& mat = pModelObject->materialCBs[j];
 
-                        String nameModelInstance = nameObject + " - " + VulkanUtilString::SaveInt(j);
+                        String nameModelInstance = nameObject + " - " + FUtilString::SaveInt(j);
                         if (ImGui::CollapsingHeader(nameModelInstance.c_str()))
                         {
                             //ObjectConstants
-                            String nameObject = VulkanUtilString::SaveInt(j) + " - Object - " + pModelObject->nameObject;
+                            String nameObject = FUtilString::SaveInt(j) + " - Object - " + pModelObject->nameObject;
                             if (ImGui::CollapsingHeader(nameObject.c_str()))
                             {
                                 const glm::mat4& mat4World = obj.g_MatWorld;
-                                String nameTable = VulkanUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameObject;
+                                String nameTable = FUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameObject;
                                 if (ImGui::BeginTable(nameTable.c_str(), 4))
                                 {
                                     ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
@@ -2300,11 +2299,11 @@ void Vulkan_012_Shadering::modelConfig()
                             }
                             
                             //MaterialConstants
-                            String nameMaterial = VulkanUtilString::SaveInt(j) + " - Material - " + pModelObject->nameObject;
+                            String nameMaterial = FUtilString::SaveInt(j) + " - Material - " + pModelObject->nameObject;
                             if (ImGui::CollapsingHeader(nameMaterial.c_str()))
                             {
                                 //factorAmbient
-                                String nameFactorAmbient = "FactorAmbient - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                String nameFactorAmbient = "FactorAmbient - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                 if (ImGui::ColorEdit4(nameFactorAmbient.c_str(), (float*)&mat.factorAmbient))
                                 {
 
@@ -2312,7 +2311,7 @@ void Vulkan_012_Shadering::modelConfig()
                                 ImGui::Spacing();
 
                                 //factorDiffuse
-                                String nameFactorDiffuse = "FactorDiffuse - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                String nameFactorDiffuse = "FactorDiffuse - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                 if (ImGui::ColorEdit4(nameFactorDiffuse.c_str(), (float*)&mat.factorDiffuse))
                                 {
 
@@ -2320,7 +2319,7 @@ void Vulkan_012_Shadering::modelConfig()
                                 ImGui::Spacing();
 
                                 //factorSpecular
-                                String nameFactorSpecular = "FactorSpecular - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                String nameFactorSpecular = "FactorSpecular - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                 if (ImGui::ColorEdit4(nameFactorSpecular.c_str(), (float*)&mat.factorSpecular))
                                 {
 
@@ -2328,7 +2327,7 @@ void Vulkan_012_Shadering::modelConfig()
                                 ImGui::Spacing();
 
                                 //shininess
-                                String nameShininess = "Shininess - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                String nameShininess = "Shininess - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                 if (ImGui::DragFloat(nameShininess.c_str(), &mat.shininess, 0.01f, 0.01f, 100.0f))
                                 {
                                     
@@ -2336,7 +2335,7 @@ void Vulkan_012_Shadering::modelConfig()
                                 ImGui::Spacing();
 
                                 //alpha
-                                String nameAlpha = "Alpha - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                String nameAlpha = "Alpha - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                 if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
                                 {
                                     
@@ -2344,7 +2343,7 @@ void Vulkan_012_Shadering::modelConfig()
                                 ImGui::Spacing();
 
                                 //lighting
-                                String nameLighting = "Lighting - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                String nameLighting = "Lighting - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                 bool isLighting = mat.lighting == 1.0f ? true : false;
                                 if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
                                 {
@@ -2369,26 +2368,26 @@ void Vulkan_012_Shadering::modelConfig()
                                         {
                                             ModelTexture* pTexture = (*pTextureFSs)[p];
 
-                                            String nameMaterial_Texture = VulkanUtilString::SaveInt(j) + " - Material - " + pModelObject->nameObject + " - TextureFS - " + VulkanUtilString::SaveInt(p);
+                                            String nameMaterial_Texture = FUtilString::SaveInt(j) + " - Material - " + pModelObject->nameObject + " - TextureFS - " + FUtilString::SaveInt(p);
                                             if (ImGui::CollapsingHeader(nameMaterial_Texture.c_str()))
                                             {
                                                 //texWidth
-                                                String nameWidth = "Width - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                String nameWidth = "Width - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 int width = pTexture->width;
                                                 ImGui::DragInt(nameWidth.c_str(), &width, 1, 0, 4096);
 
                                                 //texHeight
-                                                String nameHeight = "Height - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                String nameHeight = "Height - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 int height = pTexture->height;
                                                 ImGui::DragInt(nameHeight.c_str(), &height, 1, 0, 4096);
 
                                                 //texDepth
-                                                String nameDepth = "Depth - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                String nameDepth = "Depth - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 int depth = pTexture->depth;
                                                 ImGui::DragInt(nameDepth.c_str(), &depth, 1, 0, 4096);
 
                                                 //indexTextureArray
-                                                String nameIndexTextureArray = "IndexTextureArray - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                String nameIndexTextureArray = "IndexTextureArray - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 if (pTexture->typeTexture == Vulkan_Texture_2DArray)
                                                 {
                                                     int count_tex = (int)pTexture->aPathTexture.size();
@@ -2407,38 +2406,38 @@ void Vulkan_012_Shadering::modelConfig()
                                                 }
 
                                                 //texSpeedU
-                                                String nameTexSpeedU = "TexSpeedU - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                String nameTexSpeedU = "TexSpeedU - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 if (ImGui::DragFloat(nameTexSpeedU.c_str(), &mat.aTexLayers[p].texSpeedU, 0.01f, 0.0f, 100.0f))
                                                 {
                                                     
                                                 }
                                                 //texSpeedV
-                                                String nameTexSpeedV = "texSpeedV - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                String nameTexSpeedV = "texSpeedV - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 if (ImGui::DragFloat(nameTexSpeedV.c_str(), &mat.aTexLayers[p].texSpeedV, 0.01f, 0.0f, 100.0f))
                                                 {
                                                     
                                                 }
                                                 //texSpeedW
-                                                String nameTexSpeedW = "texSpeedW - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                String nameTexSpeedW = "texSpeedW - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeedW, 0.01f, 0.0f, 100.0f))
                                                 {
                                                     
                                                 }
 
                                                 //texChunkMaxX
-                                                String nameTexChunkMaxX = "texChunkMaxX - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                String nameTexChunkMaxX = "texChunkMaxX - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 float fTexChunkMaxX = mat.aTexLayers[p].texChunkMaxX;
                                                 ImGui::DragFloat(nameTexChunkMaxX.c_str(), &fTexChunkMaxX, 1.0f, 1.0f, 100.0f);
                                                 //texChunkMaxY
-                                                String nameTexChunkMaxY = "texChunkMaxY - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                String nameTexChunkMaxY = "texChunkMaxY - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 float fTexChunkMaxY = mat.aTexLayers[p].texChunkMaxY;
                                                 ImGui::DragFloat(nameTexChunkMaxY.c_str(), &fTexChunkMaxY, 1.0f, 1.0f, 100.0f);
                                                 //texChunkIndexX
-                                                String nameTexChunkIndexX = "texChunkIndexX - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                String nameTexChunkIndexX = "texChunkIndexX - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 float fTexChunkIndexX = mat.aTexLayers[p].texChunkIndexX;
                                                 ImGui::DragFloat(nameTexChunkIndexX.c_str(), &fTexChunkIndexX, 1.0f, 0.0f, 100.0f);
                                                 //texChunkIndexY
-                                                String nameTexChunkIndexY = "texChunkIndexY - " + VulkanUtilString::SaveInt(j) + " - " + VulkanUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                String nameTexChunkIndexY = "texChunkIndexY - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
                                                 float fTexChunkIndexY = mat.aTexLayers[p].texChunkIndexY;
                                                 ImGui::DragFloat(nameTexChunkIndexY.c_str(), &fTexChunkIndexY, 1.0f, 0.0f, 100.0f);
                                             }
@@ -2460,30 +2459,30 @@ void Vulkan_012_Shadering::modelConfig()
                             //TessellationConstants
                             if (pModelObject->isUsedTessellation)
                             {
-                                String nameTessellation = VulkanUtilString::SaveInt(j) + " - Tessellation - " + pModelObject->nameObject;
+                                String nameTessellation = FUtilString::SaveInt(j) + " - Tessellation - " + pModelObject->nameObject;
                                 if (ImGui::CollapsingHeader(nameTessellation.c_str()))
                                 {
                                     TessellationConstants& tess = pModelObject->tessellationCBs[j];
                                     //tessLevelOuter
-                                    String nameTessLevelOuter = "tessLevelOuter - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    String nameTessLevelOuter = "tessLevelOuter - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                     if (ImGui::DragFloat(nameTessLevelOuter.c_str(), &tess.tessLevelOuter, 0.1f, 0.1f, 500.0f))
                                     {
                                         
                                     }
                                     //tessLevelInner
-                                    String nameTessLevelInner = "tessLevelInner - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    String nameTessLevelInner = "tessLevelInner - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                     if (ImGui::DragFloat(nameTessLevelInner.c_str(), &tess.tessLevelInner, 0.1f, 0.1f, 500.0f))
                                     {
                                         
                                     }
                                     //tessAlpha
-                                    String nameTessAlpha = "tessAlpha - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    String nameTessAlpha = "tessAlpha - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                     if (ImGui::DragFloat(nameTessAlpha.c_str(), &tess.tessAlpha, 0.05f, 0.0f, 1.0f))
                                     {
                                         
                                     }
                                     //tessStrength
-                                    String nameTessStrength = "tessStrength - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    String nameTessStrength = "tessStrength - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                     if (ImGui::DragFloat(nameTessStrength.c_str(), &tess.tessStrength, 0.025f, 0.1f, 100.0f))
                                     {
                                         
@@ -2496,24 +2495,24 @@ void Vulkan_012_Shadering::modelConfig()
                             //Geometry
                             if (pModelObject->isUsedGeometry)
                             {
-                                String nameGeometry = VulkanUtilString::SaveInt(j) + " - Geometry - " + pModelObject->nameObject;
+                                String nameGeometry = FUtilString::SaveInt(j) + " - Geometry - " + pModelObject->nameObject;
                                 if (ImGui::CollapsingHeader(nameGeometry.c_str()))
                                 {
                                     GeometryConstants& geometry = pModelObject->geometryCBs[j];
                                     //width
-                                    String nameGeometryWidth = "width - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    String nameGeometryWidth = "width - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                     if (ImGui::DragFloat(nameGeometryWidth.c_str(), &geometry.width, 0.001f, 0.001f, 10.0f))
                                     {
                                         
                                     }
                                     //height
-                                    String nameGeometryHeight = "height - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    String nameGeometryHeight = "height - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                     if (ImGui::DragFloat(nameGeometryHeight.c_str(), &geometry.height, 0.001f, 0.001f, 10.0f))
                                     {
                                         
                                     }
                                     //length
-                                    String nameGeometryLength = "length - " + VulkanUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
+                                    String nameGeometryLength = "length - " + FUtilString::SaveInt(j) + " - " + pModelObject->nameObject;
                                     if (ImGui::DragFloat(nameGeometryLength.c_str(), &geometry.length, 0.001f, 0.001f, 10.0f))
                                     {
                                         
@@ -2596,7 +2595,7 @@ void Vulkan_012_Shadering::cleanupCustom()
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
-        UTIL_DELETE(pModelObject)
+        F_DELETE(pModelObject)
     }
     this->m_aModelObjects.clear();
     this->m_aModelObjects_Render.clear();

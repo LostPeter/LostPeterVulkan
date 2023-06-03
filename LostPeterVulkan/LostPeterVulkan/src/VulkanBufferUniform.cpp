@@ -44,7 +44,7 @@ namespace LostPeter
                                                                                   m_aVkUniformBuffer, 
                                                                                   m_aVkUniformBuffersMemory))
         {
-            Util_LogError("*********************** VulkanBufferUniform::Init: CreateVkUniformBuffers failed !");
+            F_LogError("*********************** VulkanBufferUniform::Init: CreateVkUniformBuffers failed !");
             return false;
         }
 
@@ -57,7 +57,7 @@ namespace LostPeter
                                                                              size,
                                                                              offset))
         {
-            Util_LogError("*********************** VulkanBufferUniform::MapMemory: MapVkDeviceMemory failed !");
+            F_LogError("*********************** VulkanBufferUniform::MapMemory: MapVkDeviceMemory failed !");
             return false;
         }
 

@@ -1,22 +1,22 @@
 /****************************************************************************
-* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterFoundation - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2022-11-20
+* Time:     2023-06-03
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/PreInclude.h"
-#include "../include/VulkanUtilString.h"
+#include "../include/FPreInclude.h"
+#include "../include/FUtilString.h"
 
-namespace LostPeter
+namespace LostPeterFoundation
 {
-    const String VulkanUtilString::BLANK;
+     const String FUtilString::BLANK;
 
-    void VulkanUtilString::Trim(String& str, bool left /*= true*/, bool right /*= true*/)
+    void FUtilString::Trim(String& str, bool left /*= true*/, bool right /*= true*/)
     {
         static const String delims = " \t\r";
         size_t index;
@@ -38,7 +38,7 @@ namespace LostPeter
         }
     }
 
-    StringVector VulkanUtilString::Split(const String& str, const String& delims /*= "\t\n "*/, unsigned int maxSplits /*= 0*/)
+    StringVector FUtilString::Split(const String& str, const String& delims /*= "\t\n "*/, unsigned int maxSplits /*= 0*/)
     {
         StringVector ret;
         ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
@@ -76,17 +76,17 @@ namespace LostPeter
         return ret;
     }
 
-    void VulkanUtilString::ToLowerCase(String& str)
+    void FUtilString::ToLowerCase(String& str)
     {
         std::transform(str.begin(), str.end(), str.begin(), tolower);
     }
 
-    void VulkanUtilString::ToUpperCase(String& str)
+    void FUtilString::ToUpperCase(String& str)
     {
         std::transform(str.begin(), str.end(), str.begin(), toupper);
     }
 
-    bool VulkanUtilString::StartsWith(const String& str, const String& pattern, bool lowerCase /*= true*/)
+    bool FUtilString::StartsWith(const String& str, const String& pattern, bool lowerCase /*= true*/)
     {
         size_t thisLen = str.length();
         size_t patternLen = pattern.length();
@@ -95,12 +95,12 @@ namespace LostPeter
 
         String startOfThis = str.substr(0, patternLen);
         if (lowerCase)
-            VulkanUtilString::ToLowerCase(startOfThis);
+            FUtilString::ToLowerCase(startOfThis);
 
         return (startOfThis == pattern);
     }
 
-    bool VulkanUtilString::EndsWith(const String& str, const String& pattern, bool lowerCase /*= true*/)
+    bool FUtilString::EndsWith(const String& str, const String& pattern, bool lowerCase /*= true*/)
     {
         size_t thisLen = str.length();
         size_t patternLen = pattern.length();
@@ -109,12 +109,12 @@ namespace LostPeter
 
         String endOfThis = str.substr(thisLen - patternLen,patternLen);
         if (lowerCase)
-            VulkanUtilString::ToLowerCase(endOfThis);
+            FUtilString::ToLowerCase(endOfThis);
 
         return (endOfThis == pattern);
     }
 
-    String VulkanUtilString::Replace(const String& src_str, const String& sub_str, const String& new_str)
+    String FUtilString::Replace(const String& src_str, const String& sub_str, const String& new_str)
     {
         String dst_str = src_str;
         String::size_type pos = 0;
@@ -125,7 +125,7 @@ namespace LostPeter
         return dst_str;
     }
 
-    String VulkanUtilString::FormatString(const char* format, ...)
+    String FUtilString::FormatString(const char* format, ...)
     {
         char szTemp[2048] = {0};
         va_list ap;
@@ -136,7 +136,7 @@ namespace LostPeter
         return szTemp;
     }
 
-    void VulkanUtilString::AddUnique(StringVector& arr, const String& val)
+    void FUtilString::AddUnique(StringVector& arr, const String& val)
     {
         bool found = false;
 		for (int32 i = 0; i < arr.size(); ++i)
@@ -154,7 +154,7 @@ namespace LostPeter
 		}
     }
 
-    void VulkanUtilString::AddUnique(ConstCharPtrVector& arr, const char* val)
+    void FUtilString::AddUnique(ConstCharPtrVector& arr, const char* val)
 	{
 		bool found = false;
 		for (int32 i = 0; i < arr.size(); ++i) 
@@ -173,7 +173,7 @@ namespace LostPeter
 	}
 
 
-    bool VulkanUtilString::ParserBool(const String& strValue)
+    bool FUtilString::ParserBool(const String& strValue)
     {
         bool bValue = false;
         if (strValue == "true")
@@ -181,7 +181,7 @@ namespace LostPeter
 
         return bValue;
     }
-    int32 VulkanUtilString::ParserInt(const String& strValue)
+    int32 FUtilString::ParserInt(const String& strValue)
     {
         int32 nValue = 0;
         std::istringstream str(strValue.c_str());
@@ -189,7 +189,7 @@ namespace LostPeter
 
         return nValue;
     }
-    uint32 VulkanUtilString::ParserUInt(const String& strValue)
+    uint32 FUtilString::ParserUInt(const String& strValue)
     {
         uint32 nValue = 0;
         std::istringstream str(strValue.c_str());
@@ -197,7 +197,7 @@ namespace LostPeter
 
         return nValue;
     }
-    size_t VulkanUtilString::ParserSizeT(const String& strValue)
+    size_t FUtilString::ParserSizeT(const String& strValue)
     {
         size_t nValue = 0;
         std::istringstream str(strValue.c_str());
@@ -205,7 +205,7 @@ namespace LostPeter
 
         return nValue;
     }
-    float VulkanUtilString::ParserFloat(const String& strValue)
+    float FUtilString::ParserFloat(const String& strValue)
     {
         float fValue = 0.0f;
         std::istringstream str(strValue.c_str());
@@ -213,7 +213,7 @@ namespace LostPeter
 
         return fValue;
     }
-    double VulkanUtilString::ParserDouble(const String& strValue)
+    double FUtilString::ParserDouble(const String& strValue)
     {
         double dValue = 0;
         std::istringstream str(strValue.c_str());
@@ -221,212 +221,212 @@ namespace LostPeter
 
         return dValue;
     }
-    glm::vec4 VulkanUtilString::ParserColor(const String& strValue)
+    FVector4 FUtilString::ParserColor(const String& strValue)
     {
-        glm::vec4 clValue = glm::vec4(0, 0, 0, 0);
-        StringVector vec = VulkanUtilString::Split(strValue);
+        FVector4 clValue = FVector4(0, 0, 0, 0);
+        StringVector vec = FUtilString::Split(strValue);
         if (vec.size() == 4)
         {
-            clValue = glm::vec4(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]));
+            clValue = FVector4(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]));
         }
 
         return clValue;
     }
-    glm::vec2 VulkanUtilString::ParserSize(const String& strValue)
+    FSize FUtilString::ParserSize(const String& strValue)
     {
-        glm::vec2 size = glm::vec2(0, 0);
-        StringVector vec = VulkanUtilString::Split(strValue);
+        FSize size = FSize(0, 0);
+        StringVector vec = FUtilString::Split(strValue);
         if (vec.size() == 2)
         {
-            size = glm::vec2(ParserFloat(vec[0]), ParserFloat(vec[1]));
+            size = FSize(ParserFloat(vec[0]), ParserFloat(vec[1]));
         }
 
         return size;
     }
-    glm::vec2 VulkanUtilString::ParserPoint(const String& strValue)
+    FPoint FUtilString::ParserPoint(const String& strValue)
     {
-        glm::vec2 point = glm::vec2(0, 0);
-        StringVector vec = VulkanUtilString::Split(strValue);
+        FPoint point = FPoint(0, 0);
+        StringVector vec = FUtilString::Split(strValue);
         if (vec.size() == 2)
         {
-            point = glm::vec2(ParserFloat(vec[0]), ParserFloat(vec[1]));
+            point = FPoint(ParserFloat(vec[0]), ParserFloat(vec[1]));
         }
 
         return point;
     }
-    glm::vec2 VulkanUtilString::ParserVector2(const String& strValue)
+    FVector2 FUtilString::ParserVector2(const String& strValue)
     {
-        glm::vec2 v2Value = glm::vec2(0, 0);
-        StringVector vec = VulkanUtilString::Split(strValue);
+        FVector2 v2Value = FVector2(0, 0);
+        StringVector vec = FUtilString::Split(strValue);
         if (vec.size() == 2)
         {
-            v2Value = glm::vec2(ParserFloat(vec[0]), ParserFloat(vec[1]));
+            v2Value = FVector2(ParserFloat(vec[0]), ParserFloat(vec[1]));
         }
 
         return v2Value;
     }
-    glm::vec3 VulkanUtilString::ParserVector3(const String& strValue)
+    FVector3 FUtilString::ParserVector3(const String& strValue)
     {
-        glm::vec3 v3Value = glm::vec3(0, 0, 0);
-        StringVector vec = VulkanUtilString::Split(strValue);
+        FVector3 v3Value = FVector3(0, 0, 0);
+        StringVector vec = FUtilString::Split(strValue);
         if (vec.size() == 3)
         {
-            v3Value = glm::vec3(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]));
+            v3Value = FVector3(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]));
         }
 
         return v3Value;
     }
-    glm::vec4 VulkanUtilString::ParserVector4(const String& strValue)
+    FVector4 FUtilString::ParserVector4(const String& strValue)
     {
-        glm::vec4 v4Value = glm::vec4(0, 0, 0, 0);
-        StringVector vec = VulkanUtilString::Split(strValue);
+        FVector4 v4Value = FVector4(0, 0, 0, 0);
+        StringVector vec = FUtilString::Split(strValue);
         if (vec.size() == 4)
         {
-            v4Value = glm::vec4(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]));
+            v4Value = FVector4(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]));
         }
 
         return v4Value;
     }
-    glm::quat VulkanUtilString::ParserQuaternion(const String& strValue)
+    FQuaternion FUtilString::ParserQuaternion(const String& strValue)
     {
-        glm::quat qValue = glm::quat(0, 0, 0, 1);
-        StringVector vec = VulkanUtilString::Split(strValue);
+        FQuaternion qValue = FQuaternion(0, 0, 0, 1);
+        StringVector vec = FUtilString::Split(strValue);
         if (vec.size() == 4)
         {
-            qValue = glm::quat(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]));
+            qValue = FQuaternion(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]));
         }
 
         return qValue;
     }
-    glm::mat3 VulkanUtilString::ParserMatrix3(const String& strValue)
+    FMatrix3 FUtilString::ParserMatrix3(const String& strValue)
     {
-        glm::mat3 mat3Value = glm::mat3(0);
-        StringVector vec = VulkanUtilString::Split(strValue);
+        FMatrix3 mat3Value = FMatrix3(0);
+        StringVector vec = FUtilString::Split(strValue);
         if (vec.size() == 9)
         {
-            mat3Value = glm::mat3(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]),
-                                  ParserFloat(vec[3]), ParserFloat(vec[4]), ParserFloat(vec[5]),
-                                  ParserFloat(vec[6]), ParserFloat(vec[7]), ParserFloat(vec[8]));
+            mat3Value = FMatrix3(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]),
+                                 ParserFloat(vec[3]), ParserFloat(vec[4]), ParserFloat(vec[5]),
+                                 ParserFloat(vec[6]), ParserFloat(vec[7]), ParserFloat(vec[8]));
         }
 
         return mat3Value;
     }
-    glm::mat4 VulkanUtilString::ParserMatrix4(const String& strValue)
+    FMatrix4 FUtilString::ParserMatrix4(const String& strValue)
     {
-        glm::mat4 mat4Value = glm::mat4(0);
-        StringVector vec = VulkanUtilString::Split(strValue);
+        FMatrix4 mat4Value = FMatrix4(0);
+        StringVector vec = FUtilString::Split(strValue);
         if (vec.size() == 16)
         {
-            mat4Value = glm::mat4(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]),
-                                  ParserFloat(vec[4]), ParserFloat(vec[5]), ParserFloat(vec[6]), ParserFloat(vec[7]),
-                                  ParserFloat(vec[8]), ParserFloat(vec[9]), ParserFloat(vec[10]), ParserFloat(vec[11]),
-                                  ParserFloat(vec[12]), ParserFloat(vec[13]), ParserFloat(vec[14]), ParserFloat(vec[15]));
+            mat4Value = FMatrix4(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]),
+                                 ParserFloat(vec[4]), ParserFloat(vec[5]), ParserFloat(vec[6]), ParserFloat(vec[7]),
+                                 ParserFloat(vec[8]), ParserFloat(vec[9]), ParserFloat(vec[10]), ParserFloat(vec[11]),
+                                 ParserFloat(vec[12]), ParserFloat(vec[13]), ParserFloat(vec[14]), ParserFloat(vec[15]));
         }
 
         return mat4Value;
     }
 
-    void VulkanUtilString::SaveBool(String& strValue, bool bValue)
+    void FUtilString::SaveBool(String& strValue, bool bValue)
     {
         strValue = SaveBool(bValue);
     }
-    void VulkanUtilString::SaveInt(String& strValue, int32 nValue)
+    void FUtilString::SaveInt(String& strValue, int32 nValue)
     {
     strValue = SaveInt(nValue);
     }
-    void VulkanUtilString::SaveUInt(String& strValue, uint32 nValue)
+    void FUtilString::SaveUInt(String& strValue, uint32 nValue)
     {
         strValue = SaveUInt(nValue);
     }
-    void VulkanUtilString::SaveSizeT(String& strValue, size_t nValue)
+    void FUtilString::SaveSizeT(String& strValue, size_t nValue)
     {
         strValue = SaveSizeT(nValue);
     }
-    void VulkanUtilString::SaveFloat(String& strValue, float fValue)
+    void FUtilString::SaveFloat(String& strValue, float fValue)
     {
         strValue = SaveFloat(fValue);
     }
-    void VulkanUtilString::SaveDouble(String& strValue, double dValue)
+    void FUtilString::SaveDouble(String& strValue, double dValue)
     {
         strValue = SaveDouble(dValue);
     }
-    void VulkanUtilString::SaveColor(String& strValue, const glm::vec4& clValue)
+    void FUtilString::SaveColor(String& strValue, const FColor& clValue)
     {
         strValue = SaveColor(clValue);
     }
-    void VulkanUtilString::SaveSize(String& strValue, const glm::vec2& size)
+    void FUtilString::SaveSize(String& strValue, const FSize& size)
     {
         strValue = SaveSize(size);
     }
-    void VulkanUtilString::SavePoint(String& strValue, const glm::vec2& point)
+    void FUtilString::SavePoint(String& strValue, const FPoint& point)
     {
         strValue = SavePoint(point);
     }
-    void VulkanUtilString::SaveVector2(String& strValue, const glm::vec2& v2Value)
+    void FUtilString::SaveVector2(String& strValue, const FVector2& v2Value)
     {
         strValue = SaveVector2(v2Value);
     }
-    void VulkanUtilString::SaveVector3(String& strValue, const glm::vec3& v3Value)
+    void FUtilString::SaveVector3(String& strValue, const FVector3& v3Value)
     {
         strValue = SaveVector3(v3Value);
     }
-    void VulkanUtilString::SaveVector4(String& strValue, const glm::vec4& v4Value)
+    void FUtilString::SaveVector4(String& strValue, const FVector4& v4Value)
     {
         strValue = SaveVector4(v4Value);
     }
-    void VulkanUtilString::SaveQuaternion(String& strValue, const glm::quat& qValue)
+    void FUtilString::SaveQuaternion(String& strValue, const FQuaternion& qValue)
     {
         strValue = SaveQuaternion(qValue);
     }
-    void VulkanUtilString::SaveMatrix3(String& strValue, const glm::mat3& mat3Value)
+    void FUtilString::SaveMatrix3(String& strValue, const FMatrix3& mat3Value)
     {
         strValue = SaveMatrix3(mat3Value);
     }
-    void VulkanUtilString::SaveMatrix4(String& strValue, const glm::mat4& mat4Value)
+    void FUtilString::SaveMatrix4(String& strValue, const FMatrix4& mat4Value)
     {
         strValue = SaveMatrix4(mat4Value);
     }
 
 
-    String VulkanUtilString::SaveBool(bool bValue)
+    String FUtilString::SaveBool(bool bValue)
     {
         if (bValue)
             return "true";
         return "false";
     }
-    String VulkanUtilString::SaveInt(int32 nValue)
+    String FUtilString::SaveInt(int32 nValue)
     {
         std::ostringstream stream;
         stream << nValue;
         return stream.str();
     }
-    String VulkanUtilString::SaveUInt(uint32 nValue)
+    String FUtilString::SaveUInt(uint32 nValue)
     {
         std::ostringstream stream;
         stream << nValue;
         return stream.str();
     }
-    String VulkanUtilString::SaveSizeT(size_t nValue)
+    String FUtilString::SaveSizeT(size_t nValue)
     {
         std::ostringstream stream;
         stream << nValue;
         return stream.str();
     }
-    String VulkanUtilString::SaveFloat(float fValue)
+    String FUtilString::SaveFloat(float fValue)
     {
         std::ostringstream stream;
         stream.precision(6);
         stream << fValue;
         return stream.str();
     }
-    String VulkanUtilString::SaveDouble(double dValue)
+    String FUtilString::SaveDouble(double dValue)
     {
         std::ostringstream stream;
         stream.precision(10);
         stream << dValue;
         return stream.str();
     }
-    String VulkanUtilString::SaveColor(const glm::vec4& clValue)
+    String FUtilString::SaveColor(const FColor& clValue)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -436,7 +436,7 @@ namespace LostPeter
                << clValue.w;
         return stream.str();
     }
-    String VulkanUtilString::SaveSize(const glm::vec2& size)
+    String FUtilString::SaveSize(const FSize& size)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -444,7 +444,7 @@ namespace LostPeter
                << size.y;
         return stream.str();
     }
-    String VulkanUtilString::SavePoint(const glm::vec2& point)
+    String FUtilString::SavePoint(const FPoint& point)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -452,7 +452,7 @@ namespace LostPeter
                << point.y;
         return stream.str();
     }
-    String VulkanUtilString::SaveVector2(const glm::vec2& v2Value)
+    String FUtilString::SaveVector2(const FVector2& v2Value)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -460,7 +460,7 @@ namespace LostPeter
                << v2Value.y;
         return stream.str();
     }
-    String VulkanUtilString::SaveVector3(const glm::vec3& v3Value)
+    String FUtilString::SaveVector3(const FVector3& v3Value)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -469,7 +469,7 @@ namespace LostPeter
                << v3Value.z;
         return stream.str();
     }
-    String VulkanUtilString::SaveVector4(const glm::vec4& v4Value)
+    String FUtilString::SaveVector4(const FVector4& v4Value)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -479,7 +479,7 @@ namespace LostPeter
                << v4Value.w;
         return stream.str();
     }
-    String VulkanUtilString::SaveQuaternion(const glm::quat& qValue)
+    String FUtilString::SaveQuaternion(const FQuaternion& qValue)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -489,7 +489,7 @@ namespace LostPeter
                << qValue.w;
         return stream.str();
     }
-    String VulkanUtilString::SaveMatrix3(const glm::mat3& mat3Value)
+    String FUtilString::SaveMatrix3(const FMatrix3& mat3Value)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -498,7 +498,7 @@ namespace LostPeter
                << mat3Value[2][0] << " " << mat3Value[2][1] << " " << mat3Value[2][2];
         return stream.str();
     }
-    String VulkanUtilString::SaveMatrix4(const glm::mat4& mat4Value)
+    String FUtilString::SaveMatrix4(const FMatrix4& mat4Value)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -509,4 +509,4 @@ namespace LostPeter
         return stream.str();
     }
 
-}; //LostPeter
+}; //LostPeterFoundation

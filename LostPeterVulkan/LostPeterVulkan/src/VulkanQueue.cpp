@@ -44,7 +44,7 @@ namespace LostPeter
         m_vkQueue = m_pDevice->GetVkQueue(m_nFamilyIndex, 0);
         if (m_vkQueue == VK_NULL_HANDLE)
         {
-            Util_LogError("*********************** VulkanQueue::Init: GetVkQueue failed !");
+            F_LogError("*********************** VulkanQueue::Init: GetVkQueue failed !");
             return false;
         }
 

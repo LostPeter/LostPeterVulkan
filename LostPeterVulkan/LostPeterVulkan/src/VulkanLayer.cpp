@@ -13,7 +13,6 @@
 #include "../include/VulkanWindow.h"
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanDevice.h"
-#include "../include/VulkanUtilString.h"
 
 namespace LostPeter
 {
@@ -37,14 +36,14 @@ namespace LostPeter
     {
         for (int32 i = 0; i < extensionProps.size(); ++i) 
         {
-            VulkanUtilString::AddUnique(outExtensions, extensionProps[i].extensionName);
+            FUtilString::AddUnique(outExtensions, extensionProps[i].extensionName);
         }
     }
     void VulkanLayerExtension::AddUniqueExtensionNames(ConstCharPtrVector& outExtensions)
     {
         for (int32 i = 0; i < extensionProps.size(); ++i) 
         {
-            VulkanUtilString::AddUnique(outExtensions, extensionProps[i].extensionName);
+            FUtilString::AddUnique(outExtensions, extensionProps[i].extensionName);
         }
     }
 
@@ -240,7 +239,7 @@ namespace LostPeter
         StringVector foundUniqueExtensions;
         for (size_t i = 0; i < globalLayerExtensions[0].extensionProps.size(); ++i) 
         {
-            VulkanUtilString::AddUnique(foundUniqueExtensions, globalLayerExtensions[0].extensionProps[i].extensionName);
+            FUtilString::AddUnique(foundUniqueExtensions, globalLayerExtensions[0].extensionProps[i].extensionName);
         }
 
         uint32 instanceLayerCount = 0;
@@ -255,24 +254,24 @@ namespace LostPeter
             layer.layerProps = globalLayerProperties[i];
             EnumerateInstanceExtensionProperties(globalLayerProperties[i].layerName, layer);
             layer.AddUniqueExtensionNames(foundUniqueExtensions);
-            VulkanUtilString::AddUnique(foundUniqueLayers, globalLayerProperties[i].layerName);
+            FUtilString::AddUnique(foundUniqueLayers, globalLayerProperties[i].layerName);
             globalLayerExtensions.push_back(layer);
         }
 
         int layerCount = (int)foundUniqueLayers.size();
-        Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Found unique layer count: %d", layerCount);
+        F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Found unique layer count: %d", layerCount);
         for (int i = 0; i < layerCount; i++)
         {
             const String& nameLayer = foundUniqueLayers[i];
-            Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Layer index: %d, Layer name: %s, Layer count: %d", i, nameLayer.c_str(), layerCount);
+            F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Layer index: %d, Layer name: %s, Layer count: %d", i, nameLayer.c_str(), layerCount);
         }
 
         int extensionsCount = (int)foundUniqueExtensions.size();
-        Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Found unique instance extension count: %d", extensionsCount);
+        F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Found unique instance extension count: %d", extensionsCount);
         for (int i = 0; i < extensionsCount; i++) 
         {
             const String& nameExtension = foundUniqueExtensions[i];
-            Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Instance Extension index: %d, Extension name: %s, Extension count: %d", i, nameExtension.c_str(), extensionsCount);
+            F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Instance Extension index: %d, Extension name: %s, Extension count: %d", i, nameExtension.c_str(), extensionsCount);
         }
 
         if (bIsEnableValidationLayers)
@@ -287,7 +286,7 @@ namespace LostPeter
                 } 
                 else 
                 {
-                    Util_LogError("*********************** VulkanWindow::getInstanceLayersAndExtensions: Unable to find Vulkan instance validation layer '%s'", currValidationLayer);
+                    F_LogError("*********************** VulkanWindow::getInstanceLayersAndExtensions: Unable to find Vulkan instance validation layer '%s'", currValidationLayer);
                 }
             }
 
@@ -306,39 +305,39 @@ namespace LostPeter
         }
 
 
-        Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions ***********************");
+        F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions ***********************");
         {
             TrimDuplicates(outInstanceLayers);
             int countLayers = (int)outInstanceLayers.size();
             if (countLayers > 0) 
             {
-                Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance layers count: %d", (int32)countLayers);
+                F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance layers count: %d", (int32)countLayers);
                 for (int i = 0; i < countLayers; i++)
                 {
-                    Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance layer index: %d, name: %s", i, outInstanceLayers[i]);
+                    F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance layer index: %d, name: %s", i, outInstanceLayers[i]);
                 }
             }
             else 
             {
-                Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Not using instance layers !");
+                F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Not using instance layers !");
             }
 
             TrimDuplicates(outInstanceExtensions);
             int countExtensions = (int)outInstanceExtensions.size();
             if (countExtensions > 0) 
             {
-                Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance extensions count: %d", countExtensions);
+                F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance extensions count: %d", countExtensions);
                 for (int i = 0; i < countExtensions; i++)
                 {
-                    Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance extensions index: %d, name: %s", i, outInstanceExtensions[i]);
+                    F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Using instance extensions index: %d, name: %s", i, outInstanceExtensions[i]);
                 }
             }
             else 
             {
-                Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Not using instance extensions !");
+                F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions: Not using instance extensions !");
             }
         }
-        Util_LogInfo("VulkanWindow::getInstanceLayersAndExtensions ***********************");
+        F_LogInfo("VulkanWindow::getInstanceLayersAndExtensions ***********************");
     }
 
     void VulkanWindow::getDeviceLayersAndExtensions(bool bIsEnableValidationLayers,
@@ -366,7 +365,7 @@ namespace LostPeter
             }
             else 
             {
-                VulkanUtilString::AddUnique(foundUniqueLayers, deviceLayerExtensions[i].layerProps.layerName);
+                FUtilString::AddUnique(foundUniqueLayers, deviceLayerExtensions[i].layerProps.layerName);
                 EnumerateDeviceExtensionProperties(this->poPhysicalDevice, deviceLayerExtensions[i].layerProps.layerName, deviceLayerExtensions[i]);
             }
             
@@ -374,19 +373,19 @@ namespace LostPeter
         }
 
         int layerCount = (int)foundUniqueLayers.size();
-        Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Found unique layer count: %d", layerCount);
+        F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Found unique layer count: %d", layerCount);
         for (int i = 0; i < layerCount; i++)
         {
             const String& nameLayer = foundUniqueLayers[i];
-            Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Layer index: %d, Layer name: %s, Layer count: %d", i, nameLayer.c_str(), layerCount);
+            F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Layer index: %d, Layer name: %s, Layer count: %d", i, nameLayer.c_str(), layerCount);
         }
 
         int extensionsCount = (int)foundUniqueExtensions.size();
-        Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Found unique device extension count: %d", extensionsCount);
+        F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Found unique device extension count: %d", extensionsCount);
         for (int i = 0; i < extensionsCount; i++) 
         {
             const String& nameExtension = foundUniqueExtensions[i];
-            Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Device Extension index: %d, Extension name: %s, Extension count: %d", i, nameExtension.c_str(), extensionsCount);
+            F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Device Extension index: %d, Extension name: %s, Extension count: %d", i, nameExtension.c_str(), extensionsCount);
         }
 
         if (bIsEnableValidationLayers)
@@ -407,7 +406,7 @@ namespace LostPeter
                 
                 if (!bValidationFound) 
                 {
-                    Util_LogError("*********************** VulkanWindow::getDeviceLayersAndExtensions: Unable to find Vulkan device validation layer '%s'", currValidationLayer);
+                    F_LogError("*********************** VulkanWindow::getDeviceLayersAndExtensions: Unable to find Vulkan device validation layer '%s'", currValidationLayer);
                 }
             }
         }
@@ -456,37 +455,37 @@ namespace LostPeter
             }
         }
         
-        Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions ***********************");
+        F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions ***********************");
         {
             size_t countLayers = outDeviceLayers.size();
             if (countLayers > 0)
             {
-                Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Using device layers count: %d", (int32)countLayers);
+                F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Using device layers count: %d", (int32)countLayers);
                 for (int i = 0; i < countLayers; i++)
                 {
-                    Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Using device layer index: %d, name: %s", i, outDeviceLayers[i]);
+                    F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Using device layer index: %d, name: %s", i, outDeviceLayers[i]);
                 }
             }
             else
             {
-                Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Not using device layers !");
+                F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Not using device layers !");
             }
 
             size_t countExtensions = outDeviceExtensions.size();
             if (countExtensions > 0)
             {
-                Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Using device extensions count: %d", (int32)countExtensions);
+                F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Using device extensions count: %d", (int32)countExtensions);
                 for (int i = 0; i < countExtensions; i++)
                 {
-                    Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Using device extensions index: %d, name: %s", i, outDeviceExtensions[i]);
+                    F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Using device extensions index: %d, name: %s", i, outDeviceExtensions[i]);
                 }
             }
             else
             {
-                Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Not using device extensions !");
+                F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions: Not using device extensions !");
             }
         }
-        Util_LogInfo("VulkanWindow::getDeviceLayersAndExtensions ***********************");
+        F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions ***********************");
     }
 
 
@@ -501,7 +500,7 @@ namespace LostPeter
         StringVector foundUniqueExtensions;
         for (size_t i = 0; i < globalLayerExtensions[0].extensionProps.size(); ++i) 
         {
-            VulkanUtilString::AddUnique(foundUniqueExtensions, globalLayerExtensions[0].extensionProps[i].extensionName);
+            FUtilString::AddUnique(foundUniqueExtensions, globalLayerExtensions[0].extensionProps[i].extensionName);
         }
 
         uint32 instanceLayerCount = 0;
@@ -516,24 +515,24 @@ namespace LostPeter
             layer.layerProps = globalLayerProperties[i];
             EnumerateInstanceExtensionProperties(globalLayerProperties[i].layerName, layer);
             layer.AddUniqueExtensionNames(foundUniqueExtensions);
-            VulkanUtilString::AddUnique(foundUniqueLayers, globalLayerProperties[i].layerName);
+            FUtilString::AddUnique(foundUniqueLayers, globalLayerProperties[i].layerName);
             globalLayerExtensions.push_back(layer);
         }
 
         int layerCount = (int)foundUniqueLayers.size();
-        Util_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Found unique layer count: %d", layerCount);
+        F_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Found unique layer count: %d", layerCount);
         for (int i = 0; i < layerCount; i++)
         {
             const String& nameLayer = foundUniqueLayers[i];
-            Util_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Layer index: %d, Layer name: %s, Layer count: %d", i, nameLayer.c_str(), layerCount);
+            F_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Layer index: %d, Layer name: %s, Layer count: %d", i, nameLayer.c_str(), layerCount);
         }
 
         int extensionsCount = (int)foundUniqueExtensions.size();
-        Util_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Found unique instance extension count: %d", extensionsCount);
+        F_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Found unique instance extension count: %d", extensionsCount);
         for (int i = 0; i < extensionsCount; i++) 
         {
             const String& nameExtension = foundUniqueExtensions[i];
-            Util_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Instance Extension index: %d, Extension name: %s, Extension count: %d", i, nameExtension.c_str(), extensionsCount);
+            F_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Instance Extension index: %d, Extension name: %s, Extension count: %d", i, nameExtension.c_str(), extensionsCount);
         }
 
         if (bIsEnableValidationLayers)
@@ -548,7 +547,7 @@ namespace LostPeter
                 } 
                 else 
                 {
-                    Util_LogError("*********************** VulkanInstance::getInstanceLayersAndExtensions: Unable to find Vulkan instance validation layer '%s'", currValidationLayer);
+                    F_LogError("*********************** VulkanInstance::getInstanceLayersAndExtensions: Unable to find Vulkan instance validation layer '%s'", currValidationLayer);
                 }
             }
 
@@ -567,39 +566,39 @@ namespace LostPeter
         }
 
 
-        Util_LogInfo("VulkanInstance::getInstanceLayersAndExtensions ***********************");
+        F_LogInfo("VulkanInstance::getInstanceLayersAndExtensions ***********************");
         {
             TrimDuplicates(outInstanceLayers);
             int countLayers = (int)outInstanceLayers.size();
             if (countLayers > 0) 
             {
-                Util_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Using instance layers count: %d", (int32)countLayers);
+                F_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Using instance layers count: %d", (int32)countLayers);
                 for (int i = 0; i < countLayers; i++)
                 {
-                    Util_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Using instance layer index: %d, name: %s", i, outInstanceLayers[i]);
+                    F_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Using instance layer index: %d, name: %s", i, outInstanceLayers[i]);
                 }
             }
             else 
             {
-                Util_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Not using instance layers !");
+                F_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Not using instance layers !");
             }
 
             TrimDuplicates(outInstanceExtensions);
             int countExtensions = (int)outInstanceExtensions.size();
             if (countExtensions > 0) 
             {
-                Util_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Using instance extensions count: %d", countExtensions);
+                F_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Using instance extensions count: %d", countExtensions);
                 for (int i = 0; i < countExtensions; i++)
                 {
-                    Util_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Using instance extensions index: %d, name: %s", i, outInstanceExtensions[i]);
+                    F_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Using instance extensions index: %d, name: %s", i, outInstanceExtensions[i]);
                 }
             }
             else 
             {
-                Util_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Not using instance extensions !");
+                F_LogInfo("VulkanInstance::getInstanceLayersAndExtensions: Not using instance extensions !");
             }
         }
-        Util_LogInfo("VulkanInstance::getInstanceLayersAndExtensions ***********************");
+        F_LogInfo("VulkanInstance::getInstanceLayersAndExtensions ***********************");
     }
 
 
@@ -628,7 +627,7 @@ namespace LostPeter
             }
             else 
             {
-                VulkanUtilString::AddUnique(foundUniqueLayers, deviceLayerExtensions[i].layerProps.layerName);
+                FUtilString::AddUnique(foundUniqueLayers, deviceLayerExtensions[i].layerProps.layerName);
                 EnumerateDeviceExtensionProperties(this->m_vkPhysicalDevice, deviceLayerExtensions[i].layerProps.layerName, deviceLayerExtensions[i]);
             }
             
@@ -636,19 +635,19 @@ namespace LostPeter
         }
 
         int layerCount = (int)foundUniqueLayers.size();
-        Util_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Found unique layer count: %d", layerCount);
+        F_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Found unique layer count: %d", layerCount);
         for (int i = 0; i < layerCount; i++)
         {
             const String& nameLayer = foundUniqueLayers[i];
-            Util_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Layer index: %d, Layer name: %s, Layer count: %d", i, nameLayer.c_str(), layerCount);
+            F_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Layer index: %d, Layer name: %s, Layer count: %d", i, nameLayer.c_str(), layerCount);
         }
 
         int extensionsCount = (int)foundUniqueExtensions.size();
-        Util_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Found unique device extension count: %d", extensionsCount);
+        F_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Found unique device extension count: %d", extensionsCount);
         for (int i = 0; i < extensionsCount; i++) 
         {
             const String& nameExtension = foundUniqueExtensions[i];
-            Util_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Device Extension index: %d, Extension name: %s, Extension count: %d", i, nameExtension.c_str(), extensionsCount);
+            F_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Device Extension index: %d, Extension name: %s, Extension count: %d", i, nameExtension.c_str(), extensionsCount);
         }
 
         if (bIsEnableValidationLayers)
@@ -669,7 +668,7 @@ namespace LostPeter
                 
                 if (!bValidationFound) 
                 {
-                    Util_LogError("*********************** VulkanDevice::getDeviceLayersAndExtensions: Unable to find Vulkan device validation layer '%s'", currValidationLayer);
+                    F_LogError("*********************** VulkanDevice::getDeviceLayersAndExtensions: Unable to find Vulkan device validation layer '%s'", currValidationLayer);
                 }
             }
         }
@@ -718,37 +717,37 @@ namespace LostPeter
             }
         }
         
-        Util_LogInfo("VulkanDevice::getDeviceLayersAndExtensions ***********************");
+        F_LogInfo("VulkanDevice::getDeviceLayersAndExtensions ***********************");
         {
             size_t countLayers = outDeviceLayers.size();
             if (countLayers > 0)
             {
-                Util_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Using device layers count: %d", (int32)countLayers);
+                F_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Using device layers count: %d", (int32)countLayers);
                 for (int i = 0; i < countLayers; i++)
                 {
-                    Util_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Using device layer index: %d, name: %s", i, outDeviceLayers[i]);
+                    F_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Using device layer index: %d, name: %s", i, outDeviceLayers[i]);
                 }
             }
             else
             {
-                Util_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Not using device layers !");
+                F_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Not using device layers !");
             }
 
             size_t countExtensions = outDeviceExtensions.size();
             if (countExtensions > 0)
             {
-                Util_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Using device extensions count: %d", (int32)countExtensions);
+                F_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Using device extensions count: %d", (int32)countExtensions);
                 for (int i = 0; i < countExtensions; i++)
                 {
-                    Util_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Using device extensions index: %d, name: %s", i, outDeviceExtensions[i]);
+                    F_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Using device extensions index: %d, name: %s", i, outDeviceExtensions[i]);
                 }
             }
             else
             {
-                Util_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Not using device extensions !");
+                F_LogInfo("VulkanDevice::getDeviceLayersAndExtensions: Not using device extensions !");
             }
         }
-        Util_LogInfo("VulkanDevice::getDeviceLayersAndExtensions ***********************");
+        F_LogInfo("VulkanDevice::getDeviceLayersAndExtensions ***********************");
     }
 
 }; //LostPeter

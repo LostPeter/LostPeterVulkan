@@ -13,7 +13,6 @@
 #include "vulkan_009_instancing.h"
 #include "VulkanMeshLoader.h"
 #include "VulkanCamera.h"
-#include "VulkanTimer.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -56,8 +55,8 @@ static glm::vec3 g_tranformModels[3 * g_CountLen] =
 
 static glm::mat4 g_tranformLocalModels[g_CountLen] = 
 {
-    VulkanMath::RotateX(-90.0f), //viking_room
-    VulkanMath::ms_mat4Unit, //bunny
+    FMath::RotateX(-90.0f), //viking_room
+    FMath::ms_mat4Unit, //bunny
 };
 
 static bool g_isTranformLocalModels[g_CountLen] = 
@@ -136,7 +135,7 @@ void Vulkan_009_Instancing::loadModel_Custom()
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTranformLocal, g_tranformLocalModels[i]))
         {
             String msg = "Vulkan_009_Instancing::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -144,7 +143,7 @@ void Vulkan_009_Instancing::loadModel_Custom()
         if (!loadModel_Texture(pModelObject))
         {   
             String msg = "Vulkan_009_Instancing::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -164,7 +163,7 @@ bool Vulkan_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, boo
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!VulkanMeshLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
     {
-        Util_LogError("Vulkan_009_Instancing::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
+        F_LogError("Vulkan_009_Instancing::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
         return false; 
     }
 
@@ -182,7 +181,7 @@ bool Vulkan_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, boo
 
         if (isTranformLocal)
         {
-            v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+            v.pos = FMath::Transform(matTransformLocal, v.pos);
         }
 
         pModelObject->vertices.push_back(v);
@@ -202,10 +201,10 @@ bool Vulkan_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, boo
     pModelObject->poIndexBuffer_Size = pModelObject->poIndexCount * sizeof(uint32_t);
     pModelObject->poIndexBuffer_Data = &pModelObject->indices[0];
 
-    Util_LogInfo("Vulkan_009_Instancing::loadModel_VertexIndex: load model [%s] success, Vertex count: [%d], Index count: [%d] !", 
-                 pModelObject->nameModel.c_str(),
-                 (int)pModelObject->vertices.size(), 
-                 (int)pModelObject->indices.size());
+    F_LogInfo("Vulkan_009_Instancing::loadModel_VertexIndex: load model [%s] success, Vertex count: [%d], Index count: [%d] !", 
+              pModelObject->nameModel.c_str(),
+              (int)pModelObject->vertices.size(), 
+              (int)pModelObject->indices.size());
 
     //2> createVertexBuffer
     createVertexBuffer(pModelObject->poVertexBuffer_Size, pModelObject->poVertexBuffer_Data, pModelObject->poVertexBuffer, pModelObject->poVertexBufferMemory);
@@ -227,7 +226,7 @@ bool Vulkan_009_Instancing::loadModel_Texture(ModelObject* pModelObject)
         createVkImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
         createVkSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
 
-        Util_LogInfo("Vulkan_009_Instancing::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
+        F_LogInfo("Vulkan_009_Instancing::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
 
     return true;
@@ -252,7 +251,7 @@ void Vulkan_009_Instancing::rebuildInstanceCBs(bool isCreateVkBuffer)
         for (int j = 0; j < pModelObject->countInstance; j++)
         {
             ObjectConstants objectConstants;
-            objectConstants.g_MatWorld = VulkanMath::FromTRS(g_tranformModels[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+            objectConstants.g_MatWorld = FMath::FromTRS(g_tranformModels[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
                                                            g_tranformModels[i * 3 + 1],
                                                            g_tranformModels[i * 3 + 2]);
             pModelObject->objectCBs.push_back(objectConstants);
@@ -299,7 +298,7 @@ void Vulkan_009_Instancing::rebuildInstanceCBs(bool isCreateVkBuffer)
         {
             ObjectConstants_Outline objectConstants_Outline;
             objectConstants_Outline.g_MatWorld = pModelObject->instanceMatWorld[j];
-            objectConstants_Outline.g_OutlineColor = VulkanMath::RandomColor(false);
+            objectConstants_Outline.g_OutlineColor = FMath::RandomColor(false);
             objectConstants_Outline.g_OutlineWidth = g_OutlineWidth[i];
             pModelObject->objectCBs_Outline.push_back(objectConstants_Outline);
         }
@@ -364,7 +363,7 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
         if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
         {
             String msg = "Vulkan_009_Instancing::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -407,7 +406,7 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
         if (pModelObject->poPipelineGraphics_Stencil == VK_NULL_HANDLE)
         {
             String msg = "Vulkan_009_Instancing::createGraphicsPipeline_Custom: Failed to create pipeline stencil !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -431,7 +430,7 @@ void Vulkan_009_Instancing::createGraphicsPipeline_Custom()
         if (pModelObject->poPipelineGraphics_Outline == VK_NULL_HANDLE)
         {
             String msg = "Vulkan_009_Instancing::createGraphicsPipeline_Custom: Failed to create pipeline outline !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
     }
@@ -445,7 +444,7 @@ void Vulkan_009_Instancing::createPipelineLayout_Outline()
     if (this->poPipelineLayout_Outline == VK_NULL_HANDLE)
     {
         String msg = "Vulkan_009_Instancing::createPipelineLayout_Outline: createVkPipelineLayout failed !";
-        Util_LogError(msg.c_str());
+        F_LogError(msg.c_str());
         throw std::runtime_error(msg.c_str());
     }
 }
@@ -471,13 +470,13 @@ void Vulkan_009_Instancing::createShaderModules()
         VkShaderModule vertShaderModule = createVkShaderModule("VertexShader: ", pathVert);
         this->m_aVkShaderModules.push_back(vertShaderModule);
         this->m_mapVkShaderModules[pathVert] = vertShaderModule;
-        Util_LogInfo("Vulkan_009_Instancing::createShaderModules: create shader [%s] success !", pathVert.c_str());
+        F_LogInfo("Vulkan_009_Instancing::createShaderModules: create shader [%s] success !", pathVert.c_str());
 
         //frag
         VkShaderModule fragShaderModule = createVkShaderModule("FragmentShader: ", pathFrag);
         this->m_aVkShaderModules.push_back(fragShaderModule);
         this->m_mapVkShaderModules[pathFrag] = fragShaderModule;
-        Util_LogInfo("Vulkan_009_Instancing::createShaderModules: create shader [%s] success !", pathFrag.c_str());
+        F_LogInfo("Vulkan_009_Instancing::createShaderModules: create shader [%s] success !", pathFrag.c_str());
     }
 }
 VkShaderModule Vulkan_009_Instancing::findShaderModule(const String& pathShaderModule)
@@ -749,7 +748,7 @@ void Vulkan_009_Instancing::modelConfig()
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
 
-            String nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
+            String nameModel = FUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
             if (ImGui::CollapsingHeader(nameModel.c_str()))
             {
                 String nameIsShow = "Is Show - " + pModelObject->nameModel;
@@ -794,7 +793,7 @@ void Vulkan_009_Instancing::modelConfig()
                         ObjectConstants_Outline& obj = pModelObject->objectCBs_Outline[j];
                         //Mat
                         const glm::mat4& mat4World = obj.g_MatWorld;
-                        String nameTable = VulkanUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
+                        String nameTable = FUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
                         if (ImGui::BeginTable(nameTable.c_str(), 4))
                         {
                             ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
@@ -916,7 +915,7 @@ void Vulkan_009_Instancing::cleanupCustom()
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
-        UTIL_DELETE(pModelObject)
+        F_DELETE(pModelObject)
     }
     this->m_aModelObjects.clear();
     this->m_aModelObjects_Render.clear();

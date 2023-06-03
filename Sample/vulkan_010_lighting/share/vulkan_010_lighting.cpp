@@ -13,7 +13,6 @@
 #include "vulkan_010_lighting.h"
 #include "VulkanMeshLoader.h"
 #include "VulkanCamera.h"
-#include "VulkanTimer.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -65,9 +64,9 @@ static glm::vec3 g_tranformModels[3 * g_CountLen] =
 
 static glm::mat4 g_tranformLocalModels[g_CountLen] = 
 {
-    VulkanMath::ms_mat4Unit, //plane
-    VulkanMath::RotateX(-90.0f), //viking_room
-    VulkanMath::ms_mat4Unit, //bunny
+    FMath::ms_mat4Unit, //plane
+    FMath::RotateX(-90.0f), //viking_room
+    FMath::ms_mat4Unit, //bunny
 };
 
 static bool g_isTranformLocalModels[g_CountLen] = 
@@ -144,7 +143,7 @@ void Vulkan_010_Lighting::loadModel_Custom()
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTranformLocal, g_tranformLocalModels[i]))
         {
             String msg = "Vulkan_010_Lighting::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -152,7 +151,7 @@ void Vulkan_010_Lighting::loadModel_Custom()
         if (!loadModel_Texture(pModelObject))
         {   
             String msg = "Vulkan_010_Lighting::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -172,7 +171,7 @@ bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool 
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!VulkanMeshLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
     {
-        Util_LogError("Vulkan_010_Lighting::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
+        F_LogError("Vulkan_010_Lighting::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
         return false; 
     }
 
@@ -190,7 +189,7 @@ bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool 
 
         if (isTranformLocal)
         {
-            v.pos = VulkanMath::Transform(matTransformLocal, v.pos);
+            v.pos = FMath::Transform(matTransformLocal, v.pos);
         }
 
         pModelObject->vertices.push_back(v);
@@ -210,10 +209,10 @@ bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool 
     pModelObject->poIndexBuffer_Size = pModelObject->poIndexCount * sizeof(uint32_t);
     pModelObject->poIndexBuffer_Data = &pModelObject->indices[0];
 
-    Util_LogInfo("Vulkan_010_Lighting::loadModel_VertexIndex: load model [%s] success, Vertex count: [%d], Index count: [%d] !", 
-                 pModelObject->nameModel.c_str(),
-                 (int)pModelObject->vertices.size(), 
-                 (int)pModelObject->indices.size());
+    F_LogInfo("Vulkan_010_Lighting::loadModel_VertexIndex: load model [%s] success, Vertex count: [%d], Index count: [%d] !", 
+              pModelObject->nameModel.c_str(),
+              (int)pModelObject->vertices.size(), 
+              (int)pModelObject->indices.size());
 
     //2> createVertexBuffer
     createVertexBuffer(pModelObject->poVertexBuffer_Size, pModelObject->poVertexBuffer_Data, pModelObject->poVertexBuffer, pModelObject->poVertexBufferMemory);
@@ -235,7 +234,7 @@ bool Vulkan_010_Lighting::loadModel_Texture(ModelObject* pModelObject)
         createVkImageView(pModelObject->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, pModelObject->poMipMapCount, 1, pModelObject->poTextureImageView);
         createVkSampler(pModelObject->poMipMapCount, pModelObject->poTextureSampler);
 
-        Util_LogInfo("Vulkan_010_Lighting::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
+        F_LogInfo("Vulkan_010_Lighting::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
 
     return true;
@@ -261,7 +260,7 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
         {
             //ObjectConstants
             ObjectConstants objectConstants;
-            objectConstants.g_MatWorld = VulkanMath::FromTRS(g_tranformModels[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+            objectConstants.g_MatWorld = FMath::FromTRS(g_tranformModels[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
                                                            g_tranformModels[i * 3 + 1],
                                                            g_tranformModels[i * 3 + 2]);
             pModelObject->objectCBs.push_back(objectConstants);
@@ -269,11 +268,11 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
 
             //MaterialConstants
             MaterialConstants materialConstants;
-            materialConstants.factorAmbient = VulkanMath::RandomColor(false);
-            materialConstants.factorDiffuse = VulkanMath::RandomColor(false);
-            materialConstants.factorSpecular = VulkanMath::RandomColor(false);
-            materialConstants.shininess = VulkanMath::RandF(10.0f, 100.0f);
-            materialConstants.alpha = VulkanMath::RandF(0.2f, 0.9f);
+            materialConstants.factorAmbient = FMath::RandomColor(false);
+            materialConstants.factorDiffuse = FMath::RandomColor(false);
+            materialConstants.factorSpecular = FMath::RandomColor(false);
+            materialConstants.shininess = FMath::RandF(10.0f, 100.0f);
+            materialConstants.alpha = FMath::RandF(0.2f, 0.9f);
             pModelObject->materialCBs.push_back(materialConstants);
         }
         
@@ -339,7 +338,7 @@ void Vulkan_010_Lighting::createGraphicsPipeline_Custom()
         if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
         {
             String msg = "Vulkan_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
 
@@ -372,7 +371,7 @@ void Vulkan_010_Lighting::createGraphicsPipeline_Custom()
         if (pModelObject->poPipelineGraphics == VK_NULL_HANDLE)
         {
             String msg = "Vulkan_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline !";
-            Util_LogError(msg.c_str());
+            F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
     }
@@ -400,13 +399,13 @@ void Vulkan_010_Lighting::createShaderModules()
         VkShaderModule vertShaderModule = createVkShaderModule("VertexShader: ", pathVert);
         this->m_aVkShaderModules.push_back(vertShaderModule);
         this->m_mapVkShaderModules[pathVert] = vertShaderModule;
-        Util_LogInfo("Vulkan_010_Lighting::createShaderModules: create shader [%s] success !", pathVert.c_str());
+        F_LogInfo("Vulkan_010_Lighting::createShaderModules: create shader [%s] success !", pathVert.c_str());
 
         //frag
         VkShaderModule fragShaderModule = createVkShaderModule("FragmentShader: ", pathFrag);
         this->m_aVkShaderModules.push_back(fragShaderModule);
         this->m_mapVkShaderModules[pathFrag] = fragShaderModule;
-        Util_LogInfo("Vulkan_010_Lighting::createShaderModules: create shader [%s] success !", pathFrag.c_str());
+        F_LogInfo("Vulkan_010_Lighting::createShaderModules: create shader [%s] success !", pathFrag.c_str());
     }
 }
 VkShaderModule Vulkan_010_Lighting::findShaderModule(const String& pathShaderModule)
@@ -596,7 +595,7 @@ void Vulkan_010_Lighting::modelConfig()
         {
             ModelObject* pModelObject = this->m_aModelObjects[i];
 
-            String nameModel = VulkanUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
+            String nameModel = FUtilString::SaveInt(i) + " - " + pModelObject->nameModel;
             if (ImGui::CollapsingHeader(nameModel.c_str()))
             {
                 String nameIsShow = "Is Show - " + pModelObject->nameModel;
@@ -630,15 +629,15 @@ void Vulkan_010_Lighting::modelConfig()
                         ObjectConstants& obj = pModelObject->objectCBs[j];
                         MaterialConstants& mat = pModelObject->materialCBs[j];
 
-                        String nameModelInstance = nameModel + " - " + VulkanUtilString::SaveInt(j);
+                        String nameModelInstance = nameModel + " - " + FUtilString::SaveInt(j);
                         if (ImGui::CollapsingHeader(nameModelInstance.c_str()))
                         {
                             //ObjectConstants
-                            String nameObject = VulkanUtilString::SaveInt(j) + " - Object - " + pModelObject->nameModel;
+                            String nameObject = FUtilString::SaveInt(j) + " - Object - " + pModelObject->nameModel;
                             if (ImGui::CollapsingHeader(nameObject.c_str()))
                             {
                                 const glm::mat4& mat4World = obj.g_MatWorld;
-                                String nameTable = VulkanUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
+                                String nameTable = FUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
                                 if (ImGui::BeginTable(nameTable.c_str(), 4))
                                 {
                                     ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
@@ -666,11 +665,11 @@ void Vulkan_010_Lighting::modelConfig()
                             }
                             
                             //MaterialConstants
-                            String nameMaterial = VulkanUtilString::SaveInt(j) + " - Material - " + pModelObject->nameModel;
+                            String nameMaterial = FUtilString::SaveInt(j) + " - Material - " + pModelObject->nameModel;
                             if (ImGui::CollapsingHeader(nameMaterial.c_str()))
                             {
                                 //factorAmbient
-                                String nameFactorAmbient = "FactorAmbient - " + VulkanUtilString::SaveInt(j);
+                                String nameFactorAmbient = "FactorAmbient - " + FUtilString::SaveInt(j);
                                 if (ImGui::ColorEdit4(nameFactorAmbient.c_str(), (float*)&mat.factorAmbient))
                                 {
 
@@ -678,7 +677,7 @@ void Vulkan_010_Lighting::modelConfig()
                                 ImGui::Spacing();
 
                                 //factorDiffuse
-                                String nameFactorDiffuse = "FactorDiffuse - " + VulkanUtilString::SaveInt(j);
+                                String nameFactorDiffuse = "FactorDiffuse - " + FUtilString::SaveInt(j);
                                 if (ImGui::ColorEdit4(nameFactorDiffuse.c_str(), (float*)&mat.factorDiffuse))
                                 {
 
@@ -686,7 +685,7 @@ void Vulkan_010_Lighting::modelConfig()
                                 ImGui::Spacing();
 
                                 //factorSpecular
-                                String nameFactorSpecular = "FactorSpecular - " + VulkanUtilString::SaveInt(j);
+                                String nameFactorSpecular = "FactorSpecular - " + FUtilString::SaveInt(j);
                                 if (ImGui::ColorEdit4(nameFactorSpecular.c_str(), (float*)&mat.factorSpecular))
                                 {
 
@@ -694,7 +693,7 @@ void Vulkan_010_Lighting::modelConfig()
                                 ImGui::Spacing();
 
                                 //shininess
-                                String nameShininess = "Shininess - " + VulkanUtilString::SaveInt(j);
+                                String nameShininess = "Shininess - " + FUtilString::SaveInt(j);
                                 if (ImGui::DragFloat(nameShininess.c_str(), &mat.shininess, 0.01f, 0.01f, 100.0f))
                                 {
                                     
@@ -702,7 +701,7 @@ void Vulkan_010_Lighting::modelConfig()
                                 ImGui::Spacing();
 
                                 //alpha
-                                String nameAlpha = "Alpha - " + VulkanUtilString::SaveInt(j);
+                                String nameAlpha = "Alpha - " + FUtilString::SaveInt(j);
                                 if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
                                 {
                                     
@@ -710,7 +709,7 @@ void Vulkan_010_Lighting::modelConfig()
                                 ImGui::Spacing();
 
                                 //lighting
-                                String nameLighting = "Lighting - " + VulkanUtilString::SaveInt(j);
+                                String nameLighting = "Lighting - " + FUtilString::SaveInt(j);
                                 bool isLighting = mat.lighting == 1.0f ? true : false;
                                 if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
                                 {
@@ -788,7 +787,7 @@ void Vulkan_010_Lighting::cleanupCustom()
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
-        UTIL_DELETE(pModelObject)
+        F_DELETE(pModelObject)
     }
     this->m_aModelObjects.clear();
     this->m_aModelObjects_Render.clear();

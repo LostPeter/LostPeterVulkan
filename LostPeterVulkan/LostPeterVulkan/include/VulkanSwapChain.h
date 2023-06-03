@@ -43,7 +43,7 @@ namespace LostPeter
         int32 m_nSemaphoreIndex;
         uint32 m_nNumPresentCalls;
         uint32 m_nNumAcquireCalls;
-        int8 m_nLockToVSync;
+        int32 m_nLockToVSync;
         uint32 m_nPresentID;
 
     public:
@@ -59,7 +59,7 @@ namespace LostPeter
     
         UTIL_FORCEINLINE int32 GetSwapChainImageIndex() const { return m_nSwapChainImageIndex; }
         UTIL_FORCEINLINE int32 GetSemaphoreIndex() const { return m_nSemaphoreIndex; }
-        UTIL_FORCEINLINE int8 DoesLockToVSync() { return m_nLockToVSync; }
+        UTIL_FORCEINLINE int32 DoesLockToVSync() { return m_nLockToVSync; }
 
     public:
         void Destroy();
@@ -68,7 +68,7 @@ namespace LostPeter
                   uint32 height, 
                   uint32* pOutDesiredNumSwapChainImages, 
                   std::vector<VkImage>& aOutImages, 
-                  int8 nLockToVSync);
+                  int32 nLockToVSync);
 
     public:
         VulkanSwapStatusType Present(VulkanQueue* pQueueGraphics, 
