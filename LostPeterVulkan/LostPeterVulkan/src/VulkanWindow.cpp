@@ -13,7 +13,6 @@
 #include "../include/VulkanWindow.h"
 #include "../include/VulkanMeshLoader.h"
 #include "../include/VulkanMeshGeometry.h"
-#include "../include/VulkanCamera.h"
 
 namespace LostPeter
 {
@@ -385,7 +384,7 @@ namespace LostPeter
                 {
                     float fRotYAngle = fX * this->cfg_cameraSpeedRotate;
                     float fRotXAngle = fY * this->cfg_cameraSpeedRotate;
-                    glm::vec3 vEulerAngles = pCamera->GetEulerAngles();
+                    FVector3 vEulerAngles = pCamera->GetEulerAngles();
                     vEulerAngles.x += fRotXAngle;
                     vEulerAngles.y += fRotYAngle;
                     vEulerAngles.z = 0;
@@ -3066,7 +3065,7 @@ namespace LostPeter
                 {
                     for (int j = 0; j < this->poTerrainGridInstanceCount; j++)
                     {
-                        glm::vec3 vPos = glm::vec3(j * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf,
+                        FVector3 vPos = FVector3(j * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf,
                                                    0.0f,
                                                    i * fTerrainInstanceSize + fTerrainInstanceSizeHalf - fTerrainSizeHalf);
                         TerrainObjectConstants toInstance;
@@ -4375,7 +4374,7 @@ namespace LostPeter
                              imageMemory);
     }
 
-    void VulkanWindow::createTextureRenderTarget1D(const glm::vec4& clDefault,
+    void VulkanWindow::createTextureRenderTarget1D(const FVector4& clDefault,
                                                    bool isSetColor,
                                                    uint32_t width, 
                                                    uint32_t mipMapCount,
@@ -4403,7 +4402,7 @@ namespace LostPeter
                                     buffer,
                                     bufferMemory);
     }
-    void VulkanWindow::createTextureRenderTarget1D(const glm::vec4& clDefault,
+    void VulkanWindow::createTextureRenderTarget1D(const FVector4& clDefault,
                                                    bool isSetColor,
                                                    uint32_t width, 
                                                    uint32_t mipMapCount,
@@ -4431,7 +4430,7 @@ namespace LostPeter
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
-    void VulkanWindow::createTextureRenderTarget2D(const glm::vec4& clDefault,
+    void VulkanWindow::createTextureRenderTarget2D(const FVector4& clDefault,
                                                    bool isSetColor,
                                                    uint32_t width, 
                                                    uint32_t height,
@@ -4505,7 +4504,7 @@ namespace LostPeter
                               0,
                               numArray);
     }
-    void VulkanWindow::createTextureRenderTarget2D(const glm::vec4& clDefault,
+    void VulkanWindow::createTextureRenderTarget2D(const FVector4& clDefault,
                                                    bool isSetColor,
                                                    uint32_t width, 
                                                    uint32_t height,
@@ -4635,7 +4634,7 @@ namespace LostPeter
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
-    void VulkanWindow::createTextureRenderTarget2DArray(const glm::vec4& clDefault,
+    void VulkanWindow::createTextureRenderTarget2DArray(const FVector4& clDefault,
                                                         bool isSetColor,
                                                         uint32_t width, 
                                                         uint32_t height,
@@ -4714,7 +4713,7 @@ namespace LostPeter
                               0,
                               numArray);
     }
-    void VulkanWindow::createTextureRenderTarget2DArray(const glm::vec4& clDefault,
+    void VulkanWindow::createTextureRenderTarget2DArray(const FVector4& clDefault,
                                                         bool isSetColor,
                                                         uint32_t width, 
                                                         uint32_t height,
@@ -4747,7 +4746,7 @@ namespace LostPeter
         destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
 
-    void VulkanWindow::createTextureRenderTarget3D(const glm::vec4& clDefault,
+    void VulkanWindow::createTextureRenderTarget3D(const FVector4& clDefault,
                                                    bool isSetColor,
                                                    uint32_t width, 
                                                    uint32_t height,
@@ -4819,7 +4818,7 @@ namespace LostPeter
                               0,
                               1);
     }
-    void VulkanWindow::createTextureRenderTarget3D(const glm::vec4& clDefault,
+    void VulkanWindow::createTextureRenderTarget3D(const FVector4& clDefault,
                                                    bool isSetColor,
                                                    uint32_t width, 
                                                    uint32_t height,
@@ -6490,8 +6489,8 @@ namespace LostPeter
                 this->passCB.g_DeltaTime = this->pTimer->GetTimeDelta();
 
                 //RenderTarget
-                this->passCB.g_RenderTargetSize = glm::vec2(this->poViewport.width, this->poViewport.height);
-                this->passCB.g_RenderTargetSize_Inv = glm::vec2(1.0f / this->poViewport.width, 1.0f / this->poViewport.height);
+                this->passCB.g_RenderTargetSize = FVector2(this->poViewport.width, this->poViewport.height);
+                this->passCB.g_RenderTargetSize_Inv = FVector2(1.0f / this->poViewport.width, 1.0f / this->poViewport.height);
 
                 //Light Settings
                 memcpy(&this->passCB.g_MainLight, &this->mainLight, sizeof(LightConstants));
@@ -6507,7 +6506,7 @@ namespace LostPeter
                     memcpy(data, &this->passCB, sizeof(PassConstants));
                 vkUnmapMemory(this->poDevice, memory);
             }
-                void VulkanWindow::updateCBs_PassTransformAndCamera(VulkanCamera* pCam, int nIndex)
+                void VulkanWindow::updateCBs_PassTransformAndCamera(FCamera* pCam, int nIndex)
                 {
                     //TransformConstants
                     TransformConstants& transformConstants = this->passCB.g_Transforms[nIndex];
@@ -6551,7 +6550,7 @@ namespace LostPeter
                         float time = this->pTimer->GetTimeSinceStart();
                         objectCB.g_MatWorld = glm::rotate(this->poMatWorld, 
                                                           time * glm::radians(90.0f), 
-                                                          glm::vec3(0.0f, 1.0f, 0.0f));
+                                                          FVector3(0.0f, 1.0f, 0.0f));
                     }
                     else
                     {
@@ -6655,14 +6654,14 @@ namespace LostPeter
                             if (ImGui::CollapsingHeader("Camera Transform"))
                             {
                                 //Position
-                                glm::vec3 vPos = this->pCamera->GetPos();
+                                FVector3 vPos = this->pCamera->GetPos();
                                 if (ImGui::DragFloat3("Position", &vPos[0], 0.05f, -FLT_MAX, FLT_MAX))
                                 {
                                     this->pCamera->SetPos(vPos);
                                     this->pCamera->UpdateViewMatrix();
                                 }
                                 //Rotation
-                                glm::vec3 vEulerAngle = this->pCamera->GetEulerAngles();
+                                FVector3 vEulerAngle = this->pCamera->GetEulerAngles();
                                 if (ImGui::DragFloat3("Rotation", &vEulerAngle[0], 0.1f, -180, 180))
                                 {
                                     this->pCamera->SetEulerAngles(vEulerAngle);
@@ -6670,19 +6669,19 @@ namespace LostPeter
                                 }
                                 ImGui::Spacing();
                                 //Right
-                                glm::vec3 vRight = this->pCamera->GetRight();
+                                FVector3 vRight = this->pCamera->GetRight();
                                 if (ImGui::DragFloat3("Right (X axis)", &vRight[0], 0.1f, -1.0f, 1.0f))
                                 {
                                     
                                 }
                                 //Up
-                                glm::vec3 vUp = this->pCamera->GetUp();
+                                FVector3 vUp = this->pCamera->GetUp();
                                 if (ImGui::DragFloat3("Up (Y axis)", &vUp[0], 0.1f, -1.0f, 1.0f))
                                 {
                                     
                                 }
                                 //Direction
-                                glm::vec3 vDir = this->pCamera->GetDir();
+                                FVector3 vDir = this->pCamera->GetDir();
                                 if (ImGui::DragFloat3("Direction (Z axis)", &vDir[0], 0.1f, -1.0f, 1.0f))
                                 {
                                     
@@ -6740,7 +6739,7 @@ namespace LostPeter
                             }
                             if (ImGui::CollapsingHeader("Camera Matrix4 World"))
                             {
-                                glm::mat4 mat4World = this->pCamera->GetMatrix4World();
+                                FMatrix4 mat4World = this->pCamera->GetMatrix4World();
                                 if (ImGui::BeginTable("split_camera_world", 4))
                                 {
                                     ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
@@ -6768,7 +6767,7 @@ namespace LostPeter
                             }
                             if (ImGui::CollapsingHeader("Camera Matrix4 View"))
                             {
-                                const glm::mat4& mat4View = this->pCamera->GetMatrix4View();
+                                const FMatrix4& mat4View = this->pCamera->GetMatrix4View();
                                 if (ImGui::BeginTable("split_camera_view", 4))
                                 {
                                     ImGui::TableNextColumn(); ImGui::Text("%f", mat4View[0][0]);
@@ -6796,7 +6795,7 @@ namespace LostPeter
                             }
                             if (ImGui::CollapsingHeader("Camera Matrix4 Projection"))
                             {
-                                const glm::mat4& mat4Projection = pCamera->GetMatrix4Projection();
+                                const FMatrix4& mat4Projection = pCamera->GetMatrix4Projection();
                                 if (ImGui::BeginTable("split_camera_projection", 4))
                                 {
                                     ImGui::TableNextColumn(); ImGui::Text("%f", mat4Projection[0][0]);
@@ -6947,7 +6946,7 @@ namespace LostPeter
                                 ImGui::Spacing();
 
                                 //position
-                                glm::vec3 vPosition = lc.position;
+                                FVector3 vPosition = lc.position;
                                 String namePosition = "Position - " + FUtilString::SaveInt(index);
                                 if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
                                 {
@@ -6957,13 +6956,13 @@ namespace LostPeter
 
                                 //Euler Angle
                                 String nameEulerAngle = "EulerAngle - " + FUtilString::SaveInt(index);
-                                glm::vec3 vEulerAngle = FMath::ToEulerAngles(lc.direction);
+                                FVector3 vEulerAngle = FMath::ToEulerAngles(lc.direction);
                                 if (ImGui::DragFloat3(nameEulerAngle.c_str(), &vEulerAngle[0], 0.1f, -180, 180))
                                 {
                                     lc.direction = FMath::ToDirection(vEulerAngle);
                                 }
                                 //direction
-                                glm::vec3 vDirection = lc.direction;
+                                FVector3 vDirection = lc.direction;
                                 String nameDirection = "Direction - " + FUtilString::SaveInt(index);
                                 if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
                                 {
@@ -7195,7 +7194,7 @@ namespace LostPeter
                                                        const VkFramebuffer& frameBuffer,
                                                        const VkOffset2D& offset,
                                                        const VkExtent2D& extent,
-                                                       const glm::vec4& clBg,
+                                                       const FVector4& clBg,
                                                        float depth,
                                                        uint32_t stencil)
                     {

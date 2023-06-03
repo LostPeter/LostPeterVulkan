@@ -23,8 +23,8 @@ namespace LostPeter
         virtual ~VulkanSceneObject();
 
     public:
-        glm::mat4 matWorld;
-        glm::mat4 matTexTransform;
+        FMatrix4 matWorld;
+        FMatrix4 matTexTransform;
 
         int numFramesDirty;
 		uint32_t objCBIndex;

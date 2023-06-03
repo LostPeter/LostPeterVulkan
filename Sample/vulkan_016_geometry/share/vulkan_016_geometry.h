@@ -103,7 +103,7 @@ public:
             return sizeof(uint32_t);
         }
 
-        bool CreateMeshSub(MeshData& meshData, bool isTranformLocal, const glm::mat4& matTransformLocal);
+        bool CreateMeshSub(MeshData& meshData, bool isTranformLocal, const FMatrix4& matTransformLocal);
 
         void WriteVertexData(std::vector<Vertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex4,
                              std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex4);
@@ -161,7 +161,7 @@ public:
         }
 
         bool AddMeshSub(ModelMeshSub* pMeshSub);
-        bool LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal);
+        bool LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal);
     };
     typedef std::vector<ModelMesh*> ModelMeshPtrVector;
     typedef std::map<String, ModelMesh*> ModelMeshPtrMap;
@@ -206,7 +206,7 @@ public:
         int frameCurrent;
 
         //Texture RenderTarget
-        glm::vec4 rtColorDefault;
+        FVector4 rtColorDefault;
         bool rtIsSetColor; 
         VkImageUsageFlags rtImageUsage;
 
@@ -710,7 +710,7 @@ public:
         std::vector<ObjectConstants> objectCBs;
         std::vector<VkBuffer> poBuffers_ObjectCB;
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
-        std::vector<glm::mat4> instanceMatWorld;
+        std::vector<FMatrix4> instanceMatWorld;
 
         std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_materialCB;

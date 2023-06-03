@@ -25,8 +25,8 @@ namespace LostPeter
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
 
-        glm::vec2 pos;
-        glm::vec4 color;
+        FVector2 pos;
+        FVector4 color;
 
 
         Vertex_Pos2Color4()
@@ -34,8 +34,8 @@ namespace LostPeter
             Reset();
         }
 
-        Vertex_Pos2Color4(const glm::vec2& _pos, 
-                          const glm::vec4& _color)
+        Vertex_Pos2Color4(const FVector2& _pos, 
+                          const FVector4& _color)
             : pos(_pos)
             , color(_color)
         {
@@ -113,8 +113,8 @@ namespace LostPeter
 
         void Reset()
         {
-            this->pos = glm::vec2(0, 0);
-            this->color = glm::vec4(0, 0, 0, 1);
+            this->pos = FVector2(0, 0);
+            this->color = FVector4(0, 0, 0, 1);
         }
     };
 
@@ -126,8 +126,8 @@ namespace LostPeter
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
 
-        glm::vec3 pos;
-        glm::vec3 normal;
+        FVector3 pos;
+        FVector3 normal;
 
 
         Vertex_Pos3Normal3()
@@ -135,8 +135,8 @@ namespace LostPeter
             Reset();
         }
 
-        Vertex_Pos3Normal3(const glm::vec3& _pos, 
-                           const glm::vec3& _normal)
+        Vertex_Pos3Normal3(const FVector3& _pos, 
+                           const FVector3& _normal)
             : pos(_pos)
             , normal(_normal)
         {
@@ -214,8 +214,8 @@ namespace LostPeter
 
         void Reset()
         {
-            this->pos = glm::vec3(0, 0, 0);
-            this->normal = glm::vec3(0, 1, 0);
+            this->pos = FVector3(0, 0, 0);
+            this->normal = FVector3(0, 1, 0);
         }
     };
 
@@ -227,9 +227,9 @@ namespace LostPeter
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
 
-        glm::vec3 pos;
-        glm::vec3 normal;
-        glm::vec2 texCoord;
+        FVector3 pos;
+        FVector3 normal;
+        FVector2 texCoord;
 
 
         Vertex_Pos3Normal3Tex2()
@@ -237,9 +237,9 @@ namespace LostPeter
             Reset();
         }
 
-        Vertex_Pos3Normal3Tex2(const glm::vec3& _pos, 
-                               const glm::vec3& _normal,
-                               const glm::vec2& _texCoord)
+        Vertex_Pos3Normal3Tex2(const FVector3& _pos, 
+                               const FVector3& _normal,
+                               const FVector2& _texCoord)
             : pos(_pos)
             , normal(_normal)
             , texCoord(_texCoord)
@@ -326,9 +326,9 @@ namespace LostPeter
 
         void Reset()
         {
-            this->pos = glm::vec3(0, 0, 0);
-            this->normal = glm::vec3(0, 1, 0);
-            this->texCoord = glm::vec2(0, 0);
+            this->pos = FVector3(0, 0, 0);
+            this->normal = FVector3(0, 1, 0);
+            this->texCoord = FVector2(0, 0);
         }
     };
 
@@ -340,9 +340,9 @@ namespace LostPeter
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
 
-        glm::vec2 pos;
-        glm::vec4 color;
-        glm::vec2 texCoord;
+        FVector2 pos;
+        FVector4 color;
+        FVector2 texCoord;
 
 
         Vertex_Pos2Color4Tex2()
@@ -350,9 +350,9 @@ namespace LostPeter
             Reset();
         }
 
-        Vertex_Pos2Color4Tex2(const glm::vec2& _pos, 
-                              const glm::vec4& _color, 
-                              const glm::vec2& _texCoord)
+        Vertex_Pos2Color4Tex2(const FVector2& _pos, 
+                              const FVector4& _color, 
+                              const FVector2& _texCoord)
             : pos(_pos)
             , color(_color)
             , texCoord(_texCoord)
@@ -438,9 +438,9 @@ namespace LostPeter
 
         void Reset()
         {
-            this->pos = glm::vec2(0, 0);
-            this->color = glm::vec4(0, 0, 0, 1);
-            this->texCoord = glm::vec2(0, 0);
+            this->pos = FVector2(0, 0);
+            this->color = FVector4(0, 0, 0, 1);
+            this->texCoord = FVector2(0, 0);
         }
     };
 
@@ -452,18 +452,18 @@ namespace LostPeter
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
 
-        glm::vec3 pos;
-        glm::vec4 color;
-        glm::vec2 texCoord;
+        FVector3 pos;
+        FVector4 color;
+        FVector2 texCoord;
 
         Vertex_Pos3Color4Tex2()
         {
             Reset();
         }
 
-        Vertex_Pos3Color4Tex2(const glm::vec3& _pos, 
-                              const glm::vec4& _color, 
-                              const glm::vec2& _texCoord)
+        Vertex_Pos3Color4Tex2(const FVector3& _pos, 
+                              const FVector4& _color, 
+                              const FVector2& _texCoord)
             : pos(_pos)
             , color(_color)
             , texCoord(_texCoord)
@@ -549,9 +549,9 @@ namespace LostPeter
 
         void Reset()
         {
-            this->pos = glm::vec3(0, 0, 0);
-            this->color = glm::vec4(0, 0, 0, 1);
-            this->texCoord = glm::vec2(0, 0);
+            this->pos = FVector3(0, 0, 0);
+            this->color = FVector4(0, 0, 0, 1);
+            this->texCoord = FVector2(0, 0);
         }
     };
 
@@ -563,20 +563,20 @@ namespace LostPeter
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
 
-        glm::vec3 pos;
-        glm::vec4 color;
-        glm::vec3 normal;
-        glm::vec2 texCoord;
+        FVector3 pos;
+        FVector4 color;
+        FVector3 normal;
+        FVector2 texCoord;
 
         Vertex_Pos3Color4Normal3Tex2()
         {
             Reset();
         }
 
-        Vertex_Pos3Color4Normal3Tex2(const glm::vec3& _pos, 
-                                     const glm::vec4& _color, 
-                                     const glm::vec3& _normal, 
-                                     const glm::vec2& _texCoord)
+        Vertex_Pos3Color4Normal3Tex2(const FVector3& _pos, 
+                                     const FVector4& _color, 
+                                     const FVector3& _normal, 
+                                     const FVector2& _texCoord)
             : pos(_pos)
             , color(_color)
             , normal(_normal)
@@ -671,10 +671,10 @@ namespace LostPeter
 
         void Reset()
         {
-            this->pos = glm::vec3(0, 0, 0);
-            this->color = glm::vec4(0, 0, 0, 1);
-            this->normal = glm::vec3(0, 1, 0);
-            this->texCoord = glm::vec2(0, 0);
+            this->pos = FVector3(0, 0, 0);
+            this->color = FVector4(0, 0, 0, 1);
+            this->normal = FVector3(0, 1, 0);
+            this->texCoord = FVector2(0, 0);
         }
     };
 
@@ -686,20 +686,20 @@ namespace LostPeter
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
 
-        glm::vec3 pos;
-        glm::vec4 color;
-        glm::vec3 normal;
-        glm::vec4 texCoord;
+        FVector3 pos;
+        FVector4 color;
+        FVector3 normal;
+        FVector4 texCoord;
 
         Vertex_Pos3Color4Normal3Tex4()
         {
             Reset();
         }
 
-        Vertex_Pos3Color4Normal3Tex4(const glm::vec3& _pos, 
-                                     const glm::vec4& _color, 
-                                     const glm::vec3& _normal, 
-                                     const glm::vec4& _texCoord)
+        Vertex_Pos3Color4Normal3Tex4(const FVector3& _pos, 
+                                     const FVector4& _color, 
+                                     const FVector3& _normal, 
+                                     const FVector4& _texCoord)
             : pos(_pos)
             , color(_color)
             , normal(_normal)
@@ -794,10 +794,10 @@ namespace LostPeter
 
         void Reset()
         {
-            this->pos = glm::vec3(0, 0, 0);
-            this->color = glm::vec4(0, 0, 0, 1);
-            this->normal = glm::vec3(0, 1, 0);
-            this->texCoord = glm::vec4(0, 0, 0, 0);
+            this->pos = FVector3(0, 0, 0);
+            this->color = FVector4(0, 0, 0, 1);
+            this->normal = FVector3(0, 1, 0);
+            this->texCoord = FVector4(0, 0, 0, 0);
         }
     };
 
@@ -809,11 +809,11 @@ namespace LostPeter
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
 
-        glm::vec3 pos;
-        glm::vec4 color;
-        glm::vec3 normal;
-        glm::vec3 tangent;
-        glm::vec2 texCoord;
+        FVector3 pos;
+        FVector4 color;
+        FVector3 normal;
+        FVector3 tangent;
+        FVector2 texCoord;
 
 
         Vertex_Pos3Color4Normal3Tangent3Tex2()
@@ -821,11 +821,11 @@ namespace LostPeter
             Reset();
         }
 
-        Vertex_Pos3Color4Normal3Tangent3Tex2(const glm::vec3& _pos, 
-                                             const glm::vec4& _color, 
-                                             const glm::vec3& _normal, 
-                                             const glm::vec3& _tangent, 
-                                             const glm::vec2& _texCoord)
+        Vertex_Pos3Color4Normal3Tangent3Tex2(const FVector3& _pos, 
+                                             const FVector4& _color, 
+                                             const FVector3& _normal, 
+                                             const FVector3& _tangent, 
+                                             const FVector2& _texCoord)
             : pos(_pos)
             , color(_color)
             , normal(_normal)
@@ -956,11 +956,11 @@ namespace LostPeter
 
         void Reset()
         {
-            this->pos = glm::vec3(0, 0, 0);
-            this->color = glm::vec4(0, 0, 0, 1);
-            this->normal = glm::vec3(0, 1, 0);
-            this->tangent = glm::vec3(0, 0, 1);
-            this->texCoord = glm::vec2(0, 0);
+            this->pos = FVector3(0, 0, 0);
+            this->color = FVector4(0, 0, 0, 1);
+            this->normal = FVector3(0, 1, 0);
+            this->tangent = FVector3(0, 0, 1);
+            this->texCoord = FVector2(0, 0);
         }
     };
 
@@ -972,11 +972,11 @@ namespace LostPeter
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
 
-        glm::vec3 pos;
-        glm::vec4 color;
-        glm::vec3 normal;
-        glm::vec3 tangent;
-        glm::vec4 texCoord;
+        FVector3 pos;
+        FVector4 color;
+        FVector3 normal;
+        FVector3 tangent;
+        FVector4 texCoord;
 
 
         Vertex_Pos3Color4Normal3Tangent3Tex4()
@@ -984,11 +984,11 @@ namespace LostPeter
             Reset();
         }
 
-        Vertex_Pos3Color4Normal3Tangent3Tex4(const glm::vec3& _pos, 
-                                             const glm::vec4& _color, 
-                                             const glm::vec3& _normal, 
-                                             const glm::vec3& _tangent, 
-                                             const glm::vec4& _texCoord)
+        Vertex_Pos3Color4Normal3Tangent3Tex4(const FVector3& _pos, 
+                                             const FVector4& _color, 
+                                             const FVector3& _normal, 
+                                             const FVector3& _tangent, 
+                                             const FVector4& _texCoord)
             : pos(_pos)
             , color(_color)
             , normal(_normal)
@@ -1119,11 +1119,11 @@ namespace LostPeter
 
         void Reset()
         {
-            this->pos = glm::vec3(0, 0, 0);
-            this->color = glm::vec4(0, 0, 0, 1);
-            this->normal = glm::vec3(0, 1, 0);
-            this->tangent = glm::vec3(0, 0, 1);
-            this->texCoord = glm::vec4(0, 0, 0, 0);
+            this->pos = FVector3(0, 0, 0);
+            this->color = FVector4(0, 0, 0, 1);
+            this->normal = FVector3(0, 1, 0);
+            this->tangent = FVector3(0, 0, 1);
+            this->texCoord = FVector4(0, 0, 0, 0);
         }
     };
 
@@ -1135,12 +1135,12 @@ namespace LostPeter
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
 
-        Vector3 pos;
-        Vector3 normal;
-        Vector3 tangent;
-        Vector4 blendweight;
-        Vector4 blendindex;
-        Vector2 texCoord;
+        FVector3 pos;
+        FVector3 normal;
+        FVector3 tangent;
+        FVector4 blendweight;
+        FVector4 blendindex;
+        FVector2 texCoord;
 
 
         Vertex_Pos3Normal3Tangent3BlendWI8Tex2()
@@ -1148,12 +1148,12 @@ namespace LostPeter
             Reset();
         }
 
-        Vertex_Pos3Normal3Tangent3BlendWI8Tex2(const Vector3& _pos, 
-                                               const Vector3& _normal, 
-                                               const Vector3& _tangent, 
-                                               const Vector4& _blendweight,
-                                               const Vector4& _blendindex,
-                                               const Vector2& _texCoord)
+        Vertex_Pos3Normal3Tangent3BlendWI8Tex2(const FVector3& _pos, 
+                                               const FVector3& _normal, 
+                                               const FVector3& _tangent, 
+                                               const FVector4& _blendweight,
+                                               const FVector4& _blendindex,
+                                               const FVector2& _texCoord)
             : pos(_pos)
             , normal(_normal)
             , tangent(_tangent)
@@ -1282,12 +1282,12 @@ namespace LostPeter
 
         void Reset()
         {
-            this->pos = Vector3(0, 0, 0);
-            this->normal = Vector3(0, 1, 0);
-            this->tangent = Vector3(0, 0, 1);
-            this->blendweight = Vector4(0, 0, 0, 0);
-            this->blendindex = Vector4(0, 0, 0, 0);
-            this->texCoord = Vector2(0, 0);
+            this->pos = FVector3(0, 0, 0);
+            this->normal = FVector3(0, 1, 0);
+            this->tangent = FVector3(0, 0, 1);
+            this->blendweight = FVector4(0, 0, 0, 0);
+            this->blendindex = FVector4(0, 0, 0, 0);
+            this->texCoord = FVector2(0, 0);
         }
     };
 
@@ -1299,13 +1299,13 @@ namespace LostPeter
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
 
-        Vector3 pos;
-        Vector4 color;
-        Vector3 normal;
-        Vector3 tangent;
-        Vector4 blendweight;
-        Vector4 blendindex;
-        Vector2 texCoord;
+        FVector3 pos;
+        FVector4 color;
+        FVector3 normal;
+        FVector3 tangent;
+        FVector4 blendweight;
+        FVector4 blendindex;
+        FVector2 texCoord;
 
 
         Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2()
@@ -1313,13 +1313,13 @@ namespace LostPeter
             Reset();
         }
 
-        Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2(const Vector3& _pos, 
-                                                     const Vector4& _color, 
-                                                     const Vector3& _normal, 
-                                                     const Vector3& _tangent, 
-                                                     const Vector4& _blendweight,
-                                                     const Vector4& _blendindex,
-                                                     const Vector2& _texCoord)
+        Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2(const FVector3& _pos, 
+                                                     const FVector4& _color, 
+                                                     const FVector3& _normal, 
+                                                     const FVector3& _tangent, 
+                                                     const FVector4& _blendweight,
+                                                     const FVector4& _blendindex,
+                                                     const FVector2& _texCoord)
             : pos(_pos)
             , color(_color)
             , normal(_normal)
@@ -1459,13 +1459,13 @@ namespace LostPeter
 
         void Reset()
         {
-            this->pos = Vector3(0, 0, 0);
-            this->color = Vector4(0, 0, 0, 1);
-            this->normal = Vector3(0, 1, 0);
-            this->tangent = Vector3(0, 0, 1);
-            this->blendweight = Vector4(0, 0, 0, 0);
-            this->blendindex = Vector4(0, 0, 0, 0);
-            this->texCoord = Vector2(0, 0);
+            this->pos = FVector3(0, 0, 0);
+            this->color = FVector4(0, 0, 0, 1);
+            this->normal = FVector3(0, 1, 0);
+            this->tangent = FVector3(0, 0, 1);
+            this->blendweight = FVector4(0, 0, 0, 0);
+            this->blendindex = FVector4(0, 0, 0, 0);
+            this->texCoord = FVector2(0, 0);
         }
     };
 
@@ -1984,12 +1984,12 @@ namespace LostPeter
     //////////////////////////////// TransformConstants /////////////////////////////
     struct utilExport TransformConstants
     {
-        glm::mat4 mat4View;
-        glm::mat4 mat4View_Inv;
-        glm::mat4 mat4Proj;
-        glm::mat4 mat4Proj_Inv;
-        glm::mat4 mat4ViewProj;
-        glm::mat4 mat4ViewProj_Inv;
+        FMatrix4 mat4View;
+        FMatrix4 mat4View_Inv;
+        FMatrix4 mat4Proj;
+        FMatrix4 mat4Proj_Inv;
+        FMatrix4 mat4ViewProj;
+        FMatrix4 mat4ViewProj_Inv;
 
         TransformConstants()
             : mat4View(FMath::Identity4x4())
@@ -2006,7 +2006,7 @@ namespace LostPeter
     //////////////////////////////// CameraConstants ////////////////////////////////
     struct utilExport CameraConstants
     {
-        glm::vec3 posEyeWorld;    
+        FVector3 posEyeWorld;    
         float fNearZ;
         float fFarZ;
         float fReserved1;
@@ -2028,14 +2028,14 @@ namespace LostPeter
     //////////////////////////////// LightConstants /////////////////////////////////
     struct utilExport LightConstants
     {
-        glm::vec4 common;    // x: type; y: enable(1 or 0); z: 0-11; w: spotPower
-        glm::vec3 position;  // directional/point/spot
+        FVector4 common;    // x: type; y: enable(1 or 0); z: 0-11; w: spotPower
+        FVector3 position;  // directional/point/spot
         float falloffStart;  // point/spot light only
-        glm::vec3 direction; // directional/spot light only
+        FVector3 direction; // directional/spot light only
         float falloffEnd;    // point/spot light only
-        glm::vec4 ambient;   // ambient
-        glm::vec4 diffuse;   // diffuse
-        glm::vec4 specular;  // specular
+        FVector4 ambient;   // ambient
+        FVector4 diffuse;   // diffuse
+        FVector4 specular;  // specular
 
         LightConstants()
             : common(0, 0, 0, 64)
@@ -2066,11 +2066,11 @@ namespace LostPeter
         float g_Pad2;
 
         //RenderTarget
-        glm::vec2 g_RenderTargetSize;   
-        glm::vec2 g_RenderTargetSize_Inv;
+        FVector2 g_RenderTargetSize;   
+        FVector2 g_RenderTargetSize_Inv;
 
         //Material
-        glm::vec4 g_AmbientLight;
+        FVector4 g_AmbientLight;
 
         //Light
         LightConstants g_MainLight;
@@ -2092,7 +2092,7 @@ namespace LostPeter
     //////////////////////////////// ObjectConstants ////////////////////////////////
     struct utilExport ObjectConstants
     {
-        glm::mat4 g_MatWorld;
+        FMatrix4 g_MatWorld;
         
 
         ObjectConstants()
@@ -2143,9 +2143,9 @@ namespace LostPeter
     //////////////////////////////// MaterialConstants //////////////////////////////
     struct utilExport MaterialConstants
     {
-        glm::vec4 factorAmbient;
-        glm::vec4 factorDiffuse;
-        glm::vec4 factorSpecular;
+        FVector4 factorAmbient;
+        FVector4 factorDiffuse;
+        FVector4 factorSpecular;
 
         float shininess;
         float alpha;
@@ -2184,10 +2184,10 @@ namespace LostPeter
     //////////////////////////////// TextureCopyConstants ///////////////////////////
     struct utilExport TextureCopyConstants
     {
-        glm::vec4 texInfo;
-        glm::vec4 texOffset;
-        glm::vec4 texIndexArray;
-        glm::vec4 texClearColor;
+        FVector4 texInfo;
+        FVector4 texOffset;
+        FVector4 texIndexArray;
+        FVector4 texClearColor;
 
         TextureCopyConstants()
             : texInfo(0, 0, 0, 0)

@@ -458,7 +458,6 @@ namespace LostPeter
     class AppEx;
     
     class VulkanBase;
-    class VulkanCamera;
     class VulkanDevice;
     class VulkanDeviceMemoryAllocation;
     class VulkanDeviceMemoryManager;
@@ -515,16 +514,7 @@ namespace LostPeter
     struct ObjectConstants;
     struct MaterialConstants;
     struct InstanceConstants;
-
-    typedef glm::vec2 Point;
-    typedef glm::vec2 Size;
-    typedef glm::vec2 Vector2;
-    typedef glm::vec3 Vector3;
-    typedef glm::vec4 Vector4;
-    typedef glm::mat3 Matrix3;
-    typedef glm::mat4 Matrix4;
-    typedef glm::quat Quaternion;
-    typedef glm::vec4 Color;
+    
 
     typedef std::vector<VulkanWindowEx*> VulkanWindowExPtrVector;
     typedef std::map<String, VulkanWindowEx*> VulkanWindowExPtrMap;
@@ -532,7 +522,6 @@ namespace LostPeter
     typedef std::vector<VulkanFence*> VulkanFencePtrVector;
 
     typedef std::vector<VulkanDeviceMemoryAllocation*> VulkanDeviceMemoryAllocationPtrVector;
-
     
 
 }; //LostPeter

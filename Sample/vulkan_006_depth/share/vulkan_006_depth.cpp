@@ -12,7 +12,6 @@
 #include "PreInclude.h"
 #include "vulkan_006_depth.h"
 #include "VulkanMeshLoader.h"
-#include "VulkanCamera.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -30,16 +29,16 @@ static const char* g_pathModels[3 * g_CountLen] =
     "cube",             "Assets/Model/Fbx/cube.fbx",                        "Assets/Texture/texture2d.jpg", //cube
 };
 
-static glm::vec3 g_tranformModels[3 * g_CountLen] = 
+static FVector3 g_tranformModels[3 * g_CountLen] = 
 {
-    glm::vec3(  -1,   0,   -1),     glm::vec3(     0,   0, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
-    glm::vec3(   1,   0,   -1),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
+    FVector3(  -1,   0,   -1),     FVector3(     0,   0, 0),    FVector3( 1.0f,   1.0f,   1.0f), //viking_room
+    FVector3(   1,   0,   -1),     FVector3(     0, 180, 0),    FVector3( 1.0f,   1.0f,   1.0f), //bunny
 
-    glm::vec3(  -1,   0,    1),     glm::vec3(   -90, 0, 0),      glm::vec3(0.02f,  0.02f,  0.02f), //plane
-    glm::vec3(   1,   0,    1),     glm::vec3(     0, 0, 0),      glm::vec3(0.01f,  0.01f,  0.01f), //cube
+    FVector3(  -1,   0,    1),     FVector3(   -90, 0, 0),      FVector3(0.02f,  0.02f,  0.02f), //plane
+    FVector3(   1,   0,    1),     FVector3(     0, 0, 0),      FVector3(0.01f,  0.01f,  0.01f), //cube
 };
 
-static glm::mat4 g_tranformLocalModels[g_CountLen] = 
+static FMatrix4 g_tranformLocalModels[g_CountLen] = 
 {
     FMath::RotateX(-90.0f), //viking_room
     FMath::ms_mat4Unit, //bunny
@@ -78,12 +77,12 @@ Vulkan_006_Depth::Vulkan_006_Depth(int width, int height, String name)
     this->cfg_shaderFragment_Path = "Assets/Shader/pos3_color4_tex2_ubo.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
 
-    this->cfg_cameraPos = glm::vec3(-0.65f, 2.5f, -4.0f);
+    this->cfg_cameraPos = FVector3(-0.65f, 2.5f, -4.0f);
 }
 
 void Vulkan_006_Depth::createCamera()
 {
-    this->pCamera = new VulkanCamera();
+    this->pCamera = new FCamera();
     cameraReset();
 }
 
@@ -122,7 +121,7 @@ void Vulkan_006_Depth::loadModel_Custom()
         m_mapModelObjects[pModelObject->nameModel] = pModelObject;
     }
 }
-bool Vulkan_006_Depth::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_006_Depth::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load 
     MeshData meshData;
@@ -142,7 +141,7 @@ bool Vulkan_006_Depth::loadModel_VertexIndex(ModelObject* pModelObject, bool isF
         MeshVertex& vertex = meshData.vertices[i];
         Vertex_Pos3Color4Tex2 v;
         v.pos = vertex.pos;
-        v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
         v.texCoord = vertex.texCoord;
 
         if (isTranformLocal)
@@ -446,7 +445,7 @@ void Vulkan_006_Depth::updateCBs_Custom()
             {
                 objectCB.g_MatWorld = glm::rotate(pModelObject->poMatWorld, 
                                                   time * glm::radians(90.0f), 
-                                                  glm::vec3(0.0f, 1.0f, 0.0f));
+                                                  FVector3(0.0f, 1.0f, 0.0f));
             }
             else
             {
@@ -515,7 +514,7 @@ void Vulkan_006_Depth::modelConfig()
                 String nameWorld = "Model World - " + pModelObject->nameModel;
                 if (ImGui::CollapsingHeader(nameWorld.c_str()))
                 {
-                    const glm::mat4& mat4World = pModelObject->objectCBs[0].g_MatWorld;
+                    const FMatrix4& mat4World = pModelObject->objectCBs[0].g_MatWorld;
                     String nameTable = FUtilString::SaveInt(i) + " - split_model_world";
                     if (ImGui::BeginTable(nameTable.c_str(), 4))
                     {

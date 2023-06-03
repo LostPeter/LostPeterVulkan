@@ -31,12 +31,12 @@ Vulkan_003_Texture::Vulkan_003_Texture(int width, int height, String name)
 void Vulkan_003_Texture::loadModel_Custom()
 {   
     //1> vertices
-    this->vertices.push_back(Vertex_Pos2Color4Tex2(glm::vec2(-0.5f, -0.5f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)));
-    this->vertices.push_back(Vertex_Pos2Color4Tex2(glm::vec2(-0.5f,  0.5f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)));
-    this->vertices.push_back(Vertex_Pos2Color4Tex2(glm::vec2( 0.5f,  0.5f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)));
-    this->vertices.push_back(Vertex_Pos2Color4Tex2(glm::vec2( 0.5f,  0.5f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)));
-    this->vertices.push_back(Vertex_Pos2Color4Tex2(glm::vec2( 0.5f, -0.5f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)));
-    this->vertices.push_back(Vertex_Pos2Color4Tex2(glm::vec2(-0.5f, -0.5f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4Tex2(FVector2(-0.5f, -0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(0.0f, 0.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4Tex2(FVector2(-0.5f,  0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(0.0f, 1.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4Tex2(FVector2( 0.5f,  0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(1.0f, 1.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4Tex2(FVector2( 0.5f,  0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(1.0f, 1.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4Tex2(FVector2( 0.5f, -0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(1.0f, 0.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4Tex2(FVector2(-0.5f, -0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(0.0f, 0.0f)));
     this->poVertexCount = (uint32_t)this->vertices.size();
     this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos2Color4Tex2);
     this->poVertexBuffer_Data = &this->vertices[0];

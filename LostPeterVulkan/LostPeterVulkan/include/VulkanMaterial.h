@@ -29,9 +29,9 @@ namespace LostPeter
         int normalSrvHeapIndex;
         int numFramesDirty;
 
-        glm::vec4 factorAmbient;
-        glm::vec4 factorDiffuse;
-        glm::vec4 factorSpecular;
+        FVector4 factorAmbient;
+        FVector4 factorDiffuse;
+        FVector4 factorSpecular;
 
         float shininess;
         float alpha;

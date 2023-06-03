@@ -56,8 +56,8 @@ namespace LostPeter
 		VulkanPixelBox GetSubVolume(const FBox& def, bool resetOrigin = true) const;
 		uint8* GetTopLeftFrontPixelPtr() const;
 
-		Color GetColorAt(size_t x, size_t y, size_t z) const;
-		void SetColorAt(size_t x, size_t y, size_t z, const Color &cv);
+		FColor GetColorAt(size_t x, size_t y, size_t z) const;
+		void SetColorAt(size_t x, size_t y, size_t z, const FColor &cv);
     };
 
 }; //LostPeter

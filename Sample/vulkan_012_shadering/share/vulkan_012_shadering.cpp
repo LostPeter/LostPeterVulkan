@@ -13,7 +13,6 @@
 #include "vulkan_012_shadering.h"
 #include "VulkanMeshLoader.h"
 #include "VulkanMeshGeometry.h"
-#include "VulkanCamera.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -56,7 +55,7 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //bunny
 
 };
-static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
+static FMatrix4 g_MeshTranformLocals[g_MeshCount] = 
 {
     FMath::ms_mat4Unit, //geo_triangle
 
@@ -379,27 +378,27 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
 
     0, //terrain 
 };
-static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] = 
+static FVector3 g_ObjectTranforms[3 * g_ObjectCount] = 
 {   
-    glm::vec3(   0,    0,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
-    glm::vec3(-2.0,  1.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainDiffuse
-    glm::vec3(   0,  1.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainNormal
-    glm::vec3( 2.0,  1.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainControl
+    FVector3(   0,    0,   0),     FVector3(     0,  0,  0),    FVector3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
+    FVector3(-2.0,  1.0,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainDiffuse
+    FVector3(   0,  1.0,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainNormal
+    FVector3( 2.0,  1.0,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainControl
 
-    glm::vec3(   0,  2.2,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //compute_CopyTexture
-    glm::vec3(   0,  3.4,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //compute_CopyTextureArray
+    FVector3(   0,  2.2,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //compute_CopyTexture
+    FVector3(   0,  3.4,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //compute_CopyTextureArray
 
-    glm::vec3(   0,  4.6,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_passthrough
-    glm::vec3(-2.0,  5.8,   0),     glm::vec3(     0,  0,  0),    glm::vec3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_integer
-    glm::vec3(-1.0,  5.8,   0),     glm::vec3(     0,  0,  0),    glm::vec3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_fractional_even
-    glm::vec3(   0,  5.8,   0),     glm::vec3(     0,  0,  0),    glm::vec3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_fractional_odd
-    glm::vec3( 1.0,  5.8,   0),     glm::vec3(     0,  0,  0),    glm::vec3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_pow2
-    glm::vec3(   0,  7.0,   0),     glm::vec3(   -90,  0,  0),    glm::vec3( 0.01f,   0.01f,   0.01f), //tessellation_pntriangles
+    FVector3(   0,  4.6,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //tessellation_passthrough
+    FVector3(-2.0,  5.8,   0),     FVector3(     0,  0,  0),    FVector3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_integer
+    FVector3(-1.0,  5.8,   0),     FVector3(     0,  0,  0),    FVector3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_fractional_even
+    FVector3(   0,  5.8,   0),     FVector3(     0,  0,  0),    FVector3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_fractional_odd
+    FVector3( 1.0,  5.8,   0),     FVector3(     0,  0,  0),    FVector3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_pow2
+    FVector3(   0,  7.0,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //tessellation_pntriangles
 
-    glm::vec3(   0,   0,  -10),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //geometry_show
-    glm::vec3(   0,   0,  -10),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //geometry_normal
+    FVector3(   0,   0,  -10),     FVector3(     0, 180, 0),    FVector3( 1.0f,   1.0f,   1.0f), //geometry_show
+    FVector3(   0,   0,  -10),     FVector3(     0, 180, 0),    FVector3( 1.0f,   1.0f,   1.0f), //geometry_normal
 
-    glm::vec3(   0, -0.1,   0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //terrain
+    FVector3(   0, -0.1,   0),     FVector3(     0,  0,  0),    FVector3( 1.0f,   1.0f,   1.0f), //terrain
 
 };
 static bool g_ObjectIsTransparents[g_ObjectCount] = 
@@ -515,7 +514,7 @@ static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
 
 
 /////////////////////////// ModelMesh ///////////////////////////
-bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load
     MeshData meshData;
@@ -553,7 +552,7 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Normal3Tex2 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
             v.texCoord = vertex.texCoord;
             if (isTranformLocal)
@@ -591,7 +590,7 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Normal3Tangent3Tex2 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
             v.tangent = vertex.tangent;
             v.texCoord = vertex.texCoord;
@@ -704,12 +703,12 @@ Vulkan_012_Shadering::Vulkan_012_Shadering(int width, int height, String name)
     this->cfg_isUseComputeShader = true;
     this->cfg_isCreateRenderComputeSycSemaphore = true;
 
-    this->cfg_cameraPos = glm::vec3(-2.5f, 2.0f, -20.0f);
-    this->cfg_cameraLookTarget = glm::vec3(-2.5f, 5.0f, 0.0f);
+    this->cfg_cameraPos = FVector3(-2.5f, 2.0f, -20.0f);
+    this->cfg_cameraLookTarget = FVector3(-2.5f, 5.0f, 0.0f);
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-    this->mainLight.direction = glm::vec3(0, -1, 0); //y-
+    this->mainLight.direction = FVector3(0, -1, 0); //y-
 }
 
 void Vulkan_012_Shadering::setUpEnabledFeatures()
@@ -735,7 +734,7 @@ void Vulkan_012_Shadering::createDescriptorSetLayout_Custom()
 
 void Vulkan_012_Shadering::createCamera()
 {
-    this->pCamera = new VulkanCamera();
+    this->pCamera = new FCamera();
     cameraReset();
 }
 void Vulkan_012_Shadering::cameraReset()
@@ -883,7 +882,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
             //ObjectConstants
             {
                 ObjectConstants objectConstants;
-                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectTranforms[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectTranforms[i * 3 + 0] + FVector3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
                                                                  g_ObjectTranforms[i * 3 + 1],
                                                                  g_ObjectTranforms[i * 3 + 2]);
                 pModelObject->objectCBs.push_back(objectConstants);
@@ -2072,7 +2071,7 @@ void Vulkan_012_Shadering::updateCBs_Custom()
             {
                 objectCB.g_MatWorld = glm::rotate(pModelObject->instanceMatWorld[j], 
                                                   time * glm::radians(90.0f), 
-                                                  glm::vec3(0.0f, 1.0f, 0.0f));
+                                                  FVector3(0.0f, 1.0f, 0.0f));
             }
             else
             {
@@ -2270,7 +2269,7 @@ void Vulkan_012_Shadering::modelConfig()
                             String nameObject = FUtilString::SaveInt(j) + " - Object - " + pModelObject->nameObject;
                             if (ImGui::CollapsingHeader(nameObject.c_str()))
                             {
-                                const glm::mat4& mat4World = obj.g_MatWorld;
+                                const FMatrix4& mat4World = obj.g_MatWorld;
                                 String nameTable = FUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameObject;
                                 if (ImGui::BeginTable(nameTable.c_str(), 4))
                                 {

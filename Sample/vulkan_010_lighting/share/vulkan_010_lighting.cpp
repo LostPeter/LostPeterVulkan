@@ -12,7 +12,6 @@
 #include "PreInclude.h"
 #include "vulkan_010_lighting.h"
 #include "VulkanMeshLoader.h"
-#include "VulkanCamera.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -55,14 +54,14 @@ static int g_instanceExtCount[] =
     5, //bunny
 };
 
-static glm::vec3 g_tranformModels[3 * g_CountLen] = 
+static FVector3 g_tranformModels[3 * g_CountLen] = 
 {   
-    glm::vec3(   0,   0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //plane
-    glm::vec3(   0,   0,    5),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
-    glm::vec3(   0,   0,    0),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
+    FVector3(   0,   0,    0),     FVector3(     0,  0,  0),    FVector3( 1.0f,   1.0f,   1.0f), //plane
+    FVector3(   0,   0,    5),     FVector3(     0,  0,  0),    FVector3( 1.0f,   1.0f,   1.0f), //viking_room
+    FVector3(   0,   0,    0),     FVector3(     0, 180, 0),    FVector3( 1.0f,   1.0f,   1.0f), //bunny
 };
 
-static glm::mat4 g_tranformLocalModels[g_CountLen] = 
+static FMatrix4 g_tranformLocalModels[g_CountLen] = 
 {
     FMath::ms_mat4Unit, //plane
     FMath::RotateX(-90.0f), //viking_room
@@ -110,7 +109,7 @@ Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, String name)
     this->cfg_shaderFragment_Path = "Assets/Shader/standard_mesh_opaque.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
 
-    this->cfg_cameraPos = glm::vec3(0.0f, 15.0f, -20.0f);
+    this->cfg_cameraPos = FVector3(0.0f, 15.0f, -20.0f);
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
@@ -118,7 +117,7 @@ Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, String name)
 
 void Vulkan_010_Lighting::createCamera()
 {
-    this->pCamera = new VulkanCamera();
+    this->pCamera = new FCamera();
     cameraReset();
 }
 
@@ -163,7 +162,7 @@ void Vulkan_010_Lighting::loadModel_Custom()
         m_mapModelObjects[pModelObject->nameModel] = pModelObject;
     }
 }
-bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load 
     MeshData meshData;
@@ -183,7 +182,7 @@ bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool 
         MeshVertex& vertex = meshData.vertices[i];
         Vertex_Pos3Color4Normal3Tex2 v;
         v.pos = vertex.pos;
-        v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
         v.normal = vertex.normal;
         v.texCoord = vertex.texCoord;
 
@@ -260,7 +259,7 @@ void Vulkan_010_Lighting::rebuildInstanceCBs(bool isCreateVkBuffer)
         {
             //ObjectConstants
             ObjectConstants objectConstants;
-            objectConstants.g_MatWorld = FMath::FromTRS(g_tranformModels[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+            objectConstants.g_MatWorld = FMath::FromTRS(g_tranformModels[i * 3 + 0] + FVector3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
                                                            g_tranformModels[i * 3 + 1],
                                                            g_tranformModels[i * 3 + 2]);
             pModelObject->objectCBs.push_back(objectConstants);
@@ -518,7 +517,7 @@ void Vulkan_010_Lighting::updateCBs_Custom()
             {
                 objectCB.g_MatWorld = glm::rotate(pModelObject->instanceMatWorld[j], 
                                                   time * glm::radians(90.0f), 
-                                                  glm::vec3(0.0f, 1.0f, 0.0f));
+                                                  FVector3(0.0f, 1.0f, 0.0f));
             }
             else
             {
@@ -636,7 +635,7 @@ void Vulkan_010_Lighting::modelConfig()
                             String nameObject = FUtilString::SaveInt(j) + " - Object - " + pModelObject->nameModel;
                             if (ImGui::CollapsingHeader(nameObject.c_str()))
                             {
-                                const glm::mat4& mat4World = obj.g_MatWorld;
+                                const FMatrix4& mat4World = obj.g_MatWorld;
                                 String nameTable = FUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
                                 if (ImGui::BeginTable(nameTable.c_str(), 4))
                                 {

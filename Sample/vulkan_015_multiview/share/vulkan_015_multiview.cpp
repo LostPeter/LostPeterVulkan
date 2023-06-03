@@ -13,7 +13,6 @@
 #include "vulkan_015_multiview.h"
 #include "VulkanMeshLoader.h"
 #include "VulkanMeshGeometry.h"
-#include "VulkanCamera.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -81,7 +80,7 @@ static bool g_Mesh_IsTranformLocals[g_Mesh_Count] =
     false, //flower
 
 };
-static glm::mat4 g_Mesh_TranformLocals[g_Mesh_Count] = 
+static FMatrix4 g_Mesh_TranformLocals[g_Mesh_Count] = 
 {
     FMath::ms_mat4Unit, //quad
     FMath::ms_mat4Unit, //plane
@@ -700,33 +699,33 @@ static const char* g_ObjectRend_NameRenderPasses[g_ObjectRend_Count] =
 
     "rp_default", //copy_view-1
 };
-static glm::vec3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
+static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
-    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(  500.0f,    500.0f,    500.0f), //object_skybox-1
-    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(    1.0f,      1.0f,      1.0f), //object_mountain-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_mountain-1
  
-    glm::vec3(   0,  0.0,   1.5),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_rock-1
-    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(    0.1f,      0.1f,      0.1f), //object_cliff-1
+    FVector3(   0,  0.0,   1.5),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_rock-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    0.1f,      0.1f,      0.1f), //object_cliff-1
 
-    glm::vec3(   0,  0.0, -10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree-1
-    glm::vec3(   0,  0.0, -10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree-2
-    glm::vec3(   0,  0.0,  10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-1
-    glm::vec3(   0,  0.0,  10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-2
+    FVector3(   0,  0.0, -10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree-1
+    FVector3(   0,  0.0, -10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree-2
+    FVector3(   0,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-1
+    FVector3(   0,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-2
 
-    glm::vec3(   0,  0.0,   2.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass-1
-    glm::vec3(   0,  0.0,   2.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass-2
-    glm::vec3(   0,  0.0,   5.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass-3
-    glm::vec3(   0,  0.0,   5.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass-4
-    glm::vec3(   0,  0.0,  -1.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-1
-    glm::vec3(   0,  0.0,  -1.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-2
-    glm::vec3(   0,  0.0,  -2.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-3
-    glm::vec3(   0,  0.0,  -2.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-4
-    glm::vec3(   0,  0.0,  -3.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-5
-    glm::vec3(   0,  0.0,  -3.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-6
-    glm::vec3(   0,  0.0,  -4.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-7
-    glm::vec3(   0,  0.0,  -4.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-8
+    FVector3(   0,  0.0,   2.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-1
+    FVector3(   0,  0.0,   2.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-2
+    FVector3(   0,  0.0,   5.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-3
+    FVector3(   0,  0.0,   5.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-4
+    FVector3(   0,  0.0,  -1.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-1
+    FVector3(   0,  0.0,  -1.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-2
+    FVector3(   0,  0.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-3
+    FVector3(   0,  0.0,  -2.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-4
+    FVector3(   0,  0.0,  -3.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-5
+    FVector3(   0,  0.0,  -3.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-6
+    FVector3(   0,  0.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-7
+    FVector3(   0,  0.0,  -4.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-8
 
-    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(    1.0f,      1.0f,      1.0f), //copy_view-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //copy_view-1
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
@@ -802,7 +801,7 @@ void Vulkan_015_MultiView::ModelMeshSub::Destroy()
     this->poIndexBuffer = VK_NULL_HANDLE;
     this->poIndexBufferMemory = VK_NULL_HANDLE;
 }
-bool Vulkan_015_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_015_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     int count_vertex = (int)meshData.vertices.size();
     if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Tex2)
@@ -814,7 +813,7 @@ bool Vulkan_015_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool 
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Tex2 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.texCoord = vertex.texCoord;
             if (isTranformLocal)
             {
@@ -852,7 +851,7 @@ bool Vulkan_015_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool 
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Normal3Tex2 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
             v.texCoord = vertex.texCoord;
             if (isTranformLocal)
@@ -891,9 +890,9 @@ bool Vulkan_015_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool 
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Normal3Tex4 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
-            v.texCoord = glm::vec4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
+            v.texCoord = FVector4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
             if (isTranformLocal)
             {
                 v.pos = FMath::Transform(matTransformLocal, v.pos);
@@ -930,7 +929,7 @@ bool Vulkan_015_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool 
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Normal3Tangent3Tex2 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
             v.tangent = vertex.tangent;
             v.texCoord = vertex.texCoord;
@@ -970,10 +969,10 @@ bool Vulkan_015_MultiView::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool 
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Normal3Tangent3Tex4 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
             v.tangent = vertex.tangent;
-            v.texCoord = glm::vec4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
+            v.texCoord = FVector4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
             if (isTranformLocal)
             {
                 v.pos = FMath::Transform(matTransformLocal, v.pos);
@@ -1042,7 +1041,7 @@ void Vulkan_015_MultiView::ModelMeshSub::WriteVertexData(std::vector<Vertex_Pos3
             aPos3Color4Normal3Tex2.push_back(Vertex_Pos3Color4Normal3Tex2(vSrc.pos,
                                              vSrc.color,
                                              vSrc.normal,
-                                             glm::vec2(vSrc.texCoord.x, vSrc.texCoord.y)));
+                                             FVector2(vSrc.texCoord.x, vSrc.texCoord.y)));
         }
     }   
     else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
@@ -1064,7 +1063,7 @@ void Vulkan_015_MultiView::ModelMeshSub::WriteVertexData(std::vector<Vertex_Pos3
                                                      vSrc.color,
                                                      vSrc.normal,
                                                      vSrc.tangent,
-                                                     glm::vec2(vSrc.texCoord.x, vSrc.texCoord.y)));
+                                                     FVector2(vSrc.texCoord.x, vSrc.texCoord.y)));
         }
     }
 }
@@ -1089,7 +1088,7 @@ bool Vulkan_015_MultiView::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
     return true;
 }
 
-bool Vulkan_015_MultiView::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_015_MultiView::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load
     std::vector<MeshData> aMeshDatas;
@@ -1643,7 +1642,7 @@ Vulkan_015_MultiView::Vulkan_015_MultiView(int width, int height, String name)
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-    this->mainLight.direction = glm::vec3(0, -1, 0); //y-
+    this->mainLight.direction = FVector3(0, -1, 0); //y-
 
     this->aInstanceExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
     this->aDeviceExtensions.push_back(VK_KHR_MULTIVIEW_EXTENSION_NAME);
@@ -1683,15 +1682,15 @@ void Vulkan_015_MultiView::createRenderPass_Custom()
 
 void Vulkan_015_MultiView::createCamera()
 {
-    this->pCamera = new VulkanCamera();
+    this->pCamera = new FCamera();
     cameraReset();
 }
 void Vulkan_015_MultiView::cameraReset()
 {
     VulkanWindow::cameraReset();
 
-    this->pCamera->SetPos(glm::vec3(-25.0f, 13.0f, 4.0f));
-    this->pCamera->SetEulerAngles(glm::vec3(35.0f, 90.0f, 0.0f));
+    this->pCamera->SetPos(FVector3(-25.0f, 13.0f, 4.0f));
+    this->pCamera->SetEulerAngles(FVector3(35.0f, 90.0f, 0.0f));
     this->pCamera->SetFarZ(100000.0f);
 }
 
@@ -1943,7 +1942,7 @@ void Vulkan_015_MultiView::rebuildInstanceCBs(bool isCreateVkBuffer)
             //ObjectConstants
             {
                 ObjectConstants objectConstants;
-                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + glm::vec3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
+                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
                                                                  g_ObjectRend_Tranforms[3 * i + 1],
                                                                  g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);
@@ -3292,7 +3291,7 @@ void Vulkan_015_MultiView::updateCBs_Custom()
             {
                 objectCB.g_MatWorld = glm::rotate(pRend->instanceMatWorld[j], 
                                                   time * glm::radians(90.0f), 
-                                                  glm::vec3(0.0f, 1.0f, 0.0f));
+                                                  FVector3(0.0f, 1.0f, 0.0f));
             }
             else
             {
@@ -3711,7 +3710,7 @@ void Vulkan_015_MultiView::modelConfig()
                                         String nameObject = FUtilString::SaveInt(p) + " - Object - " + nameObjectRend;
                                         if (ImGui::CollapsingHeader(nameObject.c_str()))
                                         {
-                                            const glm::mat4& mat4World = obj.g_MatWorld;
+                                            const FMatrix4& mat4World = obj.g_MatWorld;
                                             String nameTable = FUtilString::SaveInt(p) + " - matWorld - " + nameObjectRend;
                                             if (ImGui::BeginTable(nameTable.c_str(), 4))
                                             {

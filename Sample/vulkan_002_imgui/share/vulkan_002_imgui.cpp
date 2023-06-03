@@ -27,9 +27,9 @@ Vulkan_002_Imgui::Vulkan_002_Imgui(int width, int height, String name)
 void Vulkan_002_Imgui::loadModel_Custom()
 {
     //1> vertices
-    this->vertices.push_back(Vertex_Pos2Color4(glm::vec2( 0.0f,  0.5f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
-    this->vertices.push_back(Vertex_Pos2Color4(glm::vec2( 0.5f, -0.5f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
-    this->vertices.push_back(Vertex_Pos2Color4(glm::vec2(-0.5f, -0.5f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4(FVector2( 0.0f,  0.5f), FVector4(1.0f, 0.0f, 0.0f, 1.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4(FVector2( 0.5f, -0.5f), FVector4(0.0f, 0.0f, 1.0f, 1.0f)));
+    this->vertices.push_back(Vertex_Pos2Color4(FVector2(-0.5f, -0.5f), FVector4(0.0f, 1.0f, 0.0f, 1.0f)));
     this->poVertexCount = (uint32_t)this->vertices.size();
     this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos2Color4);
     this->poVertexBuffer_Data = &this->vertices[0];

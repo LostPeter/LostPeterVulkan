@@ -1010,7 +1010,7 @@ namespace LostPeter
                 v.pos.y = radius * cosf(phi);
                 v.pos.z = radius * sinf(phi) * sinf(theta);
                 //color
-                v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
                 //normal
                 v.normal = glm::normalize(v.pos);
                 //tangent
@@ -1105,14 +1105,14 @@ namespace LostPeter
         numSubdivisions = std::min<uint32>(numSubdivisions, 6u);
         const float X = 0.525731f;
         const float Z = 0.850651f;
-        glm::vec3 pos[12] =
+        FVector3 pos[12] =
         {
-            glm::vec3(   -X,  0.0f,     Z),  glm::vec3(    X,  0.0f,     Z),
-            glm::vec3(   -X,  0.0f,    -Z),  glm::vec3(    X,  0.0f,    -Z),
-            glm::vec3( 0.0f,     Z,     X),  glm::vec3( 0.0f,     Z,    -X),
-            glm::vec3( 0.0f,    -Z,     X),  glm::vec3( 0.0f,    -Z,    -X),
-            glm::vec3(    Z,     X,  0.0f),  glm::vec3(   -Z,     X,  0.0f),
-            glm::vec3(    Z,    -X,  0.0f),  glm::vec3(   -Z,    -X,  0.0f)
+            FVector3(   -X,  0.0f,     Z),  FVector3(    X,  0.0f,     Z),
+            FVector3(   -X,  0.0f,    -Z),  FVector3(    X,  0.0f,    -Z),
+            FVector3( 0.0f,     Z,     X),  FVector3( 0.0f,     Z,    -X),
+            FVector3( 0.0f,    -Z,     X),  FVector3( 0.0f,    -Z,    -X),
+            FVector3(    Z,     X,  0.0f),  FVector3(   -Z,     X,  0.0f),
+            FVector3(    Z,    -X,  0.0f),  FVector3(   -Z,    -X,  0.0f)
         };
 
         uint32 k[60] =
@@ -1180,8 +1180,8 @@ namespace LostPeter
                 float c = cosf(j * dTheta);
                 float s = sinf(j * dTheta);
 
-                vertex.pos = glm::vec3(r * c, y, r * s);
-                vertex.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                vertex.pos = FVector3(r * c, y, r * s);
+                vertex.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
 
                 vertex.texCoord.x = (float)j / sliceCount;
                 vertex.texCoord.y = flipV ? ((float)i / stackCount) : (1.0f - (float)i / stackCount);
@@ -1206,13 +1206,13 @@ namespace LostPeter
                 //  dz/dv = (r0-r1)*sin(t)
 
                 // This is unit length.
-                vertex.tangent = glm::vec3(-s, 0.0f, c);
+                vertex.tangent = FVector3(-s, 0.0f, c);
 
                 float dr = bottomRadius - topRadius;
-                glm::vec3 bitangent(dr * c, -height, dr * s);
+                FVector3 bitangent(dr * c, -height, dr * s);
 
-                glm::vec3 T = vertex.tangent;
-                glm::vec3 B = bitangent;
+                FVector3 T = vertex.tangent;
+                FVector3 B = bitangent;
                 vertex.normal = glm::normalize(glm::cross(T, B));
 
                 meshData.AddVertex(vertex);

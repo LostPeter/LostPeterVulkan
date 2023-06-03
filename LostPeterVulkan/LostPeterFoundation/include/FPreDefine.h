@@ -137,6 +137,7 @@ namespace LostPeterFoundation
 
     class FBitwise;
     class FBox;
+    class FCamera;
     class FMath;
     class FLog;
     class FLogConsole;

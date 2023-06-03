@@ -12,7 +12,6 @@
 #include "PreInclude.h"
 #include "vulkan_009_instancing.h"
 #include "VulkanMeshLoader.h"
-#include "VulkanCamera.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -47,13 +46,13 @@ static const char* g_pathModelShaderModules[2 * g_CountLen] =
 
 static float g_instanceGap = 1.5f;
 
-static glm::vec3 g_tranformModels[3 * g_CountLen] = 
+static FVector3 g_tranformModels[3 * g_CountLen] = 
 {   
-    glm::vec3(   0,   0,    1),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
-    glm::vec3(   0,   0,    0),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
+    FVector3(   0,   0,    1),     FVector3(     0,  0,  0),    FVector3( 1.0f,   1.0f,   1.0f), //viking_room
+    FVector3(   0,   0,    0),     FVector3(     0, 180, 0),    FVector3( 1.0f,   1.0f,   1.0f), //bunny
 };
 
-static glm::mat4 g_tranformLocalModels[g_CountLen] = 
+static FMatrix4 g_tranformLocalModels[g_CountLen] = 
 {
     FMath::RotateX(-90.0f), //viking_room
     FMath::ms_mat4Unit, //bunny
@@ -83,16 +82,16 @@ static float g_TransparentAlpha[g_CountLen] =
     1.0f, //bunny
 };
 
-static glm::vec4 g_OutlineWidth[g_CountLen] = 
+static FVector4 g_OutlineWidth[g_CountLen] = 
 {
-    glm::vec4(0.02f,0.02f,0.02f,0.02f), //viking_room
-    glm::vec4(0.02f,0.02f,0.02f,0.02f), //bunny
+    FVector4(0.02f,0.02f,0.02f,0.02f), //viking_room
+    FVector4(0.02f,0.02f,0.02f,0.02f), //bunny
 };
 
-static glm::vec4 g_OutlineColor[g_CountLen] = 
+static FVector4 g_OutlineColor[g_CountLen] = 
 {
-    glm::vec4(0,1,0,1), //viking_room
-    glm::vec4(1,0,0,1), //bunny
+    FVector4(0,1,0,1), //viking_room
+    FVector4(1,0,0,1), //bunny
 };
 
 
@@ -109,12 +108,12 @@ Vulkan_009_Instancing::Vulkan_009_Instancing(int width, int height, String name)
     this->cfg_shaderFragment_Path = "Assets/Shader/standard_mesh_opaque.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
 
-    this->cfg_cameraPos = glm::vec3(0.0f, 3.0f, -4.0f);
+    this->cfg_cameraPos = FVector3(0.0f, 3.0f, -4.0f);
 }
 
 void Vulkan_009_Instancing::createCamera()
 {
-    this->pCamera = new VulkanCamera();
+    this->pCamera = new FCamera();
     cameraReset();
 }
 
@@ -155,7 +154,7 @@ void Vulkan_009_Instancing::loadModel_Custom()
         m_mapModelObjects[pModelObject->nameModel] = pModelObject;
     }
 }
-bool Vulkan_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load 
     MeshData meshData;
@@ -175,7 +174,7 @@ bool Vulkan_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, boo
         MeshVertex& vertex = meshData.vertices[i];
         Vertex_Pos3Color4Normal3Tex2 v;
         v.pos = vertex.pos;
-        v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
         v.normal = vertex.normal;
         v.texCoord = vertex.texCoord;
 
@@ -251,7 +250,7 @@ void Vulkan_009_Instancing::rebuildInstanceCBs(bool isCreateVkBuffer)
         for (int j = 0; j < pModelObject->countInstance; j++)
         {
             ObjectConstants objectConstants;
-            objectConstants.g_MatWorld = FMath::FromTRS(g_tranformModels[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+            objectConstants.g_MatWorld = FMath::FromTRS(g_tranformModels[i * 3 + 0] + FVector3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
                                                            g_tranformModels[i * 3 + 1],
                                                            g_tranformModels[i * 3 + 2]);
             pModelObject->objectCBs.push_back(objectConstants);
@@ -666,7 +665,7 @@ void Vulkan_009_Instancing::updateCBs_Custom()
             {
                 objectCB.g_MatWorld = glm::rotate(pModelObject->instanceMatWorld[j], 
                                                   time * glm::radians(90.0f), 
-                                                  glm::vec3(0.0f, 1.0f, 0.0f));
+                                                  FVector3(0.0f, 1.0f, 0.0f));
             }
             else
             {
@@ -792,7 +791,7 @@ void Vulkan_009_Instancing::modelConfig()
                     {
                         ObjectConstants_Outline& obj = pModelObject->objectCBs_Outline[j];
                         //Mat
-                        const glm::mat4& mat4World = obj.g_MatWorld;
+                        const FMatrix4& mat4World = obj.g_MatWorld;
                         String nameTable = FUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameModel;
                         if (ImGui::BeginTable(nameTable.c_str(), 4))
                         {
@@ -823,7 +822,7 @@ void Vulkan_009_Instancing::modelConfig()
                         float fOutlineWidth = obj.g_OutlineWidth.x;
                         if (ImGui::DragFloat(nameOutlineWidth.c_str(), &fOutlineWidth, 0.01f, 0.01f, 1.0f))
                         {
-                            obj.g_OutlineWidth = glm::vec4(fOutlineWidth,fOutlineWidth,fOutlineWidth,fOutlineWidth);
+                            obj.g_OutlineWidth = FVector4(fOutlineWidth,fOutlineWidth,fOutlineWidth,fOutlineWidth);
                         }
                         //OutlineColor
                         String nameOutlineColor = "Outline Color - " + pModelObject->nameModel;

@@ -99,7 +99,7 @@ public:
         }
 
 
-        bool LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal);
+        bool LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal);
 
     };
     typedef std::vector<ModelMesh*> ModelMeshPtrVector;
@@ -145,7 +145,7 @@ public:
         int frameCurrent;
 
         //Texture RenderTarget
-        glm::vec4 rtColorDefault;
+        FVector4 rtColorDefault;
         bool rtIsSetColor; 
         VkImageUsageFlags rtImageUsage;
 
@@ -762,7 +762,7 @@ public:
         std::vector<ObjectConstants> objectCBs;
         std::vector<VkBuffer> poBuffers_ObjectCB;
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
-        std::vector<glm::mat4> instanceMatWorld;
+        std::vector<FMatrix4> instanceMatWorld;
 
         std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_materialCB;

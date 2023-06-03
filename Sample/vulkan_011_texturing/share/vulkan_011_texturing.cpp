@@ -12,7 +12,6 @@
 #include "PreInclude.h"
 #include "vulkan_011_texturing.h"
 #include "VulkanMeshLoader.h"
-#include "VulkanCamera.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -101,7 +100,7 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //sphere
     
 };
-static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
+static FMatrix4 g_MeshTranformLocals[g_MeshCount] = 
 {
     FMath::ms_mat4Unit, //plane
     FMath::ms_mat4Unit, //plane_nt
@@ -522,30 +521,30 @@ static int g_ObjectInstanceExtCount[g_ObjectCount] =
     0, //textureDisplacementMap 
 
 };
-static glm::vec3 g_ObjectTranforms[3 * g_ObjectCount] = 
+static FVector3 g_ObjectTranforms[3 * g_ObjectCount] = 
 {   
-    glm::vec3(   0, -0.1,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 1.0f,   1.0f,   1.0f), //ground
+    FVector3(   0, -0.1,    0),     FVector3(     0,  0,  0),    FVector3( 1.0f,   1.0f,   1.0f), //ground
 
 ////Basic-Level Texture Operation
-    glm::vec3(   0,  0.1,  0.4),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureSampler_Wrap
-    glm::vec3(   0,  0.1,  1.5),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureSampler_Mirror
-    glm::vec3(   0,  0.1,  2.6),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureSampler_Clamp
-    glm::vec3(   0,  0.1,  3.7),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureSampler_Border
-    glm::vec3(   0,  0.1,  4.8),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //texture1D
-    glm::vec3(   0,  0.1,  5.9),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //texture2D
-    glm::vec3(   0,  0.1,  7.0),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //texture2Darray
-    glm::vec3(   0,  0.1,  8.1),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //texture3D
-    glm::vec3(   0,    0,    0),     glm::vec3(     0,  0,  0),    glm::vec3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
-    glm::vec3(   0,  0.4,  9.2),     glm::vec3(     0,  0,  0),    glm::vec3( 0.005f,  0.005f,  0.005f), //textureCubeMap_Sphere
-    glm::vec3(   0,  0.1, 10.3),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureAnimation_Scroll
-    glm::vec3(   0,  0.1, 11.4),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureAnimation_Chunk
+    FVector3(   0,  0.1,  0.4),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureSampler_Wrap
+    FVector3(   0,  0.1,  1.5),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureSampler_Mirror
+    FVector3(   0,  0.1,  2.6),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureSampler_Clamp
+    FVector3(   0,  0.1,  3.7),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureSampler_Border
+    FVector3(   0,  0.1,  4.8),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //texture1D
+    FVector3(   0,  0.1,  5.9),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //texture2D
+    FVector3(   0,  0.1,  7.0),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //texture2Darray
+    FVector3(   0,  0.1,  8.1),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //texture3D
+    FVector3(   0,    0,    0),     FVector3(     0,  0,  0),    FVector3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
+    FVector3(   0,  0.4,  9.2),     FVector3(     0,  0,  0),    FVector3( 0.005f,  0.005f,  0.005f), //textureCubeMap_Sphere
+    FVector3(   0,  0.1, 10.3),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureAnimation_Scroll
+    FVector3(   0,  0.1, 11.4),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureAnimation_Chunk
 
 ////High-Level Texture Operation
-    glm::vec3(   0,  0.1, 12.5),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureOriginal
-    glm::vec3(   0,  0.1, 13.6),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureBumpMap
-    glm::vec3(   0,  0.1, 14.7),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureNormalMap
-    glm::vec3(   0,  0.1, 15.8),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureParallaxMap
-    glm::vec3(   0,  0.1, 16.9),     glm::vec3(     0,  0,  0),    glm::vec3( 0.01f,   0.01f,    0.01f), //textureDisplacementMap
+    FVector3(   0,  0.1, 12.5),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureOriginal
+    FVector3(   0,  0.1, 13.6),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureBumpMap
+    FVector3(   0,  0.1, 14.7),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureNormalMap
+    FVector3(   0,  0.1, 15.8),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureParallaxMap
+    FVector3(   0,  0.1, 16.9),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureDisplacementMap
 
 };
 static bool g_ObjectIsTransparents[g_ObjectCount] = 
@@ -681,7 +680,7 @@ static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
 
 
 /////////////////////////// ModelMesh ///////////////////////////
-bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load
     MeshData meshData;
@@ -703,7 +702,7 @@ bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Normal3Tex2 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
             v.texCoord = vertex.texCoord;
             if (isTranformLocal)
@@ -741,7 +740,7 @@ bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Normal3Tangent3Tex2 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
             v.tangent = vertex.tangent;
             v.texCoord = vertex.texCoord;
@@ -853,7 +852,7 @@ Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, String name)
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-    this->mainLight.direction = glm::vec3(0, -1, 0); //y-
+    this->mainLight.direction = FVector3(0, -1, 0); //y-
 }
 
 void Vulkan_011_Texturing::setUpEnabledFeatures()
@@ -880,15 +879,15 @@ void Vulkan_011_Texturing::createDescriptorSetLayout_Custom()
 
 void Vulkan_011_Texturing::createCamera()
 {
-    this->pCamera = new VulkanCamera();
+    this->pCamera = new FCamera();
     cameraReset();
 }
 void Vulkan_011_Texturing::cameraReset()
 {
     VulkanWindow::cameraReset();
 
-    this->pCamera->SetPos(glm::vec3(-4.0f, 24.0f, 3.6f));
-    this->pCamera->SetEulerAngles(glm::vec3(80.0f, 0.0f, 0.0f));
+    this->pCamera->SetPos(FVector3(-4.0f, 24.0f, 3.6f));
+    this->pCamera->SetEulerAngles(FVector3(80.0f, 0.0f, 0.0f));
 }
 
 void Vulkan_011_Texturing::loadModel_Custom()
@@ -1067,7 +1066,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
             //ObjectConstants
             {
                 ObjectConstants objectConstants;
-                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectTranforms[i * 3 + 0] + glm::vec3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectTranforms[i * 3 + 0] + FVector3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
                                                                  g_ObjectTranforms[i * 3 + 1],
                                                                  g_ObjectTranforms[i * 3 + 2]);
                 pModelObject->objectCBs.push_back(objectConstants);
@@ -1141,9 +1140,9 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                             {
                                 if (j == pModelObject->countInstance / 2)
                                 {
-                                    materialConstants.factorAmbient = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-                                    materialConstants.factorDiffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-                                    materialConstants.factorSpecular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                                    materialConstants.factorAmbient = FVector4(0.0f, 0.0f, 0.0f, 1.0f);
+                                    materialConstants.factorDiffuse = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+                                    materialConstants.factorSpecular = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
                                     materialConstants.lighting = 0.0f;
                                 }
                             }
@@ -1151,9 +1150,9 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                             {
                                 if (j == pModelObject->countInstance / 2)
                                 {
-                                    materialConstants.factorAmbient = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-                                    materialConstants.factorDiffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-                                    materialConstants.factorSpecular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                                    materialConstants.factorAmbient = FVector4(0.0f, 0.0f, 0.0f, 1.0f);
+                                    materialConstants.factorDiffuse = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+                                    materialConstants.factorSpecular = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
                                 }
                                 materialConstants.aTexLayers[p].indexTextureArray = 1; 
                                 materialConstants.aTexLayers[p].texSpeedU = FMath::RandF(20.0f, 1000.0f);
@@ -1162,9 +1161,9 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                             {
                                 if (j == pModelObject->countInstance / 2)
                                 {
-                                    materialConstants.factorAmbient = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-                                    materialConstants.factorDiffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-                                    materialConstants.factorSpecular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                                    materialConstants.factorAmbient = FVector4(0.0f, 0.0f, 0.0f, 1.0f);
+                                    materialConstants.factorDiffuse = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+                                    materialConstants.factorSpecular = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
                                 }
                                 materialConstants.aTexLayers[p].indexTextureArray = 2;
                             }
@@ -1172,9 +1171,9 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                             {
                                 if (j == pModelObject->countInstance / 2)
                                 {
-                                    materialConstants.factorAmbient = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-                                    materialConstants.factorDiffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-                                    materialConstants.factorSpecular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+                                    materialConstants.factorAmbient = FVector4(0.0f, 0.0f, 0.0f, 1.0f);
+                                    materialConstants.factorDiffuse = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+                                    materialConstants.factorSpecular = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
                                 }
                                 materialConstants.aTexLayers[p].indexTextureArray = 3;
                                 materialConstants.aTexLayers[p].texSpeedU = 0.1f;
@@ -2235,7 +2234,7 @@ void Vulkan_011_Texturing::updateCBs_Custom()
             {
                 objectCB.g_MatWorld = glm::rotate(pModelObject->instanceMatWorld[j], 
                                                   timeSinceStart * glm::radians(90.0f), 
-                                                  glm::vec3(0.0f, 1.0f, 0.0f));
+                                                  FVector3(0.0f, 1.0f, 0.0f));
             }
             else
             {
@@ -2407,7 +2406,7 @@ void Vulkan_011_Texturing::modelConfig()
                             String nameObject = FUtilString::SaveInt(j) + " - Object - " + pModelObject->nameObject;
                             if (ImGui::CollapsingHeader(nameObject.c_str()))
                             {
-                                const glm::mat4& mat4World = obj.g_MatWorld;
+                                const FMatrix4& mat4World = obj.g_MatWorld;
                                 String nameTable = FUtilString::SaveInt(j) + " - matWorld - " + pModelObject->nameObject;
                                 if (ImGui::BeginTable(nameTable.c_str(), 4))
                                 {

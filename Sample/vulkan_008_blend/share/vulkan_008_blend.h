@@ -23,8 +23,8 @@ public:
 public:
     struct ObjectConstants_Outline
     {
-        glm::mat4 g_MatWorld;
-        glm::vec4 g_OutlineColor;
+        FMatrix4 g_MatWorld;
+        FVector4 g_OutlineColor;
         float g_OutlineWidth;
 
         ObjectConstants_Outline()
@@ -202,7 +202,7 @@ public:
         std::vector<ObjectConstants> objectCBs;
         std::vector<VkBuffer> poBuffers_ObjectCB;
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
-        glm::mat4 poMatWorld;
+        FMatrix4 poMatWorld;
 
         std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_materialCB;
@@ -271,7 +271,7 @@ protected:
 
         //Geometry/Texture
         virtual void loadModel_Custom();
-            bool loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal);
+            bool loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal);
             bool loadModel_Texture(ModelObject* pModelObject);
 
         //ConstBuffers

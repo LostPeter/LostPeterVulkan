@@ -166,7 +166,7 @@ public:
         std::vector<ObjectConstants> objectCBs;
         std::vector<VkBuffer> poBuffers_ObjectCB;
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
-        glm::mat4 poMatWorld;
+        FMatrix4 poMatWorld;
 
         //Texture
         uint32_t poMipMapCount;
@@ -221,7 +221,7 @@ protected:
 
         //Geometry/Texture
         virtual void loadModel_Custom();
-            bool loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal);
+            bool loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal);
             bool loadModel_Texture(ModelObject* pModelObject);
 
         //ConstBuffers

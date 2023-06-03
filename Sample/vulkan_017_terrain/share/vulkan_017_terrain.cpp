@@ -13,7 +13,6 @@
 #include "vulkan_017_terrain.h"
 #include "VulkanMeshLoader.h"
 #include "VulkanMeshGeometry.h"
-#include "VulkanCamera.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -78,7 +77,7 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //flower
 
 };
-static glm::mat4 g_MeshTranformLocals[g_MeshCount] = 
+static FMatrix4 g_MeshTranformLocals[g_MeshCount] = 
 {
     FMath::ms_mat4Unit, //plane
     FMath::ms_mat4Unit, //cube
@@ -615,31 +614,31 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-8
 
 };
-static glm::vec3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
+static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
-    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(  500.0f,    500.0f,    500.0f), //object_skybox-1
-    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(    1.0f,      1.0f,      1.0f), //object_mountain-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_mountain-1
  
-    glm::vec3(   0,  0.0,   1.5),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_rock-1
-    glm::vec3(   0,  0.0,   0.0),    glm::vec3(     0,  0,  0),    glm::vec3(    0.1f,      0.1f,      0.1f), //object_cliff-1
+    FVector3(   0,  0.0,   1.5),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_rock-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    0.1f,      0.1f,      0.1f), //object_cliff-1
 
-    glm::vec3(   0,  0.0, -10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree-1
-    glm::vec3(   0,  0.0, -10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree-2
-    glm::vec3(   0,  0.0,  10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-1
-    glm::vec3(   0,  0.0,  10.0),    glm::vec3(     0,  0,  0),    glm::vec3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-2
+    FVector3(   0,  0.0, -10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree-1
+    FVector3(   0,  0.0, -10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree-2
+    FVector3(   0,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-1
+    FVector3(   0,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-2
 
-    glm::vec3(   0,  0.0,   2.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass-1
-    glm::vec3(   0,  0.0,   2.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass-2
-    glm::vec3(   0,  0.0,   5.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass-3
-    glm::vec3(   0,  0.0,   5.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_grass-4
-    glm::vec3(   0,  0.0,  -1.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-1
-    glm::vec3(   0,  0.0,  -1.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-2
-    glm::vec3(   0,  0.0,  -2.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-3
-    glm::vec3(   0,  0.0,  -2.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-4
-    glm::vec3(   0,  0.0,  -3.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-5
-    glm::vec3(   0,  0.0,  -3.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-6
-    glm::vec3(   0,  0.0,  -4.0),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-7
-    glm::vec3(   0,  0.0,  -4.5),    glm::vec3(     0,  0,  0),    glm::vec3(   50.0f,     50.0f,     50.0f), //object_flower-8
+    FVector3(   0,  0.0,   2.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-1
+    FVector3(   0,  0.0,   2.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-2
+    FVector3(   0,  0.0,   5.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-3
+    FVector3(   0,  0.0,   5.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-4
+    FVector3(   0,  0.0,  -1.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-1
+    FVector3(   0,  0.0,  -1.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-2
+    FVector3(   0,  0.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-3
+    FVector3(   0,  0.0,  -2.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-4
+    FVector3(   0,  0.0,  -3.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-5
+    FVector3(   0,  0.0,  -3.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-6
+    FVector3(   0,  0.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-7
+    FVector3(   0,  0.0,  -4.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-8
 
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
@@ -714,7 +713,7 @@ void Vulkan_017_Terrain::ModelMeshSub::Destroy()
     this->poIndexBuffer = VK_NULL_HANDLE;
     this->poIndexBufferMemory = VK_NULL_HANDLE;
 }
-bool Vulkan_017_Terrain::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_017_Terrain::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     int count_vertex = (int)meshData.vertices.size();
     if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex2)
@@ -726,7 +725,7 @@ bool Vulkan_017_Terrain::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool is
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Normal3Tex2 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
             v.texCoord = vertex.texCoord;
             if (isTranformLocal)
@@ -765,9 +764,9 @@ bool Vulkan_017_Terrain::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool is
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Normal3Tex4 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
-            v.texCoord = glm::vec4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
+            v.texCoord = FVector4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
             if (isTranformLocal)
             {
                 v.pos = FMath::Transform(matTransformLocal, v.pos);
@@ -804,7 +803,7 @@ bool Vulkan_017_Terrain::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool is
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Normal3Tangent3Tex2 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
             v.tangent = vertex.tangent;
             v.texCoord = vertex.texCoord;
@@ -844,10 +843,10 @@ bool Vulkan_017_Terrain::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool is
             MeshVertex& vertex = meshData.vertices[i];
             Vertex_Pos3Color4Normal3Tangent3Tex4 v;
             v.pos = vertex.pos;
-            v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
             v.tangent = vertex.tangent;
-            v.texCoord = glm::vec4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
+            v.texCoord = FVector4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
             if (isTranformLocal)
             {
                 v.pos = FMath::Transform(matTransformLocal, v.pos);
@@ -916,7 +915,7 @@ void Vulkan_017_Terrain::ModelMeshSub::WriteVertexData(std::vector<Vertex_Pos3Co
             aPos3Color4Normal3Tex2.push_back(Vertex_Pos3Color4Normal3Tex2(vSrc.pos,
                                              vSrc.color,
                                              vSrc.normal,
-                                             glm::vec2(vSrc.texCoord.x, vSrc.texCoord.y)));
+                                             FVector2(vSrc.texCoord.x, vSrc.texCoord.y)));
         }
     }   
     else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
@@ -938,7 +937,7 @@ void Vulkan_017_Terrain::ModelMeshSub::WriteVertexData(std::vector<Vertex_Pos3Co
                                                      vSrc.color,
                                                      vSrc.normal,
                                                      vSrc.tangent,
-                                                     glm::vec2(vSrc.texCoord.x, vSrc.texCoord.y)));
+                                                     FVector2(vSrc.texCoord.x, vSrc.texCoord.y)));
         }
     }
 }
@@ -963,7 +962,7 @@ bool Vulkan_017_Terrain::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
     return true;
 }
 
-bool Vulkan_017_Terrain::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const glm::mat4& matTransformLocal)
+bool Vulkan_017_Terrain::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load
     std::vector<MeshData> aMeshDatas;
@@ -1312,7 +1311,7 @@ Vulkan_017_Terrain::Vulkan_017_Terrain(int width, int height, String name)
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
-    this->mainLight.direction = glm::vec3(0, -1, 0); //y-
+    this->mainLight.direction = FVector3(0, -1, 0); //y-
 
     this->cfg_terrain_Path = "Assets/Terrain/terrain_1025_1025.raw";
 }
@@ -1339,15 +1338,15 @@ void Vulkan_017_Terrain::createDescriptorSetLayout_Custom()
 
 void Vulkan_017_Terrain::createCamera()
 {
-    this->pCamera = new VulkanCamera();
+    this->pCamera = new FCamera();
     cameraReset();
 }
 void Vulkan_017_Terrain::cameraReset()
 {
     VulkanWindow::cameraReset();
 
-    this->pCamera->SetPos(glm::vec3(-25.0f, 13.0f, 4.0f));
-    this->pCamera->SetEulerAngles(glm::vec3(35.0f, 90.0f, 0.0f));
+    this->pCamera->SetPos(FVector3(-25.0f, 13.0f, 4.0f));
+    this->pCamera->SetEulerAngles(FVector3(35.0f, 90.0f, 0.0f));
     this->pCamera->SetFarZ(100000.0f);
 }
 
@@ -1588,7 +1587,7 @@ void Vulkan_017_Terrain::rebuildInstanceCBs(bool isCreateVkBuffer)
             //ObjectConstants
             {
                 ObjectConstants objectConstants;
-                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + glm::vec3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
+                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
                                                                  g_ObjectRend_Tranforms[3 * i + 1],
                                                                  g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);
@@ -2774,7 +2773,7 @@ void Vulkan_017_Terrain::updateCBs_Custom()
             {
                 objectCB.g_MatWorld = glm::rotate(pRend->instanceMatWorld[j], 
                                                   time * glm::radians(90.0f), 
-                                                  glm::vec3(0.0f, 1.0f, 0.0f));
+                                                  FVector3(0.0f, 1.0f, 0.0f));
             }
             else
             {
@@ -3171,7 +3170,7 @@ void Vulkan_017_Terrain::modelConfig()
                                         String nameObject = FUtilString::SaveInt(p) + " - Object - " + nameObjectRend;
                                         if (ImGui::CollapsingHeader(nameObject.c_str()))
                                         {
-                                            const glm::mat4& mat4World = obj.g_MatWorld;
+                                            const FMatrix4& mat4World = obj.g_MatWorld;
                                             String nameTable = FUtilString::SaveInt(p) + " - matWorld - " + nameObjectRend;
                                             if (ImGui::BeginTable(nameTable.c_str(), 4))
                                             {

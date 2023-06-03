@@ -84,7 +84,7 @@ namespace LostPeter
         void* poIndexBuffer_Data;
         VkBuffer poIndexBuffer;
         VkDeviceMemory poIndexBufferMemory;
-        glm::mat4 poMatWorld;
+        FMatrix4 poMatWorld;
 
         VulkanVertexType poTypeVertex;
         VkPipelineLayout poPipelineLayout;
@@ -129,7 +129,7 @@ namespace LostPeter
         
         bool isFrameBufferResized;
         //Config
-        glm::vec4 cfg_colorBackground;
+        FVector4 cfg_colorBackground;
         bool cfg_isMSAA;
         bool cfg_isImgui;
         bool cfg_isWireFrame;
@@ -156,9 +156,9 @@ namespace LostPeter
         VkBlendOp cfg_BlendAlphaOp;
         VkColorComponentFlags cfg_ColorWriteMask;
 
-        glm::vec3 cfg_cameraPos;
-        glm::vec3 cfg_cameraLookTarget;
-        glm::vec3 cfg_cameraUp;
+        FVector3 cfg_cameraPos;
+        FVector3 cfg_cameraLookTarget;
+        FVector3 cfg_cameraUp;
 
         float cfg_cameraFov;
         float cfg_cameraNear;
@@ -270,7 +270,7 @@ namespace LostPeter
 
         struct TerrainObjectConstants
         {
-            glm::mat4 g_MatWorld;
+            FMatrix4 g_MatWorld;
         
 
             TerrainObjectConstants()
@@ -292,15 +292,15 @@ namespace LostPeter
         VkDescriptorSetVector poTerrainGraphicsDescriptorSets; 
         
         //Camera
-        VulkanCamera* pCamera; //Eye Left
-        VulkanCamera* pCameraRight; //Eye Right
+        FCamera* pCamera; //Eye Left
+        FCamera* pCameraRight; //Eye Right
 
         //Light
         LightConstants mainLight; //common.x == Vulkan_Light_Directional, can not change
         LightConstants aAdditionalLights[MAX_LIGHT_COUNT];
 
         //Mouse
-        glm::vec2 mousePosLast;
+        FVector2 mousePosLast;
         bool mouseButtonDownLeft;
         bool mouseButtonDownRight;
 
@@ -606,7 +606,7 @@ namespace LostPeter
                                                       VkDeviceMemory& imageMemory);
 
                     
-                    virtual void createTextureRenderTarget1D(const glm::vec4& clDefault,
+                    virtual void createTextureRenderTarget1D(const FVector4& clDefault,
                                                              bool isSetColor,
                                                              uint32_t width, 
                                                              uint32_t mipMapCount,
@@ -618,7 +618,7 @@ namespace LostPeter
                                                              VkDeviceMemory& imageMemory,
                                                              VkBuffer& buffer, 
                                                              VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTarget1D(const glm::vec4& clDefault,
+                    virtual void createTextureRenderTarget1D(const FVector4& clDefault,
                                                              bool isSetColor,
                                                              uint32_t width, 
                                                              uint32_t mipMapCount,
@@ -629,7 +629,7 @@ namespace LostPeter
                                                              VkImage& image, 
                                                              VkDeviceMemory& imageMemory);
                     
-                    virtual void createTextureRenderTarget2D(const glm::vec4& clDefault,
+                    virtual void createTextureRenderTarget2D(const FVector4& clDefault,
                                                              bool isSetColor,
                                                              uint32_t width, 
                                                              uint32_t height,
@@ -643,7 +643,7 @@ namespace LostPeter
                                                              VkDeviceMemory& imageMemory,
                                                              VkBuffer& buffer, 
                                                              VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTarget2D(const glm::vec4& clDefault,
+                    virtual void createTextureRenderTarget2D(const FVector4& clDefault,
                                                              bool isSetColor,
                                                              uint32_t width, 
                                                              uint32_t height,
@@ -679,7 +679,7 @@ namespace LostPeter
                                                              VkImage& image, 
                                                              VkDeviceMemory& imageMemory);
                     
-                    virtual void createTextureRenderTarget2DArray(const glm::vec4& clDefault,
+                    virtual void createTextureRenderTarget2DArray(const FVector4& clDefault,
                                                                   bool isSetColor,
                                                                   uint32_t width, 
                                                                   uint32_t height,
@@ -694,7 +694,7 @@ namespace LostPeter
                                                                   VkDeviceMemory& imageMemory,
                                                                   VkBuffer& buffer, 
                                                                   VkDeviceMemory& bufferMemory);
-                    virtual void createTextureRenderTarget2DArray(const glm::vec4& clDefault,
+                    virtual void createTextureRenderTarget2DArray(const FVector4& clDefault,
                                                                   bool isSetColor,
                                                                   uint32_t width, 
                                                                   uint32_t height,
@@ -707,7 +707,7 @@ namespace LostPeter
                                                                   VkImage& image, 
                                                                   VkDeviceMemory& imageMemory);
 
-                    virtual void createTextureRenderTarget3D(const glm::vec4& clDefault,
+                    virtual void createTextureRenderTarget3D(const FVector4& clDefault,
                                                              bool isSetColor,
                                                              uint32_t width, 
                                                              uint32_t height,
@@ -721,7 +721,7 @@ namespace LostPeter
                                                              VkDeviceMemory& imageMemory,
                                                              VkBuffer& buffer, 
                                                              VkDeviceMemory& bufferMemory);                                           
-                    virtual void createTextureRenderTarget3D(const glm::vec4& clDefault,
+                    virtual void createTextureRenderTarget3D(const FVector4& clDefault,
                                                              bool isSetColor,
                                                              uint32_t width, 
                                                              uint32_t height,
@@ -950,7 +950,7 @@ namespace LostPeter
             virtual void updateRender();
                 virtual void updateSceneObjects();
                 virtual void updateCBs_Pass();
-                    virtual void updateCBs_PassTransformAndCamera(VulkanCamera* pCam, int nIndex);
+                    virtual void updateCBs_PassTransformAndCamera(FCamera* pCam, int nIndex);
                 virtual void updateCBs_Objects();
                     virtual void updateCBs_ObjectsContent();
                 virtual void updateCBs_Materials();
@@ -992,7 +992,7 @@ namespace LostPeter
                                                      const VkFramebuffer& frameBuffer,
                                                      const VkOffset2D& offset,
                                                      const VkExtent2D& extent,
-                                                     const glm::vec4& clBg,
+                                                     const FVector4& clBg,
                                                      float depth,
                                                      uint32_t stencil);
                             virtual void bindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport, const VkRect2D& scissor);

@@ -363,7 +363,7 @@ namespace LostPeter
 		return format;
 	}
 
-	void VulkanPixelFormat::PackColor(const Color &color, const VulkanPixelFormatType format, void* dest)
+	void VulkanPixelFormat::PackColor(const FColor &color, const VulkanPixelFormatType format, void* dest)
 	{
 		PackColor(color.r, color.g, color.b, color.a, format, dest);
 	}	
@@ -475,12 +475,12 @@ namespace LostPeter
 		}
 	}
 
-	void VulkanPixelFormat::UnpackColor(Color& color, VulkanPixelFormatType format, const void* src)
+	void VulkanPixelFormat::UnpackColor(FColor& color, VulkanPixelFormatType format, const void* src)
 	{
 		UnpackColor(&color.r, &color.g, &color.b, &color.a, format, src);
 	}
 
-	void VulkanPixelFormat::UnpackColor(Color* color, VulkanPixelFormatType format, const void* src)
+	void VulkanPixelFormat::UnpackColor(FColor* color, VulkanPixelFormatType format, const void* src)
 	{
 		UnpackColor(&color->r, &color->g, &color->b, &color->a, format, src);
 	}

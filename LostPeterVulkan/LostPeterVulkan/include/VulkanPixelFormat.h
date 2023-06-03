@@ -53,12 +53,12 @@ namespace LostPeter
 		static VulkanPixelFormatType ParsePixelFormatFromName(const String& strName, bool accessibleOnly = false, bool caseSensitive = false);
 		static VulkanPixelFormatType ParsePixelFormatForBitDepths(VulkanPixelFormatType format, uint16 integerBits, uint16 floatBits);
 
-		static void	PackColor(const Color &color, const VulkanPixelFormatType format, void* dest);
+		static void	PackColor(const FColor &color, const VulkanPixelFormatType format, void* dest);
 		static void	PackColor(const uint8 r, const uint8 g, const uint8 b, const uint8 a, const VulkanPixelFormatType format, void* dest);
 		static void	PackColor(const float r, const float g, const float b, const float a, const VulkanPixelFormatType format, void* dest);
 
-		static void UnpackColor(Color& color, VulkanPixelFormatType format, const void* src);
-		static void	UnpackColor(Color* color, VulkanPixelFormatType format, const void* src);
+		static void UnpackColor(FColor& color, VulkanPixelFormatType format, const void* src);
+		static void	UnpackColor(FColor* color, VulkanPixelFormatType format, const void* src);
 		static void	UnpackColor(uint8* r, uint8* g, uint8* b, uint8* a, VulkanPixelFormatType format, const void* src);
 		static void	UnpackColor(float* r, float* g, float* b, float* a, VulkanPixelFormatType format, const void* src); 
 

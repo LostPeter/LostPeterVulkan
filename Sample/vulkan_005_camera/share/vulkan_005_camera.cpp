@@ -12,7 +12,6 @@
 #include "PreInclude.h"
 #include "vulkan_005_camera.h"
 #include "VulkanMeshLoader.h"
-#include "VulkanCamera.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -30,16 +29,16 @@ static const char* g_pathModels[3 * g_CountLen] =
     "bunny",            "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp", //bunny
 };
 
-static glm::vec3 g_tranformModels[3 * g_CountLen] = 
+static FVector3 g_tranformModels[3 * g_CountLen] = 
 {
-    glm::vec3(   0,   0,    0),     glm::vec3(     0, 0, 0),      glm::vec3(0.01f,  0.01f,  0.01f), //plane
-    glm::vec3(   0,   0,    0),     glm::vec3(     0, 0, 0),      glm::vec3(0.01f,  0.01f,  0.01f), //cube
+    FVector3(   0,   0,    0),     FVector3(     0, 0, 0),      FVector3(0.01f,  0.01f,  0.01f), //plane
+    FVector3(   0,   0,    0),     FVector3(     0, 0, 0),      FVector3(0.01f,  0.01f,  0.01f), //cube
 
-    glm::vec3(   0,   0,    0),     glm::vec3(     0, 0, 0),      glm::vec3( 1.0f,   1.0f,   1.0f), //viking_room
-    glm::vec3(   0,   0,    0),     glm::vec3(     0, 180, 0),    glm::vec3( 1.0f,   1.0f,   1.0f), //bunny
+    FVector3(   0,   0,    0),     FVector3(     0, 0, 0),      FVector3( 1.0f,   1.0f,   1.0f), //viking_room
+    FVector3(   0,   0,    0),     FVector3(     0, 180, 0),    FVector3( 1.0f,   1.0f,   1.0f), //bunny
 };
 
-static glm::mat4 g_tranformLocalModels[g_CountLen] = 
+static FMatrix4 g_tranformLocalModels[g_CountLen] = 
 {
     FMath::ms_mat4Unit, //plane
     FMath::ms_mat4Unit, //cube
@@ -47,7 +46,7 @@ static glm::mat4 g_tranformLocalModels[g_CountLen] =
     FMath::RotateX(-90.0f), //viking_room
     FMath::ms_mat4Unit, //bunny
 };
-static glm::mat4 g_tranformLocal = FMath::ms_mat4Unit;
+static FMatrix4 g_tranformLocal = FMath::ms_mat4Unit;
 static bool g_isTranformLocalModels[] = 
 {
     false, //plane
@@ -88,13 +87,13 @@ static bool g_isFlipYModels[g_CountLen] =
 };
 static bool g_isFlipY = true;
 
-static glm::vec3 g_vCameraPos[g_CountLen] = 
+static FVector3 g_vCameraPos[g_CountLen] = 
 {
-    glm::vec3(0.0f, 2.0f, -1.0f), //plane
-    glm::vec3(0.0f, 2.0f, -1.0f), //cube
+    FVector3(0.0f, 2.0f, -1.0f), //plane
+    FVector3(0.0f, 2.0f, -1.0f), //cube
 
-    glm::vec3(0.0f, 2.5f, -2.0f), //viking_room
-    glm::vec3(0.0f, 3.0f, -1.5f), //bunny
+    FVector3(0.0f, 2.5f, -2.0f), //viking_room
+    FVector3(0.0f, 3.0f, -1.5f), //bunny
 };
 static float g_fCameraFov[g_CountLen] =
 {
@@ -153,7 +152,7 @@ void Vulkan_005_Camera::changeModel(int index)
 
 void Vulkan_005_Camera::createCamera()
 {
-    this->pCamera = new VulkanCamera();
+    this->pCamera = new FCamera();
     cameraReset();
 }
 
@@ -176,7 +175,7 @@ void Vulkan_005_Camera::loadModel_Assimp()
         MeshVertex& vertex = meshData.vertices[i];
         Vertex_Pos3Color4Tex2 v;
         v.pos = vertex.pos;
-        v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
         v.texCoord = vertex.texCoord;
 
         if (g_isTranformLocal)
@@ -250,7 +249,7 @@ void Vulkan_005_Camera::modelConfig()
         }
         if (ImGui::CollapsingHeader("Model World"))
         {
-            const glm::mat4& mat4World = this->objectCBs[0].g_MatWorld;
+            const FMatrix4& mat4World = this->objectCBs[0].g_MatWorld;
             if (ImGui::BeginTable("split_model_world", 4))
             {
                 ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[0][0]);
