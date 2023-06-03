@@ -12,7 +12,6 @@
 #include "../include/PreInclude.h"
 #include "../include/VulkanPixelFormat.h"
 
-
 namespace LostPeter
 {
     VulkanPixelFormatDes VulkanPixelFormat::ms_PixelFormats[Vulkan_PixelFormat_Count] = 

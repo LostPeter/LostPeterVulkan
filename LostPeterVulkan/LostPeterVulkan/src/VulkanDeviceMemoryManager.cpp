@@ -13,7 +13,6 @@
 #include "../include/VulkanDeviceMemoryManager.h"
 #include "../include/VulkanDevice.h"
 
-
 namespace LostPeter
 {
     VulkanDeviceMemoryManager::VulkanDeviceMemoryManager()

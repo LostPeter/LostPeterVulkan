@@ -9,7 +9,6 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/PreInclude.h"
 #include "../include/App.h"
 #include "../include/VulkanBase.h"
 

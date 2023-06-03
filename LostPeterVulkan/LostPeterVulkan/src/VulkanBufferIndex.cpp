@@ -11,6 +11,7 @@
 
 #include "../include/PreInclude.h"
 #include "../include/VulkanBufferIndex.h"
+#include "../include/VulkanDefine.h"
 #include "../include/VulkanManager.h"
 #include "../include/VulkanDevice.h"
 

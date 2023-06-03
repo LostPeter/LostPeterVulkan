@@ -10,6 +10,7 @@
 ****************************************************************************/
 
 #include "../include/PreInclude.h"
+#include "../include/VulkanDefine.h"
 #include "../include/VulkanWindow.h"
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanDevice.h"

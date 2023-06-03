@@ -13,7 +13,6 @@
 #include "../include/VulkanPixelBox.h"
 #include "../include/VulkanPixelFormat.h"
 
-
 namespace LostPeter
 {
     VulkanPixelBox::VulkanPixelBox()

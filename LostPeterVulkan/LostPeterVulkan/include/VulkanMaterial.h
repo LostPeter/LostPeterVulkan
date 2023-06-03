@@ -12,7 +12,7 @@
 #ifndef _VULKAN_MATERIAL_H_
 #define _VULKAN_MATERIAL_H_
 
-#include "PreDefine.h"
+#include "VulkanDefine.h"
 
 namespace LostPeter
 {

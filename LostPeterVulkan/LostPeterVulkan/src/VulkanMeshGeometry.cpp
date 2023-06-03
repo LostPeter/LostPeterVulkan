@@ -11,6 +11,7 @@
 
 #include "../include/PreInclude.h"
 #include "../include/VulkanMeshGeometry.h"
+#include "../include/VulkanDefine.h"
 
 namespace LostPeter
 {
