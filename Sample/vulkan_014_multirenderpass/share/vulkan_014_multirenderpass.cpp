@@ -11,8 +11,6 @@
 
 #include "PreInclude.h"
 #include "vulkan_014_multirenderpass.h"
-#include "VulkanMeshLoader.h"
-#include "VulkanMeshGeometry.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -799,17 +797,17 @@ void Vulkan_014_MultiRenderPass::ModelMeshSub::Destroy()
     this->poIndexBuffer = VK_NULL_HANDLE;
     this->poIndexBufferMemory = VK_NULL_HANDLE;
 }
-bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData, bool isTranformLocal, const FMatrix4& matTransformLocal)
+bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(FMeshData& meshData, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     int count_vertex = (int)meshData.vertices.size();
-    if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Tex2)
+    if (this->poTypeVertex == F_MeshVertex_Pos3Color4Tex2)
     {   
         this->vertices_Pos3Color4Tex2.clear();
         this->vertices_Pos3Color4Tex2.reserve(count_vertex);
         for (int i = 0; i < count_vertex; i++)
         {
-            MeshVertex& vertex = meshData.vertices[i];
-            Vertex_Pos3Color4Tex2 v;
+            FMeshVertex& vertex = meshData.vertices[i];
+            FVertex_Pos3Color4Tex2 v;
             v.pos = vertex.pos;
             v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.texCoord = vertex.texCoord;
@@ -828,7 +826,7 @@ bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData,
             this->indices.push_back(meshData.indices32[i]);
         }
         this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Tex2.size();
-        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Tex2);
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Tex2);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Tex2[0];
         this->poIndexCount = (uint32_t)this->indices.size();
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -840,14 +838,14 @@ bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData,
                   (int)this->vertices_Pos3Color4Tex2.size(), 
                   (int)this->indices.size());
     }
-    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex2)
+    else if (this->poTypeVertex == F_MeshVertex_Pos3Color4Normal3Tex2)
     {
         this->vertices_Pos3Color4Normal3Tex2.clear();
         this->vertices_Pos3Color4Normal3Tex2.reserve(count_vertex);
         for (int i = 0; i < count_vertex; i++)
         {
-            MeshVertex& vertex = meshData.vertices[i];
-            Vertex_Pos3Color4Normal3Tex2 v;
+            FMeshVertex& vertex = meshData.vertices[i];
+            FVertex_Pos3Color4Normal3Tex2 v;
             v.pos = vertex.pos;
             v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
@@ -867,7 +865,7 @@ bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData,
             this->indices.push_back(meshData.indices32[i]);
         }
         this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tex2.size();
-        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tex2);
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex2);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex2[0];
         this->poIndexCount = (uint32_t)this->indices.size();
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -879,14 +877,14 @@ bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData,
                   (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
                   (int)this->indices.size());
     }
-    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex4)
+    else if (this->poTypeVertex == F_MeshVertex_Pos3Color4Normal3Tex4)
     {
         this->vertices_Pos3Color4Normal3Tex4.clear();
         this->vertices_Pos3Color4Normal3Tex4.reserve(count_vertex);
         for (int i = 0; i < count_vertex; i++)
         {
-            MeshVertex& vertex = meshData.vertices[i];
-            Vertex_Pos3Color4Normal3Tex4 v;
+            FMeshVertex& vertex = meshData.vertices[i];
+            FVertex_Pos3Color4Normal3Tex4 v;
             v.pos = vertex.pos;
             v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
@@ -906,7 +904,7 @@ bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData,
             this->indices.push_back(meshData.indices32[i]);
         }
         this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tex4.size();
-        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tex4);
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex4);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex4[0];
         this->poIndexCount = (uint32_t)this->indices.size();
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -918,14 +916,14 @@ bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData,
                   (int)this->vertices_Pos3Color4Normal3Tex4.size(), 
                   (int)this->indices.size());
     }
-    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
+    else if (this->poTypeVertex == F_MeshVertex_Pos3Color4Normal3Tangent3Tex2)
     {
         this->vertices_Pos3Color4Normal3Tangent3Tex2.clear();
         this->vertices_Pos3Color4Normal3Tangent3Tex2.reserve(count_vertex);
         for (int i = 0; i < count_vertex; i++)
         {
-            MeshVertex& vertex = meshData.vertices[i];
-            Vertex_Pos3Color4Normal3Tangent3Tex2 v;
+            FMeshVertex& vertex = meshData.vertices[i];
+            FVertex_Pos3Color4Normal3Tangent3Tex2 v;
             v.pos = vertex.pos;
             v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
@@ -946,7 +944,7 @@ bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData,
             this->indices.push_back(meshData.indices32[i]);
         }
         this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
-        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2);
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex2);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex2[0];
         this->poIndexCount = (uint32_t)this->indices.size();
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -958,14 +956,14 @@ bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData,
                   (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
                   (int)this->indices.size());
     }
-    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4)
+    else if (this->poTypeVertex == F_MeshVertex_Pos3Color4Normal3Tangent3Tex4)
     {
         this->vertices_Pos3Color4Normal3Tangent3Tex4.clear();
         this->vertices_Pos3Color4Normal3Tangent3Tex4.reserve(count_vertex);
         for (int i = 0; i < count_vertex; i++)
         {
-            MeshVertex& vertex = meshData.vertices[i];
-            Vertex_Pos3Color4Normal3Tangent3Tex4 v;
+            FMeshVertex& vertex = meshData.vertices[i];
+            FVertex_Pos3Color4Normal3Tangent3Tex4 v;
             v.pos = vertex.pos;
             v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
@@ -986,7 +984,7 @@ bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData,
             this->indices.push_back(meshData.indices32[i]);
         }
         this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tangent3Tex4.size();
-        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tangent3Tex4);
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex4);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex4[0];
         this->poIndexCount = (uint32_t)this->indices.size();
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -1017,8 +1015,8 @@ bool Vulkan_014_MultiRenderPass::ModelMeshSub::CreateMeshSub(MeshData& meshData,
     return true;
 }
 
-void Vulkan_014_MultiRenderPass::ModelMeshSub::WriteVertexData(std::vector<Vertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
-                                                               std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2)
+void Vulkan_014_MultiRenderPass::ModelMeshSub::WriteVertexData(std::vector<FVertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
+                                                               std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2)
 {
     size_t count = 0;
     if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
@@ -1026,7 +1024,7 @@ void Vulkan_014_MultiRenderPass::ModelMeshSub::WriteVertexData(std::vector<Verte
         count = this->vertices_Pos3Color4Normal3Tex2.size();
         for (size_t i = 0; i < count; i++)
         {
-            Vertex_Pos3Color4Normal3Tex2& vSrc = this->vertices_Pos3Color4Normal3Tex2[i];
+            FVertex_Pos3Color4Normal3Tex2& vSrc = this->vertices_Pos3Color4Normal3Tex2[i];
             aPos3Color4Normal3Tex2.push_back(vSrc);
         }
     }
@@ -1035,8 +1033,8 @@ void Vulkan_014_MultiRenderPass::ModelMeshSub::WriteVertexData(std::vector<Verte
         count = this->vertices_Pos3Color4Normal3Tex4.size();
         for (size_t i = 0; i < count; i++)
         {
-            Vertex_Pos3Color4Normal3Tex4& vSrc = this->vertices_Pos3Color4Normal3Tex4[i];
-            aPos3Color4Normal3Tex2.push_back(Vertex_Pos3Color4Normal3Tex2(vSrc.pos,
+            FVertex_Pos3Color4Normal3Tex4& vSrc = this->vertices_Pos3Color4Normal3Tex4[i];
+            aPos3Color4Normal3Tex2.push_back(FVertex_Pos3Color4Normal3Tex2(vSrc.pos,
                                              vSrc.color,
                                              vSrc.normal,
                                              FVector2(vSrc.texCoord.x, vSrc.texCoord.y)));
@@ -1047,7 +1045,7 @@ void Vulkan_014_MultiRenderPass::ModelMeshSub::WriteVertexData(std::vector<Verte
         count = this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
         for (size_t i = 0; i < count; i++)
         {
-            Vertex_Pos3Color4Normal3Tangent3Tex2& vSrc = this->vertices_Pos3Color4Normal3Tangent3Tex2[i];
+            FVertex_Pos3Color4Normal3Tangent3Tex2& vSrc = this->vertices_Pos3Color4Normal3Tangent3Tex2[i];
             aPos3Color4Normal3Tangent3Tex2.push_back(vSrc);
         }
     }   
@@ -1056,8 +1054,8 @@ void Vulkan_014_MultiRenderPass::ModelMeshSub::WriteVertexData(std::vector<Verte
         count = this->vertices_Pos3Color4Normal3Tangent3Tex4.size();
         for (size_t i = 0; i < count; i++)
         {
-            Vertex_Pos3Color4Normal3Tangent3Tex4& vSrc = this->vertices_Pos3Color4Normal3Tangent3Tex4[i];
-            aPos3Color4Normal3Tangent3Tex2.push_back(Vertex_Pos3Color4Normal3Tangent3Tex2(vSrc.pos,
+            FVertex_Pos3Color4Normal3Tangent3Tex4& vSrc = this->vertices_Pos3Color4Normal3Tangent3Tex4[i];
+            aPos3Color4Normal3Tangent3Tex2.push_back(FVertex_Pos3Color4Normal3Tangent3Tex2(vSrc.pos,
                                                      vSrc.color,
                                                      vSrc.normal,
                                                      vSrc.tangent,
@@ -1089,23 +1087,23 @@ bool Vulkan_014_MultiRenderPass::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
 bool Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load
-    std::vector<MeshData> aMeshDatas;
-    if (this->typeMesh == Vulkan_Mesh_File)
+    FMeshDataVector aMeshDatas;
+    if (this->typeMesh == F_Mesh_File)
     {
         unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
-        if (!VulkanMeshLoader::LoadMeshDatas(this->pathMesh, aMeshDatas, isFlipY, eMeshParserFlags))
+        if (!FMeshDataLoader::LoadMeshDatas(this->pathMesh, aMeshDatas, isFlipY, eMeshParserFlags))
         {
             F_LogError("Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
             return false; 
         }
     }
-    else if (this->typeMesh == Vulkan_Mesh_Geometry)
+    else if (this->typeMesh == F_Mesh_Geometry)
     {
-        MeshData meshData;
+        FMeshData meshData;
         meshData.bIsFlipY = isFlipY;
-        if (!VulkanMeshGeometry::CreateGeometry(meshData, this->typeGeometryType))
+        if (!FMeshGeometry::CreateGeometry(meshData, this->typeGeometryType))
         {
-            F_LogError("Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", Util_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
+            F_LogError("Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", F_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
             return false; 
         }
         aMeshDatas.push_back(meshData);
@@ -1119,7 +1117,7 @@ bool Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh(bool isFlipY, bool isTranfo
     int count_mesh_sub = (int)aMeshDatas.size();
     for (int i = 0; i < count_mesh_sub; i++)
     {
-        MeshData& meshData = aMeshDatas[i];
+        FMeshData& meshData = aMeshDatas[i];
         
         String nameMeshSub = this->nameMesh + "-" + FUtilString::SaveInt(i);
         ModelMeshSub* pMeshSub = new ModelMeshSub(this,
@@ -1486,13 +1484,13 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer
     if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
     {
         this->poVertexCount = this->vertices_Pos3Color4Normal3Tex2.size();
-        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tex2);
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex2);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex2[0];
     }
     else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
     {
         this->poVertexCount = this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
-        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2);
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex2);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex2[0];
     }
     else
@@ -2249,12 +2247,12 @@ void Vulkan_014_MultiRenderPass::createModelMeshes()
         String nameGeometryType = g_Mesh_Paths[5 * i + 3];
         String pathMesh = g_Mesh_Paths[5 * i + 4];
         
-        VulkanVertexType typeVertex = Util_ParseVertexType(nameVertexType); 
-        VulkanMeshType typeMesh = Util_ParseMeshType(nameMeshType);
-        VulkanMeshGeometryType typeGeometryType = Vulkan_MeshGeometry_Triangle;
+        F_MeshVertexType typeVertex = F_ParseMeshVertexType(nameVertexType); 
+        FMeshType typeMesh = F_ParseMeshType(nameMeshType);
+        FMeshGeometryType typeGeometryType = F_MeshGeometry_Triangle;
         if (!nameGeometryType.empty())
         {
-            typeGeometryType = Util_ParseMeshGeometryType(nameGeometryType);
+            typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);
         }
 
         ModelMesh* pMesh = new ModelMesh(this, 

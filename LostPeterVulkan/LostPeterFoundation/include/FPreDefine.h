@@ -17,7 +17,7 @@
 
 namespace LostPeterFoundation
 {
-////////////////////////////// Define //////////////////////////////
+    ////////////////////////////// Define //////////////////////////////
     #define F_C_PI                              3.14159265f                                         // PI
     #define F_C_PI_HALF				            1.57079632f                                         // 0.5 * PI
     #define	F_C_PI_TWO					        6.28318530717958647692							    // 2.0 * PI
@@ -75,15 +75,7 @@ namespace LostPeterFoundation
     #define F_DELETE_T(p)                       { if(p) { delete[] p; p=nullptr; }}
 
 
-////////////////////////////// Enum ////////////////////////////////
-    enum FLogType
-    {
-        F_Log_Console = 0,                         //0:    Console
-        F_Log_File,                                //1:    File
-    };
-
-
-////////////////////////////// Typedef /////////////////////////////
+    ////////////////////////////// Typedef /////////////////////////////
     using int8 = std::int8_t;
     using uint8 = std::uint8_t;
     using int16 = std::int16_t;
@@ -135,10 +127,43 @@ namespace LostPeterFoundation
     typedef std::map<size_t, FVector3> FIndex2Vector3Map;
 
 
+    struct FVertex_Pos2Color4;
+    struct FVertex_Pos3Normal3;
+    struct FVertex_Pos2Color4Tex2;
+    struct FVertex_Pos3Color4Tex2;
+    struct FVertex_Pos3Color4Normal3Tex2;
+    struct FVertex_Pos3Color4Normal3Tex4;
+    struct FVertex_Pos3Color4Normal3Tangent3Tex2;
+    struct FVertex_Pos3Color4Normal3Tangent3Tex4;
+    struct FVertex_Pos3Normal3Tangent3BlendWI8Tex2;
+    struct FVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2;
+
+    struct FMeshDataPCT;
+    struct FMeshData;
+    struct FMeshDataUV2;
+    struct FMeshDataSkin;
+
     class FBitwise;
     class FBox;
     class FCamera;
     class FMath;
+    class FMeshDataLoader;
+    class FMeshCreateParam;
+    class FMeshCreateParam_Triangle;
+    class FMeshCreateParam_Quad;
+    class FMeshCreateParam_Grid;
+    class FMeshCreateParam_Circle;
+    class FMeshCreateParam_AABB;
+    class FMeshCreateParam_Sphere;
+    class FMeshCreateParam_GeoSphere;
+    class FMeshCreateParam_Cylinder;
+    class FMeshCreateParam_Capsule;
+    class FMeshCreateParam_Cone;
+    class FMeshCreateParam_Torus;
+    class FMeshCreateParam_SkyBox;
+    class FMeshCreateParam_SkyDome;
+    class FMeshCreateParam_Terrain;
+    class FMeshGeometry;
     class FLog;
     class FLogConsole;
     class FLogFile;
@@ -147,9 +172,76 @@ namespace LostPeterFoundation
     class FUtil;
     class FUtilString;
 
+    
 
     typedef std::vector<FLog*> FLogPtrVector;
     typedef std::map<String, FLog*> VFLogPtrMap;
+
+
+    ////////////////////////////// Enum ////////////////////////////////
+    enum FLogType
+    {
+        F_Log_Console = 0,                              //0:    Console
+        F_Log_File,                                     //1:    File
+    };
+
+
+    enum FMeshType
+    {
+        F_Mesh_File = 0,                                //0:    File
+        F_Mesh_Geometry,                                //1:    Geometry
+
+        F_Mesh_Count
+    };
+    const String& F_GetMeshTypeName(FMeshType type);
+    const String& F_GetMeshTypeName(int type);
+    FMeshType F_ParseMeshType(const String& strName);
+
+
+    enum FMeshGeometryType
+    {
+        F_MeshGeometry_Triangle = 0,                    //0:    Triangle
+        F_MeshGeometry_Quad,                            //1:    Quad
+        F_MeshGeometry_Grid,                            //2:    Grid
+        F_MeshGeometry_Circle,                          //3:    Circle
+        F_MeshGeometry_AABB,                            //4:    AABB
+        F_MeshGeometry_Sphere,                          //5:    Sphere
+        F_MeshGeometry_GeoSphere,                       //6:    GeoSphere
+        F_MeshGeometry_Cylinder,                        //7:    Cylinder
+        F_MeshGeometry_Capsule,                         //8:    Capsule
+        F_MeshGeometry_Cone,                            //9:    Cone
+        F_MeshGeometry_Torus,                           //10:   Torus
+        F_MeshGeometry_SkyBox,                          //11:   SkyBox
+        F_MeshGeometry_SkyDome,                         //12:   SkyDome
+        F_MeshGeometry_Terrain,                         //13:   Terrain
+
+        F_MeshGeometry_Count,
+    };
+    const String& F_GetMeshGeometryTypeName(FMeshGeometryType type);
+    const String& F_GetMeshGeometryTypeName(int type);
+    FMeshGeometryType F_ParseMeshGeometryType(const String& strName);
+
+
+    enum F_MeshVertexType
+    {
+        F_MeshVertex_Pos2Color4 = 0,                           //0:    Pos2Color4
+        F_MeshVertex_Pos3Normal3,                              //1:    Pos3Normal3
+        F_MeshVertex_Pos3Normal3Tex2,                          //2:    Pos3Normal3Tex2
+        F_MeshVertex_Pos2Color4Tex2,                           //3:    Pos2Color4Tex2
+        F_MeshVertex_Pos3Color4Tex2,                           //4:    Pos3Color4Tex2                          (FMeshVertexPCT)
+        F_MeshVertex_Pos3Color4Normal3Tex2,                    //5:    Pos3Color4Normal3Tex2
+        F_MeshVertex_Pos3Color4Normal3Tex4,                    //6:    Pos3Color4Normal3Tex4
+        F_MeshVertex_Pos3Color4Normal3Tangent3Tex2,            //7:    Pos3Color4Normal3Tangent3Tex2           (FMeshVertex)
+        F_MeshVertex_Pos3Color4Normal3Tangent3Tex4,            //8:    Pos3Color4Normal3Tangent3Tex4           (FMeshVertexUV2)
+        F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2,          //9:    Pos3Normal3Tangent3BlendWI8Tex2 
+        F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2,    //10:   Pos3Color4Normal3Tangent3BlendWI8Tex2   (FMeshVertexSkin)
+
+        F_MeshVertex_Count
+    };
+    const String& F_GetMeshVertexTypeName(F_MeshVertexType type);
+    const String& F_GetMeshVertexTypeName(int type);
+    F_MeshVertexType F_ParseMeshVertexType(const String& strName);
+
 
 
 }; //LostPeterFoundation

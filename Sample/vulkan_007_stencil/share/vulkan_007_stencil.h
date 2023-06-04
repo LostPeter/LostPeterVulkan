@@ -171,7 +171,7 @@ public:
         bool isOutline;
 
         //Vertex
-        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices;
+        std::vector<FVertex_Pos3Color4Normal3Tex2> vertices;
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
@@ -242,7 +242,7 @@ public:
     String pathShaderVertex_Outline;
     String pathShaderFragment_Outline;
     
-    VulkanVertexType poTypeVertex_Outline;
+    F_MeshVertexType poTypeVertex_Outline;
     VkPipelineLayout poPipelineLayout_Outline;
     
 

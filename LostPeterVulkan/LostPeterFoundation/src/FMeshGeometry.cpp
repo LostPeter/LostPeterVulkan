@@ -1,50 +1,50 @@
 /****************************************************************************
-* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterFoundation - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2022-10-30
+* Time:     2023-06-04
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/PreInclude.h"
-#include "../include/VulkanMeshGeometry.h"
-#include "../include/VulkanDefine.h"
+#include "../include/FMeshGeometry.h"
+#include "../include/FMath.h"
+#include "../include/FUtilString.h"
 
-namespace LostPeter
+namespace LostPeterFoundation
 {
-	///////////////////////////////////////// VulkanMeshCreateParam ///////////////////////////////////////////
-    VulkanMeshCreateParam::VulkanMeshCreateParam(bool _flipV, bool _rightHand)
+    ///////////////////////////////////////// FMeshCreateParam ///////////////////////////////////////////
+    FMeshCreateParam::FMeshCreateParam(bool _flipV, bool _rightHand)
         : flipV(_flipV)
         , rightHand(_rightHand)
     {
 
     }
-    VulkanMeshCreateParam::~VulkanMeshCreateParam()
+    FMeshCreateParam::~FMeshCreateParam()
     {
 
     }
 
     //Triangle
-    String VulkanMeshCreateParam_Triangle::ms_nameType = "MeshTriangle";
-    VulkanMeshCreateParam_Triangle::VulkanMeshCreateParam_Triangle()
-        : VulkanMeshCreateParam(true, false)
+    String FMeshCreateParam_Triangle::ms_nameType = "MeshTriangle";
+    FMeshCreateParam_Triangle::FMeshCreateParam_Triangle()
+        : FMeshCreateParam(true, false)
     {
 
     }
-    VulkanMeshCreateParam_Triangle::VulkanMeshCreateParam_Triangle(bool _flipV,
+    FMeshCreateParam_Triangle::FMeshCreateParam_Triangle(bool _flipV,
                                                                    bool _rightHand)
-        : VulkanMeshCreateParam(_flipV, _rightHand)
+        : FMeshCreateParam(_flipV, _rightHand)
     {
 
     }
-    VulkanMeshCreateParam_Triangle::~VulkanMeshCreateParam_Triangle()
+    FMeshCreateParam_Triangle::~FMeshCreateParam_Triangle()
     {
 
     }
-    String VulkanMeshCreateParam_Triangle::ToName()
+    String FMeshCreateParam_Triangle::ToName()
     {
         return FUtilString::FormatString("%s_%d_%d", 
                                          ms_nameType.c_str(), 
@@ -53,9 +53,9 @@ namespace LostPeter
     }
 
     //Quad
-    String VulkanMeshCreateParam_Quad::ms_nameType = "MeshQuad";
-    VulkanMeshCreateParam_Quad::VulkanMeshCreateParam_Quad()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_Quad::ms_nameType = "MeshQuad";
+    FMeshCreateParam_Quad::FMeshCreateParam_Quad()
+        : FMeshCreateParam(false, false)
         , centerX(0)
         , centerY(0)
         , width(1)
@@ -64,14 +64,14 @@ namespace LostPeter
     {
 
     }
-    VulkanMeshCreateParam_Quad::VulkanMeshCreateParam_Quad(float _centerX,
+    FMeshCreateParam_Quad::FMeshCreateParam_Quad(float _centerX,
                                                            float _centerY,
                                                            float _width,
                                                            float _height,
                                                            float _depth,
                                                            bool _flipV,
                                                            bool _rightHand)
-        : VulkanMeshCreateParam(_flipV, _rightHand)
+        : FMeshCreateParam(_flipV, _rightHand)
         , centerX(_centerX)
         , centerY(_centerY)
         , width(_width)
@@ -80,11 +80,11 @@ namespace LostPeter
     {
 
     }
-    VulkanMeshCreateParam_Quad::~VulkanMeshCreateParam_Quad()
+    FMeshCreateParam_Quad::~FMeshCreateParam_Quad()
     {
         
     }
-    String VulkanMeshCreateParam_Quad::ToName()
+    String FMeshCreateParam_Quad::ToName()
     {
         return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%f", 
                                          ms_nameType.c_str(), 
@@ -98,9 +98,9 @@ namespace LostPeter
     }
 
     //Grid
-    String VulkanMeshCreateParam_Grid::ms_nameType = "MeshGrid";
-    VulkanMeshCreateParam_Grid::VulkanMeshCreateParam_Grid()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_Grid::ms_nameType = "MeshGrid";
+    FMeshCreateParam_Grid::FMeshCreateParam_Grid()
+        : FMeshCreateParam(false, false)
         , width(1)
         , height(1)
         , m(10)
@@ -108,13 +108,13 @@ namespace LostPeter
     {
 
     }
-    VulkanMeshCreateParam_Grid::VulkanMeshCreateParam_Grid(float _width,
+    FMeshCreateParam_Grid::FMeshCreateParam_Grid(float _width,
                                                            float _height,
                                                            uint32 _m,
                                                            uint32 _n,
                                                            bool _flipV,
                                                            bool _rightHand)    
-        : VulkanMeshCreateParam(_flipV, _rightHand)
+        : FMeshCreateParam(_flipV, _rightHand)
         , width(_width)
         , height(_height)
         , m(_m)
@@ -122,11 +122,11 @@ namespace LostPeter
     {
 
     }
-    VulkanMeshCreateParam_Grid::~VulkanMeshCreateParam_Grid()
+    FMeshCreateParam_Grid::~FMeshCreateParam_Grid()
     {
         
     }
-    String VulkanMeshCreateParam_Grid::ToName()
+    String FMeshCreateParam_Grid::ToName()
     {
         return FUtilString::FormatString("%s_%d-%d-%f-%f-%u-%u", 
                                          ms_nameType.c_str(), 
@@ -139,29 +139,29 @@ namespace LostPeter
     }
 
     //Circle
-    String VulkanMeshCreateParam_Circle::ms_nameType = "MeshCircle";
-    VulkanMeshCreateParam_Circle::VulkanMeshCreateParam_Circle()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_Circle::ms_nameType = "MeshCircle";
+    FMeshCreateParam_Circle::FMeshCreateParam_Circle()
+        : FMeshCreateParam(false, false)
         , radius(1)
         , segment(100)
     {
 
     }
-    VulkanMeshCreateParam_Circle::VulkanMeshCreateParam_Circle(float _radius,
+    FMeshCreateParam_Circle::FMeshCreateParam_Circle(float _radius,
                                                                uint32 _segment,
                                                                bool _flipV,
                                                                bool _rightHand)
-        : VulkanMeshCreateParam(_flipV, _rightHand)
+        : FMeshCreateParam(_flipV, _rightHand)
         , radius(_radius)
         , segment(_segment)
     {
 
     }
-    VulkanMeshCreateParam_Circle::~VulkanMeshCreateParam_Circle()
+    FMeshCreateParam_Circle::~FMeshCreateParam_Circle()
     {
         
     }
-    String VulkanMeshCreateParam_Circle::ToName()
+    String FMeshCreateParam_Circle::ToName()
     {
         return FUtilString::FormatString("%s_%d-%d-%f-%u", 
                                          ms_nameType.c_str(), 
@@ -172,9 +172,9 @@ namespace LostPeter
     }
 
     //AABB
-    String VulkanMeshCreateParam_AABB::ms_nameType = "MeshAABB";
-    VulkanMeshCreateParam_AABB::VulkanMeshCreateParam_AABB()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_AABB::ms_nameType = "MeshAABB";
+    FMeshCreateParam_AABB::FMeshCreateParam_AABB()
+        : FMeshCreateParam(false, false)
         , width(1)
         , height(1)
         , depth(1)
@@ -182,13 +182,13 @@ namespace LostPeter
     {
 
     }
-    VulkanMeshCreateParam_AABB::VulkanMeshCreateParam_AABB(float _width,
+    FMeshCreateParam_AABB::FMeshCreateParam_AABB(float _width,
                                                            float _height,
                                                            float _depth,
                                                            uint32 _numSubdivisions,
                                                            bool _flipV,
                                                            bool _rightHand)
-        : VulkanMeshCreateParam(_flipV, _rightHand)
+        : FMeshCreateParam(_flipV, _rightHand)
         , width(_width)
         , height(_height)
         , depth(_depth)
@@ -196,11 +196,11 @@ namespace LostPeter
     {
 
     }
-    VulkanMeshCreateParam_AABB::~VulkanMeshCreateParam_AABB()
+    FMeshCreateParam_AABB::~FMeshCreateParam_AABB()
     {
         
     }
-    String VulkanMeshCreateParam_AABB::ToName()
+    String FMeshCreateParam_AABB::ToName()
     {
         return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u", 
                                          ms_nameType.c_str(), 
@@ -213,32 +213,32 @@ namespace LostPeter
     }
 
     //Sphere
-    String VulkanMeshCreateParam_Sphere::ms_nameType = "MeshSphere";
-    VulkanMeshCreateParam_Sphere::VulkanMeshCreateParam_Sphere()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_Sphere::ms_nameType = "MeshSphere";
+    FMeshCreateParam_Sphere::FMeshCreateParam_Sphere()
+        : FMeshCreateParam(false, false)
         , radius(1)
         , sliceCount(30)
         , stackCount(30)
     {
 
     }
-    VulkanMeshCreateParam_Sphere::VulkanMeshCreateParam_Sphere(float _radius,
+    FMeshCreateParam_Sphere::FMeshCreateParam_Sphere(float _radius,
                                                                uint32 _sliceCount,
                                                                uint32 _stackCount,
                                                                bool _flipV,
                                                                bool _rightHand)
-        : VulkanMeshCreateParam(_flipV, _rightHand)
+        : FMeshCreateParam(_flipV, _rightHand)
         , radius(_radius)
         , sliceCount(_sliceCount)
         , stackCount(_stackCount)
     {
 
     }
-    VulkanMeshCreateParam_Sphere::~VulkanMeshCreateParam_Sphere()
+    FMeshCreateParam_Sphere::~FMeshCreateParam_Sphere()
     {
         
     }
-    String VulkanMeshCreateParam_Sphere::ToName()
+    String FMeshCreateParam_Sphere::ToName()
     {
         return FUtilString::FormatString("%s_%d-%d-%f-%u-%u", 
                                          ms_nameType.c_str(), 
@@ -250,29 +250,29 @@ namespace LostPeter
     }
 
     //GeoSphere
-    String VulkanMeshCreateParam_GeoSphere::ms_nameType = "MeshGeoSphere";
-    VulkanMeshCreateParam_GeoSphere::VulkanMeshCreateParam_GeoSphere()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_GeoSphere::ms_nameType = "MeshGeoSphere";
+    FMeshCreateParam_GeoSphere::FMeshCreateParam_GeoSphere()
+        : FMeshCreateParam(false, false)
         , radius(1)
         , numSubdivisions(5)
     {
 
     }
-    VulkanMeshCreateParam_GeoSphere::VulkanMeshCreateParam_GeoSphere(float _radius,
+    FMeshCreateParam_GeoSphere::FMeshCreateParam_GeoSphere(float _radius,
                                                                      uint32 _numSubdivisions,
                                                                      bool _flipV,
                                                                      bool _rightHand)
-        : VulkanMeshCreateParam(_flipV, _rightHand)
+        : FMeshCreateParam(_flipV, _rightHand)
         , radius(_radius)
         , numSubdivisions(_numSubdivisions)
     {
 
     }
-    VulkanMeshCreateParam_GeoSphere::~VulkanMeshCreateParam_GeoSphere()
+    FMeshCreateParam_GeoSphere::~FMeshCreateParam_GeoSphere()
     {
         
     }
-    String VulkanMeshCreateParam_GeoSphere::ToName()
+    String FMeshCreateParam_GeoSphere::ToName()
     {
         return FUtilString::FormatString("%s_%d-%d-%f-%u", 
                                          ms_nameType.c_str(), 
@@ -283,9 +283,9 @@ namespace LostPeter
     }
 
     //Cylinder
-    String VulkanMeshCreateParam_Cylinder::ms_nameType = "MeshCylinder";
-    VulkanMeshCreateParam_Cylinder::VulkanMeshCreateParam_Cylinder()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_Cylinder::ms_nameType = "MeshCylinder";
+    FMeshCreateParam_Cylinder::FMeshCreateParam_Cylinder()
+        : FMeshCreateParam(false, false)
         , bottomRadius(0.5f)
         , topRadius(0.5f)
         , height(2.0f)
@@ -294,14 +294,14 @@ namespace LostPeter
     {
 
     }
-    VulkanMeshCreateParam_Cylinder::VulkanMeshCreateParam_Cylinder(float _bottomRadius,
+    FMeshCreateParam_Cylinder::FMeshCreateParam_Cylinder(float _bottomRadius,
                                                                    float _topRadius,
                                                                    float _height,
                                                                    uint32 _sliceCount,
                                                                    uint32 _stackCount,
                                                                    bool _flipV,
                                                                    bool _rightHand)
-        : VulkanMeshCreateParam(_flipV, _rightHand)
+        : FMeshCreateParam(_flipV, _rightHand)
         , bottomRadius(_bottomRadius)
         , topRadius(_topRadius)
         , height(_height)
@@ -310,11 +310,11 @@ namespace LostPeter
     {
 
     }
-    VulkanMeshCreateParam_Cylinder::~VulkanMeshCreateParam_Cylinder()
+    FMeshCreateParam_Cylinder::~FMeshCreateParam_Cylinder()
     {
         
     }
-    String VulkanMeshCreateParam_Cylinder::ToName()
+    String FMeshCreateParam_Cylinder::ToName()
     {
         return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u-%u", 
                                          ms_nameType.c_str(), 
@@ -328,89 +328,89 @@ namespace LostPeter
     }
 
     //Capsule
-    String VulkanMeshCreateParam_Capsule::ms_nameType = "MeshCapsule";
-    VulkanMeshCreateParam_Capsule::VulkanMeshCreateParam_Capsule()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_Capsule::ms_nameType = "MeshCapsule";
+    FMeshCreateParam_Capsule::FMeshCreateParam_Capsule()
+        : FMeshCreateParam(false, false)
     {
 
     }
-    VulkanMeshCreateParam_Capsule::~VulkanMeshCreateParam_Capsule()
+    FMeshCreateParam_Capsule::~FMeshCreateParam_Capsule()
     {
         
     }
-    String VulkanMeshCreateParam_Capsule::ToName()
+    String FMeshCreateParam_Capsule::ToName()
     {
         return "";
     }
 
     //Cone
-    String VulkanMeshCreateParam_Cone::ms_nameType = "MeshCone";
-    VulkanMeshCreateParam_Cone::VulkanMeshCreateParam_Cone()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_Cone::ms_nameType = "MeshCone";
+    FMeshCreateParam_Cone::FMeshCreateParam_Cone()
+        : FMeshCreateParam(false, false)
     {
 
     }
-    VulkanMeshCreateParam_Cone::~VulkanMeshCreateParam_Cone()
+    FMeshCreateParam_Cone::~FMeshCreateParam_Cone()
     {
         
     }
-    String VulkanMeshCreateParam_Cone::ToName()
+    String FMeshCreateParam_Cone::ToName()
     {
         return "";
     }
 
     //Torus
-    String VulkanMeshCreateParam_Torus::ms_nameType = "MeshTorus";
-    VulkanMeshCreateParam_Torus::VulkanMeshCreateParam_Torus()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_Torus::ms_nameType = "MeshTorus";
+    FMeshCreateParam_Torus::FMeshCreateParam_Torus()
+        : FMeshCreateParam(false, false)
     {
 
     }
-    VulkanMeshCreateParam_Torus::~VulkanMeshCreateParam_Torus()
+    FMeshCreateParam_Torus::~FMeshCreateParam_Torus()
     {
         
     }
-    String VulkanMeshCreateParam_Torus::ToName()
+    String FMeshCreateParam_Torus::ToName()
     {
         return "";
     }
 
     //SkyBox
-    String VulkanMeshCreateParam_SkyBox::ms_nameType = "MeshSkyBox";
-    VulkanMeshCreateParam_SkyBox::VulkanMeshCreateParam_SkyBox()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_SkyBox::ms_nameType = "MeshSkyBox";
+    FMeshCreateParam_SkyBox::FMeshCreateParam_SkyBox()
+        : FMeshCreateParam(false, false)
     {
 
     }
-    VulkanMeshCreateParam_SkyBox::~VulkanMeshCreateParam_SkyBox()
+    FMeshCreateParam_SkyBox::~FMeshCreateParam_SkyBox()
     {
         
     }
-    String VulkanMeshCreateParam_SkyBox::ToName()
+    String FMeshCreateParam_SkyBox::ToName()
     {
         return "";
     }   
 
     //SkyDome
-    String VulkanMeshCreateParam_SkyDome::ms_nameType = "MeshSkyDome";
-    VulkanMeshCreateParam_SkyDome::VulkanMeshCreateParam_SkyDome()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_SkyDome::ms_nameType = "MeshSkyDome";
+    FMeshCreateParam_SkyDome::FMeshCreateParam_SkyDome()
+        : FMeshCreateParam(false, false)
     {
 
     }
-    VulkanMeshCreateParam_SkyDome::~VulkanMeshCreateParam_SkyDome()
+    FMeshCreateParam_SkyDome::~FMeshCreateParam_SkyDome()
     {
         
     }
-    String VulkanMeshCreateParam_SkyDome::ToName()
+    String FMeshCreateParam_SkyDome::ToName()
     {
         return "";
     }
 
     //Terrain
-    String VulkanMeshCreateParam_Terrain::ms_nameType = "MeshTerrain";
-    VulkanMeshCreateParam_Terrain::VulkanMeshCreateParam_Terrain()
-        : VulkanMeshCreateParam(false, false)
+    String FMeshCreateParam_Terrain::ms_nameType = "MeshTerrain";
+    FMeshCreateParam_Terrain::FMeshCreateParam_Terrain()
+        : FMeshCreateParam(false, false)
         , offsetX(0)
         , offsetZ(0)
         , width(1024)
@@ -422,7 +422,7 @@ namespace LostPeter
     {
 
     }
-    VulkanMeshCreateParam_Terrain::VulkanMeshCreateParam_Terrain(float _offsetX,
+    FMeshCreateParam_Terrain::FMeshCreateParam_Terrain(float _offsetX,
                                                                  float _offsetZ,
                                                                  float _width,
                                                                  float _height,
@@ -432,7 +432,7 @@ namespace LostPeter
                                                                  uint32 _heightDataGap,
                                                                  bool _flipV,
                                                                  bool _rightHand)    
-        : VulkanMeshCreateParam(_flipV, _rightHand)
+        : FMeshCreateParam(_flipV, _rightHand)
         , offsetX(_offsetX)
         , offsetZ(_offsetZ)
         , width(_width)
@@ -444,11 +444,11 @@ namespace LostPeter
     {
 
     }
-    VulkanMeshCreateParam_Terrain::~VulkanMeshCreateParam_Terrain()
+    FMeshCreateParam_Terrain::~FMeshCreateParam_Terrain()
     {
         
     }
-    String VulkanMeshCreateParam_Terrain::ToName()
+    String FMeshCreateParam_Terrain::ToName()
     {
         return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%u-%u", 
                                          ms_nameType.c_str(), 
@@ -462,184 +462,184 @@ namespace LostPeter
                                          vertexZ);
     }
 
-    ///////////////////////////////////////// VulkanMeshGeometry //////////////////////////////////////////////
-    bool VulkanMeshGeometry::CreateGeometry(MeshData& meshData, VulkanMeshGeometryType eMeshGeometry)
+    ///////////////////////////////////////// FMeshGeometry //////////////////////////////////////////////
+    bool FMeshGeometry::CreateGeometry(FMeshData& meshData, FMeshGeometryType eMeshGeometry)
     {
         switch ((int)eMeshGeometry)
         {
-        case Vulkan_MeshGeometry_Triangle:
+        case F_MeshGeometry_Triangle:
             {
-                VulkanMeshCreateParam_Triangle param_Triangle;
-                VulkanMeshGeometry::CreateTriangle(meshData, &param_Triangle);
+                FMeshCreateParam_Triangle param_Triangle;
+                FMeshGeometry::CreateTriangle(meshData, &param_Triangle);
                 return true;
             }
-        case Vulkan_MeshGeometry_Quad:
+        case F_MeshGeometry_Quad:
             {
-                VulkanMeshCreateParam_Quad param_Quad;
-                VulkanMeshGeometry::CreateQuad(meshData, &param_Quad);
+                FMeshCreateParam_Quad param_Quad;
+                FMeshGeometry::CreateQuad(meshData, &param_Quad);
                 return true;
             }
-        case Vulkan_MeshGeometry_Grid:
+        case F_MeshGeometry_Grid:
             {
-                VulkanMeshCreateParam_Grid param_Grid;
-                VulkanMeshGeometry::CreateGrid(meshData, &param_Grid);
+                FMeshCreateParam_Grid param_Grid;
+                FMeshGeometry::CreateGrid(meshData, &param_Grid);
                 return true;
             }
-        case Vulkan_MeshGeometry_Circle:
+        case F_MeshGeometry_Circle:
             {
-                VulkanMeshCreateParam_Circle param_Circle;
-                VulkanMeshGeometry::CreateCircle(meshData, &param_Circle);
+                FMeshCreateParam_Circle param_Circle;
+                FMeshGeometry::CreateCircle(meshData, &param_Circle);
                 return true;
             }
-        case Vulkan_MeshGeometry_AABB:
+        case F_MeshGeometry_AABB:
             {
-                VulkanMeshCreateParam_AABB param_AABB;
-                VulkanMeshGeometry::CreateAABB(meshData, &param_AABB);
+                FMeshCreateParam_AABB param_AABB;
+                FMeshGeometry::CreateAABB(meshData, &param_AABB);
                 return true;
             }
-        case Vulkan_MeshGeometry_Sphere:
+        case F_MeshGeometry_Sphere:
             {
-                VulkanMeshCreateParam_Sphere param_Sphere;
-                VulkanMeshGeometry::CreateSphere(meshData, &param_Sphere);
+                FMeshCreateParam_Sphere param_Sphere;
+                FMeshGeometry::CreateSphere(meshData, &param_Sphere);
                 return true;
             }
-         case Vulkan_MeshGeometry_GeoSphere:
+         case F_MeshGeometry_GeoSphere:
             {
-                VulkanMeshCreateParam_GeoSphere param_GeoSphere;
-                VulkanMeshGeometry::CreateGeosphere(meshData, &param_GeoSphere);
+                FMeshCreateParam_GeoSphere param_GeoSphere;
+                FMeshGeometry::CreateGeosphere(meshData, &param_GeoSphere);
                 return true;
             }
-        case Vulkan_MeshGeometry_Cylinder:
+        case F_MeshGeometry_Cylinder:
             {
-                VulkanMeshCreateParam_Cylinder param_Cylinder;
-                VulkanMeshGeometry::CreateCylinder(meshData, &param_Cylinder);
+                FMeshCreateParam_Cylinder param_Cylinder;
+                FMeshGeometry::CreateCylinder(meshData, &param_Cylinder);
                 return true;
             }
-        case Vulkan_MeshGeometry_Capsule:
+        case F_MeshGeometry_Capsule:
             {
-                VulkanMeshCreateParam_Capsule param_Capsule;
-                VulkanMeshGeometry::CreateCapsule(meshData, &param_Capsule);
+                FMeshCreateParam_Capsule param_Capsule;
+                FMeshGeometry::CreateCapsule(meshData, &param_Capsule);
                 return true;
             }
-        case Vulkan_MeshGeometry_Cone:
+        case F_MeshGeometry_Cone:
             {
-                VulkanMeshCreateParam_Cone param_Cone;
-                VulkanMeshGeometry::CreateCone(meshData, &param_Cone);
+                FMeshCreateParam_Cone param_Cone;
+                FMeshGeometry::CreateCone(meshData, &param_Cone);
                 return true;
             }
-        case Vulkan_MeshGeometry_Torus:
+        case F_MeshGeometry_Torus:
             {
-                VulkanMeshCreateParam_Torus param_Torus;
-                VulkanMeshGeometry::CreateTorus(meshData, &param_Torus);
+                FMeshCreateParam_Torus param_Torus;
+                FMeshGeometry::CreateTorus(meshData, &param_Torus);
                 return true;
             }
-        case Vulkan_MeshGeometry_SkyBox:
+        case F_MeshGeometry_SkyBox:
             {
-                VulkanMeshCreateParam_SkyBox param_SkyBox;
-                VulkanMeshGeometry::CreateSkyBox(meshData, &param_SkyBox);
+                FMeshCreateParam_SkyBox param_SkyBox;
+                FMeshGeometry::CreateSkyBox(meshData, &param_SkyBox);
                 return true;
             }
-        case Vulkan_MeshGeometry_SkyDome:
+        case F_MeshGeometry_SkyDome:
             {
-                VulkanMeshCreateParam_SkyDome param_SkyDome;
-                VulkanMeshGeometry::CreateSkyDome(meshData, &param_SkyDome);
+                FMeshCreateParam_SkyDome param_SkyDome;
+                FMeshGeometry::CreateSkyDome(meshData, &param_SkyDome);
                 return true;
             }
-        case Vulkan_MeshGeometry_Terrain:
+        case F_MeshGeometry_Terrain:
             {
-                VulkanMeshCreateParam_Terrain param_Terrain;
-                VulkanMeshGeometry::CreateTerrain(meshData, &param_Terrain);
+                FMeshCreateParam_Terrain param_Terrain;
+                FMeshGeometry::CreateTerrain(meshData, &param_Terrain);
                 return true;
             }
         }
         return false;
     }
-    bool VulkanMeshGeometry::CreateGeometry(MeshData& meshData, VulkanMeshGeometryType eMeshGeometry, VulkanMeshCreateParam* pParam)
+    bool FMeshGeometry::CreateGeometry(FMeshData& meshData, FMeshGeometryType eMeshGeometry, FMeshCreateParam* pParam)
     {   
         switch ((int)eMeshGeometry)
         {
-        case Vulkan_MeshGeometry_Triangle:
+        case F_MeshGeometry_Triangle:
             {
-                VulkanMeshCreateParam_Triangle* pParam_Triangle = static_cast<VulkanMeshCreateParam_Triangle*>(pParam);
-                VulkanMeshGeometry::CreateTriangle(meshData, pParam_Triangle);
+                FMeshCreateParam_Triangle* pParam_Triangle = static_cast<FMeshCreateParam_Triangle*>(pParam);
+                FMeshGeometry::CreateTriangle(meshData, pParam_Triangle);
                 return true;
             }
-        case Vulkan_MeshGeometry_Quad:
+        case F_MeshGeometry_Quad:
             {
-                VulkanMeshCreateParam_Quad* pParam_Quad = static_cast<VulkanMeshCreateParam_Quad*>(pParam);
-                VulkanMeshGeometry::CreateQuad(meshData, pParam_Quad);
+                FMeshCreateParam_Quad* pParam_Quad = static_cast<FMeshCreateParam_Quad*>(pParam);
+                FMeshGeometry::CreateQuad(meshData, pParam_Quad);
                 return true;
             }
-        case Vulkan_MeshGeometry_Grid:
+        case F_MeshGeometry_Grid:
             {
-                VulkanMeshCreateParam_Grid* pParam_Grid = static_cast<VulkanMeshCreateParam_Grid*>(pParam);
-                VulkanMeshGeometry::CreateGrid(meshData, pParam_Grid);
+                FMeshCreateParam_Grid* pParam_Grid = static_cast<FMeshCreateParam_Grid*>(pParam);
+                FMeshGeometry::CreateGrid(meshData, pParam_Grid);
                 return true;
             }
-        case Vulkan_MeshGeometry_Circle:
+        case F_MeshGeometry_Circle:
             {
-                VulkanMeshCreateParam_Circle* pParam_Circle = static_cast<VulkanMeshCreateParam_Circle*>(pParam);
-                VulkanMeshGeometry::CreateCircle(meshData, pParam_Circle);
+                FMeshCreateParam_Circle* pParam_Circle = static_cast<FMeshCreateParam_Circle*>(pParam);
+                FMeshGeometry::CreateCircle(meshData, pParam_Circle);
                 return true;
             }
-        case Vulkan_MeshGeometry_AABB:
+        case F_MeshGeometry_AABB:
             {
-                VulkanMeshCreateParam_AABB* pParam_AABB = static_cast<VulkanMeshCreateParam_AABB*>(pParam);
-                VulkanMeshGeometry::CreateAABB(meshData, pParam_AABB);
+                FMeshCreateParam_AABB* pParam_AABB = static_cast<FMeshCreateParam_AABB*>(pParam);
+                FMeshGeometry::CreateAABB(meshData, pParam_AABB);
                 return true;
             }
-        case Vulkan_MeshGeometry_Sphere:
+        case F_MeshGeometry_Sphere:
             {
-                VulkanMeshCreateParam_Sphere* pParam_Sphere = static_cast<VulkanMeshCreateParam_Sphere*>(pParam);
-                VulkanMeshGeometry::CreateSphere(meshData, pParam_Sphere);
+                FMeshCreateParam_Sphere* pParam_Sphere = static_cast<FMeshCreateParam_Sphere*>(pParam);
+                FMeshGeometry::CreateSphere(meshData, pParam_Sphere);
                 return true;
             }
-        case Vulkan_MeshGeometry_GeoSphere:
+        case F_MeshGeometry_GeoSphere:
             {
-                VulkanMeshCreateParam_GeoSphere* pParam_GeoSphere = static_cast<VulkanMeshCreateParam_GeoSphere*>(pParam);
-                VulkanMeshGeometry::CreateGeosphere(meshData, pParam_GeoSphere);
+                FMeshCreateParam_GeoSphere* pParam_GeoSphere = static_cast<FMeshCreateParam_GeoSphere*>(pParam);
+                FMeshGeometry::CreateGeosphere(meshData, pParam_GeoSphere);
                 return true;
             }
-        case Vulkan_MeshGeometry_Cylinder:
+        case F_MeshGeometry_Cylinder:
             {
-                VulkanMeshCreateParam_Cylinder* pParam_Cylinder = static_cast<VulkanMeshCreateParam_Cylinder*>(pParam);
-                VulkanMeshGeometry::CreateCylinder(meshData, pParam_Cylinder);
+                FMeshCreateParam_Cylinder* pParam_Cylinder = static_cast<FMeshCreateParam_Cylinder*>(pParam);
+                FMeshGeometry::CreateCylinder(meshData, pParam_Cylinder);
                 return true;
             }
-        case Vulkan_MeshGeometry_Capsule:
+        case F_MeshGeometry_Capsule:
             {
-                VulkanMeshCreateParam_Capsule* pParam_Capsule = static_cast<VulkanMeshCreateParam_Capsule*>(pParam);
-                VulkanMeshGeometry::CreateCapsule(meshData, pParam_Capsule);
+                FMeshCreateParam_Capsule* pParam_Capsule = static_cast<FMeshCreateParam_Capsule*>(pParam);
+                FMeshGeometry::CreateCapsule(meshData, pParam_Capsule);
                 return true;
             }
-        case Vulkan_MeshGeometry_Cone:
+        case F_MeshGeometry_Cone:
             {
-                VulkanMeshCreateParam_Cone* pParam_Cone = static_cast<VulkanMeshCreateParam_Cone*>(pParam);
-                VulkanMeshGeometry::CreateCone(meshData, pParam_Cone);
+                FMeshCreateParam_Cone* pParam_Cone = static_cast<FMeshCreateParam_Cone*>(pParam);
+                FMeshGeometry::CreateCone(meshData, pParam_Cone);
                 return true;
             }
-        case Vulkan_MeshGeometry_Torus:
+        case F_MeshGeometry_Torus:
             {
-                VulkanMeshCreateParam_Torus* pParam_Torus = static_cast<VulkanMeshCreateParam_Torus*>(pParam);
-                VulkanMeshGeometry::CreateTorus(meshData, pParam_Torus);
+                FMeshCreateParam_Torus* pParam_Torus = static_cast<FMeshCreateParam_Torus*>(pParam);
+                FMeshGeometry::CreateTorus(meshData, pParam_Torus);
                 return true;
             }
-        case Vulkan_MeshGeometry_SkyBox:
+        case F_MeshGeometry_SkyBox:
             {
-                VulkanMeshCreateParam_SkyBox* pParam_SkyBox = static_cast<VulkanMeshCreateParam_SkyBox*>(pParam);
-                VulkanMeshGeometry::CreateSkyBox(meshData, pParam_SkyBox);
+                FMeshCreateParam_SkyBox* pParam_SkyBox = static_cast<FMeshCreateParam_SkyBox*>(pParam);
+                FMeshGeometry::CreateSkyBox(meshData, pParam_SkyBox);
                 return true;
             }
-        case Vulkan_MeshGeometry_SkyDome:
+        case F_MeshGeometry_SkyDome:
             {
-                VulkanMeshCreateParam_SkyDome* pParam_SkyDome = static_cast<VulkanMeshCreateParam_SkyDome*>(pParam);
-                VulkanMeshGeometry::CreateSkyDome(meshData, pParam_SkyDome);
+                FMeshCreateParam_SkyDome* pParam_SkyDome = static_cast<FMeshCreateParam_SkyDome*>(pParam);
+                FMeshGeometry::CreateSkyDome(meshData, pParam_SkyDome);
                 return true;
             }
-        case Vulkan_MeshGeometry_Terrain:
+        case F_MeshGeometry_Terrain:
             {
-                VulkanMeshCreateParam_Terrain* pParam_Terrain = static_cast<VulkanMeshCreateParam_Terrain*>(pParam);
-                VulkanMeshGeometry::CreateTerrain(meshData, pParam_Terrain);
+                FMeshCreateParam_Terrain* pParam_Terrain = static_cast<FMeshCreateParam_Terrain*>(pParam);
+                FMeshGeometry::CreateTerrain(meshData, pParam_Terrain);
                 return true;
             }
         }
@@ -647,7 +647,7 @@ namespace LostPeter
     }
 
 
-    void VulkanMeshGeometry::CreateTriangle(MeshData& meshData, 
+    void FMeshGeometry::CreateTriangle(FMeshData& meshData, 
                                             bool flipV,
                                             bool rightHand)
     {
@@ -656,20 +656,20 @@ namespace LostPeter
         //       /  \
         //    1 ------ 2
 
-        //MeshVertex
-        meshData.AddVertex(MeshVertex(
+        //FMeshVertex
+        meshData.AddVertex(FMeshVertex(
             0.0f,  0.5f,  0.0f,
             0.0f,  0.0f,  1.0f,
             1.0f,  0.0f,  0.0f,
             0.5f,  flipV ? 1.0f : 0.0f));
 
-        meshData.AddVertex(MeshVertex(
+        meshData.AddVertex(FMeshVertex(
            -0.5f, -0.5f,  0.0f,
             0.0f,  0.0f,  1.0f,
             1.0f,  0.0f,  0.0f,
             0.0f,  flipV ? 0.0f : 1.0f));
 
-        meshData.AddVertex(MeshVertex(
+        meshData.AddVertex(FMeshVertex(
             0.5f, -0.5f,  0.0f,
             0.0f,  0.0f,  1.0f,
             1.0f,  0.0f,  0.0f,
@@ -686,7 +686,7 @@ namespace LostPeter
         }
     }
 
-    void VulkanMeshGeometry::CreateQuad(MeshData& meshData, 
+    void FMeshGeometry::CreateQuad(FMeshData& meshData, 
                                         float centerX, 
                                         float centerY, 
                                         float width, 
@@ -703,26 +703,26 @@ namespace LostPeter
         //   --------
         //  1        2
 
-        //MeshVertex
-        meshData.AddVertex(MeshVertex(
+        //FMeshVertex
+        meshData.AddVertex(FMeshVertex(
             centerX - width/2, centerY + height/2, depth,
             0.0f, 0.0f, 1.0f,
             1.0f, 0.0f, 0.0f,
             0.0f, flipV ? 1.0f : 0.0f));
 
-        meshData.AddVertex(MeshVertex(
+        meshData.AddVertex(FMeshVertex(
             centerX - width/2, centerY - height/2, depth,
             0.0f, 0.0f, 1.0f,
             1.0f, 0.0f, 0.0f,
             0.0f, flipV ? 0.0f : 1.0f));
 
-        meshData.AddVertex(MeshVertex(
+        meshData.AddVertex(FMeshVertex(
             centerX + width/2, centerY - height/2, depth,
             0.0f, 0.0f, 1.0f,
             1.0f, 0.0f, 0.0f,
             1.0f, flipV ? 0.0f : 1.0f));
 
-        meshData.AddVertex(MeshVertex(
+        meshData.AddVertex(FMeshVertex(
             centerX + width/2, centerY + height/2, depth,
             0.0f, 0.0f, 1.0f,
             1.0f, 0.0f, 0.0f,
@@ -741,7 +741,7 @@ namespace LostPeter
         }
     }
 
-    void VulkanMeshGeometry::CreateGrid(MeshData& meshData, 
+    void FMeshGeometry::CreateGrid(FMeshData& meshData, 
                                         float width, 
                                         float height, 
                                         uint32 m, 
@@ -752,7 +752,7 @@ namespace LostPeter
         uint32 vertexCount = m * n;
         uint32 faceCount = (m - 1) * (n - 1) * 2;
 
-        //MeshVertex
+        //FMeshVertex
         float halfW = 0.5f * width;
         float halfH = 0.5f * height;
 
@@ -770,7 +770,7 @@ namespace LostPeter
             {
                 float x = -halfW + j * dx;
 
-                MeshVertex vertex = MeshVertex(
+                FMeshVertex vertex = FMeshVertex(
                     x, y, 0.0f,
                     0.0f, 0.0f, 1.0f,
                     1.0f, 0.0f, 0.0f,
@@ -813,7 +813,7 @@ namespace LostPeter
         }
     }
 
-    void VulkanMeshGeometry::CreateCircle(MeshData& meshData,
+    void FMeshGeometry::CreateCircle(FMeshData& meshData,
                                           float radius,
                                           uint32 segment,
                                           bool flipV,
@@ -822,10 +822,10 @@ namespace LostPeter
         uint32 vertexCount = segment + 1;
         uint32 faceCount = segment;
 
-        //MeshVertex
+        //FMeshVertex
         float thetaStep = 2.0f * FMath::ms_fPI / segment;
         meshData.vertices.resize(vertexCount);
-        meshData.vertices[0] = MeshVertex(
+        meshData.vertices[0] = FMeshVertex(
                     0.0f, 0.0f, 0.0f,
                     0.0f, 0.0f, 1.0f,
                     1.0f, 0.0f, 0.0f,
@@ -836,7 +836,7 @@ namespace LostPeter
         {
             float ux = cos(thetaStep * i);
             float uy = sin(thetaStep * i);
-            MeshVertex vertex = MeshVertex(
+            FMeshVertex vertex = FMeshVertex(
                     radius * ux,  radius * uy, 0.0f,
                     0.0f, 0.0f, 1.0f,
                     1.0f, 0.0f, 0.0f,
@@ -883,7 +883,7 @@ namespace LostPeter
         }
     }
 
-    void VulkanMeshGeometry::CreateAABB(MeshData& meshData, 
+    void FMeshGeometry::CreateAABB(FMeshData& meshData, 
                                         float width, 
                                         float height, 
                                         float depth, 
@@ -891,41 +891,41 @@ namespace LostPeter
                                         bool flipV,
                                         bool rightHand)
     {
-        //MeshVertex
-        MeshVertex v[24];
+        //FMeshVertex
+        FMeshVertex v[24];
         float w2 = 0.5f * width;
         float h2 = 0.5f * height;
         float d2 = 0.5f * depth;
         //Front
-        v[0]  = MeshVertex(-w2, +h2, +d2,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   0.0f, flipV ? 1.0f : 0.0f);
-        v[1]  = MeshVertex(-w2, -h2, +d2,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   0.0f, flipV ? 0.0f : 1.0f);
-        v[2]  = MeshVertex(+w2, -h2, +d2,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   1.0f, flipV ? 0.0f : 1.0f);
-        v[3]  = MeshVertex(+w2, +h2, +d2,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   1.0f, flipV ? 1.0f : 0.0f);
+        v[0]  = FMeshVertex(-w2, +h2, +d2,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   0.0f, flipV ? 1.0f : 0.0f);
+        v[1]  = FMeshVertex(-w2, -h2, +d2,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   0.0f, flipV ? 0.0f : 1.0f);
+        v[2]  = FMeshVertex(+w2, -h2, +d2,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   1.0f, flipV ? 0.0f : 1.0f);
+        v[3]  = FMeshVertex(+w2, +h2, +d2,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   1.0f, flipV ? 1.0f : 0.0f);
         //Back
-        v[4]  = MeshVertex(-w2, -h2, -d2,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   0.0f, flipV ? 1.0f : 0.0f);
-        v[5]  = MeshVertex(-w2, +h2, -d2,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   0.0f, flipV ? 0.0f : 1.0f);
-        v[6]  = MeshVertex(+w2, +h2, -d2,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   1.0f, flipV ? 0.0f : 1.0f);
-        v[7]  = MeshVertex(+w2, -h2, -d2,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   1.0f, flipV ? 1.0f : 0.0f);
+        v[4]  = FMeshVertex(-w2, -h2, -d2,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   0.0f, flipV ? 1.0f : 0.0f);
+        v[5]  = FMeshVertex(-w2, +h2, -d2,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   0.0f, flipV ? 0.0f : 1.0f);
+        v[6]  = FMeshVertex(+w2, +h2, -d2,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   1.0f, flipV ? 0.0f : 1.0f);
+        v[7]  = FMeshVertex(+w2, -h2, -d2,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   1.0f, flipV ? 1.0f : 0.0f);
         //Top
-        v[8]  = MeshVertex(-w2, +h2, -d2,   0.0f,  1.0f,  0.0f,   1.0f,  0.0f,  0.0f,   0.0f, flipV ? 1.0f : 0.0f);
-        v[9]  = MeshVertex(-w2, +h2, +d2,   0.0f,  1.0f,  0.0f,   1.0f,  0.0f,  0.0f,   0.0f, flipV ? 0.0f : 1.0f);
-        v[10] = MeshVertex(+w2, +h2, +d2,   0.0f,  1.0f,  0.0f,   1.0f,  0.0f,  0.0f,   1.0f, flipV ? 0.0f : 1.0f);
-        v[11] = MeshVertex(+w2, +h2, -d2,   0.0f,  1.0f,  0.0f,   1.0f,  0.0f,  0.0f,   1.0f, flipV ? 1.0f : 0.0f);
+        v[8]  = FMeshVertex(-w2, +h2, -d2,   0.0f,  1.0f,  0.0f,   1.0f,  0.0f,  0.0f,   0.0f, flipV ? 1.0f : 0.0f);
+        v[9]  = FMeshVertex(-w2, +h2, +d2,   0.0f,  1.0f,  0.0f,   1.0f,  0.0f,  0.0f,   0.0f, flipV ? 0.0f : 1.0f);
+        v[10] = FMeshVertex(+w2, +h2, +d2,   0.0f,  1.0f,  0.0f,   1.0f,  0.0f,  0.0f,   1.0f, flipV ? 0.0f : 1.0f);
+        v[11] = FMeshVertex(+w2, +h2, -d2,   0.0f,  1.0f,  0.0f,   1.0f,  0.0f,  0.0f,   1.0f, flipV ? 1.0f : 0.0f);
         //Bottom
-        v[12] = MeshVertex(-w2, -h2, +d2,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   0.0f, flipV ? 1.0f : 0.0f);
-        v[13] = MeshVertex(-w2, -h2, -d2,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   0.0f, flipV ? 0.0f : 1.0f);
-        v[14] = MeshVertex(+w2, -h2, -d2,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   1.0f, flipV ? 0.0f : 1.0f);
-        v[15] = MeshVertex(+w2, -h2, +d2,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   1.0f, flipV ? 1.0f : 0.0f);
+        v[12] = FMeshVertex(-w2, -h2, +d2,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   0.0f, flipV ? 1.0f : 0.0f);
+        v[13] = FMeshVertex(-w2, -h2, -d2,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   0.0f, flipV ? 0.0f : 1.0f);
+        v[14] = FMeshVertex(+w2, -h2, -d2,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   1.0f, flipV ? 0.0f : 1.0f);
+        v[15] = FMeshVertex(+w2, -h2, +d2,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   1.0f, flipV ? 1.0f : 0.0f);
         //Left
-        v[16] = MeshVertex(-w2, +h2, -d2,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   0.0f, flipV ? 1.0f : 0.0f);
-        v[17] = MeshVertex(-w2, -h2, -d2,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   0.0f, flipV ? 0.0f : 1.0f);
-        v[18] = MeshVertex(-w2, -h2, +d2,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   1.0f, flipV ? 0.0f : 1.0f);
-        v[19] = MeshVertex(-w2, +h2, +d2,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   1.0f, flipV ? 1.0f : 0.0f);
+        v[16] = FMeshVertex(-w2, +h2, -d2,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   0.0f, flipV ? 1.0f : 0.0f);
+        v[17] = FMeshVertex(-w2, -h2, -d2,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   0.0f, flipV ? 0.0f : 1.0f);
+        v[18] = FMeshVertex(-w2, -h2, +d2,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   1.0f, flipV ? 0.0f : 1.0f);
+        v[19] = FMeshVertex(-w2, +h2, +d2,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   1.0f, flipV ? 1.0f : 0.0f);
         //Right
-        v[20] = MeshVertex(+w2, +h2, +d2,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   0.0f, flipV ? 1.0f : 0.0f);
-        v[21] = MeshVertex(+w2, -h2, +d2,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   0.0f, flipV ? 0.0f : 1.0f);
-        v[22] = MeshVertex(+w2, -h2, -d2,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   1.0f, flipV ? 0.0f : 1.0f);
-        v[23] = MeshVertex(+w2, +h2, -d2,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   1.0f, flipV ? 1.0f : 0.0f);
+        v[20] = FMeshVertex(+w2, +h2, +d2,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   0.0f, flipV ? 1.0f : 0.0f);
+        v[21] = FMeshVertex(+w2, -h2, +d2,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   0.0f, flipV ? 0.0f : 1.0f);
+        v[22] = FMeshVertex(+w2, -h2, -d2,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   1.0f, flipV ? 0.0f : 1.0f);
+        v[23] = FMeshVertex(+w2, +h2, -d2,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   1.0f, flipV ? 1.0f : 0.0f);
 
         for (int i = 0; i < 24; i++)
         {
@@ -984,16 +984,16 @@ namespace LostPeter
             subdivide(meshData, rightHand);
     }
 
-    void VulkanMeshGeometry::CreateSphere(MeshData& meshData, 
+    void FMeshGeometry::CreateSphere(FMeshData& meshData, 
                                           float radius, 
                                           uint32 sliceCount, 
                                           uint32 stackCount,
                                           bool flipV,
                                           bool rightHand)
     {
-        //MeshVertex
-        MeshVertex topVertex(0.0f, +radius, 0.0f,  0.0f, +1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, flipV ? 1.0f : 0.0f);
-        MeshVertex bottomVertex(0.0f, -radius, 0.0f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, flipV ? 0.0f : 1.0f);
+        //FMeshVertex
+        FMeshVertex topVertex(0.0f, +radius, 0.0f,  0.0f, +1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, flipV ? 1.0f : 0.0f);
+        FMeshVertex bottomVertex(0.0f, -radius, 0.0f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, flipV ? 0.0f : 1.0f);
         meshData.AddVertex(topVertex);
 
         float phiStep = FMath::ms_fPI / stackCount;
@@ -1005,7 +1005,7 @@ namespace LostPeter
             {
                 float theta = j * thetaStep;
 
-                MeshVertex v;
+                FMeshVertex v;
                 //pos
                 v.pos.x = radius * sinf(phi) * cosf(theta);
                 v.pos.y = radius * cosf(phi);
@@ -1096,13 +1096,13 @@ namespace LostPeter
         }
     }
 
-    void VulkanMeshGeometry::CreateGeosphere(MeshData& meshData, 
+    void FMeshGeometry::CreateGeosphere(FMeshData& meshData, 
                                              float radius, 
                                              uint32 numSubdivisions,
                                              bool flipV,
                                              bool rightHand)
     {
-        //MeshVertex
+        //FMeshVertex
         numSubdivisions = std::min<uint32>(numSubdivisions, 6u);
         const float X = 0.525731f;
         const float Z = 0.850651f;
@@ -1155,7 +1155,7 @@ namespace LostPeter
         }
     }
 
-    void VulkanMeshGeometry::CreateCylinder(MeshData& meshData, 
+    void FMeshGeometry::CreateCylinder(FMeshData& meshData, 
                                             float bottomRadius, 
                                             float topRadius, 
                                             float height, 
@@ -1164,7 +1164,7 @@ namespace LostPeter
                                             bool flipV,
                                             bool rightHand)
     {
-        //MeshVertex
+        //FMeshVertex
         float stackHeight = height / stackCount;
         float radiusStep = (topRadius - bottomRadius) / stackCount;
         uint32 ringCount = stackCount + 1;
@@ -1176,7 +1176,7 @@ namespace LostPeter
             float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
             for (uint32 j = 0; j <= sliceCount; ++j)
             {
-                MeshVertex vertex;
+                FMeshVertex vertex;
 
                 float c = cosf(j * dTheta);
                 float s = sinf(j * dTheta);
@@ -1253,42 +1253,42 @@ namespace LostPeter
         buildCylinderBottomCap(bottomRadius, topRadius, height, sliceCount, stackCount, meshData, rightHand);
     }
 
-    void VulkanMeshGeometry::CreateCapsule(MeshData& meshData,
+    void FMeshGeometry::CreateCapsule(FMeshData& meshData,
                                            bool flipV,
                                            bool rightHand)
     {
 
     }
 
-    void VulkanMeshGeometry::CreateCone(MeshData& meshData,
+    void FMeshGeometry::CreateCone(FMeshData& meshData,
                                         bool flipV,
                                         bool rightHand)
     {
 
     }
 
-    void VulkanMeshGeometry::CreateTorus(MeshData& meshData,
+    void FMeshGeometry::CreateTorus(FMeshData& meshData,
                                          bool flipV,
                                          bool rightHand)
     {
 
     }
 
-    void VulkanMeshGeometry::CreateSkyBox(MeshData& meshData,
+    void FMeshGeometry::CreateSkyBox(FMeshData& meshData,
                                           bool flipV,
                                           bool rightHand)
     {
 
     }
 
-    void VulkanMeshGeometry::CreateSkyDome(MeshData& meshData,
+    void FMeshGeometry::CreateSkyDome(FMeshData& meshData,
                                            bool flipV,
                                            bool rightHand)
     {
 
     }
 
-    void VulkanMeshGeometry::CreateTerrain(MeshData& meshData,
+    void FMeshGeometry::CreateTerrain(FMeshData& meshData,
                                            float offsetX,
                                            float offsetZ,
                                            float width,
@@ -1303,7 +1303,7 @@ namespace LostPeter
         uint32 vertexCount = vertexX * vertexZ;
         uint32 faceCount = (vertexX - 1) * (vertexZ - 1) * 2;
 
-        //MeshVertex
+        //FMeshVertex
         float halfW = 0.5f * width;
         float halfH = 0.5f * height;
 
@@ -1326,7 +1326,7 @@ namespace LostPeter
                 }
                 
                 float x = -halfW + j * dx + offsetX;
-                MeshVertex vertex = MeshVertex(
+                FMeshVertex vertex = FMeshVertex(
                     x, height, z,
                     0.0f, 0.0f, 1.0f,
                     1.0f, 0.0f, 0.0f,
@@ -1368,9 +1368,9 @@ namespace LostPeter
         }
     }
 
-    void VulkanMeshGeometry::subdivide(MeshData& meshData, bool rightHand)
+    void FMeshGeometry::subdivide(FMeshData& meshData, bool rightHand)
     {
-        MeshData inputCopy = meshData;
+        FMeshData inputCopy = meshData;
 
         meshData.vertices.resize(0);
         meshData.indices32.resize(0);
@@ -1390,12 +1390,12 @@ namespace LostPeter
         uint32 numTri = (uint32)inputCopy.indices32.size() / 3;
         for (uint32 i = 0; i < numTri; ++i)
         {
-            const MeshVertex& v0 = inputCopy.vertices[inputCopy.indices32[i * 3 + 0]];
-            const MeshVertex& v1 = inputCopy.vertices[inputCopy.indices32[i * 3 + 1]];
-            const MeshVertex& v2 = inputCopy.vertices[inputCopy.indices32[i * 3 + 2]];
+            const FMeshVertex& v0 = inputCopy.vertices[inputCopy.indices32[i * 3 + 0]];
+            const FMeshVertex& v1 = inputCopy.vertices[inputCopy.indices32[i * 3 + 1]];
+            const FMeshVertex& v2 = inputCopy.vertices[inputCopy.indices32[i * 3 + 2]];
 
             //mid
-            MeshVertex m0,m1,m2;
+            FMeshVertex m0,m1,m2;
             midPoint(v0, v1, m0);
             midPoint(v1, v2, m1);
             midPoint(v0, v2, m2);
@@ -1447,7 +1447,7 @@ namespace LostPeter
         }
     }
 
-    void VulkanMeshGeometry::midPoint(const MeshVertex& v0, const MeshVertex& v1, MeshVertex& m)
+    void FMeshGeometry::midPoint(const FMeshVertex& v0, const FMeshVertex& v1, FMeshVertex& m)
     {
         m.pos = 0.5f * (v0.pos + v1.pos);
         m.color = 0.5f * (v0.color + v1.color);
@@ -1456,7 +1456,7 @@ namespace LostPeter
         m.texCoord = 0.5f * (v0.texCoord + v1.texCoord);
     }
 
-    void VulkanMeshGeometry::buildCylinderTopCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, MeshData& meshData, bool rightHand)
+    void FMeshGeometry::buildCylinderTopCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, FMeshData& meshData, bool rightHand)
     {
         uint32 baseIndex = (uint32)meshData.vertices.size();
 
@@ -1471,9 +1471,9 @@ namespace LostPeter
             float u = x / height + 0.5f;
             float v = z / height + 0.5f;
 
-            meshData.AddVertex(MeshVertex(x, y, z, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, u, v));
+            meshData.AddVertex(FMeshVertex(x, y, z, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, u, v));
         }
-        meshData.AddVertex(MeshVertex(0.0f, y, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f));
+        meshData.AddVertex(FMeshVertex(0.0f, y, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f));
 
         uint32 centerIndex = (uint32)meshData.vertices.size() - 1;
         for (uint32 i = 0; i < sliceCount; ++i)
@@ -1493,7 +1493,7 @@ namespace LostPeter
         }
     }
 
-    void VulkanMeshGeometry::buildCylinderBottomCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, MeshData& meshData, bool rightHand)
+    void FMeshGeometry::buildCylinderBottomCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, FMeshData& meshData, bool rightHand)
     {
         uint32 baseIndex = (uint32)meshData.vertices.size();
         float y = -0.5f * height;
@@ -1507,9 +1507,9 @@ namespace LostPeter
             float u = x / height + 0.5f;
             float v = z / height + 0.5f;
 
-            meshData.AddVertex(MeshVertex(x, y, z, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, u, v));
+            meshData.AddVertex(FMeshVertex(x, y, z, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, u, v));
         }
-        meshData.AddVertex(MeshVertex(0.0f, y, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f));
+        meshData.AddVertex(FMeshVertex(0.0f, y, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f));
 
         uint32 centerIndex = (uint32)meshData.vertices.size() - 1;
         for (uint32 i = 0; i < sliceCount; ++i)
@@ -1529,4 +1529,4 @@ namespace LostPeter
         }
     }
 
-}; //LostPeter
+}; //LostPeterFoundation

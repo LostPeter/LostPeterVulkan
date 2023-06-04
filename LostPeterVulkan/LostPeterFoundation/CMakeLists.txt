@@ -53,7 +53,8 @@ endif ()
 
 #LIB_INCLUDE
 if (WIN32)
-    SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glm-0.9.9.8"
+    SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/assimp-5.2.4"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/stb-0.02"
@@ -63,7 +64,8 @@ elseif (ANDROID)
 
 
 elseif (APPLE)
-    SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glm-0.9.9.8"
+    SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/assimp-5.2.4"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/stb-0.02"
@@ -119,12 +121,14 @@ if (WIN32)
     endif()
     if (DEBUG)
         LINK_LIBRARIES(shlwapi.lib
+                       ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib)
         
     else ()
         LINK_LIBRARIES(shlwapi.lib
+                       ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib)
@@ -140,11 +144,13 @@ elseif (APPLE)
     MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom MacOS !")
 
     if (DEBUG)
-        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
+        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a)
     else ()
-        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
+        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4.a
+                       ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a)
     endif()

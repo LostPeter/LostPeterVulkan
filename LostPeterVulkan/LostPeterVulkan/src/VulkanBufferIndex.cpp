@@ -57,19 +57,19 @@ namespace LostPeter
 
         return true;
     }
-    bool VulkanBufferIndex::Init(MeshPCTData& data, bool bIsUpdateData)
+    bool VulkanBufferIndex::Init(FMeshDataPCT& data, bool bIsUpdateData)
     {
         return Init(data.GetIndexData(), data.GetIndexDataSize(), data.GetIndexCount(), false, bIsUpdateData);
     }
-    bool VulkanBufferIndex::Init(MeshData& data, bool bIsUpdateData)
+    bool VulkanBufferIndex::Init(FMeshData& data, bool bIsUpdateData)
     {
         return Init(data.GetIndexData(), data.GetIndexDataSize(), data.GetIndexCount(), false, bIsUpdateData);
     }
-    bool VulkanBufferIndex::Init(MeshUV2Data& data, bool bIsUpdateData)
+    bool VulkanBufferIndex::Init(FMeshDataUV2& data, bool bIsUpdateData)
     {
         return Init(data.GetIndexData(), data.GetIndexDataSize(), data.GetIndexCount(), false, bIsUpdateData);
     }
-    bool VulkanBufferIndex::Init(SkinMeshData& data, bool bIsUpdateData)
+    bool VulkanBufferIndex::Init(FMeshDataSkin& data, bool bIsUpdateData)
     {
         return Init(data.GetIndexData(), data.GetIndexDataSize(), data.GetIndexCount(), false, bIsUpdateData);
     }

@@ -13,6 +13,7 @@
 #include "../include/VulkanSceneObject.h"
 #include "../include/VulkanSceneManager.h"
 #include "../include/VulkanMaterial.h"
+#include "../include/VulkanMesh.h"
 
 namespace LostPeter
 {
@@ -22,7 +23,7 @@ namespace LostPeter
 		, numFramesDirty(VulkanSceneManager::s_numFrameResources)
 		, objCBIndex(-1)
 		, pMaterial(nullptr)
-		, pMeshGeometry(nullptr)
+		, pMesh(nullptr)
 		, indexCount(0)
 		, startIndexLocation(0)
 		, baseVertexLocation(0)

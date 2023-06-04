@@ -15,57 +15,57 @@ namespace LostPeter
 {
 ////Struct
     //////////////////////////////// Vertex_Pos2Color4 //////////////////////////////
-    //0: Vulkan_Vertex_Pos2Color4
+    //0: F_MeshVertex_Pos2Color4
     VkVertexInputBindingDescriptionVector Vertex_Pos2Color4::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos2Color4::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos3Normal3 /////////////////////////////
-    //1: Vulkan_Vertex_Pos3Normal3
+    //1: F_MeshVertex_Pos3Normal3
     VkVertexInputBindingDescriptionVector Vertex_Pos3Normal3::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Normal3::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos3Normal3Tex2 /////////////////////////
-    //2: Vulkan_Vertex_Pos3Normal3Tex2
+    //2: F_MeshVertex_Pos3Normal3Tex2
     VkVertexInputBindingDescriptionVector Vertex_Pos3Normal3Tex2::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Normal3Tex2::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos2Color4Tex2 //////////////////////////
-    //3: Vulkan_Vertex_Pos2Color4Tex2
+    //3: F_MeshVertex_Pos2Color4Tex2
     VkVertexInputBindingDescriptionVector Vertex_Pos2Color4Tex2::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos2Color4Tex2::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos3Color4Tex2 //////////////////////////
-    //4: Vulkan_Vertex_Pos3Color4Tex2
+    //4: F_MeshVertex_Pos3Color4Tex2
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Tex2::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Tex2::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tex2 ///////////////////
-    //5: Vulkan_Vertex_Pos3Color4Normal3Tex2
+    //5: F_MeshVertex_Pos3Color4Normal3Tex2
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tex2::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tex2::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tex4 ///////////////////
-    //6: Vulkan_Vertex_Pos3Color4Normal3Tex2
+    //6: F_MeshVertex_Pos3Color4Normal3Tex4
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tex4::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tex4::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex2 ///////////
-    //7: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2
+    //7: F_MeshVertex_Pos3Color4Normal3Tangent3Tex2
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex2::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex2::s_aAttributeDescriptions;
     
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex4 ///////////
-    //8: Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4
+    //8: F_MeshVertex_Pos3Color4Normal3Tangent3Tex4
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex4::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tangent3Tex4::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos3Normal3Tangent3BlendWI8Tex2 //////////
-    //9: Vulkan_Vertex_Pos3Normal3Tangent3BlendWI8Tex2
+    //9: F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2
     VkVertexInputBindingDescriptionVector Vertex_Pos3Normal3Tangent3BlendWI8Tex2::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Normal3Tangent3BlendWI8Tex2::s_aAttributeDescriptions;
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 ////
-    //10: Vulkan_Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2
+    //10: F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2::s_aAttributeDescriptions;
 

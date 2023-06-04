@@ -11,7 +11,6 @@
 
 #include "PreInclude.h"
 #include "vulkan_011_texturing.h"
-#include "VulkanMeshLoader.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -683,24 +682,24 @@ static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
 bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load
-    MeshData meshData;
+    FMeshData meshData;
     meshData.bIsFlipY = isFlipY;
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
-    if (!VulkanMeshLoader::LoadMeshData(this->pathMesh, meshData, eMeshParserFlags))
+    if (!FMeshDataLoader::LoadMeshData(this->pathMesh, meshData, eMeshParserFlags))
     {
         F_LogError("Vulkan_011_Texturing::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
         return false; 
     }
 
     int count_vertex = (int)meshData.vertices.size();
-    if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tex2)
+    if (this->poTypeVertex == F_MeshVertex_Pos3Color4Normal3Tex2)
     {
         this->vertices_Pos3Color4Normal3Tex2.clear();
         this->vertices_Pos3Color4Normal3Tex2.reserve(count_vertex);
         for (int i = 0; i < count_vertex; i++)
         {
-            MeshVertex& vertex = meshData.vertices[i];
-            Vertex_Pos3Color4Normal3Tex2 v;
+            FMeshVertex& vertex = meshData.vertices[i];
+            FVertex_Pos3Color4Normal3Tex2 v;
             v.pos = vertex.pos;
             v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
@@ -720,7 +719,7 @@ bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
             this->indices.push_back(meshData.indices32[i]);
         }
         this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tex2.size();
-        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tex2);
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex2);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex2[0];
         this->poIndexCount = (uint32_t)this->indices.size();
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -731,14 +730,14 @@ bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
                   (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
                   (int)this->indices.size());
     }
-    else if (this->poTypeVertex == Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
+    else if (this->poTypeVertex == F_MeshVertex_Pos3Color4Normal3Tangent3Tex2)
     {
         this->vertices_Pos3Color4Normal3Tangent3Tex2.clear();
         this->vertices_Pos3Color4Normal3Tangent3Tex2.reserve(count_vertex);
         for (int i = 0; i < count_vertex; i++)
         {
-            MeshVertex& vertex = meshData.vertices[i];
-            Vertex_Pos3Color4Normal3Tangent3Tex2 v;
+            FMeshVertex& vertex = meshData.vertices[i];
+            FVertex_Pos3Color4Normal3Tangent3Tex2 v;
             v.pos = vertex.pos;
             v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
@@ -759,7 +758,7 @@ bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
             this->indices.push_back(meshData.indices32[i]);
         }
         this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
-        this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2);
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex2);
         this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex2[0];
         this->poIndexCount = (uint32_t)this->indices.size();
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -1451,12 +1450,12 @@ void Vulkan_011_Texturing::createModelMeshes()
         String nameGeometryType = g_MeshPaths[5 * i + 3];
         String pathMesh = g_MeshPaths[5 * i + 4];
         
-        VulkanVertexType typeVertex = Util_ParseVertexType(nameVertexType); 
-        VulkanMeshType typeMesh = Util_ParseMeshType(nameMeshType);
-        VulkanMeshGeometryType typeGeometryType = Vulkan_MeshGeometry_Triangle;
+        F_MeshVertexType typeVertex = F_ParseMeshVertexType(nameVertexType); 
+        FMeshType typeMesh = F_ParseMeshType(nameMeshType);
+        FMeshGeometryType typeGeometryType = F_MeshGeometry_Triangle;
         if (!nameGeometryType.empty())
         {
-            typeGeometryType = Util_ParseMeshGeometryType(nameGeometryType);
+            typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);
         }
 
         ModelMesh* pMesh = new ModelMesh(this, 

@@ -23,7 +23,7 @@ public:
 public:
 
 protected:
-    std::vector<Vertex_Pos2Color4Tex2> vertices;
+    std::vector<FVertex_Pos2Color4Tex2> vertices;
 
 public:
     //Create Pipeline

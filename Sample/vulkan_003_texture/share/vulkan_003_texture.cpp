@@ -22,7 +22,7 @@ Vulkan_003_Texture::Vulkan_003_Texture(int width, int height, String name)
     this->cfg_isNegativeViewport = false;
     this->cfg_vkFrontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 
-    this->poTypeVertex = Vulkan_Vertex_Pos2Color4Tex2;
+    this->poTypeVertex = F_MeshVertex_Pos2Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/notrans_pos2_color4_tex2.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/notrans_pos2_color4_tex2.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
@@ -31,14 +31,14 @@ Vulkan_003_Texture::Vulkan_003_Texture(int width, int height, String name)
 void Vulkan_003_Texture::loadModel_Custom()
 {   
     //1> vertices
-    this->vertices.push_back(Vertex_Pos2Color4Tex2(FVector2(-0.5f, -0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(0.0f, 0.0f)));
-    this->vertices.push_back(Vertex_Pos2Color4Tex2(FVector2(-0.5f,  0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(0.0f, 1.0f)));
-    this->vertices.push_back(Vertex_Pos2Color4Tex2(FVector2( 0.5f,  0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(1.0f, 1.0f)));
-    this->vertices.push_back(Vertex_Pos2Color4Tex2(FVector2( 0.5f,  0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(1.0f, 1.0f)));
-    this->vertices.push_back(Vertex_Pos2Color4Tex2(FVector2( 0.5f, -0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(1.0f, 0.0f)));
-    this->vertices.push_back(Vertex_Pos2Color4Tex2(FVector2(-0.5f, -0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(0.0f, 0.0f)));
+    this->vertices.push_back(FVertex_Pos2Color4Tex2(FVector2(-0.5f, -0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(0.0f, 0.0f)));
+    this->vertices.push_back(FVertex_Pos2Color4Tex2(FVector2(-0.5f,  0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(0.0f, 1.0f)));
+    this->vertices.push_back(FVertex_Pos2Color4Tex2(FVector2( 0.5f,  0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(1.0f, 1.0f)));
+    this->vertices.push_back(FVertex_Pos2Color4Tex2(FVector2( 0.5f,  0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(1.0f, 1.0f)));
+    this->vertices.push_back(FVertex_Pos2Color4Tex2(FVector2( 0.5f, -0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(1.0f, 0.0f)));
+    this->vertices.push_back(FVertex_Pos2Color4Tex2(FVector2(-0.5f, -0.5f), FVector4(1.0f, 1.0f, 1.0f, 1.0f), FVector2(0.0f, 0.0f)));
     this->poVertexCount = (uint32_t)this->vertices.size();
-    this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos2Color4Tex2);
+    this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos2Color4Tex2);
     this->poVertexBuffer_Data = &this->vertices[0];
     this->poIndexCount = 0;
     this->poIndexBuffer_Size = 0;

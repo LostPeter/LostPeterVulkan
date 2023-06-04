@@ -147,7 +147,7 @@ public:
         bool isNoDepthTestWrite;
 
         //Vertex
-        std::vector<Vertex_Pos3Color4Tex2> vertices;
+        std::vector<FVertex_Pos3Color4Tex2> vertices;
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;

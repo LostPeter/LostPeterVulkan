@@ -32,13 +32,13 @@ public:
         int indexMeshSub;
 
         //Vertex
-        VulkanVertexType poTypeVertex;
+        F_MeshVertexType poTypeVertex;
 
-        std::vector<Vertex_Pos3Color4Tex2> vertices_Pos3Color4Tex2;
-        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
-        std::vector<Vertex_Pos3Color4Normal3Tex4> vertices_Pos3Color4Normal3Tex4;
-        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
-        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex4> vertices_Pos3Color4Normal3Tangent3Tex4;
+        std::vector<FVertex_Pos3Color4Tex2> vertices_Pos3Color4Tex2;
+        std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
+        std::vector<FVertex_Pos3Color4Normal3Tex4> vertices_Pos3Color4Normal3Tex4;
+        std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
+        std::vector<FVertex_Pos3Color4Normal3Tangent3Tex4> vertices_Pos3Color4Normal3Tangent3Tex4;
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
@@ -58,7 +58,7 @@ public:
                      const String& _nameMeshSub,
                      const String& _nameOriginal,
                      int _indexMeshSub,
-                     VulkanVertexType _poTypeVertex)
+                     F_MeshVertexType _poTypeVertex)
             : pMesh(_pMesh)
             , nameMeshSub(_nameMeshSub)
             , nameOriginal(_nameOriginal)
@@ -87,15 +87,15 @@ public:
         uint32_t GetVertexSize() 
         {
             if (this->vertices_Pos3Color4Tex2.size() > 0)
-                return sizeof(Vertex_Pos3Color4Tex2);
+                return sizeof(FVertex_Pos3Color4Tex2);
             else if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
-                return sizeof(Vertex_Pos3Color4Normal3Tex2);
+                return sizeof(FVertex_Pos3Color4Normal3Tex2);
             else if(this->vertices_Pos3Color4Normal3Tex4.size() > 0)
-                return sizeof(Vertex_Pos3Color4Normal3Tex4);
+                return sizeof(FVertex_Pos3Color4Normal3Tex4);
             else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
-                return sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2);
+                return sizeof(FVertex_Pos3Color4Normal3Tangent3Tex2);
             else if (this->vertices_Pos3Color4Normal3Tangent3Tex4.size() > 0)
-                return sizeof(Vertex_Pos3Color4Normal3Tangent3Tex4);
+                return sizeof(FVertex_Pos3Color4Normal3Tangent3Tex4);
             else
             {
                 assert(false && "ModelMeshSub::GetVertexSize: wrong vertex type !");
@@ -107,10 +107,10 @@ public:
             return sizeof(uint32_t);
         }
 
-        bool CreateMeshSub(MeshData& meshData, bool isTranformLocal, const FMatrix4& matTransformLocal);
+        bool CreateMeshSub(FMeshData& meshData, bool isTranformLocal, const FMatrix4& matTransformLocal);
 
-        void WriteVertexData(std::vector<Vertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex4,
-                             std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex4);
+        void WriteVertexData(std::vector<FVertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex4,
+                             std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex4);
         void WriteIndexData(std::vector<uint32_t>& indexData);
     };
     typedef std::vector<ModelMeshSub*> ModelMeshSubPtrVector;
@@ -123,9 +123,9 @@ public:
         Vulkan_015_MultiView* pWindow;
         String nameMesh;
         String pathMesh;
-        VulkanMeshType typeMesh;
-        VulkanMeshGeometryType typeGeometryType;
-        VulkanVertexType typeVertex;
+        FMeshType typeMesh;
+        FMeshGeometryType typeGeometryType;
+        F_MeshVertexType typeVertex;
 
         ModelMeshSubPtrVector aMeshSubs;
         ModelMeshSubPtrMap mapMeshSubs;
@@ -133,9 +133,9 @@ public:
         ModelMesh(Vulkan_015_MultiView* _pWindow, 
                   const String& _nameMesh,
                   const String& _pathMesh,
-                  VulkanMeshType _typeMesh,
-                  VulkanMeshGeometryType _typeGeometryType,
-                  VulkanVertexType _typeVertex)
+                  FMeshType _typeMesh,
+                  FMeshGeometryType _typeGeometryType,
+                  F_MeshVertexType _typeVertex)
             : pWindow(_pWindow)
             , nameMesh(_nameMesh)
             , pathMesh(_pathMesh)
@@ -1065,8 +1065,8 @@ public:
         bool isTransparent;
 
         //Vertex
-        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
-        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
+        std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
+        std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
         size_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;

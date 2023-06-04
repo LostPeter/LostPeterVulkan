@@ -28,13 +28,13 @@ public:
         Vulkan_012_Shadering* pWindow;
         String nameMesh;
         String pathMesh;
-        VulkanMeshType typeMesh;
-        VulkanMeshGeometryType typeGeometryType;
+        FMeshType typeMesh;
+        FMeshGeometryType typeGeometryType;
 
         //Vertex
-        VulkanVertexType poTypeVertex;
-        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
-        std::vector<Vertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
+        F_MeshVertexType poTypeVertex;
+        std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
+        std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
@@ -53,9 +53,9 @@ public:
         ModelMesh(Vulkan_012_Shadering* _pWindow, 
                   const String& _nameMesh,
                   const String& _pathMesh,
-                  VulkanMeshType _typeMesh,
-                  VulkanMeshGeometryType _typeGeometryType,
-                  VulkanVertexType _poTypeVertex)
+                  FMeshType _typeMesh,
+                  FMeshGeometryType _typeGeometryType,
+                  F_MeshVertexType _poTypeVertex)
             : pWindow(_pWindow)
             , nameMesh(_nameMesh)
             , pathMesh(_pathMesh)

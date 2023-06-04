@@ -30,7 +30,7 @@ namespace LostPeter
 		uint32_t objCBIndex;
 
 		VulkanMaterial* pMaterial;
-		MeshGeometry* pMeshGeometry;
+		VulkanMesh* pMesh;
 
 		uint32_t indexCount;
 		uint32_t startIndexLocation;

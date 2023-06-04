@@ -11,8 +11,6 @@
 
 #include "../include/PreInclude.h"
 #include "../include/VulkanWindow.h"
-#include "../include/VulkanMeshLoader.h"
-#include "../include/VulkanMeshGeometry.h"
 
 namespace LostPeter
 {
@@ -61,7 +59,7 @@ namespace LostPeter
         , poIndexBufferMemory(VK_NULL_HANDLE)
         , poMatWorld(FMath::Identity4x4())
 
-        , poTypeVertex(Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2)
+        , poTypeVertex(F_MeshVertex_Pos3Color4Normal3Tangent3Tex2)
         , poPipelineLayout(VK_NULL_HANDLE)
         , poPipelineCache(VK_NULL_HANDLE)
         , poPipelineGraphics(VK_NULL_HANDLE)
@@ -2621,7 +2619,7 @@ namespace LostPeter
         void VulkanWindow::setupTerrainGeometry()
         {   
             //1> Mesh Geometry
-            MeshData meshData;
+            FMeshData meshData;
             float fSize = (float)(this->poTerrainHeightMapSize - 1.0f);
             uint32 nSizeVertex = (uint32)(this->poTerrainHeightMapSize);
             uint32 nVertexCount = 0;
@@ -2640,25 +2638,25 @@ namespace LostPeter
                 pHeight = this->poTerrainHeightMapDataFloat;
                 heightDataGap = (nSizeVertex - 1) / (nVertexCount - 1);
             }
-            VulkanMeshGeometry::CreateTerrain(meshData,
-                                              0.0f,
-                                              0.0f,
-                                              fSize,
-                                              fSize,
-                                              nVertexCount,
-                                              nVertexCount,
-                                              pHeight,
-                                              heightDataGap,
-                                              false,
-                                              false);
+            FMeshGeometry::CreateTerrain(meshData,
+                                         0.0f,
+                                         0.0f,
+                                         fSize,
+                                         fSize,
+                                         nVertexCount,
+                                         nVertexCount,
+                                         pHeight,
+                                         heightDataGap,
+                                         false,
+                                         false);
 
             int count_vertex = (int)meshData.vertices.size();
             this->poTerrain_Pos3Normal3Tex2.clear();
             this->poTerrain_Pos3Normal3Tex2.reserve(count_vertex);
             for (int i = 0; i < count_vertex; i++)
             {
-                MeshVertex& vertex = meshData.vertices[i];
-                Vertex_Pos3Normal3Tex2 v;
+                FMeshVertex& vertex = meshData.vertices[i];
+                FVertex_Pos3Normal3Tex2 v;
                 v.pos = vertex.pos;
                 v.normal = vertex.normal;
                 v.texCoord = vertex.texCoord;
@@ -2674,7 +2672,7 @@ namespace LostPeter
             }
 
             this->poTerrainVertexCount = (uint32_t)this->poTerrain_Pos3Normal3Tex2.size();
-            this->poTerrainVertexBuffer_Size = this->poTerrainVertexCount * sizeof(Vertex_Pos3Normal3Tex2);
+            this->poTerrainVertexBuffer_Size = this->poTerrainVertexCount * sizeof(FVertex_Pos3Normal3Tex2);
             this->poTerrainVertexBuffer_Data = &this->poTerrain_Pos3Normal3Tex2[0];
             this->poTerrainIndexCount = (uint32_t)this->poTerrain_Indices.size();
             this->poTerrainIndexBuffer_Size = this->poTerrainIndexCount * sizeof(uint32_t);
@@ -3314,8 +3312,8 @@ namespace LostPeter
 
             this->poTerrainGraphicsPipeline = createVkGraphicsPipeline(this->poTerrainGraphicsShaderModuleVertex, "main", 
                                                                        this->poTerrainGraphicsShaderModuleFragment, "main", 
-                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(Vulkan_Vertex_Pos3Normal3Tex2),
-                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(Vulkan_Vertex_Pos3Normal3Tex2),
+                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Normal3Tex2),
+                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Normal3Tex2),
                                                                        this->poRenderPass, this->poTerrainGraphicsPipelineLayout, aViewports, aScissors,
                                                                        vkPrimitiveTopology, vkFrontFace, vkPolygonMode, vkCullModeFlagBits,
                                                                        isDepthTest, isDepthWrite, vkDepthCompareOp,
@@ -3333,8 +3331,8 @@ namespace LostPeter
             
             this->poTerrainGraphicsPipeline_WireFrame = createVkGraphicsPipeline(this->poTerrainGraphicsShaderModuleVertex, "main", 
                                                                                  this->poTerrainGraphicsShaderModuleFragment, "main", 
-                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(Vulkan_Vertex_Pos3Normal3Tex2),
-                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(Vulkan_Vertex_Pos3Normal3Tex2),
+                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Normal3Tex2),
+                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Normal3Tex2),
                                                                                  this->poRenderPass, this->poTerrainGraphicsPipelineLayout, aViewports, aScissors,
                                                                                  vkPrimitiveTopology, vkFrontFace, VK_POLYGON_MODE_LINE, vkCullModeFlagBits,
                                                                                  isDepthTest, isDepthWrite, vkDepthCompareOp,

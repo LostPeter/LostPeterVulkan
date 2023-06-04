@@ -21,7 +21,7 @@ public:
     Vulkan_004_Model(int width, int height, String name);
 
 public:
-    std::vector<Vertex_Pos3Color4Tex2> vertices;
+    std::vector<FVertex_Pos3Color4Tex2> vertices;
     std::vector<uint32_t> indices;
 
 protected:

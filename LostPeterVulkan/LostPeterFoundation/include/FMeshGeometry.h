@@ -1,27 +1,28 @@
 /****************************************************************************
-* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterFoundation - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2022-10-30
+* Time:     2023-06-04
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VULKAN_GEOMETRY_H_
-#define _VULKAN_GEOMETRY_H_
+#ifndef _F_MESH_GEOMETRY_H_
+#define _F_MESH_GEOMETRY_H_
 
-#include "PreDefine.h"
+#include "FPreDefine.h"
+#include "FMeshData.h"
 
-namespace LostPeter
+namespace LostPeterFoundation
 {
-	///////////////////////////////////////// VulkanMeshCreateParam ///////////////////////////////////////////
-    class utilExport VulkanMeshCreateParam
+    ///////////////////////////////////////// FMeshCreateParam ///////////////////////////////////////////
+    class LPF_Export FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam(bool _flipV, bool _rightHand);
-        virtual ~VulkanMeshCreateParam();
+        FMeshCreateParam(bool _flipV, bool _rightHand);
+        virtual ~FMeshCreateParam();
 
     public:
         bool flipV;
@@ -32,12 +33,12 @@ namespace LostPeter
     };
 
     //Triangle
-    class utilExport VulkanMeshCreateParam_Triangle : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_Triangle : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_Triangle();
-        VulkanMeshCreateParam_Triangle(bool _flipV, bool _rightHand);
-        virtual ~VulkanMeshCreateParam_Triangle();
+        FMeshCreateParam_Triangle();
+        FMeshCreateParam_Triangle(bool _flipV, bool _rightHand);
+        virtual ~FMeshCreateParam_Triangle();
 
     public:
         static String ms_nameType;
@@ -48,18 +49,18 @@ namespace LostPeter
     };
 
     //Quad
-    class utilExport VulkanMeshCreateParam_Quad : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_Quad : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_Quad();
-        VulkanMeshCreateParam_Quad(float _centerX,
-                                   float _centerY,
-                                   float _width,
-                                   float _height,
-                                   float _depth,
-                                   bool _flipV,
-                                   bool _rightHand);
-        virtual ~VulkanMeshCreateParam_Quad();
+        FMeshCreateParam_Quad();
+        FMeshCreateParam_Quad(float _centerX,
+                              float _centerY,
+                              float _width,
+                              float _height,
+                              float _depth,
+                              bool _flipV,
+                              bool _rightHand);
+        virtual ~FMeshCreateParam_Quad();
 
     public:
         static String ms_nameType;
@@ -75,17 +76,17 @@ namespace LostPeter
     };
 
     //Grid
-    class utilExport VulkanMeshCreateParam_Grid : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_Grid : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_Grid();
-        VulkanMeshCreateParam_Grid(float _width,
-                                   float _height,
-                                   uint32 _m,
-                                   uint32 _n,
-                                   bool _flipV,
-                                   bool _rightHand);
-        virtual ~VulkanMeshCreateParam_Grid();
+        FMeshCreateParam_Grid();
+        FMeshCreateParam_Grid(float _width,
+                              float _height,
+                              uint32 _m,
+                              uint32 _n,
+                              bool _flipV,
+                              bool _rightHand);
+        virtual ~FMeshCreateParam_Grid();
 
     public:
         static String ms_nameType;
@@ -100,15 +101,15 @@ namespace LostPeter
     };
 
     //Circle
-    class utilExport VulkanMeshCreateParam_Circle : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_Circle : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_Circle();
-        VulkanMeshCreateParam_Circle(float _radius,
-                                     uint32 _segment,
-                                     bool _flipV,
-                                     bool _rightHand);
-        virtual ~VulkanMeshCreateParam_Circle();
+        FMeshCreateParam_Circle();
+        FMeshCreateParam_Circle(float _radius,
+                                uint32 _segment,
+                                bool _flipV,
+                                bool _rightHand);
+        virtual ~FMeshCreateParam_Circle();
 
     public:
         static String ms_nameType;
@@ -121,17 +122,17 @@ namespace LostPeter
     };
 
     //AABB
-    class utilExport VulkanMeshCreateParam_AABB : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_AABB : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_AABB();
-        VulkanMeshCreateParam_AABB(float _width,
-                                   float _height,
-                                   float _depth,
-                                   uint32 _numSubdivisions,
-                                   bool _flipV,
-                                   bool _rightHand);
-        virtual ~VulkanMeshCreateParam_AABB();
+        FMeshCreateParam_AABB();
+        FMeshCreateParam_AABB(float _width,
+                              float _height,
+                              float _depth,
+                              uint32 _numSubdivisions,
+                              bool _flipV,
+                              bool _rightHand);
+    virtual ~FMeshCreateParam_AABB();
 
     public:
         static String ms_nameType;
@@ -146,16 +147,16 @@ namespace LostPeter
     };
 
     //Sphere
-    class utilExport VulkanMeshCreateParam_Sphere : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_Sphere : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_Sphere();
-        VulkanMeshCreateParam_Sphere(float _radius,
-                                     uint32 _sliceCount,
-                                     uint32 _stackCount,
-                                     bool _flipV,
-                                     bool _rightHand);
-        virtual ~VulkanMeshCreateParam_Sphere();
+        FMeshCreateParam_Sphere();
+        FMeshCreateParam_Sphere(float _radius,
+                                uint32 _sliceCount,
+                                uint32 _stackCount,
+                                bool _flipV,
+                                bool _rightHand);
+        virtual ~FMeshCreateParam_Sphere();
 
     public:
         static String ms_nameType;
@@ -169,15 +170,15 @@ namespace LostPeter
     };
 
     //GeoSphere
-    class utilExport VulkanMeshCreateParam_GeoSphere : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_GeoSphere : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_GeoSphere();
-        VulkanMeshCreateParam_GeoSphere(float _radius,
-                                        uint32 _numSubdivisions,
-                                        bool _flipV,
-                                        bool _rightHand);
-        virtual ~VulkanMeshCreateParam_GeoSphere();
+        FMeshCreateParam_GeoSphere();
+        FMeshCreateParam_GeoSphere(float _radius,
+                                   uint32 _numSubdivisions,
+                                   bool _flipV,
+                                   bool _rightHand);
+        virtual ~FMeshCreateParam_GeoSphere();
 
     public:
         static String ms_nameType;
@@ -190,18 +191,18 @@ namespace LostPeter
     };
 
     //Cylinder
-    class utilExport VulkanMeshCreateParam_Cylinder : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_Cylinder : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_Cylinder();
-        VulkanMeshCreateParam_Cylinder(float _bottomRadius,
-                                       float _topRadius,
-                                       float _height,
-                                       uint32 _sliceCount,
-                                       uint32 _stackCount,
-                                       bool _flipV,
-                                       bool _rightHand);
-        virtual ~VulkanMeshCreateParam_Cylinder();
+        FMeshCreateParam_Cylinder();
+        FMeshCreateParam_Cylinder(float _bottomRadius,
+                                  float _topRadius,
+                                  float _height,
+                                  uint32 _sliceCount,
+                                  uint32 _stackCount,
+                                  bool _flipV,
+                                  bool _rightHand);
+        virtual ~FMeshCreateParam_Cylinder();
 
     public:
         static String ms_nameType;
@@ -217,11 +218,11 @@ namespace LostPeter
     };
 
     //Capsule
-    class utilExport VulkanMeshCreateParam_Capsule : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_Capsule : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_Capsule();
-        virtual ~VulkanMeshCreateParam_Capsule();
+        FMeshCreateParam_Capsule();
+        virtual ~FMeshCreateParam_Capsule();
 
     public:
         static String ms_nameType;
@@ -233,11 +234,11 @@ namespace LostPeter
     };
 
     //Cone
-    class utilExport VulkanMeshCreateParam_Cone : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_Cone : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_Cone();
-        virtual ~VulkanMeshCreateParam_Cone();
+        FMeshCreateParam_Cone();
+        virtual ~FMeshCreateParam_Cone();
 
     public:
         static String ms_nameType;
@@ -249,11 +250,11 @@ namespace LostPeter
     };
 
     //Torus
-    class utilExport VulkanMeshCreateParam_Torus : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_Torus : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_Torus();
-        virtual ~VulkanMeshCreateParam_Torus();
+        FMeshCreateParam_Torus();
+        virtual ~FMeshCreateParam_Torus();
 
     public:
         static String ms_nameType;
@@ -265,11 +266,11 @@ namespace LostPeter
     };
 
     //SkyBox
-    class utilExport VulkanMeshCreateParam_SkyBox : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_SkyBox : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_SkyBox();
-        virtual ~VulkanMeshCreateParam_SkyBox();
+        FMeshCreateParam_SkyBox();
+        virtual ~FMeshCreateParam_SkyBox();
 
     public:
         static String ms_nameType;
@@ -281,11 +282,11 @@ namespace LostPeter
     };
 
     //SkyDome
-    class utilExport VulkanMeshCreateParam_SkyDome : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_SkyDome : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_SkyDome();
-        virtual ~VulkanMeshCreateParam_SkyDome();
+        FMeshCreateParam_SkyDome();
+        virtual ~FMeshCreateParam_SkyDome();
 
     public:
         static String ms_nameType;
@@ -297,21 +298,21 @@ namespace LostPeter
     };
 
     //Terrain
-    class utilExport VulkanMeshCreateParam_Terrain : public VulkanMeshCreateParam
+    class LPF_Export FMeshCreateParam_Terrain : public FMeshCreateParam
     {
     public:
-        VulkanMeshCreateParam_Terrain();
-        VulkanMeshCreateParam_Terrain(float _offsetX,
-                                      float _offsetZ,
-                                      float _width,
-                                      float _height,
-                                      uint32 _vertexX,
-                                      uint32 _vertexZ,
-                                      float* _pHeight,
-                                      uint32 _heightDataGap,
-                                      bool _flipV,
-                                      bool _rightHand);    
-        virtual ~VulkanMeshCreateParam_Terrain();
+        FMeshCreateParam_Terrain();
+        FMeshCreateParam_Terrain(float _offsetX,
+                                 float _offsetZ,
+                                 float _width,
+                                 float _height,
+                                 uint32 _vertexX,
+                                 uint32 _vertexZ,
+                                 float* _pHeight,
+                                 uint32 _heightDataGap,
+                                 bool _flipV,
+                                 bool _rightHand);    
+        virtual ~FMeshCreateParam_Terrain();
 
     public:
         static String ms_nameType;
@@ -329,28 +330,28 @@ namespace LostPeter
         virtual String ToName();
     };
 
-    ///////////////////////////////////////// VulkanMeshGeometry //////////////////////////////////////////////
-    class utilExport VulkanMeshGeometry
+    ///////////////////////////////////////// FMeshGeometry //////////////////////////////////////////////
+    class LPF_Export FMeshGeometry
 	{
 	public:
-        static bool CreateGeometry(MeshData& meshData, VulkanMeshGeometryType eMeshGeometry);
-		static bool CreateGeometry(MeshData& meshData, VulkanMeshGeometryType eMeshGeometry, VulkanMeshCreateParam* pParam);
+        static bool CreateGeometry(FMeshData& meshData, FMeshGeometryType eMeshGeometry);
+		static bool CreateGeometry(FMeshData& meshData, FMeshGeometryType eMeshGeometry, FMeshCreateParam* pParam);
 
 	 //Triangle
-        static void CreateTriangle(MeshData& meshData, VulkanMeshCreateParam_Triangle* pParam)
+        static void CreateTriangle(FMeshData& meshData, FMeshCreateParam_Triangle* pParam)
         {
             CreateTriangle(meshData, pParam->flipV, pParam->rightHand);
         }
-        static void CreateTriangle(MeshData& meshData, 
+        static void CreateTriangle(FMeshData& meshData, 
                                    bool flipV,
                                    bool rightHand);
 
         //Quad
-        static void CreateQuad(MeshData& meshData, VulkanMeshCreateParam_Quad* pParam)
+        static void CreateQuad(FMeshData& meshData, FMeshCreateParam_Quad* pParam)
         {
             CreateQuad(meshData, pParam->centerX, pParam->centerY, pParam->width, pParam->height, pParam->depth,  pParam->flipV, pParam->rightHand);
         }
-        static void CreateQuad(MeshData& meshData,
+        static void CreateQuad(FMeshData& meshData,
                                float centerX,
                                float centerY,
                                float width,
@@ -360,11 +361,11 @@ namespace LostPeter
                                bool rightHand);
 
         //Grid
-        static void CreateGrid(MeshData& meshData, VulkanMeshCreateParam_Grid* pParam)
+        static void CreateGrid(FMeshData& meshData, FMeshCreateParam_Grid* pParam)
         {
             CreateGrid(meshData, pParam->width, pParam->height, pParam->m, pParam->n, pParam->flipV, pParam->rightHand);
         }
-        static void CreateGrid(MeshData& meshData,
+        static void CreateGrid(FMeshData& meshData,
                                float width,
                                float height,
                                uint32 m,
@@ -373,22 +374,22 @@ namespace LostPeter
                                bool rightHand);
 
         //Circle
-        static void CreateCircle(MeshData& meshData, VulkanMeshCreateParam_Circle* pParam)
+        static void CreateCircle(FMeshData& meshData, FMeshCreateParam_Circle* pParam)
         {
             CreateCircle(meshData, pParam->radius, pParam->segment, pParam->flipV, pParam->rightHand);
         }
-        static void CreateCircle(MeshData& meshData,
+        static void CreateCircle(FMeshData& meshData,
                                  float radius,
                                  uint32 segment,
                                  bool flipV,
                                  bool rightHand);
 
         //AABB
-        static void CreateAABB(MeshData& meshData, VulkanMeshCreateParam_AABB* pParam)
+        static void CreateAABB(FMeshData& meshData, FMeshCreateParam_AABB* pParam)
         {
             CreateAABB(meshData, pParam->width, pParam->height, pParam->depth, pParam->numSubdivisions, pParam->flipV, pParam->rightHand);
         }
-        static void CreateAABB(MeshData& meshData,
+        static void CreateAABB(FMeshData& meshData,
                                float width,
                                float height,
                                float depth,
@@ -397,11 +398,11 @@ namespace LostPeter
                                bool rightHand);
 
         //Sphere
-        static void CreateSphere(MeshData& meshData, VulkanMeshCreateParam_Sphere* pParam)
+        static void CreateSphere(FMeshData& meshData, FMeshCreateParam_Sphere* pParam)
         {
             CreateSphere(meshData, pParam->radius, pParam->sliceCount, pParam->stackCount, pParam->flipV, pParam->rightHand);
         }
-        static void CreateSphere(MeshData& meshData,
+        static void CreateSphere(FMeshData& meshData,
                                  float radius,
                                  uint32 sliceCount,
                                  uint32 stackCount,
@@ -409,22 +410,22 @@ namespace LostPeter
                                  bool rightHand);
 
         //GeoSphere
-        static void CreateGeosphere(MeshData& meshData, VulkanMeshCreateParam_GeoSphere* pParam)
+        static void CreateGeosphere(FMeshData& meshData, FMeshCreateParam_GeoSphere* pParam)
         {
             CreateGeosphere(meshData, pParam->radius, pParam->numSubdivisions, pParam->flipV, pParam->rightHand);
         }
-        static void CreateGeosphere(MeshData& meshData,
+        static void CreateGeosphere(FMeshData& meshData,
                                     float radius,
                                     uint32 numSubdivisions,
                                     bool flipV,
                                     bool rightHand);
 
         //Cylinder
-        static void CreateCylinder(MeshData& meshData, VulkanMeshCreateParam_Cylinder* pParam)
+        static void CreateCylinder(FMeshData& meshData, FMeshCreateParam_Cylinder* pParam)
         {
             CreateCylinder(meshData, pParam->bottomRadius, pParam->topRadius, pParam->height, pParam->sliceCount, pParam->stackCount, pParam->flipV, pParam->rightHand);
         }
-        static void CreateCylinder(MeshData& meshData,
+        static void CreateCylinder(FMeshData& meshData,
                                    float bottomRadius,
                                    float topRadius,
                                    float height,
@@ -434,52 +435,52 @@ namespace LostPeter
                                    bool rightHand);
 
         //Capsule
-        static void CreateCapsule(MeshData& meshData, VulkanMeshCreateParam_Capsule* pParam)
+        static void CreateCapsule(FMeshData& meshData, FMeshCreateParam_Capsule* pParam)
         {
             CreateCapsule(meshData, pParam->flipV, pParam->rightHand);
         }
-        static void CreateCapsule(MeshData& meshData,
+        static void CreateCapsule(FMeshData& meshData,
                                   bool flipV,
                                   bool rightHand);
 
         //Cone
-        static void CreateCone(MeshData& meshData, VulkanMeshCreateParam_Cone* pParam)
+        static void CreateCone(FMeshData& meshData, FMeshCreateParam_Cone* pParam)
         {
             CreateCone(meshData, pParam->flipV, pParam->rightHand);
         }
-        static void CreateCone(MeshData& meshData,
+        static void CreateCone(FMeshData& meshData,
                                bool flipV,
                                bool rightHand);
 
         //Torus
-        static void CreateTorus(MeshData& meshData, VulkanMeshCreateParam_Torus* pParam)
+        static void CreateTorus(FMeshData& meshData, FMeshCreateParam_Torus* pParam)
         {
             CreateTorus(meshData, pParam->flipV, pParam->rightHand);
         }
-        static void CreateTorus(MeshData& meshData,
+        static void CreateTorus(FMeshData& meshData,
                                 bool flipV,
                                 bool rightHand);
 
         //SkyBox
-        static void CreateSkyBox(MeshData& meshData, VulkanMeshCreateParam_SkyBox* pParam)
+        static void CreateSkyBox(FMeshData& meshData, FMeshCreateParam_SkyBox* pParam)
         {
             CreateSkyBox(meshData, pParam->flipV, pParam->rightHand);
         }
-        static void CreateSkyBox(MeshData& meshData,
+        static void CreateSkyBox(FMeshData& meshData,
                                  bool flipV,
                                  bool rightHand);
 
         //SkyDome
-        static void CreateSkyDome(MeshData& meshData, VulkanMeshCreateParam_SkyDome* pParam)
+        static void CreateSkyDome(FMeshData& meshData, FMeshCreateParam_SkyDome* pParam)
         {
             CreateSkyDome(meshData, pParam->flipV, pParam->rightHand);
         }
-        static void CreateSkyDome(MeshData& meshData,
+        static void CreateSkyDome(FMeshData& meshData,
                                   bool flipV,
                                   bool rightHand);
 
         //Terrain
-        static void CreateTerrain(MeshData& meshData, VulkanMeshCreateParam_Terrain* pParam)
+        static void CreateTerrain(FMeshData& meshData, FMeshCreateParam_Terrain* pParam)
         {
             CreateTerrain(meshData, 
                           pParam->offsetX, 
@@ -493,7 +494,7 @@ namespace LostPeter
                           pParam->flipV, 
                           pParam->rightHand);
         }
-        static void CreateTerrain(MeshData& meshData,
+        static void CreateTerrain(FMeshData& meshData,
                                   float offsetX,
                                   float offsetZ,
                                   float width,
@@ -506,12 +507,12 @@ namespace LostPeter
                                   bool rightHand);
 
     private:
-        static void subdivide(MeshData& meshData, bool rightHand);
-        static void midPoint(const MeshVertex& v0, const MeshVertex& v1, MeshVertex& m);
-        static void buildCylinderTopCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, MeshData& meshData, bool rightHand);
-        static void buildCylinderBottomCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, MeshData& meshData, bool rightHand);
+        static void subdivide(FMeshData& meshData, bool rightHand);
+        static void midPoint(const FMeshVertex& v0, const FMeshVertex& v1, FMeshVertex& m);
+        static void buildCylinderTopCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, FMeshData& meshData, bool rightHand);
+        static void buildCylinderBottomCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, FMeshData& meshData, bool rightHand);
 	};
 
-}; //LostPeter
+}; //LostPeterFoundation
 
 #endif

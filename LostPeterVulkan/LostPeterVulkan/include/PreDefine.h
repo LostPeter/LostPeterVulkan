@@ -91,9 +91,6 @@ namespace LostPeter
 
 
 ////////////////////////////// Enum ////////////////////////////////
-   
-
-
     enum VulkanWindowType
     {
         Vulkan_Window_Main = 0,                         //0:    Main
@@ -112,63 +109,6 @@ namespace LostPeter
         Vulkan_FenceState_NotReady = 0,
         Vulkan_FenceState_Signaled,
     };
-
-
-    enum VulkanVertexType
-    {
-        Vulkan_Vertex_Pos2Color4 = 0,                           //0:    Pos2Color4
-        Vulkan_Vertex_Pos3Normal3,                              //1:    Pos3Normal3
-        Vulkan_Vertex_Pos3Normal3Tex2,                          //2:    Pos3Normal3Tex2
-        Vulkan_Vertex_Pos2Color4Tex2,                           //3:    Pos2Color4Tex2
-        Vulkan_Vertex_Pos3Color4Tex2,                           //4:    Pos3Color4Tex2                          (MeshVertexPCT)
-        Vulkan_Vertex_Pos3Color4Normal3Tex2,                    //5:    Pos3Color4Normal3Tex2
-        Vulkan_Vertex_Pos3Color4Normal3Tex4,                    //6:    Pos3Color4Normal3Tex4
-        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex2,            //7:    Pos3Color4Normal3Tangent3Tex2           (MeshVertex)
-        Vulkan_Vertex_Pos3Color4Normal3Tangent3Tex4,            //8:    Pos3Color4Normal3Tangent3Tex4           (MeshVertexUV2)
-        Vulkan_Vertex_Pos3Normal3Tangent3BlendWI8Tex2,          //9:    Pos3Normal3Tangent3BlendWI8Tex2 
-        Vulkan_Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2,    //10:   Pos3Color4Normal3Tangent3BlendWI8Tex2   (SkinMeshVertex)
-
-        Vulkan_Vertex_Count
-    };
-    const String& Util_GetVertexTypeName(VulkanVertexType type);
-    const String& Util_GetVertexTypeName(int type);
-    VulkanVertexType Util_ParseVertexType(const String& strName);
-
-
-    enum VulkanMeshType
-    {
-        Vulkan_Mesh_File = 0,                           //0:    File
-        Vulkan_Mesh_Geometry,                           //1:    Geometry
-
-        Vulkan_Mesh_Count
-    };
-    const String& Util_GetMeshTypeName(VulkanMeshType type);
-    const String& Util_GetMeshTypeName(int type);
-    VulkanMeshType Util_ParseMeshType(const String& strName);
-
-
-    enum VulkanMeshGeometryType
-    {
-        Vulkan_MeshGeometry_Triangle = 0,               //0:    Triangle
-        Vulkan_MeshGeometry_Quad,                       //1:    Quad
-        Vulkan_MeshGeometry_Grid,                       //2:    Grid
-        Vulkan_MeshGeometry_Circle,                     //3:    Circle
-        Vulkan_MeshGeometry_AABB,                       //4:    AABB
-        Vulkan_MeshGeometry_Sphere,                     //5:    Sphere
-        Vulkan_MeshGeometry_GeoSphere,                  //6:    GeoSphere
-        Vulkan_MeshGeometry_Cylinder,                   //7:    Cylinder
-        Vulkan_MeshGeometry_Capsule,                    //8:    Capsule
-        Vulkan_MeshGeometry_Cone,                       //9:    Cone
-        Vulkan_MeshGeometry_Torus,                      //10:   Torus
-        Vulkan_MeshGeometry_SkyBox,                     //11:   SkyBox
-        Vulkan_MeshGeometry_SkyDome,                    //12:   SkyDome
-        Vulkan_MeshGeometry_Terrain,                    //13:   Terrain
-
-        Vulkan_MeshGeometry_Count,
-    };
-    const String& Util_GetMeshGeometryTypeName(VulkanMeshGeometryType type);
-    const String& Util_GetMeshGeometryTypeName(int type);
-    VulkanMeshGeometryType Util_ParseMeshGeometryType(const String& strName);
 
 
     enum VulkanSwapStatusType
@@ -447,10 +387,10 @@ namespace LostPeter
     typedef std::vector<VkDescriptorSet> VkDescriptorSetVector;
     typedef std::vector<VkWriteDescriptorSet> VkWriteDescriptorSetVector;
 
-    const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(VulkanVertexType type);
-    const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(VulkanVertexType type);
-    VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(VulkanVertexType type);
-    VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(VulkanVertexType type);
+    const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(F_MeshVertexType type);
+    const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(F_MeshVertexType type);
+    VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertexType type);
+    VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertexType type);
 
 
 ////////////////////////////// Class ///////////////////////////////
@@ -481,33 +421,6 @@ namespace LostPeter
     class VulkanTexture;
     class VulkanWindow;
     class VulkanWindowEx;
-    
-    struct Vertex_Pos2Color4;
-    struct Vertex_Pos3Normal3;
-    struct Vertex_Pos2Color4Tex2;
-    struct Vertex_Pos3Color4Tex2;
-    typedef Vertex_Pos3Color4Tex2 MeshVertexPCT;
-    typedef std::vector<MeshVertexPCT> MeshVertexPCTVector;
-    struct Vertex_Pos3Color4Normal3Tex2;
-    struct Vertex_Pos3Color4Normal3Tex4;
-    struct Vertex_Pos3Color4Normal3Tangent3Tex2;
-    typedef Vertex_Pos3Color4Normal3Tangent3Tex2 MeshVertex;
-    typedef std::vector<MeshVertex> MeshVertexVector;
-    struct Vertex_Pos3Color4Normal3Tangent3Tex4;
-    typedef Vertex_Pos3Color4Normal3Tangent3Tex4 MeshVertexUV2;
-    typedef std::vector<MeshVertexUV2> MeshVertexUV2Vector;
-    struct Vertex_Pos3Normal3Tangent3BlendWI8Tex2;
-    struct Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2;
-    typedef Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 SkinMeshVertex;
-    typedef std::vector<SkinMeshVertex> SkinMeshVertexVector;
-
-    struct MeshPCTData;
-    struct MeshData;
-    struct MeshUV2Data;
-    struct SkinMeshData;
-    
-    struct SubmeshGeometry;
-    struct MeshGeometry;
 
     struct LightConstants;
     struct PassConstants;

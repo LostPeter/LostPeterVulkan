@@ -154,7 +154,7 @@ public:
         bool isTransparent;
 
         //Vertex
-        std::vector<Vertex_Pos3Color4Normal3Tex2> vertices;
+        std::vector<FVertex_Pos3Color4Normal3Tex2> vertices;
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;

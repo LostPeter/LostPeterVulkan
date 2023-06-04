@@ -1,23 +1,23 @@
 /****************************************************************************
-* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterFoundation - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2022-10-30
+* Time:     2023-06-04
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/PreInclude.h"
-#include "../include/VulkanMeshLoader.h"
+#include "../include/FMeshDataLoader.h"
+#include "../include/FUtil.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/matrix4x4.h>
 #include <assimp/postprocess.h>
 
-namespace LostPeter
+namespace LostPeterFoundation
 {
     //Materials
     static void s_ProcessMaterials(const struct aiScene* pScene, StringVector& aMaterials)
@@ -34,8 +34,8 @@ namespace LostPeter
         }
     }
     
-    //MeshData
-	static bool s_ProcessMeshData(void* pTransform, struct aiMesh* pMesh, const struct aiScene* pScene, MeshData& meshData)
+    //FMeshData
+	static bool s_ProcessMeshData(void* pTransform, struct aiMesh* pMesh, const struct aiScene* pScene, FMeshData& meshData)
     {
         if (pMesh->mNumVertices <= 0)
             return false;
@@ -50,11 +50,11 @@ namespace LostPeter
             aiVector3D tangent = pMesh->mTangents ? meshTransformation * pMesh->mTangents[i] : aiVector3D(1.0f, 0.0f, 0.0f);
             aiVector3D texCoords = pMesh->mTextureCoords[0] ? pMesh->mTextureCoords[0][i] : aiVector3D(0.0f, 0.0f, 0.0f);
             
-            MeshVertex vertex(position.x, position.y, position.z,
-                              color.r, color.g, color.b, color.a,
-                              normal.x, normal.y, normal.z,
-                              tangent.x, tangent.y, tangent.z,
-                              texCoords.x, meshData.bIsFlipY ? 1.0f - texCoords.y : texCoords.y);
+            FMeshVertex vertex(position.x, position.y, position.z,
+                               color.r, color.g, color.b, color.a,
+                               normal.x, normal.y, normal.z,
+                               tangent.x, tangent.y, tangent.z,
+                               texCoords.x, meshData.bIsFlipY ? 1.0f - texCoords.y : texCoords.y);
             meshData.AddVertex(vertex);
         }
 
@@ -69,7 +69,7 @@ namespace LostPeter
 
         return true;
     }
-    static bool s_ProcessMesh(void* pTransform, struct aiNode* pNode, const struct aiScene* pScene, MeshData& meshData)
+    static bool s_ProcessMesh(void* pTransform, struct aiNode* pNode, const struct aiScene* pScene, FMeshData& meshData)
     {
         aiMatrix4x4 nodeTransformation = *reinterpret_cast<aiMatrix4x4*>(pTransform) * pNode->mTransformation;
 
@@ -90,7 +90,7 @@ namespace LostPeter
 
         return false;
     }
-    static void s_ProcessNode_MeshDatas(void* pTransform, struct aiNode* pNode, const struct aiScene* pScene, std::vector<MeshData>& aMeshDatas, bool isFlipY)
+    static void s_ProcessNode_MeshDatas(void* pTransform, struct aiNode* pNode, const struct aiScene* pScene, FMeshDataVector& aMeshDatas, bool isFlipY)
     {
         aiMatrix4x4 nodeTransformation = *reinterpret_cast<aiMatrix4x4*>(pTransform) * pNode->mTransformation;
 
@@ -98,7 +98,7 @@ namespace LostPeter
         for (unsigned int i = 0; i < pNode->mNumMeshes; ++i)
         {
             aiMesh* pMesh = pScene->mMeshes[pNode->mMeshes[i]];
-            MeshData meshData;
+            FMeshData meshData;
             meshData.bIsFlipY = isFlipY;
             if (s_ProcessMeshData(&nodeTransformation, pMesh, pScene, meshData))
                 aMeshDatas.push_back(meshData);
@@ -112,17 +112,17 @@ namespace LostPeter
     }
 
 
-    bool VulkanMeshLoader::LoadMeshData(const String& pathMesh, MeshData& meshData, unsigned int eMeshParserFlags)
+    bool FMeshDataLoader::LoadMeshData(const String& pathMesh, FMeshData& meshData, unsigned int eMeshParserFlags)
     {
         return LoadMeshData(pathMesh.c_str(), meshData, eMeshParserFlags);
     }
-    bool VulkanMeshLoader::LoadMeshData(const char* szPathMesh, MeshData& meshData, unsigned int eMeshParserFlags)
+    bool FMeshDataLoader::LoadMeshData(const char* szPathMesh, FMeshData& meshData, unsigned int eMeshParserFlags)
     {
         //1> LoadAssetFileContent
         CharVector content;
         if (!FUtil::LoadAssetFileContent(szPathMesh, content))
         {
-            F_LogError("*********************** VulkanMeshLoader::LoadMeshData: 1> FUtil::LoadAssetFileContent failed, mesh path: [%s] !", szPathMesh);
+            F_LogError("*********************** FMeshDataLoader::LoadMeshData: 1> FUtil::LoadAssetFileContent failed, mesh path: [%s] !", szPathMesh);
             return false;
         }
 
@@ -132,7 +132,7 @@ namespace LostPeter
         const aiScene* pScene = import.ReadFileFromMemory(pBuffer, content.size(), static_cast<unsigned int>(eMeshParserFlags));
         if (pScene == nullptr)
         {
-            F_LogError("*********************** VulkanMeshLoader::LoadMeshData: 2> import.ReadFileFromMemory failed, mesh path: [%s] !", szPathMesh);
+            F_LogError("*********************** FMeshDataLoader::LoadMeshData: 2> import.ReadFileFromMemory failed, mesh path: [%s] !", szPathMesh);
             return false;
         }
 
@@ -140,24 +140,24 @@ namespace LostPeter
         aiMatrix4x4 identity;
         if (!s_ProcessMesh(&identity, pScene->mRootNode, pScene, meshData))
         {
-            F_LogError("*********************** VulkanMeshLoader::LoadMeshData: 3> s_ProcessMesh failed, mesh path: [%s] !", szPathMesh);
+            F_LogError("*********************** FMeshDataLoader::LoadMeshData: 3> s_ProcessMesh failed, mesh path: [%s] !", szPathMesh);
             return false;
         }
 
         return true;
     }
 
-    bool VulkanMeshLoader::LoadMeshDatas(const String& pathMesh, std::vector<MeshData>& aMeshDatas, bool isFlipY, unsigned int eMeshParserFlags)
+    bool FMeshDataLoader::LoadMeshDatas(const String& pathMesh, FMeshDataVector& aMeshDatas, bool isFlipY, unsigned int eMeshParserFlags)
     {
         return LoadMeshDatas(pathMesh.c_str(), aMeshDatas, isFlipY, eMeshParserFlags);
     }
-    bool VulkanMeshLoader::LoadMeshDatas(const char* szPathMesh, std::vector<MeshData>& aMeshDatas, bool isFlipY, unsigned int eMeshParserFlags)
+    bool FMeshDataLoader::LoadMeshDatas(const char* szPathMesh, FMeshDataVector& aMeshDatas, bool isFlipY, unsigned int eMeshParserFlags)
     {
         //1> LoadAssetFileContent
         CharVector content;
         if (!FUtil::LoadAssetFileContent(szPathMesh, content))
         {
-            F_LogError("*********************** VulkanMeshLoader::LoadMeshDatas: 1> FUtil::LoadAssetFileContent failed, mesh path: [%s] !", szPathMesh);
+            F_LogError("*********************** FMeshDataLoader::LoadMeshDatas: 1> FUtil::LoadAssetFileContent failed, mesh path: [%s] !", szPathMesh);
             return false;
         }
 
@@ -167,7 +167,7 @@ namespace LostPeter
         const aiScene* pScene = import.ReadFileFromMemory(pBuffer, content.size(), static_cast<unsigned int>(eMeshParserFlags));
         if (pScene == nullptr)
         {
-            F_LogError("*********************** VulkanMeshLoader::LoadMeshDatas: 2> import.ReadFileFromMemory failed, mesh path: [%s] !", szPathMesh);
+            F_LogError("*********************** FMeshDataLoader::LoadMeshDatas: 2> import.ReadFileFromMemory failed, mesh path: [%s] !", szPathMesh);
             return false;
         }
 
@@ -178,4 +178,4 @@ namespace LostPeter
         return true;
     }
 
-}; //LostPeter
+}; //LostPeterFoundation

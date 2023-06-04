@@ -11,7 +11,6 @@
 
 #include "PreInclude.h"
 #include "vulkan_004_model.h"
-#include "VulkanMeshLoader.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -112,7 +111,7 @@ Vulkan_004_Model::Vulkan_004_Model(int width, int height, String name)
     this->imgui_IsEnable = true;
     this->cfg_isRotate = true;
 
-    this->poTypeVertex = Vulkan_Vertex_Pos3Color4Tex2;
+    this->poTypeVertex = F_MeshVertex_Pos3Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_tex2_ubo.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/pos3_color4_tex2_ubo.frag.spv";
     
@@ -152,10 +151,10 @@ void Vulkan_004_Model::changeModel(int index)
 
 void Vulkan_004_Model::loadModel_Assimp()
 {
-    MeshData meshData;
+    FMeshData meshData;
     meshData.bIsFlipY = g_isFlipY;
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
-    if (!VulkanMeshLoader::LoadMeshData(this->cfg_model_Path, meshData, eMeshParserFlags))
+    if (!FMeshDataLoader::LoadMeshData(this->cfg_model_Path, meshData, eMeshParserFlags))
     {
         F_LogError("Vulkan_004_Model::loadModel_Assimp load model failed: [%s] !", this->cfg_model_Path.c_str());
         return;
@@ -166,8 +165,8 @@ void Vulkan_004_Model::loadModel_Assimp()
     this->vertices.reserve(count_vertex);
     for (int i = 0; i < count_vertex; i++)
     {
-        MeshVertex& vertex = meshData.vertices[i];
-        Vertex_Pos3Color4Tex2 v;
+        FMeshVertex& vertex = meshData.vertices[i];
+        FVertex_Pos3Color4Tex2 v;
         v.pos = vertex.pos;
         v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
         v.texCoord = vertex.texCoord;
@@ -188,7 +187,7 @@ void Vulkan_004_Model::loadModel_Assimp()
     }
 
     this->poVertexCount = (uint32_t)this->vertices.size();
-    this->poVertexBuffer_Size = this->poVertexCount * sizeof(Vertex_Pos3Color4Tex2);
+    this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Tex2);
     this->poVertexBuffer_Data = &this->vertices[0];
     this->poIndexCount = (uint32_t)this->indices.size();
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);

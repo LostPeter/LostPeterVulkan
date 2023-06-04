@@ -11,7 +11,6 @@
 
 #include "PreInclude.h"
 #include "vulkan_007_stencil.h"
-#include "VulkanMeshLoader.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -70,14 +69,14 @@ Vulkan_007_Stencil::Vulkan_007_Stencil(int width, int height, String name)
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
 
-    this->poTypeVertex = Vulkan_Vertex_Pos3Color4Normal3Tex2;
+    this->poTypeVertex = F_MeshVertex_Pos3Color4Normal3Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_normal3_tex2_ubo.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/pos3_color4_normal3_tex2_ubo.frag.spv";
     this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
 
     this->pathShaderVertex_Outline = "Assets/Shader/pos3_color4_normal3_tex2_ubo_outline.vert.spv";
     this->pathShaderFragment_Outline = "Assets/Shader/pos3_color4_normal3_tex2_ubo_outline.frag.spv";
-    this->poTypeVertex_Outline = Vulkan_Vertex_Pos3Color4Normal3Tex2;
+    this->poTypeVertex_Outline = F_MeshVertex_Pos3Color4Normal3Tex2;
 
     this->cfg_cameraPos = FVector3(0.5f, 2.5f, -4.0f);
 }
@@ -126,10 +125,10 @@ void Vulkan_007_Stencil::loadModel_Custom()
 bool Vulkan_007_Stencil::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load 
-    MeshData meshData;
+    FMeshData meshData;
     meshData.bIsFlipY = isFlipY;
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
-    if (!VulkanMeshLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
+    if (!FMeshDataLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
     {
         F_LogError("Vulkan_007_Stencil::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
         return false; 
@@ -140,8 +139,8 @@ bool Vulkan_007_Stencil::loadModel_VertexIndex(ModelObject* pModelObject, bool i
     pModelObject->vertices.reserve(count_vertex);
     for (int i = 0; i < count_vertex; i++)
     {
-        MeshVertex& vertex = meshData.vertices[i];
-        Vertex_Pos3Color4Normal3Tex2 v;
+        FMeshVertex& vertex = meshData.vertices[i];
+        FVertex_Pos3Color4Normal3Tex2 v;
         v.pos = vertex.pos;
         v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
         v.normal = vertex.normal;
@@ -163,7 +162,7 @@ bool Vulkan_007_Stencil::loadModel_VertexIndex(ModelObject* pModelObject, bool i
         pModelObject->indices.push_back(meshData.indices32[i]);
     }
     pModelObject->poVertexCount = (uint32_t)pModelObject->vertices.size();
-    pModelObject->poVertexBuffer_Size = pModelObject->poVertexCount * sizeof(Vertex_Pos3Color4Normal3Tex2);
+    pModelObject->poVertexBuffer_Size = pModelObject->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex2);
     pModelObject->poVertexBuffer_Data = &pModelObject->vertices[0];
     pModelObject->poIndexCount = (uint32_t)pModelObject->indices.size();
     pModelObject->poIndexBuffer_Size = pModelObject->poIndexCount * sizeof(uint32_t);
