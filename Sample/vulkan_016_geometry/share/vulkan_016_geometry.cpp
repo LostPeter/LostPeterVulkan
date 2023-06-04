@@ -19,79 +19,111 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 10;
+static const int g_MeshCount = 16; //22
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
-    "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
-    "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
-
     "mountain",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Obj/mountain/mountain.obj", //mountain
-
     "rock",             "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Fbx/rock/rock.fbx", //rock
     "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Obj/cliff/cliff.obj", //cliff
-
     "tree",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree/tree.fbx", //tree
     "tree_spruce",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree_spruce/tree_spruce.fbx", //tree_spruce
-
     "grass",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/grass/grass.fbx", //grass
     "flower",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/flower/flower.fbx", //flower
 
+    "geo_triangle",     "Pos3Color4Normal3Tex2",                "geometry",         "triangle",                 "", //geo_triangle
+    "geo_quad",         "Pos3Color4Normal3Tex2",                "geometry",         "quad",                     "", //geo_quad
+    "geo_grid",         "Pos3Color4Normal3Tex2",                "geometry",         "grid",                     "", //geo_grid
+    "geo_circle",       "Pos3Color4Normal3Tex2",                "geometry",         "circle",                   "", //geo_circle
+    "geo_aabb",         "Pos3Color4Normal3Tex2",                "geometry",         "aabb",                     "", //geo_aabb
+    "geo_sphere",       "Pos3Color4Normal3Tex2",                "geometry",         "sphere",                   "", //geo_sphere
+    "geo_geosphere",    "Pos3Color4Normal3Tex2",                "geometry",         "geosphere",                "", //geo_geosphere
+    "geo_cylinder",     "Pos3Color4Normal3Tex2",                "geometry",         "cylinder",                 "", //geo_cylinder
+    // "geo_capsule",      "Pos3Color4Normal3Tex2",                "geometry",         "capsule",                  "", //geo_capsule
+    // "geo_cone",         "Pos3Color4Normal3Tex2",                "geometry",         "cone",                     "", //geo_cone
+    // "geo_torus",        "Pos3Color4Normal3Tex2",                "geometry",         "torus",                    "", //geo_torus
+    // "geo_skybox",       "Pos3Color4Normal3Tex2",                "geometry",         "skybox",                   "", //geo_skybox
+    // "geo_skydome",      "Pos3Color4Normal3Tex2",                "geometry",         "skydome",                  "", //geo_skydome
+    // "geo_terrain",      "Pos3Color4Normal3Tex2",                "geometry",         "terrain",                  "", //geo_terrain
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
-    true, //plane
     false, //cube
-    false, //sphere
-
     false, //mountain
-
     false, //rock
     false, //cliff
-
     false, //tree
     false, //tree_spruce
-
     false, //grass
     false, //flower
 
+    false, //geo_triangle
+    false, //geo_quad
+    false, //geo_grid
+    false, //geo_circle
+    false, //geo_aabb
+    false, //geo_sphere
+    false, //geo_geosphere
+    false, //geo_cylinder
+    // false, //geo_capsule
+    // false, //geo_cone
+    // false, //geo_torus
+    // false, //geo_skybox
+    // false, //geo_skydome
+    // false, //geo_terrain
 };
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
 {
-    false, //plane  
     false, //cube
-    false, //sphere
-
     false, //mountain
-
     false, //rock
     false, //cliff
-
     false, //tree
     false, //tree_spruce
-
     false, //grass
     false, //flower
 
+    true, //geo_triangle
+    true, //geo_quad
+    true, //geo_grid
+    true, //geo_circle
+    false, //geo_aabb
+    false, //geo_sphere
+    false, //geo_geosphere
+    false, //geo_cylinder
+    // false, //geo_capsule
+    // false, //geo_cone
+    // false, //geo_torus
+    // false, //geo_skybox
+    // false, //geo_skydome
+    // false, //geo_terrain
 };
 static FMatrix4 g_MeshTranformLocals[g_MeshCount] = 
 {
-    FMath::ms_mat4Unit, //plane
     FMath::ms_mat4Unit, //cube
-    FMath::ms_mat4Unit, //sphere
-
     FMath::ms_mat4Unit, //mountain
-
     FMath::ms_mat4Unit, //rock
     FMath::ms_mat4Unit, //cliff
-
     FMath::ms_mat4Unit, //tree
     FMath::ms_mat4Unit, //tree_spruce
-
     FMath::ms_mat4Unit, //grass
     FMath::ms_mat4Unit, //flower
 
+    FMath::RotateX(90.0f), //geo_triangle  
+    FMath::RotateX(90.0f), //geo_quad 
+    FMath::RotateX(90.0f), //geo_grid
+    FMath::RotateX(90.0f), //geo_circle
+    FMath::ms_mat4Unit, //geo_aabb
+    FMath::ms_mat4Unit, //geo_sphere
+    FMath::ms_mat4Unit, //geo_geosphere
+    FMath::ms_mat4Unit, //geo_cylinder
+    // FMath::ms_mat4Unit, //geo_capsule
+    // FMath::ms_mat4Unit, //geo_cone
+    // FMath::ms_mat4Unit, //geo_torus
+    // FMath::ms_mat4Unit, //geo_skybox
+    // FMath::ms_mat4Unit, //geo_skydome
+    // FMath::ms_mat4Unit, //geo_terrain
 };
 
 
@@ -415,36 +447,60 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 8;
+static const int g_Object_Count = 16; //22
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
-    //Object Name                          //Mesh Name                                                                    
-    "object_skybox",                       "cube", //object_skybox
-    "object_mountain",                     "mountain", //object_mountain   
-
-    "object_rock",                         "rock", //object_rock   
-    "object_cliff",                        "cliff", //object_cliff   
-
-    "object_tree",                         "tree", //object_tree        
-    "object_tree_spruce",                  "tree_spruce", //object_tree_spruce
+    //Object Name                           //Mesh Name                                                                    
+    "object_skybox",                        "cube", //object_skybox
+    "object_mountain",                      "mountain", //object_mountain   
+    "object_rock",                          "rock", //object_rock   
+    "object_cliff",                         "cliff", //object_cliff   
+    "object_tree",                          "tree", //object_tree        
+    "object_tree_spruce",                   "tree_spruce", //object_tree_spruce
+    "object_grass",                         "grass", //object_grass        
+    "object_flower",                        "flower", //object_flower
     
-    "object_grass",                        "grass", //object_grass        
-    "object_flower",                       "flower", //object_flower
+    "object_geo_triangle",                  "geo_triangle", //object_geo_triangle
+    "object_geo_quad",                      "geo_quad", //object_geo_quad
+    "object_geo_grid",                      "geo_grid", //object_geo_grid
+    "object_geo_circle",                    "geo_circle", //object_geo_circle
+    "object_geo_aabb",                      "geo_aabb", //object_geo_aabb
+    "object_geo_sphere",                    "geo_sphere", //object_geo_sphere
+    "object_geo_geosphere",                 "geo_geosphere", //object_geo_geosphere
+    "object_geo_cylinder",                  "geo_cylinder", //object_geo_cylinder
+    // "object_geo_capsule",                "geo_capsule", //object_geo_capsule
+    // "object_geo_cone",                   "geo_cone", //object_geo_cone
+    // "object_geo_torus",                  "geo_torus", //object_geo_torus
+    // "object_geo_skybox",                 "geo_skybox", //object_geo_skybox
+    // "object_geo_skydome",                "geo_skydome", //object_geo_skydome
+    // "object_geo_terrain",                "geo_terrain", //object_geo_terrain
 
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {
     "0", //object_skybox
     "0", //object_mountain
-
     "0", //object_rock
     "0", //object_cliff
-
     "0;1", //object_tree        
     "0;1", //object_tree_spruce
-
     "1;4;6;9", //object_grass
     "0;2;4;6;8;9;10;11", //object_flower
+    
+    "0", //object_geo_triangle
+    "0", //object_geo_quad
+    "0", //object_geo_grid
+    "0", //object_geo_circle
+    "0", //object_geo_aabb
+    "0", //object_geo_sphere
+    "0", //object_geo_geosphere
+    "0", //object_geo_cylinder
+    // "0", //object_geo_capsule
+    // "0", //object_geo_cone
+    // "0", //object_geo_torus
+    // "0", //object_geo_skybox
+    // "0", //object_geo_skydome
+    // "0", //object_geo_terrain
 
 };  
 
@@ -453,95 +509,149 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
 {
     0, //object_skybox
     0, //object_mountain 
-
     4, //object_rock 
     4, //object_cliff 
-
     4, //object_tree 
     4, //object_tree_spruce 
-
     4, //object_grass 
     4, //object_flower 
+
+    4, //object_geo_triangle 
+    4, //object_geo_quad 
+    4, //object_geo_grid 
+    4, //object_geo_circle 
+    4, //object_geo_aabb 
+    4, //object_geo_sphere 
+    4, //object_geo_geosphere 
+    4, //object_geo_cylinder 
+    // 4, //object_geo_capsule 
+    // 4, //object_geo_cone 
+    // 4, //object_geo_torus 
+    // 4, //object_geo_skybox 
+    // 4, //object_geo_skydome 
+    // 4, //object_geo_terrain 
 
 };
 static bool g_Object_IsShows[] = 
 {
     true, //object_skybox
     true, //object_mountain
-
     true, //object_rock
     true, //object_cliff
-
     true, //object_tree
     true, //object_tree_spruce
-
     true, //object_grass
     true, //object_flower
+    
+    true, //object_geo_triangle
+    true, //object_geo_quad
+    true, //object_geo_grid
+    true, //object_geo_circle
+    true, //object_geo_aabb
+    true, //object_geo_sphere
+    true, //object_geo_geosphere
+    true, //object_geo_cylinder
+    // true, //object_geo_capsule
+    // true, //object_geo_cone
+    // true, //object_geo_torus
+    // true, //object_geo_skybox
+    // true, //object_geo_skydome
+    // true, //object_geo_terrain'
 
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
     false, //object_skybox
     false, //object_mountain
-
     false, //object_rock
     false, //object_cliff
-
     false, //object_tree
     false, //object_tree_spruce
-
     false, //object_grass
     false, //object_flower
 
+    true, //object_geo_triangle
+    true, //object_geo_quad
+    true, //object_geo_grid
+    true, //object_geo_circle
+    true, //object_geo_aabb
+    true, //object_geo_sphere
+    true, //object_geo_geosphere
+    true, //object_geo_cylinder
+    // true, //object_geo_capsule
+    // true, //object_geo_cone
+    // true, //object_geo_torus
+    // true, //object_geo_skybox
+    // true, //object_geo_skydome
+    // true, //object_geo_terrain
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
     true, //object_skybox
     true, //object_mountain
-
     true, //object_rock
     true, //object_cliff
-
     true, //object_tree
     true, //object_tree_spruce
-
     true, //object_grass
     true, //object_flower
 
+    true, //object_geo_triangle
+    true, //object_geo_quad
+    true, //object_geo_grid
+    true, //object_geo_circle
+    true, //object_geo_aabb
+    true, //object_geo_sphere
+    true, //object_geo_geosphere
+    true, //object_geo_cylinder
+    // true, //object_geo_capsule
+    // true, //object_geo_cone
+    // true, //object_geo_torus
+    // true, //object_geo_skybox
+    // true, //object_geo_skydome
+    // true, //object_geo_terrain
 };
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
     false, //object_skybox
     false, //object_mountain
-
     false, //object_rock
     false, //object_cliff
-
     false, //object_tree
     false, //object_tree_spruce
-
     false, //object_grass
     true, //object_flower
 
+    false, //object_geo_triangle
+    false, //object_geo_quad
+    false, //object_geo_grid
+    false, //object_geo_circle
+    false, //object_geo_aabb
+    false, //object_geo_sphere
+    false, //object_geo_geosphere
+    false, //object_geo_cylinder
+    // false, //object_geo_capsule
+    // false, //object_geo_cone
+    // false, //object_geo_torus
+    // false, //object_geo_skybox
+    // false, //object_geo_skydome
+    // false, //object_geo_terrain
 };
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 20;
+static const int g_ObjectRend_Count = 28; //34
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
     "object_skybox-1",                     "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //object_skybox-1
     "object_mountain-1",                   "",                     "",                              "",                         "",                    "mountain_diffuse;mountain_normal",                                             "", //object_mountain-1
-
     "object_rock-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                                                     "", //object_rock-1
     "object_cliff-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //object_cliff-1
-
     "object_tree-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-1
     "object_tree-2",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-2
     "object_tree_spruce-1",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-1
     "object_tree_spruce-2",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-2
-
     "object_grass-1",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-1
     "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_wheat",                                                                  "", //object_grass-2
     "object_grass-3",                      "",                     "",                              "",                         "",                    "grass_tall",                                                                   "", //object_grass-3
@@ -555,21 +665,33 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
     "object_flower-7",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-7
     "object_flower-8",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-8
 
+    "object_geo_triangle-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_triangle-1
+    "object_geo_quad-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_quad-1
+    "object_geo_grid-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_grid-1
+    "object_geo_circle-1",                 "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_circle-1
+    "object_geo_aabb-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_aabb-1
+    "object_geo_sphere-1",                 "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_sphere-1
+    "object_geo_geosphere-1",              "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_geosphere-1
+    "object_geo_cylinder-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_cylinder-1
+    // "object_geo_capsule-1",                "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_capsule-1
+    // "object_geo_cone-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_cone-1
+    // "object_geo_torus-1",                  "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_torus-1
+    // "object_geo_skybox-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_skybox-1
+    // "object_geo_skydome-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_skydome-1
+    // "object_geo_terrain-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_terrain-1
+
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
     "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                         "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //object_skybox-1
     "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_mountain-1
-    
     "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_rock-1
     "vert_standard_mesh_opaque_normalmap_lit",              "",                                             "",                                         "",                         "frag_standard_mesh_opaque_normalmap_lit",              "", //object_cliff-1
-
     "vert_standard_mesh_opaque_tree_alphatest_lit",         "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tree_alphatest_lit",         "", //object_tree-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_tree-2
     "vert_standard_mesh_opaque_tree_alphatest_lit",         "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tree_alphatest_lit",         "", //object_tree_spruce-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_tree_spruce-2
-
     "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_grass-1
     "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_grass-2
     "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_grass-3
@@ -583,21 +705,33 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
     "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-7
     "vert_standard_mesh_opaque_grass_alphatest_lit",        "",                                             "",                                         "",                         "frag_standard_mesh_opaque_grass_alphatest_lit",        "", //object_flower-8
 
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_triangle-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_quad-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_grid-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_circle-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_aabb-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_sphere-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_geosphere-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_cylinder-1
+    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_capsule-1
+    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_cone-1
+    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_torus-1
+    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_skybox-1
+    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_skydome-1
+    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_terrain-1
+
 };
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
     //Pipeline Graphics                                                 //Pipeline Compute
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_skybox-1
     "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_mountain-1
-
     "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_rock-1
     "Pass-Object-Material-Instance-TextureFS-TextureFS",                "", //object_cliff-1
-
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree-2
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree_spruce-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_tree_spruce-2
-
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass-2
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_grass-3
@@ -611,20 +745,32 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-7
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_flower-8
 
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_triangle-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_quad-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_grid-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_circle-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_aabb-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_sphere-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_geosphere-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_cylinder-1
+    // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_capsule-1
+    // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_cone-1
+    // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_torus-1
+    // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_skybox-1
+    // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_skydome-1
+    // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_terrain-1
+
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
     FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(  500.0f,    500.0f,    500.0f), //object_skybox-1
     FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_mountain-1
- 
     FVector3(   0,  0.0,   1.5),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_rock-1
     FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    0.1f,      0.1f,      0.1f), //object_cliff-1
-
     FVector3(   0,  0.0, -10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree-1
     FVector3(   0,  0.0, -10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree-2
     FVector3(   0,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-1
     FVector3(   0,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(   10.0f,     10.0f,     10.0f), //object_tree_spruce-2
-
     FVector3(   0,  0.0,   2.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-1
     FVector3(   0,  0.0,   2.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-2
     FVector3(   0,  0.0,   5.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_grass-3
@@ -638,20 +784,32 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     FVector3(   0,  0.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-7
     FVector3(   0,  0.0,  -4.5),    FVector3(     0,  0,  0),    FVector3(   50.0f,     50.0f,     50.0f), //object_flower-8
 
+    FVector3(   0,  5.0, -12.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_triangle-1
+    FVector3(   0,  5.0, -10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_quad-1
+    FVector3(   0,  5.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_grid-1
+    FVector3(   0,  5.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_circle-1
+    FVector3(   0,  5.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_aabb-1
+    FVector3(   0,  5.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(    0.8f,      0.8f,      0.8f), //object_geo_sphere-1
+    FVector3(   0,  5.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    0.8f,      0.8f,      0.8f), //object_geo_geosphere-1
+    FVector3(   0,  5.0,   2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cylinder-1
+    //FVector3(   0,  5.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_capsule-1
+    //FVector3(   0,  5.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cone-1
+    //FVector3(   0,  5.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_torus-1
+    //FVector3(   0,  5.0,  12.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skybox-1
+    //FVector3(   0,  5.0,  14.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skydome-1
+    //FVector3(   0,  5.0,  16.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_terrain-1
+
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
     false, //object_skybox-1
     false, //object_mountain-1
-
     false, //object_rock-1
     false, //object_cliff-1
-
     false, //object_tree-1
     false, //object_tree-2
     false, //object_tree_spruce-1
     false, //object_tree_spruce-2
-
     false, //object_grass-1
     false, //object_grass-2
     false, //object_grass-3
@@ -664,21 +822,33 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
     false, //object_flower-6
     false, //object_flower-7
     false, //object_flower-8
+
+    false, //object_geo_triangle-1
+    false, //object_geo_quad-1
+    false, //object_geo_grid-1
+    false, //object_geo_circle-1
+    false, //object_geo_aabb-1
+    false, //object_geo_sphere-1
+    false, //object_geo_geosphere-1
+    false, //object_geo_cylinder-1
+    //false, //object_geo_capsule-1
+    //false, //object_geo_cone-1
+    //false, //object_geo_torus-1
+    //false, //object_geo_skybox-1
+    //false, //object_geo_skydome-1
+    //false, //object_geo_terrain-1
 
 };
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
     false, //object_skybox-1
     false, //object_mountain-1
-    
     false, //object_rock-1
     false, //object_cliff-1
-
     false, //object_tree-1
     false, //object_tree-2
     false, //object_tree_spruce-1
     false, //object_tree_spruce-2
-
     false, //object_grass-1
     false, //object_grass-2
     false, //object_grass-3
@@ -691,6 +861,21 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
     false, //object_flower-6
     false, //object_flower-7
     false, //object_flower-8
+
+    false, //object_geo_triangle-1
+    false, //object_geo_quad-1
+    false, //object_geo_grid-1
+    false, //object_geo_circle-1
+    false, //object_geo_aabb-1
+    false, //object_geo_sphere-1
+    false, //object_geo_geosphere-1
+    false, //object_geo_cylinder-1
+    //false, //object_geo_capsule-1
+    //false, //object_geo_cone-1
+    //false, //object_geo_torus-1
+    //false, //object_geo_skybox-1
+    //false, //object_geo_skydome-1
+    //false, //object_geo_terrain-1
 
 };
 
@@ -1341,7 +1526,7 @@ void Vulkan_016_Geometry::cameraReset()
 {
     VulkanWindow::cameraReset();
 
-    this->pCamera->SetPos(FVector3(-25.0f, 13.0f, 4.0f));
+    this->pCamera->SetPos(FVector3(-28.0f, 17.0f, 2.0f));
     this->pCamera->SetEulerAngles(FVector3(35.0f, 90.0f, 0.0f));
     this->pCamera->SetFarZ(100000.0f);
 }
