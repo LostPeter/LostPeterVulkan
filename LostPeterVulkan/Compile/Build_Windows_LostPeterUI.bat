@@ -16,6 +16,12 @@ set rebuild=%2
 echo %debug%
 echo %rebuild%
 
+
+@REM 1) Build LostPeterFoundation
+call ./Build_Windows_LostPeterFoundation.bat %debug% %rebuild%
+
+
+@REM #2) Build LostPeterUI
 if "%debug%" == "debug" (
     set name_project="LostPeterUI_d"
     set name_lib="LostPeterUI_d.lib"
@@ -26,12 +32,6 @@ if "%debug%" == "debug" (
     @REM set name_dll=%name%"_"%mode%".dll"
 )
 
-
-@REM 1) Build LostPeterFoundation
-call ./Build_Windows_LostPeterFoundation.bat %debug% %rebuild%
-
-
-@REM #2) Build LostPeterUI
 @rem build folder
 set build_folder="../Build/Windows/"%name_project%
 if exist %build_folder% (

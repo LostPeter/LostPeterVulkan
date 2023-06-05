@@ -35,7 +35,7 @@ namespace LostPeterFoundation
 
     }
     FMeshCreateParam_Triangle::FMeshCreateParam_Triangle(bool _flipV,
-                                                                   bool _rightHand)
+                                                         bool _rightHand)
         : FMeshCreateParam(_flipV, _rightHand)
     {
 
@@ -65,12 +65,12 @@ namespace LostPeterFoundation
 
     }
     FMeshCreateParam_Quad::FMeshCreateParam_Quad(float _centerX,
-                                                           float _centerY,
-                                                           float _width,
-                                                           float _height,
-                                                           float _depth,
-                                                           bool _flipV,
-                                                           bool _rightHand)
+                                                 float _centerY,
+                                                 float _width,
+                                                 float _height,
+                                                 float _depth,
+                                                 bool _flipV,
+                                                 bool _rightHand)
         : FMeshCreateParam(_flipV, _rightHand)
         , centerX(_centerX)
         , centerY(_centerY)
@@ -109,11 +109,11 @@ namespace LostPeterFoundation
 
     }
     FMeshCreateParam_Grid::FMeshCreateParam_Grid(float _width,
-                                                           float _height,
-                                                           uint32 _m,
-                                                           uint32 _n,
-                                                           bool _flipV,
-                                                           bool _rightHand)    
+                                                 float _height,
+                                                 uint32 _m,
+                                                 uint32 _n,
+                                                 bool _flipV,
+                                                 bool _rightHand)    
         : FMeshCreateParam(_flipV, _rightHand)
         , width(_width)
         , height(_height)
@@ -148,9 +148,9 @@ namespace LostPeterFoundation
 
     }
     FMeshCreateParam_Circle::FMeshCreateParam_Circle(float _radius,
-                                                               uint32 _segment,
-                                                               bool _flipV,
-                                                               bool _rightHand)
+                                                     uint32 _segment,
+                                                     bool _flipV,
+                                                     bool _rightHand)
         : FMeshCreateParam(_flipV, _rightHand)
         , radius(_radius)
         , segment(_segment)
@@ -183,11 +183,11 @@ namespace LostPeterFoundation
 
     }
     FMeshCreateParam_AABB::FMeshCreateParam_AABB(float _width,
-                                                           float _height,
-                                                           float _depth,
-                                                           uint32 _numSubdivisions,
-                                                           bool _flipV,
-                                                           bool _rightHand)
+                                                 float _height,
+                                                 float _depth,
+                                                 uint32 _numSubdivisions,
+                                                 bool _flipV,
+                                                 bool _rightHand)
         : FMeshCreateParam(_flipV, _rightHand)
         , width(_width)
         , height(_height)
@@ -223,10 +223,10 @@ namespace LostPeterFoundation
 
     }
     FMeshCreateParam_Sphere::FMeshCreateParam_Sphere(float _radius,
-                                                               uint32 _sliceCount,
-                                                               uint32 _stackCount,
-                                                               bool _flipV,
-                                                               bool _rightHand)
+                                                     uint32 _sliceCount,
+                                                     uint32 _stackCount,
+                                                     bool _flipV,
+                                                     bool _rightHand)
         : FMeshCreateParam(_flipV, _rightHand)
         , radius(_radius)
         , sliceCount(_sliceCount)
@@ -259,9 +259,9 @@ namespace LostPeterFoundation
 
     }
     FMeshCreateParam_GeoSphere::FMeshCreateParam_GeoSphere(float _radius,
-                                                                     uint32 _numSubdivisions,
-                                                                     bool _flipV,
-                                                                     bool _rightHand)
+                                                           uint32 _numSubdivisions,
+                                                           bool _flipV,
+                                                           bool _rightHand)
         : FMeshCreateParam(_flipV, _rightHand)
         , radius(_radius)
         , numSubdivisions(_numSubdivisions)
@@ -295,12 +295,12 @@ namespace LostPeterFoundation
 
     }
     FMeshCreateParam_Cylinder::FMeshCreateParam_Cylinder(float _bottomRadius,
-                                                                   float _topRadius,
-                                                                   float _height,
-                                                                   uint32 _sliceCount,
-                                                                   uint32 _stackCount,
-                                                                   bool _flipV,
-                                                                   bool _rightHand)
+                                                         float _topRadius,
+                                                         float _height,
+                                                         uint32 _sliceCount,
+                                                         uint32 _stackCount,
+                                                         bool _flipV,
+                                                         bool _rightHand)
         : FMeshCreateParam(_flipV, _rightHand)
         , bottomRadius(_bottomRadius)
         , topRadius(_topRadius)
@@ -423,15 +423,15 @@ namespace LostPeterFoundation
 
     }
     FMeshCreateParam_Terrain::FMeshCreateParam_Terrain(float _offsetX,
-                                                                 float _offsetZ,
-                                                                 float _width,
-                                                                 float _height,
-                                                                 uint32 _vertexX,
-                                                                 uint32 _vertexZ,
-                                                                 float* _pHeight,
-                                                                 uint32 _heightDataGap,
-                                                                 bool _flipV,
-                                                                 bool _rightHand)    
+                                                       float _offsetZ,
+                                                       float _width,
+                                                       float _height,
+                                                       uint32 _vertexX,
+                                                       uint32 _vertexZ,
+                                                       float* _pHeight,
+                                                       uint32 _heightDataGap,
+                                                       bool _flipV,
+                                                       bool _rightHand)    
         : FMeshCreateParam(_flipV, _rightHand)
         , offsetX(_offsetX)
         , offsetZ(_offsetZ)
@@ -648,8 +648,8 @@ namespace LostPeterFoundation
 
 
     void FMeshGeometry::CreateTriangle(FMeshData& meshData, 
-                                            bool flipV,
-                                            bool rightHand)
+                                       bool flipV,
+                                       bool rightHand)
     {
         //        0 
         //        /\
@@ -687,13 +687,13 @@ namespace LostPeterFoundation
     }
 
     void FMeshGeometry::CreateQuad(FMeshData& meshData, 
-                                        float centerX, 
-                                        float centerY, 
-                                        float width, 
-                                        float height, 
-                                        float depth,
-                                        bool flipV,
-                                        bool rightHand)
+                                   float centerX, 
+                                   float centerY, 
+                                   float width, 
+                                   float height, 
+                                   float depth,
+                                   bool flipV,
+                                   bool rightHand)
     {
         //  0       3
         //   --------
@@ -742,12 +742,12 @@ namespace LostPeterFoundation
     }
 
     void FMeshGeometry::CreateGrid(FMeshData& meshData, 
-                                        float width, 
-                                        float height, 
-                                        uint32 m, 
-                                        uint32 n,
-                                        bool flipV,
-                                        bool rightHand)
+                                   float width, 
+                                   float height, 
+                                   uint32 m, 
+                                   uint32 n,
+                                   bool flipV,
+                                   bool rightHand)
     {
         uint32 vertexCount = m * n;
         uint32 faceCount = (m - 1) * (n - 1) * 2;
@@ -814,10 +814,10 @@ namespace LostPeterFoundation
     }
 
     void FMeshGeometry::CreateCircle(FMeshData& meshData,
-                                          float radius,
-                                          uint32 segment,
-                                          bool flipV,
-                                          bool rightHand)
+                                     float radius,
+                                     uint32 segment,
+                                     bool flipV,
+                                     bool rightHand)
     {
         uint32 vertexCount = segment + 1;
         uint32 faceCount = segment;
@@ -884,12 +884,12 @@ namespace LostPeterFoundation
     }
 
     void FMeshGeometry::CreateAABB(FMeshData& meshData, 
-                                        float width, 
-                                        float height, 
-                                        float depth, 
-                                        uint32 numSubdivisions,
-                                        bool flipV,
-                                        bool rightHand)
+                                   float width, 
+                                   float height, 
+                                   float depth, 
+                                   uint32 numSubdivisions,
+                                   bool flipV,
+                                   bool rightHand)
     {
         //FMeshVertex
         FMeshVertex v[24];
@@ -981,15 +981,17 @@ namespace LostPeterFoundation
         //Subdivisions.
         numSubdivisions = std::min<uint32>(numSubdivisions, 6u);
         for (uint32 i = 0; i < numSubdivisions; ++i)
+        {
             subdivide(meshData, rightHand);
+        }
     }
 
     void FMeshGeometry::CreateSphere(FMeshData& meshData, 
-                                          float radius, 
-                                          uint32 sliceCount, 
-                                          uint32 stackCount,
-                                          bool flipV,
-                                          bool rightHand)
+                                     float radius, 
+                                     uint32 sliceCount, 
+                                     uint32 stackCount,
+                                     bool flipV,
+                                     bool rightHand)
     {
         //FMeshVertex
         FMeshVertex topVertex(0.0f, +radius, 0.0f,  0.0f, +1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, flipV ? 1.0f : 0.0f);
@@ -1097,10 +1099,10 @@ namespace LostPeterFoundation
     }
 
     void FMeshGeometry::CreateGeosphere(FMeshData& meshData, 
-                                             float radius, 
-                                             uint32 numSubdivisions,
-                                             bool flipV,
-                                             bool rightHand)
+                                        float radius, 
+                                        uint32 numSubdivisions,
+                                        bool flipV,
+                                        bool rightHand)
     {
         //FMeshVertex
         numSubdivisions = std::min<uint32>(numSubdivisions, 6u);
@@ -1128,9 +1130,13 @@ namespace LostPeterFoundation
         meshData.indices32.assign(&k[0], &k[60]);
 
         for (uint32 i = 0; i < 12; ++i)
+        {
             meshData.vertices[i].pos = pos[i];
+        }
         for (uint32 i = 0; i < numSubdivisions; ++i)
+        {
             subdivide(meshData, rightHand);
+        }
 
         for (uint32 i = 0; i < meshData.vertices.size(); ++i)
         {
@@ -1156,13 +1162,13 @@ namespace LostPeterFoundation
     }
 
     void FMeshGeometry::CreateCylinder(FMeshData& meshData, 
-                                            float bottomRadius, 
-                                            float topRadius, 
-                                            float height, 
-                                            uint32 sliceCount, 
-                                            uint32 stackCount,
-                                            bool flipV,
-                                            bool rightHand)
+                                       float bottomRadius, 
+                                       float topRadius, 
+                                       float height, 
+                                       uint32 sliceCount, 
+                                       uint32 stackCount,
+                                       bool flipV,
+                                       bool rightHand)
     {
         //FMeshVertex
         float stackHeight = height / stackCount;
@@ -1254,51 +1260,51 @@ namespace LostPeterFoundation
     }
 
     void FMeshGeometry::CreateCapsule(FMeshData& meshData,
-                                           bool flipV,
-                                           bool rightHand)
+                                      bool flipV,
+                                      bool rightHand)
     {
 
     }
 
     void FMeshGeometry::CreateCone(FMeshData& meshData,
-                                        bool flipV,
-                                        bool rightHand)
+                                   bool flipV,
+                                   bool rightHand)
     {
 
     }
 
     void FMeshGeometry::CreateTorus(FMeshData& meshData,
-                                         bool flipV,
-                                         bool rightHand)
+                                    bool flipV,
+                                    bool rightHand)
     {
 
     }
 
     void FMeshGeometry::CreateSkyBox(FMeshData& meshData,
-                                          bool flipV,
-                                          bool rightHand)
+                                     bool flipV,
+                                     bool rightHand)
     {
 
     }
 
     void FMeshGeometry::CreateSkyDome(FMeshData& meshData,
-                                           bool flipV,
-                                           bool rightHand)
+                                      bool flipV,
+                                      bool rightHand)
     {
 
     }
 
     void FMeshGeometry::CreateTerrain(FMeshData& meshData,
-                                           float offsetX,
-                                           float offsetZ,
-                                           float width,
-                                           float height,
-                                           uint32 vertexX,
-                                           uint32 vertexZ,
-                                           float* pHeight,
-                                           uint32 heightDataGap,
-                                           bool flipV,
-                                           bool rightHand)
+                                      float offsetX,
+                                      float offsetZ,
+                                      float width,
+                                      float height,
+                                      uint32 vertexX,
+                                      uint32 vertexZ,
+                                      float* pHeight,
+                                      uint32 heightDataGap,
+                                      bool flipV,
+                                      bool rightHand)
     {
         uint32 vertexCount = vertexX * vertexZ;
         uint32 faceCount = (vertexX - 1) * (vertexZ - 1) * 2;
