@@ -19,7 +19,7 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 16; //22
+static const int g_MeshCount = 19; //22
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
@@ -40,9 +40,9 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
     "geo_sphere",       "Pos3Color4Normal3Tex2",                "geometry",         "sphere",                   "", //geo_sphere
     "geo_geosphere",    "Pos3Color4Normal3Tex2",                "geometry",         "geosphere",                "", //geo_geosphere
     "geo_cylinder",     "Pos3Color4Normal3Tex2",                "geometry",         "cylinder",                 "", //geo_cylinder
-    // "geo_capsule",      "Pos3Color4Normal3Tex2",                "geometry",         "capsule",                  "", //geo_capsule
-    // "geo_cone",         "Pos3Color4Normal3Tex2",                "geometry",         "cone",                     "", //geo_cone
-    // "geo_torus",        "Pos3Color4Normal3Tex2",                "geometry",         "torus",                    "", //geo_torus
+    "geo_capsule",      "Pos3Color4Normal3Tex2",                "geometry",         "capsule",                  "", //geo_capsule
+    "geo_cone",         "Pos3Color4Normal3Tex2",                "geometry",         "cone",                     "", //geo_cone
+    "geo_torus",        "Pos3Color4Normal3Tex2",                "geometry",         "torus",                    "", //geo_torus
     // "geo_skybox",       "Pos3Color4Normal3Tex2",                "geometry",         "skybox",                   "", //geo_skybox
     // "geo_skydome",      "Pos3Color4Normal3Tex2",                "geometry",         "skydome",                  "", //geo_skydome
     // "geo_terrain",      "Pos3Color4Normal3Tex2",                "geometry",         "terrain",                  "", //geo_terrain
@@ -66,9 +66,9 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     false, //geo_sphere
     false, //geo_geosphere
     false, //geo_cylinder
-    // false, //geo_capsule
-    // false, //geo_cone
-    // false, //geo_torus
+    false, //geo_capsule
+    false, //geo_cone
+    false, //geo_torus
     // false, //geo_skybox
     // false, //geo_skydome
     // false, //geo_terrain
@@ -92,9 +92,9 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     false, //geo_sphere
     false, //geo_geosphere
     false, //geo_cylinder
-    // false, //geo_capsule
-    // false, //geo_cone
-    // false, //geo_torus
+    false, //geo_capsule
+    false, //geo_cone
+    false, //geo_torus
     // false, //geo_skybox
     // false, //geo_skydome
     // false, //geo_terrain
@@ -118,9 +118,9 @@ static FMatrix4 g_MeshTranformLocals[g_MeshCount] =
     FMath::ms_mat4Unit, //geo_sphere
     FMath::ms_mat4Unit, //geo_geosphere
     FMath::ms_mat4Unit, //geo_cylinder
-    // FMath::ms_mat4Unit, //geo_capsule
-    // FMath::ms_mat4Unit, //geo_cone
-    // FMath::ms_mat4Unit, //geo_torus
+    FMath::ms_mat4Unit, //geo_capsule
+    FMath::ms_mat4Unit, //geo_cone
+    FMath::ms_mat4Unit, //geo_torus
     // FMath::ms_mat4Unit, //geo_skybox
     // FMath::ms_mat4Unit, //geo_skydome
     // FMath::ms_mat4Unit, //geo_terrain
@@ -447,7 +447,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 16; //22
+static const int g_Object_Count = 19; //22
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                           //Mesh Name                                                                    
@@ -468,9 +468,9 @@ static const char* g_Object_Configs[2 * g_Object_Count] =
     "object_geo_sphere",                    "geo_sphere", //object_geo_sphere
     "object_geo_geosphere",                 "geo_geosphere", //object_geo_geosphere
     "object_geo_cylinder",                  "geo_cylinder", //object_geo_cylinder
-    // "object_geo_capsule",                "geo_capsule", //object_geo_capsule
-    // "object_geo_cone",                   "geo_cone", //object_geo_cone
-    // "object_geo_torus",                  "geo_torus", //object_geo_torus
+    "object_geo_capsule",                   "geo_capsule", //object_geo_capsule
+    "object_geo_cone",                      "geo_cone", //object_geo_cone
+    "object_geo_torus",                     "geo_torus", //object_geo_torus
     // "object_geo_skybox",                 "geo_skybox", //object_geo_skybox
     // "object_geo_skydome",                "geo_skydome", //object_geo_skydome
     // "object_geo_terrain",                "geo_terrain", //object_geo_terrain
@@ -495,9 +495,9 @@ static const char* g_Object_MeshSubsUsed[g_Object_Count] =
     "0", //object_geo_sphere
     "0", //object_geo_geosphere
     "0", //object_geo_cylinder
-    // "0", //object_geo_capsule
-    // "0", //object_geo_cone
-    // "0", //object_geo_torus
+    "0", //object_geo_capsule
+    "0", //object_geo_cone
+    "0", //object_geo_torus
     // "0", //object_geo_skybox
     // "0", //object_geo_skydome
     // "0", //object_geo_terrain
@@ -524,9 +524,9 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
     4, //object_geo_sphere 
     4, //object_geo_geosphere 
     4, //object_geo_cylinder 
-    // 4, //object_geo_capsule 
-    // 4, //object_geo_cone 
-    // 4, //object_geo_torus 
+    4, //object_geo_capsule 
+    4, //object_geo_cone 
+    4, //object_geo_torus 
     // 4, //object_geo_skybox 
     // 4, //object_geo_skydome 
     // 4, //object_geo_terrain 
@@ -551,9 +551,9 @@ static bool g_Object_IsShows[] =
     true, //object_geo_sphere
     true, //object_geo_geosphere
     true, //object_geo_cylinder
-    // true, //object_geo_capsule
-    // true, //object_geo_cone
-    // true, //object_geo_torus
+    true, //object_geo_capsule
+    true, //object_geo_cone
+    true, //object_geo_torus
     // true, //object_geo_skybox
     // true, //object_geo_skydome
     // true, //object_geo_terrain'
@@ -578,9 +578,9 @@ static bool g_Object_IsRotates[g_Object_Count] =
     true, //object_geo_sphere
     true, //object_geo_geosphere
     true, //object_geo_cylinder
-    // true, //object_geo_capsule
-    // true, //object_geo_cone
-    // true, //object_geo_torus
+    true, //object_geo_capsule
+    true, //object_geo_cone
+    true, //object_geo_torus
     // true, //object_geo_skybox
     // true, //object_geo_skydome
     // true, //object_geo_terrain
@@ -604,9 +604,9 @@ static bool g_Object_IsLightings[g_Object_Count] =
     true, //object_geo_sphere
     true, //object_geo_geosphere
     true, //object_geo_cylinder
-    // true, //object_geo_capsule
-    // true, //object_geo_cone
-    // true, //object_geo_torus
+    true, //object_geo_capsule
+    true, //object_geo_cone
+    true, //object_geo_torus
     // true, //object_geo_skybox
     // true, //object_geo_skydome
     // true, //object_geo_terrain
@@ -630,9 +630,9 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
     false, //object_geo_sphere
     false, //object_geo_geosphere
     false, //object_geo_cylinder
-    // false, //object_geo_capsule
-    // false, //object_geo_cone
-    // false, //object_geo_torus
+    false, //object_geo_capsule
+    false, //object_geo_cone
+    false, //object_geo_torus
     // false, //object_geo_skybox
     // false, //object_geo_skydome
     // false, //object_geo_terrain
@@ -640,7 +640,7 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 28; //34
+static const int g_ObjectRend_Count = 31; //34
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
@@ -673,9 +673,9 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
     "object_geo_sphere-1",                 "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_sphere-1
     "object_geo_geosphere-1",              "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_geosphere-1
     "object_geo_cylinder-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_cylinder-1
-    // "object_geo_capsule-1",                "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_capsule-1
-    // "object_geo_cone-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_cone-1
-    // "object_geo_torus-1",                  "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_torus-1
+    "object_geo_capsule-1",                "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_capsule-1
+    "object_geo_cone-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_cone-1
+    "object_geo_torus-1",                  "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_torus-1
     // "object_geo_skybox-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_skybox-1
     // "object_geo_skydome-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_skydome-1
     // "object_geo_terrain-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_terrain-1
@@ -713,9 +713,9 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_sphere-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_geosphere-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_cylinder-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_capsule-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_cone-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_torus-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_capsule-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_cone-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_torus-1
     // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_skybox-1
     // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_skydome-1
     // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_terrain-1
@@ -753,9 +753,9 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_sphere-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_geosphere-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_cylinder-1
-    // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_capsule-1
-    // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_cone-1
-    // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_torus-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_capsule-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_cone-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_torus-1
     // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_skybox-1
     // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_skydome-1
     // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_terrain-1
@@ -792,12 +792,12 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     FVector3(   0,  5.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(    0.8f,      0.8f,      0.8f), //object_geo_sphere-1
     FVector3(   0,  5.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    0.8f,      0.8f,      0.8f), //object_geo_geosphere-1
     FVector3(   0,  5.0,   2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cylinder-1
-    //FVector3(   0,  5.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_capsule-1
-    //FVector3(   0,  5.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cone-1
-    //FVector3(   0,  5.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_torus-1
-    //FVector3(   0,  5.0,  12.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skybox-1
-    //FVector3(   0,  5.0,  14.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skydome-1
-    //FVector3(   0,  5.0,  16.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_terrain-1
+    FVector3(   0,  5.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_capsule-1
+    FVector3(   0,  5.0,   6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cone-1
+    FVector3(   0,  5.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_torus-1
+    //FVector3(   0,  5.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skybox-1
+    //FVector3(   0,  5.0,  12.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skydome-1
+    //FVector3(   0,  5.0,  14.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_terrain-1
 
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
@@ -831,9 +831,9 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
     false, //object_geo_sphere-1
     false, //object_geo_geosphere-1
     false, //object_geo_cylinder-1
-    //false, //object_geo_capsule-1
-    //false, //object_geo_cone-1
-    //false, //object_geo_torus-1
+    false, //object_geo_capsule-1
+    false, //object_geo_cone-1
+    false, //object_geo_torus-1
     //false, //object_geo_skybox-1
     //false, //object_geo_skydome-1
     //false, //object_geo_terrain-1
@@ -870,9 +870,9 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
     false, //object_geo_sphere-1
     false, //object_geo_geosphere-1
     false, //object_geo_cylinder-1
-    //false, //object_geo_capsule-1
-    //false, //object_geo_cone-1
-    //false, //object_geo_torus-1
+    false, //object_geo_capsule-1
+    false, //object_geo_cone-1
+    false, //object_geo_torus-1
     //false, //object_geo_skybox-1
     //false, //object_geo_skydome-1
     //false, //object_geo_terrain-1

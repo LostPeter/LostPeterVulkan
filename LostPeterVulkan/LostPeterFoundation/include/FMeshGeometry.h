@@ -42,6 +42,7 @@ namespace LostPeterFoundation
 
     public:
         static String ms_nameType;
+
     public:
 
     public:
@@ -64,6 +65,7 @@ namespace LostPeterFoundation
 
     public:
         static String ms_nameType;
+
     public:
         float centerX;
         float centerY;
@@ -90,6 +92,7 @@ namespace LostPeterFoundation
 
     public:
         static String ms_nameType;
+
     public:
         float width;
         float height;
@@ -113,6 +116,7 @@ namespace LostPeterFoundation
 
     public:
         static String ms_nameType;
+
     public:
         float radius;
         uint32 segment;
@@ -136,6 +140,7 @@ namespace LostPeterFoundation
 
     public:
         static String ms_nameType;
+
     public:
         float width;
         float height;
@@ -160,6 +165,7 @@ namespace LostPeterFoundation
 
     public:
         static String ms_nameType;
+
     public:
         float radius;
         uint32 sliceCount;
@@ -182,6 +188,7 @@ namespace LostPeterFoundation
 
     public:
         static String ms_nameType;
+
     public:
         float radius;
         uint32 numSubdivisions;
@@ -206,6 +213,7 @@ namespace LostPeterFoundation
 
     public:
         static String ms_nameType;
+
     public:
         float bottomRadius;
         float topRadius;
@@ -222,12 +230,25 @@ namespace LostPeterFoundation
     {
     public:
         FMeshCreateParam_Capsule();
+        FMeshCreateParam_Capsule(float _radius,
+                                 float _height,
+                                 uint32 _numRings,
+                                 uint32 _numSegments,
+                                 uint32 _numSegHeight,
+                                 bool _flipV,
+                                 bool _rightHand);
         virtual ~FMeshCreateParam_Capsule();
 
     public:
         static String ms_nameType;
+
     public:
-        
+        float radius;
+        float height;
+
+        uint32 numRings;
+        uint32 numSegments;
+        uint32 numSegHeight;
 
     public:
         virtual String ToName();
@@ -238,12 +259,23 @@ namespace LostPeterFoundation
     {
     public:
         FMeshCreateParam_Cone();
+        FMeshCreateParam_Cone(float _radius,
+                              float _height,
+                              uint32 _numSegBase,
+                              uint32 _numSegHeight,
+                              bool _flipV,
+                              bool _rightHand);
         virtual ~FMeshCreateParam_Cone();
 
     public:
         static String ms_nameType;
+
     public:
-        
+        float radius;
+        float height;
+
+        uint32 numSegBase;
+	    uint32 numSegHeight;
 
     public:
         virtual String ToName();
@@ -254,12 +286,23 @@ namespace LostPeterFoundation
     {
     public:
         FMeshCreateParam_Torus();
+        FMeshCreateParam_Torus(float _radius,
+                               float _sectionRadius,
+                               uint32 _numSegSection,
+                               uint32 _numSegCircle,
+                               bool _flipV,
+                               bool _rightHand);
         virtual ~FMeshCreateParam_Torus();
 
     public:
         static String ms_nameType;
+
     public:
-        
+        float radius;
+        float sectionRadius;
+
+        uint32 numSegSection;
+        uint32 numSegCircle;
 
     public:
         virtual String ToName();
@@ -274,6 +317,7 @@ namespace LostPeterFoundation
 
     public:
         static String ms_nameType;
+
     public:
         
 
@@ -290,6 +334,7 @@ namespace LostPeterFoundation
 
     public:
         static String ms_nameType;
+
     public:
         
 
@@ -316,6 +361,7 @@ namespace LostPeterFoundation
 
     public:
         static String ms_nameType;
+
     public:
         float offsetX;
         float offsetZ;
@@ -340,7 +386,9 @@ namespace LostPeterFoundation
 	 //Triangle
         static void CreateTriangle(FMeshData& meshData, FMeshCreateParam_Triangle* pParam)
         {
-            CreateTriangle(meshData, pParam->flipV, pParam->rightHand);
+            CreateTriangle(meshData, 
+                           pParam->flipV, 
+                           pParam->rightHand);
         }
         static void CreateTriangle(FMeshData& meshData, 
                                    bool flipV,
@@ -349,7 +397,14 @@ namespace LostPeterFoundation
         //Quad
         static void CreateQuad(FMeshData& meshData, FMeshCreateParam_Quad* pParam)
         {
-            CreateQuad(meshData, pParam->centerX, pParam->centerY, pParam->width, pParam->height, pParam->depth,  pParam->flipV, pParam->rightHand);
+            CreateQuad(meshData, 
+                       pParam->centerX, 
+                       pParam->centerY, 
+                       pParam->width, 
+                       pParam->height, 
+                       pParam->depth,  
+                       pParam->flipV, 
+                       pParam->rightHand);
         }
         static void CreateQuad(FMeshData& meshData,
                                float centerX,
@@ -363,7 +418,13 @@ namespace LostPeterFoundation
         //Grid
         static void CreateGrid(FMeshData& meshData, FMeshCreateParam_Grid* pParam)
         {
-            CreateGrid(meshData, pParam->width, pParam->height, pParam->m, pParam->n, pParam->flipV, pParam->rightHand);
+            CreateGrid(meshData, 
+                       pParam->width, 
+                       pParam->height, 
+                       pParam->m, 
+                       pParam->n, 
+                       pParam->flipV, 
+                       pParam->rightHand);
         }
         static void CreateGrid(FMeshData& meshData,
                                float width,
@@ -376,7 +437,11 @@ namespace LostPeterFoundation
         //Circle
         static void CreateCircle(FMeshData& meshData, FMeshCreateParam_Circle* pParam)
         {
-            CreateCircle(meshData, pParam->radius, pParam->segment, pParam->flipV, pParam->rightHand);
+            CreateCircle(meshData, 
+                         pParam->radius, 
+                         pParam->segment, 
+                         pParam->flipV, 
+                         pParam->rightHand);
         }
         static void CreateCircle(FMeshData& meshData,
                                  float radius,
@@ -387,7 +452,13 @@ namespace LostPeterFoundation
         //AABB
         static void CreateAABB(FMeshData& meshData, FMeshCreateParam_AABB* pParam)
         {
-            CreateAABB(meshData, pParam->width, pParam->height, pParam->depth, pParam->numSubdivisions, pParam->flipV, pParam->rightHand);
+            CreateAABB(meshData, 
+                       pParam->width, 
+                       pParam->height, 
+                       pParam->depth, 
+                       pParam->numSubdivisions, 
+                       pParam->flipV, 
+                       pParam->rightHand);
         }
         static void CreateAABB(FMeshData& meshData,
                                float width,
@@ -400,7 +471,12 @@ namespace LostPeterFoundation
         //Sphere
         static void CreateSphere(FMeshData& meshData, FMeshCreateParam_Sphere* pParam)
         {
-            CreateSphere(meshData, pParam->radius, pParam->sliceCount, pParam->stackCount, pParam->flipV, pParam->rightHand);
+            CreateSphere(meshData, 
+                         pParam->radius, 
+                         pParam->sliceCount, 
+                         pParam->stackCount, 
+                         pParam->flipV, 
+                         pParam->rightHand);
         }
         static void CreateSphere(FMeshData& meshData,
                                  float radius,
@@ -412,7 +488,11 @@ namespace LostPeterFoundation
         //GeoSphere
         static void CreateGeosphere(FMeshData& meshData, FMeshCreateParam_GeoSphere* pParam)
         {
-            CreateGeosphere(meshData, pParam->radius, pParam->numSubdivisions, pParam->flipV, pParam->rightHand);
+            CreateGeosphere(meshData, 
+                            pParam->radius,
+                            pParam->numSubdivisions, 
+                            pParam->flipV, 
+                            pParam->rightHand);
         }
         static void CreateGeosphere(FMeshData& meshData,
                                     float radius,
@@ -423,7 +503,14 @@ namespace LostPeterFoundation
         //Cylinder
         static void CreateCylinder(FMeshData& meshData, FMeshCreateParam_Cylinder* pParam)
         {
-            CreateCylinder(meshData, pParam->bottomRadius, pParam->topRadius, pParam->height, pParam->sliceCount, pParam->stackCount, pParam->flipV, pParam->rightHand);
+            CreateCylinder(meshData, 
+                           pParam->bottomRadius, 
+                           pParam->topRadius, 
+                           pParam->height, 
+                           pParam->sliceCount, 
+                           pParam->stackCount, 
+                           pParam->flipV, 
+                           pParam->rightHand);
         }
         static void CreateCylinder(FMeshData& meshData,
                                    float bottomRadius,
@@ -437,27 +524,59 @@ namespace LostPeterFoundation
         //Capsule
         static void CreateCapsule(FMeshData& meshData, FMeshCreateParam_Capsule* pParam)
         {
-            CreateCapsule(meshData, pParam->flipV, pParam->rightHand);
+            CreateCapsule(meshData,
+                          pParam->radius, 
+                          pParam->height, 
+                          pParam->numRings, 
+                          pParam->numSegments, 
+                          pParam->numSegHeight, 
+                          pParam->flipV, 
+                          pParam->rightHand);
         }
         static void CreateCapsule(FMeshData& meshData,
+                                  float radius,
+                                  float height,
+                                  uint32 numRings,
+                                  uint32 numSegments,
+                                  uint32 numSegHeight,
                                   bool flipV,
                                   bool rightHand);
 
         //Cone
         static void CreateCone(FMeshData& meshData, FMeshCreateParam_Cone* pParam)
         {
-            CreateCone(meshData, pParam->flipV, pParam->rightHand);
+            CreateCone(meshData, 
+                       pParam->radius, 
+                       pParam->height, 
+                       pParam->numSegBase, 
+                       pParam->numSegHeight, 
+                       pParam->flipV, 
+                       pParam->rightHand);
         }
         static void CreateCone(FMeshData& meshData,
+                               float radius,
+                               float height,
+                               uint32 numSegBase,
+                               uint32 numSegHeight,
                                bool flipV,
                                bool rightHand);
 
         //Torus
         static void CreateTorus(FMeshData& meshData, FMeshCreateParam_Torus* pParam)
         {
-            CreateTorus(meshData, pParam->flipV, pParam->rightHand);
+            CreateTorus(meshData, 
+                        pParam->radius, 
+                        pParam->sectionRadius, 
+                        pParam->numSegSection, 
+                        pParam->numSegCircle, 
+                        pParam->flipV, 
+                        pParam->rightHand);
         }
         static void CreateTorus(FMeshData& meshData,
+                                float radius,
+                                float sectionRadius,
+                                uint32 numSegSection,
+                                uint32 numSegCircle,
                                 bool flipV,
                                 bool rightHand);
 
@@ -506,11 +625,33 @@ namespace LostPeterFoundation
                                   bool flipV,
                                   bool rightHand);
 
-    private:
-        static void subdivide(FMeshData& meshData, bool rightHand);
-        static void midPoint(const FMeshVertex& v0, const FMeshVertex& v1, FMeshVertex& m);
-        static void buildCylinderTopCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, FMeshData& meshData, bool rightHand);
-        static void buildCylinderBottomCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, FMeshData& meshData, bool rightHand);
+    public:
+        static void MidPoint(const FMeshVertex& v0, const FMeshVertex& v1, FMeshVertex& m);
+        static void Subdivide(FMeshData& meshData, bool rightHand);
+
+    public:
+        static uint32 GetVertexCount(FMeshData& meshData);
+        static void ReserveVertexCount(FMeshData& meshData, uint32 count);
+        static void ResizeVertexCount(FMeshData& meshData, uint32 count);
+        static FMeshVertex& GetVertex(FMeshData& meshData, uint32 index);
+        static uint32 AddVertex(FMeshData& meshData, const FMeshVertex& vertex);
+        static uint32 AddVertex(FMeshData& meshData, 
+                                const FVector3& vPos,
+                                const FVector4& color, 
+                                const FVector3& normal, 
+                                const FVector3& tangent, 
+                                const FVector2& texCoord);
+        static void SetVertex(FMeshData& meshData, int index, const FMeshVertex& vertex);
+
+        static uint32 GetIndexCount(FMeshData& meshData);
+        static void ReserveIndexCount(FMeshData& meshData, uint32 count);
+        static void ResizeIndexCount(FMeshData& meshData, uint32 count);
+        static uint32 GetIndex(FMeshData& meshData, uint32 index);
+        static uint32 AddIndex(FMeshData& meshData, uint32 value);
+        static void AddIndices(FMeshData& meshData, uint32 count, uint32* pIndex);
+        static void SetIndex(FMeshData& meshData, uint32 index, uint32 value);
+        static void AddIndexTriangle(FMeshData& meshData, uint32 index1, uint32 index2, uint32 index3);
+        static void SetIndexTriangle(FMeshData& meshData, uint32 indexStart, uint32 index1, uint32 index2, uint32 index3);
 	};
 
 }; //LostPeterFoundation

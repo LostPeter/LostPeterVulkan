@@ -49,10 +49,18 @@ namespace LostPeterFoundation
         {
             vertices.resize(nCount);
         }
+        FMeshVertexPCT& GetVertex(uint32 nIndex)
+        {
+            return vertices[nIndex];
+        }
         void AddVertex(const FMeshVertexPCT& meshVertex)
         {
             //aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
+        }
+        void SetVertex(int nIndex, const FMeshVertexPCT& meshVertex)
+        {
+            vertices[nIndex] = meshVertex;
         }
 
         void ReserveIndexCount(size_t nCount)
@@ -63,15 +71,36 @@ namespace LostPeterFoundation
         {
             indices32.resize(nCount);
         }
+        uint32 GetIndex(uint32 nIndex)
+        {
+            return indices32[nIndex];
+        }
         void AddIndex(uint32 nIndex)
         {
             indices32.push_back(nIndex);
+        }
+        void AddIndices(uint32 nCount, uint32* pIndex)
+        {
+            for (uint32 i = 0; i < nCount; i++)
+            {
+                AddIndex(pIndex[i]);
+            }
+        }
+        void SetIndex(uint32 index, uint32 nIndex)
+        {
+            indices32[index] = nIndex;
         }
         void AddIndexTriangle(uint32 nIndex1, uint32 nIndex2, uint32 nIndex3)
         {
             indices32.push_back(nIndex1);
             indices32.push_back(nIndex2);
             indices32.push_back(nIndex3);
+        }
+        void SetIndexTriangle(uint32 indexStart, uint32 index1, uint32 index2, uint32 index3)
+        {
+            indices32[indexStart + 0] = index1;
+            indices32[indexStart + 1] = index2;
+            indices32[indexStart + 2] = index3;
         }
 
 
@@ -175,10 +204,18 @@ namespace LostPeterFoundation
         {
             vertices.resize(nCount);
         }
+        FMeshVertex& GetVertex(uint32 nIndex)
+        {
+            return vertices[nIndex];
+        }
         void AddVertex(const FMeshVertex& meshVertex)
         {
             //aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
+        }
+        void SetVertex(int nIndex, const FMeshVertex& meshVertex)
+        {
+            vertices[nIndex] = meshVertex;
         }
 
         void ReserveIndexCount(size_t nCount)
@@ -189,15 +226,36 @@ namespace LostPeterFoundation
         {
             indices32.resize(nCount);
         }
+        uint32 GetIndex(uint32 nIndex)
+        {
+            return indices32[nIndex];
+        }
         void AddIndex(uint32 nIndex)
         {
             indices32.push_back(nIndex);
+        }
+        void AddIndices(uint32 nCount, uint32* pIndex)
+        {
+            for (uint32 i = 0; i < nCount; i++)
+            {
+                AddIndex(pIndex[i]);
+            }
+        }
+        void SetIndex(uint32 index, uint32 nIndex)
+        {
+            indices32[index] = nIndex;
         }
         void AddIndexTriangle(uint32 nIndex1, uint32 nIndex2, uint32 nIndex3)
         {
             indices32.push_back(nIndex1);
             indices32.push_back(nIndex2);
             indices32.push_back(nIndex3);
+        }
+        void SetIndexTriangle(uint32 indexStart, uint32 index1, uint32 index2, uint32 index3)
+        {
+            indices32[indexStart + 0] = index1;
+            indices32[indexStart + 1] = index2;
+            indices32[indexStart + 2] = index3;
         }
 
         Indices16Vector& GetIndices16()
@@ -299,10 +357,18 @@ namespace LostPeterFoundation
         {
             vertices.resize(nCount);
         }
+        FMeshVertexUV2& GetVertex(uint32 nIndex)
+        {
+            return vertices[nIndex];
+        }
         void AddVertex(const FMeshVertexUV2& meshVertex)
         {
             //aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
+        }
+        void SetVertex(int nIndex, const FMeshVertexUV2& meshVertex)
+        {
+            vertices[nIndex] = meshVertex;
         }
 
         void ReserveIndexCount(size_t nCount)
@@ -313,15 +379,36 @@ namespace LostPeterFoundation
         {
             indices32.resize(nCount);
         }
+        uint32 GetIndex(uint32 nIndex)
+        {
+            return indices32[nIndex];
+        }
         void AddIndex(uint32 nIndex)
         {
             indices32.push_back(nIndex);
+        }
+        void AddIndices(uint32 nCount, uint32* pIndex)
+        {
+            for (uint32 i = 0; i < nCount; i++)
+            {
+                AddIndex(pIndex[i]);
+            }
+        }
+        void SetIndex(uint32 index, uint32 nIndex)
+        {
+            indices32[index] = nIndex;
         }
         void AddIndexTriangle(uint32 nIndex1, uint32 nIndex2, uint32 nIndex3)
         {
             indices32.push_back(nIndex1);
             indices32.push_back(nIndex2);
             indices32.push_back(nIndex3);
+        }
+        void SetIndexTriangle(uint32 indexStart, uint32 index1, uint32 index2, uint32 index3)
+        {
+            indices32[indexStart + 0] = index1;
+            indices32[indexStart + 1] = index2;
+            indices32[indexStart + 2] = index3;
         }
 
 
@@ -423,10 +510,18 @@ namespace LostPeterFoundation
         {
             vertices.resize(nCount);
         }
+        FMeshVertexSkin& GetVertex(uint32 nIndex)
+        {
+            return vertices[nIndex];
+        }
         void AddVertex(const FMeshVertexSkin& meshVertex)
         {
             //aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
+        }
+        void SetVertex(int nIndex, const FMeshVertexSkin& meshVertex)
+        {
+            vertices[nIndex] = meshVertex;
         }
 
         void ReserveIndexCount(size_t nCount)
@@ -437,15 +532,36 @@ namespace LostPeterFoundation
         {
             indices32.resize(nCount);
         }
+        uint32 GetIndex(uint32 nIndex)
+        {
+            return indices32[nIndex];
+        }
         void AddIndex(uint32 nIndex)
         {
             indices32.push_back(nIndex);
+        }
+        void AddIndices(uint32 nCount, uint32* pIndex)
+        {
+            for (uint32 i = 0; i < nCount; i++)
+            {
+                AddIndex(pIndex[i]);
+            }
+        }
+        void SetIndex(uint32 index, uint32 nIndex)
+        {
+            indices32[index] = nIndex;
         }
         void AddIndexTriangle(uint32 nIndex1, uint32 nIndex2, uint32 nIndex3)
         {
             indices32.push_back(nIndex1);
             indices32.push_back(nIndex2);
             indices32.push_back(nIndex3);
+        }
+        void SetIndexTriangle(uint32 indexStart, uint32 index1, uint32 index2, uint32 index3)
+        {
+            indices32[indexStart + 0] = index1;
+            indices32[indexStart + 1] = index2;
+            indices32[indexStart + 2] = index3;
         }
 
 
