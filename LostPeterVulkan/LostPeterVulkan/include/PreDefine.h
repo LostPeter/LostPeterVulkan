@@ -387,10 +387,10 @@ namespace LostPeter
     typedef std::vector<VkDescriptorSet> VkDescriptorSetVector;
     typedef std::vector<VkWriteDescriptorSet> VkWriteDescriptorSetVector;
 
-    const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(F_MeshVertexType type);
-    const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(F_MeshVertexType type);
-    VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertexType type);
-    VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertexType type);
+    const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(FMeshVertexType type);
+    const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(FMeshVertexType type);
+    VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(FMeshVertexType type);
+    VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(FMeshVertexType type);
 
 
 ////////////////////////////// Class ///////////////////////////////

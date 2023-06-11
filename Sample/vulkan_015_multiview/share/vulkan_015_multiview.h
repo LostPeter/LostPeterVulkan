@@ -32,7 +32,7 @@ public:
         int indexMeshSub;
 
         //Vertex
-        F_MeshVertexType poTypeVertex;
+        FMeshVertexType poTypeVertex;
 
         std::vector<FVertex_Pos3Color4Tex2> vertices_Pos3Color4Tex2;
         std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
@@ -58,7 +58,7 @@ public:
                      const String& _nameMeshSub,
                      const String& _nameOriginal,
                      int _indexMeshSub,
-                     F_MeshVertexType _poTypeVertex)
+                     FMeshVertexType _poTypeVertex)
             : pMesh(_pMesh)
             , nameMeshSub(_nameMeshSub)
             , nameOriginal(_nameOriginal)
@@ -125,7 +125,7 @@ public:
         String pathMesh;
         FMeshType typeMesh;
         FMeshGeometryType typeGeometryType;
-        F_MeshVertexType typeVertex;
+        FMeshVertexType typeVertex;
 
         ModelMeshSubPtrVector aMeshSubs;
         ModelMeshSubPtrMap mapMeshSubs;
@@ -135,7 +135,7 @@ public:
                   const String& _pathMesh,
                   FMeshType _typeMesh,
                   FMeshGeometryType _typeGeometryType,
-                  F_MeshVertexType _typeVertex)
+                  FMeshVertexType _typeVertex)
             : pWindow(_pWindow)
             , nameMesh(_nameMesh)
             , pathMesh(_pathMesh)

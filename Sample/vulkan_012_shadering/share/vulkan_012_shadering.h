@@ -32,7 +32,7 @@ public:
         FMeshGeometryType typeGeometryType;
 
         //Vertex
-        F_MeshVertexType poTypeVertex;
+        FMeshVertexType poTypeVertex;
         std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
         std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
         uint32_t poVertexCount;
@@ -55,7 +55,7 @@ public:
                   const String& _pathMesh,
                   FMeshType _typeMesh,
                   FMeshGeometryType _typeGeometryType,
-                  F_MeshVertexType _poTypeVertex)
+                  FMeshVertexType _poTypeVertex)
             : pWindow(_pWindow)
             , nameMesh(_nameMesh)
             , pathMesh(_pathMesh)

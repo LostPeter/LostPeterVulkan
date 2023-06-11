@@ -10,6 +10,12 @@
 ****************************************************************************/
 
 #include "../include/FMath.h"
+#include "../include/FAABB.h"
+#include "../include/FFrustum.h"
+#include "../include/FPlane.h"
+#include "../include/FPlaneBoundedVolume.h"
+#include "../include/FRay.h"
+#include "../include/FSphere.h"
 
 namespace LostPeterFoundation
 {
@@ -477,4 +483,592 @@ namespace LostPeterFoundation
         return glm::transpose(mat4);
     }
     
+     float FMath::GetRadiusFromAABB(const FAABB& aabb)
+    {
+        const FVector3& max = aabb.GetMax();
+        const FVector3& min = aabb.GetMin();
+
+        FVector3 magnitude = max;
+        FMath::MakeCeil(magnitude, -max);
+        FMath::MakeCeil(magnitude,  min);
+        FMath::MakeCeil(magnitude, -min);
+        
+        return FMath::Length(magnitude);
+    }
+
+    std::pair<bool, float> FMath::Intersects(const FRay& ray, const FPlane& plane)
+    {
+        float denom = FMath::Dot(plane.m_vNormal, ray.GetDirection());
+        if (FMath::Abs(denom) < std::numeric_limits<float>::epsilon())
+        {
+            return std::pair<bool, float>(false, 0);
+        }
+        else
+        {
+            float nom = FMath::Dot(plane.m_vNormal, ray.GetOrigin()) + plane.m_fDistance;
+            float t = -(nom/denom);
+            return std::pair<bool, float>(t >= 0, t);
+        }
+    }
+
+    std::pair<bool, float> FMath::Intersects(const FRay& ray, const FSphere& sphere, bool discardInside /*= true*/)		
+    {
+        const FVector3& raydir = ray.GetDirection();
+        const FVector3& rayorig = ray.GetOrigin() - sphere.GetCenter();
+        float radius = sphere.GetRadius();
+
+        if (FMath::Length2(rayorig) <= radius * radius && discardInside)
+        {
+            return std::pair<bool, float>(true, 0);
+        }
+
+        // ie t = (-b +/- sqrt(b*b + 4ac)) / 2a
+        float a = FMath::Dot(raydir, raydir);
+        float b = 2 * FMath::Dot(rayorig, raydir);
+        float c = FMath::Dot(rayorig, rayorig) - radius * radius;
+
+        float d = (b*b) - (4 * a * c);
+        if (d < 0)
+        {
+            return std::pair<bool, float>(false, 0);
+        }
+        else
+        {
+            float t = ( -b - FMath::Sqrt(d) ) / (2 * a);
+            if (t < 0)
+                t = ( -b + FMath::Sqrt(d) ) / (2 * a);
+            return std::pair<bool, float>(true, t);
+        }
+    }
+
+    std::pair<bool, float> FMath::Intersects(const FRay& ray, const FAABB& aabb)
+    {
+        if (!aabb.IsValid()) 
+            return std::pair<bool, float>(false, 0);
+
+        float lowt = 0.0f;
+        float t;
+        bool hit = false;
+        FVector3 hitpoint;
+        const FVector3& min = aabb.GetMin();
+        const FVector3& max = aabb.GetMax();
+        const FVector3& rayorig = ray.GetOrigin();
+        const FVector3& raydir = ray.GetDirection();
+
+        // Check origin inside first
+        if (FMath::IsGreat(rayorig, min) &&  FMath::IsLess(rayorig, max))
+        {
+            return std::pair<bool, float>(true, 0);
+        }
+
+        // Check each face in turn, only check closest 3
+        // Min x
+        if (rayorig.x <= min.x && raydir.x > 0)
+        {
+            t = (min.x - rayorig.x) / raydir.x;
+            if (t >= 0)
+            {
+                // Substitute t back into ray and check bounds and dist
+                hitpoint = rayorig + raydir * t;
+                if (hitpoint.y >= min.y && hitpoint.y <= max.y &&
+                    hitpoint.z >= min.z && hitpoint.z <= max.z &&
+                    (!hit || t < lowt))
+                {
+                    hit = true;
+                    lowt = t;
+                }
+            }
+        }
+        // Max x
+        if (rayorig.x >= max.x && raydir.x < 0)
+        {
+            t = (max.x - rayorig.x) / raydir.x;
+            if (t >= 0)
+            {
+                // Substitute t back into ray and check bounds and dist
+                hitpoint = rayorig + raydir * t;
+                if (hitpoint.y >= min.y && hitpoint.y <= max.y &&
+                    hitpoint.z >= min.z && hitpoint.z <= max.z &&
+                    (!hit || t < lowt))
+                {
+                    hit = true;
+                    lowt = t;
+                }
+            }
+        }
+        // Min y
+        if (rayorig.y <= min.y && raydir.y > 0)
+        {
+            t = (min.y - rayorig.y) / raydir.y;
+            if (t >= 0)
+            {
+                // Substitute t back into ray and check bounds and dist
+                hitpoint = rayorig + raydir * t;
+                if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
+                    hitpoint.z >= min.z && hitpoint.z <= max.z &&
+                    (!hit || t < lowt))
+                {
+                    hit = true;
+                    lowt = t;
+                }
+            }
+        }
+        // Max y
+        if (rayorig.y >= max.y && raydir.y < 0)
+        {
+            t = (max.y - rayorig.y) / raydir.y;
+            if (t >= 0)
+            {
+                // Substitute t back into ray and check bounds and dist
+                hitpoint = rayorig + raydir * t;
+                if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
+                    hitpoint.z >= min.z && hitpoint.z <= max.z &&
+                    (!hit || t < lowt))
+                {
+                    hit = true;
+                    lowt = t;
+                }
+            }
+        }
+        // Min z
+        if (rayorig.z <= min.z && raydir.z > 0)
+        {
+            t = (min.z - rayorig.z) / raydir.z;
+            if (t >= 0)
+            {
+                // Substitute t back into ray and check bounds and dist
+                hitpoint = rayorig + raydir * t;
+                if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
+                    hitpoint.y >= min.y && hitpoint.y <= max.y &&
+                    (!hit || t < lowt))
+                {
+                    hit = true;
+                    lowt = t;
+                }
+            }
+        }
+        // Max z
+        if (rayorig.z >= max.z && raydir.z < 0)
+        {
+            t = (max.z - rayorig.z) / raydir.z;
+            if (t >= 0)
+            {
+                // Substitute t back into ray and check bounds and dist
+                hitpoint = rayorig + raydir * t;
+                if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
+                    hitpoint.y >= min.y && hitpoint.y <= max.y &&
+                    (!hit || t < lowt))
+                {
+                    hit = true;
+                    lowt = t;
+                }
+            }
+        }
+
+        return std::pair<bool, float>(hit, lowt);
+    }
+
+    std::pair<bool, float> FMath::Intersects(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
+                                             bool positiveSide /*= true*/, bool negativeSide /*= true*/)
+    {
+        FVector3 vNormal = CalculateBasicFaceNormalWithoutNormalize(a, b, c);
+        return Intersects(ray, a, b, c, vNormal, positiveSide, negativeSide);
+    }
+
+    std::pair<bool, float> FMath::Intersects(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& normal,
+                                             bool positiveSide /*= true*/, bool negativeSide /*= true*/)
+    {
+        float t;
+        {
+            float denom = FMath::Dot(normal, ray.GetDirection());
+            if (denom > + std::numeric_limits<float>::epsilon())
+            {
+                if (!negativeSide)
+                    return std::pair<bool, float>(false, 0);
+            }
+            else if (denom < - std::numeric_limits<float>::epsilon())
+            {
+                if (!positiveSide)
+                    return std::pair<bool, float>(false, 0);
+            }
+            else
+            {
+                return std::pair<bool, float>(false, 0);
+            }
+
+            t = FMath::Dot(normal, a - ray.GetOrigin()) / denom;
+            if (t < 0)
+            {
+                return std::pair<bool, float>(false, 0);
+            }
+        }
+
+        int i0, i1;
+        {
+            float n0 = FMath::Abs(normal[0]);
+            float n1 = FMath::Abs(normal[1]);
+            float n2 = FMath::Abs(normal[2]);
+
+            i0 = 1; i1 = 2;
+            if (n1 > n2)
+            {
+                if (n1 > n0) 
+                    i0 = 0;
+            }
+            else
+            {
+                if (n2 > n0) 
+                    i1 = 0;
+            }
+        }
+
+        {
+            float u1 = b[i0] - a[i0];
+            float v1 = b[i1] - a[i1];
+            float u2 = c[i0] - a[i0];
+            float v2 = c[i1] - a[i1];
+            float u0 = t * ray.GetDirection()[i0] + ray.GetOrigin()[i0] - a[i0];
+            float v0 = t * ray.GetDirection()[i1] + ray.GetOrigin()[i1] - a[i1];
+
+            float alpha = u0 * v2 - u2 * v0;
+            float beta  = u1 * v0 - u0 * v1;
+            float area  = u1 * v2 - u2 * v1;
+
+            const float EPSILON = 1e-6f;
+
+            float tolerance = - EPSILON * area;
+
+            if (area > 0)
+            {
+                if (alpha < tolerance || beta < tolerance || alpha+beta > area-tolerance)
+                    return std::pair<bool, float>(false, 0);
+            }
+            else
+            {
+                if (alpha > tolerance || beta > tolerance || alpha+beta < area-tolerance)
+                    return std::pair<bool, float>(false, 0);
+            }
+        }
+
+        return std::pair<bool, float>(true, t);
+    }
+
+    std::pair<bool, float> FMath::Intersects(const FRay& ray, const FPlaneVector& aPlanes, bool normalIsOutside)
+    {
+        FPlaneList listPlanes;
+        for (FPlaneVector::const_iterator it = aPlanes.begin(); 
+            it != aPlanes.end(); ++it)
+        {
+            listPlanes.push_back(*it);
+        }
+        return Intersects(ray, listPlanes, normalIsOutside);
+    }
+
+    std::pair<bool, float> FMath::Intersects(const FRay& ray, FPlaneList& listPlanes, bool normalIsOutside)
+    {
+        bool allInside = true;
+        std::pair<bool, float> ret;
+        std::pair<bool, float> end;
+        ret.first = false;
+        ret.second = 0.0f;
+        end.first = false;
+        end.second = 0;
+
+        FPlaneSideType ePlaneSide = normalIsOutside ? F_PlaneSide_Positive : F_PlaneSide_Negative;
+        for (FPlaneList::iterator it = listPlanes.begin();
+             it != listPlanes.end(); ++it)
+        {
+            const FPlane& plane = *it;
+            if (plane.GetSide(ray.GetOrigin()) == ePlaneSide)
+            {
+                allInside = false;
+                std::pair<bool, float> planeRes = ray.Intersects(plane);
+                if (planeRes.first)
+                {
+                    ret.first = true;
+                    ret.second = FMath::Max<float>(ret.second, planeRes.second);
+                }
+                else
+                {
+                    ret.first =false;
+                    ret.second = 0.0f;
+                    return ret;
+                }
+            }
+            else
+            {
+                std::pair<bool, float> planeRes = ray.Intersects(plane);
+                if (planeRes.first)
+                {
+                    if (!end.first)
+                    {
+                        end.first = true;
+                        end.second = planeRes.second;
+                    }
+                    else
+                    {
+                        end.second = FMath::Min<float>(planeRes.second, end.second);
+                    }
+                }
+            }
+        }
+
+        if (allInside)
+        {
+            ret.first = true;
+            ret.second = 0.0f;
+            return ret;
+        }
+
+        if (end.first)
+        {
+            if(end.second < ret.second)
+            {
+                ret.first = false;
+                return ret;
+            }
+        }
+        return ret;
+    }
+
+    bool FMath::Intersects(const FRay& ray, const FAABB& aabb, float* d1, float* d2)
+    {
+        if (!aabb.IsValid())
+            return false;
+
+        const FVector3& min = aabb.GetMin();
+        const FVector3& max = aabb.GetMax();
+        const FVector3& rayorig = ray.GetOrigin();
+        const FVector3& raydir = ray.GetDirection();
+
+        FVector3 absDir;
+        absDir[0] = FMath::Abs(raydir[0]);
+        absDir[1] = FMath::Abs(raydir[1]);
+        absDir[2] = FMath::Abs(raydir[2]);
+
+        // Sort the axis, ensure check minimise floating error axis first
+        int32 imax = 0, imid = 1, imin = 2;
+        if (absDir[0] < absDir[2])
+        {
+            imax = 2;
+            imin = 0;
+        }
+        if (absDir[1] < absDir[imin])
+        {
+            imid = imin;
+            imin = 1;
+        }
+        else if (absDir[1] > absDir[imax])
+        {
+            imid = imax;
+            imax = 1;
+        }
+
+        float start = 0, end = FMath::ms_fPosInfinity;
+
+    #define _CALC_AXIS(i)                                       \
+        /*do*/ {                                                \
+        float denom = 1 / raydir[i];						    \
+        float newstart = (min[i] - rayorig[i]) * denom;			\
+        float newend = (max[i] - rayorig[i]) * denom;			\
+        if (newstart > newend) std::swap(newstart, newend);		\
+        if (newstart > end || newend < start) return false;		\
+        if (newstart > start) start = newstart;					\
+        if (newend < end) end = newend;							\
+        } /*while(0)*/
+
+        // Check each axis in turn
+
+        _CALC_AXIS(imax);
+
+        if (absDir[imid] < std::numeric_limits<float>::epsilon())
+        {
+            // Parallel with middle and minimise axis, check bounds only
+            if (rayorig[imid] < min[imid] || rayorig[imid] > max[imid] ||
+                rayorig[imin] < min[imin] || rayorig[imin] > max[imin])
+                return false;
+        }
+        else
+        {
+            _CALC_AXIS(imid);
+
+            if (absDir[imin] < std::numeric_limits<float>::epsilon())
+            {
+                // Parallel with minimise axis, check bounds only
+                if (rayorig[imin] < min[imin] || rayorig[imin] > max[imin])
+                    return false;
+            }
+            else
+            {
+                _CALC_AXIS(imin);
+            }
+        }
+    #undef _CALC_AXIS
+
+        if (d1) *d1 = start;
+        if (d2) *d2 = end;
+
+        return true;
+    }
+
+    bool FMath::Intersects(const FSphere& sphere, const FPlane& plane)
+    {
+        return (FMath::Abs(plane.GetDistance(sphere.GetCenter())) <= sphere.GetRadius());
+    }
+
+    bool FMath::Intersects(const FSphere& sphere, const FFrustum& frustum)
+    {
+        if (frustum.GetPlane(F_FrustumPlane_Left).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+            return false;
+        if (frustum.GetPlane(F_FrustumPlane_Right).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+            return false;
+        if (frustum.GetPlane(F_FrustumPlane_Top).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+            return false;
+        if (frustum.GetPlane(F_FrustumPlane_Bottom).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+            return false;
+        if (frustum.GetPlane(F_FrustumPlane_Near).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+            return false;
+        if (frustum.GetPlane(F_FrustumPlane_Far).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+            return false;
+
+        return true;
+    }
+
+    bool FMath::Intersects(const FSphere& sphere, const FAABB& aabb)
+    {
+        if (!aabb.IsValid())
+            return false;
+
+        const FVector3& center = sphere.GetCenter();
+        float radius = sphere.GetRadius();
+        const FVector3& min = aabb.GetMin();
+        const FVector3& max = aabb.GetMax();
+
+        float s, d = 0;
+        for (int32 i = 0; i < 3; ++i)
+        {
+            if (center[i] < min[i])
+            {
+                s = center[i] - min[i];
+                d += s * s; 
+            }
+            else if(center[i] > max[i])
+            {
+                s = center[i] - max[i];
+                d += s * s; 
+            }
+        }
+        return d <= radius * radius;
+    }
+
+    //bool FMath::Intersects(const FSegment& s, const FAABB& aabb)
+    //{
+    //  return true;
+    //}
+
+    bool FMath::Intersects(const FPlane& plane, const FAABB& aabb)
+    {
+        return (plane.GetSide(aabb) == F_PlaneSide_Both);
+    }
+
+
+     FMatrix4 FMath::BuildReflectionMatrix(const FPlane& p)
+    {
+        return FMatrix4(
+			-2 * p.m_vNormal.x * p.m_vNormal.x + 1,   -2 * p.m_vNormal.x * p.m_vNormal.y,       -2 * p.m_vNormal.x * p.m_vNormal.z,       -2 * p.m_vNormal.x * p.m_fDistance, 
+			-2 * p.m_vNormal.y * p.m_vNormal.x,       -2 * p.m_vNormal.y * p.m_vNormal.y + 1,   -2 * p.m_vNormal.y * p.m_vNormal.z,       -2 * p.m_vNormal.y * p.m_fDistance, 
+			-2 * p.m_vNormal.z * p.m_vNormal.x,       -2 * p.m_vNormal.z * p.m_vNormal.y,       -2 * p.m_vNormal.z * p.m_vNormal.z + 1,   -2 * p.m_vNormal.z * p.m_fDistance, 
+												 0,                                        0,                                        0,                                    1);
+    }
+
+    FVector3 FMath::CalculateTangentSpaceVector(const FVector3& position1, const FVector3& position2, const FVector3& position3,
+												float u1, float v1, float u2, float v2, float u3, float v3)
+    {
+		FVector3 side0 = position1 - position2;
+		FVector3 side1 = position3 - position1;
+		FVector3 normal = FMath::Cross(side1, side0);
+		normal = FMath::Normalize(normal);
+		//Calculate tangent. 
+		float deltaV0 = v1 - v2;
+		float deltaV1 = v3 - v1;
+		FVector3 tangent = FMath::Normalize(deltaV1 * side0 - deltaV0 * side1);
+		//Calculate binormal
+		float deltaU0 = u1 - u2;
+		float deltaU1 = u3 - u1;
+		FVector3 binormal = FMath::Normalize(deltaU1 * side0 - deltaU0 * side1);
+        
+		FVector3 tangentCross = FMath::Cross(tangent, binormal);
+		if (FMath::Dot(tangentCross, normal) < 0.0f)
+		{
+			tangent = -tangent;
+			binormal = -binormal;
+		}
+
+		return tangent;
+    }
+
+    FVector4 FMath::CalculateFaceNormal(const FVector3& v1, const FVector3& v2, const FVector3& v3)
+    {
+        FVector3 normal = CalculateBasicFaceNormal(v1, v2, v3);
+		return FVector4(normal.x, normal.y, normal.z, -(FMath::Dot(normal, v1)));
+    }
+
+    FVector3 FMath::CalculateBasicFaceNormal(const FVector3& v1, const FVector3& v2, const FVector3& v3)
+    {
+        return FMath::Normalize(FMath::Cross(v2 - v1, v3 - v1));
+    }
+
+    FVector4 FMath::CalculateFaceNormalWithoutNormalize(const FVector3& v1, const FVector3& v2, const FVector3& v3)
+    {
+        FVector3 normal = CalculateBasicFaceNormalWithoutNormalize(v1, v2, v3);
+		return FVector4(normal.x, normal.y, normal.z, -(FMath::Dot(normal, v1)));
+    }
+
+    FVector3 FMath::CalculateBasicFaceNormalWithoutNormalize(const FVector3& v1, const FVector3& v2, const FVector3& v3)
+    {
+        return FMath::Cross(v2 - v1, v3 - v1);
+    }
+
+    float FMath::GaussianDistribution(float x, float offset /*= 0.0f*/, float scale /*= 1.0f*/)
+    {
+        float nom = FMath::Exp(-FMath::Square(x - offset) / (2 * FMath::Square(scale)));
+		float denom = scale * FMath::Sqrt(2 * FMath::ms_fPI);
+		return nom / denom;
+    }
+
+    FMatrix4 FMath::MakeMatrix4ViewLH(const FVector3& vPos, const FQuaternion& qRot, const FMatrix4* pReflectMatrix /*= nullptr*/)
+    {
+        FMatrix4 mat4View = FMath::ms_mat4Unit;
+
+		// View matrix is: Use Left-Hand Coordinate, HLSL (matrix4 * vector4)
+		//  [ Px  Py  Pz   0  ]
+		//  [ Qx  Qy  Qz   0  ]
+		//  [ Rx  Ry  Rz   0  ]
+		//  [ Tx  Ty  Tz   1  ]
+		// T = -Transpose(Matrix3(Rot)) * Pos
+
+		FMatrix3 mat3Rot = FMath::TransposeMatrix3(FMath::ToMatrix3(qRot));
+        FVector3 trans = -mat3Rot * vPos;
+
+		mat4View = FMatrix4(mat3Rot);
+		mat4View[3][0] = trans.x;
+		mat4View[3][1] = trans.y;
+		mat4View[3][2] = trans.z;
+
+		// Reflection
+		if (pReflectMatrix)
+		{
+			mat4View = mat4View * (*pReflectMatrix);
+		}
+		return mat4View;
+    }
+
+    FMatrix4 FMath::MakeMatrix4ProjectionPerspectiveLH(float rFovY, float fAspect, float fNear, float fFar)
+    {
+        return glm::perspectiveLH(rFovY,
+                                  fAspect,
+                                  fNear, 
+                                  fFar);
+    }
+
 }; //LostPeterFoundation

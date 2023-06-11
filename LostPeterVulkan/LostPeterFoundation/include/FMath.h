@@ -544,6 +544,43 @@ namespace LostPeterFoundation
 
         static FMatrix3 TransposeMatrix3(const FMatrix3& mat3);
         static FMatrix4 TransposeMatrix4(const FMatrix4& mat4);
+
+    public:
+        static float GetRadiusFromAABB(const FAABB& aabb);
+
+    public:
+        static std::pair<bool, float> Intersects(const FRay& ray, const FPlane& plane);
+        static std::pair<bool, float> Intersects(const FRay& ray, const FSphere& sphere, bool discardInside = true);			
+        static std::pair<bool, float> Intersects(const FRay& ray, const FAABB& aabb);
+        static std::pair<bool, float> Intersects(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
+                                                 bool positiveSide = true, bool negativeSide = true);
+        static std::pair<bool, float> Intersects(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& normal,
+                                                 bool positiveSide = true, bool negativeSide = true);
+        static std::pair<bool, float> Intersects(const FRay& ray, const FPlaneVector& aPlanes, bool normalIsOutside);
+        static std::pair<bool, float> Intersects(const FRay& ray, FPlaneList& listPlanes, bool normalIsOutside);
+
+        static bool	Intersects(const FRay& ray, const FAABB& aabb, float* d1, float* d2);
+        static bool	Intersects(const FSphere& sphere, const FPlane& plane);
+        static bool	Intersects(const FSphere& sphere, const FFrustum& frustum);
+        static bool Intersects(const FSphere& sphere, const FAABB& aabb);
+        //static bool Intersects(const FSegment& s, const FAABB& aabb);
+        static bool	Intersects(const FPlane& plane, const FAABB& aabb);
+
+    public:
+		static FMatrix4 BuildReflectionMatrix(const FPlane& p);	
+
+        static FVector3 CalculateTangentSpaceVector(const FVector3& position1, const FVector3& position2, const FVector3& position3,
+												    float u1, float v1, float u2, float v2, float u3, float v3);
+
+        static FVector4 CalculateFaceNormal(const FVector3& v1, const FVector3& v2, const FVector3& v3);
+		static FVector3 CalculateBasicFaceNormal(const FVector3& v1, const FVector3& v2, const FVector3& v3);
+		static FVector4 CalculateFaceNormalWithoutNormalize(const FVector3& v1, const FVector3& v2, const FVector3& v3);
+		static FVector3 CalculateBasicFaceNormalWithoutNormalize(const FVector3& v1, const FVector3& v2, const FVector3& v3);
+
+		static float GaussianDistribution(float x, float offset = 0.0f, float scale = 1.0f);
+
+		static FMatrix4 MakeMatrix4ViewLH(const FVector3& vPos, const FQuaternion& qRot, const FMatrix4* pReflectMatrix = nullptr);
+        static FMatrix4 MakeMatrix4ProjectionPerspectiveLH(float rFovY, float fAspect, float fNear, float fFar);
     };
 
 }; //LostPeterFoundation

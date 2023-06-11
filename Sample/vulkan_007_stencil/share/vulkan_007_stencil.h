@@ -242,7 +242,7 @@ public:
     String pathShaderVertex_Outline;
     String pathShaderFragment_Outline;
     
-    F_MeshVertexType poTypeVertex_Outline;
+    FMeshVertexType poTypeVertex_Outline;
     VkPipelineLayout poPipelineLayout_Outline;
     
 

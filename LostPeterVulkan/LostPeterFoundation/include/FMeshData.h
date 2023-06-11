@@ -14,6 +14,7 @@
 
 #include "FPreDefine.h"
 #include "FMeshVertex.h"
+#include "FAABB.h"
 
 namespace LostPeterFoundation
 {
@@ -26,7 +27,7 @@ namespace LostPeterFoundation
         Indices16Vector indices16;
         Indices32Vector indices32;
         bool bIsFlipY;
-        //VulkanAABB aabb;
+        FAABB aabb;
 
         FMeshDataPCT()
             : bIsFlipY(true)
@@ -180,7 +181,7 @@ namespace LostPeterFoundation
         Indices16Vector indices16;
         Indices32Vector indices32;
         bool bIsFlipY;
-        //VulkanAABB aabb;
+        FAABB aabb;
 
         FMeshData()
             : bIsFlipY(true)
@@ -334,7 +335,7 @@ namespace LostPeterFoundation
         Indices16Vector indices16;
         Indices32Vector indices32;
         bool bIsFlipY;
-        //VulkanAABB aabb;
+        FAABB aabb;
 
         FMeshDataUV2()
             : bIsFlipY(true)
@@ -487,7 +488,7 @@ namespace LostPeterFoundation
         Indices16Vector indices16;
         Indices32Vector indices32;
         bool bIsFlipY;
-        //VulkanAABB aabb;
+        FAABB aabb;
 
         FMeshDataSkin()
             : bIsFlipY(true)

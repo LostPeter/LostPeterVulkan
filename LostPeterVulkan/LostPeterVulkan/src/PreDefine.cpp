@@ -535,7 +535,7 @@ namespace LostPeter
 
 
 ////////////////////////////// Vulkan //////////////////////////////
-    const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(F_MeshVertexType type)
+    const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(FMeshVertexType type)
     {
         switch ((int)type)
         {
@@ -561,7 +561,7 @@ namespace LostPeter
         assert(false && "Util_GetVkVertexInputBindingDescriptionVector: Wrong type !");
         return Vertex_Pos3Color4Normal3Tangent3Tex2::GetBindingDescriptions();
     }
-    const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(F_MeshVertexType type)
+    const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(FMeshVertexType type)
     {
         switch ((int)type)
         {
@@ -587,7 +587,7 @@ namespace LostPeter
         assert(false && "Util_GetVkVertexInputAttributeDescriptionVector: Wrong type !");
         return Vertex_Pos3Color4Normal3Tangent3Tex2::GetAttributeDescriptions();
     }
-    VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertexType type)
+    VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(FMeshVertexType type)
     {
         switch ((int)type)
         {
@@ -613,7 +613,7 @@ namespace LostPeter
         assert(false && "Util_GetVkVertexInputBindingDescriptionVectorPtr: Wrong type !");
         return Vertex_Pos3Color4Normal3Tangent3Tex2::GetBindingDescriptionsPtr();
     }   
-    VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertexType type)
+    VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(FMeshVertexType type)
     {
         switch ((int)type)
         {

@@ -86,7 +86,7 @@ namespace LostPeter
         VkDeviceMemory poIndexBufferMemory;
         FMatrix4 poMatWorld;
 
-        F_MeshVertexType poTypeVertex;
+        FMeshVertexType poTypeVertex;
         VkPipelineLayout poPipelineLayout;
         VkPipelineCache poPipelineCache;
         VkPipeline poPipelineGraphics;

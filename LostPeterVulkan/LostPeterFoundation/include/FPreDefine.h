@@ -143,9 +143,11 @@ namespace LostPeterFoundation
     struct FMeshDataUV2;
     struct FMeshDataSkin;
 
+    class FAABB;
     class FBitwise;
     class FBox;
     class FCamera;
+    class FFrustum;
     class FMath;
     class FMeshDataLoader;
     class FMeshCreateParam;
@@ -168,14 +170,22 @@ namespace LostPeterFoundation
     class FLogConsole;
     class FLogFile;
     class FLogManager;
+    class FPlane;
+    class FPlaneBoundedVolume;
+    class FRay;
+    class FSphere;
     class FTimer;
     class FUtil;
     class FUtilString;
 
-    
 
     typedef std::vector<FLog*> FLogPtrVector;
     typedef std::map<String, FLog*> VFLogPtrMap;
+
+    typedef std::vector<FRay> FRayVector; 
+    typedef std::vector<FPlane> FPlaneVector; 
+    typedef std::list<FPlane> FPlaneList;
+	typedef std::vector<FPlaneBoundedVolume> FPlaneBoundedVolumeVector;
 
 
     ////////////////////////////// Enum ////////////////////////////////
@@ -222,7 +232,7 @@ namespace LostPeterFoundation
     FMeshGeometryType F_ParseMeshGeometryType(const String& strName);
 
 
-    enum F_MeshVertexType
+    enum FMeshVertexType
     {
         F_MeshVertex_Pos2Color4 = 0,                           //0:    Pos2Color4
         F_MeshVertex_Pos3Normal3,                              //1:    Pos3Normal3
@@ -238,10 +248,39 @@ namespace LostPeterFoundation
 
         F_MeshVertex_Count
     };
-    const String& F_GetMeshVertexTypeName(F_MeshVertexType type);
+    const String& F_GetMeshVertexTypeName(FMeshVertexType type);
     const String& F_GetMeshVertexTypeName(int type);
-    F_MeshVertexType F_ParseMeshVertexType(const String& strName);
+    FMeshVertexType F_ParseMeshVertexType(const String& strName);
 
+
+    enum FPlaneSideType
+    {
+        F_PlaneSide_None = 0,                           //0: None
+        F_PlaneSide_Positive,                           //1: Positive
+        F_PlaneSide_Negative,                           //2: Negative
+        F_PlaneSide_Both,	                            //3: Both
+    };
+
+
+    enum FFrustumPlaneType
+    {
+        F_FrustumPlane_Near = 0,                        //0: Near
+        F_FrustumPlane_Far,                             //1: Far
+        F_FrustumPlane_Left,                            //2: Left
+        F_FrustumPlane_Right,                           //3: Right
+        F_FrustumPlane_Top,                             //4: Top
+        F_FrustumPlane_Bottom,                          //5: Bottom
+
+        F_FrustumPlane_Count
+    };
+
+
+    enum FAABBExtentType
+    {
+        F_AABBExtent_Null = 0,                          //0: Null
+        F_AABBExtent_Finite,                            //1: Finite
+        F_AABBExtent_Infinite,                          //2: Infinite
+    };
 
 
 }; //LostPeterFoundation

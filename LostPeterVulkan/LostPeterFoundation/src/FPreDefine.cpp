@@ -78,7 +78,7 @@ namespace LostPeterFoundation
     }
     
 
-    //F_MeshVertexType
+    //FMeshVertexType
     static const String s_nameMeshVertexTypes[] = 
     {
         "Pos2Color4",                               //0:    Pos2Color4
@@ -93,7 +93,7 @@ namespace LostPeterFoundation
         "Pos3Normal3Tangent3BlendWI8Tex2",          //9:    Pos3Normal3Tangent3BlendWI8Tex2
         "Pos3Color4Normal3Tangent3BlendWI8Tex2",    //10:   Pos3Color4Normal3Tangent3BlendWI8Tex2
     };
-    const String& F_GetMeshVertexTypeName(F_MeshVertexType type)
+    const String& F_GetMeshVertexTypeName(FMeshVertexType type)
     {
         return s_nameMeshVertexTypes[(int)type];
     }
@@ -101,12 +101,12 @@ namespace LostPeterFoundation
     {
         return s_nameMeshVertexTypes[(int)type];
     }
-    F_MeshVertexType F_ParseMeshVertexType(const String& strName)
+    FMeshVertexType F_ParseMeshVertexType(const String& strName)
     {
         for (size_t i = 0; i < (int)F_MeshVertex_Count; i++)
         {
             if (s_nameMeshVertexTypes[i] == strName)
-                return (F_MeshVertexType)(i);
+                return (FMeshVertexType)(i);
         }
         assert(false && "F_ParseMeshVertexType: Wrong type name !");
         return F_MeshVertex_Pos3Color4Normal3Tex2;

@@ -2086,7 +2086,7 @@ void Vulkan_016_Geometry::createModelMeshes()
         String nameGeometryType = g_MeshPaths[5 * i + 3];
         String pathMesh = g_MeshPaths[5 * i + 4];
         
-        F_MeshVertexType typeVertex = F_ParseMeshVertexType(nameVertexType); 
+        FMeshVertexType typeVertex = F_ParseMeshVertexType(nameVertexType); 
         FMeshType typeMesh = F_ParseMeshType(nameMeshType);
         FMeshGeometryType typeGeometryType = F_MeshGeometry_Triangle;
         if (!nameGeometryType.empty())
