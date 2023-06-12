@@ -1,5 +1,5 @@
 #****************************************************************************
-# LostPeterVulkan - Copyright (C) 2022 by LostPeter
+# LostPeterUI - Copyright (C) 2022 by LostPeter
 # 
 # Author:   LostPeter
 # Time:     2023-06-01
