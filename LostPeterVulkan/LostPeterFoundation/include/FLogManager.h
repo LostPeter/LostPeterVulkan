@@ -26,7 +26,7 @@ namespace LostPeterFoundation
     public:
     protected:
         FLogPtrVector m_aLogs;
-        VFLogPtrMap m_mapLogs;
+        FLogPtrMap m_mapLogs;
 
     public:
         static const String ms_strLogDefault_Console;
@@ -51,8 +51,8 @@ namespace LostPeterFoundation
     ////FLog
         LP_FORCEINLINE const FLogPtrVector& GetLogPtrVector() const { return m_aLogs; }
         LP_FORCEINLINE FLogPtrVector& GetLogPtrVector() { return m_aLogs; }
-        LP_FORCEINLINE const VFLogPtrMap& GetLogPtrMap() const { return m_mapLogs; }
-        LP_FORCEINLINE VFLogPtrMap& GetLogPtrMap() { return m_mapLogs; }
+        LP_FORCEINLINE const FLogPtrMap& GetLogPtrMap() const { return m_mapLogs; }
+        LP_FORCEINLINE FLogPtrMap& GetLogPtrMap() { return m_mapLogs; }
 
         FLog* GetLogPtr(const String& strName);
         FLog* CreateLogPtr(const String& strName, FLogType eLog);

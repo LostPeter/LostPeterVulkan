@@ -38,13 +38,13 @@ namespace LostPeter
 	const VulkanPixelFormatDes& VulkanPixelFormat::GetPixelFormatDes(const VulkanPixelFormatType& format)
 	{
 		const int32 type = (int32)format;
-		assert(type >= Vulkan_PixelFormat_Unknown && type < Vulkan_PixelFormat_Count && "VulkanPixelFormat::GetPixelFormatDes");
+		F_Assert(type >= Vulkan_PixelFormat_Unknown && type < Vulkan_PixelFormat_Count && "VulkanPixelFormat::GetPixelFormatDes")
 		return ms_PixelFormats[type];
 	}
 	VulkanPixelFormatDes& VulkanPixelFormat::GetPixelFormatDesRef(VulkanPixelFormatType format)
 	{
 		const int32 type = (int32)format;
-		assert(type >= Vulkan_PixelFormat_Unknown && type < Vulkan_PixelFormat_Count && "VulkanPixelFormat::GetPixelFormatDesRef");
+		F_Assert(type >= Vulkan_PixelFormat_Unknown && type < Vulkan_PixelFormat_Count && "VulkanPixelFormat::GetPixelFormatDesRef")
 		return ms_PixelFormats[type];
 	}
 
@@ -158,7 +158,7 @@ namespace LostPeter
 
 			default:
 				{
-					assert(false && "VulkanPixelFormat::GetPixelFormatMemorySize, Invalid compressed pixel format");
+					F_Assert(false && "VulkanPixelFormat::GetPixelFormatMemorySize, Invalid compressed pixel format")
 					return 0;
 				}
 			}
@@ -467,7 +467,7 @@ namespace LostPeter
 			default:
 				{
 					F_LogError("VulkanPixelFormat::PackColor: pack to [%s] not implemented", GetPixelFormatName(format).c_str());
-					assert(false && "VulkanPixelFormat::PackColor");
+					F_Assert(false && "VulkanPixelFormat::PackColor")
 				}
 				break;
 			}
@@ -610,7 +610,7 @@ namespace LostPeter
 			default:
 				{
 					F_LogError("VulkanPixelFormat::UnpackColor: unpack from [%s] not implemented", GetPixelFormatName(format).c_str());
-					assert(false && "VulkanPixelFormat::UnpackColor");
+					F_Assert(false && "VulkanPixelFormat::UnpackColor")
 				}
 				break;
 			}
@@ -626,10 +626,10 @@ namespace LostPeter
 
 	void VulkanPixelFormat::BulkPixelConversion(const VulkanPixelBox &src, const VulkanPixelBox &dst)
 	{
-		assert(src.GetWidth() == dst.GetWidth() &&
-			   src.GetHeight() == dst.GetHeight() &&
-			   src.GetDepth() == dst.GetDepth() && 
-               "VulkanPixelFormat::BulkPixelConversion");
+		F_Assert(src.GetWidth() == dst.GetWidth() &&
+			     src.GetHeight() == dst.GetHeight() &&
+			     src.GetDepth() == dst.GetDepth() && 
+                 "VulkanPixelFormat::BulkPixelConversion")
 
 		if (VulkanPixelFormat::IsCompressed(src.m_ePixelFormat) || VulkanPixelFormat::IsCompressed(dst.m_ePixelFormat))
 		{
@@ -645,7 +645,7 @@ namespace LostPeter
 			else
 			{
 				F_LogError("VulkanPixelFormat::BulkPixelConversion: This method can not be used to compress or decompress images");
-				assert(false && "VulkanPixelFormat::BulkPixelConversion");
+				F_Assert(false && "VulkanPixelFormat::BulkPixelConversion")
 			}
 		}
 
@@ -721,7 +721,7 @@ namespace LostPeter
 	{
         if (VulkanPixelFormat::IsCompressed(box.m_ePixelFormat))
         {
-            assert(false && "VulkanPixelFormat::BulkPixelVerticalFlip: This method can not be used for compressed format !");
+            F_Assert(false && "VulkanPixelFormat::BulkPixelVerticalFlip: This method can not be used for compressed format !")
             return;
         }
         

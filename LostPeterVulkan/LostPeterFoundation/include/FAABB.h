@@ -180,14 +180,14 @@ namespace LostPeterFoundation
         LP_FORCEINLINE float GetExtents(uint32 axis) const { return (m_vMax[axis] - m_vMin[axis]) * 0.5f; }
         LP_FORCEINLINE void SetExtents(const FVector3& min, const FVector3& max)
         {
-            assert((min.x <= max.x && min.y <= max.y && min.z <= max.z) && "FAABB::SetExtents");
+            F_Assert((min.x <= max.x && min.y <= max.y && min.z <= max.z) && "FAABB::SetExtents")
             m_vMin = min;
             m_vMax = max;
             m_eAABBExtent = F_AABBExtent_Finite;
         }
         LP_FORCEINLINE void SetExtents(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
         {
-            assert((minX <= maxX && minY <= maxY && minZ <= maxZ) && "FAABB::SetExtents");
+            F_Assert((minX <= maxX && minY <= maxY && minZ <= maxZ) && "FAABB::SetExtents")
             m_vMin.x = minX;
             m_vMin.y = minY;
             m_vMin.z = minZ;

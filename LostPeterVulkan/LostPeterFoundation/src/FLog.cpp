@@ -27,7 +27,7 @@ namespace LostPeterFoundation
 
     void FLog::LogInfoString(const char* szContent)
     {
-        assert(m_pLogger.get() != nullptr && "FLog::LogInfoString");
+        F_Assert(m_pLogger.get() != nullptr && "FLog::LogInfoString")
         m_pLogger->info("{0}", szContent);
     }
     void FLog::LogInfo(const char* fmt, ...)
@@ -49,7 +49,7 @@ namespace LostPeterFoundation
 
     void FLog::LogWarnString(const char* szContent)
     {
-        assert(m_pLogger.get() != nullptr && "FLog::LogWarnString");
+        F_Assert(m_pLogger.get() != nullptr && "FLog::LogWarnString")
         m_pLogger->warn("{0}", szContent);
     }
     void FLog::LogWarn(const char* fmt, ...)
@@ -71,7 +71,7 @@ namespace LostPeterFoundation
 
     void FLog::LogErrorString(const char* szContent)
     {
-        assert(m_pLogger.get() != nullptr && "FLog::LogErrorString");
+        F_Assert(m_pLogger.get() != nullptr && "FLog::LogErrorString")
         m_pLogger->error("{0}", szContent);
     }
     void FLog::LogError(const char* fmt, ...)

@@ -78,6 +78,14 @@
     #include <shlwapi.h>
 
 #elif LP_PLATFORM == LP_PLATFORM_MAC
+    extern "C" 
+	{
+		#include <unistd.h>
+		#include <sys/param.h>
+		#include <CoreFoundation/CoreFoundation.h>
+	}
+	#include <dirent.h>
+    #include <dlfcn.h>
 
 #elif LP_PLATFORM == LP_PLATFORM_LINUX
 

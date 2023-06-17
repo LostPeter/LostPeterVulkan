@@ -32,7 +32,7 @@ namespace LostPeter
         , m_pFenceManager(nullptr)
         , m_pDeviceMemoryManager(nullptr)
     {
-        assert(m_vkPhysicalDevice != VK_NULL_HANDLE && "VulkanDevice::VulkanDevice");
+        F_Assert(m_vkPhysicalDevice != VK_NULL_HANDLE && "VulkanDevice::VulkanDevice")
     }
 
     VulkanDevice::~VulkanDevice()

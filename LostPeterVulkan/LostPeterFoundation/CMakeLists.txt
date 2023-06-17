@@ -56,8 +56,10 @@ if (WIN32)
     SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/assimp-5.2.4"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/libnoise-1.0.0"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/include/Windows/rapidxml-1.13"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/stb-0.02"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/tinyxml-2.6.2"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/zlib-1.2.11")
 
 elseif (ANDROID) 
@@ -67,11 +69,19 @@ elseif (APPLE)
     SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/assimp-5.2.4"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/libnoise-1.0.0"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/include/MacOS/rapidxml-1.13"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/stb-0.02"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/tinyxml-2.6.2"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/zlib-1.2.11")
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
+    SET(CORE_FOUNDATION_LIBS ${SYS_FRAMEWORKS_DIR}/CoreFoundation.framework)
+    SET(COCOA_LIBS ${SYS_FRAMEWORKS_DIR}/Cocoa.framework)
+    SET(CORE_SERVICES_LIBS ${SYS_FRAMEWORKS_DIR}/CoreServices.framework)
+    SET(CORE_VIDEO_LIBS ${SYS_FRAMEWORKS_DIR}/CoreVideo.framework)
+    SET(QUARTZ_CORE_LIBS ${SYS_FRAMEWORKS_DIR}/QuartzCore.framework)
+    SET(IOKIT_LIBS ${SYS_FRAMEWORKS_DIR}/IOKit.framework)
 
 endif ()
 MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
@@ -124,6 +134,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/tinyxml-2.6.2_d.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib)
         
     else ()
@@ -131,6 +142,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
+                       ${LIB_DEPENDENCIES_DIR}/tinyxml-2.6.2.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib)
         
     endif()
@@ -147,15 +159,23 @@ elseif (APPLE)
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libtinyxml-2.6.2_d.a
                        ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a)
     else ()
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4.a
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
+                       ${LIB_DEPENDENCIES_DIR}/libtinyxml-2.6.2.a
                        ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a)
     endif()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+                          ${CORE_FOUNDATION_LIBS}
+                          ${COCOA_LIBS}
+                          ${CORE_SERVICES_LIBS}
+                          ${CORE_VIDEO_LIBS}
+                          ${QUARTZ_CORE_LIBS}
+                          ${IOKIT_LIBS})
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES CMAKE_ENABLE_EXPORTS TRUE)   

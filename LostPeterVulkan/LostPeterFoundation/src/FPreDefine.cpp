@@ -35,7 +35,7 @@ namespace LostPeterFoundation
             if (s_nameMeshTypes[i] == strName)
                 return (FMeshType)(i);
         }
-        assert(false && "F_ParseMeshType: Wrong type name !");
+        F_Assert(false && "F_ParseMeshType: Wrong type name !")
         return F_Mesh_File;
     }
 
@@ -73,7 +73,7 @@ namespace LostPeterFoundation
             if (s_nameMeshGeometryTypes[i] == strName)
                 return (FMeshGeometryType)(i);
         }
-        assert(false && "F_ParseMeshGeometryType: Wrong type name !");
+        F_Assert(false && "F_ParseMeshGeometryType: Wrong type name !")
         return F_MeshGeometry_Triangle;
     }
     
@@ -108,7 +108,7 @@ namespace LostPeterFoundation
             if (s_nameMeshVertexTypes[i] == strName)
                 return (FMeshVertexType)(i);
         }
-        assert(false && "F_ParseMeshVertexType: Wrong type name !");
+        F_Assert(false && "F_ParseMeshVertexType: Wrong type name !")
         return F_MeshVertex_Pos3Color4Normal3Tex2;
     }
 

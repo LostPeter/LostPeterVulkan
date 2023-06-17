@@ -20,9 +20,9 @@ namespace LostPeter
         , m_vkFence(VK_NULL_HANDLE)
         , m_eFenceState(bCreateSignaled ? Vulkan_FenceState_Signaled : Vulkan_FenceState_NotReady)
     {
-        assert(m_pFenceManager != nullptr && "VulkanFence::VulkanFence");
+        F_Assert(m_pFenceManager != nullptr && "VulkanFence::VulkanFence")
         m_vkFence = m_pFenceManager->GetDevice()->CreateVkFence(bCreateSignaled);
-        assert(m_vkFence != VK_NULL_HANDLE && "VulkanFence::VulkanFence");
+        F_Assert(m_vkFence != VK_NULL_HANDLE && "VulkanFence::VulkanFence")
     }
 
     VulkanFence::~VulkanFence()

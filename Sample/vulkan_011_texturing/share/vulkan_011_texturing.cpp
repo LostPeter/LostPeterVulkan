@@ -904,7 +904,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
         //Mesh
         {
             ModelMesh* pMesh = this->findModelMesh(pModelObject->nameMesh);
-            assert(pMesh != nullptr && "Vulkan_011_Texturing::loadModel_Custom");
+            F_Assert(pMesh != nullptr && "Vulkan_011_Texturing::loadModel_Custom")
             pModelObject->SetMesh(pMesh);
         }
 
@@ -2006,7 +2006,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
         //Pipeline Graphics
         {
             StringVector* pDescriptorSetLayoutNames = pModelObject->pPipelineGraphics->poDescriptorSetLayoutNames;
-            assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_011_Texturing::createDescriptorSets_Custom");
+            F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_011_Texturing::createDescriptorSets_Custom")
             createVkDescriptorSets(pModelObject->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pPipelineGraphics->poDescriptorSets);
             for (size_t j = 0; j < count_sci; j++)
             {   
@@ -2151,7 +2151,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
             PipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
 
             StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-            assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_011_Texturing::createDescriptorSets_Custom");
+            F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_011_Texturing::createDescriptorSets_Custom")
             createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
             VkWriteDescriptorSetVector descriptorWrites;

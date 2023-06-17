@@ -441,7 +441,7 @@ namespace LostPeterFoundation
     }
     FVector3 FMath::TransformAffine(const FMatrix4& mat4, const FVector3& v)
     {
-        assert(FMath::IsAffine(mat4) && "FMath::TransformAffine");
+        F_Assert(FMath::IsAffine(mat4) && "FMath::TransformAffine")
 
 		return FVector3(mat4[0][0] * v.x + mat4[0][1] * v.y + mat4[0][2] * v.z + mat4[0][3], 
                         mat4[1][0] * v.x + mat4[1][1] * v.y + mat4[1][2] * v.z + mat4[1][3],
@@ -449,7 +449,7 @@ namespace LostPeterFoundation
     }
 	FVector3 FMath::TransformAffine(const FMatrix4& mat4, const FVector4& v)
     {
-        assert(FMath::IsAffine(mat4) && "FMath::TransformAffine");
+        F_Assert(FMath::IsAffine(mat4) && "FMath::TransformAffine")
 
 		return FVector4(mat4[0][0] * v.x + mat4[0][1] * v.y + mat4[0][2] * v.z + mat4[0][3] * v.w, 
                         mat4[1][0] * v.x + mat4[1][1] * v.y + mat4[1][2] * v.z + mat4[1][3] * v.w,

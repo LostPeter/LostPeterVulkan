@@ -874,7 +874,7 @@ public:
         }
         PipelineCompute* GetPipelineCompute(int index)
         {
-            assert (index >= 0 && index < (int)this->aPipelineComputes.size() && "ModelObject::GetPipelineCompute");
+            F_Assert(index >= 0 && index < (int)this->aPipelineComputes.size() && "ModelObject::GetPipelineCompute")
             return this->aPipelineComputes[index];
         }
 

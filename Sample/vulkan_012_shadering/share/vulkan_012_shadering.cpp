@@ -536,7 +536,7 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
     }
     else
     {
-        assert(false && "Vulkan_012_Shadering::ModelMesh::LoadMesh: Wrong typeMesh !");
+        F_Assert(false && "Vulkan_012_Shadering::ModelMesh::LoadMesh: Wrong typeMesh !")
         return false;
     }
 
@@ -756,7 +756,7 @@ void Vulkan_012_Shadering::loadModel_Custom()
         //Mesh
         {
             ModelMesh* pMesh = this->findModelMesh(pModelObject->nameMesh);
-            assert(pMesh != nullptr && "Vulkan_012_Shadering::loadModel_Custom");
+            F_Assert(pMesh != nullptr && "Vulkan_012_Shadering::loadModel_Custom")
             pModelObject->SetMesh(pMesh);
         }
 
@@ -1770,7 +1770,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
         //Pipeline Graphics
         {
             StringVector* pDescriptorSetLayoutNames = pModelObject->pPipelineGraphics->poDescriptorSetLayoutNames;
-            assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_012_Shadering::createDescriptorSets_Custom");
+            F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_012_Shadering::createDescriptorSets_Custom")
             createVkDescriptorSets(pModelObject->pPipelineGraphics->poDescriptorSetLayout, pModelObject->pPipelineGraphics->poDescriptorSets);
             for (size_t j = 0; j < count_sci; j++)
             {   
@@ -1928,7 +1928,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
             PipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
 
             StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-            assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_012_Shadering::createDescriptorSets_Custom");
+            F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_012_Shadering::createDescriptorSets_Custom")
             createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
             VkWriteDescriptorSetVector descriptorWrites;

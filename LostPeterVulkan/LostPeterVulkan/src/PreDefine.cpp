@@ -86,7 +86,7 @@ namespace LostPeter
             if (s_nameWindows[i] == strName)
                 return (VulkanWindowType)(i);
         }
-        assert(false && "Util_ParseWindowType: Wrong type name !");
+        F_Assert(false && "Util_ParseWindowType: Wrong type name !")
         return Vulkan_Window_Main;
     }
 
@@ -168,7 +168,7 @@ namespace LostPeter
             if (s_nameTextures[i] == strName)
                 return (VulkanTextureType)(i);
         }
-        assert(false && "Util_ParseTextureType: Wrong type name !");
+        F_Assert(false && "Util_ParseTextureType: Wrong type name !")
         return Vulkan_Texture_2D;
     }
     VkImageType Util_Transform2VkImageType(VulkanTextureType type)
@@ -181,7 +181,7 @@ namespace LostPeter
         case Vulkan_Texture_3D: return VK_IMAGE_TYPE_3D;
         case Vulkan_Texture_CubeMap: return VK_IMAGE_TYPE_2D;
         }
-        assert(false && "Util_Transform2VkImageType: Wrong type !");
+        F_Assert(false && "Util_Transform2VkImageType: Wrong type !")
         return VK_IMAGE_TYPE_2D;
     }
     VkImageViewType Util_Transform2VkImageViewType(VulkanTextureType type)
@@ -194,7 +194,7 @@ namespace LostPeter
         case Vulkan_Texture_3D: return VK_IMAGE_VIEW_TYPE_3D;
         case Vulkan_Texture_CubeMap: return VK_IMAGE_VIEW_TYPE_CUBE;
         }
-        assert(false && "Util_Transform2VkImageViewType: Wrong type !");
+        F_Assert(false && "Util_Transform2VkImageViewType: Wrong type !")
         return VK_IMAGE_VIEW_TYPE_2D;
     }
 
@@ -221,7 +221,7 @@ namespace LostPeter
             if (s_nameTextureFilterSizes[i] == strName)
                 return (VulkanTextureFilterSizeType)(i);
         }
-        assert(false && "Util_ParseTextureFilterSizeType: Wrong type name !");
+        F_Assert(false && "Util_ParseTextureFilterSizeType: Wrong type name !")
         return Vulkan_TextureFilterSize_Min;
     }
 
@@ -249,7 +249,7 @@ namespace LostPeter
             if (s_nameTextureFilterPixels[i] == strName)
                 return (VulkanTextureFilterPixelType)(i);
         }
-        assert(false && "Util_ParseTextureFilterPixelType: Wrong type name !");
+        F_Assert(false && "Util_ParseTextureFilterPixelType: Wrong type name !")
         return Vulkan_TextureFilterPixel_None;
     }
     VkFilter Util_Transform2VkFilter(VulkanTextureFilterPixelType type)
@@ -261,7 +261,7 @@ namespace LostPeter
         case Vulkan_TextureFilterPixel_Linear:          return VK_FILTER_LINEAR;
         case Vulkan_TextureFilterPixel_Anisotropic:     return VK_FILTER_LINEAR;
         }
-        assert(false && "Util_Transform2VkFilter: Wrong type !");
+        F_Assert(false && "Util_Transform2VkFilter: Wrong type !")
         return VK_FILTER_NEAREST;
     }
     VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(VulkanTextureFilterPixelType type)
@@ -273,7 +273,7 @@ namespace LostPeter
         case Vulkan_TextureFilterPixel_Linear:          return VK_SAMPLER_MIPMAP_MODE_LINEAR;
         case Vulkan_TextureFilterPixel_Anisotropic:     return VK_SAMPLER_MIPMAP_MODE_LINEAR;
         }
-        assert(false && "Util_Transform2VkSamplerMipmapMode: Wrong type !");
+        F_Assert(false && "Util_Transform2VkSamplerMipmapMode: Wrong type !")
         return VK_SAMPLER_MIPMAP_MODE_NEAREST;
     }
 
@@ -301,7 +301,7 @@ namespace LostPeter
             if (s_nameTextureFilters[i] == strName)
                 return (VulkanTextureFilterType)(i);
         }
-        assert(false && "Util_ParseTextureFilterType: Wrong type name !");
+        F_Assert(false && "Util_ParseTextureFilterType: Wrong type name !")
         return Vulkan_TextureFilter_None;
     }
     VkFilter Util_Transform2VkFilter(VulkanTextureFilterType typeFilter, VulkanTextureFilterSizeType typeFilterSize)
@@ -314,7 +314,7 @@ namespace LostPeter
                 {
                     case Vulkan_TextureFilterSize_Min:        return VK_FILTER_NEAREST;
                     case Vulkan_TextureFilterSize_Mag:        return VK_FILTER_NEAREST;
-                    assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterSizeType type !");    
+                    F_Assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterSizeType type !")
                 }   
             }   
             break;
@@ -324,7 +324,7 @@ namespace LostPeter
                 {
                     case Vulkan_TextureFilterSize_Min:        return VK_FILTER_LINEAR;
                     case Vulkan_TextureFilterSize_Mag:        return VK_FILTER_LINEAR;
-                    assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterSizeType type !");    
+                    F_Assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterSizeType type !")
                 }
             }
             break;
@@ -334,7 +334,7 @@ namespace LostPeter
                 {
                     case Vulkan_TextureFilterSize_Min:        return VK_FILTER_LINEAR;
                     case Vulkan_TextureFilterSize_Mag:        return VK_FILTER_LINEAR;
-                    assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterSizeType type !");    
+                    F_Assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterSizeType type !")
                 }
             }
             break;
@@ -344,12 +344,12 @@ namespace LostPeter
                 {
                     case Vulkan_TextureFilterSize_Min:        return VK_FILTER_LINEAR;
                     case Vulkan_TextureFilterSize_Mag:        return VK_FILTER_LINEAR;
-                    assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterSizeType type !");    
+                    F_Assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterSizeType type !")
                 }
             }
             break;
         } 
-        assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterType type !");
+        F_Assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterType type !")
         return VK_FILTER_NEAREST;
     }
     VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(VulkanTextureFilterType typeFilter)
@@ -361,7 +361,7 @@ namespace LostPeter
         case Vulkan_TextureFilter_Trilinear:    return VK_SAMPLER_MIPMAP_MODE_LINEAR;
         case Vulkan_TextureFilter_Anisotropic:  return VK_SAMPLER_MIPMAP_MODE_LINEAR;
         } 
-        assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterType type !");
+        F_Assert(false && "Util_Transform2VkFilter: Wrong VulkanTextureFilterType type !")
         return VK_SAMPLER_MIPMAP_MODE_NEAREST;
     }
 
@@ -389,7 +389,7 @@ namespace LostPeter
             if (s_nameTextureAddressings[i] == strName)
                 return (VulkanTextureAddressingType)(i);
         }
-        assert(false && "Util_ParseTextureAddressingType: Wrong type name !");
+        F_Assert(false && "Util_ParseTextureAddressingType: Wrong type name !")
         return Vulkan_TextureAddressing_Wrap;
     }
     VkSamplerAddressMode Util_Transform2VkSamplerAddressMode(VulkanTextureAddressingType type)
@@ -401,7 +401,7 @@ namespace LostPeter
         case Vulkan_TextureAddressing_Clamp:     return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
         case Vulkan_TextureAddressing_Border:    return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
         }
-        assert(false && "Util_Transform2VkSamplerAddressMode: Wrong type !");
+        F_Assert(false && "Util_Transform2VkSamplerAddressMode: Wrong type !")
         return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
     }
 
@@ -428,7 +428,7 @@ namespace LostPeter
             if (s_nameTextureAddressings[i] == strName)
                 return (VulkanTextureBorderColorType)(i);
         }
-        assert(false && "Util_ParseTextureBorderColorType: Wrong type name !");
+        F_Assert(false && "Util_ParseTextureBorderColorType: Wrong type name !")
         return Vulkan_TextureBorderColor_OpaqueBlack;
     }
     VkBorderColor Util_Transform2VkBorderColor(VulkanTextureBorderColorType type)
@@ -439,7 +439,7 @@ namespace LostPeter
         case Vulkan_TextureBorderColor_OpaqueWhite:         return VK_BORDER_COLOR_INT_OPAQUE_WHITE;
         case Vulkan_TextureBorderColor_TransparentBlack:    return VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
         }
-        assert(false && "Util_Transform2VkBorderColor: Wrong type !");
+        F_Assert(false && "Util_Transform2VkBorderColor: Wrong type !")
         return VK_BORDER_COLOR_INT_OPAQUE_BLACK;
     }
 
@@ -470,7 +470,7 @@ namespace LostPeter
             if (s_nameMSAASampleCounts[i] == strName)
                 return (VulkanMSAASampleCountType)(i);
         }
-        assert(false && "Util_ParseMSAASampleCountType: Wrong type name !");
+        F_Assert(false && "Util_ParseMSAASampleCountType: Wrong type name !")
         return Vulkan_MSAASampleCount_1_Bit;
     }
     VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(VulkanMSAASampleCountType type)
@@ -485,7 +485,7 @@ namespace LostPeter
         case Vulkan_MSAASampleCount_32_Bit:     return VK_SAMPLE_COUNT_32_BIT;
         case Vulkan_MSAASampleCount_64_Bit:     return VK_SAMPLE_COUNT_64_BIT;
         }
-        assert(false && "Util_Transform2VkSampleCountFlagBits: Wrong type !");
+        F_Assert(false && "Util_Transform2VkSampleCountFlagBits: Wrong type !")
         return VK_SAMPLE_COUNT_1_BIT;
     }
 
@@ -515,7 +515,7 @@ namespace LostPeter
             if (s_nameShaders[i] == strName)
                 return (VulkanShaderType)(i);
         }
-        assert(false && "Util_ParseShaderType: Wrong type name !");
+        F_Assert(false && "Util_ParseShaderType: Wrong type name !")
         return Vulkan_Shader_Vertex;
     }
     VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(VulkanShaderType type)
@@ -529,7 +529,7 @@ namespace LostPeter
         case Vulkan_Shader_Fragment:                return VK_SHADER_STAGE_FRAGMENT_BIT;
         case Vulkan_Shader_Compute:                 return VK_SHADER_STAGE_COMPUTE_BIT;
         }
-        assert(false && "Util_Transform2VkShaderStageFlagBits: Wrong type !");
+        F_Assert(false && "Util_Transform2VkShaderStageFlagBits: Wrong type !")
         return VK_SHADER_STAGE_VERTEX_BIT;
     }
 
@@ -558,7 +558,7 @@ namespace LostPeter
             case F_MeshVertex_Pos3Color4Normal3Tangent3Tex4:
                 return Vertex_Pos3Color4Normal3Tangent3Tex4::GetBindingDescriptions();
         }
-        assert(false && "Util_GetVkVertexInputBindingDescriptionVector: Wrong type !");
+        F_Assert(false && "Util_GetVkVertexInputBindingDescriptionVector: Wrong type !")
         return Vertex_Pos3Color4Normal3Tangent3Tex2::GetBindingDescriptions();
     }
     const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(FMeshVertexType type)
@@ -584,7 +584,7 @@ namespace LostPeter
             case F_MeshVertex_Pos3Color4Normal3Tangent3Tex4:
                 return Vertex_Pos3Color4Normal3Tangent3Tex4::GetAttributeDescriptions();
         }
-        assert(false && "Util_GetVkVertexInputAttributeDescriptionVector: Wrong type !");
+        F_Assert(false && "Util_GetVkVertexInputAttributeDescriptionVector: Wrong type !")
         return Vertex_Pos3Color4Normal3Tangent3Tex2::GetAttributeDescriptions();
     }
     VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(FMeshVertexType type)
@@ -610,7 +610,7 @@ namespace LostPeter
             case F_MeshVertex_Pos3Color4Normal3Tangent3Tex4:
                 return Vertex_Pos3Color4Normal3Tangent3Tex4::GetBindingDescriptionsPtr();
         }
-        assert(false && "Util_GetVkVertexInputBindingDescriptionVectorPtr: Wrong type !");
+        F_Assert(false && "Util_GetVkVertexInputBindingDescriptionVectorPtr: Wrong type !")
         return Vertex_Pos3Color4Normal3Tangent3Tex2::GetBindingDescriptionsPtr();
     }   
     VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(FMeshVertexType type)
@@ -636,7 +636,7 @@ namespace LostPeter
             case F_MeshVertex_Pos3Color4Normal3Tangent3Tex4:
                 return Vertex_Pos3Color4Normal3Tangent3Tex4::GetAttributeDescriptionsPtr();
         }
-        assert(false && "Util_GetVkVertexInputAttributeDescriptionVectorPtr: Wrong type !");
+        F_Assert(false && "Util_GetVkVertexInputAttributeDescriptionVectorPtr: Wrong type !")
         return Vertex_Pos3Color4Normal3Tangent3Tex2::GetAttributeDescriptionsPtr();
     }
 

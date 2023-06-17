@@ -18,9 +18,9 @@ namespace LostPeter
         : m_pDevice(pDevice)
         , m_vkSemaphore(VK_NULL_HANDLE)
     {
-        assert(m_pDevice && "VulkanSemaphore::VulkanSemaphore");
+        F_Assert(m_pDevice && "VulkanSemaphore::VulkanSemaphore")
         m_vkSemaphore = m_pDevice->CreateVkSemaphore();
-        assert(m_vkSemaphore != VK_NULL_HANDLE && "VulkanSemaphore::VulkanSemaphore");
+        F_Assert(m_vkSemaphore != VK_NULL_HANDLE && "VulkanSemaphore::VulkanSemaphore")
     }
 
 	VulkanSemaphore::~VulkanSemaphore()

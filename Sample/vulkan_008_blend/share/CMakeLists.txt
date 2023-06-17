@@ -59,8 +59,10 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/imgui-1.85_glfw_vulkan"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/libnoise-1.0.0"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/include/Windows/rapidxml-1.13"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/stb-0.02"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/tinyxml-2.6.2"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterFoundation/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterUI/include"
@@ -76,8 +78,10 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/glm-0.9.9.8"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/imgui-1.85_glfw_vulkan"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/libnoise-1.0.0"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/include/MacOS/rapidxml-1.13"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/stb-0.02"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/tinyxml-2.6.2"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterFoundation/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterUI/include"
@@ -147,6 +151,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/tinyxml-2.6.2_d.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterUI_d.lib
@@ -159,6 +164,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
+                       ${LIB_DEPENDENCIES_DIR}/tinyxml-2.6.2.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib
                        ${LIB_PLUGINS_DIR}/LostPeterUI.lib

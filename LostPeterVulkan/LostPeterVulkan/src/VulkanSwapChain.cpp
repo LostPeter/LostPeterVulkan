@@ -33,7 +33,7 @@ namespace LostPeter
         , m_nLockToVSync(0)
         , m_nPresentID(0)
     {
-        assert(m_pDevice && "VulkanSwapChain::VulkanSwapChain");
+        F_Assert(m_pDevice && "VulkanSwapChain::VulkanSwapChain")
     }
 
     VulkanSwapChain::~VulkanSwapChain()

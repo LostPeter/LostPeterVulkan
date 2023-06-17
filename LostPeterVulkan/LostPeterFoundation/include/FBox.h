@@ -37,7 +37,7 @@ namespace LostPeterFoundation
 			, m_nFront(0)
 			, m_nBack(1)
 		{
-			assert(m_nRight >= m_nLeft && m_nBottom >= m_nTop && m_nBack >= m_nFront && "FBox::FBox");
+			F_Assert(m_nRight >= m_nLeft && m_nBottom >= m_nTop && m_nBack >= m_nFront && "FBox::FBox")
 		}
 		LP_FORCEINLINE FBox(size_t l, size_t t, size_t ff, size_t r, size_t b, size_t bb)
 			: m_nLeft(l)
@@ -47,7 +47,7 @@ namespace LostPeterFoundation
 			, m_nFront(ff)
 			, m_nBack(bb)
 		{
-			assert(m_nRight >= m_nLeft && m_nBottom >= m_nTop && m_nBack >= m_nFront && "FBox::FBox");
+			F_Assert(m_nRight >= m_nLeft && m_nBottom >= m_nTop && m_nBack >= m_nFront && "FBox::FBox")
 		}
         virtual ~FBox()
         {

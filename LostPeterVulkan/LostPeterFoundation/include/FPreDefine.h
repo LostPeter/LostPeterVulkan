@@ -68,6 +68,9 @@ namespace LostPeterFoundation
     #define F_C_NUMBER_BIG			            3.4e+38f
     #define F_C_NUMBER_EULERS                   2.71828182845904523536f   
 
+    #define F_Malloc(size)                      malloc(size); 
+    #define F_Free(p)                           if (p != nullptr) { free(p); }
+    #define F_Assert(expr)                      assert(expr);
 
     #define F_ARRAYSIZE(_ARR)                   ((int)(sizeof(_ARR)/sizeof(*_ARR)))    
     #define F_OFFSETOF(_TYPE,_MEMBER)           ((size_t)&(((_TYPE*)0)->_MEMBER))     
@@ -144,9 +147,21 @@ namespace LostPeterFoundation
     struct FMeshDataSkin;
 
     class FAABB;
+    class FAtomicCount;
     class FBitwise;
     class FBox;
     class FCamera;
+    class FCylinder;
+    class FDynamicLib;
+	class FDynamicLibManager;
+    class FFileBase;
+	class FFileBinary;
+	class FFileIO;
+	class FFileManager;
+	class FFileMemory;
+    class FFileXML;
+	class FFileXMLTiny;
+	class FFileXMLTinyConfig;
     class FFrustum;
     class FMath;
     class FMeshDataLoader;
@@ -172,15 +187,25 @@ namespace LostPeterFoundation
     class FLogManager;
     class FPlane;
     class FPlaneBoundedVolume;
+    class FPlugin;
+	class FPluginManager;
     class FRay;
+    class FRefCount;
     class FSphere;
     class FTimer;
     class FUtil;
     class FUtilString;
 
+    typedef	std::vector<FFileIO*> FFileIOPtrVector;
+	typedef	std::vector<FFileMemory*> FFileMemoryPtrVector;
+    typedef std::map<FFileIO*, int32> FFileIOPtrMap;
+	typedef std::map<FFileMemory*, int32> FFileMemoryPtrMap;
 
     typedef std::vector<FLog*> FLogPtrVector;
-    typedef std::map<String, FLog*> VFLogPtrMap;
+    typedef std::map<String, FLog*> FLogPtrMap;
+
+    typedef std::map<String, FDynamicLib*> FDynamicLibPtrMap;
+    typedef std::map<String, FPlugin*> FPluginPtrMap;
 
     typedef std::vector<FRay> FRayVector; 
     typedef std::vector<FPlane> FPlaneVector; 
@@ -189,6 +214,12 @@ namespace LostPeterFoundation
 
 
     ////////////////////////////// Enum ////////////////////////////////
+    enum FFileXMLType
+	{
+		F_FileXML_RapidXML = 0,
+		F_FileXML_TinyXML,
+	};
+
     enum FLogType
     {
         F_Log_Console = 0,                              //0:    Console

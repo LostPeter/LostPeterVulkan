@@ -1112,7 +1112,7 @@ bool Vulkan_015_MultiView::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
     }
     else
     {
-        assert(false && "Vulkan_015_MultiView::ModelMesh::LoadMesh: Wrong typeMesh !");
+        F_Assert(false && "Vulkan_015_MultiView::ModelMesh::LoadMesh: Wrong typeMesh !")
         return false;
     }
 
@@ -1466,7 +1466,7 @@ void Vulkan_015_MultiView::ModelObjectRendIndirect::CleanupSwapChain()
 
 void Vulkan_015_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
 {
-    assert(_aRends.size() > 0 && "Vulkan_015_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer");
+    F_Assert(_aRends.size() > 0 && "Vulkan_015_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer")
     this->aRends.clear();
     this->aRends = _aRends;
     this->pRend = _aRends[0];
@@ -1509,7 +1509,7 @@ void Vulkan_015_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer(const
     }
     else
     {
-        assert(false && "Vulkan_015_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !");
+        F_Assert(false && "Vulkan_015_MultiView::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
     }
     this->poIndexCount = this->indices.size();
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -1747,7 +1747,7 @@ void Vulkan_015_MultiView::loadModel_Custom()
                 if (pModelObject->pMesh != nullptr)
                 {   
                     int indexMeshSub = pModelObject->aMeshSubUsed[j];
-                    assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_015_MultiView::loadModel_Custom");
+                    F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_015_MultiView::loadModel_Custom")
                     pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
                 }
                 String nameObjectRend = g_ObjectRend_Configs[8 * nIndexObjectRend + 0];
@@ -2995,7 +2995,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Graphics(VkDescriptorSetVector& 
                                                          ModelObjectRendIndirect* pRendIndirect)
 {
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
-    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_015_MultiView::createDescriptorSets_Graphics");
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_015_MultiView::createDescriptorSets_Graphics")
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
@@ -3149,7 +3149,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Compute(PipelineCompute* pPipeli
                                                               ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_015_MultiView::createDescriptorSets_Compute");
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_015_MultiView::createDescriptorSets_Compute")
     createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
     VkWriteDescriptorSetVector descriptorWrites;

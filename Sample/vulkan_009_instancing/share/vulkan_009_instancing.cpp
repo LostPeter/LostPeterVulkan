@@ -654,7 +654,7 @@ void Vulkan_009_Instancing::updateCBs_Custom()
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
 
-        assert(pModelObject->objectCBs.size() == pModelObject->objectCBs_Outline.size() && "Vulkan_009_Instancing::updateCBs_Custom");
+        F_Assert(pModelObject->objectCBs.size() == pModelObject->objectCBs_Outline.size() && "Vulkan_009_Instancing::updateCBs_Custom")
         size_t count_object = pModelObject->objectCBs.size();
         for (size_t j = 0; j < count_object; j++)
         {

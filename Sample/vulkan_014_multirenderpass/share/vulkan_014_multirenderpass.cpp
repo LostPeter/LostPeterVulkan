@@ -1110,7 +1110,7 @@ bool Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh(bool isFlipY, bool isTranfo
     }
     else
     {
-        assert(false && "Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh: Wrong typeMesh !");
+        F_Assert(false && "Vulkan_014_MultiRenderPass::ModelMesh::LoadMesh: Wrong typeMesh !")
         return false;
     }
 
@@ -1452,7 +1452,7 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::CleanupSwapChain()
 
 void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends)
 {
-    assert(_aRends.size() > 0 && "Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer");
+    F_Assert(_aRends.size() > 0 && "Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer")
     this->aRends.clear();
     this->aRends = _aRends;
     this->pRend = _aRends[0];
@@ -1495,7 +1495,7 @@ void Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer
     }
     else
     {
-        assert(false && "Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !");
+        F_Assert(false && "Vulkan_014_MultiRenderPass::ModelObjectRendIndirect::SetupVertexIndexBuffer: No vertex data !")
     }
     this->poIndexCount = this->indices.size();
     this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
@@ -1685,7 +1685,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
             //Mesh
             {
                 ModelMesh* pMesh = this->findModelMesh(pModelObject->nameMesh);
-                assert(pMesh != nullptr && "Vulkan_014_MultiRenderPass::loadModel_Custom");
+                F_Assert(pMesh != nullptr && "Vulkan_014_MultiRenderPass::loadModel_Custom")
                 pModelObject->SetMesh(pMesh);
             }
             //MeshSub Used
@@ -1716,7 +1716,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
             for (size_t j = 0; j < count_mesh_sub_used; j++)
             {
                 int indexMeshSub = pModelObject->aMeshSubUsed[j];
-                assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_014_MultiRenderPass::loadModel_Custom");
+                F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_014_MultiRenderPass::loadModel_Custom")
 
                 ModelMeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
                 String nameObjectRend = g_ObjectRend_Configs[8 * nIndexObjectRend + 0];
@@ -2880,7 +2880,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
                                                                ModelObjectRendIndirect* pRendIndirect)
 {
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
-    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics");
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics")
     size_t count_ds = poDescriptorSets.size();
     for (size_t j = 0; j < count_ds; j++)
     {   
@@ -3034,7 +3034,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Compute(PipelineCompute* p
                                                               ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
-    assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_014_MultiRenderPass::createDescriptorSets_Compute");
+    F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_014_MultiRenderPass::createDescriptorSets_Compute")
     createVkDescriptorSet(pPipelineCompute->poDescriptorSetLayout, pPipelineCompute->poDescriptorSet);
 
     VkWriteDescriptorSetVector descriptorWrites;

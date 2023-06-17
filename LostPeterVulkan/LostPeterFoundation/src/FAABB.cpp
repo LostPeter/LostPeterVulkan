@@ -98,7 +98,7 @@ namespace LostPeterFoundation
         case F_AABBExtent_Infinite: 
             return;
         }
-        assert(false && "FAABB::Merge: Wrong state !");
+        F_Assert(false && "FAABB::Merge: Wrong state !")
     }
 
     bool FAABB::Merge(const FAABB& aabb)
@@ -162,7 +162,7 @@ namespace LostPeterFoundation
 
     void FAABB::TransformAffine(const FMatrix4& mat4)
     {
-        assert(FMath::IsAffine(mat4) && "FAABB::TransformAffine");
+        F_Assert(FMath::IsAffine(mat4) && "FAABB::TransformAffine")
         if (!IsFinite())
             return;
 

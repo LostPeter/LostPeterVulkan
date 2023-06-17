@@ -60,13 +60,13 @@ namespace LostPeter
 				return *this;
 			}
 			F_LogError("VulkanPixelBox::GetSubVolume: Cannot return subvolume of compressed PixelBuffer");
-			assert(false && "VulkanPixelBox::GetSubVolume");
+			F_Assert(false && "VulkanPixelBox::GetSubVolume")
 		}
 
 		if (!Contains(def))
 		{
 			F_LogError("VulkanPixelBox::GetSubVolume: Bounds out of range");
-			assert(false && "VulkanPixelBox::GetSubVolume");
+			F_Assert(false && "VulkanPixelBox::GetSubVolume")
 		}
 
 		const size_t elemSize = VulkanPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat);

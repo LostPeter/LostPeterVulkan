@@ -47,7 +47,7 @@ namespace LostPeter
     bool VulkanDeviceMemoryManager::Init(VulkanDevice* pDevice)
     {
         m_pDevice = pDevice;
-        assert(m_pDevice && "VulkanDeviceMemoryAllocation::Init");
+        F_Assert(m_pDevice && "VulkanDeviceMemoryAllocation::Init")
 
         m_nNumAllocations = 0;
         m_nNumPeakAllocations = 0;

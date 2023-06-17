@@ -17,6 +17,7 @@ call ./Build_Windows_lib_spdlog.bat
 call ./Build_Windows_lib_stb.bat
 
 call ./Build_Windows_lib_libnoise.bat %debug% %rebuild%
+call ./Build_Windows_lib_tinyxml.bat %debug% %rebuild%
 call ./Build_Windows_lib_zlib.bat %debug% %rebuild%
 call ./Build_Windows_lib_glfw.bat %debug% %rebuild%
 call ./Build_Windows_lib_imgui.bat %debug% %rebuild%

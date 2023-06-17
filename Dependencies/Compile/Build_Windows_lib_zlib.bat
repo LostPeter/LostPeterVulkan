@@ -35,7 +35,7 @@ if exist %build_folder% (
 mkdir %build_folder%
 
 
-@rem Plugins folder/file
+@rem Lib folder/file
 set plugins_folder="..\Lib\Windows"
 if not exist %plugins_folder% (
     mkdir %plugins_folder%

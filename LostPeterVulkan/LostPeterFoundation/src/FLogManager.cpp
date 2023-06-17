@@ -36,7 +36,7 @@ namespace LostPeterFoundation
 ////FLog
     FLog* FLogManager::GetLogPtr(const String& strName)
     {
-        VFLogPtrMap::iterator itFind = m_mapLogs.find(strName);
+        FLogPtrMap::iterator itFind = m_mapLogs.find(strName);
         if (itFind == m_mapLogs.end())
             return nullptr;
         return itFind->second;
@@ -59,7 +59,7 @@ namespace LostPeterFoundation
         }
         else
         {
-            assert(false && "FLogManager::CreateLogPtr");
+            F_Assert(false && "FLogManager::CreateLogPtr")
             return nullptr;
         }
 
@@ -68,7 +68,7 @@ namespace LostPeterFoundation
     }
     void FLogManager::InsertLogPtr(FLog* pLog)
     {
-        VFLogPtrMap::iterator itFind = m_mapLogs.find(pLog->GetName());
+        FLogPtrMap::iterator itFind = m_mapLogs.find(pLog->GetName());
         if (itFind != m_mapLogs.end())
             return;
 
@@ -77,7 +77,7 @@ namespace LostPeterFoundation
     }
     void FLogManager::RemoveLogPtr(FLog* pLog)
     {
-        VFLogPtrMap::iterator itFind = m_mapLogs.find(pLog->GetName());
+        FLogPtrMap::iterator itFind = m_mapLogs.find(pLog->GetName());
         if (itFind == m_mapLogs.end())
             return;
         

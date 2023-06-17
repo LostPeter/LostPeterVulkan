@@ -94,7 +94,7 @@ public:
                 return sizeof(FVertex_Pos3Color4Normal3Tangent3Tex4);
             else
             {
-                assert(false && "ModelMeshSub::GetVertexSize: wrong vertex type !");
+                F_Assert(false && "ModelMeshSub::GetVertexSize: wrong vertex type !")
                 return 0;
             }
         }
@@ -891,7 +891,7 @@ public:
         }
         PipelineCompute* GetPipelineCompute(int index)
         {
-            assert (index >= 0 && index < (int)this->aPipelineComputes.size() && "ModelObjectRend::GetPipelineCompute");
+            F_Assert(index >= 0 && index < (int)this->aPipelineComputes.size() && "ModelObjectRend::GetPipelineCompute")
             return this->aPipelineComputes[index];
         }
 
