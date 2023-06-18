@@ -22,6 +22,328 @@ namespace LostPeter
         VulkanWindow(int width, int height, String name);
         virtual ~VulkanWindow();
 
+    public:
+        class ModelMesh;
+
+        /////////////////////////// ModelMeshSub //////////////////////
+        class ModelMeshSub
+        {
+        public:
+            ModelMeshSub(ModelMesh* _pMesh, 
+                         const String& _nameMeshSub,
+                         const String& _nameOriginal,
+                         int _indexMeshSub,
+                         FMeshVertexType _poTypeVertex);
+            virtual ~ModelMeshSub();
+
+        public:
+            ModelMesh* pMesh;
+            String nameMeshSub;
+            String nameOriginal;
+            int indexMeshSub;
+
+            //Vertex
+            FMeshVertexType poTypeVertex;
+            std::vector<FVertex_Pos3Color4Tex2> vertices_Pos3Color4Tex2;
+            std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
+            std::vector<FVertex_Pos3Color4Normal3Tex4> vertices_Pos3Color4Normal3Tex4;
+            std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
+            std::vector<FVertex_Pos3Color4Normal3Tangent3Tex4> vertices_Pos3Color4Normal3Tangent3Tex4;
+            uint32_t poVertexCount;
+            size_t poVertexBuffer_Size;
+            void* poVertexBuffer_Data;
+            VkBuffer poVertexBuffer;
+            VkDeviceMemory poVertexBufferMemory;
+
+            //Index
+            std::vector<uint32_t> indices;
+            uint32_t poIndexCount;
+            size_t poIndexBuffer_Size;
+            void* poIndexBuffer_Data;
+            VkBuffer poIndexBuffer;
+            VkDeviceMemory poIndexBufferMemory;
+
+        public:
+            void Destroy();
+            uint32_t GetVertexSize();
+            uint32_t GetIndexSize();
+
+            virtual bool CreateMeshSub(FMeshData& meshData, bool isTranformLocal, const FMatrix4& matTransformLocal);
+            virtual void WriteVertexData(std::vector<FVertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
+                                         std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2);
+            virtual void WriteIndexData(std::vector<uint32_t>& indexData);
+        };
+        typedef std::vector<ModelMeshSub*> ModelMeshSubPtrVector;
+        typedef std::map<String, ModelMeshSub*> ModelMeshSubPtrMap;
+
+
+        /////////////////////////// ModelMesh /////////////////////////
+        class ModelMesh
+        {
+        public:
+            ModelMesh(VulkanWindow* _pWindow, 
+                      const String& _nameMesh,
+                      const String& _pathMesh,
+                      FMeshType _typeMesh,
+                      FMeshGeometryType _typeGeometryType,
+                      FMeshVertexType _typeVertex);
+            virtual ~ModelMesh();
+
+        public:
+            VulkanWindow* pWindow;
+            String nameMesh;
+            String pathMesh;
+            FMeshType typeMesh;
+            FMeshGeometryType typeGeometryType;
+            FMeshVertexType typeVertex;
+            ModelMeshSubPtrVector aMeshSubs;
+            ModelMeshSubPtrMap mapMeshSubs;
+
+        public:
+            void Destroy();
+
+            virtual bool AddMeshSub(ModelMeshSub* pMeshSub);
+            virtual bool LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal);
+        };
+        typedef std::vector<ModelMesh*> ModelMeshPtrVector;
+        typedef std::map<String, ModelMesh*> ModelMeshPtrMap;
+
+
+        /////////////////////////// ModelTexture //////////////////////
+        class ModelTexture
+        {
+        public:
+             ModelTexture(VulkanWindow* _pWindow, 
+                          const String& _nameTexture,
+                          VulkanTextureType _typeTexture,
+                          bool _isRenderTarget,
+                          bool _isGraphicsComputeShared,
+                          VkFormat _typeFormat,
+                          VulkanTextureFilterType _typeFilter,
+                          VulkanTextureAddressingType _typeAddressing,
+                          VulkanTextureBorderColorType _typeBorderColor,
+                          const StringVector& _aPathTexture);
+            virtual ~ModelTexture();
+
+        public:
+            VulkanWindow* pWindow;
+            String nameTexture;
+            StringVector aPathTexture;
+            VulkanTextureType typeTexture;
+            bool isRenderTarget;
+            bool isGraphicsComputeShared;
+            VkFormat typeFormat; 
+            VulkanTextureFilterType typeFilter;
+            VulkanTextureAddressingType typeAddressing;
+            VulkanTextureBorderColorType typeBorderColor;
+            int refCount;
+            int width;
+            int height;
+            int depth;
+
+            uint32_t poMipMapCount;
+            VkImage poTextureImage;
+            VkDeviceMemory poTextureImageMemory;
+            VkImageView poTextureImageView;
+            VkSampler poTextureSampler;
+            VkDescriptorImageInfo poTextureImageInfo;
+            VkImageLayout poTextureImageLayout;
+
+            VkBuffer stagingBuffer;
+            VkDeviceMemory stagingBufferMemory;
+
+            //Texture 3D
+            uint8* pDataRGBA;
+
+            //Texture Animation
+            int texChunkMaxX;
+            int texChunkMaxY;
+            int texChunkIndex;
+            int frameCurrent;
+
+            //Texture RenderTarget
+            FVector4 rtColorDefault;
+            bool rtIsSetColor; 
+            VkImageUsageFlags rtImageUsage;
+
+        public:
+            int GetRef() { return this->refCount; }
+            int AddRef() { return ++ this->refCount; }
+            int DelRef() { return -- this->refCount; }
+            bool HasRef() { return this->refCount > 0; }
+            bool CanDel() { return !HasRef(); }
+
+            void Destroy();
+            virtual int RandomTextureIndex();
+            virtual void LoadTexture(int width,
+                                     int height,
+                                     int depth);
+            virtual void UpdateTexture();
+
+        protected:
+            virtual void updateNoiseTextureData();
+            virtual void updateNoiseTexture();
+        };
+        typedef std::vector<ModelTexture*> ModelTexturePtrVector;
+        typedef std::map<String, ModelTexture*> ModelTexturePtrMap;
+        typedef std::map<String, ModelTexturePtrVector> ModelTexturePtrShaderSortMap;
+
+
+        /////////////////////////// MultiRenderPass ///////////////////
+        class FrameBufferAttachment
+        {
+        public:
+            FrameBufferAttachment();
+            virtual ~FrameBufferAttachment();
+
+        public:
+            bool isDepth;
+            VkImage image;
+            VkDeviceMemory memory;
+            VkImageView view;
+
+        public:
+            void Destroy(VulkanWindow* pWindow);
+            virtual void Init(VulkanWindow* pWindow, bool _isDepth);
+        };
+        class MultiRenderPass
+        {
+        public:
+            MultiRenderPass(VulkanWindow* _pWindow, 
+                            const String& _nameRenderPass,
+                            bool _isUseDefault);
+            virtual ~MultiRenderPass();
+
+        public:
+            //Window
+            VulkanWindow* pWindow;
+            String nameRenderPass;
+            bool isUseDefault;
+
+            //Attachment
+            FrameBufferAttachment framebufferColor;
+            FrameBufferAttachment framebufferDepth;
+            VkSampler sampler;
+            VkDescriptorImageInfo imageInfo;
+            
+            //RenderPass
+            VkRenderPass poRenderPass;
+
+            //FrameBuffer
+            VkFramebuffer poFrameBuffer;
+
+        public:
+            void Destroy();
+
+            virtual void Init();
+        
+        public:
+            void CleanupSwapChain();
+            void RecreateSwapChain();
+        };
+        typedef std::vector<MultiRenderPass*> MultiRenderPassPtrVector;
+        typedef std::map<String, MultiRenderPass*> MultiRenderPassPtrMap;
+
+
+        /////////////////////////// PipelineGraphics //////////////////
+        class PipelineGraphics
+        {
+        public:
+            PipelineGraphics(VulkanWindow* _pWindow);
+            virtual ~PipelineGraphics();
+
+        public:
+            VulkanWindow* pWindow;
+            String nameDescriptorSetLayout;
+            StringVector* poDescriptorSetLayoutNames;
+            VkDescriptorSetLayout poDescriptorSetLayout;
+            VkPipelineLayout poPipelineLayout;
+            VkPipeline poPipeline_WireFrame;
+            VkPipeline poPipeline;
+            VkDescriptorSetVector poDescriptorSets;
+
+            bool isMultiView;
+            VkPipeline poPipeline_WireFrame2;
+            VkPipeline poPipeline2;
+
+            String nameRenderPass;
+            MultiRenderPass* pRenderPass;
+
+        public:
+            void Destroy();
+
+            virtual void CleanupSwapChain();
+        };  
+
+
+        /////////////////////////// PipelineCompute ///////////////////
+        class PipelineCompute
+        {
+        public:
+            PipelineCompute(VulkanWindow* _pWindow);
+            virtual ~PipelineCompute();
+
+        public:
+            VulkanWindow* pWindow;
+            String nameDescriptorSetLayout;
+            StringVector* poDescriptorSetLayoutNames;
+            VkDescriptorSetLayout poDescriptorSetLayout;
+            VkPipelineLayout poPipelineLayout;
+            VkPipeline poPipeline;
+            VkDescriptorSet poDescriptorSet;
+            
+            ModelTexture* pTextureSource;
+            ModelTexture* pTextureTarget;
+            TextureCopyConstants* pTextureCopy;
+            VkBuffer poBuffer_TextureCopy;  
+            VkDeviceMemory poBufferMemory_TextureCopy;
+            int frameRand;
+
+        public:
+            void Destroy();
+
+            virtual void CleanupSwapChain();
+
+        public:
+            void CreateTextureCopy();
+            void DestroyTextureCopy();
+        };
+        typedef std::vector<PipelineCompute*> PipelineComputePtrVector;
+        typedef std::map<String, PipelineCompute*> PipelineComputePtrMap;
+
+
+        /////////////////////////// EditorGrid ////////////////////////
+        class EditorGrid
+        {
+        public:
+            EditorGrid(VulkanWindow* pWindow);
+            ~EditorGrid();
+
+        public:
+            VulkanWindow* m_pWindow;
+
+        public:
+
+
+
+
+        };
+
+        /////////////////////////// EditorAxis ////////////////////////
+        class EditorAxis
+        {
+        public:
+            EditorAxis(VulkanWindow* pWindow);
+            ~EditorAxis();
+
+        public:
+            VulkanWindow* m_pWindow;
+
+        public:
+        
+
+        };
+
     public: 
         static bool s_isEnableValidationLayers;
         static int s_maxFramesInFight;
@@ -304,6 +626,9 @@ namespace LostPeter
         bool mouseButtonDownLeft;
         bool mouseButtonDownRight;
 
+        //Editor
+        EditorGrid* pEditorGrid;
+        EditorAxis* pEditorAxis;
 
     protected:
         ConstCharPtrVector aInstanceLayers;

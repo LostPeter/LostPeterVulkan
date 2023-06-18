@@ -678,8 +678,8 @@ static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
 };
 
 
-/////////////////////////// ModelMesh ///////////////////////////
-bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
+/////////////////////////// ModelMeshRaw ////////////////////////
+bool Vulkan_011_Texturing::ModelMeshRaw::LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load
     FMeshData meshData;
@@ -687,7 +687,7 @@ bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!FMeshDataLoader::LoadMeshData(this->pathMesh, meshData, eMeshParserFlags))
     {
-        F_LogError("Vulkan_011_Texturing::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
+        F_LogError("Vulkan_011_Texturing::ModelMeshRaw::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
         return false; 
     }
 
@@ -725,7 +725,7 @@ bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        F_LogInfo("Vulkan_011_Texturing::ModelMesh::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+        F_LogInfo("Vulkan_011_Texturing::ModelMeshRaw::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                   this->nameMesh.c_str(),
                   (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
                   (int)this->indices.size());
@@ -764,7 +764,7 @@ bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        F_LogInfo("Vulkan_011_Texturing::ModelMesh::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+        F_LogInfo("Vulkan_011_Texturing::ModelMeshRaw::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                   this->nameMesh.c_str(),
                   (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
                   (int)this->indices.size());
@@ -784,60 +784,8 @@ bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLoca
 }
 
 
-/////////////////////////// ModelTexture ////////////////////////
-void Vulkan_011_Texturing::ModelTexture::UpdateTexture()
-{
-    if (this->typeTexture == Vulkan_Texture_3D)
-    {
-        updateNoiseTexture();
-    }
-}
-void Vulkan_011_Texturing::ModelTexture::updateNoiseTextureData()
-{
-    // Perlin noise
-    noise::module::Perlin modulePerlin;
-    for (int z = 0; z < this->depth; z++)
-    {
-        for (int y = 0; y < this->height; y++)
-        {
-            for (int x = 0; x < this->width; x++)
-            {
-                float nx = (float)x / (float)this->width;
-                float ny = (float)y / (float)this->height;
-                float nz = (float)z / (float)this->depth;
 
-                float n = 20.0f * modulePerlin.GetValue(nx, ny, nz);
-                n = n - floor(n);
-                this->pDataRGBA[x + y * this->width + z * this->width * this->height] = static_cast<uint8>(floor(n * 255));
-            }
-        }
-    }
-}
-void Vulkan_011_Texturing::ModelTexture::updateNoiseTexture()
-{
-    //1> updateNoiseTextureData
-    updateNoiseTextureData();
-
-    //2> MapData to stagingBuffer
-    VkDeviceSize bufSize = this->width * this->height * this->depth;
-    void* data;
-    vkMapMemory(this->pWindow->poDevice, this->stagingBufferMemory, 0, bufSize, 0, &data);
-        memcpy(data, this->pDataRGBA, bufSize);
-    vkUnmapMemory(this->pWindow->poDevice, this->stagingBufferMemory);
-
-    //3> CopyToImage
-    VkCommandBuffer cmdBuffer = this->pWindow->beginSingleTimeCommands();
-    {   
-        this->pWindow->copyBufferToImage(cmdBuffer,
-                                         this->stagingBuffer, 
-                                         this->poTextureImage, 
-                                         static_cast<uint32_t>(this->width), 
-                                         static_cast<uint32_t>(this->height),
-                                         static_cast<uint32_t>(this->depth), 
-                                         1);
-    }
-    this->pWindow->endSingleTimeCommands(cmdBuffer);
-}
+/////////////////////////// ModelObject /////////////////////////
 
 
 
@@ -903,7 +851,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
 
         //Mesh
         {
-            ModelMesh* pMesh = this->findModelMesh(pModelObject->nameMesh);
+            ModelMeshRaw* pMesh = this->findModelMesh(pModelObject->nameMesh);
             F_Assert(pMesh != nullptr && "Vulkan_011_Texturing::loadModel_Custom")
             pModelObject->SetMesh(pMesh);
         }
@@ -1434,7 +1382,7 @@ void Vulkan_011_Texturing::destroyModelMeshes()
     size_t count = this->m_aModelMesh.size();
     for (size_t i = 0; i < count; i++)
     {
-        ModelMesh* pMesh = this->m_aModelMesh[i];
+        ModelMeshRaw* pMesh = this->m_aModelMesh[i];
         delete pMesh;
     }
     this->m_aModelMesh.clear();
@@ -1458,7 +1406,7 @@ void Vulkan_011_Texturing::createModelMeshes()
             typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);
         }
 
-        ModelMesh* pMesh = new ModelMesh(this, 
+        ModelMeshRaw* pMesh = new ModelMeshRaw(this, 
                                          nameMesh,
                                          pathMesh,
                                          typeMesh,
@@ -1480,9 +1428,9 @@ void Vulkan_011_Texturing::createModelMeshes()
                   nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), pathMesh.c_str());
     }
 }
-Vulkan_011_Texturing::ModelMesh* Vulkan_011_Texturing::findModelMesh(const String& nameMesh)
+Vulkan_011_Texturing::ModelMeshRaw* Vulkan_011_Texturing::findModelMesh(const String& nameMesh)
 {
-    ModelMeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
+    ModelMeshRawPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
     if (itFind == this->m_mapModelMesh.end())
     {
         return nullptr;
@@ -2759,7 +2707,7 @@ void Vulkan_011_Texturing::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer
         ModelObject* pModelObject = this->m_aModelObjects_Render[i];
         if (!pModelObject->isShow)
             continue;
-        ModelMesh* pMesh = pModelObject->pMesh;
+        ModelMeshRaw* pMesh = pModelObject->pMesh;
 
         VkBuffer vertexBuffers[] = { pMesh->poVertexBuffer };
         VkDeviceSize offsets[] = { 0 };

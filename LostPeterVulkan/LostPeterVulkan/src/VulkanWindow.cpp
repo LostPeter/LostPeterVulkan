@@ -12,6 +12,11 @@
 #include "../include/PreInclude.h"
 #include "../include/VulkanWindow.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/matrix4x4.h>
+#include <assimp/postprocess.h>
+
 namespace LostPeter
 {
 #if UTIL_DEBUG == 1
@@ -19,9 +24,1222 @@ namespace LostPeter
 #else
     bool VulkanWindow::s_isEnableValidationLayers = false;
 #endif
-
     int VulkanWindow::s_maxFramesInFight = 2;
 
+
+    /////////////////////////// ModelMeshSub //////////////////////
+    VulkanWindow::ModelMeshSub::ModelMeshSub(ModelMesh* _pMesh, 
+                                             const String& _nameMeshSub,
+                                             const String& _nameOriginal,
+                                             int _indexMeshSub,
+                                             FMeshVertexType _poTypeVertex)
+        : pMesh(_pMesh)
+        , nameMeshSub(_nameMeshSub)
+        , nameOriginal(_nameOriginal)
+        , indexMeshSub(_indexMeshSub)
+
+        //Vertex
+        , poTypeVertex(_poTypeVertex)
+        , poVertexCount(0)
+        , poVertexBuffer_Size(0)
+        , poVertexBuffer_Data(nullptr)
+        , poVertexBuffer(VK_NULL_HANDLE)
+        , poVertexBufferMemory(VK_NULL_HANDLE)
+
+        //Index
+        , poIndexCount(0)
+        , poIndexBuffer_Size(0)
+        , poIndexBuffer_Data(nullptr)
+        , poIndexBuffer(VK_NULL_HANDLE)
+        , poIndexBufferMemory(VK_NULL_HANDLE)
+    {
+
+    }
+    VulkanWindow::ModelMeshSub::~ModelMeshSub()
+    {
+        Destroy();
+    }
+    void VulkanWindow::ModelMeshSub::Destroy()
+    {
+        //Vertex
+        this->pMesh->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
+        this->poVertexBuffer = VK_NULL_HANDLE;
+        this->poVertexBufferMemory = VK_NULL_HANDLE;
+
+        //Index
+        this->pMesh->pWindow->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
+        this->poIndexBuffer = VK_NULL_HANDLE;
+        this->poIndexBufferMemory = VK_NULL_HANDLE;
+    }
+    uint32_t VulkanWindow::ModelMeshSub::GetVertexSize() 
+    {
+        if (this->vertices_Pos3Color4Tex2.size() > 0)
+            return sizeof(FVertex_Pos3Color4Tex2);
+        else if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
+            return sizeof(FVertex_Pos3Color4Normal3Tex2);
+        else if(this->vertices_Pos3Color4Normal3Tex4.size() > 0)
+            return sizeof(FVertex_Pos3Color4Normal3Tex4);
+        else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
+            return sizeof(FVertex_Pos3Color4Normal3Tangent3Tex2);
+        else if (this->vertices_Pos3Color4Normal3Tangent3Tex4.size() > 0)
+            return sizeof(FVertex_Pos3Color4Normal3Tangent3Tex4);
+        else
+        {
+            F_Assert(false && "ModelMeshSub::GetVertexSize: wrong vertex type !")
+            return 0;
+        }
+    }
+    uint32_t VulkanWindow::ModelMeshSub::GetIndexSize()
+    {
+        return sizeof(uint32_t);
+    }
+    bool VulkanWindow::ModelMeshSub::CreateMeshSub(FMeshData& meshData, bool isTranformLocal, const FMatrix4& matTransformLocal)
+    {
+        int count_vertex = (int)meshData.vertices.size();
+        if (this->poTypeVertex == F_MeshVertex_Pos3Color4Tex2)
+        {   
+            this->vertices_Pos3Color4Tex2.clear();
+            this->vertices_Pos3Color4Tex2.reserve(count_vertex);
+            for (int i = 0; i < count_vertex; i++)
+            {
+                FMeshVertex& vertex = meshData.vertices[i];
+                FVertex_Pos3Color4Tex2 v;
+                v.pos = vertex.pos;
+                v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+                v.texCoord = vertex.texCoord;
+                if (isTranformLocal)
+                {
+                    v.pos = FMath::Transform(matTransformLocal, v.pos);
+                }
+                this->vertices_Pos3Color4Tex2.push_back(v);
+            }
+
+            int count_index = (int)meshData.indices32.size();
+            this->indices.clear();
+            this->indices.reserve(count_index);
+            for (int i = 0; i < count_index; i++)
+            {
+                this->indices.push_back(meshData.indices32[i]);
+            }
+            this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Tex2.size();
+            this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Tex2);
+            this->poVertexBuffer_Data = &this->vertices_Pos3Color4Tex2[0];
+            this->poIndexCount = (uint32_t)this->indices.size();
+            this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+            this->poIndexBuffer_Data = &this->indices[0];
+
+            F_LogInfo("VulkanWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                      this->nameMeshSub.c_str(),
+                      this->nameOriginal.c_str(),
+                      (int)this->vertices_Pos3Color4Tex2.size(), 
+                      (int)this->indices.size());
+        }
+        else if (this->poTypeVertex == F_MeshVertex_Pos3Color4Normal3Tex2)
+        {
+            this->vertices_Pos3Color4Normal3Tex2.clear();
+            this->vertices_Pos3Color4Normal3Tex2.reserve(count_vertex);
+            for (int i = 0; i < count_vertex; i++)
+            {
+                FMeshVertex& vertex = meshData.vertices[i];
+                FVertex_Pos3Color4Normal3Tex2 v;
+                v.pos = vertex.pos;
+                v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+                v.normal = vertex.normal;
+                v.texCoord = vertex.texCoord;
+                if (isTranformLocal)
+                {
+                    v.pos = FMath::Transform(matTransformLocal, v.pos);
+                }
+                this->vertices_Pos3Color4Normal3Tex2.push_back(v);
+            }
+
+            int count_index = (int)meshData.indices32.size();
+            this->indices.clear();
+            this->indices.reserve(count_index);
+            for (int i = 0; i < count_index; i++)
+            {
+                this->indices.push_back(meshData.indices32[i]);
+            }
+            this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tex2.size();
+            this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex2);
+            this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex2[0];
+            this->poIndexCount = (uint32_t)this->indices.size();
+            this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+            this->poIndexBuffer_Data = &this->indices[0];
+
+            F_LogInfo("VulkanWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                     this->nameMeshSub.c_str(),
+                     this->nameOriginal.c_str(),
+                     (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
+                     (int)this->indices.size());
+        }
+        else if (this->poTypeVertex == F_MeshVertex_Pos3Color4Normal3Tex4)
+        {
+            this->vertices_Pos3Color4Normal3Tex4.clear();
+            this->vertices_Pos3Color4Normal3Tex4.reserve(count_vertex);
+            for (int i = 0; i < count_vertex; i++)
+            {
+                FMeshVertex& vertex = meshData.vertices[i];
+                FVertex_Pos3Color4Normal3Tex4 v;
+                v.pos = vertex.pos;
+                v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+                v.normal = vertex.normal;
+                v.texCoord = FVector4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
+                if (isTranformLocal)
+                {
+                    v.pos = FMath::Transform(matTransformLocal, v.pos);
+                }
+                this->vertices_Pos3Color4Normal3Tex4.push_back(v);
+            }
+
+            int count_index = (int)meshData.indices32.size();
+            this->indices.clear();
+            this->indices.reserve(count_index);
+            for (int i = 0; i < count_index; i++)
+            {
+                this->indices.push_back(meshData.indices32[i]);
+            }
+            this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tex4.size();
+            this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tex4);
+            this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tex4[0];
+            this->poIndexCount = (uint32_t)this->indices.size();
+            this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+            this->poIndexBuffer_Data = &this->indices[0];
+
+            F_LogInfo("VulkanWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+                      this->nameMeshSub.c_str(),
+                      this->nameOriginal.c_str(),
+                      (int)this->vertices_Pos3Color4Normal3Tex4.size(), 
+                      (int)this->indices.size());
+        }
+        else if (this->poTypeVertex == F_MeshVertex_Pos3Color4Normal3Tangent3Tex2)
+        {
+            this->vertices_Pos3Color4Normal3Tangent3Tex2.clear();
+            this->vertices_Pos3Color4Normal3Tangent3Tex2.reserve(count_vertex);
+            for (int i = 0; i < count_vertex; i++)
+            {
+                FMeshVertex& vertex = meshData.vertices[i];
+                FVertex_Pos3Color4Normal3Tangent3Tex2 v;
+                v.pos = vertex.pos;
+                v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+                v.normal = vertex.normal;
+                v.tangent = vertex.tangent;
+                v.texCoord = vertex.texCoord;
+                if (isTranformLocal)
+                {
+                    v.pos = FMath::Transform(matTransformLocal, v.pos);
+                }
+                this->vertices_Pos3Color4Normal3Tangent3Tex2.push_back(v);
+            }
+
+            int count_index = (int)meshData.indices32.size();
+            this->indices.clear();
+            this->indices.reserve(count_index);
+            for (int i = 0; i < count_index; i++)
+            {
+                this->indices.push_back(meshData.indices32[i]);
+            }
+            this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
+            this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex2);
+            this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex2[0];
+            this->poIndexCount = (uint32_t)this->indices.size();
+            this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+            this->poIndexBuffer_Data = &this->indices[0];
+
+            F_LogInfo("VulkanWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                      this->nameMeshSub.c_str(),
+                      this->nameOriginal.c_str(),
+                      (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
+                      (int)this->indices.size());
+        }
+        else if (this->poTypeVertex == F_MeshVertex_Pos3Color4Normal3Tangent3Tex4)
+        {
+            this->vertices_Pos3Color4Normal3Tangent3Tex4.clear();
+            this->vertices_Pos3Color4Normal3Tangent3Tex4.reserve(count_vertex);
+            for (int i = 0; i < count_vertex; i++)
+            {
+                FMeshVertex& vertex = meshData.vertices[i];
+                FVertex_Pos3Color4Normal3Tangent3Tex4 v;
+                v.pos = vertex.pos;
+                v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+                v.normal = vertex.normal;
+                v.tangent = vertex.tangent;
+                v.texCoord = FVector4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
+                if (isTranformLocal)
+                {
+                    v.pos = FMath::Transform(matTransformLocal, v.pos);
+                }
+                this->vertices_Pos3Color4Normal3Tangent3Tex4.push_back(v);
+            }
+
+            int count_index = (int)meshData.indices32.size();
+            this->indices.clear();
+            this->indices.reserve(count_index);
+            for (int i = 0; i < count_index; i++)
+            {
+                this->indices.push_back(meshData.indices32[i]);
+            }
+            this->poVertexCount = (uint32_t)this->vertices_Pos3Color4Normal3Tangent3Tex4.size();
+            this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4Normal3Tangent3Tex4);
+            this->poVertexBuffer_Data = &this->vertices_Pos3Color4Normal3Tangent3Tex4[0];
+            this->poIndexCount = (uint32_t)this->indices.size();
+            this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+            this->poIndexBuffer_Data = &this->indices[0];
+
+            F_LogInfo("VulkanWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+                      this->nameMeshSub.c_str(),
+                      this->nameOriginal.c_str(),
+                      (int)this->vertices_Pos3Color4Normal3Tangent3Tex4.size(), 
+                      (int)this->indices.size());
+        }
+        else
+        {
+            F_LogError("VulkanWindow::ModelMeshSub::CreateMeshSub: create mesh sub failed: [%s], wrong poTypeVertex !", this->nameMeshSub.c_str());
+            return false; 
+        }
+
+        //2> createVertexBuffer
+        this->pMesh->pWindow->createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
+
+        //3> createIndexBuffer
+        if (this->poIndexBuffer_Size > 0 &&
+            this->poIndexBuffer_Data != nullptr)
+        {
+            this->pMesh->pWindow->createIndexBuffer(this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+        }
+
+        return true;
+    }
+    void VulkanWindow::ModelMeshSub::WriteVertexData(std::vector<FVertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
+                                                     std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2)
+    {
+        size_t count = 0;
+        if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
+        {
+            count = this->vertices_Pos3Color4Normal3Tex2.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                FVertex_Pos3Color4Normal3Tex2& vSrc = this->vertices_Pos3Color4Normal3Tex2[i];
+                aPos3Color4Normal3Tex2.push_back(vSrc);
+            }
+        }
+        else if (this->vertices_Pos3Color4Normal3Tex4.size() > 0)
+        {
+            count = this->vertices_Pos3Color4Normal3Tex4.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                FVertex_Pos3Color4Normal3Tex4& vSrc = this->vertices_Pos3Color4Normal3Tex4[i];
+                aPos3Color4Normal3Tex2.push_back(FVertex_Pos3Color4Normal3Tex2(vSrc.pos,
+                                                vSrc.color,
+                                                vSrc.normal,
+                                                FVector2(vSrc.texCoord.x, vSrc.texCoord.y)));
+            }
+        }   
+        else if (this->vertices_Pos3Color4Normal3Tangent3Tex2.size() > 0)
+        {
+            count = this->vertices_Pos3Color4Normal3Tangent3Tex2.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                FVertex_Pos3Color4Normal3Tangent3Tex2& vSrc = this->vertices_Pos3Color4Normal3Tangent3Tex2[i];
+                aPos3Color4Normal3Tangent3Tex2.push_back(vSrc);
+            }
+        }   
+        else if (this->vertices_Pos3Color4Normal3Tangent3Tex4.size() > 0)
+        {
+            count = this->vertices_Pos3Color4Normal3Tangent3Tex4.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                FVertex_Pos3Color4Normal3Tangent3Tex4& vSrc = this->vertices_Pos3Color4Normal3Tangent3Tex4[i];
+                aPos3Color4Normal3Tangent3Tex2.push_back(FVertex_Pos3Color4Normal3Tangent3Tex2(vSrc.pos,
+                                                        vSrc.color,
+                                                        vSrc.normal,
+                                                        vSrc.tangent,
+                                                        FVector2(vSrc.texCoord.x, vSrc.texCoord.y)));
+            }
+        }
+    }
+    void VulkanWindow::ModelMeshSub::WriteIndexData(std::vector<uint32_t>& indexData)
+    {
+        indexData.insert(indexData.end(), indices.begin(), indices.end());
+    }
+
+
+    /////////////////////////// ModelMesh /////////////////////////
+    VulkanWindow::ModelMesh::ModelMesh(VulkanWindow* _pWindow, 
+                                       const String& _nameMesh,
+                                       const String& _pathMesh,
+                                       FMeshType _typeMesh,
+                                       FMeshGeometryType _typeGeometryType,
+                                       FMeshVertexType _typeVertex)
+        : pWindow(_pWindow)
+        , nameMesh(_nameMesh)
+        , pathMesh(_pathMesh)
+        , typeMesh(_typeMesh)
+        , typeGeometryType(_typeGeometryType)
+        , typeVertex(_typeVertex)
+    {
+
+    }
+    VulkanWindow::ModelMesh::~ModelMesh()
+    {
+        Destroy();
+    }
+
+    void VulkanWindow::ModelMesh::Destroy()
+    {
+        int count = (int)this->aMeshSubs.size();
+        for (int i = 0; i < count; i++)
+        {
+            ModelMeshSub* pMeshSub = this->aMeshSubs[i];
+            pMeshSub->Destroy();
+            delete pMeshSub;
+        }
+        this->aMeshSubs.clear();
+        this->mapMeshSubs.clear();
+    }
+
+    bool VulkanWindow::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
+    {
+        ModelMeshSubPtrMap::iterator itFind = this->mapMeshSubs.find(pMeshSub->nameMeshSub);
+        if (itFind != this->mapMeshSubs.end())
+        {
+            F_LogError("VulkanWindow::ModelMesh::AddMeshSub: Mesh sub is exist: [%s] !", pMeshSub->nameMeshSub.c_str());
+            return false;
+        }
+
+        this->aMeshSubs.push_back(pMeshSub);
+        this->mapMeshSubs[pMeshSub->nameMeshSub] = pMeshSub;
+        return true;
+    }   
+    bool VulkanWindow::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
+    {
+        //1> Load
+        FMeshDataVector aMeshDatas;
+        if (this->typeMesh == F_Mesh_File)
+        {
+            unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
+            if (!FMeshDataLoader::LoadMeshDatas(this->pathMesh, aMeshDatas, isFlipY, eMeshParserFlags))
+            {
+                F_LogError("VulkanWindow::ModelMesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
+                return false; 
+            }
+        }
+        else if (this->typeMesh == F_Mesh_Geometry)
+        {
+            FMeshData meshData;
+            meshData.bIsFlipY = isFlipY;
+            if (!FMeshGeometry::CreateGeometry(meshData, this->typeGeometryType))
+            {
+                F_LogError("VulkanWindow::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", F_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
+                return false; 
+            }
+            aMeshDatas.push_back(meshData);
+        }
+        else
+        {
+            F_Assert(false && "VulkanWindow::ModelMesh::LoadMesh: Wrong typeMesh !")
+            return false;
+        }
+
+        int count_mesh_sub = (int)aMeshDatas.size();
+        for (int i = 0; i < count_mesh_sub; i++)
+        {
+            FMeshData& meshData = aMeshDatas[i];
+            
+            String nameMeshSub = this->nameMesh + "-" + FUtilString::SaveInt(i);
+            ModelMeshSub* pMeshSub = new ModelMeshSub(this,
+                                                      nameMeshSub,
+                                                      meshData.nameMesh,
+                                                      i,
+                                                      this->typeVertex);
+            if (!pMeshSub->CreateMeshSub(meshData, isTranformLocal, matTransformLocal))
+            {
+                F_LogError("VulkanWindow::ModelMesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
+                return false;
+            }
+            AddMeshSub(pMeshSub);
+        }
+
+        return true;
+    }
+
+
+    /////////////////////////// ModelTexture //////////////////////
+    VulkanWindow::ModelTexture::ModelTexture(VulkanWindow* _pWindow, 
+                                             const String& _nameTexture,
+                                             VulkanTextureType _typeTexture,
+                                             bool _isRenderTarget,
+                                             bool _isGraphicsComputeShared,
+                                             VkFormat _typeFormat,
+                                             VulkanTextureFilterType _typeFilter,
+                                             VulkanTextureAddressingType _typeAddressing,
+                                             VulkanTextureBorderColorType _typeBorderColor,
+                                             const StringVector& _aPathTexture)
+        : pWindow(_pWindow)
+        , nameTexture(_nameTexture)
+        , typeTexture(_typeTexture)
+        , isRenderTarget(_isRenderTarget)
+        , isGraphicsComputeShared(_isGraphicsComputeShared)
+        , typeFormat(_typeFormat)
+        , typeFilter(_typeFilter)
+        , typeAddressing(_typeAddressing)
+        , typeBorderColor(_typeBorderColor)
+        , aPathTexture(_aPathTexture)
+        , refCount(0)
+        , width(0)
+        , height(0)
+        , depth(0)
+
+        , poMipMapCount(1)
+        , poTextureImage(VK_NULL_HANDLE)
+        , poTextureImageMemory(VK_NULL_HANDLE)
+        , poTextureImageView(VK_NULL_HANDLE)
+        , poTextureSampler(VK_NULL_HANDLE)
+
+        , stagingBuffer(VK_NULL_HANDLE)
+        , stagingBufferMemory(VK_NULL_HANDLE)
+
+        //Texture 3D
+        , pDataRGBA(nullptr)
+
+        //Texture Animation
+        , texChunkMaxX(0)
+        , texChunkMaxY(0)
+        , texChunkIndex(0)
+        , frameCurrent(0)
+
+        //Texture RenderTarget
+        , rtColorDefault(0, 0, 0, 1)
+        , rtIsSetColor(false)
+        , rtImageUsage(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT)
+    {
+        if (this->isRenderTarget)
+            this->poTextureImageLayout = VK_IMAGE_LAYOUT_GENERAL;
+        else
+            this->poTextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    }
+    VulkanWindow::ModelTexture::~ModelTexture()
+    {
+        Destroy();
+    }
+    void VulkanWindow::ModelTexture::Destroy()
+    {
+        if (this->stagingBuffer != VK_NULL_HANDLE)
+        {
+            this->pWindow->destroyVkBuffer(this->stagingBuffer, this->stagingBufferMemory);
+        }
+        this->pWindow->destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
+        this->poTextureImage = VK_NULL_HANDLE;
+        this->poTextureImageMemory = VK_NULL_HANDLE;
+        this->poTextureImageView = VK_NULL_HANDLE;
+        this->pWindow->destroyVkImageSampler(this->poTextureSampler);
+        this->poTextureSampler = VK_NULL_HANDLE;
+        F_DELETE_T(pDataRGBA)
+    }
+    int VulkanWindow::ModelTexture::RandomTextureIndex()
+    {
+        if (this->typeTexture == Vulkan_Texture_2DArray)
+        {
+            int count = (int)this->aPathTexture.size();
+            return FMath::Rand(0, count - 1);
+        }
+        return 0;
+    }
+    void VulkanWindow::ModelTexture::LoadTexture(int width,
+                                                 int height,
+                                                 int depth)
+    {
+        this->width = width;
+        this->height = height;
+        this->depth = depth;
+
+        if (!this->isRenderTarget)
+        {
+            if (this->typeTexture == Vulkan_Texture_1D)
+            {
+                this->pWindow->createTexture1D(this->aPathTexture[0], 
+                                               this->poMipMapCount, 
+                                               this->poTextureImage, 
+                                               this->poTextureImageMemory);
+                this->pWindow->createVkImageView(this->poTextureImage, 
+                                                 VK_IMAGE_VIEW_TYPE_1D, 
+                                                 this->typeFormat, 
+                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                 this->poMipMapCount, 
+                                                 1, 
+                                                 this->poTextureImageView);
+            }
+            else if (this->typeTexture == Vulkan_Texture_2D)
+            {
+                this->pWindow->createTexture2D(this->aPathTexture[0], 
+                                               VK_IMAGE_TYPE_2D, 
+                                               VK_SAMPLE_COUNT_1_BIT, 
+                                               this->typeFormat, true, 
+                                               this->poMipMapCount, 
+                                               this->poTextureImage, 
+                                               this->poTextureImageMemory);
+                this->pWindow->createVkImageView(this->poTextureImage, 
+                                                 VK_IMAGE_VIEW_TYPE_2D, 
+                                                 this->typeFormat, 
+                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                 this->poMipMapCount, 
+                                                 1, 
+                                                 this->poTextureImageView);
+            }
+            else if (this->typeTexture == Vulkan_Texture_2DArray)
+            {
+                this->pWindow->createTexture2DArray(this->aPathTexture, 
+                                                    VK_IMAGE_TYPE_2D,
+                                                    VK_SAMPLE_COUNT_1_BIT, 
+                                                    this->typeFormat, 
+                                                    true, 
+                                                    this->poMipMapCount, 
+                                                    this->poTextureImage, 
+                                                    this->poTextureImageMemory);
+                this->pWindow->createVkImageView(this->poTextureImage, 
+                                                 VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
+                                                 this->typeFormat, 
+                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                 this->poMipMapCount, 
+                                                 (int)this->aPathTexture.size(), 
+                                                 this->poTextureImageView);
+            }
+            else if (this->typeTexture == Vulkan_Texture_3D)
+            {
+                uint32_t size = width * height * depth;
+                this->pDataRGBA = new uint8[size];
+                memset(this->pDataRGBA, 0, (size_t)size);
+                updateNoiseTextureData();
+                this->pWindow->createTexture3D(this->typeFormat, 
+                                               this->pDataRGBA, 
+                                               size, 
+                                               width, 
+                                               height, 
+                                               depth, 
+                                               this->poTextureImage, 
+                                               this->poTextureImageMemory, 
+                                               this->stagingBuffer, 
+                                               this->stagingBufferMemory);
+                this->pWindow->createVkImageView(this->poTextureImage, 
+                                                 VK_IMAGE_VIEW_TYPE_3D, 
+                                                 this->typeFormat, 
+                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                 this->poMipMapCount, 
+                                                 1, 
+                                                 this->poTextureImageView);
+            }
+            else if (this->typeTexture == Vulkan_Texture_CubeMap)
+            {
+                this->pWindow->createTextureCubeMap(this->aPathTexture, 
+                                                    this->poMipMapCount, 
+                                                    this->poTextureImage, 
+                                                    this->poTextureImageMemory);
+                this->pWindow->createVkImageView(this->poTextureImage, 
+                                                 VK_IMAGE_VIEW_TYPE_CUBE, 
+                                                 this->typeFormat, 
+                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                 this->poMipMapCount, 
+                                                 (int)this->aPathTexture.size(), 
+                                                 this->poTextureImageView);
+            }   
+            else
+            {
+                String msg = "ModelTexture::LoadTexture: Wrong texture type, Create from file, name: [" + this->nameTexture + "] !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+        }
+        else
+        {
+            if (this->typeTexture == Vulkan_Texture_1D)
+            {
+                this->pWindow->createTextureRenderTarget1D(this->rtColorDefault, 
+                                                           this->rtIsSetColor, 
+                                                           this->width, 
+                                                           this->poMipMapCount, 
+                                                           VK_SAMPLE_COUNT_1_BIT, 
+                                                           this->typeFormat, 
+                                                           this->rtImageUsage,
+                                                           this->isGraphicsComputeShared,
+                                                           this->poTextureImage, 
+                                                           this->poTextureImageMemory);
+                this->pWindow->createVkImageView(this->poTextureImage, 
+                                                 VK_IMAGE_VIEW_TYPE_1D, 
+                                                 this->typeFormat, 
+                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                 this->poMipMapCount, 
+                                                 1, 
+                                                 this->poTextureImageView);
+            } 
+            else if (this->typeTexture == Vulkan_Texture_2D)
+            {
+                this->pWindow->createTextureRenderTarget2D(this->rtColorDefault, 
+                                                           this->rtIsSetColor, 
+                                                           this->width, 
+                                                           this->height,
+                                                           this->poMipMapCount, 
+                                                           VK_SAMPLE_COUNT_1_BIT, 
+                                                           this->typeFormat, 
+                                                           this->rtImageUsage,
+                                                           this->isGraphicsComputeShared,
+                                                           this->poTextureImage, 
+                                                           this->poTextureImageMemory);
+                this->pWindow->createVkImageView(this->poTextureImage, 
+                                                 VK_IMAGE_VIEW_TYPE_2D, 
+                                                 this->typeFormat, 
+                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                 this->poMipMapCount, 
+                                                 1, 
+                                                 this->poTextureImageView);
+            }
+            else if (this->typeTexture == Vulkan_Texture_2DArray)
+            {
+                this->pWindow->createTextureRenderTarget2DArray(this->rtColorDefault, 
+                                                                this->rtIsSetColor, 
+                                                                this->width, 
+                                                                this->height,
+                                                                this->poMipMapCount, 
+                                                                VK_IMAGE_TYPE_2D,
+                                                                VK_SAMPLE_COUNT_1_BIT, 
+                                                                this->typeFormat, 
+                                                                this->rtImageUsage,
+                                                                this->isGraphicsComputeShared,
+                                                                this->poTextureImage, 
+                                                                this->poTextureImageMemory);
+                this->pWindow->createVkImageView(this->poTextureImage, 
+                                                 VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
+                                                 this->typeFormat, 
+                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                 this->poMipMapCount, 
+                                                 (int)this->aPathTexture.size(), 
+                                                 this->poTextureImageView);
+            }
+            else if (this->typeTexture == Vulkan_Texture_3D)
+            {
+                this->pWindow->createTextureRenderTarget3D(this->rtColorDefault, 
+                                                           this->rtIsSetColor, 
+                                                           this->width, 
+                                                           this->height,
+                                                           this->depth,
+                                                           this->poMipMapCount, 
+                                                           VK_SAMPLE_COUNT_1_BIT,
+                                                           this->typeFormat, 
+                                                           this->rtImageUsage,
+                                                           this->isGraphicsComputeShared,
+                                                           this->poTextureImage, 
+                                                           this->poTextureImageMemory);
+                this->pWindow->createVkImageView(this->poTextureImage, 
+                                                 VK_IMAGE_VIEW_TYPE_3D, 
+                                                 this->typeFormat, 
+                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                 this->poMipMapCount, 
+                                                 1, 
+                                                 this->poTextureImageView);
+            }
+            else if (this->typeTexture == Vulkan_Texture_CubeMap)
+            {
+                this->pWindow->createTextureRenderTargetCubeMap(this->width, 
+                                                                this->height,
+                                                                this->poMipMapCount, 
+                                                                VK_SAMPLE_COUNT_1_BIT,
+                                                                this->typeFormat, 
+                                                                this->rtImageUsage,
+                                                                this->isGraphicsComputeShared,
+                                                                this->poTextureImage, 
+                                                                this->poTextureImageMemory);
+                this->pWindow->createVkImageView(this->poTextureImage, 
+                                                 VK_IMAGE_VIEW_TYPE_CUBE, 
+                                                 this->typeFormat, 
+                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                 this->poMipMapCount, 
+                                                 6, 
+                                                 this->poTextureImageView);
+            }
+            else
+            {
+                String msg = "ModelTexture::LoadTexture: Wrong texture type, Create render target, name: [" + this->nameTexture + "] !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+        }
+
+        this->pWindow->createVkSampler(this->typeFilter, 
+                                       this->typeAddressing,
+                                       this->typeBorderColor,
+                                       true,
+                                       this->pWindow->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+                                       0.0f,
+                                       static_cast<float>(this->poMipMapCount),
+                                       0.0f,
+                                       this->poTextureSampler);
+
+        this->poTextureImageInfo = {};
+        this->poTextureImageInfo.imageLayout = this->poTextureImageLayout;
+        this->poTextureImageInfo.imageView = this->poTextureImageView;
+        this->poTextureImageInfo.sampler = this->poTextureSampler;
+    }   
+    void VulkanWindow::ModelTexture::UpdateTexture()
+    {
+        if (this->typeTexture == Vulkan_Texture_3D)
+        {
+            updateNoiseTexture();
+        }
+    }
+    void VulkanWindow::ModelTexture::updateNoiseTextureData()
+    {
+        // Perlin noise
+        noise::module::Perlin modulePerlin;
+        for (int z = 0; z < this->depth; z++)
+        {
+            for (int y = 0; y < this->height; y++)
+            {
+                for (int x = 0; x < this->width; x++)
+                {
+                    float nx = (float)x / (float)this->width;
+                    float ny = (float)y / (float)this->height;
+                    float nz = (float)z / (float)this->depth;
+
+                    float n = 20.0f * modulePerlin.GetValue(nx, ny, nz);
+                    n = n - floor(n);
+                    this->pDataRGBA[x + y * this->width + z * this->width * this->height] = static_cast<uint8>(floor(n * 255));
+                }
+            }
+        }
+    }
+    void VulkanWindow::ModelTexture::updateNoiseTexture()
+    {
+        //1> updateNoiseTextureData
+        updateNoiseTextureData();
+
+        //2> MapData to stagingBuffer
+        VkDeviceSize bufSize = this->width * this->height * this->depth;
+        void* data;
+        vkMapMemory(this->pWindow->poDevice, this->stagingBufferMemory, 0, bufSize, 0, &data);
+            memcpy(data, this->pDataRGBA, bufSize);
+        vkUnmapMemory(this->pWindow->poDevice, this->stagingBufferMemory);
+
+        //3> CopyToImage
+        VkCommandBuffer cmdBuffer = this->pWindow->beginSingleTimeCommands();
+        {   
+            this->pWindow->copyBufferToImage(cmdBuffer,
+                                            this->stagingBuffer, 
+                                            this->poTextureImage, 
+                                            static_cast<uint32_t>(this->width), 
+                                            static_cast<uint32_t>(this->height),
+                                            static_cast<uint32_t>(this->depth), 
+                                            1);
+        }
+        this->pWindow->endSingleTimeCommands(cmdBuffer);
+    }
+
+
+    /////////////////////////// MultiRenderPass ///////////////////
+    VulkanWindow::FrameBufferAttachment::FrameBufferAttachment()
+        : image(VK_NULL_HANDLE)
+        , memory(VK_NULL_HANDLE)
+        , view(VK_NULL_HANDLE)
+    {
+
+    }
+    VulkanWindow::FrameBufferAttachment::~FrameBufferAttachment()
+    {
+
+    }
+    void VulkanWindow::FrameBufferAttachment::Destroy(VulkanWindow* pWindow)
+    {
+        if (this->image != VK_NULL_HANDLE)
+        {
+            pWindow->destroyVkImage(this->image, this->memory, this->view);
+        }
+        this->image = VK_NULL_HANDLE;
+        this->memory = VK_NULL_HANDLE;
+        this->view = VK_NULL_HANDLE;
+    }
+    void VulkanWindow::FrameBufferAttachment::Init(VulkanWindow* pWindow, bool _isDepth)
+    {
+        this->isDepth = _isDepth;
+
+        uint32_t width = pWindow->poSwapChainExtent.width;
+        uint32_t height = pWindow->poSwapChainExtent.height; 
+        uint32_t depth = 1;
+        uint32_t numArray = 2;
+        uint32_t mipMapCount = 1;
+        VkImageType imageType = VK_IMAGE_TYPE_2D;
+        VkSampleCountFlagBits numSamples = pWindow->poMSAASamples;
+        VkFormat format = pWindow->poSwapChainImageFormat;
+        VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
+        VkImageUsageFlags usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+        VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+        VkImageViewType imageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY; 
+        VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+
+        if (_isDepth)
+        {
+            format = pWindow->poDepthImageFormat;
+            usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+            aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+        }
+
+        pWindow->createVkImage(width, 
+                               height, 
+                               depth,
+                               numArray,
+                               mipMapCount,
+                               imageType, 
+                               false,
+                               numSamples, 
+                               format, 
+                               tiling, 
+                               usage,
+                               sharingMode,
+                               false,
+                               properties, 
+                               this->image, 
+                               this->memory);
+        
+        pWindow->createVkImageView(this->image, 
+                                   imageViewType,
+                                   format, 
+                                   aspectFlags, 
+                                   mipMapCount,
+                                   numArray,
+                                   this->view);
+    }
+
+
+    VulkanWindow::MultiRenderPass::MultiRenderPass(VulkanWindow* _pWindow, 
+                                                   const String& _nameRenderPass,
+                                                   bool _isUseDefault)
+        //Window
+        : pWindow(_pWindow)
+        , nameRenderPass(_nameRenderPass)
+        , isUseDefault(_isUseDefault)
+
+        //RenderPass
+        , poRenderPass(VK_NULL_HANDLE)
+
+        //FrameBuffer
+        , sampler(VK_NULL_HANDLE)
+        , poFrameBuffer(VK_NULL_HANDLE)
+    {
+
+    }
+    VulkanWindow::MultiRenderPass::~MultiRenderPass()
+    {
+        Destroy();
+    }   
+    void VulkanWindow::MultiRenderPass::Destroy()
+    {
+        //RenderPass
+        if (this->poRenderPass != VK_NULL_HANDLE &&
+            !this->isUseDefault)
+        {
+            this->pWindow->destroyVkRenderPass(this->poRenderPass);
+        }
+        this->poRenderPass = VK_NULL_HANDLE;
+
+        //FrameBuffer
+        this->framebufferColor.Destroy(this->pWindow);
+        this->framebufferDepth.Destroy(this->pWindow);
+        this->pWindow->destroyVkImageSampler(this->sampler);
+        this->sampler = VK_NULL_HANDLE;
+
+        this->pWindow->destroyVkFramebuffer(this->poFrameBuffer);
+        this->poFrameBuffer = VK_NULL_HANDLE;
+
+        this->imageInfo.imageView = VK_NULL_HANDLE;
+        this->imageInfo.sampler = VK_NULL_HANDLE;
+    } 
+    void VulkanWindow::MultiRenderPass::Init()
+    {
+        if (this->isUseDefault)
+        {
+            this->poRenderPass = this->pWindow->poRenderPass;
+        }
+        else
+        {
+            //1> Attachment
+            {
+                this->framebufferColor.Init(this->pWindow, false);
+                this->framebufferDepth.Init(this->pWindow, true);
+                this->pWindow->createVkSampler(Vulkan_TextureFilter_Bilinear, 
+                                               Vulkan_TextureAddressing_Clamp,
+                                               Vulkan_TextureBorderColor_OpaqueWhite,
+                                               false,
+                                               1.0f,
+                                               0.0f,
+                                               1.0f,
+                                               0.0f,
+                                               this->sampler);
+                
+                this->imageInfo.sampler = this->sampler;
+                this->imageInfo.imageView = this->framebufferColor.view;
+                this->imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            }
+
+            //2> RenderPass
+            {
+                std::vector<VkAttachmentDescription> aAttachmentDescription;
+                std::vector<VkSubpassDescription> aSubpassDescription;
+                std::vector<VkSubpassDependency> aSubpassDependency;
+                
+                //VkAttachmentDescription Color
+                VkAttachmentDescription attachmentSR_Color = {};
+                this->pWindow->createAttachmentDescription(attachmentSR_Color,
+                                                           0,
+                                                           pWindow->poSwapChainImageFormat,
+                                                           VK_SAMPLE_COUNT_1_BIT,
+                                                           VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                           VK_ATTACHMENT_STORE_OP_STORE,
+                                                           VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                                           VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                           VK_IMAGE_LAYOUT_UNDEFINED,
+                                                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                aAttachmentDescription.push_back(attachmentSR_Color);
+
+                //VkAttachmentDescription Depth
+                VkAttachmentDescription attachmentSR_Depth = {};
+                this->pWindow->createAttachmentDescription(attachmentSR_Depth,
+                                                           0,
+                                                           pWindow->poDepthImageFormat,
+                                                           VK_SAMPLE_COUNT_1_BIT,
+                                                           VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                           VK_ATTACHMENT_STORE_OP_STORE,
+                                                           VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                           VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                           VK_IMAGE_LAYOUT_UNDEFINED,
+                                                           VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+                aAttachmentDescription.push_back(attachmentSR_Depth);
+
+                //VkSubpassDescription 
+                VkAttachmentReference attachRef_Color = {};
+                attachRef_Color.attachment = 0;
+                attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                VkAttachmentReference attachRef_Depth = {};
+                attachRef_Depth.attachment = 1;
+                attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+                VkSubpassDescription subpass_SceneRender = {};
+                subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+                subpass_SceneRender.colorAttachmentCount = 1;
+                subpass_SceneRender.pColorAttachments = &attachRef_Color;
+                subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+                aSubpassDescription.push_back(subpass_SceneRender);
+                
+                //VkSubpassDependency
+                VkSubpassDependency subpassDependency_SceneRender = {};
+                subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
+                subpassDependency_SceneRender.dstSubpass = 0;
+                subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+                subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+                subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+                subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+                aSubpassDependency.push_back(subpassDependency_SceneRender);
+
+                //VkRenderPassMultiviewCreateInfo
+                //Bit mask that specifies which view rendering is broadcast to 0011 = Broadcast to first and second view (layer)
+                const uint32_t viewMask = 0b00000011; 
+                //Bit mask that specifies correlation between views, An implementation may use this for optimizations (concurrent render)
+                const uint32_t correlationMask = 0b00000011;
+                VkRenderPassMultiviewCreateInfo renderPassMultiviewCI = {};
+                renderPassMultiviewCI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO;
+                renderPassMultiviewCI.subpassCount = 1;
+                renderPassMultiviewCI.pViewMasks = &viewMask;
+                renderPassMultiviewCI.correlationMaskCount = 1;
+                renderPassMultiviewCI.pCorrelationMasks = &correlationMask;
+
+                if (!this->pWindow->createVkRenderPass(this->nameRenderPass,
+                                                       aAttachmentDescription,
+                                                       aSubpassDescription,
+                                                       aSubpassDependency,
+                                                       &renderPassMultiviewCI,
+                                                       this->poRenderPass))
+                {
+                    String msg = "VulkanWindow::MultiRenderPass::Init: Failed to create renderpass: " + this->nameRenderPass;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+
+            //3> Framebuffer
+            {
+                VkImageViewVector aImageViews;
+                aImageViews.push_back(this->framebufferColor.view);
+                aImageViews.push_back(this->framebufferDepth.view);
+                if (!this->pWindow->createVkFramebuffer(this->nameRenderPass,
+                                                        aImageViews, 
+                                                        this->poRenderPass,
+                                                        0,
+                                                        this->pWindow->poSwapChainExtent.width,
+                                                        this->pWindow->poSwapChainExtent.height,
+                                                        1,
+                                                        this->poFrameBuffer))
+                {
+                    String msg = "VulkanWindow::MultiRenderPass::Init: Failed to create framebuffer: " + this->nameRenderPass;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+            }
+        }
+    }
+    void VulkanWindow::MultiRenderPass::CleanupSwapChain()
+    {
+         Destroy();
+    }
+    void VulkanWindow::MultiRenderPass::RecreateSwapChain()
+    {
+
+    }
+
+
+    /////////////////////////// PipelineGraphics //////////////////
+    VulkanWindow::PipelineGraphics::PipelineGraphics(VulkanWindow* _pWindow)
+        : pWindow(_pWindow)
+        , nameDescriptorSetLayout("")
+        , poDescriptorSetLayoutNames(nullptr)
+        , poDescriptorSetLayout(VK_NULL_HANDLE)
+        , poPipelineLayout(VK_NULL_HANDLE)
+        , poPipeline_WireFrame(VK_NULL_HANDLE)
+        , poPipeline(VK_NULL_HANDLE)
+
+        , isMultiView(false)
+        , poPipeline_WireFrame2(VK_NULL_HANDLE)
+        , poPipeline2(VK_NULL_HANDLE)
+
+        , pRenderPass(nullptr)
+    {
+
+    }
+    VulkanWindow::PipelineGraphics::~PipelineGraphics()
+    {
+        Destroy();
+    }
+    void VulkanWindow::PipelineGraphics::Destroy()
+    {
+        CleanupSwapChain();
+    }
+    void VulkanWindow::PipelineGraphics::CleanupSwapChain()
+    {
+        this->poDescriptorSetLayoutNames = nullptr;
+        this->poDescriptorSetLayout = VK_NULL_HANDLE;
+        this->poPipelineLayout = VK_NULL_HANDLE;
+        if (this->poPipeline_WireFrame != VK_NULL_HANDLE)
+        {
+            this->pWindow->destroyVkPipeline(this->poPipeline_WireFrame);
+        }
+        this->poPipeline_WireFrame = VK_NULL_HANDLE;
+
+        if (this->poPipeline != VK_NULL_HANDLE)
+        {
+            this->pWindow->destroyVkPipeline(this->poPipeline);
+        }
+        this->poPipeline = VK_NULL_HANDLE;
+        this->poDescriptorSets.clear();
+
+        if (this->poPipeline_WireFrame2 != VK_NULL_HANDLE)
+        {
+            this->pWindow->destroyVkPipeline(this->poPipeline_WireFrame2);
+        }
+        this->poPipeline_WireFrame2 = VK_NULL_HANDLE;
+        if (this->poPipeline2 != VK_NULL_HANDLE)
+        {
+            this->pWindow->destroyVkPipeline(this->poPipeline2);
+        }
+        this->poPipeline2 = VK_NULL_HANDLE;
+
+        this->pRenderPass = nullptr;
+    }  
+
+
+    /////////////////////////// PipelineCompute ///////////////////
+    VulkanWindow::PipelineCompute::PipelineCompute(VulkanWindow* _pWindow)
+        : pWindow(_pWindow)
+        , nameDescriptorSetLayout("")
+        , poDescriptorSetLayoutNames(nullptr)
+        , poDescriptorSetLayout(VK_NULL_HANDLE)
+        , poPipelineLayout(VK_NULL_HANDLE)
+        , poPipeline(VK_NULL_HANDLE)
+        , pTextureSource(nullptr)
+        , pTextureTarget(nullptr)
+        
+        , pTextureCopy(nullptr)
+        , poBuffer_TextureCopy(VK_NULL_HANDLE)
+        , poBufferMemory_TextureCopy(VK_NULL_HANDLE)
+        , frameRand(0)
+    {
+
+    }
+    VulkanWindow::PipelineCompute::~PipelineCompute()
+    {
+        Destroy();
+    }
+    void  VulkanWindow::PipelineCompute::Destroy()
+    {
+        CleanupSwapChain();
+    }
+    void  VulkanWindow::PipelineCompute::CleanupSwapChain()
+    {
+        this->poDescriptorSetLayoutNames = nullptr;
+        this->poDescriptorSetLayout = VK_NULL_HANDLE;
+        this->poPipelineLayout = VK_NULL_HANDLE;
+        if (this->poPipeline != VK_NULL_HANDLE)
+        {
+            this->pWindow->destroyVkPipeline(this->poPipeline);
+        }       
+        this->poPipeline = VK_NULL_HANDLE;
+        this->poDescriptorSet = VK_NULL_HANDLE;
+
+        DestroyTextureCopy();
+    }  
+    void VulkanWindow::PipelineCompute::CreateTextureCopy()
+    {
+        DestroyTextureCopy();
+        this->pTextureCopy = new TextureCopyConstants();
+        VkDeviceSize bufferSize = sizeof(TextureCopyConstants);
+        this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
+    }
+    void VulkanWindow::PipelineCompute::DestroyTextureCopy()
+    {
+        F_DELETE(this->pTextureCopy)
+        if (this->poBuffer_TextureCopy != VK_NULL_HANDLE)
+        {
+            this->pWindow->destroyVkBuffer(this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
+        }
+        this->poBuffer_TextureCopy = VK_NULL_HANDLE;
+        this->poBufferMemory_TextureCopy = VK_NULL_HANDLE;
+    }
+
+    
+    /////////////////////////// EditorGrid ////////////////////////
+    VulkanWindow::EditorGrid::EditorGrid(VulkanWindow* pWindow)
+        : m_pWindow(pWindow)
+    {
+
+    }
+    
+    VulkanWindow::EditorGrid::~EditorGrid()
+    {
+
+    }
+
+    /////////////////////////// EditorAxis ////////////////////////
+    VulkanWindow::EditorAxis::EditorAxis(VulkanWindow* pWindow)
+        : m_pWindow(pWindow)
+    {
+
+    }
+
+    VulkanWindow::EditorAxis::~EditorAxis()
+    {
+
+    }
+
+
+    /////////////////////////// VulkanWindow //////////////////////
     VulkanWindow::VulkanWindow(int width, int height, String name)
         : VulkanBase(width, height, name)
         , poInstance(VK_NULL_HANDLE)
@@ -198,6 +1416,9 @@ namespace LostPeter
 
         , mouseButtonDownLeft(false)
         , mouseButtonDownRight(false)
+
+        , pEditorGrid(nullptr)
+        , pEditorAxis(nullptr)
     {
         cfg_StencilOpFront.failOp = VK_STENCIL_OP_KEEP;
         cfg_StencilOpFront.passOp = VK_STENCIL_OP_KEEP;

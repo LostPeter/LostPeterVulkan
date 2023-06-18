@@ -22,8 +22,8 @@ public:
     Vulkan_011_Texturing(int width, int height, String name);
 
 public:
-    /////////////////////////// ModelMesh ///////////////////////////
-    struct ModelMesh
+    /////////////////////////// ModelMeshRaw ////////////////////////
+    struct ModelMeshRaw
     {
         Vulkan_011_Texturing* pWindow;
         String nameMesh;
@@ -50,12 +50,12 @@ public:
         VkDeviceMemory poIndexBufferMemory;
 
 
-        ModelMesh(Vulkan_011_Texturing* _pWindow, 
-                  const String& _nameMesh,
-                  const String& _pathMesh,
-                  FMeshType _typeMesh,
-                  FMeshGeometryType _typeGeometryType,
-                  FMeshVertexType _poTypeVertex)
+        ModelMeshRaw(Vulkan_011_Texturing* _pWindow, 
+                     const String& _nameMesh,
+                     const String& _pathMesh,
+                     FMeshType _typeMesh,
+                     FMeshGeometryType _typeGeometryType,
+                     FMeshVertexType _poTypeVertex)
             : pWindow(_pWindow)
             , nameMesh(_nameMesh)
             , pathMesh(_pathMesh)
@@ -80,7 +80,7 @@ public:
 
         }
 
-        ~ModelMesh()
+        ~ModelMeshRaw()
         {
             Destroy();
         }
@@ -102,521 +102,10 @@ public:
         bool LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal);
 
     };
-    typedef std::vector<ModelMesh*> ModelMeshPtrVector;
-    typedef std::map<String, ModelMesh*> ModelMeshPtrMap;
+    typedef std::vector<ModelMeshRaw*> ModelMeshRawPtrVector;
+    typedef std::map<String, ModelMeshRaw*> ModelMeshRawPtrMap;
 
-
-    /////////////////////////// ModelTexture ////////////////////////
-    struct ModelTexture
-    {
-        Vulkan_011_Texturing* pWindow;
-        String nameTexture;
-        StringVector aPathTexture;
-        VulkanTextureType typeTexture;
-        bool isRenderTarget;
-        bool isGraphicsComputeShared;
-        VkFormat typeFormat; 
-        VulkanTextureFilterType typeFilter;
-        VulkanTextureAddressingType typeAddressing;
-        VulkanTextureBorderColorType typeBorderColor;
-        int refCount;
-        int width;
-        int height;
-        int depth;
-
-        uint32_t poMipMapCount;
-        VkImage poTextureImage;
-        VkDeviceMemory poTextureImageMemory;
-        VkImageView poTextureImageView;
-        VkSampler poTextureSampler;
-        VkDescriptorImageInfo poTextureImageInfo;
-        VkImageLayout poTextureImageLayout;
-
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
-
-        //Texture 3D
-        uint8* pDataRGBA;
-
-        //Texture Animation
-        int texChunkMaxX;
-        int texChunkMaxY;
-        int texChunkIndex;
-        int frameCurrent;
-
-        //Texture RenderTarget
-        FVector4 rtColorDefault;
-        bool rtIsSetColor; 
-        VkImageUsageFlags rtImageUsage;
-
-
-        ModelTexture(Vulkan_011_Texturing* _pWindow, 
-                     const String& _nameTexture,
-                     VulkanTextureType _typeTexture,
-                     bool _isRenderTarget,
-                     bool _isGraphicsComputeShared,
-                     VkFormat _typeFormat,
-                     VulkanTextureFilterType _typeFilter,
-                     VulkanTextureAddressingType _typeAddressing,
-                     VulkanTextureBorderColorType _typeBorderColor,
-                     const StringVector& _aPathTexture)
-            : pWindow(_pWindow)
-            , nameTexture(_nameTexture)
-            , typeTexture(_typeTexture)
-            , isRenderTarget(_isRenderTarget)
-            , isGraphicsComputeShared(_isGraphicsComputeShared)
-            , typeFormat(_typeFormat)
-            , typeFilter(_typeFilter)
-            , typeAddressing(_typeAddressing)
-            , typeBorderColor(_typeBorderColor)
-            , aPathTexture(_aPathTexture)
-            , refCount(0)
-            , width(0)
-            , height(0)
-            , depth(0)
-
-            , poMipMapCount(1)
-            , poTextureImage(VK_NULL_HANDLE)
-            , poTextureImageMemory(VK_NULL_HANDLE)
-            , poTextureImageView(VK_NULL_HANDLE)
-            , poTextureSampler(VK_NULL_HANDLE)
-
-            , stagingBuffer(VK_NULL_HANDLE)
-            , stagingBufferMemory(VK_NULL_HANDLE)
-
-            //Texture 3D
-            , pDataRGBA(nullptr)
-
-            //Texture Animation
-            , texChunkMaxX(0)
-            , texChunkMaxY(0)
-            , texChunkIndex(0)
-            , frameCurrent(0)
-
-            //Texture RenderTarget
-            , rtColorDefault(0, 0, 0, 1)
-            , rtIsSetColor(false)
-            , rtImageUsage(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT)
-        {
-            if (this->isRenderTarget)
-                this->poTextureImageLayout = VK_IMAGE_LAYOUT_GENERAL;
-            else
-                this->poTextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        }
-
-        ~ModelTexture()
-        {
-            Destroy();
-        }
-
-        int GetRef() { return this->refCount; }
-        int AddRef() { return ++ this->refCount; }
-        int DelRef() { return -- this->refCount; }
-        bool HasRef() { return this->refCount > 0; }
-        bool CanDel() { return !HasRef(); }
-
-        void Destroy()
-        {
-            if (this->stagingBuffer != VK_NULL_HANDLE)
-            {
-                this->pWindow->destroyVkBuffer(this->stagingBuffer, this->stagingBufferMemory);
-            }
-            this->pWindow->destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
-            this->poTextureImage = VK_NULL_HANDLE;
-            this->poTextureImageMemory = VK_NULL_HANDLE;
-            this->poTextureImageView = VK_NULL_HANDLE;
-            this->pWindow->destroyVkImageSampler(this->poTextureSampler);
-            this->poTextureSampler = VK_NULL_HANDLE;
-            F_DELETE_T(pDataRGBA)
-        }
-
-        int RandomTextureIndex()
-        {
-            if (this->typeTexture == Vulkan_Texture_2DArray)
-            {
-                int count = (int)this->aPathTexture.size();
-                return FMath::Rand(0, count - 1);
-            }
-            return 0;
-        }
-
-        void LoadTexture(int width,
-                         int height,
-                         int depth)
-        {
-            this->width = width;
-            this->height = height;
-            this->depth = depth;
-
-            if (!this->isRenderTarget)
-            {
-                if (this->typeTexture == Vulkan_Texture_1D)
-                {
-                    this->pWindow->createTexture1D(this->aPathTexture[0], 
-                                                   this->poMipMapCount, 
-                                                   this->poTextureImage, 
-                                                   this->poTextureImageMemory);
-                    this->pWindow->createVkImageView(this->poTextureImage, 
-                                                     VK_IMAGE_VIEW_TYPE_1D, 
-                                                     this->typeFormat, 
-                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                     this->poMipMapCount, 
-                                                     1, 
-                                                     this->poTextureImageView);
-                }
-                else if (this->typeTexture == Vulkan_Texture_2D)
-                {
-                    this->pWindow->createTexture2D(this->aPathTexture[0], 
-                                                   VK_IMAGE_TYPE_2D, 
-                                                   VK_SAMPLE_COUNT_1_BIT,
-                                                   this->typeFormat, 
-                                                   true, 
-                                                   this->poMipMapCount, 
-                                                   this->poTextureImage, 
-                                                   this->poTextureImageMemory);
-                    this->pWindow->createVkImageView(this->poTextureImage, 
-                                                     VK_IMAGE_VIEW_TYPE_2D, 
-                                                     this->typeFormat, 
-                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                     this->poMipMapCount, 
-                                                     1, 
-                                                     this->poTextureImageView);
-                }
-                else if (this->typeTexture == Vulkan_Texture_2DArray)
-                {
-                    this->pWindow->createTexture2DArray(this->aPathTexture, 
-                                                        VK_IMAGE_TYPE_2D, 
-                                                        VK_SAMPLE_COUNT_1_BIT, 
-                                                        this->typeFormat, 
-                                                        true, 
-                                                        this->poMipMapCount, 
-                                                        this->poTextureImage, 
-                                                        this->poTextureImageMemory);
-                    this->pWindow->createVkImageView(this->poTextureImage, 
-                                                     VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
-                                                     this->typeFormat, 
-                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                     this->poMipMapCount, 
-                                                     (int)this->aPathTexture.size(), 
-                                                     this->poTextureImageView);
-                }
-                else if (this->typeTexture == Vulkan_Texture_3D)
-                {
-                    uint32_t size = width * height * depth;
-                    this->pDataRGBA = new uint8[size];
-                    memset(this->pDataRGBA, 0, (size_t)size);
-                    updateNoiseTextureData();
-                    this->pWindow->createTexture3D(this->typeFormat, 
-                                                   this->pDataRGBA, 
-                                                   size, 
-                                                   width, 
-                                                   height, 
-                                                   depth, 
-                                                   this->poTextureImage, 
-                                                   this->poTextureImageMemory, 
-                                                   this->stagingBuffer, 
-                                                   this->stagingBufferMemory);
-                    this->pWindow->createVkImageView(this->poTextureImage, 
-                                                     VK_IMAGE_VIEW_TYPE_3D, 
-                                                     this->typeFormat, 
-                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                     this->poMipMapCount, 
-                                                     1, 
-                                                     this->poTextureImageView);
-                }
-                else if (this->typeTexture == Vulkan_Texture_CubeMap)
-                {
-                    this->pWindow->createTextureCubeMap(this->aPathTexture, 
-                                                        this->poMipMapCount, 
-                                                        this->poTextureImage, 
-                                                        this->poTextureImageMemory);
-                    this->pWindow->createVkImageView(this->poTextureImage, 
-                                                     VK_IMAGE_VIEW_TYPE_CUBE, 
-                                                     this->typeFormat, 
-                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                     this->poMipMapCount, 
-                                                     (int)this->aPathTexture.size(), 
-                                                     this->poTextureImageView);
-                }   
-                else
-                {
-                    String msg = "ModelTexture::LoadTexture: Wrong texture type, Create from file, name: [" + this->nameTexture + "] !";
-                    F_LogError(msg.c_str());
-                    throw std::runtime_error(msg);
-                }
-            }
-            else
-            {
-                if (this->typeTexture == Vulkan_Texture_1D)
-                {
-                    this->pWindow->createTextureRenderTarget1D(this->rtColorDefault, 
-                                                               this->rtIsSetColor, 
-                                                               this->width, 
-                                                               this->poMipMapCount, 
-                                                               VK_SAMPLE_COUNT_1_BIT, 
-                                                               this->typeFormat, 
-                                                               this->rtImageUsage,
-                                                               this->isGraphicsComputeShared,
-                                                               this->poTextureImage, 
-                                                               this->poTextureImageMemory);
-                    this->pWindow->createVkImageView(this->poTextureImage, 
-                                                     VK_IMAGE_VIEW_TYPE_1D, 
-                                                     this->typeFormat, 
-                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                     this->poMipMapCount, 
-                                                     1, 
-                                                     this->poTextureImageView);
-                }
-                else if (this->typeTexture == Vulkan_Texture_2D)
-                {
-                    this->pWindow->createTextureRenderTarget2D(this->rtColorDefault, 
-                                                               this->rtIsSetColor, 
-                                                               this->width, 
-                                                               this->height,
-                                                               this->poMipMapCount, 
-                                                               VK_SAMPLE_COUNT_1_BIT, 
-                                                               this->typeFormat, 
-                                                               this->rtImageUsage,
-                                                               this->isGraphicsComputeShared,
-                                                               this->poTextureImage, 
-                                                               this->poTextureImageMemory);
-                    this->pWindow->createVkImageView(this->poTextureImage, 
-                                                     VK_IMAGE_VIEW_TYPE_2D, 
-                                                     this->typeFormat, 
-                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                     this->poMipMapCount, 
-                                                     1, 
-                                                     this->poTextureImageView);
-                }
-                else if (this->typeTexture == Vulkan_Texture_2DArray)
-                {
-                    this->pWindow->createTextureRenderTarget2DArray(this->rtColorDefault, 
-                                                                    this->rtIsSetColor, 
-                                                                    this->width, 
-                                                                    this->height,
-                                                                    this->poMipMapCount, 
-                                                                    VK_IMAGE_TYPE_2D,
-                                                                    VK_SAMPLE_COUNT_1_BIT, 
-                                                                    this->typeFormat, 
-                                                                    this->rtImageUsage,
-                                                                    this->isGraphicsComputeShared,
-                                                                    this->poTextureImage, 
-                                                                    this->poTextureImageMemory);
-                    this->pWindow->createVkImageView(this->poTextureImage, 
-                                                     VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
-                                                     this->typeFormat, 
-                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                     this->poMipMapCount, 
-                                                     (int)this->aPathTexture.size(), 
-                                                     this->poTextureImageView);
-                }
-                else if (this->typeTexture == Vulkan_Texture_3D)
-                {
-                    this->pWindow->createTextureRenderTarget3D(this->rtColorDefault, 
-                                                               this->rtIsSetColor, 
-                                                               this->width, 
-                                                               this->height,
-                                                               this->depth,
-                                                               this->poMipMapCount, 
-                                                               VK_SAMPLE_COUNT_1_BIT,
-                                                               this->typeFormat, 
-                                                               this->rtImageUsage,
-                                                               this->isGraphicsComputeShared,
-                                                               this->poTextureImage, 
-                                                               this->poTextureImageMemory);
-                    this->pWindow->createVkImageView(this->poTextureImage, 
-                                                     VK_IMAGE_VIEW_TYPE_3D, 
-                                                     this->typeFormat, 
-                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                     this->poMipMapCount, 
-                                                     1, 
-                                                     this->poTextureImageView);
-                }
-                else if (this->typeTexture == Vulkan_Texture_CubeMap)
-                {
-                    this->pWindow->createTextureRenderTargetCubeMap(this->width, 
-                                                                    this->height,
-                                                                    this->poMipMapCount, 
-                                                                    VK_SAMPLE_COUNT_1_BIT,
-                                                                    this->typeFormat, 
-                                                                    this->rtImageUsage,
-                                                                    this->isGraphicsComputeShared,
-                                                                    this->poTextureImage, 
-                                                                    this->poTextureImageMemory);
-                    this->pWindow->createVkImageView(this->poTextureImage, 
-                                                     VK_IMAGE_VIEW_TYPE_CUBE, 
-                                                     this->typeFormat, 
-                                                     VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                     this->poMipMapCount, 
-                                                     6, 
-                                                     this->poTextureImageView);
-                }
-                else
-                {
-                    String msg = "ModelTexture::LoadTexture: Wrong texture type, Create render target, name: [" + this->nameTexture + "] !";
-                    F_LogError(msg.c_str());
-                    throw std::runtime_error(msg);
-                }
-            }
-
-            this->pWindow->createVkSampler(this->typeFilter, 
-                                           this->typeAddressing,
-                                           this->typeBorderColor,
-                                           true,
-                                           this->pWindow->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
-                                           0.0f,
-                                           static_cast<float>(this->poMipMapCount),
-                                           0.0f,
-                                           this->poTextureSampler);
-
-            this->poTextureImageInfo = {};
-            this->poTextureImageInfo.imageLayout = this->poTextureImageLayout;
-            this->poTextureImageInfo.imageView = this->poTextureImageView;
-            this->poTextureImageInfo.sampler = this->poTextureSampler;
-        }   
-
-        void UpdateTexture();
-
-    private:
-        void updateNoiseTextureData();
-        void updateNoiseTexture();
-    };
-    typedef std::vector<ModelTexture*> ModelTexturePtrVector;
-    typedef std::map<String, ModelTexture*> ModelTexturePtrMap;
-    typedef std::map<String, ModelTexturePtrVector> ModelTexturePtrShaderSortMap;
-
-
-    /////////////////////////// PipelineGraphics ////////////////////
-    struct PipelineGraphics
-    {
-        Vulkan_011_Texturing* pWindow;
-        String nameDescriptorSetLayout;
-        StringVector* poDescriptorSetLayoutNames;
-        VkDescriptorSetLayout poDescriptorSetLayout;
-        VkPipelineLayout poPipelineLayout;
-        VkPipeline poPipeline_WireFrame;
-        VkPipeline poPipeline;
-        VkDescriptorSetVector poDescriptorSets;
-
-        PipelineGraphics(Vulkan_011_Texturing* _pWindow)
-            : pWindow(_pWindow)
-            , nameDescriptorSetLayout("")
-            , poDescriptorSetLayoutNames(nullptr)
-            , poDescriptorSetLayout(VK_NULL_HANDLE)
-            , poPipelineLayout(VK_NULL_HANDLE)
-            , poPipeline_WireFrame(VK_NULL_HANDLE)
-            , poPipeline(VK_NULL_HANDLE)
-        {
-
-        }
-
-        ~PipelineGraphics()
-        {
-            Destroy();
-        }
-
-        void Destroy()
-        {
-            CleanupSwapChain();
-        }
-
-        void CleanupSwapChain()
-        {
-            this->poDescriptorSetLayoutNames = nullptr;
-            this->poDescriptorSetLayout = VK_NULL_HANDLE;
-            this->poPipelineLayout = VK_NULL_HANDLE;
-            if (this->poPipeline_WireFrame != VK_NULL_HANDLE)
-            {
-                this->pWindow->destroyVkPipeline(this->poPipeline_WireFrame);
-            }
-            this->poPipeline_WireFrame = VK_NULL_HANDLE;
-
-            if (this->poPipeline != VK_NULL_HANDLE)
-            {
-                this->pWindow->destroyVkPipeline(this->poPipeline);
-            }
-            this->poPipeline = VK_NULL_HANDLE;
-            this->poDescriptorSets.clear();
-        }  
-    };
-
-
-    /////////////////////////// PipelineCompute /////////////////////
-    struct PipelineCompute
-    {
-        Vulkan_011_Texturing* pWindow;
-        String nameDescriptorSetLayout;
-        StringVector* poDescriptorSetLayoutNames;
-        VkDescriptorSetLayout poDescriptorSetLayout;
-        VkPipelineLayout poPipelineLayout;
-        VkPipeline poPipeline;
-        VkDescriptorSet poDescriptorSet;
-
-        TextureCopyConstants* pTextureCopy;
-        VkBuffer poBuffer_TextureCopy;  
-        VkDeviceMemory poBufferMemory_TextureCopy;
-        void CreateTextureCopy()
-        {
-            DestroyTextureCopy();
-            this->pTextureCopy = new TextureCopyConstants();
-            VkDeviceSize bufferSize = sizeof(TextureCopyConstants);
-            this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
-        }
-        void DestroyTextureCopy()
-        {
-            F_DELETE(this->pTextureCopy)
-            if (this->poBuffer_TextureCopy != VK_NULL_HANDLE)
-            {
-                this->pWindow->destroyVkBuffer(this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
-            }
-            this->poBuffer_TextureCopy = VK_NULL_HANDLE;
-            this->poBufferMemory_TextureCopy = VK_NULL_HANDLE;
-        }
-
-        PipelineCompute(Vulkan_011_Texturing* _pWindow)
-            : pWindow(_pWindow)
-            , nameDescriptorSetLayout("")
-            , poDescriptorSetLayoutNames(nullptr)
-            , poDescriptorSetLayout(VK_NULL_HANDLE)
-            , poPipelineLayout(VK_NULL_HANDLE)
-            , poPipeline(VK_NULL_HANDLE)
-            
-            , pTextureCopy(nullptr)
-            , poBuffer_TextureCopy(VK_NULL_HANDLE)
-            , poBufferMemory_TextureCopy(VK_NULL_HANDLE)
-        {
-
-        }
-
-        ~PipelineCompute()
-        {
-            Destroy();
-        }
-
-        void Destroy()
-        {
-            CleanupSwapChain();
-        }
-
-        void CleanupSwapChain()
-        {
-            this->poDescriptorSetLayoutNames = nullptr;
-            this->poDescriptorSetLayout = VK_NULL_HANDLE;
-            this->poPipelineLayout = VK_NULL_HANDLE;
-            if (this->poPipeline != VK_NULL_HANDLE)
-            {
-                this->pWindow->destroyVkPipeline(this->poPipeline);
-            }       
-            this->poPipeline = VK_NULL_HANDLE;
-            this->poDescriptorSet = VK_NULL_HANDLE;
-
-            DestroyTextureCopy();
-        } 
-    };
-    typedef std::vector<PipelineCompute*> PipelineComputePtrVector;
-    typedef std::map<String, PipelineCompute*> PipelineComputePtrMap;
-
-
+    
     /////////////////////////// ModelObject /////////////////////////
     struct ModelObject
     {
@@ -745,7 +234,7 @@ public:
         bool isLighting;
 
         //Mesh
-        ModelMesh* pMesh;
+        ModelMeshRaw* pMesh;
 
         //Texture
         ModelTexturePtrShaderSortMap mapModelTexturesShaderSort;
@@ -801,11 +290,11 @@ public:
 
 
     ////Mesh
-        void SetMesh(ModelMesh* pMesh)
+        void SetMesh(ModelMeshRaw* pMesh)
         {
             this->pMesh = pMesh;
         }
-        ModelMesh* GetMesh()
+        ModelMeshRaw* GetMesh()
         {
             return this->pMesh;
         }
@@ -863,8 +352,8 @@ public:
     typedef std::map<String, ModelObject*> ModelObjectPtrMap;
 
 public:
-    ModelMeshPtrVector m_aModelMesh;
-    ModelMeshPtrMap m_mapModelMesh;    
+    ModelMeshRawPtrVector m_aModelMesh;
+    ModelMeshRawPtrMap m_mapModelMesh;    
 
     ModelTexturePtrVector m_aModelTexture;
     ModelTexturePtrMap m_mapModelTexture;
@@ -931,10 +420,10 @@ protected:
 private:
     void rebuildInstanceCBs(bool isCreateVkBuffer);
 
-////ModelMesh
+////ModelMeshRaw
     void destroyModelMeshes();
     void createModelMeshes();
-    ModelMesh* findModelMesh(const String& nameMesh);
+    ModelMeshRaw* findModelMesh(const String& nameMesh);
 
 ////ModelTexture
     void destroyModelTextures();
