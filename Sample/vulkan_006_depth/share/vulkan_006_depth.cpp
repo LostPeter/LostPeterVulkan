@@ -95,10 +95,10 @@ void Vulkan_006_Depth::loadModel_Custom()
         pModelObject->pathTexture = g_pathModels[3 * i + 2];
 
         bool isFlipY = g_isFlipYModels[i];
-        bool isTranformLocal = g_isTranformLocalModels[i];
+        bool isTransformLocal = g_isTranformLocalModels[i];
         
         //Model
-        if (!loadModel_VertexIndex(pModelObject, isFlipY, isTranformLocal, g_tranformLocalModels[i]))
+        if (!loadModel_VertexIndex(pModelObject, isFlipY, isTransformLocal, g_tranformLocalModels[i]))
         {
             String msg = "Vulkan_006_Depth::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
             F_LogError(msg.c_str());
@@ -120,7 +120,7 @@ void Vulkan_006_Depth::loadModel_Custom()
         m_mapModelObjects[pModelObject->nameModel] = pModelObject;
     }
 }
-bool Vulkan_006_Depth::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
+bool Vulkan_006_Depth::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load 
     FMeshData meshData;
@@ -143,7 +143,7 @@ bool Vulkan_006_Depth::loadModel_VertexIndex(ModelObject* pModelObject, bool isF
         v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
         v.texCoord = vertex.texCoord;
 
-        if (isTranformLocal)
+        if (isTransformLocal)
         {
             v.pos = FMath::Transform(matTransformLocal, v.pos);
         }

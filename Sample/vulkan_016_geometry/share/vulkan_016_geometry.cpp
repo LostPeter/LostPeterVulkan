@@ -1122,6 +1122,10 @@ Vulkan_016_Geometry::Vulkan_016_Geometry(int width, int height, String name)
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
     this->mainLight.direction = FVector3(0, -1, 0); //y-
+
+    this->cfg_isEditorCreate = true;
+    this->cfg_isEditorGridShow = true;
+    this->cfg_isEditorAxisShow = true;
 }
 
 void Vulkan_016_Geometry::setUpEnabledFeatures()
@@ -1728,8 +1732,8 @@ void Vulkan_016_Geometry::createModelMeshes()
                                          typeGeometryType,
                                          typeVertex);
         bool isFlipY = g_MeshIsFlipYs[i];
-        bool isTranformLocal = g_MeshIsTranformLocals[i];
-        if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_MeshTranformLocals[i]))
+        bool isTransformLocal = g_MeshIsTranformLocals[i];
+        if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
         {
             String msg = "Vulkan_016_Geometry::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());

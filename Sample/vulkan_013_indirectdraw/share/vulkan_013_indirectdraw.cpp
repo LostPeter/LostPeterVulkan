@@ -1543,8 +1543,8 @@ void Vulkan_013_IndirectDraw::createModelMeshes()
                                          typeGeometryType,
                                          typeVertex);
         bool isFlipY = g_MeshIsFlipYs[i];
-        bool isTranformLocal = g_MeshIsTranformLocals[i];
-        if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_MeshTranformLocals[i]))
+        bool isTransformLocal = g_MeshIsTranformLocals[i];
+        if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
         {
             String msg = "Vulkan_013_IndirectDraw::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());

@@ -1765,8 +1765,8 @@ void Vulkan_015_MultiView::createModelMeshes()
                                          typeGeometryType,
                                          typeVertex);
         bool isFlipY = g_Mesh_IsFlipYs[i];
-        bool isTranformLocal = g_Mesh_IsTranformLocals[i];
-        if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_Mesh_TranformLocals[i]))
+        bool isTransformLocal = g_Mesh_IsTranformLocals[i];
+        if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_Mesh_TranformLocals[i]))
         {
             String msg = "Vulkan_015_MultiView::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());

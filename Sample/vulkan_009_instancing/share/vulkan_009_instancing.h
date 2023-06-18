@@ -275,7 +275,7 @@ protected:
 
         //Geometry/Texture
         virtual void loadModel_Custom();
-            bool loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal);
+            bool loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal);
             bool loadModel_Texture(ModelObject* pModelObject);
 
         //ConstBuffers

@@ -679,7 +679,7 @@ static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
 
 
 /////////////////////////// ModelMeshRaw ////////////////////////
-bool Vulkan_011_Texturing::ModelMeshRaw::LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
+bool Vulkan_011_Texturing::ModelMeshRaw::LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load
     FMeshData meshData;
@@ -704,7 +704,7 @@ bool Vulkan_011_Texturing::ModelMeshRaw::LoadMesh(bool isFlipY, bool isTranformL
             v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
             v.normal = vertex.normal;
             v.texCoord = vertex.texCoord;
-            if (isTranformLocal)
+            if (isTransformLocal)
             {
                 v.pos = FMath::Transform(matTransformLocal, v.pos);
             }
@@ -743,7 +743,7 @@ bool Vulkan_011_Texturing::ModelMeshRaw::LoadMesh(bool isFlipY, bool isTranformL
             v.normal = vertex.normal;
             v.tangent = vertex.tangent;
             v.texCoord = vertex.texCoord;
-            if (isTranformLocal)
+            if (isTransformLocal)
             {
                 v.pos = FMath::Transform(matTransformLocal, v.pos);
             }
@@ -1413,8 +1413,8 @@ void Vulkan_011_Texturing::createModelMeshes()
                                          typeGeometryType,
                                          typeVertex);
         bool isFlipY = g_MeshIsFlipYs[i];
-        bool isTranformLocal = g_MeshIsTranformLocals[i];
-        if (!pMesh->LoadMesh(isFlipY, isTranformLocal, g_MeshTranformLocals[i]))
+        bool isTransformLocal = g_MeshIsTranformLocals[i];
+        if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
         {
             String msg = "Vulkan_011_Texturing::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());

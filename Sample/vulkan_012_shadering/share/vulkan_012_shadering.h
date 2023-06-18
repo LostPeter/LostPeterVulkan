@@ -99,7 +99,7 @@ public:
         }
 
 
-        bool LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal);
+        bool LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal);
 
     };
     typedef std::vector<ModelMeshRaw*> ModelMeshRawPtrVector;

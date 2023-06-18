@@ -23,6 +23,45 @@ namespace LostPeter
         virtual ~VulkanWindow();
 
     public:
+        struct MeshInfo
+        {
+            MeshInfo()
+                : nameMesh("")
+                , pathMesh("")
+                , typeMesh(F_Mesh_File)
+                , typeGeometryType(F_MeshGeometry_Grid)
+                , typeVertex(F_MeshVertex_Pos3Color4Tex2)
+                , isFlipY(false)
+                , isTransformLocal(false)
+                , matTransformLocal(FMath::ms_mat4Unit)
+            {
+
+            }
+
+            String nameMesh;
+            String pathMesh;
+            
+            FMeshType typeMesh;
+            FMeshGeometryType typeGeometryType;
+            FMeshVertexType typeVertex;
+
+            bool isFlipY;
+            bool isTransformLocal;
+            FMatrix4 matTransformLocal;
+        };
+        typedef std::vector<MeshInfo> MeshInfoVector;
+
+
+        struct ShaderModuleInfo
+        {
+            String nameShader;
+            String nameShaderType;
+            String pathShader;
+        };
+        typedef std::vector<ShaderModuleInfo> ShaderModuleInfoVector;
+
+
+    public:
         class ModelMesh;
 
         /////////////////////////// ModelMeshSub //////////////////////
@@ -68,7 +107,7 @@ namespace LostPeter
             uint32_t GetVertexSize();
             uint32_t GetIndexSize();
 
-            virtual bool CreateMeshSub(FMeshData& meshData, bool isTranformLocal, const FMatrix4& matTransformLocal);
+            virtual bool CreateMeshSub(FMeshData& meshData, bool isTransformLocal, const FMatrix4& matTransformLocal);
             virtual void WriteVertexData(std::vector<FVertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
                                          std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2);
             virtual void WriteIndexData(std::vector<uint32_t>& indexData);
@@ -103,7 +142,7 @@ namespace LostPeter
             void Destroy();
 
             virtual bool AddMeshSub(ModelMeshSub* pMeshSub);
-            virtual bool LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal);
+            virtual bool LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal);
         };
         typedef std::vector<ModelMesh*> ModelMeshPtrVector;
         typedef std::map<String, ModelMesh*> ModelMeshPtrMap;
@@ -312,37 +351,147 @@ namespace LostPeter
         typedef std::map<String, PipelineCompute*> PipelineComputePtrMap;
 
 
-        /////////////////////////// EditorGrid ////////////////////////
-        class EditorGrid
+        /////////////////////////// EditorBase ////////////////////////
+        class EditorBase
         {
         public:
-            EditorGrid(VulkanWindow* pWindow);
-            ~EditorGrid();
+            EditorBase(VulkanWindow* _pWindow);
+            virtual ~EditorBase();
 
         public:
-            VulkanWindow* m_pWindow;
+            
 
         public:
+            VulkanWindow* pWindow;
+
+            //Meshes
+            MeshInfoVector aMeshInfos;
+            ModelMeshPtrVector aMeshes;
+            ModelMeshPtrMap mapMeshes;
+
+            //Shaders
+            ShaderModuleInfoVector aShaderModuleInfos;
+            VkShaderModuleVector aShaderModules;
+            VkShaderModuleMap mapShaderModules;
+
+            //DescriptorSetLayout
+            String nameDescriptorSetLayout; 
+            StringVector aNameDescriptorSetLayouts;
+
+            //PipelineGraphics
+            PipelineGraphics* pPipelineGraphics;
+
+        public:
+            virtual void Destroy() = 0;
+
+            virtual void Init();
+
+        public:
+            virtual void CleanupSwapChain();
+            virtual void RecreateSwapChain();
+
+        protected:
+            virtual void initConfigs() = 0;
+            virtual void initMeshes();
+            virtual void initShaders();
+            virtual void initBufferUniforms() = 0;
+            virtual void initPipelineGraphics() = 0;
+
+            virtual void destroyMeshes();
+            virtual void destroyShaders();
+            virtual void destroyBufferUniforms() = 0;
+            virtual void destroyPipelineGraphics();
+        };
 
 
+        /////////////////////////// EditorGrid ////////////////////////
+        class EditorGrid : public EditorBase
+        {
+        public:
+            EditorGrid(VulkanWindow* _pWindow);
+            virtual ~EditorGrid();
 
+        public:
+            struct GridObjectConstant
+            {
+                FMatrix4 g_MatWorld;
+                FColor color;
 
+                GridObjectConstant()
+                    : g_MatWorld(FMath::Identity4x4())
+                    , color(0.5f, 0.5f, 0.5f, 1.0f)
+                {
+                    
+                }
+            };
+
+        public:
+            GridObjectConstant gridObjectCB;
+            VkBuffer poBuffers_ObjectCB;
+            VkDeviceMemory poBuffersMemory_ObjectCB;
+
+        public:
+            void Destroy();
+
+            virtual void Init();
+
+        public:
+            virtual void CleanupSwapChain();
+            virtual void RecreateSwapChain();
+
+        protected:
+            virtual void initConfigs();
+            virtual void initBufferUniforms();
+            virtual void initPipelineGraphics();
+
+            virtual void destroyBufferUniforms();
         };
 
         /////////////////////////// EditorAxis ////////////////////////
-        class EditorAxis
+        class EditorAxis : public EditorBase
         {
         public:
-            EditorAxis(VulkanWindow* pWindow);
-            ~EditorAxis();
+            EditorAxis(VulkanWindow* _pWindow);
+            virtual ~EditorAxis();
 
         public:
-            VulkanWindow* m_pWindow;
+            VulkanWindow* pWindow;
 
         public:
         
 
+        public:
+            void Destroy();
+
+            virtual void Init();
+
+        public:
+            virtual void CleanupSwapChain();
+            virtual void RecreateSwapChain();
+
+        protected:
+            virtual void initConfigs();
+            virtual void initBufferUniforms();
+            virtual void initPipelineGraphics();
+
+            virtual void destroyBufferUniforms();
         };
+
+    public:
+        //ModelMesh
+        virtual ModelMesh* CreateModelMesh(const MeshInfo& mi);
+        virtual void CreateModelMeshes(const MeshInfoVector& aMIs, ModelMeshPtrVector& aMeshes, ModelMeshPtrMap& mapMeshes);
+
+        //ShaderModule
+        virtual VkShaderModule CreateShaderModule(const ShaderModuleInfo& si);
+        virtual void CreateShaderModules(const ShaderModuleInfoVector& aSIs, VkShaderModuleVector& aShaderModules, VkShaderModuleMap& mapShaderModules);
+
+        //Texture
+
+        
+        //DescriptorSetLayout
+        virtual VkDescriptorSetLayout CreateDescriptorSetLayout(const StringVector* pNamesDescriptorSetLayout);
+
 
     public: 
         static bool s_isEnableValidationLayers;
@@ -627,6 +776,10 @@ namespace LostPeter
         bool mouseButtonDownRight;
 
         //Editor
+        bool cfg_isEditorCreate;
+        bool cfg_isEditorGridShow;
+        bool cfg_isEditorAxisShow;
+        FColor cfg_editorGridColor;
         EditorGrid* pEditorGrid;
         EditorAxis* pEditorAxis;
 
@@ -1256,6 +1409,12 @@ namespace LostPeter
             virtual void createImgui();
                 virtual void createImgui_DescriptorPool();
                 virtual void createImgui_Init();
+
+            //Editor
+            virtual void createEditor();
+                virtual void createEditor_Grid();
+                virtual void createEditor_Axis();    
+            virtual void destroyEditor();
 
         //Resize
         virtual void resizeWindow(int w, int h, bool force);

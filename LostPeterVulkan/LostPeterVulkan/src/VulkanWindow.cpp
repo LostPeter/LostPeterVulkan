@@ -26,6 +26,19 @@ namespace LostPeter
 #endif
     int VulkanWindow::s_maxFramesInFight = 2;
 
+    // const String c_strLayout_Pass = "Pass";
+    // const String c_strLayout_Object = "Object";
+    // const String c_strLayout_Material = "Material";
+    // const String c_strLayout_Instance = "Instance";
+    // const String c_strLayout_TextureCopy = "TextureCopy";
+    // const String c_strLayout_Tessellation = "Tessellation";
+    // const String c_strLayout_TextureVS = "TextureVS";
+    // const String c_strLayout_TextureTESC = "TextureTESC";
+    // const String c_strLayout_TextureTESE = "TextureTESE";
+    // const String c_strLayout_TextureFS = "TextureFS";
+    // const String c_strLayout_TextureCSR = "TextureCSR";
+    // const String c_strLayout_TextureCSRW = "TextureCSRW";
+
 
     /////////////////////////// ModelMeshSub //////////////////////
     VulkanWindow::ModelMeshSub::ModelMeshSub(ModelMesh* _pMesh, 
@@ -62,12 +75,18 @@ namespace LostPeter
     void VulkanWindow::ModelMeshSub::Destroy()
     {
         //Vertex
-        this->pMesh->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
+        if (this->poVertexBuffer != VK_NULL_HANDLE)
+        {
+            this->pMesh->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
+        }
         this->poVertexBuffer = VK_NULL_HANDLE;
         this->poVertexBufferMemory = VK_NULL_HANDLE;
 
         //Index
-        this->pMesh->pWindow->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
+        if (this->poIndexBuffer != VK_NULL_HANDLE)
+        {
+            this->pMesh->pWindow->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
+        }
         this->poIndexBuffer = VK_NULL_HANDLE;
         this->poIndexBufferMemory = VK_NULL_HANDLE;
     }
@@ -93,7 +112,7 @@ namespace LostPeter
     {
         return sizeof(uint32_t);
     }
-    bool VulkanWindow::ModelMeshSub::CreateMeshSub(FMeshData& meshData, bool isTranformLocal, const FMatrix4& matTransformLocal)
+    bool VulkanWindow::ModelMeshSub::CreateMeshSub(FMeshData& meshData, bool isTransformLocal, const FMatrix4& matTransformLocal)
     {
         int count_vertex = (int)meshData.vertices.size();
         if (this->poTypeVertex == F_MeshVertex_Pos3Color4Tex2)
@@ -107,7 +126,7 @@ namespace LostPeter
                 v.pos = vertex.pos;
                 v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
                 v.texCoord = vertex.texCoord;
-                if (isTranformLocal)
+                if (isTransformLocal)
                 {
                     v.pos = FMath::Transform(matTransformLocal, v.pos);
                 }
@@ -146,7 +165,7 @@ namespace LostPeter
                 v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
                 v.normal = vertex.normal;
                 v.texCoord = vertex.texCoord;
-                if (isTranformLocal)
+                if (isTransformLocal)
                 {
                     v.pos = FMath::Transform(matTransformLocal, v.pos);
                 }
@@ -185,7 +204,7 @@ namespace LostPeter
                 v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
                 v.normal = vertex.normal;
                 v.texCoord = FVector4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
-                if (isTranformLocal)
+                if (isTransformLocal)
                 {
                     v.pos = FMath::Transform(matTransformLocal, v.pos);
                 }
@@ -225,7 +244,7 @@ namespace LostPeter
                 v.normal = vertex.normal;
                 v.tangent = vertex.tangent;
                 v.texCoord = vertex.texCoord;
-                if (isTranformLocal)
+                if (isTransformLocal)
                 {
                     v.pos = FMath::Transform(matTransformLocal, v.pos);
                 }
@@ -265,7 +284,7 @@ namespace LostPeter
                 v.normal = vertex.normal;
                 v.tangent = vertex.tangent;
                 v.texCoord = FVector4(vertex.texCoord.x, vertex.texCoord.y, 0, 0);
-                if (isTranformLocal)
+                if (isTransformLocal)
                 {
                     v.pos = FMath::Transform(matTransformLocal, v.pos);
                 }
@@ -411,7 +430,7 @@ namespace LostPeter
         this->mapMeshSubs[pMeshSub->nameMeshSub] = pMeshSub;
         return true;
     }   
-    bool VulkanWindow::ModelMesh::LoadMesh(bool isFlipY, bool isTranformLocal, const FMatrix4& matTransformLocal)
+    bool VulkanWindow::ModelMesh::LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
     {
         //1> Load
         FMeshDataVector aMeshDatas;
@@ -452,7 +471,7 @@ namespace LostPeter
                                                       meshData.nameMesh,
                                                       i,
                                                       this->typeVertex);
-            if (!pMeshSub->CreateMeshSub(meshData, isTranformLocal, matTransformLocal))
+            if (!pMeshSub->CreateMeshSub(meshData, isTransformLocal, matTransformLocal))
             {
                 F_LogError("VulkanWindow::ModelMesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
                 return false;
@@ -1213,29 +1232,462 @@ namespace LostPeter
         this->poBufferMemory_TextureCopy = VK_NULL_HANDLE;
     }
 
-    
-    /////////////////////////// EditorGrid ////////////////////////
-    VulkanWindow::EditorGrid::EditorGrid(VulkanWindow* pWindow)
-        : m_pWindow(pWindow)
+
+    /////////////////////////// EditorBase ////////////////////////
+    VulkanWindow::EditorBase::EditorBase(VulkanWindow* _pWindow)
+        : pWindow(_pWindow)
+        , pPipelineGraphics(nullptr)
+    {
+
+    }
+    VulkanWindow::EditorBase::~EditorBase()
+    {
+       
+    }
+    void VulkanWindow::EditorBase::Init()
+    {
+        //0> initConfigs
+        initConfigs();
+
+        //1> initMeshes
+        initMeshes();
+
+        //2> initShader
+        initShaders();
+
+        //3> initBufferUniforms
+        initBufferUniforms();
+    }
+    void VulkanWindow::EditorBase::initMeshes()
+    {
+        this->pWindow->CreateModelMeshes(this->aMeshInfos, this->aMeshes, this->mapMeshes);
+    }
+    void VulkanWindow::EditorBase::initShaders()
+    {   
+        this->pWindow->CreateShaderModules(this->aShaderModuleInfos, this->aShaderModules, this->mapShaderModules);
+    }
+    void VulkanWindow::EditorBase::destroyMeshes()
+    {
+        size_t count = this->aMeshes.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            VulkanWindow::ModelMesh* pMesh = this->aMeshes[i];
+            F_DELETE(pMesh)
+        }
+        this->aMeshes.clear();
+        this->mapMeshes.clear();
+    }
+    void VulkanWindow::EditorBase::destroyShaders()
+    {
+        size_t count = this->aShaderModules.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            VkShaderModule& vkShaderModule= this->aShaderModules[i];
+            this->pWindow->destroyVkShaderModule(vkShaderModule);
+        }
+        this->aShaderModules.clear();
+        this->mapShaderModules.clear();
+    }
+    void VulkanWindow::EditorBase::destroyPipelineGraphics()
+    {
+        F_DELETE(this->pPipelineGraphics)
+    }
+    void VulkanWindow::EditorBase::CleanupSwapChain()
+    {
+
+    }
+    void VulkanWindow::EditorBase::RecreateSwapChain()
     {
 
     }
     
+    /////////////////////////// EditorGrid ////////////////////////
+    VulkanWindow::EditorGrid::EditorGrid(VulkanWindow* _pWindow)
+        : EditorBase(_pWindow)
+    {
+
+    }
     VulkanWindow::EditorGrid::~EditorGrid()
+    {
+        Destroy();
+    }
+    void VulkanWindow::EditorGrid::Destroy()
+    {
+        destroyPipelineGraphics();
+        destroyBufferUniforms();
+        destroyShaders();
+        destroyMeshes();
+    }
+    void VulkanWindow::EditorGrid::Init()
+    {
+        VulkanWindow::EditorBase::Init();
+    }
+    void VulkanWindow::EditorGrid::initConfigs()
+    {
+        //1> Mesh
+        {
+            MeshInfo mi;
+            mi.nameMesh = "EditorGrid";
+            mi.pathMesh = "";
+            mi.typeMesh = F_Mesh_Geometry;
+            mi.typeGeometryType = F_MeshGeometry_Grid;
+            mi.typeVertex = F_MeshVertex_Pos3Color4Tex2;
+            mi.isFlipY = false;
+            mi.isTransformLocal = true;
+            mi.matTransformLocal = FMath::RotateX(90.0f);
+            this->aMeshInfos.push_back(mi);
+        }
+        //2> Shader
+        {
+            //Vert
+            {
+                ShaderModuleInfo siVert;
+                siVert.nameShader = "vert_editor_grid";
+                siVert.nameShaderType = "vert";
+                siVert.pathShader = "Assets/Shader/editor_grid.vert.spv";
+                this->aShaderModuleInfos.push_back(siVert);
+            }
+            //Frag
+            {
+                ShaderModuleInfo siFrag;
+                siFrag.nameShader = "frag_editor_grid";
+                siFrag.nameShaderType = "frag";
+                siFrag.pathShader = "Assets/Shader/editor_grid.frag.spv";
+                this->aShaderModuleInfos.push_back(siFrag);
+            }
+        }
+        //3> BufferUniform
+        {
+
+        }
+        //4> DescriptorSetLayout
+        {
+            this->nameDescriptorSetLayout = "Pass-Object";
+            this->aNameDescriptorSetLayouts = FUtilString::Split(this->nameDescriptorSetLayout, "-");
+        }
+    }
+    void VulkanWindow::EditorGrid::initBufferUniforms()
+    {
+        VkDeviceSize bufferSize = sizeof(GridObjectConstant);
+        this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+    }
+    void VulkanWindow::EditorGrid::initPipelineGraphics()
+    {
+        this->pPipelineGraphics = new PipelineGraphics(this->pWindow);
+        this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
+        this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
+        this->pPipelineGraphics->poDescriptorSetLayout = this->pWindow->CreateDescriptorSetLayout(this->pPipelineGraphics->poDescriptorSetLayoutNames);
+        if (this->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
+        {
+            String msg = "VulkanWindow::initPipelineGraphics: Can not create VkDescriptorSetLayout by name: " + this->pPipelineGraphics->nameDescriptorSetLayout;
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg.c_str());
+        }
+        
+    }
+    void VulkanWindow::EditorGrid::destroyBufferUniforms()
+    {
+        if (this->poBuffers_ObjectCB != VK_NULL_HANDLE)
+        {
+            this->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+        }
+        this->poBuffers_ObjectCB = VK_NULL_HANDLE;
+        this->poBuffersMemory_ObjectCB = VK_NULL_HANDLE;
+    }
+    void VulkanWindow::EditorGrid::CleanupSwapChain()
+    {
+        //1> Uniform Buffer
+
+    }
+    void VulkanWindow::EditorGrid::RecreateSwapChain()
     {
 
     }
 
     /////////////////////////// EditorAxis ////////////////////////
-    VulkanWindow::EditorAxis::EditorAxis(VulkanWindow* pWindow)
-        : m_pWindow(pWindow)
+    VulkanWindow::EditorAxis::EditorAxis(VulkanWindow* _pWindow)
+        : EditorBase(_pWindow)
     {
 
     }
-
     VulkanWindow::EditorAxis::~EditorAxis()
     {
+        Destroy();
+    }
+    void VulkanWindow::EditorAxis::Destroy()
+    {
+        destroyBufferUniforms();
+        destroyShaders();
+        destroyMeshes();
+    }
+    void VulkanWindow::EditorAxis::Init()
+    {
+        VulkanWindow::EditorBase::Init();
+    }
+    void VulkanWindow::EditorAxis::initConfigs()
+    {
+        //1> Mesh
+        {
+            
+        }
+        //2> Shader
+        {
 
+        }
+        //3> Pipeline
+        {
+
+        }
+        //4> 
+        {
+
+        }
+    }
+    void VulkanWindow::EditorAxis::initBufferUniforms()
+    {
+
+    }
+    void VulkanWindow::EditorAxis::initPipelineGraphics()
+    {
+        this->pPipelineGraphics = new PipelineGraphics(this->pWindow);
+        
+    }
+    void VulkanWindow::EditorAxis::destroyBufferUniforms()
+    {
+
+    }
+    void VulkanWindow::EditorAxis::CleanupSwapChain()
+    {
+        //1> Uniform Buffer
+
+    }
+    void VulkanWindow::EditorAxis::RecreateSwapChain()
+    {
+        
+    }
+    
+
+    VulkanWindow::ModelMesh* VulkanWindow::CreateModelMesh(const MeshInfo& mi)
+    {
+        ModelMesh* pMesh = new VulkanWindow::ModelMesh(this, 
+                                                       mi.nameMesh,
+                                                       mi.pathMesh,
+                                                       mi.typeMesh,
+                                                       mi.typeGeometryType,
+                                                       mi.typeVertex);
+        if (!pMesh->LoadMesh(mi.isFlipY, mi.isTransformLocal, mi.matTransformLocal))
+        {
+            String msg = "VulkanWindow::CreateModelMesh: create mesh: name: [" + mi.nameMesh + "], path: [" + mi.pathMesh + "] failed !";
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+
+        F_LogInfo("VulkanWindow::CreateModelMesh: create mesh, name: [%s], path: [%s] success !", 
+                  mi.nameMesh.c_str(), mi.pathMesh.c_str());
+        return pMesh;
+    }
+    void VulkanWindow::CreateModelMeshes(const MeshInfoVector& aMIs, ModelMeshPtrVector& aMeshes, ModelMeshPtrMap& mapMeshes)
+    {
+        size_t count = aMIs.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            ModelMesh* pMesh = CreateModelMesh(aMIs[i]);
+            if (pMesh != nullptr)
+            {
+                aMeshes.push_back(pMesh);
+                mapMeshes[pMesh->nameMesh] = pMesh;
+            }
+        }
+    }
+
+    VkShaderModule VulkanWindow::CreateShaderModule(const ShaderModuleInfo& si)
+    { 
+        VkShaderModule shaderModule = createVkShaderModule(si.nameShaderType, si.pathShader);
+        if (shaderModule == VK_NULL_HANDLE)
+        {
+            String msg = "VulkanWindow::CreateShaderModule: create shader: name: [" + si.nameShader + "], type: [" + si.nameShaderType + "], path: [" + si.pathShader + "] failed !";
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+        
+        F_LogInfo("VulkanWindow::CreateShaderModule: create shader: name: [%s], type: [%s], path: [%s] success !", 
+                  si.nameShader.c_str(), si.nameShaderType.c_str(), si.pathShader.c_str());
+        return shaderModule;
+    }
+    void VulkanWindow::CreateShaderModules(const ShaderModuleInfoVector& aSIs, VkShaderModuleVector& aShaderModules, VkShaderModuleMap& mapShaderModules)
+    {
+        size_t count = aSIs.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            const ShaderModuleInfo& si = aSIs[i];
+            VkShaderModule shaderModule = CreateShaderModule(si);
+            if (shaderModule != nullptr)
+            {
+                aShaderModules.push_back(shaderModule);
+                mapShaderModules[si.nameShader] = shaderModule;
+            }
+        }
+    }
+
+    VkDescriptorSetLayout VulkanWindow::CreateDescriptorSetLayout(const StringVector* pNamesDescriptorSetLayout)
+    {
+        return VK_NULL_HANDLE;
+
+        // VkDescriptorSetLayout vkDescriptorSetLayout;
+        // VkDescriptorSetLayoutBindingVector bindings;
+        // size_t count_layout = pNamesDescriptorSetLayout->size();
+        // for (size_t i = 0; i < count_layout; i++)
+        // {
+        //     String& strLayout = (*pNamesDescriptorSetLayout)[i];
+        //     if (strLayout == c_strLayout_Pass) //Pass
+        //     {
+        //         VkDescriptorSetLayoutBinding passMainLayoutBinding = {};
+        //         passMainLayoutBinding.binding = j;
+        //         passMainLayoutBinding.descriptorCount = 1;
+        //         passMainLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        //         passMainLayoutBinding.pImmutableSamplers = nullptr;
+        //         passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+
+        //         bindings.push_back(passMainLayoutBinding);
+        //     }
+        //     else if (strLayout == c_strLayout_Object) //Object
+        //     {
+        //         VkDescriptorSetLayoutBinding objectLayoutBinding = {};
+        //         objectLayoutBinding.binding = j;
+        //         objectLayoutBinding.descriptorCount = 1;
+        //         objectLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        //         objectLayoutBinding.pImmutableSamplers = nullptr;
+        //         objectLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+
+        //         bindings.push_back(objectLayoutBinding);
+        //     }
+        //     else if (strLayout == c_strLayout_Material) //Material
+        //     {
+        //         VkDescriptorSetLayoutBinding materialLayoutBinding = {};
+        //         materialLayoutBinding.binding = j;
+        //         materialLayoutBinding.descriptorCount = 1;
+        //         materialLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        //         materialLayoutBinding.pImmutableSamplers = nullptr;
+        //         materialLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+
+        //         bindings.push_back(materialLayoutBinding);
+        //     }
+        //     else if (strLayout == c_strLayout_Instance) //Instance
+        //     {
+        //         VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
+        //         instanceLayoutBinding.binding = j;
+        //         instanceLayoutBinding.descriptorCount = 1;
+        //         instanceLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        //         instanceLayoutBinding.pImmutableSamplers = nullptr;
+        //         instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+
+        //         bindings.push_back(instanceLayoutBinding);
+        //     }
+        //     else if (strLayout == c_strLayout_TextureCopy) //TextureCopy
+        //     {
+        //         VkDescriptorSetLayoutBinding textureCopyLayoutBinding = {};
+        //         textureCopyLayoutBinding.binding = j;
+        //         textureCopyLayoutBinding.descriptorCount = 1;
+        //         textureCopyLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        //         textureCopyLayoutBinding.pImmutableSamplers = nullptr;
+        //         textureCopyLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+
+        //         bindings.push_back(textureCopyLayoutBinding);
+        //     }
+        //     else if (strLayout == c_strLayout_Tessellation) //Tessellation
+        //     {
+        //         VkDescriptorSetLayoutBinding textureCopyLayoutBinding = {};
+        //         textureCopyLayoutBinding.binding = j;
+        //         textureCopyLayoutBinding.descriptorCount = 1;
+        //         textureCopyLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        //         textureCopyLayoutBinding.pImmutableSamplers = nullptr;
+        //         textureCopyLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+
+        //         bindings.push_back(textureCopyLayoutBinding);
+        //     }
+        //     else if (strLayout == c_strLayout_TextureVS) //TextureVS
+        //     {
+        //         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+        //         samplerLayoutBinding.binding = j;
+        //         samplerLayoutBinding.descriptorCount = 1;
+        //         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        //         samplerLayoutBinding.pImmutableSamplers = nullptr;
+        //         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+        //         bindings.push_back(samplerLayoutBinding);
+        //     }
+        //     else if (strLayout == c_strLayout_TextureTESC) //TextureTESC
+        //     {
+        //         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+        //         samplerLayoutBinding.binding = j;
+        //         samplerLayoutBinding.descriptorCount = 1;
+        //         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        //         samplerLayoutBinding.pImmutableSamplers = nullptr;
+        //         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+
+        //         bindings.push_back(samplerLayoutBinding);
+        //     }
+        //     else if (strLayout == c_strLayout_TextureTESE) //TextureTESE
+        //     {
+        //         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+        //         samplerLayoutBinding.binding = j;
+        //         samplerLayoutBinding.descriptorCount = 1;
+        //         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        //         samplerLayoutBinding.pImmutableSamplers = nullptr;
+        //         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+
+        //         bindings.push_back(samplerLayoutBinding);
+        //     }
+        //     else if (strLayout == c_strLayout_TextureFS) //TextureFS
+        //     {
+        //         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+        //         samplerLayoutBinding.binding = j;
+        //         samplerLayoutBinding.descriptorCount = 1;
+        //         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        //         samplerLayoutBinding.pImmutableSamplers = nullptr;
+        //         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+        //         bindings.push_back(samplerLayoutBinding);
+        //     }
+        //     else if (strLayout == c_strLayout_TextureCSR) //TextureCSR
+        //     {
+        //         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+        //         samplerLayoutBinding.binding = j;
+        //         samplerLayoutBinding.descriptorCount = 1;
+        //         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        //         samplerLayoutBinding.pImmutableSamplers = nullptr;
+        //         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+
+        //         bindings.push_back(samplerLayoutBinding);
+        //     }
+        //     else if (strLayout == c_strLayout_TextureCSRW) //TextureCSRW
+        //     {
+        //         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+        //         samplerLayoutBinding.binding = j;
+        //         samplerLayoutBinding.descriptorCount = 1;
+        //         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        //         samplerLayoutBinding.pImmutableSamplers = nullptr;
+        //         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+
+        //         bindings.push_back(samplerLayoutBinding);
+        //     }
+        //     else
+        //     {
+        //         String msg = "VulkanWindow::CreateDescriptorSetLayout: Wrong DescriptorSetLayout type: " + strLayout;
+        //         F_LogError(msg.c_str());
+        //         throw std::runtime_error(msg.c_str());
+        //     }
+        // }
+
+        // if (!createVkDescriptorSetLayout(bindings, vkDescriptorSetLayout))
+        // {
+        //     String msg = "VulkanWindow::CreateDescriptorSetLayout: Failed to create descriptor set layout: " + nameLayout;
+        //     F_LogError(msg.c_str());
+        //     throw std::runtime_error(msg);
+        // }
+
+        // F_LogInfo("VulkanWindow::CreateDescriptorSetLayout: Success to create descriptor set layout: [%s] !", nameLayout.c_str());
+        // return vkDescriptorSetLayout;
     }
 
 
@@ -1416,7 +1868,11 @@ namespace LostPeter
 
         , mouseButtonDownLeft(false)
         , mouseButtonDownRight(false)
-
+        
+        , cfg_isEditorCreate(false)
+        , cfg_isEditorGridShow(false)
+        , cfg_isEditorAxisShow(false)
+        , cfg_editorGridColor(0.5f, 0.5f, 0.5f, 1.0f)
         , pEditorGrid(nullptr)
         , pEditorAxis(nullptr)
     {
@@ -3691,6 +4147,12 @@ namespace LostPeter
             if (HasConfig_Imgui())
             {
                 createImgui();
+            }
+
+            //5> Editor
+            if (this->cfg_isEditorCreate)
+            {
+                createEditor();
             }
 
             this->isLoadAsset = true;
@@ -7511,6 +7973,38 @@ namespace LostPeter
             F_LogInfo("<2-4-2> VulkanWindow::createImgui_Init finish !");
         }
 
+    void VulkanWindow::createEditor()
+    {
+        F_LogInfo("**********<2-5> VulkanWindow::createEditor start **********");
+        {
+            //1> createEditor_Grid
+            createEditor_Grid();
+            
+            //2> createEditor_Axis
+            createEditor_Axis();
+        }
+        F_LogInfo("**********<2-5> VulkanWindow::createEditor finish **********");
+    }
+        void VulkanWindow::createEditor_Grid()
+        {
+            this->pEditorGrid = new EditorGrid(this);
+            this->pEditorGrid->Init();
+
+            F_LogInfo("<2-5-1> VulkanWindow::createEditor_Grid finish !");
+        }
+        void VulkanWindow::createEditor_Axis()
+        {
+            this->pEditorAxis = new EditorAxis(this);
+            this->pEditorAxis->Init();
+
+            F_LogInfo("<2-5-1> VulkanWindow::createEditor_Axis finish !");
+        }
+    void VulkanWindow::destroyEditor()
+    {
+        F_DELETE(this->pEditorGrid)
+        F_DELETE(this->pEditorAxis)
+    }
+
     void VulkanWindow::resizeWindow(int w, int h, bool force)
     {
         if (this->width == w &&
@@ -8581,27 +9075,30 @@ namespace LostPeter
             //1> cleanupSwapChain
             cleanupSwapChain();
 
-            //2> imgui
+            //2> editor
+            destroyEditor();
+
+            //3> imgui
             destroyVkDescriptorPool(this->imgui_DescriptorPool);
             this->imgui_DescriptorPool = VK_NULL_HANDLE;
 
-            //3> cleanupTexture
+            //4> cleanupTexture
             cleanupTexture();
 
-            //4> VkPipelineCache
+            //5> VkPipelineCache
             destroyVkPipelineCache(this->poPipelineCache);
             this->poPipelineCache = VK_NULL_HANDLE;
 
-            //5> DescriptorSetLayout
+            //6> DescriptorSetLayout
             destroyVkDescriptorSetLayout(this->poDescriptorSetLayout);
 
-            //6> cleanupVertexIndexBuffer
+            //7> cleanupVertexIndexBuffer
             cleanupVertexIndexBuffer();
 
-            //7> destroyTerrain
+            //8> destroyTerrain
             destroyTerrain();
             
-            //8> Semaphores
+            //9> Semaphores
             for (size_t i = 0; i < s_maxFramesInFight; i++) 
             {
                 destroyVkSemaphore(this->poRenderCompleteSemaphores[i]);
@@ -8617,29 +9114,29 @@ namespace LostPeter
             destroyVkSemaphore(this->poComputeWaitSemaphore);
             this->poComputeWaitSemaphore = VK_NULL_HANDLE;
 
-            //9> Imgui
+            //10> Imgui
             if (HasConfig_Imgui())
             {
                 ImGui_ImplVulkan_Shutdown();
 	            ImGui_ImplGlfw_Shutdown();
             }
 
-            //10> CommandPool
+            //11> CommandPool
             destroyVkCommandPool(this->poCommandPoolGraphics);
             destroyVkCommandPool(this->poCommandPoolCompute);
             
-            //11> Device
+            //12> Device
             destroyVkDevice(this->poDevice);
             this->poDevice = VK_NULL_HANDLE;
             if (s_isEnableValidationLayers)
             {
                 destroyDebugUtilsMessengerEXT(this->poInstance, this->poDebugMessenger, nullptr);
             }
-            //12> Surface
+            //13> Surface
             destroyVkSurfaceKHR(this->poSurface);
             this->poSurface = VK_NULL_HANDLE;
 
-            //13> Instance
+            //14> Instance
             destroyVkInstance(this->poInstance);
             this->poInstance = VK_NULL_HANDLE;
         }
