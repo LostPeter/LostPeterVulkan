@@ -351,19 +351,6 @@ static float g_Texture_AnimChunks[2 * g_Texture_Count] =
 
 
 /////////////////////////// DescriptorSetLayout /////////////////
-const String c_strLayout_Pass = "Pass";
-const String c_strLayout_Object = "Object";
-const String c_strLayout_Material = "Material";
-const String c_strLayout_Instance = "Instance";
-const String c_strLayout_TextureCopy = "TextureCopy";
-const String c_strLayout_Tessellation = "Tessellation";
-const String c_strLayout_TextureVS = "TextureVS";
-const String c_strLayout_TextureTESC = "TextureTESC";
-const String c_strLayout_TextureTESE = "TextureTESE";
-const String c_strLayout_TextureFS = "TextureFS";
-const String c_strLayout_TextureFrameColor = "TextureFrameColor";
-const String c_strLayout_TextureCSR = "TextureCSR";
-const String c_strLayout_TextureCSRW = "TextureCSRW";
 static const int g_DescriptorSetLayout_Count = 4;
 static const char* g_DescriptorSetLayout_Names[g_DescriptorSetLayout_Count] =
 {
@@ -1777,165 +1764,8 @@ void Vulkan_014_MultiRenderPass::createDescriptorSetLayouts()
     {
         String nameLayout(g_DescriptorSetLayout_Names[i]);
         StringVector aLayouts = FUtilString::Split(nameLayout, "-");
-        size_t count_layout = aLayouts.size();
-
-        VkDescriptorSetLayout vkDescriptorSetLayout;
-        VkDescriptorSetLayoutBindingVector bindings;
-        for (size_t j = 0; j < count_layout; j++)
-        {
-            String& strLayout = aLayouts[j];
-            if (strLayout == c_strLayout_Pass) //Pass
-            {
-                VkDescriptorSetLayoutBinding passMainLayoutBinding = {};
-                passMainLayoutBinding.binding = j;
-                passMainLayoutBinding.descriptorCount = 1;
-                passMainLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                passMainLayoutBinding.pImmutableSamplers = nullptr;
-                passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-
-                bindings.push_back(passMainLayoutBinding);
-            }
-            else if (strLayout == c_strLayout_Object) //Object
-            {
-                VkDescriptorSetLayoutBinding objectLayoutBinding = {};
-                objectLayoutBinding.binding = j;
-                objectLayoutBinding.descriptorCount = 1;
-                objectLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                objectLayoutBinding.pImmutableSamplers = nullptr;
-                objectLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-
-                bindings.push_back(objectLayoutBinding);
-            }
-            else if (strLayout == c_strLayout_Material) //Material
-            {
-                VkDescriptorSetLayoutBinding materialLayoutBinding = {};
-                materialLayoutBinding.binding = j;
-                materialLayoutBinding.descriptorCount = 1;
-                materialLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                materialLayoutBinding.pImmutableSamplers = nullptr;
-                materialLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-
-                bindings.push_back(materialLayoutBinding);
-            }
-            else if (strLayout == c_strLayout_Instance) //Instance
-            {
-                VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
-                instanceLayoutBinding.binding = j;
-                instanceLayoutBinding.descriptorCount = 1;
-                instanceLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                instanceLayoutBinding.pImmutableSamplers = nullptr;
-                instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-
-                bindings.push_back(instanceLayoutBinding);
-            }
-            else if (strLayout == c_strLayout_TextureCopy) //TextureCopy
-            {
-                VkDescriptorSetLayoutBinding textureCopyLayoutBinding = {};
-                textureCopyLayoutBinding.binding = j;
-                textureCopyLayoutBinding.descriptorCount = 1;
-                textureCopyLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                textureCopyLayoutBinding.pImmutableSamplers = nullptr;
-                textureCopyLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-
-                bindings.push_back(textureCopyLayoutBinding);
-            }
-            else if (strLayout == c_strLayout_Tessellation) //Tessellation
-            {
-                VkDescriptorSetLayoutBinding textureCopyLayoutBinding = {};
-                textureCopyLayoutBinding.binding = j;
-                textureCopyLayoutBinding.descriptorCount = 1;
-                textureCopyLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                textureCopyLayoutBinding.pImmutableSamplers = nullptr;
-                textureCopyLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-
-                bindings.push_back(textureCopyLayoutBinding);
-            }
-            else if (strLayout == c_strLayout_TextureVS) //TextureVS
-            {
-                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                samplerLayoutBinding.binding = j;
-                samplerLayoutBinding.descriptorCount = 1;
-                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                samplerLayoutBinding.pImmutableSamplers = nullptr;
-                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-                bindings.push_back(samplerLayoutBinding);
-            }
-            else if (strLayout == c_strLayout_TextureTESC) //TextureTESC
-            {
-                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                samplerLayoutBinding.binding = j;
-                samplerLayoutBinding.descriptorCount = 1;
-                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                samplerLayoutBinding.pImmutableSamplers = nullptr;
-                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-
-                bindings.push_back(samplerLayoutBinding);
-            }
-            else if (strLayout == c_strLayout_TextureTESE) //TextureTESE
-            {
-                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                samplerLayoutBinding.binding = j;
-                samplerLayoutBinding.descriptorCount = 1;
-                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                samplerLayoutBinding.pImmutableSamplers = nullptr;
-                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-
-                bindings.push_back(samplerLayoutBinding);
-            }
-            else if (strLayout == c_strLayout_TextureFS) //TextureFS
-            {
-                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                samplerLayoutBinding.binding = j;
-                samplerLayoutBinding.descriptorCount = 1;
-                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                samplerLayoutBinding.pImmutableSamplers = nullptr;
-                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-                bindings.push_back(samplerLayoutBinding);
-            }
-            else if (strLayout == c_strLayout_TextureFrameColor) //TextureFrameColor
-            {
-                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                samplerLayoutBinding.binding = j;
-                samplerLayoutBinding.descriptorCount = 1;
-                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                samplerLayoutBinding.pImmutableSamplers = nullptr;
-                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-                bindings.push_back(samplerLayoutBinding);
-            }
-            else if (strLayout == c_strLayout_TextureCSR) //TextureCSR
-            {
-                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                samplerLayoutBinding.binding = j;
-                samplerLayoutBinding.descriptorCount = 1;
-                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                samplerLayoutBinding.pImmutableSamplers = nullptr;
-                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-
-                bindings.push_back(samplerLayoutBinding);
-            }
-            else if (strLayout == c_strLayout_TextureCSRW) //TextureCSRW
-            {
-                VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                samplerLayoutBinding.binding = j;
-                samplerLayoutBinding.descriptorCount = 1;
-                samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-                samplerLayoutBinding.pImmutableSamplers = nullptr;
-                samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-
-                bindings.push_back(samplerLayoutBinding);
-            }
-            else
-            {
-                String msg = "Vulkan_014_MultiRenderPass::createDescriptorSetLayouts: Wrong DescriptorSetLayout type: " + strLayout;
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg.c_str());
-            }
-        }
-
-        if (!createVkDescriptorSetLayout(bindings, vkDescriptorSetLayout))
+        VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
+        if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
             String msg = "Vulkan_014_MultiRenderPass::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
             F_LogError(msg.c_str());
@@ -2295,7 +2125,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
         for (size_t p = 0; p < count_names; p++)
         {
             String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
-            if (nameDescriptorSet == c_strLayout_Pass) //Pass
+            if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
             {
                 VkDescriptorBufferInfo bufferInfo_Pass = {};
                 bufferInfo_Pass.buffer = this->poBuffers_PassCB[j];
@@ -2308,7 +2138,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
                                             1,
                                             bufferInfo_Pass);
             }
-            else if (nameDescriptorSet == c_strLayout_Object) //Object
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
             {
                 VkDescriptorBufferInfo bufferInfo_Object = {};
                 bufferInfo_Object.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB[j] : pRend->poBuffers_ObjectCB[j];
@@ -2321,7 +2151,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
                                             1,
                                             bufferInfo_Object);
             }
-            else if (nameDescriptorSet == c_strLayout_Material) //Material
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
             {
                 VkDescriptorBufferInfo bufferInfo_Material = {};
                 bufferInfo_Material.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_materialCB[j] : pRend->poBuffers_materialCB[j];
@@ -2334,7 +2164,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
                                             1,
                                             bufferInfo_Material);
             }
-            else if (nameDescriptorSet == c_strLayout_Instance) //Instance
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Instance)) //Instance
             {
                 VkDescriptorBufferInfo bufferInfo_Instance = {};
                 bufferInfo_Instance.buffer = this->poBuffers_InstanceCB[j]; 
@@ -2347,7 +2177,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
                                             1,
                                             bufferInfo_Instance);
             }
-            else if (nameDescriptorSet == c_strLayout_Tessellation) //Tessellation
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Tessellation)) //Tessellation
             {
                 VkDescriptorBufferInfo bufferInfo_Tessellation = {};
                 bufferInfo_Tessellation.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_tessellationCB[j] : pRend->poBuffers_tessellationCB[j];
@@ -2360,7 +2190,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
                                             1,
                                             bufferInfo_Tessellation);
             }
-            else if (nameDescriptorSet == c_strLayout_TextureVS) //TextureVS
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureVS)) //TextureVS
             {
                 ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
                 nIndexTextureVS ++;
@@ -2372,7 +2202,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                           pTexture->poTextureImageInfo);
             }
-            else if (nameDescriptorSet == c_strLayout_TextureTESC)//TextureTESC
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESC))//TextureTESC
             {
                 ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), nIndexTextureTESC);
                 nIndexTextureTESC ++;
@@ -2384,7 +2214,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                           pTexture->poTextureImageInfo);
             }
-            else if (nameDescriptorSet == c_strLayout_TextureTESE)//TextureTESE
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESE))//TextureTESE
             {
                 ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), nIndexTextureTESE);
                 nIndexTextureTESE ++;
@@ -2396,7 +2226,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                           pTexture->poTextureImageInfo);
             }
-            else if (nameDescriptorSet == c_strLayout_TextureFS) //TextureFS
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS)) //TextureFS
             {
                 ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), nIndexTextureFS);
                 nIndexTextureFS ++;
@@ -2408,7 +2238,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
                                           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                           pTexture->poTextureImageInfo);
             }
-            else if (nameDescriptorSet == c_strLayout_TextureFrameColor) //TextureFrameColor
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFrameColor)) //TextureFrameColor
             {
                 MultiRenderPass* pRenderPass = pRend->GetRenderPass(nIndexTextureFrameColor);
                 nIndexTextureFrameColor ++;
@@ -2443,7 +2273,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Compute(PipelineCompute* p
     for (size_t p = 0; p < count_names; p++)
     {
         String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[p];
-        if (nameDescriptorSet == c_strLayout_TextureCopy) //TextureCopy
+        if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCopy)) //TextureCopy
         {
             pPipelineCompute->CreateTextureCopy();
 
@@ -2458,7 +2288,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Compute(PipelineCompute* p
                                         1,
                                         bufferInfo_TextureCopy);
         }   
-        else if (nameDescriptorSet == c_strLayout_TextureCSR) //TextureCSR
+        else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSR)) //TextureCSR
         {
             ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
@@ -2471,7 +2301,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Compute(PipelineCompute* p
                                       VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                       pTexture->poTextureImageInfo);
         }
-        else if (nameDescriptorSet == c_strLayout_TextureCSRW) //TextureCSRW
+        else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW)) //TextureCSRW
         {
             ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;

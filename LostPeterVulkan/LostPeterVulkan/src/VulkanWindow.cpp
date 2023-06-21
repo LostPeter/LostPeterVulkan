@@ -26,20 +26,7 @@ namespace LostPeter
 #endif
     int VulkanWindow::s_maxFramesInFight = 2;
 
-    // const String c_strLayout_Pass = "Pass";
-    // const String c_strLayout_Object = "Object";
-    // const String c_strLayout_Material = "Material";
-    // const String c_strLayout_Instance = "Instance";
-    // const String c_strLayout_TextureCopy = "TextureCopy";
-    // const String c_strLayout_Tessellation = "Tessellation";
-    // const String c_strLayout_TextureVS = "TextureVS";
-    // const String c_strLayout_TextureTESC = "TextureTESC";
-    // const String c_strLayout_TextureTESE = "TextureTESE";
-    // const String c_strLayout_TextureFS = "TextureFS";
-    // const String c_strLayout_TextureCSR = "TextureCSR";
-    // const String c_strLayout_TextureCSRW = "TextureCSRW";
-
-
+    
     /////////////////////////// ModelMeshSub //////////////////////
     VulkanWindow::ModelMeshSub::ModelMeshSub(ModelMesh* _pMesh, 
                                              const String& _nameMeshSub,
@@ -1376,7 +1363,7 @@ namespace LostPeter
         this->pPipelineGraphics = new PipelineGraphics(this->pWindow);
         this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
         this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
-        this->pPipelineGraphics->poDescriptorSetLayout = this->pWindow->CreateDescriptorSetLayout(this->pPipelineGraphics->poDescriptorSetLayoutNames);
+        this->pPipelineGraphics->poDescriptorSetLayout = this->pWindow->CreateDescriptorSetLayout(this->nameDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSetLayoutNames);
         if (this->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
         {
             String msg = "VulkanWindow::initPipelineGraphics: Can not create VkDescriptorSetLayout by name: " + this->pPipelineGraphics->nameDescriptorSetLayout;
@@ -1529,165 +1516,91 @@ namespace LostPeter
         }
     }
 
-    VkDescriptorSetLayout VulkanWindow::CreateDescriptorSetLayout(const StringVector* pNamesDescriptorSetLayout)
+    VkDescriptorSetLayout VulkanWindow::CreateDescriptorSetLayout(const String& nameLayout, const StringVector* pNamesDescriptorSetLayout)
     {
-        return VK_NULL_HANDLE;
+        VkDescriptorSetLayout vkDescriptorSetLayout;
+        VkDescriptorSetLayoutBindingVector bindings;
+        size_t count_layout = pNamesDescriptorSetLayout->size();
+        for (size_t i = 0; i < count_layout; i++)
+        {
+            const String& strLayout = (*pNamesDescriptorSetLayout)[i];
+            if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectTerrain)) //ObjectTerrain
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Instance)) //Instance
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCopy)) //TextureCopy
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_COMPUTE_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Tessellation)) //Tessellation
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Geometry)) //Geometry
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_GEOMETRY_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureVS)) //TextureVS
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESC)) //TextureTESC
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, nullptr));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESE)) //TextureTESE
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, nullptr));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS)) //TextureFS
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFrameColor)) //TextureFrameColor
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSR)) //TextureCSR
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW)) //TextureCSRW
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Image(i, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr));
+            }
+            else
+            {
+                String msg = "VulkanWindow::CreateDescriptorSetLayout: Wrong DescriptorSetLayout type: " + strLayout;
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+        }
 
-        // VkDescriptorSetLayout vkDescriptorSetLayout;
-        // VkDescriptorSetLayoutBindingVector bindings;
-        // size_t count_layout = pNamesDescriptorSetLayout->size();
-        // for (size_t i = 0; i < count_layout; i++)
-        // {
-        //     String& strLayout = (*pNamesDescriptorSetLayout)[i];
-        //     if (strLayout == c_strLayout_Pass) //Pass
-        //     {
-        //         VkDescriptorSetLayoutBinding passMainLayoutBinding = {};
-        //         passMainLayoutBinding.binding = j;
-        //         passMainLayoutBinding.descriptorCount = 1;
-        //         passMainLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        //         passMainLayoutBinding.pImmutableSamplers = nullptr;
-        //         passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+        if (!createVkDescriptorSetLayout(bindings, vkDescriptorSetLayout))
+        {
+            String msg = "VulkanWindow::CreateDescriptorSetLayout: Failed to create descriptor set layout: " + nameLayout;
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
 
-        //         bindings.push_back(passMainLayoutBinding);
-        //     }
-        //     else if (strLayout == c_strLayout_Object) //Object
-        //     {
-        //         VkDescriptorSetLayoutBinding objectLayoutBinding = {};
-        //         objectLayoutBinding.binding = j;
-        //         objectLayoutBinding.descriptorCount = 1;
-        //         objectLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        //         objectLayoutBinding.pImmutableSamplers = nullptr;
-        //         objectLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-
-        //         bindings.push_back(objectLayoutBinding);
-        //     }
-        //     else if (strLayout == c_strLayout_Material) //Material
-        //     {
-        //         VkDescriptorSetLayoutBinding materialLayoutBinding = {};
-        //         materialLayoutBinding.binding = j;
-        //         materialLayoutBinding.descriptorCount = 1;
-        //         materialLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        //         materialLayoutBinding.pImmutableSamplers = nullptr;
-        //         materialLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-
-        //         bindings.push_back(materialLayoutBinding);
-        //     }
-        //     else if (strLayout == c_strLayout_Instance) //Instance
-        //     {
-        //         VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
-        //         instanceLayoutBinding.binding = j;
-        //         instanceLayoutBinding.descriptorCount = 1;
-        //         instanceLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        //         instanceLayoutBinding.pImmutableSamplers = nullptr;
-        //         instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-
-        //         bindings.push_back(instanceLayoutBinding);
-        //     }
-        //     else if (strLayout == c_strLayout_TextureCopy) //TextureCopy
-        //     {
-        //         VkDescriptorSetLayoutBinding textureCopyLayoutBinding = {};
-        //         textureCopyLayoutBinding.binding = j;
-        //         textureCopyLayoutBinding.descriptorCount = 1;
-        //         textureCopyLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        //         textureCopyLayoutBinding.pImmutableSamplers = nullptr;
-        //         textureCopyLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-
-        //         bindings.push_back(textureCopyLayoutBinding);
-        //     }
-        //     else if (strLayout == c_strLayout_Tessellation) //Tessellation
-        //     {
-        //         VkDescriptorSetLayoutBinding textureCopyLayoutBinding = {};
-        //         textureCopyLayoutBinding.binding = j;
-        //         textureCopyLayoutBinding.descriptorCount = 1;
-        //         textureCopyLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        //         textureCopyLayoutBinding.pImmutableSamplers = nullptr;
-        //         textureCopyLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-
-        //         bindings.push_back(textureCopyLayoutBinding);
-        //     }
-        //     else if (strLayout == c_strLayout_TextureVS) //TextureVS
-        //     {
-        //         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        //         samplerLayoutBinding.binding = j;
-        //         samplerLayoutBinding.descriptorCount = 1;
-        //         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        //         samplerLayoutBinding.pImmutableSamplers = nullptr;
-        //         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-        //         bindings.push_back(samplerLayoutBinding);
-        //     }
-        //     else if (strLayout == c_strLayout_TextureTESC) //TextureTESC
-        //     {
-        //         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        //         samplerLayoutBinding.binding = j;
-        //         samplerLayoutBinding.descriptorCount = 1;
-        //         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        //         samplerLayoutBinding.pImmutableSamplers = nullptr;
-        //         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-
-        //         bindings.push_back(samplerLayoutBinding);
-        //     }
-        //     else if (strLayout == c_strLayout_TextureTESE) //TextureTESE
-        //     {
-        //         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        //         samplerLayoutBinding.binding = j;
-        //         samplerLayoutBinding.descriptorCount = 1;
-        //         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        //         samplerLayoutBinding.pImmutableSamplers = nullptr;
-        //         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-
-        //         bindings.push_back(samplerLayoutBinding);
-        //     }
-        //     else if (strLayout == c_strLayout_TextureFS) //TextureFS
-        //     {
-        //         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        //         samplerLayoutBinding.binding = j;
-        //         samplerLayoutBinding.descriptorCount = 1;
-        //         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        //         samplerLayoutBinding.pImmutableSamplers = nullptr;
-        //         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-        //         bindings.push_back(samplerLayoutBinding);
-        //     }
-        //     else if (strLayout == c_strLayout_TextureCSR) //TextureCSR
-        //     {
-        //         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        //         samplerLayoutBinding.binding = j;
-        //         samplerLayoutBinding.descriptorCount = 1;
-        //         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        //         samplerLayoutBinding.pImmutableSamplers = nullptr;
-        //         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-
-        //         bindings.push_back(samplerLayoutBinding);
-        //     }
-        //     else if (strLayout == c_strLayout_TextureCSRW) //TextureCSRW
-        //     {
-        //         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        //         samplerLayoutBinding.binding = j;
-        //         samplerLayoutBinding.descriptorCount = 1;
-        //         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-        //         samplerLayoutBinding.pImmutableSamplers = nullptr;
-        //         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-
-        //         bindings.push_back(samplerLayoutBinding);
-        //     }
-        //     else
-        //     {
-        //         String msg = "VulkanWindow::CreateDescriptorSetLayout: Wrong DescriptorSetLayout type: " + strLayout;
-        //         F_LogError(msg.c_str());
-        //         throw std::runtime_error(msg.c_str());
-        //     }
-        // }
-
-        // if (!createVkDescriptorSetLayout(bindings, vkDescriptorSetLayout))
-        // {
-        //     String msg = "VulkanWindow::CreateDescriptorSetLayout: Failed to create descriptor set layout: " + nameLayout;
-        //     F_LogError(msg.c_str());
-        //     throw std::runtime_error(msg);
-        // }
-
-        // F_LogInfo("VulkanWindow::CreateDescriptorSetLayout: Success to create descriptor set layout: [%s] !", nameLayout.c_str());
-        // return vkDescriptorSetLayout;
+        F_LogInfo("VulkanWindow::CreateDescriptorSetLayout: Success to create descriptor set layout: [%s] !", nameLayout.c_str());
+        return vkDescriptorSetLayout;
     }
 
 
@@ -3331,57 +3244,18 @@ namespace LostPeter
             return;
         }
 
-        //0> PassConstants
-        VkDescriptorSetLayoutBinding passMainLayoutBinding = {};
-        passMainLayoutBinding.binding = 0;
-        passMainLayoutBinding.descriptorCount = 1;
-        passMainLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        passMainLayoutBinding.pImmutableSamplers = nullptr;
-        passMainLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-
-        //1> ObjectConstants
-        VkDescriptorSetLayoutBinding objectLayoutBinding = {};
-        objectLayoutBinding.binding = 1;
-        objectLayoutBinding.descriptorCount = 1;
-        objectLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        objectLayoutBinding.pImmutableSamplers = nullptr;
-        objectLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-
-        //2> MaterialConstants
-        VkDescriptorSetLayoutBinding materialLayoutBinding = {};
-        materialLayoutBinding.binding = 2;
-        materialLayoutBinding.descriptorCount = 1;
-        materialLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        materialLayoutBinding.pImmutableSamplers = nullptr;
-        materialLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-
-        //3> InstanceConstants
-        VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
-        instanceLayoutBinding.binding = 3;
-        instanceLayoutBinding.descriptorCount = 1;
-        instanceLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        instanceLayoutBinding.pImmutableSamplers = nullptr;
-        instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-
-        //4> Texture Sampler
-        VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        samplerLayoutBinding.binding = 4;
-        samplerLayoutBinding.descriptorCount = 1;
-        samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        samplerLayoutBinding.pImmutableSamplers = nullptr;
-        samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-        VkDescriptorSetLayoutBindingVector bindings;
-        bindings.push_back(passMainLayoutBinding);
-        bindings.push_back(objectLayoutBinding);
-        bindings.push_back(materialLayoutBinding);
-        bindings.push_back(instanceLayoutBinding);
+        StringVector aNameDescriptorSets;
+        aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass));
+        aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object));
+        aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material));
+        aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Instance));
         if (!this->cfg_texture_Path.empty())
         {
-            bindings.push_back(samplerLayoutBinding);
+            aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS));
         }
-        
-        if (!createVkDescriptorSetLayout(bindings, this->poDescriptorSetLayout))
+
+        this->poDescriptorSetLayout = CreateDescriptorSetLayout("DescriptorSetLayout_Default", &aNameDescriptorSets);
+        if (this->poDescriptorSetLayout == VK_NULL_HANDLE)
         {
             String msg = "*********************** VulkanWindow::createDescriptorSetLayout_Default: Failed to create descriptor set layout !";
             F_LogError(msg.c_str());
@@ -4616,39 +4490,12 @@ namespace LostPeter
 
             //1> poTerrainComputeDescriptorSetLayout
             {
-                VkDescriptorSetLayoutBindingVector bindings;
-                //(0) TextureCopyConstants
-                {
-                    VkDescriptorSetLayoutBinding textureCopyLayoutBinding = {};
-                    textureCopyLayoutBinding.binding = 0;
-                    textureCopyLayoutBinding.descriptorCount = 1;
-                    textureCopyLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                    textureCopyLayoutBinding.pImmutableSamplers = nullptr;
-                    textureCopyLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-                    bindings.push_back(textureCopyLayoutBinding);
-                }
-                //(1) TextureCSR
-                {
-                    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                    samplerLayoutBinding.binding = 1;
-                    samplerLayoutBinding.descriptorCount = 1;
-                    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                    samplerLayoutBinding.pImmutableSamplers = nullptr;
-                    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-                    bindings.push_back(samplerLayoutBinding);
-                }
-                //(2) TextureCSRW
-                {
-                    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                    samplerLayoutBinding.binding = 2;
-                    samplerLayoutBinding.descriptorCount = 1;
-                    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-                    samplerLayoutBinding.pImmutableSamplers = nullptr;
-                    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-                    bindings.push_back(samplerLayoutBinding);
-                }
-
-                if (!createVkDescriptorSetLayout(bindings, this->poTerrainComputeDescriptorSetLayout))
+                StringVector aNameDescriptorSets;
+                aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCopy));
+                aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSR));
+                aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW));
+                this->poTerrainComputeDescriptorSetLayout = CreateDescriptorSetLayout("DescriptorSetLayout_TerrainCompute", &aNameDescriptorSets);
+                if (this->poTerrainComputeDescriptorSetLayout == VK_NULL_HANDLE)
                 {
                     String msg = "*********************** VulkanWindow::setupTerrainComputePipeline: Failed to create descriptor set layout !";
                     F_LogError(msg.c_str());
@@ -4764,79 +4611,16 @@ namespace LostPeter
 
             //1> poTerrainGraphicsDescriptorSetLayout
             {
-                VkDescriptorSetLayoutBindingVector bindings;
-                //(0) PassConstants
-                {
-                    VkDescriptorSetLayoutBinding passConstants = {};
-                    passConstants.binding = 0;
-                    passConstants.descriptorCount = 1;
-                    passConstants.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                    passConstants.pImmutableSamplers = nullptr;
-                    passConstants.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-                    bindings.push_back(passConstants);
-                }
-                //(1) TerrainObjectConstants
-                {
-                    VkDescriptorSetLayoutBinding terrainObjectConstants = {};
-                    terrainObjectConstants.binding = 1;
-                    terrainObjectConstants.descriptorCount = 1;
-                    terrainObjectConstants.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                    terrainObjectConstants.pImmutableSamplers = nullptr;
-                    terrainObjectConstants.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-                    bindings.push_back(terrainObjectConstants);
-                }
-                //(2) MaterialConstants
-                {
-                    VkDescriptorSetLayoutBinding materialConstants = {};
-                    materialConstants.binding = 2;
-                    materialConstants.descriptorCount = 1;
-                    materialConstants.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                    materialConstants.pImmutableSamplers = nullptr;
-                    materialConstants.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-                    bindings.push_back(materialConstants);
-                }
-                //(3) InstanceConstants
-                {
-                    VkDescriptorSetLayoutBinding instanceConstants = {};
-                    instanceConstants.binding = 3;
-                    instanceConstants.descriptorCount = 1;
-                    instanceConstants.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                    instanceConstants.pImmutableSamplers = nullptr;
-                    instanceConstants.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-                    bindings.push_back(instanceConstants);
-                }
-                //(4) texture2DArrayDiffuse
-                {
-                    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                    samplerLayoutBinding.binding = 4;
-                    samplerLayoutBinding.descriptorCount = 1;
-                    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                    samplerLayoutBinding.pImmutableSamplers = nullptr;
-                    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-                    bindings.push_back(samplerLayoutBinding);
-                }
-                //(5) texture2DArrayNormal
-                {
-                    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                    samplerLayoutBinding.binding = 5;
-                    samplerLayoutBinding.descriptorCount = 1;
-                    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                    samplerLayoutBinding.pImmutableSamplers = nullptr;
-                    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-                    bindings.push_back(samplerLayoutBinding);
-                }
-                //(6) texture2DArrayControl
-                {
-                    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-                    samplerLayoutBinding.binding = 6;
-                    samplerLayoutBinding.descriptorCount = 1;
-                    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                    samplerLayoutBinding.pImmutableSamplers = nullptr;
-                    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-                    bindings.push_back(samplerLayoutBinding);
-                }
-
-                if (!createVkDescriptorSetLayout(bindings, this->poTerrainGraphicsDescriptorSetLayout))
+                StringVector aNameDescriptorSets;
+                aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass));
+                aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectTerrain));
+                aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material));
+                aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Instance));
+                aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS));
+                aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS));
+                aNameDescriptorSets.push_back(Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS));
+                this->poTerrainGraphicsDescriptorSetLayout = CreateDescriptorSetLayout("DescriptorSetLayout_TerrainGraphics", &aNameDescriptorSets);
+                if (this->poTerrainGraphicsDescriptorSetLayout == VK_NULL_HANDLE)
                 {
                     String msg = "*********************** VulkanWindow::setupTerrainGraphicsPipeline: Failed to create descriptor set layout !";
                     F_LogError(msg.c_str());
@@ -7788,6 +7572,60 @@ namespace LostPeter
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
+            }
+
+            VkDescriptorSetLayoutBinding VulkanWindow::createVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
+                                                                                                  VkDescriptorType descriptorType,
+                                                                                                  uint32_t descriptorCount,
+                                                                                                  VkShaderStageFlags stageFlags)
+            {
+                VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+                createVkDescriptorSetLayoutBinding_Uniform(descriptorSetLayoutBinding,
+                                                           binding,
+                                                           descriptorType,
+                                                           descriptorCount,
+                                                           stageFlags);
+                return descriptorSetLayoutBinding;
+            }
+            void VulkanWindow::createVkDescriptorSetLayoutBinding_Uniform(VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding,
+                                                                          uint32_t binding,
+                                                                          VkDescriptorType descriptorType,
+                                                                          uint32_t descriptorCount,
+                                                                          VkShaderStageFlags stageFlags)
+            {
+                descriptorSetLayoutBinding.binding = binding;
+                descriptorSetLayoutBinding.descriptorType = descriptorType;
+                descriptorSetLayoutBinding.descriptorCount = descriptorCount;
+                descriptorSetLayoutBinding.stageFlags = stageFlags;
+                descriptorSetLayoutBinding.pImmutableSamplers = nullptr;
+            }
+            VkDescriptorSetLayoutBinding VulkanWindow::createVkDescriptorSetLayoutBinding_Image(uint32_t binding,
+                                                                                                VkDescriptorType descriptorType,
+                                                                                                uint32_t descriptorCount,
+                                                                                                VkShaderStageFlags stageFlags,
+                                                                                                VkSampler* pImmutableSamplers)
+            {
+                VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+                createVkDescriptorSetLayoutBinding_Image(descriptorSetLayoutBinding,
+                                                         binding,
+                                                         descriptorType,
+                                                         descriptorCount,
+                                                         stageFlags,
+                                                         pImmutableSamplers);
+                return descriptorSetLayoutBinding;
+            }
+            void VulkanWindow::createVkDescriptorSetLayoutBinding_Image(VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding,
+                                                                        uint32_t binding,
+                                                                        VkDescriptorType descriptorType,
+                                                                        uint32_t descriptorCount,
+                                                                        VkShaderStageFlags stageFlags,
+                                                                        VkSampler* pImmutableSamplers)
+            {
+                descriptorSetLayoutBinding.binding = binding;
+                descriptorSetLayoutBinding.descriptorType = descriptorType;
+                descriptorSetLayoutBinding.descriptorCount = descriptorCount;
+                descriptorSetLayoutBinding.stageFlags = stageFlags;
+                descriptorSetLayoutBinding.pImmutableSamplers = pImmutableSamplers;
             }
 
             void VulkanWindow::pushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,

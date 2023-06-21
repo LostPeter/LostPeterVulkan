@@ -374,7 +374,7 @@ namespace LostPeter
             VkShaderModuleVector aShaderModules;
             VkShaderModuleMap mapShaderModules;
 
-            //DescriptorSetLayout
+            //DescriptorSetLayouts
             String nameDescriptorSetLayout; 
             StringVector aNameDescriptorSetLayouts;
 
@@ -490,7 +490,7 @@ namespace LostPeter
 
         
         //DescriptorSetLayout
-        virtual VkDescriptorSetLayout CreateDescriptorSetLayout(const StringVector* pNamesDescriptorSetLayout);
+        virtual VkDescriptorSetLayout CreateDescriptorSetLayout(const String& nameLayout, const StringVector* pNamesDescriptorSetLayout);
 
 
     public: 
@@ -1384,6 +1384,27 @@ namespace LostPeter
 
                         virtual void createVkDescriptorSet(VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSet& vkDescriptorSet);
                         virtual void createVkDescriptorSets(VkDescriptorSetLayout vkDescriptorSetLayout, VkDescriptorSetVector& aDescriptorSets);
+
+                        virtual VkDescriptorSetLayoutBinding createVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
+                                                                                                        VkDescriptorType descriptorType,
+                                                                                                        uint32_t descriptorCount,
+                                                                                                        VkShaderStageFlags stageFlags);
+                        virtual void createVkDescriptorSetLayoutBinding_Uniform(VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding,
+                                                                                uint32_t binding,
+                                                                                VkDescriptorType descriptorType,
+                                                                                uint32_t descriptorCount,
+                                                                                VkShaderStageFlags stageFlags);
+                        virtual VkDescriptorSetLayoutBinding createVkDescriptorSetLayoutBinding_Image(uint32_t binding,
+                                                                                                      VkDescriptorType descriptorType,
+                                                                                                      uint32_t descriptorCount,
+                                                                                                      VkShaderStageFlags stageFlags,
+                                                                                                      VkSampler* pImmutableSamplers);
+                        virtual void createVkDescriptorSetLayoutBinding_Image(VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding,
+                                                                              uint32_t binding,
+                                                                              VkDescriptorType descriptorType,
+                                                                              uint32_t descriptorCount,
+                                                                              VkShaderStageFlags stageFlags,
+                                                                              VkSampler* pImmutableSamplers);
 
                         virtual void pushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,
                                                                  VkDescriptorSet dstSet,

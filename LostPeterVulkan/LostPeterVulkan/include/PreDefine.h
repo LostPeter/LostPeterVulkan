@@ -307,13 +307,13 @@ namespace LostPeter
 
     enum VulkanMSAASampleCountType
     {
-        Vulkan_MSAASampleCount_1_Bit = 0,
-        Vulkan_MSAASampleCount_2_Bit,
-        Vulkan_MSAASampleCount_4_Bit,
-        Vulkan_MSAASampleCount_8_Bit,
-        Vulkan_MSAASampleCount_16_Bit,
-        Vulkan_MSAASampleCount_32_Bit,
-        Vulkan_MSAASampleCount_64_Bit,
+        Vulkan_MSAASampleCount_1_Bit = 0,                   //0: 1_Bit
+        Vulkan_MSAASampleCount_2_Bit,                       //1: 2_Bit
+        Vulkan_MSAASampleCount_4_Bit,                       //2: 4_Bit
+        Vulkan_MSAASampleCount_8_Bit,                       //3: 8_Bit
+        Vulkan_MSAASampleCount_16_Bit,                      //4: 16_Bit
+        Vulkan_MSAASampleCount_32_Bit,                      //5: 32_Bit
+        Vulkan_MSAASampleCount_64_Bit,                      //6: 64_Bit
 
         Vulkan_MSAASampleCount_Count,
     };
@@ -325,12 +325,12 @@ namespace LostPeter
     
     enum VulkanShaderType
     {
-        Vulkan_Shader_Vertex = 0,
-        Vulkan_Shader_TessellationControl,
-        Vulkan_Shader_TessellationEvaluation,
-        Vulkan_Shader_Geometry,
-        Vulkan_Shader_Fragment,
-        Vulkan_Shader_Compute,
+        Vulkan_Shader_Vertex = 0,                           //0: Vertex
+        Vulkan_Shader_TessellationControl,                  //1: TessellationControl
+        Vulkan_Shader_TessellationEvaluation,               //2: TessellationEvaluation
+        Vulkan_Shader_Geometry,                             //3: Geometry
+        Vulkan_Shader_Fragment,                             //4: Fragment
+        Vulkan_Shader_Compute,                              //5: Compute
 
         Vulkan_Shader_Count,
     };
@@ -338,6 +338,31 @@ namespace LostPeter
     const String& Util_GetShaderTypeName(int type);
     VulkanShaderType Util_ParseShaderType(const String& strName);
     VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(VulkanShaderType type);
+
+
+    enum VulkanDescriptorSetType
+    {
+        Vulkan_DescriptorSet_Pass = 0,                      //0:  Pass
+        Vulkan_DescriptorSet_Object,                        //1:  Object
+        Vulkan_DescriptorSet_ObjectTerrain,                 //2:  ObjectTerrain
+        Vulkan_DescriptorSet_Material,                      //3:  Material
+        Vulkan_DescriptorSet_Instance,                      //4:  Instance
+        Vulkan_DescriptorSet_TextureCopy,                   //5:  TextureCopy
+        Vulkan_DescriptorSet_Tessellation,                  //6:  Tessellation
+        Vulkan_DescriptorSet_Geometry,                      //7:  Geometry
+        Vulkan_DescriptorSet_TextureVS,                     //8:  TextureVS
+        Vulkan_DescriptorSet_TextureTESC,                   //9:  TextureTESC
+        Vulkan_DescriptorSet_TextureTESE,                   //10: TextureTESE
+        Vulkan_DescriptorSet_TextureFS,                     //11: TextureFS
+        Vulkan_DescriptorSet_TextureFrameColor,             //12: TextureFrameColor
+        Vulkan_DescriptorSet_TextureCSR,                    //13: TextureCSR
+        Vulkan_DescriptorSet_TextureCSRW,                   //14: TextureCSRW
+
+        Vulkan_DescriptorSet_Count,
+    };
+    const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type);
+    const String& Util_GetDescriptorSetTypeName(int type);
+    VulkanDescriptorSetType Util_ParseDescriptorSetType(const String& strName);
 
 
 ////////////////////////////// Vulkan //////////////////////////////

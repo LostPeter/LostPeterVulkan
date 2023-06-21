@@ -447,13 +447,13 @@ namespace LostPeter
     //VulkanMSAASampleCountType
     static String s_nameMSAASampleCounts[] = 
     {
-        "1-Bit",
-        "2-Bit",
-        "4-Bit",
-        "8-Bit",
-        "16-Bit",
-        "32-Bit",
-        "64-Bit",
+        "1-Bit",                //0: 1_Bit
+        "2-Bit",                //1: 2_Bit
+        "4-Bit",                //2: 4_Bit
+        "8-Bit",                //3: 8_Bit
+        "16-Bit",               //4: 16_Bit
+        "32-Bit",               //5: 32_Bit
+        "64-Bit",               //6: 64_Bit
     };
     const String& Util_GetMSAASampleCountTypeName(VulkanMSAASampleCountType type)
     {
@@ -493,12 +493,12 @@ namespace LostPeter
     //VulkanShaderType
     static String s_nameShaders[] = 
     {
-        "vert",
-        "tesc",
-        "tese",
-        "geom",
-        "frag",
-        "comp",
+        "vert",                 //0: Vertex
+        "tesc",                 //1: TessellationControl
+        "tese",                 //2: TessellationEvaluation
+        "geom",                 //3: Geometry
+        "frag",                 //4: Fragment
+        "comp",                 //5: Compute
     };
     const String& Util_GetShaderTypeName(VulkanShaderType type)
     {
@@ -533,6 +533,44 @@ namespace LostPeter
         return VK_SHADER_STAGE_VERTEX_BIT;
     }
 
+
+    //VulkanDescriptorSetType
+    static String s_nameDescriptorSets[] = 
+    {
+        "Pass",                     //0:   Pass
+        "Object",                   //2:   Object
+        "ObjectTerrain",            //3:   ObjectTerrain
+        "Material",                 //4:   Material
+        "Instance",                 //5:   Instance
+        "TextureCopy",              //6:   TextureCopy
+        "Tessellation",             //7:   Tessellation
+        "Geometry",                 //8:   Geometry
+        "TextureVS",                //9:   TextureVS
+        "TextureTESC",              //10:  TextureTESC
+        "TextureTESE",              //11:  TextureTESE
+        "TextureFS",                //12:  TextureFS
+        "TextureFrameColor",        //13:  TextureFrameColor
+        "TextureCSR",               //14:  TextureCSR
+        "TextureCSRW",              //15:  TextureCSRW
+    };
+    const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type)
+    {
+        return s_nameDescriptorSets[(int)type];
+    }
+    const String& Util_GetDescriptorSetTypeName(int type)
+    {
+        return s_nameDescriptorSets[type];
+    }
+    VulkanDescriptorSetType Util_ParseDescriptorSetType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)Vulkan_DescriptorSet_Count; i++)
+        {
+            if (s_nameDescriptorSets[i] == strName)
+                return (VulkanDescriptorSetType)(i);
+        }
+        F_Assert(false && "Util_ParseDescriptorSetType: Wrong type name !")
+        return Vulkan_DescriptorSet_Pass;
+    }
 
 ////////////////////////////// Vulkan //////////////////////////////
     const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(FMeshVertexType type)
