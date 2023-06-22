@@ -377,6 +377,10 @@ namespace LostPeter
             //DescriptorSetLayouts
             String nameDescriptorSetLayout; 
             StringVector aNameDescriptorSetLayouts;
+            VkDescriptorSetLayout poDescriptorSetLayout;
+
+            //PipelineLayout
+            VkPipelineLayout poPipelineLayout;
 
             //PipelineGraphics
             PipelineGraphics* pPipelineGraphics;
@@ -395,12 +399,17 @@ namespace LostPeter
             virtual void initMeshes();
             virtual void initShaders();
             virtual void initBufferUniforms() = 0;
+            virtual void initDescriptorSetLayout();
+            virtual void initPipelineLayout();
             virtual void initPipelineGraphics() = 0;
+            virtual void updateDescriptorSets_Graphics() = 0;
 
             virtual void destroyMeshes();
             virtual void destroyShaders();
             virtual void destroyBufferUniforms() = 0;
             virtual void destroyPipelineGraphics();
+            virtual void destroyPipelineLayout();
+            virtual void destroyDescriptorSetLayout();
         };
 
 
@@ -412,23 +421,12 @@ namespace LostPeter
             virtual ~EditorGrid();
 
         public:
-            struct GridObjectConstant
-            {
-                FMatrix4 g_MatWorld;
-                FColor color;
-
-                GridObjectConstant()
-                    : g_MatWorld(FMath::Identity4x4())
-                    , color(0.5f, 0.5f, 0.5f, 1.0f)
-                {
-                    
-                }
-            };
-
         public:
-            GridObjectConstant gridObjectCB;
+            GridObjectConstants gridObjectCB;
             VkBuffer poBuffers_ObjectCB;
             VkDeviceMemory poBuffersMemory_ObjectCB;
+
+
 
         public:
             void Destroy();
@@ -443,8 +441,10 @@ namespace LostPeter
             virtual void initConfigs();
             virtual void initBufferUniforms();
             virtual void initPipelineGraphics();
+            virtual void updateDescriptorSets_Graphics();
 
             virtual void destroyBufferUniforms();
+            virtual void destroyPipelineGraphics();
         };
 
         /////////////////////////// EditorAxis ////////////////////////
@@ -473,8 +473,10 @@ namespace LostPeter
             virtual void initConfigs();
             virtual void initBufferUniforms();
             virtual void initPipelineGraphics();
+            virtual void updateDescriptorSets_Graphics();
 
             virtual void destroyBufferUniforms();
+            virtual void destroyPipelineGraphics();
         };
 
     public:
@@ -485,6 +487,29 @@ namespace LostPeter
         //ShaderModule
         virtual VkShaderModule CreateShaderModule(const ShaderModuleInfo& si);
         virtual void CreateShaderModules(const ShaderModuleInfoVector& aSIs, VkShaderModuleVector& aShaderModules, VkShaderModuleMap& mapShaderModules);
+
+        //PipelineShaderStageCreateInfos
+        virtual bool CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                                          const String& nameShaderTesc,
+                                                          const String& nameShaderTese,
+                                                          const String& nameShaderGeom,
+                                                          const String& nameShaderFrag,
+                                                          const String& nameShaderComp,
+                                                          VkShaderModuleMap& mapVkShaderModules,
+                                                          VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
+                                                          VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                                          VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
+        virtual bool CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                                          const String& nameShaderTesc,
+                                                          const String& nameShaderTese,
+                                                          const String& nameShaderGeom,
+                                                          const String& nameShaderFrag,
+                                                          VkShaderModuleMap& mapVkShaderModules,
+                                                          VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics);
+        virtual bool CreatePipelineShaderStageCreateInfos(const String& nameShaderComp,
+                                                          VkShaderModuleMap& mapVkShaderModules,
+                                                          VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                                          VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
 
         //Texture
 
@@ -739,17 +764,7 @@ namespace LostPeter
         VkSampler poTerrainControlImageSampler;
         VkDescriptorImageInfo poTerrainControlImageInfo;
 
-        struct TerrainObjectConstants
-        {
-            FMatrix4 g_MatWorld;
         
-
-            TerrainObjectConstants()
-                : g_MatWorld(FMath::Identity4x4())
-            {
-
-            }
-        };
         std::vector<TerrainObjectConstants> terrainObjectCBs;
         VkBuffer poBuffer_TerrainObjectCB;
         VkDeviceMemory poBufferMemory_TerrainObjectCB;
@@ -1491,6 +1506,7 @@ namespace LostPeter
                         virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer);
+                    virtual void updateRenderPass_Editor(VkCommandBuffer& commandBuffer);
 
                         virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 
                                                      const VkRenderPass& renderPass, 

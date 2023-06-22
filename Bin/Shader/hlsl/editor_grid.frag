@@ -77,22 +77,22 @@ struct PassConstants
     LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 };
 
-[[vk::binding(0)]]cbuffer passConsts               : register(b0) 
+[[vk::binding(0)]]cbuffer passConsts                : register(b0) 
 {
     PassConstants passConsts;
 }
 
 
-//GridObjectConstant
-struct GridObjectConstant
+//GridObjectConstants
+struct GridObjectConstants
 {
     float4x4 g_MatWorld;
     float4 color;
 };
 
-[[vk::binding(1)]]cbuffer gridObjectConstant        : register(b1) 
+[[vk::binding(1)]]cbuffer gridObjectConsts          : register(b1) 
 {
-    GridObjectConstant gridObjectConstant;
+    GridObjectConstants gridObjectConsts;
 }
 
 
@@ -118,7 +118,7 @@ float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
 
     CameraConstants cam = passConsts.g_Cameras[viewIndex];
     float3 viewPos = cam.posEyeWorld;
-    float4 color = gridObjectConstant.color;
+    float4 color = gridObjectConsts.color;
 
 	fDivs = divisions / pow(2, round((abs(viewPos.y) - step / subdivisions) / step));
 	float4 vGrid1 = Grid(input, fDivs, color) + Grid(input, fDivs / subdivisions, color);

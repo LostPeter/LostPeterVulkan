@@ -82,16 +82,16 @@ struct PassConstants
 }
 
 
-//GridObjectConstant
-struct GridObjectConstant
+//GridObjectConstants
+struct GridObjectConstants
 {
     float4x4 g_MatWorld;
     float4 color;
 };
 
-[[vk::binding(1)]]cbuffer gridObjectConstant        : register(b1) 
+[[vk::binding(1)]]cbuffer gridObjectConsts          : register(b1) 
 {
-    GridObjectConstant gridObjectConstant;
+    GridObjectConstants gridObjectConsts;
 }
 
 
@@ -111,7 +111,7 @@ VSOutput main(VSInput input,
 
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
 
-    float4 outWorldPos = mul(gridObjectConstant.g_MatWorld, float4(input.inPosition, 1.0));
+    float4 outWorldPos = mul(gridObjectConsts.g_MatWorld, float4(input.inPosition, 1.0));
     output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, outWorldPos));
     output.outWorldPos = outWorldPos.xyz / outWorldPos.w;
     output.outColor = input.inColor;

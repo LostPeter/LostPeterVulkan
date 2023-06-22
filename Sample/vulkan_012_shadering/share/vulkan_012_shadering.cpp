@@ -954,11 +954,12 @@ void Vulkan_012_Shadering::createGraphicsPipeline_Custom()
         String nameShaderTese = g_ObjectNameShaderModules[6 * i + 2];
         String nameShaderGeom = g_ObjectNameShaderModules[6 * i + 3];
         String nameShaderFrag = g_ObjectNameShaderModules[6 * i + 4];
-        if (!createPipelineShaderStageCreateInfos(nameShaderVert,
+        if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
                                                   nameShaderTesc,
                                                   nameShaderTese,
                                                   nameShaderGeom,
                                                   nameShaderFrag,
+                                                  m_mapVkShaderModules,
                                                   pModelObject->aShaderStageCreateInfos_Graphics))
         {
             String msg = "Vulkan_012_Shadering::createGraphicsPipeline_Custom: Can not find shader used !";
@@ -1058,7 +1059,8 @@ void Vulkan_012_Shadering::createComputePipeline_Custom()
 
         //[1] Shaders
         String nameShaderComp = g_ObjectNameShaderModules[6 * i + 5];
-        if (!createPipelineShaderStageCreateInfos(nameShaderComp,
+        if (!CreatePipelineShaderStageCreateInfos(nameShaderComp,
+                                                  m_mapVkShaderModules,
                                                   pModelObject->aShaderStageCreateInfos_Computes,
                                                   pModelObject->mapShaderStageCreateInfos_Computes))
         {
@@ -1331,160 +1333,7 @@ VkShaderModule Vulkan_012_Shadering::findShaderModule(const String& nameShaderMo
         return nullptr;
     }
     return itFind->second;
-}   
-bool Vulkan_012_Shadering::createPipelineShaderStageCreateInfos(const String& nameShaderVert,
-                                                                const String& nameShaderTesc,
-                                                                const String& nameShaderTese,
-                                                                const String& nameShaderGeom,
-                                                                const String& nameShaderFrag,
-                                                                const String& nameShaderComp,
-                                                                VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
-                                                                VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
-                                                                VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
-{
-    if (!createPipelineShaderStageCreateInfos(nameShaderVert,
-                                              nameShaderTesc,
-                                              nameShaderTese,
-                                              nameShaderGeom,
-                                              nameShaderFrag,
-                                              aStageCreateInfos_Graphics))
-    {
-        return false;
-    }
-
-    if (!createPipelineShaderStageCreateInfos(nameShaderComp,
-                                              aStageCreateInfos_Compute,
-                                              mapStageCreateInfos_Compute))
-    {
-        return false;
-    }
-
-    return true;
-}
-bool Vulkan_012_Shadering::createPipelineShaderStageCreateInfos(const String& nameShaderVert,
-                                                                const String& nameShaderTesc,
-                                                                const String& nameShaderTese,
-                                                                const String& nameShaderGeom,
-                                                                const String& nameShaderFrag,
-                                                                VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics)
-{
-    //vert
-    {
-        VkShaderModule shaderModule = findShaderModule(nameShaderVert);
-        if (shaderModule == VK_NULL_HANDLE)
-        {
-            F_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
-            return false;
-        }
-
-        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        shaderStageInfo.module = shaderModule;
-        shaderStageInfo.pName = "main";
-        aStageCreateInfos_Graphics.push_back(shaderStageInfo);
-    }
-    //tesc
-    if (!nameShaderTesc.empty())
-    {
-        VkShaderModule shaderModule = findShaderModule(nameShaderTesc);
-        if (shaderModule == VK_NULL_HANDLE)
-        {
-            F_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
-            return false;
-        }
-
-        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-        shaderStageInfo.module = shaderModule;
-        shaderStageInfo.pName = "main";
-        aStageCreateInfos_Graphics.push_back(shaderStageInfo);
-    }
-    //tese
-    if (!nameShaderTese.empty())
-    {
-        VkShaderModule shaderModule = findShaderModule(nameShaderTese);
-        if (shaderModule == VK_NULL_HANDLE)
-        {
-            F_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
-            return false;
-        }
-
-        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-        shaderStageInfo.module = shaderModule;
-        shaderStageInfo.pName = "main";
-        aStageCreateInfos_Graphics.push_back(shaderStageInfo);
-    }
-    //geom
-    if (!nameShaderGeom.empty())
-    {
-        VkShaderModule shaderModule = findShaderModule(nameShaderGeom);
-        if (shaderModule == VK_NULL_HANDLE)
-        {
-            F_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
-            return false;
-        }
-
-        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
-        shaderStageInfo.module = shaderModule;
-        shaderStageInfo.pName = "main";
-        aStageCreateInfos_Graphics.push_back(shaderStageInfo);
-    }
-    //frag
-    {
-        VkShaderModule shaderModule = findShaderModule(nameShaderFrag);
-        if (shaderModule == VK_NULL_HANDLE)
-        {
-            F_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
-            return false;
-        }
-
-        VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        shaderStageInfo.module = shaderModule;
-        shaderStageInfo.pName = "main";
-        aStageCreateInfos_Graphics.push_back(shaderStageInfo);
-    }
-
-    return true;
-}
-bool Vulkan_012_Shadering::createPipelineShaderStageCreateInfos(const String& nameShaderComp,
-                                                                VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
-                                                                VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
-{
-    //comp
-    if (!nameShaderComp.empty())
-    {
-        StringVector aShaderComps = FUtilString::Split(nameShaderComp, ";");
-        int count_comp = (int)aShaderComps.size();
-        for (int i = 0; i < count_comp; i++)
-        {
-            String nameSC = aShaderComps[i];
-            VkShaderModule shaderModule = findShaderModule(nameSC);
-            if (shaderModule == VK_NULL_HANDLE)
-            {
-                F_LogError("Vulkan_012_Shadering::createPipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
-                return false;
-            }
-
-            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-            shaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-            shaderStageInfo.module = shaderModule;
-            shaderStageInfo.pName = "main";
-            aStageCreateInfos_Compute.push_back(shaderStageInfo);
-            mapStageCreateInfos_Compute[nameSC] = shaderStageInfo;
-        }
-    }
-
-    return true;
-}
+} 
 
 
 void Vulkan_012_Shadering::destroyPipelineLayouts()

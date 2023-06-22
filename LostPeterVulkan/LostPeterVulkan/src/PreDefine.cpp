@@ -538,20 +538,22 @@ namespace LostPeter
     static String s_nameDescriptorSets[] = 
     {
         "Pass",                     //0:   Pass
-        "Object",                   //2:   Object
-        "ObjectTerrain",            //3:   ObjectTerrain
-        "Material",                 //4:   Material
-        "Instance",                 //5:   Instance
-        "TextureCopy",              //6:   TextureCopy
-        "Tessellation",             //7:   Tessellation
-        "Geometry",                 //8:   Geometry
-        "TextureVS",                //9:   TextureVS
-        "TextureTESC",              //10:  TextureTESC
-        "TextureTESE",              //11:  TextureTESE
-        "TextureFS",                //12:  TextureFS
-        "TextureFrameColor",        //13:  TextureFrameColor
-        "TextureCSR",               //14:  TextureCSR
-        "TextureCSRW",              //15:  TextureCSRW
+        "Object",                   //1:   Object
+        "ObjectTerrain",            //2:   ObjectTerrain
+        "ObjectGrid",               //3:   ObjectGrid
+        "ObjectAxis",               //4:   ObjectAxis
+        "Material",                 //5:   Material
+        "Instance",                 //6:   Instance
+        "TextureCopy",              //7:   TextureCopy
+        "Tessellation",             //8:   Tessellation
+        "Geometry",                 //9:   Geometry
+        "TextureVS",                //10:  TextureVS
+        "TextureTESC",              //11:  TextureTESC
+        "TextureTESE",              //12:  TextureTESE
+        "TextureFS",                //13:  TextureFS
+        "TextureFrameColor",        //14:  TextureFrameColor
+        "TextureCSR",               //15:  TextureCSR
+        "TextureCSRW",              //16:  TextureCSRW
     };
     const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type)
     {

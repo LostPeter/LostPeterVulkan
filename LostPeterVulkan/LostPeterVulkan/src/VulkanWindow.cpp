@@ -1223,6 +1223,15 @@ namespace LostPeter
     /////////////////////////// EditorBase ////////////////////////
     VulkanWindow::EditorBase::EditorBase(VulkanWindow* _pWindow)
         : pWindow(_pWindow)
+
+        //DescriptorSetLayouts
+        , nameDescriptorSetLayout("")
+        , poDescriptorSetLayout(VK_NULL_HANDLE)
+
+        //PipelineLayout
+        , poPipelineLayout(VK_NULL_HANDLE)
+
+        //PipelineGraphics
         , pPipelineGraphics(nullptr)
     {
 
@@ -1244,6 +1253,15 @@ namespace LostPeter
 
         //3> initBufferUniforms
         initBufferUniforms();
+
+        //4> initDescriptorSetLayout
+        initDescriptorSetLayout();
+
+        //5> initPipelineLayout
+        initPipelineLayout();
+
+        //6> initPipelineGraphics
+        initPipelineGraphics();
     }
     void VulkanWindow::EditorBase::initMeshes()
     {
@@ -1252,6 +1270,28 @@ namespace LostPeter
     void VulkanWindow::EditorBase::initShaders()
     {   
         this->pWindow->CreateShaderModules(this->aShaderModuleInfos, this->aShaderModules, this->mapShaderModules);
+    }
+    void VulkanWindow::EditorBase::initDescriptorSetLayout()
+    {
+        this->poDescriptorSetLayout = this->pWindow->CreateDescriptorSetLayout(this->nameDescriptorSetLayout, &this->aNameDescriptorSetLayouts);
+        if (this->poDescriptorSetLayout == VK_NULL_HANDLE)
+        {
+            String msg = "VulkanWindow::EditorBase::initDescriptorSetLayout: Can not create VkDescriptorSetLayout by name: " + this->nameDescriptorSetLayout;
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg.c_str());
+        }
+    }
+    void VulkanWindow::EditorBase::initPipelineLayout()
+    {
+        VkDescriptorSetLayoutVector aDescriptorSetLayout;
+        aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
+        this->poPipelineLayout = this->pWindow->createVkPipelineLayout(aDescriptorSetLayout);
+        if (this->poPipelineLayout == VK_NULL_HANDLE)
+        {
+            String msg = "VulkanWindow::EditorBase::initPipelineLayout: Can not create VkPipelineLayout by desscriptorSetLayout name: " + this->nameDescriptorSetLayout;
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg.c_str());
+        }
     }
     void VulkanWindow::EditorBase::destroyMeshes()
     {
@@ -1279,13 +1319,37 @@ namespace LostPeter
     {
         F_DELETE(this->pPipelineGraphics)
     }
+    void VulkanWindow::EditorBase::destroyPipelineLayout()
+    {
+        if (this->poPipelineLayout != VK_NULL_HANDLE)
+        {
+            this->pWindow->destroyVkPipelineLayout(this->poPipelineLayout);
+        }
+        this->poPipelineLayout = VK_NULL_HANDLE;
+    }
+    void VulkanWindow::EditorBase::destroyDescriptorSetLayout()
+    {
+        if (this->poDescriptorSetLayout != VK_NULL_HANDLE)
+        {
+            this->pWindow->destroyVkDescriptorSetLayout(this->poDescriptorSetLayout);
+        }
+        this->poDescriptorSetLayout = VK_NULL_HANDLE;
+    }   
     void VulkanWindow::EditorBase::CleanupSwapChain()
     {
-
+        destroyPipelineGraphics();
+        destroyPipelineLayout();
+        destroyDescriptorSetLayout();
+        destroyShaders();
+        destroyBufferUniforms();
     }
     void VulkanWindow::EditorBase::RecreateSwapChain()
     {
-
+        initShaders();
+        initBufferUniforms();
+        initDescriptorSetLayout();
+        initPipelineLayout();
+        initPipelineGraphics();
     }
     
     /////////////////////////// EditorGrid ////////////////////////
@@ -1349,13 +1413,13 @@ namespace LostPeter
         }
         //4> DescriptorSetLayout
         {
-            this->nameDescriptorSetLayout = "Pass-Object";
+            this->nameDescriptorSetLayout = "Pass-ObjectGrid";
             this->aNameDescriptorSetLayouts = FUtilString::Split(this->nameDescriptorSetLayout, "-");
         }
     }
     void VulkanWindow::EditorGrid::initBufferUniforms()
     {
-        VkDeviceSize bufferSize = sizeof(GridObjectConstant);
+        VkDeviceSize bufferSize = sizeof(GridObjectConstants);
         this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
     }
     void VulkanWindow::EditorGrid::initPipelineGraphics()
@@ -1363,14 +1427,69 @@ namespace LostPeter
         this->pPipelineGraphics = new PipelineGraphics(this->pWindow);
         this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
         this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
-        this->pPipelineGraphics->poDescriptorSetLayout = this->pWindow->CreateDescriptorSetLayout(this->nameDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSetLayoutNames);
-        if (this->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
+        //1> DescriptorSetLayout 
+        this->pPipelineGraphics->poDescriptorSetLayout = this->poDescriptorSetLayout;
+        //2> DescriptorSets
+        this->pWindow->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
+        updateDescriptorSets_Graphics();
+        //3> PipelineLayout
+        this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
+        //4> Pipeline
         {
-            String msg = "VulkanWindow::initPipelineGraphics: Can not create VkDescriptorSetLayout by name: " + this->pPipelineGraphics->nameDescriptorSetLayout;
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg.c_str());
+            //pPipelineGraphics->poPipeline_WireFrame
+
+            //pPipelineGraphics->poPipeline
+
         }
-        
+    }
+    void VulkanWindow::EditorGrid::updateDescriptorSets_Graphics()
+    {
+        StringVector* pDescriptorSetLayoutNames = this->pPipelineGraphics->poDescriptorSetLayoutNames;
+        F_Assert(pDescriptorSetLayoutNames != nullptr && "VulkanWindow::EditorGrid::updateDescriptorSets_Graphics")
+        size_t count_ds = this->pPipelineGraphics->poDescriptorSets.size();
+        for (size_t i = 0; i < count_ds; i++)
+        {
+            VkWriteDescriptorSetVector descriptorWrites;
+
+            size_t count_names = pDescriptorSetLayoutNames->size();
+            for (size_t j = 0; j < count_names; j++)
+            {
+                String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[j];
+                if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
+                {
+                    VkDescriptorBufferInfo bufferInfo_Pass = {};
+                    bufferInfo_Pass.buffer = this->pWindow->poBuffers_PassCB[i];
+                    bufferInfo_Pass.offset = 0;
+                    bufferInfo_Pass.range = sizeof(PassConstants);
+                    this->pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                               this->pPipelineGraphics->poDescriptorSets[i],
+                                                               j,
+                                                               0,
+                                                               1,
+                                                               bufferInfo_Pass);
+                }
+                else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectGrid)) //ObjectGrid
+                {
+                    VkDescriptorBufferInfo bufferInfo_ObjectGrid = {};
+                    bufferInfo_ObjectGrid.buffer = this->poBuffers_ObjectCB;
+                    bufferInfo_ObjectGrid.offset = 0;
+                    bufferInfo_ObjectGrid.range = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
+                    this->pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                               this->pPipelineGraphics->poDescriptorSets[j],
+                                                               j,
+                                                               0,
+                                                               1,
+                                                               bufferInfo_ObjectGrid);
+                }
+                else
+                {
+                    String msg = "VulkanWindow::EditorGrid::updateDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+            }
+            this->pWindow->updateVkDescriptorSets(descriptorWrites);
+        }
     }
     void VulkanWindow::EditorGrid::destroyBufferUniforms()
     {
@@ -1381,14 +1500,20 @@ namespace LostPeter
         this->poBuffers_ObjectCB = VK_NULL_HANDLE;
         this->poBuffersMemory_ObjectCB = VK_NULL_HANDLE;
     }
-    void VulkanWindow::EditorGrid::CleanupSwapChain()
+    void VulkanWindow::EditorGrid::destroyPipelineGraphics()
     {
-        //1> Uniform Buffer
+        VulkanWindow::EditorBase::destroyPipelineGraphics();
+        
+    }
+
+    void VulkanWindow::EditorGrid::CleanupSwapChain()
+    {   
+        VulkanWindow::EditorBase::CleanupSwapChain();
 
     }
     void VulkanWindow::EditorGrid::RecreateSwapChain()
     {
-
+        VulkanWindow::EditorBase::RecreateSwapChain();
     }
 
     /////////////////////////// EditorAxis ////////////////////////
@@ -1439,9 +1564,17 @@ namespace LostPeter
         this->pPipelineGraphics = new PipelineGraphics(this->pWindow);
         
     }
+    void VulkanWindow::EditorAxis::updateDescriptorSets_Graphics()
+    {
+
+    }
     void VulkanWindow::EditorAxis::destroyBufferUniforms()
     {
 
+    }
+    void VulkanWindow::EditorAxis::destroyPipelineGraphics()
+    {
+        VulkanWindow::EditorBase::destroyPipelineGraphics();
     }
     void VulkanWindow::EditorAxis::CleanupSwapChain()
     {
@@ -1516,6 +1649,164 @@ namespace LostPeter
         }
     }
 
+    bool VulkanWindow::CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                                            const String& nameShaderTesc,
+                                                            const String& nameShaderTese,
+                                                            const String& nameShaderGeom,
+                                                            const String& nameShaderFrag,
+                                                            const String& nameShaderComp,
+                                                            VkShaderModuleMap& mapVkShaderModules,
+                                                            VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
+                                                            VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                                            VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
+    {
+        if (!CreatePipelineShaderStageCreateInfos(nameShaderVert,
+                                                  nameShaderTesc,
+                                                  nameShaderTese,
+                                                  nameShaderGeom,
+                                                  nameShaderFrag,
+                                                  mapVkShaderModules,
+                                                  aStageCreateInfos_Graphics))
+        {
+            return false;
+        }
+
+        if (!CreatePipelineShaderStageCreateInfos(nameShaderComp,
+                                                  mapVkShaderModules,
+                                                  aStageCreateInfos_Compute,
+                                                  mapStageCreateInfos_Compute))
+        {
+            return false;
+        }
+
+        return true;
+    }
+    bool VulkanWindow::CreatePipelineShaderStageCreateInfos(const String& nameShaderVert,
+                                                            const String& nameShaderTesc,
+                                                            const String& nameShaderTese,
+                                                            const String& nameShaderGeom,
+                                                            const String& nameShaderFrag,
+                                                            VkShaderModuleMap& mapVkShaderModules,
+                                                            VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics)
+    {
+        //vert
+        {
+            VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderVert);
+            if (itFind == mapVkShaderModules.end())
+            {
+                F_LogError("VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
+                return false;
+            }
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+            shaderStageInfo.module = itFind->second;
+            shaderStageInfo.pName = "main";
+            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
+        }
+        //tesc
+        if (!nameShaderTesc.empty())
+        {
+            VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderTesc);
+            if (itFind == mapVkShaderModules.end())
+            {
+                F_LogError("VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
+                return false;
+            }
+
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+            shaderStageInfo.module = itFind->second;
+            shaderStageInfo.pName = "main";
+            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
+        }
+        //tese
+        if (!nameShaderTese.empty())
+        {
+            VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderTese);
+            if (itFind == mapVkShaderModules.end())
+            {
+                F_LogError("VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
+                return false;
+            }
+
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+            shaderStageInfo.module = itFind->second;
+            shaderStageInfo.pName = "main";
+            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
+        }
+        //geom
+        if (!nameShaderGeom.empty())
+        {
+            VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderGeom);
+            if (itFind == mapVkShaderModules.end())
+            {
+                F_LogError("VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
+                return false;
+            }
+
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+            shaderStageInfo.module = itFind->second;
+            shaderStageInfo.pName = "main";
+            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
+        }
+        //frag
+        {
+            VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderFrag);
+            if (itFind == mapVkShaderModules.end())
+            {
+                F_LogError("VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
+                return false;
+            }
+
+            VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+            shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            shaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+            shaderStageInfo.module = itFind->second;
+            shaderStageInfo.pName = "main";
+            aStageCreateInfos_Graphics.push_back(shaderStageInfo);
+        }
+
+        return true;
+    }
+    bool VulkanWindow::CreatePipelineShaderStageCreateInfos(const String& nameShaderComp,
+                                                            VkShaderModuleMap& mapVkShaderModules,
+                                                            VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
+                                                            VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute)
+    {
+        //comp
+        if (!nameShaderComp.empty())
+        {
+            StringVector aShaderComps = FUtilString::Split(nameShaderComp, ";");
+            int count_comp = (int)aShaderComps.size();
+            for (int i = 0; i < count_comp; i++)
+            {
+                String nameSC = aShaderComps[i];
+                VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameSC);
+                if (itFind == mapVkShaderModules.end())
+                {
+                    F_LogError("VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
+                    return false;
+                }
+
+                VkPipelineShaderStageCreateInfo shaderStageInfo = {};
+                shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+                shaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+                shaderStageInfo.module = itFind->second;
+                shaderStageInfo.pName = "main";
+                aStageCreateInfos_Compute.push_back(shaderStageInfo);
+                mapStageCreateInfos_Compute[nameSC] = shaderStageInfo;
+            }
+        }
+
+        return true;
+    }
+
     VkDescriptorSetLayout VulkanWindow::CreateDescriptorSetLayout(const String& nameLayout, const StringVector* pNamesDescriptorSetLayout)
     {
         VkDescriptorSetLayout vkDescriptorSetLayout;
@@ -1533,6 +1824,14 @@ namespace LostPeter
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectTerrain)) //ObjectTerrain
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectGrid)) //ObjectGrid
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+            }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectAxis)) //ObjectAxis
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
@@ -8655,6 +8954,7 @@ namespace LostPeter
                         updateRenderPass_Default(commandBuffer);
                     }
                     updateRenderPass_CustomAfterDefault(commandBuffer);
+                    updateRenderPass_Editor(commandBuffer);
                 }
                 if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
                 {
@@ -8737,6 +9037,10 @@ namespace LostPeter
                         }
                     }
                 void VulkanWindow::updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer)
+                {
+
+                }
+                void VulkanWindow::updateRenderPass_Editor(VkCommandBuffer& commandBuffer)
                 {
 
                 }

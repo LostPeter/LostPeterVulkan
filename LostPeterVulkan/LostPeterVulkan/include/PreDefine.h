@@ -345,18 +345,20 @@ namespace LostPeter
         Vulkan_DescriptorSet_Pass = 0,                      //0:  Pass
         Vulkan_DescriptorSet_Object,                        //1:  Object
         Vulkan_DescriptorSet_ObjectTerrain,                 //2:  ObjectTerrain
-        Vulkan_DescriptorSet_Material,                      //3:  Material
-        Vulkan_DescriptorSet_Instance,                      //4:  Instance
-        Vulkan_DescriptorSet_TextureCopy,                   //5:  TextureCopy
-        Vulkan_DescriptorSet_Tessellation,                  //6:  Tessellation
-        Vulkan_DescriptorSet_Geometry,                      //7:  Geometry
-        Vulkan_DescriptorSet_TextureVS,                     //8:  TextureVS
-        Vulkan_DescriptorSet_TextureTESC,                   //9:  TextureTESC
-        Vulkan_DescriptorSet_TextureTESE,                   //10: TextureTESE
-        Vulkan_DescriptorSet_TextureFS,                     //11: TextureFS
-        Vulkan_DescriptorSet_TextureFrameColor,             //12: TextureFrameColor
-        Vulkan_DescriptorSet_TextureCSR,                    //13: TextureCSR
-        Vulkan_DescriptorSet_TextureCSRW,                   //14: TextureCSRW
+        Vulkan_DescriptorSet_ObjectGrid,                    //3:  ObjectGrid
+        Vulkan_DescriptorSet_ObjectAxis,                    //4:  ObjectAxis
+        Vulkan_DescriptorSet_Material,                      //5:  Material
+        Vulkan_DescriptorSet_Instance,                      //6:  Instance
+        Vulkan_DescriptorSet_TextureCopy,                   //7:  TextureCopy
+        Vulkan_DescriptorSet_Tessellation,                  //8:  Tessellation
+        Vulkan_DescriptorSet_Geometry,                      //9:  Geometry
+        Vulkan_DescriptorSet_TextureVS,                     //10: TextureVS
+        Vulkan_DescriptorSet_TextureTESC,                   //11: TextureTESC
+        Vulkan_DescriptorSet_TextureTESE,                   //12: TextureTESE
+        Vulkan_DescriptorSet_TextureFS,                     //13: TextureFS
+        Vulkan_DescriptorSet_TextureFrameColor,             //14: TextureFrameColor
+        Vulkan_DescriptorSet_TextureCSR,                    //15: TextureCSR
+        Vulkan_DescriptorSet_TextureCSRW,                   //16: TextureCSRW
 
         Vulkan_DescriptorSet_Count,
     };
@@ -450,6 +452,9 @@ namespace LostPeter
     struct LightConstants;
     struct PassConstants;
     struct ObjectConstants;
+    struct TerrainObjectConstants;
+    struct GridObjectConstants;
+    struct AxisObjectConstants;
     struct MaterialConstants;
     struct InstanceConstants;
     

@@ -1067,11 +1067,45 @@ namespace LostPeter
     {
         FMatrix4 g_MatWorld;
         
-
         ObjectConstants()
             : g_MatWorld(FMath::Identity4x4())
         {
 
+        }
+    };
+    struct utilExport TerrainObjectConstants
+    {
+        FMatrix4 g_MatWorld;
+    
+
+        TerrainObjectConstants()
+            : g_MatWorld(FMath::Identity4x4())
+        {
+
+        }
+    };
+    struct utilExport GridObjectConstants
+    {
+        FMatrix4 g_MatWorld;
+        FColor color;
+
+        GridObjectConstants()
+            : g_MatWorld(FMath::Identity4x4())
+            , color(0.5f, 0.5f, 0.5f, 1.0f)
+        {
+            
+        }
+    };
+    struct utilExport AxisObjectConstants
+    {
+        FMatrix4 g_MatWorld;
+        FColor color;
+
+        AxisObjectConstants()
+            : g_MatWorld(FMath::Identity4x4())
+            , color(0.5f, 0.5f, 0.5f, 1.0f)
+        {
+            
         }
     };
 

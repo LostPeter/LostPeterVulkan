@@ -457,24 +457,6 @@ private:
     void destroyShaderModules();
     void createShaderModules();
     VkShaderModule findShaderModule(const String& nameShaderModule);
-    bool createPipelineShaderStageCreateInfos(const String& nameShaderVert,
-                                              const String& nameShaderTesc,
-                                              const String& nameShaderTese,
-                                              const String& nameShaderGeom,
-                                              const String& nameShaderFrag,
-                                              const String& nameShaderComp,
-                                              VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics,
-                                              VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
-                                              VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
-    bool createPipelineShaderStageCreateInfos(const String& nameShaderVert,
-                                              const String& nameShaderTesc,
-                                              const String& nameShaderTese,
-                                              const String& nameShaderGeom,
-                                              const String& nameShaderFrag,
-                                              VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Graphics);
-    bool createPipelineShaderStageCreateInfos(const String& nameShaderComp,
-                                              VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
-                                              VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
 
 ////PipelineLayout
     void destroyPipelineLayouts();
