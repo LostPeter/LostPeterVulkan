@@ -23,7 +23,7 @@ namespace LostPeter
         virtual ~VulkanWindow();
 
     public:
-        struct MeshInfo
+        struct utilExport MeshInfo
         {
             MeshInfo()
                 : nameMesh("")
@@ -52,7 +52,7 @@ namespace LostPeter
         typedef std::vector<MeshInfo> MeshInfoVector;
 
 
-        struct ShaderModuleInfo
+        struct utilExport ShaderModuleInfo
         {
             String nameShader;
             String nameShaderType;
@@ -65,7 +65,7 @@ namespace LostPeter
         class ModelMesh;
 
         /////////////////////////// ModelMeshSub //////////////////////
-        class ModelMeshSub
+        class utilExport ModelMeshSub
         {
         public:
             ModelMeshSub(ModelMesh* _pMesh, 
@@ -102,6 +102,9 @@ namespace LostPeter
             VkBuffer poIndexBuffer;
             VkDeviceMemory poIndexBufferMemory;
 
+            //Instance
+            uint32_t instanceCount;
+
         public:
             void Destroy();
             uint32_t GetVertexSize();
@@ -117,7 +120,7 @@ namespace LostPeter
 
 
         /////////////////////////// ModelMesh /////////////////////////
-        class ModelMesh
+        class utilExport ModelMesh
         {
         public:
             ModelMesh(VulkanWindow* _pWindow, 
@@ -149,7 +152,7 @@ namespace LostPeter
 
 
         /////////////////////////// ModelTexture //////////////////////
-        class ModelTexture
+        class utilExport ModelTexture
         {
         public:
              ModelTexture(VulkanWindow* _pWindow, 
@@ -229,7 +232,7 @@ namespace LostPeter
 
 
         /////////////////////////// MultiRenderPass ///////////////////
-        class FrameBufferAttachment
+        class utilExport FrameBufferAttachment
         {
         public:
             FrameBufferAttachment();
@@ -245,7 +248,7 @@ namespace LostPeter
             void Destroy(VulkanWindow* pWindow);
             virtual void Init(VulkanWindow* pWindow, bool _isDepth);
         };
-        class MultiRenderPass
+        class utilExport MultiRenderPass
         {
         public:
             MultiRenderPass(VulkanWindow* _pWindow, 
@@ -285,7 +288,7 @@ namespace LostPeter
 
 
         /////////////////////////// PipelineGraphics //////////////////
-        class PipelineGraphics
+        class utilExport PipelineGraphics
         {
         public:
             PipelineGraphics(VulkanWindow* _pWindow);
@@ -316,7 +319,7 @@ namespace LostPeter
 
 
         /////////////////////////// PipelineCompute ///////////////////
-        class PipelineCompute
+        class utilExport PipelineCompute
         {
         public:
             PipelineCompute(VulkanWindow* _pWindow);
@@ -352,7 +355,7 @@ namespace LostPeter
 
 
         /////////////////////////// EditorBase ////////////////////////
-        class EditorBase
+        class utilExport EditorBase
         {
         public:
             EditorBase(VulkanWindow* _pWindow);
@@ -371,6 +374,7 @@ namespace LostPeter
 
             //Shaders
             ShaderModuleInfoVector aShaderModuleInfos;
+            VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
             VkShaderModuleVector aShaderModules;
             VkShaderModuleMap mapShaderModules;
 
@@ -389,6 +393,9 @@ namespace LostPeter
             virtual void Destroy() = 0;
 
             virtual void Init();
+
+            virtual void UpdateCBs() = 0;
+            virtual void Draw(VkCommandBuffer& commandBuffer);
 
         public:
             virtual void CleanupSwapChain();
@@ -414,7 +421,7 @@ namespace LostPeter
 
 
         /////////////////////////// EditorGrid ////////////////////////
-        class EditorGrid : public EditorBase
+        class utilExport EditorGrid : public EditorBase
         {
         public:
             EditorGrid(VulkanWindow* _pWindow);
@@ -426,12 +433,24 @@ namespace LostPeter
             VkBuffer poBuffers_ObjectCB;
             VkDeviceMemory poBuffersMemory_ObjectCB;
 
+            void SetColor(FColor& color)
+            {
+                this->gridObjectCB.color = color;
+                SetIsNeedUpdate(true);
+            }
 
+        protected:
+            bool isNeedUpdate;
+        public:
+            bool IsNeedUpdate() const { return this->isNeedUpdate; }
+            void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
 
         public:
-            void Destroy();
+            virtual void Destroy();
 
             virtual void Init();
+
+            virtual void UpdateCBs();
 
         public:
             virtual void CleanupSwapChain();
@@ -448,7 +467,7 @@ namespace LostPeter
         };
 
         /////////////////////////// EditorAxis ////////////////////////
-        class EditorAxis : public EditorBase
+        class utilExport EditorAxis : public EditorBase
         {
         public:
             EditorAxis(VulkanWindow* _pWindow);
@@ -461,9 +480,11 @@ namespace LostPeter
         
 
         public:
-            void Destroy();
+            virtual void Destroy();
 
             virtual void Init();
+
+            virtual void UpdateCBs();
 
         public:
             virtual void CleanupSwapChain();
@@ -684,9 +705,6 @@ namespace LostPeter
         String imgui_PathIni;
         String imgui_PathLog;
 
-        //Multi object use, top priority
-        VulkanSceneManager* pSceneManager;
-
         //Constants Buffer
         PassConstants passCB;
         std::vector<VkBuffer> poBuffers_PassCB;
@@ -789,6 +807,9 @@ namespace LostPeter
         FVector2 mousePosLast;
         bool mouseButtonDownLeft;
         bool mouseButtonDownRight;
+
+        //Terrain
+
 
         //Editor
         bool cfg_isEditorCreate;
@@ -945,36 +966,6 @@ namespace LostPeter
 
         //Load Assets
         virtual void loadAssets();
-            //Scene
-            virtual void createScene();
-                virtual void createSceneManager();
-            virtual void buildScene();
-                virtual void buildScene_Shaders();
-                virtual void buildScene_InputLayouts();
-                virtual void buildScene_Meshes();
-                virtual void buildScene_SceneObjects();
-                virtual void buildScene_Materials();
-                virtual void buildScene_FrameResources();
-                virtual void buildScene_ConstantBufferViews();
-                virtual void buildScene_PipelineStates();
-
-            //Terrain
-            virtual void createTerrain();
-                virtual bool loadTerrainData();
-                virtual void setupTerrainGeometry();
-                virtual void setupTerrainTexture();
-                virtual void setupTerrainShader();
-                virtual void setupTerrainComputePipeline();
-                    virtual void createTerrainComputeDescriptorSet();
-                    virtual void destroyTerrainComputeDescriptorSet();
-
-                virtual void setupTerrainGraphicsPipeline();
-                    virtual void createTerrainGraphicsDescriptorSet();
-                    virtual void destroyTerrainGraphicsDescriptorSet();
-                    virtual void createTerrainGraphicsPipeline();
-                    virtual void destroyTerrainGraphicsPipeline();
-            virtual void destroyTerrain();
-
             //Camera
             virtual void createCamera();
 
@@ -1446,6 +1437,23 @@ namespace LostPeter
                 virtual void createImgui_DescriptorPool();
                 virtual void createImgui_Init();
 
+            //Terrain
+            virtual void createTerrain();
+                virtual bool loadTerrainData();
+                virtual void setupTerrainGeometry();
+                virtual void setupTerrainTexture();
+                virtual void setupTerrainShader();
+                virtual void setupTerrainComputePipeline();
+                    virtual void createTerrainComputeDescriptorSet();
+                    virtual void destroyTerrainComputeDescriptorSet();
+
+                virtual void setupTerrainGraphicsPipeline();
+                    virtual void createTerrainGraphicsDescriptorSet();
+                    virtual void destroyTerrainGraphicsDescriptorSet();
+                    virtual void createTerrainGraphicsPipeline();
+                    virtual void destroyTerrainGraphicsPipeline();
+            virtual void destroyTerrain();
+
             //Editor
             virtual void createEditor();
                 virtual void createEditor_Grid();
@@ -1468,18 +1476,17 @@ namespace LostPeter
         //Render/Update
         virtual bool beginRender();
             virtual void updateRender();
-                virtual void updateSceneObjects();
-                virtual void updateCBs_Pass();
-                    virtual void updateCBs_PassTransformAndCamera(FCamera* pCam, int nIndex);
-                virtual void updateCBs_Objects();
-                    virtual void updateCBs_ObjectsContent();
-                virtual void updateCBs_Materials();
-                    virtual void updateCBs_MaterialsContent();
-                virtual void updateCBs_Instances();
-                    virtual void updateCBs_InstancesContent();
-                virtual void updateCBs_Custom();
-
-                virtual void updateImgui();
+                virtual void updateCBs_Default();
+                    virtual void updateCBs_Pass();
+                        virtual void updateCBs_PassTransformAndCamera(FCamera* pCam, int nIndex);
+                    virtual void updateCBs_Objects();
+                        virtual void updateCBs_ObjectsContent();
+                    virtual void updateCBs_Materials();
+                        virtual void updateCBs_MaterialsContent();
+                    virtual void updateCBs_Instances();
+                        virtual void updateCBs_InstancesContent();
+                virtual void updateCBs_Terrain();
+                virtual void updateCBs_ImGUI();
                     virtual bool beginRenderImgui();
                         //Common
                         virtual void commonConfig();
@@ -1494,8 +1501,9 @@ namespace LostPeter
                         virtual void passConstantsConfig();
                         //Model
                         virtual void modelConfig();
-
                     virtual void endRenderImgui();
+                virtual void updateCBs_Editor();
+                virtual void updateCBs_Custom();
 
                 virtual void updateRenderCommandBuffers_CustomBeforeDefault();
                 virtual void updateRenderCommandBuffers_Default();
@@ -1504,9 +1512,9 @@ namespace LostPeter
                     virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);
+                        virtual void drawMeshDefault_Editor(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Imgui(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomAfterDefault(VkCommandBuffer& commandBuffer);
-                    virtual void updateRenderPass_Editor(VkCommandBuffer& commandBuffer);
 
                         virtual void beginRenderPass(VkCommandBuffer& commandBuffer, 
                                                      const VkRenderPass& renderPass, 
@@ -1537,13 +1545,22 @@ namespace LostPeter
 
         //cleanup
         virtual void cleanup();
+            virtual void cleanupDefault();
+                virtual void cleanupTexture();
+                virtual void cleanupVertexIndexBuffer();
+            virtual void cleanupTerrain();
+            virtual void cleanupImGUI();
+            virtual void cleanupEditor();
             virtual void cleanupCustom();
-            virtual void cleanupTexture();
-            virtual void cleanupVertexIndexBuffer();
 
             virtual void cleanupSwapChain();
+                virtual void cleanupSwapChain_Default();
+                virtual void cleanupSwapChain_Terrain();
+                virtual void cleanupSwapChain_Editor();
                 virtual void cleanupSwapChain_Custom();
             virtual void recreateSwapChain();
+                virtual void recreateSwapChain_Terrain();
+                virtual void recreateSwapChain_Editor();
                 virtual void recreateSwapChain_Custom();
 
     private:

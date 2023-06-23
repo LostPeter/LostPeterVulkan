@@ -1105,15 +1105,14 @@ Vulkan_016_Geometry::Vulkan_016_Geometry(int width, int height, String name)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
+    this->cfg_isEditorCreate = true;
+    this->cfg_isEditorGridShow = true;
+    this->cfg_isEditorAxisShow = true;
 
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
     this->mainLight.direction = FVector3(0, -1, 0); //y-
-
-    this->cfg_isEditorCreate = true;
-    this->cfg_isEditorGridShow = true;
-    this->cfg_isEditorAxisShow = true;
 }
 
 void Vulkan_016_Geometry::setUpEnabledFeatures()
@@ -1388,8 +1387,8 @@ void Vulkan_016_Geometry::rebuildInstanceCBs(bool isCreateVkBuffer)
             {
                 ObjectConstants objectConstants;
                 objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
-                                                                 g_ObjectRend_Tranforms[3 * i + 1],
-                                                                 g_ObjectRend_Tranforms[3 * i + 2]);
+                                                            g_ObjectRend_Tranforms[3 * i + 1],
+                                                            g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);
                 pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
             }

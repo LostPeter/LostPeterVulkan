@@ -630,6 +630,9 @@ Vulkan_012_Shadering::Vulkan_012_Shadering(int width, int height, String name)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
+    this->cfg_isEditorCreate = true;
+    this->cfg_isEditorGridShow = true;
+    this->cfg_isEditorAxisShow = true;
     this->cfg_isUseComputeShader = true;
     this->cfg_isCreateRenderComputeSycSemaphore = true;
 

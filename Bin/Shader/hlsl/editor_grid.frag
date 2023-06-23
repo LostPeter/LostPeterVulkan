@@ -98,7 +98,7 @@ struct GridObjectConstants
 
 float4 Grid(VSOutput input, float divisions, float4 color)
 {
-    float lineWidth = 1.0;
+    float lineWidth = 2.0;
 
     float2 vCoord = input.inTexCoord.xy * divisions;
 
@@ -134,8 +134,8 @@ float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
     float3 vPseudoViewPos = float3(viewPos.x, input.inWorldPos.y, viewPos.z);
     float fDistanceToCamera = max(distance(input.inWorldPos, vPseudoViewPos) - abs(viewPos.y), 0);
     
-    float fAlphaDecreaseDistance = 20.0f;
-    float fDecreaseDistance = 30.0f;
+    float fAlphaDecreaseDistance = 128.0f;
+    float fDecreaseDistance = 1024.0f;
     if (fDistanceToCamera > fAlphaDecreaseDistance)
     {
         float normalizedDistanceToCamera = clamp(fDistanceToCamera - fAlphaDecreaseDistance, 0.0f, fDecreaseDistance) / fDecreaseDistance;

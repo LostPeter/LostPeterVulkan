@@ -110,6 +110,9 @@ Vulkan_005_Camera::Vulkan_005_Camera(int width, int height, String name)
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
     this->cfg_isRotate = true;
+    this->cfg_isEditorCreate = true;
+    this->cfg_isEditorGridShow = true;
+    this->cfg_isEditorAxisShow = true;
 
     this->poTypeVertex = F_MeshVertex_Pos3Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_tex2_ubo.vert.spv";

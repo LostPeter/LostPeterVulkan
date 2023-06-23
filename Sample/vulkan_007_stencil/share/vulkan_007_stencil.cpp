@@ -68,6 +68,9 @@ Vulkan_007_Stencil::Vulkan_007_Stencil(int width, int height, String name)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
+    this->cfg_isEditorCreate = true;
+    this->cfg_isEditorGridShow = true;
+    this->cfg_isEditorAxisShow = true;
 
     this->poTypeVertex = F_MeshVertex_Pos3Color4Normal3Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_normal3_tex2_ubo.vert.spv";

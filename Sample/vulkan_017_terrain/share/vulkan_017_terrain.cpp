@@ -920,6 +920,9 @@ Vulkan_017_Terrain::Vulkan_017_Terrain(int width, int height, String name)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
+    this->cfg_isEditorCreate = true;
+    this->cfg_isEditorGridShow = true;
+    this->cfg_isEditorAxisShow = true;
 
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
