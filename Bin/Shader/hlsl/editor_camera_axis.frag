@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-06-18
+* Time:     2023-06-23
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -11,7 +11,7 @@
 
 struct VSOutput
 {
-    [[vk::location(0)]] float3 inWorldPos       : POSITION0;
+    [[vk::location(0)]] float4 inWorldPos       : POSITION0;
     [[vk::location(1)]] float4 inColor          : COLOR0;
     [[vk::location(2)]] float2 inTexCoord       : TEXCOORD0;
 };
@@ -82,65 +82,29 @@ struct PassConstants
 }
 
 
-//GridObjectConstants
-struct GridObjectConstants
+//CameraAxisObjectConstants
+#define MAX_OBJECT_COUNT 6
+struct CameraAxisObjectConstants
 {
     float4x4 g_MatWorld;
     float4 color;
 };
 
-[[vk::binding(1)]]cbuffer gridObjectConsts          : register(b1) 
+[[vk::binding(1)]]cbuffer cameraAxisObjectConsts    : register(b1) 
 {
-    GridObjectConstants gridObjectConsts;
+    CameraAxisObjectConstants cameraAxisObjectConsts[MAX_OBJECT_COUNT];
 }
 
-
-float4 Grid(VSOutput input, float divisions, float4 color)
-{
-    float lineWidth = 2.0;
-
-    float2 vCoord = input.inTexCoord.xy * divisions;
-
-    float2 vGrid = abs(frac(vCoord - 0.5) - 0.5) / fwidth(vCoord);
-    float fLine = min(vGrid.x, vGrid.y);
-    float fLineResult = lineWidth - min(fLine, lineWidth);
-
-    return float4(color.xyz * fLineResult, 0.05 * fLineResult);
-}
 
 float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
 {
-    float fDivs;
-    float divisions = 1000.0;
-    float step = 100.0;
-    float subdivisions = 4.0;
-
+    CameraAxisObjectConstants axis = cameraAxisObjectConsts[(uint)input.inWorldPos.w];
     CameraConstants cam = passConsts.g_Cameras[viewIndex];
     float3 viewPos = cam.posEyeWorld;
-    float4 color = gridObjectConsts.color;
+    float4 color = axis.color;
 
-	fDivs = divisions / pow(2, round((abs(viewPos.y) - step / subdivisions) / step));
-	float4 vGrid1 = Grid(input, fDivs, color) + Grid(input, fDivs / subdivisions, color);
+    float4 outColor = color;
 
-	fDivs = divisions / pow(2, round((abs(viewPos.y + 50) - step / subdivisions) / step));
-	float4 vGrid2 = Grid(input, fDivs, color) + Grid(input, fDivs / subdivisions, color);
-
-	float fAlpha = fmod(abs(viewPos.y), step);
-	fAlpha = 0.0;
-
-    float4 outColor = lerp(vGrid1, vGrid2, fAlpha);
-
-    float3 vPseudoViewPos = float3(viewPos.x, input.inWorldPos.y, viewPos.z);
-    float fDistanceToCamera = max(distance(input.inWorldPos, vPseudoViewPos) - abs(viewPos.y), 0);
-    
-    float fAlphaDecreaseDistance = 128.0f;
-    float fDecreaseDistance = 1024.0f;
-    if (fDistanceToCamera > fAlphaDecreaseDistance)
-    {
-        float normalizedDistanceToCamera = clamp(fDistanceToCamera - fAlphaDecreaseDistance, 0.0f, fDecreaseDistance) / fDecreaseDistance;
-        outColor.a *= clamp(1.0f - normalizedDistanceToCamera, 0.0f, 1.0f);
-    }
-    outColor.a *= color.a;
 
     return outColor;
 }

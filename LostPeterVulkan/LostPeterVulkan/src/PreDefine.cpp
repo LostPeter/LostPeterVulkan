@@ -541,19 +541,21 @@ namespace LostPeter
         "Object",                   //1:   Object
         "ObjectTerrain",            //2:   ObjectTerrain
         "ObjectGrid",               //3:   ObjectGrid
-        "ObjectAxis",               //4:   ObjectAxis
-        "Material",                 //5:   Material
-        "Instance",                 //6:   Instance
-        "TextureCopy",              //7:   TextureCopy
-        "Tessellation",             //8:   Tessellation
-        "Geometry",                 //9:   Geometry
-        "TextureVS",                //10:  TextureVS
-        "TextureTESC",              //11:  TextureTESC
-        "TextureTESE",              //12:  TextureTESE
-        "TextureFS",                //13:  TextureFS
-        "TextureFrameColor",        //14:  TextureFrameColor
-        "TextureCSR",               //15:  TextureCSR
-        "TextureCSRW",              //16:  TextureCSRW
+        "ObjectCameraAxis",         //4:   ObjectCameraAxis
+        "ObjectCoordinateAxis",     //5:   ObjectCoordinateAxis
+        "ObjectCopyBlit",           //6:   ObjectCopyBlit
+        "Material",                 //7:   Material
+        "Instance",                 //8:   Instance
+        "TextureCopy",              //9:   TextureCopy
+        "Tessellation",             //10:  Tessellation
+        "Geometry",                 //11:  Geometry
+        "TextureVS",                //12:  TextureVS
+        "TextureTESC",              //13:  TextureTESC
+        "TextureTESE",              //14:  TextureTESE
+        "TextureFS",                //15:  TextureFS
+        "TextureFrameColor",        //16:  TextureFrameColor
+        "TextureCSR",               //17:  TextureCSR
+        "TextureCSRW",              //18:  TextureCSRW
     };
     const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type)
     {

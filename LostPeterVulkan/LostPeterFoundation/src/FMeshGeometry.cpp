@@ -335,7 +335,7 @@ namespace LostPeterFoundation
         , height(1.0f)
         , numRings(5)
         , numSegments(50)
-        , numSegHeight(20)
+        , numSegHeight(30)
     {
 
     }
@@ -378,8 +378,8 @@ namespace LostPeterFoundation
         : FMeshCreateParam(false, false)
         , radius(0.5f)
         , height(1.0f)
-        , numSegBase(20)
-        , numSegHeight(20)
+        , numSegBase(50)
+        , numSegHeight(30)
     {
 
     }

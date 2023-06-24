@@ -144,7 +144,9 @@ struct MaterialConstants
 #define MAX_INSTANCE_COUNT 1024
 struct InstanceConstants
 {
+    int offsetObject;
     int indexObject;
+    int offsetMaterial;
     int indexMaterial;
 };
 

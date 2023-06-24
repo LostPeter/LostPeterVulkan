@@ -72,7 +72,8 @@ Vulkan_006_Depth::Vulkan_006_Depth(int width, int height, String name)
     this->imgui_IsEnable = true;
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = true;
-    this->cfg_isEditorAxisShow = true;
+    this->cfg_isEditorCameraAxisShow = false;
+    this->cfg_isEditorCoordinateAxisShow = false;
 
     this->poTypeVertex = F_MeshVertex_Pos3Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_tex2_ubo.vert.spv";

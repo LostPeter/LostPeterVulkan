@@ -112,7 +112,8 @@ Vulkan_005_Camera::Vulkan_005_Camera(int width, int height, String name)
     this->cfg_isRotate = true;
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = true;
-    this->cfg_isEditorAxisShow = true;
+    this->cfg_isEditorCameraAxisShow = false;
+    this->cfg_isEditorCoordinateAxisShow = false;
 
     this->poTypeVertex = F_MeshVertex_Pos3Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_tex2_ubo.vert.spv";
@@ -132,8 +133,8 @@ void Vulkan_005_Camera::resetSetting(int index)
     this->cfg_cameraFov = g_fCameraFov[index];
 
     this->poMatWorld = FMath::FromTRS(g_tranformModels[index * 3 + 0],
-                                         g_tranformModels[index * 3 + 1],
-                                         g_tranformModels[index * 3 + 2]); 
+                                      g_tranformModels[index * 3 + 1],
+                                      g_tranformModels[index * 3 + 2]); 
     this->cfg_model_Path = g_pathModels[index * 3 + 1]; 
     this->cfg_texture_Path = g_pathModels[index * 3 + 2];
 }

@@ -2,7 +2,7 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-06-18
+* Time:     2023-06-23
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -82,38 +82,42 @@ struct PassConstants
 }
 
 
-//GridObjectConstants
-struct GridObjectConstants
+//CameraAxisObjectConstants
+#define MAX_OBJECT_COUNT 6
+struct CameraAxisObjectConstants
 {
     float4x4 g_MatWorld;
     float4 color;
 };
 
-[[vk::binding(1)]]cbuffer gridObjectConsts          : register(b1) 
+[[vk::binding(1)]]cbuffer cameraAxisObjectConsts    : register(b1) 
 {
-    GridObjectConstants gridObjectConsts;
+    CameraAxisObjectConstants cameraAxisObjectConsts[MAX_OBJECT_COUNT];
 }
 
 
 struct VSOutput
 {
 	float4 outPosition                          : SV_POSITION;
-    [[vk::location(0)]] float3 outWorldPos      : POSITION0;
+    [[vk::location(0)]] float4 outWorldPos      : POSITION0;
     [[vk::location(1)]] float4 outColor         : COLOR0;
     [[vk::location(2)]] float2 outTexCoord      : TEXCOORD0;
 };
 
 
 VSOutput main(VSInput input, 
-              uint viewIndex : SV_ViewID)
+              uint viewIndex : SV_ViewID,
+              uint instanceIndex : SV_InstanceID)
 {
     VSOutput output = (VSOutput)0;
 
     TransformConstants trans = passConsts.g_Transforms[viewIndex];
+    CameraAxisObjectConstants obj = cameraAxisObjectConsts[instanceIndex];
 
-    float4 outWorldPos = mul(gridObjectConsts.g_MatWorld, float4(input.inPosition, 1.0));
+    float4 outWorldPos = mul(obj.g_MatWorld, float4(input.inPosition, 1.0));
     output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, outWorldPos));
-    output.outWorldPos = outWorldPos.xyz / outWorldPos.w;
+    output.outWorldPos.xyz = outWorldPos.xyz / outWorldPos.w;
+    output.outWorldPos.w = instanceIndex;
     output.outColor = input.inColor;
     output.outTexCoord = input.inTexCoord;
     

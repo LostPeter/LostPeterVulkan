@@ -1902,7 +1902,7 @@ void Vulkan_014_MultiRenderPass::createMultiRenderPasses()
         bool isDefault = g_RenderPass_IsDefault[i];
 
         MultiRenderPass* pMultiRenderPass = new MultiRenderPass(this, nameRenderPass, isDefault);
-        pMultiRenderPass->Init();
+        pMultiRenderPass->Init(this->poSwapChainExtent.width, this->poSwapChainExtent.height);
 
         this->m_aMultiRenderPasses.push_back(pMultiRenderPass);
         this->m_mapMultiRenderPasses[nameRenderPass] = pMultiRenderPass;

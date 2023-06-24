@@ -1096,14 +1096,42 @@ namespace LostPeter
             
         }
     };
-    struct utilExport AxisObjectConstants
+    struct utilExport CameraAxisObjectConstants
     {
         FMatrix4 g_MatWorld;
         FColor color;
 
-        AxisObjectConstants()
+        CameraAxisObjectConstants()
             : g_MatWorld(FMath::Identity4x4())
             , color(0.5f, 0.5f, 0.5f, 1.0f)
+        {
+            
+        }
+    };
+    struct utilExport CoordinateAxisObjectConstants
+    {
+        FMatrix4 g_MatWorld;
+        FColor color;
+
+        CoordinateAxisObjectConstants()
+            : g_MatWorld(FMath::Identity4x4())
+            , color(0.5f, 0.5f, 0.5f, 1.0f)
+        {
+            
+        }
+    };
+    struct utilExport CopyBlitObjectConstants
+    {
+        float offsetX;
+        float offsetY;
+        float scaleX;
+        float scaleY;
+
+        CopyBlitObjectConstants()
+            : offsetX(0.0f)
+            , offsetY(0.0f)
+            , scaleX(1.0f)
+            , scaleY(1.0f)
         {
             
         }
@@ -1177,11 +1205,15 @@ namespace LostPeter
     //////////////////////////////// InstanceConstants //////////////////////////////
     struct utilExport InstanceConstants
     {
-        int indexObject = 0;
-        int indexMaterial = 0;
+        int offsetObject;
+        int indexObject;
+        int offsetMaterial;
+        int indexMaterial;
 
         InstanceConstants()
-            : indexObject(0)
+            : offsetObject(0)
+            , indexObject(0)
+            , offsetMaterial(0)
             , indexMaterial(0)
         {
 

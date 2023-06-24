@@ -246,7 +246,7 @@ namespace LostPeter
 
         public:
             void Destroy(VulkanWindow* pWindow);
-            virtual void Init(VulkanWindow* pWindow, bool _isDepth);
+            virtual void Init(VulkanWindow* pWindow, uint32_t width, uint32_t height, bool _isDepth);
         };
         class utilExport MultiRenderPass
         {
@@ -277,7 +277,7 @@ namespace LostPeter
         public:
             void Destroy();
 
-            virtual void Init();
+            virtual void Init(uint32_t width, uint32_t height);
         
         public:
             void CleanupSwapChain();
@@ -360,10 +360,7 @@ namespace LostPeter
         public:
             EditorBase(VulkanWindow* _pWindow);
             virtual ~EditorBase();
-
-        public:
-            
-
+        
         public:
             VulkanWindow* pWindow;
 
@@ -374,7 +371,6 @@ namespace LostPeter
 
             //Shaders
             ShaderModuleInfoVector aShaderModuleInfos;
-            VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
             VkShaderModuleVector aShaderModules;
             VkShaderModuleMap mapShaderModules;
 
@@ -428,7 +424,6 @@ namespace LostPeter
             virtual ~EditorGrid();
 
         public:
-        public:
             GridObjectConstants gridObjectCB;
             VkBuffer poBuffers_ObjectCB;
             VkDeviceMemory poBuffersMemory_ObjectCB;
@@ -466,18 +461,93 @@ namespace LostPeter
             virtual void destroyPipelineGraphics();
         };
 
-        /////////////////////////// EditorAxis ////////////////////////
-        class utilExport EditorAxis : public EditorBase
+        /////////////////////////// EditorCameraAxis //////////////////
+        class utilExport EditorCameraAxis : public EditorBase
         {
         public:
-            EditorAxis(VulkanWindow* _pWindow);
-            virtual ~EditorAxis();
+            EditorCameraAxis(VulkanWindow* _pWindow);
+            virtual ~EditorCameraAxis();
 
         public:
-            VulkanWindow* pWindow;
+            static size_t s_nMeshConeIndex;
+            static size_t s_nMeshAABBIndex;
+            static size_t s_nMeshQuadIndex;
+            static size_t s_nMeshCameraAxisCount;
+
+            static const String s_strNameShader_CameraAxis_Vert;
+            static const String s_strNameShader_CameraAxis_Frag;
+            static const String s_strNameShader_QuadBlit_Vert;
+            static const String s_strNameShader_QuadBlit_Frag;
+
+            static const float s_fBlitAreaWidth;
+            static const float s_fBlitAreaHeight;
+
+        //CameraAxis
+        public:
+            std::vector<CameraAxisObjectConstants> cameraAxisObjectCBs;
+            VkBuffer poBuffers_ObjectCB;
+            VkDeviceMemory poBuffersMemory_ObjectCB;
+
+        //Quad Blit
+        public:
+            //DescriptorSetLayouts
+            String nameDescriptorSetLayout_CopyBlit; 
+            StringVector aNameDescriptorSetLayouts_CopyBlit;
+            VkDescriptorSetLayout poDescriptorSetLayout_CopyBlit;
+
+            //PipelineLayout
+            VkPipelineLayout poPipelineLayout_CopyBlit;
+
+            //PipelineGraphics
+            PipelineGraphics* pPipelineGraphics_CopyBlit;
+
+            //Uniform Buffer
+            CopyBlitObjectConstants copyBlitObjectCB;
+            VkBuffer poBuffers_CopyBlitObjectCB;
+            VkDeviceMemory poBuffersMemory_CopyBlitObjectCB;
+
+        protected:
+            bool isNeedUpdate;
+        public:
+            bool IsNeedUpdate() const { return this->isNeedUpdate; }
+            void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
 
         public:
-        
+            virtual void Destroy();
+
+            virtual void Init();
+
+            virtual void UpdateCBs();
+            virtual void Draw(VkCommandBuffer& commandBuffer);
+            virtual void DrawQuad(VkCommandBuffer& commandBuffer);
+
+        public:
+            virtual void CleanupSwapChain();
+            virtual void RecreateSwapChain();
+
+        protected:
+            virtual void initConfigs();
+            virtual void initBufferUniforms();
+            virtual void initDescriptorSetLayout();
+            virtual void initPipelineLayout();
+            virtual void initPipelineGraphics();
+            virtual void updateDescriptorSets_Graphics();
+
+            virtual void destroyBufferUniforms();
+            virtual void destroyPipelineGraphics();
+            virtual void destroyPipelineLayout();
+            virtual void destroyDescriptorSetLayout();
+        };
+
+        /////////////////////////// EditorCoordinateAxis //////////////
+        class utilExport EditorCoordinateAxis : public EditorBase
+        {
+        public:
+            EditorCoordinateAxis(VulkanWindow* _pWindow);
+            virtual ~EditorCoordinateAxis();
+
+        public:
+            
 
         public:
             virtual void Destroy();
@@ -499,6 +569,7 @@ namespace LostPeter
             virtual void destroyBufferUniforms();
             virtual void destroyPipelineGraphics();
         };
+
 
     public:
         //ModelMesh
@@ -814,10 +885,12 @@ namespace LostPeter
         //Editor
         bool cfg_isEditorCreate;
         bool cfg_isEditorGridShow;
-        bool cfg_isEditorAxisShow;
+        bool cfg_isEditorCameraAxisShow;
+        bool cfg_isEditorCoordinateAxisShow;
         FColor cfg_editorGridColor;
         EditorGrid* pEditorGrid;
-        EditorAxis* pEditorAxis;
+        EditorCameraAxis* pEditorCameraAxis;
+        EditorCoordinateAxis* pEditorCoordinateAxis;
 
     protected:
         ConstCharPtrVector aInstanceLayers;
@@ -1457,7 +1530,8 @@ namespace LostPeter
             //Editor
             virtual void createEditor();
                 virtual void createEditor_Grid();
-                virtual void createEditor_Axis();    
+                virtual void createEditor_CameraAxis();
+                virtual void createEditor_CoordinateAxis();       
             virtual void destroyEditor();
 
         //Resize
@@ -1509,6 +1583,7 @@ namespace LostPeter
                 virtual void updateRenderCommandBuffers_Default();
                     virtual void updateRenderPass_SyncComputeGraphics(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer);
+                    virtual void updateRenderPass_EditorCameraAxis(VkCommandBuffer& commandBuffer);
                     virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault(VkCommandBuffer& commandBuffer);
                         virtual void drawMeshDefault_Custom(VkCommandBuffer& commandBuffer);

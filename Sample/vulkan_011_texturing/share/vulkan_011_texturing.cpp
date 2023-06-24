@@ -785,7 +785,8 @@ Vulkan_011_Texturing::Vulkan_011_Texturing(int width, int height, String name)
     this->cfg_isUseComputeShader = true;
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = true;
-    this->cfg_isEditorAxisShow = true;
+    this->cfg_isEditorCameraAxisShow = false;
+    this->cfg_isEditorCoordinateAxisShow = false;
 
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable

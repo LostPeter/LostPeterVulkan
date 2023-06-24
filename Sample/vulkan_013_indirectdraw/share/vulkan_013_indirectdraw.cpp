@@ -922,7 +922,8 @@ Vulkan_013_IndirectDraw::Vulkan_013_IndirectDraw(int width, int height, String n
     this->imgui_IsEnable = true;
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = true;
-    this->cfg_isEditorAxisShow = true;
+    this->cfg_isEditorCameraAxisShow = false;
+    this->cfg_isEditorCoordinateAxisShow = false;
 
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable

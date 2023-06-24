@@ -346,19 +346,21 @@ namespace LostPeter
         Vulkan_DescriptorSet_Object,                        //1:  Object
         Vulkan_DescriptorSet_ObjectTerrain,                 //2:  ObjectTerrain
         Vulkan_DescriptorSet_ObjectGrid,                    //3:  ObjectGrid
-        Vulkan_DescriptorSet_ObjectAxis,                    //4:  ObjectAxis
-        Vulkan_DescriptorSet_Material,                      //5:  Material
-        Vulkan_DescriptorSet_Instance,                      //6:  Instance
-        Vulkan_DescriptorSet_TextureCopy,                   //7:  TextureCopy
-        Vulkan_DescriptorSet_Tessellation,                  //8:  Tessellation
-        Vulkan_DescriptorSet_Geometry,                      //9:  Geometry
-        Vulkan_DescriptorSet_TextureVS,                     //10: TextureVS
-        Vulkan_DescriptorSet_TextureTESC,                   //11: TextureTESC
-        Vulkan_DescriptorSet_TextureTESE,                   //12: TextureTESE
-        Vulkan_DescriptorSet_TextureFS,                     //13: TextureFS
-        Vulkan_DescriptorSet_TextureFrameColor,             //14: TextureFrameColor
-        Vulkan_DescriptorSet_TextureCSR,                    //15: TextureCSR
-        Vulkan_DescriptorSet_TextureCSRW,                   //16: TextureCSRW
+        Vulkan_DescriptorSet_ObjectCameraAxis,              //4:  ObjectCameraAxis
+        Vulkan_DescriptorSet_ObjectCoordinateAxis,          //5:  ObjectCoordinateAxis
+        Vulkan_DescriptorSet_ObjectCopyBlit,                //6:  ObjectCopyBlit
+        Vulkan_DescriptorSet_Material,                      //7:  Material
+        Vulkan_DescriptorSet_Instance,                      //8:  Instance
+        Vulkan_DescriptorSet_TextureCopy,                   //9:  TextureCopy
+        Vulkan_DescriptorSet_Tessellation,                  //10: Tessellation
+        Vulkan_DescriptorSet_Geometry,                      //11: Geometry
+        Vulkan_DescriptorSet_TextureVS,                     //12: TextureVS
+        Vulkan_DescriptorSet_TextureTESC,                   //13: TextureTESC
+        Vulkan_DescriptorSet_TextureTESE,                   //14: TextureTESE
+        Vulkan_DescriptorSet_TextureFS,                     //15: TextureFS
+        Vulkan_DescriptorSet_TextureFrameColor,             //16: TextureFrameColor
+        Vulkan_DescriptorSet_TextureCSR,                    //17: TextureCSR
+        Vulkan_DescriptorSet_TextureCSRW,                   //18: TextureCSRW
 
         Vulkan_DescriptorSet_Count,
     };
@@ -454,7 +456,9 @@ namespace LostPeter
     struct ObjectConstants;
     struct TerrainObjectConstants;
     struct GridObjectConstants;
-    struct AxisObjectConstants;
+    struct CameraAxisObjectConstants;
+    struct CoordinateAxisObjectConstants;
+    struct CopyBlitObjectConstants;
     struct MaterialConstants;
     struct InstanceConstants;
     
