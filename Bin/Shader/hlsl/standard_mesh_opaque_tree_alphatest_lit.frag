@@ -262,7 +262,7 @@ float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
     clip(colorTexture.a == 0.0f ? -1 : 1);
 
     //Material
-    MaterialConstants mat = materialConsts[(uint)input.inWorldPos.w];
+    MaterialConstants mat = materialConsts[floor(input.inWorldPos.w + 0.5)];
     float3 N = normalize(input.inWorldNormal);
 
     float3 colorLight;

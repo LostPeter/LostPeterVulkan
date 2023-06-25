@@ -20,8 +20,8 @@ struct VSOutput
 
 float4 main(VSOutput input) : SV_TARGET
 {
-    float3 outColor = texture2D.Sample(texture2DSampler, input.inTexCoord).rgb;
+    float4 outColor = texture2D.Sample(texture2DSampler, input.inTexCoord).rgba;
     outColor.xyz *= input.inColor.xyz;
-
-    return float4(outColor, 1.0);
+    
+    return outColor;
 }

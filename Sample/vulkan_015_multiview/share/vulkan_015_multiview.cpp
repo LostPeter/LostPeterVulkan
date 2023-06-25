@@ -2004,7 +2004,7 @@ void Vulkan_015_MultiView::createMultiRenderPasses()
         String nameRenderPass = g_RenderPass_Names[i];
         bool isDefault = g_RenderPass_IsDefault[i];
 
-        MultiRenderPass* pMultiRenderPass = new MultiRenderPass(this, nameRenderPass, isDefault);
+        MultiRenderPass* pMultiRenderPass = new MultiRenderPass(this, nameRenderPass, isDefault, true);
         pMultiRenderPass->Init(this->poSwapChainExtent.width, this->poSwapChainExtent.height);
 
         this->m_aMultiRenderPasses.push_back(pMultiRenderPass);

@@ -844,7 +844,9 @@ namespace LostPeter
 
     /////////////////////////// MultiRenderPass ///////////////////
     VulkanWindow::FrameBufferAttachment::FrameBufferAttachment()
-        : image(VK_NULL_HANDLE)
+        : isDepth(false)
+        , isImageArray(false)
+        , image(VK_NULL_HANDLE)
         , memory(VK_NULL_HANDLE)
         , view(VK_NULL_HANDLE)
     {
@@ -864,12 +866,17 @@ namespace LostPeter
         this->memory = VK_NULL_HANDLE;
         this->view = VK_NULL_HANDLE;
     }
-    void VulkanWindow::FrameBufferAttachment::Init(VulkanWindow* pWindow, uint32_t width, uint32_t height, bool _isDepth)
+    void VulkanWindow::FrameBufferAttachment::Init(VulkanWindow* pWindow, 
+                                                   uint32_t width, 
+                                                   uint32_t height, 
+                                                   bool _isDepth,
+                                                   bool _isImageArray)
     {
         this->isDepth = _isDepth;
+        this->isImageArray = _isImageArray;
 
         uint32_t depth = 1;
-        uint32_t numArray = 2;
+        uint32_t numArray = 1;
         uint32_t mipMapCount = 1;
         VkImageType imageType = VK_IMAGE_TYPE_2D;
         VkSampleCountFlagBits numSamples = pWindow->poMSAASamples;
@@ -879,7 +886,7 @@ namespace LostPeter
         VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
-        VkImageViewType imageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY; 
+        VkImageViewType imageViewType = VK_IMAGE_VIEW_TYPE_2D;
         VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 
         if (_isDepth)
@@ -887,6 +894,12 @@ namespace LostPeter
             format = pWindow->poDepthImageFormat;
             usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
             aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+        }
+
+        if (_isImageArray)
+        {
+            numArray = 2;
+            imageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
         }
 
         pWindow->createVkImage(width, 
@@ -918,11 +931,13 @@ namespace LostPeter
 
     VulkanWindow::MultiRenderPass::MultiRenderPass(VulkanWindow* _pWindow, 
                                                    const String& _nameRenderPass,
-                                                   bool _isUseDefault)
+                                                   bool _isUseDefault,
+                                                   bool _isMultiView2)
         //Window
         : pWindow(_pWindow)
         , nameRenderPass(_nameRenderPass)
         , isUseDefault(_isUseDefault)
+        , isMultiView2(_isMultiView2)
 
         //RenderPass
         , poRenderPass(VK_NULL_HANDLE)
@@ -969,8 +984,8 @@ namespace LostPeter
         {
             //1> Attachment
             {
-                this->framebufferColor.Init(this->pWindow, width, height, false);
-                this->framebufferDepth.Init(this->pWindow, width, height, true);
+                this->framebufferColor.Init(this->pWindow, width, height, false, this->isMultiView2);
+                this->framebufferDepth.Init(this->pWindow, width, height, true, this->isMultiView2);
                 this->pWindow->createVkSampler(Vulkan_TextureFilter_Bilinear, 
                                                Vulkan_TextureAddressing_Clamp,
                                                Vulkan_TextureBorderColor_OpaqueWhite,
@@ -1047,10 +1062,8 @@ namespace LostPeter
                 subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
                 aSubpassDependency.push_back(subpassDependency_SceneRender);
 
-                //VkRenderPassMultiviewCreateInfo
-                //Bit mask that specifies which view rendering is broadcast to 0011 = Broadcast to first and second view (layer)
+
                 const uint32_t viewMask = 0b00000011; 
-                //Bit mask that specifies correlation between views, An implementation may use this for optimizations (concurrent render)
                 const uint32_t correlationMask = 0b00000011;
                 VkRenderPassMultiviewCreateInfo renderPassMultiviewCI = {};
                 renderPassMultiviewCI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO;
@@ -1059,11 +1072,16 @@ namespace LostPeter
                 renderPassMultiviewCI.correlationMaskCount = 1;
                 renderPassMultiviewCI.pCorrelationMasks = &correlationMask;
 
+                VkRenderPassMultiviewCreateInfo* pMultiviewCI = nullptr;
+                if (this->isMultiView2)
+                {
+                    pMultiviewCI = &renderPassMultiviewCI;
+                }
                 if (!this->pWindow->createVkRenderPass(this->nameRenderPass,
                                                        aAttachmentDescription,
                                                        aSubpassDescription,
                                                        aSubpassDependency,
-                                                       &renderPassMultiviewCI,
+                                                       pMultiviewCI,
                                                        this->poRenderPass))
                 {
                     String msg = "VulkanWindow::MultiRenderPass::Init: Failed to create renderpass: " + this->nameRenderPass;
@@ -1623,12 +1641,35 @@ namespace LostPeter
     const String VulkanWindow::EditorCameraAxis::s_strNameShader_CameraAxis_Frag = "frag_editor_camera_axis";
     const String VulkanWindow::EditorCameraAxis::s_strNameShader_QuadBlit_Vert = "vert_standard_copy_blit";
     const String VulkanWindow::EditorCameraAxis::s_strNameShader_QuadBlit_Frag = "frag_standard_copy_blit";
-    const float VulkanWindow::EditorCameraAxis::s_fBlitAreaWidth = 256;
-    const float VulkanWindow::EditorCameraAxis::s_fBlitAreaHeight = 256;
+    const float VulkanWindow::EditorCameraAxis::s_fBlitAreaWidth = 128;
+    const float VulkanWindow::EditorCameraAxis::s_fBlitAreaHeight = 128;
+    FMatrix4 VulkanWindow::EditorCameraAxis::s_aMatrix4Transforms[7] = 
+    {
+        FMath::FromTRS(FVector3(-1.5f,  0.0f,  0.0f), FVector3(0.0f,   0.0f, -90.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone X+
+        FMath::FromTRS(FVector3( 1.5f,  0.0f,  0.0f), FVector3(0.0f,   0.0f,  90.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone X-
+        FMath::FromTRS(FVector3( 0.0f,  1.5f,  0.0f), FVector3(180.0f, 0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Y+
+        FMath::FromTRS(FVector3( 0.0f, -1.5f,  0.0f), FVector3(0.0f,   0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Y-
+        FMath::FromTRS(FVector3( 0.0f,  0.0f, -1.5f), FVector3(90.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Z+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  1.5f), FVector3(-90.0f, 0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Z-
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(00.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //AABB
+    };
+    float VulkanWindow::EditorCameraAxis::s_fCameraDistance = 10;
+    FVector3 VulkanWindow::EditorCameraAxis::s_vCameraPos = FVector3(0, 0, - VulkanWindow::EditorCameraAxis::s_fCameraDistance);
+    FVector3 VulkanWindow::EditorCameraAxis::s_vCameraLookTarget = FVector3(0, 0, 0);
+    FVector3 VulkanWindow::EditorCameraAxis::s_vCameraUp = FVector3(0, 1, 0);
+    float VulkanWindow::EditorCameraAxis::s_fCameraFOV = 45.0f;
+    float VulkanWindow::EditorCameraAxis::s_fCameraAspectRatio = 1.0f;
+    float VulkanWindow::EditorCameraAxis::s_fCameraZNear = 0.01f;
+    float VulkanWindow::EditorCameraAxis::s_fCameraZFar = 10000.0f;
     VulkanWindow::EditorCameraAxis::EditorCameraAxis(VulkanWindow* _pWindow)
         : EditorBase(_pWindow)
 
         //CameraAxis
+        , pCamera(nullptr)
+        , poColorBackground(0.0f, 0.0f, 0.0f, 0.0f)
+
+        , poBuffers_PassCB(VK_NULL_HANDLE)
+        , poBuffersMemory_PassCB(VK_NULL_HANDLE)
         , poBuffers_ObjectCB(VK_NULL_HANDLE)
         , poBuffersMemory_ObjectCB(VK_NULL_HANDLE)
         , isNeedUpdate(true)
@@ -1649,6 +1690,7 @@ namespace LostPeter
     }
     void VulkanWindow::EditorCameraAxis::Destroy()
     {
+        F_DELETE(this->pCamera)
         destroyBufferUniforms();
         destroyShaders();
         destroyMeshes();
@@ -1659,6 +1701,19 @@ namespace LostPeter
     }
     void VulkanWindow::EditorCameraAxis::UpdateCBs()
     {
+        //Pass
+        {
+            FVector3 vDir = this->pWindow->pCamera->GetDir();
+            FVector3 vPos = -vDir * s_fCameraDistance;
+            this->pCamera->LookAtLH(vPos, s_vCameraLookTarget, s_vCameraUp);
+            this->pCamera->UpdateViewMatrix();
+            this->pWindow->updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
+            void* data;
+            vkMapMemory(this->pWindow->poDevice, this->poBuffersMemory_PassCB, 0, sizeof(PassConstants), 0, &data);
+                memcpy(data, &this->passCB, sizeof(PassConstants));
+            vkUnmapMemory(this->pWindow->poDevice, this->poBuffersMemory_PassCB);
+        }
+        
         if (!IsNeedUpdate())
             return;
         SetIsNeedUpdate(false);
@@ -1718,6 +1773,10 @@ namespace LostPeter
             this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipeline);
         this->pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipelineLayout, 0, 1, &this->pPipelineGraphics_CopyBlit->poDescriptorSets[this->pWindow->poSwapChainImageIndex], 0, nullptr);
         this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
+    }
+    void VulkanWindow::EditorCameraAxis::ResetCamera()
+    {
+
     }
     void VulkanWindow::EditorCameraAxis::initConfigs()
     {
@@ -1807,11 +1866,38 @@ namespace LostPeter
                 this->aNameDescriptorSetLayouts_CopyBlit = FUtilString::Split(this->nameDescriptorSetLayout_CopyBlit, "-");
             }
         }
+        //5> Camera/Viewport
+        {
+            initCamera();
+            initViewport();
+        }
     }
+        void VulkanWindow::EditorCameraAxis::initCamera()
+        {
+            this->pCamera = new FCamera();
+            this->pCamera->LookAtLH(s_vCameraPos, s_vCameraLookTarget, s_vCameraUp);
+            this->pCamera->PerspectiveLH(s_fCameraFOV, s_fCameraAspectRatio, s_fCameraZNear, s_fCameraZFar);
+            this->pCamera->UpdateViewMatrix();
+        }
+        void VulkanWindow::EditorCameraAxis::initViewport()
+        {
+            this->pWindow->createViewport(s_fBlitAreaWidth,
+                                          s_fBlitAreaHeight,
+                                          this->poViewport,
+                                          this->poScissor);
+            this->poOffset.x = 0.0f;
+            this->poOffset.y = 0.0f;
+            this->poExtent.width = s_fBlitAreaWidth;
+            this->poExtent.height = s_fBlitAreaHeight;
+        }
     void VulkanWindow::EditorCameraAxis::initBufferUniforms()
     {
         //CameraAxis
         {
+            //Pass
+            this->pWindow->updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
+            this->pWindow->createVkBuffer(sizeof(PassConstants), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_PassCB, this->poBuffersMemory_PassCB);
+
             this->cameraAxisObjectCBs.clear();
             //Axis Cone
             {
@@ -1819,33 +1905,25 @@ namespace LostPeter
                 {
                     //+
                     CameraAxisObjectConstants xConsts0;
-                    xConsts0.g_MatWorld = FMath::FromTRS(FVector3(-1.5f, 0.0f, 0.0f),
-                                                         FVector3(0.0f, 0.0f, -90.0f),
-                                                         FVector3(1.0f, 1.0f, 1.0f));
+                    xConsts0.g_MatWorld = s_aMatrix4Transforms[0];
                     xConsts0.color = FColor(1.0f, 0.0f, 0.0f, 1.0f);
                     this->cameraAxisObjectCBs.push_back(xConsts0);
                     //-
                     CameraAxisObjectConstants xConsts1;
-                    xConsts1.g_MatWorld = FMath::FromTRS(FVector3(1.5f, 0.0f, 0.0f),
-                                                         FVector3(0.0f, 0.0f, 90.0f),
-                                                         FVector3(1.0f, 1.0f, 1.0f));
-                    xConsts0.color = FColor(0.5f, 0.5f, 0.5f, 1.0f);
+                    xConsts1.g_MatWorld = s_aMatrix4Transforms[1];
+                    xConsts1.color = FColor(0.5f, 0.5f, 0.5f, 1.0f);
                     this->cameraAxisObjectCBs.push_back(xConsts1);
                 }
                 //Y
                 {
                     //+
                     CameraAxisObjectConstants yConsts0;
-                    yConsts0.g_MatWorld = FMath::FromTRS(FVector3(0.0f, 1.5f, 0.0f),
-                                                         FVector3(180.0f, 0.0f, 0.0f),
-                                                         FVector3(1.0f, 1.0f, 1.0f));
+                    yConsts0.g_MatWorld = s_aMatrix4Transforms[2];
                     yConsts0.color = FColor(0.0f, 1.0f, 0.0f, 1.0f);
                     this->cameraAxisObjectCBs.push_back(yConsts0);
                     //-
                     CameraAxisObjectConstants yConsts1;
-                    yConsts1.g_MatWorld = FMath::FromTRS(FVector3(0.0f, -1.5f, 0.0f),
-                                                         FVector3(0.0f, 0.0f, 0.0f),
-                                                         FVector3(1.0f, 1.0f, 1.0f));
+                    yConsts1.g_MatWorld = s_aMatrix4Transforms[3];
                     yConsts1.color = FColor(0.5f, 0.5f, 0.5f, 1.0f);
                     this->cameraAxisObjectCBs.push_back(yConsts1);
                 }
@@ -1853,16 +1931,12 @@ namespace LostPeter
                 {
                     //+
                     CameraAxisObjectConstants zConsts0;
-                    zConsts0.g_MatWorld = FMath::FromTRS(FVector3(0.0f, 0.0f, -1.5f),
-                                                         FVector3(90.0f, 0.0f, 0.0f),
-                                                         FVector3(1.0f, 1.0f, 1.0f));
+                    zConsts0.g_MatWorld = s_aMatrix4Transforms[4];
                     zConsts0.color = FColor(0.0f, 0.0f, 1.0f, 1.0f);
                     this->cameraAxisObjectCBs.push_back(zConsts0);
                     //-
                     CameraAxisObjectConstants zConsts1;
-                    zConsts1.g_MatWorld = FMath::FromTRS(FVector3(0.0f, 0.0f, 1.5f),
-                                                         FVector3(-90.0f, 0.0f, 0.0f),
-                                                         FVector3(1.0f, 1.0f, 1.0f));
+                    zConsts1.g_MatWorld = s_aMatrix4Transforms[5]; 
                     zConsts1.color = FColor(0.5f, 0.5f, 0.5f, 1.0f);
                     this->cameraAxisObjectCBs.push_back(zConsts1);
                 }
@@ -1870,9 +1944,7 @@ namespace LostPeter
             //Axis AABB
             {
                 CameraAxisObjectConstants constsAABB;
-                constsAABB.g_MatWorld = FMath::FromTRS(FVector3(0.0f, 0.0f, 0.0f),
-                                                       FVector3(0.0f, 0.0f, 0.0f),
-                                                       FVector3(1.0f, 1.0f, 1.0f));
+                constsAABB.g_MatWorld = s_aMatrix4Transforms[6];
                 constsAABB.color = FColor(0.5f, 0.5f, 0.5f, 1.0f);
                 this->cameraAxisObjectCBs.push_back(constsAABB);
             }
@@ -1943,6 +2015,9 @@ namespace LostPeter
                 this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
                 //2> DescriptorSets
                 this->pWindow->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
+                //3> MultiRenderPass
+                this->pPipelineGraphics->pRenderPass = new MultiRenderPass(this->pWindow, "rp_editor_camera_axis", false, false);
+                this->pPipelineGraphics->pRenderPass->Init(s_fBlitAreaWidth, s_fBlitAreaHeight);
             }
             //Quad Blit
             {
@@ -1954,25 +2029,22 @@ namespace LostPeter
                 this->pPipelineGraphics_CopyBlit->poPipelineLayout = this->poPipelineLayout_CopyBlit;
                 //2> DescriptorSets
                 this->pWindow->createVkDescriptorSets(this->pPipelineGraphics_CopyBlit->poDescriptorSetLayout, this->pPipelineGraphics_CopyBlit->poDescriptorSets);
-                //3> MultiRenderPass
-                this->pPipelineGraphics_CopyBlit->pRenderPass = new MultiRenderPass(this->pWindow, "rp_editor_camera_axis", false);
-                this->pPipelineGraphics_CopyBlit->pRenderPass->Init(this->pWindow->poSwapChainExtent.width, this->pWindow->poSwapChainExtent.height); //(s_fBlitAreaWidth, s_fBlitAreaHeight);
             }
             updateDescriptorSets_Graphics();
         }
         
         //Pipeline
         {
-            VkViewportVector aViewports;
-            aViewports.push_back(this->pWindow->poViewport);
-            VkRect2DVector aScissors;
-            aScissors.push_back(this->pWindow->poScissor);
-
             VkStencilOpState stencilOpFront; 
             VkStencilOpState stencilOpBack;
 
             //CameraAxis
             {
+                VkViewportVector aViewports;
+                aViewports.push_back(this->poViewport);
+                VkRect2DVector aScissors;
+                aScissors.push_back(this->poScissor);
+
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
                 if (!this->pWindow->CreatePipelineShaderStageCreateInfos(s_strNameShader_CameraAxis_Vert,
                                                                          "",
@@ -1992,7 +2064,7 @@ namespace LostPeter
                                                                                               false, 0, 3,
                                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                              this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                              this->pPipelineGraphics->pRenderPass->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                                               VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE,
                                                                                               VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
                                                                                               VK_FALSE, stencilOpFront, stencilOpBack, 
@@ -2012,7 +2084,7 @@ namespace LostPeter
                                                                                                         false, 0, 3,
                                                                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                         Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                        this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                        this->pPipelineGraphics->pRenderPass->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                                                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
                                                                                                         VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
                                                                                                         VK_FALSE, stencilOpFront, stencilOpBack, 
@@ -2029,6 +2101,11 @@ namespace LostPeter
             }
             //Quad Blit
             {
+                VkViewportVector aViewports;
+                aViewports.push_back(this->pWindow->poViewport);
+                VkRect2DVector aScissors;
+                aScissors.push_back(this->pWindow->poScissor);
+
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
                 if (!this->pWindow->CreatePipelineShaderStageCreateInfos(s_strNameShader_QuadBlit_Vert,
                                                                          "",
@@ -2048,11 +2125,11 @@ namespace LostPeter
                                                                                                        false, 0, 3,
                                                                                                        Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                        Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                       this->pPipelineGraphics_CopyBlit->pRenderPass->poRenderPass, this->pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
+                                                                                                       this->pWindow->poRenderPass, this->pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
                                                                                                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE,
                                                                                                        VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
                                                                                                        VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                       VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                       VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
                                                                                                        VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
                                                                                                        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
                 if (this->pPipelineGraphics_CopyBlit->poPipeline == VK_NULL_HANDLE)
@@ -2068,11 +2145,11 @@ namespace LostPeter
                                                                                                                  false, 0, 3,
                                                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                                  Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                                 this->pPipelineGraphics_CopyBlit->pRenderPass->poRenderPass, this->pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
+                                                                                                                 this->pWindow->poRenderPass, this->pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
                                                                                                                  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
                                                                                                                  VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
                                                                                                                  VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                                 VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                                 VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
                                                                                                                  VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
                                                                                                                  VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
                 if (this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame == VK_NULL_HANDLE)
@@ -2103,7 +2180,7 @@ namespace LostPeter
                     if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                     {
                         VkDescriptorBufferInfo bufferInfo_Pass = {};
-                        bufferInfo_Pass.buffer = this->pWindow->poBuffers_PassCB[i];
+                        bufferInfo_Pass.buffer = this->poBuffers_PassCB;
                         bufferInfo_Pass.offset = 0;
                         bufferInfo_Pass.range = sizeof(PassConstants);
                         this->pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
@@ -2170,7 +2247,7 @@ namespace LostPeter
                                                                  0,
                                                                  1,
                                                                  VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                                 this->pPipelineGraphics_CopyBlit->pRenderPass->imageInfo);
+                                                                 this->pPipelineGraphics->pRenderPass->imageInfo);
                     }
                     else
                     {
@@ -4088,6 +4165,29 @@ namespace LostPeter
             this->poExtent = this->poSwapChainExtent;
             this->poScissor.offset = this->poOffset;
             this->poScissor.extent = this->poExtent;
+        }
+        void VulkanWindow::createViewport(uint32_t width,
+                                          uint32_t height,
+                                          VkViewport& poViewport, 
+                                          VkRect2D& poScissor)
+        {
+            poViewport  = {};
+            poViewport.x = 0.0f;
+            poViewport.y = 0.0f;
+            poViewport.width = (float)width;
+            poViewport.height = (float)height;
+            poViewport.minDepth = 0.0f;
+            poViewport.maxDepth = 1.0f;
+
+            poScissor = {};
+            VkOffset2D offset;
+            offset.x = 0;
+            offset.y = 0;
+            VkExtent2D extent;
+            extent.width = (float)width;
+            extent.height = (float)height;
+            poScissor.offset = offset;
+            poScissor.extent = extent;
         }
 
     void VulkanWindow::createSwapChainImageViews()
@@ -8955,7 +9055,7 @@ namespace LostPeter
                     //TransformConstants/CameraConstants
                     if (this->pCamera != nullptr)
                     {
-                        updateCBs_PassTransformAndCamera(this->pCamera, 0);
+                        updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
                         if (this->pCameraRight == nullptr)
                         {
                             this->passCB.g_Transforms[1] = this->passCB.g_Transforms[0];
@@ -8985,7 +9085,7 @@ namespace LostPeter
                     }   
                     if (this->pCameraRight != nullptr)
                     {
-                        updateCBs_PassTransformAndCamera(this->pCameraRight, 1); 
+                        updateCBs_PassTransformAndCamera(this->passCB, this->pCameraRight, 1); 
                     }
 
                     //TimeConstants
@@ -9010,10 +9110,10 @@ namespace LostPeter
                         memcpy(data, &this->passCB, sizeof(PassConstants));
                     vkUnmapMemory(this->poDevice, memory);
                 }
-                    void VulkanWindow::updateCBs_PassTransformAndCamera(FCamera* pCam, int nIndex)
+                    void VulkanWindow::updateCBs_PassTransformAndCamera(PassConstants& pass, FCamera* pCam, int nIndex)
                     {
                         //TransformConstants
-                        TransformConstants& transformConstants = this->passCB.g_Transforms[nIndex];
+                        TransformConstants& transformConstants = pass.g_Transforms[nIndex];
                         transformConstants.mat4View = pCam->GetMatrix4View();
                         transformConstants.mat4View_Inv = FMath::InverseMatrix4(transformConstants.mat4View);
                         transformConstants.mat4Proj = pCam->GetMatrix4Projection();
@@ -9022,7 +9122,7 @@ namespace LostPeter
                         transformConstants.mat4ViewProj_Inv = FMath::InverseMatrix4(transformConstants.mat4ViewProj);
 
                         //CameraConstants
-                        CameraConstants& cameraConstants = this->passCB.g_Cameras[nIndex];
+                        CameraConstants& cameraConstants = pass.g_Cameras[nIndex];
                         cameraConstants.posEyeWorld = pCam->GetPos();
                         cameraConstants.fNearZ = pCam->GetNearZ();
                         cameraConstants.fFarZ = pCam->GetFarZ();
@@ -9658,21 +9758,21 @@ namespace LostPeter
                         return;
                     }
 
-                    VulkanWindow::MultiRenderPass* pRenderPass = this->pEditorCameraAxis->pPipelineGraphics_CopyBlit->pRenderPass;
+                    VulkanWindow::MultiRenderPass* pRenderPass = this->pEditorCameraAxis->pPipelineGraphics->pRenderPass;
                     if (pRenderPass == nullptr)
                         return;
 
                     beginRenderPass(commandBuffer,
                                     pRenderPass->poRenderPass,
                                     pRenderPass->poFrameBuffer,
-                                    this->poOffset,
-                                    this->poExtent,
-                                    this->cfg_colorBackground,
+                                    this->pEditorCameraAxis->poOffset,
+                                    this->pEditorCameraAxis->poExtent,
+                                    this->pEditorCameraAxis->poColorBackground,
                                     1.0f,
                                     0);
                     {
                         //1> Viewport
-                        bindViewport(commandBuffer, this->poViewport, this->poScissor);
+                        bindViewport(commandBuffer, this->pEditorCameraAxis->poViewport, this->pEditorCameraAxis->poScissor);
 
                         //2> Render CameraAxis
                         this->pEditorCameraAxis->Draw(commandBuffer);

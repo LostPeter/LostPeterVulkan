@@ -104,7 +104,7 @@ Vulkan_010_Lighting::Vulkan_010_Lighting(int width, int height, String name)
     this->imgui_IsEnable = true;
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = true;
-    this->cfg_isEditorCameraAxisShow = false;
+    this->cfg_isEditorCameraAxisShow = true;
     this->cfg_isEditorCoordinateAxisShow = false;
 
     this->poTypeVertex = F_MeshVertex_Pos3Color4Normal3Tex2;

@@ -922,7 +922,7 @@ Vulkan_017_Terrain::Vulkan_017_Terrain(int width, int height, String name)
     this->imgui_IsEnable = true;
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = true;
-    this->cfg_isEditorCameraAxisShow = false;
+    this->cfg_isEditorCameraAxisShow = true;
     this->cfg_isEditorCoordinateAxisShow = false;
 
     this->mainLight.common.x = 0; //Directional Type

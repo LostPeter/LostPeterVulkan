@@ -383,7 +383,7 @@ float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
     float3 outColor;
 
     CameraConstants cam = passConsts.g_Cameras[viewIndex];
-    MaterialConstants mat = materialConsts[(uint)input.inWorldPos.w];
+    MaterialConstants mat = materialConsts[floor(input.inWorldPos.w + 0.5)];
     float3 V = normalize(cam.posEyeWorld - input.inWorldPos.xyz);
     float3 VT = normalize(input.inTSEyePos - input.inTSPos);
     float3 N = float3(0,0,1);

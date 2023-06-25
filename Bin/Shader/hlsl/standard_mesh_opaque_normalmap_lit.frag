@@ -319,7 +319,7 @@ float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
 {
     float3 outColor;
 
-    MaterialConstants mat = materialConsts[(uint)input.inWorldPos.w];
+    MaterialConstants mat = materialConsts[floor(input.inWorldPos.w + 0.5)];
     //Normal Map
     float3 N = calculateNormal(input);
     

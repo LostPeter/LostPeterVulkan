@@ -257,7 +257,7 @@ float4 main(DSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
 {
     float3 outColor;
 
-    MaterialConstants mat = materialConsts[(uint)input.inWorldPos.w];
+    MaterialConstants mat = materialConsts[floor(input.inWorldPos.w + 0.5)];
     float3 N = normalize(input.inWorldNormal);
 
     float3 colorLight;

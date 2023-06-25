@@ -240,20 +240,27 @@ namespace LostPeter
 
         public:
             bool isDepth;
+            bool isImageArray;
+
             VkImage image;
             VkDeviceMemory memory;
             VkImageView view;
 
         public:
             void Destroy(VulkanWindow* pWindow);
-            virtual void Init(VulkanWindow* pWindow, uint32_t width, uint32_t height, bool _isDepth);
+            virtual void Init(VulkanWindow* pWindow, 
+                              uint32_t width, 
+                              uint32_t height, 
+                              bool _isDepth,
+                              bool _isImageArray);
         };
         class utilExport MultiRenderPass
         {
         public:
             MultiRenderPass(VulkanWindow* _pWindow, 
                             const String& _nameRenderPass,
-                            bool _isUseDefault);
+                            bool _isUseDefault,
+                            bool _isMultiView2);
             virtual ~MultiRenderPass();
 
         public:
@@ -261,6 +268,7 @@ namespace LostPeter
             VulkanWindow* pWindow;
             String nameRenderPass;
             bool isUseDefault;
+            bool isMultiView2;
 
             //Attachment
             FrameBufferAttachment framebufferColor;
@@ -482,8 +490,30 @@ namespace LostPeter
             static const float s_fBlitAreaWidth;
             static const float s_fBlitAreaHeight;
 
+            static FMatrix4 s_aMatrix4Transforms[7];
+
+            static float s_fCameraDistance;
+            static FVector3 s_vCameraPos;
+            static FVector3 s_vCameraLookTarget;
+            static FVector3 s_vCameraUp;
+            static float s_fCameraFOV;
+            static float s_fCameraAspectRatio;
+            static float s_fCameraZNear;
+            static float s_fCameraZFar;
+
         //CameraAxis
         public:
+            FCamera* pCamera;
+            VkViewport poViewport;
+            VkRect2D poScissor;
+            VkOffset2D poOffset;
+            VkExtent2D poExtent;
+            FColor poColorBackground;
+
+            PassConstants passCB;
+            VkBuffer poBuffers_PassCB;
+            VkDeviceMemory poBuffersMemory_PassCB;
+
             std::vector<CameraAxisObjectConstants> cameraAxisObjectCBs;
             VkBuffer poBuffers_ObjectCB;
             VkDeviceMemory poBuffersMemory_ObjectCB;
@@ -521,12 +551,16 @@ namespace LostPeter
             virtual void Draw(VkCommandBuffer& commandBuffer);
             virtual void DrawQuad(VkCommandBuffer& commandBuffer);
 
+            virtual void ResetCamera();
+
         public:
             virtual void CleanupSwapChain();
             virtual void RecreateSwapChain();
 
         protected:
             virtual void initConfigs();
+                virtual void initCamera();
+                virtual void initViewport();
             virtual void initBufferUniforms();
             virtual void initDescriptorSetLayout();
             virtual void initPipelineLayout();
@@ -972,6 +1006,10 @@ namespace LostPeter
                     virtual VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
                     virtual VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
                     virtual void createViewport();
+                    virtual void createViewport(uint32_t width,
+                                                uint32_t height,
+                                                VkViewport& poViewport, 
+                                                VkRect2D& poScissor);
                 virtual void createSwapChainImageViews();
                     virtual void createColorResources();
                     virtual void createDepthResources();
@@ -1552,7 +1590,7 @@ namespace LostPeter
             virtual void updateRender();
                 virtual void updateCBs_Default();
                     virtual void updateCBs_Pass();
-                        virtual void updateCBs_PassTransformAndCamera(FCamera* pCam, int nIndex);
+                        virtual void updateCBs_PassTransformAndCamera(PassConstants& pass, FCamera* pCam, int nIndex);
                     virtual void updateCBs_Objects();
                         virtual void updateCBs_ObjectsContent();
                     virtual void updateCBs_Materials();
