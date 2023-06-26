@@ -1719,8 +1719,9 @@ void Vulkan_016_Geometry::createModelMeshes()
                                          nameMesh,
                                          pathMesh,
                                          typeMesh,
+                                         typeVertex,
                                          typeGeometryType,
-                                         typeVertex);
+                                         nullptr);
         bool isFlipY = g_MeshIsFlipYs[i];
         bool isTransformLocal = g_MeshIsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))

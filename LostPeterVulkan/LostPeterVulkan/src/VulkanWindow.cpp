@@ -378,14 +378,16 @@ namespace LostPeter
                                        const String& _nameMesh,
                                        const String& _pathMesh,
                                        FMeshType _typeMesh,
+                                       FMeshVertexType _typeVertex,
                                        FMeshGeometryType _typeGeometryType,
-                                       FMeshVertexType _typeVertex)
+                                       FMeshCreateParam* _pMeshCreateParam)
         : pWindow(_pWindow)
         , nameMesh(_nameMesh)
         , pathMesh(_pathMesh)
         , typeMesh(_typeMesh)
-        , typeGeometryType(_typeGeometryType)
         , typeVertex(_typeVertex)
+        , typeGeometryType(_typeGeometryType)
+        , pMeshCreateParam(_pMeshCreateParam)
     {
 
     }
@@ -437,7 +439,7 @@ namespace LostPeter
         {
             FMeshData meshData;
             meshData.bIsFlipY = isFlipY;
-            if (!FMeshGeometry::CreateGeometry(meshData, this->typeGeometryType))
+            if (!FMeshGeometry::CreateGeometry(meshData, this->typeGeometryType, this->pMeshCreateParam))
             {
                 F_LogError("VulkanWindow::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", F_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
                 return false; 
@@ -1322,6 +1324,14 @@ namespace LostPeter
         }
         this->aMeshes.clear();
         this->mapMeshes.clear();
+
+        count = this->aMeshInfos.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            VulkanWindow::MeshInfo* pMI = this->aMeshInfos[i];
+            F_DELETE(pMI)
+        }
+        this->aMeshInfos.clear();
     }
     void VulkanWindow::EditorBase::destroyShaders()
     {
@@ -1398,6 +1408,8 @@ namespace LostPeter
     }
     
     /////////////////////////// EditorGrid ////////////////////////
+    const String VulkanWindow::EditorGrid::s_strNameShader_Grid_Vert = "vert_editor_grid";
+    const String VulkanWindow::EditorGrid::s_strNameShader_Grid_Frag = "frag_editor_grid";
     VulkanWindow::EditorGrid::EditorGrid(VulkanWindow* _pWindow)
         : EditorBase(_pWindow)
 
@@ -1437,28 +1449,28 @@ namespace LostPeter
     {
         //1> Mesh
         {
-            MeshInfo mi;
-            mi.nameMesh = "EditorGrid";
-            mi.pathMesh = "";
-            mi.typeMesh = F_Mesh_Geometry;
-            mi.typeGeometryType = F_MeshGeometry_Grid;
-            mi.typeVertex = F_MeshVertex_Pos3Color4Tex2;
-            mi.isFlipY = false;
-            mi.isTransformLocal = true;
-            mi.matTransformLocal = FMath::RotateX(90.0f);
-            this->aMeshInfos.push_back(mi);
+            MeshInfo* pMI = new MeshInfo("EditorGrid",
+                                         "",
+                                         F_Mesh_Geometry,
+                                         F_MeshVertex_Pos3Color4Tex2,
+                                         F_MeshGeometry_Grid,
+                                         nullptr,
+                                         false,
+                                         true,
+                                         FMath::RotateX(90.0f));
+            this->aMeshInfos.push_back(pMI);
         }
         //2> Shader
         {
             //Vert
             ShaderModuleInfo siVert;
-            siVert.nameShader = "vert_editor_grid";
+            siVert.nameShader = s_strNameShader_Grid_Vert;
             siVert.nameShaderType = "vert";
             siVert.pathShader = "Assets/Shader/editor_grid.vert.spv";
             this->aShaderModuleInfos.push_back(siVert);
             //Frag
             ShaderModuleInfo siFrag;
-            siFrag.nameShader = "frag_editor_grid";
+            siFrag.nameShader = s_strNameShader_Grid_Frag;
             siFrag.nameShaderType = "frag";
             siFrag.pathShader = "Assets/Shader/editor_grid.frag.spv";
             this->aShaderModuleInfos.push_back(siFrag);
@@ -1496,11 +1508,11 @@ namespace LostPeter
         //4> Pipeline
         {
             VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
-            if (!this->pWindow->CreatePipelineShaderStageCreateInfos(this->aShaderModuleInfos[0].nameShader,
+            if (!this->pWindow->CreatePipelineShaderStageCreateInfos(s_strNameShader_Grid_Vert,
                                                                      "",
                                                                      "",
                                                                      "",
-                                                                     this->aShaderModuleInfos[1].nameShader,
+                                                                     s_strNameShader_Grid_Frag,
                                                                      this->mapShaderModules,
                                                                      aShaderStageCreateInfos_Graphics))
             {
@@ -1645,13 +1657,13 @@ namespace LostPeter
     const float VulkanWindow::EditorCameraAxis::s_fBlitAreaHeight = 128;
     FMatrix4 VulkanWindow::EditorCameraAxis::s_aMatrix4Transforms[7] = 
     {
-        FMath::FromTRS(FVector3(-1.5f,  0.0f,  0.0f), FVector3(0.0f,   0.0f, -90.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone X+
-        FMath::FromTRS(FVector3( 1.5f,  0.0f,  0.0f), FVector3(0.0f,   0.0f,  90.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone X-
-        FMath::FromTRS(FVector3( 0.0f,  1.5f,  0.0f), FVector3(180.0f, 0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Y+
-        FMath::FromTRS(FVector3( 0.0f, -1.5f,  0.0f), FVector3(0.0f,   0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Y-
-        FMath::FromTRS(FVector3( 0.0f,  0.0f, -1.5f), FVector3(90.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Z+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  1.5f), FVector3(-90.0f, 0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Z-
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(00.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //AABB
+        FMath::FromTRS(FVector3(-2.5f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone X+
+        FMath::FromTRS(FVector3( 2.5f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,  90.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone X-
+        FMath::FromTRS(FVector3( 0.0f,  2.5f,  0.0f), FVector3(180.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Y+
+        FMath::FromTRS(FVector3( 0.0f, -2.5f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Y-
+        FMath::FromTRS(FVector3( 0.0f,  0.0f, -2.5f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Z+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  2.5f), FVector3(-90.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Z-
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //AABB
     };
     float VulkanWindow::EditorCameraAxis::s_fCameraDistance = 10;
     FVector3 VulkanWindow::EditorCameraAxis::s_vCameraPos = FVector3(0, 0, - VulkanWindow::EditorCameraAxis::s_fCameraDistance);
@@ -1774,47 +1786,43 @@ namespace LostPeter
         this->pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipelineLayout, 0, 1, &this->pPipelineGraphics_CopyBlit->poDescriptorSets[this->pWindow->poSwapChainImageIndex], 0, nullptr);
         this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
     }
-    void VulkanWindow::EditorCameraAxis::ResetCamera()
-    {
-
-    }
     void VulkanWindow::EditorCameraAxis::initConfigs()
     {
         //1> Mesh
         {
             //0: Cone
-            MeshInfo miCone;
-            miCone.nameMesh = "EditorCameraAxis_Cone";
-            miCone.pathMesh = "";
-            miCone.typeMesh = F_Mesh_Geometry;
-            miCone.typeGeometryType = F_MeshGeometry_Cone;
-            miCone.typeVertex = F_MeshVertex_Pos3Color4Tex2;
-            miCone.isFlipY = false;
-            miCone.isTransformLocal = false;
-            miCone.matTransformLocal = FMath::ms_mat4Unit;
-            this->aMeshInfos.push_back(miCone);
+            MeshInfo* pMICone = new MeshInfo("EditorCameraAxis_Cone",
+                                             "",
+                                             F_Mesh_Geometry,
+                                             F_MeshVertex_Pos3Color4Tex2,
+                                             F_MeshGeometry_Cone,
+                                             new FMeshCreateParam_Cone(0.5f, 2.0f, 16, 1, false, false),
+                                             false,
+                                             false,
+                                             FMath::ms_mat4Unit);
+            this->aMeshInfos.push_back(pMICone);
             //1: AABB
-            MeshInfo miAABB;
-            miAABB.nameMesh = "EditorCameraAxis_AABB";
-            miAABB.pathMesh = "";
-            miAABB.typeMesh = F_Mesh_Geometry;
-            miAABB.typeGeometryType = F_MeshGeometry_AABB;
-            miAABB.typeVertex = F_MeshVertex_Pos3Color4Tex2;
-            miAABB.isFlipY = false;
-            miAABB.isTransformLocal = false;
-            miAABB.matTransformLocal = FMath::ms_mat4Unit;
-            this->aMeshInfos.push_back(miAABB);
+            MeshInfo* pMIAABB = new MeshInfo("EditorCameraAxis_AABB",
+                                             "",
+                                             F_Mesh_Geometry,
+                                             F_MeshVertex_Pos3Color4Tex2,
+                                             F_MeshGeometry_AABB,
+                                             nullptr,
+                                             false,
+                                             false,
+                                             FMath::ms_mat4Unit);
+            this->aMeshInfos.push_back(pMIAABB);
             //2: Quad
-            MeshInfo miQuad;
-            miQuad.nameMesh = "EditorCameraAxis_Quad";
-            miQuad.pathMesh = "";
-            miQuad.typeMesh = F_Mesh_Geometry;
-            miQuad.typeGeometryType = F_MeshGeometry_Quad;
-            miQuad.typeVertex = F_MeshVertex_Pos3Color4Tex2;
-            miQuad.isFlipY = true;
-            miQuad.isTransformLocal = false;
-            miQuad.matTransformLocal = FMath::ms_mat4Unit;
-            this->aMeshInfos.push_back(miQuad);
+            MeshInfo* pMIQuad = new MeshInfo("EditorCameraAxis_Quad",
+                                             "",
+                                             F_Mesh_Geometry,
+                                             F_MeshVertex_Pos3Color4Tex2,
+                                             F_MeshGeometry_Quad,
+                                             nullptr,
+                                             true,
+                                             false,
+                                             FMath::ms_mat4Unit);
+            this->aMeshInfos.push_back(pMIQuad);
         }
         //2> Shader
         {
@@ -1899,54 +1907,62 @@ namespace LostPeter
             this->pWindow->createVkBuffer(sizeof(PassConstants), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_PassCB, this->poBuffersMemory_PassCB);
 
             this->cameraAxisObjectCBs.clear();
+            int indexConst = 0;
             //Axis Cone
             {
                 //X
                 {
                     //+
                     CameraAxisObjectConstants xConsts0;
-                    xConsts0.g_MatWorld = s_aMatrix4Transforms[0];
-                    xConsts0.color = FColor(1.0f, 0.0f, 0.0f, 1.0f);
+                    xConsts0.g_MatWorld = s_aMatrix4Transforms[indexConst];
+                    xConsts0.color = FColor(0.5f, 0.5f, 0.5f, 1.0f);
                     this->cameraAxisObjectCBs.push_back(xConsts0);
+                    indexConst++;
                     //-
                     CameraAxisObjectConstants xConsts1;
-                    xConsts1.g_MatWorld = s_aMatrix4Transforms[1];
-                    xConsts1.color = FColor(0.5f, 0.5f, 0.5f, 1.0f);
+                    xConsts1.g_MatWorld = s_aMatrix4Transforms[indexConst];
+                    xConsts1.color = FColor(1.0f, 0.0f, 0.0f, 1.0f);
                     this->cameraAxisObjectCBs.push_back(xConsts1);
+                    indexConst++;
                 }
                 //Y
                 {
                     //+
                     CameraAxisObjectConstants yConsts0;
-                    yConsts0.g_MatWorld = s_aMatrix4Transforms[2];
+                    yConsts0.g_MatWorld = s_aMatrix4Transforms[indexConst];
                     yConsts0.color = FColor(0.0f, 1.0f, 0.0f, 1.0f);
                     this->cameraAxisObjectCBs.push_back(yConsts0);
+                    indexConst++;
                     //-
                     CameraAxisObjectConstants yConsts1;
-                    yConsts1.g_MatWorld = s_aMatrix4Transforms[3];
+                    yConsts1.g_MatWorld = s_aMatrix4Transforms[indexConst];
                     yConsts1.color = FColor(0.5f, 0.5f, 0.5f, 1.0f);
                     this->cameraAxisObjectCBs.push_back(yConsts1);
+                    indexConst++;
                 }
                 //Z
                 {
                     //+
                     CameraAxisObjectConstants zConsts0;
-                    zConsts0.g_MatWorld = s_aMatrix4Transforms[4];
-                    zConsts0.color = FColor(0.0f, 0.0f, 1.0f, 1.0f);
+                    zConsts0.g_MatWorld = s_aMatrix4Transforms[indexConst];
+                    zConsts0.color = FColor(0.5f, 0.5f, 0.5f, 1.0f);
                     this->cameraAxisObjectCBs.push_back(zConsts0);
+                    indexConst++;
                     //-
                     CameraAxisObjectConstants zConsts1;
-                    zConsts1.g_MatWorld = s_aMatrix4Transforms[5]; 
-                    zConsts1.color = FColor(0.5f, 0.5f, 0.5f, 1.0f);
+                    zConsts1.g_MatWorld = s_aMatrix4Transforms[indexConst]; 
+                    zConsts1.color = FColor(0.0f, 0.0f, 1.0f, 1.0f);
                     this->cameraAxisObjectCBs.push_back(zConsts1);
+                    indexConst++;
                 }
             }
             //Axis AABB
             {
                 CameraAxisObjectConstants constsAABB;
-                constsAABB.g_MatWorld = s_aMatrix4Transforms[6];
+                constsAABB.g_MatWorld = s_aMatrix4Transforms[indexConst];
                 constsAABB.color = FColor(0.5f, 0.5f, 0.5f, 1.0f);
                 this->cameraAxisObjectCBs.push_back(constsAABB);
+                indexConst++;
             }
             VkDeviceSize bufferSize = sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size();
             this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
@@ -2326,8 +2342,39 @@ namespace LostPeter
     }
     
     /////////////////////////// EditorCoordinateAxis //////////////
+    size_t VulkanWindow::EditorCoordinateAxis::s_nMeshCylinderIndex = 0;
+    size_t VulkanWindow::EditorCoordinateAxis::s_nMeshConeIndex = 1;
+    size_t VulkanWindow::EditorCoordinateAxis::s_nMeshQuadIndex = 2;
+    size_t VulkanWindow::EditorCoordinateAxis::s_nMeshQuadLineIndex = 3;
+    size_t VulkanWindow::EditorCoordinateAxis::s_nMeshCoordinateAxisCount = 3;
+    const String VulkanWindow::EditorCoordinateAxis::s_strNameShader_CoordinateAxis_Vert = "vert_editor_coordinate_axis";
+    const String VulkanWindow::EditorCoordinateAxis::s_strNameShader_CoordinateAxis_Frag = "frag_editor_coordinate_axis";
+    FMatrix4 VulkanWindow::EditorCoordinateAxis::s_aMatrix4Transforms[12] = 
+    {
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cylinder X+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cylinder Y+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cylinder Z+
+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone X+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Y+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Z+
+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Quad XY+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f, -90.0f,  0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Quad YZ+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,   0.0f,  0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Quad ZX+
+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Quad Line XY+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f, -90.0f,  0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Quad Line YZ+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,   0.0f,  0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Quad Line ZX+
+    };
+
     VulkanWindow::EditorCoordinateAxis::EditorCoordinateAxis(VulkanWindow* _pWindow)
         : EditorBase(_pWindow)
+
+        , poBuffers_ObjectCB(VK_NULL_HANDLE)
+        , poBuffersMemory_ObjectCB(VK_NULL_HANDLE)
+        , isNeedUpdate(true)
+        , scaleCoordinate(1.0f)
     {
 
     }
@@ -2347,43 +2394,357 @@ namespace LostPeter
     }
     void VulkanWindow::EditorCoordinateAxis::UpdateCBs()
     {
+        //if (!IsNeedUpdate())
+        //    return;
+        //SetIsNeedUpdate(false);
 
+        //CoordinateAxis
+        {
+            int countStart = 0;
+            int countNumber = 3;
+            //Cylinder
+            {
+
+            }
+            //Cone
+            {
+
+            }
+            //Quad
+            {
+
+            }
+            void* data;
+            vkMapMemory(this->pWindow->poDevice, this->poBuffersMemory_ObjectCB, 0, sizeof(CameraAxisObjectConstants) * this->coordinateAxisObjectCBs.size(), 0, &data);
+                memcpy(data, &this->coordinateAxisObjectCBs[0], sizeof(CameraAxisObjectConstants) * this->coordinateAxisObjectCBs.size());
+            vkUnmapMemory(this->pWindow->poDevice, this->poBuffersMemory_ObjectCB);
+        }
+    }
+    void VulkanWindow::EditorCoordinateAxis::Draw(VkCommandBuffer& commandBuffer)
+    {
+        uint32_t instanceStart = 0;
+        size_t count_mesh = s_nMeshCoordinateAxisCount;
+        for (size_t i = 0; i < count_mesh; i++)
+        {
+            ModelMesh* pMesh = this->aMeshes[i];
+            size_t count_mesh_sub = pMesh->aMeshSubs.size();
+            for (size_t j = 0; j < count_mesh_sub; j++)
+            {
+                ModelMeshSub* pMeshSub = pMesh->aMeshSubs[j];
+
+                VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
+                VkDeviceSize offsets[] = { 0 };
+                this->pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+                this->pWindow->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+                if (this->pWindow->cfg_isWireFrame)
+                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+                else
+                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+                this->pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[this->pWindow->poSwapChainImageIndex], 0, nullptr);
+                this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
+
+                if (i != count_mesh - 1)
+                {
+                    instanceStart += pMeshSub->instanceCount;
+                }
+                else
+                {
+                    if (!this->pWindow->cfg_isWireFrame)
+                    {
+                        this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+                    }
+                    this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
+                }
+            }
+        }
     }
     void VulkanWindow::EditorCoordinateAxis::initConfigs()
     {
         //1> Mesh
         {
-            
+            //0: Cylinder
+            MeshInfo* pMICylinder = new MeshInfo("EditorCoordinateAxis_Cylinder",
+                                                 "",
+                                                 F_Mesh_Geometry,
+                                                 F_MeshVertex_Pos3Color4Tex2,
+                                                 F_MeshGeometry_Cylinder,
+                                                 new FMeshCreateParam_Cylinder(0.05f, 0.05f, 5.0f, 5, 5, false, false),
+                                                 false,
+                                                 false,
+                                                 FMath::ms_mat4Unit);
+            this->aMeshInfos.push_back(pMICylinder);
+            //1: Cone
+            MeshInfo* pMICone = new MeshInfo("EditorCoordinateAxis_Cone",
+                                             "",
+                                             F_Mesh_Geometry,
+                                             F_MeshVertex_Pos3Color4Tex2,
+                                             F_MeshGeometry_Cone,
+                                             new FMeshCreateParam_Cone(0.5f, 2.0f, 16, 1, false, false),
+                                             false,
+                                             false,
+                                             FMath::ms_mat4Unit);
+            this->aMeshInfos.push_back(pMICone);
+            //2: Quad
+            MeshInfo* pMIQuad = new MeshInfo("EditorCameraAxis_Quad",
+                                             "",
+                                             F_Mesh_Geometry,
+                                             F_MeshVertex_Pos3Color4Tex2,
+                                             F_MeshGeometry_Quad,
+                                             nullptr,
+                                             true,
+                                             false,
+                                             FMath::ms_mat4Unit);
+            this->aMeshInfos.push_back(pMIQuad);
         }
         //2> Shader
         {
-
+            //CoordinateAxis
+            {
+                //Vert
+                ShaderModuleInfo siVert;
+                siVert.nameShader = s_strNameShader_CoordinateAxis_Vert;
+                siVert.nameShaderType = "vert";
+                siVert.pathShader = "Assets/Shader/editor_coordinate_axis.vert.spv";
+                this->aShaderModuleInfos.push_back(siVert);
+                //Frag
+                ShaderModuleInfo siFrag;
+                siFrag.nameShader = s_strNameShader_CoordinateAxis_Frag;
+                siFrag.nameShaderType = "frag";
+                siFrag.pathShader = "Assets/Shader/editor_coordinate_axis.frag.spv";
+                this->aShaderModuleInfos.push_back(siFrag);
+            }
         }
-        //3> Pipeline
+        //3> BufferUniform
         {
 
         }
-        //4> 
+        //4> DescriptorSetLayout
         {
-
+            //CoordinateAxis
+            {
+                this->nameDescriptorSetLayout = "Pass-ObjectCoordinateAxis";
+                this->aNameDescriptorSetLayouts = FUtilString::Split(this->nameDescriptorSetLayout, "-");
+            }
         }
     }
     void VulkanWindow::EditorCoordinateAxis::initBufferUniforms()
     {
+        //CoordinateAxis
+        {
+            this->coordinateAxisObjectCBs.clear();
+            int indexConst = 0;
+            //Axis Cylinder
+            {
+                //X+
+                CoordinateAxisObjectConstants xConsts;
+                xConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
+                xConsts.color = FColor(1.0f, 0.0f, 0.0f, 1.0f);
+                this->coordinateAxisObjectCBs.push_back(xConsts);
+                indexConst++;
+                //Y+
+                CoordinateAxisObjectConstants yConsts;
+                yConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
+                yConsts.color = FColor(0.0f, 1.0f, 0.0f, 1.0f);
+                this->coordinateAxisObjectCBs.push_back(yConsts);
+                indexConst++;
+                //Z+
+                CoordinateAxisObjectConstants zConsts;
+                zConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
+                zConsts.color = FColor(0.0f, 0.0f, 1.0f, 1.0f);
+                this->coordinateAxisObjectCBs.push_back(zConsts);
+                indexConst++;
+            }
+            //Axis Cone
+            {
+                //X+
+                CoordinateAxisObjectConstants xConsts;
+                xConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
+                xConsts.color = FColor(1.0f, 0.0f, 0.0f, 1.0f);
+                this->coordinateAxisObjectCBs.push_back(xConsts);
+                indexConst++;
+                //Y+
+                CoordinateAxisObjectConstants yConsts;
+                yConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
+                yConsts.color = FColor(0.0f, 1.0f, 0.0f, 1.0f);
+                this->coordinateAxisObjectCBs.push_back(yConsts);
+                indexConst++;
+                //Z+
+                CoordinateAxisObjectConstants zConsts;
+                zConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
+                zConsts.color = FColor(0.0f, 0.0f, 1.0f, 1.0f);
+                this->coordinateAxisObjectCBs.push_back(zConsts);
+                indexConst++;
+            }
+            //Axis Quad / Line
+            {
+                //XY+
+                CoordinateAxisObjectConstants xConsts;
+                xConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
+                xConsts.color = FColor(0.0f, 0.0f, 1.0f, 1.0f);
+                this->coordinateAxisObjectCBs.push_back(xConsts);
+                indexConst++;
+                //YZ+
+                CoordinateAxisObjectConstants yConsts;
+                yConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
+                yConsts.color = FColor(1.0f, 0.0f, 0.0f, 1.0f);
+                this->coordinateAxisObjectCBs.push_back(yConsts);
+                indexConst++;
+                //ZX+
+                CoordinateAxisObjectConstants zConsts;
+                zConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
+                zConsts.color = FColor(0.0f, 1.0f, 0.0f, 1.0f);
+                this->coordinateAxisObjectCBs.push_back(zConsts);
+                indexConst++;
+            }
+            VkDeviceSize bufferSize = sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size();
+            this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
 
+            ModelMesh* pMesh = this->aMeshes[s_nMeshCylinderIndex]; //Cylinder
+            ModelMeshSub* pMeshSub = pMesh->aMeshSubs[0];
+            pMeshSub->instanceCount = 3;
+            pMesh = this->aMeshes[s_nMeshConeIndex]; //Cone
+            pMeshSub = pMesh->aMeshSubs[0];
+            pMeshSub->instanceCount = 3;
+            pMesh = this->aMeshes[s_nMeshQuadIndex]; //Quad
+            pMeshSub = pMesh->aMeshSubs[0];
+            pMeshSub->instanceCount = 3;
+        }
     }
     void VulkanWindow::EditorCoordinateAxis::initPipelineGraphics()
     {
         this->pPipelineGraphics = new PipelineGraphics(this->pWindow);
-        
+        this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
+        this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
+        //1> DescriptorSetLayout 
+        this->pPipelineGraphics->poDescriptorSetLayout = this->poDescriptorSetLayout;
+        //2> DescriptorSets
+        this->pWindow->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
+        updateDescriptorSets_Graphics();
+        //3> PipelineLayout
+        this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
+        //4> Pipeline
+        {
+            VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
+            if (!this->pWindow->CreatePipelineShaderStageCreateInfos(s_strNameShader_CoordinateAxis_Vert,
+                                                                     "",
+                                                                     "",
+                                                                     "",
+                                                                     s_strNameShader_CoordinateAxis_Frag,
+                                                                     this->mapShaderModules,
+                                                                     aShaderStageCreateInfos_Graphics))
+            {
+                String msg = "VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: Can not find shader used !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+
+            VkViewportVector aViewports;
+            aViewports.push_back(this->pWindow->poViewport);
+            VkRect2DVector aScissors;
+            aScissors.push_back(this->pWindow->poScissor);
+
+            VkStencilOpState stencilOpFront; 
+            VkStencilOpState stencilOpBack; 
+
+            //pPipelineGraphics->poPipeline
+            this->pPipelineGraphics->poPipeline = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                          false, 0, 3,
+                                                                                          Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                          Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                          this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                          VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE,
+                                                                                          VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
+                                                                                          VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                          VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                          VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                          VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
+            {
+                String msg = "VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCoordinateAxis] !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+            F_LogInfo("VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: [EditorCoordinateAxis] Create pipeline graphics success !");
+
+            //pPipelineGraphics->poPipeline_WireFrame
+            this->pPipelineGraphics->poPipeline_WireFrame = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                                    false, 0, 3,
+                                                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                                    this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
+                                                                                                    VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
+                                                                                                    VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                    VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                    VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                    VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
+            {
+                String msg = "VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCoordinateAxis] !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+            F_LogInfo("VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: [EditorCoordinateAxis] Create pipeline graphics wire frame success !");
+        }
     }
     void VulkanWindow::EditorCoordinateAxis::updateDescriptorSets_Graphics()
     {
+        StringVector* pDescriptorSetLayoutNames = this->pPipelineGraphics->poDescriptorSetLayoutNames;
+        F_Assert(pDescriptorSetLayoutNames != nullptr && "VulkanWindow::EditorCoordinateAxis::updateDescriptorSets_Graphics")
+        size_t count_ds = this->pPipelineGraphics->poDescriptorSets.size();
+        for (size_t i = 0; i < count_ds; i++)
+        {
+            VkWriteDescriptorSetVector descriptorWrites;
 
+            size_t count_names = pDescriptorSetLayoutNames->size();
+            for (size_t j = 0; j < count_names; j++)
+            {
+                String& nameDescriptorSet = (*pDescriptorSetLayoutNames)[j];
+                if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
+                {
+                    VkDescriptorBufferInfo bufferInfo_Pass = {};
+                    bufferInfo_Pass.buffer = this->pWindow->poBuffers_PassCB[i];
+                    bufferInfo_Pass.offset = 0;
+                    bufferInfo_Pass.range = sizeof(PassConstants);
+                    this->pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                               this->pPipelineGraphics->poDescriptorSets[i],
+                                                               j,
+                                                               0,
+                                                               1,
+                                                               bufferInfo_Pass);
+                }
+                else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCoordinateAxis)) //ObjectCoordinateAxis
+                {
+                    VkDescriptorBufferInfo bufferInfo_ObjectCameraAxis = {};
+                    bufferInfo_ObjectCameraAxis.buffer = this->poBuffers_ObjectCB;
+                    bufferInfo_ObjectCameraAxis.offset = 0;
+                    bufferInfo_ObjectCameraAxis.range = sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size();
+                    this->pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                               this->pPipelineGraphics->poDescriptorSets[i],
+                                                               j,
+                                                               0,
+                                                               1,
+                                                               bufferInfo_ObjectCameraAxis);
+                }
+                else
+                {
+                    String msg = "VulkanWindow::EditorCoordinateAxis::updateDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg.c_str());
+                }
+            }
+            this->pWindow->updateVkDescriptorSets(descriptorWrites);
+        }
     }
     void VulkanWindow::EditorCoordinateAxis::destroyBufferUniforms()
     {
-
+        if (this->poBuffers_ObjectCB != VK_NULL_HANDLE)
+        {
+            this->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+        }
+        this->poBuffers_ObjectCB = VK_NULL_HANDLE;
+        this->poBuffersMemory_ObjectCB = VK_NULL_HANDLE;
+        this->coordinateAxisObjectCBs.clear();
     }
     void VulkanWindow::EditorCoordinateAxis::destroyPipelineGraphics()
     {
@@ -2401,26 +2762,27 @@ namespace LostPeter
     }
 
 
-    VulkanWindow::ModelMesh* VulkanWindow::CreateModelMesh(const MeshInfo& mi)
+    VulkanWindow::ModelMesh* VulkanWindow::CreateModelMesh(const MeshInfo* pMI)
     {
         ModelMesh* pMesh = new VulkanWindow::ModelMesh(this, 
-                                                       mi.nameMesh,
-                                                       mi.pathMesh,
-                                                       mi.typeMesh,
-                                                       mi.typeGeometryType,
-                                                       mi.typeVertex);
-        if (!pMesh->LoadMesh(mi.isFlipY, mi.isTransformLocal, mi.matTransformLocal))
+                                                       pMI->nameMesh,
+                                                       pMI->pathMesh,
+                                                       pMI->typeMesh,
+                                                       pMI->typeVertex,
+                                                       pMI->typeGeometryType,
+                                                       pMI->pMeshCreateParam);
+        if (!pMesh->LoadMesh(pMI->isFlipY, pMI->isTransformLocal, pMI->matTransformLocal))
         {
-            String msg = "VulkanWindow::CreateModelMesh: create mesh: name: [" + mi.nameMesh + "], path: [" + mi.pathMesh + "] failed !";
+            String msg = "VulkanWindow::CreateModelMesh: create mesh: name: [" + pMI->nameMesh + "], path: [" + pMI->pathMesh + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
         F_LogInfo("VulkanWindow::CreateModelMesh: create mesh, name: [%s], path: [%s] success !", 
-                  mi.nameMesh.c_str(), mi.pathMesh.c_str());
+                  pMI->nameMesh.c_str(), pMI->pathMesh.c_str());
         return pMesh;
     }
-    void VulkanWindow::CreateModelMeshes(const MeshInfoVector& aMIs, ModelMeshPtrVector& aMeshes, ModelMeshPtrMap& mapMeshes)
+    void VulkanWindow::CreateModelMeshes(const MeshInfoPtrVector& aMIs, ModelMeshPtrVector& aMeshes, ModelMeshPtrMap& mapMeshes)
     {
         size_t count = aMIs.size();
         for (size_t i = 0; i < count; i++)
@@ -8102,13 +8464,13 @@ namespace LostPeter
             uint32 heightDataGap = 1;
             if (this->poTerrainIsDrawInstance)
             {
-                nVertexCount = this->poTerrainGridInstanceVertexCount;
+                nVertexCount = (uint32)this->poTerrainGridInstanceVertexCount;
             }
             else
             {
                 nVertexCount = nSizeVertex;
-                if (nVertexCount > this->poTerrainGridVertexCount)
-                    nVertexCount = this->poTerrainGridVertexCount;
+                if (nVertexCount > (uint32)this->poTerrainGridVertexCount)
+                    nVertexCount = (uint32)this->poTerrainGridVertexCount;
                 
                 pHeight = this->poTerrainHeightMapDataFloat;
                 heightDataGap = (nSizeVertex - 1) / (nVertexCount - 1);

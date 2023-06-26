@@ -635,6 +635,11 @@ namespace LostPeterFoundation
     }
     bool FMeshGeometry::CreateGeometry(FMeshData& meshData, FMeshGeometryType eMeshGeometry, FMeshCreateParam* pParam)
     {   
+        if (pParam == nullptr)
+        {
+            return CreateGeometry(meshData, eMeshGeometry);
+        }
+
         switch ((int)eMeshGeometry)
         {
         case F_MeshGeometry_Triangle:

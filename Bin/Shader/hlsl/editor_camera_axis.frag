@@ -99,12 +99,5 @@ struct CameraAxisObjectConstants
 float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
 {
     CameraAxisObjectConstants axis = cameraAxisObjectConsts[floor(input.inWorldPos.w + 0.5)];
-    CameraConstants cam = passConsts.g_Cameras[viewIndex];
-    float3 viewPos = cam.posEyeWorld;
-    float4 color = axis.color;
-
-    float4 outColor = color;
-
-
-    return outColor;
+    return axis.color;
 }

@@ -29,27 +29,54 @@ namespace LostPeter
                 : nameMesh("")
                 , pathMesh("")
                 , typeMesh(F_Mesh_File)
-                , typeGeometryType(F_MeshGeometry_Grid)
                 , typeVertex(F_MeshVertex_Pos3Color4Tex2)
+                , typeGeometryType(F_MeshGeometry_Grid)
+                , pMeshCreateParam(nullptr)
                 , isFlipY(false)
                 , isTransformLocal(false)
                 , matTransformLocal(FMath::ms_mat4Unit)
             {
 
             }
+            MeshInfo(const String& _nameMesh,
+                     const String& _pathMesh,
+                     FMeshType _typeMesh,
+                     FMeshVertexType _typeVertex,
+                     FMeshGeometryType _typeGeometryType,
+                     FMeshCreateParam* _pMeshCreateParam,
+                     bool _isFlipY,
+                     bool _isTransformLocal,
+                     const FMatrix4& _matTransformLocal)
+                : nameMesh(_nameMesh)
+                , pathMesh(_pathMesh)
+                , typeMesh(_typeMesh)
+                , typeVertex(_typeVertex)
+                , typeGeometryType(_typeGeometryType)
+                , pMeshCreateParam(_pMeshCreateParam)
+                , isFlipY(_isFlipY)
+                , isTransformLocal(_isTransformLocal)
+                , matTransformLocal(_matTransformLocal)
+            {
+
+            }
+            ~MeshInfo()
+            {
+                F_DELETE(this->pMeshCreateParam)
+            }
 
             String nameMesh;
             String pathMesh;
             
             FMeshType typeMesh;
-            FMeshGeometryType typeGeometryType;
             FMeshVertexType typeVertex;
+            FMeshGeometryType typeGeometryType;
+            FMeshCreateParam* pMeshCreateParam;
 
             bool isFlipY;
             bool isTransformLocal;
             FMatrix4 matTransformLocal;
         };
-        typedef std::vector<MeshInfo> MeshInfoVector;
+        typedef std::vector<MeshInfo*> MeshInfoPtrVector;
 
 
         struct utilExport ShaderModuleInfo
@@ -127,8 +154,9 @@ namespace LostPeter
                       const String& _nameMesh,
                       const String& _pathMesh,
                       FMeshType _typeMesh,
+                      FMeshVertexType _typeVertex,
                       FMeshGeometryType _typeGeometryType,
-                      FMeshVertexType _typeVertex);
+                      FMeshCreateParam* _pMeshCreateParam);
             virtual ~ModelMesh();
 
         public:
@@ -136,8 +164,9 @@ namespace LostPeter
             String nameMesh;
             String pathMesh;
             FMeshType typeMesh;
-            FMeshGeometryType typeGeometryType;
             FMeshVertexType typeVertex;
+            FMeshGeometryType typeGeometryType;
+            FMeshCreateParam* pMeshCreateParam;
             ModelMeshSubPtrVector aMeshSubs;
             ModelMeshSubPtrMap mapMeshSubs;
 
@@ -373,7 +402,7 @@ namespace LostPeter
             VulkanWindow* pWindow;
 
             //Meshes
-            MeshInfoVector aMeshInfos;
+            MeshInfoPtrVector aMeshInfos;
             ModelMeshPtrVector aMeshes;
             ModelMeshPtrMap mapMeshes;
 
@@ -430,6 +459,10 @@ namespace LostPeter
         public:
             EditorGrid(VulkanWindow* _pWindow);
             virtual ~EditorGrid();
+
+        public:
+            static const String s_strNameShader_Grid_Vert;
+            static const String s_strNameShader_Grid_Frag;
 
         public:
             GridObjectConstants gridObjectCB;
@@ -551,8 +584,6 @@ namespace LostPeter
             virtual void Draw(VkCommandBuffer& commandBuffer);
             virtual void DrawQuad(VkCommandBuffer& commandBuffer);
 
-            virtual void ResetCamera();
-
         public:
             virtual void CleanupSwapChain();
             virtual void RecreateSwapChain();
@@ -581,7 +612,28 @@ namespace LostPeter
             virtual ~EditorCoordinateAxis();
 
         public:
-            
+            static size_t s_nMeshCylinderIndex;
+            static size_t s_nMeshConeIndex;
+            static size_t s_nMeshQuadIndex;
+            static size_t s_nMeshQuadLineIndex;
+            static size_t s_nMeshCoordinateAxisCount;
+
+            static const String s_strNameShader_CoordinateAxis_Vert;
+            static const String s_strNameShader_CoordinateAxis_Frag;
+
+            static FMatrix4 s_aMatrix4Transforms[12];
+
+        public:
+            std::vector<CoordinateAxisObjectConstants> coordinateAxisObjectCBs;
+            VkBuffer poBuffers_ObjectCB;
+            VkDeviceMemory poBuffersMemory_ObjectCB;
+
+        protected:
+            bool isNeedUpdate;
+            float scaleCoordinate;
+        public:
+            bool IsNeedUpdate() const { return this->isNeedUpdate; }
+            void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
 
         public:
             virtual void Destroy();
@@ -589,6 +641,7 @@ namespace LostPeter
             virtual void Init();
 
             virtual void UpdateCBs();
+            virtual void Draw(VkCommandBuffer& commandBuffer);
 
         public:
             virtual void CleanupSwapChain();
@@ -607,8 +660,8 @@ namespace LostPeter
 
     public:
         //ModelMesh
-        virtual ModelMesh* CreateModelMesh(const MeshInfo& mi);
-        virtual void CreateModelMeshes(const MeshInfoVector& aMIs, ModelMeshPtrVector& aMeshes, ModelMeshPtrMap& mapMeshes);
+        virtual ModelMesh* CreateModelMesh(const MeshInfo* pMI);
+        virtual void CreateModelMeshes(const MeshInfoPtrVector& aMIs, ModelMeshPtrVector& aMeshes, ModelMeshPtrMap& mapMeshes);
 
         //ShaderModule
         virtual VkShaderModule CreateShaderModule(const ShaderModuleInfo& si);

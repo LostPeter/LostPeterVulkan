@@ -76,33 +76,28 @@ struct PassConstants
     LightConstants g_AdditionalLights[MAX_LIGHT_COUNT];
 };
 
-[[vk::binding(0)]]cbuffer passConsts                : register(b0) 
+[[vk::binding(0)]]cbuffer passConsts                    : register(b0) 
 {
     PassConstants passConsts;
 }
 
 
-//CameraAxisObjectConstants
-#define MAX_OBJECT_COUNT 6
-struct CameraAxisObjectConstants
+//CoordinateAxisObjectConstants
+#define MAX_OBJECT_COUNT 9
+struct CoordinateAxisObjectConstants
 {
     float4x4 g_MatWorld;
     float4 color;
 };
 
-[[vk::binding(1)]]cbuffer cameraAxisObjectConsts    : register(b1) 
+[[vk::binding(1)]]cbuffer coordinateAxisObjectConsts    : register(b1) 
 {
-    CameraAxisObjectConstants cameraAxisObjectConsts[MAX_OBJECT_COUNT];
+    CoordinateAxisObjectConstants coordinateAxisObjectConsts[MAX_OBJECT_COUNT];
 }
 
 
 float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
 {
-    CameraAxisObjectConstants axis = cameraAxisObjectConsts[floor(input.inWorldPos.w + 0.5)];
-    CameraConstants cam = passConsts.g_Cameras[viewIndex];
-    float3 viewPos = cam.posEyeWorld;
-    float4 color = axis.color;
-
-    float4 outColor = color;
-    return outColor;
+    CoordinateAxisObjectConstants axis = coordinateAxisObjectConsts[floor(input.inWorldPos.w + 0.5)];
+    return axis.color;
 }
