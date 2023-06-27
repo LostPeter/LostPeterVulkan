@@ -91,6 +91,11 @@ namespace LostPeterFoundation
         {
             indices32[index] = nIndex;
         }
+        void AddIndexLine(uint32 nIndex1, uint32 nIndex2)
+        {
+            indices32.push_back(nIndex1);
+            indices32.push_back(nIndex2);
+        }
         void AddIndexTriangle(uint32 nIndex1, uint32 nIndex2, uint32 nIndex3)
         {
             indices32.push_back(nIndex1);
@@ -246,6 +251,11 @@ namespace LostPeterFoundation
         {
             indices32[index] = nIndex;
         }
+        void AddIndexLine(uint32 nIndex1, uint32 nIndex2)
+        {
+            indices32.push_back(nIndex1);
+            indices32.push_back(nIndex2);
+        }
         void AddIndexTriangle(uint32 nIndex1, uint32 nIndex2, uint32 nIndex3)
         {
             indices32.push_back(nIndex1);
@@ -399,6 +409,11 @@ namespace LostPeterFoundation
         {
             indices32[index] = nIndex;
         }
+          void AddIndexLine(uint32 nIndex1, uint32 nIndex2)
+        {
+            indices32.push_back(nIndex1);
+            indices32.push_back(nIndex2);
+        }
         void AddIndexTriangle(uint32 nIndex1, uint32 nIndex2, uint32 nIndex3)
         {
             indices32.push_back(nIndex1);
@@ -551,6 +566,11 @@ namespace LostPeterFoundation
         void SetIndex(uint32 index, uint32 nIndex)
         {
             indices32[index] = nIndex;
+        }
+        void AddIndexLine(uint32 nIndex1, uint32 nIndex2)
+        {
+            indices32.push_back(nIndex1);
+            indices32.push_back(nIndex2);
         }
         void AddIndexTriangle(uint32 nIndex1, uint32 nIndex2, uint32 nIndex3)
         {

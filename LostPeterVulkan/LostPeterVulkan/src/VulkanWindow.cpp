@@ -2346,26 +2346,26 @@ namespace LostPeter
     size_t VulkanWindow::EditorCoordinateAxis::s_nMeshConeIndex = 1;
     size_t VulkanWindow::EditorCoordinateAxis::s_nMeshQuadIndex = 2;
     size_t VulkanWindow::EditorCoordinateAxis::s_nMeshQuadLineIndex = 3;
-    size_t VulkanWindow::EditorCoordinateAxis::s_nMeshCoordinateAxisCount = 3;
+    size_t VulkanWindow::EditorCoordinateAxis::s_nMeshCoordinateAxisCount = 4;
     const String VulkanWindow::EditorCoordinateAxis::s_strNameShader_CoordinateAxis_Vert = "vert_editor_coordinate_axis";
     const String VulkanWindow::EditorCoordinateAxis::s_strNameShader_CoordinateAxis_Frag = "frag_editor_coordinate_axis";
     FMatrix4 VulkanWindow::EditorCoordinateAxis::s_aMatrix4Transforms[12] = 
     {
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cylinder X+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cylinder Y+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cylinder Z+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(0.01f, 1.0f, 0.01f)), //Cylinder X+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(0.01f, 1.0f, 0.01f)), //Cylinder Y+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(0.01f, 1.0f, 0.01f)), //Cylinder Z+
 
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone X+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Y+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Cone Z+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3( 0.1f, 0.15f,  0.1f)), //Cone X+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3( 0.1f, 0.15f,  0.1f)), //Cone Y+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3( 0.1f, 0.15f,  0.1f)), //Cone Z+
 
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Quad XY+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f, -90.0f,  0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Quad YZ+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,   0.0f,  0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Quad ZX+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3( 0.2f, 0.2f,  1.0f)), //Quad XY+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f, -90.0f,  0.0f), FVector3( 0.2f, 0.2f,  1.0f)), //Quad YZ+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,   0.0f,  0.0f), FVector3( 0.2f, 0.2f,  1.0f)), //Quad ZX+
 
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Quad Line XY+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f, -90.0f,  0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Quad Line YZ+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,   0.0f,  0.0f), FVector3(1.0f, 1.0f, 1.0f)), //Quad Line ZX+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3( 0.2f, 0.2f,  1.0f)), //Quad Line XY+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f, -90.0f,  0.0f), FVector3( 0.2f, 0.2f,  1.0f)), //Quad Line YZ+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,   0.0f,  0.0f), FVector3( 0.2f, 0.2f,  1.0f)), //Quad Line ZX+
     };
 
     VulkanWindow::EditorCoordinateAxis::EditorCoordinateAxis(VulkanWindow* _pWindow)
@@ -2404,19 +2404,43 @@ namespace LostPeter
             int countNumber = 3;
             //Cylinder
             {
-
+                for (int i = countStart; i < countStart + countNumber; i++)
+                {
+                    CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[i];
+                    objConsts.g_MatWorld = FMath::Scale(FVector3(1.0f, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
+                }
+                countStart += countNumber;
             }
             //Cone
             {
-
+                for (int i = countStart; i < countStart + countNumber; i++)
+                {
+                    CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[i];
+                    if (i == countStart) //X+
+                        objConsts.g_MatWorld = FMath::Translate(FVector3(this->scaleCoordinate, 0.0f, 0.0f)) * s_aMatrix4Transforms[i];
+                    else if (i == countStart + 1) //Y+
+                        objConsts.g_MatWorld = FMath::Translate(FVector3(0.0f, this->scaleCoordinate, 0.0f)) * s_aMatrix4Transforms[i];
+                    else if (i == countStart + 2) //Z+
+                        objConsts.g_MatWorld = FMath::Translate(FVector3(0.0f, 0.0f, this->scaleCoordinate)) * s_aMatrix4Transforms[i];
+                }
+                countStart += countNumber;
             }
             //Quad
             {
-
+                for (int i = countStart; i < countStart + countNumber; i++)
+                {
+                    CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[i];
+                    if (i == countStart) //XY+
+                        objConsts.g_MatWorld = FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
+                    else if (i == countStart + 1) //YZ+
+                        objConsts.g_MatWorld = FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
+                    else if (i == countStart + 2) //ZX+
+                        objConsts.g_MatWorld = FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
+                }
             }
             void* data;
-            vkMapMemory(this->pWindow->poDevice, this->poBuffersMemory_ObjectCB, 0, sizeof(CameraAxisObjectConstants) * this->coordinateAxisObjectCBs.size(), 0, &data);
-                memcpy(data, &this->coordinateAxisObjectCBs[0], sizeof(CameraAxisObjectConstants) * this->coordinateAxisObjectCBs.size());
+            vkMapMemory(this->pWindow->poDevice, this->poBuffersMemory_ObjectCB, 0, sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size(), 0, &data);
+                memcpy(data, &this->coordinateAxisObjectCBs[0], sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size());
             vkUnmapMemory(this->pWindow->poDevice, this->poBuffersMemory_ObjectCB);
         }
     }
@@ -2436,24 +2460,24 @@ namespace LostPeter
                 VkDeviceSize offsets[] = { 0 };
                 this->pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
                 this->pWindow->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-                if (this->pWindow->cfg_isWireFrame)
-                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
-                else
-                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
-                this->pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[this->pWindow->poSwapChainImageIndex], 0, nullptr);
-                this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
 
-                if (i != count_mesh - 1)
+                if (i != s_nMeshQuadLineIndex)
                 {
-                    instanceStart += pMeshSub->instanceCount;
+                    if (this->pWindow->cfg_isWireFrame)
+                        this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+                    else
+                        this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
                 }
                 else
                 {
-                    if (!this->pWindow->cfg_isWireFrame)
-                    {
-                        this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
-                    }
-                    this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
+                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame2);
+                }
+                this->pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[this->pWindow->poSwapChainImageIndex], 0, nullptr);
+                this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
+
+                if (i < s_nMeshQuadLineIndex)
+                {
+                    instanceStart += pMeshSub->instanceCount;
                 }
             }
         }
@@ -2468,7 +2492,7 @@ namespace LostPeter
                                                  F_Mesh_Geometry,
                                                  F_MeshVertex_Pos3Color4Tex2,
                                                  F_MeshGeometry_Cylinder,
-                                                 new FMeshCreateParam_Cylinder(0.05f, 0.05f, 5.0f, 5, 5, false, false),
+                                                 new FMeshCreateParam_Cylinder(0.5f, 0.5f, 1.0f, 0.5f, 5, 5, false, false),
                                                  false,
                                                  false,
                                                  FMath::ms_mat4Unit);
@@ -2490,11 +2514,22 @@ namespace LostPeter
                                              F_Mesh_Geometry,
                                              F_MeshVertex_Pos3Color4Tex2,
                                              F_MeshGeometry_Quad,
-                                             nullptr,
+                                             new FMeshCreateParam_Quad(0.5f, 0.5f, 1.0f, 1.0f, 0.0f, false, false),
                                              true,
                                              false,
                                              FMath::ms_mat4Unit);
             this->aMeshInfos.push_back(pMIQuad);
+            //3: QuadLine
+            MeshInfo* pMIQuadLine = new MeshInfo("EditorCameraAxis_QuadLine",
+                                                 "",
+                                                 F_Mesh_Geometry,
+                                                 F_MeshVertex_Pos3Color4Tex2,
+                                                 F_MeshGeometry_LineQuad,
+                                                 new FMeshCreateParam_Quad(0.5f, 0.5f, 1.0f, 1.0f, 0.0f, false, false),
+                                                 true,
+                                                 false,
+                                                 FMath::ms_mat4Unit);
+            this->aMeshInfos.push_back(pMIQuadLine);
         }
         //2> Shader
         {
@@ -2653,7 +2688,7 @@ namespace LostPeter
                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
                                                                                           this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE,
-                                                                                          VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
+                                                                                          VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
                                                                                           VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                           VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
                                                                                           VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
@@ -2673,7 +2708,7 @@ namespace LostPeter
                                                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
                                                                                                     this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                                                     VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
-                                                                                                    VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
+                                                                                                    VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
                                                                                                     VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                                     VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
                                                                                                     VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
@@ -2685,6 +2720,26 @@ namespace LostPeter
                 throw std::runtime_error(msg.c_str());
             }
             F_LogInfo("VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: [EditorCoordinateAxis] Create pipeline graphics wire frame success !");
+
+            //pPipelineGraphics->poPipeline_WireFrame2
+            this->pPipelineGraphics->poPipeline_WireFrame2 = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                                     false, 0, 3,
+                                                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                                     this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                     VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
+                                                                                                     VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
+                                                                                                     VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                     VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                     VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                     VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            if (this->pPipelineGraphics->poPipeline_WireFrame2 == VK_NULL_HANDLE)
+            {
+                String msg = "VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame 2 for [EditorCoordinateAxis] !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+            F_LogInfo("VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: [EditorCoordinateAxis] Create pipeline graphics wire frame 2 success !");
         }
     }
     void VulkanWindow::EditorCoordinateAxis::updateDescriptorSets_Graphics()

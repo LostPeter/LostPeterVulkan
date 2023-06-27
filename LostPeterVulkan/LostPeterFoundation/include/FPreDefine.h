@@ -241,20 +241,24 @@ namespace LostPeterFoundation
 
     enum FMeshGeometryType
     {
-        F_MeshGeometry_Triangle = 0,                    //0:    Triangle
-        F_MeshGeometry_Quad,                            //1:    Quad
-        F_MeshGeometry_Grid,                            //2:    Grid
-        F_MeshGeometry_Circle,                          //3:    Circle
-        F_MeshGeometry_AABB,                            //4:    AABB
-        F_MeshGeometry_Sphere,                          //5:    Sphere
-        F_MeshGeometry_GeoSphere,                       //6:    GeoSphere
-        F_MeshGeometry_Cylinder,                        //7:    Cylinder
-        F_MeshGeometry_Capsule,                         //8:    Capsule
-        F_MeshGeometry_Cone,                            //9:    Cone
-        F_MeshGeometry_Torus,                           //10:   Torus
-        F_MeshGeometry_SkyBox,                          //11:   SkyBox
-        F_MeshGeometry_SkyDome,                         //12:   SkyDome
-        F_MeshGeometry_Terrain,                         //13:   Terrain
+        F_MeshGeometry_Line = 0,                        //0:    Line
+        F_MeshGeometry_LineQuad,                        //1:    LineQuad
+        F_MeshGeometry_LineAABB,                        //2:    LineAABB
+        F_MeshGeometry_LineSphere,                      //3:    LineSphere
+        F_MeshGeometry_Triangle,                        //4:    Triangle
+        F_MeshGeometry_Quad,                            //5:    Quad
+        F_MeshGeometry_Grid,                            //6:    Grid
+        F_MeshGeometry_Circle,                          //7:    Circle
+        F_MeshGeometry_AABB,                            //8:    AABB
+        F_MeshGeometry_Sphere,                          //9:    Sphere
+        F_MeshGeometry_GeoSphere,                       //10:   GeoSphere
+        F_MeshGeometry_Cylinder,                        //11:   Cylinder
+        F_MeshGeometry_Capsule,                         //12:   Capsule
+        F_MeshGeometry_Cone,                            //13:   Cone
+        F_MeshGeometry_Torus,                           //14:   Torus
+        F_MeshGeometry_SkyBox,                          //15:   SkyBox
+        F_MeshGeometry_SkyDome,                         //16:   SkyDome
+        F_MeshGeometry_Terrain,                         //17:   Terrain
 
         F_MeshGeometry_Count,
     };

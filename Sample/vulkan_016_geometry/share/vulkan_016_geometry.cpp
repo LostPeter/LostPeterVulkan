@@ -1108,7 +1108,7 @@ Vulkan_016_Geometry::Vulkan_016_Geometry(int width, int height, String name)
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = true;
     this->cfg_isEditorCameraAxisShow = true;
-    this->cfg_isEditorCoordinateAxisShow = false;
+    this->cfg_isEditorCoordinateAxisShow = true;
 
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable

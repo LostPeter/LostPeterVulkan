@@ -32,6 +32,90 @@ namespace LostPeterFoundation
         virtual String ToName() = 0;
     };
 
+    //Line
+    class LPF_Export FMeshCreateParam_Line : public FMeshCreateParam
+    {
+    public:
+        FMeshCreateParam_Line();
+        virtual ~FMeshCreateParam_Line();
+
+    public:
+        static String ms_nameType;
+
+    public:
+
+    public:
+        virtual String ToName();
+    };
+
+    //LineQuad
+    class LPF_Export FMeshCreateParam_LineQuad : public FMeshCreateParam
+    {
+    public:
+        FMeshCreateParam_LineQuad();
+        FMeshCreateParam_LineQuad(float _centerX,
+                                  float _centerY,
+                                  float _width,
+                                  float _height);
+        virtual ~FMeshCreateParam_LineQuad();
+
+    public:
+        static String ms_nameType;
+
+    public:
+        float centerX;
+        float centerY;
+        float width;
+        float height;
+
+    public:
+        virtual String ToName();
+    };
+
+    //LineAABB
+    class LPF_Export FMeshCreateParam_LineAABB : public FMeshCreateParam
+    {
+    public:
+        FMeshCreateParam_LineAABB();
+        FMeshCreateParam_LineAABB(float _width,
+                                  float _height,
+                                  float _depth);
+        virtual ~FMeshCreateParam_LineAABB();
+
+    public:
+        static String ms_nameType;
+
+    public:
+        float width;
+        float height;
+        float depth;
+
+    public:
+        virtual String ToName();
+    };
+
+    //LineSphere
+    class LPF_Export FMeshCreateParam_LineSphere : public FMeshCreateParam
+    {
+    public:
+        FMeshCreateParam_LineSphere();
+        FMeshCreateParam_LineSphere(float _radius,
+                                    uint32 _sliceCount,
+                                    uint32 _stackCount);
+        virtual ~FMeshCreateParam_LineSphere();
+
+    public:
+        static String ms_nameType;
+
+    public:
+        float radius;
+        uint32 sliceCount;
+        uint32 stackCount;
+
+    public:
+        virtual String ToName();
+    };
+
     //Triangle
     class LPF_Export FMeshCreateParam_Triangle : public FMeshCreateParam
     {
@@ -205,6 +289,7 @@ namespace LostPeterFoundation
         FMeshCreateParam_Cylinder(float _bottomRadius,
                                   float _topRadius,
                                   float _height,
+                                  float _heightOffset,
                                   uint32 _sliceCount,
                                   uint32 _stackCount,
                                   bool _flipV,
@@ -218,6 +303,7 @@ namespace LostPeterFoundation
         float bottomRadius;
         float topRadius;
         float height;
+        float heightOffset;
         uint32 sliceCount;
         uint32 stackCount;
 
@@ -383,7 +469,55 @@ namespace LostPeterFoundation
         static bool CreateGeometry(FMeshData& meshData, FMeshGeometryType eMeshGeometry);
 		static bool CreateGeometry(FMeshData& meshData, FMeshGeometryType eMeshGeometry, FMeshCreateParam* pParam);
 
-	 //Triangle
+        //Line
+        static void CreateLine(FMeshData& meshData, FMeshCreateParam_Line* pParam)
+        {
+            CreateLine(meshData);
+        }
+        static void CreateLine(FMeshData& meshData);
+
+        //LineQuad
+        static void CreateLineQuad(FMeshData& meshData, FMeshCreateParam_LineQuad* pParam)
+        {
+            CreateLineQuad(meshData,
+                           pParam->centerX,
+                           pParam->centerY,
+                           pParam->width,
+                           pParam->height);
+        }
+        static void CreateLineQuad(FMeshData& meshData,
+                                   float centerX,
+                                   float centerY,
+                                   float width,
+                                   float height);
+
+        //LineAABB
+        static void CreateLineAABB(FMeshData& meshData, FMeshCreateParam_LineAABB* pParam)
+        {
+            CreateLineAABB(meshData, 
+                       pParam->width, 
+                       pParam->height, 
+                       pParam->depth);
+        }
+        static void CreateLineAABB(FMeshData& meshData,
+                                   float width,
+                                   float height,
+                                   float depth);
+
+        //LineSphere
+        static void CreateLineSphere(FMeshData& meshData, FMeshCreateParam_LineSphere* pParam)
+        {
+            CreateLineSphere(meshData, 
+                             pParam->radius, 
+                             pParam->sliceCount, 
+                             pParam->stackCount);
+        }
+        static void CreateLineSphere(FMeshData& meshData,
+                                     float radius,
+                                     uint32 sliceCount,
+                                     uint32 stackCount);
+
+	    //Triangle
         static void CreateTriangle(FMeshData& meshData, FMeshCreateParam_Triangle* pParam)
         {
             CreateTriangle(meshData, 
@@ -507,6 +641,7 @@ namespace LostPeterFoundation
                            pParam->bottomRadius, 
                            pParam->topRadius, 
                            pParam->height, 
+                           pParam->heightOffset,
                            pParam->sliceCount, 
                            pParam->stackCount, 
                            pParam->flipV, 
@@ -516,6 +651,7 @@ namespace LostPeterFoundation
                                    float bottomRadius,
                                    float topRadius,
                                    float height,
+                                   float heightOffset,
                                    uint32 sliceCount,
                                    uint32 stackCount,
                                    bool flipV,
@@ -650,6 +786,7 @@ namespace LostPeterFoundation
         static uint32 AddIndex(FMeshData& meshData, uint32 value);
         static void AddIndices(FMeshData& meshData, uint32 count, uint32* pIndex);
         static void SetIndex(FMeshData& meshData, uint32 index, uint32 value);
+        static void AddIndexLine(FMeshData& meshData, uint32 index1, uint32 index2);
         static void AddIndexTriangle(FMeshData& meshData, uint32 index1, uint32 index2, uint32 index3);
         static void SetIndexTriangle(FMeshData& meshData, uint32 indexStart, uint32 index1, uint32 index2, uint32 index3);
 	};

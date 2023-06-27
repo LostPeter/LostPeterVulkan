@@ -27,6 +27,128 @@ namespace LostPeterFoundation
 
     }
 
+    //Line
+    String FMeshCreateParam_Line::ms_nameType = "MeshLine";
+    FMeshCreateParam_Line::FMeshCreateParam_Line()
+        : FMeshCreateParam(false, false)
+    {
+
+    }
+    FMeshCreateParam_Line::~FMeshCreateParam_Line()
+    {
+
+    }
+    String FMeshCreateParam_Line::ToName()
+    {
+        return FUtilString::FormatString("%s_%d_%d", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0,
+                                         rightHand ? 1 : 0);
+    }
+
+    //LineQuad
+    String FMeshCreateParam_LineQuad::ms_nameType = "MeshLineQuad";
+    FMeshCreateParam_LineQuad::FMeshCreateParam_LineQuad()
+        : FMeshCreateParam(false, false)
+        , centerX(0)
+        , centerY(0)
+        , width(1)
+        , height(1)
+    {
+
+    }
+    FMeshCreateParam_LineQuad::FMeshCreateParam_LineQuad(float _centerX,
+                                                         float _centerY,
+                                                         float _width,
+                                                         float _height)
+        : FMeshCreateParam(false, false)
+        , centerX(_centerX)
+        , centerY(_centerY)
+        , width(_width)
+        , height(_height)
+    {
+
+    }
+    FMeshCreateParam_LineQuad::~FMeshCreateParam_LineQuad()
+    {
+
+    }
+    String FMeshCreateParam_LineQuad::ToName()
+    {
+        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%f", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0, 
+                                         rightHand ? 1 : 0,
+                                         centerX,
+                                         centerY,
+                                         width,
+                                         height);
+    }
+
+    //LineAABB
+    String FMeshCreateParam_LineAABB::ms_nameType = "MeshLineAABB";
+    FMeshCreateParam_LineAABB::FMeshCreateParam_LineAABB()
+        : FMeshCreateParam(false, false)
+    {
+
+    }
+    FMeshCreateParam_LineAABB::FMeshCreateParam_LineAABB(float _width,
+                                                         float _height,
+                                                         float _depth)
+        : FMeshCreateParam(false, false)
+        , width(_width)
+        , height(_height)
+        , depth(_depth)
+    {
+
+    }
+    FMeshCreateParam_LineAABB::~FMeshCreateParam_LineAABB()
+    {
+
+    }
+    String FMeshCreateParam_LineAABB::ToName()
+    {
+        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0, 
+                                         rightHand ? 1 : 0,
+                                         width,
+                                         height,
+                                         depth);
+    }
+
+    //LineSphere
+    String FMeshCreateParam_LineSphere::ms_nameType = "MeshLineSphere";
+    FMeshCreateParam_LineSphere::FMeshCreateParam_LineSphere()
+        : FMeshCreateParam(false, false)
+    {
+
+    }
+    FMeshCreateParam_LineSphere::FMeshCreateParam_LineSphere(float _radius,
+                                                             uint32 _sliceCount,
+                                                             uint32 _stackCount)
+        : FMeshCreateParam(false, false)
+        , radius(_radius)
+        , sliceCount(_sliceCount)
+        , stackCount(_stackCount)
+    {
+
+    }
+    FMeshCreateParam_LineSphere::~FMeshCreateParam_LineSphere()
+    {
+
+    }
+    String FMeshCreateParam_LineSphere::ToName()
+    {
+        return FUtilString::FormatString("%s_%d-%d-%f-%u-%u", 
+                                         ms_nameType.c_str(), 
+                                         flipV ? 1 : 0, 
+                                         rightHand ? 1 : 0,
+                                         radius,
+                                         sliceCount,
+                                         stackCount);
+    }
+
     //Triangle
     String FMeshCreateParam_Triangle::ms_nameType = "MeshTriangle";
     FMeshCreateParam_Triangle::FMeshCreateParam_Triangle()
@@ -289,6 +411,7 @@ namespace LostPeterFoundation
         , bottomRadius(0.5f)
         , topRadius(0.5f)
         , height(1.0f)
+        , heightOffset(0.0f)
         , sliceCount(50)
         , stackCount(50)
     {
@@ -297,6 +420,7 @@ namespace LostPeterFoundation
     FMeshCreateParam_Cylinder::FMeshCreateParam_Cylinder(float _bottomRadius,
                                                          float _topRadius,
                                                          float _height,
+                                                         float _heightOffset,
                                                          uint32 _sliceCount,
                                                          uint32 _stackCount,
                                                          bool _flipV,
@@ -305,6 +429,7 @@ namespace LostPeterFoundation
         , bottomRadius(_bottomRadius)
         , topRadius(_topRadius)
         , height(_height)
+        , heightOffset(_heightOffset)
         , sliceCount(_sliceCount)
         , stackCount(_stackCount)
     {
@@ -316,13 +441,14 @@ namespace LostPeterFoundation
     }
     String FMeshCreateParam_Cylinder::ToName()
     {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u-%u", 
+        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%u-%u", 
                                          ms_nameType.c_str(), 
                                          flipV ? 1 : 0, 
                                          rightHand ? 1 : 0,
                                          bottomRadius,
                                          topRadius,
                                          height,
+                                         heightOffset,
                                          sliceCount,
                                          stackCount);
     }
@@ -546,6 +672,30 @@ namespace LostPeterFoundation
     {
         switch ((int)eMeshGeometry)
         {
+        case F_MeshGeometry_Line:
+            {
+                FMeshCreateParam_Line param_Line;
+                FMeshGeometry::CreateLine(meshData, &param_Line);
+                return true;
+            }
+        case F_MeshGeometry_LineQuad:
+            {
+                FMeshCreateParam_LineQuad param_LineQuad;
+                FMeshGeometry::CreateLineQuad(meshData, &param_LineQuad);
+                return true;
+            }
+        case F_MeshGeometry_LineAABB:
+            {
+                FMeshCreateParam_LineAABB param_LineAABB;
+                FMeshGeometry::CreateLineAABB(meshData, &param_LineAABB);
+                return true;
+            }
+        case F_MeshGeometry_LineSphere:
+            {
+                FMeshCreateParam_LineSphere param_LineSphere;
+                FMeshGeometry::CreateLineSphere(meshData, &param_LineSphere);
+                return true;
+            }
         case F_MeshGeometry_Triangle:
             {
                 FMeshCreateParam_Triangle param_Triangle;
@@ -642,6 +792,30 @@ namespace LostPeterFoundation
 
         switch ((int)eMeshGeometry)
         {
+        case F_MeshGeometry_Line:
+            {
+                FMeshCreateParam_Line* pParam_Line = static_cast<FMeshCreateParam_Line*>(pParam);
+                FMeshGeometry::CreateLine(meshData, pParam_Line);
+                return true;
+            }
+        case F_MeshGeometry_LineQuad:
+            {
+                FMeshCreateParam_LineQuad* pParam_LineQuad = static_cast<FMeshCreateParam_LineQuad*>(pParam);
+                FMeshGeometry::CreateLineQuad(meshData, pParam_LineQuad);
+                return true;
+            }
+        case F_MeshGeometry_LineAABB:
+            {
+                FMeshCreateParam_LineAABB* pParam_LineAABB = static_cast<FMeshCreateParam_LineAABB*>(pParam);
+                FMeshGeometry::CreateLineAABB(meshData, pParam_LineAABB);
+                return true;
+            }
+        case F_MeshGeometry_LineSphere:
+            {
+                FMeshCreateParam_LineSphere* pParam_LineSphere = static_cast<FMeshCreateParam_LineSphere*>(pParam);
+                FMeshGeometry::CreateLineSphere(meshData, pParam_LineSphere);
+                return true;
+            }
         case F_MeshGeometry_Triangle:
             {
                 FMeshCreateParam_Triangle* pParam_Triangle = static_cast<FMeshCreateParam_Triangle*>(pParam);
@@ -728,6 +902,84 @@ namespace LostPeterFoundation
             }
         }
         return false;
+    }
+
+
+    void FMeshGeometry::CreateLine(FMeshData& meshData)
+    {
+        //FMeshVertex
+        AddVertex(meshData, FMeshVertex( 0.0f,  0.0f,  0.0f,
+                                         0.0f,  0.0f,  1.0f,
+                                         1.0f,  0.0f,  0.0f,
+                                         0.0f,  0.0f));
+        AddVertex(meshData, FMeshVertex( 1.0f,  0.0f,  0.0f,
+                                         0.0f,  0.0f,  1.0f,
+                                         1.0f,  0.0f,  0.0f,
+                                         0.0f,  0.0f));
+
+        //Index
+        AddIndexLine(meshData, 0, 1);
+    }
+
+
+    void FMeshGeometry::CreateLineQuad(FMeshData& meshData,
+                                       float centerX,
+                                       float centerY,
+                                       float width,
+                                       float height)
+    {
+        //  0       3
+        //   --------
+        //   |\     |
+        //   |  \   |
+        //   |    \ |
+        //   --------
+        //  1        2
+
+        //FMeshVertex
+        AddVertex(meshData, FMeshVertex(centerX - width/2, centerY + height/2, 0,
+                                        0.0f, 0.0f, 1.0f,
+                                        1.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f));
+
+        AddVertex(meshData, FMeshVertex(centerX - width/2, centerY - height/2, 0,
+                                        0.0f, 0.0f, 1.0f,
+                                        1.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f));
+
+        AddVertex(meshData, FMeshVertex(centerX + width/2, centerY - height/2, 0,
+                                        0.0f, 0.0f, 1.0f,
+                                        1.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f));
+
+        AddVertex(meshData, FMeshVertex(centerX + width/2, centerY + height/2, 0,
+                                        0.0f, 0.0f, 1.0f,
+                                        1.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f));
+
+        //Index
+        AddIndexLine(meshData, 0, 1);
+        AddIndexLine(meshData, 1, 2);
+        AddIndexLine(meshData, 2, 3);
+        AddIndexLine(meshData, 3, 0);
+    }
+
+
+    void FMeshGeometry::CreateLineAABB(FMeshData& meshData,
+                                       float width,
+                                       float height,
+                                       float depth)
+    {
+        
+    }
+
+
+    void FMeshGeometry::CreateLineSphere(FMeshData& meshData,
+                                         float radius,
+                                         uint32 sliceCount,
+                                         uint32 stackCount)
+    {
+        
     }
 
 
@@ -1365,6 +1617,7 @@ namespace LostPeterFoundation
                                        float bottomRadius, 
                                        float topRadius, 
                                        float height, 
+                                       float heightOffset,
                                        uint32 sliceCount, 
                                        uint32 stackCount,
                                        bool flipV,
@@ -1395,7 +1648,7 @@ namespace LostPeterFoundation
         uint32 ringCount = stackCount + 1;
         for (uint32 i = 0; i < ringCount; ++i)
         {
-            float y = -0.5f * height + i * stackHeight;
+            float y = (-0.5f + heightOffset) * height + i * stackHeight;
             float r = bottomRadius + i * radiusStep;
 
             float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
@@ -2007,6 +2260,10 @@ namespace LostPeterFoundation
     void FMeshGeometry::SetIndex(FMeshData& meshData, uint32 index, uint32 value)
     {
         meshData.SetIndex(index, value);
+    }
+    void FMeshGeometry::AddIndexLine(FMeshData& meshData, uint32 index1, uint32 index2)
+    {
+        meshData.AddIndexLine(index1, index2);
     }
     void FMeshGeometry::AddIndexTriangle(FMeshData& meshData, uint32 index1, uint32 index2, uint32 index3)
     {

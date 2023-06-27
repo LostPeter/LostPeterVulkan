@@ -43,20 +43,24 @@ namespace LostPeterFoundation
     //FMeshGeometryType
     static const String s_nameMeshGeometryTypes[] = 
     {
-        "triangle",                 //0:    Triangle
-        "quad",                     //1:    Quad
-        "grid",                     //2:    Grid
-        "circle",                   //3:    Circle
-        "aabb",                     //4:    AABB
-        "sphere",                   //5:    Sphere
-        "geosphere",                //6:    GeoSphere
-        "cylinder",                 //7:    Cylinder
-        "capsule",                  //8:    Capsule
-        "cone",                     //9:    Cone
-        "torus",                    //10:   Torus
-        "skybox",                   //11:   SkyBox
-        "skydome",                  //12:   SkyDome
-        "terrain",                  //13:   Terrain
+        "line",                     //0:    Line
+        "linequad",                 //1:    LineQuad
+        "lineaabb",                 //2:    LineAABB
+        "linesphere",               //3:    LineSphere   
+        "triangle",                 //4:    Triangle
+        "quad",                     //5:    Quad
+        "grid",                     //6:    Grid
+        "circle",                   //7:    Circle
+        "aabb",                     //8:    AABB
+        "sphere",                   //9:    Sphere
+        "geosphere",                //10:   GeoSphere
+        "cylinder",                 //11:   Cylinder
+        "capsule",                  //12:   Capsule
+        "cone",                     //13:   Cone
+        "torus",                    //14:   Torus
+        "skybox",                   //15:   SkyBox
+        "skydome",                  //16:   SkyDome
+        "terrain",                  //17:   Terrain
     };
     const String& F_GetMeshGeometryTypeName(FMeshGeometryType type)
     {
