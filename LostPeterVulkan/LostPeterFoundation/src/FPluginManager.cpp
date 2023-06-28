@@ -67,7 +67,7 @@ namespace LostPeterFoundation
 			String strPluginName;
 			xmlCfg.GetString(pElement, "name", strPluginName);
 
-#if LP_PLATFORM == DF_PLATFORM_WIN32
+#if LP_PLATFORM == LP_PLATFORM_WIN32
 		#if LP_DEBUG == 1
 			strPluginName += "_d.dll";
 		#else
@@ -157,7 +157,7 @@ namespace LostPeterFoundation
 			return true;
 		
 		String strDynLibName(strPluginName);
-#if LP_PLATFORM == DF_PLATFORM_WIN32
+#if LP_PLATFORM == LP_PLATFORM_WIN32
 	#if LP_DEBUG == 1
 		strDynLibName += "_d.dll";
 	#else

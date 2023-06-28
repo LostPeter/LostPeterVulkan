@@ -478,8 +478,8 @@ namespace LostPeter
         protected:
             bool isNeedUpdate;
         public:
-            bool IsNeedUpdate() const { return this->isNeedUpdate; }
-            void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
+            LP_FORCEINLINE bool IsNeedUpdate() const { return this->isNeedUpdate; }
+            LP_FORCEINLINE void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
 
         public:
             virtual void Destroy();
@@ -572,8 +572,8 @@ namespace LostPeter
         protected:
             bool isNeedUpdate;
         public:
-            bool IsNeedUpdate() const { return this->isNeedUpdate; }
-            void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
+            LP_FORCEINLINE bool IsNeedUpdate() const { return this->isNeedUpdate; }
+            LP_FORCEINLINE void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
 
         public:
             virtual void Destroy();
@@ -623,6 +623,8 @@ namespace LostPeter
 
             static FMatrix4 s_aMatrix4Transforms[12];
 
+            static const float s_fScaleDistance;
+
         public:
             std::vector<CoordinateAxisObjectConstants> coordinateAxisObjectCBs;
             VkBuffer poBuffers_ObjectCB;
@@ -631,9 +633,15 @@ namespace LostPeter
         protected:
             bool isNeedUpdate;
             float scaleCoordinate;
+            FVector3 vPos;
+            FMatrix4 mat4Trans;
         public:
-            bool IsNeedUpdate() const { return this->isNeedUpdate; }
-            void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
+            LP_FORCEINLINE bool IsNeedUpdate() const { return this->isNeedUpdate; }
+            LP_FORCEINLINE void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
+            LP_FORCEINLINE float GetScaleCoordinate() const { return this->scaleCoordinate; }
+            LP_FORCEINLINE void SetScaleCoordinate(float f) { this->scaleCoordinate = f; }
+            LP_FORCEINLINE const FVector3& GetPos() const { return this->vPos; }
+            void SetPos(const FVector3& vP);
 
         public:
             virtual void Destroy();

@@ -49,6 +49,9 @@ namespace LostPeterFoundation
         static bool LoadAssetFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 = false);
         static bool LoadAssetFileToString(const char* szFile, String& contentFile);
 
+    ////Sort
+        static void Sort3(float f1, float f2, float f3, int* pIndex);
+        static void SortBubble(int count, float* pFloat, int* pIndex);
 
     //////////////////////// Thread ////////////////////////
     public:

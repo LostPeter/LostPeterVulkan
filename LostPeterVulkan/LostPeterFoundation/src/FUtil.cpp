@@ -260,6 +260,34 @@ namespace LostPeterFoundation
     }
 
 
+////Sort
+    void FUtil::Sort3(float f1, float f2, float f3, int* pIndex)
+    {
+        float aV[3] = { f1, f2, f3};
+        SortBubble(3, aV, pIndex);
+    }
+    void FUtil::SortBubble(int count, float* pFloat, int* pIndex)
+    {   
+
+        for (int i = 0; i < count -1; i++)
+        {
+            for (int j = 0; j < count - 1 - i; j++)
+            {
+                if (pFloat[j] > pFloat[j + 1])
+                {
+                    float f = pFloat[j];
+                    pFloat[j] = pFloat[j + 1];
+                    pFloat[j + 1] = f;
+
+                    int index = pIndex[j];
+                    pIndex[j] = pIndex[j + 1];
+                    pIndex[j + 1] = index;
+                }
+            }
+        }
+    }
+
+
     //////////////////////// Thread ////////////////////////
     //int8/16/32/64 [+-] 1
     int8 FUtil::InterlockedIncrement(volatile int8* pValue)

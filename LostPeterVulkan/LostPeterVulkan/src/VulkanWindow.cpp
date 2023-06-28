@@ -2351,9 +2351,9 @@ namespace LostPeter
     const String VulkanWindow::EditorCoordinateAxis::s_strNameShader_CoordinateAxis_Frag = "frag_editor_coordinate_axis";
     FMatrix4 VulkanWindow::EditorCoordinateAxis::s_aMatrix4Transforms[12] = 
     {
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(0.01f, 1.0f, 0.01f)), //Cylinder X+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(0.01f, 1.0f, 0.01f)), //Cylinder Y+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(0.01f, 1.0f, 0.01f)), //Cylinder Z+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(0.02f, 1.0f, 0.02f)), //Cylinder X+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(0.02f, 1.0f, 0.02f)), //Cylinder Y+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(0.02f, 1.0f, 0.02f)), //Cylinder Z+
 
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3( 0.1f, 0.15f,  0.1f)), //Cone X+
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3( 0.1f, 0.15f,  0.1f)), //Cone Y+
@@ -2367,6 +2367,7 @@ namespace LostPeter
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f, -90.0f,  0.0f), FVector3( 0.2f, 0.2f,  1.0f)), //Quad Line YZ+
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,   0.0f,  0.0f), FVector3( 0.2f, 0.2f,  1.0f)), //Quad Line ZX+
     };
+    const float VulkanWindow::EditorCoordinateAxis::s_fScaleDistance = 10.0f;
 
     VulkanWindow::EditorCoordinateAxis::EditorCoordinateAxis(VulkanWindow* _pWindow)
         : EditorBase(_pWindow)
@@ -2375,6 +2376,8 @@ namespace LostPeter
         , poBuffersMemory_ObjectCB(VK_NULL_HANDLE)
         , isNeedUpdate(true)
         , scaleCoordinate(1.0f)
+        , vPos(FMath::ms_v3Zero)
+        , mat4Trans(FMath::ms_mat4Unit)
     {
 
     }
@@ -2392,6 +2395,11 @@ namespace LostPeter
     {
         VulkanWindow::EditorBase::Init();
     }
+    void VulkanWindow::EditorCoordinateAxis::SetPos(const FVector3& vP) 
+    {
+        this->vPos = vP; 
+        this->mat4Trans = FMath::Translate(this->vPos);
+    }
     void VulkanWindow::EditorCoordinateAxis::UpdateCBs()
     {
         //if (!IsNeedUpdate())
@@ -2400,6 +2408,21 @@ namespace LostPeter
 
         //CoordinateAxis
         {
+            //Scale
+            {
+                float fDis = FMath::Length(this->pWindow->pCamera->GetPos() - this->vPos);
+                this->scaleCoordinate = FMath::Max(1.0f, fDis / s_fScaleDistance);
+            }
+            //Sequence
+            float aDistances[3] = 
+            {
+                FMath::Length2(this->pWindow->pCamera->GetPos() - FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate, 0.0f, 0.0f))),
+                FMath::Length2(this->pWindow->pCamera->GetPos() - FMath::Transform(this->mat4Trans, FVector3(0.0f, this->scaleCoordinate, 0.0f))),
+                FMath::Length2(this->pWindow->pCamera->GetPos() - FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, this->scaleCoordinate))),
+            };
+            int aSequences[3] = { 0, 1, 2 };
+            FUtil::SortBubble(3, aDistances, aSequences);
+
             int countStart = 0;
             int countNumber = 3;
             //Cylinder
@@ -2407,35 +2430,52 @@ namespace LostPeter
                 for (int i = countStart; i < countStart + countNumber; i++)
                 {
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[i];
-                    objConsts.g_MatWorld = FMath::Scale(FVector3(1.0f, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
+                    objConsts.g_MatWorld = this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[i];
                 }
                 countStart += countNumber;
             }
             //Cone
             {
-                for (int i = countStart; i < countStart + countNumber; i++)
+                FMatrix4 aWorldCones[3] = 
                 {
-                    CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[i];
-                    if (i == countStart) //X+
-                        objConsts.g_MatWorld = FMath::Translate(FVector3(this->scaleCoordinate, 0.0f, 0.0f)) * s_aMatrix4Transforms[i];
-                    else if (i == countStart + 1) //Y+
-                        objConsts.g_MatWorld = FMath::Translate(FVector3(0.0f, this->scaleCoordinate, 0.0f)) * s_aMatrix4Transforms[i];
-                    else if (i == countStart + 2) //Z+
-                        objConsts.g_MatWorld = FMath::Translate(FVector3(0.0f, 0.0f, this->scaleCoordinate)) * s_aMatrix4Transforms[i];
+                    FMath::FromTRS(FVector3(this->scaleCoordinate, 0.0f, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(1.0f, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 0], //X+
+                    FMath::FromTRS(FVector3(0.0f, this->scaleCoordinate, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(this->scaleCoordinate, 1.0f, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 1], //Y+
+                    FMath::FromTRS(FVector3(0.0f, 0.0f, this->scaleCoordinate), FVector3(  0.0f,   0.0f,  0.0f), FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[countStart + 2], //Z+
+
+                };
+                for (int i = 0; i < countNumber; i++)
+                {
+                    CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
+                    objConsts.g_MatWorld = aWorldCones[aSequences[2 - i]];
+
+                    // if (i == countStart) //X+
+                    //     objConsts.g_MatWorld = FMath::FromTRS(FVector3(this->scaleCoordinate, 0.0f, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(1.0f, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[i];
+                    // else if (i == countStart + 1) //Y+
+                    //     objConsts.g_MatWorld = FMath::FromTRS(FVector3(0.0f, this->scaleCoordinate, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(this->scaleCoordinate, 1.0f, this->scaleCoordinate)) * s_aMatrix4Transforms[i];
+                    // else if (i == countStart + 2) //Z+
+                    //     objConsts.g_MatWorld = FMath::FromTRS(FVector3(0.0f, 0.0f, this->scaleCoordinate), FVector3(  0.0f,   0.0f,  0.0f), FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
                 }
                 countStart += countNumber;
             }
             //Quad
             {
-                for (int i = countStart; i < countStart + countNumber; i++)
+                FMatrix4 aWorldQuads[3] = 
+                {   
+                    FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[countStart + 0], //XY+
+                    FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[countStart + 1], //YZ+
+                    FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[countStart + 2], //ZX+
+                };
+                for (int i = 0; i < 3; i++)
                 {
-                    CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[i];
-                    if (i == countStart) //XY+
-                        objConsts.g_MatWorld = FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
-                    else if (i == countStart + 1) //YZ+
-                        objConsts.g_MatWorld = FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
-                    else if (i == countStart + 2) //ZX+
-                        objConsts.g_MatWorld = FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
+                    CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
+                    objConsts.g_MatWorld = aWorldQuads[aSequences[2 - i]];
+
+                    // if (i == countStart) //XY+
+                    //     objConsts.g_MatWorld = FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
+                    // else if (i == countStart + 1) //YZ+
+                    //     objConsts.g_MatWorld = FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
+                    // else if (i == countStart + 2) //ZX+
+                    //     objConsts.g_MatWorld = FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
                 }
             }
             void* data;
