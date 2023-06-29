@@ -622,6 +622,7 @@ namespace LostPeter
             static const String s_strNameShader_CoordinateAxis_Frag;
 
             static FMatrix4 s_aMatrix4Transforms[12];
+            static FColor s_aColors[12];
 
             static const float s_fScaleDistance;
 

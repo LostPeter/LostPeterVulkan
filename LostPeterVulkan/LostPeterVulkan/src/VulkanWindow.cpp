@@ -2367,6 +2367,24 @@ namespace LostPeter
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f, -90.0f,  0.0f), FVector3( 0.2f, 0.2f,  1.0f)), //Quad Line YZ+
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,   0.0f,  0.0f), FVector3( 0.2f, 0.2f,  1.0f)), //Quad Line ZX+
     };
+    FColor VulkanWindow::EditorCoordinateAxis::s_aColors[12] = 
+    {
+        FColor(1.0f, 0.0f, 0.0f, 1.0f), //Cylinder X+
+        FColor(0.0f, 1.0f, 0.0f, 1.0f), //Cylinder Y+
+        FColor(0.0f, 0.0f, 1.0f, 1.0f), //Cylinder Z+
+
+        FColor(1.0f, 0.0f, 0.0f, 1.0f), //Cone X+
+        FColor(0.0f, 1.0f, 0.0f, 1.0f), //Cone Y+
+        FColor(0.0f, 0.0f, 1.0f, 1.0f), //Cone Z+
+
+        FColor(0.0f, 0.0f, 1.0f, 1.0f), //Quad XY+
+        FColor(1.0f, 0.0f, 0.0f, 1.0f), //Quad YZ+
+        FColor(0.0f, 1.0f, 0.0f, 1.0f), //Quad ZX+
+
+        FColor(0.0f, 0.0f, 1.0f, 1.0f), //Quad Line XY+
+        FColor(1.0f, 0.0f, 0.0f, 1.0f), //Quad Line YZ+
+        FColor(0.0f, 1.0f, 0.0f, 1.0f), //Quad Line ZX+
+    };
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleDistance = 10.0f;
 
     VulkanWindow::EditorCoordinateAxis::EditorCoordinateAxis(VulkanWindow* _pWindow)
@@ -2441,19 +2459,13 @@ namespace LostPeter
                     FMath::FromTRS(FVector3(this->scaleCoordinate, 0.0f, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(1.0f, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 0], //X+
                     FMath::FromTRS(FVector3(0.0f, this->scaleCoordinate, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(this->scaleCoordinate, 1.0f, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 1], //Y+
                     FMath::FromTRS(FVector3(0.0f, 0.0f, this->scaleCoordinate), FVector3(  0.0f,   0.0f,  0.0f), FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[countStart + 2], //Z+
-
                 };
                 for (int i = 0; i < countNumber; i++)
                 {
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
-                    objConsts.g_MatWorld = aWorldCones[aSequences[2 - i]];
-
-                    // if (i == countStart) //X+
-                    //     objConsts.g_MatWorld = FMath::FromTRS(FVector3(this->scaleCoordinate, 0.0f, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(1.0f, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[i];
-                    // else if (i == countStart + 1) //Y+
-                    //     objConsts.g_MatWorld = FMath::FromTRS(FVector3(0.0f, this->scaleCoordinate, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(this->scaleCoordinate, 1.0f, this->scaleCoordinate)) * s_aMatrix4Transforms[i];
-                    // else if (i == countStart + 2) //Z+
-                    //     objConsts.g_MatWorld = FMath::FromTRS(FVector3(0.0f, 0.0f, this->scaleCoordinate), FVector3(  0.0f,   0.0f,  0.0f), FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
+                    int index = aSequences[2 - i];
+                    objConsts.g_MatWorld = aWorldCones[index];
+                    objConsts.color = s_aColors[countStart + index];
                 }
                 countStart += countNumber;
             }
@@ -2468,14 +2480,9 @@ namespace LostPeter
                 for (int i = 0; i < 3; i++)
                 {
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
-                    objConsts.g_MatWorld = aWorldQuads[aSequences[2 - i]];
-
-                    // if (i == countStart) //XY+
-                    //     objConsts.g_MatWorld = FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
-                    // else if (i == countStart + 1) //YZ+
-                    //     objConsts.g_MatWorld = FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
-                    // else if (i == countStart + 2) //ZX+
-                    //     objConsts.g_MatWorld = FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, 1.0f)) * s_aMatrix4Transforms[i];
+                    int index = aSequences[2 - i];
+                    objConsts.g_MatWorld = aWorldQuads[index];
+                    objConsts.color = s_aColors[countStart + index];
                 }
             }
             void* data;
@@ -2613,19 +2620,19 @@ namespace LostPeter
                 //X+
                 CoordinateAxisObjectConstants xConsts;
                 xConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
-                xConsts.color = FColor(1.0f, 0.0f, 0.0f, 1.0f);
+                xConsts.color = s_aColors[indexConst];
                 this->coordinateAxisObjectCBs.push_back(xConsts);
                 indexConst++;
                 //Y+
                 CoordinateAxisObjectConstants yConsts;
                 yConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
-                yConsts.color = FColor(0.0f, 1.0f, 0.0f, 1.0f);
+                yConsts.color = s_aColors[indexConst];
                 this->coordinateAxisObjectCBs.push_back(yConsts);
                 indexConst++;
                 //Z+
                 CoordinateAxisObjectConstants zConsts;
                 zConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
-                zConsts.color = FColor(0.0f, 0.0f, 1.0f, 1.0f);
+                zConsts.color = s_aColors[indexConst];
                 this->coordinateAxisObjectCBs.push_back(zConsts);
                 indexConst++;
             }
@@ -2634,19 +2641,19 @@ namespace LostPeter
                 //X+
                 CoordinateAxisObjectConstants xConsts;
                 xConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
-                xConsts.color = FColor(1.0f, 0.0f, 0.0f, 1.0f);
+                xConsts.color = s_aColors[indexConst];
                 this->coordinateAxisObjectCBs.push_back(xConsts);
                 indexConst++;
                 //Y+
                 CoordinateAxisObjectConstants yConsts;
                 yConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
-                yConsts.color = FColor(0.0f, 1.0f, 0.0f, 1.0f);
+                yConsts.color = s_aColors[indexConst];
                 this->coordinateAxisObjectCBs.push_back(yConsts);
                 indexConst++;
                 //Z+
                 CoordinateAxisObjectConstants zConsts;
                 zConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
-                zConsts.color = FColor(0.0f, 0.0f, 1.0f, 1.0f);
+                zConsts.color = s_aColors[indexConst];
                 this->coordinateAxisObjectCBs.push_back(zConsts);
                 indexConst++;
             }
@@ -2655,19 +2662,19 @@ namespace LostPeter
                 //XY+
                 CoordinateAxisObjectConstants xConsts;
                 xConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
-                xConsts.color = FColor(0.0f, 0.0f, 1.0f, 1.0f);
+                xConsts.color = s_aColors[indexConst];
                 this->coordinateAxisObjectCBs.push_back(xConsts);
                 indexConst++;
                 //YZ+
                 CoordinateAxisObjectConstants yConsts;
                 yConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
-                yConsts.color = FColor(1.0f, 0.0f, 0.0f, 1.0f);
+                yConsts.color = s_aColors[indexConst];
                 this->coordinateAxisObjectCBs.push_back(yConsts);
                 indexConst++;
                 //ZX+
                 CoordinateAxisObjectConstants zConsts;
                 zConsts.g_MatWorld = s_aMatrix4Transforms[indexConst];
-                zConsts.color = FColor(0.0f, 1.0f, 0.0f, 1.0f);
+                zConsts.color = s_aColors[indexConst];
                 this->coordinateAxisObjectCBs.push_back(zConsts);
                 indexConst++;
             }
