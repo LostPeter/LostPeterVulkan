@@ -13,6 +13,7 @@ set debug=%1
 set rebuild=%2
 
 call ./Build_Windows_lib_glm.bat
+call ./Build_Windows_lib_rapidxml.bat
 call ./Build_Windows_lib_spdlog.bat
 call ./Build_Windows_lib_stb.bat
 

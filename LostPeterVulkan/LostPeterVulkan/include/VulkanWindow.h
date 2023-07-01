@@ -612,19 +612,39 @@ namespace LostPeter
             virtual ~EditorCoordinateAxis();
 
         public:
-            static size_t s_nMeshCylinderIndex;
-            static size_t s_nMeshConeIndex;
             static size_t s_nMeshQuadIndex;
             static size_t s_nMeshQuadLineIndex;
+            static size_t s_nMeshCylinderIndex;
+            static size_t s_nMeshConeIndex;
             static size_t s_nMeshCoordinateAxisCount;
 
             static const String s_strNameShader_CoordinateAxis_Vert;
             static const String s_strNameShader_CoordinateAxis_Frag;
+            
+            static float s_fQuadScale;
+            static float s_fCylinderScale;
+            static float s_fConeScale;
 
             static FMatrix4 s_aMatrix4Transforms[12];
-            static FColor s_aColors[12];
+            static FColor s_aColors_Default[12];
+            static FColor s_aColors_Select[12];
 
             static const float s_fScaleDistance;
+            static const float s_fScaleAxisWhenSelect;
+
+        public:
+            enum CoordinateSelectType
+            {
+                CoordinateSelect_None = -1,
+
+                CoordinateSelect_Axis_X = 0,
+                CoordinateSelect_Axis_Y,
+                CoordinateSelect_Axis_Z,
+
+                CoordinateSelect_Quad_XY,
+                CoordinateSelect_Quad_YZ,
+                CoordinateSelect_Quad_ZX,
+            };
 
         public:
             std::vector<CoordinateAxisObjectConstants> coordinateAxisObjectCBs;
@@ -632,17 +652,39 @@ namespace LostPeter
             VkDeviceMemory poBuffersMemory_ObjectCB;
 
         protected:
-            bool isNeedUpdate;
             float scaleCoordinate;
             FVector3 vPos;
             FMatrix4 mat4Trans;
+
+            CoordinateSelectType typeSelect;
+            
+            FVector3 vAxisPoints[3];
+            FVector3 vQuadCenters[3];
+
         public:
-            LP_FORCEINLINE bool IsNeedUpdate() const { return this->isNeedUpdate; }
-            LP_FORCEINLINE void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
             LP_FORCEINLINE float GetScaleCoordinate() const { return this->scaleCoordinate; }
             LP_FORCEINLINE void SetScaleCoordinate(float f) { this->scaleCoordinate = f; }
             LP_FORCEINLINE const FVector3& GetPos() const { return this->vPos; }
             void SetPos(const FVector3& vP);
+
+            bool IsAxisSelected();
+            bool IsAxisSelectedByIndex(int index); //0:X; 1:Y; 2:Z
+            bool IsAxisSelectedByType(CoordinateSelectType type);
+            bool IsAxisXSelected();
+            bool IsAxisYSelected();
+            bool IsAxisZSelected();
+            CoordinateSelectType GetAxisSelected();
+            void SetAxisSelected(CoordinateSelectType type);
+
+            bool IsQuadSelected();
+            bool IsQuadSelectedByIndex(int index); //0:XY; 1:YZ; 2:ZX
+            bool IsQuadSelectedByType(CoordinateSelectType type);
+            bool IsQuadXYSelected();
+            bool IsQuadYZSelected();
+            bool IsQuadZXSelected();
+            CoordinateSelectType GetQuadSelected();
+            void SetQuadSelected(CoordinateSelectType type);
+            void ClearSelectState();
 
         public:
             virtual void Destroy();
@@ -651,6 +693,14 @@ namespace LostPeter
 
             virtual void UpdateCBs();
             virtual void Draw(VkCommandBuffer& commandBuffer);
+            virtual void DrawQuad(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
+            virtual void DrawQuadLine(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
+            virtual void DrawCylinderCone(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
+
+            virtual void MouseLeftDown(double x, double y);
+            virtual void MouseMove(double x, double y);
+            virtual void MouseLeftUp(double x, double y);
+            virtual void MouseHover(double x, double y);
 
         public:
             virtual void CleanupSwapChain();
@@ -974,6 +1024,7 @@ namespace LostPeter
         FVector2 mousePosLast;
         bool mouseButtonDownLeft;
         bool mouseButtonDownRight;
+        bool mouseButtonDownMiddle;
 
         //Terrain
 
@@ -995,6 +1046,7 @@ namespace LostPeter
         ConstCharPtrVector aDeviceExtensions;
 
     public:
+        // Common
         virtual void OnInit();
         virtual void OnLoad();
         virtual bool OnIsInit();
@@ -1015,6 +1067,8 @@ namespace LostPeter
         virtual void OnMouseLeftUp(double x, double y);
         virtual void OnMouseRightDown(double x, double y);
         virtual void OnMouseRightUp(double x, double y);
+        virtual void OnMouseMiddleDown(double x, double y);
+        virtual void OnMouseMiddleUp(double x, double y);
         virtual void OnMouseMove(int button, double x, double y);
         virtual void OnMouseWheel(double x, double y);
 
@@ -1022,6 +1076,18 @@ namespace LostPeter
         virtual void OnKeyboardInput();
         virtual void OnKeyDown(int key);
         virtual void OnKeyUp(int key);
+
+        // Camera Process
+        virtual void OnCameraMouseMoveProcess(double newX, double newY, double oldX, double oldY);
+        virtual void OnCameraMouseZoomProcess(double zoom);
+        virtual void OnCameraMouseKeyboardProcess();
+
+        // Editor Coordinate Process
+        virtual void OnEditorCoordinateMouseLeftDown(double x, double y);
+        virtual void OnEditorCoordinateMouseMove(double x, double y);
+        virtual void OnEditorCoordinateMouseLeftUp(double x, double y);
+        virtual void OnEditorCoordinateMouseHover(double x, double y);
+
 
     public:
         virtual bool HasConfig_MASS();

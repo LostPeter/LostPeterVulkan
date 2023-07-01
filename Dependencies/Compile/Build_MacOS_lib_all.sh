@@ -13,6 +13,7 @@ debug=${1}
 rebuild=${2}
 
 ./Build_MacOS_lib_glm.sh
+./Build_MacOS_lib_rapidxml.sh
 ./Build_MacOS_lib_spdlog.sh
 ./Build_MacOS_lib_stb.sh
 

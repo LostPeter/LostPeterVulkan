@@ -60,6 +60,7 @@ namespace LostPeter
 
 
     public:
+        // Common
         virtual void OnInit() = 0;
         virtual void OnLoad() = 0;
         virtual bool OnIsInit() = 0;
@@ -80,6 +81,8 @@ namespace LostPeter
         virtual void OnMouseLeftUp(double x, double y) { }
         virtual void OnMouseRightDown(double x, double y) { }
         virtual void OnMouseRightUp(double x, double y) { }
+        virtual void OnMouseMiddleDown(double x, double y) { }
+        virtual void OnMouseMiddleUp(double x, double y) { }
         virtual void OnMouseMove(int button, double x, double y) { }
         virtual void OnMouseWheel(double x, double y) { }
 
@@ -87,6 +90,17 @@ namespace LostPeter
         virtual void OnKeyboardInput() { }
         virtual void OnKeyDown(int key) { }
         virtual void OnKeyUp(int key) { }
+
+        // Camera Process
+        virtual void OnCameraMouseMoveProcess(double newX, double newY, double oldX, double oldY) { }
+        virtual void OnCameraMouseZoomProcess(double zoom) { }
+        virtual void OnCameraMouseKeyboardProcess() { }
+
+        // Editor Coordinate Process
+        virtual void OnEditorCoordinateMouseLeftDown(double x, double y) { }
+        virtual void OnEditorCoordinateMouseMove(double x, double y) { }
+        virtual void OnEditorCoordinateMouseLeftUp(double x, double y) { }
+        virtual void OnEditorCoordinateMouseHover(double x, double y) { }
 
     public:
         virtual void CalculateFrameStats(GLFWwindow* s_pWindow);

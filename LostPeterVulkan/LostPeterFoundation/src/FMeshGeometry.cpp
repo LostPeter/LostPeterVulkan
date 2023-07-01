@@ -1514,16 +1514,15 @@ namespace LostPeterFoundation
                                float bottomRadius, 
                                float topRadius, 
                                float height, 
+                               float heightOffset,
                                uint32 sliceCount, 
                                uint32 stackCount, 
                                bool flipV,
                                bool rightHand)
     {
         uint32 baseIndex = FMeshGeometry::GetVertexCount(meshData);
-
-        float y = 0.5f * height;
+        float y = heightOffset + 0.5f * height;
         float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
-
         for (uint32 i = 0; i <= sliceCount; ++i)
         {
             float x = topRadius * cosf(i * dTheta);
@@ -1566,14 +1565,14 @@ namespace LostPeterFoundation
                                   float bottomRadius, 
                                   float topRadius, 
                                   float height, 
+                                  float heightOffset,
                                   uint32 sliceCount, 
                                   uint32 stackCount, 
                                   bool flipV,
                                   bool rightHand)
     {
         uint32 baseIndex = FMeshGeometry::GetVertexCount(meshData);
-        float y = -0.5f * height;
-
+        float y = heightOffset - 0.5f * height;
         float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
         for (uint32 i = 0; i <= sliceCount; ++i)
         {
@@ -1623,32 +1622,13 @@ namespace LostPeterFoundation
                                        bool flipV,
                                        bool rightHand)
     {
-        // Cylinder can be parameterized as follows, where we introduce v
-        // parameter that goes in the same direction as the v tex-coord
-        // so that the bitangent goes in the same direction as the v tex-coord.
-        //  Let r0 be the bottom radius and let r1 be the top radius.
-        //  y(v) = h - hv for v in [0,1].
-        //  r(v) = r1 + (r0-r1)v
-        //
-        //  x(t, v) = r(v)*cos(t)
-        //  y(t, v) = h - hv
-        //  z(t, v) = r(v)*sin(t)
-        // 
-        //  dx/dt = -r(v)*sin(t)
-        //  dy/dt = 0
-        //  dz/dt = +r(v)*cos(t)
-        //
-        //  dx/dv = (r0-r1)*cos(t)
-        //  dy/dv = -h
-        //  dz/dv = (r0-r1)*sin(t)
-
         //FMeshVertex
         float stackHeight = height / stackCount;
         float radiusStep = (topRadius - bottomRadius) / stackCount;
         uint32 ringCount = stackCount + 1;
         for (uint32 i = 0; i < ringCount; ++i)
         {
-            float y = (-0.5f + heightOffset) * height + i * stackHeight;
+            float y = heightOffset - 0.5f * height + i * stackHeight;
             float r = bottomRadius + i * radiusStep;
 
             float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
@@ -1709,8 +1689,24 @@ namespace LostPeterFoundation
             }
         }
 
-        s_BuildCylinderTopCap(meshData, bottomRadius, topRadius, height, sliceCount, stackCount, flipV, rightHand);
-        s_BuildCylinderBottomCap(meshData, bottomRadius, topRadius, height, sliceCount, stackCount, flipV, rightHand);
+        s_BuildCylinderTopCap(meshData, 
+                              bottomRadius, 
+                              topRadius, 
+                              height, 
+                              heightOffset,
+                              sliceCount, 
+                              stackCount, 
+                              flipV, 
+                              rightHand);
+        s_BuildCylinderBottomCap(meshData, 
+                                 bottomRadius, 
+                                 topRadius, 
+                                 height, 
+                                 heightOffset,
+                                 sliceCount, 
+                                 stackCount, 
+                                 flipV, 
+                                 rightHand);
     }
 
     void FMeshGeometry::CreateCapsule(FMeshData& meshData,
