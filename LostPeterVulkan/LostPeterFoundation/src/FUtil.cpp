@@ -11,6 +11,9 @@
 
 #include "../include/FUtil.h"
 #include "../include/FUtilOC.h"
+#include "../include/FMath.h"
+#include "../include/FCamera.h"
+#include "../include/FRay.h"
 
 namespace LostPeterFoundation
 {
@@ -259,6 +262,203 @@ namespace LostPeterFoundation
         return LoadFileToString(pathReal.c_str(), contentFile); 
     }
 
+
+////Screen - World Transform
+    bool FUtil::TransformScreenToWorld(FCamera* pCamera, const FVector2& vPosScreen, FVector3& vPosWorld)
+    {
+        return TransformScreenToWorld(pCamera, FVector3(vPosScreen.x, vPosScreen.y, 0.0f), vPosWorld);
+    }
+    bool FUtil::TransformScreenToWorld(FCamera* pCamera, const FVector3& vPosScreen, FVector3& vPosWorld)
+    {
+        F_Assert("FUtil::TransformScreenToWorld" && pCamera != nullptr)
+        FRay ray; 
+        pCamera->GetCameraToViewportRay(vPosScreen.x, vPosScreen.y, &ray);
+        vPosWorld = ray.GetPoint(vPosScreen.z);
+
+        return true;
+    }
+    bool FUtil::TransformScreenToWorld(FCamera* pCamera, float fScreenX, float fScreenY, FVector3& vPosWorld)
+    {
+        return TransformScreenToWorld(pCamera, FVector3(fScreenX, fScreenY, 0.0f), vPosWorld);
+    }
+    bool FUtil::TransformScreenToWorld(FCamera* pCamera, int nScreenX, int nScreenY, FVector3& vStart, FVector3& vEnd)
+    {
+        FVector3 vScreenStart = FVector3(nScreenX, nScreenY, 0.0f);
+        if (!TransformScreenToWorld(pCamera, vScreenStart, vStart))
+        {
+            vStart = FMath::ms_v3Zero;
+            vEnd = FMath::ms_v3Zero;
+            return false;
+        }
+
+        FVector3 vScreenEnd = FVector3(nScreenX, nScreenY, 1.0f);
+        if (!TransformScreenToWorld(pCamera, vScreenEnd, vEnd))
+        {
+            vStart = FMath::ms_v3Zero;
+            vEnd = FMath::ms_v3Zero;
+            return false;
+        }
+
+        return true;
+    }   
+
+    bool FUtil::TransformWorldToScreen(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vPosWorld, FVector2& vPosScreen)
+    {
+        FVector3 vPosScreen3;
+        if (!TransformWorldToScreen(pCamera, vRectScreen, vPosWorld, vPosScreen3))
+        {
+            vPosScreen.x = 0.0f;
+            vPosScreen.y = 0.0f;
+            return false;
+        }
+        vPosScreen.x = vPosScreen3.x;
+        vPosScreen.y = vPosScreen3.y;
+        return true;
+    }
+    bool FUtil::TransformWorldToScreen(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vPosWorld, FVector3& vPosScreen)
+    {
+        F_Assert("FUtil::TransformWorldToScreen" && pCamera != nullptr)
+
+        const FMatrix4& mat4View = pCamera->GetMatrix4View();
+        const FMatrix4& mat4Proj = pCamera->GetMatrix4Projection();
+
+        FVector4 in	= FVector4(vPosWorld.x, vPosWorld.y, vPosWorld.z, 1.0f);
+        FVector4 out = mat4View * in;
+        out = mat4Proj * out;
+
+        if (out.w <= 0.0)
+            return false;    
+
+        out.x /= out.w;
+        out.y /= out.w;
+        out.z /= out.w;
+
+        //Map x, y and z to range 0-1
+        out.x = out.x * 0.5f + 0.5f;
+        out.y = out.y * 0.5f + 0.5f;
+        out.z = out.z * 0.5f + 0.5f;
+
+        //Map x,y to viewport
+        out.x = out.x * vRectScreen.x;
+        out.y = (1.0f - out.y) * vRectScreen.y;
+
+        vPosScreen.x = out.x;
+        vPosScreen.y = out.y;
+        vPosScreen.z = out.z;
+        return true;
+    }
+
+    bool FUtil::IsBetween(float fl, float fr, float ft)
+    {   
+        float fBigger  = fl >= fr? fl : fr;
+        float fSmaller = fl < fr? fl : fr;
+        return (ft <= fBigger && ft >= fSmaller);
+    }
+
+    bool FUtil::IntersectLine(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vStart, const FVector3& vEnd, int x, int y, FVector3& vInter)
+    {
+        int nRadius = 5;
+        FVector3 vScreenStart, vScreenEnd;
+        TransformWorldToScreen(pCamera, vRectScreen, vStart, vScreenStart);
+        TransformWorldToScreen(pCamera, vRectScreen, vEnd, vScreenEnd);
+
+        float x1,x2,y1,y2;
+        x1 = vScreenStart.x;
+        y1 = vScreenStart.y;
+        x2 = vScreenEnd.x;
+        y2 = vScreenEnd.y;
+
+        //if not acute triangle
+        if (!IsBetween(x1, x2, (float)x) && !IsBetween(y1, y2, (float)y))
+        {
+            return false;
+        }
+
+        //the line is a dot on screen
+        if (fabsf(x1 - x2) < 1e-6 && fabsf(y1 - y2) < 1e-6)
+        {
+            return false;
+        }
+
+        //the line is vertical on screen
+        float fPitch, fb, fb2, fDist;
+        if (fabsf(x1 - x2) < 1e-6)
+        {
+            if(fabsf(x - x1) < nRadius)
+                goto _succeed;
+
+            return false;
+        }
+
+        //calculate the distance
+        fPitch = (y2 - y1) / (x2 - x1);
+        fb = y2 - x2 * fPitch;
+        fb2 = y1 - x1 * fPitch;
+        fDist = fabsf(fPitch * x - y + fb) * fabsf(fPitch * x - y + fb) / (fPitch * fPitch + 1);
+        if(fDist < nRadius * nRadius)
+            goto _succeed;
+        return false;
+
+    _succeed:	
+        FVector3 vCursorPos((float)x, (float)y, 0);	
+        FVector3 vScreenStart0(vScreenStart);
+        FVector3 vScreenEnd0(vScreenEnd);
+        vScreenStart0.z = vScreenEnd0.z = 0;	
+        FVector3 u0 = vCursorPos - vScreenStart0;
+        FVector3 v0 = FMath::Normalize(vScreenEnd0 - vScreenStart0);
+
+        float t0 = FMath::Dot(u0, v0) / FMath::Length(vScreenEnd0 - vScreenStart0);
+        vCursorPos.z = vScreenStart.z + t0 * (vScreenEnd.z - vScreenStart.z);
+        TransformScreenToWorld(pCamera, vCursorPos, vInter);
+        FVector3 vRayStart,vRayEnd;
+        if (!TransformScreenToWorld(pCamera, x, y, vRayStart, vRayEnd))
+            return false;
+
+        FVector3 vRayDir = FMath::Normalize(vRayEnd - vRayStart);
+        FVector3 vInterDir = FMath::Normalize(vInter - vRayStart);
+
+        float f = FMath::Dot(vRayDir, vInterDir);
+        if (f < 0.9f)
+            return false;
+
+        return true;
+    }
+    bool FUtil::IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3* pvArray, int nCnt, int x, int y, FVector3& vInter, bool bloop)
+    {
+        int nOffset = 0;
+        if (!bloop)
+            nOffset = 1;
+        FVector3 vStart,vEnd;
+        for (int i = 0; i < nCnt - nOffset; ++i)
+        {
+            vStart = pvArray[i % nCnt];
+            vEnd = pvArray[(i + 1) % nCnt];
+            if (IntersectLine(pCamera, vRectScreen, vStart, vEnd, x, y, vInter))		
+            {
+                return true;	
+            }	
+        }
+
+        return false;
+    }
+    bool FUtil::IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3Vector& aArrays, int nCnt, int x, int y, FVector3& vInter, bool bloop)
+    {
+        int nOffset = 0;
+        if (!bloop) 
+            nOffset = 1;
+        FVector3 vStart,vEnd;
+        for (int i = 0; i < nCnt - nOffset; ++i)
+        {
+            vStart = aArrays[i % nCnt];
+            vEnd = aArrays[(i + 1) % nCnt];
+            if (IntersectLine(pCamera, vRectScreen, vStart, vEnd, x, y, vInter))		
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 ////Sort
     void FUtil::Sort3(float f1, float f2, float f3, int* pIndex)

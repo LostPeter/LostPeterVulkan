@@ -49,6 +49,20 @@ namespace LostPeterFoundation
         static bool LoadAssetFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 = false);
         static bool LoadAssetFileToString(const char* szFile, String& contentFile);
 
+    ////Screen - World Transform
+        static bool	TransformScreenToWorld(FCamera* pCamera, const FVector2& vPosScreen, FVector3& vPosWorld);
+        static bool	TransformScreenToWorld(FCamera* pCamera, const FVector3& vPosScreen, FVector3& vPosWorld);
+        static bool	TransformScreenToWorld(FCamera* pCamera, float fScreenX, float fScreenY, FVector3& vPosWorld);
+        static bool	TransformScreenToWorld(FCamera* pCamera, int nScreenX, int nScreenY, FVector3& vStart, FVector3& vEnd);
+
+        static bool	TransformWorldToScreen(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vPosWorld, FVector2& vPosScreen);
+        static bool	TransformWorldToScreen(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vPosWorld, FVector3& vPosScreen);
+        
+        static bool	IsBetween(float fl, float fr, float ft);
+        static bool	IntersectLine(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vStart, const FVector3& vEnd, int x, int y, FVector3& vInter);
+        static bool	IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3* pvArray, int nCnt, int x, int y, FVector3& vInter, bool bloop);
+        static bool	IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3Vector& aArrays, int nCnt, int x, int y, FVector3& vInter, bool bloop);
+
     ////Sort
         static void Sort3(float f1, float f2, float f3, int* pIndex);
         static void SortBubble(int count, float* pFloat, int* pIndex);

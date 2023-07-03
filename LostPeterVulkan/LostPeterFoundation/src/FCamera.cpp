@@ -11,6 +11,7 @@
 
 #include "../include/FCamera.h"
 #include "../include/FMath.h"
+#include "../include/FRay.h"
 
 namespace LostPeterFoundation
 {
@@ -87,6 +88,21 @@ namespace LostPeterFoundation
 	FMatrix4 FCamera::GetMatrix4World() const
 	{
 		return FMath::Translate(this->m_vPos);
+	}
+
+	void FCamera::GetCameraToViewportRay(float screenX, float screenY, FRay* pOutRay) const
+	{
+		FMatrix4 mat4VP_Inverse = FMath::InverseMatrix4(GetMatrix4Projection() * GetMatrix4View());
+
+		float nx = (2.0f * screenX) - 1.0f;
+		float ny = 1.0f - (2.0f * screenY);
+		FVector3 ptNear(nx, ny, -1.f);
+		FVector3 ptMid(nx, ny,  0.0f);
+
+		FVector3 vRayOrigin = FMath::Transform(mat4VP_Inverse, ptNear);
+		FVector3 vRayTarget = FMath::Transform(mat4VP_Inverse, ptMid);
+		pOutRay->SetOrigin(vRayOrigin);
+		pOutRay->SetDirection(FMath::Normalize(vRayTarget - vRayOrigin));
 	}
 
 	void FCamera::LookAtLH(const FVector3& pos, const FVector3& target, const FVector3& worldUp)

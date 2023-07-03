@@ -80,6 +80,8 @@ namespace LostPeterFoundation
 		LP_FORCEINLINE const FMatrix4& GetMatrix4View() const { return this->m_mat4View; }
 		LP_FORCEINLINE const FMatrix4& GetMatrix4Projection() const { return this->m_mat4Projection; }
 
+		void GetCameraToViewportRay(float screenX, float screenY, FRay* pOutRay) const;
+
 	public:
 		virtual void LookAtLH(const FVector3& pos, const FVector3& target, const FVector3& vUp);
 		virtual void PerspectiveLH(float fFovY, float fAspect, float fNearZ, float fFarZ);
