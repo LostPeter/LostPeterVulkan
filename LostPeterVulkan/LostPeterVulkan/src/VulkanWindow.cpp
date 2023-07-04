@@ -2398,16 +2398,17 @@ namespace LostPeter
         FColor(1.0f, 0.0f, 0.0f, 1.0f), //Quad Line YZ+
         FColor(0.0f, 1.0f, 0.0f, 1.0f), //Quad Line ZX+
 
-        FColor(1.0f, 0.0f, 0.0f, 1.0f), //Cylinder X+
-        FColor(0.0f, 1.0f, 0.0f, 1.0f), //Cylinder Y+
-        FColor(0.0f, 0.0f, 1.0f, 1.0f), //Cylinder Z+
+        FColor(1.0f, 0.0f, 0.0f, 0.8f), //Cylinder X+
+        FColor(0.0f, 1.0f, 0.0f, 0.8f), //Cylinder Y+
+        FColor(0.0f, 0.0f, 1.0f, 0.8f), //Cylinder Z+
 
-        FColor(1.0f, 0.0f, 0.0f, 1.0f), //Cone X+
-        FColor(0.0f, 1.0f, 0.0f, 1.0f), //Cone Y+
-        FColor(0.0f, 0.0f, 1.0f, 1.0f), //Cone Z+
+        FColor(1.0f, 0.0f, 0.0f, 0.8f), //Cone X+
+        FColor(0.0f, 1.0f, 0.0f, 0.8f), //Cone Y+
+        FColor(0.0f, 0.0f, 1.0f, 0.8f), //Cone Z+
     };
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleDistance = 5.0f;
-    const float VulkanWindow::EditorCoordinateAxis::s_fScaleAxisWhenSelect = 1.1f;
+    const float VulkanWindow::EditorCoordinateAxis::s_fScaleAxisWhenSelect = 1.5f;
+    const float VulkanWindow::EditorCoordinateAxis::s_fScaleConeWhenSelect = 1.2;
 
     VulkanWindow::EditorCoordinateAxis::EditorCoordinateAxis(VulkanWindow* _pWindow)
         : EditorBase(_pWindow)
@@ -2419,8 +2420,13 @@ namespace LostPeter
         , vPos(FMath::ms_v3Zero)
         , mat4Trans(FMath::ms_mat4Unit)
 
-        , typeSelect(CoordinateSelect_None)
+        , typeState(CoordinateState_Select)
+        , typeElementSelect(CoordinateElement_None)
+
+        , isButtonLeftDown(false)
     {
+        this->pCamera = _pWindow->GetCamera();
+        this->vRectScreen = _pWindow->GetViewportRect();
         ClearSelectState();
     }
     VulkanWindow::EditorCoordinateAxis::~EditorCoordinateAxis()
@@ -2444,9 +2450,9 @@ namespace LostPeter
     }
     bool VulkanWindow::EditorCoordinateAxis::IsAxisSelected()
     {
-        if (this->typeSelect == CoordinateSelect_Axis_X ||
-            this->typeSelect == CoordinateSelect_Axis_Y ||
-            this->typeSelect == CoordinateSelect_Axis_Z)
+        if (this->typeElementSelect == CoordinateElement_Axis_X ||
+            this->typeElementSelect == CoordinateElement_Axis_Y ||
+            this->typeElementSelect == CoordinateElement_Axis_Z)
         {
             return true;
         }
@@ -2455,45 +2461,45 @@ namespace LostPeter
     bool VulkanWindow::EditorCoordinateAxis::IsAxisSelectedByIndex(int index)
     {
         if (index == 0)
-            return IsAxisSelectedByType(CoordinateSelect_Axis_X);
+            return IsAxisSelectedByType(CoordinateElement_Axis_X);
         else if (index == 1)
-            return IsAxisSelectedByType(CoordinateSelect_Axis_Y);
+            return IsAxisSelectedByType(CoordinateElement_Axis_Y);
         else if (index == 2)
-            return IsAxisSelectedByType(CoordinateSelect_Axis_Z);
+            return IsAxisSelectedByType(CoordinateElement_Axis_Z);
         return false;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsAxisSelectedByType(CoordinateSelectType type)
+    bool VulkanWindow::EditorCoordinateAxis::IsAxisSelectedByType(CoordinateElementType type)
     {
-        return this->typeSelect == type;
+        return this->typeElementSelect == type;
     }
     bool VulkanWindow::EditorCoordinateAxis::IsAxisXSelected()
     {
-        return this->typeSelect == CoordinateSelect_Axis_X;
+        return this->typeElementSelect == CoordinateElement_Axis_X;
     }
     bool VulkanWindow::EditorCoordinateAxis::IsAxisYSelected()
     {
-        return this->typeSelect == CoordinateSelect_Axis_Y;
+        return this->typeElementSelect == CoordinateElement_Axis_Y;
     }
     bool VulkanWindow::EditorCoordinateAxis::IsAxisZSelected()
     {
-        return this->typeSelect == CoordinateSelect_Axis_Z;
+        return this->typeElementSelect == CoordinateElement_Axis_Z;
     }   
-    VulkanWindow::EditorCoordinateAxis::CoordinateSelectType VulkanWindow::EditorCoordinateAxis::GetAxisSelected()
+    VulkanWindow::EditorCoordinateAxis::CoordinateElementType VulkanWindow::EditorCoordinateAxis::GetAxisSelected()
     {
         if (IsAxisSelected())
-            return this->typeSelect;
-        return CoordinateSelect_None;
+            return this->typeElementSelect;
+        return CoordinateElement_None;
     }
-    void VulkanWindow::EditorCoordinateAxis::SetAxisSelected(CoordinateSelectType type)
+    void VulkanWindow::EditorCoordinateAxis::SetAxisSelected(CoordinateElementType type)
     {
-        F_Assert((type == CoordinateSelect_Axis_X || type == CoordinateSelect_Axis_X || type == CoordinateSelect_Axis_Z) && "VulkanWindow::EditorCoordinateAxis::SetAxisSelected")
-        this->typeSelect = type;
+        F_Assert((type == CoordinateElement_Axis_X || type == CoordinateElement_Axis_Y || type == CoordinateElement_Axis_Z) && "VulkanWindow::EditorCoordinateAxis::SetAxisSelected")
+        this->typeElementSelect = type;
     }
     bool VulkanWindow::EditorCoordinateAxis::IsQuadSelected()
     {
-        if (this->typeSelect == CoordinateSelect_Quad_XY ||
-            this->typeSelect == CoordinateSelect_Quad_YZ ||
-            this->typeSelect == CoordinateSelect_Quad_ZX)
+        if (this->typeElementSelect == CoordinateElement_Quad_XY ||
+            this->typeElementSelect == CoordinateElement_Quad_YZ ||
+            this->typeElementSelect == CoordinateElement_Quad_ZX)
         {
             return true;
         }
@@ -2502,43 +2508,43 @@ namespace LostPeter
     bool VulkanWindow::EditorCoordinateAxis::IsQuadSelectedByIndex(int index)
     {
         if (index == 0)
-            return IsQuadSelectedByType(CoordinateSelect_Quad_XY);
+            return IsQuadSelectedByType(CoordinateElement_Quad_XY);
         else if (index == 1)
-            return IsQuadSelectedByType(CoordinateSelect_Quad_YZ);
+            return IsQuadSelectedByType(CoordinateElement_Quad_YZ);
         else if (index == 2)
-            return IsQuadSelectedByType(CoordinateSelect_Quad_ZX);
+            return IsQuadSelectedByType(CoordinateElement_Quad_ZX);
         return false;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsQuadSelectedByType(CoordinateSelectType type)
+    bool VulkanWindow::EditorCoordinateAxis::IsQuadSelectedByType(CoordinateElementType type)
     {
-        return this->typeSelect == type;
+        return this->typeElementSelect == type;
     }
     bool VulkanWindow::EditorCoordinateAxis::IsQuadXYSelected()
     {
-        return this->typeSelect == CoordinateSelect_Quad_XY;
+        return this->typeElementSelect == CoordinateElement_Quad_XY;
     }
     bool VulkanWindow::EditorCoordinateAxis::IsQuadYZSelected()
     {
-        return this->typeSelect == CoordinateSelect_Quad_YZ;
+        return this->typeElementSelect == CoordinateElement_Quad_YZ;
     }
     bool VulkanWindow::EditorCoordinateAxis::IsQuadZXSelected()
     {
-        return this->typeSelect == CoordinateSelect_Quad_ZX;
+        return this->typeElementSelect == CoordinateElement_Quad_ZX;
     }
-    VulkanWindow::EditorCoordinateAxis::CoordinateSelectType VulkanWindow::EditorCoordinateAxis::GetQuadSelected()
+    VulkanWindow::EditorCoordinateAxis::CoordinateElementType VulkanWindow::EditorCoordinateAxis::GetQuadSelected()
     {
         if (IsQuadSelected())
-            return this->typeSelect;
-        return CoordinateSelect_None;
+            return this->typeElementSelect;
+        return CoordinateElement_None;
     }   
-    void VulkanWindow::EditorCoordinateAxis::SetQuadSelected(CoordinateSelectType type)
+    void VulkanWindow::EditorCoordinateAxis::SetQuadSelected(CoordinateElementType type)
     {
-        F_Assert((type == CoordinateSelect_Quad_XY || type == CoordinateSelect_Quad_YZ || type == CoordinateSelect_Quad_ZX) && "VulkanWindow::EditorCoordinateAxis::SetQuadSelected")
-        this->typeSelect = type;
+        F_Assert((type == CoordinateElement_Quad_XY || type == CoordinateElement_Quad_YZ || type == CoordinateElement_Quad_ZX) && "VulkanWindow::EditorCoordinateAxis::SetQuadSelected")
+        this->typeElementSelect = type;
     }
     void VulkanWindow::EditorCoordinateAxis::ClearSelectState()
     {
-        this->typeSelect = CoordinateSelect_None;
+        this->typeElementSelect = CoordinateElement_None;
     }
     void VulkanWindow::EditorCoordinateAxis::UpdateCBs()
     {
@@ -2546,22 +2552,42 @@ namespace LostPeter
         {
             //Scale
             {
-                float fDis = FMath::Length(this->pWindow->pCamera->GetPos() - this->vPos);
+                float fDis = FMath::Length(this->pCamera->GetPos() - this->vPos);
                 this->scaleCoordinate = FMath::Max(1.0f, fDis / s_fScaleDistance);
             }
             //Sequence
-            const FVector3& vCameraPos = this->pWindow->pCamera->GetPos();
-            this->vAxisPoints[0] = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate, 0.0f, 0.0f)); //X
-            this->vAxisPoints[1] = FMath::Transform(this->mat4Trans, FVector3(0.0f, this->scaleCoordinate, 0.0f)); //Y
-            this->vAxisPoints[2] = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, this->scaleCoordinate)); //Z
-            this->vQuadCenters[0] = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate / 2.0f, this->scaleCoordinate / 2.0f, 0.0f)); //XY
-            this->vQuadCenters[1] = FMath::Transform(this->mat4Trans, FVector3(0.0f, this->scaleCoordinate / 2.0f, this->scaleCoordinate / 2.0f)); //YZ
-            this->vQuadCenters[2] = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate / 2.0f, 0.0f, this->scaleCoordinate / 2.0f)); //ZX
+            const FVector3& vCameraPos = this->pCamera->GetPos();
+            FVector3 vCenter = FMath::Transform(this->mat4Trans, FMath::ms_v3Zero);
+            FVector3 vX = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate * s_fQuadScale, 0.0f, 0.0f));
+            FVector3 vY = FMath::Transform(this->mat4Trans, FVector3(0.0f, this->scaleCoordinate * s_fQuadScale, 0.0f));
+            FVector3 vZ = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, this->scaleCoordinate * s_fQuadScale));
+            //X
+            this->aAxisX[0] = vCenter; 
+            this->aAxisX[1] = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate, 0.0f, 0.0f));
+            //Y
+            this->aAxisY[0] = vCenter; 
+            this->aAxisY[1] = FMath::Transform(this->mat4Trans, FVector3(0.0f, this->scaleCoordinate, 0.0f)); 
+            //Z
+            this->aAxisZ[0] = vCenter; 
+            this->aAxisZ[1] = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, this->scaleCoordinate));
+            //XY
+            this->aQuadXY[0] = vX;
+            this->aQuadXY[1] = vX + vY;
+            this->aQuadXY[2] = vY;
+            //YZ
+            this->aQuadYZ[0] = vY;
+            this->aQuadYZ[1] = vY + vZ;
+            this->aQuadYZ[2] = vZ;
+            //ZX
+            this->aQuadZX[0] = vZ;
+            this->aQuadZX[1] = vZ + vX;
+            this->aQuadZX[2] = vX;
+
             float aDistances[3] = 
             {
-                FMath::Length2(vCameraPos - this->vAxisPoints[0]),
-                FMath::Length2(vCameraPos - this->vAxisPoints[1]),
-                FMath::Length2(vCameraPos - this->vAxisPoints[2]),
+                FMath::Length2(vCameraPos - this->aAxisX[1]),
+                FMath::Length2(vCameraPos - this->aAxisY[1]),
+                FMath::Length2(vCameraPos - this->aAxisZ[1]),
             };
             int aSequences[3] = { 0, 1, 2 };
             FUtil::SortBubble(3, aDistances, aSequences);
@@ -2572,9 +2598,9 @@ namespace LostPeter
             {
                 FMatrix4 aWorldQuads[3] = 
                 {   
-                    FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 0], //XY+
-                    FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 1], //YZ+
-                    FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 2], //ZX+
+                    this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 0], //XY+
+                    this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 1], //YZ+
+                    this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 2], //ZX+
                 };
                 for (int i = 0; i < countNumber; i++)
                 {
@@ -2592,16 +2618,19 @@ namespace LostPeter
             {
                 FMatrix4 aWorldQuadLines[3] = 
                 {   
-                    FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 0], //XY+
-                    FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 1], //YZ+
-                    FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 2], //ZX+
+                    this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 0], //XY+
+                    this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 1], //YZ+
+                    this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 2], //ZX+
                 };
                 for (int i = 0; i < countNumber; i++)
                 {
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                     int index = aSequences[2 - i];
                     objConsts.g_MatWorld = aWorldQuadLines[index];
-                    objConsts.color = s_aColors_Default[countStart + index];
+                    if (IsQuadSelectedByIndex(i))
+                        objConsts.color = s_aColors_Select[countStart + index];
+                    else
+                        objConsts.color = s_aColors_Default[countStart + index];
                 }
                 countStart += countNumber;
             }
@@ -2614,36 +2643,57 @@ namespace LostPeter
                     this->scaleCoordinate,
                     this->scaleCoordinate,
                 };
+                float scaleCones[3] = 
+                {
+                    this->scaleCoordinate,
+                    this->scaleCoordinate,
+                    this->scaleCoordinate,
+                };
                 for (int i = 0; i < 3; i++)
                 {
                     if (IsAxisSelectedByIndex(i))
                     {
                         scaleAxis[i] *= s_fScaleAxisWhenSelect;
+                        scaleCones[i] *= s_fScaleConeWhenSelect;
                         break;
                     }
                 }
 
                 //Cylinder
+                FMatrix4 aWorldCylinders[3] = 
+                {
+                    this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, scaleAxis[0], scaleAxis[0])) * s_aMatrix4Transforms[countStart + 0],
+                    this->mat4Trans * FMath::Scale(FVector3(scaleAxis[1], this->scaleCoordinate, scaleAxis[1])) * s_aMatrix4Transforms[countStart + 1],
+                    this->mat4Trans * FMath::Scale(FVector3(scaleAxis[2], scaleAxis[2], this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 2],
+                };
                 for (int i = 0; i < countNumber; i++)
                 {
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
-                    objConsts.g_MatWorld = this->mat4Trans * FMath::Scale(FVector3(scaleAxis[i], scaleAxis[i], scaleAxis[i])) * s_aMatrix4Transforms[countStart + i];
+                    int index = aSequences[2 - i];
+                    objConsts.g_MatWorld = aWorldCylinders[index];
+                    if (IsAxisSelectedByIndex(i))
+                        objConsts.color = s_aColors_Select[countStart + index];
+                    else
+                        objConsts.color = s_aColors_Default[countStart + index];
                 }
                 countStart += countNumber;
 
                 //Cone
                 FMatrix4 aWorldCones[3] = 
                 {
-                    FMath::FromTRS(FVector3(scaleAxis[0], 0.0f, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(scaleAxis[0], scaleAxis[0], scaleAxis[0])) * s_aMatrix4Transforms[countStart + 0], //X+
-                    FMath::FromTRS(FVector3(0.0f, scaleAxis[1], 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(scaleAxis[1], scaleAxis[1], scaleAxis[1])) * s_aMatrix4Transforms[countStart + 1], //Y+
-                    FMath::FromTRS(FVector3(0.0f, 0.0f, scaleAxis[2]), FVector3(  0.0f,   0.0f,  0.0f), FVector3(scaleAxis[2], scaleAxis[2], scaleAxis[2])) * s_aMatrix4Transforms[countStart + 2], //Z+
+                    this->mat4Trans * FMath::FromTRS(FVector3(this->scaleCoordinate, 0.0f, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(scaleCones[0], scaleCones[0], scaleCones[0])) * s_aMatrix4Transforms[countStart + 0], //X+
+                    this->mat4Trans * FMath::FromTRS(FVector3(0.0f, this->scaleCoordinate, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(scaleCones[1], scaleCones[1], scaleCones[1])) * s_aMatrix4Transforms[countStart + 1], //Y+
+                    this->mat4Trans * FMath::FromTRS(FVector3(0.0f, 0.0f, this->scaleCoordinate), FVector3(  0.0f,   0.0f,  0.0f), FVector3(scaleCones[2], scaleCones[2], scaleCones[2])) * s_aMatrix4Transforms[countStart + 2], //Z+
                 };
                 for (int i = 0; i < countNumber; i++)
                 {
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                     int index = aSequences[2 - i];
                     objConsts.g_MatWorld = aWorldCones[index];
-                    objConsts.color = s_aColors_Default[countStart + index];
+                     if (IsAxisSelectedByIndex(i))
+                        objConsts.color = s_aColors_Select[countStart + index];
+                    else
+                        objConsts.color = s_aColors_Default[countStart + index];
                 }
             }
 
@@ -2739,33 +2789,56 @@ namespace LostPeter
     }
     void VulkanWindow::EditorCoordinateAxis::MouseLeftDown(double x, double y)
     {
+        this->isButtonLeftDown = true;
 
     }
     void VulkanWindow::EditorCoordinateAxis::MouseMove(double x, double y)
     {
-
+        
     }
     void VulkanWindow::EditorCoordinateAxis::MouseLeftUp(double x, double y)
     {
+        this->isButtonLeftDown = false;
 
     }
     void VulkanWindow::EditorCoordinateAxis::MouseHover(double x, double y)
     {
-        //Axis
+        switch (this->typeState)
         {
-            //Cylinder
+        case CoordinateState_Select:
+        case CoordinateState_Move:
             {
-                
+                FVector3 vInter;
+                if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisX, 2, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Axis_X;
+				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisY, 2, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Axis_Y;
+				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisZ, 2, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Axis_Z;
+                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aQuadXY, 3, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Quad_XY;
+                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aQuadYZ, 3, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Quad_YZ;
+                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aQuadZX, 3, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Quad_ZX;
+                else
+					this->typeElementSelect = CoordinateElement_None;
+
+                break;
             }
-            //Cone
+        case CoordinateState_Rotate:
             {
 
+                break;
+            }
+
+        case CoordinateState_Scale:
+            {
+
+                break;
             }
         }
-        //Quad
-        {
-
-        }
+        
     }
     void VulkanWindow::EditorCoordinateAxis::initConfigs()
     {
@@ -3729,6 +3802,14 @@ namespace LostPeter
                 OnMouseMiddleUp(cursorX, cursorY);
             }
         }
+
+        //Mouse Hover
+        if (!this->mouseButtonDownLeft &&
+            !this->mouseButtonDownRight &&
+            !this->mouseButtonDownMiddle)
+        {
+            OnMouseHover(cursorX, cursorY);
+        }
     }
     void VulkanWindow::OnMouseLeftDown(double x, double y)
     {
@@ -3792,6 +3873,11 @@ namespace LostPeter
 
         this->mousePosLast.x = (float)x;
         this->mousePosLast.y = (float)y;
+    }
+    void VulkanWindow::OnMouseHover(double x, double y)
+    {
+        OnEditorCoordinateMouseHover(x, y);
+
     }
     void VulkanWindow::OnMouseWheel(double x, double y)
     {

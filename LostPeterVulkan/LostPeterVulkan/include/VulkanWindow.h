@@ -631,20 +631,34 @@ namespace LostPeter
 
             static const float s_fScaleDistance;
             static const float s_fScaleAxisWhenSelect;
+            static const float s_fScaleConeWhenSelect;
 
         public:
-            enum CoordinateSelectType
+            enum CoordinateStateType
             {
-                CoordinateSelect_None = -1,
+                CoordinateState_None = 0,
+                CoordinateState_Select,
+                CoordinateState_Move,
+                CoordinateState_Rotate,
+                CoordinateState_Scale,
 
-                CoordinateSelect_Axis_X = 0,
-                CoordinateSelect_Axis_Y,
-                CoordinateSelect_Axis_Z,
-
-                CoordinateSelect_Quad_XY,
-                CoordinateSelect_Quad_YZ,
-                CoordinateSelect_Quad_ZX,
             };
+            enum CoordinateElementType
+            {
+                CoordinateElement_None = -1,
+
+                CoordinateElement_Axis_X = 0,
+                CoordinateElement_Axis_Y,
+                CoordinateElement_Axis_Z,
+
+                CoordinateElement_Quad_XY,
+                CoordinateElement_Quad_YZ,
+                CoordinateElement_Quad_ZX,
+            };
+
+        public:
+            FCamera* pCamera;
+            FVector2 vRectScreen;
 
         public:
             std::vector<CoordinateAxisObjectConstants> coordinateAxisObjectCBs;
@@ -656,10 +670,17 @@ namespace LostPeter
             FVector3 vPos;
             FMatrix4 mat4Trans;
 
-            CoordinateSelectType typeSelect;
+            CoordinateStateType typeState;
+            CoordinateElementType typeElementSelect;
+
+            bool isButtonLeftDown;
             
-            FVector3 vAxisPoints[3];
-            FVector3 vQuadCenters[3];
+            FVector3 aAxisX[2];
+            FVector3 aAxisY[2];
+            FVector3 aAxisZ[2];
+            FVector3 aQuadXY[3];
+            FVector3 aQuadYZ[3];
+            FVector3 aQuadZX[3];
 
         public:
             LP_FORCEINLINE float GetScaleCoordinate() const { return this->scaleCoordinate; }
@@ -669,21 +690,21 @@ namespace LostPeter
 
             bool IsAxisSelected();
             bool IsAxisSelectedByIndex(int index); //0:X; 1:Y; 2:Z
-            bool IsAxisSelectedByType(CoordinateSelectType type);
+            bool IsAxisSelectedByType(CoordinateElementType type);
             bool IsAxisXSelected();
             bool IsAxisYSelected();
             bool IsAxisZSelected();
-            CoordinateSelectType GetAxisSelected();
-            void SetAxisSelected(CoordinateSelectType type);
+            CoordinateElementType GetAxisSelected();
+            void SetAxisSelected(CoordinateElementType type);
 
             bool IsQuadSelected();
             bool IsQuadSelectedByIndex(int index); //0:XY; 1:YZ; 2:ZX
-            bool IsQuadSelectedByType(CoordinateSelectType type);
+            bool IsQuadSelectedByType(CoordinateElementType type);
             bool IsQuadXYSelected();
             bool IsQuadYZSelected();
             bool IsQuadZXSelected();
-            CoordinateSelectType GetQuadSelected();
-            void SetQuadSelected(CoordinateSelectType type);
+            CoordinateElementType GetQuadSelected();
+            void SetQuadSelected(CoordinateElementType type);
             void ClearSelectState();
 
         public:
@@ -1070,6 +1091,7 @@ namespace LostPeter
         virtual void OnMouseMiddleDown(double x, double y);
         virtual void OnMouseMiddleUp(double x, double y);
         virtual void OnMouseMove(int button, double x, double y);
+        virtual void OnMouseHover(double x, double y);
         virtual void OnMouseWheel(double x, double y);
 
         // Keyboard Input
@@ -1095,6 +1117,17 @@ namespace LostPeter
 
         virtual bool IsEnable_MASS();
         virtual bool IsEnable_Imgui();
+
+    public:
+        FCamera* GetCamera() const { return this->pCamera; } 
+        FCamera* GetCameraRight() const { return this->pCameraRight; }
+        FVector2 GetViewportRect() 
+        {
+            FVector2 vRectScreen;
+            vRectScreen.x = this->poViewport.width;
+            vRectScreen.y = this->poViewport.height;
+            return vRectScreen;
+        }
 
     protected:
         //Create Pipeline

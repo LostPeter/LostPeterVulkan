@@ -84,6 +84,7 @@ namespace LostPeter
         virtual void OnMouseMiddleDown(double x, double y) { }
         virtual void OnMouseMiddleUp(double x, double y) { }
         virtual void OnMouseMove(int button, double x, double y) { }
+        virtual void OnMouseHover(double x, double y) { }
         virtual void OnMouseWheel(double x, double y) { }
 
         // Keyboard Input
