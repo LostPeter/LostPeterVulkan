@@ -2558,9 +2558,10 @@ namespace LostPeter
             //Sequence
             const FVector3& vCameraPos = this->pCamera->GetPos();
             FVector3 vCenter = FMath::Transform(this->mat4Trans, FMath::ms_v3Zero);
-            FVector3 vX = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate * s_fQuadScale, 0.0f, 0.0f));
-            FVector3 vY = FMath::Transform(this->mat4Trans, FVector3(0.0f, this->scaleCoordinate * s_fQuadScale, 0.0f));
-            FVector3 vZ = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, this->scaleCoordinate * s_fQuadScale));
+            float fLength = this->scaleCoordinate * s_fQuadScale;
+            FVector3 vX = FMath::Transform(this->mat4Trans, FVector3(fLength, 0.0f, 0.0f));
+            FVector3 vY = FMath::Transform(this->mat4Trans, FVector3(0.0f, fLength, 0.0f));
+            FVector3 vZ = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, fLength));
             //X
             this->aAxisX[0] = vCenter; 
             this->aAxisX[1] = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate, 0.0f, 0.0f));
@@ -2582,6 +2583,10 @@ namespace LostPeter
             this->aQuadZX[0] = vZ;
             this->aQuadZX[1] = vZ + vX;
             this->aQuadZX[2] = vX;
+            //aQuadAABB
+            this->aQuadAABB[0].SetCenterExtents(FVector3(vX.x / 2.0f, vY.y / 2.0f, 0.005f), FVector3(fLength / 2.0f, fLength / 2.0f, 0.005f));
+            this->aQuadAABB[1].SetCenterExtents(FVector3(0.005f, vY.y / 2.0f, vZ.z / 2.0f), FVector3(0.005f, fLength / 2.0f, fLength / 2.0f));
+            this->aQuadAABB[2].SetCenterExtents(FVector3(vX.x / 2.0f, 0.005f, vZ.z / 2.0f), FVector3(fLength / 2.0f, 0.005f, fLength / 2.0f));
 
             float aDistances[3] = 
             {
@@ -2790,7 +2795,56 @@ namespace LostPeter
     void VulkanWindow::EditorCoordinateAxis::MouseLeftDown(double x, double y)
     {
         this->isButtonLeftDown = true;
+        
+        switch ((int)this->typeState)
+        {
+        case CoordinateState_Select:
+        case CoordinateState_Move:
+            {
+                FVector3 vInter;
+                if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisX, 2, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Axis_X;
+				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisY, 2, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Axis_Y;
+				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisZ, 2, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Axis_Z;
+                else
+                {
+                    FRay ray;
+                    this->pCamera->GetCameraToViewportRay((float)x, (float)y, &ray);
 
+                    if (FMath::Intersects_RayAABB(ray, this->aQuadAABB[0]))
+                        this->typeElementSelect = CoordinateElement_Quad_XY;
+                    else if (FMath::Intersects_RayAABB(ray, this->aQuadAABB[1]))
+                        this->typeElementSelect = CoordinateElement_Quad_YZ;
+                    else if (FMath::Intersects_RayAABB(ray, this->aQuadAABB[2]))
+                        this->typeElementSelect = CoordinateElement_Quad_ZX;
+                    else
+					    this->typeElementSelect = CoordinateElement_None;
+                }
+                // else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aQuadXY, 3, (int)x, (int)y, vInter, false))
+				// 	this->typeElementSelect = CoordinateElement_Quad_XY;
+                // else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aQuadYZ, 3, (int)x, (int)y, vInter, false))
+				// 	this->typeElementSelect = CoordinateElement_Quad_YZ;
+                // else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aQuadZX, 3, (int)x, (int)y, vInter, false))
+				// 	this->typeElementSelect = CoordinateElement_Quad_ZX;
+                // else
+				// 	this->typeElementSelect = CoordinateElement_None;
+
+                break;
+            }
+        case CoordinateState_Rotate:
+            {
+
+                break;
+            }
+
+        case CoordinateState_Scale:
+            {
+
+                break;
+            }
+        }
     }
     void VulkanWindow::EditorCoordinateAxis::MouseMove(double x, double y)
     {
@@ -2803,7 +2857,7 @@ namespace LostPeter
     }
     void VulkanWindow::EditorCoordinateAxis::MouseHover(double x, double y)
     {
-        switch (this->typeState)
+        switch ((int)this->typeState)
         {
         case CoordinateState_Select:
         case CoordinateState_Move:
@@ -2815,14 +2869,28 @@ namespace LostPeter
 					this->typeElementSelect = CoordinateElement_Axis_Y;
 				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisZ, 2, (int)x, (int)y, vInter, false))
 					this->typeElementSelect = CoordinateElement_Axis_Z;
-                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aQuadXY, 3, (int)x, (int)y, vInter, false))
-					this->typeElementSelect = CoordinateElement_Quad_XY;
-                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aQuadYZ, 3, (int)x, (int)y, vInter, false))
-					this->typeElementSelect = CoordinateElement_Quad_YZ;
-                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aQuadZX, 3, (int)x, (int)y, vInter, false))
-					this->typeElementSelect = CoordinateElement_Quad_ZX;
                 else
-					this->typeElementSelect = CoordinateElement_None;
+                {
+                    FRay ray;
+                    this->pCamera->GetCameraToViewportRay((float)x, (float)y, &ray);
+
+                    if (FMath::Intersects_RayAABB(ray, this->aQuadAABB[0]))
+                        this->typeElementSelect = CoordinateElement_Quad_XY;
+                    else if (FMath::Intersects_RayAABB(ray, this->aQuadAABB[1]))
+                        this->typeElementSelect = CoordinateElement_Quad_YZ;
+                    else if (FMath::Intersects_RayAABB(ray, this->aQuadAABB[2]))
+                        this->typeElementSelect = CoordinateElement_Quad_ZX;
+                    else
+					    this->typeElementSelect = CoordinateElement_None;
+                }
+                // else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aQuadXY, 3, (int)x, (int)y, vInter, false))
+				// 	this->typeElementSelect = CoordinateElement_Quad_XY;
+                // else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aQuadYZ, 3, (int)x, (int)y, vInter, false))
+				// 	this->typeElementSelect = CoordinateElement_Quad_YZ;
+                // else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aQuadZX, 3, (int)x, (int)y, vInter, false))
+				// 	this->typeElementSelect = CoordinateElement_Quad_ZX;
+                // else
+				// 	this->typeElementSelect = CoordinateElement_None;
 
                 break;
             }
@@ -3739,6 +3807,8 @@ namespace LostPeter
     {   
         double cursorX; double cursorY;
         glfwGetCursorPos(this->pWindow, &cursorX, &cursorY);
+        cursorX *= this->poWindowContentScale.x;
+        cursorY *= this->poWindowContentScale.y;
 
         //Mouse Left
         int actionLeft = glfwGetMouseButton(this->pWindow, GLFW_MOUSE_BUTTON_LEFT);
@@ -4922,8 +4992,12 @@ namespace LostPeter
 
         int width, height;
         glfwGetFramebufferSize(this->pWindow, &width, &height);
-        F_LogInfo("<1-5-1> VulkanWindow::createSwapChain finish, Swapchain size: [%d,%d], window size: [%d,%d]", 
-                    (int)extent.width, (int)extent.height, (int)width, (int)height);
+        float scaleX, scaleY;
+        glfwGetWindowContentScale(this->pWindow, &scaleX, &scaleY);
+        this->poWindowContentScale.x = scaleX;
+        this->poWindowContentScale.y = scaleY;
+        F_LogInfo("<1-5-1> VulkanWindow::createSwapChain finish, Swapchain size: [%d,%d], window size: [%d,%d], scale: [%f, %f] !", 
+                  (int)extent.width, (int)extent.height, (int)width, (int)height, scaleX, scaleY);
 
         createViewport();
     }
@@ -4956,26 +5030,19 @@ namespace LostPeter
         }
         VkExtent2D VulkanWindow::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) 
         {
-            if (capabilities.currentExtent.width != UINT32_MAX) 
+            int width, height;
+            glfwGetFramebufferSize(this->pWindow, &width, &height);
+
+            VkExtent2D actualExtent = 
             {
-                return capabilities.currentExtent;
-            } 
-            else 
-            {
-                int width, height;
-                glfwGetFramebufferSize(this->pWindow, &width, &height);
+                static_cast<uint32_t>(width),
+                static_cast<uint32_t>(height)
+            };
 
-                VkExtent2D actualExtent = 
-                {
-                    static_cast<uint32_t>(width),
-                    static_cast<uint32_t>(height)
-                };
+            actualExtent.width = FMath::Clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+            actualExtent.height = FMath::Clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 
-                actualExtent.width = FMath::Clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-                actualExtent.height = FMath::Clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
-                return actualExtent;
-            }
+            return actualExtent;
         }
         void VulkanWindow::createViewport()
         {

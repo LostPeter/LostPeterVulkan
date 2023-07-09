@@ -50,6 +50,7 @@ namespace LostPeterFoundation
         static bool LoadAssetFileToString(const char* szFile, String& contentFile);
 
     ////Screen - World Transform
+        static void TransformScreenToWorldRay(FCamera* pCamera, const FVector2& vPosScreen, FRay* pOutRay);
         static bool	TransformScreenToWorld(FCamera* pCamera, const FVector2& vPosScreen, FVector3& vPosWorld);
         static bool	TransformScreenToWorld(FCamera* pCamera, const FVector3& vPosScreen, FVector3& vPosWorld);
         static bool	TransformScreenToWorld(FCamera* pCamera, float fScreenX, float fScreenY, FVector3& vPosWorld);

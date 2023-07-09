@@ -681,6 +681,7 @@ namespace LostPeter
             FVector3 aQuadXY[3];
             FVector3 aQuadYZ[3];
             FVector3 aQuadZX[3];
+            FAABB aQuadAABB[3];
 
         public:
             LP_FORCEINLINE float GetScaleCoordinate() const { return this->scaleCoordinate; }
@@ -810,6 +811,7 @@ namespace LostPeter
         std::vector<VkImage> poSwapChainImages;
         VkFormat poSwapChainImageFormat;
         VkExtent2D poSwapChainExtent;
+        FVector2 poWindowContentScale;
         VkImageViewVector poSwapChainImageViews;
         VkFramebufferVector poSwapChainFrameBuffers;
         VkFormat poDepthImageFormat;

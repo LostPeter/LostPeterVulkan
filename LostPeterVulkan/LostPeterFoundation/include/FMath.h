@@ -559,6 +559,7 @@ namespace LostPeterFoundation
         static std::pair<bool, float> Intersects(const FRay& ray, const FPlaneVector& aPlanes, bool normalIsOutside);
         static std::pair<bool, float> Intersects(const FRay& ray, FPlaneList& listPlanes, bool normalIsOutside);
 
+        static bool	Intersects_RayAABB(const FRay& ray, const FAABB& aabb);
         static bool	Intersects(const FRay& ray, const FAABB& aabb, float* d1, float* d2);
         static bool	Intersects(const FSphere& sphere, const FPlane& plane);
         static bool	Intersects(const FSphere& sphere, const FFrustum& frustum);

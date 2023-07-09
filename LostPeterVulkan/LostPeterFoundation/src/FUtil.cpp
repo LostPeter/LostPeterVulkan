@@ -264,6 +264,11 @@ namespace LostPeterFoundation
 
 
 ////Screen - World Transform
+    void FUtil::TransformScreenToWorldRay(FCamera* pCamera, const FVector2& vPosScreen, FRay* pOutRay)
+    {
+        F_Assert("FUtil::TransformScreenToWorldRay" && pCamera != nullptr)
+        pCamera->GetCameraToViewportRay(vPosScreen.x, vPosScreen.y, pOutRay);
+    }
     bool FUtil::TransformScreenToWorld(FCamera* pCamera, const FVector2& vPosScreen, FVector3& vPosWorld)
     {
         return TransformScreenToWorld(pCamera, FVector3(vPosScreen.x, vPosScreen.y, 0.0f), vPosWorld);

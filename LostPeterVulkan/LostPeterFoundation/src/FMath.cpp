@@ -831,6 +831,32 @@ namespace LostPeterFoundation
         return ret;
     }
 
+    bool FMath::Intersects_RayAABB(const FRay& ray, const FAABB& aabb)
+    {
+        float d1,d2;
+        return Intersects(ray, aabb, &d1, &d2);
+    }
+    static bool s_CheckAxis(const FVector3& rayorig, 
+                            const FVector3& raydir,
+                            const FVector3& min,
+                            const FVector3& max,
+                            int32 iAxis,
+                            float& start,
+                            float& end)
+    {
+        float denom = 1 / raydir[iAxis];
+        float newstart = (min[iAxis] - rayorig[iAxis]) * denom;	
+        float newend = (max[iAxis] - rayorig[iAxis]) * denom;
+        if (newstart > newend) 
+            std::swap(newstart, newend);		
+        if (newstart > end || newend < start) 
+            return false;		
+        if (newstart > start) 
+            start = newstart;					
+        if (newend < end) 
+            end = newend;
+        return true;
+    }
     bool FMath::Intersects(const FRay& ray, const FAABB& aabb, float* d1, float* d2)
     {
         if (!aabb.IsValid())
@@ -864,46 +890,64 @@ namespace LostPeterFoundation
             imax = 1;
         }
 
-        float start = 0, end = FMath::ms_fPosInfinity;
-
-    #define _CALC_AXIS(i)                                       \
-        /*do*/ {                                                \
-        float denom = 1 / raydir[i];						    \
-        float newstart = (min[i] - rayorig[i]) * denom;			\
-        float newend = (max[i] - rayorig[i]) * denom;			\
-        if (newstart > newend) std::swap(newstart, newend);		\
-        if (newstart > end || newend < start) return false;		\
-        if (newstart > start) start = newstart;					\
-        if (newend < end) end = newend;							\
-        } /*while(0)*/
-
+        float start = 0;
+        float end = FMath::ms_fPosInfinity;
         // Check each axis in turn
-
-        _CALC_AXIS(imax);
+        if (!s_CheckAxis(rayorig,
+                         raydir,
+                         min,
+                         max,
+                         imax,
+                         start,
+                         end))
+        {
+            return false;
+        }
 
         if (absDir[imid] < std::numeric_limits<float>::epsilon())
         {
             // Parallel with middle and minimise axis, check bounds only
             if (rayorig[imid] < min[imid] || rayorig[imid] > max[imid] ||
                 rayorig[imin] < min[imin] || rayorig[imin] > max[imin])
+            {
                 return false;
+            }
         }
         else
         {
-            _CALC_AXIS(imid);
+            if (!s_CheckAxis(rayorig,
+                             raydir,
+                             min,
+                             max,
+                             imid,
+                             start,
+                             end))
+            {
+                return false;
+            }
 
             if (absDir[imin] < std::numeric_limits<float>::epsilon())
             {
                 // Parallel with minimise axis, check bounds only
                 if (rayorig[imin] < min[imin] || rayorig[imin] > max[imin])
+                {
                     return false;
+                }
             }
             else
             {
-                _CALC_AXIS(imin);
+                if (!s_CheckAxis(rayorig,
+                                 raydir,
+                                 min,
+                                 max,
+                                 imin,
+                                 start,
+                                 end))
+                {
+                    return false;
+                }
             }
         }
-    #undef _CALC_AXIS
 
         if (d1) *d1 = start;
         if (d2) *d2 = end;
