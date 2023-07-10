@@ -2406,7 +2406,7 @@ namespace LostPeter
         FColor(0.0f, 1.0f, 0.0f, 0.8f), //Cone Y+
         FColor(0.0f, 0.0f, 1.0f, 0.8f), //Cone Z+
     };
-    const float VulkanWindow::EditorCoordinateAxis::s_fScaleDistance = 5.0f;
+    const float VulkanWindow::EditorCoordinateAxis::s_fScaleDistance = 8.0f;
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleAxisWhenSelect = 1.5f;
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleConeWhenSelect = 1.2;
 
@@ -3195,6 +3195,7 @@ namespace LostPeter
     {
         VulkanWindow::EditorBase::RecreateSwapChain();
 
+        this->vRectScreen = this->pWindow->GetViewportRect();
     }
 
 
