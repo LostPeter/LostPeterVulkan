@@ -616,18 +616,22 @@ namespace LostPeter
             static size_t s_nMeshQuadLineIndex;
             static size_t s_nMeshCylinderIndex;
             static size_t s_nMeshConeIndex;
+            static size_t s_nMeshTorusIndex;
+            static size_t s_nMeshAABBIndex;
             static size_t s_nMeshCoordinateAxisCount;
 
             static const String s_strNameShader_CoordinateAxis_Vert;
             static const String s_strNameShader_CoordinateAxis_Frag;
             
-            static float s_fQuadScale;
-            static float s_fCylinderScale;
-            static float s_fConeScale;
+            static float s_fScale_Quad;
+            static float s_fScale_Cylinder;
+            static float s_fScale_Cone;
+            static float s_fScale_Torus;
+            static float s_fScale_AABB;
 
-            static FMatrix4 s_aMatrix4Transforms[12];
-            static FColor s_aColors_Default[12];
-            static FColor s_aColors_Select[12];
+            static FMatrix4 s_aMatrix4Transforms[18];
+            static FColor s_aColors_Default[18];
+            static FColor s_aColors_Select[18];
 
             static const float s_fScaleDistance;
             static const float s_fScaleAxisWhenSelect;
@@ -717,7 +721,8 @@ namespace LostPeter
             virtual void Draw(VkCommandBuffer& commandBuffer);
             virtual void DrawQuad(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
             virtual void DrawQuadLine(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
-            virtual void DrawCylinderCone(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
+            virtual void DrawShape(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
+
 
             virtual void MouseLeftDown(double x, double y);
             virtual void MouseMove(double x, double y);

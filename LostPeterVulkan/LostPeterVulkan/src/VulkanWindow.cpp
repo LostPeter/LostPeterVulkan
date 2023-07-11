@@ -2346,31 +2346,43 @@ namespace LostPeter
     size_t VulkanWindow::EditorCoordinateAxis::s_nMeshQuadLineIndex = 1;
     size_t VulkanWindow::EditorCoordinateAxis::s_nMeshCylinderIndex = 2;
     size_t VulkanWindow::EditorCoordinateAxis::s_nMeshConeIndex = 3;
-    size_t VulkanWindow::EditorCoordinateAxis::s_nMeshCoordinateAxisCount = 4;
+    size_t VulkanWindow::EditorCoordinateAxis::s_nMeshTorusIndex = 4;
+    size_t VulkanWindow::EditorCoordinateAxis::s_nMeshAABBIndex = 5;
+    size_t VulkanWindow::EditorCoordinateAxis::s_nMeshCoordinateAxisCount = 6;
     const String VulkanWindow::EditorCoordinateAxis::s_strNameShader_CoordinateAxis_Vert = "vert_editor_coordinate_axis";
     const String VulkanWindow::EditorCoordinateAxis::s_strNameShader_CoordinateAxis_Frag = "frag_editor_coordinate_axis";
-    float VulkanWindow::EditorCoordinateAxis::s_fQuadScale = 0.3f;
-    float VulkanWindow::EditorCoordinateAxis::s_fCylinderScale = 0.01f;
-    float VulkanWindow::EditorCoordinateAxis::s_fConeScale = 0.1f;
-    FMatrix4 VulkanWindow::EditorCoordinateAxis::s_aMatrix4Transforms[12] = 
+    float VulkanWindow::EditorCoordinateAxis::s_fScale_Quad = 0.3f;
+    float VulkanWindow::EditorCoordinateAxis::s_fScale_Cylinder = 0.01f;
+    float VulkanWindow::EditorCoordinateAxis::s_fScale_Cone = 0.1f;
+    float VulkanWindow::EditorCoordinateAxis::s_fScale_Torus = 0.01f;
+    float VulkanWindow::EditorCoordinateAxis::s_fScale_AABB = 0.1f;
+    FMatrix4 VulkanWindow::EditorCoordinateAxis::s_aMatrix4Transforms[18] = 
     {
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(s_fQuadScale, s_fQuadScale, 1.0f)), //Quad XY+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f, -90.0f,  0.0f), FVector3(s_fQuadScale, s_fQuadScale, 1.0f)), //Quad YZ+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,   0.0f,  0.0f), FVector3(s_fQuadScale, s_fQuadScale, 1.0f)), //Quad ZX+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(s_fScale_Quad, s_fScale_Quad, 1.0f)), //Quad XY+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f, -90.0f,  0.0f), FVector3(s_fScale_Quad, s_fScale_Quad, 1.0f)), //Quad YZ+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,   0.0f,  0.0f), FVector3(s_fScale_Quad, s_fScale_Quad, 1.0f)), //Quad ZX+
 
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(s_fQuadScale, s_fQuadScale, 1.0f)), //Quad Line XY+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f, -90.0f,  0.0f), FVector3(s_fQuadScale, s_fQuadScale, 1.0f)), //Quad Line YZ+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,   0.0f,  0.0f), FVector3(s_fQuadScale, s_fQuadScale, 1.0f)), //Quad Line ZX+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(s_fScale_Quad, s_fScale_Quad, 1.0f)), //Quad Line XY+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f, -90.0f,  0.0f), FVector3(s_fScale_Quad, s_fScale_Quad, 1.0f)), //Quad Line YZ+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,   0.0f,  0.0f), FVector3(s_fScale_Quad, s_fScale_Quad, 1.0f)), //Quad Line ZX+
 
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(s_fCylinderScale, 1.0f, s_fCylinderScale)), //Cylinder X+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fCylinderScale, 1.0f, s_fCylinderScale)), //Cylinder Y+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(s_fCylinderScale, 1.0f, s_fCylinderScale)), //Cylinder Z+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(s_fScale_Cylinder, 1.0f, s_fScale_Cylinder)), //Cylinder X+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_Cylinder, 1.0f, s_fScale_Cylinder)), //Cylinder Y+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(s_fScale_Cylinder, 1.0f, s_fScale_Cylinder)), //Cylinder Z+
 
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(s_fConeScale, s_fConeScale, s_fConeScale)), //Cone X+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fConeScale, s_fConeScale, s_fConeScale)), //Cone Y+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(s_fConeScale, s_fConeScale, s_fConeScale)), //Cone Z+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(s_fScale_Cone, s_fScale_Cone, s_fScale_Cone)), //Cone X+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_Cone, s_fScale_Cone, s_fScale_Cone)), //Cone Y+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(s_fScale_Cone, s_fScale_Cone, s_fScale_Cone)), //Cone Z+
+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f, -90.0f), FVector3(s_fScale_Torus, s_fScale_Torus, s_fScale_Torus)), //Torus X+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_Torus, s_fScale_Torus, s_fScale_Torus)), //Torus Y+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3( 90.0f,  0.0f,   0.0f), FVector3(s_fScale_Torus, s_fScale_Torus, s_fScale_Torus)), //Torus Z+
+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABB, s_fScale_AABB, s_fScale_AABB)), //AABB X+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABB, s_fScale_AABB, s_fScale_AABB)), //AABB Y+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABB, s_fScale_AABB, s_fScale_AABB)), //AABB Z+
     };
-    FColor VulkanWindow::EditorCoordinateAxis::s_aColors_Default[12] = 
+    FColor VulkanWindow::EditorCoordinateAxis::s_aColors_Default[18] = 
     {
         FColor(0.0f, 0.0f, 0.3f, 0.5f), //Quad XY+
         FColor(0.3f, 0.0f, 0.0f, 0.5f), //Quad YZ+
@@ -2387,8 +2399,16 @@ namespace LostPeter
         FColor(1.0f, 0.0f, 0.0f, 1.0f), //Cone X+
         FColor(0.0f, 1.0f, 0.0f, 1.0f), //Cone Y+
         FColor(0.0f, 0.0f, 1.0f, 1.0f), //Cone Z+
+
+        FColor(1.0f, 0.0f, 0.0f, 1.0f), //Torus X+
+        FColor(0.0f, 1.0f, 0.0f, 1.0f), //Torus Y+
+        FColor(0.0f, 0.0f, 1.0f, 1.0f), //Torus Z+
+
+        FColor(1.0f, 0.0f, 0.0f, 1.0f), //AABB X+
+        FColor(0.0f, 1.0f, 0.0f, 1.0f), //AABB Y+
+        FColor(0.0f, 0.0f, 1.0f, 1.0f), //AABB Z+
     };
-    FColor VulkanWindow::EditorCoordinateAxis::s_aColors_Select[12] = 
+    FColor VulkanWindow::EditorCoordinateAxis::s_aColors_Select[18] = 
     {
         FColor(0.0f, 0.0f, 1.0f, 0.5f), //Quad XY+
         FColor(1.0f, 0.0f, 0.0f, 0.5f), //Quad YZ+
@@ -2405,6 +2425,14 @@ namespace LostPeter
         FColor(1.0f, 0.0f, 0.0f, 0.8f), //Cone X+
         FColor(0.0f, 1.0f, 0.0f, 0.8f), //Cone Y+
         FColor(0.0f, 0.0f, 1.0f, 0.8f), //Cone Z+
+
+        FColor(1.0f, 0.0f, 0.0f, 0.8f), //Torus X+
+        FColor(0.0f, 1.0f, 0.0f, 0.8f), //Torus Y+
+        FColor(0.0f, 0.0f, 1.0f, 0.8f), //Torus Z+
+
+        FColor(1.0f, 0.0f, 0.0f, 0.8f), //AABB X+
+        FColor(0.0f, 1.0f, 0.0f, 0.8f), //AABB Y+
+        FColor(0.0f, 0.0f, 1.0f, 0.8f), //AABB Z+
     };
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleDistance = 8.0f;
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleAxisWhenSelect = 1.5f;
@@ -2558,7 +2586,7 @@ namespace LostPeter
             //Sequence
             const FVector3& vCameraPos = this->pCamera->GetPos();
             FVector3 vCenter = FMath::Transform(this->mat4Trans, FMath::ms_v3Zero);
-            float fLength = this->scaleCoordinate * s_fQuadScale;
+            float fLength = this->scaleCoordinate * s_fScale_Quad;
             FVector3 vX = FMath::Transform(this->mat4Trans, FVector3(fLength, 0.0f, 0.0f));
             FVector3 vY = FMath::Transform(this->mat4Trans, FVector3(0.0f, fLength, 0.0f));
             FVector3 vZ = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, fLength));
@@ -2701,6 +2729,14 @@ namespace LostPeter
                         objConsts.color = s_aColors_Default[countStart + index];
                 }
             }
+            //Torus
+            {
+                
+            }
+            //AABB
+            {
+
+            }
 
             void* data;
             vkMapMemory(this->pWindow->poDevice, this->poBuffersMemory_ObjectCB, 0, sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size(), 0, &data);
@@ -2714,51 +2750,82 @@ namespace LostPeter
 
         int instanceStart = 0;
         int instanceGap = 3;
-        //Quad - QuadLine
+        switch ((int)this->typeState)
         {
-            ModelMesh* pMesh_Quad = this->aMeshes[s_nMeshQuadIndex];
-            ModelMeshSub* pMeshSub_Quad = pMesh_Quad->aMeshSubs[0];
-            ModelMesh* pMesh_QuadLine = this->aMeshes[s_nMeshQuadLineIndex];
-            ModelMeshSub* pMeshSub_QuadLine = pMesh_QuadLine->aMeshSubs[0];
+        case CoordinateState_Select:
+        case CoordinateState_Move:
+            {
+                //Quad - QuadLine
+                {
+                    ModelMesh* pMesh_Quad = this->aMeshes[s_nMeshQuadIndex];
+                    ModelMeshSub* pMeshSub_Quad = pMesh_Quad->aMeshSubs[0];
+                    ModelMesh* pMesh_QuadLine = this->aMeshes[s_nMeshQuadLineIndex];
+                    ModelMeshSub* pMeshSub_QuadLine = pMesh_QuadLine->aMeshSubs[0];
+                    //Quad - QuadLine  - 0
+                    DrawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 0);
+                    DrawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 0 + instanceGap);
+                    //Quad - QuadLine  - 1
+                    DrawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 1);
+                    DrawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 1 + instanceGap);
+                    //Quad - QuadLine  - 2
+                    DrawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 2);
+                    DrawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 2 + instanceGap);
+                }
 
-            //Quad - QuadLine  - 0
-            DrawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 0);
-            DrawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 0 + instanceGap);
+                //Cylinder - Cone
+                instanceStart = 6;
+                {
+                    if (this->pWindow->cfg_isWireFrame)
+                        this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+                    else
+                        this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
 
-            //Quad - QuadLine  - 1
-            DrawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 1);
-            DrawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 1 + instanceGap);
+                    ModelMesh* pMesh_Cylinder = this->aMeshes[s_nMeshCylinderIndex];
+                    ModelMeshSub* pMeshSub_Cylinder = pMesh_Cylinder->aMeshSubs[0];
+                    ModelMesh* pMesh_Cone = this->aMeshes[s_nMeshConeIndex];
+                    ModelMeshSub* pMeshSub_Cone = pMesh_Cone->aMeshSubs[0];
+                    //Cylinder - Cone - 0
+                    DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 0);
+                    DrawShape(commandBuffer, pMeshSub_Cone, instanceStart + 0 + instanceGap);
+                    //Cylinder - Cone - 1
+                    DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 1);
+                    DrawShape(commandBuffer, pMeshSub_Cone, instanceStart + 1 + instanceGap);
+                    //Cylinder - Cone - 2
+                    DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 2);
+                    DrawShape(commandBuffer, pMeshSub_Cone, instanceStart + 2 + instanceGap);
+                }
 
-            //Quad - QuadLine  - 2
-            DrawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 2);
-            DrawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 2 + instanceGap);
+                break;
+            }
+        case CoordinateState_Rotate:
+            {
+                //Torus
+                instanceStart = 12;
+                {
+                    if (this->pWindow->cfg_isWireFrame)
+                        this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+                    else
+                        this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+
+                    ModelMesh* pMesh_Torus = this->aMeshes[s_nMeshTorusIndex];
+                    ModelMeshSub* pMeshSub_Torus = pMesh_Torus->aMeshSubs[0];
+                    //Torus - 0
+                    DrawShape(commandBuffer, pMeshSub_Torus, instanceStart + 0);
+                    //Torus - 1
+                    DrawShape(commandBuffer, pMeshSub_Torus, instanceStart + 1);
+                    //Torus - 2
+                    DrawShape(commandBuffer, pMeshSub_Torus, instanceStart + 2);
+                }
+                break;
+            }
+
+        case CoordinateState_Scale:
+            {
+
+                break;
+            }
         }
-
-        //Cylinder - Cone
-        instanceStart = 6;
-        {
-            if (this->pWindow->cfg_isWireFrame)
-                this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
-            else
-                this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
-
-            ModelMesh* pMesh_Cylinder = this->aMeshes[s_nMeshCylinderIndex];
-            ModelMeshSub* pMeshSub_Cylinder = pMesh_Cylinder->aMeshSubs[0];
-            ModelMesh* pMesh_Cone = this->aMeshes[s_nMeshConeIndex];
-            ModelMeshSub* pMeshSub_Cone = pMesh_Cone->aMeshSubs[0];
-
-            //Cylinder - Cone - 0
-            DrawCylinderCone(commandBuffer, pMeshSub_Cylinder, instanceStart + 0);
-            DrawCylinderCone(commandBuffer, pMeshSub_Cone, instanceStart + 0 + instanceGap);
-            
-            //Cylinder - Cone - 1
-            DrawCylinderCone(commandBuffer, pMeshSub_Cylinder, instanceStart + 1);
-            DrawCylinderCone(commandBuffer, pMeshSub_Cone, instanceStart + 1 + instanceGap);
-            
-            //Cylinder - Cone - 2
-            DrawCylinderCone(commandBuffer, pMeshSub_Cylinder, instanceStart + 2);
-            DrawCylinderCone(commandBuffer, pMeshSub_Cone, instanceStart + 2 + instanceGap);
-        }
+        
     }
     void VulkanWindow::EditorCoordinateAxis::DrawQuad(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart)
     {
@@ -2783,7 +2850,8 @@ namespace LostPeter
         this->pWindow->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
         this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
     }
-    void VulkanWindow::EditorCoordinateAxis::DrawCylinderCone(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart)
+
+    void VulkanWindow::EditorCoordinateAxis::DrawShape(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart)
     {
         VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
         VkDeviceSize offsets[] = { 0 };
@@ -2897,6 +2965,7 @@ namespace LostPeter
         case CoordinateState_Rotate:
             {
 
+
                 break;
             }
 
@@ -2956,6 +3025,28 @@ namespace LostPeter
                                              false,
                                              FMath::ms_mat4Unit);
             this->aMeshInfos.push_back(pMICone);
+            //4: Torus
+            MeshInfo* pMITorus = new MeshInfo("EditorCoordinateAxis_Torus",
+                                              "",
+                                              F_Mesh_Geometry,
+                                              F_MeshVertex_Pos3Color4Tex2,
+                                              F_MeshGeometry_Torus,
+                                              new FMeshCreateParam_Torus(0.5f, 0.2f, 50, 20, false, false),
+                                              false,
+                                              false,
+                                              FMath::ms_mat4Unit);
+            this->aMeshInfos.push_back(pMITorus);    
+            //5: AABB
+            MeshInfo* pMIAABB = new MeshInfo("EditorCoordinateAxis_AABB",
+                                             "",
+                                             F_Mesh_Geometry,
+                                             F_MeshVertex_Pos3Color4Tex2,
+                                             F_MeshGeometry_AABB,
+                                             nullptr,
+                                             false,
+                                             false,
+                                             FMath::ms_mat4Unit);
+            this->aMeshInfos.push_back(pMIAABB);                      
         }
         //2> Shader
         {
@@ -2997,7 +3088,9 @@ namespace LostPeter
             //Axis Quad Line
             //Axis Cylinder
             //Axis Cone
-            for (int i = 0; i < 12; i++)
+            //Axis Torus
+            //Axis AABB
+            for (int i = 0; i < 18; i++)
             {
                 CoordinateAxisObjectConstants consts;
                 consts.g_MatWorld = s_aMatrix4Transforms[i];
@@ -3022,6 +3115,14 @@ namespace LostPeter
             pMeshSub->instanceCount = 1;
             //Cone
             pMesh = this->aMeshes[s_nMeshConeIndex]; 
+            pMeshSub = pMesh->aMeshSubs[0];
+            pMeshSub->instanceCount = 1;
+            //Torus
+            pMesh = this->aMeshes[s_nMeshTorusIndex]; 
+            pMeshSub = pMesh->aMeshSubs[0];
+            pMeshSub->instanceCount = 1;
+            //AABB
+            pMesh = this->aMeshes[s_nMeshAABBIndex]; 
             pMeshSub = pMesh->aMeshSubs[0];
             pMeshSub->instanceCount = 1;
         }
