@@ -629,13 +629,15 @@ namespace LostPeter
             static float s_fScale_Torus;
             static float s_fScale_AABB;
 
-            static FMatrix4 s_aMatrix4Transforms[18];
-            static FColor s_aColors_Default[18];
-            static FColor s_aColors_Select[18];
+            static FMatrix4 s_aMatrix4Transforms[19];
+            static FColor s_aColors_Default[19];
+            static FColor s_aColors_Select[19];
 
             static const float s_fScaleDistance;
             static const float s_fScaleAxisWhenSelect;
             static const float s_fScaleConeWhenSelect;
+            static const float s_fScaleTorusWhenSelect;
+            static const float s_fScaleAABBWhenSelect;
 
         public:
             enum CoordinateStateType
@@ -651,9 +653,10 @@ namespace LostPeter
             {
                 CoordinateElement_None = -1,
 
-                CoordinateElement_Axis_X = 0,
-                CoordinateElement_Axis_Y,
-                CoordinateElement_Axis_Z,
+                CoordinateElement_Axis_X = 0,   //X Axis or X Scale
+                CoordinateElement_Axis_Y,       //Y Axis or Y Scale
+                CoordinateElement_Axis_Z,       //Y Axis or Z Scale
+                CoordinateElement_Axis_XYZ,     //XYZ Scale
 
                 CoordinateElement_Quad_XY,
                 CoordinateElement_Quad_YZ,
@@ -686,12 +689,20 @@ namespace LostPeter
             FVector3 aQuadYZ[3];
             FVector3 aQuadZX[3];
             FAABB aQuadAABB[3];
-
+            FAABB aScaleAABB[4];
+            
         public:
             LP_FORCEINLINE float GetScaleCoordinate() const { return this->scaleCoordinate; }
             LP_FORCEINLINE void SetScaleCoordinate(float f) { this->scaleCoordinate = f; }
             LP_FORCEINLINE const FVector3& GetPos() const { return this->vPos; }
             void SetPos(const FVector3& vP);
+
+            LP_FORCEINLINE bool IsStateNone() { return this->typeState == CoordinateState_None; }
+            LP_FORCEINLINE bool IsStateSelect() { return this->typeState == CoordinateState_Select; }
+            LP_FORCEINLINE bool IsStateMove() { return this->typeState == CoordinateState_Move; }
+            LP_FORCEINLINE bool IsStateRotate() { return this->typeState == CoordinateState_Rotate; }
+            LP_FORCEINLINE bool IsStateScale() { return this->typeState == CoordinateState_Scale; }
+            LP_FORCEINLINE void SetStateType(CoordinateStateType type) { this->typeState = type; }
 
             bool IsAxisSelected();
             bool IsAxisSelectedByIndex(int index); //0:X; 1:Y; 2:Z
@@ -712,16 +723,34 @@ namespace LostPeter
             void SetQuadSelected(CoordinateElementType type);
             void ClearSelectState();
 
+            bool IsScaleAABBSelected();
+            bool IsScaleAABBSelectedByIndex(int index); //0:X; 1:Y; 2: Z; 3:XYZ
+            bool IsScaleAABBSelectedByType(CoordinateElementType type);
+            bool IsScaleAABBXSelected();
+            bool IsScaleAABBYSelected();
+            bool IsScaleAABBZSelected();
+            bool IsScaleAABBXYZSelected();
+            CoordinateElementType GetScaleAABBSelected();
+            void SetScaleAABBSelected(CoordinateElementType type);
+
         public:
             virtual void Destroy();
 
             virtual void Init();
 
             virtual void UpdateCBs();
+                virtual void UpdateCBs_Move();
+                virtual void UpdateCBs_Rotate();
+                virtual void UpdateCBs_Scale();
+
             virtual void Draw(VkCommandBuffer& commandBuffer);
-            virtual void DrawQuad(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
-            virtual void DrawQuadLine(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
-            virtual void DrawShape(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
+                virtual void Draw_Move(VkCommandBuffer& commandBuffer);
+                virtual void Draw_Rotate(VkCommandBuffer& commandBuffer);
+                virtual void Draw_Scale(VkCommandBuffer& commandBuffer);
+
+                virtual void DrawQuad(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
+                virtual void DrawQuadLine(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
+                virtual void DrawShape(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
 
 
             virtual void MouseLeftDown(double x, double y);
