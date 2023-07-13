@@ -428,10 +428,10 @@ namespace LostPeterFoundation
 
         return true;
     }
-    bool FUtil::IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3* pvArray, int nCnt, int x, int y, FVector3& vInter, bool bloop)
+    bool FUtil::IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3* pvArray, int nCnt, int x, int y, FVector3& vInter, bool bLoop)
     {
         int nOffset = 0;
-        if (!bloop)
+        if (!bLoop)
             nOffset = 1;
         FVector3 vStart,vEnd;
         for (int i = 0; i < nCnt - nOffset; ++i)
@@ -446,24 +446,25 @@ namespace LostPeterFoundation
 
         return false;
     }
-    bool FUtil::IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3Vector& aArrays, int nCnt, int x, int y, FVector3& vInter, bool bloop)
+    bool FUtil::IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3* pvArray, int nTotalCnt, int nCnt, int nStart, int x, int y, FVector3& vInter, bool bLoop)
     {
         int nOffset = 0;
-        if (!bloop) 
+        if (!bLoop)
             nOffset = 1;
         FVector3 vStart,vEnd;
-        for (int i = 0; i < nCnt - nOffset; ++i)
+        for (int i = nStart; i < nCnt - nOffset + nStart; ++i)
         {
-            vStart = aArrays[i % nCnt];
-            vEnd = aArrays[(i + 1) % nCnt];
-            if (IntersectLine(pCamera, vRectScreen, vStart, vEnd, x, y, vInter))		
+            vStart = pvArray[i % nTotalCnt];
+            vEnd   = pvArray[(i + 1) % nTotalCnt];
+            if (IntersectLine(pCamera, vRectScreen, vStart,vEnd, x, y, vInter))
             {
                 return true;
             }
         }
-
+        
         return false;
     }
+    
 
 ////Sort
     void FUtil::Sort3(float f1, float f2, float f3, int* pIndex)

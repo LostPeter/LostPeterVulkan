@@ -689,6 +689,9 @@ namespace LostPeter
             FVector3 aQuadYZ[3];
             FVector3 aQuadZX[3];
             FAABB aQuadAABB[3];
+            FVector3 aTorusX[30];
+            FVector3 aTorusY[30];
+            FVector3 aTorusZ[30];
             FAABB aScaleAABB[4];
             
         public:

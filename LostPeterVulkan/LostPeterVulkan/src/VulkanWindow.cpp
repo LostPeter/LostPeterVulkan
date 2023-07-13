@@ -2440,7 +2440,7 @@ namespace LostPeter
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleDistance = 8.0f;
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleAxisWhenSelect = 1.5f;
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleConeWhenSelect = 1.2f;
-    const float VulkanWindow::EditorCoordinateAxis::s_fScaleTorusWhenSelect = 1.5f;
+    const float VulkanWindow::EditorCoordinateAxis::s_fScaleTorusWhenSelect = 1.05f;
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleAABBWhenSelect = 1.2f;
 
     VulkanWindow::EditorCoordinateAxis::EditorCoordinateAxis(VulkanWindow* _pWindow)
@@ -2821,42 +2821,55 @@ namespace LostPeter
         }
         void VulkanWindow::EditorCoordinateAxis::UpdateCBs_Rotate()
         {
+            FVector3 vCenter = FMath::Transform(this->mat4Trans, FMath::ms_v3Zero);
+            
             //Torus (12-14)
+            float scaleToruses[3] = 
             {
-                float scaleToruses[3] = 
+                this->scaleCoordinate,
+                this->scaleCoordinate,
+                this->scaleCoordinate,
+            };
+            for (int i = 0; i < 3; i++)
+            {
+                if (IsAxisSelectedByIndex(i))
                 {
-                    this->scaleCoordinate,
-                    this->scaleCoordinate,
-                    this->scaleCoordinate,
-                };
-                for (int i = 0; i < 3; i++)
-                {
+                    scaleToruses[i] *= s_fScaleTorusWhenSelect;
+                    break;
+                }
+            }
+
+            int countStart = 12;
+            int countNumber = 3;
+            FMatrix4 aWorldToruses[3] = 
+            {
+                this->mat4Trans * FMath::Scale(FVector3(scaleToruses[0], scaleToruses[0], scaleToruses[0])) * s_aMatrix4Transforms[countStart + 0],
+                this->mat4Trans * FMath::Scale(FVector3(scaleToruses[1], scaleToruses[1], scaleToruses[1])) * s_aMatrix4Transforms[countStart + 1],
+                this->mat4Trans * FMath::Scale(FVector3(scaleToruses[2], scaleToruses[2], scaleToruses[2])) * s_aMatrix4Transforms[countStart + 2],
+            };
+            float fLengthX = 0.5f * s_fScale_Torus * scaleToruses[0];
+            float fLengthY = 0.5f * s_fScale_Torus * scaleToruses[1];
+            float fLengthZ = 0.5f * s_fScale_Torus * scaleToruses[2];
+            int nIndexCnt = 60;
+	        int nStartIndex = 0;
+            float fPerAngle = 360.0f / 30;
+            for (int i = 0; i < 30; ++i)
+            {
+                float fRad = i * fPerAngle * FMath::ms_fDeg2Rad;
+                float fCos = cos(fRad);
+                float fSin = sin(fRad);
+                this->aTorusX[i] = vCenter + FVector3(0.0f, fCos,  fSin) * fLengthY;
+                this->aTorusY[i] = vCenter + FVector3(fCos, 0.0f, -fSin) * fLengthZ;
+                this->aTorusZ[i] = vCenter + FVector3(fCos, fSin,  0.0f) * fLengthX;
+            }
+            for (int i = 0; i < countNumber; i++)
+            {
+                CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
+                objConsts.g_MatWorld = aWorldToruses[i];
                     if (IsAxisSelectedByIndex(i))
-                    {
-                        scaleToruses[i] *= s_fScaleTorusWhenSelect;
-                        break;
-                    }
-                }
-
-                int countStart = 12;
-                int countNumber = 3;
-                FMatrix4 aWorldToruses[3] = 
-                {
-                    this->mat4Trans * FMath::Scale(FVector3(scaleToruses[0], scaleToruses[0], scaleToruses[0])) * s_aMatrix4Transforms[countStart + 0],
-                    this->mat4Trans * FMath::Scale(FVector3(scaleToruses[1], scaleToruses[1], scaleToruses[1])) * s_aMatrix4Transforms[countStart + 1],
-                    this->mat4Trans * FMath::Scale(FVector3(scaleToruses[2], scaleToruses[2], scaleToruses[2])) * s_aMatrix4Transforms[countStart + 2],
-                };
-
-                for (int i = 0; i < countNumber; i++)
-                {
-                    CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
-                    objConsts.g_MatWorld = aWorldToruses[i];
-                     if (IsAxisSelectedByIndex(i))
-                        objConsts.color = s_aColors_Select[countStart + i];
-                    else
-                        objConsts.color = s_aColors_Default[countStart + i];
-                }
-                countStart += countNumber; //15
+                    objConsts.color = s_aColors_Select[countStart + i];
+                else
+                    objConsts.color = s_aColors_Default[countStart + i];
             }
         }
         void VulkanWindow::EditorCoordinateAxis::UpdateCBs_Scale()
@@ -3172,6 +3185,15 @@ namespace LostPeter
             }
         case CoordinateState_Rotate:
             {
+                FVector3 vInter;
+                if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aTorusX, 30, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Axis_X;
+				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aTorusY, 30, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Axis_Y;
+				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aTorusZ, 30, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Axis_Z;
+                else
+					this->typeElementSelect = CoordinateElement_None;
 
                 break;
             }
@@ -3256,7 +3278,15 @@ namespace LostPeter
             }
         case CoordinateState_Rotate:
             {
-
+                FVector3 vInter;
+                if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aTorusX, 30, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Axis_X;
+				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aTorusY, 30, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Axis_Y;
+				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aTorusZ, 30, (int)x, (int)y, vInter, false))
+					this->typeElementSelect = CoordinateElement_Axis_Z;
+                else
+					this->typeElementSelect = CoordinateElement_None;
 
                 break;
             }

@@ -61,8 +61,8 @@ namespace LostPeterFoundation
         
         static bool	IsBetween(float fl, float fr, float ft);
         static bool	IntersectLine(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vStart, const FVector3& vEnd, int x, int y, FVector3& vInter);
-        static bool	IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3* pvArray, int nCnt, int x, int y, FVector3& vInter, bool bloop);
-        static bool	IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3Vector& aArrays, int nCnt, int x, int y, FVector3& vInter, bool bloop);
+        static bool	IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3* pvArray, int nCnt, int x, int y, FVector3& vInter, bool bLoop);
+        static bool	IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3* pvArray, int nTotalCnt, int nCnt, int nStart, int x, int y, FVector3& vInter, bool bLoop);
 
     ////Sort
         static void Sort3(float f1, float f2, float f3, int* pIndex);
