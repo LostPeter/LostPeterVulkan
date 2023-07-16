@@ -50,14 +50,14 @@ namespace LostPeterFoundation
         static bool LoadAssetFileToString(const char* szFile, String& contentFile);
 
     ////Screen - World Transform
-        static void TransformScreenToWorldRay(FCamera* pCamera, const FVector2& vPosScreen, FRay* pOutRay);
-        static bool	TransformScreenToWorld(FCamera* pCamera, const FVector2& vPosScreen, FVector3& vPosWorld);
-        static bool	TransformScreenToWorld(FCamera* pCamera, const FVector3& vPosScreen, FVector3& vPosWorld);
-        static bool	TransformScreenToWorld(FCamera* pCamera, float fScreenX, float fScreenY, FVector3& vPosWorld);
-        static bool	TransformScreenToWorld(FCamera* pCamera, int nScreenX, int nScreenY, FVector3& vStart, FVector3& vEnd);
+        static void TransformScreenPos2ToWorldRay(FCamera* pCamera, const FVector2& vRectScreen, const FVector2& vPosScreen, FRay* pOutRay);
+        static bool	TransformScreenPos2ToWorldPos3(FCamera* pCamera, const FVector2& vRectScreen, const FVector2& vPosScreen, FVector3& vPosWorld);
+        static bool	TransformScreenPos2ToWorldPos3(FCamera* pCamera, const FVector2& vRectScreen, float fScreenX, float fScreenY, FVector3& vPosWorld);
+        static bool	TransformScreenPos3ToWorldPos3(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vPosScreen, FVector3& vPosWorld);
+        static bool	TransformScreenPos2ToWorldPos3StartEnd(FCamera* pCamera, const FVector2& vRectScreen, int nScreenX, int nScreenY, FVector3& vStart, FVector3& vEnd);
 
-        static bool	TransformWorldToScreen(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vPosWorld, FVector2& vPosScreen);
-        static bool	TransformWorldToScreen(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vPosWorld, FVector3& vPosScreen);
+        static bool	TransformWorldPos3ToScreenPos2(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vPosWorld, FVector2& vPosScreen);
+        static bool	TransformWorldPos3ToScreenPos3(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vPosWorld, FVector3& vPosScreen);
         
         static bool	IsBetween(float fl, float fr, float ft);
         static bool	IntersectLine(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vStart, const FVector3& vEnd, int x, int y, FVector3& vInter);
