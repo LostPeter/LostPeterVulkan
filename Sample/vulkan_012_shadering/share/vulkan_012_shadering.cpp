@@ -1148,11 +1148,11 @@ void Vulkan_012_Shadering::createModelMeshes()
         }
 
         ModelMeshRaw* pMesh = new ModelMeshRaw(this, 
-                                         nameMesh,
-                                         pathMesh,
-                                         typeMesh,
-                                         typeGeometryType,
-                                         typeVertex);
+                                               nameMesh,
+                                               pathMesh,
+                                               typeMesh,
+                                               typeGeometryType,
+                                               typeVertex);
         bool isFlipY = g_MeshIsFlipYs[i];
         bool isTransformLocal = g_MeshIsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))

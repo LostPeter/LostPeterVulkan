@@ -844,6 +844,34 @@ namespace LostPeter
     }
 
 
+    /////////////////////////// ModelShader ///////////////////////
+    VulkanWindow::ModelShader::ModelShader(VulkanWindow* _pWindow,
+                                           const String& _nameShader)
+        : pWindow(_pWindow)
+        , nameShader(_nameShader)
+    {
+
+    }
+    VulkanWindow::ModelShader::~ModelShader()
+    {
+
+    }
+
+
+    /////////////////////////// ModelMaterial /////////////////////
+    VulkanWindow::ModelMaterial::ModelMaterial(VulkanWindow* _pWindow,
+                                               const String& _nameMaterial)
+        : pWindow(_pWindow)
+        , nameMaterial(_nameMaterial)
+    {
+        
+    }
+    VulkanWindow::ModelMaterial::~ModelMaterial()
+    {
+
+    }
+
+
     /////////////////////////// MultiRenderPass ///////////////////
     VulkanWindow::FrameBufferAttachment::FrameBufferAttachment()
         : isDepth(false)
@@ -1238,6 +1266,90 @@ namespace LostPeter
         }
         this->poBuffer_TextureCopy = VK_NULL_HANDLE;
         this->poBufferMemory_TextureCopy = VK_NULL_HANDLE;
+    }
+
+
+    /////////////////////////// Renderable ////////////////////////
+    VulkanWindow::Renderable::Renderable(const String& _nameRenderable)
+        : nameRenderable(_nameRenderable)
+    {
+
+    }
+    VulkanWindow::Renderable::~Renderable()
+    {
+
+    }
+
+
+    /////////////////////////// RenderableIndirect ////////////////
+    VulkanWindow::RenderableIndirect::RenderableIndirect(const String& _nameRenderable)
+        : Renderable(_nameRenderable)
+    {
+
+    }
+    VulkanWindow::RenderableIndirect::~RenderableIndirect()
+    {
+
+    }
+
+
+    /////////////////////////// Movable ///////////////////////////
+    VulkanWindow::Movable::Movable(const String& _nameMovable)
+        : nameMovable(_nameMovable)
+    {
+
+    }
+    VulkanWindow::Movable::~Movable()
+    {
+
+    }
+
+
+    /////////////////////////// Node //////////////////////////////
+    VulkanWindow::Node::Node(const String& _nameNode)
+        : nameNode(_nameNode)
+    {
+
+    }
+    VulkanWindow::Node::~Node()
+    {
+
+    }
+
+
+    /////////////////////////// SceneNode /////////////////////////
+    VulkanWindow::SceneNode::SceneNode(const String& _nameNode)
+        : Node(_nameNode)
+    {
+
+    }
+    VulkanWindow::SceneNode::~SceneNode()
+    {
+
+    }
+
+
+    /////////////////////////// Object ////////////////////////////
+    VulkanWindow::Object::Object(const String& _nameObject)
+        : nameObject(_nameObject)
+    {
+
+    }
+    VulkanWindow::Object::~Object()
+    {
+
+    }
+
+
+    /////////////////////////// ObjectTerrain /////////////////////
+    VulkanWindow::ObjectTerrain::ObjectTerrain(const String& _nameTerrain)
+        : nameTerrain(_nameTerrain)
+    {
+
+    }
+    VulkanWindow::ObjectTerrain::~ObjectTerrain()
+    {
+
     }
 
 
@@ -3939,11 +4051,11 @@ namespace LostPeter
             const String& strLayout = (*pNamesDescriptorSetLayout)[i];
             if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Object)) //Object
             {
-                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectTerrain)) //ObjectTerrain
             {

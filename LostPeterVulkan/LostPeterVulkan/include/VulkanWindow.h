@@ -23,6 +23,7 @@ namespace LostPeter
         virtual ~VulkanWindow();
 
     public:
+        /////////////////////////// MeshInfo //////////////////////////
         struct utilExport MeshInfo
         {
             MeshInfo()
@@ -79,6 +80,7 @@ namespace LostPeter
         typedef std::vector<MeshInfo*> MeshInfoPtrVector;
 
 
+        /////////////////////////// ShaderModuleInfo //////////////////
         struct utilExport ShaderModuleInfo
         {
             String nameShader;
@@ -260,6 +262,41 @@ namespace LostPeter
         typedef std::map<String, ModelTexturePtrVector> ModelTexturePtrShaderSortMap;
 
 
+        /////////////////////////// ModelShader ///////////////////////
+        class utilExport ModelShader
+        {
+        public:
+            ModelShader(VulkanWindow* _pWindow,
+                        const String& _nameShader);
+            virtual ~ModelShader();
+
+        public:
+            VulkanWindow* pWindow;
+            String nameShader;
+
+        public:
+
+
+        };
+
+
+        /////////////////////////// ModelMaterial /////////////////////
+        class utilExport ModelMaterial
+        {
+        public:
+            ModelMaterial(VulkanWindow* _pWindow,
+                          const String& _nameMaterial);
+            virtual ~ModelMaterial();
+
+        public:
+            VulkanWindow* pWindow;
+            String nameMaterial;
+
+        public:
+
+        };
+
+
         /////////////////////////// MultiRenderPass ///////////////////
         class utilExport FrameBufferAttachment
         {
@@ -389,6 +426,110 @@ namespace LostPeter
         };
         typedef std::vector<PipelineCompute*> PipelineComputePtrVector;
         typedef std::map<String, PipelineCompute*> PipelineComputePtrMap;
+
+
+        /////////////////////////// Renderable ////////////////////////
+        class utilExport Renderable
+        {
+        public:
+            Renderable(const String& _nameRenderable);
+            virtual ~Renderable();
+
+        public:
+            String nameRenderable;
+
+        public:
+
+        };
+
+
+        /////////////////////////// RenderableIndirect ////////////////
+        class utilExport RenderableIndirect : public Renderable
+        {
+        public:
+            RenderableIndirect(const String& _nameRenderable);
+            virtual ~RenderableIndirect();
+
+        public:
+
+        public:
+
+        };
+
+
+        /////////////////////////// Movable ///////////////////////////
+        class utilExport Movable
+        {
+        public:
+            Movable(const String& _nameMovable);
+            virtual ~Movable();
+
+        public:
+            String nameMovable;
+
+        public:
+
+        };
+
+
+        /////////////////////////// Node //////////////////////////////
+        class utilExport Node
+        {
+        public:
+            Node(const String& _nameNode);
+            virtual ~Node();
+
+        public:
+            String nameNode;
+
+        public:
+
+        };
+
+
+        /////////////////////////// SceneNode /////////////////////////
+        class utilExport SceneNode : public Node
+        {
+        public:
+            SceneNode(const String& _nameNode);
+            virtual ~SceneNode();
+
+        public:
+
+
+        public:
+
+        };
+
+
+        /////////////////////////// Object ////////////////////////////
+        class utilExport Object
+        {
+        public:
+            Object(const String& _nameObject);
+            virtual ~Object();
+
+        public:
+             String nameObject;
+
+        public:
+
+        };
+
+
+        /////////////////////////// ObjectTerrain /////////////////////
+        class utilExport ObjectTerrain
+        {
+        public:
+            ObjectTerrain(const String& _nameTerrain);
+            virtual ~ObjectTerrain();
+
+        public:
+             String nameTerrain;
+
+        public:
+
+        };
 
 
         /////////////////////////// EditorBase ////////////////////////
