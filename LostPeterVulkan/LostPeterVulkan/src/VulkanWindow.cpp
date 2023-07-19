@@ -1353,6 +1353,18 @@ namespace LostPeter
     }
 
 
+    /////////////////////////// SceneManager //////////////////////
+    VulkanWindow::SceneManager::SceneManager(const String& _nameSceneManager)
+        : nameSceneManager(_nameSceneManager)
+    {
+
+    }
+    VulkanWindow::SceneManager::~SceneManager()
+    {
+
+    }
+
+
     /////////////////////////// EditorBase ////////////////////////
     VulkanWindow::EditorBase::EditorBase(VulkanWindow* _pWindow)
         : pWindow(_pWindow)
@@ -2553,7 +2565,7 @@ namespace LostPeter
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleAxisWhenSelect = 1.5f;
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleConeWhenSelect = 1.2f;
     const float VulkanWindow::EditorCoordinateAxis::s_fScaleTorusWhenSelect = 1.05f;
-    const float VulkanWindow::EditorCoordinateAxis::s_fScaleAABBWhenSelect = 1.2f;
+    const float VulkanWindow::EditorCoordinateAxis::s_fScaleAABBWhenSelect = 1.3f;
 
     VulkanWindow::EditorCoordinateAxis::EditorCoordinateAxis(VulkanWindow* _pWindow)
         : EditorBase(_pWindow)
@@ -3266,15 +3278,15 @@ namespace LostPeter
                 FVector3 vInter;
                 FRay ray;
                 this->pCamera->ConvertScreenPos2ToWorldRay((float)x, (float)y, &ray);
-                if (FMath::Intersects_RayAABB(ray, this->aQuadAABB[0]))
+                if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[0]))
                 {
                     this->typeElementSelect = CoordinateElement_Quad_XY;
                 }
-                else if (FMath::Intersects_RayAABB(ray, this->aQuadAABB[1]))
+                else if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[1]))
                 {
                     this->typeElementSelect = CoordinateElement_Quad_YZ;
                 }
-                else if (FMath::Intersects_RayAABB(ray, this->aQuadAABB[2]))
+                else if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[2]))
                 {
                     this->typeElementSelect = CoordinateElement_Quad_ZX;
                 }
@@ -3333,13 +3345,13 @@ namespace LostPeter
             {
                 FVector3 vInter;
                 FRay ray;
-                this->pCamera->ConvertScreenPos2ToWorldRay((float)x, (float)y, &ray);
+                this->pCamera->ConvertScreenPos2ToWorldRay((float)x / this->vRectScreen.x, (float)y / this->vRectScreen.y, &ray);
                 F_LogInfo("MouseLeftDown: XYZ: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
                           ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
                           ray.m_vDirection.x, ray.m_vDirection.y, ray.m_vDirection.z,
                           this->aScaleAABB[3].m_vMin.x, this->aScaleAABB[3].m_vMin.y, this->aScaleAABB[3].m_vMin.z,
                           this->aScaleAABB[3].m_vMax.x, this->aScaleAABB[3].m_vMax.y, this->aScaleAABB[3].m_vMax.z);
-                if (FMath::Intersects_RayAABB(ray, this->aScaleAABB[3]))
+                if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[3]))
                 {
                     F_LogError("MouseLeftDown: XYZ: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
                               ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
@@ -3348,7 +3360,7 @@ namespace LostPeter
                               this->aScaleAABB[3].m_vMax.x, this->aScaleAABB[3].m_vMax.y, this->aScaleAABB[3].m_vMax.z);
                     this->typeElementSelect = CoordinateElement_Axis_XYZ;
                 }
-                else if (FMath::Intersects_RayAABB(ray, this->aScaleAABB[0]) || FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisX, 2, (int)x, (int)y, vInter, false))
+                else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[0]) || FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisX, 2, (int)x, (int)y, vInter, false))
                 {
                     F_LogError("MouseLeftDown: X: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
                               ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
@@ -3357,7 +3369,7 @@ namespace LostPeter
                               this->aScaleAABB[0].m_vMax.x, this->aScaleAABB[0].m_vMax.y, this->aScaleAABB[0].m_vMax.z);
                     this->typeElementSelect = CoordinateElement_Axis_X;
                 }
-                else if (FMath::Intersects_RayAABB(ray, this->aScaleAABB[1]) || FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisY, 2, (int)x, (int)y, vInter, false))
+                else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[1]) || FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisY, 2, (int)x, (int)y, vInter, false))
                 {
                     F_LogError("MouseLeftDown: Y: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
                               ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
@@ -3366,7 +3378,7 @@ namespace LostPeter
                               this->aScaleAABB[1].m_vMax.x, this->aScaleAABB[1].m_vMax.y, this->aScaleAABB[1].m_vMax.z);
                     this->typeElementSelect = CoordinateElement_Axis_Y;
                 }
-                else if (FMath::Intersects_RayAABB(ray, this->aScaleAABB[2]) || FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisZ, 2, (int)x, (int)y, vInter, false))
+                else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[2]) || FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisZ, 2, (int)x, (int)y, vInter, false))
                 {
                     F_LogError("MouseLeftDown: Z: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
                               ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
@@ -3403,15 +3415,15 @@ namespace LostPeter
                 FVector3 vInter;
                 FRay ray;
                 this->pCamera->ConvertScreenPos2ToWorldRay((float)x, (float)y, &ray);
-                if (FMath::Intersects_RayAABB(ray, this->aQuadAABB[0]))
+                if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[0]))
                 {
                     this->typeElementSelect = CoordinateElement_Quad_XY;
                 }
-                else if (FMath::Intersects_RayAABB(ray, this->aQuadAABB[1]))
+                else if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[1]))
                 {
                     this->typeElementSelect = CoordinateElement_Quad_YZ;
                 }
-                else if (FMath::Intersects_RayAABB(ray, this->aQuadAABB[2]))
+                else if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[2]))
                 {
                     this->typeElementSelect = CoordinateElement_Quad_ZX;
                 }
@@ -3470,20 +3482,20 @@ namespace LostPeter
             {
                 FVector3 vInter;
                 FRay ray;
-                this->pCamera->ConvertScreenPos2ToWorldRay((float)x, (float)y, &ray);
-                if (FMath::Intersects_RayAABB(ray, this->aScaleAABB[3]))
+                this->pCamera->ConvertScreenPos2ToWorldRay((float)x / this->vRectScreen.x, (float)y / this->vRectScreen.y, &ray);
+                if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[3]))
                 {
                     this->typeElementSelect = CoordinateElement_Axis_XYZ;
                 }
-                else if (FMath::Intersects_RayAABB(ray, this->aScaleAABB[0]) || FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisX, 2, (int)x, (int)y, vInter, false))
+                else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[0]) || FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisX, 2, (int)x, (int)y, vInter, false))
                 {
                     this->typeElementSelect = CoordinateElement_Axis_X;
                 }
-                else if (FMath::Intersects_RayAABB(ray, this->aScaleAABB[1]) || FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisY, 2, (int)x, (int)y, vInter, false))
+                else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[1]) || FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisY, 2, (int)x, (int)y, vInter, false))
                 {
                     this->typeElementSelect = CoordinateElement_Axis_Y;
                 }
-                else if (FMath::Intersects_RayAABB(ray, this->aScaleAABB[2]) || FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisZ, 2, (int)x, (int)y, vInter, false))
+                else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[2]) || FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisZ, 2, (int)x, (int)y, vInter, false))
                 {
                     this->typeElementSelect = CoordinateElement_Axis_Z;
                 }

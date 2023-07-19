@@ -18,21 +18,21 @@
 
 namespace LostPeterFoundation
 {
-    std::pair<bool, float> FRay::Intersects(const FPlane& plane) const
+    std::pair<bool, float> FRay::Intersects_Plane(const FPlane& plane) const
     {
-        return FMath::Intersects(*this, plane);
+        return FMath::Intersects_RayPlane(*this, plane);
     }
-    std::pair<bool, float> FRay::Intersects(const FPlaneBoundedVolume& planeBoundedVolume) const
+    std::pair<bool, float> FRay::Intersects_PlaneBoundedVolume(const FPlaneBoundedVolume& planeBoundedVolume) const
     {
-        return FMath::Intersects(*this, planeBoundedVolume.m_aPlanes, planeBoundedVolume.m_ePlaneSide == F_PlaneSide_Positive);
+        return FMath::Intersects_RayPlaneVector(*this, planeBoundedVolume.m_aPlanes, planeBoundedVolume.m_ePlaneSide == F_PlaneSide_Positive);
     }
-    std::pair<bool, float> FRay::Intersects(const FSphere& sphere) const
+    std::pair<bool, float> FRay::Intersects_Sphere(const FSphere& sphere) const
     {
-        return FMath::Intersects(*this, sphere);
+        return FMath::Intersects_RaySphere(*this, sphere);
     }
-    std::pair<bool, float> FRay::Intersects(const FAABB& aabb) const
+    std::pair<bool, float> FRay::Intersects_AABB(const FAABB& aabb) const
     {
-        return FMath::Intersects(*this, aabb);
+        return FMath::Intersects_RayAABB(*this, aabb);
     }
 
     bool FRay::operator ==(const FRay& ray) const

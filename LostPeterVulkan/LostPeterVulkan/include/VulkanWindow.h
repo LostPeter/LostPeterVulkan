@@ -441,6 +441,8 @@ namespace LostPeter
         public:
 
         };
+        typedef std::vector<Renderable*> RenderablePtrVector;
+        typedef std::map<String, Renderable*> RenderablePtrMap;
 
 
         /////////////////////////// RenderableIndirect ////////////////
@@ -455,6 +457,8 @@ namespace LostPeter
         public:
 
         };
+        typedef std::vector<RenderableIndirect*> RenderableIndirectPtrVector;
+        typedef std::map<String, RenderableIndirect*> RenderableIndirectPtrMap;
 
 
         /////////////////////////// Movable ///////////////////////////
@@ -470,6 +474,8 @@ namespace LostPeter
         public:
 
         };
+        typedef std::vector<Movable*> MovablePtrVector;
+        typedef std::map<String, Movable*> MovablePtrMap;
 
 
         /////////////////////////// Node //////////////////////////////
@@ -485,6 +491,8 @@ namespace LostPeter
         public:
 
         };
+        typedef std::vector<Node*> NodePtrVector;
+        typedef std::map<String, Node*> NodePtrMap;
 
 
         /////////////////////////// SceneNode /////////////////////////
@@ -500,6 +508,8 @@ namespace LostPeter
         public:
 
         };
+        typedef std::vector<SceneNode*> SceneNodePtrVector;
+        typedef std::map<String, SceneNode*> SceneNodePtrMap;
 
 
         /////////////////////////// Object ////////////////////////////
@@ -515,6 +525,8 @@ namespace LostPeter
         public:
 
         };
+        typedef std::vector<Object*> ObjectPtrVector;
+        typedef std::map<String, Object*> ObjectPtrMap;
 
 
         /////////////////////////// ObjectTerrain /////////////////////
@@ -526,6 +538,23 @@ namespace LostPeter
 
         public:
              String nameTerrain;
+
+        public:
+
+        };
+        typedef std::vector<ObjectTerrain*> ObjectTerrainPtrVector;
+        typedef std::map<String, ObjectTerrain*> ObjectTerrainPtrMap;
+
+
+        /////////////////////////// SceneManager //////////////////////
+        class utilExport SceneManager
+        {
+        public:
+            SceneManager(const String& _nameSceneManager);
+            virtual ~SceneManager();
+
+        public:
+             String nameSceneManager;
 
         public:
 

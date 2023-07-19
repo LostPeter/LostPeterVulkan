@@ -17,30 +17,30 @@
 
 namespace LostPeterFoundation
 {
-    bool FSphere::Intersects(const FVector3& point) const
+    bool FSphere::Intersects_Point(const FVector3& point) const
     {
         return (FMath::Length2(point - m_vCenter) <= m_fRadius * m_fRadius);
     }
 
-    bool FSphere::Intersects(const FSphere& sphere) const
+    bool FSphere::Intersects_Plane(const FPlane& plane) const
+    {
+        return FMath::Intersects_SpherePlane(*this, plane);
+    }
+
+    bool FSphere::Intersects_Sphere(const FSphere& sphere) const
     {
         return FMath::Length2(sphere.m_vCenter - m_vCenter) <= (sphere.m_fRadius + m_fRadius) * (sphere.m_fRadius + m_fRadius);
     }
 
-    // bool FSphere::Intersects(const FAABB& aabb) const
-    // {
-    //     return FMath::Intersects(*this, aabb);
-    // }
+    bool FSphere::Intersects_AABB(const FAABB& aabb) const
+    {
+        return FMath::Intersects_SphereAABB(*this, aabb);
+    }
 
-    // bool FSphere::Intersects(const FPlane& plane) const
-    // {
-    //     return FMath::Intersects(*this, plane);
-    // }
-
-    // bool FSphere::Intersects(const FFrustum& frustum) const
-    // {
-    //     return FMath::Intersects(*this, frustum); 
-    // }
+    bool FSphere::Intersects_Frustum(const FFrustum& frustum) const
+    {
+        return FMath::Intersects_SphereFrustum(*this, frustum);
+    }
 
     bool FSphere::IfInSphere(const FSphere& sphere) const
     {

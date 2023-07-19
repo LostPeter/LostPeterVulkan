@@ -59,11 +59,11 @@ namespace LostPeterFoundation
             m_fRadius = radius;
         }
 
-        bool Intersects(const FVector3& point) const;
-        bool Intersects(const FSphere& sphere) const;
-        bool Intersects(const FAABB& aabb) const;
-        bool Intersects(const FPlane& plane) const;
-        bool Intersects(const FFrustum& frustum) const;
+        bool Intersects_Point(const FVector3& point) const;
+        bool Intersects_Plane(const FPlane& plane) const;
+        bool Intersects_Sphere(const FSphere& sphere) const;
+        bool Intersects_AABB(const FAABB& aabb) const;
+        bool Intersects_Frustum(const FFrustum& frustum) const;
 
 
         bool IfInSphere(const FSphere& sphere) const;

@@ -46,9 +46,9 @@ namespace LostPeterFoundation
         FPlane* GetPlanePtr();
 
     public:
-        bool Intersects(const FAABB& aabb) const;
-        bool Intersects(const FSphere& sphere) const;
-        std::pair<bool, float> Intersects(const FRay& ray);
+        std::pair<bool, float> Intersects_Ray(const FRay& ray);
+        bool Intersects_AABB(const FAABB& aabb) const;
+        bool Intersects_Sphere(const FSphere& sphere) const;
 
     public:
         bool operator ==(const FPlaneBoundedVolume& rhs) const;

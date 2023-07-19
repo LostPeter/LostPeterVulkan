@@ -549,23 +549,25 @@ namespace LostPeterFoundation
         static float GetRadiusFromAABB(const FAABB& aabb);
 
     public:
-        static std::pair<bool, float> Intersects(const FRay& ray, const FPlane& plane);
-        static std::pair<bool, float> Intersects(const FRay& ray, const FSphere& sphere, bool discardInside = true);			
-        static std::pair<bool, float> Intersects(const FRay& ray, const FAABB& aabb);
-        static std::pair<bool, float> Intersects(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
-                                                 bool positiveSide = true, bool negativeSide = true);
-        static std::pair<bool, float> Intersects(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& normal,
-                                                 bool positiveSide = true, bool negativeSide = true);
-        static std::pair<bool, float> Intersects(const FRay& ray, const FPlaneVector& aPlanes, bool normalIsOutside);
-        static std::pair<bool, float> Intersects(const FRay& ray, FPlaneList& listPlanes, bool normalIsOutside);
+        static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
+                                                             bool positiveSide = true, bool negativeSide = true);
+        static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& normal,
+                                                             bool positiveSide = true, bool negativeSide = true);
+        static std::pair<bool, float> Intersects_RayPlane(const FRay& ray, const FPlane& plane);
+        static std::pair<bool, float> Intersects_RayPlaneVector(const FRay& ray, const FPlaneVector& aPlanes, bool normalIsOutside);
+        static std::pair<bool, float> Intersects_RayPlaneList(const FRay& ray, FPlaneList& listPlanes, bool normalIsOutside);
+        static std::pair<bool, float> Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool discardInside = true);			
+        static std::pair<bool, float> Intersects_RayAABB(const FRay& ray, const FAABB& aabb);
+        static bool Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb);
+        static bool	Intersects_RayAABB(const FRay& ray, const FAABB& aabb, float* d1, float* d2);
+            
+        static bool	Intersects_SpherePlane(const FSphere& sphere, const FPlane& plane);
+        static bool Intersects_SphereAABB(const FSphere& sphere, const FAABB& aabb);
+        static bool	Intersects_SphereFrustum(const FSphere& sphere, const FFrustum& frustum);
+        
+        //static bool Intersects_SegmentAABB(const FSegment& s, const FAABB& aabb);
 
-        static bool	Intersects_RayAABB(const FRay& ray, const FAABB& aabb);
-        static bool	Intersects(const FRay& ray, const FAABB& aabb, float* d1, float* d2);
-        static bool	Intersects(const FSphere& sphere, const FPlane& plane);
-        static bool	Intersects(const FSphere& sphere, const FFrustum& frustum);
-        static bool Intersects(const FSphere& sphere, const FAABB& aabb);
-        //static bool Intersects(const FSegment& s, const FAABB& aabb);
-        static bool	Intersects(const FPlane& plane, const FAABB& aabb);
+        static bool	Intersects_PlaneAABB(const FPlane& plane, const FAABB& aabb);
 
     public:
 		static FMatrix4 BuildReflectionMatrix(const FPlane& p);	

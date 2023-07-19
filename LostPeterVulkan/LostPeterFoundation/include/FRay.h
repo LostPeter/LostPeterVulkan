@@ -50,10 +50,10 @@ namespace LostPeterFoundation
 
         LP_FORCEINLINE FVector3 GetPoint(float t) const { return m_vOrigin + (m_vDirection * t); }
 
-        std::pair<bool, float> Intersects(const FPlane& plane) const;		
-        std::pair<bool, float> Intersects(const FPlaneBoundedVolume& planeBoundedVolume) const;
-        std::pair<bool, float> Intersects(const FSphere& sphere) const;		
-        std::pair<bool, float> Intersects(const FAABB& aabb) const;
+        std::pair<bool, float> Intersects_Plane(const FPlane& plane) const;		
+        std::pair<bool, float> Intersects_PlaneBoundedVolume(const FPlaneBoundedVolume& planeBoundedVolume) const;
+        std::pair<bool, float> Intersects_Sphere(const FSphere& sphere) const;		
+        std::pair<bool, float> Intersects_AABB(const FAABB& aabb) const;
 
     public:	
         bool operator ==(const FRay& ray) const;

@@ -496,7 +496,92 @@ namespace LostPeterFoundation
         return FMath::Length(magnitude);
     }
 
-    std::pair<bool, float> FMath::Intersects(const FRay& ray, const FPlane& plane)
+    std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
+                                                         bool positiveSide /*= true*/, bool negativeSide /*= true*/)
+    {
+        FVector3 vNormal = CalculateBasicFaceNormalWithoutNormalize(a, b, c);
+        return Intersects_RayTriangle(ray, a, b, c, vNormal, positiveSide, negativeSide);
+    }
+
+    std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& normal,
+                                                         bool positiveSide /*= true*/, bool negativeSide /*= true*/)
+    {
+        float t;
+        {
+            float denom = FMath::Dot(normal, ray.GetDirection());
+            if (denom > + std::numeric_limits<float>::epsilon())
+            {
+                if (!negativeSide)
+                    return std::pair<bool, float>(false, 0);
+            }
+            else if (denom < - std::numeric_limits<float>::epsilon())
+            {
+                if (!positiveSide)
+                    return std::pair<bool, float>(false, 0);
+            }
+            else
+            {
+                return std::pair<bool, float>(false, 0);
+            }
+
+            t = FMath::Dot(normal, a - ray.GetOrigin()) / denom;
+            if (t < 0)
+            {
+                return std::pair<bool, float>(false, 0);
+            }
+        }
+
+        int i0, i1;
+        {
+            float n0 = FMath::Abs(normal[0]);
+            float n1 = FMath::Abs(normal[1]);
+            float n2 = FMath::Abs(normal[2]);
+
+            i0 = 1; i1 = 2;
+            if (n1 > n2)
+            {
+                if (n1 > n0) 
+                    i0 = 0;
+            }
+            else
+            {
+                if (n2 > n0) 
+                    i1 = 0;
+            }
+        }
+
+        {
+            float u1 = b[i0] - a[i0];
+            float v1 = b[i1] - a[i1];
+            float u2 = c[i0] - a[i0];
+            float v2 = c[i1] - a[i1];
+            float u0 = t * ray.GetDirection()[i0] + ray.GetOrigin()[i0] - a[i0];
+            float v0 = t * ray.GetDirection()[i1] + ray.GetOrigin()[i1] - a[i1];
+
+            float alpha = u0 * v2 - u2 * v0;
+            float beta  = u1 * v0 - u0 * v1;
+            float area  = u1 * v2 - u2 * v1;
+
+            const float EPSILON = 1e-6f;
+
+            float tolerance = - EPSILON * area;
+
+            if (area > 0)
+            {
+                if (alpha < tolerance || beta < tolerance || alpha+beta > area-tolerance)
+                    return std::pair<bool, float>(false, 0);
+            }
+            else
+            {
+                if (alpha > tolerance || beta > tolerance || alpha+beta < area-tolerance)
+                    return std::pair<bool, float>(false, 0);
+            }
+        }
+
+        return std::pair<bool, float>(true, t);
+    }
+
+    std::pair<bool, float> FMath::Intersects_RayPlane(const FRay& ray, const FPlane& plane)
     {
         float denom = FMath::Dot(plane.m_vNormal, ray.GetDirection());
         if (FMath::Abs(denom) < std::numeric_limits<float>::epsilon())
@@ -511,7 +596,85 @@ namespace LostPeterFoundation
         }
     }
 
-    std::pair<bool, float> FMath::Intersects(const FRay& ray, const FSphere& sphere, bool discardInside /*= true*/)		
+    std::pair<bool, float> FMath::Intersects_RayPlaneVector(const FRay& ray, const FPlaneVector& aPlanes, bool normalIsOutside)
+    {
+        FPlaneList listPlanes;
+        for (FPlaneVector::const_iterator it = aPlanes.begin(); 
+             it != aPlanes.end(); ++it)
+        {
+            listPlanes.push_back(*it);
+        }
+        return Intersects_RayPlaneList(ray, listPlanes, normalIsOutside);
+    }
+
+    std::pair<bool, float> FMath::Intersects_RayPlaneList(const FRay& ray, FPlaneList& listPlanes, bool normalIsOutside)
+    {
+        bool allInside = true;
+        std::pair<bool, float> ret;
+        std::pair<bool, float> end;
+        ret.first = false;
+        ret.second = 0.0f;
+        end.first = false;
+        end.second = 0;
+
+        FPlaneSideType ePlaneSide = normalIsOutside ? F_PlaneSide_Positive : F_PlaneSide_Negative;
+        for (FPlaneList::iterator it = listPlanes.begin();
+             it != listPlanes.end(); ++it)
+        {
+            const FPlane& plane = *it;
+            if (plane.GetSide(ray.GetOrigin()) == ePlaneSide)
+            {
+                allInside = false;
+                std::pair<bool, float> planeRes = ray.Intersects_Plane(plane);
+                if (planeRes.first)
+                {
+                    ret.first = true;
+                    ret.second = FMath::Max<float>(ret.second, planeRes.second);
+                }
+                else
+                {
+                    ret.first =false;
+                    ret.second = 0.0f;
+                    return ret;
+                }
+            }
+            else
+            {
+                std::pair<bool, float> planeRes = ray.Intersects_Plane(plane);
+                if (planeRes.first)
+                {
+                    if (!end.first)
+                    {
+                        end.first = true;
+                        end.second = planeRes.second;
+                    }
+                    else
+                    {
+                        end.second = FMath::Min<float>(planeRes.second, end.second);
+                    }
+                }
+            }
+        }
+
+        if (allInside)
+        {
+            ret.first = true;
+            ret.second = 0.0f;
+            return ret;
+        }
+
+        if (end.first)
+        {
+            if(end.second < ret.second)
+            {
+                ret.first = false;
+                return ret;
+            }
+        }
+        return ret;
+    }
+
+    std::pair<bool, float> FMath::Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool discardInside /*= true*/)		
     {
         const FVector3& raydir = ray.GetDirection();
         const FVector3& rayorig = ray.GetOrigin() - sphere.GetCenter();
@@ -541,7 +704,7 @@ namespace LostPeterFoundation
         }
     }
 
-    std::pair<bool, float> FMath::Intersects(const FRay& ray, const FAABB& aabb)
+    std::pair<bool, float> FMath::Intersects_RayAABB(const FRay& ray, const FAABB& aabb)
     {
         if (!aabb.IsValid()) 
             return std::pair<bool, float>(false, 0);
@@ -668,174 +831,12 @@ namespace LostPeterFoundation
         return std::pair<bool, float>(hit, lowt);
     }
 
-    std::pair<bool, float> FMath::Intersects(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
-                                             bool positiveSide /*= true*/, bool negativeSide /*= true*/)
-    {
-        FVector3 vNormal = CalculateBasicFaceNormalWithoutNormalize(a, b, c);
-        return Intersects(ray, a, b, c, vNormal, positiveSide, negativeSide);
+    bool FMath::Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb)
+    {   
+        std::pair<bool, float> ret = Intersects_RayAABB(ray, aabb);
+        return ret.first;
     }
 
-    std::pair<bool, float> FMath::Intersects(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& normal,
-                                             bool positiveSide /*= true*/, bool negativeSide /*= true*/)
-    {
-        float t;
-        {
-            float denom = FMath::Dot(normal, ray.GetDirection());
-            if (denom > + std::numeric_limits<float>::epsilon())
-            {
-                if (!negativeSide)
-                    return std::pair<bool, float>(false, 0);
-            }
-            else if (denom < - std::numeric_limits<float>::epsilon())
-            {
-                if (!positiveSide)
-                    return std::pair<bool, float>(false, 0);
-            }
-            else
-            {
-                return std::pair<bool, float>(false, 0);
-            }
-
-            t = FMath::Dot(normal, a - ray.GetOrigin()) / denom;
-            if (t < 0)
-            {
-                return std::pair<bool, float>(false, 0);
-            }
-        }
-
-        int i0, i1;
-        {
-            float n0 = FMath::Abs(normal[0]);
-            float n1 = FMath::Abs(normal[1]);
-            float n2 = FMath::Abs(normal[2]);
-
-            i0 = 1; i1 = 2;
-            if (n1 > n2)
-            {
-                if (n1 > n0) 
-                    i0 = 0;
-            }
-            else
-            {
-                if (n2 > n0) 
-                    i1 = 0;
-            }
-        }
-
-        {
-            float u1 = b[i0] - a[i0];
-            float v1 = b[i1] - a[i1];
-            float u2 = c[i0] - a[i0];
-            float v2 = c[i1] - a[i1];
-            float u0 = t * ray.GetDirection()[i0] + ray.GetOrigin()[i0] - a[i0];
-            float v0 = t * ray.GetDirection()[i1] + ray.GetOrigin()[i1] - a[i1];
-
-            float alpha = u0 * v2 - u2 * v0;
-            float beta  = u1 * v0 - u0 * v1;
-            float area  = u1 * v2 - u2 * v1;
-
-            const float EPSILON = 1e-6f;
-
-            float tolerance = - EPSILON * area;
-
-            if (area > 0)
-            {
-                if (alpha < tolerance || beta < tolerance || alpha+beta > area-tolerance)
-                    return std::pair<bool, float>(false, 0);
-            }
-            else
-            {
-                if (alpha > tolerance || beta > tolerance || alpha+beta < area-tolerance)
-                    return std::pair<bool, float>(false, 0);
-            }
-        }
-
-        return std::pair<bool, float>(true, t);
-    }
-
-    std::pair<bool, float> FMath::Intersects(const FRay& ray, const FPlaneVector& aPlanes, bool normalIsOutside)
-    {
-        FPlaneList listPlanes;
-        for (FPlaneVector::const_iterator it = aPlanes.begin(); 
-            it != aPlanes.end(); ++it)
-        {
-            listPlanes.push_back(*it);
-        }
-        return Intersects(ray, listPlanes, normalIsOutside);
-    }
-
-    std::pair<bool, float> FMath::Intersects(const FRay& ray, FPlaneList& listPlanes, bool normalIsOutside)
-    {
-        bool allInside = true;
-        std::pair<bool, float> ret;
-        std::pair<bool, float> end;
-        ret.first = false;
-        ret.second = 0.0f;
-        end.first = false;
-        end.second = 0;
-
-        FPlaneSideType ePlaneSide = normalIsOutside ? F_PlaneSide_Positive : F_PlaneSide_Negative;
-        for (FPlaneList::iterator it = listPlanes.begin();
-             it != listPlanes.end(); ++it)
-        {
-            const FPlane& plane = *it;
-            if (plane.GetSide(ray.GetOrigin()) == ePlaneSide)
-            {
-                allInside = false;
-                std::pair<bool, float> planeRes = ray.Intersects(plane);
-                if (planeRes.first)
-                {
-                    ret.first = true;
-                    ret.second = FMath::Max<float>(ret.second, planeRes.second);
-                }
-                else
-                {
-                    ret.first =false;
-                    ret.second = 0.0f;
-                    return ret;
-                }
-            }
-            else
-            {
-                std::pair<bool, float> planeRes = ray.Intersects(plane);
-                if (planeRes.first)
-                {
-                    if (!end.first)
-                    {
-                        end.first = true;
-                        end.second = planeRes.second;
-                    }
-                    else
-                    {
-                        end.second = FMath::Min<float>(planeRes.second, end.second);
-                    }
-                }
-            }
-        }
-
-        if (allInside)
-        {
-            ret.first = true;
-            ret.second = 0.0f;
-            return ret;
-        }
-
-        if (end.first)
-        {
-            if(end.second < ret.second)
-            {
-                ret.first = false;
-                return ret;
-            }
-        }
-        return ret;
-    }
-
-    bool FMath::Intersects_RayAABB(const FRay& ray, const FAABB& aabb)
-    {
-        float d1,d2;
-        return Intersects(ray, aabb, &d1, &d2);
-    }
     static bool s_CheckAxis(const FVector3& rayorig, 
                             const FVector3& raydir,
                             const FVector3& min,
@@ -857,7 +858,7 @@ namespace LostPeterFoundation
             end = newend;
         return true;
     }
-    bool FMath::Intersects(const FRay& ray, const FAABB& aabb, float* d1, float* d2)
+    bool FMath::Intersects_RayAABB(const FRay& ray, const FAABB& aabb, float* d1, float* d2)
     {
         if (!aabb.IsValid())
             return false;
@@ -955,30 +956,12 @@ namespace LostPeterFoundation
         return true;
     }
 
-    bool FMath::Intersects(const FSphere& sphere, const FPlane& plane)
+    bool FMath::Intersects_SpherePlane(const FSphere& sphere, const FPlane& plane)
     {
         return (FMath::Abs(plane.GetDistance(sphere.GetCenter())) <= sphere.GetRadius());
     }
 
-    bool FMath::Intersects(const FSphere& sphere, const FFrustum& frustum)
-    {
-        if (frustum.GetPlane(F_FrustumPlane_Left).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
-            return false;
-        if (frustum.GetPlane(F_FrustumPlane_Right).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
-            return false;
-        if (frustum.GetPlane(F_FrustumPlane_Top).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
-            return false;
-        if (frustum.GetPlane(F_FrustumPlane_Bottom).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
-            return false;
-        if (frustum.GetPlane(F_FrustumPlane_Near).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
-            return false;
-        if (frustum.GetPlane(F_FrustumPlane_Far).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
-            return false;
-
-        return true;
-    }
-
-    bool FMath::Intersects(const FSphere& sphere, const FAABB& aabb)
+    bool FMath::Intersects_SphereAABB(const FSphere& sphere, const FAABB& aabb)
     {
         if (!aabb.IsValid())
             return false;
@@ -1005,12 +988,30 @@ namespace LostPeterFoundation
         return d <= radius * radius;
     }
 
-    //bool FMath::Intersects(const FSegment& s, const FAABB& aabb)
+    bool FMath::Intersects_SphereFrustum(const FSphere& sphere, const FFrustum& frustum)
+    {
+        if (frustum.GetPlane(F_FrustumPlane_Left).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+            return false;
+        if (frustum.GetPlane(F_FrustumPlane_Right).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+            return false;
+        if (frustum.GetPlane(F_FrustumPlane_Top).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+            return false;
+        if (frustum.GetPlane(F_FrustumPlane_Bottom).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+            return false;
+        if (frustum.GetPlane(F_FrustumPlane_Near).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+            return false;
+        if (frustum.GetPlane(F_FrustumPlane_Far).GetDistance(sphere.GetCenter()) > sphere.GetRadius())
+            return false;
+
+        return true;
+    }
+
+    //bool FMath::Intersects_SegmentAABB(const FSegment& s, const FAABB& aabb)
     //{
     //  return true;
     //}
 
-    bool FMath::Intersects(const FPlane& plane, const FAABB& aabb)
+    bool FMath::Intersects_PlaneAABB(const FPlane& plane, const FAABB& aabb)
     {
         return (plane.GetSide(aabb) == F_PlaneSide_Both);
     }

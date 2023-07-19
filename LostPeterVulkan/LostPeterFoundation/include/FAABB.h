@@ -273,7 +273,7 @@ namespace LostPeterFoundation
         void TransformAffine(const FMatrix4& mat4);
         void Rotate(const FMatrix4& mat4, FAABB& aabb) const;
 
-        bool Intersects(const FVector3& v) const
+        bool Intersects_Point(const FVector3& v) const
         {
             if (IsNull())
                 return false;
@@ -286,7 +286,7 @@ namespace LostPeterFoundation
         }
 
 
-        bool Intersects(const FAABB& aabb, uint32 axis) const
+        bool Intersects_Axis(const FAABB& aabb, uint32 axis) const
         {
             if (IsNull() || aabb.IsNull())
                 return false;
@@ -297,7 +297,7 @@ namespace LostPeterFoundation
                 return false;
             return true;
         }
-        bool Intersects(const FAABB& aabb) const
+        bool Intersects_AABB(const FAABB& aabb) const
         {
             if (IsNull() || aabb.IsNull())
                 return false;
@@ -320,17 +320,16 @@ namespace LostPeterFoundation
             return true;
         }
 
-        bool Intersects(const FRay& ray) const;
-        bool Intersects(const FSphere& sphere) const;
-        bool Intersects(const FPlane& plane) const;
-        // bool Intersects(const FSegment& segment) const;
-
-        FAABB Intersection(const FAABB& aabb) const;
+        bool Intersects_Ray(const FRay& ray) const;
+        bool Intersects_Plane(const FPlane& plane) const;
+        //bool Intersects_Segment(const FSegment& segment) const;
+        bool Intersects_Sphere(const FSphere& sphere) const;
+        FAABB Intersection_AABB(const FAABB& aabb) const;
 
 
         bool Contains(const FVector3& v) const
         {
-            return Intersects(v);
+            return Intersects_Point(v);
         }
         bool Contains(const FAABB& other) const
         {

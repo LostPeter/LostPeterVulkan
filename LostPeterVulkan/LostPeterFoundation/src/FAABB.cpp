@@ -183,28 +183,28 @@ namespace LostPeterFoundation
 
     }
 
-    bool FAABB::Intersects(const FRay& ray) const
+    bool FAABB::Intersects_Ray(const FRay& ray) const
     {
         float d1,d2;
-        return FMath::Intersects(ray, *this, &d1, &d2);
+        return FMath::Intersects_RayAABB(ray, *this, &d1, &d2);
     }
 
-    bool FAABB::Intersects(const FSphere& sphere) const
-    {   
-        return FMath::Intersects(sphere, *this); 
-    }
-
-    bool FAABB::Intersects(const FPlane& plane) const
+    bool FAABB::Intersects_Plane(const FPlane& plane) const
     {
-        return FMath::Intersects(plane, *this);
+        return FMath::Intersects_PlaneAABB(plane, *this);
     }
 
-    // bool FAABB::Intersects(const FSegment& segment) const
+    // bool FAABB::Intersects_Segment(const FSegment& segment) const
     // {
-    //     return FMath::Intersects(segment, *this);
+    //     return FMath::Intersects_SegmentAABB(segment, *this);
     // }
 
-    FAABB FAABB::Intersection(const FAABB& aabb) const
+    bool FAABB::Intersects_Sphere(const FSphere& sphere) const
+    {   
+        return FMath::Intersects_SphereAABB(sphere, *this); 
+    }
+
+    FAABB FAABB::Intersection_AABB(const FAABB& aabb) const
     {
         if (IsNull() || aabb.IsNull())
         {

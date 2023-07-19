@@ -34,7 +34,12 @@ namespace LostPeterFoundation
         return &m_aPlanes[0];
     }
 
-    bool FPlaneBoundedVolume::Intersects(const FAABB& aabb) const
+    std::pair<bool, float> FPlaneBoundedVolume::Intersects_Ray(const FRay& ray)
+    {
+        return FMath::Intersects_RayPlaneVector(ray, m_aPlanes, m_ePlaneSide == F_PlaneSide_Negative);
+    }
+
+    bool FPlaneBoundedVolume::Intersects_AABB(const FAABB& aabb) const
     {
         if (!aabb.IsValid()) 
             return false;
@@ -55,7 +60,7 @@ namespace LostPeterFoundation
         return true;
     }
 
-    bool FPlaneBoundedVolume::Intersects(const FSphere& sphere) const
+    bool FPlaneBoundedVolume::Intersects_Sphere(const FSphere& sphere) const
     {
         for (FPlaneVector::const_iterator it = m_aPlanes.begin(); 
              it != m_aPlanes.end(); ++it)
@@ -70,11 +75,6 @@ namespace LostPeterFoundation
                 return false;
         }
         return true;
-    }
-
-    std::pair<bool, float> FPlaneBoundedVolume::Intersects(const FRay& ray)
-    {
-        return FMath::Intersects(ray, m_aPlanes, m_ePlaneSide == F_PlaneSide_Negative);
     }
 
     bool FPlaneBoundedVolume::operator ==(const FPlaneBoundedVolume& rhs) const
