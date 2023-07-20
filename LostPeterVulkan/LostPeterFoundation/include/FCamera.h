@@ -79,6 +79,7 @@ namespace LostPeterFoundation
 		FMatrix4 GetMatrix4World() const;
 		LP_FORCEINLINE const FMatrix4& GetMatrix4View() const { return this->m_mat4View; }
 		LP_FORCEINLINE const FMatrix4& GetMatrix4Projection() const { return this->m_mat4Projection; }
+		LP_FORCEINLINE FMatrix4 GetMatrix4ViewProjection() const;
 
 		void ConvertScreenPos2ToWorldRay(float screenX, float screenY, FRay* pOutRay) const;
 

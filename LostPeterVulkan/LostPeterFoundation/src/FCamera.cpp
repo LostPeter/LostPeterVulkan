@@ -90,9 +90,14 @@ namespace LostPeterFoundation
 		return FMath::Translate(this->m_vPos);
 	}
 
+	FMatrix4 FCamera::GetMatrix4ViewProjection() const
+	{
+		return GetMatrix4View() * GetMatrix4Projection();
+	}
+
 	void FCamera::ConvertScreenPos2ToWorldRay(float screenX, float screenY, FRay* pOutRay) const
 	{
-		FMatrix4 mat4VP_Inverse = FMath::InverseMatrix4(GetMatrix4Projection() * GetMatrix4View());
+		FMatrix4 mat4VP_Inverse = FMath::InverseMatrix4(GetMatrix4View() * GetMatrix4Projection());
 
 		float nx = (2.0f * screenX) - 1.0f;
 		float ny = 1.0f - (2.0f * screenY);
