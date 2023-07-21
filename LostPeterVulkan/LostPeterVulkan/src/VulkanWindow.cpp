@@ -2505,7 +2505,7 @@ namespace LostPeter
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABB, s_fScale_AABB, s_fScale_AABB)), //AABB X+
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABB, s_fScale_AABB, s_fScale_AABB)), //AABB Y+
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABB, s_fScale_AABB, s_fScale_AABB)), //AABB Z+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABB, s_fScale_AABB, s_fScale_AABB)), //AABB Z+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABB, s_fScale_AABB, s_fScale_AABB)), //AABB XYZ+
     };
     FColor VulkanWindow::EditorCoordinateAxis::s_aColors_Default[19] = 
     {
@@ -2583,7 +2583,8 @@ namespace LostPeter
         , isButtonLeftDown(false)
     {
         this->pCamera = _pWindow->GetCamera();
-        this->vRectScreen = _pWindow->GetViewportRect();
+        this->vRectScreen = _pWindow->GetViewportVector2();
+        this->vViewport = _pWindow->GetViewportVector4();
         ClearSelectState();
     }
     VulkanWindow::EditorCoordinateAxis::~EditorCoordinateAxis()
@@ -3212,31 +3213,27 @@ namespace LostPeter
                 this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
 
             //Cylinder - Cone
-            int instanceStart = 6;
-            {
-                ModelMesh* pMesh_Cylinder = this->aMeshes[s_nMeshCylinderIndex];
-                ModelMeshSub* pMeshSub_Cylinder = pMesh_Cylinder->aMeshSubs[0];
-                //Cylinder - 0
-                DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 0);
-                //Cylinder - 1
-                DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 1);
-                //Cylinder - 2
-                DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 2);
-            }
             //AABB
-            instanceStart = 15;
-            {
-                ModelMesh* pMesh_AABB = this->aMeshes[s_nMeshAABBIndex];
-                ModelMeshSub* pMeshSub_AABB = pMesh_AABB->aMeshSubs[0];
-                //AABB - 0
-                DrawShape(commandBuffer, pMeshSub_AABB, instanceStart + 0);
-                //AABB - 1
-                DrawShape(commandBuffer, pMeshSub_AABB, instanceStart + 1);
-                //AABB - 2
-                DrawShape(commandBuffer, pMeshSub_AABB, instanceStart + 2);
-                //AABB - 3
-                DrawShape(commandBuffer, pMeshSub_AABB, instanceStart + 3);
-            }
+            ModelMesh* pMesh_Cylinder = this->aMeshes[s_nMeshCylinderIndex];
+            ModelMeshSub* pMeshSub_Cylinder = pMesh_Cylinder->aMeshSubs[0];
+            ModelMesh* pMesh_AABB = this->aMeshes[s_nMeshAABBIndex];
+            ModelMeshSub* pMeshSub_AABB = pMesh_AABB->aMeshSubs[0];
+            int instanceStart_Cone = 6;
+            int instanceStart_AABB = 15;
+            //Cylinder - 0
+            DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart_Cone + 0);
+            //AABB - 0
+            DrawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 0);
+            //Cylinder - 1
+            DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart_Cone + 1);
+            //AABB - 1
+            DrawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 1);
+            //Cylinder - 2
+            DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart_Cone + 2);
+            //AABB - 2
+            DrawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 2);
+            //AABB - 3
+            DrawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 3);
         }
         void VulkanWindow::EditorCoordinateAxis::DrawQuad(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart)
         {
@@ -3341,12 +3338,25 @@ namespace LostPeter
             {
                 FVector3 vInter;
                 FRay ray;
-                this->pCamera->ConvertScreenPos2ToWorldRay((float)(x / this->vRectScreen.x), (float)(y / this->vRectScreen.y), &ray);
-                F_LogInfo("MouseLeftDown: XYZ: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
+                this->pCamera->ConvertScreenPos2ToWorldRay(this->vViewport, (float)x, (float)y, &ray);
+                std::pair<bool, float> ret = FMath::Intersects_RayPlane(ray, FPlane(FVector3(0, 1, 0), 0));
+                FVector3 vHit(0, 0, 0);
+                if (ret.first)
+                {
+                    vHit = ray.GetPoint(ret.second);
+                }
+                F_LogInfo("MouseLeftDown: XYZ: Ray: [(%f,%f,%f) - (%f,%f,%f)], AABB: [0: (%f,%f,%f) - (%f,%f,%f)] - [1: (%f,%f,%f) - (%f,%f,%f)] - [2: (%f,%f,%f) - (%f,%f,%f)] - [3: (%f,%f,%f) - (%f,%f,%f)], Ray-Plane: [%d - %f], Hit: [%f, %f, %f]", 
                           ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
                           ray.m_vDirection.x, ray.m_vDirection.y, ray.m_vDirection.z,
+                          this->aScaleAABB[0].m_vMin.x, this->aScaleAABB[0].m_vMin.y, this->aScaleAABB[0].m_vMin.z,
+                          this->aScaleAABB[0].m_vMax.x, this->aScaleAABB[0].m_vMax.y, this->aScaleAABB[0].m_vMax.z,
+                          this->aScaleAABB[1].m_vMin.x, this->aScaleAABB[1].m_vMin.y, this->aScaleAABB[1].m_vMin.z,
+                          this->aScaleAABB[1].m_vMax.x, this->aScaleAABB[1].m_vMax.y, this->aScaleAABB[1].m_vMax.z,
+                          this->aScaleAABB[2].m_vMin.x, this->aScaleAABB[2].m_vMin.y, this->aScaleAABB[2].m_vMin.z,
+                          this->aScaleAABB[2].m_vMax.x, this->aScaleAABB[2].m_vMax.y, this->aScaleAABB[2].m_vMax.z,
                           this->aScaleAABB[3].m_vMin.x, this->aScaleAABB[3].m_vMin.y, this->aScaleAABB[3].m_vMin.z,
-                          this->aScaleAABB[3].m_vMax.x, this->aScaleAABB[3].m_vMax.y, this->aScaleAABB[3].m_vMax.z);
+                          this->aScaleAABB[3].m_vMax.x, this->aScaleAABB[3].m_vMax.y, this->aScaleAABB[3].m_vMax.z,
+                          (ret.first ? 1 : 0), ret.second, vHit.x, vHit.y, vHit.z);
                 if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[3]))
                 {
                     F_LogError("MouseLeftDown: AABB XYZ: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
@@ -3856,7 +3866,8 @@ namespace LostPeter
     {
         VulkanWindow::EditorBase::RecreateSwapChain();
 
-        this->vRectScreen = this->pWindow->GetViewportRect();
+        this->vRectScreen = this->pWindow->GetViewportVector2();
+        this->vViewport = this->pWindow->GetViewportVector4();
     }
 
 

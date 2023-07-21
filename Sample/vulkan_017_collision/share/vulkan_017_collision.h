@@ -2,24 +2,24 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-05-22
+* Time:     2023-07-21
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VULKAN_017_TERRAIN_H_
-#define _VULKAN_017_TERRAIN_H_
+#ifndef _VULKAN_017_COLLISION_H_
+#define _VULKAN_017_COLLISION_H_
 
 #include "VulkanWindow.h"
 #include "FMath.h"
 using namespace LostPeter; 
 
-class Vulkan_017_Terrain : public VulkanWindow
+class Vulkan_017_Collision : public VulkanWindow
 {
 public:
-    Vulkan_017_Terrain(int width, int height, String name);
+    Vulkan_017_Collision(int width, int height, String name);
 
 public:
     /////////////////////////// ModelObjectRend /////////////////////
@@ -354,7 +354,7 @@ public:
     struct ModelObject
     {
         //Window
-        Vulkan_017_Terrain* pWindow;
+        Vulkan_017_Collision* pWindow;
         int index;
 
         //Name
@@ -379,7 +379,7 @@ public:
         ModelObjectRendPtrVector aRends;
         ModelObjectRendIndirect* pRendIndirect;
 
-        ModelObject(Vulkan_017_Terrain* _pWindow,
+        ModelObject(Vulkan_017_Collision* _pWindow,
                     int _index)
             //Window
             : pWindow(_pWindow)

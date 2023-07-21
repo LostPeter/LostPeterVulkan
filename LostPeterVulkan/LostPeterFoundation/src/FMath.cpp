@@ -718,20 +718,19 @@ namespace LostPeterFoundation
         const FVector3& rayorig = ray.GetOrigin();
         const FVector3& raydir = ray.GetDirection();
 
-        // Check origin inside first
+        //1> Check origin inside first
         if (FMath::IsGreat(rayorig, min) &&  FMath::IsLess(rayorig, max))
         {
             return std::pair<bool, float>(true, 0);
         }
 
-        // Check each face in turn, only check closest 3
+        //2> Check each face in turn, only check closest 3
         // Min x
         if (rayorig.x <= min.x && raydir.x > 0)
         {
             t = (min.x - rayorig.x) / raydir.x;
             if (t >= 0)
             {
-                // Substitute t back into ray and check bounds and dist
                 hitpoint = rayorig + raydir * t;
                 if (hitpoint.y >= min.y && hitpoint.y <= max.y &&
                     hitpoint.z >= min.z && hitpoint.z <= max.z &&
@@ -748,7 +747,6 @@ namespace LostPeterFoundation
             t = (max.x - rayorig.x) / raydir.x;
             if (t >= 0)
             {
-                // Substitute t back into ray and check bounds and dist
                 hitpoint = rayorig + raydir * t;
                 if (hitpoint.y >= min.y && hitpoint.y <= max.y &&
                     hitpoint.z >= min.z && hitpoint.z <= max.z &&
@@ -765,7 +763,6 @@ namespace LostPeterFoundation
             t = (min.y - rayorig.y) / raydir.y;
             if (t >= 0)
             {
-                // Substitute t back into ray and check bounds and dist
                 hitpoint = rayorig + raydir * t;
                 if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
                     hitpoint.z >= min.z && hitpoint.z <= max.z &&
@@ -782,7 +779,6 @@ namespace LostPeterFoundation
             t = (max.y - rayorig.y) / raydir.y;
             if (t >= 0)
             {
-                // Substitute t back into ray and check bounds and dist
                 hitpoint = rayorig + raydir * t;
                 if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
                     hitpoint.z >= min.z && hitpoint.z <= max.z &&
@@ -799,7 +795,6 @@ namespace LostPeterFoundation
             t = (min.z - rayorig.z) / raydir.z;
             if (t >= 0)
             {
-                // Substitute t back into ray and check bounds and dist
                 hitpoint = rayorig + raydir * t;
                 if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
                     hitpoint.y >= min.y && hitpoint.y <= max.y &&
@@ -816,7 +811,6 @@ namespace LostPeterFoundation
             t = (max.z - rayorig.z) / raydir.z;
             if (t >= 0)
             {
-                // Substitute t back into ray and check bounds and dist
                 hitpoint = rayorig + raydir * t;
                 if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
                     hitpoint.y >= min.y && hitpoint.y <= max.y &&
@@ -1114,6 +1108,18 @@ namespace LostPeterFoundation
                                   fAspect,
                                   fNear, 
                                   fFar);
+    }
+
+    FVector3 FMath::TransformFromScreenToWorld(const FVector3& vScreenCoord, const FMatrix4& mat4ModelView, const FMatrix4& mat4Proj, const FVector4& vViewport)
+    {
+        FVector3 vWorldCoord;
+        TransformFromScreenToWorld(vScreenCoord, mat4ModelView, mat4Proj, vViewport, vWorldCoord);
+        return vWorldCoord;
+    }
+
+    void FMath::TransformFromScreenToWorld(const FVector3& vScreenCoord, const FMatrix4& mat4ModelView, const FMatrix4& mat4Proj, const FVector4& vViewport, FVector3& vWorldCoord)
+    {
+        vWorldCoord = glm::unProject(vScreenCoord, mat4ModelView, mat4Proj, vViewport);
     }
 
 }; //LostPeterFoundation

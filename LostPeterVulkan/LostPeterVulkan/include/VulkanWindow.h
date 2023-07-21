@@ -836,6 +836,7 @@ namespace LostPeter
         public:
             FCamera* pCamera;
             FVector2 vRectScreen;
+            FVector4 vViewport;
 
         public:
             std::vector<CoordinateAxisObjectConstants> coordinateAxisObjectCBs;
@@ -1330,13 +1331,22 @@ namespace LostPeter
     public:
         FCamera* GetCamera() const { return this->pCamera; } 
         FCamera* GetCameraRight() const { return this->pCameraRight; }
-        FVector2 GetViewportRect() 
+        FVector2 GetViewportVector2() 
         {
             FVector2 vRectScreen;
             vRectScreen.x = this->poViewport.width;
             vRectScreen.y = this->poViewport.height;
             return vRectScreen;
         }
+        FVector4 GetViewportVector4()
+        {
+            FVector4 vViewport;
+            vViewport.x = this->poViewport.x;
+            vViewport.y = this->poViewport.y;
+            vViewport.z = this->poViewport.width;
+            vViewport.w = this->poViewport.height;
+            return vViewport;
+        } 
 
     protected:
         //Create Pipeline

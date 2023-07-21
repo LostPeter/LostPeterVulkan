@@ -584,6 +584,9 @@ namespace LostPeterFoundation
 
 		static FMatrix4 MakeMatrix4ViewLH(const FVector3& vPos, const FQuaternion& qRot, const FMatrix4* pReflectMatrix = nullptr);
         static FMatrix4 MakeMatrix4ProjectionPerspectiveLH(float rFovY, float fAspect, float fNear, float fFar);
+
+        static FVector3 TransformFromScreenToWorld(const FVector3& vScreenCoord, const FMatrix4& mat4ModelView, const FMatrix4& mat4Proj, const FVector4& vViewport);
+        static void TransformFromScreenToWorld(const FVector3& vScreenCoord, const FMatrix4& mat4ModelView, const FMatrix4& mat4Proj, const FVector4& vViewport, FVector3& vWorldCoord);
     };
 
 }; //LostPeterFoundation

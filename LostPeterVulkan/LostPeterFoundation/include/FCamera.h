@@ -82,6 +82,7 @@ namespace LostPeterFoundation
 		LP_FORCEINLINE FMatrix4 GetMatrix4ViewProjection() const;
 
 		void ConvertScreenPos2ToWorldRay(float screenX, float screenY, FRay* pOutRay) const;
+		void ConvertScreenPos2ToWorldRay(FVector4 vViewport, float screenX, float screenY, FRay* pOutRay) const;
 
 	public:
 		virtual void LookAtLH(const FVector3& pos, const FVector3& target, const FVector3& vUp);
