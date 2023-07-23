@@ -318,6 +318,7 @@ namespace LostPeterFoundation
         FMeshCreateParam_Capsule();
         FMeshCreateParam_Capsule(float _radius,
                                  float _height,
+                                 float _heightOffset,
                                  uint32 _numRings,
                                  uint32 _numSegments,
                                  uint32 _numSegHeight,
@@ -331,6 +332,7 @@ namespace LostPeterFoundation
     public:
         float radius;
         float height;
+        float heightOffset;
 
         uint32 numRings;
         uint32 numSegments;
@@ -347,6 +349,7 @@ namespace LostPeterFoundation
         FMeshCreateParam_Cone();
         FMeshCreateParam_Cone(float _radius,
                               float _height,
+                              float _heightOffset,
                               uint32 _numSegBase,
                               uint32 _numSegHeight,
                               bool _flipV,
@@ -359,6 +362,7 @@ namespace LostPeterFoundation
     public:
         float radius;
         float height;
+        float heightOffset;
 
         uint32 numSegBase;
 	    uint32 numSegHeight;
@@ -620,15 +624,15 @@ namespace LostPeterFoundation
                                  bool rightHand);
 
         //GeoSphere
-        static void CreateGeosphere(FMeshData& meshData, FMeshCreateParam_GeoSphere* pParam)
+        static void CreateGeoSphere(FMeshData& meshData, FMeshCreateParam_GeoSphere* pParam)
         {
-            CreateGeosphere(meshData, 
+            CreateGeoSphere(meshData, 
                             pParam->radius,
                             pParam->numSubdivisions, 
                             pParam->flipV, 
                             pParam->rightHand);
         }
-        static void CreateGeosphere(FMeshData& meshData,
+        static void CreateGeoSphere(FMeshData& meshData,
                                     float radius,
                                     uint32 numSubdivisions,
                                     bool flipV,
@@ -663,6 +667,7 @@ namespace LostPeterFoundation
             CreateCapsule(meshData,
                           pParam->radius, 
                           pParam->height, 
+                          pParam->heightOffset,
                           pParam->numRings, 
                           pParam->numSegments, 
                           pParam->numSegHeight, 
@@ -672,6 +677,7 @@ namespace LostPeterFoundation
         static void CreateCapsule(FMeshData& meshData,
                                   float radius,
                                   float height,
+                                  float heightOffset,
                                   uint32 numRings,
                                   uint32 numSegments,
                                   uint32 numSegHeight,
@@ -684,6 +690,7 @@ namespace LostPeterFoundation
             CreateCone(meshData, 
                        pParam->radius, 
                        pParam->height, 
+                       pParam->heightOffset,
                        pParam->numSegBase, 
                        pParam->numSegHeight, 
                        pParam->flipV, 
@@ -692,6 +699,7 @@ namespace LostPeterFoundation
         static void CreateCone(FMeshData& meshData,
                                float radius,
                                float height,
+                               float heightOffset,
                                uint32 numSegBase,
                                uint32 numSegHeight,
                                bool flipV,
@@ -763,7 +771,7 @@ namespace LostPeterFoundation
 
     public:
         static void MidPoint(const FMeshVertex& v0, const FMeshVertex& v1, FMeshVertex& m);
-        static void Subdivide(FMeshData& meshData, bool rightHand);
+        static void SubDivide(FMeshData& meshData, bool rightHand);
 
     public:
         static uint32 GetVertexCount(FMeshData& meshData);

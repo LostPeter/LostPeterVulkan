@@ -1920,7 +1920,7 @@ namespace LostPeter
                                              F_Mesh_Geometry,
                                              F_MeshVertex_Pos3Color4Tex2,
                                              F_MeshGeometry_Cone,
-                                             new FMeshCreateParam_Cone(0.5f, 2.0f, 16, 1, false, false),
+                                             new FMeshCreateParam_Cone(0.5f, 2.0f, 0.0f, 16, 1, false, false),
                                              false,
                                              false,
                                              FMath::ms_mat4Unit);
@@ -3590,7 +3590,7 @@ namespace LostPeter
                                              F_Mesh_Geometry,
                                              F_MeshVertex_Pos3Color4Tex2,
                                              F_MeshGeometry_Cone,
-                                             new FMeshCreateParam_Cone(0.5f, 2.0f, 16, 1, false, false),
+                                             new FMeshCreateParam_Cone(0.5f, 2.0f, 0.0f, 16, 1, false, false),
                                              false,
                                              false,
                                              FMath::ms_mat4Unit);

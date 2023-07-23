@@ -179,3 +179,9 @@ License:
 * sample015: Vulkan RenderPass，Multi RenderPass usage
 
 ![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_015_multiview.png)
+
+### <016> vulkan_016_geometry
+[Vulkan学习例子016: vulkan_016_geometry 常用几何体渲染及其应用-EditorGrid/EditorCameraAxis/EditorCoordinateAxis的实现](https://zhuanlan.zhihu.com/p/632896372)
+* sample016: All sort of Geometry Rendering, EditorGrid/EditorCameraAxis/EditorCoordinateAxis Rendering
+
+![image](https://github.com/LostPeter/LostPeterVulkan/blob/main/Images/vulkan_016_geometry.png)

@@ -56,12 +56,22 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertexPCT& meshVertex)
         {
-            //aabb.Merge(meshVertex.pos);
+            aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
         }
         void SetVertex(int nIndex, const FMeshVertexPCT& meshVertex)
         {
             vertices[nIndex] = meshVertex;
+        }
+        void RefreshAABB()
+        {
+            aabb.SetNull();
+            size_t count = vertices.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                FMeshVertexPCT& meshVertex = vertices[i];
+                aabb.Merge(meshVertex.pos);
+            }
         }
 
         void ReserveIndexCount(size_t nCount)
@@ -216,12 +226,22 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertex& meshVertex)
         {
-            //aabb.Merge(meshVertex.pos);
+            aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
         }
         void SetVertex(int nIndex, const FMeshVertex& meshVertex)
         {
             vertices[nIndex] = meshVertex;
+        }
+        void RefreshAABB()
+        {
+            aabb.SetNull();
+            size_t count = vertices.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                FMeshVertex& meshVertex = vertices[i];
+                aabb.Merge(meshVertex.pos);
+            }
         }
 
         void ReserveIndexCount(size_t nCount)
@@ -374,12 +394,22 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertexUV2& meshVertex)
         {
-            //aabb.Merge(meshVertex.pos);
+            aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
         }
         void SetVertex(int nIndex, const FMeshVertexUV2& meshVertex)
         {
             vertices[nIndex] = meshVertex;
+        }
+        void RefreshAABB()
+        {
+            aabb.SetNull();
+            size_t count = vertices.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                FMeshVertexUV2& meshVertex = vertices[i];
+                aabb.Merge(meshVertex.pos);
+            }
         }
 
         void ReserveIndexCount(size_t nCount)
@@ -532,12 +562,22 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertexSkin& meshVertex)
         {
-            //aabb.Merge(meshVertex.pos);
+            aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
         }
         void SetVertex(int nIndex, const FMeshVertexSkin& meshVertex)
         {
             vertices[nIndex] = meshVertex;
+        }
+        void RefreshAABB()
+        {
+            aabb.SetNull();
+            size_t count = vertices.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                FMeshVertexSkin& meshVertex = vertices[i];
+                aabb.Merge(meshVertex.pos);
+            }
         }
 
         void ReserveIndexCount(size_t nCount)

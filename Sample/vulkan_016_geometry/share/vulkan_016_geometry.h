@@ -502,6 +502,12 @@ public:
     VkPipelineLayoutVector m_aVkPipelineLayouts;
     VkPipelineLayoutMap m_mapVkPipelineLayouts;
 
+public:
+    virtual void OnMouseLeftDown(double x, double y);
+    virtual void OnMouseLeftUp(double x, double y);
+    virtual void OnMouseMove(int button, double x, double y);
+    virtual void OnMouseHover(double x, double y);
+    
 protected:
     //Create Pipeline
         virtual void setUpEnabledFeatures();

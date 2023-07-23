@@ -19,21 +19,21 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 1; //12
+static const int g_MeshCount = 11; 
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
-    // "geo_triangle",     "Pos3Color4Normal3Tex2",                "geometry",         "triangle",                 "", //geo_triangle
-    // "geo_quad",         "Pos3Color4Normal3Tex2",                "geometry",         "quad",                     "", //geo_quad
-    // "geo_grid",         "Pos3Color4Normal3Tex2",                "geometry",         "grid",                     "", //geo_grid
-    // "geo_circle",       "Pos3Color4Normal3Tex2",                "geometry",         "circle",                   "", //geo_circle
+    "geo_triangle",     "Pos3Color4Normal3Tex2",                "geometry",         "triangle",                 "", //geo_triangle
+    "geo_quad",         "Pos3Color4Normal3Tex2",                "geometry",         "quad",                     "", //geo_quad
+    "geo_grid",         "Pos3Color4Normal3Tex2",                "geometry",         "grid",                     "", //geo_grid
+    "geo_circle",       "Pos3Color4Normal3Tex2",                "geometry",         "circle",                   "", //geo_circle
     "geo_aabb",         "Pos3Color4Normal3Tex2",                "geometry",         "aabb",                     "", //geo_aabb
-    // "geo_sphere",       "Pos3Color4Normal3Tex2",                "geometry",         "sphere",                   "", //geo_sphere
-    // "geo_geosphere",    "Pos3Color4Normal3Tex2",                "geometry",         "geosphere",                "", //geo_geosphere
-    // "geo_cylinder",     "Pos3Color4Normal3Tex2",                "geometry",         "cylinder",                 "", //geo_cylinder
-    // "geo_capsule",      "Pos3Color4Normal3Tex2",                "geometry",         "capsule",                  "", //geo_capsule
-    // "geo_cone",         "Pos3Color4Normal3Tex2",                "geometry",         "cone",                     "", //geo_cone
-    // "geo_torus",        "Pos3Color4Normal3Tex2",                "geometry",         "torus",                    "", //geo_torus
+    "geo_sphere",       "Pos3Color4Normal3Tex2",                "geometry",         "sphere",                   "", //geo_sphere
+    "geo_geosphere",    "Pos3Color4Normal3Tex2",                "geometry",         "geosphere",                "", //geo_geosphere
+    "geo_cylinder",     "Pos3Color4Normal3Tex2",                "geometry",         "cylinder",                 "", //geo_cylinder
+    "geo_capsule",      "Pos3Color4Normal3Tex2",                "geometry",         "capsule",                  "", //geo_capsule
+    "geo_cone",         "Pos3Color4Normal3Tex2",                "geometry",         "cone",                     "", //geo_cone
+    "geo_torus",        "Pos3Color4Normal3Tex2",                "geometry",         "torus",                    "", //geo_torus
 
     // "geo_skybox",       "Pos3Color4Normal3Tex2",                "geometry",         "skybox",                   "", //geo_skybox
     // "geo_skydome",      "Pos3Color4Normal3Tex2",                "geometry",         "skydome",                  "", //geo_skydome
@@ -41,17 +41,17 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
-    // false, //geo_triangle
-    // false, //geo_quad
-    // false, //geo_grid
-    // false, //geo_circle
+    false, //geo_triangle
+    false, //geo_quad
+    false, //geo_grid
+    false, //geo_circle
     false, //geo_aabb
-    // false, //geo_sphere
-    // false, //geo_geosphere
-    // false, //geo_cylinder
-    // false, //geo_capsule
-    // false, //geo_cone
-    // false, //geo_torus
+    false, //geo_sphere
+    false, //geo_geosphere
+    false, //geo_cylinder
+    false, //geo_capsule
+    false, //geo_cone
+    false, //geo_torus
 
     // false, //geo_skybox
     // false, //geo_skydome
@@ -59,17 +59,17 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
 };
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
 {
-    // true, //geo_triangle
-    // true, //geo_quad
-    // true, //geo_grid
-    // true, //geo_circle
+    true, //geo_triangle
+    true, //geo_quad
+    true, //geo_grid
+    true, //geo_circle
     false, //geo_aabb
-    // false, //geo_sphere
-    // false, //geo_geosphere
-    // false, //geo_cylinder
-    // false, //geo_capsule
-    // false, //geo_cone
-    // false, //geo_torus
+    false, //geo_sphere
+    false, //geo_geosphere
+    false, //geo_cylinder
+    false, //geo_capsule
+    false, //geo_cone
+    false, //geo_torus
 
     // false, //geo_skybox
     // false, //geo_skydome
@@ -77,17 +77,17 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
 };
 static FMatrix4 g_MeshTranformLocals[g_MeshCount] = 
 {
-    // FMath::RotateX(90.0f), //geo_triangle  
-    // FMath::RotateX(90.0f), //geo_quad 
-    // FMath::RotateX(90.0f), //geo_grid
-    // FMath::RotateX(90.0f), //geo_circle
+    FMath::RotateX(90.0f), //geo_triangle  
+    FMath::RotateX(90.0f), //geo_quad 
+    FMath::RotateX(90.0f), //geo_grid
+    FMath::RotateX(90.0f), //geo_circle
     FMath::ms_mat4Unit, //geo_aabb
-    // FMath::ms_mat4Unit, //geo_sphere
-    // FMath::ms_mat4Unit, //geo_geosphere
-    // FMath::ms_mat4Unit, //geo_cylinder
-    // FMath::ms_mat4Unit, //geo_capsule
-    // FMath::ms_mat4Unit, //geo_cone
-    // FMath::ms_mat4Unit, //geo_torus
+    FMath::ms_mat4Unit, //geo_sphere
+    FMath::ms_mat4Unit, //geo_geosphere
+    FMath::ms_mat4Unit, //geo_cylinder
+    FMath::ms_mat4Unit, //geo_capsule
+    FMath::ms_mat4Unit, //geo_cone
+    FMath::ms_mat4Unit, //geo_torus
 
     // FMath::ms_mat4Unit, //geo_skybox
     // FMath::ms_mat4Unit, //geo_skydome
@@ -163,21 +163,21 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 1; //12
+static const int g_Object_Count = 11; 
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                           //Mesh Name                   
-    // "object_geo_triangle",                  "geo_triangle", //object_geo_triangle
-    // "object_geo_quad",                      "geo_quad", //object_geo_quad
-    // "object_geo_grid",                      "geo_grid", //object_geo_grid
-    // "object_geo_circle",                    "geo_circle", //object_geo_circle
+    "object_geo_triangle",                  "geo_triangle", //object_geo_triangle
+    "object_geo_quad",                      "geo_quad", //object_geo_quad
+    "object_geo_grid",                      "geo_grid", //object_geo_grid
+    "object_geo_circle",                    "geo_circle", //object_geo_circle
     "object_geo_aabb",                      "geo_aabb", //object_geo_aabb
-    // "object_geo_sphere",                    "geo_sphere", //object_geo_sphere
-    // "object_geo_geosphere",                 "geo_geosphere", //object_geo_geosphere
-    // "object_geo_cylinder",                  "geo_cylinder", //object_geo_cylinder
-    // "object_geo_capsule",                   "geo_capsule", //object_geo_capsule
-    // "object_geo_cone",                      "geo_cone", //object_geo_cone
-    // "object_geo_torus",                     "geo_torus", //object_geo_torus
+    "object_geo_sphere",                    "geo_sphere", //object_geo_sphere
+    "object_geo_geosphere",                 "geo_geosphere", //object_geo_geosphere
+    "object_geo_cylinder",                  "geo_cylinder", //object_geo_cylinder
+    "object_geo_capsule",                   "geo_capsule", //object_geo_capsule
+    "object_geo_cone",                      "geo_cone", //object_geo_cone
+    "object_geo_torus",                     "geo_torus", //object_geo_torus
 
     // "object_geo_skybox",                 "geo_skybox", //object_geo_skybox
     // "object_geo_skydome",                "geo_skydome", //object_geo_skydome
@@ -186,17 +186,17 @@ static const char* g_Object_Configs[2 * g_Object_Count] =
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {   
-    // "0", //object_geo_triangle
-    // "0", //object_geo_quad
-    // "0", //object_geo_grid
-    // "0", //object_geo_circle
+    "0", //object_geo_triangle
+    "0", //object_geo_quad
+    "0", //object_geo_grid
+    "0", //object_geo_circle
     "0", //object_geo_aabb
-    // "0", //object_geo_sphere
-    // "0", //object_geo_geosphere
-    // "0", //object_geo_cylinder
-    // "0", //object_geo_capsule
-    // "0", //object_geo_cone
-    // "0", //object_geo_torus
+    "0", //object_geo_sphere
+    "0", //object_geo_geosphere
+    "0", //object_geo_cylinder
+    "0", //object_geo_capsule
+    "0", //object_geo_cone
+    "0", //object_geo_torus
 
     // "0", //object_geo_skybox
     // "0", //object_geo_skydome
@@ -206,36 +206,36 @@ static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 static float g_Object_InstanceGap = 3.0f;
 static int g_Object_InstanceExtCount[g_Object_Count] =
 {
-    // 4, //object_geo_triangle 
-    // 4, //object_geo_quad 
-    // 4, //object_geo_grid 
-    // 4, //object_geo_circle 
-    4, //object_geo_aabb 
-    // 4, //object_geo_sphere 
-    // 4, //object_geo_geosphere 
-    // 4, //object_geo_cylinder 
-    // 4, //object_geo_capsule 
-    // 4, //object_geo_cone 
-    // 4, //object_geo_torus 
+    1, //object_geo_triangle 
+    1, //object_geo_quad 
+    1, //object_geo_grid 
+    1, //object_geo_circle 
+    1, //object_geo_aabb 
+    1, //object_geo_sphere 
+    1, //object_geo_geosphere 
+    1, //object_geo_cylinder 
+    1, //object_geo_capsule 
+    1, //object_geo_cone 
+    1, //object_geo_torus 
 
-    // 4, //object_geo_skybox 
-    // 4, //object_geo_skydome 
-    // 4, //object_geo_terrain 
+    // 1, //object_geo_skybox 
+    // 1, //object_geo_skydome 
+    // 1, //object_geo_terrain 
 
 };
 static bool g_Object_IsShows[] = 
 {   
-    // true, //object_geo_triangle
-    // true, //object_geo_quad
-    // true, //object_geo_grid
-    // true, //object_geo_circle
+    true, //object_geo_triangle
+    true, //object_geo_quad
+    true, //object_geo_grid
+    true, //object_geo_circle
     true, //object_geo_aabb
-    // true, //object_geo_sphere
-    // true, //object_geo_geosphere
-    // true, //object_geo_cylinder
-    // true, //object_geo_capsule
-    // true, //object_geo_cone
-    // true, //object_geo_torus
+    true, //object_geo_sphere
+    true, //object_geo_geosphere
+    true, //object_geo_cylinder
+    true, //object_geo_capsule
+    true, //object_geo_cone
+    true, //object_geo_torus
 
     // true, //object_geo_skybox
     // true, //object_geo_skydome
@@ -244,35 +244,35 @@ static bool g_Object_IsShows[] =
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
-    // true, //object_geo_triangle
-    // true, //object_geo_quad
-    // true, //object_geo_grid
-    // true, //object_geo_circle
-    true, //object_geo_aabb
-    // true, //object_geo_sphere
-    // true, //object_geo_geosphere
-    // true, //object_geo_cylinder
-    // true, //object_geo_capsule
-    // true, //object_geo_cone
-    // true, //object_geo_torus
+    false, //object_geo_triangle
+    false, //object_geo_quad
+    false, //object_geo_grid
+    false, //object_geo_circle
+    false, //object_geo_aabb
+    false, //object_geo_sphere
+    false, //object_geo_geosphere
+    false, //object_geo_cylinder
+    false, //object_geo_capsule
+    false, //object_geo_cone
+    false, //object_geo_torus
 
-    // true, //object_geo_skybox
-    // true, //object_geo_skydome
-    // true, //object_geo_terrain
+    // false, //object_geo_skybox
+    // false, //object_geo_skydome
+    // false, //object_geo_terrain
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
-    // true, //object_geo_triangle
-    // true, //object_geo_quad
-    // true, //object_geo_grid
-    // true, //object_geo_circle
+    true, //object_geo_triangle
+    true, //object_geo_quad
+    true, //object_geo_grid
+    true, //object_geo_circle
     true, //object_geo_aabb
-    // true, //object_geo_sphere
-    // true, //object_geo_geosphere
-    // true, //object_geo_cylinder
-    // true, //object_geo_capsule
-    // true, //object_geo_cone
-    // true, //object_geo_torus
+    true, //object_geo_sphere
+    true, //object_geo_geosphere
+    true, //object_geo_cylinder
+    true, //object_geo_capsule
+    true, //object_geo_cone
+    true, //object_geo_torus
 
     // true, //object_geo_skybox
     // true, //object_geo_skydome
@@ -280,17 +280,17 @@ static bool g_Object_IsLightings[g_Object_Count] =
 };
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
-    // false, //object_geo_triangle
-    // false, //object_geo_quad
-    // false, //object_geo_grid
-    // false, //object_geo_circle
+    false, //object_geo_triangle
+    false, //object_geo_quad
+    false, //object_geo_grid
+    false, //object_geo_circle
     false, //object_geo_aabb
-    // false, //object_geo_sphere
-    // false, //object_geo_geosphere
-    // false, //object_geo_cylinder
-    // false, //object_geo_capsule
-    // false, //object_geo_cone
-    // false, //object_geo_torus
+    false, //object_geo_sphere
+    false, //object_geo_geosphere
+    false, //object_geo_cylinder
+    false, //object_geo_capsule
+    false, //object_geo_cone
+    false, //object_geo_torus
 
     // false, //object_geo_skybox
     // false, //object_geo_skydome
@@ -299,21 +299,21 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 1; //12
+static const int g_ObjectRend_Count = 11; 
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
-    // "object_geo_triangle-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_triangle-1
-    // "object_geo_quad-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_quad-1
-    // "object_geo_grid-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_grid-1
-    // "object_geo_circle-1",                 "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_circle-1
+    "object_geo_triangle-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_triangle-1
+    "object_geo_quad-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_quad-1
+    "object_geo_grid-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_grid-1
+    "object_geo_circle-1",                 "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_circle-1
     "object_geo_aabb-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_aabb-1
-    // "object_geo_sphere-1",                 "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_sphere-1
-    // "object_geo_geosphere-1",              "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_geosphere-1
-    // "object_geo_cylinder-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_cylinder-1
-    // "object_geo_capsule-1",                "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_capsule-1
-    // "object_geo_cone-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_cone-1
-    // "object_geo_torus-1",                  "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_torus-1
+    "object_geo_sphere-1",                 "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_sphere-1
+    "object_geo_geosphere-1",              "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_geosphere-1
+    "object_geo_cylinder-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_cylinder-1
+    "object_geo_capsule-1",                "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_capsule-1
+    "object_geo_cone-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_cone-1
+    "object_geo_torus-1",                  "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_torus-1
 
     // "object_geo_skybox-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_skybox-1
     // "object_geo_skydome-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_skydome-1
@@ -323,17 +323,17 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_triangle-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_quad-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_grid-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_circle-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_triangle-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_quad-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_grid-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_circle-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_aabb-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_sphere-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_geosphere-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_cylinder-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_capsule-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_cone-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_torus-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_sphere-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_geosphere-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_cylinder-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_capsule-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_cone-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_torus-1
 
     // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_skybox-1
     // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_skydome-1
@@ -343,17 +343,17 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
     //Pipeline Graphics                                                 //Pipeline Compute
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_triangle-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_quad-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_grid-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_circle-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_triangle-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_quad-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_grid-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_circle-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_aabb-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_sphere-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_geosphere-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_cylinder-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_capsule-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_cone-1
-    // "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_torus-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_sphere-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_geosphere-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_cylinder-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_capsule-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_cone-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_torus-1
 
     // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_skybox-1
     // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_skydome-1
@@ -362,36 +362,36 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
-    // FVector3(   0,  5.0, -12.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_triangle-1
-    // FVector3(   0,  5.0, -10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_quad-1
-    // FVector3(   0,  5.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_grid-1
-    // FVector3(   0,  5.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_circle-1
-    FVector3(   0,  5.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_aabb-1
-    // FVector3(   0,  5.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(    0.8f,      0.8f,      0.8f), //object_geo_sphere-1
-    // FVector3(   0,  5.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    0.8f,      0.8f,      0.8f), //object_geo_geosphere-1
-    // FVector3(   0,  5.0,   2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cylinder-1
-    // FVector3(   0,  5.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_capsule-1
-    // FVector3(   0,  5.0,   6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cone-1
-    // FVector3(   0,  5.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_torus-1
+    FVector3(   0,  5.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_triangle-1
+    FVector3(   0,  5.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_quad-1
+    FVector3(   0,  5.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_grid-1
+    FVector3(   0,  5.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_circle-1
+    FVector3(   0,  5.0,  0.0),     FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_aabb-1
+    FVector3(   0,  5.0,   2.0),    FVector3(     0,  0,  0),    FVector3(    0.8f,      0.8f,      0.8f), //object_geo_sphere-1
+    FVector3(   0,  5.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    0.8f,      0.8f,      0.8f), //object_geo_geosphere-1
+    FVector3(   0,  5.0,   6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cylinder-1
+    FVector3(   0,  5.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_capsule-1
+    FVector3(   0,  5.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cone-1
+    FVector3(   0,  5.0,  12.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_torus-1
 
-    //FVector3(   0,  5.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skybox-1
-    //FVector3(   0,  5.0,  12.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skydome-1
-    //FVector3(   0,  5.0,  14.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_terrain-1
+    // FVector3(   0,  5.0,  14.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skybox-1
+    // FVector3(   0,  5.0,  16.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skydome-1
+    // FVector3(   0,  5.0,  18.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_terrain-1
 
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
-    // false, //object_geo_triangle-1
-    // false, //object_geo_quad-1
-    // false, //object_geo_grid-1
-    // false, //object_geo_circle-1
+    false, //object_geo_triangle-1
+    false, //object_geo_quad-1
+    false, //object_geo_grid-1
+    false, //object_geo_circle-1
     false, //object_geo_aabb-1
-    // false, //object_geo_sphere-1
-    // false, //object_geo_geosphere-1
-    // false, //object_geo_cylinder-1
-    // false, //object_geo_capsule-1
-    // false, //object_geo_cone-1
-    // false, //object_geo_torus-1
+    false, //object_geo_sphere-1
+    false, //object_geo_geosphere-1
+    false, //object_geo_cylinder-1
+    false, //object_geo_capsule-1
+    false, //object_geo_cone-1
+    false, //object_geo_torus-1
 
     //false, //object_geo_skybox-1
     //false, //object_geo_skydome-1
@@ -400,17 +400,17 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
 };
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
-    // false, //object_geo_triangle-1
-    // false, //object_geo_quad-1
-    // false, //object_geo_grid-1
-    // false, //object_geo_circle-1
+    false, //object_geo_triangle-1
+    false, //object_geo_quad-1
+    false, //object_geo_grid-1
+    false, //object_geo_circle-1
     false, //object_geo_aabb-1
-    // false, //object_geo_sphere-1
-    // false, //object_geo_geosphere-1
-    // false, //object_geo_cylinder-1
-    // false, //object_geo_capsule-1
-    // false, //object_geo_cone-1
-    // false, //object_geo_torus-1
+    false, //object_geo_sphere-1
+    false, //object_geo_geosphere-1
+    false, //object_geo_cylinder-1
+    false, //object_geo_capsule-1
+    false, //object_geo_cone-1
+    false, //object_geo_torus-1
 
     //false, //object_geo_skybox-1
     //false, //object_geo_skydome-1
@@ -667,6 +667,31 @@ Vulkan_017_Collision::Vulkan_017_Collision(int width, int height, String name)
     this->mainLight.direction = FVector3(0, -1, 0); //y-
 }
 
+void Vulkan_017_Collision::OnMouseLeftDown(double x, double y)
+{
+    VulkanWindow::OnMouseLeftDown(x, y);
+    F_LogInfo("Vulkan_017_Collision::OnMouseLeftDown: Mouse Left Down !");
+    
+}
+void Vulkan_017_Collision::OnMouseLeftUp(double x, double y)
+{
+    VulkanWindow::OnMouseLeftUp(x, y);
+    F_LogInfo("Vulkan_017_Collision::OnMouseLeftUp: Mouse Left Up !");
+
+}
+void Vulkan_017_Collision::OnMouseMove(int button, double x, double y)
+{
+    VulkanWindow::OnMouseMove(button, x, y);
+    //F_LogInfo("Vulkan_017_Collision::OnMouseMove: Mouse Move !");
+
+}
+void Vulkan_017_Collision::OnMouseHover(double x, double y)
+{
+    VulkanWindow::OnMouseHover(x, y);
+    //F_LogInfo("Vulkan_017_Collision::OnMouseHover: Mouse Hover !");
+
+}
+
 void Vulkan_017_Collision::setUpEnabledFeatures()
 {
     VulkanWindow::setUpEnabledFeatures();
@@ -696,8 +721,8 @@ void Vulkan_017_Collision::cameraReset()
 {
     VulkanWindow::cameraReset();
 
-    this->pCamera->SetPos(FVector3(0.0f, 21.0f, -28.0f));
-    this->pCamera->SetEulerAngles(FVector3(35.0f, 0.0f, 0.0f));
+    this->pCamera->SetPos(FVector3(0.0f, 18.0f, -14.0f));
+    this->pCamera->SetEulerAngles(FVector3(45.0f, 0.0f, 0.0f));
     this->pCamera->SetFarZ(100000.0f);
 }
 
@@ -1120,7 +1145,7 @@ void Vulkan_017_Collision::createGraphicsPipeline_Custom()
                                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                       this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                      pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, pRend->cfg_vkCullModeFlagBits,
+                                                                                      pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
                                                                                       pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
                                                                                       pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
                                                                                       pRend->cfg_isBlend, pRend->cfg_BlendColorFactorSrc, pRend->cfg_BlendColorFactorDst, pRend->cfg_BlendColorOp,
@@ -1154,7 +1179,7 @@ void Vulkan_017_Collision::createGraphicsPipeline_Custom()
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                             this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                            pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, VK_CULL_MODE_NONE,
+                                                                            pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, pRend->cfg_vkCullModeFlagBits,
                                                                             isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
                                                                             pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
                                                                             isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->cfg_BlendColorOp,

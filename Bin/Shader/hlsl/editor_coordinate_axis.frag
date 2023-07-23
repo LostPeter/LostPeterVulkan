@@ -83,7 +83,7 @@ struct PassConstants
 
 
 //CoordinateAxisObjectConstants
-#define MAX_OBJECT_COUNT 9
+#define MAX_OBJECT_COUNT 19
 struct CoordinateAxisObjectConstants
 {
     float4x4 g_MatWorld;

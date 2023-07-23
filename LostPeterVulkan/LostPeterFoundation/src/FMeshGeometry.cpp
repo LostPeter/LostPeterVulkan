@@ -459,6 +459,7 @@ namespace LostPeterFoundation
         : FMeshCreateParam(false, false)
         , radius(0.5f)
         , height(1.0f)
+        , heightOffset(0.0f)
         , numRings(5)
         , numSegments(50)
         , numSegHeight(30)
@@ -467,6 +468,7 @@ namespace LostPeterFoundation
     }
     FMeshCreateParam_Capsule::FMeshCreateParam_Capsule(float _radius,
                                                        float _height,
+                                                       float _heightOffset,
                                                        uint32 _numRings,
                                                        uint32 _numSegments,
                                                        uint32 _numSegHeight,
@@ -475,6 +477,7 @@ namespace LostPeterFoundation
         : FMeshCreateParam(_flipV, _rightHand)
         , radius(_radius)
         , height(_height)
+        , heightOffset(_heightOffset)
         , numRings(_numRings)
         , numSegments(_numSegments)
         , numSegHeight(_numSegHeight)
@@ -487,12 +490,13 @@ namespace LostPeterFoundation
     }
     String FMeshCreateParam_Capsule::ToName()
     {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%u-%u-%u", 
+        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u-%u-%u", 
                                          ms_nameType.c_str(), 
                                          flipV ? 1 : 0, 
                                          rightHand ? 1 : 0,
                                          radius,
                                          height,
+                                         heightOffset,
                                          numRings,
                                          numSegments,
                                          numSegHeight);
@@ -504,6 +508,7 @@ namespace LostPeterFoundation
         : FMeshCreateParam(false, false)
         , radius(0.5f)
         , height(1.0f)
+        , heightOffset(0.0f)
         , numSegBase(50)
         , numSegHeight(30)
     {
@@ -511,6 +516,7 @@ namespace LostPeterFoundation
     }
     FMeshCreateParam_Cone::FMeshCreateParam_Cone(float _radius,
                                                  float _height,
+                                                 float _heightOffset,
                                                  uint32 _numSegBase,
                                                  uint32 _numSegHeight,
                                                  bool _flipV,
@@ -518,6 +524,7 @@ namespace LostPeterFoundation
         : FMeshCreateParam(false, false)
         , radius(_radius)
         , height(_height)
+        , heightOffset(_heightOffset)
         , numSegBase(_numSegBase)
         , numSegHeight(_numSegHeight)
     {
@@ -529,12 +536,13 @@ namespace LostPeterFoundation
     }
     String FMeshCreateParam_Cone::ToName()
     {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%u-%u",
+        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u-%u",
                                          ms_nameType.c_str(), 
                                          flipV ? 1 : 0, 
                                          rightHand ? 1 : 0,
                                          radius,
                                          height,
+                                         heightOffset,
                                          numSegBase,
                                          numSegHeight);
     }
@@ -735,7 +743,7 @@ namespace LostPeterFoundation
          case F_MeshGeometry_GeoSphere:
             {
                 FMeshCreateParam_GeoSphere param_GeoSphere;
-                FMeshGeometry::CreateGeosphere(meshData, &param_GeoSphere);
+                FMeshGeometry::CreateGeoSphere(meshData, &param_GeoSphere);
                 return true;
             }
         case F_MeshGeometry_Cylinder:
@@ -855,7 +863,7 @@ namespace LostPeterFoundation
         case F_MeshGeometry_GeoSphere:
             {
                 FMeshCreateParam_GeoSphere* pParam_GeoSphere = static_cast<FMeshCreateParam_GeoSphere*>(pParam);
-                FMeshGeometry::CreateGeosphere(meshData, pParam_GeoSphere);
+                FMeshGeometry::CreateGeoSphere(meshData, pParam_GeoSphere);
                 return true;
             }
         case F_MeshGeometry_Cylinder:
@@ -909,11 +917,11 @@ namespace LostPeterFoundation
     {
         //FMeshVertex
         AddVertex(meshData, FMeshVertex( 0.0f,  0.0f,  0.0f,
-                                         0.0f,  0.0f,  1.0f,
+                                         0.0f,  0.0f,  -1.0f,
                                          1.0f,  0.0f,  0.0f,
                                          0.0f,  0.0f));
         AddVertex(meshData, FMeshVertex( 1.0f,  0.0f,  0.0f,
-                                         0.0f,  0.0f,  1.0f,
+                                         0.0f,  0.0f,  -1.0f,
                                          1.0f,  0.0f,  0.0f,
                                          0.0f,  0.0f));
 
@@ -938,22 +946,22 @@ namespace LostPeterFoundation
 
         //FMeshVertex
         AddVertex(meshData, FMeshVertex(centerX - width/2, centerY + height/2, 0,
-                                        0.0f, 0.0f, 1.0f,
+                                        0.0f, 0.0f, -1.0f,
                                         1.0f, 0.0f, 0.0f,
                                         0.0f, 0.0f));
 
         AddVertex(meshData, FMeshVertex(centerX - width/2, centerY - height/2, 0,
-                                        0.0f, 0.0f, 1.0f,
+                                        0.0f, 0.0f, -1.0f,
                                         1.0f, 0.0f, 0.0f,
                                         0.0f, 0.0f));
 
         AddVertex(meshData, FMeshVertex(centerX + width/2, centerY - height/2, 0,
-                                        0.0f, 0.0f, 1.0f,
+                                        0.0f, 0.0f, -1.0f,
                                         1.0f, 0.0f, 0.0f,
                                         0.0f, 0.0f));
 
         AddVertex(meshData, FMeshVertex(centerX + width/2, centerY + height/2, 0,
-                                        0.0f, 0.0f, 1.0f,
+                                        0.0f, 0.0f, -1.0f,
                                         1.0f, 0.0f, 0.0f,
                                         0.0f, 0.0f));
 
@@ -993,19 +1001,19 @@ namespace LostPeterFoundation
         //    1 ------ 2
 
         //FMeshVertex
-        AddVertex(meshData, FMeshVertex( 0.0f,  0.5f,  0.0f,
-                                         0.0f,  0.0f,  1.0f,
-                                         1.0f,  0.0f,  0.0f,
+        AddVertex(meshData, FMeshVertex( 0.0f,  0.5f,   0.0f,
+                                         0.0f,  0.0f,  -1.0f,
+                                         1.0f,  0.0f,   0.0f,
                                          0.5f,  flipV ? 1.0f : 0.0f));
 
-        AddVertex(meshData, FMeshVertex(-0.5f, -0.5f,  0.0f,
-                                         0.0f,  0.0f,  1.0f,
-                                         1.0f,  0.0f,  0.0f,
+        AddVertex(meshData, FMeshVertex(-0.5f, -0.5f,   0.0f,
+                                         0.0f,  0.0f,  -1.0f,
+                                         1.0f,  0.0f,   0.0f,
                                          0.0f,  flipV ? 0.0f : 1.0f));
 
-        AddVertex(meshData, FMeshVertex( 0.5f, -0.5f,  0.0f,
-                                         0.0f,  0.0f,  1.0f,
-                                         1.0f,  0.0f,  0.0f,
+        AddVertex(meshData, FMeshVertex( 0.5f, -0.5f,   0.0f,
+                                         0.0f,  0.0f,  -1.0f,
+                                         1.0f,  0.0f,   0.0f,
                                          1.0f,  flipV ? 0.0f : 1.0f));
         
         //Index
@@ -1038,23 +1046,23 @@ namespace LostPeterFoundation
 
         //FMeshVertex
         AddVertex(meshData, FMeshVertex(centerX - width/2, centerY + height/2, depth,
-                                        0.0f, 0.0f, 1.0f,
-                                        1.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f, -1.0f,
+                                        1.0f, 0.0f,  0.0f,
                                         0.0f, flipV ? 1.0f : 0.0f));
 
         AddVertex(meshData, FMeshVertex(centerX - width/2, centerY - height/2, depth,
-                                        0.0f, 0.0f, 1.0f,
-                                        1.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f, -1.0f,
+                                        1.0f, 0.0f,  0.0f,
                                         0.0f, flipV ? 0.0f : 1.0f));
 
         AddVertex(meshData, FMeshVertex(centerX + width/2, centerY - height/2, depth,
-                                        0.0f, 0.0f, 1.0f,
-                                        1.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f, -1.0f,
+                                        1.0f, 0.0f,  0.0f,
                                         1.0f, flipV ? 0.0f : 1.0f));
 
         AddVertex(meshData, FMeshVertex(centerX + width/2, centerY + height/2, depth,
-                                        0.0f, 0.0f, 1.0f,
-                                        1.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f, -1.0f,
+                                        1.0f, 0.0f,  0.0f,
                                         1.0f, flipV ? 1.0f : 0.0f));
 
         //Index
@@ -1078,6 +1086,21 @@ namespace LostPeterFoundation
                                    bool flipV,
                                    bool rightHand)
     {
+        // (n-1)*(m-2)                  (n-1)*(m-1)
+        //      |
+        //      |
+        //      |
+        //  n*2 ----------------        (n-1)*3
+        //      |\     |\     |
+        //      |  \   |  \   |
+        //      |    \ |    \ |
+        //  n   ----------------        (n-1)*2
+        //      |\     |\(n+1)|(n+2)
+        //      |  \   |  \   |
+        //      |    \ |    \ |
+        //      ------------------------
+        //  0          1      2         (n-1)
+
         uint32 vertexCount = m * n;
         uint32 faceCount = (m - 1) * (n - 1) * 2;
 
@@ -1094,19 +1117,19 @@ namespace LostPeterFoundation
         ResizeVertexCount(meshData, vertexCount);
         for (uint32 i = 0; i < m; ++i)
         {
-            float y = halfH - i * dz;
+            float y = -halfH + i * dz;
             for (uint32 j = 0; j < n; ++j)
             {
                 float x = -halfW + j * dx;
 
-                FMeshVertex vertex(   x,    y, 0.0f,
-                                   0.0f, 0.0f, 1.0f,
-                                   1.0f, 0.0f, 0.0f,
+                FMeshVertex vertex(   x,    y,  0.0f,
+                                   0.0f, 0.0f, -1.0f,
+                                   1.0f, 0.0f,  0.0f,
                                    j * du, flipV ? (1.0f - i * dv) : (i * dv));
                 SetVertex(meshData, i * n + j, vertex);
-                //meshData.aabb.Merge(vertex.pos);
             }
         }
+        meshData.RefreshAABB();
 
         //Index
         ResizeIndexCount(meshData, faceCount * 3);
@@ -1118,26 +1141,26 @@ namespace LostPeterFoundation
                 if (rightHand)
                 {
                     SetIndexTriangle(meshData, k + 0,
-                                     i * n + j,
                                      (i + 1) * n + j,
-                                     (i + 1) * n + j + 1);
+                                     i * n + j,
+                                     i * n + j + 1);
 
                     SetIndexTriangle(meshData, k + 3,
-                                     (i + 1) * n + j + 1,
                                      i * n + j + 1,
-                                     i * n + j);
+                                     (i + 1) * n + j + 1,
+                                     (i + 1) * n + j);
                 }
                 else
                 {
                     SetIndexTriangle(meshData, k + 0,
-                                     i * n + j,
-                                     i * n + j + 1,
-                                     (i + 1) * n + j + 1);
+                                     (i + 1) * n + j,
+                                     (i + 1) * n + j + 1,
+                                     i * n + j + 1);
 
                     SetIndexTriangle(meshData, k + 3,
-                                     (i + 1) * n + j + 1,
-                                     (i + 1) * n + j,
-                                     i * n + j);
+                                     i * n + j + 1,
+                                     i * n + j,
+                                     (i + 1) * n + j);
                 }
 
                 k += 6;
@@ -1151,6 +1174,14 @@ namespace LostPeterFoundation
                                      bool flipV,
                                      bool rightHand)
     {
+		//          *  * 
+		//		*		   * 2
+		//
+		//	   *	 * 0    * 1
+		//			
+		//      *          * segment
+		//          *   *
+        
         uint32 vertexCount = segment + 1;
         uint32 faceCount = segment;
 
@@ -1159,9 +1190,9 @@ namespace LostPeterFoundation
         ResizeVertexCount(meshData, vertexCount);
         SetVertex(meshData, 
                   0, 
-                  FMeshVertex(0.0f, 0.0f, 0.0f,
-                              0.0f, 0.0f, 1.0f,
-                              1.0f, 0.0f, 0.0f,
+                  FMeshVertex(0.0f, 0.0f,  0.0f,
+                              0.0f, 0.0f, -1.0f,
+                              1.0f, 0.0f,  0.0f,
                               0.5f, 0.5f));
         int index = 1;
         for (uint32 i = 0; i < segment; i++)
@@ -1172,12 +1203,12 @@ namespace LostPeterFoundation
             SetVertex(meshData, 
                       index,
                       FMeshVertex(radius * ux,  radius * uy, 0.0f,
-                                  0.0f, 0.0f, 1.0f,
-                                  1.0f, 0.0f, 0.0f,
+                                  0.0f, 0.0f, -1.0f,
+                                  1.0f, 0.0f,  0.0f,
                                   (1.0f + ux) / 2.0f,  flipV ? (1.0f - (1.0f - uy) / 2.0f) : (1.0f - uy) / 2.0f));
-            //meshData.aabb.Merge(vertex.pos);
             index++;
         }
+        meshData.RefreshAABB();
 
         //Index
         ResizeIndexCount(meshData, faceCount * 3);
@@ -1187,14 +1218,14 @@ namespace LostPeterFoundation
             {
                 if (rightHand)
                 {
-                    SetIndexTriangle(meshData, i*3 + 0,
+                    SetIndexTriangle(meshData, i * 3 + 0,
                                      0,
                                      i + 1,
                                      i + 2);
                 }
                 else
                 {
-                    SetIndexTriangle(meshData, i*3 + 0,
+                    SetIndexTriangle(meshData, i * 3 + 0,
                                      0,
                                      i + 2,
                                      i + 1);
@@ -1204,14 +1235,14 @@ namespace LostPeterFoundation
             {
                 if (rightHand)
                 {
-                    SetIndexTriangle(meshData, i*3 + 0,
+                    SetIndexTriangle(meshData, i * 3 + 0,
                                      0,
                                      i,
                                      1);
                 }
                 else
                 {
-                    SetIndexTriangle(meshData, i*3 + 0,
+                    SetIndexTriangle(meshData, i * 3 + 0,
                                      0,
                                      1,
                                      i);
@@ -1228,41 +1259,50 @@ namespace LostPeterFoundation
                                    bool flipV,
                                    bool rightHand)
     {
+        //     7+------+4			  0 -  9 - 19  -+-
+		//     /|     /|			  1 - 12 - 18  ---
+		//    / |    / |			  2 - 15 - 21  +--
+		//   / 6+---/--+5	 y		  3 - 10 - 20  ++-
+		// 0+------+3 /		 | z	  4 - 11 - 23  +++
+		//  | /    | /    	 |/		  5 - 14 - 22  +-+
+		//  |/     |/     	 *---x	  6 - 13 - 17  --+
+		// 1+------+2        		  7 -  8 - 16  -++
+
         //FMeshVertex
         FMeshVertex v[24];
         float w2 = 0.5f * width;
         float h2 = 0.5f * height;
         float d2 = 0.5f * depth;
         //Front
-        v[0]  = FMeshVertex(-w2, +h2, +d2,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   0.0f, flipV ? 1.0f : 0.0f);
-        v[1]  = FMeshVertex(-w2, -h2, +d2,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   0.0f, flipV ? 0.0f : 1.0f);
-        v[2]  = FMeshVertex(+w2, -h2, +d2,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   1.0f, flipV ? 0.0f : 1.0f);
-        v[3]  = FMeshVertex(+w2, +h2, +d2,   0.0f,  0.0f,  1.0f,   1.0f,  0.0f,  0.0f,   1.0f, flipV ? 1.0f : 0.0f);
+        v[0]  = FMeshVertex(-w2, +h2, -d2,   0.0f,   0.0f,  -1.0f,   1.0f,  0.0f,   0.0f,   0.0f, flipV ? 1.0f : 0.0f); //0 -+-
+        v[1]  = FMeshVertex(-w2, -h2, -d2,   0.0f,   0.0f,  -1.0f,   1.0f,  0.0f,   0.0f,   0.0f, flipV ? 0.0f : 1.0f); //1 ---
+        v[2]  = FMeshVertex(+w2, -h2, -d2,   0.0f,   0.0f,  -1.0f,   1.0f,  0.0f,   0.0f,   1.0f, flipV ? 0.0f : 1.0f); //2 +--
+        v[3]  = FMeshVertex(+w2, +h2, -d2,   0.0f,   0.0f,  -1.0f,   1.0f,  0.0f,   0.0f,   1.0f, flipV ? 1.0f : 0.0f); //3 ++-
         //Back
-        v[4]  = FMeshVertex(-w2, -h2, -d2,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   0.0f, flipV ? 1.0f : 0.0f);
-        v[5]  = FMeshVertex(-w2, +h2, -d2,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   0.0f, flipV ? 0.0f : 1.0f);
-        v[6]  = FMeshVertex(+w2, +h2, -d2,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   1.0f, flipV ? 0.0f : 1.0f);
-        v[7]  = FMeshVertex(+w2, -h2, -d2,   0.0f,  0.0f, -1.0f,  -1.0f,  0.0f,  0.0f,   1.0f, flipV ? 1.0f : 0.0f);
+        v[4]  = FMeshVertex(+w2, +h2, +d2,   0.0f,   0.0f,   1.0f,  -1.0f,  0.0f,   0.0f,   0.0f, flipV ? 1.0f : 0.0f); //4 +++
+        v[5]  = FMeshVertex(+w2, -h2, +d2,   0.0f,   0.0f,   1.0f,  -1.0f,  0.0f,   0.0f,   0.0f, flipV ? 0.0f : 1.0f); //5 +-+
+        v[6]  = FMeshVertex(-w2, -h2, +d2,   0.0f,   0.0f,   1.0f,  -1.0f,  0.0f,   0.0f,   1.0f, flipV ? 0.0f : 1.0f); //6 --+
+        v[7]  = FMeshVertex(-w2, +h2, +d2,   0.0f,   0.0f,   1.0f,  -1.0f,  0.0f,   0.0f,   1.0f, flipV ? 1.0f : 0.0f); //7 -++
         //Top
-        v[8]  = FMeshVertex(-w2, +h2, -d2,   0.0f,  1.0f,  0.0f,   1.0f,  0.0f,  0.0f,   0.0f, flipV ? 1.0f : 0.0f);
-        v[9]  = FMeshVertex(-w2, +h2, +d2,   0.0f,  1.0f,  0.0f,   1.0f,  0.0f,  0.0f,   0.0f, flipV ? 0.0f : 1.0f);
-        v[10] = FMeshVertex(+w2, +h2, +d2,   0.0f,  1.0f,  0.0f,   1.0f,  0.0f,  0.0f,   1.0f, flipV ? 0.0f : 1.0f);
-        v[11] = FMeshVertex(+w2, +h2, -d2,   0.0f,  1.0f,  0.0f,   1.0f,  0.0f,  0.0f,   1.0f, flipV ? 1.0f : 0.0f);
+        v[8]  = FMeshVertex(-w2, +h2, +d2,   0.0f,   1.0f,   0.0f,   1.0f,  0.0f,   0.0f,   0.0f, flipV ? 1.0f : 0.0f); //8  - 7
+        v[9]  = FMeshVertex(-w2, +h2, -d2,   0.0f,   1.0f,   0.0f,   1.0f,  0.0f,   0.0f,   0.0f, flipV ? 0.0f : 1.0f); //9  - 0
+        v[10] = FMeshVertex(+w2, +h2, -d2,   0.0f,   1.0f,   0.0f,   1.0f,  0.0f,   0.0f,   1.0f, flipV ? 0.0f : 1.0f); //10 - 3
+        v[11] = FMeshVertex(+w2, +h2, +d2,   0.0f,   1.0f,   0.0f,   1.0f,  0.0f,   0.0f,   1.0f, flipV ? 1.0f : 0.0f); //11 - 4
         //Bottom
-        v[12] = FMeshVertex(-w2, -h2, +d2,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   0.0f, flipV ? 1.0f : 0.0f);
-        v[13] = FMeshVertex(-w2, -h2, -d2,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   0.0f, flipV ? 0.0f : 1.0f);
-        v[14] = FMeshVertex(+w2, -h2, -d2,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   1.0f, flipV ? 0.0f : 1.0f);
-        v[15] = FMeshVertex(+w2, -h2, +d2,   0.0f, -1.0f,  0.0f,  -1.0f,  0.0f,  0.0f,   1.0f, flipV ? 1.0f : 0.0f);
+        v[12] = FMeshVertex(-w2, -h2, -d2,   0.0f,  -1.0f,   0.0f,   1.0f,  0.0f,   0.0f,   0.0f, flipV ? 1.0f : 0.0f); //12 - 1
+        v[13] = FMeshVertex(-w2, -h2, +d2,   0.0f,  -1.0f,   0.0f,   1.0f,  0.0f,   0.0f,   0.0f, flipV ? 0.0f : 1.0f); //13 - 6
+        v[14] = FMeshVertex(+w2, -h2, +d2,   0.0f,  -1.0f,   0.0f,   1.0f,  0.0f,   0.0f,   1.0f, flipV ? 0.0f : 1.0f); //14 - 5
+        v[15] = FMeshVertex(+w2, -h2, -d2,   0.0f,  -1.0f,   0.0f,   1.0f,  0.0f,   0.0f,   1.0f, flipV ? 1.0f : 0.0f); //15 - 2
         //Left
-        v[16] = FMeshVertex(-w2, +h2, -d2,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   0.0f, flipV ? 1.0f : 0.0f);
-        v[17] = FMeshVertex(-w2, -h2, -d2,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   0.0f, flipV ? 0.0f : 1.0f);
-        v[18] = FMeshVertex(-w2, -h2, +d2,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   1.0f, flipV ? 0.0f : 1.0f);
-        v[19] = FMeshVertex(-w2, +h2, +d2,  -1.0f,  0.0f,  0.0f,   0.0f,  0.0f, -1.0f,   1.0f, flipV ? 1.0f : 0.0f);
+        v[16] = FMeshVertex(-w2, +h2, +d2,  -1.0f,   0.0f,   0.0f,   0.0f,  0.0f,  -1.0f,   0.0f, flipV ? 1.0f : 0.0f); //16 - 7
+        v[17] = FMeshVertex(-w2, -h2, +d2,  -1.0f,   0.0f,   0.0f,   0.0f,  0.0f,  -1.0f,   0.0f, flipV ? 0.0f : 1.0f); //17 - 6
+        v[18] = FMeshVertex(-w2, -h2, -d2,  -1.0f,   0.0f,   0.0f,   0.0f,  0.0f,  -1.0f,   1.0f, flipV ? 0.0f : 1.0f); //18 - 1
+        v[19] = FMeshVertex(-w2, +h2, -d2,  -1.0f,   0.0f,   0.0f,   0.0f,  0.0f,  -1.0f,   1.0f, flipV ? 1.0f : 0.0f); //19 - 0
         //Right
-        v[20] = FMeshVertex(+w2, +h2, +d2,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   0.0f, flipV ? 1.0f : 0.0f);
-        v[21] = FMeshVertex(+w2, -h2, +d2,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   0.0f, flipV ? 0.0f : 1.0f);
-        v[22] = FMeshVertex(+w2, -h2, -d2,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   1.0f, flipV ? 0.0f : 1.0f);
-        v[23] = FMeshVertex(+w2, +h2, -d2,   1.0f,  0.0f,  0.0f,   0.0f,  0.0f,  1.0f,   1.0f, flipV ? 1.0f : 0.0f);
+        v[20] = FMeshVertex(+w2, +h2, -d2,   1.0f,   0.0f,   0.0f,   0.0f,  0.0f,   1.0f,   0.0f, flipV ? 1.0f : 0.0f); //20 - 3
+        v[21] = FMeshVertex(+w2, -h2, -d2,   1.0f,   0.0f,   0.0f,   0.0f,  0.0f,   1.0f,   0.0f, flipV ? 0.0f : 1.0f); //21 - 2
+        v[22] = FMeshVertex(+w2, -h2, +d2,   1.0f,   0.0f,   0.0f,   0.0f,  0.0f,   1.0f,   1.0f, flipV ? 0.0f : 1.0f); //22 - 5
+        v[23] = FMeshVertex(+w2, +h2, +d2,   1.0f,   0.0f,   0.0f,   0.0f,  0.0f,   1.0f,   1.0f, flipV ? 1.0f : 0.0f); //23 - 4
 
         for (int i = 0; i < 24; i++)
         {
@@ -1272,27 +1312,6 @@ namespace LostPeterFoundation
         //Index
         uint32 i[36];
         if (rightHand)
-        {
-            //Front 
-            i[0]  = 0;  i[1]  = 3;  i[2]  = 2;
-            i[3]  = 2;  i[4]  = 1;  i[5]  = 0;
-            //Back
-            i[6]  = 4;  i[7]  = 7;  i[8]  = 6;
-            i[9]  = 6;  i[10] = 5;  i[11] = 4;
-            //Top
-            i[12] = 8;  i[13] = 11;  i[14] = 10;
-            i[15] = 10; i[16] =  9; i[17] = 8;
-            //Bottom
-            i[18] = 12; i[19] = 15; i[20] = 14;
-            i[21] = 14; i[22] = 13; i[23] = 12;
-            //Left
-            i[24] = 16; i[25] = 19; i[26] = 18;
-            i[27] = 18; i[28] = 17; i[29] = 16;
-            //Right
-            i[30] = 20; i[31] = 23; i[32] = 22;
-            i[33] = 22; i[34] = 21; i[35] = 20;
-        }
-        else
         {
             //Front 
             i[0]  = 0;  i[1]  = 1;  i[2]  = 2;
@@ -1313,13 +1332,34 @@ namespace LostPeterFoundation
             i[30] = 20; i[31] = 21; i[32] = 22;
             i[33] = 22; i[34] = 23; i[35] = 20;
         }
+        else
+        {
+            //Front 
+            i[0]  = 0;  i[1]  = 3;  i[2]  = 2;
+            i[3]  = 2;  i[4]  = 1;  i[5]  = 0;
+            //Back
+            i[6]  = 4;  i[7]  = 7;  i[8]  = 6;
+            i[9]  = 6;  i[10] = 5;  i[11] = 4;
+            //Top
+            i[12] = 8;  i[13] = 11;  i[14] = 10;
+            i[15] = 10; i[16] =  9; i[17] = 8;
+            //Bottom
+            i[18] = 12; i[19] = 15; i[20] = 14;
+            i[21] = 14; i[22] = 13; i[23] = 12;
+            //Left
+            i[24] = 16; i[25] = 19; i[26] = 18;
+            i[27] = 18; i[28] = 17; i[29] = 16;
+            //Right
+            i[30] = 20; i[31] = 23; i[32] = 22;
+            i[33] = 22; i[34] = 21; i[35] = 20;
+        }
         AddIndices(meshData, 36, i);
 
-        //Subdivisions.
+        //SubDivide
         numSubdivisions = std::min<uint32>(numSubdivisions, 6u);
         for (uint32 i = 0; i < numSubdivisions; ++i)
         {
-            Subdivide(meshData, rightHand);
+            SubDivide(meshData, rightHand);
         }
     }
 
@@ -1329,43 +1369,57 @@ namespace LostPeterFoundation
                                      uint32 stackCount,
                                      bool flipV,
                                      bool rightHand)
-    {
+    {       
+        //           0 
+        //           *   
+	    //	    *    - 2  *  1          
+	    //        -     -          y                   
+	    //   *	     *       *     | z              
+	    //	      -     - l-2      |/
+	    //      *    -    *  l-1   *---x
+	    //           *
+        //           l=(stackCount-1)*(sliceCount+1)+1
+
         //FMeshVertex
-        FMeshVertex topVertex(0.0f, +radius, 0.0f,  0.0f, +1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, flipV ? 1.0f : 0.0f);
-        FMeshVertex bottomVertex(0.0f, -radius, 0.0f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, flipV ? 0.0f : 1.0f);
-        AddVertex(meshData, topVertex);
-
-        float phiStep = FMath::ms_fPI / stackCount;
-        float thetaStep = 2.0f * FMath::ms_fPI / sliceCount;
-        for (uint32 i = 1; i <= stackCount - 1; ++i)
+        //Vertex Top
+        FMeshVertex vertexTop(0.0f, +radius, 0.0f,  0.0f, +1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, flipV ? 1.0f : 0.0f);
+        AddVertex(meshData, vertexTop);
         {
-            float phi = i * phiStep;
-            for (uint32 j = 0; j <= sliceCount; ++j)
+            //Vertex
+            float phiStep = FMath::ms_fPI / stackCount;
+            float thetaStep = 2.0f * FMath::ms_fPI / sliceCount;
+            for (uint32 i = 1; i <= stackCount - 1; ++i)
             {
-                float theta = j * thetaStep;
+                float phi = i * phiStep;
+                for (uint32 j = 0; j <= sliceCount; ++j)
+                {
+                    float theta = j * thetaStep;
 
-                FMeshVertex v;
-                //pos
-                v.pos.x = radius * sinf(phi) * cosf(theta);
-                v.pos.y = radius * cosf(phi);
-                v.pos.z = radius * sinf(phi) * sinf(theta);
-                //color
-                v.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-                //normal
-                v.normal = FMath::Normalize(v.pos);
-                //tangent
-                v.tangent.x = -radius * sinf(phi) * sinf(theta);
-                v.tangent.y = 0.0f;
-                v.tangent.z = +radius * sinf(phi) * cosf(theta);
-                v.tangent = FMath::Normalize(v.tangent);
-                //texCoord
-                v.texCoord.x = theta / FMath::ms_fPI_Two;
-                v.texCoord.y = flipV ? (1.0f - phi / FMath::ms_fPI) : (phi / FMath::ms_fPI);
+                    FMeshVertex vertex;
+                    //pos
+                    vertex.pos.x = radius * sinf(phi) * cosf(theta);
+                    vertex.pos.y = radius * cosf(phi);
+                    vertex.pos.z = radius * sinf(phi) * sinf(theta);
+                    //color
+                    vertex.color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+                    //normal
+                    vertex.normal = FMath::Normalize(vertex.pos);
+                    //tangent
+                    vertex.tangent.x = -radius * sinf(phi) * sinf(theta);
+                    vertex.tangent.y = 0.0f;
+                    vertex.tangent.z = +radius * sinf(phi) * cosf(theta);
+                    vertex.tangent = FMath::Normalize(vertex.tangent);
+                    //texCoord
+                    vertex.texCoord.x = theta / FMath::ms_fPI_Two;
+                    vertex.texCoord.y = flipV ? (1.0f - phi / FMath::ms_fPI) : (phi / FMath::ms_fPI);
 
-                AddVertex(meshData, v);
+                    AddVertex(meshData, vertex);
+                }
             }
         }
-        AddVertex(meshData, bottomVertex);
+        //Vertex Bottom
+        FMeshVertex vertexBottom(0.0f, -radius, 0.0f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, flipV ? 0.0f : 1.0f);
+        AddVertex(meshData, vertexBottom);
 
         //Index Top
         for (uint32 i = 1; i <= sliceCount; ++i)
@@ -1443,71 +1497,102 @@ namespace LostPeterFoundation
         }
     }
 
-    void FMeshGeometry::CreateGeosphere(FMeshData& meshData, 
+    void FMeshGeometry::CreateGeoSphere(FMeshData& meshData, 
                                         float radius, 
                                         uint32 numSubdivisions,
                                         bool flipV,
                                         bool rightHand)
     {
+		//             * 4    
+		//			 * 5 	    
+		//         * 0  * 1           
+        //    * 9              * 8    y
+		//	 * 11	         * 10     | z
+		//		   * 2	* 3           |/
+		//             * 6            *---x
+		//           * 7    
+
         //FMeshVertex
         numSubdivisions = std::min<uint32>(numSubdivisions, 6u);
         const float X = 0.525731f;
         const float Z = 0.850651f;
         FVector3 pos[12] =
         {
-            FVector3(   -X,  0.0f,     Z),  FVector3(    X,  0.0f,     Z),
-            FVector3(   -X,  0.0f,    -Z),  FVector3(    X,  0.0f,    -Z),
-            FVector3( 0.0f,     Z,     X),  FVector3( 0.0f,     Z,    -X),
-            FVector3( 0.0f,    -Z,     X),  FVector3( 0.0f,    -Z,    -X),
-            FVector3(    Z,     X,  0.0f),  FVector3(   -Z,     X,  0.0f),
-            FVector3(    Z,    -X,  0.0f),  FVector3(   -Z,    -X,  0.0f)
+            FVector3(   -X,  0.0f,     Z),  //0
+            FVector3(    X,  0.0f,     Z),  //1
+            FVector3(   -X,  0.0f,    -Z),  //2
+            FVector3(    X,  0.0f,    -Z),  //3
+            FVector3( 0.0f,     Z,     X),  //4
+            FVector3( 0.0f,     Z,    -X),  //5
+            FVector3( 0.0f,    -Z,     X),  //6
+            FVector3( 0.0f,    -Z,    -X),  //7
+            FVector3(    Z,     X,  0.0f),  //8
+            FVector3(   -Z,     X,  0.0f),  //9
+            FVector3(    Z,    -X,  0.0f),  //10
+            FVector3(   -Z,    -X,  0.0f)   //11
         };
 
-        uint32 k[60] =
-        {
-            1,  4, 0,   4, 9, 0,   4,  5, 9,   8, 5,  4,   1, 8, 4,
-            1, 10, 8,  10, 3, 8,   8,  3, 5,   3, 2,  5,   3, 7, 2,
-            3, 10, 7,  10, 6, 7,   6, 11, 7,   6, 0, 11,   6, 1, 0,
-            10, 1, 6,  11, 0, 9,   2, 11, 9,   5, 2,  9,  11, 2, 7
-        };
-
+        //Vertex
         ResizeVertexCount(meshData, 12);
-        AddIndices(meshData, 60, k);
-
         for (uint32 i = 0; i < 12; ++i)
         {
-            FMeshVertex& v = GetVertex(meshData, i);
-            v.pos = pos[i];
+            FMeshVertex& vertex = GetVertex(meshData, i);
+            vertex.pos = pos[i];
         }
+
+        //Index
+        if (rightHand)
+        {
+            uint32 k[60] =
+            {
+                1,  4,  0,    4, 9, 0,   4,  5, 9,   8, 5,  4,   1, 8, 4,
+                1, 10,  8,   10, 3, 8,   8,  3, 5,   3, 2,  5,   3, 7, 2,
+                3, 10,  7,   10, 6, 7,   6, 11, 7,   6, 0, 11,   6, 1, 0,
+               10,  1,  6,   11, 0, 9,   2, 11, 9,   5, 2,  9,  11, 2, 7
+            };
+            AddIndices(meshData, 60, k);
+        }
+        else
+        {
+            uint32 k[60] =
+            {
+                1,  0,  4,    4, 0, 9,   4, 9,  5,   8,  4, 5,   1, 4, 8,
+                1,  8, 10,   10, 8, 3,   8, 5,  3,   3,  5, 2,   3, 2, 7,
+                3,  7, 10,   10, 7, 6,   6, 7, 11,   6, 11, 0,   6, 0, 1,
+               10,  6,  1,   11, 9, 0,   2, 9, 11,   5,  9, 2,  11, 7, 2
+            };
+            AddIndices(meshData, 60, k);
+        }
+
+        //SubDivide
         for (uint32 i = 0; i < numSubdivisions; ++i)
         {
-            Subdivide(meshData, rightHand);
+            SubDivide(meshData, rightHand);
         }
 
         uint32 countVertex = GetVertexCount(meshData);
         for (uint32 i = 0; i < countVertex; ++i)
         {
-            FMeshVertex& v = GetVertex(meshData, i);
+            FMeshVertex& vertex = GetVertex(meshData, i);
 
-            v.normal = FMath::Normalize(v.pos);
-            v.pos = radius * v.normal;
+            vertex.normal = FMath::Normalize(vertex.pos);
+            vertex.pos = radius * vertex.normal;
 
-            float theta = atan2f(v.pos.z, v.pos.x);
+            float theta = atan2f(vertex.pos.z, vertex.pos.x);
             if (theta < 0.0f)
                 theta += FMath::ms_fPI_Two;
 
-            float phi = acosf(v.pos.y / radius);
+            float phi = acosf(vertex.pos.y / radius);
 
-            v.texCoord.x = theta / FMath::ms_fPI_Two;
-            v.texCoord.y = flipV ? (1.0f - phi / FMath::ms_fPI) : (phi / FMath::ms_fPI);
+            vertex.texCoord.x = theta / FMath::ms_fPI_Two;
+            vertex.texCoord.y = flipV ? (1.0f - phi / FMath::ms_fPI) : (phi / FMath::ms_fPI);
 
-            v.tangent.x = -radius * sinf(phi) * sinf(theta);
-            v.tangent.y = 0.0f;
-            v.tangent.z = +radius * sinf(phi) * cosf(theta);
-            v.tangent = FMath::Normalize(v.tangent);
-
-            //meshData.aabb.Merge(meshData.vertices[i].pos);
+            vertex.tangent.x = -radius * sinf(phi) * sinf(theta);
+            vertex.tangent.y = 0.0f;
+            vertex.tangent.z = +radius * sinf(phi) * cosf(theta);
+            vertex.tangent = FMath::Normalize(vertex.tangent);
         }
+        meshData.RefreshAABB();
     }
 
     void s_BuildCylinderTopCap(FMeshData& meshData, 
@@ -1622,6 +1707,16 @@ namespace LostPeterFoundation
                                        bool flipV,
                                        bool rightHand)
     {
+        //       * 
+        //    *     *
+        //    *  *  *
+        //    *     *
+        //    *     *
+        //    *     *
+        //    *  *  *
+        //    *     *
+        //       *       
+
         //FMeshVertex
         float stackHeight = height / stackCount;
         float radiusStep = (topRadius - bottomRadius) / stackCount;
@@ -1712,12 +1807,24 @@ namespace LostPeterFoundation
     void FMeshGeometry::CreateCapsule(FMeshData& meshData,
                                       float radius,
                                       float height,
+                                      float heightOffset,
                                       uint32 numRings,
                                       uint32 numSegments,
                                       uint32 numSegHeight,
                                       bool flipV,
                                       bool rightHand)
     {
+        //      *** 
+        //    *  *  *
+        //    *  *  *
+        //    *     *
+        //    *     *
+        //    *     *
+        //    *  *  *
+        //    *  *  *
+        //      ***  
+
+        //FMeshVertex
         uint32 nVertexCount = (2 * numRings + 2) * (numSegments + 1) + (numSegHeight - 1) * (numSegments + 1);
         uint32 nIndexCount = (2 * numRings + 1) * (numSegments + 1) * 6 + (numSegHeight - 1) * (numSegments + 1) * 6;
         ReserveVertexCount(meshData, nVertexCount);
@@ -1740,7 +1847,7 @@ namespace LostPeterFoundation
             {
                 float x0 = r0 * cosf(seg * fDeltaSegAngle);
                 float z0 = r0 * sinf(seg * fDeltaSegAngle);
-                FVector3 pos(x0, 0.5f * height + y0, z0);
+                FVector3 pos(x0, heightOffset + 0.5f * height + y0, z0);
                 FVector3 normal = FMath::Normalize(FVector3(x0, y0, z0));
                 FVector3 tangent = FMath::Normalize(FVector3(-z0, y0, x0));
                 float u = (float)seg / (float)numSegments;
@@ -1777,7 +1884,7 @@ namespace LostPeterFoundation
             {
                 float x0 = radius * cosf(j * deltaAngle);
                 float z0 = radius * sinf(j * deltaAngle);
-                FVector3 pos(x0, 0.5f * height - i * deltamHeight, z0);
+                FVector3 pos(x0, heightOffset + 0.5f * height - i * deltamHeight, z0);
                 FVector3 normal = FMath::Normalize(FVector3(x0, 0, z0));
                 FVector3 tangent = FMath::Normalize(FVector3(-z0, 0, x0));
                 float u = j / (float)numSegments;
@@ -1815,7 +1922,7 @@ namespace LostPeterFoundation
             {
                 float x0 = r0 * cosf(seg * fDeltaSegAngle);
                 float z0 = r0 * sinf(seg * fDeltaSegAngle);
-                FVector3 pos(x0, -0.5f * height + y0, z0);
+                FVector3 pos(x0, heightOffset - 0.5f * height + y0, z0);
                 FVector3 normal = FMath::Normalize(FVector3(x0, y0, z0));
                 FVector3 tangent = FMath::Normalize(FVector3(-z0, y0, x0));
                 float u = (float)seg / (float)numSegments;
@@ -1850,18 +1957,31 @@ namespace LostPeterFoundation
     void FMeshGeometry::CreateCone(FMeshData& meshData,
                                    float radius,
                                    float height,
+                                   float heightOffset,
                                    uint32 numSegBase,
                                    uint32 numSegHeight,
                                    bool flipV,
                                    bool rightHand)
     {
+        //               *
+        //             *   *
+        //           *       *
+        //         *           *
+        //       *       +       *
+        //     *   +           +   *
+        //    *          *           *
+        //      +                  +
+        //          +          +
+        //               +
+
+        //FMeshVertex
         uint32 nVertexCount = (numSegHeight + 1) * (numSegBase + 1) + numSegBase + 2;
         uint32 nIndexCount = numSegHeight * numSegBase * 6 + 3 * numSegBase;
         ReserveVertexCount(meshData, nVertexCount);
         ReserveIndexCount(meshData, nIndexCount);
 
         float deltaAngle = (FMath::ms_fPI_Two / numSegBase);
-        float deltaHeight = height/(float)numSegHeight;
+        float deltaHeight = height / (float)numSegHeight;
         int offset = 0;
 
         FVector3 refNormal = FMath::Normalize(FVector3(radius, height, 0.f));
@@ -1874,7 +1994,7 @@ namespace LostPeterFoundation
             {
                 float x0 = r0 * cosf(j * deltaAngle);
                 float z0 = r0 * sinf(j * deltaAngle);
-                FVector3 pos(x0, i * deltaHeight, z0);
+                FVector3 pos(x0, heightOffset + i * deltaHeight, z0);
                 FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(-deltaAngle * j, FMath::ms_v3UnitY);
                 FVector3 normal = FMath::Transform(qRot, refNormal);
                 FVector3 tangent = FMath::Normalize(FVector3(-z0, i * deltaHeight, x0));
@@ -1909,7 +2029,7 @@ namespace LostPeterFoundation
         //2> Low Cap
         int centerIndex = offset;
         AddVertex(meshData, 
-                  FMath::ms_v3Zero,
+                  heightOffset + FMath::ms_v3Zero,
                   FVector4(1.0f, 1.0f, 1.0f, 1.0f),
                   FMath::ms_v3UnitNegY,
                   FMath::ms_v3UnitX,
@@ -1919,7 +2039,7 @@ namespace LostPeterFoundation
         {
             float x0 = radius * cosf(j * deltaAngle);
             float z0 = radius * sinf(j * deltaAngle);
-            FVector3 pos(x0, 0.0f, z0);
+            FVector3 pos(x0, heightOffset, z0);
             float u = j / (float)numSegBase;
             float v = flipV ? 1.0f : 0.0f;
 
@@ -1953,6 +2073,15 @@ namespace LostPeterFoundation
                                     bool flipV,
                                     bool rightHand)
     {
+        //         + +
+        //       + * *  +  
+        //     + * - -  *  +
+        //    + * -    - * +
+        //     + * - -  *  + 
+        //       + * *  +
+        //         +  +
+
+        //FMeshVertex
         uint32 nVertexCount = (numSegCircle + 1) * (numSegSection + 1);
         uint32 nIndexCount = (numSegCircle) * (numSegSection + 1) * 6;
         ReserveVertexCount(meshData, nVertexCount);
@@ -2058,6 +2187,7 @@ namespace LostPeterFoundation
                 SetVertex(meshData, i * vertexZ + j, vertex);
             }
         }
+        meshData.RefreshAABB();
 
         //Index
         ResizeIndexCount(meshData, faceCount * 3);
@@ -2105,13 +2235,8 @@ namespace LostPeterFoundation
         m.texCoord = 0.5f * (v0.texCoord + v1.texCoord);
     }
 
-    void FMeshGeometry::Subdivide(FMeshData& meshData, bool rightHand)
+    void FMeshGeometry::SubDivide(FMeshData& meshData, bool rightHand)
     {
-        FMeshData inputCopy = meshData;
-
-        ResizeVertexCount(meshData, 0);
-        ResizeIndexCount(meshData, 0);
-
         //      (0)
         //       v0
         //       *
@@ -2124,6 +2249,9 @@ namespace LostPeterFoundation
         // v1    m1    v2
         //(1)    (4)   (2)
 
+        FMeshData inputCopy = meshData;
+        ResizeVertexCount(meshData, 0);
+        ResizeIndexCount(meshData, 0);
         uint32 numTri = GetIndexCount(inputCopy) / 3;
         for (uint32 i = 0; i < numTri; ++i)
         {
