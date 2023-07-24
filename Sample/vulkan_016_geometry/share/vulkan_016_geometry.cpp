@@ -670,13 +670,13 @@ Vulkan_016_Geometry::Vulkan_016_Geometry(int width, int height, String name)
 void Vulkan_016_Geometry::OnMouseLeftDown(double x, double y)
 {
     VulkanWindow::OnMouseLeftDown(x, y);
-    F_LogInfo("Vulkan_016_Geometry::OnMouseLeftDown: Mouse Left Down !");
+    //F_LogInfo("Vulkan_016_Geometry::OnMouseLeftDown: Mouse Left Down !");
     
 }
 void Vulkan_016_Geometry::OnMouseLeftUp(double x, double y)
 {
     VulkanWindow::OnMouseLeftUp(x, y);
-    F_LogInfo("Vulkan_016_Geometry::OnMouseLeftUp: Mouse Left Up !");
+    //F_LogInfo("Vulkan_016_Geometry::OnMouseLeftUp: Mouse Left Up !");
 
 }
 void Vulkan_016_Geometry::OnMouseMove(int button, double x, double y)

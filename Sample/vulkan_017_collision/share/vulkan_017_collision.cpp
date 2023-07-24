@@ -670,13 +670,13 @@ Vulkan_017_Collision::Vulkan_017_Collision(int width, int height, String name)
 void Vulkan_017_Collision::OnMouseLeftDown(double x, double y)
 {
     VulkanWindow::OnMouseLeftDown(x, y);
-    F_LogInfo("Vulkan_017_Collision::OnMouseLeftDown: Mouse Left Down !");
+    //F_LogInfo("Vulkan_017_Collision::OnMouseLeftDown: Mouse Left Down !");
     
 }
 void Vulkan_017_Collision::OnMouseLeftUp(double x, double y)
 {
     VulkanWindow::OnMouseLeftUp(x, y);
-    F_LogInfo("Vulkan_017_Collision::OnMouseLeftUp: Mouse Left Up !");
+    //F_LogInfo("Vulkan_017_Collision::OnMouseLeftUp: Mouse Left Up !");
 
 }
 void Vulkan_017_Collision::OnMouseMove(int button, double x, double y)

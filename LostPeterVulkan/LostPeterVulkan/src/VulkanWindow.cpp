@@ -3440,8 +3440,6 @@ namespace LostPeter
     }
     void VulkanWindow::EditorCoordinateAxis::MouseHover(double x, double y)
     {
-        return;
-
         switch ((int)this->typeState)
         {
         case CoordinateState_Select:
