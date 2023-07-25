@@ -80,9 +80,13 @@ namespace LostPeterFoundation
 		LP_FORCEINLINE const FMatrix4& GetMatrix4View() const { return this->m_mat4View; }
 		LP_FORCEINLINE const FMatrix4& GetMatrix4Projection() const { return this->m_mat4Projection; }
 		LP_FORCEINLINE FMatrix4 GetMatrix4ViewProjection() const;
+		LP_FORCEINLINE FMatrix4 GetMatrix4ViewProjectionInverse() const;
+
+		bool ConvertScreenPosToWorldPos3(const FVector3& vPosScreen, const FMatrix4& mat4Clip2World, const FVector4& vViewport, FVector3& vPosWorld) const;
+		bool ConvertScreenPosToWorldPos3(const FVector3& vPosScreen, const FVector4& vViewport, FVector3& vPosWorld) const;
 
 		void ConvertScreenPos2ToWorldRay(float screenX, float screenY, FRay* pOutRay) const;
-		void ConvertScreenPos2ToWorldRay(FVector4 vViewport, float screenX, float screenY, FRay* pOutRay) const;
+		bool ConvertScreenPos2ToWorldRay(const FVector4& vViewport, float screenX, float screenY, FRay* pOutRay) const;
 
 	public:
 		virtual void LookAtLH(const FVector3& pos, const FVector3& target, const FVector3& vUp);

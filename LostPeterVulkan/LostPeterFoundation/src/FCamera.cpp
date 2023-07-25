@@ -92,7 +92,53 @@ namespace LostPeterFoundation
 
 	FMatrix4 FCamera::GetMatrix4ViewProjection() const
 	{
-		return GetMatrix4View() * GetMatrix4Projection();
+		return GetMatrix4Projection() * GetMatrix4View();
+	}
+
+	FMatrix4 FCamera::GetMatrix4ViewProjectionInverse() const
+	{
+		return FMath::InverseMatrix4(GetMatrix4ViewProjection());
+	}
+	
+	bool FCamera::ConvertScreenPosToWorldPos3(const FVector3& vPosScreen, const FMatrix4& mat4Clip2World, const FVector4& vViewport, FVector3& vPosWorld) const
+	{
+		//1> Pixels in [-1,1]
+		FVector3 vIn;
+		vIn.x = (vPosScreen.x - vViewport.x) * 2.0f / vViewport.z - 1.0f;
+		vIn.y = (vPosScreen.y - vViewport.y) * 2.0f / vViewport.w - 1.0f;
+		vIn.z = 0.95f;
+
+		//2> Point on Plane
+		FVector3 vOnPlane;
+		if (FMath::TransformPerspective(mat4Clip2World, vIn, vOnPlane))
+		{
+			const FVector3& vCameraPos = GetPos();
+        	FVector3 vDir = vOnPlane - vCameraPos;
+			FVector3 vForward = - GetDir();
+			float fDistToPlane = FMath::Dot(vDir, vForward);
+			if (FMath::Abs(fDistToPlane) >= 1.0e-6f)
+			{
+				bool isPerspective = true;
+				if (isPerspective)
+				{
+					vDir *= vPosScreen.z / fDistToPlane;
+					vPosWorld = vCameraPos + vDir;
+				}
+				else
+				{
+					vPosWorld = vOnPlane - vForward * (fDistToPlane - vPosScreen.z);
+				}
+				return true;
+			}
+		}
+
+		vPosWorld = FMath::ms_v3Zero;
+    	return false;
+	}
+
+	bool FCamera::ConvertScreenPosToWorldPos3(const FVector3& vPosScreen, const FVector4& vViewport, FVector3& vPosWorld) const
+	{
+		return ConvertScreenPosToWorldPos3(vPosScreen, GetMatrix4ViewProjectionInverse(), vViewport, vPosWorld);
 	}
 
 	void FCamera::ConvertScreenPos2ToWorldRay(float screenX, float screenY, FRay* pOutRay) const
@@ -111,15 +157,34 @@ namespace LostPeterFoundation
 		pOutRay->SetDirection(FMath::Normalize(vRayTarget - vRayOrigin));
 	}
 
-	void FCamera::ConvertScreenPos2ToWorldRay(FVector4 vViewport, float screenX, float screenY, FRay* pOutRay) const
+	bool FCamera::ConvertScreenPos2ToWorldRay(const FVector4& vViewport, float screenX, float screenY, FRay* pOutRay) const
 	{
-		float fMax = 0.95f; 
-		FVector3 vScreenNear(screenX, screenY, -fMax);
-		FVector3 vScreenFar(screenX, screenY, fMax);
-		FVector3 vRayOrigin = FMath::TransformFromScreenToWorld(vScreenNear, GetMatrix4View(), GetMatrix4Projection(), vViewport);
-		FVector3 vRayTarget = FMath::TransformFromScreenToWorld(vScreenFar, GetMatrix4View(), GetMatrix4Projection(), vViewport);
+		float fNear = GetNearZ();
+		FVector3 vScreenNear(screenX, screenY, fNear);
+		FVector3 vScreenFar(screenX, screenY, fNear + 1000.0f);
+		FMatrix4 mat4Clip2World = GetMatrix4ViewProjectionInverse();
+
+		//RayOrigin
+		FVector3 vRayOrigin;
+		if (!ConvertScreenPosToWorldPos3(vScreenNear, mat4Clip2World, vViewport, vRayOrigin))
+		{
+			pOutRay->SetOrigin(GetPos());
+			pOutRay->SetDirection(FMath::ms_v3UnitZ);
+			return false;
+		}
+		
+		//RayTarget
+		FVector3 vRayTarget;
+		if (!ConvertScreenPosToWorldPos3(vScreenFar, mat4Clip2World, vViewport, vRayTarget))
+		{
+			pOutRay->SetOrigin(GetPos());
+			pOutRay->SetDirection(FMath::ms_v3UnitZ);
+			return false;
+		}
+
 		pOutRay->SetOrigin(vRayOrigin);
 		pOutRay->SetDirection(FMath::Normalize(vRayTarget - vRayOrigin));
+		return true;
 	}
 
 	void FCamera::LookAtLH(const FVector3& pos, const FVector3& target, const FVector3& worldUp)

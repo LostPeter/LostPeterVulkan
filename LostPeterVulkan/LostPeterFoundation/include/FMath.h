@@ -533,6 +533,8 @@ namespace LostPeterFoundation
         static FVector3 Transform(const FMatrix4& mat4, const FVector3& vPos);
         static FVector3 Transform(const FQuaternion& qRot, const FVector3& vPos);
 
+        static bool TransformPerspective(const FMatrix4& mat4, const FVector3& vPosIn, FVector3& vPosOut);
+
         static bool IsAffine(const FMatrix4& mat4);
         static FVector3 TransformAffine(const FMatrix4& mat4, const FVector3& v);
 		static FVector3 TransformAffine(const FMatrix4& mat4, const FVector4& v);	

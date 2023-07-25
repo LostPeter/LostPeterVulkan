@@ -435,6 +435,24 @@ namespace LostPeterFoundation
         return glm::rotate(qRot, v);
     }
 
+    bool FMath::TransformPerspective(const FMatrix4& mat4, const FVector3& vPosIn, FVector3& vPosOut)
+    {
+        FVector4 vRet = mat4 * FVector4(vPosIn.x, vPosIn.y, vPosIn.z, 1.0f);
+        if (Abs(vRet.w) > 1.0e-7f)
+        {
+            float invW = 1.0f / vRet.w;
+            vPosOut.x = vRet.x * invW;
+            vPosOut.y = vRet.y * invW;
+            vPosOut.z = vRet.z * invW;
+            return true;
+        }
+        
+        vPosOut.x = 0.0f;
+        vPosOut.y = 0.0f;
+        vPosOut.z = 0.0f;
+        return false;
+    }
+
     bool FMath::IsAffine(const FMatrix4& mat4)
     {
         return mat4[3][0] == 0.0f && mat4[3][1] == 0.0f && mat4[3][2] == 0.0f && mat4[3][3] == 1.0f;

@@ -264,7 +264,7 @@ namespace LostPeterFoundation
     String FMeshCreateParam_Circle::ms_nameType = "MeshCircle";
     FMeshCreateParam_Circle::FMeshCreateParam_Circle()
         : FMeshCreateParam(false, false)
-        , radius(1)
+        , radius(0.5f)
         , segment(100)
     {
 
@@ -338,7 +338,7 @@ namespace LostPeterFoundation
     String FMeshCreateParam_Sphere::ms_nameType = "MeshSphere";
     FMeshCreateParam_Sphere::FMeshCreateParam_Sphere()
         : FMeshCreateParam(false, false)
-        , radius(1)
+        , radius(0.5f)
         , sliceCount(30)
         , stackCount(30)
     {
@@ -375,7 +375,7 @@ namespace LostPeterFoundation
     String FMeshCreateParam_GeoSphere::ms_nameType = "MeshGeoSphere";
     FMeshCreateParam_GeoSphere::FMeshCreateParam_GeoSphere()
         : FMeshCreateParam(false, false)
-        , radius(1)
+        , radius(0.5f)
         , numSubdivisions(5)
     {
 

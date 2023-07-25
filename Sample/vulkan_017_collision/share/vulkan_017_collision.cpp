@@ -362,21 +362,21 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
-    FVector3(   0,  5.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_triangle-1
-    FVector3(   0,  5.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_quad-1
-    FVector3(   0,  5.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_grid-1
-    FVector3(   0,  5.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_circle-1
-    FVector3(   0,  5.0,  0.0),     FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_aabb-1
-    FVector3(   0,  5.0,   2.0),    FVector3(     0,  0,  0),    FVector3(    0.8f,      0.8f,      0.8f), //object_geo_sphere-1
-    FVector3(   0,  5.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    0.8f,      0.8f,      0.8f), //object_geo_geosphere-1
-    FVector3(   0,  5.0,   6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cylinder-1
-    FVector3(   0,  5.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_capsule-1
-    FVector3(   0,  5.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cone-1
-    FVector3(   0,  5.0,  12.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_torus-1
+    FVector3(   0,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_triangle-1
+    FVector3(   0,  0.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_quad-1
+    FVector3(   0,  0.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_grid-1
+    FVector3(   0,  0.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_circle-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_aabb-1
+    FVector3(   0,  0.0,   2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_sphere-1
+    FVector3(   0,  0.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_geosphere-1
+    FVector3(   0,  0.0,   6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cylinder-1
+    FVector3(   0,  0.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_capsule-1
+    FVector3(   0,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cone-1
+    FVector3(   0,  0.0,  12.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_torus-1
 
-    // FVector3(   0,  5.0,  14.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skybox-1
-    // FVector3(   0,  5.0,  16.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skydome-1
-    // FVector3(   0,  5.0,  18.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_terrain-1
+    // FVector3(   0,  0.0,  14.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skybox-1
+    // FVector3(   0,  0.0,  16.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skydome-1
+    // FVector3(   0,  0.0,  18.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_terrain-1
 
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
@@ -501,7 +501,7 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::SetupVertexIndexBuffer(const
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pR = this->aRends[i];
-        ModelMeshSub* pMeshSub = pR->pMeshSub;
+        MeshSub* pMeshSub = pR->pMeshSub;
 
         this->aMeshSubs.push_back(pMeshSub);
     }
@@ -512,7 +512,7 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::SetupVertexIndexBuffer(const
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pR = this->aRends[i];
-        ModelMeshSub* pMeshSub = pR->pMeshSub;
+        MeshSub* pMeshSub = pR->pMeshSub;
 
         pMeshSub->WriteVertexData(this->vertices_Pos3Color4Normal3Tex2, this->vertices_Pos3Color4Normal3Tangent3Tex2);
         pMeshSub->WriteIndexData(this->indices);
@@ -605,7 +605,7 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::UpdateUniformBuffer()
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pR = this->aRends[i];
-        ModelMeshSub* pMeshSub = pR->pMeshSub;
+        MeshSub* pMeshSub = pR->pMeshSub;
 
         this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
         this->materialCBs.insert(this->materialCBs.end(), pR->materialCBs.begin(), pR->materialCBs.end());
@@ -627,7 +627,7 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::UpdateIndirectCommandBuffer(
     for (size_t i = 0; i < count_rend; i++)
     {
         ModelObjectRend* pR = this->aRends[i];
-        ModelMeshSub* pMeshSub = pR->pMeshSub;
+        MeshSub* pMeshSub = pR->pMeshSub;
 
         VkDrawIndexedIndirectCommand indirectCommand = {};
         indirectCommand.indexCount = pMeshSub->poIndexCount;
@@ -721,15 +721,15 @@ void Vulkan_017_Collision::cameraReset()
 {
     VulkanWindow::cameraReset();
 
-    this->pCamera->SetPos(FVector3(0.0f, 18.0f, -14.0f));
-    this->pCamera->SetEulerAngles(FVector3(45.0f, 0.0f, 0.0f));
+    this->pCamera->SetPos(FVector3(0.0f, 18.0f, -13.0f));
+    this->pCamera->SetEulerAngles(FVector3(55.0f, 0.0f, 0.0f));
     this->pCamera->SetFarZ(100000.0f);
 }
 
 void Vulkan_017_Collision::loadModel_Custom()
 {
-    createModelMeshes();
-    createModelTextures();
+    createMeshes();
+    createTextures();
 
     int nIndexObjectRend = 0;
     for (int i = 0; i < g_Object_Count; i++)
@@ -743,7 +743,7 @@ void Vulkan_017_Collision::loadModel_Custom()
             pModelObject->nameMesh = g_Object_Configs[2 * i + 1];
             //Mesh
             {
-                ModelMesh* pMesh = this->findModelMesh(pModelObject->nameMesh);
+                Mesh* pMesh = this->findMesh(pModelObject->nameMesh);
                 F_Assert(pMesh != nullptr && "Vulkan_017_Collision::loadModel_Custom")
                 pModelObject->SetMesh(pMesh);
             }
@@ -776,7 +776,7 @@ void Vulkan_017_Collision::loadModel_Custom()
                 int indexMeshSub = pModelObject->aMeshSubUsed[j];
                 F_Assert(indexMeshSub >= 0 && indexMeshSub < count_mesh_sub && "Vulkan_017_Collision::loadModel_Custom")
 
-                ModelMeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
+                MeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
                 String nameObjectRend = g_ObjectRend_Configs[7 * nIndexObjectRend + 0];
                 ModelObjectRend* pRend = new ModelObjectRend(nameObjectRend, pModelObject, pMeshSub);
 
@@ -790,7 +790,7 @@ void Vulkan_017_Collision::loadModel_Custom()
                         for (size_t p = 0; p < count_tex; p++)
                         {
                             String nameTex = aTextureVS[p];
-                            ModelTexture* pTextureVS = this->findModelTexture(nameTex);
+                            Texture* pTextureVS = this->findTexture(nameTex);
                             pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), pTextureVS);
                         }
                     }
@@ -805,7 +805,7 @@ void Vulkan_017_Collision::loadModel_Custom()
                         for (size_t p = 0; p < count_tex; p++)
                         {
                             String nameTex = aTextureTESC[p];
-                            ModelTexture* pTextureTESC = this->findModelTexture(nameTex);
+                            Texture* pTextureTESC = this->findTexture(nameTex);
                             pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), pTextureTESC);
                         }
                     }
@@ -820,7 +820,7 @@ void Vulkan_017_Collision::loadModel_Custom()
                         for (size_t p = 0; p < count_tex; p++)
                         {
                             String nameTex = aTextureTESE[p];
-                            ModelTexture* pTextureTESE = this->findModelTexture(nameTex);
+                            Texture* pTextureTESE = this->findTexture(nameTex);
                             pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), pTextureTESE);
                         }
                     }
@@ -835,7 +835,7 @@ void Vulkan_017_Collision::loadModel_Custom()
                         for (size_t p = 0; p < count_tex; p++)
                         {
                             String nameTex = aTextureGS[p];
-                            ModelTexture* pTextureGS = this->findModelTexture(nameTex);
+                            Texture* pTextureGS = this->findTexture(nameTex);
                             pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), pTextureGS);
                         }
                     }
@@ -850,7 +850,7 @@ void Vulkan_017_Collision::loadModel_Custom()
                         for (size_t p = 0; p < count_tex; p++)
                         {
                             String nameTex = aTextureFS[p];
-                            ModelTexture* pTextureFS = this->findModelTexture(nameTex);
+                            Texture* pTextureFS = this->findTexture(nameTex);
                             pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), pTextureFS);
                         }
                     }
@@ -865,7 +865,7 @@ void Vulkan_017_Collision::loadModel_Custom()
                         for (size_t p = 0; p < count_tex; p++)
                         {
                             String nameTex = aTextureCS[p];
-                            ModelTexture* pTextureCS = this->findModelTexture(nameTex);
+                            Texture* pTextureCS = this->findTexture(nameTex);
                             pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), pTextureCS);
                         }
                     }
@@ -981,7 +981,7 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
                 materialConstants.lighting = isObjectLighting;
                 //Texture VS
                 {
-                    ModelTexturePtrVector* pTextureVSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
+                    TexturePtrVector* pTextureVSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
                     if (pTextureVSs != nullptr)
                     {
 
@@ -989,7 +989,7 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
                 }
                 //Texture FS
                 {
-                    ModelTexturePtrVector* pTextureFSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                    TexturePtrVector* pTextureFSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
                     if (pTextureFSs != nullptr)
                     {
 
@@ -997,7 +997,7 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
                 }
                 //Texture CS
                 {
-                    ModelTexturePtrVector* pTextureCSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
+                    TexturePtrVector* pTextureCSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
                     if (pTextureCSs != nullptr)
                     {
 
@@ -1262,18 +1262,18 @@ void Vulkan_017_Collision::createComputePipeline_Custom()
     }   
 }
 
-void Vulkan_017_Collision::destroyModelMeshes()
+void Vulkan_017_Collision::destroyMeshes()
 {
     size_t count = this->m_aModelMesh.size();
     for (size_t i = 0; i < count; i++)
     {
-        ModelMesh* pMesh = this->m_aModelMesh[i];
+        Mesh* pMesh = this->m_aModelMesh[i];
         delete pMesh;
     }
     this->m_aModelMesh.clear();
     this->m_mapModelMesh.clear();
 }
-void Vulkan_017_Collision::createModelMeshes()
+void Vulkan_017_Collision::createMeshes()
 {
     for (int i = 0; i < g_MeshCount; i++)
     {
@@ -1291,18 +1291,18 @@ void Vulkan_017_Collision::createModelMeshes()
             typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);
         }
 
-        ModelMesh* pMesh = new ModelMesh(this, 
-                                         nameMesh,
-                                         pathMesh,
-                                         typeMesh,
-                                         typeVertex,
-                                         typeGeometryType,
-                                         nullptr);
+        Mesh* pMesh = new Mesh(this, 
+                               nameMesh,
+                               pathMesh,
+                               typeMesh,
+                               typeVertex,
+                               typeGeometryType,
+                               nullptr);
         bool isFlipY = g_MeshIsFlipYs[i];
         bool isTransformLocal = g_MeshIsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
         {
-            String msg = "Vulkan_017_Collision::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
+            String msg = "Vulkan_017_Collision::createMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1310,13 +1310,13 @@ void Vulkan_017_Collision::createModelMeshes()
         this->m_aModelMesh.push_back(pMesh);
         this->m_mapModelMesh[nameMesh] = pMesh;
 
-        F_LogInfo("Vulkan_017_Collision::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
+        F_LogInfo("Vulkan_017_Collision::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
                   nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
     }
 }
-Vulkan_017_Collision::ModelMesh* Vulkan_017_Collision::findModelMesh(const String& nameMesh)
+Vulkan_017_Collision::Mesh* Vulkan_017_Collision::findMesh(const String& nameMesh)
 {
-    ModelMeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
+    MeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
     if (itFind == this->m_mapModelMesh.end())
     {
         return nullptr;
@@ -1325,18 +1325,18 @@ Vulkan_017_Collision::ModelMesh* Vulkan_017_Collision::findModelMesh(const Strin
 }
 
 
-void Vulkan_017_Collision::destroyModelTextures()
+void Vulkan_017_Collision::destroyTextures()
 {
     size_t count = this->m_aModelTexture.size();
     for (size_t i = 0; i < count; i++)
     {
-        ModelTexture* pTexture = this->m_aModelTexture[i];
+        Texture* pTexture = this->m_aModelTexture[i];
         delete pTexture;
     }
     this->m_aModelTexture.clear();
     this->m_mapModelTexture.clear();
 }
-void Vulkan_017_Collision::createModelTextures()
+void Vulkan_017_Collision::createTextures()
 {
     for (int i = 0; i < g_TextureCount; i++)
     {
@@ -1350,16 +1350,16 @@ void Vulkan_017_Collision::createModelTextures()
         String pathTextures = g_TexturePaths[5 * i + 4];
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
-        ModelTexture* pTexture = new ModelTexture(this, 
-                                                  nameTexture,
-                                                  typeTexture,
-                                                  isRenderTarget,
-                                                  isGraphicsComputeShared,
-                                                  g_TextureFormats[i],
-                                                  g_TextureFilters[i],
-                                                  g_TextureAddressings[i],
-                                                  g_TextureBorderColors[i],
-                                                  aPathTexture);
+        Texture* pTexture = new Texture(this, 
+                                        nameTexture,
+                                        typeTexture,
+                                        isRenderTarget,
+                                        isGraphicsComputeShared,
+                                        g_TextureFormats[i],
+                                        g_TextureFilters[i],
+                                        g_TextureAddressings[i],
+                                        g_TextureBorderColors[i],
+                                        aPathTexture);
         pTexture->texChunkMaxX = g_TextureAnimChunks[i * 2 + 0];
         pTexture->texChunkMaxY = g_TextureAnimChunks[i * 2 + 1];
         if (pTexture->texChunkMaxX > 0 && 
@@ -1379,16 +1379,16 @@ void Vulkan_017_Collision::createModelTextures()
         this->m_aModelTexture.push_back(pTexture);
         this->m_mapModelTexture[nameTexture] = pTexture;
 
-        F_LogInfo("Vulkan_017_Collision::createModelTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_017_Collision::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
                   nameTexture.c_str(), 
                   nameType.c_str(), 
                   isRenderTarget ? "true" : "false",
                   pathTextures.c_str());
     }
 }
-Vulkan_017_Collision::ModelTexture* Vulkan_017_Collision::findModelTexture(const String& nameTexture)
+Vulkan_017_Collision::Texture* Vulkan_017_Collision::findTexture(const String& nameTexture)
 {
-    ModelTexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
+    TexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
     if (itFind == this->m_mapModelTexture.end())
     {
         return nullptr;
@@ -1653,7 +1653,7 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureVS)) //TextureVS
             {
-                ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
+                Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
                 nIndexTextureVS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -1665,7 +1665,7 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESC))//TextureTESC
             {
-                ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), nIndexTextureTESC);
+                Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), nIndexTextureTESC);
                 nIndexTextureTESC ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -1677,7 +1677,7 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESE))//TextureTESE
             {
-                ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), nIndexTextureTESE);
+                Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), nIndexTextureTESE);
                 nIndexTextureTESE ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -1689,7 +1689,7 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS)) //TextureFS
             {
-                ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), nIndexTextureFS);
+                Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), nIndexTextureFS);
                 nIndexTextureFS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -1739,7 +1739,7 @@ void Vulkan_017_Collision::createDescriptorSets_Compute(PipelineCompute* pPipeli
         }   
         else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSR)) //TextureCSR
         {
-            ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
+            Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
             pPipelineCompute->pTextureSource = pTexture;
             pushVkDescriptorSet_Image(descriptorWrites,
@@ -1752,7 +1752,7 @@ void Vulkan_017_Collision::createDescriptorSets_Compute(PipelineCompute* pPipeli
         }
         else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW)) //TextureCSRW
         {
-            ModelTexture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
+            Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
             pPipelineCompute->pTextureTarget = pTexture;
             pushVkDescriptorSet_Image(descriptorWrites,
@@ -2332,7 +2332,7 @@ void Vulkan_017_Collision::modelConfig()
 
                                             //Texture VS
                                             {
-                                                ModelTexturePtrVector* pTextureVSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
+                                                TexturePtrVector* pTextureVSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
                                                 if (pTextureVSs != nullptr)
                                                 {
 
@@ -2340,13 +2340,13 @@ void Vulkan_017_Collision::modelConfig()
                                             }
                                             //Texture FS
                                             {
-                                                ModelTexturePtrVector* pTextureFSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                                                TexturePtrVector* pTextureFSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
                                                 if (pTextureFSs != nullptr)
                                                 {
                                                     size_t count_texture = pTextureFSs->size();
                                                     for (size_t q = 0; q < count_texture; q++)
                                                     {
-                                                        ModelTexture* pTexture = (*pTextureFSs)[q];
+                                                        Texture* pTexture = (*pTextureFSs)[q];
 
                                                         String nameMaterial_Texture = FUtilString::SaveInt(p) + " - Material - " + nameObjectRend + " - TextureFS - " + FUtilString::SaveInt(q);
                                                         if (ImGui::CollapsingHeader(nameMaterial_Texture.c_str()))
@@ -2426,7 +2426,7 @@ void Vulkan_017_Collision::modelConfig()
                                             }
                                             //Texture CS
                                             {
-                                                ModelTexturePtrVector* pTextureCSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
+                                                TexturePtrVector* pTextureCSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
                                                 if (pTextureCSs != nullptr)
                                                 {
 
@@ -2601,7 +2601,7 @@ void Vulkan_017_Collision::drawModelObjectRends(VkCommandBuffer& commandBuffer, 
 void Vulkan_017_Collision::drawModelObjectRend(VkCommandBuffer& commandBuffer, ModelObjectRend* pRend)
 {
     ModelObject* pModelObject = pRend->pModelObject;
-    ModelMeshSub* pMeshSub = pRend->pMeshSub;
+    MeshSub* pMeshSub = pRend->pMeshSub;
 
     VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
     VkDeviceSize offsets[] = { 0 };
@@ -2647,8 +2647,8 @@ void Vulkan_017_Collision::drawModelObjectRend(VkCommandBuffer& commandBuffer, M
 
 void Vulkan_017_Collision::cleanupCustom()
 {   
-    destroyModelTextures();
-    destroyModelMeshes();
+    destroyTextures();
+    destroyMeshes();
 
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

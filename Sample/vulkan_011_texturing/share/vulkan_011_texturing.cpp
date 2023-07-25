@@ -666,8 +666,8 @@ static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
 };
 
 
-/////////////////////////// ModelMeshRaw ////////////////////////
-bool Vulkan_011_Texturing::ModelMeshRaw::LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
+/////////////////////////// ModelMesh ///////////////////////////
+bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load
     FMeshData meshData;
@@ -675,7 +675,7 @@ bool Vulkan_011_Texturing::ModelMeshRaw::LoadMesh(bool isFlipY, bool isTransform
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!FMeshDataLoader::LoadMeshData(this->pathMesh, meshData, eMeshParserFlags))
     {
-        F_LogError("Vulkan_011_Texturing::ModelMeshRaw::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
+        F_LogError("Vulkan_011_Texturing::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
         return false; 
     }
 
@@ -713,7 +713,7 @@ bool Vulkan_011_Texturing::ModelMeshRaw::LoadMesh(bool isFlipY, bool isTransform
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        F_LogInfo("Vulkan_011_Texturing::ModelMeshRaw::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+        F_LogInfo("Vulkan_011_Texturing::ModelMesh::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                   this->nameMesh.c_str(),
                   (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
                   (int)this->indices.size());
@@ -752,7 +752,7 @@ bool Vulkan_011_Texturing::ModelMeshRaw::LoadMesh(bool isFlipY, bool isTransform
         this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
         this->poIndexBuffer_Data = &this->indices[0];
 
-        F_LogInfo("Vulkan_011_Texturing::ModelMeshRaw::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+        F_LogInfo("Vulkan_011_Texturing::ModelMesh::LoadMesh: load mesh [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                   this->nameMesh.c_str(),
                   (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
                   (int)this->indices.size());
@@ -831,8 +831,8 @@ void Vulkan_011_Texturing::cameraReset()
 
 void Vulkan_011_Texturing::loadModel_Custom()
 {
-    createModelMeshes();
-    createModelTextures();
+    createMeshes();
+    createTextures();
 
     for (int i = 0; i < g_ObjectCount; i++)
     {
@@ -843,7 +843,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
 
         //Mesh
         {
-            ModelMeshRaw* pMesh = this->findModelMesh(pModelObject->nameMesh);
+            ModelMesh* pMesh = this->findMesh(pModelObject->nameMesh);
             F_Assert(pMesh != nullptr && "Vulkan_011_Texturing::loadModel_Custom")
             pModelObject->SetMesh(pMesh);
         }
@@ -858,7 +858,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
                 for (size_t j = 0; j < count_tex; j++)
                 {
                     String nameTex = aTextureVS[j];
-                    ModelTexture* pTextureVS = this->findModelTexture(nameTex);
+                    Texture* pTextureVS = this->findTexture(nameTex);
                     pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), pTextureVS);
                 }
             }
@@ -873,7 +873,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
                 for (size_t j = 0; j < count_tex; j++)
                 {
                     String nameTex = aTextureTESC[j];
-                    ModelTexture* pTextureTESC = this->findModelTexture(nameTex);
+                    Texture* pTextureTESC = this->findTexture(nameTex);
                     pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), pTextureTESC);
                 }
             }
@@ -888,7 +888,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
                 for (size_t j = 0; j < count_tex; j++)
                 {
                     String nameTex = aTextureTESE[j];
-                    ModelTexture* pTextureTESE = this->findModelTexture(nameTex);
+                    Texture* pTextureTESE = this->findTexture(nameTex);
                     pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), pTextureTESE);
                 }
             }
@@ -903,7 +903,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
                 for (size_t j = 0; j < count_tex; j++)
                 {
                     String nameTex = aTextureGS[j];
-                    ModelTexture* pTextureGS = this->findModelTexture(nameTex);
+                    Texture* pTextureGS = this->findTexture(nameTex);
                     pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), pTextureGS);
                 }
             }
@@ -918,7 +918,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
                 for (size_t j = 0; j < count_tex; j++)
                 {
                     String nameTex = aTextureFS[j];
-                    ModelTexture* pTextureFS = this->findModelTexture(nameTex);
+                    Texture* pTextureFS = this->findTexture(nameTex);
                     pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), pTextureFS);
                 }
             }
@@ -933,7 +933,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
                 for (size_t j = 0; j < count_tex; j++)
                 {
                     String nameTex = aTextureCS[j];
-                    ModelTexture* pTextureCS = this->findModelTexture(nameTex);
+                    Texture* pTextureCS = this->findTexture(nameTex);
                     pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), pTextureCS);
                 }
             }
@@ -1023,7 +1023,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                 materialConstants.lighting = g_ObjectIsLightings[i];
                 //Texture VS
                 {
-                    ModelTexturePtrVector* pTextureVSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
+                    TexturePtrVector* pTextureVSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
                     if (pTextureVSs != nullptr)
                     {
 
@@ -1031,13 +1031,13 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                 }
                 //Texture FS
                 {
-                    ModelTexturePtrVector* pTextureFSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                    TexturePtrVector* pTextureFSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
                     if (pTextureFSs != nullptr)
                     {
                         size_t count_texture = pTextureFSs->size();
                         for (size_t p = 0; p < count_texture; p++)
                         {
-                            ModelTexture* pTexture = (*pTextureFSs)[p];
+                            Texture* pTexture = (*pTextureFSs)[p];
                             materialConstants.aTexLayers[p].texWidth = pTexture->width;
                             materialConstants.aTexLayers[p].texHeight = pTexture->height;
                             materialConstants.aTexLayers[p].texDepth = pTexture->depth;
@@ -1124,7 +1124,7 @@ void Vulkan_011_Texturing::rebuildInstanceCBs(bool isCreateVkBuffer)
                 }
                 //Texture CS
                 {
-                    ModelTexturePtrVector* pTextureCSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
+                    TexturePtrVector* pTextureCSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
                     if (pTextureCSs != nullptr)
                     {
 
@@ -1371,18 +1371,18 @@ void Vulkan_011_Texturing::createComputePipeline_Custom()
     }   
 }
 
-void Vulkan_011_Texturing::destroyModelMeshes()
+void Vulkan_011_Texturing::destroyMeshes()
 {
     size_t count = this->m_aModelMesh.size();
     for (size_t i = 0; i < count; i++)
     {
-        ModelMeshRaw* pMesh = this->m_aModelMesh[i];
+        ModelMesh* pMesh = this->m_aModelMesh[i];
         delete pMesh;
     }
     this->m_aModelMesh.clear();
     this->m_mapModelMesh.clear();
 }
-void Vulkan_011_Texturing::createModelMeshes()
+void Vulkan_011_Texturing::createMeshes()
 {
     for (int i = 0; i < g_MeshCount; i++)
     {
@@ -1400,7 +1400,7 @@ void Vulkan_011_Texturing::createModelMeshes()
             typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);
         }
 
-        ModelMeshRaw* pMesh = new ModelMeshRaw(this, 
+        ModelMesh* pMesh = new ModelMesh(this, 
                                          nameMesh,
                                          pathMesh,
                                          typeMesh,
@@ -1410,7 +1410,7 @@ void Vulkan_011_Texturing::createModelMeshes()
         bool isTransformLocal = g_MeshIsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
         {
-            String msg = "Vulkan_011_Texturing::createModelMeshes: create mesh: [" + nameMesh + "] failed !";
+            String msg = "Vulkan_011_Texturing::createMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1418,13 +1418,13 @@ void Vulkan_011_Texturing::createModelMeshes()
         this->m_aModelMesh.push_back(pMesh);
         this->m_mapModelMesh[nameMesh] = pMesh;
 
-        F_LogInfo("Vulkan_011_Texturing::createModelMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_011_Texturing::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], path: [%s] success !", 
                   nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), pathMesh.c_str());
     }
 }
-Vulkan_011_Texturing::ModelMeshRaw* Vulkan_011_Texturing::findModelMesh(const String& nameMesh)
+Vulkan_011_Texturing::ModelMesh* Vulkan_011_Texturing::findMesh(const String& nameMesh)
 {
-    ModelMeshRawPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
+    ModelMeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
     if (itFind == this->m_mapModelMesh.end())
     {
         return nullptr;
@@ -1433,18 +1433,18 @@ Vulkan_011_Texturing::ModelMeshRaw* Vulkan_011_Texturing::findModelMesh(const St
 }
 
 
-void Vulkan_011_Texturing::destroyModelTextures()
+void Vulkan_011_Texturing::destroyTextures()
 {
     size_t count = this->m_aModelTexture.size();
     for (size_t i = 0; i < count; i++)
     {
-        ModelTexture* pTexture = this->m_aModelTexture[i];
+        Texture* pTexture = this->m_aModelTexture[i];
         delete pTexture;
     }
     this->m_aModelTexture.clear();
     this->m_mapModelTexture.clear();
 }
-void Vulkan_011_Texturing::createModelTextures()
+void Vulkan_011_Texturing::createTextures()
 {
     for (int i = 0; i < g_TextureCount; i++)
     {
@@ -1458,16 +1458,16 @@ void Vulkan_011_Texturing::createModelTextures()
         String pathTextures = g_TexturePaths[5 * i + 4];
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
-        ModelTexture* pTexture = new ModelTexture(this, 
-                                                  nameTexture,
-                                                  typeTexture,
-                                                  isRenderTarget,
-                                                  isGraphicsComputeShared,
-                                                  g_TextureFormats[i],
-                                                  g_TextureFilters[i],
-                                                  g_TextureAddressings[i],
-                                                  g_TextureBorderColors[i],
-                                                  aPathTexture);
+        Texture* pTexture = new Texture(this, 
+                                        nameTexture,
+                                        typeTexture,
+                                        isRenderTarget,
+                                        isGraphicsComputeShared,
+                                        g_TextureFormats[i],
+                                        g_TextureFilters[i],
+                                        g_TextureAddressings[i],
+                                        g_TextureBorderColors[i],
+                                        aPathTexture);
         pTexture->texChunkMaxX = g_TextureAnimChunks[i * 2 + 0];
         pTexture->texChunkMaxY = g_TextureAnimChunks[i * 2 + 1];
         if (pTexture->texChunkMaxX > 0 && 
@@ -1487,16 +1487,16 @@ void Vulkan_011_Texturing::createModelTextures()
         this->m_aModelTexture.push_back(pTexture);
         this->m_mapModelTexture[nameTexture] = pTexture;
 
-        F_LogInfo("Vulkan_011_Texturing::createModelTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
+        F_LogInfo("Vulkan_011_Texturing::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
                   nameTexture.c_str(), 
                   nameType.c_str(), 
                   isRenderTarget ? "true" : "false",
                   pathTextures.c_str());
     }
 }
-Vulkan_011_Texturing::ModelTexture* Vulkan_011_Texturing::findModelTexture(const String& nameTexture)
+Vulkan_011_Texturing::Texture* Vulkan_011_Texturing::findTexture(const String& nameTexture)
 {
-    ModelTexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
+    TexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
     if (itFind == this->m_mapModelTexture.end())
     {
         return nullptr;
@@ -1730,7 +1730,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                     }
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureVS))//TextureVS
                     {
-                        ModelTexture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
+                        Texture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
                         nIndexTextureVS ++;
                         pushVkDescriptorSet_Image(descriptorWrites,
                                                   pModelObject->pPipelineGraphics->poDescriptorSets[j],
@@ -1742,7 +1742,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                     }
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESC))//TextureTESC
                     {
-                        ModelTexture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), nIndexTextureTESC);
+                        Texture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), nIndexTextureTESC);
                         nIndexTextureTESC ++;
                         pushVkDescriptorSet_Image(descriptorWrites,
                                                   pModelObject->pPipelineGraphics->poDescriptorSets[j],
@@ -1754,7 +1754,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                     }
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESE))//TextureTESE
                     {
-                        ModelTexture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), nIndexTextureTESE);
+                        Texture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), nIndexTextureTESE);
                         nIndexTextureTESE ++;
                         pushVkDescriptorSet_Image(descriptorWrites,
                                                   pModelObject->pPipelineGraphics->poDescriptorSets[j],
@@ -1766,7 +1766,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                     }
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS)) //TextureFS
                     {
-                        ModelTexture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), nIndexTextureFS);
+                        Texture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), nIndexTextureFS);
                         nIndexTextureFS ++;
                         pushVkDescriptorSet_Image(descriptorWrites,
                                                   pModelObject->pPipelineGraphics->poDescriptorSets[j],
@@ -1820,7 +1820,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                 }   
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSR)) //TextureCSR
                 {
-                    ModelTexture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
+                    Texture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
                     nIndexTextureCS ++;
                     pushVkDescriptorSet_Image(descriptorWrites,
                                               pPipelineCompute->poDescriptorSet,
@@ -1832,7 +1832,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                 }
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW)) //TextureCSRW
                 {
-                    ModelTexture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
+                    Texture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
                     nIndexTextureCS ++;
                     pushVkDescriptorSet_Image(descriptorWrites,
                                               pPipelineCompute->poDescriptorSet,
@@ -1887,13 +1887,13 @@ void Vulkan_011_Texturing::updateCBs_Custom()
             MaterialConstants& materialCB = pModelObject->materialCBs[j];
             if (pModelObject->nameObject == g_Object_TextureAnimation_Chunk)
             {
-                ModelTexturePtrVector* pTextureFSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                TexturePtrVector* pTextureFSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
                 if (pTextureFSs != nullptr)
                 {
                     size_t count_texture = pTextureFSs->size();
                     for (size_t p = 0; p < count_texture; p++)
                     {
-                        ModelTexture* pTexture = (*pTextureFSs)[p];
+                        Texture* pTexture = (*pTextureFSs)[p];
 
                         if (pTexture->texChunkMaxX > 0 &&
                             pTexture->texChunkMaxY > 0)
@@ -2130,7 +2130,7 @@ void Vulkan_011_Texturing::modelConfig()
 
                                 //Texture VS
                                 {
-                                    ModelTexturePtrVector* pTextureVSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
+                                    TexturePtrVector* pTextureVSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
                                     if (pTextureVSs != nullptr)
                                     {
 
@@ -2138,13 +2138,13 @@ void Vulkan_011_Texturing::modelConfig()
                                 }
                                 //Texture FS
                                 {
-                                    ModelTexturePtrVector* pTextureFSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                                    TexturePtrVector* pTextureFSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
                                     if (pTextureFSs != nullptr)
                                     {
                                         size_t count_texture = pTextureFSs->size();
                                         for (size_t p = 0; p < count_texture; p++)
                                         {
-                                            ModelTexture* pTexture = (*pTextureFSs)[p];
+                                            Texture* pTexture = (*pTextureFSs)[p];
 
                                             String nameMaterial_Texture = FUtilString::SaveInt(j) + " - Material - " + pModelObject->nameObject + " - TextureFS - " + FUtilString::SaveInt(p);
                                             if (ImGui::CollapsingHeader(nameMaterial_Texture.c_str()))
@@ -2334,7 +2334,7 @@ void Vulkan_011_Texturing::modelConfig()
                                 }
                                 //Texture CS
                                 {
-                                    ModelTexturePtrVector* pTextureCSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
+                                    TexturePtrVector* pTextureCSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
                                     if (pTextureCSs != nullptr)
                                     {
 
@@ -2402,7 +2402,7 @@ void Vulkan_011_Texturing::drawMeshDefault_Custom(VkCommandBuffer& commandBuffer
         ModelObject* pModelObject = this->m_aModelObjects_Render[i];
         if (!pModelObject->isShow)
             continue;
-        ModelMeshRaw* pMesh = pModelObject->pMesh;
+        ModelMesh* pMesh = pModelObject->pMesh;
 
         VkBuffer vertexBuffers[] = { pMesh->poVertexBuffer };
         VkDeviceSize offsets[] = { 0 };
@@ -2447,8 +2447,8 @@ void Vulkan_011_Texturing::drawModelObject(VkCommandBuffer& commandBuffer, Model
 
 void Vulkan_011_Texturing::cleanupCustom()
 {   
-    destroyModelTextures();
-    destroyModelMeshes();
+    destroyTextures();
+    destroyMeshes();
 
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

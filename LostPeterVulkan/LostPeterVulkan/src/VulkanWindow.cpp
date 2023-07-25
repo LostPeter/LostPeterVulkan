@@ -26,13 +26,12 @@ namespace LostPeter
 #endif
     int VulkanWindow::s_maxFramesInFight = 2;
 
-    
-    /////////////////////////// ModelMeshSub //////////////////////
-    VulkanWindow::ModelMeshSub::ModelMeshSub(ModelMesh* _pMesh, 
-                                             const String& _nameMeshSub,
-                                             const String& _nameOriginal,
-                                             int _indexMeshSub,
-                                             FMeshVertexType _poTypeVertex)
+    /////////////////////////// MeshSub ///////////////////////////
+    VulkanWindow::MeshSub::MeshSub(Mesh* _pMesh, 
+                                   const String& _nameMeshSub,
+                                   const String& _nameOriginal,
+                                   int _indexMeshSub,
+                                   FMeshVertexType _poTypeVertex)
         : pMesh(_pMesh)
         , nameMeshSub(_nameMeshSub)
         , nameOriginal(_nameOriginal)
@@ -58,11 +57,11 @@ namespace LostPeter
     {
 
     }
-    VulkanWindow::ModelMeshSub::~ModelMeshSub()
+    VulkanWindow::MeshSub::~MeshSub()
     {
         Destroy();
     }
-    void VulkanWindow::ModelMeshSub::Destroy()
+    void VulkanWindow::MeshSub::Destroy()
     {
         //Vertex
         if (this->poVertexBuffer != VK_NULL_HANDLE)
@@ -80,7 +79,7 @@ namespace LostPeter
         this->poIndexBuffer = VK_NULL_HANDLE;
         this->poIndexBufferMemory = VK_NULL_HANDLE;
     }
-    uint32_t VulkanWindow::ModelMeshSub::GetVertexSize() 
+    uint32_t VulkanWindow::MeshSub::GetVertexSize() 
     {
         if (this->vertices_Pos3Color4Tex2.size() > 0)
             return sizeof(FVertex_Pos3Color4Tex2);
@@ -94,15 +93,15 @@ namespace LostPeter
             return sizeof(FVertex_Pos3Color4Normal3Tangent3Tex4);
         else
         {
-            F_Assert(false && "ModelMeshSub::GetVertexSize: wrong vertex type !")
+            F_Assert(false && "MeshSub::GetVertexSize: wrong vertex type !")
             return 0;
         }
     }
-    uint32_t VulkanWindow::ModelMeshSub::GetIndexSize()
+    uint32_t VulkanWindow::MeshSub::GetIndexSize()
     {
         return sizeof(uint32_t);
     }
-    bool VulkanWindow::ModelMeshSub::CreateMeshSub(FMeshData& meshData, bool isTransformLocal, const FMatrix4& matTransformLocal)
+    bool VulkanWindow::MeshSub::CreateMeshSub(FMeshData& meshData, bool isTransformLocal, const FMatrix4& matTransformLocal)
     {
         int count_vertex = (int)meshData.vertices.size();
         if (this->poTypeVertex == F_MeshVertex_Pos3Color4Tex2)
@@ -137,7 +136,7 @@ namespace LostPeter
             this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
             this->poIndexBuffer_Data = &this->indices[0];
 
-            F_LogInfo("VulkanWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Tex2]: Vertex count: [%d], Index count: [%d] !", 
+            F_LogInfo("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Tex2]: Vertex count: [%d], Index count: [%d] !", 
                       this->nameMeshSub.c_str(),
                       this->nameOriginal.c_str(),
                       (int)this->vertices_Pos3Color4Tex2.size(), 
@@ -176,11 +175,11 @@ namespace LostPeter
             this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
             this->poIndexBuffer_Data = &this->indices[0];
 
-            F_LogInfo("VulkanWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
-                     this->nameMeshSub.c_str(),
-                     this->nameOriginal.c_str(),
-                     (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
-                     (int)this->indices.size());
+            F_LogInfo("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+                      this->nameMeshSub.c_str(),
+                      this->nameOriginal.c_str(),
+                      (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
+                      (int)this->indices.size());
         }
         else if (this->poTypeVertex == F_MeshVertex_Pos3Color4Normal3Tex4)
         {
@@ -215,7 +214,7 @@ namespace LostPeter
             this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
             this->poIndexBuffer_Data = &this->indices[0];
 
-            F_LogInfo("VulkanWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+            F_LogInfo("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex4]: Vertex count: [%d], Index count: [%d] !", 
                       this->nameMeshSub.c_str(),
                       this->nameOriginal.c_str(),
                       (int)this->vertices_Pos3Color4Normal3Tex4.size(), 
@@ -255,7 +254,7 @@ namespace LostPeter
             this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
             this->poIndexBuffer_Data = &this->indices[0];
 
-            F_LogInfo("VulkanWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
+            F_LogInfo("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                       this->nameMeshSub.c_str(),
                       this->nameOriginal.c_str(),
                       (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
@@ -295,7 +294,7 @@ namespace LostPeter
             this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
             this->poIndexBuffer_Data = &this->indices[0];
 
-            F_LogInfo("VulkanWindow::ModelMeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex4]: Vertex count: [%d], Index count: [%d] !", 
+            F_LogInfo("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex4]: Vertex count: [%d], Index count: [%d] !", 
                       this->nameMeshSub.c_str(),
                       this->nameOriginal.c_str(),
                       (int)this->vertices_Pos3Color4Normal3Tangent3Tex4.size(), 
@@ -303,7 +302,7 @@ namespace LostPeter
         }
         else
         {
-            F_LogError("VulkanWindow::ModelMeshSub::CreateMeshSub: create mesh sub failed: [%s], wrong poTypeVertex !", this->nameMeshSub.c_str());
+            F_LogError("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub failed: [%s], wrong poTypeVertex !", this->nameMeshSub.c_str());
             return false; 
         }
 
@@ -319,8 +318,8 @@ namespace LostPeter
 
         return true;
     }
-    void VulkanWindow::ModelMeshSub::WriteVertexData(std::vector<FVertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
-                                                     std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2)
+    void VulkanWindow::MeshSub::WriteVertexData(std::vector<FVertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
+                                                std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2)
     {
         size_t count = 0;
         if (this->vertices_Pos3Color4Normal3Tex2.size() > 0)
@@ -367,20 +366,20 @@ namespace LostPeter
             }
         }
     }
-    void VulkanWindow::ModelMeshSub::WriteIndexData(std::vector<uint32_t>& indexData)
+    void VulkanWindow::MeshSub::WriteIndexData(std::vector<uint32_t>& indexData)
     {
         indexData.insert(indexData.end(), indices.begin(), indices.end());
     }
 
 
-    /////////////////////////// ModelMesh /////////////////////////
-    VulkanWindow::ModelMesh::ModelMesh(VulkanWindow* _pWindow, 
-                                       const String& _nameMesh,
-                                       const String& _pathMesh,
-                                       FMeshType _typeMesh,
-                                       FMeshVertexType _typeVertex,
-                                       FMeshGeometryType _typeGeometryType,
-                                       FMeshCreateParam* _pMeshCreateParam)
+    /////////////////////////// Mesh //////////////////////////////
+    VulkanWindow::Mesh::Mesh(VulkanWindow* _pWindow, 
+                             const String& _nameMesh,
+                             const String& _pathMesh,
+                             FMeshType _typeMesh,
+                             FMeshVertexType _typeVertex,
+                             FMeshGeometryType _typeGeometryType,
+                             FMeshCreateParam* _pMeshCreateParam)
         : pWindow(_pWindow)
         , nameMesh(_nameMesh)
         , pathMesh(_pathMesh)
@@ -391,17 +390,17 @@ namespace LostPeter
     {
 
     }
-    VulkanWindow::ModelMesh::~ModelMesh()
+    VulkanWindow::Mesh::~Mesh()
     {
         Destroy();
     }
 
-    void VulkanWindow::ModelMesh::Destroy()
+    void VulkanWindow::Mesh::Destroy()
     {
         int count = (int)this->aMeshSubs.size();
         for (int i = 0; i < count; i++)
         {
-            ModelMeshSub* pMeshSub = this->aMeshSubs[i];
+            MeshSub* pMeshSub = this->aMeshSubs[i];
             pMeshSub->Destroy();
             delete pMeshSub;
         }
@@ -409,12 +408,12 @@ namespace LostPeter
         this->mapMeshSubs.clear();
     }
 
-    bool VulkanWindow::ModelMesh::AddMeshSub(ModelMeshSub* pMeshSub)
+    bool VulkanWindow::Mesh::AddMeshSub(MeshSub* pMeshSub)
     {
-        ModelMeshSubPtrMap::iterator itFind = this->mapMeshSubs.find(pMeshSub->nameMeshSub);
+        MeshSubPtrMap::iterator itFind = this->mapMeshSubs.find(pMeshSub->nameMeshSub);
         if (itFind != this->mapMeshSubs.end())
         {
-            F_LogError("VulkanWindow::ModelMesh::AddMeshSub: Mesh sub is exist: [%s] !", pMeshSub->nameMeshSub.c_str());
+            F_LogError("VulkanWindow::Mesh::AddMeshSub: Mesh sub is exist: [%s] !", pMeshSub->nameMeshSub.c_str());
             return false;
         }
 
@@ -422,7 +421,7 @@ namespace LostPeter
         this->mapMeshSubs[pMeshSub->nameMeshSub] = pMeshSub;
         return true;
     }   
-    bool VulkanWindow::ModelMesh::LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
+    bool VulkanWindow::Mesh::LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
     {
         //1> Load
         FMeshDataVector aMeshDatas;
@@ -431,7 +430,7 @@ namespace LostPeter
             unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
             if (!FMeshDataLoader::LoadMeshDatas(this->pathMesh, aMeshDatas, isFlipY, eMeshParserFlags))
             {
-                F_LogError("VulkanWindow::ModelMesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
+                F_LogError("VulkanWindow::Mesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
                 return false; 
             }
         }
@@ -441,14 +440,14 @@ namespace LostPeter
             meshData.bIsFlipY = isFlipY;
             if (!FMeshGeometry::CreateGeometry(meshData, this->typeGeometryType, this->pMeshCreateParam))
             {
-                F_LogError("VulkanWindow::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", F_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
+                F_LogError("VulkanWindow::Mesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", F_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
                 return false; 
             }
             aMeshDatas.push_back(meshData);
         }
         else
         {
-            F_Assert(false && "VulkanWindow::ModelMesh::LoadMesh: Wrong typeMesh !")
+            F_Assert(false && "VulkanWindow::Mesh::LoadMesh: Wrong typeMesh !")
             return false;
         }
 
@@ -458,14 +457,14 @@ namespace LostPeter
             FMeshData& meshData = aMeshDatas[i];
             
             String nameMeshSub = this->nameMesh + "-" + FUtilString::SaveInt(i);
-            ModelMeshSub* pMeshSub = new ModelMeshSub(this,
-                                                      nameMeshSub,
-                                                      meshData.nameMesh,
-                                                      i,
-                                                      this->typeVertex);
+            MeshSub* pMeshSub = new MeshSub(this,
+                                            nameMeshSub,
+                                            meshData.nameMesh,
+                                            i,
+                                            this->typeVertex);
             if (!pMeshSub->CreateMeshSub(meshData, isTransformLocal, matTransformLocal))
             {
-                F_LogError("VulkanWindow::ModelMesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
+                F_LogError("VulkanWindow::Mesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
                 return false;
             }
             AddMeshSub(pMeshSub);
@@ -475,17 +474,17 @@ namespace LostPeter
     }
 
 
-    /////////////////////////// ModelTexture //////////////////////
-    VulkanWindow::ModelTexture::ModelTexture(VulkanWindow* _pWindow, 
-                                             const String& _nameTexture,
-                                             VulkanTextureType _typeTexture,
-                                             bool _isRenderTarget,
-                                             bool _isGraphicsComputeShared,
-                                             VkFormat _typeFormat,
-                                             VulkanTextureFilterType _typeFilter,
-                                             VulkanTextureAddressingType _typeAddressing,
-                                             VulkanTextureBorderColorType _typeBorderColor,
-                                             const StringVector& _aPathTexture)
+    /////////////////////////// Texture ///////////////////////////
+    VulkanWindow::Texture::Texture(VulkanWindow* _pWindow, 
+                                   const String& _nameTexture,
+                                   VulkanTextureType _typeTexture,
+                                   bool _isRenderTarget,
+                                   bool _isGraphicsComputeShared,
+                                   VkFormat _typeFormat,
+                                   VulkanTextureFilterType _typeFilter,
+                                   VulkanTextureAddressingType _typeAddressing,
+                                   VulkanTextureBorderColorType _typeBorderColor,
+                                   const StringVector& _aPathTexture)
         : pWindow(_pWindow)
         , nameTexture(_nameTexture)
         , typeTexture(_typeTexture)
@@ -529,11 +528,11 @@ namespace LostPeter
         else
             this->poTextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     }
-    VulkanWindow::ModelTexture::~ModelTexture()
+    VulkanWindow::Texture::~Texture()
     {
         Destroy();
     }
-    void VulkanWindow::ModelTexture::Destroy()
+    void VulkanWindow::Texture::Destroy()
     {
         if (this->stagingBuffer != VK_NULL_HANDLE)
         {
@@ -547,7 +546,7 @@ namespace LostPeter
         this->poTextureSampler = VK_NULL_HANDLE;
         F_DELETE_T(pDataRGBA)
     }
-    int VulkanWindow::ModelTexture::RandomTextureIndex()
+    int VulkanWindow::Texture::RandomTextureIndex()
     {
         if (this->typeTexture == Vulkan_Texture_2DArray)
         {
@@ -556,9 +555,9 @@ namespace LostPeter
         }
         return 0;
     }
-    void VulkanWindow::ModelTexture::LoadTexture(int width,
-                                                 int height,
-                                                 int depth)
+    void VulkanWindow::Texture::LoadTexture(int width,
+                                            int height,
+                                            int depth)
     {
         this->width = width;
         this->height = height;
@@ -655,7 +654,7 @@ namespace LostPeter
             }   
             else
             {
-                String msg = "ModelTexture::LoadTexture: Wrong texture type, Create from file, name: [" + this->nameTexture + "] !";
+                String msg = "Texture::LoadTexture: Wrong texture type, Create from file, name: [" + this->nameTexture + "] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -768,7 +767,7 @@ namespace LostPeter
             }
             else
             {
-                String msg = "ModelTexture::LoadTexture: Wrong texture type, Create render target, name: [" + this->nameTexture + "] !";
+                String msg = "Texture::LoadTexture: Wrong texture type, Create render target, name: [" + this->nameTexture + "] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -789,14 +788,14 @@ namespace LostPeter
         this->poTextureImageInfo.imageView = this->poTextureImageView;
         this->poTextureImageInfo.sampler = this->poTextureSampler;
     }   
-    void VulkanWindow::ModelTexture::UpdateTexture()
+    void VulkanWindow::Texture::UpdateTexture()
     {
         if (this->typeTexture == Vulkan_Texture_3D)
         {
             updateNoiseTexture();
         }
     }
-    void VulkanWindow::ModelTexture::updateNoiseTextureData()
+    void VulkanWindow::Texture::updateNoiseTextureData()
     {
         // Perlin noise
         noise::module::Perlin modulePerlin;
@@ -817,7 +816,7 @@ namespace LostPeter
             }
         }
     }
-    void VulkanWindow::ModelTexture::updateNoiseTexture()
+    void VulkanWindow::Texture::updateNoiseTexture()
     {
         //1> updateNoiseTextureData
         updateNoiseTextureData();
@@ -844,29 +843,29 @@ namespace LostPeter
     }
 
 
-    /////////////////////////// ModelShader ///////////////////////
-    VulkanWindow::ModelShader::ModelShader(VulkanWindow* _pWindow,
-                                           const String& _nameShader)
+    /////////////////////////// Shader ////////////////////////////
+    VulkanWindow::Shader::Shader(VulkanWindow* _pWindow,
+                                 const String& _nameShader)
         : pWindow(_pWindow)
         , nameShader(_nameShader)
     {
 
     }
-    VulkanWindow::ModelShader::~ModelShader()
+    VulkanWindow::Shader::~Shader()
     {
 
     }
 
 
-    /////////////////////////// ModelMaterial /////////////////////
-    VulkanWindow::ModelMaterial::ModelMaterial(VulkanWindow* _pWindow,
-                                               const String& _nameMaterial)
+    /////////////////////////// Material //////////////////////////
+    VulkanWindow::Material::Material(VulkanWindow* _pWindow,
+                                     const String& _nameMaterial)
         : pWindow(_pWindow)
         , nameMaterial(_nameMaterial)
     {
         
     }
-    VulkanWindow::ModelMaterial::~ModelMaterial()
+    VulkanWindow::Material::~Material()
     {
 
     }
@@ -1353,6 +1352,18 @@ namespace LostPeter
     }
 
 
+    /////////////////////////// Scene /////////////////////////////
+    VulkanWindow::Scene::Scene(const String& _nameScene)
+        : nameScene(_nameScene)
+    {
+
+    }
+    VulkanWindow::Scene::~Scene()
+    {
+
+    }
+
+
     /////////////////////////// SceneManager //////////////////////
     VulkanWindow::SceneManager::SceneManager(const String& _nameSceneManager)
         : nameSceneManager(_nameSceneManager)
@@ -1410,7 +1421,7 @@ namespace LostPeter
     }
     void VulkanWindow::EditorBase::initMeshes()
     {
-        this->pWindow->CreateModelMeshes(this->aMeshInfos, this->aMeshes, this->mapMeshes);
+        this->pWindow->CreateMeshes(this->aMeshInfos, this->aMeshes, this->mapMeshes);
     }
     void VulkanWindow::EditorBase::initShaders()
     {   
@@ -1443,7 +1454,7 @@ namespace LostPeter
         size_t count = this->aMeshes.size();
         for (size_t i = 0; i < count; i++)
         {
-            VulkanWindow::ModelMesh* pMesh = this->aMeshes[i];
+            VulkanWindow::Mesh* pMesh = this->aMeshes[i];
             F_DELETE(pMesh)
         }
         this->aMeshes.clear();
@@ -1494,11 +1505,11 @@ namespace LostPeter
         size_t count_mesh = this->aMeshes.size();
         for (size_t i = 0; i < count_mesh; i++)
         {
-            ModelMesh* pMesh = this->aMeshes[i];
+            Mesh* pMesh = this->aMeshes[i];
             size_t count_mesh_sub = pMesh->aMeshSubs.size();
             for (size_t j = 0; j < count_mesh_sub; j++)
             {
-                ModelMeshSub* pMeshSub = pMesh->aMeshSubs[j];
+                MeshSub* pMeshSub = pMesh->aMeshSubs[j];
 
                 VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
                 VkDeviceSize offsets[] = { 0 };
@@ -1875,11 +1886,11 @@ namespace LostPeter
         size_t count_mesh = s_nMeshCameraAxisCount;
         for (size_t i = 0; i < count_mesh; i++)
         {
-            ModelMesh* pMesh = this->aMeshes[i];
+            Mesh* pMesh = this->aMeshes[i];
             size_t count_mesh_sub = pMesh->aMeshSubs.size();
             for (size_t j = 0; j < count_mesh_sub; j++)
             {
-                ModelMeshSub* pMeshSub = pMesh->aMeshSubs[j];
+                MeshSub* pMeshSub = pMesh->aMeshSubs[j];
 
                 VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
                 VkDeviceSize offsets[] = { 0 };
@@ -1897,8 +1908,8 @@ namespace LostPeter
     }   
     void VulkanWindow::EditorCameraAxis::DrawQuad(VkCommandBuffer& commandBuffer)
     {
-        ModelMesh* pMesh = this->aMeshes[s_nMeshQuadIndex];
-        ModelMeshSub* pMeshSub = pMesh->aMeshSubs[0];
+        Mesh* pMesh = this->aMeshes[s_nMeshQuadIndex];
+        MeshSub* pMeshSub = pMesh->aMeshSubs[0];
         VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
         VkDeviceSize offsets[] = { 0 };
         this->pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
@@ -2091,8 +2102,8 @@ namespace LostPeter
             VkDeviceSize bufferSize = sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size();
             this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
 
-            ModelMesh* pMesh = this->aMeshes[s_nMeshConeIndex]; //Cone
-            ModelMeshSub* pMeshSub = pMesh->aMeshSubs[0];
+            Mesh* pMesh = this->aMeshes[s_nMeshConeIndex]; //Cone
+            MeshSub* pMeshSub = pMesh->aMeshSubs[0];
             pMeshSub->instanceCount = 6;
             pMesh = this->aMeshes[s_nMeshAABBIndex]; //AABB
             pMeshSub = pMesh->aMeshSubs[0];
@@ -3147,10 +3158,10 @@ namespace LostPeter
             int instanceGap = 3;
             //Quad - QuadLine
             {
-                ModelMesh* pMesh_Quad = this->aMeshes[s_nMeshQuadIndex];
-                ModelMeshSub* pMeshSub_Quad = pMesh_Quad->aMeshSubs[0];
-                ModelMesh* pMesh_QuadLine = this->aMeshes[s_nMeshQuadLineIndex];
-                ModelMeshSub* pMeshSub_QuadLine = pMesh_QuadLine->aMeshSubs[0];
+                Mesh* pMesh_Quad = this->aMeshes[s_nMeshQuadIndex];
+                MeshSub* pMeshSub_Quad = pMesh_Quad->aMeshSubs[0];
+                Mesh* pMesh_QuadLine = this->aMeshes[s_nMeshQuadLineIndex];
+                MeshSub* pMeshSub_QuadLine = pMesh_QuadLine->aMeshSubs[0];
                 //Quad - QuadLine  - 0
                 DrawQuad(commandBuffer, pMeshSub_Quad, instanceStart + 0);
                 DrawQuadLine(commandBuffer, pMeshSub_QuadLine, instanceStart + 0 + instanceGap);
@@ -3170,10 +3181,10 @@ namespace LostPeter
                 else
                     this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
 
-                ModelMesh* pMesh_Cylinder = this->aMeshes[s_nMeshCylinderIndex];
-                ModelMeshSub* pMeshSub_Cylinder = pMesh_Cylinder->aMeshSubs[0];
-                ModelMesh* pMesh_Cone = this->aMeshes[s_nMeshConeIndex];
-                ModelMeshSub* pMeshSub_Cone = pMesh_Cone->aMeshSubs[0];
+                Mesh* pMesh_Cylinder = this->aMeshes[s_nMeshCylinderIndex];
+                MeshSub* pMeshSub_Cylinder = pMesh_Cylinder->aMeshSubs[0];
+                Mesh* pMesh_Cone = this->aMeshes[s_nMeshConeIndex];
+                MeshSub* pMeshSub_Cone = pMesh_Cone->aMeshSubs[0];
                 //Cylinder - Cone - 0
                 DrawShape(commandBuffer, pMeshSub_Cylinder, instanceStart + 0);
                 DrawShape(commandBuffer, pMeshSub_Cone, instanceStart + 0 + instanceGap);
@@ -3195,8 +3206,8 @@ namespace LostPeter
                 else
                     this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
 
-                ModelMesh* pMesh_Torus = this->aMeshes[s_nMeshTorusIndex];
-                ModelMeshSub* pMeshSub_Torus = pMesh_Torus->aMeshSubs[0];
+                Mesh* pMesh_Torus = this->aMeshes[s_nMeshTorusIndex];
+                MeshSub* pMeshSub_Torus = pMesh_Torus->aMeshSubs[0];
                 //Torus - 0
                 DrawShape(commandBuffer, pMeshSub_Torus, instanceStart + 0);
                 //Torus - 1
@@ -3214,10 +3225,10 @@ namespace LostPeter
 
             //Cylinder - Cone
             //AABB
-            ModelMesh* pMesh_Cylinder = this->aMeshes[s_nMeshCylinderIndex];
-            ModelMeshSub* pMeshSub_Cylinder = pMesh_Cylinder->aMeshSubs[0];
-            ModelMesh* pMesh_AABB = this->aMeshes[s_nMeshAABBIndex];
-            ModelMeshSub* pMeshSub_AABB = pMesh_AABB->aMeshSubs[0];
+            Mesh* pMesh_Cylinder = this->aMeshes[s_nMeshCylinderIndex];
+            MeshSub* pMeshSub_Cylinder = pMesh_Cylinder->aMeshSubs[0];
+            Mesh* pMesh_AABB = this->aMeshes[s_nMeshAABBIndex];
+            MeshSub* pMeshSub_AABB = pMesh_AABB->aMeshSubs[0];
             int instanceStart_Cone = 6;
             int instanceStart_AABB = 15;
             //Cylinder - 0
@@ -3235,7 +3246,7 @@ namespace LostPeter
             //AABB - 3
             DrawShape(commandBuffer, pMeshSub_AABB, instanceStart_AABB + 3);
         }
-        void VulkanWindow::EditorCoordinateAxis::DrawQuad(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart)
+        void VulkanWindow::EditorCoordinateAxis::DrawQuad(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
         {
             if (this->pWindow->cfg_isWireFrame)
                 this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
@@ -3248,7 +3259,7 @@ namespace LostPeter
             this->pWindow->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
             this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
         }
-        void VulkanWindow::EditorCoordinateAxis::DrawQuadLine(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart)
+        void VulkanWindow::EditorCoordinateAxis::DrawQuadLine(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
         {
             this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame2);
 
@@ -3258,7 +3269,7 @@ namespace LostPeter
             this->pWindow->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
             this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
         }
-        void VulkanWindow::EditorCoordinateAxis::DrawShape(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart)
+        void VulkanWindow::EditorCoordinateAxis::DrawShape(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
         {
             VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
             VkDeviceSize offsets[] = { 0 };
@@ -3670,8 +3681,8 @@ namespace LostPeter
             this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
 
             //Quad
-            ModelMesh* pMesh = this->aMeshes[s_nMeshQuadIndex]; 
-            ModelMeshSub* pMeshSub = pMesh->aMeshSubs[0];
+            Mesh* pMesh = this->aMeshes[s_nMeshQuadIndex]; 
+            MeshSub* pMeshSub = pMesh->aMeshSubs[0];
             pMeshSub->instanceCount = 1;
             //Quad Line
             pMesh = this->aMeshes[s_nMeshQuadLineIndex]; 
@@ -3869,32 +3880,32 @@ namespace LostPeter
     }
 
 
-    VulkanWindow::ModelMesh* VulkanWindow::CreateModelMesh(const MeshInfo* pMI)
+    VulkanWindow::Mesh* VulkanWindow::CreateMesh(const MeshInfo* pMI)
     {
-        ModelMesh* pMesh = new VulkanWindow::ModelMesh(this, 
-                                                       pMI->nameMesh,
-                                                       pMI->pathMesh,
-                                                       pMI->typeMesh,
-                                                       pMI->typeVertex,
-                                                       pMI->typeGeometryType,
-                                                       pMI->pMeshCreateParam);
+        Mesh* pMesh = new VulkanWindow::Mesh(this, 
+                                             pMI->nameMesh,
+                                             pMI->pathMesh,
+                                             pMI->typeMesh,
+                                             pMI->typeVertex,
+                                             pMI->typeGeometryType,
+                                             pMI->pMeshCreateParam);
         if (!pMesh->LoadMesh(pMI->isFlipY, pMI->isTransformLocal, pMI->matTransformLocal))
         {
-            String msg = "VulkanWindow::CreateModelMesh: create mesh: name: [" + pMI->nameMesh + "], path: [" + pMI->pathMesh + "] failed !";
+            String msg = "VulkanWindow::CreateMesh: create mesh: name: [" + pMI->nameMesh + "], path: [" + pMI->pathMesh + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
 
-        F_LogInfo("VulkanWindow::CreateModelMesh: create mesh, name: [%s], path: [%s] success !", 
+        F_LogInfo("VulkanWindow::CreateMesh: create mesh, name: [%s], path: [%s] success !", 
                   pMI->nameMesh.c_str(), pMI->pathMesh.c_str());
         return pMesh;
     }
-    void VulkanWindow::CreateModelMeshes(const MeshInfoPtrVector& aMIs, ModelMeshPtrVector& aMeshes, ModelMeshPtrMap& mapMeshes)
+    void VulkanWindow::CreateMeshes(const MeshInfoPtrVector& aMIs, MeshPtrVector& aMeshes, MeshPtrMap& mapMeshes)
     {
         size_t count = aMIs.size();
         for (size_t i = 0; i < count; i++)
         {
-            ModelMesh* pMesh = CreateModelMesh(aMIs[i]);
+            Mesh* pMesh = CreateMesh(aMIs[i]);
             if (pMesh != nullptr)
             {
                 aMeshes.push_back(pMesh);

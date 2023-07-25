@@ -91,21 +91,21 @@ namespace LostPeter
 
 
     public:
-        class ModelMesh;
-
-        /////////////////////////// ModelMeshSub //////////////////////
-        class utilExport ModelMeshSub
+        class Mesh;
+        
+        /////////////////////////// MeshSub ///////////////////////////
+        class utilExport MeshSub
         {
         public:
-            ModelMeshSub(ModelMesh* _pMesh, 
-                         const String& _nameMeshSub,
-                         const String& _nameOriginal,
-                         int _indexMeshSub,
-                         FMeshVertexType _poTypeVertex);
-            virtual ~ModelMeshSub();
+            MeshSub(Mesh* _pMesh, 
+                    const String& _nameMeshSub,
+                    const String& _nameOriginal,
+                    int _indexMeshSub,
+                    FMeshVertexType _poTypeVertex);
+            virtual ~MeshSub();
 
         public:
-            ModelMesh* pMesh;
+            Mesh* pMesh;
             String nameMeshSub;
             String nameOriginal;
             int indexMeshSub;
@@ -144,22 +144,22 @@ namespace LostPeter
                                          std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2);
             virtual void WriteIndexData(std::vector<uint32_t>& indexData);
         };
-        typedef std::vector<ModelMeshSub*> ModelMeshSubPtrVector;
-        typedef std::map<String, ModelMeshSub*> ModelMeshSubPtrMap;
+        typedef std::vector<MeshSub*> MeshSubPtrVector;
+        typedef std::map<String, MeshSub*> MeshSubPtrMap;
 
 
-        /////////////////////////// ModelMesh /////////////////////////
-        class utilExport ModelMesh
+        /////////////////////////// Mesh //////////////////////////////
+        class utilExport Mesh
         {
         public:
-            ModelMesh(VulkanWindow* _pWindow, 
-                      const String& _nameMesh,
-                      const String& _pathMesh,
-                      FMeshType _typeMesh,
-                      FMeshVertexType _typeVertex,
-                      FMeshGeometryType _typeGeometryType,
-                      FMeshCreateParam* _pMeshCreateParam);
-            virtual ~ModelMesh();
+            Mesh(VulkanWindow* _pWindow, 
+                 const String& _nameMesh,
+                 const String& _pathMesh,
+                 FMeshType _typeMesh,
+                 FMeshVertexType _typeVertex,
+                 FMeshGeometryType _typeGeometryType,
+                 FMeshCreateParam* _pMeshCreateParam);
+            virtual ~Mesh();
 
         public:
             VulkanWindow* pWindow;
@@ -169,34 +169,34 @@ namespace LostPeter
             FMeshVertexType typeVertex;
             FMeshGeometryType typeGeometryType;
             FMeshCreateParam* pMeshCreateParam;
-            ModelMeshSubPtrVector aMeshSubs;
-            ModelMeshSubPtrMap mapMeshSubs;
+            MeshSubPtrVector aMeshSubs;
+            MeshSubPtrMap mapMeshSubs;
 
         public:
             void Destroy();
 
-            virtual bool AddMeshSub(ModelMeshSub* pMeshSub);
+            virtual bool AddMeshSub(MeshSub* pMeshSub);
             virtual bool LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal);
         };
-        typedef std::vector<ModelMesh*> ModelMeshPtrVector;
-        typedef std::map<String, ModelMesh*> ModelMeshPtrMap;
+        typedef std::vector<Mesh*> MeshPtrVector;
+        typedef std::map<String, Mesh*> MeshPtrMap;
 
 
-        /////////////////////////// ModelTexture //////////////////////
-        class utilExport ModelTexture
+        /////////////////////////// Texture ///////////////////////////
+        class utilExport Texture
         {
         public:
-             ModelTexture(VulkanWindow* _pWindow, 
-                          const String& _nameTexture,
-                          VulkanTextureType _typeTexture,
-                          bool _isRenderTarget,
-                          bool _isGraphicsComputeShared,
-                          VkFormat _typeFormat,
-                          VulkanTextureFilterType _typeFilter,
-                          VulkanTextureAddressingType _typeAddressing,
-                          VulkanTextureBorderColorType _typeBorderColor,
-                          const StringVector& _aPathTexture);
-            virtual ~ModelTexture();
+             Texture(VulkanWindow* _pWindow, 
+                     const String& _nameTexture,
+                     VulkanTextureType _typeTexture,
+                     bool _isRenderTarget,
+                     bool _isGraphicsComputeShared,
+                     VkFormat _typeFormat,
+                     VulkanTextureFilterType _typeFilter,
+                     VulkanTextureAddressingType _typeAddressing,
+                     VulkanTextureBorderColorType _typeBorderColor,
+                     const StringVector& _aPathTexture);
+            virtual ~Texture();
 
         public:
             VulkanWindow* pWindow;
@@ -257,18 +257,18 @@ namespace LostPeter
             virtual void updateNoiseTextureData();
             virtual void updateNoiseTexture();
         };
-        typedef std::vector<ModelTexture*> ModelTexturePtrVector;
-        typedef std::map<String, ModelTexture*> ModelTexturePtrMap;
-        typedef std::map<String, ModelTexturePtrVector> ModelTexturePtrShaderSortMap;
+        typedef std::vector<Texture*> TexturePtrVector;
+        typedef std::map<String, Texture*> TexturePtrMap;
+        typedef std::map<String, TexturePtrVector> TexturePtrShaderSortMap;
 
 
-        /////////////////////////// ModelShader ///////////////////////
-        class utilExport ModelShader
+        /////////////////////////// Shader ////////////////////////////
+        class utilExport Shader
         {
         public:
-            ModelShader(VulkanWindow* _pWindow,
-                        const String& _nameShader);
-            virtual ~ModelShader();
+            Shader(VulkanWindow* _pWindow,
+                   const String& _nameShader);
+            virtual ~Shader();
 
         public:
             VulkanWindow* pWindow;
@@ -278,15 +278,17 @@ namespace LostPeter
 
 
         };
+        typedef std::vector<Shader*> ShaderPtrVector;
+        typedef std::map<String, Shader*> ShaderPtrMap;
 
 
-        /////////////////////////// ModelMaterial /////////////////////
-        class utilExport ModelMaterial
+        /////////////////////////// Material //////////////////////////
+        class utilExport Material
         {
         public:
-            ModelMaterial(VulkanWindow* _pWindow,
-                          const String& _nameMaterial);
-            virtual ~ModelMaterial();
+            Material(VulkanWindow* _pWindow,
+                     const String& _nameMaterial);
+            virtual ~Material();
 
         public:
             VulkanWindow* pWindow;
@@ -295,6 +297,8 @@ namespace LostPeter
         public:
 
         };
+        typedef std::vector<Material*> MaterialPtrVector;
+        typedef std::map<String, Material*> MaterialPtrMap;
 
 
         /////////////////////////// MultiRenderPass ///////////////////
@@ -390,6 +394,8 @@ namespace LostPeter
 
             virtual void CleanupSwapChain();
         };  
+        typedef std::vector<PipelineGraphics*> PipelineGraphicsPtrVector;
+        typedef std::map<String, PipelineGraphics*> PipelineGraphicsPtrMap;
 
 
         /////////////////////////// PipelineCompute ///////////////////
@@ -408,8 +414,8 @@ namespace LostPeter
             VkPipeline poPipeline;
             VkDescriptorSet poDescriptorSet;
             
-            ModelTexture* pTextureSource;
-            ModelTexture* pTextureTarget;
+            Texture* pTextureSource;
+            Texture* pTextureTarget;
             TextureCopyConstants* pTextureCopy;
             VkBuffer poBuffer_TextureCopy;  
             VkDeviceMemory poBufferMemory_TextureCopy;
@@ -546,6 +552,21 @@ namespace LostPeter
         typedef std::map<String, ObjectTerrain*> ObjectTerrainPtrMap;
 
 
+        /////////////////////////// Scene /////////////////////////////
+        class utilExport Scene
+        {
+        public:
+            Scene(const String& _nameScene);
+            virtual ~Scene();
+
+        public:
+             String nameScene;
+
+        public:
+
+        };
+
+
         /////////////////////////// SceneManager //////////////////////
         class utilExport SceneManager
         {
@@ -573,8 +594,8 @@ namespace LostPeter
 
             //Meshes
             MeshInfoPtrVector aMeshInfos;
-            ModelMeshPtrVector aMeshes;
-            ModelMeshPtrMap mapMeshes;
+            MeshPtrVector aMeshes;
+            MeshPtrMap mapMeshes;
 
             //Shaders
             ShaderModuleInfoVector aShaderModuleInfos;
@@ -922,9 +943,9 @@ namespace LostPeter
                 virtual void Draw_Rotate(VkCommandBuffer& commandBuffer);
                 virtual void Draw_Scale(VkCommandBuffer& commandBuffer);
 
-                virtual void DrawQuad(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
-                virtual void DrawQuadLine(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
-                virtual void DrawShape(VkCommandBuffer& commandBuffer, ModelMeshSub* pMeshSub, int instanceStart);
+                virtual void DrawQuad(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart);
+                virtual void DrawQuadLine(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart);
+                virtual void DrawShape(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart);
 
 
             virtual void MouseLeftDown(double x, double y);
@@ -948,9 +969,9 @@ namespace LostPeter
 
 
     public:
-        //ModelMesh
-        virtual ModelMesh* CreateModelMesh(const MeshInfo* pMI);
-        virtual void CreateModelMeshes(const MeshInfoPtrVector& aMIs, ModelMeshPtrVector& aMeshes, ModelMeshPtrMap& mapMeshes);
+        //Mesh
+        virtual Mesh* CreateMesh(const MeshInfo* pMI);
+        virtual void CreateMeshes(const MeshInfoPtrVector& aMIs, MeshPtrVector& aMeshes, MeshPtrMap& mapMeshes);
 
         //ShaderModule
         virtual VkShaderModule CreateShaderModule(const ShaderModuleInfo& si);

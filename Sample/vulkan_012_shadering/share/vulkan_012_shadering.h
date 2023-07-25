@@ -22,8 +22,8 @@ public:
     Vulkan_012_Shadering(int width, int height, String name);
 
 public:
-    /////////////////////////// ModelMeshRaw ////////////////////////
-    struct ModelMeshRaw
+    /////////////////////////// ModelMesh ///////////////////////////
+    struct ModelMesh
     {
         Vulkan_012_Shadering* pWindow;
         String nameMesh;
@@ -50,12 +50,12 @@ public:
         VkDeviceMemory poIndexBufferMemory;
 
 
-        ModelMeshRaw(Vulkan_012_Shadering* _pWindow, 
-                     const String& _nameMesh,
-                     const String& _pathMesh,
-                     FMeshType _typeMesh,
-                     FMeshGeometryType _typeGeometryType,
-                     FMeshVertexType _poTypeVertex)
+        ModelMesh(Vulkan_012_Shadering* _pWindow, 
+                  const String& _nameMesh,
+                  const String& _pathMesh,
+                  FMeshType _typeMesh,
+                  FMeshGeometryType _typeGeometryType,
+                  FMeshVertexType _poTypeVertex)
             : pWindow(_pWindow)
             , nameMesh(_nameMesh)
             , pathMesh(_pathMesh)
@@ -80,7 +80,7 @@ public:
 
         }
 
-        ~ModelMeshRaw()
+        ~ModelMesh()
         {
             Destroy();
         }
@@ -102,8 +102,8 @@ public:
         bool LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal);
 
     };
-    typedef std::vector<ModelMeshRaw*> ModelMeshRawPtrVector;
-    typedef std::map<String, ModelMeshRaw*> ModelMeshRawPtrMap;
+    typedef std::vector<ModelMesh*> ModelMeshPtrVector;
+    typedef std::map<String, ModelMesh*> ModelMeshPtrMap;
 
     
     /////////////////////////// ModelObject /////////////////////////
@@ -244,10 +244,10 @@ public:
         bool isLighting;
 
         //Mesh
-        ModelMeshRaw* pMesh;
+        ModelMesh* pMesh;
 
         //Texture
-        ModelTexturePtrShaderSortMap mapModelTexturesShaderSort;
+        TexturePtrShaderSortMap mapModelTexturesShaderSort;
 
         //Shader
         VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
@@ -305,11 +305,11 @@ public:
 
 
     ////Mesh
-        void SetMesh(ModelMeshRaw* pMesh)
+        void SetMesh(ModelMesh* pMesh)
         {
             this->pMesh = pMesh;
         }
-        ModelMeshRaw* GetMesh()
+        ModelMesh* GetMesh()
         {
             return this->pMesh;
         }
@@ -324,28 +324,28 @@ public:
         }
 
     ////Textures
-        void AddTexture(const String& nameShaderSort, ModelTexture* pTexture)
+        void AddTexture(const String& nameShaderSort, Texture* pTexture)
         {
-            ModelTexturePtrVector* pVector = nullptr;
-            ModelTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
+            TexturePtrVector* pVector = nullptr;
+            TexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
             if (itFind == this->mapModelTexturesShaderSort.end())
             {
-                ModelTexturePtrVector aMTs;
+                TexturePtrVector aMTs;
                 this->mapModelTexturesShaderSort[nameShaderSort] = aMTs;
                 itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
             }
             itFind->second.push_back(pTexture);
         }
-        ModelTexture* GetTexture(const String& nameShaderSort, int index)
+        Texture* GetTexture(const String& nameShaderSort, int index)
         {
-            ModelTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
+            TexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
             if (itFind == this->mapModelTexturesShaderSort.end())
                 return nullptr;
             return itFind->second.at(index);
         }
-        ModelTexturePtrVector* GetTextures(const String& nameShaderSort)
+        TexturePtrVector* GetTextures(const String& nameShaderSort)
         {
-            ModelTexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
+            TexturePtrShaderSortMap::iterator itFind = this->mapModelTexturesShaderSort.find(nameShaderSort);
             if (itFind == this->mapModelTexturesShaderSort.end())
                 return nullptr;
             return &(itFind->second);
@@ -367,11 +367,11 @@ public:
     typedef std::map<String, ModelObject*> ModelObjectPtrMap;
 
 public:
-    ModelMeshRawPtrVector m_aModelMesh;
-    ModelMeshRawPtrMap m_mapModelMesh;    
+    ModelMeshPtrVector m_aModelMesh;
+    ModelMeshPtrMap m_mapModelMesh;    
 
-    ModelTexturePtrVector m_aModelTexture;
-    ModelTexturePtrMap m_mapModelTexture;
+    TexturePtrVector m_aModelTexture;
+    TexturePtrMap m_mapModelTexture;
 
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrVector m_aModelObjects_Render;
@@ -437,15 +437,15 @@ protected:
 private:
     void rebuildInstanceCBs(bool isCreateVkBuffer);
 
-////ModelMeshRaw
-    void destroyModelMeshes();
-    void createModelMeshes();
-    ModelMeshRaw* findModelMesh(const String& nameMesh);
+////ModelMesh
+    void destroyMeshes();
+    void createMeshes();
+    ModelMesh* findMesh(const String& nameMesh);
 
-////ModelTexture
-    void destroyModelTextures();
-    void createModelTextures();
-    ModelTexture* findModelTexture(const String& nameTexture);
+////Texture
+    void destroyTextures();
+    void createTextures();
+    Texture* findTexture(const String& nameTexture);
 
 ////DescriptorSetLayout
     void destroyDescriptorSetLayouts();
