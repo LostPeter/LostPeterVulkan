@@ -105,7 +105,7 @@ namespace LostPeterFoundation
 		//1> Pixels in [-1,1]
 		FVector3 vIn;
 		vIn.x = (vPosScreen.x - vViewport.x) * 2.0f / vViewport.z - 1.0f;
-		vIn.y = (vPosScreen.y - vViewport.y) * 2.0f / vViewport.w - 1.0f;
+		vIn.y = 1.0f - (vPosScreen.y - vViewport.y) * 2.0f / vViewport.w;
 		vIn.z = 0.95f;
 
 		//2> Point on Plane
@@ -114,7 +114,7 @@ namespace LostPeterFoundation
 		{
 			const FVector3& vCameraPos = GetPos();
         	FVector3 vDir = vOnPlane - vCameraPos;
-			FVector3 vForward = - GetDir();
+			FVector3 vForward = GetDir();
 			float fDistToPlane = FMath::Dot(vDir, vForward);
 			if (FMath::Abs(fDistToPlane) >= 1.0e-6f)
 			{
@@ -141,23 +141,12 @@ namespace LostPeterFoundation
 		return ConvertScreenPosToWorldPos3(vPosScreen, GetMatrix4ViewProjectionInverse(), vViewport, vPosWorld);
 	}
 
-	void FCamera::ConvertScreenPos2ToWorldRay(float screenX, float screenY, FRay* pOutRay) const
+	bool FCamera::ConvertScreenPos2ToWorldRay(const FVector2& vPosSceen2, const FVector4& vViewport, FRay* pOutRay) const
 	{
-		FMatrix4 mat4P_Inverse = FMath::InverseMatrix4(GetMatrix4Projection());
-		FMatrix4 mat4V_Inverse = FMath::InverseMatrix4(GetMatrix4View());
-
-		float nx = (2.0f * screenX) - 1.0f;
-		float ny = 1.0f - (2.0f * screenY);
-		FVector4 ptNear(nx, ny, -1.f, 1.0f);
-		FVector4 ptMid(nx, ny,  0.0f, 1.0f);
-
-		FVector3 vRayOrigin = mat4V_Inverse * mat4P_Inverse * ptNear;
-		FVector3 vRayTarget = mat4V_Inverse * mat4P_Inverse * ptMid;
-		pOutRay->SetOrigin(vRayOrigin);
-		pOutRay->SetDirection(FMath::Normalize(vRayTarget - vRayOrigin));
+		return ConvertScreenPos2ToWorldRay(vPosSceen2.x, vPosSceen2.y, vViewport, pOutRay);
 	}
 
-	bool FCamera::ConvertScreenPos2ToWorldRay(const FVector4& vViewport, float screenX, float screenY, FRay* pOutRay) const
+	bool FCamera::ConvertScreenPos2ToWorldRay(float screenX, float screenY, const FVector4& vViewport, FRay* pOutRay) const
 	{
 		float fNear = GetNearZ();
 		FVector3 vScreenNear(screenX, screenY, fNear);

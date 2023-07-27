@@ -85,8 +85,9 @@ namespace LostPeterFoundation
 		bool ConvertScreenPosToWorldPos3(const FVector3& vPosScreen, const FMatrix4& mat4Clip2World, const FVector4& vViewport, FVector3& vPosWorld) const;
 		bool ConvertScreenPosToWorldPos3(const FVector3& vPosScreen, const FVector4& vViewport, FVector3& vPosWorld) const;
 
-		void ConvertScreenPos2ToWorldRay(float screenX, float screenY, FRay* pOutRay) const;
-		bool ConvertScreenPos2ToWorldRay(const FVector4& vViewport, float screenX, float screenY, FRay* pOutRay) const;
+		bool ConvertScreenPos2ToWorldRay(const FVector2& vPosSceen2, const FVector4& vViewport, FRay* pOutRay) const;
+		bool ConvertScreenPos2ToWorldRay(float screenX, float screenY, const FVector4& vViewport, FRay* pOutRay) const;
+		
 
 	public:
 		virtual void LookAtLH(const FVector3& pos, const FVector3& target, const FVector3& vUp);

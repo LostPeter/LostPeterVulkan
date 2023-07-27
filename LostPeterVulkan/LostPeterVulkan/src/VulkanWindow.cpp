@@ -2491,6 +2491,7 @@ namespace LostPeter
     float VulkanWindow::EditorCoordinateAxis::s_fScale_Cone = 0.1f;
     float VulkanWindow::EditorCoordinateAxis::s_fScale_Torus = 1.0f;
     float VulkanWindow::EditorCoordinateAxis::s_fScale_AABB = 0.1f;
+    float VulkanWindow::EditorCoordinateAxis::s_fScale_AABBCenter = 0.1f * 1.2f;
     FMatrix4 VulkanWindow::EditorCoordinateAxis::s_aMatrix4Transforms[19] = 
     {
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(s_fScale_Quad, s_fScale_Quad, 1.0f)), //Quad XY+
@@ -2516,7 +2517,7 @@ namespace LostPeter
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABB, s_fScale_AABB, s_fScale_AABB)), //AABB X+
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABB, s_fScale_AABB, s_fScale_AABB)), //AABB Y+
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABB, s_fScale_AABB, s_fScale_AABB)), //AABB Z+
-        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABB, s_fScale_AABB, s_fScale_AABB)), //AABB XYZ+
+        FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,  0.0f,   0.0f), FVector3(s_fScale_AABBCenter, s_fScale_AABBCenter, s_fScale_AABBCenter)), //AABB XYZ+
     };
     FColor VulkanWindow::EditorCoordinateAxis::s_aColors_Default[19] = 
     {
@@ -2572,12 +2573,13 @@ namespace LostPeter
         FColor(0.0f, 0.0f, 1.0f, 0.8f), //AABB Z+
         FColor(0.5f, 0.5f, 0.5f, 0.8f), //AABB XYZ+
     };
-    const float VulkanWindow::EditorCoordinateAxis::s_fScaleDistance = 8.0f;
-    const float VulkanWindow::EditorCoordinateAxis::s_fScaleAxisWhenSelect = 1.5f;
-    const float VulkanWindow::EditorCoordinateAxis::s_fScaleConeWhenSelect = 1.2f;
-    const float VulkanWindow::EditorCoordinateAxis::s_fScaleTorusWhenSelect = 1.05f;
-    const float VulkanWindow::EditorCoordinateAxis::s_fScaleAABBWhenSelect = 1.3f;
-
+    const float VulkanWindow::EditorCoordinateAxis::s_fScale_Distance = 8.0f;
+    const float VulkanWindow::EditorCoordinateAxis::s_fScale_WhenSelect_Axis = 2.0f;
+    const float VulkanWindow::EditorCoordinateAxis::s_fScale_WhenSelect_AxisCone = 1.2f;
+    const float VulkanWindow::EditorCoordinateAxis::s_fScale_WhenSelect_AxisTorus = 1.05f;
+    const float VulkanWindow::EditorCoordinateAxis::s_fScale_WhenSelect_AxisAABB = 1.2f;
+    const float VulkanWindow::EditorCoordinateAxis::s_fScale_WhenSelect_AxisAABBCenter = 1.5f;
+    
     VulkanWindow::EditorCoordinateAxis::EditorCoordinateAxis(VulkanWindow* _pWindow)
         : EditorBase(_pWindow)
 
@@ -2594,7 +2596,6 @@ namespace LostPeter
         , isButtonLeftDown(false)
     {
         this->pCamera = _pWindow->GetCamera();
-        this->vRectScreen = _pWindow->GetViewportVector2();
         this->vViewport = _pWindow->GetViewportVector4();
         ClearSelectState();
     }
@@ -2772,7 +2773,7 @@ namespace LostPeter
     void VulkanWindow::EditorCoordinateAxis::UpdateCBs()
     {
         float fDis = FMath::Length(this->pCamera->GetPos() - this->vPos);
-        this->scaleCoordinate = FMath::Max(1.0f, fDis / s_fScaleDistance);
+        this->scaleCoordinate = FMath::Max(1.0f, fDis / s_fScale_Distance);
         
         switch ((int)this->typeState)
         {
@@ -2805,9 +2806,6 @@ namespace LostPeter
             const FVector3& vCameraPos = this->pCamera->GetPos();
             FVector3 vCenter = FMath::Transform(this->mat4Trans, FMath::ms_v3Zero);
             float fLength = this->scaleCoordinate * s_fScale_Quad;
-            FVector3 vX = FMath::Transform(this->mat4Trans, FVector3(fLength, 0.0f, 0.0f));
-            FVector3 vY = FMath::Transform(this->mat4Trans, FVector3(0.0f, fLength, 0.0f));
-            FVector3 vZ = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, fLength));
             //X
             this->aAxisX[0] = vCenter; 
             this->aAxisX[1] = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate, 0.0f, 0.0f));
@@ -2817,18 +2815,6 @@ namespace LostPeter
             //Z
             this->aAxisZ[0] = vCenter; 
             this->aAxisZ[1] = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, this->scaleCoordinate));
-            //XY
-            this->aQuadXY[0] = vX;
-            this->aQuadXY[1] = vX + vY;
-            this->aQuadXY[2] = vY;
-            //YZ
-            this->aQuadYZ[0] = vY;
-            this->aQuadYZ[1] = vY + vZ;
-            this->aQuadYZ[2] = vZ;
-            //ZX
-            this->aQuadZX[0] = vZ;
-            this->aQuadZX[1] = vZ + vX;
-            this->aQuadZX[2] = vX;
             
             //Distance 
             float aDistances[3] = 
@@ -2850,22 +2836,17 @@ namespace LostPeter
                     this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 1], //YZ+
                     this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 2], //ZX+
                 };
-                float aExtentAABBs[3] = 
-                {
-                    0.5f * s_fScale_Quad * this->scaleCoordinate,
-                    0.5f * s_fScale_Quad * this->scaleCoordinate,
-                    0.5f * s_fScale_Quad * this->scaleCoordinate,
-                };
+                float fQuadLen = 0.5f * s_fScale_Quad * this->scaleCoordinate;
                 //aQuadAABB
-                this->aQuadAABB[0].SetCenterExtents(FMath::Transform(aWorldQuads[0], FMath::ms_v3Zero), FVector3(aExtentAABBs[0], aExtentAABBs[0], aExtentAABBs[0]));
-                this->aQuadAABB[1].SetCenterExtents(FMath::Transform(aWorldQuads[1], FMath::ms_v3Zero), FVector3(aExtentAABBs[1], aExtentAABBs[1], aExtentAABBs[1]));
-                this->aQuadAABB[2].SetCenterExtents(FMath::Transform(aWorldQuads[2], FMath::ms_v3Zero), FVector3(aExtentAABBs[2], aExtentAABBs[2], aExtentAABBs[2]));
+                this->aQuadAABB[0].SetCenterExtents(vCenter + FVector3(fQuadLen / 2.0f, fQuadLen / 2.0f, 0.0f), FVector3(fQuadLen, fQuadLen, 0.01f)); //XY+
+                this->aQuadAABB[1].SetCenterExtents(vCenter + FVector3(0.0f, fQuadLen / 2.0f, fQuadLen / 2.0f), FVector3(0.01f, fQuadLen, fQuadLen)); //YZ+
+                this->aQuadAABB[2].SetCenterExtents(vCenter + FVector3(fQuadLen / 2.0f, 0.0f, fQuadLen / 2.0f), FVector3(fQuadLen, 0.01f, fQuadLen)); //ZX+
                 for (int i = 0; i < countNumber; i++)
                 {
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                     int index = aSequences[2 - i];
                     objConsts.g_MatWorld = aWorldQuads[index];
-                    if (IsQuadSelectedByIndex(i))
+                    if (IsQuadSelectedByIndex(index))
                         objConsts.color = s_aColors_Select[countStart + index];
                     else
                         objConsts.color = s_aColors_Default[countStart + index];
@@ -2885,7 +2866,7 @@ namespace LostPeter
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                     int index = aSequences[2 - i];
                     objConsts.g_MatWorld = aWorldQuadLines[index];
-                    if (IsQuadSelectedByIndex(i))
+                    if (IsQuadSelectedByIndex(index))
                         objConsts.color = s_aColors_Select[countStart + index];
                     else
                         objConsts.color = s_aColors_Default[countStart + index];
@@ -2910,8 +2891,8 @@ namespace LostPeter
                 {
                     if (IsAxisSelectedByIndex(i))
                     {
-                        scaleAxis[i] *= s_fScaleAxisWhenSelect;
-                        scaleCones[i] *= s_fScaleConeWhenSelect;
+                        scaleAxis[i] *= s_fScale_WhenSelect_Axis;
+                        scaleCones[i] *= s_fScale_WhenSelect_AxisCone;
                         break;
                     }
                 }
@@ -2928,7 +2909,7 @@ namespace LostPeter
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                     int index = aSequences[2 - i];
                     objConsts.g_MatWorld = aWorldCylinders[index];
-                    if (IsAxisSelectedByIndex(i))
+                    if (IsAxisSelectedByIndex(index))
                         objConsts.color = s_aColors_Select[countStart + index];
                     else
                         objConsts.color = s_aColors_Default[countStart + index];
@@ -2947,7 +2928,7 @@ namespace LostPeter
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                     int index = aSequences[2 - i];
                     objConsts.g_MatWorld = aWorldCones[index];
-                     if (IsAxisSelectedByIndex(i))
+                     if (IsAxisSelectedByIndex(index))
                         objConsts.color = s_aColors_Select[countStart + index];
                     else
                         objConsts.color = s_aColors_Default[countStart + index];
@@ -2970,7 +2951,7 @@ namespace LostPeter
             {
                 if (IsAxisSelectedByIndex(i))
                 {
-                    scaleToruses[i] *= s_fScaleTorusWhenSelect;
+                    scaleToruses[i] *= s_fScale_WhenSelect_AxisTorus;
                     break;
                 }
             }
@@ -3014,9 +2995,6 @@ namespace LostPeter
             const FVector3& vCameraPos = this->pCamera->GetPos();
             FVector3 vCenter = FMath::Transform(this->mat4Trans, FMath::ms_v3Zero);
             float fLength = this->scaleCoordinate * s_fScale_Quad;
-            FVector3 vX = FMath::Transform(this->mat4Trans, FVector3(fLength, 0.0f, 0.0f));
-            FVector3 vY = FMath::Transform(this->mat4Trans, FVector3(0.0f, fLength, 0.0f));
-            FVector3 vZ = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, fLength));
             //X
             this->aAxisX[0] = vCenter; 
             this->aAxisX[1] = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate, 0.0f, 0.0f));
@@ -3048,7 +3026,7 @@ namespace LostPeter
             {
                 if (IsAxisSelectedByIndex(i))
                 {
-                    scaleAxis[i] *= s_fScaleAxisWhenSelect;
+                    scaleAxis[i] *= s_fScale_WhenSelect_Axis;
                     break;
                 }
             }
@@ -3067,7 +3045,7 @@ namespace LostPeter
                 CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                 int index = aSequences[2 - i];
                 objConsts.g_MatWorld = aWorldCylinders[index];
-                if (IsAxisSelectedByIndex(i))
+                if (IsAxisSelectedByIndex(index))
                     objConsts.color = s_aColors_Select[countStart + index];
                 else
                     objConsts.color = s_aColors_Default[countStart + index];
@@ -3086,7 +3064,10 @@ namespace LostPeter
             {
                 if (IsScaleAABBSelectedByIndex(i))
                 {
-                    scaleAABBs[i] *= s_fScaleAABBWhenSelect;
+                    if (i != 3)
+                        scaleAABBs[i] *= s_fScale_WhenSelect_AxisAABB;
+                    else
+                        scaleAABBs[i] *= s_fScale_WhenSelect_AxisAABBCenter;
                     break;
                 }
             }
@@ -3102,7 +3083,7 @@ namespace LostPeter
                 0.5f * s_fScale_AABB * scaleAABBs[0],
                 0.5f * s_fScale_AABB * scaleAABBs[1],
                 0.5f * s_fScale_AABB * scaleAABBs[2],
-                0.5f * s_fScale_AABB * scaleAABBs[3],
+                0.5f * s_fScale_AABBCenter * scaleAABBs[3],
             };
             //aScaleAABB
             this->aScaleAABB[0].SetCenterExtents(FMath::Transform(aWorldAABBs[0], FMath::ms_v3Zero), FVector3(aExtentAABBs[0], aExtentAABBs[0], aExtentAABBs[0]));
@@ -3279,6 +3260,99 @@ namespace LostPeter
             this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
         }
 
+    void VulkanWindow::EditorCoordinateAxis::CheckStateMove(double x, double y)
+    {
+        FVector3 vInter;
+        FRay ray;
+        this->pCamera->ConvertScreenPos2ToWorldRay((float)x, (float)y, this->vViewport, &ray);
+        if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[0]))
+        {
+            SetQuadSelected(CoordinateElement_Quad_XY);
+        }
+        else if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[1]))
+        {
+            SetQuadSelected(CoordinateElement_Quad_YZ);
+        }
+        else if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[2]))
+        {
+            SetQuadSelected(CoordinateElement_Quad_ZX);
+        }
+        else if (FUtil::IntersectLines((float)x, (float)y, this->aAxisX, 2, this->pCamera, this->vViewport, vInter, false))
+        {
+            SetAxisSelected(CoordinateElement_Axis_X);
+        }
+        else if (FUtil::IntersectLines((float)x, (float)y, this->aAxisY, 2, this->pCamera, this->vViewport, vInter, false))
+        {
+            SetAxisSelected(CoordinateElement_Axis_Y);
+        }
+        else if (FUtil::IntersectLines((float)x, (float)y, this->aAxisZ, 2, this->pCamera, this->vViewport, vInter, false))
+        {
+            SetAxisSelected(CoordinateElement_Axis_Z);
+        }
+        else
+        {
+            ClearSelectState();
+        }
+    }
+    void VulkanWindow::EditorCoordinateAxis::CheckStateRotate(double x, double y)
+    {
+        FVector3 vInter;
+        if (FUtil::IntersectLines((float)x, (float)y, this->aTorusX, 30, this->pCamera, this->vViewport, vInter, false))
+        {
+            SetAxisSelected(CoordinateElement_Axis_X);
+        }
+        else if (FUtil::IntersectLines((float)x, (float)y, this->aTorusY, 30, this->pCamera, this->vViewport, vInter, false))
+        {
+            SetAxisSelected(CoordinateElement_Axis_Y);
+        }
+        else if (FUtil::IntersectLines((float)x, (float)y, this->aTorusZ, 30, this->pCamera, this->vViewport, vInter, false))
+        {
+            SetAxisSelected(CoordinateElement_Axis_Z);
+        }
+        else
+        {
+            ClearSelectState();
+        }
+    }
+    void VulkanWindow::EditorCoordinateAxis::CheckStateScale(double x, double y)
+    {
+        FVector3 vInter;
+        FRay ray;
+        this->pCamera->ConvertScreenPos2ToWorldRay((float)x, (float)y, this->vViewport, &ray);
+        if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[3]))
+        {
+            SetScaleAABBSelected(CoordinateElement_Axis_XYZ);
+        }
+        else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[0]))
+        {
+            SetScaleAABBSelected(CoordinateElement_Axis_X);
+        }
+        else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[1]))
+        {
+            SetScaleAABBSelected(CoordinateElement_Axis_Y);
+        }
+        else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[2]))
+        {
+            SetScaleAABBSelected(CoordinateElement_Axis_Z);
+        }
+        else if (FUtil::IntersectLines((float)x, (float)y, this->aAxisX, 2, this->pCamera, this->vViewport, vInter, false))
+        {
+            SetScaleAABBSelected(CoordinateElement_Axis_X);
+        }
+        else if (FUtil::IntersectLines((float)x, (float)y, this->aAxisY, 2, this->pCamera, this->vViewport, vInter, false))
+        {
+            SetScaleAABBSelected(CoordinateElement_Axis_Y);
+        }
+        else if (FUtil::IntersectLines((float)x, (float)y, this->aAxisZ, 2, this->pCamera, this->vViewport, vInter, false))
+        {
+            SetScaleAABBSelected(CoordinateElement_Axis_Z);
+        }
+        else
+        {
+            ClearSelectState();
+        }
+    }
+
     void VulkanWindow::EditorCoordinateAxis::MouseLeftDown(double x, double y)
     {
         this->isButtonLeftDown = true;
@@ -3288,154 +3362,18 @@ namespace LostPeter
         case CoordinateState_Select:
         case CoordinateState_Move:
             {
-                FVector3 vInter;
-                FRay ray;
-                this->pCamera->ConvertScreenPos2ToWorldRay((float)x, (float)y, &ray);
-                if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[0]))
-                {
-                    SetQuadSelected(CoordinateElement_Quad_XY);
-                }
-                else if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[1]))
-                {
-                    SetQuadSelected(CoordinateElement_Quad_YZ);
-                }
-                else if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[2]))
-                {
-                    SetQuadSelected(CoordinateElement_Quad_ZX);
-                }
-                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisX, 2, (int)x, (int)y, vInter, false))
-				{
-                    SetAxisSelected(CoordinateElement_Axis_X);
-                }
-				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisY, 2, (int)x, (int)y, vInter, false))
-				{
-                    SetAxisSelected(CoordinateElement_Axis_Y);
-                }
-				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisZ, 2, (int)x, (int)y, vInter, false))
-				{
-                    SetAxisSelected(CoordinateElement_Axis_Z);
-                }
-                else
-                {
-                    ClearSelectState();
-                }
-
+                CheckStateMove(x, y);
                 break;
             }
         case CoordinateState_Rotate:
             {
-                FVector3 vInter;
-                if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aTorusX, 30, (int)x, (int)y, vInter, false))
-				{
-                    SetAxisSelected(CoordinateElement_Axis_X);
-                }
-				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aTorusY, 30, (int)x, (int)y, vInter, false))
-				{
-                    SetAxisSelected(CoordinateElement_Axis_Y);
-                }
-				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aTorusZ, 30, (int)x, (int)y, vInter, false))
-				{
-                    SetAxisSelected(CoordinateElement_Axis_Z);
-                }
-                else
-				{
-                    ClearSelectState();
-                }
-
+                CheckStateRotate(x, y);
                 break;
             }
 
         case CoordinateState_Scale:
             {
-                FVector3 vInter;
-                FRay ray;
-                this->pCamera->ConvertScreenPos2ToWorldRay(this->vViewport, (float)x, (float)y, &ray);
-                std::pair<bool, float> ret = FMath::Intersects_RayPlane(ray, FPlane(FVector3(0, 1, 0), 0));
-                FVector3 vHit(0, 0, 0);
-                if (ret.first)
-                {
-                    vHit = ray.GetPoint(ret.second);
-                }
-                F_LogInfo("MouseLeftDown: XYZ: Ray: [(%f,%f,%f) - (%f,%f,%f)], AABB: [0: (%f,%f,%f) - (%f,%f,%f)] - [1: (%f,%f,%f) - (%f,%f,%f)] - [2: (%f,%f,%f) - (%f,%f,%f)] - [3: (%f,%f,%f) - (%f,%f,%f)], Ray-Plane: [%d - %f], Hit: [%f, %f, %f]", 
-                          ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
-                          ray.m_vDirection.x, ray.m_vDirection.y, ray.m_vDirection.z,
-                          this->aScaleAABB[0].m_vMin.x, this->aScaleAABB[0].m_vMin.y, this->aScaleAABB[0].m_vMin.z,
-                          this->aScaleAABB[0].m_vMax.x, this->aScaleAABB[0].m_vMax.y, this->aScaleAABB[0].m_vMax.z,
-                          this->aScaleAABB[1].m_vMin.x, this->aScaleAABB[1].m_vMin.y, this->aScaleAABB[1].m_vMin.z,
-                          this->aScaleAABB[1].m_vMax.x, this->aScaleAABB[1].m_vMax.y, this->aScaleAABB[1].m_vMax.z,
-                          this->aScaleAABB[2].m_vMin.x, this->aScaleAABB[2].m_vMin.y, this->aScaleAABB[2].m_vMin.z,
-                          this->aScaleAABB[2].m_vMax.x, this->aScaleAABB[2].m_vMax.y, this->aScaleAABB[2].m_vMax.z,
-                          this->aScaleAABB[3].m_vMin.x, this->aScaleAABB[3].m_vMin.y, this->aScaleAABB[3].m_vMin.z,
-                          this->aScaleAABB[3].m_vMax.x, this->aScaleAABB[3].m_vMax.y, this->aScaleAABB[3].m_vMax.z,
-                          (ret.first ? 1 : 0), ret.second, vHit.x, vHit.y, vHit.z);
-                if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[3]))
-                {
-                    F_LogError("MouseLeftDown: AABB XYZ: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
-                               ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
-                               ray.m_vDirection.x, ray.m_vDirection.y, ray.m_vDirection.z,
-                               this->aScaleAABB[3].m_vMin.x, this->aScaleAABB[3].m_vMin.y, this->aScaleAABB[3].m_vMin.z,
-                               this->aScaleAABB[3].m_vMax.x, this->aScaleAABB[3].m_vMax.y, this->aScaleAABB[3].m_vMax.z);
-                    SetScaleAABBSelected(CoordinateElement_Axis_XYZ);
-                }
-                else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[0]))
-                {
-                    F_LogError("MouseLeftDown: AABB X: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
-                              ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
-                              ray.m_vDirection.x, ray.m_vDirection.y, ray.m_vDirection.z,
-                              this->aScaleAABB[0].m_vMin.x, this->aScaleAABB[0].m_vMin.y, this->aScaleAABB[0].m_vMin.z,
-                              this->aScaleAABB[0].m_vMax.x, this->aScaleAABB[0].m_vMax.y, this->aScaleAABB[0].m_vMax.z);
-                    SetScaleAABBSelected(CoordinateElement_Axis_X);
-                }
-                else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[1]))
-                {
-                    F_LogError("MouseLeftDown: AABB Y: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
-                              ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
-                              ray.m_vDirection.x, ray.m_vDirection.y, ray.m_vDirection.z,
-                              this->aScaleAABB[1].m_vMin.x, this->aScaleAABB[1].m_vMin.y, this->aScaleAABB[1].m_vMin.z,
-                              this->aScaleAABB[1].m_vMax.x, this->aScaleAABB[1].m_vMax.y, this->aScaleAABB[1].m_vMax.z);
-                    SetScaleAABBSelected(CoordinateElement_Axis_Y);
-                }
-                else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[2]))
-                {
-                    F_LogError("MouseLeftDown: AABB Z: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
-                              ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
-                              ray.m_vDirection.x, ray.m_vDirection.y, ray.m_vDirection.z,
-                              this->aScaleAABB[2].m_vMin.x, this->aScaleAABB[2].m_vMin.y, this->aScaleAABB[2].m_vMin.z,
-                              this->aScaleAABB[2].m_vMax.x, this->aScaleAABB[2].m_vMax.y, this->aScaleAABB[2].m_vMax.z);
-                    SetScaleAABBSelected(CoordinateElement_Axis_Z);
-                }
-                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisX, 2, (int)x, (int)y, vInter, false))
-                {
-                    F_LogError("MouseLeftDown: Axis X: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
-                               ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
-                               ray.m_vDirection.x, ray.m_vDirection.y, ray.m_vDirection.z,
-                               this->aScaleAABB[0].m_vMin.x, this->aScaleAABB[0].m_vMin.y, this->aScaleAABB[0].m_vMin.z,
-                               this->aScaleAABB[0].m_vMax.x, this->aScaleAABB[0].m_vMax.y, this->aScaleAABB[0].m_vMax.z);
-                    SetScaleAABBSelected(CoordinateElement_Axis_X);
-                }
-                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisY, 2, (int)x, (int)y, vInter, false))
-                {
-                    F_LogError("MouseLeftDown: Axis Y: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
-                               ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
-                               ray.m_vDirection.x, ray.m_vDirection.y, ray.m_vDirection.z,
-                               this->aScaleAABB[1].m_vMin.x, this->aScaleAABB[1].m_vMin.y, this->aScaleAABB[1].m_vMin.z,
-                               this->aScaleAABB[1].m_vMax.x, this->aScaleAABB[1].m_vMax.y, this->aScaleAABB[1].m_vMax.z);
-                    SetScaleAABBSelected(CoordinateElement_Axis_Y);
-                }
-                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisZ, 2, (int)x, (int)y, vInter, false))
-                {
-                    F_LogError("MouseLeftDown: Axis Z: Ray: [%f,%f,%f]-[%f,%f,%f], AABB: [%f,%f,%f]-[%f,%f,%f]", 
-                               ray.m_vOrigin.x, ray.m_vOrigin.y, ray.m_vOrigin.z, 
-                               ray.m_vDirection.x, ray.m_vDirection.y, ray.m_vDirection.z,
-                               this->aScaleAABB[2].m_vMin.x, this->aScaleAABB[2].m_vMin.y, this->aScaleAABB[2].m_vMin.z,
-                               this->aScaleAABB[2].m_vMax.x, this->aScaleAABB[2].m_vMax.y, this->aScaleAABB[2].m_vMax.z);
-                    SetScaleAABBSelected(CoordinateElement_Axis_Z);
-                }
-                else
-                {
-                    ClearSelectState();
-                }
-
+                CheckStateScale(x, y);
                 break;
             }
         }
@@ -3456,101 +3394,18 @@ namespace LostPeter
         case CoordinateState_Select:
         case CoordinateState_Move:
             {
-                FVector3 vInter;
-                FRay ray;
-                this->pCamera->ConvertScreenPos2ToWorldRay((float)x, (float)y, &ray);
-                if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[0]))
-                {
-                    SetQuadSelected(CoordinateElement_Quad_XY);
-                }
-                else if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[1]))
-                {
-                    SetQuadSelected(CoordinateElement_Quad_YZ);
-                }
-                else if (FMath::Intersects_RayAABB_Test(ray, this->aQuadAABB[2]))
-                {
-                    SetQuadSelected(CoordinateElement_Quad_ZX);
-                }
-                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisX, 2, (int)x, (int)y, vInter, false))
-				{
-                    SetAxisSelected(CoordinateElement_Axis_X);
-                }
-				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisY, 2, (int)x, (int)y, vInter, false))
-				{
-                    SetAxisSelected(CoordinateElement_Axis_Y);
-                }
-				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisZ, 2, (int)x, (int)y, vInter, false))
-				{
-                    SetAxisSelected(CoordinateElement_Axis_Z);
-                }
-                else
-                {
-                    ClearSelectState();
-                }
-
+                CheckStateMove(x, y);
                 break;
             }
         case CoordinateState_Rotate:
             {
-                FVector3 vInter;
-                if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aTorusX, 30, (int)x, (int)y, vInter, false))
-				{
-                    SetAxisSelected(CoordinateElement_Axis_X);
-                }
-				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aTorusY, 30, (int)x, (int)y, vInter, false))
-				{
-                    SetAxisSelected(CoordinateElement_Axis_Y);
-                }
-				else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aTorusZ, 30, (int)x, (int)y, vInter, false))
-				{
-                    SetAxisSelected(CoordinateElement_Axis_Z);
-                }
-                else
-				{
-                    ClearSelectState();
-                }
-
+                CheckStateRotate(x, y);
                 break;
             }
 
         case CoordinateState_Scale:
             {
-                FVector3 vInter;
-                FRay ray;
-                this->pCamera->ConvertScreenPos2ToWorldRay((float)x, (float)y, &ray);
-                if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[3]))
-                {
-                    SetScaleAABBSelected(CoordinateElement_Axis_XYZ);
-                }
-                else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[0]))
-                {
-                    SetScaleAABBSelected(CoordinateElement_Axis_X);
-                }
-                else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[1]))
-                {
-                    SetScaleAABBSelected(CoordinateElement_Axis_Y);
-                }
-                else if (FMath::Intersects_RayAABB_Test(ray, this->aScaleAABB[2]))
-                {
-                    SetScaleAABBSelected(CoordinateElement_Axis_Z);
-                }
-                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisX, 2, (int)x, (int)y, vInter, false))
-                {
-                    SetScaleAABBSelected(CoordinateElement_Axis_X);
-                }
-                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisY, 2, (int)x, (int)y, vInter, false))
-                {
-                    SetScaleAABBSelected(CoordinateElement_Axis_Y);
-                }
-                else if (FUtil::IntersectLines(this->pCamera, this->vRectScreen, this->aAxisZ, 2, (int)x, (int)y, vInter, false))
-                {
-                    SetScaleAABBSelected(CoordinateElement_Axis_Z);
-                }
-                else
-                {
-                    ClearSelectState();
-                }
-
+                CheckStateScale(x, y);
                 break;
             }
         }
@@ -3875,7 +3730,6 @@ namespace LostPeter
     {
         VulkanWindow::EditorBase::RecreateSwapChain();
 
-        this->vRectScreen = this->pWindow->GetViewportVector2();
         this->vViewport = this->pWindow->GetViewportVector4();
     }
 

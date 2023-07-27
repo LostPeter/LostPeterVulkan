@@ -819,16 +819,18 @@ namespace LostPeter
             static float s_fScale_Cone;
             static float s_fScale_Torus;
             static float s_fScale_AABB;
+            static float s_fScale_AABBCenter;
 
             static FMatrix4 s_aMatrix4Transforms[19];
             static FColor s_aColors_Default[19];
             static FColor s_aColors_Select[19];
 
-            static const float s_fScaleDistance;
-            static const float s_fScaleAxisWhenSelect;
-            static const float s_fScaleConeWhenSelect;
-            static const float s_fScaleTorusWhenSelect;
-            static const float s_fScaleAABBWhenSelect;
+            static const float s_fScale_Distance;
+            static const float s_fScale_WhenSelect_Axis;
+            static const float s_fScale_WhenSelect_AxisCone;
+            static const float s_fScale_WhenSelect_AxisTorus;
+            static const float s_fScale_WhenSelect_AxisAABB;
+            static const float s_fScale_WhenSelect_AxisAABBCenter;
 
         public:
             enum CoordinateStateType
@@ -856,7 +858,6 @@ namespace LostPeter
 
         public:
             FCamera* pCamera;
-            FVector2 vRectScreen;
             FVector4 vViewport;
 
         public:
@@ -877,9 +878,6 @@ namespace LostPeter
             FVector3 aAxisX[2];
             FVector3 aAxisY[2];
             FVector3 aAxisZ[2];
-            FVector3 aQuadXY[3];
-            FVector3 aQuadYZ[3];
-            FVector3 aQuadZX[3];
             FAABB aQuadAABB[3];
             FVector3 aTorusX[30];
             FVector3 aTorusY[30];
@@ -947,6 +945,10 @@ namespace LostPeter
                 virtual void DrawQuadLine(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart);
                 virtual void DrawShape(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart);
 
+
+            virtual void CheckStateMove(double x, double y);
+            virtual void CheckStateRotate(double x, double y);
+            virtual void CheckStateScale(double x, double y);
 
             virtual void MouseLeftDown(double x, double y);
             virtual void MouseMove(double x, double y);

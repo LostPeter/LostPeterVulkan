@@ -264,40 +264,38 @@ namespace LostPeterFoundation
 
 
 ////Screen - World Transform
-    void FUtil::TransformScreenPos2ToWorldRay(FCamera* pCamera, const FVector2& vRectScreen, const FVector2& vPosScreen, FRay* pOutRay)
+    bool FUtil::TransformScreenPos2ToWorldRay(const FVector2& vPosSceen2, FCamera* pCamera, const FVector4& vViewport, FRay* pOutRay)
     {
         F_Assert("FUtil::TransformScreenPos2ToWorldRay" && pCamera != nullptr)
-        pCamera->ConvertScreenPos2ToWorldRay(vPosScreen.x, vPosScreen.y, pOutRay);
+        return pCamera->ConvertScreenPos2ToWorldRay(vPosSceen2.x, vPosSceen2.y, vViewport, pOutRay);
     }
-    bool FUtil::TransformScreenPos2ToWorldPos3(FCamera* pCamera, const FVector2& vRectScreen, const FVector2& vPosScreen, FVector3& vPosWorld)
+    bool FUtil::TransformScreenPos2ToWorldRay(float screenX, float screenY, FCamera* pCamera, const FVector4& vViewport, FRay* pOutRay)
     {
-        return TransformScreenPos3ToWorldPos3(pCamera, vRectScreen, FVector3(vPosScreen.x, vPosScreen.y, 0.0f), vPosWorld);
+        F_Assert("FUtil::TransformScreenPos2ToWorldRay" && pCamera != nullptr)
+        return pCamera->ConvertScreenPos2ToWorldRay(screenX, screenY, vViewport, pOutRay);
     }
-     bool FUtil::TransformScreenPos2ToWorldPos3(FCamera* pCamera, const FVector2& vRectScreen, float fScreenX, float fScreenY, FVector3& vPosWorld)
-    {
-        return TransformScreenPos2ToWorldPos3(pCamera, vRectScreen, FVector3(fScreenX, fScreenY, 0.0f), vPosWorld);
-    }
-    bool FUtil::TransformScreenPos3ToWorldPos3(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vPosScreen, FVector3& vPosWorld)
+
+    bool FUtil::TransformScreenPos3ToWorldPos3(const FVector3& vPosScreen3, FCamera* pCamera, const FVector4& vViewport, FVector3& vPosWorld)
     {
         F_Assert("FUtil::TransformScreenPos3ToWorldPos3" && pCamera != nullptr)
         FRay ray; 
-        pCamera->ConvertScreenPos2ToWorldRay(vPosScreen.x, vPosScreen.y, &ray);
-        vPosWorld = ray.GetPoint(vPosScreen.z);
+        pCamera->ConvertScreenPos2ToWorldRay(vPosScreen3.x, vPosScreen3.y, vViewport, &ray);
+        vPosWorld = ray.GetPoint(vPosScreen3.z);
 
         return true;
     }
-    bool FUtil::TransformScreenPos2ToWorldPos3StartEnd(FCamera* pCamera, const FVector2& vRectScreen, int nScreenX, int nScreenY, FVector3& vStart, FVector3& vEnd)
+    bool FUtil::TransformScreenPos2ToWorldPos3StartEnd(float screenX, float screenY, FCamera* pCamera, const FVector4& vViewport, FVector3& vStart, FVector3& vEnd)
     {
-        FVector3 vScreenStart = FVector3(nScreenX, nScreenY, 0.0f);
-        if (!TransformScreenPos3ToWorldPos3(pCamera, vRectScreen, vScreenStart, vStart))
+        FVector3 vScreenStart = FVector3(screenX, screenY, 0.0f);
+        if (!TransformScreenPos3ToWorldPos3(vScreenStart, pCamera, vViewport, vStart))
         {
             vStart = FMath::ms_v3Zero;
             vEnd = FMath::ms_v3Zero;
             return false;
         }
 
-        FVector3 vScreenEnd = FVector3(nScreenX, nScreenY, 1.0f);
-        if (!TransformScreenPos3ToWorldPos3(pCamera, vRectScreen, vScreenEnd, vEnd))
+        FVector3 vScreenEnd = FVector3(screenX, screenY, 1.0f);
+        if (!TransformScreenPos3ToWorldPos3(vScreenEnd, pCamera, vViewport, vEnd))
         {
             vStart = FMath::ms_v3Zero;
             vEnd = FMath::ms_v3Zero;
@@ -307,10 +305,10 @@ namespace LostPeterFoundation
         return true;
     }   
 
-    bool FUtil::TransformWorldPos3ToScreenPos2(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vPosWorld, FVector2& vPosScreen)
+    bool FUtil::TransformWorldPos3ToScreenPos2(const FVector3& vPosWorld, FCamera* pCamera, const FVector4& vViewport, FVector2& vPosScreen)
     {
         FVector3 vPosScreen3;
-        if (!TransformWorldPos3ToScreenPos3(pCamera, vRectScreen, vPosWorld, vPosScreen3))
+        if (!TransformWorldPos3ToScreenPos3(vPosWorld, pCamera, vViewport, vPosScreen3))
         {
             vPosScreen.x = 0.0f;
             vPosScreen.y = 0.0f;
@@ -320,7 +318,7 @@ namespace LostPeterFoundation
         vPosScreen.y = vPosScreen3.y;
         return true;
     }
-    bool FUtil::TransformWorldPos3ToScreenPos3(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vPosWorld, FVector3& vPosScreen)
+    bool FUtil::TransformWorldPos3ToScreenPos3(const FVector3& vPosWorld, FCamera* pCamera, const FVector4& vViewport, FVector3& vPosScreen)
     {
         F_Assert("FUtil::TransformWorldPos3ToScreenPos3" && pCamera != nullptr)
 
@@ -344,8 +342,8 @@ namespace LostPeterFoundation
         out.z = out.z * 0.5f + 0.5f;
 
         //Map x,y to viewport
-        out.x = out.x * vRectScreen.x;
-        out.y = (1.0f - out.y) * vRectScreen.y;
+        out.x = vViewport.x + out.x * vViewport.z;
+        out.y = (1.0f - out.y - vViewport.y) * vViewport.w;
 
         vPosScreen.x = out.x;
         vPosScreen.y = out.y;
@@ -360,12 +358,12 @@ namespace LostPeterFoundation
         return (ft <= fBigger && ft >= fSmaller);
     }
 
-    bool FUtil::IntersectLine(FCamera* pCamera, const FVector2& vRectScreen, const FVector3& vStart, const FVector3& vEnd, int x, int y, FVector3& vInter)
+    bool FUtil::IntersectLine(float x, float y, const FVector3& vStart, const FVector3& vEnd, FCamera* pCamera, const FVector4& vViewport, FVector3& vInter)
     {
         int nRadius = 5;
         FVector3 vScreenStart, vScreenEnd;
-        TransformWorldPos3ToScreenPos3(pCamera, vRectScreen, vStart, vScreenStart);
-        TransformWorldPos3ToScreenPos3(pCamera, vRectScreen, vEnd, vScreenEnd);
+        TransformWorldPos3ToScreenPos3(vStart, pCamera, vViewport, vScreenStart);
+        TransformWorldPos3ToScreenPos3(vEnd, pCamera, vViewport, vScreenEnd);
 
         float x1,x2,y1,y2;
         x1 = vScreenStart.x;
@@ -374,7 +372,7 @@ namespace LostPeterFoundation
         y2 = vScreenEnd.y;
 
         //if not acute triangle
-        if (!IsBetween(x1, x2, (float)x) && !IsBetween(y1, y2, (float)y))
+        if (!IsBetween(x1, x2, x) && !IsBetween(y1, y2, y))
         {
             return false;
         }
@@ -409,7 +407,7 @@ namespace LostPeterFoundation
         return false;
 
     _succeed:	
-        FVector3 vCursorPos((float)x, (float)y, 0);	
+        FVector3 vCursorPos(x, y, 0);
         FVector3 vScreenStart0(vScreenStart);
         FVector3 vScreenEnd0(vScreenEnd);
         vScreenStart0.z = vScreenEnd0.z = 0;	
@@ -418,9 +416,9 @@ namespace LostPeterFoundation
 
         float t0 = FMath::Dot(u0, v0) / FMath::Length(vScreenEnd0 - vScreenStart0);
         vCursorPos.z = vScreenStart.z + t0 * (vScreenEnd.z - vScreenStart.z);
-        TransformScreenPos3ToWorldPos3(pCamera, vRectScreen, vCursorPos, vInter);
+        TransformScreenPos3ToWorldPos3(vCursorPos, pCamera, vViewport, vInter);
         FVector3 vRayStart,vRayEnd;
-        if (!TransformScreenPos2ToWorldPos3StartEnd(pCamera, vRectScreen, x, y, vRayStart, vRayEnd))
+        if (!TransformScreenPos2ToWorldPos3StartEnd(x, y, pCamera, vViewport, vRayStart, vRayEnd))
         {
             return false;
         }
@@ -435,7 +433,7 @@ namespace LostPeterFoundation
 
         return true;
     }
-    bool FUtil::IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3* pvArray, int nCnt, int x, int y, FVector3& vInter, bool bLoop)
+    bool FUtil::IntersectLines(float x, float y, FVector3* pvArray, int nCnt, FCamera* pCamera, const FVector4& vViewport, FVector3& vInter, bool bLoop)
     {
         int nOffset = 0;
         if (!bLoop)
@@ -445,7 +443,7 @@ namespace LostPeterFoundation
         {
             vStart = pvArray[i % nCnt];
             vEnd = pvArray[(i + 1) % nCnt];
-            if (IntersectLine(pCamera, vRectScreen, vStart, vEnd, x, y, vInter))		
+            if (IntersectLine(x, y, vStart, vEnd, pCamera, vViewport, vInter))		
             {
                 return true;	
             }	
@@ -453,7 +451,7 @@ namespace LostPeterFoundation
 
         return false;
     }
-    bool FUtil::IntersectLines(FCamera* pCamera, const FVector2& vRectScreen, FVector3* pvArray, int nTotalCnt, int nCnt, int nStart, int x, int y, FVector3& vInter, bool bLoop)
+    bool FUtil::IntersectLines(float x, float y, FVector3* pvArray, int nTotalCnt, int nCnt, int nStart, FCamera* pCamera, const FVector4& vViewport, FVector3& vInter, bool bLoop)
     {
         int nOffset = 0;
         if (!bLoop)
@@ -463,7 +461,7 @@ namespace LostPeterFoundation
         {
             vStart = pvArray[i % nTotalCnt];
             vEnd   = pvArray[(i + 1) % nTotalCnt];
-            if (IntersectLine(pCamera, vRectScreen, vStart,vEnd, x, y, vInter))
+            if (IntersectLine(x, y, vStart,vEnd, pCamera, vViewport, vInter))
             {
                 return true;
             }
