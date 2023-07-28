@@ -231,27 +231,71 @@ namespace LostPeterFoundation
 
         return clValue;
     }
-    FSize FUtilString::ParserSize(const String& strValue)
+    FPointI FUtilString::ParserPointI(const String& strValue)
     {
-        FSize size = FSize(0, 0);
+        FPointI point = FPointI(0, 0);
         StringVector vec = FUtilString::Split(strValue);
         if (vec.size() == 2)
         {
-            size = FSize(ParserFloat(vec[0]), ParserFloat(vec[1]));
+            point = FPointI(ParserInt(vec[0]), ParserFloat(vec[1]));
+        }
+
+        return point;
+    }
+    FPointF FUtilString::ParserPointF(const String& strValue)
+    {
+        FPointF point = FPointF(0, 0);
+        StringVector vec = FUtilString::Split(strValue);
+        if (vec.size() == 2)
+        {
+            point = FPointF(ParserFloat(vec[0]), ParserFloat(vec[1]));
+        }
+
+        return point;
+    }
+    FSizeI FUtilString::ParserSizeI(const String& strValue)
+    {
+        FSizeI size = FSizeI(0, 0);
+        StringVector vec = FUtilString::Split(strValue);
+        if (vec.size() == 2)
+        {
+            size = FSizeI(ParserInt(vec[0]), ParserInt(vec[1]));
         }
 
         return size;
     }
-    FPoint FUtilString::ParserPoint(const String& strValue)
+    FSizeF FUtilString::ParserSizeF(const String& strValue)
     {
-        FPoint point = FPoint(0, 0);
+        FSizeF size = FSizeF(0, 0);
         StringVector vec = FUtilString::Split(strValue);
         if (vec.size() == 2)
         {
-            point = FPoint(ParserFloat(vec[0]), ParserFloat(vec[1]));
+            size = FSizeF(ParserFloat(vec[0]), ParserFloat(vec[1]));
         }
 
-        return point;
+        return size;
+    }
+    FRectI FUtilString::ParserRectI(const String& strValue)
+    {
+        FRectI size = FRectI(0, 0, 0, 0);
+        StringVector vec = FUtilString::Split(strValue);
+        if (vec.size() == 4)
+        {
+            size = FRectI(ParserInt(vec[0]), ParserInt(vec[1]), ParserInt(vec[2]), ParserInt(vec[3]));
+        }
+
+        return size;
+    }
+    FRectF FUtilString::ParserRectF(const String& strValue)
+    {
+        FRectF size = FRectF(0, 0, 0, 0);
+        StringVector vec = FUtilString::Split(strValue);
+        if (vec.size() == 4)
+        {
+            size = FRectF(ParserFloat(vec[0]), ParserFloat(vec[1]), ParserFloat(vec[2]), ParserFloat(vec[3]));
+        }
+
+        return size;
     }
     FVector2 FUtilString::ParserVector2(const String& strValue)
     {
@@ -353,13 +397,29 @@ namespace LostPeterFoundation
     {
         strValue = SaveColor(clValue);
     }
-    void FUtilString::SaveSize(String& strValue, const FSize& size)
+    void FUtilString::SavePointI(String& strValue, const FPointI& point)
     {
-        strValue = SaveSize(size);
+        strValue = SavePointI(point);
     }
-    void FUtilString::SavePoint(String& strValue, const FPoint& point)
+    void FUtilString::SavePointF(String& strValue, const FPointF& point)
     {
-        strValue = SavePoint(point);
+        strValue = SavePointF(point);
+    }
+    void FUtilString::SaveSizeI(String& strValue, const FSizeI& size)
+    {
+        strValue = SaveSizeI(size);
+    }
+    void FUtilString::SaveSizeF(String& strValue, const FSizeF& size)
+    {
+        strValue = SaveSizeF(size);
+    }
+    void FUtilString::SaveRectI(String& strValue, const FRectI& rect)
+    {
+        strValue = SaveRectI(rect);
+    }
+    void FUtilString::SaveRectF(String& strValue, const FRectF& rect)
+    {
+        strValue = SaveRectF(rect);
     }
     void FUtilString::SaveVector2(String& strValue, const FVector2& v2Value)
     {
@@ -435,7 +495,29 @@ namespace LostPeterFoundation
                << clValue.w;
         return stream.str();
     }
-    String FUtilString::SaveSize(const FSize& size)
+    String FUtilString::SavePointI(const FPointI& point)
+    {
+        std::ostringstream stream;
+        stream << point.x << " "
+               << point.y;
+        return stream.str();
+    }
+    String FUtilString::SavePointF(const FPointF& point)
+    {
+        std::ostringstream stream;
+        stream.precision(6);
+        stream << point.x << " "
+               << point.y;
+        return stream.str();
+    }
+    String FUtilString::SaveSizeI(const FSizeI& size)
+    {
+        std::ostringstream stream;
+        stream << size.x << " "
+               << size.y;
+        return stream.str();
+    }
+    String FUtilString::SaveSizeF(const FSizeF& size)
     {
         std::ostringstream stream;
         stream.precision(6);
@@ -443,12 +525,23 @@ namespace LostPeterFoundation
                << size.y;
         return stream.str();
     }
-    String FUtilString::SavePoint(const FPoint& point)
+    String FUtilString::SaveRectI(const FRectI& rect)
+    {
+        std::ostringstream stream;
+        stream << rect.left << " "
+               << rect.top << " "
+               << rect.right << " "
+               << rect.bottom;
+        return stream.str();
+    }
+    String FUtilString::SaveRectF(const FRectF& rect)
     {
         std::ostringstream stream;
         stream.precision(6);
-        stream << point.x << " "
-               << point.y;
+        stream << rect.left << " "
+               << rect.top << " "
+               << rect.right << " "
+               << rect.bottom;
         return stream.str();
     }
     String FUtilString::SaveVector2(const FVector2& v2Value)

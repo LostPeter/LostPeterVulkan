@@ -2491,7 +2491,7 @@ namespace LostPeter
     float VulkanWindow::EditorCoordinateAxis::s_fScale_Cone = 0.1f;
     float VulkanWindow::EditorCoordinateAxis::s_fScale_Torus = 1.0f;
     float VulkanWindow::EditorCoordinateAxis::s_fScale_AABB = 0.1f;
-    float VulkanWindow::EditorCoordinateAxis::s_fScale_AABBCenter = 0.1f * 1.2f;
+    float VulkanWindow::EditorCoordinateAxis::s_fScale_AABBCenter = 0.1f * 1.5f;
     FMatrix4 VulkanWindow::EditorCoordinateAxis::s_aMatrix4Transforms[19] = 
     {
         FMath::FromTRS(FVector3( 0.0f,  0.0f,  0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(s_fScale_Quad, s_fScale_Quad, 1.0f)), //Quad XY+
@@ -2578,7 +2578,6 @@ namespace LostPeter
     const float VulkanWindow::EditorCoordinateAxis::s_fScale_WhenSelect_AxisCone = 1.2f;
     const float VulkanWindow::EditorCoordinateAxis::s_fScale_WhenSelect_AxisTorus = 1.05f;
     const float VulkanWindow::EditorCoordinateAxis::s_fScale_WhenSelect_AxisAABB = 1.2f;
-    const float VulkanWindow::EditorCoordinateAxis::s_fScale_WhenSelect_AxisAABBCenter = 1.5f;
     
     VulkanWindow::EditorCoordinateAxis::EditorCoordinateAxis(VulkanWindow* _pWindow)
         : EditorBase(_pWindow)
@@ -2836,11 +2835,11 @@ namespace LostPeter
                     this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 1], //YZ+
                     this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 2], //ZX+
                 };
-                float fQuadLen = 0.5f * s_fScale_Quad * this->scaleCoordinate;
+                float fQuadLenHalf = 0.5f * s_fScale_Quad * this->scaleCoordinate;
                 //aQuadAABB
-                this->aQuadAABB[0].SetCenterExtents(vCenter + FVector3(fQuadLen / 2.0f, fQuadLen / 2.0f, 0.0f), FVector3(fQuadLen, fQuadLen, 0.01f)); //XY+
-                this->aQuadAABB[1].SetCenterExtents(vCenter + FVector3(0.0f, fQuadLen / 2.0f, fQuadLen / 2.0f), FVector3(0.01f, fQuadLen, fQuadLen)); //YZ+
-                this->aQuadAABB[2].SetCenterExtents(vCenter + FVector3(fQuadLen / 2.0f, 0.0f, fQuadLen / 2.0f), FVector3(fQuadLen, 0.01f, fQuadLen)); //ZX+
+                this->aQuadAABB[0].SetCenterExtents(vCenter + FVector3(fQuadLenHalf, fQuadLenHalf, 0.0f), FVector3(fQuadLenHalf, fQuadLenHalf, 0.0001f)); //XY+
+                this->aQuadAABB[1].SetCenterExtents(vCenter + FVector3(0.0f, fQuadLenHalf, fQuadLenHalf), FVector3(0.0001f, fQuadLenHalf, fQuadLenHalf)); //YZ+
+                this->aQuadAABB[2].SetCenterExtents(vCenter + FVector3(fQuadLenHalf, 0.0f, fQuadLenHalf), FVector3(fQuadLenHalf, 0.0001f, fQuadLenHalf)); //ZX+
                 for (int i = 0; i < countNumber; i++)
                 {
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
@@ -3064,10 +3063,7 @@ namespace LostPeter
             {
                 if (IsScaleAABBSelectedByIndex(i))
                 {
-                    if (i != 3)
-                        scaleAABBs[i] *= s_fScale_WhenSelect_AxisAABB;
-                    else
-                        scaleAABBs[i] *= s_fScale_WhenSelect_AxisAABBCenter;
+                    scaleAABBs[i] *= s_fScale_WhenSelect_AxisAABB;
                     break;
                 }
             }

@@ -551,6 +551,10 @@ namespace LostPeterFoundation
         static float GetRadiusFromAABB(const FAABB& aabb);
 
     public:
+        //static bool Intersects_PointLine();
+        
+
+    public:
         static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
                                                              bool positiveSide = true, bool negativeSide = true);
         static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& normal,

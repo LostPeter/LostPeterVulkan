@@ -14,6 +14,10 @@
 
 #include "FPreIncludeStd.h"
 #include "FPreIncludeThird.h"
+#include "FTPoint.h"
+#include "FTSize.h"
+#include "FTRect.h"
+#include "FTLine.h"
 
 namespace LostPeterFoundation
 {
@@ -109,8 +113,24 @@ namespace LostPeterFoundation
 	typedef std::vector<double>	DoubleVector;
     typedef std::deque<TimePoint> FrameTimePointQueue;
 
-    typedef glm::vec2 FPoint;
-    typedef glm::vec2 FSize;
+    typedef FTPoint<int32> FPointI;
+	typedef FTPoint<float> FPointF;
+    typedef	FTSize<int32> FSizeI;
+	typedef	FTSize<float> FSizeF;
+    typedef FTRect<int32> FRectI;
+	typedef FTRect<float> FRectF;
+    typedef FTLine<int32> FLineI;
+	typedef FTLine<float> FLineF;
+    typedef std::vector<FPointI> FPointIVector;
+    typedef std::vector<FPointF> FPointFVector;
+    typedef std::vector<FSizeI> FSizeIVector;
+    typedef std::vector<FSizeF> FSizeFVector;
+    typedef std::vector<FRectI> FRectIVector;
+    typedef std::vector<FRectF> FRectFVector;
+    typedef std::vector<FLineI> FLineIVector;
+    typedef std::vector<FLineF> FLineFVector;
+
+
     typedef glm::vec2 FVector2;
     typedef glm::vec3 FVector3;
     typedef glm::vec4 FVector4;
@@ -118,8 +138,6 @@ namespace LostPeterFoundation
     typedef glm::mat4 FMatrix4;
     typedef glm::quat FQuaternion;
     typedef glm::vec4 FColor;
-    typedef std::vector<FPoint> FPointVector;
-    typedef std::vector<FSize> FSizeVector;
     typedef std::vector<FVector2> FVector2Vector;
     typedef std::vector<FVector3> FVector3Vector;
     typedef std::vector<FVector4> FVector4Vector;

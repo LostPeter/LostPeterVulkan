@@ -830,7 +830,6 @@ namespace LostPeter
             static const float s_fScale_WhenSelect_AxisCone;
             static const float s_fScale_WhenSelect_AxisTorus;
             static const float s_fScale_WhenSelect_AxisAABB;
-            static const float s_fScale_WhenSelect_AxisAABBCenter;
 
         public:
             enum CoordinateStateType

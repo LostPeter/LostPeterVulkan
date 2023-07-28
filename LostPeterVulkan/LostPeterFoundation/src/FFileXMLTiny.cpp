@@ -249,22 +249,59 @@ namespace LostPeterFoundation
 		return true;
 	}
 
-	bool FFileXMLTiny::ParserSize(TiXmlElement* pElement, const char* szItemName, FSize& size)
+	bool FFileXMLTiny::ParserPointI(TiXmlElement* pElement, const char* szItemName, FPointI& point)
 	{
-		F_Assert(pElement && szItemName && "FFileXMLTiny::ParserSize")
+		F_Assert(pElement && szItemName && "FFileXMLTiny::ParserPointI")
 		if (!pElement->Attribute(szItemName))
 			return false;
-		size = FUtilString::ParserSize(pElement->Attribute(szItemName));
+		point = FUtilString::ParserPointI(pElement->Attribute(szItemName));
+
+		return true;
+	}
+	bool FFileXMLTiny::ParserPointF(TiXmlElement* pElement, const char* szItemName, FPointF& point)
+	{
+		F_Assert(pElement && szItemName && "FFileXMLTiny::ParserPointF")
+		if (!pElement->Attribute(szItemName))
+			return false;
+		point = FUtilString::ParserPointF(pElement->Attribute(szItemName));
 
 		return true;
 	}
 
-	bool FFileXMLTiny::ParserPoint(TiXmlElement* pElement, const char* szItemName, FPoint& point)
+	bool FFileXMLTiny::ParserSizeI(TiXmlElement* pElement, const char* szItemName, FSizeI& size)
 	{
-		F_Assert(pElement && szItemName && "FFileXMLTiny::ParserPoint")
+		F_Assert(pElement && szItemName && "FFileXMLTiny::ParserSizeI")
 		if (!pElement->Attribute(szItemName))
 			return false;
-		point = FUtilString::ParserPoint(pElement->Attribute(szItemName));
+		size = FUtilString::ParserSizeI(pElement->Attribute(szItemName));
+
+		return true;
+	}
+	bool FFileXMLTiny::ParserSizeF(TiXmlElement* pElement, const char* szItemName, FSizeF& size)
+	{
+		F_Assert(pElement && szItemName && "FFileXMLTiny::ParserSizeF")
+		if (!pElement->Attribute(szItemName))
+			return false;
+		size = FUtilString::ParserSizeF(pElement->Attribute(szItemName));
+
+		return true;
+	}
+
+	bool FFileXMLTiny::ParserRectI(TiXmlElement* pElement, const char* szItemName, FRectI& rect)
+	{
+		F_Assert(pElement && szItemName && "FFileXMLTiny::ParserRectI")
+		if (!pElement->Attribute(szItemName))
+			return false;
+		rect = FUtilString::ParserRectI(pElement->Attribute(szItemName));
+
+		return true;
+	}
+	bool FFileXMLTiny::ParserRectF(TiXmlElement* pElement, const char* szItemName, FRectF& rect)
+	{
+		F_Assert(pElement && szItemName && "FFileXMLTiny::ParserSizeF")
+		if (!pElement->Attribute(szItemName))
+			return false;
+		rect = FUtilString::ParserRectF(pElement->Attribute(szItemName));
 
 		return true;
 	}
@@ -372,17 +409,42 @@ namespace LostPeterFoundation
 		pElement->SetAttribute(szItemName,strValue.c_str());
 	}
 
-	void FFileXMLTiny::SaveSize(TiXmlElement* pElement, const char* szItemName, const FSize& size)
+	void FFileXMLTiny::SavePointI(TiXmlElement* pElement, const char* szItemName, const FPointI& point)
 	{
-		F_Assert(pElement && szItemName && "FFileXMLTiny::SaveSize")
-		String strValue = FUtilString::SaveSize(size);
+		F_Assert(pElement && szItemName && "FFileXMLTiny::SavePointI")
+		String strValue = FUtilString::SavePointI(point);
+		pElement->SetAttribute(szItemName,strValue.c_str());
+	}
+	void FFileXMLTiny::SavePointF(TiXmlElement* pElement, const char* szItemName, const FPointF& point)
+	{
+		F_Assert(pElement && szItemName && "FFileXMLTiny::SavePointF")
+		String strValue = FUtilString::SavePointF(point);
 		pElement->SetAttribute(szItemName,strValue.c_str());
 	}
 
-	void FFileXMLTiny::SavePoint(TiXmlElement* pElement, const char* szItemName, const FPoint& point)
+	void FFileXMLTiny::SaveSizeI(TiXmlElement* pElement, const char* szItemName, const FSizeI& size)
 	{
-		F_Assert(pElement && szItemName && "FFileXMLTiny::SavePoint")
-		String strValue = FUtilString::SavePoint(point);
+		F_Assert(pElement && szItemName && "FFileXMLTiny::SaveSizeI")
+		String strValue = FUtilString::SaveSizeI(size);
+		pElement->SetAttribute(szItemName,strValue.c_str());
+	}
+	void FFileXMLTiny::SaveSizeF(TiXmlElement* pElement, const char* szItemName, const FSizeF& size)
+	{
+		F_Assert(pElement && szItemName && "FFileXMLTiny::SaveSizeF")
+		String strValue = FUtilString::SaveSizeF(size);
+		pElement->SetAttribute(szItemName,strValue.c_str());
+	}
+	
+	void FFileXMLTiny::SaveRectI(TiXmlElement* pElement, const char* szItemName, const FRectI& rect)
+	{
+		F_Assert(pElement && szItemName && "FFileXMLTiny::SaveRectI")
+		String strValue = FUtilString::SaveRectI(rect);
+		pElement->SetAttribute(szItemName,strValue.c_str());
+	}
+	void FFileXMLTiny::SaveRectF(TiXmlElement* pElement, const char* szItemName, const FRectF& rect)
+	{
+		F_Assert(pElement && szItemName && "FFileXMLTiny::SaveRectF")
+		String strValue = FUtilString::SaveRectF(rect);
 		pElement->SetAttribute(szItemName,strValue.c_str());
 	}
 
