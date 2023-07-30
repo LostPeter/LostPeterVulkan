@@ -23,21 +23,21 @@ static const int g_MeshCount = 11;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
-    "geo_triangle",     "Pos3Color4Normal3Tex2",                "geometry",         "triangle",                 "", //geo_triangle
-    "geo_quad",         "Pos3Color4Normal3Tex2",                "geometry",         "quad",                     "", //geo_quad
-    "geo_grid",         "Pos3Color4Normal3Tex2",                "geometry",         "grid",                     "", //geo_grid
-    "geo_circle",       "Pos3Color4Normal3Tex2",                "geometry",         "circle",                   "", //geo_circle
-    "geo_aabb",         "Pos3Color4Normal3Tex2",                "geometry",         "aabb",                     "", //geo_aabb
-    "geo_sphere",       "Pos3Color4Normal3Tex2",                "geometry",         "sphere",                   "", //geo_sphere
-    "geo_geosphere",    "Pos3Color4Normal3Tex2",                "geometry",         "geosphere",                "", //geo_geosphere
-    "geo_cylinder",     "Pos3Color4Normal3Tex2",                "geometry",         "cylinder",                 "", //geo_cylinder
-    "geo_capsule",      "Pos3Color4Normal3Tex2",                "geometry",         "capsule",                  "", //geo_capsule
-    "geo_cone",         "Pos3Color4Normal3Tex2",                "geometry",         "cone",                     "", //geo_cone
-    "geo_torus",        "Pos3Color4Normal3Tex2",                "geometry",         "torus",                    "", //geo_torus
+    "geo_triangle",     "Pos3Color4Normal3Tex2",                "geometry",         "EntityTriangle",           "", //geo_triangle
+    "geo_quad",         "Pos3Color4Normal3Tex2",                "geometry",         "EntityQuad",               "", //geo_quad
+    "geo_grid",         "Pos3Color4Normal3Tex2",                "geometry",         "EntityGrid",               "", //geo_grid
+    "geo_circle",       "Pos3Color4Normal3Tex2",                "geometry",         "EntityCircle",             "", //geo_circle
+    "geo_aabb",         "Pos3Color4Normal3Tex2",                "geometry",         "EntityAABB",               "", //geo_aabb
+    "geo_sphere",       "Pos3Color4Normal3Tex2",                "geometry",         "EntitySphere",             "", //geo_sphere
+    "geo_geosphere",    "Pos3Color4Normal3Tex2",                "geometry",         "EntityGeoSphere",          "", //geo_geosphere
+    "geo_cylinder",     "Pos3Color4Normal3Tex2",                "geometry",         "EntityCylinder",           "", //geo_cylinder
+    "geo_capsule",      "Pos3Color4Normal3Tex2",                "geometry",         "EntityCapsule",            "", //geo_capsule
+    "geo_cone",         "Pos3Color4Normal3Tex2",                "geometry",         "EntityCone",               "", //geo_cone
+    "geo_torus",        "Pos3Color4Normal3Tex2",                "geometry",         "EntityTorus",              "", //geo_torus
 
-    // "geo_skybox",       "Pos3Color4Normal3Tex2",                "geometry",         "skybox",                   "", //geo_skybox
-    // "geo_skydome",      "Pos3Color4Normal3Tex2",                "geometry",         "skydome",                  "", //geo_skydome
-    // "geo_terrain",      "Pos3Color4Normal3Tex2",                "geometry",         "terrain",                  "", //geo_terrain
+    // "geo_skybox",       "Pos3Color4Normal3Tex2",                "geometry",         "EntitySkyBox",             "", //geo_skybox
+    // "geo_skydome",      "Pos3Color4Normal3Tex2",                "geometry",         "EntitySkyDome",            "", //geo_skydome
+    // "geo_terrain",      "Pos3Color4Normal3Tex2",                "geometry",         "EntityTerrain",            "", //geo_terrain
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
@@ -1285,7 +1285,7 @@ void Vulkan_016_Geometry::createMeshes()
         
         FMeshVertexType typeVertex = F_ParseMeshVertexType(nameVertexType); 
         FMeshType typeMesh = F_ParseMeshType(nameMeshType);
-        FMeshGeometryType typeGeometryType = F_MeshGeometry_Triangle;
+        FMeshGeometryType typeGeometryType = F_MeshGeometry_EntityTriangle;
         if (!nameGeometryType.empty())
         {
             typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);

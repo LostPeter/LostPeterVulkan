@@ -186,20 +186,40 @@ namespace LostPeterFoundation
     class FMath;
     class FMeshDataLoader;
     class FMeshCreateParam;
-    class FMeshCreateParam_Triangle;
-    class FMeshCreateParam_Quad;
-    class FMeshCreateParam_Grid;
-    class FMeshCreateParam_Circle;
-    class FMeshCreateParam_AABB;
-    class FMeshCreateParam_Sphere;
-    class FMeshCreateParam_GeoSphere;
-    class FMeshCreateParam_Cylinder;
-    class FMeshCreateParam_Capsule;
-    class FMeshCreateParam_Cone;
-    class FMeshCreateParam_Torus;
-    class FMeshCreateParam_SkyBox;
-    class FMeshCreateParam_SkyDome;
-    class FMeshCreateParam_Terrain;
+    class FMeshCreateParam_Line;
+    class FMeshCreateParam_LineTriangle;
+    class FMeshCreateParam_LineQuad;
+    class FMeshCreateParam_LineGrid;
+    class FMeshCreateParam_LineCircle;
+    class FMeshCreateParam_LineAABB;
+    class FMeshCreateParam_LineSphere;
+    class FMeshCreateParam_LineCylinder;
+    class FMeshCreateParam_LineCapsule;
+    class FMeshCreateParam_LineCone;
+    class FMeshCreateParam_LineTorus;
+    class FMeshCreateParam_FlatTriangle;
+    class FMeshCreateParam_FlatQuad;
+    class FMeshCreateParam_FlatCircle;
+    class FMeshCreateParam_FlatAABB;
+    class FMeshCreateParam_FlatSphere;
+    class FMeshCreateParam_FlatCylinder;
+    class FMeshCreateParam_FlatCapsule;
+    class FMeshCreateParam_FlatCone;
+    class FMeshCreateParam_FlatTorus;
+    class FMeshCreateParam_EntityTriangle;
+    class FMeshCreateParam_EntityQuad;
+    class FMeshCreateParam_EntityGrid;
+    class FMeshCreateParam_EntityCircle;
+    class FMeshCreateParam_EntityAABB;
+    class FMeshCreateParam_EntitySphere;
+    class FMeshCreateParam_EntityGeoSphere;
+    class FMeshCreateParam_EntityCylinder;
+    class FMeshCreateParam_EntityCapsule;
+    class FMeshCreateParam_EntityCone;
+    class FMeshCreateParam_EntityTorus;
+    class FMeshCreateParam_EntitySkyBox;
+    class FMeshCreateParam_EntitySkyDome;
+    class FMeshCreateParam_EntityTerrain;
     class FMeshGeometry;
     class FLog;
     class FLogConsole;
@@ -261,31 +281,54 @@ namespace LostPeterFoundation
 
     enum FMeshGeometryType
     {
+    ////////////////////////////////// Line //////////////////////////////////
         F_MeshGeometry_Line = 0,                        //0:    Line
-        F_MeshGeometry_LineQuad,                        //1:    LineQuad
-        F_MeshGeometry_LineAABB,                        //2:    LineAABB
-        F_MeshGeometry_LineSphere,                      //3:    LineSphere
-        
-        F_MeshGeometry_Triangle,                        //4:    Triangle
-        F_MeshGeometry_Quad,                            //5:    Quad
-        F_MeshGeometry_Grid,                            //6:    Grid
-        F_MeshGeometry_Circle,                          //7:    Circle
-        F_MeshGeometry_AABB,                            //8:    AABB
-        F_MeshGeometry_Sphere,                          //9:    Sphere
-        F_MeshGeometry_GeoSphere,                       //10:   GeoSphere
-        F_MeshGeometry_Cylinder,                        //11:   Cylinder
-        F_MeshGeometry_Capsule,                         //12:   Capsule
-        F_MeshGeometry_Cone,                            //13:   Cone
-        F_MeshGeometry_Torus,                           //14:   Torus
-        F_MeshGeometry_SkyBox,                          //15:   SkyBox
-        F_MeshGeometry_SkyDome,                         //16:   SkyDome
-        F_MeshGeometry_Terrain,                         //17:   Terrain
+        F_MeshGeometry_LineTriangle,                    //1:    LineTriangle
+        F_MeshGeometry_LineQuad,                        //2:    LineQuad
+        F_MeshGeometry_LineGrid,                        //3:    LineGrid
+        F_MeshGeometry_LineCircle,                      //4:    LineCircle
+        F_MeshGeometry_LineAABB,                        //5:    LineAABB
+        F_MeshGeometry_LineSphere,                      //6:    LineSphere
+        F_MeshGeometry_LineCylinder,                    //7:    LineCylinder
+        F_MeshGeometry_LineCapsule,                     //8:    LineCapsule
+        F_MeshGeometry_LineCone,                        //9:    LineCone
+        F_MeshGeometry_LineTorus,                       //10:   LineTorus
+
+    ////////////////////////////////// Flat //////////////////////////////////
+        F_MeshGeometry_FlatTriangle,                    //11:   FlatTriangle
+        F_MeshGeometry_FlatQuad,                        //12:   FlatQuad
+        F_MeshGeometry_FlatCircle,                      //13:   FlatCircle
+        F_MeshGeometry_FlatAABB,                        //14:   FlatAABB
+        F_MeshGeometry_FlatSphere,                      //15:   FlatSphere
+        F_MeshGeometry_FlatCylinder,                    //16:   FlatCylinder
+        F_MeshGeometry_FlatCapsule,                     //17:   FlatCapsule
+        F_MeshGeometry_FlatCone,                        //18:   FlatCone
+        F_MeshGeometry_FlatTorus,                       //19:   FlatTorus
+
+    ////////////////////////////////// Entity ////////////////////////////////
+        F_MeshGeometry_EntityTriangle,                  //20:   EntityTriangle
+        F_MeshGeometry_EntityQuad,                      //21:   EntityQuad
+        F_MeshGeometry_EntityGrid,                      //22:   EntityGrid
+        F_MeshGeometry_EntityCircle,                    //23:   EntityCircle
+        F_MeshGeometry_EntityAABB,                      //24:   EntityAABB
+        F_MeshGeometry_EntitySphere,                    //25:   EntitySphere
+        F_MeshGeometry_EntityGeoSphere,                 //26:   EntityGeoSphere
+        F_MeshGeometry_EntityCylinder,                  //27:   EntityCylinder
+        F_MeshGeometry_EntityCapsule,                   //28:   EntityCapsule
+        F_MeshGeometry_EntityCone,                      //29:   EntityCone
+        F_MeshGeometry_EntityTorus,                     //30:   EntityTorus
+        F_MeshGeometry_EntitySkyBox,                    //31:   EntitySkyBox
+        F_MeshGeometry_EntitySkyDome,                   //32:   EntitySkyDome
+        F_MeshGeometry_EntityTerrain,                   //33:   EntityTerrain
 
         F_MeshGeometry_Count,
     };
     const String& F_GetMeshGeometryTypeName(FMeshGeometryType type);
     const String& F_GetMeshGeometryTypeName(int type);
     FMeshGeometryType F_ParseMeshGeometryType(const String& strName);
+    bool F_IsMeshGeometryType_Line(FMeshGeometryType type);
+    bool F_IsMeshGeometryType_Flat(FMeshGeometryType type);
+    bool F_IsMeshGeometryType_Entity(FMeshGeometryType type);
 
 
     enum FMeshVertexType

@@ -31,7 +31,7 @@ namespace LostPeter
                 , pathMesh("")
                 , typeMesh(F_Mesh_File)
                 , typeVertex(F_MeshVertex_Pos3Color4Tex2)
-                , typeGeometryType(F_MeshGeometry_Grid)
+                , typeGeometryType(F_MeshGeometry_EntityGrid)
                 , pMeshCreateParam(nullptr)
                 , isFlipY(false)
                 , isTransformLocal(false)
@@ -112,6 +112,7 @@ namespace LostPeter
 
             //Vertex
             FMeshVertexType poTypeVertex;
+            std::vector<FVertex_Pos3Color4> vertices_Pos3Color4;
             std::vector<FVertex_Pos3Color4Tex2> vertices_Pos3Color4Tex2;
             std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
             std::vector<FVertex_Pos3Color4Normal3Tex4> vertices_Pos3Color4Normal3Tex4;
@@ -139,6 +140,7 @@ namespace LostPeter
             uint32_t GetVertexSize();
             uint32_t GetIndexSize();
 
+            virtual bool CreateMeshSub(FMeshDataPC& meshDataPC, bool isTransformLocal, const FMatrix4& matTransformLocal);
             virtual bool CreateMeshSub(FMeshData& meshData, bool isTransformLocal, const FMatrix4& matTransformLocal);
             virtual void WriteVertexData(std::vector<FVertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
                                          std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2);
@@ -813,6 +815,8 @@ namespace LostPeter
 
             static const String s_strNameShader_CoordinateAxis_Vert;
             static const String s_strNameShader_CoordinateAxis_Frag;
+            static const String s_strNameShader_CoordinateAxisLine_Vert;
+            static const String s_strNameShader_CoordinateAxisLine_Frag;
             
             static float s_fScale_Quad;
             static float s_fScale_Cylinder;

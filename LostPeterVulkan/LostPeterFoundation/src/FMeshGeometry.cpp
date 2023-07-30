@@ -15,922 +15,268 @@
 
 namespace LostPeterFoundation
 {
-    ///////////////////////////////////////// FMeshCreateParam ///////////////////////////////////////////
-    FMeshCreateParam::FMeshCreateParam(bool _flipV, bool _rightHand)
-        : flipV(_flipV)
-        , rightHand(_rightHand)
-    {
+    ////////////////////////////////// Line //////////////////////////////////
+    String FMeshCreateParam_Line::ms_nameType = "MeshLine"; //Line
+    String FMeshCreateParam_LineTriangle::ms_nameType = "MeshLineTriangle"; //LineTriangle
+    String FMeshCreateParam_LineQuad::ms_nameType = "MeshLineQuad"; //LineQuad
+    String FMeshCreateParam_LineGrid::ms_nameType = "MeshLineGrid"; //LineGrid
+    String FMeshCreateParam_LineCircle::ms_nameType = "MeshLineCircle"; //LineCircle
+    String FMeshCreateParam_LineAABB::ms_nameType = "MeshLineAABB"; //LineAABB    
+    String FMeshCreateParam_LineSphere::ms_nameType = "MeshLineSphere"; //LineSphere
+    String FMeshCreateParam_LineCylinder::ms_nameType = "MeshLineCylinder"; //LineCylinder
+    String FMeshCreateParam_LineCapsule::ms_nameType = "MeshLineCapsule"; //LineCapsule
+    String FMeshCreateParam_LineCone::ms_nameType = "MeshLineCone"; //LineCone
+    String FMeshCreateParam_LineTorus::ms_nameType = "MeshLineTorus"; //LineTorus
 
-    }
-    FMeshCreateParam::~FMeshCreateParam()
-    {
 
-    }
+    ////////////////////////////////// Flat //////////////////////////////////
+    String FMeshCreateParam_FlatTriangle::ms_nameType = "MeshFlatTriangle"; //FlatTriangle
+    String FMeshCreateParam_FlatQuad::ms_nameType = "MeshFlatQuad"; //FlatQuad
+    String FMeshCreateParam_FlatCircle::ms_nameType = "MeshFlatCircle"; //FlatCircle
+    String FMeshCreateParam_FlatAABB::ms_nameType = "MeshFlatAABB"; //FlatAABB
+    String FMeshCreateParam_FlatSphere::ms_nameType = "MeshFlatSphere"; //FlatSphere
+    String FMeshCreateParam_FlatCylinder::ms_nameType = "MeshFlatCylinder"; //FlatCylinder
+    String FMeshCreateParam_FlatCapsule::ms_nameType = "MeshFlatCapsule"; //FlatCapsule
+    String FMeshCreateParam_FlatCone::ms_nameType = "MeshFlatCone"; //FlatCone
+    String FMeshCreateParam_FlatTorus::ms_nameType = "MeshFlatTorus"; //FlatTorus
 
-    //Line
-    String FMeshCreateParam_Line::ms_nameType = "MeshLine";
-    FMeshCreateParam_Line::FMeshCreateParam_Line()
-        : FMeshCreateParam(false, false)
-    {
 
-    }
-    FMeshCreateParam_Line::~FMeshCreateParam_Line()
-    {
-
-    }
-    String FMeshCreateParam_Line::ToName()
-    {
-        return FUtilString::FormatString("%s_%d_%d", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0,
-                                         rightHand ? 1 : 0);
-    }
-
-    //LineQuad
-    String FMeshCreateParam_LineQuad::ms_nameType = "MeshLineQuad";
-    FMeshCreateParam_LineQuad::FMeshCreateParam_LineQuad()
-        : FMeshCreateParam(false, false)
-        , centerX(0)
-        , centerY(0)
-        , width(1)
-        , height(1)
-    {
-
-    }
-    FMeshCreateParam_LineQuad::FMeshCreateParam_LineQuad(float _centerX,
-                                                         float _centerY,
-                                                         float _width,
-                                                         float _height)
-        : FMeshCreateParam(false, false)
-        , centerX(_centerX)
-        , centerY(_centerY)
-        , width(_width)
-        , height(_height)
-    {
-
-    }
-    FMeshCreateParam_LineQuad::~FMeshCreateParam_LineQuad()
-    {
-
-    }
-    String FMeshCreateParam_LineQuad::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%f", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         centerX,
-                                         centerY,
-                                         width,
-                                         height);
-    }
-
-    //LineAABB
-    String FMeshCreateParam_LineAABB::ms_nameType = "MeshLineAABB";
-    FMeshCreateParam_LineAABB::FMeshCreateParam_LineAABB()
-        : FMeshCreateParam(false, false)
-    {
-
-    }
-    FMeshCreateParam_LineAABB::FMeshCreateParam_LineAABB(float _width,
-                                                         float _height,
-                                                         float _depth)
-        : FMeshCreateParam(false, false)
-        , width(_width)
-        , height(_height)
-        , depth(_depth)
-    {
-
-    }
-    FMeshCreateParam_LineAABB::~FMeshCreateParam_LineAABB()
-    {
-
-    }
-    String FMeshCreateParam_LineAABB::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         width,
-                                         height,
-                                         depth);
-    }
-
-    //LineSphere
-    String FMeshCreateParam_LineSphere::ms_nameType = "MeshLineSphere";
-    FMeshCreateParam_LineSphere::FMeshCreateParam_LineSphere()
-        : FMeshCreateParam(false, false)
-    {
-
-    }
-    FMeshCreateParam_LineSphere::FMeshCreateParam_LineSphere(float _radius,
-                                                             uint32 _sliceCount,
-                                                             uint32 _stackCount)
-        : FMeshCreateParam(false, false)
-        , radius(_radius)
-        , sliceCount(_sliceCount)
-        , stackCount(_stackCount)
-    {
-
-    }
-    FMeshCreateParam_LineSphere::~FMeshCreateParam_LineSphere()
-    {
-
-    }
-    String FMeshCreateParam_LineSphere::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%u-%u", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         radius,
-                                         sliceCount,
-                                         stackCount);
-    }
-
-    //Triangle
-    String FMeshCreateParam_Triangle::ms_nameType = "MeshTriangle";
-    FMeshCreateParam_Triangle::FMeshCreateParam_Triangle()
-        : FMeshCreateParam(true, false)
-    {
-
-    }
-    FMeshCreateParam_Triangle::FMeshCreateParam_Triangle(bool _flipV,
-                                                         bool _rightHand)
-        : FMeshCreateParam(_flipV, _rightHand)
-    {
-
-    }
-    FMeshCreateParam_Triangle::~FMeshCreateParam_Triangle()
-    {
-
-    }
-    String FMeshCreateParam_Triangle::ToName()
-    {
-        return FUtilString::FormatString("%s_%d_%d", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0,
-                                         rightHand ? 1 : 0);
-    }
-
-    //Quad
-    String FMeshCreateParam_Quad::ms_nameType = "MeshQuad";
-    FMeshCreateParam_Quad::FMeshCreateParam_Quad()
-        : FMeshCreateParam(false, false)
-        , centerX(0)
-        , centerY(0)
-        , width(1)
-        , height(1)
-        , depth(0)
-    {
-
-    }
-    FMeshCreateParam_Quad::FMeshCreateParam_Quad(float _centerX,
-                                                 float _centerY,
-                                                 float _width,
-                                                 float _height,
-                                                 float _depth,
-                                                 bool _flipV,
-                                                 bool _rightHand)
-        : FMeshCreateParam(_flipV, _rightHand)
-        , centerX(_centerX)
-        , centerY(_centerY)
-        , width(_width)
-        , height(_height)
-        , depth(_depth)
-    {
-
-    }
-    FMeshCreateParam_Quad::~FMeshCreateParam_Quad()
-    {
-        
-    }
-    String FMeshCreateParam_Quad::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%f", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         centerX,
-                                         centerY,
-                                         width,
-                                         height,
-                                         depth);
-    }
-
-    //Grid
-    String FMeshCreateParam_Grid::ms_nameType = "MeshGrid";
-    FMeshCreateParam_Grid::FMeshCreateParam_Grid()
-        : FMeshCreateParam(false, false)
-        , width(1)
-        , height(1)
-        , m(10)
-        , n(10)
-    {
-
-    }
-    FMeshCreateParam_Grid::FMeshCreateParam_Grid(float _width,
-                                                 float _height,
-                                                 uint32 _m,
-                                                 uint32 _n,
-                                                 bool _flipV,
-                                                 bool _rightHand)    
-        : FMeshCreateParam(_flipV, _rightHand)
-        , width(_width)
-        , height(_height)
-        , m(_m)
-        , n(_n)
-    {
-
-    }
-    FMeshCreateParam_Grid::~FMeshCreateParam_Grid()
-    {
-        
-    }
-    String FMeshCreateParam_Grid::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%u-%u", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         width,
-                                         height,
-                                         m,
-                                         n);
-    }
-
-    //Circle
-    String FMeshCreateParam_Circle::ms_nameType = "MeshCircle";
-    FMeshCreateParam_Circle::FMeshCreateParam_Circle()
-        : FMeshCreateParam(false, false)
-        , radius(0.5f)
-        , segment(100)
-    {
-
-    }
-    FMeshCreateParam_Circle::FMeshCreateParam_Circle(float _radius,
-                                                     uint32 _segment,
-                                                     bool _flipV,
-                                                     bool _rightHand)
-        : FMeshCreateParam(_flipV, _rightHand)
-        , radius(_radius)
-        , segment(_segment)
-    {
-
-    }
-    FMeshCreateParam_Circle::~FMeshCreateParam_Circle()
-    {
-        
-    }
-    String FMeshCreateParam_Circle::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%u", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         radius,
-                                         segment);
-    }
-
-    //AABB
-    String FMeshCreateParam_AABB::ms_nameType = "MeshAABB";
-    FMeshCreateParam_AABB::FMeshCreateParam_AABB()
-        : FMeshCreateParam(false, false)
-        , width(1)
-        , height(1)
-        , depth(1)
-        , numSubdivisions(0)
-    {
-
-    }
-    FMeshCreateParam_AABB::FMeshCreateParam_AABB(float _width,
-                                                 float _height,
-                                                 float _depth,
-                                                 uint32 _numSubdivisions,
-                                                 bool _flipV,
-                                                 bool _rightHand)
-        : FMeshCreateParam(_flipV, _rightHand)
-        , width(_width)
-        , height(_height)
-        , depth(_depth)
-        , numSubdivisions(_numSubdivisions)
-    {
-
-    }
-    FMeshCreateParam_AABB::~FMeshCreateParam_AABB()
-    {
-        
-    }
-    String FMeshCreateParam_AABB::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         width,
-                                         height,
-                                         depth,
-                                         numSubdivisions);
-    }
-
-    //Sphere
-    String FMeshCreateParam_Sphere::ms_nameType = "MeshSphere";
-    FMeshCreateParam_Sphere::FMeshCreateParam_Sphere()
-        : FMeshCreateParam(false, false)
-        , radius(0.5f)
-        , sliceCount(30)
-        , stackCount(30)
-    {
-
-    }
-    FMeshCreateParam_Sphere::FMeshCreateParam_Sphere(float _radius,
-                                                     uint32 _sliceCount,
-                                                     uint32 _stackCount,
-                                                     bool _flipV,
-                                                     bool _rightHand)
-        : FMeshCreateParam(_flipV, _rightHand)
-        , radius(_radius)
-        , sliceCount(_sliceCount)
-        , stackCount(_stackCount)
-    {
-
-    }
-    FMeshCreateParam_Sphere::~FMeshCreateParam_Sphere()
-    {
-        
-    }
-    String FMeshCreateParam_Sphere::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%u-%u", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         radius,
-                                         sliceCount,
-                                         stackCount);
-    }
-
-    //GeoSphere
-    String FMeshCreateParam_GeoSphere::ms_nameType = "MeshGeoSphere";
-    FMeshCreateParam_GeoSphere::FMeshCreateParam_GeoSphere()
-        : FMeshCreateParam(false, false)
-        , radius(0.5f)
-        , numSubdivisions(5)
-    {
-
-    }
-    FMeshCreateParam_GeoSphere::FMeshCreateParam_GeoSphere(float _radius,
-                                                           uint32 _numSubdivisions,
-                                                           bool _flipV,
-                                                           bool _rightHand)
-        : FMeshCreateParam(_flipV, _rightHand)
-        , radius(_radius)
-        , numSubdivisions(_numSubdivisions)
-    {
-
-    }
-    FMeshCreateParam_GeoSphere::~FMeshCreateParam_GeoSphere()
-    {
-        
-    }
-    String FMeshCreateParam_GeoSphere::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%u", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         radius,
-                                         numSubdivisions);
-    }
-
-    //Cylinder
-    String FMeshCreateParam_Cylinder::ms_nameType = "MeshCylinder";
-    FMeshCreateParam_Cylinder::FMeshCreateParam_Cylinder()
-        : FMeshCreateParam(false, false)
-        , bottomRadius(0.5f)
-        , topRadius(0.5f)
-        , height(1.0f)
-        , heightOffset(0.0f)
-        , sliceCount(50)
-        , stackCount(50)
-    {
-
-    }
-    FMeshCreateParam_Cylinder::FMeshCreateParam_Cylinder(float _bottomRadius,
-                                                         float _topRadius,
-                                                         float _height,
-                                                         float _heightOffset,
-                                                         uint32 _sliceCount,
-                                                         uint32 _stackCount,
-                                                         bool _flipV,
-                                                         bool _rightHand)
-        : FMeshCreateParam(_flipV, _rightHand)
-        , bottomRadius(_bottomRadius)
-        , topRadius(_topRadius)
-        , height(_height)
-        , heightOffset(_heightOffset)
-        , sliceCount(_sliceCount)
-        , stackCount(_stackCount)
-    {
-
-    }
-    FMeshCreateParam_Cylinder::~FMeshCreateParam_Cylinder()
-    {
-        
-    }
-    String FMeshCreateParam_Cylinder::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%u-%u", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         bottomRadius,
-                                         topRadius,
-                                         height,
-                                         heightOffset,
-                                         sliceCount,
-                                         stackCount);
-    }
-
-    //Capsule
-    String FMeshCreateParam_Capsule::ms_nameType = "MeshCapsule";
-    FMeshCreateParam_Capsule::FMeshCreateParam_Capsule()
-        : FMeshCreateParam(false, false)
-        , radius(0.5f)
-        , height(1.0f)
-        , heightOffset(0.0f)
-        , numRings(5)
-        , numSegments(50)
-        , numSegHeight(30)
-    {
-
-    }
-    FMeshCreateParam_Capsule::FMeshCreateParam_Capsule(float _radius,
-                                                       float _height,
-                                                       float _heightOffset,
-                                                       uint32 _numRings,
-                                                       uint32 _numSegments,
-                                                       uint32 _numSegHeight,
-                                                       bool _flipV,
-                                                       bool _rightHand)
-        : FMeshCreateParam(_flipV, _rightHand)
-        , radius(_radius)
-        , height(_height)
-        , heightOffset(_heightOffset)
-        , numRings(_numRings)
-        , numSegments(_numSegments)
-        , numSegHeight(_numSegHeight)
-    {
-
-    }
-    FMeshCreateParam_Capsule::~FMeshCreateParam_Capsule()
-    {
-        
-    }
-    String FMeshCreateParam_Capsule::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u-%u-%u", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         radius,
-                                         height,
-                                         heightOffset,
-                                         numRings,
-                                         numSegments,
-                                         numSegHeight);
-    }
-
-    //Cone
-    String FMeshCreateParam_Cone::ms_nameType = "MeshCone";
-    FMeshCreateParam_Cone::FMeshCreateParam_Cone()
-        : FMeshCreateParam(false, false)
-        , radius(0.5f)
-        , height(1.0f)
-        , heightOffset(0.0f)
-        , numSegBase(50)
-        , numSegHeight(30)
-    {
-
-    }
-    FMeshCreateParam_Cone::FMeshCreateParam_Cone(float _radius,
-                                                 float _height,
-                                                 float _heightOffset,
-                                                 uint32 _numSegBase,
-                                                 uint32 _numSegHeight,
-                                                 bool _flipV,
-                                                 bool _rightHand)
-        : FMeshCreateParam(false, false)
-        , radius(_radius)
-        , height(_height)
-        , heightOffset(_heightOffset)
-        , numSegBase(_numSegBase)
-        , numSegHeight(_numSegHeight)
-    {
-
-    }
-    FMeshCreateParam_Cone::~FMeshCreateParam_Cone()
-    {
-        
-    }
-    String FMeshCreateParam_Cone::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u-%u",
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         radius,
-                                         height,
-                                         heightOffset,
-                                         numSegBase,
-                                         numSegHeight);
-    }
-
-    //Torus
-    String FMeshCreateParam_Torus::ms_nameType = "MeshTorus";
-    FMeshCreateParam_Torus::FMeshCreateParam_Torus()
-        : FMeshCreateParam(false, false)
-        , radius(0.5f)
-        , sectionRadius(0.2f)
-        , numSegSection(50)
-        , numSegCircle(20)
-    {
-
-    }
-    FMeshCreateParam_Torus::FMeshCreateParam_Torus(float _radius,
-                                                   float _sectionRadius,
-                                                   uint32 _numSegSection,
-                                                   uint32 _numSegCircle,
-                                                   bool _flipV,
-                                                   bool _rightHand)
-        : FMeshCreateParam(false, false)
-        , radius(_radius)
-        , sectionRadius(_sectionRadius)
-        , numSegSection(_numSegSection)
-        , numSegCircle(_numSegCircle)
-    {
-
-    }
-    FMeshCreateParam_Torus::~FMeshCreateParam_Torus()
-    {
-        
-    }
-    String FMeshCreateParam_Torus::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%u-%u",
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         radius,
-                                         sectionRadius,
-                                         numSegSection,
-                                         numSegCircle);
-    }
-
-    //SkyBox
-    String FMeshCreateParam_SkyBox::ms_nameType = "MeshSkyBox";
-    FMeshCreateParam_SkyBox::FMeshCreateParam_SkyBox()
-        : FMeshCreateParam(false, false)
-    {
-
-    }
-    FMeshCreateParam_SkyBox::~FMeshCreateParam_SkyBox()
-    {
-        
-    }
-    String FMeshCreateParam_SkyBox::ToName()
-    {
-        return "";
-    }   
-
-    //SkyDome
-    String FMeshCreateParam_SkyDome::ms_nameType = "MeshSkyDome";
-    FMeshCreateParam_SkyDome::FMeshCreateParam_SkyDome()
-        : FMeshCreateParam(false, false)
-    {
-
-    }
-    FMeshCreateParam_SkyDome::~FMeshCreateParam_SkyDome()
-    {
-        
-    }
-    String FMeshCreateParam_SkyDome::ToName()
-    {
-        return "";
-    }
-
-    //Terrain
-    String FMeshCreateParam_Terrain::ms_nameType = "MeshTerrain";
-    FMeshCreateParam_Terrain::FMeshCreateParam_Terrain()
-        : FMeshCreateParam(false, false)
-        , offsetX(0)
-        , offsetZ(0)
-        , width(1024)
-        , height(1024)
-        , vertexX(1025)
-        , vertexZ(1025)
-        , pHeight(nullptr)
-        , heightDataGap(1)
-    {
-
-    }
-    FMeshCreateParam_Terrain::FMeshCreateParam_Terrain(float _offsetX,
-                                                       float _offsetZ,
-                                                       float _width,
-                                                       float _height,
-                                                       uint32 _vertexX,
-                                                       uint32 _vertexZ,
-                                                       float* _pHeight,
-                                                       uint32 _heightDataGap,
-                                                       bool _flipV,
-                                                       bool _rightHand)    
-        : FMeshCreateParam(_flipV, _rightHand)
-        , offsetX(_offsetX)
-        , offsetZ(_offsetZ)
-        , width(_width)
-        , height(_height)
-        , vertexX(_vertexX)
-        , vertexZ(_vertexZ)
-        , pHeight(_pHeight)
-        , heightDataGap(_heightDataGap)
-    {
-
-    }
-    FMeshCreateParam_Terrain::~FMeshCreateParam_Terrain()
-    {
-        
-    }
-    String FMeshCreateParam_Terrain::ToName()
-    {
-        return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%u-%u", 
-                                         ms_nameType.c_str(), 
-                                         flipV ? 1 : 0, 
-                                         rightHand ? 1 : 0,
-                                         offsetX,
-                                         offsetZ,
-                                         width,
-                                         height,
-                                         vertexX,
-                                         vertexZ);
-    }
+    ////////////////////////////////// Entity ////////////////////////////////
+    String FMeshCreateParam_EntityTriangle::ms_nameType = "MeshEntityTriangle"; //EntityTriangle
+    String FMeshCreateParam_EntityQuad::ms_nameType = "MeshEntityQuad"; //EntityQuad
+    String FMeshCreateParam_EntityGrid::ms_nameType = "MeshEntityGrid"; //EntityGrid   
+    String FMeshCreateParam_EntityCircle::ms_nameType = "MeshEntityCircle";  //EntityCircle
+    String FMeshCreateParam_EntityAABB::ms_nameType = "MeshEntityAABB"; //EntityAABB
+    String FMeshCreateParam_EntitySphere::ms_nameType = "MeshEntitySphere"; //EntitySphere
+    String FMeshCreateParam_EntityGeoSphere::ms_nameType = "MeshEntityGeoSphere"; //EntityGeoSphere
+    String FMeshCreateParam_EntityCylinder::ms_nameType = "MeshEntityCylinder"; //EntityCylinder
+    String FMeshCreateParam_EntityCapsule::ms_nameType = "MeshEntityCapsule"; //EntityCapsule
+    String FMeshCreateParam_EntityCone::ms_nameType = "MeshEntityCone"; //EntityCone
+    String FMeshCreateParam_EntityTorus::ms_nameType = "MeshEntityTorus"; //EntityTorus
+    String FMeshCreateParam_EntitySkyBox::ms_nameType = "MeshEntitySkyBox"; //EntitySkyBox
+    String FMeshCreateParam_EntitySkyDome::ms_nameType = "MeshEntitySkyDome"; //EntitySkyDome
+    String FMeshCreateParam_EntityTerrain::ms_nameType = "MeshEntityTerrain"; //EntityTerrain
+    
 
     ///////////////////////////////////////// FMeshGeometry //////////////////////////////////////////////
-    bool FMeshGeometry::CreateGeometry(FMeshData& meshData, FMeshGeometryType eMeshGeometry)
+    bool FMeshGeometry::CreateGeometry(FMeshDataPC* pMeshDataPC, FMeshData* pMeshData, FMeshGeometryType typeMeshGeometry)
     {
-        switch ((int)eMeshGeometry)
+        if (F_IsMeshGeometryType_Entity(typeMeshGeometry))
+        {
+            F_Assert(pMeshData != nullptr && "FMeshGeometry::CreateGeometry");
+            return CreateEntityGeometry(*pMeshData, typeMeshGeometry);
+        }
+        else if (F_IsMeshGeometryType_Flat(typeMeshGeometry))
+        {
+            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometry");
+            return CreateFlatGeometry(*pMeshDataPC, typeMeshGeometry);
+        }
+        else if (F_IsMeshGeometryType_Line(typeMeshGeometry))
+        {
+            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometry");
+            return CreateLineGeometry(*pMeshDataPC, typeMeshGeometry);
+        }
+        
+        F_Assert(false && "FMeshGeometry::CreateGeometry: Wrong MeshGeometry type !");
+        return false;
+    }
+	bool FMeshGeometry::CreateGeometryWithParam(FMeshDataPC* pMeshDataPC, FMeshData* pMeshData, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam)
+    {
+        if (F_IsMeshGeometryType_Entity(typeMeshGeometry))
+        {
+            F_Assert(pMeshData != nullptr && "FMeshGeometry::CreateGeometryWithParam");
+            return CreateEntityGeometryWithParam(*pMeshData, typeMeshGeometry, pParam);
+        }
+        else if (F_IsMeshGeometryType_Flat(typeMeshGeometry))
+        {
+            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometryWithParam");
+            return CreateFlatGeometryWithParam(*pMeshDataPC, typeMeshGeometry, pParam);
+        }
+        else if (F_IsMeshGeometryType_Line(typeMeshGeometry))
+        {
+            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometryWithParam");
+            return CreateLineGeometryWithParam(*pMeshDataPC, typeMeshGeometry, pParam);
+        }
+        
+        F_Assert(false && "FMeshGeometry::CreateGeometryWithParam: Wrong MeshGeometry type !");
+        return false;
+    }
+
+
+    ////////////////////////////////// Line //////////////////////////////////
+    bool FMeshGeometry::CreateLineGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry)
+    {
+        switch ((int)typeMeshGeometry)
         {
         case F_MeshGeometry_Line:
             {
                 FMeshCreateParam_Line param_Line;
-                FMeshGeometry::CreateLine(meshData, &param_Line);
+                FMeshGeometry::CreateLine(meshDataPC, &param_Line);
+                return true;
+            }
+        case F_MeshGeometry_LineTriangle:
+            {
+                FMeshCreateParam_LineTriangle param_LineTriangle;
+                FMeshGeometry::CreateLineTriangle(meshDataPC, &param_LineTriangle);
                 return true;
             }
         case F_MeshGeometry_LineQuad:
             {
                 FMeshCreateParam_LineQuad param_LineQuad;
-                FMeshGeometry::CreateLineQuad(meshData, &param_LineQuad);
+                FMeshGeometry::CreateLineQuad(meshDataPC, &param_LineQuad);
+                return true;
+            }
+        case F_MeshGeometry_LineGrid:
+            {
+                FMeshCreateParam_LineGrid param_LineGrid;
+                FMeshGeometry::CreateLineGrid(meshDataPC, &param_LineGrid);
+                return true;
+            }
+        case F_MeshGeometry_LineCircle:
+            {
+                FMeshCreateParam_LineCircle param_LineCircle;
+                FMeshGeometry::CreateLineCircle(meshDataPC, &param_LineCircle);
                 return true;
             }
         case F_MeshGeometry_LineAABB:
             {
                 FMeshCreateParam_LineAABB param_LineAABB;
-                FMeshGeometry::CreateLineAABB(meshData, &param_LineAABB);
+                FMeshGeometry::CreateLineAABB(meshDataPC, &param_LineAABB);
                 return true;
             }
         case F_MeshGeometry_LineSphere:
             {
                 FMeshCreateParam_LineSphere param_LineSphere;
-                FMeshGeometry::CreateLineSphere(meshData, &param_LineSphere);
+                FMeshGeometry::CreateLineSphere(meshDataPC, &param_LineSphere);
                 return true;
             }
-        case F_MeshGeometry_Triangle:
+        case F_MeshGeometry_LineCylinder:
             {
-                FMeshCreateParam_Triangle param_Triangle;
-                FMeshGeometry::CreateTriangle(meshData, &param_Triangle);
+                FMeshCreateParam_LineCylinder param_LineCylinder;
+                FMeshGeometry::CreateLineCylinder(meshDataPC, &param_LineCylinder);
                 return true;
             }
-        case F_MeshGeometry_Quad:
+        case F_MeshGeometry_LineCapsule:
             {
-                FMeshCreateParam_Quad param_Quad;
-                FMeshGeometry::CreateQuad(meshData, &param_Quad);
+                FMeshCreateParam_LineCapsule param_LineCapsule;
+                FMeshGeometry::CreateLineCapsule(meshDataPC, &param_LineCapsule);
                 return true;
             }
-        case F_MeshGeometry_Grid:
+        case F_MeshGeometry_LineCone:
             {
-                FMeshCreateParam_Grid param_Grid;
-                FMeshGeometry::CreateGrid(meshData, &param_Grid);
+                FMeshCreateParam_LineCone param_LineCone;
+                FMeshGeometry::CreateLineCone(meshDataPC, &param_LineCone);
                 return true;
             }
-        case F_MeshGeometry_Circle:
+        case F_MeshGeometry_LineTorus:
             {
-                FMeshCreateParam_Circle param_Circle;
-                FMeshGeometry::CreateCircle(meshData, &param_Circle);
-                return true;
-            }
-        case F_MeshGeometry_AABB:
-            {
-                FMeshCreateParam_AABB param_AABB;
-                FMeshGeometry::CreateAABB(meshData, &param_AABB);
-                return true;
-            }
-        case F_MeshGeometry_Sphere:
-            {
-                FMeshCreateParam_Sphere param_Sphere;
-                FMeshGeometry::CreateSphere(meshData, &param_Sphere);
-                return true;
-            }
-         case F_MeshGeometry_GeoSphere:
-            {
-                FMeshCreateParam_GeoSphere param_GeoSphere;
-                FMeshGeometry::CreateGeoSphere(meshData, &param_GeoSphere);
-                return true;
-            }
-        case F_MeshGeometry_Cylinder:
-            {
-                FMeshCreateParam_Cylinder param_Cylinder;
-                FMeshGeometry::CreateCylinder(meshData, &param_Cylinder);
-                return true;
-            }
-        case F_MeshGeometry_Capsule:
-            {
-                FMeshCreateParam_Capsule param_Capsule;
-                FMeshGeometry::CreateCapsule(meshData, &param_Capsule);
-                return true;
-            }
-        case F_MeshGeometry_Cone:
-            {
-                FMeshCreateParam_Cone param_Cone;
-                FMeshGeometry::CreateCone(meshData, &param_Cone);
-                return true;
-            }
-        case F_MeshGeometry_Torus:
-            {
-                FMeshCreateParam_Torus param_Torus;
-                FMeshGeometry::CreateTorus(meshData, &param_Torus);
-                return true;
-            }
-        case F_MeshGeometry_SkyBox:
-            {
-                FMeshCreateParam_SkyBox param_SkyBox;
-                FMeshGeometry::CreateSkyBox(meshData, &param_SkyBox);
-                return true;
-            }
-        case F_MeshGeometry_SkyDome:
-            {
-                FMeshCreateParam_SkyDome param_SkyDome;
-                FMeshGeometry::CreateSkyDome(meshData, &param_SkyDome);
-                return true;
-            }
-        case F_MeshGeometry_Terrain:
-            {
-                FMeshCreateParam_Terrain param_Terrain;
-                FMeshGeometry::CreateTerrain(meshData, &param_Terrain);
+                FMeshCreateParam_LineTorus param_LineTorus;
+                FMeshGeometry::CreateLineTorus(meshDataPC, &param_LineTorus);
                 return true;
             }
         }
         return false;
     }
-    bool FMeshGeometry::CreateGeometry(FMeshData& meshData, FMeshGeometryType eMeshGeometry, FMeshCreateParam* pParam)
-    {   
+	bool FMeshGeometry::CreateLineGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam)
+    {
         if (pParam == nullptr)
         {
-            return CreateGeometry(meshData, eMeshGeometry);
+            return CreateLineGeometry(meshDataPC, typeMeshGeometry);
         }
 
-        switch ((int)eMeshGeometry)
+        switch ((int)typeMeshGeometry)
         {
         case F_MeshGeometry_Line:
             {
                 FMeshCreateParam_Line* pParam_Line = static_cast<FMeshCreateParam_Line*>(pParam);
-                FMeshGeometry::CreateLine(meshData, pParam_Line);
+                FMeshGeometry::CreateLine(meshDataPC, pParam_Line);
+                return true;
+            }
+        case F_MeshGeometry_LineTriangle:
+            {
+                FMeshCreateParam_LineTriangle* pParam_LineTriangle = static_cast<FMeshCreateParam_LineTriangle*>(pParam);
+                FMeshGeometry::CreateLineTriangle(meshDataPC, pParam_LineTriangle);
                 return true;
             }
         case F_MeshGeometry_LineQuad:
             {
                 FMeshCreateParam_LineQuad* pParam_LineQuad = static_cast<FMeshCreateParam_LineQuad*>(pParam);
-                FMeshGeometry::CreateLineQuad(meshData, pParam_LineQuad);
+                FMeshGeometry::CreateLineQuad(meshDataPC, pParam_LineQuad);
+                return true;
+            }
+        case F_MeshGeometry_LineGrid:
+            {
+                FMeshCreateParam_LineGrid* pParam_LineGrid = static_cast<FMeshCreateParam_LineGrid*>(pParam);
+                FMeshGeometry::CreateLineGrid(meshDataPC, pParam_LineGrid);
+                return true;
+            }
+        case F_MeshGeometry_LineCircle:
+            {
+                FMeshCreateParam_LineCircle* pParam_LineCircle = static_cast<FMeshCreateParam_LineCircle*>(pParam);
+                FMeshGeometry::CreateLineCircle(meshDataPC, pParam_LineCircle);
                 return true;
             }
         case F_MeshGeometry_LineAABB:
             {
                 FMeshCreateParam_LineAABB* pParam_LineAABB = static_cast<FMeshCreateParam_LineAABB*>(pParam);
-                FMeshGeometry::CreateLineAABB(meshData, pParam_LineAABB);
+                FMeshGeometry::CreateLineAABB(meshDataPC, pParam_LineAABB);
                 return true;
             }
         case F_MeshGeometry_LineSphere:
             {
                 FMeshCreateParam_LineSphere* pParam_LineSphere = static_cast<FMeshCreateParam_LineSphere*>(pParam);
-                FMeshGeometry::CreateLineSphere(meshData, pParam_LineSphere);
+                FMeshGeometry::CreateLineSphere(meshDataPC, pParam_LineSphere);
                 return true;
             }
-        case F_MeshGeometry_Triangle:
+        case F_MeshGeometry_LineCylinder:
             {
-                FMeshCreateParam_Triangle* pParam_Triangle = static_cast<FMeshCreateParam_Triangle*>(pParam);
-                FMeshGeometry::CreateTriangle(meshData, pParam_Triangle);
+                FMeshCreateParam_LineCylinder* pParam_LineCylinder = static_cast<FMeshCreateParam_LineCylinder*>(pParam);
+                FMeshGeometry::CreateLineCylinder(meshDataPC, pParam_LineCylinder);
                 return true;
             }
-        case F_MeshGeometry_Quad:
+        case F_MeshGeometry_LineCapsule:
             {
-                FMeshCreateParam_Quad* pParam_Quad = static_cast<FMeshCreateParam_Quad*>(pParam);
-                FMeshGeometry::CreateQuad(meshData, pParam_Quad);
+                FMeshCreateParam_LineCapsule* pParam_LineCapsule = static_cast<FMeshCreateParam_LineCapsule*>(pParam);
+                FMeshGeometry::CreateLineCapsule(meshDataPC, pParam_LineCapsule);
                 return true;
             }
-        case F_MeshGeometry_Grid:
+        case F_MeshGeometry_LineCone:
             {
-                FMeshCreateParam_Grid* pParam_Grid = static_cast<FMeshCreateParam_Grid*>(pParam);
-                FMeshGeometry::CreateGrid(meshData, pParam_Grid);
+                FMeshCreateParam_LineCone* pParam_LineCone = static_cast<FMeshCreateParam_LineCone*>(pParam);
+                FMeshGeometry::CreateLineCone(meshDataPC, pParam_LineCone);
                 return true;
             }
-        case F_MeshGeometry_Circle:
+        case F_MeshGeometry_LineTorus:
             {
-                FMeshCreateParam_Circle* pParam_Circle = static_cast<FMeshCreateParam_Circle*>(pParam);
-                FMeshGeometry::CreateCircle(meshData, pParam_Circle);
-                return true;
-            }
-        case F_MeshGeometry_AABB:
-            {
-                FMeshCreateParam_AABB* pParam_AABB = static_cast<FMeshCreateParam_AABB*>(pParam);
-                FMeshGeometry::CreateAABB(meshData, pParam_AABB);
-                return true;
-            }
-        case F_MeshGeometry_Sphere:
-            {
-                FMeshCreateParam_Sphere* pParam_Sphere = static_cast<FMeshCreateParam_Sphere*>(pParam);
-                FMeshGeometry::CreateSphere(meshData, pParam_Sphere);
-                return true;
-            }
-        case F_MeshGeometry_GeoSphere:
-            {
-                FMeshCreateParam_GeoSphere* pParam_GeoSphere = static_cast<FMeshCreateParam_GeoSphere*>(pParam);
-                FMeshGeometry::CreateGeoSphere(meshData, pParam_GeoSphere);
-                return true;
-            }
-        case F_MeshGeometry_Cylinder:
-            {
-                FMeshCreateParam_Cylinder* pParam_Cylinder = static_cast<FMeshCreateParam_Cylinder*>(pParam);
-                FMeshGeometry::CreateCylinder(meshData, pParam_Cylinder);
-                return true;
-            }
-        case F_MeshGeometry_Capsule:
-            {
-                FMeshCreateParam_Capsule* pParam_Capsule = static_cast<FMeshCreateParam_Capsule*>(pParam);
-                FMeshGeometry::CreateCapsule(meshData, pParam_Capsule);
-                return true;
-            }
-        case F_MeshGeometry_Cone:
-            {
-                FMeshCreateParam_Cone* pParam_Cone = static_cast<FMeshCreateParam_Cone*>(pParam);
-                FMeshGeometry::CreateCone(meshData, pParam_Cone);
-                return true;
-            }
-        case F_MeshGeometry_Torus:
-            {
-                FMeshCreateParam_Torus* pParam_Torus = static_cast<FMeshCreateParam_Torus*>(pParam);
-                FMeshGeometry::CreateTorus(meshData, pParam_Torus);
-                return true;
-            }
-        case F_MeshGeometry_SkyBox:
-            {
-                FMeshCreateParam_SkyBox* pParam_SkyBox = static_cast<FMeshCreateParam_SkyBox*>(pParam);
-                FMeshGeometry::CreateSkyBox(meshData, pParam_SkyBox);
-                return true;
-            }
-        case F_MeshGeometry_SkyDome:
-            {
-                FMeshCreateParam_SkyDome* pParam_SkyDome = static_cast<FMeshCreateParam_SkyDome*>(pParam);
-                FMeshGeometry::CreateSkyDome(meshData, pParam_SkyDome);
-                return true;
-            }
-        case F_MeshGeometry_Terrain:
-            {
-                FMeshCreateParam_Terrain* pParam_Terrain = static_cast<FMeshCreateParam_Terrain*>(pParam);
-                FMeshGeometry::CreateTerrain(meshData, pParam_Terrain);
+                FMeshCreateParam_LineTorus* pParam_LineTorus= static_cast<FMeshCreateParam_LineTorus*>(pParam);
+                FMeshGeometry::CreateLineTorus(meshDataPC, pParam_LineTorus);
                 return true;
             }
         }
         return false;
     }
 
-
-    void FMeshGeometry::CreateLine(FMeshData& meshData)
+    //Line
+    void FMeshGeometry::CreateLine(FMeshDataPC& meshDataPC)
     {
         //FMeshVertex
-        AddVertex(meshData, FMeshVertex( 0.0f,  0.0f,  0.0f,
-                                         0.0f,  0.0f,  -1.0f,
-                                         1.0f,  0.0f,  0.0f,
-                                         0.0f,  0.0f));
-        AddVertex(meshData, FMeshVertex( 1.0f,  0.0f,  0.0f,
-                                         0.0f,  0.0f,  -1.0f,
-                                         1.0f,  0.0f,  0.0f,
-                                         0.0f,  0.0f));
+        AddVertex(meshDataPC, FMeshVertexPC( 0.0f,  0.0f,  0.0f,
+                                             1.0f,  1.0f,  1.0f, 1.0f));
+        AddVertex(meshDataPC, FMeshVertexPC( 1.0f,  0.0f,  0.0f,
+                                             1.0f,  1.0f,  1.0f, 1.0f));
 
         //Index
-        AddIndexLine(meshData, 0, 1);
+        AddIndexLine(meshDataPC, 0, 1);
     }
 
+    //LineTriangle
+    void FMeshGeometry::CreateLineTriangle(FMeshDataPC& meshDataPC)
+    {
 
-    void FMeshGeometry::CreateLineQuad(FMeshData& meshData,
+    }
+
+    //LineQuad
+    void FMeshGeometry::CreateLineQuad(FMeshDataPC& meshDataPC,
                                        float centerX,
                                        float centerY,
                                        float width,
@@ -945,35 +291,39 @@ namespace LostPeterFoundation
         //  1        2
 
         //FMeshVertex
-        AddVertex(meshData, FMeshVertex(centerX - width/2, centerY + height/2, 0,
-                                        0.0f, 0.0f, -1.0f,
-                                        1.0f, 0.0f, 0.0f,
-                                        0.0f, 0.0f));
+        AddVertex(meshDataPC, FMeshVertexPC(centerX - width/2, centerY + height/2, 0,
+                                            1.0f,  1.0f,  1.0f, 1.0f));
 
-        AddVertex(meshData, FMeshVertex(centerX - width/2, centerY - height/2, 0,
-                                        0.0f, 0.0f, -1.0f,
-                                        1.0f, 0.0f, 0.0f,
-                                        0.0f, 0.0f));
+        AddVertex(meshDataPC, FMeshVertexPC(centerX - width/2, centerY - height/2, 0,
+                                            1.0f,  1.0f,  1.0f, 1.0f));
 
-        AddVertex(meshData, FMeshVertex(centerX + width/2, centerY - height/2, 0,
-                                        0.0f, 0.0f, -1.0f,
-                                        1.0f, 0.0f, 0.0f,
-                                        0.0f, 0.0f));
+        AddVertex(meshDataPC, FMeshVertexPC(centerX + width/2, centerY - height/2, 0,
+                                            1.0f,  1.0f,  1.0f, 1.0f));
 
-        AddVertex(meshData, FMeshVertex(centerX + width/2, centerY + height/2, 0,
-                                        0.0f, 0.0f, -1.0f,
-                                        1.0f, 0.0f, 0.0f,
-                                        0.0f, 0.0f));
+        AddVertex(meshDataPC, FMeshVertexPC(centerX + width/2, centerY + height/2, 0,
+                                            1.0f,  1.0f,  1.0f, 1.0f));
 
         //Index
-        AddIndexLine(meshData, 0, 1);
-        AddIndexLine(meshData, 1, 2);
-        AddIndexLine(meshData, 2, 3);
-        AddIndexLine(meshData, 3, 0);
+        AddIndexLine(meshDataPC, 0, 1);
+        AddIndexLine(meshDataPC, 1, 2);
+        AddIndexLine(meshDataPC, 2, 3);
+        AddIndexLine(meshDataPC, 3, 0);
     }
 
+    //LineGrid
+    void FMeshGeometry::CreateLineGrid(FMeshDataPC& meshDataPC)
+    {
 
-    void FMeshGeometry::CreateLineAABB(FMeshData& meshData,
+    }
+
+    //LineCircle
+    void FMeshGeometry::CreateLineCircle(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+    //LineAABB
+    void FMeshGeometry::CreateLineAABB(FMeshDataPC& meshDataPC,
                                        float width,
                                        float height,
                                        float depth)
@@ -981,8 +331,8 @@ namespace LostPeterFoundation
         
     }
 
-
-    void FMeshGeometry::CreateLineSphere(FMeshData& meshData,
+    //LineSphere
+    void FMeshGeometry::CreateLineSphere(FMeshDataPC& meshDataPC,
                                          float radius,
                                          uint32 sliceCount,
                                          uint32 stackCount)
@@ -990,10 +340,408 @@ namespace LostPeterFoundation
         
     }
 
+    //LineCylinder
+    void FMeshGeometry::CreateLineCylinder(FMeshDataPC& meshDataPC)
+    {
 
-    void FMeshGeometry::CreateTriangle(FMeshData& meshData, 
-                                       bool flipV,
-                                       bool rightHand)
+    }
+
+    //LineCapsule
+    void FMeshGeometry::CreateLineCapsule(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+    //LineCone
+    void FMeshGeometry::CreateLineCone(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+    //LineTorus
+    void FMeshGeometry::CreateLineTorus(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+
+    ////////////////////////////////// Flat //////////////////////////////////
+    bool FMeshGeometry::CreateFlatGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry)
+    {
+        switch ((int)typeMeshGeometry)
+        {
+        case F_MeshGeometry_FlatTriangle:
+            {
+                FMeshCreateParam_FlatTriangle param_FlatTriangle;
+                FMeshGeometry::CreateFlatTriangle(meshDataPC, &param_FlatTriangle);
+                return true;
+            }
+        case F_MeshGeometry_FlatQuad:
+            {
+                FMeshCreateParam_FlatQuad param_FlatQuad;
+                FMeshGeometry::CreateFlatQuad(meshDataPC, &param_FlatQuad);
+                return true;
+            }
+        case F_MeshGeometry_FlatCircle:
+            {
+                FMeshCreateParam_FlatCircle param_FlatCircle;
+                FMeshGeometry::CreateFlatCircle(meshDataPC, &param_FlatCircle);
+                return true;
+            }
+        case F_MeshGeometry_FlatAABB:
+            {
+                FMeshCreateParam_FlatAABB param_FlatAABB;
+                FMeshGeometry::CreateFlatAABB(meshDataPC, &param_FlatAABB);
+                return true;
+            }
+        case F_MeshGeometry_FlatSphere:
+            {
+                FMeshCreateParam_FlatSphere param_FlatSphere;
+                FMeshGeometry::CreateFlatSphere(meshDataPC, &param_FlatSphere);
+                return true;
+            }
+        case F_MeshGeometry_FlatCylinder:
+            {
+                FMeshCreateParam_FlatCylinder param_FlatCylinder;
+                FMeshGeometry::CreateFlatCylinder(meshDataPC, &param_FlatCylinder);
+                return true;
+            }
+        case F_MeshGeometry_FlatCapsule:
+            {
+                FMeshCreateParam_FlatCapsule param_FlatCapsule;
+                FMeshGeometry::CreateFlatCapsule(meshDataPC, &param_FlatCapsule);
+                return true;
+            }
+        case F_MeshGeometry_FlatCone:
+            {
+                FMeshCreateParam_FlatCone param_FlatCone;
+                FMeshGeometry::CreateFlatCone(meshDataPC, &param_FlatCone);
+                return true;
+            }
+        case F_MeshGeometry_FlatTorus:
+            {
+                FMeshCreateParam_FlatTorus param_FlatTorus;
+                FMeshGeometry::CreateFlatTorus(meshDataPC, &param_FlatTorus);
+                return true;
+            }
+        }
+        return false;
+    }
+	bool FMeshGeometry::CreateFlatGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam)
+    {
+        if (pParam == nullptr)
+        {
+            return CreateFlatGeometryWithParam(meshDataPC, typeMeshGeometry);
+        }
+
+        switch ((int)typeMeshGeometry)
+        {
+        case F_MeshGeometry_FlatTriangle:
+            {
+                FMeshCreateParam_FlatTriangle* pParam_FlatTriangle = static_cast<FMeshCreateParam_FlatTriangle*>(pParam);
+                FMeshGeometry::CreateFlatTriangle(meshDataPC, pParam_FlatTriangle);
+                return true;
+            }
+        case F_MeshGeometry_FlatQuad:
+            {
+                FMeshCreateParam_FlatQuad* pParam_FlatQuad = static_cast<FMeshCreateParam_FlatQuad*>(pParam);
+                FMeshGeometry::CreateFlatQuad(meshDataPC, pParam_FlatQuad);
+                return true;
+            }
+        case F_MeshGeometry_FlatCircle:
+            {
+                FMeshCreateParam_FlatCircle* pParam_FlatCircle = static_cast<FMeshCreateParam_FlatCircle*>(pParam);
+                FMeshGeometry::CreateFlatCircle(meshDataPC, pParam_FlatCircle);
+                return true;
+            }
+        case F_MeshGeometry_FlatAABB:
+            {
+                FMeshCreateParam_FlatAABB* pParam_FlatAABB = static_cast<FMeshCreateParam_FlatAABB*>(pParam);
+                FMeshGeometry::CreateFlatAABB(meshDataPC, pParam_FlatAABB);
+                return true;
+            }
+        case F_MeshGeometry_FlatSphere:
+            {
+                FMeshCreateParam_FlatSphere* pParam_FlatSphere = static_cast<FMeshCreateParam_FlatSphere*>(pParam);
+                FMeshGeometry::CreateFlatSphere(meshDataPC, pParam_FlatSphere);
+                return true;
+            }
+        case F_MeshGeometry_FlatCylinder:
+            {
+                FMeshCreateParam_FlatCylinder* pParam_FlatCylinder = static_cast<FMeshCreateParam_FlatCylinder*>(pParam);
+                FMeshGeometry::CreateFlatCylinder(meshDataPC, pParam_FlatCylinder);
+                return true;
+            }
+        case F_MeshGeometry_FlatCapsule:
+            {
+                FMeshCreateParam_FlatCapsule* pParam_FlatCapsule = static_cast<FMeshCreateParam_FlatCapsule*>(pParam);
+                FMeshGeometry::CreateFlatCapsule(meshDataPC, pParam_FlatCapsule);
+                return true;
+            }
+        case F_MeshGeometry_FlatCone:
+            {
+                FMeshCreateParam_FlatCone* pParam_FlatCone = static_cast<FMeshCreateParam_FlatCone*>(pParam);
+                FMeshGeometry::CreateFlatCone(meshDataPC, pParam_FlatCone);
+                return true;
+            }
+        case F_MeshGeometry_FlatTorus:
+            {
+                FMeshCreateParam_FlatTorus* pParam_FlatTorus = static_cast<FMeshCreateParam_FlatTorus*>(pParam);
+                FMeshGeometry::CreateFlatTorus(meshDataPC, pParam_FlatTorus);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //FlatTriangle
+    void FMeshGeometry::CreateFlatTriangle(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+    //FlatQuad
+    void FMeshGeometry::CreateFlatQuad(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+    //FlatCircle
+    void FMeshGeometry::CreateFlatCircle(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+    //FlatAABB
+    void FMeshGeometry::CreateFlatAABB(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+    //FlatSphere
+    void FMeshGeometry::CreateFlatSphere(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+    //FlatCylinder
+    void FMeshGeometry::CreateFlatCylinder(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+    //FlatCapsule
+    void FMeshGeometry::CreateFlatCapsule(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+    //FlatCone
+    void FMeshGeometry::CreateFlatCone(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+    //FlatTorus
+    void FMeshGeometry::CreateFlatTorus(FMeshDataPC& meshDataPC)
+    {
+
+    }
+
+
+    ////////////////////////////////// Entity ////////////////////////////////
+    bool FMeshGeometry::CreateEntityGeometry(FMeshData& meshData, FMeshGeometryType typeMeshGeometry)
+    {
+        switch ((int)typeMeshGeometry)
+        {
+        case F_MeshGeometry_EntityTriangle:
+            {
+                FMeshCreateParam_EntityTriangle param_EntityTriangle;
+                FMeshGeometry::CreateEntityTriangle(meshData, &param_EntityTriangle);
+                return true;
+            }
+        case F_MeshGeometry_EntityQuad:
+            {
+                FMeshCreateParam_EntityQuad param_EntityQuad;
+                FMeshGeometry::CreateEntityQuad(meshData, &param_EntityQuad);
+                return true;
+            }
+        case F_MeshGeometry_EntityGrid:
+            {
+                FMeshCreateParam_EntityGrid param_EntityGrid;
+                FMeshGeometry::CreateEntityGrid(meshData, &param_EntityGrid);
+                return true;
+            }
+        case F_MeshGeometry_EntityCircle:
+            {
+                FMeshCreateParam_EntityCircle param_EntityCircle;
+                FMeshGeometry::CreateEntityCircle(meshData, &param_EntityCircle);
+                return true;
+            }
+        case F_MeshGeometry_EntityAABB:
+            {
+                FMeshCreateParam_EntityAABB param_EntityAABB;
+                FMeshGeometry::CreateEntityAABB(meshData, &param_EntityAABB);
+                return true;
+            }
+        case F_MeshGeometry_EntitySphere:
+            {
+                FMeshCreateParam_EntitySphere param_EntitySphere;
+                FMeshGeometry::CreateEntitySphere(meshData, &param_EntitySphere);
+                return true;
+            }
+         case F_MeshGeometry_EntityGeoSphere:
+            {
+                FMeshCreateParam_EntityGeoSphere param_EntityGeoSphere;
+                FMeshGeometry::CreateEntityGeoSphere(meshData, &param_EntityGeoSphere);
+                return true;
+            }
+        case F_MeshGeometry_EntityCylinder:
+            {
+                FMeshCreateParam_EntityCylinder param_EntityCylinder;
+                FMeshGeometry::CreateEntityCylinder(meshData, &param_EntityCylinder);
+                return true;
+            }
+        case F_MeshGeometry_EntityCapsule:
+            {
+                FMeshCreateParam_EntityCapsule param_EntityCapsule;
+                FMeshGeometry::CreateEntityCapsule(meshData, &param_EntityCapsule);
+                return true;
+            }
+        case F_MeshGeometry_EntityCone:
+            {
+                FMeshCreateParam_EntityCone param_EntityCone;
+                FMeshGeometry::CreateEntityCone(meshData, &param_EntityCone);
+                return true;
+            }
+        case F_MeshGeometry_EntityTorus:
+            {
+                FMeshCreateParam_EntityTorus param_EntityTorus;
+                FMeshGeometry::CreateEntityTorus(meshData, &param_EntityTorus);
+                return true;
+            }
+        case F_MeshGeometry_EntitySkyBox:
+            {
+                FMeshCreateParam_EntitySkyBox param_EntitySkyBox;
+                FMeshGeometry::CreateEntitySkyBox(meshData, &param_EntitySkyBox);
+                return true;
+            }
+        case F_MeshGeometry_EntitySkyDome:
+            {
+                FMeshCreateParam_EntitySkyDome param_EntitySkyDome;
+                FMeshGeometry::CreateEntitySkyDome(meshData, &param_EntitySkyDome);
+                return true;
+            }
+        case F_MeshGeometry_EntityTerrain:
+            {
+                FMeshCreateParam_EntityTerrain param_EntityTerrain;
+                FMeshGeometry::CreateEntityTerrain(meshData, &param_EntityTerrain);
+                return true;
+            }
+        }
+        return false;
+    }
+    bool FMeshGeometry::CreateEntityGeometryWithParam(FMeshData& meshData, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam)
+    {   
+        if (pParam == nullptr)
+        {
+            return CreateEntityGeometry(meshData, typeMeshGeometry);
+        }
+
+        switch ((int)typeMeshGeometry)
+        {
+        case F_MeshGeometry_EntityTriangle:
+            {
+                FMeshCreateParam_EntityTriangle* pParam_EntityTriangle = static_cast<FMeshCreateParam_EntityTriangle*>(pParam);
+                FMeshGeometry::CreateEntityTriangle(meshData, pParam_EntityTriangle);
+                return true;
+            }
+        case F_MeshGeometry_EntityQuad:
+            {
+                FMeshCreateParam_EntityQuad* pParam_EntityQuad = static_cast<FMeshCreateParam_EntityQuad*>(pParam);
+                FMeshGeometry::CreateEntityQuad(meshData, pParam_EntityQuad);
+                return true;
+            }
+        case F_MeshGeometry_EntityGrid:
+            {
+                FMeshCreateParam_EntityGrid* pParam_EntityGrid = static_cast<FMeshCreateParam_EntityGrid*>(pParam);
+                FMeshGeometry::CreateEntityGrid(meshData, pParam_EntityGrid);
+                return true;
+            }
+        case F_MeshGeometry_EntityCircle:
+            {
+                FMeshCreateParam_EntityCircle* pParam_EntityCircle = static_cast<FMeshCreateParam_EntityCircle*>(pParam);
+                FMeshGeometry::CreateEntityCircle(meshData, pParam_EntityCircle);
+                return true;
+            }
+        case F_MeshGeometry_EntityAABB:
+            {
+                FMeshCreateParam_EntityAABB* pParam_EntityAABB = static_cast<FMeshCreateParam_EntityAABB*>(pParam);
+                FMeshGeometry::CreateEntityAABB(meshData, pParam_EntityAABB);
+                return true;
+            }
+        case F_MeshGeometry_EntitySphere:
+            {
+                FMeshCreateParam_EntitySphere* pParam_EntitySphere = static_cast<FMeshCreateParam_EntitySphere*>(pParam);
+                FMeshGeometry::CreateEntitySphere(meshData, pParam_EntitySphere);
+                return true;
+            }
+        case F_MeshGeometry_EntityGeoSphere:
+            {
+                FMeshCreateParam_EntityGeoSphere* pParam_EntityGeoSphere = static_cast<FMeshCreateParam_EntityGeoSphere*>(pParam);
+                FMeshGeometry::CreateEntityGeoSphere(meshData, pParam_EntityGeoSphere);
+                return true;
+            }
+        case F_MeshGeometry_EntityCylinder:
+            {
+                FMeshCreateParam_EntityCylinder* pParam_EntityCylinder = static_cast<FMeshCreateParam_EntityCylinder*>(pParam);
+                FMeshGeometry::CreateEntityCylinder(meshData, pParam_EntityCylinder);
+                return true;
+            }
+        case F_MeshGeometry_EntityCapsule:
+            {
+                FMeshCreateParam_EntityCapsule* pParam_EntityCapsule = static_cast<FMeshCreateParam_EntityCapsule*>(pParam);
+                FMeshGeometry::CreateEntityCapsule(meshData, pParam_EntityCapsule);
+                return true;
+            }
+        case F_MeshGeometry_EntityCone:
+            {
+                FMeshCreateParam_EntityCone* pParam_EntityCone = static_cast<FMeshCreateParam_EntityCone*>(pParam);
+                FMeshGeometry::CreateEntityCone(meshData, pParam_EntityCone);
+                return true;
+            }
+        case F_MeshGeometry_EntityTorus:
+            {
+                FMeshCreateParam_EntityTorus* pParam_EntityTorus = static_cast<FMeshCreateParam_EntityTorus*>(pParam);
+                FMeshGeometry::CreateEntityTorus(meshData, pParam_EntityTorus);
+                return true;
+            }
+        case F_MeshGeometry_EntitySkyBox:
+            {
+                FMeshCreateParam_EntitySkyBox* pParam_EntitySkyBox = static_cast<FMeshCreateParam_EntitySkyBox*>(pParam);
+                FMeshGeometry::CreateEntitySkyBox(meshData, pParam_EntitySkyBox);
+                return true;
+            }
+        case F_MeshGeometry_EntitySkyDome:
+            {
+                FMeshCreateParam_EntitySkyDome* pParam_EntitySkyDome = static_cast<FMeshCreateParam_EntitySkyDome*>(pParam);
+                FMeshGeometry::CreateEntitySkyDome(meshData, pParam_EntitySkyDome);
+                return true;
+            }
+        case F_MeshGeometry_EntityTerrain:
+            {
+                FMeshCreateParam_EntityTerrain* pParam_EntityTerrain = static_cast<FMeshCreateParam_EntityTerrain*>(pParam);
+                FMeshGeometry::CreateEntityTerrain(meshData, pParam_EntityTerrain);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    void FMeshGeometry::CreateEntityTriangle(FMeshData& meshData, 
+                                             bool flipV,
+                                             bool rightHand)
     {
         //        0 
         //        /\
@@ -1027,14 +775,14 @@ namespace LostPeterFoundation
         }
     }
 
-    void FMeshGeometry::CreateQuad(FMeshData& meshData, 
-                                   float centerX, 
-                                   float centerY, 
-                                   float width, 
-                                   float height, 
-                                   float depth,
-                                   bool flipV,
-                                   bool rightHand)
+    void FMeshGeometry::CreateEntityQuad(FMeshData& meshData, 
+                                         float centerX, 
+                                         float centerY, 
+                                         float width, 
+                                         float height, 
+                                         float depth,
+                                         bool flipV,
+                                         bool rightHand)
     {
         //  0       3
         //   --------
@@ -1078,13 +826,13 @@ namespace LostPeterFoundation
         }
     }
 
-    void FMeshGeometry::CreateGrid(FMeshData& meshData, 
-                                   float width, 
-                                   float height, 
-                                   uint32 m, 
-                                   uint32 n,
-                                   bool flipV,
-                                   bool rightHand)
+    void FMeshGeometry::CreateEntityGrid(FMeshData& meshData, 
+                                         float width, 
+                                         float height, 
+                                         uint32 m, 
+                                         uint32 n,
+                                         bool flipV,
+                                         bool rightHand)
     {
         // (n-1)*(m-2)                  (n-1)*(m-1)
         //      |
@@ -1168,11 +916,11 @@ namespace LostPeterFoundation
         }
     }
 
-    void FMeshGeometry::CreateCircle(FMeshData& meshData,
-                                     float radius,
-                                     uint32 segment,
-                                     bool flipV,
-                                     bool rightHand)
+    void FMeshGeometry::CreateEntityCircle(FMeshData& meshData,
+                                           float radius,
+                                           uint32 segment,
+                                           bool flipV,
+                                           bool rightHand)
     {
 		//          *  * 
 		//		*		   * 2
@@ -1251,13 +999,13 @@ namespace LostPeterFoundation
         }
     }
 
-    void FMeshGeometry::CreateAABB(FMeshData& meshData, 
-                                   float width, 
-                                   float height, 
-                                   float depth, 
-                                   uint32 numSubdivisions,
-                                   bool flipV,
-                                   bool rightHand)
+    void FMeshGeometry::CreateEntityAABB(FMeshData& meshData, 
+                                         float width, 
+                                         float height, 
+                                         float depth, 
+                                         uint32 numSubdivisions,
+                                         bool flipV,
+                                         bool rightHand)
     {
         //     7+------+4			  0 -  9 - 19  -+-
 		//     /|     /|			  1 - 12 - 18  ---
@@ -1363,12 +1111,12 @@ namespace LostPeterFoundation
         }
     }
 
-    void FMeshGeometry::CreateSphere(FMeshData& meshData, 
-                                     float radius, 
-                                     uint32 sliceCount, 
-                                     uint32 stackCount,
-                                     bool flipV,
-                                     bool rightHand)
+    void FMeshGeometry::CreateEntitySphere(FMeshData& meshData, 
+                                           float radius, 
+                                           uint32 sliceCount, 
+                                           uint32 stackCount,
+                                           bool flipV,
+                                           bool rightHand)
     {       
         //           0 
         //           *   
@@ -1497,11 +1245,11 @@ namespace LostPeterFoundation
         }
     }
 
-    void FMeshGeometry::CreateGeoSphere(FMeshData& meshData, 
-                                        float radius, 
-                                        uint32 numSubdivisions,
-                                        bool flipV,
-                                        bool rightHand)
+    void FMeshGeometry::CreateEntityGeoSphere(FMeshData& meshData, 
+                                              float radius, 
+                                              uint32 numSubdivisions,
+                                              bool flipV,
+                                              bool rightHand)
     {
 		//             * 4    
 		//			 * 5 	    
@@ -1697,15 +1445,15 @@ namespace LostPeterFoundation
         }
     }
 
-    void FMeshGeometry::CreateCylinder(FMeshData& meshData, 
-                                       float bottomRadius, 
-                                       float topRadius, 
-                                       float height, 
-                                       float heightOffset,
-                                       uint32 sliceCount, 
-                                       uint32 stackCount,
-                                       bool flipV,
-                                       bool rightHand)
+    void FMeshGeometry::CreateEntityCylinder(FMeshData& meshData, 
+                                             float bottomRadius, 
+                                             float topRadius, 
+                                             float height, 
+                                             float heightOffset,
+                                             uint32 sliceCount, 
+                                             uint32 stackCount,
+                                             bool flipV,
+                                             bool rightHand)
     {
         //       * 
         //    *     *
@@ -1804,15 +1552,15 @@ namespace LostPeterFoundation
                                  rightHand);
     }
 
-    void FMeshGeometry::CreateCapsule(FMeshData& meshData,
-                                      float radius,
-                                      float height,
-                                      float heightOffset,
-                                      uint32 numRings,
-                                      uint32 numSegments,
-                                      uint32 numSegHeight,
-                                      bool flipV,
-                                      bool rightHand)
+    void FMeshGeometry::CreateEntityCapsule(FMeshData& meshData,
+                                            float radius,
+                                            float height,
+                                            float heightOffset,
+                                            uint32 numRings,
+                                            uint32 numSegments,
+                                            uint32 numSegHeight,
+                                            bool flipV,
+                                            bool rightHand)
     {
         //      *** 
         //    *  *  *
@@ -1954,14 +1702,14 @@ namespace LostPeterFoundation
         } 
     }
 
-    void FMeshGeometry::CreateCone(FMeshData& meshData,
-                                   float radius,
-                                   float height,
-                                   float heightOffset,
-                                   uint32 numSegBase,
-                                   uint32 numSegHeight,
-                                   bool flipV,
-                                   bool rightHand)
+    void FMeshGeometry::CreateEntityCone(FMeshData& meshData,
+                                         float radius,
+                                         float height,
+                                         float heightOffset,
+                                         uint32 numSegBase,
+                                         uint32 numSegHeight,
+                                         bool flipV,
+                                         bool rightHand)
     {
         //               *
         //             *   *
@@ -2065,13 +1813,13 @@ namespace LostPeterFoundation
         }
     }
 
-    void FMeshGeometry::CreateTorus(FMeshData& meshData,
-                                    float radius,
-                                    float sectionRadius,
-                                    uint32 numSegSection,
-                                    uint32 numSegCircle,
-                                    bool flipV,
-                                    bool rightHand)
+    void FMeshGeometry::CreateEntityTorus(FMeshData& meshData,
+                                          float radius,
+                                          float sectionRadius,
+                                          uint32 numSegSection,
+                                          uint32 numSegCircle,
+                                          bool flipV,
+                                          bool rightHand)
     {
         //         + +
         //       + * *  +  
@@ -2128,31 +1876,31 @@ namespace LostPeterFoundation
         }       
     }
 
-    void FMeshGeometry::CreateSkyBox(FMeshData& meshData,
-                                     bool flipV,
-                                     bool rightHand)
+    void FMeshGeometry::CreateEntitySkyBox(FMeshData& meshData,
+                                           bool flipV,
+                                           bool rightHand)
     {
 
     }
 
-    void FMeshGeometry::CreateSkyDome(FMeshData& meshData,
-                                      bool flipV,
-                                      bool rightHand)
+    void FMeshGeometry::CreateEntitySkyDome(FMeshData& meshData,
+                                            bool flipV,
+                                            bool rightHand)
     {
 
     }
 
-    void FMeshGeometry::CreateTerrain(FMeshData& meshData,
-                                      float offsetX,
-                                      float offsetZ,
-                                      float width,
-                                      float height,
-                                      uint32 vertexX,
-                                      uint32 vertexZ,
-                                      float* pHeight,
-                                      uint32 heightDataGap,
-                                      bool flipV,
-                                      bool rightHand)
+    void FMeshGeometry::CreateEntityTerrain(FMeshData& meshData,
+                                            float offsetX,
+                                            float offsetZ,
+                                            float width,
+                                            float height,
+                                            uint32 vertexX,
+                                            uint32 vertexZ,
+                                            float* pHeight,
+                                            uint32 heightDataGap,
+                                            bool flipV,
+                                            bool rightHand)
     {
         uint32 vertexCount = vertexX * vertexZ;
         uint32 faceCount = (vertexX - 1) * (vertexZ - 1) * 2;
@@ -2320,7 +2068,84 @@ namespace LostPeterFoundation
         }
     }
 
+
+    //FMeshDataPC
+    uint32 FMeshGeometry::GetVertexCount(FMeshDataPC& meshDataPC)
+    {
+        return meshDataPC.GetVertexCount();
+    }
+    void FMeshGeometry::ReserveVertexCount(FMeshDataPC& meshDataPC, uint32 count)
+    {
+        meshDataPC.ReserveVertexCount(count);
+    }
+    void FMeshGeometry::ResizeVertexCount(FMeshDataPC& meshDataPC, uint32 count)
+    {
+        meshDataPC.ResizeVertexCount(count);
+    }
+    FMeshVertexPC& FMeshGeometry::GetVertex(FMeshDataPC& meshDataPC, uint32 index)
+    {
+        return meshDataPC.GetVertex(index);
+    }
+    uint32 FMeshGeometry::AddVertex(FMeshDataPC& meshDataPC, const FMeshVertexPC& vertex)
+    {
+        meshDataPC.AddVertex(vertex);
+        return GetVertexCount(meshDataPC);
+    }
+    uint32 FMeshGeometry::AddVertex(FMeshDataPC& meshDataPC, 
+                                    const FVector3& vPos,
+                                    const FVector4& color)
+    {
+        return AddVertex(meshDataPC, FMeshVertexPC(vPos, color));
+    }
+    void FMeshGeometry::SetVertex(FMeshDataPC& meshDataPC, int index, const FMeshVertexPC& vertex)
+    {
+        meshDataPC.SetVertex(index, vertex);
+    }
+
+    uint32 FMeshGeometry::GetIndexCount(FMeshDataPC& meshDataPC)
+    {
+        return meshDataPC.GetIndexCount();
+    }
+    void FMeshGeometry::ReserveIndexCount(FMeshDataPC& meshDataPC, uint32 count)
+    {
+        meshDataPC.ReserveIndexCount(count);
+    }
+    void FMeshGeometry::ResizeIndexCount(FMeshDataPC& meshDataPC, uint32 count)
+    {
+        meshDataPC.ResizeIndexCount(count);
+    }
+    uint32 FMeshGeometry::GetIndex(FMeshDataPC& meshDataPC, uint32 index)
+    {
+        return meshDataPC.GetIndex(index);
+    }   
+    uint32 FMeshGeometry::AddIndex(FMeshDataPC& meshDataPC, uint32 value)
+    {
+        meshDataPC.AddIndex(value);
+        return GetIndexCount(meshDataPC);
+    }
+    void FMeshGeometry::AddIndices(FMeshDataPC& meshDataPC, uint32 count, uint32* pIndex)
+    {
+        meshDataPC.AddIndices(count, pIndex);
+    }
+    void FMeshGeometry::SetIndex(FMeshDataPC& meshDataPC, uint32 index, uint32 value)
+    {
+        meshDataPC.SetIndex(index, value);
+    }
+    void FMeshGeometry::AddIndexLine(FMeshDataPC& meshDataPC, uint32 index1, uint32 index2)
+    {
+        meshDataPC.AddIndexLine(index1, index2);
+    }
+    void FMeshGeometry::AddIndexTriangle(FMeshDataPC& meshDataPC, uint32 index1, uint32 index2, uint32 index3)
+    {
+        meshDataPC.AddIndexTriangle(index1, index2, index3);
+    }
+    void FMeshGeometry::SetIndexTriangle(FMeshDataPC& meshDataPC, uint32 indexStart, uint32 index1, uint32 index2, uint32 index3)
+    {
+        meshDataPC.SetIndexTriangle(indexStart, index1, index2, index3);
+    }
+
     
+    //FMeshData
     uint32 FMeshGeometry::GetVertexCount(FMeshData& meshData)
     {
         return meshData.GetVertexCount();

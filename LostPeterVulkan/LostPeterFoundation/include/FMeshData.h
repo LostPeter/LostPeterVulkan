@@ -23,6 +23,7 @@ namespace LostPeterFoundation
     {
         const size_t c_nMaxUint16 = std::numeric_limits<uint16>::max();
 
+        String nameMesh;
         FMeshVertexPCVector vertices;
         Indices16Vector indices16;
         Indices32Vector indices32;
@@ -37,6 +38,7 @@ namespace LostPeterFoundation
 
         void Clear()
         {
+            nameMesh = "";
             vertices.clear();
             indices16.clear();
             indices32.clear();

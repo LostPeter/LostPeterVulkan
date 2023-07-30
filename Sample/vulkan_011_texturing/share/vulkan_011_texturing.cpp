@@ -1394,7 +1394,7 @@ void Vulkan_011_Texturing::createMeshes()
         
         FMeshVertexType typeVertex = F_ParseMeshVertexType(nameVertexType); 
         FMeshType typeMesh = F_ParseMeshType(nameMeshType);
-        FMeshGeometryType typeGeometryType = F_MeshGeometry_Triangle;
+        FMeshGeometryType typeGeometryType = F_MeshGeometry_EntityTriangle;
         if (!nameGeometryType.empty())
         {
             typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);

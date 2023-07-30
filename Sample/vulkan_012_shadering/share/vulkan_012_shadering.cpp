@@ -24,7 +24,7 @@ static const int g_MeshCount = 5;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
-    "geo_triangle",     "Pos3Color4Normal3Tex2",                "geometry",         "triangle",                 "", //geo_triangle
+    "geo_triangle",     "Pos3Color4Normal3Tex2",                "geometry",         "EntityTriangle",           "", //geo_triangle
 
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
@@ -502,6 +502,7 @@ static bool g_ObjectIsTopologyPatchLists[g_ObjectCount] =
 bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load
+    FMeshDataPC meshDataPC;
     FMeshData meshData;
     meshData.bIsFlipY = isFlipY;
     if (this->typeMesh == F_Mesh_File)
@@ -515,7 +516,7 @@ bool Vulkan_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTransformLoc
     }
     else if (this->typeMesh == F_Mesh_Geometry)
     {
-        if (!FMeshGeometry::CreateGeometry(meshData, this->typeGeometryType))
+        if (!FMeshGeometry::CreateGeometry(&meshDataPC, &meshData, this->typeGeometryType))
         {
             F_LogError("Vulkan_012_Shadering::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", F_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
             return false; 
@@ -1141,7 +1142,7 @@ void Vulkan_012_Shadering::createMeshes()
         
         FMeshVertexType typeVertex = F_ParseMeshVertexType(nameVertexType); 
         FMeshType typeMesh = F_ParseMeshType(nameMeshType);
-        FMeshGeometryType typeGeometryType = F_MeshGeometry_Triangle;
+        FMeshGeometryType typeGeometryType = F_MeshGeometry_EntityTriangle;
         if (!nameGeometryType.empty())
         {
             typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);

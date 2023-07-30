@@ -101,8 +101,66 @@ namespace LostPeter
     {
         return sizeof(uint32_t);
     }
+    bool VulkanWindow::MeshSub::CreateMeshSub(FMeshDataPC& meshDataPC, bool isTransformLocal, const FMatrix4& matTransformLocal)
+    {
+        if (this->poTypeVertex != F_MeshVertex_Pos3Color4)
+        {
+            F_Assert("VulkanWindow::MeshSub::CreateMeshSub: Type vertex is not [F_MeshVertex_Pos3Color4] !");
+            return false;
+        }
+
+        //1> Vertex/Index Data
+        int count_vertex = (int)meshDataPC.vertices.size();
+        this->vertices_Pos3Color4.clear();
+        this->vertices_Pos3Color4.reserve(count_vertex);
+        for (int i = 0; i < count_vertex; i++)
+        {
+            FMeshVertexPC& vertex = meshDataPC.vertices[i];
+            FVertex_Pos3Color4 v;
+            v.pos = vertex.pos;
+            v.color = vertex.color;
+            if (isTransformLocal)
+            {
+                v.pos = FMath::Transform(matTransformLocal, v.pos);
+            }
+            this->vertices_Pos3Color4.push_back(v);
+        }
+
+        int count_index = (int)meshDataPC.indices32.size();
+        this->indices.clear();
+        this->indices.reserve(count_index);
+        for (int i = 0; i < count_index; i++)
+        {
+            this->indices.push_back(meshDataPC.indices32[i]);
+        }
+        this->poVertexCount = (uint32_t)this->vertices_Pos3Color4.size();
+        this->poVertexBuffer_Size = this->poVertexCount * sizeof(FVertex_Pos3Color4);
+        this->poVertexBuffer_Data = &this->vertices_Pos3Color4[0];
+        this->poIndexCount = (uint32_t)this->indices.size();
+        this->poIndexBuffer_Size = this->poIndexCount * sizeof(uint32_t);
+        this->poIndexBuffer_Data = &this->indices[0];
+
+        F_LogInfo("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4]: Vertex count: [%d], Index count: [%d] !", 
+                  this->nameMeshSub.c_str(),
+                  this->nameOriginal.c_str(),
+                  (int)this->vertices_Pos3Color4.size(),
+                  (int)this->indices.size());
+
+        //2> createVertexBuffer
+        this->pMesh->pWindow->createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
+
+        //3> createIndexBuffer
+        if (this->poIndexBuffer_Size > 0 &&
+            this->poIndexBuffer_Data != nullptr)
+        {
+            this->pMesh->pWindow->createIndexBuffer(this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+        }
+
+        return true;
+    }
     bool VulkanWindow::MeshSub::CreateMeshSub(FMeshData& meshData, bool isTransformLocal, const FMatrix4& matTransformLocal)
     {
+        //1> Vertex/Index Data
         int count_vertex = (int)meshData.vertices.size();
         if (this->poTypeVertex == F_MeshVertex_Pos3Color4Tex2)
         {   
@@ -424,6 +482,7 @@ namespace LostPeter
     bool VulkanWindow::Mesh::LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
     {
         //1> Load
+        FMeshDataPCVector aMeshDataPCs;
         FMeshDataVector aMeshDatas;
         if (this->typeMesh == F_Mesh_File)
         {
@@ -436,14 +495,23 @@ namespace LostPeter
         }
         else if (this->typeMesh == F_Mesh_Geometry)
         {
+            FMeshDataPC meshDataPC;
             FMeshData meshData;
             meshData.bIsFlipY = isFlipY;
-            if (!FMeshGeometry::CreateGeometry(meshData, this->typeGeometryType, this->pMeshCreateParam))
+            if (!FMeshGeometry::CreateGeometryWithParam(&meshDataPC, &meshData, this->typeGeometryType, this->pMeshCreateParam))
             {
                 F_LogError("VulkanWindow::Mesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", F_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
                 return false; 
             }
-            aMeshDatas.push_back(meshData);
+
+            if (meshData.GetVertexCount() > 0)
+            {
+                aMeshDatas.push_back(meshData);
+            }
+            if (meshDataPC.GetVertexCount() > 0)
+            {   
+                aMeshDataPCs.push_back(meshDataPC);
+            }
         }
         else
         {
@@ -451,6 +519,7 @@ namespace LostPeter
             return false;
         }
 
+        //MeshData
         int count_mesh_sub = (int)aMeshDatas.size();
         for (int i = 0; i < count_mesh_sub; i++)
         {
@@ -463,6 +532,26 @@ namespace LostPeter
                                             i,
                                             this->typeVertex);
             if (!pMeshSub->CreateMeshSub(meshData, isTransformLocal, matTransformLocal))
+            {
+                F_LogError("VulkanWindow::Mesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
+                return false;
+            }
+            AddMeshSub(pMeshSub);
+        }
+
+        //MeshDataPC
+        count_mesh_sub = (int)aMeshDataPCs.size();
+        for (int i = 0; i < count_mesh_sub; i++)
+        {
+            FMeshDataPC& meshDataPC = aMeshDataPCs[i];
+            
+            String nameMeshSub = this->nameMesh + "-" + FUtilString::SaveInt(i);
+            MeshSub* pMeshSub = new MeshSub(this,
+                                            nameMeshSub,
+                                            meshDataPC.nameMesh,
+                                            i,
+                                            this->typeVertex);
+            if (!pMeshSub->CreateMeshSub(meshDataPC, isTransformLocal, matTransformLocal))
             {
                 F_LogError("VulkanWindow::Mesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
                 return false;
@@ -1588,7 +1677,7 @@ namespace LostPeter
                                          "",
                                          F_Mesh_Geometry,
                                          F_MeshVertex_Pos3Color4Tex2,
-                                         F_MeshGeometry_Grid,
+                                         F_MeshGeometry_EntityGrid,
                                          nullptr,
                                          false,
                                          true,
@@ -1930,8 +2019,8 @@ namespace LostPeter
                                              "",
                                              F_Mesh_Geometry,
                                              F_MeshVertex_Pos3Color4Tex2,
-                                             F_MeshGeometry_Cone,
-                                             new FMeshCreateParam_Cone(0.5f, 2.0f, 0.0f, 16, 1, false, false),
+                                             F_MeshGeometry_EntityCone,
+                                             new FMeshCreateParam_EntityCone(0.5f, 2.0f, 0.0f, 16, 1, false, false),
                                              false,
                                              false,
                                              FMath::ms_mat4Unit);
@@ -1941,7 +2030,7 @@ namespace LostPeter
                                              "",
                                              F_Mesh_Geometry,
                                              F_MeshVertex_Pos3Color4Tex2,
-                                             F_MeshGeometry_AABB,
+                                             F_MeshGeometry_EntityAABB,
                                              nullptr,
                                              false,
                                              false,
@@ -1952,7 +2041,7 @@ namespace LostPeter
                                              "",
                                              F_Mesh_Geometry,
                                              F_MeshVertex_Pos3Color4Tex2,
-                                             F_MeshGeometry_Quad,
+                                             F_MeshGeometry_EntityQuad,
                                              nullptr,
                                              true,
                                              false,
@@ -2436,6 +2525,7 @@ namespace LostPeter
     void VulkanWindow::EditorCameraAxis::destroyPipelineGraphics()
     {
         VulkanWindow::EditorBase::destroyPipelineGraphics();
+
         //Quad Blit
         {   
             F_DELETE(this->pPipelineGraphics_CopyBlit)
@@ -2486,6 +2576,8 @@ namespace LostPeter
     size_t VulkanWindow::EditorCoordinateAxis::s_nMeshCoordinateAxisCount = 6;
     const String VulkanWindow::EditorCoordinateAxis::s_strNameShader_CoordinateAxis_Vert = "vert_editor_coordinate_axis";
     const String VulkanWindow::EditorCoordinateAxis::s_strNameShader_CoordinateAxis_Frag = "frag_editor_coordinate_axis";
+    const String VulkanWindow::EditorCoordinateAxis::s_strNameShader_CoordinateAxisLine_Vert = "vert_editor_coordinate_axis_line";
+    const String VulkanWindow::EditorCoordinateAxis::s_strNameShader_CoordinateAxisLine_Frag = "frag_editor_coordinate_axis_line";
     float VulkanWindow::EditorCoordinateAxis::s_fScale_Quad = 0.3f;
     float VulkanWindow::EditorCoordinateAxis::s_fScale_Cylinder = 0.01f;
     float VulkanWindow::EditorCoordinateAxis::s_fScale_Cone = 0.1f;
@@ -3743,8 +3835,8 @@ namespace LostPeter
                                              "",
                                              F_Mesh_Geometry,
                                              F_MeshVertex_Pos3Color4Tex2,
-                                             F_MeshGeometry_Quad,
-                                             new FMeshCreateParam_Quad(0.5f, 0.5f, 1.0f, 1.0f, 0.0f, false, false),
+                                             F_MeshGeometry_EntityQuad,
+                                             new FMeshCreateParam_EntityQuad(0.5f, 0.5f, 1.0f, 1.0f, 0.0f, false, false),
                                              true,
                                              false,
                                              FMath::ms_mat4Unit);
@@ -3753,9 +3845,9 @@ namespace LostPeter
             MeshInfo* pMIQuadLine = new MeshInfo("EditorCameraAxis_QuadLine",
                                                  "",
                                                  F_Mesh_Geometry,
-                                                 F_MeshVertex_Pos3Color4Tex2,
+                                                 F_MeshVertex_Pos3Color4,
                                                  F_MeshGeometry_LineQuad,
-                                                 new FMeshCreateParam_Quad(0.5f, 0.5f, 1.0f, 1.0f, 0.0f, false, false),
+                                                 new FMeshCreateParam_LineQuad(0.5f, 0.5f, 1.0f, 1.0f),
                                                  true,
                                                  false,
                                                  FMath::ms_mat4Unit);
@@ -3765,8 +3857,8 @@ namespace LostPeter
                                                  "",
                                                  F_Mesh_Geometry,
                                                  F_MeshVertex_Pos3Color4Tex2,
-                                                 F_MeshGeometry_Cylinder,
-                                                 new FMeshCreateParam_Cylinder(0.5f, 0.5f, 1.0f, 0.5f, 5, 1, false, false),
+                                                 F_MeshGeometry_EntityCylinder,
+                                                 new FMeshCreateParam_EntityCylinder(0.5f, 0.5f, 1.0f, 0.5f, 5, 1, false, false),
                                                  false,
                                                  false,
                                                  FMath::ms_mat4Unit);
@@ -3776,8 +3868,8 @@ namespace LostPeter
                                              "",
                                              F_Mesh_Geometry,
                                              F_MeshVertex_Pos3Color4Tex2,
-                                             F_MeshGeometry_Cone,
-                                             new FMeshCreateParam_Cone(0.5f, 2.0f, 0.0f, 16, 1, false, false),
+                                             F_MeshGeometry_EntityCone,
+                                             new FMeshCreateParam_EntityCone(0.5f, 2.0f, 0.0f, 16, 1, false, false),
                                              false,
                                              false,
                                              FMath::ms_mat4Unit);
@@ -3787,8 +3879,8 @@ namespace LostPeter
                                               "",
                                               F_Mesh_Geometry,
                                               F_MeshVertex_Pos3Color4Tex2,
-                                              F_MeshGeometry_Torus,
-                                              new FMeshCreateParam_Torus(0.5f, 0.005f, 5, 100, false, false),
+                                              F_MeshGeometry_EntityTorus,
+                                              new FMeshCreateParam_EntityTorus(0.5f, 0.005f, 5, 100, false, false),
                                               false,
                                               false,
                                               FMath::ms_mat4Unit);
@@ -3798,7 +3890,7 @@ namespace LostPeter
                                              "",
                                              F_Mesh_Geometry,
                                              F_MeshVertex_Pos3Color4Tex2,
-                                             F_MeshGeometry_AABB,
+                                             F_MeshGeometry_EntityAABB,
                                              nullptr,
                                              false,
                                              false,
@@ -3820,6 +3912,21 @@ namespace LostPeter
                 siFrag.nameShader = s_strNameShader_CoordinateAxis_Frag;
                 siFrag.nameShaderType = "frag";
                 siFrag.pathShader = "Assets/Shader/editor_coordinate_axis.frag.spv";
+                this->aShaderModuleInfos.push_back(siFrag);
+            }
+            //CoordinateQuadLine
+            {   
+                //Vert
+                ShaderModuleInfo siVert;
+                siVert.nameShader = s_strNameShader_CoordinateAxisLine_Vert;
+                siVert.nameShaderType = "vert";
+                siVert.pathShader = "Assets/Shader/editor_coordinate_axis_line.vert.spv";
+                this->aShaderModuleInfos.push_back(siVert);
+                //Frag
+                ShaderModuleInfo siFrag;
+                siFrag.nameShader = s_strNameShader_CoordinateAxisLine_Frag;
+                siFrag.nameShaderType = "frag";
+                siFrag.pathShader = "Assets/Shader/editor_coordinate_axis_line.frag.spv";
                 this->aShaderModuleInfos.push_back(siFrag);
             }
         }
@@ -3886,6 +3993,7 @@ namespace LostPeter
     }
     void VulkanWindow::EditorCoordinateAxis::initPipelineGraphics()
     {
+        //0> PipelineGraphics/PipelineGraphicsQuadLine
         this->pPipelineGraphics = new PipelineGraphics(this->pWindow);
         this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
         this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
@@ -3961,10 +4069,23 @@ namespace LostPeter
             F_LogInfo("VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: [EditorCoordinateAxis] Create pipeline graphics wire frame success !");
 
             //pPipelineGraphics->poPipeline_WireFrame2
-            this->pPipelineGraphics->poPipeline_WireFrame2 = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+            VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics_Wire;
+            if (!this->pWindow->CreatePipelineShaderStageCreateInfos(s_strNameShader_CoordinateAxisLine_Vert,
+                                                                     "",
+                                                                     "",
+                                                                     "",
+                                                                     s_strNameShader_CoordinateAxisLine_Frag,
+                                                                     this->mapShaderModules,
+                                                                     aShaderStageCreateInfos_Graphics_Wire))
+            {
+                String msg = "VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: Can not find shader used !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+            this->pPipelineGraphics->poPipeline_WireFrame2 = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics_Wire,
                                                                                                      false, 0, 3,
-                                                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
+                                                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
                                                                                                      this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
                                                                                                      VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
                                                                                                      VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
@@ -9867,17 +9988,17 @@ namespace LostPeter
                 pHeight = this->poTerrainHeightMapDataFloat;
                 heightDataGap = (nSizeVertex - 1) / (nVertexCount - 1);
             }
-            FMeshGeometry::CreateTerrain(meshData,
-                                         0.0f,
-                                         0.0f,
-                                         fSize,
-                                         fSize,
-                                         nVertexCount,
-                                         nVertexCount,
-                                         pHeight,
-                                         heightDataGap,
-                                         false,
-                                         false);
+            FMeshGeometry::CreateEntityTerrain(meshData,
+                                               0.0f,
+                                               0.0f,
+                                               fSize,
+                                               fSize,
+                                               nVertexCount,
+                                               nVertexCount,
+                                               pHeight,
+                                               heightDataGap,
+                                               false,
+                                               false);
 
             int count_vertex = (int)meshData.vertices.size();
             this->poTerrain_Pos3Normal3Tex2.clear();

@@ -43,25 +43,47 @@ namespace LostPeterFoundation
     //FMeshGeometryType
     static const String s_nameMeshGeometryTypes[] = 
     {
-        "line",                     //0:    Line
-        "linequad",                 //1:    LineQuad
-        "lineaabb",                 //2:    LineAABB
-        "linesphere",               //3:    LineSphere   
-        "triangle",                 //4:    Triangle
-        "quad",                     //5:    Quad
-        "grid",                     //6:    Grid
-        "circle",                   //7:    Circle
-        "aabb",                     //8:    AABB
-        "sphere",                   //9:    Sphere
-        "geosphere",                //10:   GeoSphere
-        "cylinder",                 //11:   Cylinder
-        "capsule",                  //12:   Capsule
-        "cone",                     //13:   Cone
-        "torus",                    //14:   Torus
-        "skybox",                   //15:   SkyBox
-        "skydome",                  //16:   SkyDome
-        "terrain",                  //17:   Terrain
+    ////////////////////////////////// Line //////////////////////////////////
+        "Line",                     //0:    Line
+        "LineTriangle",             //1:    LineTriangle
+        "LineQuad",                 //2:    LineQuad
+        "LineGrid",                 //3:    LineGrid
+        "LineCircle",               //4:    LineCircle
+        "LineAABB",                 //5:    LineAABB
+        "LineSphere",               //6:    LineSphere   
+        "LineCylinder",             //7:    LineCylinder
+        "LineCapsule",              //8:    LineCapsule
+        "LineCone",                 //9:    LineCone
+        "LineTorus",                //10:   LineTorus
+
+    ////////////////////////////////// Flat //////////////////////////////////
+        "FlatTriangle",             //11:   FlatTriangle
+        "FlatQuad",                 //12:   FlatQuad
+        "FlatCircle",               //13:   FlatCircle
+        "FlatAABB",                 //14:   FlatAABB
+        "FlatSphere",               //15:   FlatSphere
+        "FlatCylinder",             //16:   FlatCylinder
+        "FlatCapsule",              //17:   FlatCapsule
+        "FlatCone",                 //18:   FlatCone
+        "FlatTorus",                //19:   FlatTorus
+
+    ////////////////////////////////// Entity ////////////////////////////////
+        "EntityTriangle",           //20:   EntityTriangle
+        "EntityQuad",               //21:   EntityQuad
+        "EntityGrid",               //22:   EntityGrid
+        "EntityCircle",             //23:   EntityCircle
+        "EntityAABB",               //24:   EntityAABB
+        "EntitySphere",             //25:   EntitySphere
+        "EntityGeoSphere",          //26:   EntityGeoSphere
+        "EntityCylinder",           //27:   EntityCylinder
+        "EntityCapsule",            //28:   EntityCapsule
+        "EntityCone",               //29:   EntityCone
+        "EntityTorus",              //30:   EntityTorus
+        "EntitySkyBox",             //31:   EntitySkyBox
+        "EntitySkyDome",            //32:   EntitySkyDome
+        "EntityTerrain",            //33:   EntityTerrain
     };
+    static std::map<String, FMeshGeometryType> s_mapName2MeshGeometryType;
     const String& F_GetMeshGeometryTypeName(FMeshGeometryType type)
     {
         return s_nameMeshGeometryTypes[(int)type];
@@ -72,15 +94,42 @@ namespace LostPeterFoundation
     }
     FMeshGeometryType F_ParseMeshGeometryType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_MeshGeometry_Count; i++)
+        if (s_mapName2MeshGeometryType.size() <= 0)
         {
-            if (s_nameMeshGeometryTypes[i] == strName)
-                return (FMeshGeometryType)(i);
+            for (size_t i = 0; i < (int)F_MeshGeometry_Count; i++)
+            {
+                FMeshGeometryType type = (FMeshGeometryType)i;
+                s_mapName2MeshGeometryType[s_nameMeshGeometryTypes[i]] = type;
+            }
+        }
+        
+        std::map<String, FMeshGeometryType>::iterator itFind = s_mapName2MeshGeometryType.find(strName);
+        if (itFind != s_mapName2MeshGeometryType.end())
+        {
+            return itFind->second;
         }
         F_Assert(false && "F_ParseMeshGeometryType: Wrong type name !")
-        return F_MeshGeometry_Triangle;
+        return F_MeshGeometry_EntityTriangle;
     }
-    
+    bool F_IsMeshGeometryType_Line(FMeshGeometryType type)
+    {
+        if ((int)type < (int)F_MeshGeometry_FlatTriangle)
+            return true;
+        return false;
+    }
+    bool F_IsMeshGeometryType_Flat(FMeshGeometryType type)
+    {
+        if ((int)type >= (int)F_MeshGeometry_FlatTriangle && (int)type < (int)F_MeshGeometry_EntityTriangle)
+            return true;
+        return false;
+    }
+    bool F_IsMeshGeometryType_Entity(FMeshGeometryType type)
+    {
+        if ((int)type >= (int)F_MeshGeometry_EntityTriangle)
+            return true;
+        return false;
+    }
+
 
     //FMeshVertexType
     static const String s_nameMeshVertexTypes[] = 

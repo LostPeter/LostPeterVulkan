@@ -70,6 +70,14 @@ namespace LostPeterFoundation
 
         }
 
+        FVertex_Pos3Color4(float px, float py, float pz,
+                           float r, float g, float b, float a)
+            : pos(px, py, pz)
+            , color(r, g, b, a)
+        {
+
+        }
+
         bool operator==(const FVertex_Pos3Color4& other) const 
         {
             return this->pos == other.pos && 

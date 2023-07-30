@@ -23,7 +23,7 @@ static const int g_Mesh_Count = 11;
 static const char* g_Mesh_Paths[5 * g_Mesh_Count] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
-    "quad",             "Pos3Color4Tex2",                       "geometry",         "quad",                     "", //plane
+    "quad",             "Pos3Color4Tex2",                       "geometry",         "EntityQuad",               "", //plane
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
@@ -1638,7 +1638,7 @@ void Vulkan_014_MultiRenderPass::createMeshes()
         
         FMeshVertexType typeVertex = F_ParseMeshVertexType(nameVertexType); 
         FMeshType typeMesh = F_ParseMeshType(nameMeshType);
-        FMeshGeometryType typeGeometryType = F_MeshGeometry_Triangle;
+        FMeshGeometryType typeGeometryType = F_MeshGeometry_EntityTriangle;
         if (!nameGeometryType.empty())
         {
             typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);
