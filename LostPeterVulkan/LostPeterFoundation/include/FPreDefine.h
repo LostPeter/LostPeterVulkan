@@ -149,6 +149,7 @@ namespace LostPeterFoundation
 
 
     struct FVertex_Pos2Color4;
+    struct FVertex_Pos3Color4;
     struct FVertex_Pos3Normal3;
     struct FVertex_Pos2Color4Tex2;
     struct FVertex_Pos3Color4Tex2;
@@ -159,6 +160,7 @@ namespace LostPeterFoundation
     struct FVertex_Pos3Normal3Tangent3BlendWI8Tex2;
     struct FVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2;
 
+    struct FMeshDataPC;
     struct FMeshDataPCT;
     struct FMeshData;
     struct FMeshDataUV2;
@@ -263,6 +265,7 @@ namespace LostPeterFoundation
         F_MeshGeometry_LineQuad,                        //1:    LineQuad
         F_MeshGeometry_LineAABB,                        //2:    LineAABB
         F_MeshGeometry_LineSphere,                      //3:    LineSphere
+        
         F_MeshGeometry_Triangle,                        //4:    Triangle
         F_MeshGeometry_Quad,                            //5:    Quad
         F_MeshGeometry_Grid,                            //6:    Grid
@@ -288,16 +291,17 @@ namespace LostPeterFoundation
     enum FMeshVertexType
     {
         F_MeshVertex_Pos2Color4 = 0,                           //0:    Pos2Color4
-        F_MeshVertex_Pos3Normal3,                              //1:    Pos3Normal3
-        F_MeshVertex_Pos3Normal3Tex2,                          //2:    Pos3Normal3Tex2
-        F_MeshVertex_Pos2Color4Tex2,                           //3:    Pos2Color4Tex2
-        F_MeshVertex_Pos3Color4Tex2,                           //4:    Pos3Color4Tex2                          (FMeshVertexPCT)
-        F_MeshVertex_Pos3Color4Normal3Tex2,                    //5:    Pos3Color4Normal3Tex2
-        F_MeshVertex_Pos3Color4Normal3Tex4,                    //6:    Pos3Color4Normal3Tex4
-        F_MeshVertex_Pos3Color4Normal3Tangent3Tex2,            //7:    Pos3Color4Normal3Tangent3Tex2           (FMeshVertex)
-        F_MeshVertex_Pos3Color4Normal3Tangent3Tex4,            //8:    Pos3Color4Normal3Tangent3Tex4           (FMeshVertexUV2)
-        F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2,          //9:    Pos3Normal3Tangent3BlendWI8Tex2 
-        F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2,    //10:   Pos3Color4Normal3Tangent3BlendWI8Tex2   (FMeshVertexSkin)
+        F_MeshVertex_Pos3Color4,                               //1:    Pos3Color4                              (FMeshVertexPC)
+        F_MeshVertex_Pos3Normal3,                              //2:    Pos3Normal3
+        F_MeshVertex_Pos3Normal3Tex2,                          //3:    Pos3Normal3Tex2
+        F_MeshVertex_Pos2Color4Tex2,                           //4:    Pos2Color4Tex2
+        F_MeshVertex_Pos3Color4Tex2,                           //5:    Pos3Color4Tex2                          (FMeshVertexPCT)
+        F_MeshVertex_Pos3Color4Normal3Tex2,                    //6:    Pos3Color4Normal3Tex2
+        F_MeshVertex_Pos3Color4Normal3Tex4,                    //7:    Pos3Color4Normal3Tex4
+        F_MeshVertex_Pos3Color4Normal3Tangent3Tex2,            //8:    Pos3Color4Normal3Tangent3Tex2           (FMeshVertex)
+        F_MeshVertex_Pos3Color4Normal3Tangent3Tex4,            //9:    Pos3Color4Normal3Tangent3Tex4           (FMeshVertexUV2)
+        F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2,          //10:   Pos3Normal3Tangent3BlendWI8Tex2 
+        F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2,    //11:   Pos3Color4Normal3Tangent3BlendWI8Tex2   (FMeshVertexSkin)
 
         F_MeshVertex_Count
     };

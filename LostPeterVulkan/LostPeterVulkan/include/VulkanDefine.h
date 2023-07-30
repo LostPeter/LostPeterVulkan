@@ -90,8 +90,79 @@ namespace LostPeter
     };
 
 
+    //////////////////////////////// Vertex_Pos3Color4 //////////////////////////////
+    //1: F_MeshVertex_Pos3Color4
+    struct utilExport Vertex_Pos3Color4
+    {
+        static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
+        static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
+
+        static const VkVertexInputBindingDescriptionVector& GetBindingDescriptions()
+        {
+            if (s_aBindingDescriptions.empty())
+            {
+                createBindingDescriptions();
+            }
+            return s_aBindingDescriptions;
+        } 
+        static VkVertexInputBindingDescriptionVector* GetBindingDescriptionsPtr()
+        {
+            if (s_aBindingDescriptions.empty())
+            {
+                createBindingDescriptions();
+            }
+            return &s_aBindingDescriptions;
+        }
+        static void createBindingDescriptions()
+        {
+            s_aBindingDescriptions.clear();
+
+            VkVertexInputBindingDescription bindingDescription0 = {};
+            bindingDescription0.binding = 0;
+            bindingDescription0.stride = sizeof(FVertex_Pos3Color4);
+            bindingDescription0.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+            s_aBindingDescriptions.push_back(bindingDescription0);
+        }
+
+        static const VkVertexInputAttributeDescriptionVector& GetAttributeDescriptions()
+        {
+            if (s_aAttributeDescriptions.empty())
+            {
+                createAttributeDescriptions();
+            }
+            return s_aAttributeDescriptions;
+        }
+        static VkVertexInputAttributeDescriptionVector* GetAttributeDescriptionsPtr()
+        {
+            if (s_aAttributeDescriptions.empty())
+            {
+                createAttributeDescriptions();
+            }
+            return &s_aAttributeDescriptions;
+        }
+        static void createAttributeDescriptions()
+        {
+            s_aAttributeDescriptions.clear();
+
+            VkVertexInputAttributeDescription attributeDescription0 = {};
+            attributeDescription0.binding = 0;
+            attributeDescription0.location = 0;
+            attributeDescription0.format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription0.offset = offsetof(FVertex_Pos3Color4, pos);
+            s_aAttributeDescriptions.push_back(attributeDescription0);
+
+            VkVertexInputAttributeDescription attributeDescription1 = {};
+            attributeDescription1.binding = 0;
+            attributeDescription1.location = 1;
+            attributeDescription1.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            attributeDescription1.offset = offsetof(FVertex_Pos3Color4, color);
+            s_aAttributeDescriptions.push_back(attributeDescription1);
+        }
+    };
+
+
     //////////////////////////////// Vertex_Pos3Normal3 /////////////////////////////
-    //1: F_MeshVertex_Pos3Normal3
+    //2: F_MeshVertex_Pos3Normal3
     struct utilExport Vertex_Pos3Normal3
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -162,7 +233,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Normal3Tex2 /////////////////////////
-    //2: F_MeshVertex_Pos3Normal3Tex2
+    //3: F_MeshVertex_Pos3Normal3Tex2
     struct utilExport Vertex_Pos3Normal3Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -240,7 +311,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos2Color4Tex2 //////////////////////////
-    //3: F_MeshVertex_Pos2Color4Tex2
+    //4: F_MeshVertex_Pos2Color4Tex2
     struct utilExport Vertex_Pos2Color4Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -318,7 +389,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Color4Tex2 //////////////////////////
-    //4: F_MeshVertex_Pos3Color4Tex2
+    //5: F_MeshVertex_Pos3Color4Tex2
     struct utilExport Vertex_Pos3Color4Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -396,7 +467,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tex2 ///////////////////
-    //5: F_MeshVertex_Pos3Color4Normal3Tex2 
+    //6: F_MeshVertex_Pos3Color4Normal3Tex2 
     struct utilExport Vertex_Pos3Color4Normal3Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -481,7 +552,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tex4 ///////////////////
-    //6: F_MeshVertex_Pos3Color4Normal3Tex4
+    //7: F_MeshVertex_Pos3Color4Normal3Tex4
     struct utilExport Vertex_Pos3Color4Normal3Tex4
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -566,7 +637,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex2 ///////////////
-    //7: F_MeshVertex_Pos3Color4Normal3Tangent3Tex2
+    //8: F_MeshVertex_Pos3Color4Normal3Tangent3Tex2
     struct utilExport Vertex_Pos3Color4Normal3Tangent3Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -658,7 +729,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex4 ///////////////
-    //8: F_MeshVertex_Pos3Color4Normal3Tangent3Tex4
+    //9: F_MeshVertex_Pos3Color4Normal3Tangent3Tex4
     struct utilExport Vertex_Pos3Color4Normal3Tangent3Tex4
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -750,7 +821,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Normal3Tangent3BlendWI8Tex2 //////////
-    //9: F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2
+    //10: F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2
     struct Vertex_Pos3Normal3Tangent3BlendWI8Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
@@ -849,7 +920,7 @@ namespace LostPeter
 
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 ////
-    //10: F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2
+    //11: F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2
     struct Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;

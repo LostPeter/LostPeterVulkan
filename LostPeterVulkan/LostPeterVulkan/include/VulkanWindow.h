@@ -823,7 +823,9 @@ namespace LostPeter
 
             static FMatrix4 s_aMatrix4Transforms[19];
             static FColor s_aColors_Default[19];
+            static FColor s_aColors_Hover[19];
             static FColor s_aColors_Select[19];
+            static FColor s_aColors_UnSelect[19];
 
             static const float s_fScale_Distance;
             static const float s_fScale_WhenSelect_Axis;
@@ -869,9 +871,8 @@ namespace LostPeter
             FVector3 vPos;
             FMatrix4 mat4Trans;
 
-            CoordinateStateType typeState;
+            CoordinateStateType typeState; 
             CoordinateElementType typeElementSelect;
-
             bool isButtonLeftDown;
             
             FVector3 aAxisX[2];
@@ -889,40 +890,42 @@ namespace LostPeter
             LP_FORCEINLINE const FVector3& GetPos() const { return this->vPos; }
             void SetPos(const FVector3& vP);
 
-            LP_FORCEINLINE bool IsStateNone() { return this->typeState == CoordinateState_None; }
-            LP_FORCEINLINE bool IsStateSelect() { return this->typeState == CoordinateState_Select; }
-            LP_FORCEINLINE bool IsStateMove() { return this->typeState == CoordinateState_Move; }
-            LP_FORCEINLINE bool IsStateRotate() { return this->typeState == CoordinateState_Rotate; }
-            LP_FORCEINLINE bool IsStateScale() { return this->typeState == CoordinateState_Scale; }
+            LP_FORCEINLINE bool IsButtonLeftDown() const { return this->isButtonLeftDown; }
+
+            LP_FORCEINLINE bool IsStateNone() const { return this->typeState == CoordinateState_None; }
+            LP_FORCEINLINE bool IsStateSelect() const  { return this->typeState == CoordinateState_Select; }
+            LP_FORCEINLINE bool IsStateMove() const { return this->typeState == CoordinateState_Move; }
+            LP_FORCEINLINE bool IsStateRotate() const { return this->typeState == CoordinateState_Rotate; }
+            LP_FORCEINLINE bool IsStateScale() const { return this->typeState == CoordinateState_Scale; }
             LP_FORCEINLINE void SetStateType(CoordinateStateType type) { this->typeState = type; }
 
-            bool IsAxisSelected();
-            bool IsAxisSelectedByIndex(int index); //0:X; 1:Y; 2:Z
-            bool IsAxisSelectedByType(CoordinateElementType type);
-            bool IsAxisXSelected();
-            bool IsAxisYSelected();
-            bool IsAxisZSelected();
-            CoordinateElementType GetAxisSelected();
+            bool IsAxisSelected() const;
+            bool IsAxisSelectedByIndex(int index) const; //0:X; 1:Y; 2:Z
+            bool IsAxisSelectedByType(CoordinateElementType type) const;
+            bool IsAxisXSelected() const;
+            bool IsAxisYSelected() const;
+            bool IsAxisZSelected() const;
+            CoordinateElementType GetAxisSelected()  const;
             void SetAxisSelected(CoordinateElementType type);
 
-            bool IsQuadSelected();
-            bool IsQuadSelectedByIndex(int index); //0:XY; 1:YZ; 2:ZX
-            bool IsQuadSelectedByType(CoordinateElementType type);
-            bool IsQuadXYSelected();
-            bool IsQuadYZSelected();
-            bool IsQuadZXSelected();
-            CoordinateElementType GetQuadSelected();
+            bool IsQuadSelected() const;
+            bool IsQuadSelectedByIndex(int index) const; //0:XY; 1:YZ; 2:ZX
+            bool IsQuadSelectedByType(CoordinateElementType type) const;
+            bool IsQuadXYSelected() const;
+            bool IsQuadYZSelected() const;
+            bool IsQuadZXSelected() const;
+            CoordinateElementType GetQuadSelected() const;
             void SetQuadSelected(CoordinateElementType type);
             void ClearSelectState();
 
-            bool IsScaleAABBSelected();
-            bool IsScaleAABBSelectedByIndex(int index); //0:X; 1:Y; 2: Z; 3:XYZ
-            bool IsScaleAABBSelectedByType(CoordinateElementType type);
-            bool IsScaleAABBXSelected();
-            bool IsScaleAABBYSelected();
-            bool IsScaleAABBZSelected();
-            bool IsScaleAABBXYZSelected();
-            CoordinateElementType GetScaleAABBSelected();
+            bool IsScaleAABBSelected() const;
+            bool IsScaleAABBSelectedByIndex(int index) const; //0:X; 1:Y; 2: Z; 3:XYZ
+            bool IsScaleAABBSelectedByType(CoordinateElementType type) const;
+            bool IsScaleAABBXSelected() const;
+            bool IsScaleAABBYSelected() const;
+            bool IsScaleAABBZSelected() const;
+            bool IsScaleAABBXYZSelected() const;
+            CoordinateElementType GetScaleAABBSelected() const;
             void SetScaleAABBSelected(CoordinateElementType type);
 
         public:

@@ -2546,7 +2546,7 @@ namespace LostPeter
         FColor(0.0f, 0.0f, 1.0f, 1.0f), //AABB Z+
         FColor(0.5f, 0.5f, 0.5f, 1.0f), //AABB XYZ+
     };
-    FColor VulkanWindow::EditorCoordinateAxis::s_aColors_Select[19] = 
+    FColor VulkanWindow::EditorCoordinateAxis::s_aColors_Hover[19] = 
     {
         FColor(0.0f, 0.0f, 1.0f, 0.5f), //Quad XY+
         FColor(1.0f, 0.0f, 0.0f, 0.5f), //Quad YZ+
@@ -2572,6 +2572,60 @@ namespace LostPeter
         FColor(0.0f, 1.0f, 0.0f, 0.8f), //AABB Y+
         FColor(0.0f, 0.0f, 1.0f, 0.8f), //AABB Z+
         FColor(0.5f, 0.5f, 0.5f, 0.8f), //AABB XYZ+
+    };
+    FColor VulkanWindow::EditorCoordinateAxis::s_aColors_Select[19] = 
+    {
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Quad XY+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Quad YZ+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Quad ZX+
+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Quad Line XY+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Quad Line YZ+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Quad Line ZX+
+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Cylinder X+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Cylinder Y+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Cylinder Z+
+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Cone X+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Cone Y+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Cone Z+
+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Torus X+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Torus Y+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //Torus Z+
+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //AABB X+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //AABB Y+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //AABB Z+
+        FColor(1.0f, 1.0f, 0.0f, 1.0f), //AABB XYZ+
+    };
+    FColor VulkanWindow::EditorCoordinateAxis::s_aColors_UnSelect[19] = 
+    {
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Quad XY+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Quad YZ+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Quad ZX+
+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Quad Line XY+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Quad Line YZ+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Quad Line ZX+
+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Cylinder X+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Cylinder Y+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Cylinder Z+
+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Cone X+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Cone Y+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Cone Z+
+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Torus X+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Torus Y+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //Torus Z+
+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //AABB X+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //AABB Y+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //AABB Z+
+        FColor(0.5f, 0.5f, 0.5f, 0.3f), //AABB XYZ+
     };
     const float VulkanWindow::EditorCoordinateAxis::s_fScale_Distance = 8.0f;
     const float VulkanWindow::EditorCoordinateAxis::s_fScale_WhenSelect_Axis = 2.0f;
@@ -2617,7 +2671,7 @@ namespace LostPeter
         this->vPos = vP; 
         this->mat4Trans = FMath::Translate(this->vPos);
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsAxisSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsAxisSelected() const 
     {
         if (this->typeElementSelect == CoordinateElement_Axis_X ||
             this->typeElementSelect == CoordinateElement_Axis_Y ||
@@ -2627,7 +2681,7 @@ namespace LostPeter
         }
         return false;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsAxisSelectedByIndex(int index)
+    bool VulkanWindow::EditorCoordinateAxis::IsAxisSelectedByIndex(int index)  const
     {
         if (index == 0)
             return IsAxisSelectedByType(CoordinateElement_Axis_X);
@@ -2637,23 +2691,23 @@ namespace LostPeter
             return IsAxisSelectedByType(CoordinateElement_Axis_Z);
         return false;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsAxisSelectedByType(CoordinateElementType type)
+    bool VulkanWindow::EditorCoordinateAxis::IsAxisSelectedByType(CoordinateElementType type)  const
     {
         return this->typeElementSelect == type;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsAxisXSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsAxisXSelected() const
     {
         return this->typeElementSelect == CoordinateElement_Axis_X;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsAxisYSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsAxisYSelected() const
     {
         return this->typeElementSelect == CoordinateElement_Axis_Y;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsAxisZSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsAxisZSelected() const
     {
         return this->typeElementSelect == CoordinateElement_Axis_Z;
     }   
-    VulkanWindow::EditorCoordinateAxis::CoordinateElementType VulkanWindow::EditorCoordinateAxis::GetAxisSelected()
+    VulkanWindow::EditorCoordinateAxis::CoordinateElementType VulkanWindow::EditorCoordinateAxis::GetAxisSelected() const
     {
         if (IsAxisSelected())
             return this->typeElementSelect;
@@ -2664,7 +2718,7 @@ namespace LostPeter
         F_Assert((type == CoordinateElement_Axis_X || type == CoordinateElement_Axis_Y || type == CoordinateElement_Axis_Z) && "VulkanWindow::EditorCoordinateAxis::SetAxisSelected")
         this->typeElementSelect = type;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsQuadSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsQuadSelected() const
     {
         if (this->typeElementSelect == CoordinateElement_Quad_XY ||
             this->typeElementSelect == CoordinateElement_Quad_YZ ||
@@ -2674,7 +2728,7 @@ namespace LostPeter
         }
         return false;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsQuadSelectedByIndex(int index)
+    bool VulkanWindow::EditorCoordinateAxis::IsQuadSelectedByIndex(int index) const
     {
         if (index == 0)
             return IsQuadSelectedByType(CoordinateElement_Quad_XY);
@@ -2684,23 +2738,23 @@ namespace LostPeter
             return IsQuadSelectedByType(CoordinateElement_Quad_ZX);
         return false;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsQuadSelectedByType(CoordinateElementType type)
+    bool VulkanWindow::EditorCoordinateAxis::IsQuadSelectedByType(CoordinateElementType type) const
     {
         return this->typeElementSelect == type;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsQuadXYSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsQuadXYSelected() const
     {
         return this->typeElementSelect == CoordinateElement_Quad_XY;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsQuadYZSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsQuadYZSelected() const
     {
         return this->typeElementSelect == CoordinateElement_Quad_YZ;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsQuadZXSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsQuadZXSelected() const
     {
         return this->typeElementSelect == CoordinateElement_Quad_ZX;
     }
-    VulkanWindow::EditorCoordinateAxis::CoordinateElementType VulkanWindow::EditorCoordinateAxis::GetQuadSelected()
+    VulkanWindow::EditorCoordinateAxis::CoordinateElementType VulkanWindow::EditorCoordinateAxis::GetQuadSelected() const
     {
         if (IsQuadSelected())
             return this->typeElementSelect;
@@ -2715,7 +2769,7 @@ namespace LostPeter
     {
         this->typeElementSelect = CoordinateElement_None;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBSelected() const
     {
         if (this->typeElementSelect == CoordinateElement_Axis_X ||
             this->typeElementSelect == CoordinateElement_Axis_Y ||
@@ -2726,7 +2780,7 @@ namespace LostPeter
         }
         return false;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBSelectedByIndex(int index)
+    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBSelectedByIndex(int index) const
     {
         if (index == 0)
             return IsScaleAABBSelectedByType(CoordinateElement_Axis_X);
@@ -2738,27 +2792,27 @@ namespace LostPeter
             return IsScaleAABBSelectedByType(CoordinateElement_Axis_XYZ);
         return false;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBSelectedByType(CoordinateElementType type)
+    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBSelectedByType(CoordinateElementType type) const
     {
         return this->typeElementSelect == type;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBXSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBXSelected() const
     {
         return this->typeElementSelect == CoordinateElement_Axis_X;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBYSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBYSelected() const
     {
         return this->typeElementSelect == CoordinateElement_Axis_Y;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBZSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBZSelected() const
     {
         return this->typeElementSelect == CoordinateElement_Axis_Z;
     }
-    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBXYZSelected()
+    bool VulkanWindow::EditorCoordinateAxis::IsScaleAABBXYZSelected() const
     {
         return this->typeElementSelect == CoordinateElement_Axis_XYZ;
     }
-    VulkanWindow::EditorCoordinateAxis::CoordinateElementType VulkanWindow::EditorCoordinateAxis::GetScaleAABBSelected()
+    VulkanWindow::EditorCoordinateAxis::CoordinateElementType VulkanWindow::EditorCoordinateAxis::GetScaleAABBSelected() const
     {
         if (IsScaleAABBSelected())
             return this->typeElementSelect;
@@ -2801,6 +2855,9 @@ namespace LostPeter
     }
         void VulkanWindow::EditorCoordinateAxis::UpdateCBs_Move()
         {
+            int countStart = 0;
+            int countNumber = 3;
+
             //Sequence
             const FVector3& vCameraPos = this->pCamera->GetPos();
             FVector3 vCenter = FMath::Transform(this->mat4Trans, FMath::ms_v3Zero);
@@ -2825,8 +2882,31 @@ namespace LostPeter
             int aSequences[3] = { 0, 1, 2 };
             FUtil::SortBubble(3, aDistances, aSequences);
 
-            int countStart = 0;
-            int countNumber = 3;
+            //State
+            bool bHasAxisSelected = false;
+            bool aAxisIsSelected[3] = {false, false, false};
+            bool bHasQuadSelected = false;
+            bool aQuadIsSelected[3] =  {false, false, false};
+            for (int i = 0; i < countNumber; i++)
+            {
+                if (IsAxisSelectedByIndex(i))
+                {
+                    bHasAxisSelected = true;
+                    aAxisIsSelected[i] = true;
+
+                    bHasQuadSelected = false;
+                    break;
+                }
+                else if (IsQuadSelectedByIndex(i))
+                {
+                    bHasQuadSelected = true;
+                    aQuadIsSelected[i] = true;
+
+                    bHasAxisSelected = false;
+                    break;
+                }
+            }
+            
             //Quad (0-2)
             {
                 FMatrix4 aWorldQuads[3] = 
@@ -2836,19 +2916,53 @@ namespace LostPeter
                     this->mat4Trans * FMath::Scale(FVector3(this->scaleCoordinate, this->scaleCoordinate, this->scaleCoordinate)) * s_aMatrix4Transforms[countStart + 2], //ZX+
                 };
                 float fQuadLenHalf = 0.5f * s_fScale_Quad * this->scaleCoordinate;
-                //aQuadAABB
+                //Quad AABB
                 this->aQuadAABB[0].SetCenterExtents(vCenter + FVector3(fQuadLenHalf, fQuadLenHalf, 0.0f), FVector3(fQuadLenHalf, fQuadLenHalf, 0.0001f)); //XY+
                 this->aQuadAABB[1].SetCenterExtents(vCenter + FVector3(0.0f, fQuadLenHalf, fQuadLenHalf), FVector3(0.0001f, fQuadLenHalf, fQuadLenHalf)); //YZ+
                 this->aQuadAABB[2].SetCenterExtents(vCenter + FVector3(fQuadLenHalf, 0.0f, fQuadLenHalf), FVector3(fQuadLenHalf, 0.0001f, fQuadLenHalf)); //ZX+
+                
                 for (int i = 0; i < countNumber; i++)
                 {
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                     int index = aSequences[2 - i];
                     objConsts.g_MatWorld = aWorldQuads[index];
-                    if (IsQuadSelectedByIndex(index))
-                        objConsts.color = s_aColors_Select[countStart + index];
+
+                    if (bHasQuadSelected)
+                    {
+                        if (aQuadIsSelected[index])
+                        {
+                            if (IsButtonLeftDown())
+                            {
+                                objConsts.color = s_aColors_Select[countStart + index];
+                            }
+                            else
+                            {
+                                objConsts.color = s_aColors_Hover[countStart + index];
+                            }
+                        }
+                        else
+                        {
+                            if (IsButtonLeftDown())
+                            {
+                                objConsts.color = s_aColors_UnSelect[countStart + index];
+                            }
+                            else
+                            {
+                                objConsts.color = s_aColors_Default[countStart + index];
+                            }
+                        }
+                    }
                     else
-                        objConsts.color = s_aColors_Default[countStart + index];
+                    {
+                        if (bHasAxisSelected && IsButtonLeftDown())
+                        {
+                            objConsts.color = s_aColors_UnSelect[countStart + index];
+                        }
+                        else
+                        {
+                            objConsts.color = s_aColors_Default[countStart + index];
+                        }   
+                    }
                 }
                 countStart += countNumber; //3
             }
@@ -2865,10 +2979,43 @@ namespace LostPeter
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                     int index = aSequences[2 - i];
                     objConsts.g_MatWorld = aWorldQuadLines[index];
-                    if (IsQuadSelectedByIndex(index))
-                        objConsts.color = s_aColors_Select[countStart + index];
+
+                    if (bHasQuadSelected)
+                    {
+                        if (aQuadIsSelected[index])
+                        {
+                            if (IsButtonLeftDown())
+                            {
+                                objConsts.color = s_aColors_Select[countStart + index];
+                            }
+                            else
+                            {
+                                objConsts.color = s_aColors_Hover[countStart + index];
+                            }
+                        }
+                        else
+                        {
+                            if (IsButtonLeftDown())
+                            {
+                                objConsts.color = s_aColors_UnSelect[countStart + index];
+                            }
+                            else
+                            {
+                                objConsts.color = s_aColors_Default[countStart + index];
+                            }
+                        }
+                    }
                     else
-                        objConsts.color = s_aColors_Default[countStart + index];
+                    {
+                        if (bHasAxisSelected && IsButtonLeftDown())
+                        {
+                            objConsts.color = s_aColors_UnSelect[countStart + index];
+                        }
+                        else
+                        {
+                            objConsts.color = s_aColors_Default[countStart + index];
+                        }
+                    }
                 }
                 countStart += countNumber; //6
             }
@@ -2908,10 +3055,43 @@ namespace LostPeter
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                     int index = aSequences[2 - i];
                     objConsts.g_MatWorld = aWorldCylinders[index];
-                    if (IsAxisSelectedByIndex(index))
-                        objConsts.color = s_aColors_Select[countStart + index];
+
+                    if (bHasAxisSelected)
+                    {
+                        if (aAxisIsSelected[index])
+                        {
+                            if (IsButtonLeftDown())
+                            {
+                                objConsts.color = s_aColors_Select[countStart + index];
+                            }
+                            else
+                            {
+                                objConsts.color = s_aColors_Hover[countStart + index];
+                            }
+                        }
+                        else
+                        {
+                            if (IsButtonLeftDown())
+                            {
+                                objConsts.color = s_aColors_UnSelect[countStart + index];
+                            }
+                            else
+                            {
+                                objConsts.color = s_aColors_Default[countStart + index];
+                            }
+                        }
+                    }
                     else
-                        objConsts.color = s_aColors_Default[countStart + index];
+                    {
+                        if (bHasQuadSelected && IsButtonLeftDown())
+                        {
+                            objConsts.color = s_aColors_UnSelect[countStart + index];
+                        }
+                        else
+                        {
+                            objConsts.color = s_aColors_Default[countStart + index];
+                        }
+                    }
                 }
                 countStart += countNumber; //9
 
@@ -2927,10 +3107,43 @@ namespace LostPeter
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                     int index = aSequences[2 - i];
                     objConsts.g_MatWorld = aWorldCones[index];
-                     if (IsAxisSelectedByIndex(index))
-                        objConsts.color = s_aColors_Select[countStart + index];
+
+                    if (bHasAxisSelected)
+                    {
+                        if (aAxisIsSelected[index])
+                        {
+                            if (IsButtonLeftDown())
+                            {
+                                objConsts.color = s_aColors_Select[countStart + index];
+                            }
+                            else
+                            {
+                                objConsts.color = s_aColors_Hover[countStart + index];
+                            }
+                        }
+                        else
+                        {
+                            if (IsButtonLeftDown())
+                            {
+                                objConsts.color = s_aColors_UnSelect[countStart + index];
+                            }
+                            else
+                            {
+                                objConsts.color = s_aColors_Default[countStart + index];
+                            }
+                        }
+                    }
                     else
-                        objConsts.color = s_aColors_Default[countStart + index];
+                    {
+                        if (bHasQuadSelected && IsButtonLeftDown())
+                        {
+                            objConsts.color = s_aColors_UnSelect[countStart + index];
+                        }
+                        else
+                        {
+                            objConsts.color = s_aColors_Default[countStart + index];
+                        }
+                    }
                 }
                 countStart += countNumber; //12
             }
@@ -2938,7 +3151,11 @@ namespace LostPeter
         void VulkanWindow::EditorCoordinateAxis::UpdateCBs_Rotate()
         {
             FVector3 vCenter = FMath::Transform(this->mat4Trans, FMath::ms_v3Zero);
-            
+
+            //State
+            bool bHasAxisSelected = false;
+            bool aAxisIsSelected[3] =  {false, false, false};
+
             //Torus (12-14)
             float scaleToruses[3] = 
             {
@@ -2951,6 +3168,9 @@ namespace LostPeter
                 if (IsAxisSelectedByIndex(i))
                 {
                     scaleToruses[i] *= s_fScale_WhenSelect_AxisTorus;
+
+                    bHasAxisSelected = true;
+                    aAxisIsSelected[i] = true;
                     break;
                 }
             }
@@ -2982,10 +3202,36 @@ namespace LostPeter
             {
                 CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                 objConsts.g_MatWorld = aWorldToruses[i];
-                    if (IsAxisSelectedByIndex(i))
-                    objConsts.color = s_aColors_Select[countStart + i];
+
+                if (bHasAxisSelected)
+                {
+                    if (aAxisIsSelected[i])
+                    {
+                        if (IsButtonLeftDown())
+                        {
+                            objConsts.color = s_aColors_Select[countStart + i];
+                        }
+                        else
+                        {
+                            objConsts.color = s_aColors_Hover[countStart + i];
+                        }
+                    }
+                    else
+                    {
+                        if (IsButtonLeftDown())
+                        {
+                            objConsts.color = s_aColors_UnSelect[countStart + i];
+                        }
+                        else
+                        {
+                            objConsts.color = s_aColors_Default[countStart + i];
+                        }
+                    }
+                }
                 else
+                {
                     objConsts.color = s_aColors_Default[countStart + i];
+                }
             }
         }
         void VulkanWindow::EditorCoordinateAxis::UpdateCBs_Scale()
@@ -3014,6 +3260,11 @@ namespace LostPeter
             int aSequences[3] = { 0, 1, 2 };
             FUtil::SortBubble(3, aDistances, aSequences);
 
+            //State
+            bool bHasScaleAABBSelected = false;
+            bool bScaleAABBIsSelectedCenter = false;
+            bool aScaleAABBIsSelected[4] =  {false, false, false, false};
+
             //Cylinder (6-8)
             float scaleAxis[3] = 
             {
@@ -3026,6 +3277,28 @@ namespace LostPeter
                 if (IsAxisSelectedByIndex(i))
                 {
                     scaleAxis[i] *= s_fScale_WhenSelect_Axis;
+                    break;
+                }
+            }
+
+            //AABB (15-18)
+            float scaleAABBs[4] = 
+            {
+                this->scaleCoordinate,
+                this->scaleCoordinate,
+                this->scaleCoordinate,
+                this->scaleCoordinate,
+            };
+            for (int i = 0; i < 4; i++)
+            {
+                if (IsScaleAABBSelectedByIndex(i))
+                {
+                    scaleAABBs[i] *= s_fScale_WhenSelect_AxisAABB;
+
+                    aScaleAABBIsSelected[i] = true;
+                    bHasScaleAABBSelected = true;
+                    if (i == 3)
+                        bScaleAABBIsSelectedCenter = true;
                     break;
                 }
             }
@@ -3044,29 +3317,47 @@ namespace LostPeter
                 CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
                 int index = aSequences[2 - i];
                 objConsts.g_MatWorld = aWorldCylinders[index];
-                if (IsAxisSelectedByIndex(index))
-                    objConsts.color = s_aColors_Select[countStart + index];
-                else
-                    objConsts.color = s_aColors_Default[countStart + index];
-            }
 
-            countStart = 15;
-            //AABB (15-18)
-            float scaleAABBs[4] = 
-            {
-                this->scaleCoordinate,
-                this->scaleCoordinate,
-                this->scaleCoordinate,
-                this->scaleCoordinate,
-            };
-            for (int i = 0; i < 4; i++)
-            {
-                if (IsScaleAABBSelectedByIndex(i))
+                if (bHasScaleAABBSelected)
                 {
-                    scaleAABBs[i] *= s_fScale_WhenSelect_AxisAABB;
-                    break;
+                    if (bScaleAABBIsSelectedCenter && IsButtonLeftDown())
+                    {
+                        objConsts.color = s_aColors_Select[countStart + index];
+                    }
+                    else
+                    {
+                        if (aScaleAABBIsSelected[index])
+                        {
+                            if (IsButtonLeftDown())
+                            {
+                                objConsts.color = s_aColors_Select[countStart + index];
+                            }
+                            else
+                            {
+                                objConsts.color = s_aColors_Hover[countStart + index];
+                            }
+                        }
+                        else
+                        {
+                            if (IsButtonLeftDown())
+                            {
+                                objConsts.color = s_aColors_UnSelect[countStart + index];
+                            }
+                            else
+                            {
+                                objConsts.color = s_aColors_Default[countStart + index];
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    objConsts.color = s_aColors_Default[countStart + index];   
                 }
             }
+
+            //AABB (15-18)
+            countStart = 15;
             FMatrix4 aWorldAABBs[4] = 
             {
                 this->mat4Trans * FMath::FromTRS(FVector3(this->scaleCoordinate, 0.0f, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(scaleAABBs[0], scaleAABBs[0], scaleAABBs[0])) * s_aMatrix4Transforms[countStart + 0], //X+
@@ -3096,10 +3387,43 @@ namespace LostPeter
                     index = aSequences[2 - i];
                 }
                 objConsts.g_MatWorld = aWorldAABBs[index];
-                if (IsScaleAABBSelectedByIndex(i))
-                    objConsts.color = s_aColors_Select[countStart + index];
+
+                if (bHasScaleAABBSelected)
+                {
+                    if (bScaleAABBIsSelectedCenter && IsButtonLeftDown())
+                    {
+                        objConsts.color = s_aColors_Select[countStart + index];
+                    }
+                    else
+                    {
+                        if (aScaleAABBIsSelected[index])
+                        {
+                            if (IsButtonLeftDown())
+                            {
+                                objConsts.color = s_aColors_Select[countStart + index];
+                            }
+                            else
+                            {
+                                objConsts.color = s_aColors_Hover[countStart + index];
+                            }
+                        }
+                        else
+                        {
+                            if (IsButtonLeftDown())
+                            {
+                                objConsts.color = s_aColors_UnSelect[countStart + index];
+                            }
+                            else
+                            {
+                                objConsts.color = s_aColors_Default[countStart + index];
+                            }
+                        }
+                    }
+                }
                 else
+                {
                     objConsts.color = s_aColors_Default[countStart + index];
+                }
             }
         }
 
@@ -3385,6 +3709,9 @@ namespace LostPeter
     }
     void VulkanWindow::EditorCoordinateAxis::MouseHover(double x, double y)
     {
+        if (this->isButtonLeftDown)
+           return;
+
         switch ((int)this->typeState)
         {
         case CoordinateState_Select:

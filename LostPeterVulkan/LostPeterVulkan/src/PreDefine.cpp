@@ -583,6 +583,8 @@ namespace LostPeter
         {
             case F_MeshVertex_Pos2Color4:
                 return Vertex_Pos2Color4::GetBindingDescriptions();
+            case F_MeshVertex_Pos3Color4:
+                return Vertex_Pos3Color4::GetBindingDescriptions();
             case F_MeshVertex_Pos3Normal3:
                 return Vertex_Pos3Normal3::GetBindingDescriptions();
             case F_MeshVertex_Pos3Normal3Tex2:
@@ -609,6 +611,8 @@ namespace LostPeter
         {
             case F_MeshVertex_Pos2Color4:
                 return Vertex_Pos2Color4::GetAttributeDescriptions();
+            case F_MeshVertex_Pos3Color4:
+                return Vertex_Pos3Color4::GetAttributeDescriptions();
             case F_MeshVertex_Pos3Normal3:
                 return Vertex_Pos3Normal3::GetAttributeDescriptions();
             case F_MeshVertex_Pos3Normal3Tex2:
@@ -635,6 +639,8 @@ namespace LostPeter
         {
             case F_MeshVertex_Pos2Color4:
                 return Vertex_Pos2Color4::GetBindingDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4:
+                return Vertex_Pos3Color4::GetBindingDescriptionsPtr();
             case F_MeshVertex_Pos3Normal3:
                 return Vertex_Pos3Normal3::GetBindingDescriptionsPtr();
             case F_MeshVertex_Pos3Normal3Tex2:
@@ -661,6 +667,8 @@ namespace LostPeter
         {
             case F_MeshVertex_Pos2Color4:
                 return Vertex_Pos2Color4::GetAttributeDescriptionsPtr();
+            case F_MeshVertex_Pos3Color4:
+                return Vertex_Pos3Color4::GetAttributeDescriptionsPtr();
             case F_MeshVertex_Pos3Normal3:
                 return Vertex_Pos3Normal3::GetAttributeDescriptionsPtr();
             case F_MeshVertex_Pos3Normal3Tex2:

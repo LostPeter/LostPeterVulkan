@@ -50,8 +50,44 @@ namespace LostPeterFoundation
     };
 
 
+    //////////////////////////////// FVertex_Pos3Color4 //////////////////////////////
+    //1: F_MeshVertex_Pos3Color4
+    struct LPF_Export FVertex_Pos3Color4 //FMeshVertexPC
+    {
+        FVector3 pos;
+        FVector4 color;
+
+        FVertex_Pos3Color4()
+        {
+            Reset();
+        }
+
+        FVertex_Pos3Color4(const FVector3& _pos, 
+                           const FVector4& _color)
+            : pos(_pos)
+            , color(_color)
+        {
+
+        }
+
+        bool operator==(const FVertex_Pos3Color4& other) const 
+        {
+            return this->pos == other.pos && 
+                   this->color == other.color;
+        }
+
+        void Reset()
+        {
+            this->pos = FVector3(0, 0, 0);
+            this->color = FVector4(0, 0, 0, 1);
+        }
+    };
+    typedef FVertex_Pos3Color4 FMeshVertexPC;
+    typedef std::vector<FMeshVertexPC> FMeshVertexPCVector;
+
+
     //////////////////////////////// FVertex_Pos3Normal3 /////////////////////////////
-    //1: F_MeshVertex_Pos3Normal3
+    //2: F_MeshVertex_Pos3Normal3
     struct LPF_Export FVertex_Pos3Normal3
     {
         FVector3 pos;
@@ -86,7 +122,7 @@ namespace LostPeterFoundation
 
 
     //////////////////////////////// FVertex_Pos3Normal3Tex2 /////////////////////////
-    //2: F_MeshVertex_Pos3Normal3Tex2
+    //3: F_MeshVertex_Pos3Normal3Tex2
     struct LPF_Export FVertex_Pos3Normal3Tex2   
     {
         FVector3 pos;
@@ -126,7 +162,7 @@ namespace LostPeterFoundation
 
 
     //////////////////////////////// FVertex_Pos2Color4Tex2 //////////////////////////
-    //3: F_MeshVertex_Pos2Color4Tex2
+    //4: F_MeshVertex_Pos2Color4Tex2
     struct LPF_Export FVertex_Pos2Color4Tex2    
     {
         FVector2 pos;
@@ -166,8 +202,8 @@ namespace LostPeterFoundation
 
 
     //////////////////////////////// FVertex_Pos3Color4Tex2 //////////////////////////
-    //4: F_MeshVertex_Pos3Color4Tex2
-    struct LPF_Export FVertex_Pos3Color4Tex2    //FMeshVertex_PCT
+    //5: F_MeshVertex_Pos3Color4Tex2
+    struct LPF_Export FVertex_Pos3Color4Tex2 //FMeshVertexPCT
     {
         FVector3 pos;
         FVector4 color;
@@ -207,7 +243,7 @@ namespace LostPeterFoundation
 
 
     //////////////////////////////// FVertex_Pos3Color4Normal3Tex2 ///////////////////
-    //5: F_MeshVertex_Pos3Color4Normal3Tex2
+    //6: F_MeshVertex_Pos3Color4Normal3Tex2
     struct LPF_Export FVertex_Pos3Color4Normal3Tex2
     {
         FVector3 pos;
@@ -251,7 +287,7 @@ namespace LostPeterFoundation
 
 
     //////////////////////////////// FVertex_Pos3Color4Normal3Tex4 ///////////////////
-    //6: F_MeshVertex_Pos3Color4Normal3Tex4
+    //7: F_MeshVertex_Pos3Color4Normal3Tex4
     struct LPF_Export FVertex_Pos3Color4Normal3Tex4
     {
         FVector3 pos;
@@ -295,8 +331,8 @@ namespace LostPeterFoundation
 
 
     //////////////////////////////// FVertex_Pos3Color4Normal3Tangent3Tex2 ///////////////
-    //7: F_MeshVertex_Pos3Color4Normal3Tangent3Tex2
-    struct LPF_Export FVertex_Pos3Color4Normal3Tangent3Tex2     //FMeshVertex
+    //8: F_MeshVertex_Pos3Color4Normal3Tangent3Tex2
+    struct LPF_Export FVertex_Pos3Color4Normal3Tangent3Tex2 //FMeshVertex
     {
         FVector3 pos;
         FVector4 color;
@@ -374,8 +410,8 @@ namespace LostPeterFoundation
 
 
     //////////////////////////////// FVertex_Pos3Color4Normal3Tangent3Tex4 ///////////////
-    //8: F_MeshVertex_Pos3Color4Normal3Tangent3Tex4
-    struct LPF_Export FVertex_Pos3Color4Normal3Tangent3Tex4     //FMeshVertexUV2
+    //9: F_MeshVertex_Pos3Color4Normal3Tangent3Tex4
+    struct LPF_Export FVertex_Pos3Color4Normal3Tangent3Tex4 //FMeshVertexUV2
     {
         FVector3 pos;
         FVector4 color;
@@ -453,7 +489,7 @@ namespace LostPeterFoundation
 
 
     //////////////////////////////// FVertex_Pos3Normal3Tangent3BlendWI8Tex2 //////////
-    //9:    F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2
+    //10: F_MeshVertex_Pos3Normal3Tangent3BlendWI8Tex2
     struct FVertex_Pos3Normal3Tangent3BlendWI8Tex2
     {
         FVector3 pos;
@@ -524,8 +560,8 @@ namespace LostPeterFoundation
 
 
     //////////////////////////////// FVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 ////
-    //10:    F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2
-    struct FVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2     //FMeshVertexSkin
+    //11: F_MeshVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2
+    struct FVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 //FMeshVertexSkin
     {
         FVector3 pos;
         FVector4 color;

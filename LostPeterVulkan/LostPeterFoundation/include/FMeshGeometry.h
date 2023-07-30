@@ -473,6 +473,7 @@ namespace LostPeterFoundation
         static bool CreateGeometry(FMeshData& meshData, FMeshGeometryType eMeshGeometry);
 		static bool CreateGeometry(FMeshData& meshData, FMeshGeometryType eMeshGeometry, FMeshCreateParam* pParam);
 
+    ////////////////////////////////// Line //////////////////////////////////
         //Line
         static void CreateLine(FMeshData& meshData, FMeshCreateParam_Line* pParam)
         {
@@ -499,9 +500,9 @@ namespace LostPeterFoundation
         static void CreateLineAABB(FMeshData& meshData, FMeshCreateParam_LineAABB* pParam)
         {
             CreateLineAABB(meshData, 
-                       pParam->width, 
-                       pParam->height, 
-                       pParam->depth);
+                           pParam->width, 
+                           pParam->height, 
+                           pParam->depth);
         }
         static void CreateLineAABB(FMeshData& meshData,
                                    float width,
@@ -521,6 +522,12 @@ namespace LostPeterFoundation
                                      uint32 sliceCount,
                                      uint32 stackCount);
 
+
+    ////////////////////////////////// Flat //////////////////////////////////
+
+
+
+    ////////////////////////////////// Entity ////////////////////////////////
 	    //Triangle
         static void CreateTriangle(FMeshData& meshData, FMeshCreateParam_Triangle* pParam)
         {
