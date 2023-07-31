@@ -49,6 +49,28 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_Line()
             : FMeshCreateParam(false, false)
+            , vStart(0, 0, 0)
+            , vEnd(1, 0, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_Line(const FVector3& _vStart,
+                              const FVector3& _vEnd)
+            : FMeshCreateParam(false, false)
+            , vStart(_vStart)
+            , vEnd(_vEnd)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_Line(const FVector3& _vStart,
+                              const FVector3& _vEnd,
+                              const FVector4& _vColor)
+            : FMeshCreateParam(false, false)
+            , vStart(_vStart)
+            , vEnd(_vEnd)
+            , vColor(_vColor)
         {
 
         }
@@ -61,14 +83,21 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vStart;
+        FVector3 vEnd;
+        FVector4 vColor;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]", 
                                             ms_nameType.c_str(), 
-                                            flipV ? 1 : 0,
-                                            rightHand ? 1 : 0);
+                                            this->vStart.x,
+                                            this->vStart.y,
+                                            this->vStart.z,
+                                            this->vEnd.x,
+                                            this->vEnd.y,
+                                            this->vEnd.z);
         }
     };
 
@@ -78,6 +107,33 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_LineTriangle()
             : FMeshCreateParam(false, false)
+            , vTop( 0.0f,  0.5f, 0.0f)
+            , vLeft(-0.5f, -0.5f, 0.0f)
+            , vRight( 0.5f, -0.5f, 0.0f)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_LineTriangle(const FVector3& _vTop,
+                                      const FVector3& _vLeft,
+                                      const FVector3& _vRight)
+            : FMeshCreateParam(false, false)
+            , vTop(_vTop)
+            , vLeft(_vLeft)
+            , vRight(_vRight)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_LineTriangle(const FVector3& _vTop,
+                                      const FVector3& _vLeft,
+                                      const FVector3& _vRight,
+                                      const FVector4& _vColor)
+            : FMeshCreateParam(false, false)
+            , vTop(_vTop)
+            , vLeft(_vLeft)
+            , vRight(_vRight)
+            , vColor(_vColor)
         {
 
         }
@@ -90,14 +146,25 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vTop;
+        FVector3 vLeft;
+        FVector3 vRight;
+        FVector4 vColor;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vTop.x,
+                                             this->vTop.y,
+                                             this->vTop.z,
+                                             this->vLeft.x,
+                                             this->vLeft.y,
+                                             this->vLeft.z,
+                                             this->vRight.x,
+                                             this->vRight.y,
+                                             this->vRight.z);
         }
     };
 
@@ -107,22 +174,38 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_LineQuad()
             : FMeshCreateParam(false, false)
-            , centerX(0)
-            , centerY(0)
-            , width(1)
-            , height(1)
+            , vLeftTop(-0.5f, 0.5f, 0.0f)
+            , vLeftBottom(-0.5f, -0.5f, 0.0f)
+            , vRightBottom(0.5f, -0.5f, 0.0f)
+            , vRightTop(0.5f, 0.5f, 0.0f)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
         {
 
         }
-        FMeshCreateParam_LineQuad(float _centerX,
-                                  float _centerY,
-                                  float _width,
-                                  float _height)
+        FMeshCreateParam_LineQuad(const FVector3& _vLeftTop,
+                                  const FVector3& _vLeftBottom,
+                                  const FVector3& _vRightBottom,
+                                  const FVector3& _vRightTop)
             : FMeshCreateParam(false, false)
-            , centerX(_centerX)
-            , centerY(_centerY)
-            , width(_width)
-            , height(_height)
+            , vLeftTop(_vLeftTop)
+            , vLeftBottom(_vLeftBottom)
+            , vRightBottom(_vRightBottom)
+            , vRightTop(_vRightTop)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_LineQuad(const FVector3& _vLeftTop,
+                                  const FVector3& _vLeftBottom,
+                                  const FVector3& _vRightBottom,
+                                  const FVector3& _vRightTop,
+                                  const FVector4& _vColor)
+            : FMeshCreateParam(false, false)
+            , vLeftTop(_vLeftTop)
+            , vLeftBottom(_vLeftBottom)
+            , vRightBottom(_vRightBottom)
+            , vRightTop(_vRightTop)
+            , vColor(_vColor)
         {
 
         }
@@ -135,22 +218,29 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
-        float centerX;
-        float centerY;
-        float width;
-        float height;
+        FVector3 vLeftTop; 
+        FVector3 vLeftBottom; 
+        FVector3 vRightBottom; 
+        FVector3 vRightTop; 
+        FVector4 vColor;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%f", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0, 
-                                             rightHand ? 1 : 0,
-                                             centerX,
-                                             centerY,
-                                             width,
-                                             height);
+                                             this->vLeftTop.x,
+                                             this->vLeftTop.y,
+                                             this->vLeftTop.z,
+                                             this->vLeftBottom.x,
+                                             this->vLeftBottom.y,
+                                             this->vLeftBottom.z,
+                                             this->vRightBottom.x,
+                                             this->vRightBottom.y,
+                                             this->vRightBottom.z,
+                                             this->vRightTop.x,
+                                             this->vRightTop.y,
+                                             this->vRightTop.z);
         }
     };
 
@@ -1449,31 +1539,47 @@ namespace LostPeterFoundation
         //Line
         static void CreateLine(FMeshDataPC& meshDataPC, FMeshCreateParam_Line* pParam)
         {
-            CreateLine(meshDataPC);
+            CreateLine(meshDataPC, 
+                       pParam->vStart,
+                       pParam->vEnd,
+                       pParam->vColor);
         }
-        static void CreateLine(FMeshDataPC& meshDataPC);
+        static void CreateLine(FMeshDataPC& meshDataPC,
+                               const FVector3& vStart,
+                               const FVector3& vEnd,
+                               const FVector4& vColor);
 
         //LineTriangle
         static void CreateLineTriangle(FMeshDataPC& meshDataPC, FMeshCreateParam_LineTriangle* pParam)
         {
-            CreateLineTriangle(meshDataPC);
+            CreateLineTriangle(meshDataPC,
+                               pParam->vTop,
+                               pParam->vLeft,
+                               pParam->vRight,
+                               pParam->vColor);
         }
-        static void CreateLineTriangle(FMeshDataPC& meshDataPC);
+        static void CreateLineTriangle(FMeshDataPC& meshDataPC,
+                                       const FVector3& vTop,
+                                       const FVector3& vLeft,
+                                       const FVector3& vRight,
+                                       const FVector4& vColor);
 
         //LineQuad
         static void CreateLineQuad(FMeshDataPC& meshDataPC, FMeshCreateParam_LineQuad* pParam)
         {
             CreateLineQuad(meshDataPC,
-                           pParam->centerX,
-                           pParam->centerY,
-                           pParam->width,
-                           pParam->height);
+                           pParam->vLeftTop,
+                           pParam->vLeftBottom,
+                           pParam->vRightBottom,
+                           pParam->vRightTop,
+                           pParam->vColor);
         }
         static void CreateLineQuad(FMeshDataPC& meshDataPC,
-                                   float centerX,
-                                   float centerY,
-                                   float width,
-                                   float height);
+                                   const FVector3& vLeftTop,
+                                   const FVector3& vLeftBottom,
+                                   const FVector3& vRightBottom,
+                                   const FVector3& vRightTop,
+                                   const FVector4& vColor);
 
         //LineGrid
         static void CreateLineGrid(FMeshDataPC& meshDataPC, FMeshCreateParam_LineGrid* pParam)

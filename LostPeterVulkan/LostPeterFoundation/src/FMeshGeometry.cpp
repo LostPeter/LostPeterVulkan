@@ -257,51 +257,65 @@ namespace LostPeterFoundation
     }
 
     //Line
-    void FMeshGeometry::CreateLine(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateLine(FMeshDataPC& meshDataPC,
+                                   const FVector3& vStart,
+                                   const FVector3& vEnd,
+                                   const FVector4& vColor)
     {
+        // 0 ----- 1
+
         //FMeshVertex
-        AddVertex(meshDataPC, FMeshVertexPC( 0.0f,  0.0f,  0.0f,
-                                             1.0f,  1.0f,  1.0f, 1.0f));
-        AddVertex(meshDataPC, FMeshVertexPC( 1.0f,  0.0f,  0.0f,
-                                             1.0f,  1.0f,  1.0f, 1.0f));
+        AddVertex(meshDataPC, FMeshVertexPC(vStart, vColor));   //0
+        AddVertex(meshDataPC, FMeshVertexPC(vEnd, vColor));     //1
 
         //Index
         AddIndexLine(meshDataPC, 0, 1);
     }
 
     //LineTriangle
-    void FMeshGeometry::CreateLineTriangle(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateLineTriangle(FMeshDataPC& meshDataPC,
+                                           const FVector3& vTop,
+                                           const FVector3& vLeft,
+                                           const FVector3& vRight,
+                                           const FVector4& vColor)
     {
+        //        0 
+        //        /\
+        //       /  \
+        //    1 ------ 2
 
+        //FMeshVertex
+        AddVertex(meshDataPC, FMeshVertexPC(vTop, vColor));     //0
+        AddVertex(meshDataPC, FMeshVertexPC(vLeft, vColor));    //1
+        AddVertex(meshDataPC, FMeshVertexPC(vRight, vColor));   //2
+        
+        //Index
+        AddIndexLine(meshDataPC, 0, 1);
+        AddIndexLine(meshDataPC, 1, 2);
+        AddIndexLine(meshDataPC, 2, 0);
     }
 
     //LineQuad
     void FMeshGeometry::CreateLineQuad(FMeshDataPC& meshDataPC,
-                                       float centerX,
-                                       float centerY,
-                                       float width,
-                                       float height)
+                                       const FVector3& vLeftTop,
+                                       const FVector3& vLeftBottom,
+                                       const FVector3& vRightBottom,
+                                       const FVector3& vRightTop,
+                                       const FVector4& vColor)
     {
         //  0       3
         //   --------
-        //   |\     |
-        //   |  \   |
-        //   |    \ |
+        //   |      |
+        //   |      |
+        //   |      |
         //   --------
         //  1        2
 
         //FMeshVertex
-        AddVertex(meshDataPC, FMeshVertexPC(centerX - width/2, centerY + height/2, 0,
-                                            1.0f,  1.0f,  1.0f, 1.0f));
-
-        AddVertex(meshDataPC, FMeshVertexPC(centerX - width/2, centerY - height/2, 0,
-                                            1.0f,  1.0f,  1.0f, 1.0f));
-
-        AddVertex(meshDataPC, FMeshVertexPC(centerX + width/2, centerY - height/2, 0,
-                                            1.0f,  1.0f,  1.0f, 1.0f));
-
-        AddVertex(meshDataPC, FMeshVertexPC(centerX + width/2, centerY + height/2, 0,
-                                            1.0f,  1.0f,  1.0f, 1.0f));
+        AddVertex(meshDataPC, FMeshVertexPC(vLeftTop, vColor));     //0
+        AddVertex(meshDataPC, FMeshVertexPC(vLeftBottom, vColor));  //1
+        AddVertex(meshDataPC, FMeshVertexPC(vRightBottom, vColor)); //2
+        AddVertex(meshDataPC, FMeshVertexPC(vRightTop, vColor));    //3
 
         //Index
         AddIndexLine(meshDataPC, 0, 1);
@@ -313,7 +327,7 @@ namespace LostPeterFoundation
     //LineGrid
     void FMeshGeometry::CreateLineGrid(FMeshDataPC& meshDataPC)
     {
-
+        
     }
 
     //LineCircle
@@ -431,7 +445,7 @@ namespace LostPeterFoundation
     {
         if (pParam == nullptr)
         {
-            return CreateFlatGeometryWithParam(meshDataPC, typeMeshGeometry);
+            return CreateFlatGeometry(meshDataPC, typeMeshGeometry);
         }
 
         switch ((int)typeMeshGeometry)

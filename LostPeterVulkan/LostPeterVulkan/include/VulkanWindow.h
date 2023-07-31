@@ -975,6 +975,17 @@ namespace LostPeter
             virtual void destroyPipelineGraphics();
         };
 
+        /////////////////////////// EditorLineFlatCollector ///////////
+        class utilExport EditorLineFlatCollector : public EditorBase
+        {
+        public:
+            EditorLineFlatCollector(VulkanWindow* _pWindow);
+            virtual ~EditorLineFlatCollector();
+
+        public:
+            
+
+        };
 
     public:
         //Mesh
@@ -1135,6 +1146,7 @@ namespace LostPeter
         VkFrontFace cfg_vkFrontFace;
         VkPolygonMode cfg_vkPolygonMode;
         VkCullModeFlagBits cfg_vkCullModeFlagBits;
+        float cfg_LineWidth;
         VkBool32 cfg_isDepthTest;
         VkBool32 cfg_isDepthWrite; 
         VkCompareOp cfg_DepthCompareOp; 
@@ -1858,7 +1870,7 @@ namespace LostPeter
                                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                                     VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
-                                                                    VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                                    VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
                                                                     VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                                     VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                                     VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
@@ -1872,7 +1884,7 @@ namespace LostPeter
                                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                                     VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
-                                                                    VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                                    VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
                                                                     VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                                     VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                                     VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
@@ -1883,7 +1895,7 @@ namespace LostPeter
                                                                     VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                                     VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                                     VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
-                                                                    VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                                    VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
                                                                     VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                                     VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                                     VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,

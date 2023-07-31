@@ -34,6 +34,7 @@ public:
         bool isRotate;
         bool isLighting;
         bool isTransparent;
+        bool isLineFlat;
 
         //Texture
         TexturePtrShaderSortMap mapModelTexturesShaderSort;
@@ -50,6 +51,10 @@ public:
         std::vector<VkBuffer> poBuffers_ObjectCB;
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
         std::vector<FMatrix4> instanceMatWorld;
+
+        std::vector<LineFlatObjectConstants> objectCBs_LineFlat;
+        std::vector<VkBuffer> poBuffers_ObjectCB_LineFlat;
+        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_LineFlat;
 
         std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_materialCB;
@@ -71,6 +76,7 @@ public:
         VkFrontFace cfg_vkFrontFace;
         VkPolygonMode cfg_vkPolygonMode;
         VkCullModeFlagBits cfg_vkCullModeFlagBits;
+        float cfg_LineWidth;
         VkBool32 cfg_isDepthTest;
         VkBool32 cfg_isDepthWrite; 
         VkCompareOp cfg_DepthCompareOp; 
@@ -98,6 +104,7 @@ public:
             , isRotate(false)
             , isLighting(true)
             , isTransparent(false)
+            , isLineFlat(false)
 
             //Uniform
             , countInstance(1)
@@ -112,6 +119,7 @@ public:
             , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
             , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
             , cfg_vkCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
+            , cfg_LineWidth(1.0f)
             , cfg_isDepthTest(VK_TRUE)
             , cfg_isDepthWrite(VK_TRUE)
             , cfg_DepthCompareOp(VK_COMPARE_OP_LESS_OR_EQUAL)  
@@ -153,6 +161,15 @@ public:
             this->objectCBs.clear();
             this->poBuffers_ObjectCB.clear();
             this->poBuffersMemory_ObjectCB.clear();
+
+            count = this->poBuffers_ObjectCB_LineFlat.size();
+             for (size_t i = 0; i < count; i++) 
+            {
+                this->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB_LineFlat[i], this->poBuffersMemory_ObjectCB_LineFlat[i]);
+            }
+            this->objectCBs_LineFlat.clear();
+            this->poBuffers_ObjectCB_LineFlat.clear();
+            this->poBuffersMemory_ObjectCB_LineFlat.clear();
 
             count = this->poBuffers_materialCB.size();
             for (size_t i = 0; i < count; i++) 
@@ -274,6 +291,10 @@ public:
         std::vector<ObjectConstants> objectCBs;
         std::vector<VkBuffer> poBuffers_ObjectCB;
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
+
+        std::vector<LineFlatObjectConstants> objectCBs_LineFlat;
+        std::vector<VkBuffer> poBuffers_ObjectCB_LineFlat;
+        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_LineFlat;
 
         std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_materialCB;

@@ -1759,7 +1759,7 @@ namespace LostPeter
                                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
                                                                                           this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                          VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE,
+                                                                                          VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
                                                                                           VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS,
                                                                                           VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                           VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
@@ -1779,7 +1779,7 @@ namespace LostPeter
                                                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
                                                                                                     this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                                    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
+                                                                                                    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
                                                                                                     VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS,
                                                                                                     VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                                     VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
@@ -2305,7 +2305,7 @@ namespace LostPeter
                                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
                                                                                               this->pPipelineGraphics->pRenderPass->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                              VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE,
+                                                                                              VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
                                                                                               VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
                                                                                               VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                               VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
@@ -2325,7 +2325,7 @@ namespace LostPeter
                                                                                                         Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                         Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
                                                                                                         this->pPipelineGraphics->pRenderPass->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
+                                                                                                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
                                                                                                         VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
                                                                                                         VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                                         VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
@@ -2366,7 +2366,7 @@ namespace LostPeter
                                                                                                        Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                        Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
                                                                                                        this->pWindow->poRenderPass, this->pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
-                                                                                                       VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE,
+                                                                                                       VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
                                                                                                        VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
                                                                                                        VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                                        VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
@@ -2386,7 +2386,7 @@ namespace LostPeter
                                                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                                  Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
                                                                                                                  this->pWindow->poRenderPass, this->pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
-                                                                                                                 VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
+                                                                                                                 VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
                                                                                                                  VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
                                                                                                                  VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                                                  VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
@@ -3847,7 +3847,7 @@ namespace LostPeter
                                                  F_Mesh_Geometry,
                                                  F_MeshVertex_Pos3Color4,
                                                  F_MeshGeometry_LineQuad,
-                                                 new FMeshCreateParam_LineQuad(0.5f, 0.5f, 1.0f, 1.0f),
+                                                 new FMeshCreateParam_LineQuad(FVector3(0, 1, 0), FVector3(0, 0, 0), FVector3(1, 0, 0), FVector3(1, 1, 0)),
                                                  true,
                                                  false,
                                                  FMath::ms_mat4Unit);
@@ -4034,7 +4034,7 @@ namespace LostPeter
                                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
                                                                                           this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                          VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE,
+                                                                                          VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
                                                                                           VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
                                                                                           VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                           VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
@@ -4054,7 +4054,7 @@ namespace LostPeter
                                                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
                                                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
                                                                                                     this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                                    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
+                                                                                                    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
                                                                                                     VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
                                                                                                     VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                                     VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
@@ -4087,7 +4087,7 @@ namespace LostPeter
                                                                                                      Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
                                                                                                      Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
                                                                                                      this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                                     VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
+                                                                                                     VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
                                                                                                      VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
                                                                                                      VK_FALSE, stencilOpFront, stencilOpBack, 
                                                                                                      VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
@@ -4431,6 +4431,10 @@ namespace LostPeter
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
             }
+            else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectLineFlat)) //ObjectLineFlat
+            {
+                bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+            }
             else if (strLayout == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCopyBlit)) //ObjectCopyBlit
             {
                 bindings.push_back(createVkDescriptorSetLayoutBinding_Uniform(i, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
@@ -4577,6 +4581,7 @@ namespace LostPeter
         , cfg_vkFrontFace(VK_FRONT_FACE_CLOCKWISE)
         , cfg_vkPolygonMode(VK_POLYGON_MODE_FILL)
         , cfg_vkCullModeFlagBits(VK_CULL_MODE_BACK_BIT)
+        , cfg_LineWidth(1.0f)
         , cfg_isDepthTest(VK_TRUE)
         , cfg_isDepthWrite(VK_TRUE)
         , cfg_DepthCompareOp(VK_COMPARE_OP_LESS_OR_EQUAL) 
@@ -9178,7 +9183,7 @@ namespace LostPeter
                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                 this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
-                                                                this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, this->cfg_vkPolygonMode, this->cfg_vkCullModeFlagBits,
+                                                                this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, this->cfg_vkPolygonMode, this->cfg_vkCullModeFlagBits, this->cfg_LineWidth,
                                                                 this->cfg_isDepthTest, this->cfg_isDepthWrite,this->cfg_DepthCompareOp,
                                                                 this->cfg_isStencilTest, this->cfg_StencilOpFront, this->cfg_StencilOpBack, 
                                                                 this->cfg_isBlend, this->cfg_BlendColorFactorSrc, this->cfg_BlendColorFactorDst, this->cfg_BlendColorOp,
@@ -9196,7 +9201,7 @@ namespace LostPeter
                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(this->poTypeVertex), 
                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(this->poTypeVertex),
                                                                           this->poRenderPass, this->poPipelineLayout, aViewports, aScissors,
-                                                                          this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, this->cfg_vkCullModeFlagBits,
+                                                                          this->cfg_vkPrimitiveTopology, this->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, this->cfg_vkCullModeFlagBits, this->cfg_LineWidth,
                                                                           this->cfg_isDepthTest, this->cfg_isDepthWrite,this->cfg_DepthCompareOp,
                                                                           this->cfg_isStencilTest, this->cfg_StencilOpFront, this->cfg_StencilOpBack, 
                                                                           this->cfg_isBlend, this->cfg_BlendColorFactorSrc, this->cfg_BlendColorFactorDst, this->cfg_BlendColorOp,
@@ -9225,7 +9230,7 @@ namespace LostPeter
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                               VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
-                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
                                                               VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                               VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
@@ -9255,7 +9260,7 @@ namespace LostPeter
                                                 pBindingDescriptions,
                                                 pAttributeDescriptions,
                                                 renderPass, pipelineLayout, aViewports, aScissors,
-                                                primitiveTopology, frontFace, polygonMode, cullMode,
+                                                primitiveTopology, frontFace, polygonMode, cullMode, lineWidth,
                                                 bDepthTest, bDepthWrite, depthCompareOp,
                                                 bStencilTest, stencilOpFront, stencilOpBack,
                                                 bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
@@ -9270,7 +9275,7 @@ namespace LostPeter
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                               VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
-                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
                                                               VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                               VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
@@ -9316,7 +9321,7 @@ namespace LostPeter
                                                 pBindingDescriptions,
                                                 pAttributeDescriptions,
                                                 renderPass, pipelineLayout, aViewports, aScissors,
-                                                primitiveTopology, frontFace, polygonMode, cullMode,
+                                                primitiveTopology, frontFace, polygonMode, cullMode, lineWidth,
                                                 bDepthTest, bDepthWrite, depthCompareOp,
                                                 bStencilTest, stencilOpFront, stencilOpBack,
                                                 bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
@@ -9328,7 +9333,7 @@ namespace LostPeter
                                                               VkVertexInputBindingDescriptionVector* pBindingDescriptions,
                                                               VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
                                                               VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
-                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode,
+                                                              VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
                                                               VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
                                                               VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
                                                               VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
@@ -9369,13 +9374,13 @@ namespace LostPeter
                 rasterizationStateInfo.depthClampEnable = VK_FALSE;
                 rasterizationStateInfo.rasterizerDiscardEnable = VK_FALSE;
                 rasterizationStateInfo.polygonMode = polygonMode;
-                rasterizationStateInfo.lineWidth = 1.0f;
                 rasterizationStateInfo.cullMode = cullMode;
                 rasterizationStateInfo.frontFace = frontFace;
                 rasterizationStateInfo.depthBiasEnable = VK_FALSE;
                 rasterizationStateInfo.depthBiasConstantFactor = 0.0f; // Optional
                 rasterizationStateInfo.depthBiasClamp = 0.0f; // Optional
                 rasterizationStateInfo.depthBiasSlopeFactor = 0.0f; // Optional
+                rasterizationStateInfo.lineWidth = lineWidth;
 
                 //5> Pipeline Multisample State
                 VkPipelineMultisampleStateCreateInfo multisamplingStateInfo = {};
@@ -10555,6 +10560,7 @@ namespace LostPeter
             VkFrontFace vkFrontFace = VK_FRONT_FACE_CLOCKWISE;
             VkPolygonMode vkPolygonMode = VK_POLYGON_MODE_FILL;
             VkCullModeFlagBits vkCullModeFlagBits = VK_CULL_MODE_BACK_BIT;
+            float lineWidth = 1.0f;
             VkBool32 isDepthTest = VK_TRUE;
             VkBool32 isDepthWrite = VK_TRUE; 
             VkCompareOp vkDepthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL; 
@@ -10575,7 +10581,7 @@ namespace LostPeter
                                                                        Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Normal3Tex2),
                                                                        Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Normal3Tex2),
                                                                        this->poRenderPass, this->poTerrainGraphicsPipelineLayout, aViewports, aScissors,
-                                                                       vkPrimitiveTopology, vkFrontFace, vkPolygonMode, vkCullModeFlagBits,
+                                                                       vkPrimitiveTopology, vkFrontFace, vkPolygonMode, vkCullModeFlagBits, lineWidth,
                                                                        isDepthTest, isDepthWrite, vkDepthCompareOp,
                                                                        isStencilTest, vkStencilOpFront, vkStencilOpBack, 
                                                                        isBlend, vkBlendColorFactorSrc, vkBlendColorFactorDst, vkBlendColorOp,
@@ -10594,7 +10600,7 @@ namespace LostPeter
                                                                                  Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Normal3Tex2),
                                                                                  Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Normal3Tex2),
                                                                                  this->poRenderPass, this->poTerrainGraphicsPipelineLayout, aViewports, aScissors,
-                                                                                 vkPrimitiveTopology, vkFrontFace, VK_POLYGON_MODE_LINE, vkCullModeFlagBits,
+                                                                                 vkPrimitiveTopology, vkFrontFace, VK_POLYGON_MODE_LINE, vkCullModeFlagBits, lineWidth,
                                                                                  isDepthTest, isDepthWrite, vkDepthCompareOp,
                                                                                  isStencilTest, vkStencilOpFront, vkStencilOpBack, 
                                                                                  isBlend, vkBlendColorFactorSrc, vkBlendColorFactorDst, vkBlendColorOp,

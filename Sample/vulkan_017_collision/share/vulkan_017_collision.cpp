@@ -19,79 +19,123 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 11; 
+static const int g_MeshCount = 14; 
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
-    //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
-    "geo_triangle",     "Pos3Color4Normal3Tex2",                "geometry",         "EntityTriangle",           "", //geo_triangle
-    "geo_quad",         "Pos3Color4Normal3Tex2",                "geometry",         "EntityQuad",               "", //geo_quad
-    "geo_grid",         "Pos3Color4Normal3Tex2",                "geometry",         "EntityGrid",               "", //geo_grid
-    "geo_circle",       "Pos3Color4Normal3Tex2",                "geometry",         "EntityCircle",             "", //geo_circle
-    "geo_aabb",         "Pos3Color4Normal3Tex2",                "geometry",         "EntityAABB",               "", //geo_aabb
-    "geo_sphere",       "Pos3Color4Normal3Tex2",                "geometry",         "EntitySphere",             "", //geo_sphere
-    "geo_geosphere",    "Pos3Color4Normal3Tex2",                "geometry",         "EntityGeoSphere",          "", //geo_geosphere
-    "geo_cylinder",     "Pos3Color4Normal3Tex2",                "geometry",         "EntityCylinder",           "", //geo_cylinder
-    "geo_capsule",      "Pos3Color4Normal3Tex2",                "geometry",         "EntityCapsule",            "", //geo_capsule
-    "geo_cone",         "Pos3Color4Normal3Tex2",                "geometry",         "EntityCone",               "", //geo_cone
-    "geo_torus",        "Pos3Color4Normal3Tex2",                "geometry",         "EntityTorus",              "", //geo_torus
+    //Mesh Name                 //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
+    "geo_line_line",            "Pos3Color4",                           "geometry",         "Line",                     "", //geo_line_line
+    "geo_line_triangle",        "Pos3Color4",                           "geometry",         "LineTriangle",             "", //geo_line_triangle
+    "geo_line_quad",            "Pos3Color4",                           "geometry",         "LineQuad",                 "", //geo_line_quad
+    //"geo_line_grid",            "Pos3Color4",                           "geometry",         "LineGrid",                 "", //geo_line_grid
+    //"geo_line_circle",          "Pos3Color4",                           "geometry",         "LineCircle",               "", //geo_line_circle
+    //"geo_line_aabb",            "Pos3Color4",                           "geometry",         "LineAABB",                 "", //geo_line_aabb
+    //"geo_line_sphere",          "Pos3Color4",                           "geometry",         "LineSphere",               "", //geo_line_sphere
+    //"geo_line_cylinder",        "Pos3Color4",                           "geometry",         "LineCylinder",             "", //geo_line_cylinder
+    //"geo_line_capsule",         "Pos3Color4",                           "geometry",         "LineCapsule",              "", //geo_line_capsule
+    //"geo_line_cone",            "Pos3Color4",                           "geometry",         "LineCone",                 "", //geo_line_cone
+    //"geo_line_torus",           "Pos3Color4",                           "geometry",         "LineTorus",                "", //geo_line_torus
 
-    // "geo_skybox",       "Pos3Color4Normal3Tex2",                "geometry",         "EntitySkyBox",             "", //geo_skybox
-    // "geo_skydome",      "Pos3Color4Normal3Tex2",                "geometry",         "EntitySkyDome",            "", //geo_skydome
-    // "geo_terrain",      "Pos3Color4Normal3Tex2",                "geometry",         "EntityTerrain",            "", //geo_terrain
+    "geo_entity_triangle",      "Pos3Color4Normal3Tex2",                "geometry",         "EntityTriangle",           "", //geo_entity_triangle
+    "geo_entity_quad",          "Pos3Color4Normal3Tex2",                "geometry",         "EntityQuad",               "", //geo_entity_quad
+    "geo_entity_grid",          "Pos3Color4Normal3Tex2",                "geometry",         "EntityGrid",               "", //geo_entity_grid
+    "geo_entity_circle",        "Pos3Color4Normal3Tex2",                "geometry",         "EntityCircle",             "", //geo_entity_circle
+    "geo_entity_aabb",          "Pos3Color4Normal3Tex2",                "geometry",         "EntityAABB",               "", //geo_entity_aabb
+    "geo_entity_sphere",        "Pos3Color4Normal3Tex2",                "geometry",         "EntitySphere",             "", //geo_entity_sphere
+    "geo_entity_geosphere",     "Pos3Color4Normal3Tex2",                "geometry",         "EntityGeoSphere",          "", //geo_entity_geosphere
+    "geo_entity_cylinder",      "Pos3Color4Normal3Tex2",                "geometry",         "EntityCylinder",           "", //geo_entity_cylinder
+    "geo_entity_capsule",       "Pos3Color4Normal3Tex2",                "geometry",         "EntityCapsule",            "", //geo_entity_capsule
+    "geo_entity_cone",          "Pos3Color4Normal3Tex2",                "geometry",         "EntityCone",               "", //geo_entity_cone
+    "geo_entity_torus",         "Pos3Color4Normal3Tex2",                "geometry",         "EntityTorus",              "", //geo_entity_torus
+    //"geo_entity_skybox",       "Pos3Color4Normal3Tex2",                "geometry",         "EntitySkyBox",             "", //geo_entity_skybox
+    //"geo_entity_skydome",      "Pos3Color4Normal3Tex2",                "geometry",         "EntitySkyDome",            "", //geo_entity_skydome
+    //"geo_entity_terrain",      "Pos3Color4Normal3Tex2",                "geometry",         "EntityTerrain",            "", //geo_entity_terrain
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
-    false, //geo_triangle
-    false, //geo_quad
-    false, //geo_grid
-    false, //geo_circle
-    false, //geo_aabb
-    false, //geo_sphere
-    false, //geo_geosphere
-    false, //geo_cylinder
-    false, //geo_capsule
-    false, //geo_cone
-    false, //geo_torus
+    false, //geo_line_line
+    false, //geo_line_triangle
+    false, //geo_line_quad
+    //false, //geo_line_grid
+    //false, //geo_line_circle
+    //false, //geo_line_aabb
+    //false, //geo_line_sphere
+    //false, //geo_line_cylinder
+    //false, //geo_line_capsule
+    //false, //geo_line_cone
+    //false, //geo_line_torus
 
-    // false, //geo_skybox
-    // false, //geo_skydome
-    // false, //geo_terrain
+    false, //geo_entity_triangle
+    false, //geo_entity_quad
+    false, //geo_entity_grid
+    false, //geo_entity_circle
+    false, //geo_entity_aabb
+    false, //geo_entity_sphere
+    false, //geo_entity_geosphere
+    false, //geo_entity_cylinder
+    false, //geo_entity_capsule
+    false, //geo_entity_cone
+    false, //geo_entity_torus
+    //false, //geo_entity_skybox
+    //false, //geo_entity_skydome
+    //false, //geo_entity_terrain
 };
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
 {
-    true, //geo_triangle
-    true, //geo_quad
-    true, //geo_grid
-    true, //geo_circle
-    false, //geo_aabb
-    false, //geo_sphere
-    false, //geo_geosphere
-    false, //geo_cylinder
-    false, //geo_capsule
-    false, //geo_cone
-    false, //geo_torus
+    false, //geo_line_line
+    false, //geo_line_triangle
+    false, //geo_line_quad
+    //false, //geo_line_grid
+    //false, //geo_line_circle
+    //false, //geo_line_aabb
+    //false, //geo_line_sphere
+    //false, //geo_line_cylinder
+    //false, //geo_line_capsule
+    //false, //geo_line_cone
+    //false, //geo_line_torus
 
-    // false, //geo_skybox
-    // false, //geo_skydome
-    // false, //geo_terrain
+    true, //geo_entity_triangle
+    true, //geo_entity_quad
+    true, //geo_entity_grid
+    true, //geo_entity_circle
+    false, //geo_entity_aabb
+    false, //geo_entity_sphere
+    false, //geo_entity_geosphere
+    false, //geo_entity_cylinder
+    false, //geo_entity_capsule
+    false, //geo_entity_cone
+    false, //geo_entity_torus
+    //false, //geo_entity_skybox
+    //false, //geo_entity_skydome
+    //false, //geo_entity_terrain
 };
 static FMatrix4 g_MeshTranformLocals[g_MeshCount] = 
 {
-    FMath::RotateX(90.0f), //geo_triangle  
-    FMath::RotateX(90.0f), //geo_quad 
-    FMath::RotateX(90.0f), //geo_grid
-    FMath::RotateX(90.0f), //geo_circle
-    FMath::ms_mat4Unit, //geo_aabb
-    FMath::ms_mat4Unit, //geo_sphere
-    FMath::ms_mat4Unit, //geo_geosphere
-    FMath::ms_mat4Unit, //geo_cylinder
-    FMath::ms_mat4Unit, //geo_capsule
-    FMath::ms_mat4Unit, //geo_cone
-    FMath::ms_mat4Unit, //geo_torus
+    FMath::ms_mat4Unit, //geo_line_line
+    FMath::ms_mat4Unit, //geo_line_triangle
+    FMath::ms_mat4Unit, //geo_line_quad
+    //FMath::ms_mat4Unit, //geo_line_grid
+    //FMath::ms_mat4Unit, //geo_line_circle
+    //FMath::ms_mat4Unit, //geo_line_aabb
+    //FMath::ms_mat4Unit, //geo_line_sphere
+    //FMath::ms_mat4Unit, //geo_line_cylinder
+    //FMath::ms_mat4Unit, //geo_line_capsule
+    //FMath::ms_mat4Unit, //geo_line_cone
+    //FMath::ms_mat4Unit, //geo_line_torus
 
-    // FMath::ms_mat4Unit, //geo_skybox
-    // FMath::ms_mat4Unit, //geo_skydome
-    // FMath::ms_mat4Unit, //geo_terrain
+    FMath::RotateX(90.0f), //geo_entity_triangle  
+    FMath::RotateX(90.0f), //geo_entity_quad 
+    FMath::RotateX(90.0f), //geo_entity_grid
+    FMath::RotateX(90.0f), //geo_entity_circle
+    FMath::ms_mat4Unit, //geo_entity_aabb
+    FMath::ms_mat4Unit, //geo_entity_sphere
+    FMath::ms_mat4Unit, //geo_entity_geosphere
+    FMath::ms_mat4Unit, //geo_entity_cylinder
+    FMath::ms_mat4Unit, //geo_entity_capsule
+    FMath::ms_mat4Unit, //geo_entity_cone
+    FMath::ms_mat4Unit, //geo_entity_torus
+    //FMath::ms_mat4Unit, //geo_entity_skybox
+    //FMath::ms_mat4Unit, //geo_entity_skydome
+    //FMath::ms_mat4Unit, //geo_entity_terrain
 };
 
 
@@ -130,20 +174,22 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
 
 
 /////////////////////////// DescriptorSetLayout /////////////////
-static const int g_DescriptorSetLayoutCount = 1;
+static const int g_DescriptorSetLayoutCount = 2;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
+    "Pass-ObjectLineFlat",
     "Pass-Object-Material-Instance-TextureFS",
 };
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 2;
+static const int g_ShaderCount = 4;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
     ///////////////////////////////////////// vert /////////////////////////////////////////
     "vert_standard_mesh_opaque_tex2d_lit",                     "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
+    "vert_editor_line",                                        "vert",              "Assets/Shader/editor_line.vert.spv", //editor_line vert
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
    
@@ -155,6 +201,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
     ///////////////////////////////////////// frag /////////////////////////////////////////
     "frag_standard_mesh_opaque_tex2d_lit",                     "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
+    "frag_editor_line",                                        "frag",              "Assets/Shader/editor_line.frag.spv", //editor_line frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
     
@@ -163,261 +210,423 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 11; 
+static const int g_Object_Count = 14; 
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
-    //Object Name                           //Mesh Name                   
-    "object_geo_triangle",                  "geo_triangle", //object_geo_triangle
-    "object_geo_quad",                      "geo_quad", //object_geo_quad
-    "object_geo_grid",                      "geo_grid", //object_geo_grid
-    "object_geo_circle",                    "geo_circle", //object_geo_circle
-    "object_geo_aabb",                      "geo_aabb", //object_geo_aabb
-    "object_geo_sphere",                    "geo_sphere", //object_geo_sphere
-    "object_geo_geosphere",                 "geo_geosphere", //object_geo_geosphere
-    "object_geo_cylinder",                  "geo_cylinder", //object_geo_cylinder
-    "object_geo_capsule",                   "geo_capsule", //object_geo_capsule
-    "object_geo_cone",                      "geo_cone", //object_geo_cone
-    "object_geo_torus",                     "geo_torus", //object_geo_torus
+    //Object Name                           //Mesh Name        
+    "object_geo_line_line",                 "geo_line_line", //object_geo_line_line
+    "object_geo_line_triangle",             "geo_line_triangle", //object_geo_line_triangle
+    "object_geo_line_quad",                 "geo_line_quad", //object_geo_line_quad
+    //"object_geo_line_grid",                 "geo_line_grid", //object_geo_line_grid
+    //"object_geo_line_circle",               "geo_line_circle", //object_geo_line_circle
+    //"object_geo_line_aabb",                 "geo_line_aabb", //object_geo_line_aabb
+    //"object_geo_line_sphere",               "geo_line_sphere", //object_geo_line_sphere
+    //"object_geo_line_cylinder",             "geo_line_cylinder", //object_geo_line_cylinder
+    //"object_geo_line_capsule",              "geo_line_capsule", //object_geo_line_capsule
+    //"object_geo_line_cone",                 "geo_line_cone", //object_geo_line_cone
+    //"object_geo_line_torus",                "geo_line_torus", //object_geo_line_torus
 
-    // "object_geo_skybox",                 "geo_skybox", //object_geo_skybox
-    // "object_geo_skydome",                "geo_skydome", //object_geo_skydome
-    // "object_geo_terrain",                "geo_terrain", //object_geo_terrain
-
+    "object_geo_entity_triangle",           "geo_entity_triangle", //object_geo_entity_triangle
+    "object_geo_entity_quad",               "geo_entity_quad", //object_geo_entity_quad
+    "object_geo_entity_grid",               "geo_entity_grid", //object_geo_entity_grid
+    "object_geo_entity_circle",             "geo_entity_circle", //object_geo_entity_circle
+    "object_geo_entity_aabb",               "geo_entity_aabb", //object_geo_entity_aabb
+    "object_geo_entity_sphere",             "geo_entity_sphere", //object_geo_entity_sphere
+    "object_geo_entity_geosphere",          "geo_entity_geosphere", //object_geo_entity_geosphere
+    "object_geo_entity_cylinder",           "geo_entity_cylinder", //object_geo_entity_cylinder
+    "object_geo_entity_capsule",            "geo_entity_capsule", //object_geo_entity_capsule
+    "object_geo_entity_cone",               "geo_entity_cone", //object_geo_entity_cone
+    "object_geo_entity_torus",              "geo_entity_torus", //object_geo_entity_torus
+    //"object_geo_entity_skybox",           "geo_entity_skybox", //object_geo_entity_skybox
+    //"object_geo_entity_skydome",          "geo_entity_skydome", //object_geo_entity_skydome
+    //"object_geo_entity_terrain",          "geo_entity_terrain", //object_geo_entity_terrain
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {   
-    "0", //object_geo_triangle
-    "0", //object_geo_quad
-    "0", //object_geo_grid
-    "0", //object_geo_circle
-    "0", //object_geo_aabb
-    "0", //object_geo_sphere
-    "0", //object_geo_geosphere
-    "0", //object_geo_cylinder
-    "0", //object_geo_capsule
-    "0", //object_geo_cone
-    "0", //object_geo_torus
+    "0", //object_geo_line_line
+    "0", //object_geo_line_triangle
+    "0", //object_geo_line_quad
+    //"0", //object_geo_line_grid
+    //"0", //object_geo_line_circle
+    //"0", //object_geo_line_aabb
+    //"0", //object_geo_line_sphere
+    //"0", //object_geo_line_cylinder
+    //"0", //object_geo_line_capsule
+    //"0", //object_geo_line_cone
+    //"0", //object_geo_line_torus
 
-    // "0", //object_geo_skybox
-    // "0", //object_geo_skydome
-    // "0", //object_geo_terrain
+    "0", //object_geo_entity_triangle
+    "0", //object_geo_entity_quad
+    "0", //object_geo_entity_grid
+    "0", //object_geo_entity_circle
+    "0", //object_geo_entity_aabb
+    "0", //object_geo_entity_sphere
+    "0", //object_geo_entity_geosphere
+    "0", //object_geo_entity_cylinder
+    "0", //object_geo_entity_capsule
+    "0", //object_geo_entity_cone
+    "0", //object_geo_entity_torus
+    //"0", //object_geo_entity_skybox
+    //"0", //object_geo_entity_skydome
+    //"0", //object_geo_entity_terrain
 };  
 
 static float g_Object_InstanceGap = 3.0f;
 static int g_Object_InstanceExtCount[g_Object_Count] =
 {
-    1, //object_geo_triangle 
-    1, //object_geo_quad 
-    1, //object_geo_grid 
-    1, //object_geo_circle 
-    1, //object_geo_aabb 
-    1, //object_geo_sphere 
-    1, //object_geo_geosphere 
-    1, //object_geo_cylinder 
-    1, //object_geo_capsule 
-    1, //object_geo_cone 
-    1, //object_geo_torus 
+    1, //object_geo_line_line
+    1, //object_geo_line_triangle
+    1, //object_geo_line_quad
+    //1, //object_geo_line_grid
+    //1, //object_geo_line_circle
+    //1, //object_geo_line_aabb
+    //1, //object_geo_line_sphere
+    //1, //object_geo_line_cylinder
+    //1, //object_geo_line_capsule
+    //1, //object_geo_line_cone
+    //1, //object_geo_line_torus
 
-    // 1, //object_geo_skybox 
-    // 1, //object_geo_skydome 
-    // 1, //object_geo_terrain 
-
+    1, //object_geo_entity_triangle 
+    1, //object_geo_entity_quad 
+    1, //object_geo_entity_grid 
+    1, //object_geo_entity_circle 
+    1, //object_geo_entity_aabb 
+    1, //object_geo_entity_sphere 
+    1, //object_geo_entity_geosphere 
+    1, //object_geo_entity_cylinder 
+    1, //object_geo_entity_capsule 
+    1, //object_geo_entity_cone 
+    1, //object_geo_entity_torus 
+    //1, //object_geo_entity_skybox 
+    //1, //object_geo_entity_skydome 
+    //1, //object_geo_entity_terrain 
 };
 static bool g_Object_IsShows[] = 
 {   
-    true, //object_geo_triangle
-    true, //object_geo_quad
-    true, //object_geo_grid
-    true, //object_geo_circle
-    true, //object_geo_aabb
-    true, //object_geo_sphere
-    true, //object_geo_geosphere
-    true, //object_geo_cylinder
-    true, //object_geo_capsule
-    true, //object_geo_cone
-    true, //object_geo_torus
+    true, //object_geo_line_line
+    true, //object_geo_line_triangle
+    true, //object_geo_line_quad
+    //true, //object_geo_line_grid
+    //true, //object_geo_line_circle
+    //true, //object_geo_line_aabb
+    //true, //object_geo_line_sphere
+    //true, //object_geo_line_cylinder
+    //true, //object_geo_line_capsule
+    //true, //object_geo_line_cone
+    //true, //object_geo_line_torus
 
-    // true, //object_geo_skybox
-    // true, //object_geo_skydome
-    // true, //object_geo_terrain'
-
+    true, //object_geo_entity_triangle
+    true, //object_geo_entity_quad
+    true, //object_geo_entity_grid
+    true, //object_geo_entity_circle
+    true, //object_geo_entity_aabb
+    true, //object_geo_entity_sphere
+    true, //object_geo_entity_geosphere
+    true, //object_geo_entity_cylinder
+    true, //object_geo_entity_capsule
+    true, //object_geo_entity_cone
+    true, //object_geo_entity_torus
+    //true, //object_geo_entity_skybox
+    //true, //object_geo_entity_skydome
+    //true, //object_geo_entity_terrain'
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
-    false, //object_geo_triangle
-    false, //object_geo_quad
-    false, //object_geo_grid
-    false, //object_geo_circle
-    false, //object_geo_aabb
-    false, //object_geo_sphere
-    false, //object_geo_geosphere
-    false, //object_geo_cylinder
-    false, //object_geo_capsule
-    false, //object_geo_cone
-    false, //object_geo_torus
+    false, //object_geo_line_line
+    false, //object_geo_line_triangle
+    false, //object_geo_line_quad
+    //false, //object_geo_line_grid
+    //false, //object_geo_line_circle
+    //false, //object_geo_line_aabb
+    //false, //object_geo_line_sphere
+    //false, //object_geo_line_cylinder
+    //false, //object_geo_line_capsule
+    //false, //object_geo_line_cone
+    //false, //object_geo_line_torus
 
-    // false, //object_geo_skybox
-    // false, //object_geo_skydome
-    // false, //object_geo_terrain
+    false, //object_geo_entity_triangle
+    false, //object_geo_entity_quad
+    false, //object_geo_entity_grid
+    false, //object_geo_entity_circle
+    false, //object_geo_entity_aabb
+    false, //object_geo_entity_sphere
+    false, //object_geo_entity_geosphere
+    false, //object_geo_entity_cylinder
+    false, //object_geo_entity_capsule
+    false, //object_geo_entity_cone
+    false, //object_geo_entity_torus
+    //false, //object_geo_entity_skybox
+    //false, //object_geo_entity_skydome
+    //false, //object_geo_entity_terrain
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
-    true, //object_geo_triangle
-    true, //object_geo_quad
-    true, //object_geo_grid
-    true, //object_geo_circle
-    true, //object_geo_aabb
-    true, //object_geo_sphere
-    true, //object_geo_geosphere
-    true, //object_geo_cylinder
-    true, //object_geo_capsule
-    true, //object_geo_cone
-    true, //object_geo_torus
+    false, //object_geo_line_line
+    false, //object_geo_line_triangle
+    false, //object_geo_line_quad
+    //false, //object_geo_line_grid
+    //false, //object_geo_line_circle
+    //false, //object_geo_line_aabb
+    //false, //object_geo_line_sphere
+    //false, //object_geo_line_cylinder
+    //false, //object_geo_line_capsule
+    //false, //object_geo_line_cone
+    //false, //object_geo_line_torus
 
-    // true, //object_geo_skybox
-    // true, //object_geo_skydome
-    // true, //object_geo_terrain
+    true, //object_geo_entity_triangle
+    true, //object_geo_entity_quad
+    true, //object_geo_entity_grid
+    true, //object_geo_entity_circle
+    true, //object_geo_entity_aabb
+    true, //object_geo_entity_sphere
+    true, //object_geo_entity_geosphere
+    true, //object_geo_entity_cylinder
+    true, //object_geo_entity_capsule
+    true, //object_geo_entity_cone
+    true, //object_geo_entity_torus
+    //true, //object_geo_entity_skybox
+    //true, //object_geo_entity_skydome
+    //true, //object_geo_entity_terrain
 };
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
-    false, //object_geo_triangle
-    false, //object_geo_quad
-    false, //object_geo_grid
-    false, //object_geo_circle
-    false, //object_geo_aabb
-    false, //object_geo_sphere
-    false, //object_geo_geosphere
-    false, //object_geo_cylinder
-    false, //object_geo_capsule
-    false, //object_geo_cone
-    false, //object_geo_torus
+    false, //object_geo_line_line
+    false, //object_geo_line_triangle
+    false, //object_geo_line_quad
+    //false, //object_geo_line_grid
+    //false, //object_geo_line_circle
+    //false, //object_geo_line_aabb
+    //false, //object_geo_line_sphere
+    //false, //object_geo_line_cylinder
+    //false, //object_geo_line_capsule
+    //false, //object_geo_line_cone
+    //false, //object_geo_line_torus
 
-    // false, //object_geo_skybox
-    // false, //object_geo_skydome
-    // false, //object_geo_terrain
+    false, //object_geo_entity_triangle
+    false, //object_geo_entity_quad
+    false, //object_geo_entity_grid
+    false, //object_geo_entity_circle
+    false, //object_geo_entity_aabb
+    false, //object_geo_entity_sphere
+    false, //object_geo_entity_geosphere
+    false, //object_geo_entity_cylinder
+    false, //object_geo_entity_capsule
+    false, //object_geo_entity_cone
+    false, //object_geo_entity_torus
+    //false, //object_geo_entity_skybox
+    //false, //object_geo_entity_skydome
+    //false, //object_geo_entity_terrain
 };
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 11; 
+static const int g_ObjectRend_Count = 14; 
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
-    "object_geo_triangle-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_triangle-1
-    "object_geo_quad-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_quad-1
-    "object_geo_grid-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_grid-1
-    "object_geo_circle-1",                 "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_circle-1
-    "object_geo_aabb-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_aabb-1
-    "object_geo_sphere-1",                 "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_sphere-1
-    "object_geo_geosphere-1",              "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_geosphere-1
-    "object_geo_cylinder-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_cylinder-1
-    "object_geo_capsule-1",                "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_capsule-1
-    "object_geo_cone-1",                   "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_cone-1
-    "object_geo_torus-1",                  "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_torus-1
+    "object_geo_line_line-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_line-1
+    "object_geo_line_triangle-1",          "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_triangle-1
+    "object_geo_line_quad-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_quad-1
+    //"object_geo_line_grid-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_grid-1
+    //"object_geo_line_circle-1",            "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_circle-1
+    //"object_geo_line_aabb-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_aabb-1
+    //"object_geo_line_sphere-1",            "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_sphere-1
+    //"object_geo_line_cylinder-1",          "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_cylinder-1
+    //"object_geo_line_capsule-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_capsule-1
+    //"object_geo_line_cone-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_cone-1
+    //"object_geo_line_torus-1",             "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_torus-1
 
-    // "object_geo_skybox-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_skybox-1
-    // "object_geo_skydome-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_skydome-1
-    // "object_geo_terrain-1",               "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_terrain-1
-
+    "object_geo_entity_triangle-1",        "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_triangle-1
+    "object_geo_entity_quad-1",            "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_quad-1
+    "object_geo_entity_grid-1",            "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_grid-1
+    "object_geo_entity_circle-1",          "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_circle-1
+    "object_geo_entity_aabb-1",            "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_aabb-1
+    "object_geo_entity_sphere-1",          "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_sphere-1
+    "object_geo_entity_geosphere-1",       "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_geosphere-1
+    "object_geo_entity_cylinder-1",        "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_cylinder-1
+    "object_geo_entity_capsule-1",         "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_capsule-1
+    "object_geo_entity_cone-1",            "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_cone-1
+    "object_geo_entity_torus-1",           "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_torus-1
+    //"object_geo_entity_skybox-1",        "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_skybox-1
+    //"object_geo_entity_skydome-1",       "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_skydome-1
+    //"object_geo_entity_terrain-1",       "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_terrain-1
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_triangle-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_quad-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_grid-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_circle-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_aabb-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_sphere-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_geosphere-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_cylinder-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_capsule-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_cone-1
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_torus-1
-
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_skybox-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_skydome-1
-    // "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_terrain-1
-
+    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_line-1
+    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_triangle-1
+    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_quad-1
+    //"vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_grid-1
+    //"vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_circle-1
+    //"vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_aabb-1
+    //"vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_sphere-1
+    //"vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_cylinder-1
+    //"vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_capsule-1
+    //"vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_cone-1
+    //"vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_torus-1
+    
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_triangle-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_quad-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_grid-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_circle-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_aabb-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_sphere-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_geosphere-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_cylinder-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_capsule-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_cone-1
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_torus-1
+    //"vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_skybox-1
+    //"vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_skydome-1
+    //"vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_terrain-1
 };
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
     //Pipeline Graphics                                                 //Pipeline Compute
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_triangle-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_quad-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_grid-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_circle-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_aabb-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_sphere-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_geosphere-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_cylinder-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_capsule-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_cone-1
-    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_torus-1
+    "Pass-ObjectLineFlat",                                              "", //object_geo_line_line-1
+    "Pass-ObjectLineFlat",                                              "", //object_geo_line_triangle-1
+    "Pass-ObjectLineFlat",                                              "", //object_geo_line_quad-1
+    //"Pass-ObjectLineFlat",                                              "", //object_geo_line_grid-1
+    //"Pass-ObjectLineFlat",                                              "", //object_geo_line_circle-1
+    //"Pass-ObjectLineFlat",                                              "", //object_geo_line_aabb-1
+    //"Pass-ObjectLineFlat",                                              "", //object_geo_line_sphere-1
+    //"Pass-ObjectLineFlat",                                              "", //object_geo_line_cylinder-1
+    //"Pass-ObjectLineFlat",                                              "", //object_geo_line_capsule-1
+    //"Pass-ObjectLineFlat",                                              "", //object_geo_line_cone-1
+    //"Pass-ObjectLineFlat",                                              "", //object_geo_line_torus-1
 
-    // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_skybox-1
-    // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_skydome-1
-    // "Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_terrain-1
-
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_triangle-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_quad-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_grid-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_circle-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_aabb-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_sphere-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_geosphere-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_cylinder-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_capsule-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_cone-1
+    "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_torus-1
+    //"Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_entity_skybox-1
+    //"Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_entity_skydome-1
+    //"Pass-Object-Material-Instance-TextureFS",                       "", //object_geo_entity_terrain-1
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
-    FVector3(   0,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_triangle-1
-    FVector3(   0,  0.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_quad-1
-    FVector3(   0,  0.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_grid-1
-    FVector3(   0,  0.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_circle-1
-    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_aabb-1
-    FVector3(   0,  0.0,   2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_sphere-1
-    FVector3(   0,  0.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_geosphere-1
-    FVector3(   0,  0.0,   6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cylinder-1
-    FVector3(   0,  0.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_capsule-1
-    FVector3(   0,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_cone-1
-    FVector3(   0,  0.0,  12.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_torus-1
+    FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_line-1
+    FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_triangle-1
+    FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_quad-1
+    // FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_grid-1
+    // FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_circle-1
+    // FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_aabb-1
+    // FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_sphere-1
+    // FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_cylinder-1
+    // FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_capsule-1
+    // FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_cone-1
+    // FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_torus-1
 
-    // FVector3(   0,  0.0,  14.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skybox-1
-    // FVector3(   0,  0.0,  16.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_skydome-1
-    // FVector3(   0,  0.0,  18.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_terrain-1
-
+    FVector3(   0,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_triangle-1
+    FVector3(   0,  0.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_quad-1
+    FVector3(   0,  0.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_grid-1
+    FVector3(   0,  0.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_circle-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_aabb-1
+    FVector3(   0,  0.0,   2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_sphere-1
+    FVector3(   0,  0.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_geosphere-1
+    FVector3(   0,  0.0,   6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_cylinder-1
+    FVector3(   0,  0.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_capsule-1
+    FVector3(   0,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_cone-1
+    FVector3(   0,  0.0,  12.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_torus-1
+    //FVector3(   0,  0.0,  14.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_skybox-1
+    //FVector3(   0,  0.0,  16.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_skydome-1
+    //FVector3(   0,  0.0,  18.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_terrain-1
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
-    false, //object_geo_triangle-1
-    false, //object_geo_quad-1
-    false, //object_geo_grid-1
-    false, //object_geo_circle-1
-    false, //object_geo_aabb-1
-    false, //object_geo_sphere-1
+    false, //object_geo_line_line-1
+    false, //object_geo_line_triangle-1
+    false, //object_geo_line_quad-1
+    //false, //object_geo_line_grid-1
+    //false, //object_geo_line_circle-1
+    //false, //object_geo_line_aabb-1
+    //false, //object_geo_line_sphere-1
+    //false, //object_geo_line_cylinder-1
+    //false, //object_geo_line_capsule-1
+    //false, //object_geo_line_cone-1
+    //false, //object_geo_line_torus-1
+
+    false, //object_geo_entity_triangle-1
+    false, //object_geo_entity_quad-1
+    false, //object_geo_entity_grid-1
+    false, //object_geo_entity_circle-1
+    false, //object_geo_entity_aabb-1
+    false, //object_geo_entity_sphere-1
     false, //object_geo_geosphere-1
-    false, //object_geo_cylinder-1
-    false, //object_geo_capsule-1
-    false, //object_geo_cone-1
-    false, //object_geo_torus-1
-
-    //false, //object_geo_skybox-1
-    //false, //object_geo_skydome-1
-    //false, //object_geo_terrain-1
-
+    false, //object_geo_entity_cylinder-1
+    false, //object_geo_entity_capsule-1
+    false, //object_geo_entity_cone-1
+    false, //object_geo_entity_torus-1
+    //false, //object_geo_entity_skybox-1
+    //false, //object_geo_entity_skydome-1
+    //false, //object_geo_entity_terrain-1
 };
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
-    false, //object_geo_triangle-1
-    false, //object_geo_quad-1
-    false, //object_geo_grid-1
-    false, //object_geo_circle-1
-    false, //object_geo_aabb-1
-    false, //object_geo_sphere-1
-    false, //object_geo_geosphere-1
-    false, //object_geo_cylinder-1
-    false, //object_geo_capsule-1
-    false, //object_geo_cone-1
-    false, //object_geo_torus-1
+    false, //object_geo_line_line-1
+    false, //object_geo_line_triangle-1
+    false, //object_geo_line_quad-1
+    //false, //object_geo_line_grid-1
+    //false, //object_geo_line_circle-1
+    //false, //object_geo_line_aabb-1
+    //false, //object_geo_line_sphere-1
+    //false, //object_geo_line_cylinder-1
+    //false, //object_geo_line_capsule-1
+    //false, //object_geo_line_cone-1
+    //false, //object_geo_line_torus-1
 
-    //false, //object_geo_skybox-1
-    //false, //object_geo_skydome-1
-    //false, //object_geo_terrain-1
-
+    false, //object_geo_entity_triangle-1
+    false, //object_geo_entity_quad-1
+    false, //object_geo_entity_grid-1
+    false, //object_geo_entity_circle-1
+    false, //object_geo_entity_aabb-1
+    false, //object_geo_entity_sphere-1
+    false, //object_geo_entity_geosphere-1
+    false, //object_geo_entity_cylinder-1
+    false, //object_geo_entity_capsule-1
+    false, //object_geo_entity_cone-1
+    false, //object_geo_entity_torus-1
+    //false, //object_geo_entity_skybox-1
+    //false, //object_geo_entity_skydome-1
+    //false, //object_geo_entity_terrain-1
 };
+static bool g_ObjectRend_IsLineFlat[g_ObjectRend_Count] =
+{
+    true, //object_geo_line_line-1
+    true, //object_geo_line_triangle-1
+    true, //object_geo_line_quad-1
+    //true, //object_geo_line_grid-1
+    //true, //object_geo_line_circle-1
+    //true, //object_geo_line_aabb-1
+    //true, //object_geo_line_sphere-1
+    //true, //object_geo_line_cylinder-1
+    //true, //object_geo_line_capsule-1
+    //true, //object_geo_line_cone-1
+    //true, //object_geo_line_torus-1
 
+    false, //object_geo_entity_triangle-1
+    false, //object_geo_entity_quad-1
+    false, //object_geo_entity_grid-1
+    false, //object_geo_entity_circle-1
+    false, //object_geo_entity_aabb-1
+    false, //object_geo_entity_sphere-1
+    false, //object_geo_entity_geosphere-1
+    false, //object_geo_entity_cylinder-1
+    false, //object_geo_entity_capsule-1
+    false, //object_geo_entity_cone-1
+    false, //object_geo_entity_torus-1
+    //false, //object_geo_entity_skybox-1
+    //false, //object_geo_entity_skydome-1
+    //false, //object_geo_entity_terrain-1
+};
 
 
 /////////////////////////// ModelObjectRend /////////////////////
@@ -456,6 +665,15 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::CleanupSwapChain()
     this->objectCBs.clear();
     this->poBuffers_ObjectCB.clear();
     this->poBuffersMemory_ObjectCB.clear();
+
+    count = this->poBuffers_ObjectCB_LineFlat.size();
+    for (size_t i = 0; i < count; i++) 
+    {
+        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB_LineFlat[i], this->poBuffersMemory_ObjectCB_LineFlat[i]);
+    }
+    this->objectCBs_LineFlat.clear();
+    this->poBuffers_ObjectCB_LineFlat.clear();
+    this->poBuffersMemory_ObjectCB_LineFlat.clear();
 
     count = this->poBuffers_materialCB.size();
     for (size_t i = 0; i < count; i++) 
@@ -557,13 +775,27 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandB
 
     //1> Uniform Buffer
     {
-        //ObjectConstants
-        bufferSize = sizeof(ObjectConstants) * this->objectCBs.size();
-        this->poBuffers_ObjectCB.resize(count_sci);
-        this->poBuffersMemory_ObjectCB.resize(count_sci);
-        for (size_t j = 0; j < count_sci; j++) 
+        if (!this->pRend->isLineFlat)
         {
-            this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
+            //ObjectConstants
+            bufferSize = sizeof(ObjectConstants) * this->objectCBs.size();
+            this->poBuffers_ObjectCB.resize(count_sci);
+            this->poBuffersMemory_ObjectCB.resize(count_sci);
+            for (size_t j = 0; j < count_sci; j++) 
+            {
+                this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
+            }
+        }
+        else
+        {
+            //LineFlatObjectConstants
+            bufferSize = sizeof(LineFlatObjectConstants) * this->objectCBs_LineFlat.size();
+            this->poBuffers_ObjectCB_LineFlat.resize(count_sci);
+            this->poBuffersMemory_ObjectCB_LineFlat.resize(count_sci);
+            for (size_t j = 0; j < count_sci; j++) 
+            {
+                this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB_LineFlat[j], this->poBuffersMemory_ObjectCB_LineFlat[j]);
+            }
         }
 
         //MaterialConstants
@@ -598,6 +830,7 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandB
 void Vulkan_017_Collision::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
     this->objectCBs.clear();
+    this->objectCBs_LineFlat.clear();
     this->materialCBs.clear();
     this->tessellationCBs.clear();
 
@@ -607,7 +840,10 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::UpdateUniformBuffer()
         ModelObjectRend* pR = this->aRends[i];
         MeshSub* pMeshSub = pR->pMeshSub;
 
-        this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
+        if (!pR->isLineFlat)
+            this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
+        else
+            this->objectCBs_LineFlat.insert(this->objectCBs_LineFlat.end(), pR->objectCBs_LineFlat.begin(), pR->objectCBs_LineFlat.end());
         this->materialCBs.insert(this->materialCBs.end(), pR->materialCBs.begin(), pR->materialCBs.end());
         if (pRend->isUsedTessellation)
         {
@@ -902,6 +1138,11 @@ void Vulkan_017_Collision::loadModel_Custom()
 
                 //Common
                 pRend->isTransparent = g_ObjectRend_IsTransparents[nIndexObjectRend];
+                pRend->isLineFlat = g_ObjectRend_IsLineFlat[nIndexObjectRend];
+                if (pRend->isLineFlat)
+                {
+                    pRend->cfg_LineWidth = 5.0f;
+                }
 
                 pModelObject->AddObjectRend(pRend);
                 m_aModelObjectRends_All.push_back(pRend);
@@ -957,16 +1198,28 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
 
         pRend->instanceMatWorld.clear();
         pRend->objectCBs.clear();
+        pRend->objectCBs_LineFlat.clear();
         pRend->materialCBs.clear();
         for (int j = 0; j < count_instance; j++)
         {
-            //ObjectConstants
+            if (!pRend->isLineFlat)
             {
+                //ObjectConstants
                 ObjectConstants objectConstants;
                 objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
                                                             g_ObjectRend_Tranforms[3 * i + 1],
                                                             g_ObjectRend_Tranforms[3 * i + 2]);
                 pRend->objectCBs.push_back(objectConstants);
+                pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+            }
+            else
+            {
+                //LineFlatObjectConstants
+                LineFlatObjectConstants objectConstants;
+                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
+                                                            g_ObjectRend_Tranforms[3 * i + 1],
+                                                            g_ObjectRend_Tranforms[3 * i + 2]);
+                pRend->objectCBs_LineFlat.push_back(objectConstants);
                 pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
             }
 
@@ -1020,12 +1273,25 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
         if (isCreateVkBuffer)
         {
             //ObjectConstants
-            bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-            pRend->poBuffers_ObjectCB.resize(count_sci);
-            pRend->poBuffersMemory_ObjectCB.resize(count_sci);
-            for (size_t j = 0; j < count_sci; j++) 
+            if (!pRend->isLineFlat)
             {
-                createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
+                bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
+                pRend->poBuffers_ObjectCB.resize(count_sci);
+                pRend->poBuffersMemory_ObjectCB.resize(count_sci);
+                for (size_t j = 0; j < count_sci; j++) 
+                {
+                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
+                }
+            }
+            else
+            {
+                bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_LINEFLAT_COUNT;
+                pRend->poBuffers_ObjectCB_LineFlat.resize(count_sci);
+                pRend->poBuffersMemory_ObjectCB_LineFlat.resize(count_sci);
+                for (size_t j = 0; j < count_sci; j++) 
+                {
+                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB_LineFlat[j], pRend->poBuffersMemory_ObjectCB_LineFlat[j]);
+                }
             }
 
             //MaterialConstants
@@ -1145,7 +1411,7 @@ void Vulkan_017_Collision::createGraphicsPipeline_Custom()
                                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                                       this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                      pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE,
+                                                                                      pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, this->cfg_LineWidth,
                                                                                       pRend->cfg_isDepthTest, pRend->cfg_isDepthWrite, pRend->cfg_DepthCompareOp,
                                                                                       pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
                                                                                       pRend->cfg_isBlend, pRend->cfg_BlendColorFactorSrc, pRend->cfg_BlendColorFactorDst, pRend->cfg_BlendColorOp,
@@ -1179,7 +1445,7 @@ void Vulkan_017_Collision::createGraphicsPipeline_Custom()
                                                                             Util_GetVkVertexInputBindingDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex), 
                                                                             Util_GetVkVertexInputAttributeDescriptionVectorPtr(pRend->pMeshSub->poTypeVertex),
                                                                             this->poRenderPass, pRend->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                            pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, pRend->cfg_vkCullModeFlagBits,
+                                                                            pRend->cfg_vkPrimitiveTopology, pRend->cfg_vkFrontFace, pRend->cfg_vkPolygonMode, pRend->cfg_vkCullModeFlagBits, this->cfg_LineWidth,
                                                                             isDepthTestEnable, isDepthWriteEnable, pRend->cfg_DepthCompareOp,
                                                                             pRend->cfg_isStencilTest, pRend->cfg_StencilOpFront, pRend->cfg_StencilOpBack, 
                                                                             isBlend, blendColorFactorSrc, blendColorFactorDst, pRend->cfg_BlendColorOp,
@@ -1612,6 +1878,19 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
                                             1,
                                             bufferInfo_Object);
             }
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectLineFlat)) //ObjectLineFlat
+            {
+                VkDescriptorBufferInfo bufferInfo_ObjectLineFlat = {};
+                bufferInfo_ObjectLineFlat.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB_LineFlat[j] : pRend->poBuffers_ObjectCB_LineFlat[j];
+                bufferInfo_ObjectLineFlat.offset = 0;
+                bufferInfo_ObjectLineFlat.range = sizeof(LineFlatObjectConstants) * MAX_OBJECT_LINEFLAT_COUNT;
+                pushVkDescriptorSet_Uniform(descriptorWrites,
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            p,
+                                            0,
+                                            1,
+                                            bufferInfo_ObjectLineFlat);
+            }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Material)) //Material
             {
                 VkDescriptorBufferInfo bufferInfo_Material = {};
@@ -1844,20 +2123,42 @@ void Vulkan_017_Collision::updateCBs_Custom()
     {
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
 
-        size_t count_object = pRend->objectCBs.size();
+        size_t count_object = 0;
+        if (!pRend->isLineFlat)
+            count_object = pRend->objectCBs.size();
+        else
+            count_object = pRend->objectCBs_LineFlat.size();
         for (size_t j = 0; j < count_object; j++)
         {
-            //ObjectConstants
-            ObjectConstants& objectCB = pRend->objectCBs[j];
-            if (pRend->pModelObject->isRotate || pRend->isRotate || this->cfg_isRotate)
+            if (!pRend->isLineFlat)
             {
-                objectCB.g_MatWorld = glm::rotate(pRend->instanceMatWorld[j], 
-                                                  time * glm::radians(90.0f), 
-                                                  FVector3(0.0f, 1.0f, 0.0f));
+                //ObjectConstants
+                ObjectConstants& objectCB = pRend->objectCBs[j];
+                if (pRend->pModelObject->isRotate || pRend->isRotate || this->cfg_isRotate)
+                {
+                    objectCB.g_MatWorld = glm::rotate(pRend->instanceMatWorld[j], 
+                                                    time * glm::radians(90.0f), 
+                                                    FVector3(0.0f, 1.0f, 0.0f));
+                }
+                else
+                {
+                    objectCB.g_MatWorld = pRend->instanceMatWorld[j];
+                }
             }
             else
             {
-                objectCB.g_MatWorld = pRend->instanceMatWorld[j];
+                //LineFlatObjectConstants
+                LineFlatObjectConstants& objectCB = pRend->objectCBs_LineFlat[j];
+                if (pRend->pModelObject->isRotate || pRend->isRotate || this->cfg_isRotate)
+                {
+                    objectCB.g_MatWorld = glm::rotate(pRend->instanceMatWorld[j], 
+                                                    time * glm::radians(90.0f), 
+                                                    FVector3(0.0f, 1.0f, 0.0f));
+                }
+                else
+                {
+                    objectCB.g_MatWorld = pRend->instanceMatWorld[j];
+                }
             }
 
             //MaterialConstants
@@ -1871,11 +2172,20 @@ void Vulkan_017_Collision::updateCBs_Custom()
         }
 
         //ObjectConstants
+        if (!pRend->isLineFlat)
         {
             VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
             void* data;
             vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
                 memcpy(data, pRend->objectCBs.data(), sizeof(ObjectConstants) * count_object);
+            vkUnmapMemory(this->poDevice, memory);
+        }
+        else
+        {
+            VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB_LineFlat[this->poSwapChainImageIndex];
+            void* data;
+            vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlatObjectConstants) * count_object, 0, &data);
+                memcpy(data, pRend->objectCBs_LineFlat.data(), sizeof(LineFlatObjectConstants) * count_object);
             vkUnmapMemory(this->poDevice, memory);
         }
 
@@ -1908,14 +2218,25 @@ void Vulkan_017_Collision::updateCBs_Custom()
         if (pRendIndirect != nullptr)
         {
             pRendIndirect->UpdateUniformBuffer();
-            size_t count_object = pRendIndirect->objectCBs.size();
             
-            //ObjectConstants
+            if (!pRendIndirect->pRend->isLineFlat)
             {
+                //ObjectConstants
+                size_t count_object = pRendIndirect->objectCBs.size();
                 VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
                 void* data;
                 vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
                     memcpy(data, pRendIndirect->objectCBs.data(), sizeof(ObjectConstants) * count_object);
+                vkUnmapMemory(this->poDevice, memory);
+            }
+            else
+            {
+                //LineFlatObjectConstants
+                size_t count_object = pRendIndirect->objectCBs_LineFlat.size();
+                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB_LineFlat[this->poSwapChainImageIndex];
+                void* data;
+                vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlatObjectConstants) * count_object, 0, &data);
+                    memcpy(data, pRendIndirect->objectCBs_LineFlat.data(), sizeof(LineFlatObjectConstants) * count_object);
                 vkUnmapMemory(this->poDevice, memory);
             }
 
@@ -2240,7 +2561,18 @@ void Vulkan_017_Collision::modelConfig()
                                 int count_instance = pModelObject->countInstance;
                                 for (int p = 0; p < count_instance; p++)
                                 {
-                                    ObjectConstants& obj = pRend->objectCBs[p];
+                                    FMatrix4* pMat4World = nullptr;
+                                    if (!pRend->isLineFlat)
+                                    {
+                                        ObjectConstants& obj = pRend->objectCBs[p];
+                                        pMat4World = &obj.g_MatWorld;
+                                    }
+                                    else
+                                    {
+                                        LineFlatObjectConstants& obj = pRend->objectCBs_LineFlat[p];
+                                        pMat4World = &obj.g_MatWorld;
+                                    }
+                                    
                                     MaterialConstants& mat = pRend->materialCBs[p];
 
                                     String nameModelInstance = FUtilString::SaveInt(p) + " - " + nameObjectRend;
@@ -2250,7 +2582,7 @@ void Vulkan_017_Collision::modelConfig()
                                         String nameObject = FUtilString::SaveInt(p) + " - Object - " + nameObjectRend;
                                         if (ImGui::CollapsingHeader(nameObject.c_str()))
                                         {
-                                            const FMatrix4& mat4World = obj.g_MatWorld;
+                                            const FMatrix4& mat4World = *pMat4World;
                                             String nameTable = FUtilString::SaveInt(p) + " - matWorld - " + nameObjectRend;
                                             if (ImGui::BeginTable(nameTable.c_str(), 4))
                                             {
