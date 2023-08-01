@@ -325,15 +325,110 @@ namespace LostPeterFoundation
     }
 
     //LineGrid
-    void FMeshGeometry::CreateLineGrid(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateLineGrid(FMeshDataPC& meshDataPC,
+                                       const FVector3& vLeftTop,
+                                       const FVector3& vLeftBottom,
+                                       const FVector3& vRightBottom,
+                                       const FVector3& vRightTop,
+                                       const FVector4& vColor,
+                                       uint32 m,
+                                       uint32 n)
     {
+        // m >= 2, n >= 2
+        //
+        // (n-1)*(m-2)                  (n-1)*(m-1)
+        //      |      |      |
+        //      |      |      |
+        //      |      |      |
+        //  n*2 ----------------------- (n-1)*3
+        //      |      |      |
+        //      |      |      |
+        //      |      |      |
+        //  n   ----------------------- (n-1)*2
+        //      |      |(n+1) |(n+2)
+        //      |      |      |
+        //      |      |      |
+        //      -----------------------
+        //  0          1      2         (n-1)
+
+        //FMeshVertex
+        FVector3 vDirX = FMath::Normalize(vRightBottom - vLeftBottom);
+        FVector3 vDirY = FMath::Normalize(vLeftTop - vLeftBottom);
+        float fDisX = FMath::Distance(vRightBottom, vLeftBottom);
+        float fDisY = FMath::Distance(vLeftTop, vLeftBottom);
+        float dx = fDisX / (n - 1);
+        float dy = fDisY / (m - 1);
+        //Bottom/Top
+        for (uint32 i = 0; i < n; ++i)
+        {
+            FVector3 vX = vLeftBottom + vDirX * (dx * i);
+            for (uint32 j = 0; j < 2; j++)
+            {
+                FVector3 vPos = vX + vDirY * (fDisY * j);
+                AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+            }   
+        }
+        //Left/Right
+        for (uint32 i = 0; i < m; i++)
+        {
+            FVector3 vY = vLeftBottom + vDirY * (dy * i);
+            for (uint32 j = 0; j < 2; j ++)
+            {
+                FVector3 vPos = vY + vDirX * (fDisX * j);
+                AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+            }
+        }
         
+        //Index
+        uint nVertexCount = n * 2 + m * 2;
+        for (uint32 i = 0; i < nVertexCount / 2; ++i)
+        {
+            AddIndexLine(meshDataPC, 2 * i, 2 * i + 1);
+        }
     }
 
     //LineCircle
-    void FMeshGeometry::CreateLineCircle(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateLineCircle(FMeshDataPC& meshDataPC,
+                                         const FVector3& vCenter,
+                                         const FVector3& vDir,
+                                         const FVector3& vUp,
+                                         const FVector4& vColor,
+                                         float radius,
+                                         uint32 segment)
     {
+        //          *  * 
+		//		*		   * 2
+		//
+		//	   *	 * 0    * 1
+		//			
+		//      *          * segment
+		//          *   *
+        
+        uint32 vertexCount = segment + 1;
+        uint32 faceCount = segment;
 
+        //FMeshVertex
+        float thetaStep = 2.0f * FMath::ms_fPI / segment;
+        for (int i = 0; i < segment; i++)
+        {
+            FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(thetaStep * i, vUp);
+            FVector3 vCur = FMath::Transform(qRot, vDir);
+            FVector3 vPos = vCenter + vCur * radius;
+            AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+        }
+
+        //Index
+        for (uint32 i = 0; i < segment; ++i)    
+        {
+            if (i != segment - 1)
+            {
+                AddIndexLine(meshDataPC, i, i + 1);
+            }
+            else
+            {
+                AddIndexLine(meshDataPC, i, 0);
+            }
+        }
     }
 
     //LineAABB

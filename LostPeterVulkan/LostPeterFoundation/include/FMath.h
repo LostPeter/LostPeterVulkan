@@ -432,6 +432,11 @@ namespace LostPeterFoundation
             return glm::length2(v);
         }
 
+        static float Distance(const FVector3& v1, const FVector3& v2)
+        {
+            return Length(v1 - v2);
+        }
+
         static float Distance2(const FVector3& v1, const FVector3& v2)
         {
             return Length2(v1 - v2);
