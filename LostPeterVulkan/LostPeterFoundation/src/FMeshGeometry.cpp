@@ -264,7 +264,7 @@ namespace LostPeterFoundation
     {
         // 0 ----- 1
 
-        //FMeshVertex
+        //Vertex
         AddVertex(meshDataPC, FMeshVertexPC(vStart, vColor));   //0
         AddVertex(meshDataPC, FMeshVertexPC(vEnd, vColor));     //1
 
@@ -284,7 +284,7 @@ namespace LostPeterFoundation
         //       /  \
         //    1 ------ 2
 
-        //FMeshVertex
+        //Vertex
         AddVertex(meshDataPC, FMeshVertexPC(vTop, vColor));     //0
         AddVertex(meshDataPC, FMeshVertexPC(vLeft, vColor));    //1
         AddVertex(meshDataPC, FMeshVertexPC(vRight, vColor));   //2
@@ -311,7 +311,7 @@ namespace LostPeterFoundation
         //   --------
         //  1        2
 
-        //FMeshVertex
+        //Vertex
         AddVertex(meshDataPC, FMeshVertexPC(vLeftTop, vColor));     //0
         AddVertex(meshDataPC, FMeshVertexPC(vLeftBottom, vColor));  //1
         AddVertex(meshDataPC, FMeshVertexPC(vRightBottom, vColor)); //2
@@ -351,7 +351,7 @@ namespace LostPeterFoundation
         //      -----------------------
         //  0          1      2         (n-1)
 
-        //FMeshVertex
+        //Vertex
         FVector3 vDirX = FMath::Normalize(vRightBottom - vLeftBottom);
         FVector3 vDirY = FMath::Normalize(vLeftTop - vLeftBottom);
         float fDisX = FMath::Distance(vRightBottom, vLeftBottom);
@@ -407,7 +407,7 @@ namespace LostPeterFoundation
         uint32 vertexCount = segment + 1;
         uint32 faceCount = segment;
 
-        //FMeshVertex
+        //Vertex
         float thetaStep = 2.0f * FMath::ms_fPI / segment;
         for (int i = 0; i < segment; i++)
         {
@@ -433,20 +433,120 @@ namespace LostPeterFoundation
 
     //LineAABB
     void FMeshGeometry::CreateLineAABB(FMeshDataPC& meshDataPC,
-                                       float width,
-                                       float height,
-                                       float depth)
+                                       const FVector3& vCenter,
+                                       const FVector3& vExtent,
+                                       const FVector4& vColor)
     {
-        
+        //     7+------+4			  0: -+-
+		//     /|     /|			  1: ---
+		//    / |    / |			  2: +--
+		//   / 6+---/--+5	 y		  3: ++-
+		// 0+------+3 /		 | z	  4: +++
+		//  | /    | /    	 |/		  5: +-+
+		//  |/     |/     	 *---x	  6: --+
+		// 1+------+2        		  7: -++
+
+        //Vertex
+        FVector3 vX = FMath::ms_v3UnitX * vExtent.x;
+        FVector3 vY = FMath::ms_v3UnitY * vExtent.y;
+        FVector3 vZ = FMath::ms_v3UnitZ * vExtent.z;
+
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter - vX + vY - vZ, vColor)); //0 -+-
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter - vX - vY - vZ, vColor)); //1 ---
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter + vX - vY - vZ, vColor)); //2 +--
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter + vX + vY - vZ, vColor)); //3 ++-
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter + vX + vY + vZ, vColor)); //4 +++
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter + vX - vY + vZ, vColor)); //5 +-+
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter - vX - vY + vZ, vColor)); //6 --+
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter - vX + vY + vZ, vColor)); //7 -++
+
+        //Index
+        AddIndexLine(meshDataPC, 0, 1);
+        AddIndexLine(meshDataPC, 1, 2);
+        AddIndexLine(meshDataPC, 2, 3);
+        AddIndexLine(meshDataPC, 3, 0);
+        AddIndexLine(meshDataPC, 4, 5);
+        AddIndexLine(meshDataPC, 5, 6);
+        AddIndexLine(meshDataPC, 6, 7);
+        AddIndexLine(meshDataPC, 7, 4);
+        AddIndexLine(meshDataPC, 0, 7);
+        AddIndexLine(meshDataPC, 1, 6);
+        AddIndexLine(meshDataPC, 2, 5);
+        AddIndexLine(meshDataPC, 3, 4);
     }
 
     //LineSphere
     void FMeshGeometry::CreateLineSphere(FMeshDataPC& meshDataPC,
+                                         const FVector3& vCenter,
+                                         const FVector3& vUp,
+                                         const FVector4& vColor,
                                          float radius,
                                          uint32 sliceCount,
                                          uint32 stackCount)
     {
-        
+        //           0 
+        //           *   
+	    //	    *    - 2  *  1          
+	    //        -     -          y                   
+	    //   *	     *       *     | z              
+	    //	      -     - l-2      |/
+	    //      *    -    *  l-1   *---x
+	    //           *
+        //           l=(stackCount-1)*(sliceCount+1)+1
+
+        //Vertex
+        //Vertex Top
+        FMeshVertexPC vertexTop(vCenter + vUp * radius, vColor);
+        AddVertex(meshDataPC, vertexTop);
+        {
+            FQuaternion qRot = FMath::ToQuaternionFromSrc2Dst(FMath::ms_v3UnitY, vUp);
+            //Vertex
+            float phiStep = FMath::ms_fPI / stackCount;
+            float thetaStep = 2.0f * FMath::ms_fPI / sliceCount;
+            for (uint32 i = 1; i <= stackCount - 1; ++i)
+            {
+                float phi = i * phiStep;
+                for (uint32 j = 0; j <= sliceCount; ++j)
+                {
+                    float theta = j * thetaStep;
+                    FVector3 vPos(radius * sinf(phi) * cosf(theta),
+                                  radius * cosf(phi),
+                                  radius * sinf(phi) * sinf(theta));
+                    vPos = vCenter + FMath::Transform(qRot, vPos);
+                    FMeshVertexPC vertex(vPos, vColor);
+                    AddVertex(meshDataPC, vertex);
+                }
+            }
+        }
+        //Vertex Bottom
+        FMeshVertexPC vertexBottom(vCenter - vUp * radius, vColor);
+        AddVertex(meshDataPC, vertexBottom);
+
+        //Index Top
+        for (uint32 i = 1; i <= sliceCount; ++i)
+        {
+            AddIndexLine(meshDataPC, 0, i);
+        }
+
+        //Index Inner
+        uint32 baseIndex = 1;
+        uint32 ringVertexCount = sliceCount + 1;
+        for (uint32 i = 0; i < stackCount - 2; ++i)
+        {
+            for (uint32 j = 0; j < sliceCount; ++j)
+            {
+                AddIndexLine(meshDataPC, baseIndex + i * ringVertexCount + j, baseIndex + i * ringVertexCount + j + 1);
+                AddIndexLine(meshDataPC, baseIndex + i * ringVertexCount + j, baseIndex + (i + 1) * ringVertexCount + j);
+            }
+        }
+
+        //Index Bottom
+        uint32 southPoleIndex = GetVertexCount(meshDataPC) - 1;
+        baseIndex = southPoleIndex - ringVertexCount;
+        for (uint32 i = 0; i <= sliceCount; ++i)
+        {
+            AddIndexLine(meshDataPC, southPoleIndex, baseIndex + i);
+        }
     }
 
     //LineCylinder
@@ -857,7 +957,7 @@ namespace LostPeterFoundation
         //       /  \
         //    1 ------ 2
 
-        //FMeshVertex
+        //Vertex
         AddVertex(meshData, FMeshVertex( 0.0f,  0.5f,   0.0f,
                                          0.0f,  0.0f,  -1.0f,
                                          1.0f,  0.0f,   0.0f,
@@ -901,7 +1001,7 @@ namespace LostPeterFoundation
         //   --------
         //  1        2
 
-        //FMeshVertex
+        //Vertex
         AddVertex(meshData, FMeshVertex(centerX - width/2, centerY + height/2, depth,
                                         0.0f, 0.0f, -1.0f,
                                         1.0f, 0.0f,  0.0f,
@@ -961,7 +1061,7 @@ namespace LostPeterFoundation
         uint32 vertexCount = m * n;
         uint32 faceCount = (m - 1) * (n - 1) * 2;
 
-        //FMeshVertex
+        //Vertex
         float halfW = 0.5f * width;
         float halfH = 0.5f * height;
 
@@ -1042,7 +1142,7 @@ namespace LostPeterFoundation
         uint32 vertexCount = segment + 1;
         uint32 faceCount = segment;
 
-        //FMeshVertex
+        //Vertex
         float thetaStep = 2.0f * FMath::ms_fPI / segment;
         ResizeVertexCount(meshData, vertexCount);
         SetVertex(meshData, 
@@ -1125,7 +1225,7 @@ namespace LostPeterFoundation
 		//  |/     |/     	 *---x	  6 - 13 - 17  --+
 		// 1+------+2        		  7 -  8 - 16  -++
 
-        //FMeshVertex
+        //Vertex
         FMeshVertex v[24];
         float w2 = 0.5f * width;
         float h2 = 0.5f * height;
@@ -1237,7 +1337,7 @@ namespace LostPeterFoundation
 	    //           *
         //           l=(stackCount-1)*(sliceCount+1)+1
 
-        //FMeshVertex
+        //Vertex
         //Vertex Top
         FMeshVertex vertexTop(0.0f, +radius, 0.0f,  0.0f, +1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  0.0f, flipV ? 1.0f : 0.0f);
         AddVertex(meshData, vertexTop);
@@ -1369,7 +1469,7 @@ namespace LostPeterFoundation
 		//             * 6            *---x
 		//           * 7    
 
-        //FMeshVertex
+        //Vertex
         numSubdivisions = std::min<uint32>(numSubdivisions, 6u);
         const float X = 0.525731f;
         const float Z = 0.850651f;
@@ -1574,7 +1674,7 @@ namespace LostPeterFoundation
         //    *     *
         //       *       
 
-        //FMeshVertex
+        //Vertex
         float stackHeight = height / stackCount;
         float radiusStep = (topRadius - bottomRadius) / stackCount;
         uint32 ringCount = stackCount + 1;
@@ -1681,7 +1781,7 @@ namespace LostPeterFoundation
         //    *  *  *
         //      ***  
 
-        //FMeshVertex
+        //Vertex
         uint32 nVertexCount = (2 * numRings + 2) * (numSegments + 1) + (numSegHeight - 1) * (numSegments + 1);
         uint32 nIndexCount = (2 * numRings + 1) * (numSegments + 1) * 6 + (numSegHeight - 1) * (numSegments + 1) * 6;
         ReserveVertexCount(meshData, nVertexCount);
@@ -1831,7 +1931,7 @@ namespace LostPeterFoundation
         //          +          +
         //               +
 
-        //FMeshVertex
+        //Vertex
         uint32 nVertexCount = (numSegHeight + 1) * (numSegBase + 1) + numSegBase + 2;
         uint32 nIndexCount = numSegHeight * numSegBase * 6 + 3 * numSegBase;
         ReserveVertexCount(meshData, nVertexCount);
@@ -1938,7 +2038,7 @@ namespace LostPeterFoundation
         //       + * *  +
         //         +  +
 
-        //FMeshVertex
+        //Vertex
         uint32 nVertexCount = (numSegCircle + 1) * (numSegSection + 1);
         uint32 nIndexCount = (numSegCircle) * (numSegSection + 1) * 6;
         ReserveVertexCount(meshData, nVertexCount);
@@ -2014,7 +2114,7 @@ namespace LostPeterFoundation
         uint32 vertexCount = vertexX * vertexZ;
         uint32 faceCount = (vertexX - 1) * (vertexZ - 1) * 2;
 
-        //FMeshVertex
+        //Vertex
         float halfW = 0.5f * width;
         float halfH = 0.5f * height;
 

@@ -421,16 +421,28 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_LineAABB()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vExtent(0.5, 0.5, 0.5)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
         {
 
         }
-        FMeshCreateParam_LineAABB(float _width,
-                                  float _height,
-                                  float _depth)
+        FMeshCreateParam_LineAABB(const FVector3& _vCenter,
+                                  const FVector3& _vExtent)
             : FMeshCreateParam(false, false)
-            , width(_width)
-            , height(_height)
-            , depth(_depth)
+            , vCenter(_vCenter)
+            , vExtent(_vExtent)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_LineAABB(const FVector3& _vCenter,
+                                  const FVector3& _vExtent,
+                                  const FVector4& _vColor)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vExtent(_vExtent)
+            , vColor(_vColor)
         {
 
         }
@@ -443,20 +455,21 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
-        float width;
-        float height;
-        float depth;
+        FVector3 vCenter;
+        FVector3 vExtent;
+        FVector4 vColor;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0, 
-                                             rightHand ? 1 : 0,
-                                             width,
-                                             height,
-                                             depth);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vExtent.x,
+                                             this->vExtent.y,
+                                             this->vExtent.z);
         }
     };
 
@@ -466,13 +479,40 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_LineSphere()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(0.5f)
+            , sliceCount(30)
+            , stackCount(30)
         {
 
         }
-        FMeshCreateParam_LineSphere(float _radius,
+        FMeshCreateParam_LineSphere(const FVector3& _vCenter,
+                                    const FVector3& _vUp,
+                                    float _radius,
                                     uint32 _sliceCount,
                                     uint32 _stackCount)
             : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(_radius)
+            , sliceCount(_sliceCount)
+            , stackCount(_stackCount)
+        {
+
+        }
+        FMeshCreateParam_LineSphere(const FVector3& _vCenter,
+                                    const FVector3& _vUp,
+                                    const FVector4& _vColor,
+                                    float _radius,
+                                    uint32 _sliceCount,
+                                    uint32 _stackCount)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(_vColor)
             , radius(_radius)
             , sliceCount(_sliceCount)
             , stackCount(_stackCount)
@@ -488,6 +528,9 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vCenter;
+        FVector3 vUp;
+        FVector4 vColor;
         float radius;
         uint32 sliceCount;
         uint32 stackCount;
@@ -495,13 +538,17 @@ namespace LostPeterFoundation
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d-%d-%f-%u-%u", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%u_%u]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0, 
-                                             rightHand ? 1 : 0,
-                                             radius,
-                                             sliceCount,
-                                             stackCount);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vUp.x,
+                                             this->vUp.y,
+                                             this->vUp.z,
+                                             this->radius,
+                                             this->sliceCount,
+                                             this->stackCount);
         }
     };
 
@@ -1714,24 +1761,30 @@ namespace LostPeterFoundation
         static void CreateLineAABB(FMeshDataPC& meshDataPC, FMeshCreateParam_LineAABB* pParam)
         {
             CreateLineAABB(meshDataPC, 
-                           pParam->width, 
-                           pParam->height, 
-                           pParam->depth);
+                           pParam->vCenter, 
+                           pParam->vExtent, 
+                           pParam->vColor);
         }
         static void CreateLineAABB(FMeshDataPC& meshDataPC,
-                                   float width,
-                                   float height,
-                                   float depth);
+                                   const FVector3& vCenter,
+                                   const FVector3& vExtent,
+                                   const FVector4& vColor);
 
         //LineSphere
         static void CreateLineSphere(FMeshDataPC& meshDataPC, FMeshCreateParam_LineSphere* pParam)
         {
             CreateLineSphere(meshDataPC, 
+                             pParam->vCenter,
+                             pParam->vUp,
+                             pParam->vColor,
                              pParam->radius, 
                              pParam->sliceCount, 
                              pParam->stackCount);
         }
         static void CreateLineSphere(FMeshDataPC& meshDataPC,
+                                     const FVector3& vCenter,
+                                     const FVector3& vUp,
+                                     const FVector4& vColor,
                                      float radius,
                                      uint32 sliceCount,
                                      uint32 stackCount);
