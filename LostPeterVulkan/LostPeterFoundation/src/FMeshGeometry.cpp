@@ -394,7 +394,8 @@ namespace LostPeterFoundation
                                          const FVector3& vUp,
                                          const FVector4& vColor,
                                          float radius,
-                                         uint32 segment)
+                                         uint32 segment,
+                                         bool isDrawCenter)
     {
         //          *  * 
 		//		*		   * 2
@@ -416,6 +417,10 @@ namespace LostPeterFoundation
             FVector3 vPos = vCenter + vCur * radius;
             AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
         }
+        if (isDrawCenter)
+        {
+            AddVertex(meshDataPC, FMeshVertexPC(vCenter, vColor));
+        }
 
         //Index
         for (uint32 i = 0; i < segment; ++i)    
@@ -427,6 +432,11 @@ namespace LostPeterFoundation
             else
             {
                 AddIndexLine(meshDataPC, i, 0);
+            }
+
+            if (isDrawCenter)
+            {
+                AddIndexLine(meshDataPC, i, segment);
             }
         }
     }
@@ -550,27 +560,265 @@ namespace LostPeterFoundation
     }
 
     //LineCylinder
-    void FMeshGeometry::CreateLineCylinder(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateLineCylinder(FMeshDataPC& meshDataPC,
+                                           const FVector3& vCenter,
+                                           const FVector3& vUp,
+                                           const FVector4& vColor,
+                                           float radiusBottom,
+                                           float radiusTop,
+                                           float height,
+                                           uint32 sliceCount,
+                                           bool isDrawCenter)
     {
+        //       * 
+        //    *     *
+        //    *  *  *
+        //    *     *
+        //    *     *
+        //    *     *
+        //    *  *  *
+        //    *     *
+        //       *       
 
+        //Vertex
+        FQuaternion qRot = FMath::ToQuaternionFromSrc2Dst(FMath::ms_v3UnitY, vUp);
+        float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
+        //Bottom 
+        for (uint32 i = 0; i < sliceCount; ++i)
+        {
+            float y = - 0.5f * height;
+            float r = radiusBottom;
+            float c = cosf(i * dTheta);
+            float s = sinf(i * dTheta);
+            FVector3 vPos(r * c, y, r * s);
+            vPos = vCenter +  FMath::Transform(qRot, vPos);
+            FMeshVertexPC vertex(vPos, vColor);
+            AddVertex(meshDataPC, vertex);
+        }
+        //Top
+        for (uint32 i = 0; i < sliceCount; ++i)
+        {
+            float y = 0.5f * height;
+            float r = radiusBottom;
+            float c = cosf(i * dTheta);
+            float s = sinf(i * dTheta);
+            FVector3 vPos(r * c, y, r * s);
+            vPos = vCenter +  FMath::Transform(qRot, vPos);
+            AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+        }
+        if (isDrawCenter)
+        {
+            //sliceCount * 2 + 0
+            AddVertex(meshDataPC, FMeshVertexPC(vCenter - vUp * (0.5f * height), vColor)); //Bottom
+
+            //sliceCount * 2 + 1
+            AddVertex(meshDataPC, FMeshVertexPC(vCenter + vUp * (0.5f * height), vColor)); //Top
+        }
+
+        //Index
+        for (uint32 i = 0; i < sliceCount; ++i)
+        {
+            if (i == sliceCount - 1)
+            {
+                AddIndexLine(meshDataPC, i, 0);
+                AddIndexLine(meshDataPC, sliceCount + i, sliceCount);
+            }
+            else
+            {
+                AddIndexLine(meshDataPC, i, i + 1);
+                AddIndexLine(meshDataPC, sliceCount + i, sliceCount + i + 1);
+            }
+            AddIndexLine(meshDataPC, i, sliceCount + i);
+
+            if (isDrawCenter)
+            {
+                AddIndexLine(meshDataPC, sliceCount * 2, i);
+                AddIndexLine(meshDataPC, sliceCount * 2 + 1, sliceCount + i);
+            }
+        }
     }
 
     //LineCapsule
-    void FMeshGeometry::CreateLineCapsule(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateLineCapsule(FMeshDataPC& meshDataPC,
+                                          const FVector3& vCenter,
+                                          const FVector3& vUp,
+                                          const FVector4& vColor,
+                                          float radius,
+                                          float height,
+                                          uint32 numRings,
+                                          uint32 numSegments)
     {
+        //      *** 
+        //    *  *  *
+        //    *  *  *
+        //    *     *
+        //    *     *
+        //    *     *
+        //    *  *  *
+        //    *  *  *
+        //      ***  
 
+        //Vertex
+        FQuaternion qRot = FMath::ToQuaternionFromSrc2Dst(FMath::ms_v3UnitY, vUp);
+        float fDeltaRingAngle = (FMath::ms_fPI_Half / numRings);
+        float fDeltaSegAngle = (FMath::ms_fPI_Two / numSegments);
+        float sphereRatio = radius / (2 * radius + height);
+        float cylinderRatio = height / (2 * radius + height);
+
+        //1> Top half sphere
+        for (uint32 ring = 0; ring <= numRings; ring++)
+        {
+            float r0 = radius * sinf(ring * fDeltaRingAngle);
+            float y0 = radius * cosf(ring * fDeltaRingAngle);
+
+            for (uint32 seg = 0; seg <= numSegments; seg++)
+            {
+                float x0 = r0 * cosf(seg * fDeltaSegAngle);
+                float z0 = r0 * sinf(seg * fDeltaSegAngle);
+                FVector3 vPos(x0, +0.5f * height + y0, z0);
+                vPos = vCenter +  FMath::Transform(qRot, vPos);
+                AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+
+                if (seg != numSegments)
+                {
+                    AddIndexLine(meshDataPC, ring * (numSegments + 1) + seg, ring * (numSegments + 1) + seg + 1);
+                }
+                if (ring > 0)
+                {
+                    AddIndexLine(meshDataPC, (ring - 1) * (numSegments + 1) + seg, ring * (numSegments + 1) + seg);
+                }
+            }
+        }
+
+        //2> Bottom half sphere
+        int offset = (numRings + 1) * (numSegments + 1);
+        for (uint32 ring = 0; ring <= numRings; ring++)
+        {
+            float r0 = radius * sinf (FMath::ms_fPI_Half + ring * fDeltaRingAngle);
+            float y0 =  radius * cosf (FMath::ms_fPI_Half + ring * fDeltaRingAngle);
+
+            for (uint32 seg = 0; seg <= numSegments; seg++)
+            {
+                float x0 = r0 * cosf(seg * fDeltaSegAngle);
+                float z0 = r0 * sinf(seg * fDeltaSegAngle);
+                FVector3 vPos(x0, -0.5f * height + y0, z0);
+                vPos = vCenter +  FMath::Transform(qRot, vPos);
+                AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+
+                if (seg != numSegments)
+                {
+                    AddIndexLine(meshDataPC, offset + ring * (numSegments + 1) + seg, offset + ring * (numSegments + 1) + seg + 1);
+                }
+                if (ring > 0)
+                {
+                    AddIndexLine(meshDataPC, offset + (ring - 1) * (numSegments + 1) + seg, offset + ring * (numSegments + 1) + seg);
+                }
+            } 
+        } 
+
+        //Index
+        int topIndex = offset - (numSegments + 1);
+        int bottomIndex = offset;
+        for (uint32 ring = 0; ring <= numSegments; ring++)
+        {
+            AddIndexLine(meshDataPC, topIndex + ring, bottomIndex + ring);
+        }
     }
 
     //LineCone
-    void FMeshGeometry::CreateLineCone(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateLineCone(FMeshDataPC& meshDataPC,
+                                       const FVector3& vCenter,
+                                       const FVector3& vUp,
+                                       const FVector4& vColor,
+                                       float radius,
+                                       float height,
+                                       uint32 numSegBase)
     {
+        //               *
+        //             *   *
+        //           *       *
+        //         *           *
+        //       *       +       *
+        //     *   +           +   *
+        //    *          *           *
+        //      +                  +
+        //          +          +
+        //               +
 
+        //Vertex
+        FQuaternion qRot = FMath::ToQuaternionFromSrc2Dst(FMath::ms_v3UnitY, vUp);
+        float deltaAngle = (FMath::ms_fPI_Two / numSegBase);
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter + vUp * height, vColor));
+        int offset = 1;
+        for (uint32 i = 0; i <= numSegBase; i++)
+        {
+            float x0 = radius * cosf(i * deltaAngle);
+            float z0 = radius * sinf(i * deltaAngle);
+            FVector3 vPos(x0, 0, z0);
+            vPos = vCenter +  FMath::Transform(qRot, vPos);
+            AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+
+            //Index
+            AddIndexLine(meshDataPC, 0, offset + i);
+            if (i != numSegBase)
+            {
+                AddIndexLine(meshDataPC, offset + i, offset + i + 1);
+            }
+        }
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter, vColor));
+
+        //Index
+        for (uint32 i = 0; i < numSegBase; i++)
+        {
+            AddIndexLine(meshDataPC, offset + i, offset + numSegBase + 1);
+        }
     }
 
     //LineTorus
-    void FMeshGeometry::CreateLineTorus(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateLineTorus(FMeshDataPC& meshDataPC,
+                                        const FVector3& vCenter,
+                                        const FVector3& vUp,
+                                        const FVector4& vColor,
+                                        float radius,
+                                        float sectionRadius,
+                                        uint32 numSegSection,
+                                        uint32 numSegCircle)
     {
+        //         + +
+        //       + * *  +  
+        //     + * - -  *  +
+        //    + * -    - * +
+        //     + * - -  *  + 
+        //       + * *  +
+        //         +  +
 
+        //Vertex
+        FQuaternion qRot = FMath::ToQuaternionFromSrc2Dst(FMath::ms_v3UnitY, vUp);
+        float deltaSection = (FMath::ms_fPI_Two / numSegSection);
+        float deltaCircle = (FMath::ms_fPI_Two / numSegCircle);
+        for (uint32 i = 0; i <= numSegCircle; i++)
+        {   
+            for (uint32 j = 0; j<= numSegSection; j++)
+            {
+                FVector3 c0(radius, 0.0, 0.0);
+                FVector3 v0(radius + sectionRadius * cosf(j * deltaSection), sectionRadius * sinf(j * deltaSection), 0.0);
+                FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(i * deltaCircle, FMath::ms_v3UnitY);
+                FVector3 vPos = FMath::Transform(qRot, v0);
+                vPos = vCenter +  FMath::Transform(qRot, vPos);
+                AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+
+                //Index
+                if (i != numSegCircle)
+                {
+                    if (j != numSegSection)
+                    {
+                        AddIndexLine(meshDataPC, i * (numSegSection + 1) + j, i * (numSegSection + 1) + j + 1);
+                    }
+                    
+                    AddIndexLine(meshDataPC, i * (numSegSection + 1) + j, i * (numSegSection + 1 + 1) + j);
+                }
+            }
+        }    
     }
 
 
@@ -1553,8 +1801,8 @@ namespace LostPeterFoundation
     }
 
     void s_BuildCylinderTopCap(FMeshData& meshData, 
-                               float bottomRadius, 
-                               float topRadius, 
+                               float radiusBottom, 
+                               float radiusTop, 
                                float height, 
                                float heightOffset,
                                uint32 sliceCount, 
@@ -1567,8 +1815,8 @@ namespace LostPeterFoundation
         float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
         for (uint32 i = 0; i <= sliceCount; ++i)
         {
-            float x = topRadius * cosf(i * dTheta);
-            float z = topRadius * sinf(i * dTheta);
+            float x = radiusTop * cosf(i * dTheta);
+            float z = radiusTop * sinf(i * dTheta);
 
             float u = x / height + 0.5f;
             float v = flipV ? (1.0f - z / height + 0.5f) : (z / height + 0.5f);
@@ -1604,8 +1852,8 @@ namespace LostPeterFoundation
     }
 
     void s_BuildCylinderBottomCap(FMeshData& meshData, 
-                                  float bottomRadius, 
-                                  float topRadius, 
+                                  float radiusBottom, 
+                                  float radiusTop, 
                                   float height, 
                                   float heightOffset,
                                   uint32 sliceCount, 
@@ -1618,8 +1866,8 @@ namespace LostPeterFoundation
         float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
         for (uint32 i = 0; i <= sliceCount; ++i)
         {
-            float x = bottomRadius * cosf(i * dTheta);
-            float z = bottomRadius * sinf(i * dTheta);
+            float x = radiusBottom * cosf(i * dTheta);
+            float z = radiusBottom * sinf(i * dTheta);
 
             float u = x / height + 0.5f;
             float v = flipV ? (1.0f - z / height + 0.5f) : (z / height + 0.5f);
@@ -1655,8 +1903,8 @@ namespace LostPeterFoundation
     }
 
     void FMeshGeometry::CreateEntityCylinder(FMeshData& meshData, 
-                                             float bottomRadius, 
-                                             float topRadius, 
+                                             float radiusBottom, 
+                                             float radiusTop, 
                                              float height, 
                                              float heightOffset,
                                              uint32 sliceCount, 
@@ -1676,12 +1924,12 @@ namespace LostPeterFoundation
 
         //Vertex
         float stackHeight = height / stackCount;
-        float radiusStep = (topRadius - bottomRadius) / stackCount;
+        float radiusStep = (radiusTop - radiusBottom) / stackCount;
         uint32 ringCount = stackCount + 1;
         for (uint32 i = 0; i < ringCount; ++i)
         {
             float y = heightOffset - 0.5f * height + i * stackHeight;
-            float r = bottomRadius + i * radiusStep;
+            float r = radiusBottom + i * radiusStep;
 
             float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
             for (uint32 j = 0; j <= sliceCount; ++j)
@@ -1699,7 +1947,7 @@ namespace LostPeterFoundation
 
                 vertex.tangent = FVector3(-s, 0.0f, c);
 
-                float dr = bottomRadius - topRadius;
+                float dr = radiusBottom - radiusTop;
                 FVector3 T = vertex.tangent;
                 FVector3 B = FVector3(dr * c, -height, dr * s);
                 vertex.normal = FMath::Normalize(FMath::Cross(T, B));
@@ -1708,8 +1956,8 @@ namespace LostPeterFoundation
             }
         }
 
+        //Index
         uint32 ringVertexCount = sliceCount + 1;
-
         for (uint32 i = 0; i < stackCount; ++i)
         {
             for (uint32 j = 0; j < sliceCount; ++j)
@@ -1742,8 +1990,8 @@ namespace LostPeterFoundation
         }
 
         s_BuildCylinderTopCap(meshData, 
-                              bottomRadius, 
-                              topRadius, 
+                              radiusBottom, 
+                              radiusTop, 
                               height, 
                               heightOffset,
                               sliceCount, 
@@ -1751,8 +1999,8 @@ namespace LostPeterFoundation
                               flipV, 
                               rightHand);
         s_BuildCylinderBottomCap(meshData, 
-                                 bottomRadius, 
-                                 topRadius, 
+                                 radiusBottom, 
+                                 radiusTop, 
                                  height, 
                                  heightOffset,
                                  sliceCount, 

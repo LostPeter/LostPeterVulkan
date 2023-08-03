@@ -346,6 +346,7 @@ namespace LostPeterFoundation
             , vColor(1.0f, 1.0f, 1.0f, 1.0f)
             , radius(0.5f)
             , segment(100)
+            , isDrawCenter(true)
         {
 
         }
@@ -353,7 +354,8 @@ namespace LostPeterFoundation
                                     const FVector3& _vDir,
                                     const FVector3& _vUp,
                                     float _radius,
-                                    uint32 _segment)
+                                    uint32 _segment,
+                                    bool _isDrawCenter)
             : FMeshCreateParam(false, false)
             , vCenter(_vCenter)
             , vDir(_vDir)
@@ -361,6 +363,7 @@ namespace LostPeterFoundation
             , vColor(1.0f, 1.0f, 1.0f, 1.0f)
             , radius(_radius)
             , segment(_segment)
+            , isDrawCenter(_isDrawCenter)
         {
 
         }
@@ -369,7 +372,8 @@ namespace LostPeterFoundation
                                     const FVector3& _vUp,
                                     const FVector4& _vColor,
                                     float _radius,
-                                    uint32 _segment)
+                                    uint32 _segment,
+                                    bool _isDrawCenter)
             : FMeshCreateParam(false, false)
             , vCenter(_vCenter)
             , vDir(_vDir)
@@ -377,6 +381,7 @@ namespace LostPeterFoundation
             , vColor(_vColor)
             , radius(_radius)
             , segment(_segment)
+            , isDrawCenter(_isDrawCenter)
         {
 
         }
@@ -395,6 +400,7 @@ namespace LostPeterFoundation
         FVector4 vColor;
         float radius;
         uint32 segment;
+        bool isDrawCenter;
 
     public:
         virtual String ToName()
@@ -558,8 +564,55 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_LineCylinder()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radiusBottom(0.5f)
+            , radiusTop(0.5f)
+            , height(1.0f)
+            , sliceCount(50)
+            , isDrawCenter(true)
         {
 
+        }
+        FMeshCreateParam_LineCylinder(const FVector3& _vCenter,
+                                      const FVector3& _vUp,
+                                      float _radiusBottom,
+                                      float _radiusTop,
+                                      float _height,
+                                      uint32 _sliceCount,
+                                      bool _isDrawCenter)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radiusBottom(_radiusBottom)
+            , radiusTop(_radiusTop)
+            , height(_height)
+            , sliceCount(_sliceCount)
+            , isDrawCenter(_isDrawCenter)
+        {
+        
+        }
+        FMeshCreateParam_LineCylinder(const FVector3& _vCenter,
+                                      const FVector3& _vUp,
+                                      const FVector4& _vColor,
+                                      float _radiusBottom,
+                                      float _radiusTop,
+                                      float _height,
+                                      uint32 _sliceCount,
+                                      bool _isDrawCenter)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(_vColor)
+            , radiusBottom(_radiusBottom)
+            , radiusTop(_radiusTop)
+            , height(_height)
+            , sliceCount(_sliceCount)
+            , isDrawCenter(_isDrawCenter)
+        {
+        
         }
         virtual ~FMeshCreateParam_LineCylinder()
         {
@@ -570,14 +623,30 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vCenter;
+        FVector3 vUp;
+        FVector4 vColor;
+        float radiusBottom;
+        float radiusTop;
+        float height;
+        uint32 sliceCount;
+        bool isDrawCenter;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f_%u]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vUp.x,
+                                             this->vUp.y,
+                                             this->vUp.z,
+                                             this->radiusBottom,
+                                             this->radiusTop,
+                                             this->height,
+                                             this->sliceCount);
         }
     };
 
@@ -588,6 +657,48 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_LineCapsule()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(0.5f)
+            , height(1.0f)
+            , numRings(5)
+            , numSegments(50)
+        {
+
+        }
+        FMeshCreateParam_LineCapsule(const FVector3& _vCenter,
+                                     const FVector3& _vUp,
+                                     float _radius,
+                                     float _height,
+                                     uint32 _numRings,
+                                     uint32 _numSegments)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(_radius)
+            , height(_height)
+            , numRings(_numRings)
+            , numSegments(_numSegments)
+        {
+
+        }
+        FMeshCreateParam_LineCapsule(const FVector3& _vCenter,
+                                     const FVector3& _vUp,
+                                     const FVector4& _vColor,
+                                     float _radius,
+                                     float _height,
+                                     uint32 _numRings,
+                                     uint32 _numSegments)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(_vColor)
+            , radius(_radius)
+            , height(_height)
+            , numRings(_numRings)
+            , numSegments(_numSegments)
         {
 
         }
@@ -600,14 +711,29 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vCenter;
+        FVector3 vUp;
+        FVector4 vColor;
+        float radius;
+        float height;
+        uint32 numRings;
+        uint32 numSegments;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%u_%u]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vUp.x,
+                                             this->vUp.y,
+                                             this->vUp.z,
+                                             this->radius,
+                                             this->height,
+                                             this->numRings,
+                                             this->numSegments);
         }
     };
 
@@ -617,6 +743,43 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_LineCone()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(0.5f)
+            , height(1.0f)
+            , numSegBase(50)
+        {
+
+        }
+        FMeshCreateParam_LineCone(const FVector3& _vCenter,
+                                  const FVector3& _vUp,
+                                  float _radius,
+                                  float _height,
+                                  uint32 _numSegBase)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(_radius)
+            , height(_height)
+            , numSegBase(_numSegBase)
+        {
+
+        }
+        FMeshCreateParam_LineCone(const FVector3& _vCenter,
+                                  const FVector3& _vUp,
+                                  const FVector4& _vColor,
+                                  float _radius,
+                                  float _height,
+                                  uint32 _numSegBase)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(_vColor)
+            , radius(_radius)
+            , height(_height)
+            , numSegBase(_numSegBase)
         {
 
         }
@@ -629,14 +792,27 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vCenter;
+        FVector3 vUp;
+        FVector4 vColor;
+        float radius;
+        float height;
+        uint32 numSegBase;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%u]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vUp.x,
+                                             this->vUp.y,
+                                             this->vUp.z,
+                                             this->radius,
+                                             this->height,
+                                             this->numSegBase);
         }
     };
 
@@ -646,6 +822,48 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_LineTorus()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(0.5f)
+            , sectionRadius(0.2f)
+            , numSegSection(50)
+            , numSegCircle(20)
+        {
+
+        }
+        FMeshCreateParam_LineTorus(const FVector3& _vCenter,
+                                   const FVector3& _vUp,
+                                   float _radius,
+                                   float _sectionRadius,
+                                   uint32 _numSegSection,
+                                   uint32 _numSegCircle)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(_radius)
+            , sectionRadius(_sectionRadius)
+            , numSegSection(_numSegSection)
+            , numSegCircle(_numSegCircle)
+        {
+
+        }
+        FMeshCreateParam_LineTorus(const FVector3& _vCenter,
+                                   const FVector3& _vUp,
+                                   const FVector4& _vColor,
+                                   float _radius,
+                                   float _sectionRadius,
+                                   uint32 _numSegSection,
+                                   uint32 _numSegCircle)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(_vColor)
+            , radius(_radius)
+            , sectionRadius(_sectionRadius)
+            , numSegSection(_numSegSection)
+            , numSegCircle(_numSegCircle)
         {
 
         }
@@ -658,6 +876,13 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vCenter;
+        FVector3 vUp;
+        FVector4 vColor;
+        float radius;
+        float sectionRadius;
+        uint32 numSegSection;
+        uint32 numSegCircle;
 
     public:
         virtual String ToName()
@@ -1284,8 +1509,8 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_EntityCylinder()
             : FMeshCreateParam(false, false)
-            , bottomRadius(0.5f)
-            , topRadius(0.5f)
+            , radiusBottom(0.5f)
+            , radiusTop(0.5f)
             , height(1.0f)
             , heightOffset(0.0f)
             , sliceCount(50)
@@ -1293,8 +1518,8 @@ namespace LostPeterFoundation
         {
 
         }
-        FMeshCreateParam_EntityCylinder(float _bottomRadius,
-                                        float _topRadius,
+        FMeshCreateParam_EntityCylinder(float _radiusBottom,
+                                        float _radiusTop,
                                         float _height,
                                         float _heightOffset,
                                         uint32 _sliceCount,
@@ -1302,8 +1527,8 @@ namespace LostPeterFoundation
                                         bool _flipV,
                                         bool _rightHand)
             : FMeshCreateParam(_flipV, _rightHand)
-            , bottomRadius(_bottomRadius)
-            , topRadius(_topRadius)
+            , radiusBottom(_radiusBottom)
+            , radiusTop(_radiusTop)
             , height(_height)
             , heightOffset(_heightOffset)
             , sliceCount(_sliceCount)
@@ -1320,8 +1545,8 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
-        float bottomRadius;
-        float topRadius;
+        float radiusBottom;
+        float radiusTop;
         float height;
         float heightOffset;
         uint32 sliceCount;
@@ -1334,8 +1559,8 @@ namespace LostPeterFoundation
                                              ms_nameType.c_str(), 
                                              flipV ? 1 : 0, 
                                              rightHand ? 1 : 0,
-                                             bottomRadius,
-                                             topRadius,
+                                             radiusBottom,
+                                             radiusTop,
                                              height,
                                              heightOffset,
                                              sliceCount,
@@ -1388,7 +1613,6 @@ namespace LostPeterFoundation
         float radius;
         float height;
         float heightOffset;
-
         uint32 numRings;
         uint32 numSegments;
         uint32 numSegHeight;
@@ -1451,7 +1675,6 @@ namespace LostPeterFoundation
         float radius;
         float height;
         float heightOffset;
-
         uint32 numSegBase;
 	    uint32 numSegHeight;
 
@@ -1508,7 +1731,6 @@ namespace LostPeterFoundation
     public:
         float radius;
         float sectionRadius;
-
         uint32 numSegSection;
         uint32 numSegCircle;
 
@@ -1747,7 +1969,8 @@ namespace LostPeterFoundation
                              pParam->vUp,
                              pParam->vColor,
                              pParam->radius,
-                             pParam->segment);
+                             pParam->segment,
+                             pParam->isDrawCenter);
         }
         static void CreateLineCircle(FMeshDataPC& meshDataPC,
                                      const FVector3& vCenter,
@@ -1755,7 +1978,8 @@ namespace LostPeterFoundation
                                      const FVector3& vUp,
                                      const FVector4& vColor,
                                      float radius,
-                                     uint32 segment);
+                                     uint32 segment,
+                                     bool isDrawCenter);
 
         //LineAABB
         static void CreateLineAABB(FMeshDataPC& meshDataPC, FMeshCreateParam_LineAABB* pParam)
@@ -1792,30 +2016,86 @@ namespace LostPeterFoundation
         //LineCylinder
         static void CreateLineCylinder(FMeshDataPC& meshDataPC, FMeshCreateParam_LineCylinder* pParam)
         {
-            CreateLineCylinder(meshDataPC);
+            CreateLineCylinder(meshDataPC,
+                               pParam->vCenter,
+                               pParam->vUp,
+                               pParam->vColor,
+                               pParam->radiusBottom, 
+                               pParam->radiusTop, 
+                               pParam->height, 
+                               pParam->sliceCount,
+                               pParam->isDrawCenter);
         }
-        static void CreateLineCylinder(FMeshDataPC& meshDataPC);
+        static void CreateLineCylinder(FMeshDataPC& meshDataPC,
+                                       const FVector3& vCenter,
+                                       const FVector3& vUp,
+                                       const FVector4& vColor,
+                                       float radiusBottom,
+                                       float radiusTop,
+                                       float height,
+                                       uint32 sliceCount,
+                                       bool isDrawCenter);
 
         //LineCapsule
         static void CreateLineCapsule(FMeshDataPC& meshDataPC, FMeshCreateParam_LineCapsule* pParam)
         {
-            CreateLineCapsule(meshDataPC);
+            CreateLineCapsule(meshDataPC,
+                              pParam->vCenter,
+                              pParam->vUp,
+                              pParam->vColor,
+                              pParam->radius, 
+                              pParam->height, 
+                              pParam->numRings, 
+                              pParam->numSegments);
         }
-        static void CreateLineCapsule(FMeshDataPC& meshDataPC);
+        static void CreateLineCapsule(FMeshDataPC& meshDataPC,
+                                      const FVector3& vCenter,
+                                      const FVector3& vUp,
+                                      const FVector4& vColor,
+                                      float radius,
+                                      float height,
+                                      uint32 numRings,
+                                      uint32 numSegments);
 
         //LineCone
         static void CreateLineCone(FMeshDataPC& meshDataPC, FMeshCreateParam_LineCone* pParam)
         {
-            CreateLineCone(meshDataPC);
+            CreateLineCone(meshDataPC,
+                           pParam->vCenter,
+                           pParam->vUp,
+                           pParam->vColor,
+                           pParam->radius, 
+                           pParam->height, 
+                           pParam->numSegBase);
         }
-        static void CreateLineCone(FMeshDataPC& meshDataPC);
+        static void CreateLineCone(FMeshDataPC& meshDataPC,
+                                   const FVector3& vCenter,
+                                   const FVector3& vUp,
+                                   const FVector4& vColor,
+                                   float radius,
+                                   float height,
+                                   uint32 numSegBase);
 
         //LineTorus
         static void CreateLineTorus(FMeshDataPC& meshDataPC, FMeshCreateParam_LineTorus* pParam)
         {
-            CreateLineTorus(meshDataPC);
+            CreateLineTorus(meshDataPC,
+                            pParam->vCenter,
+                            pParam->vUp,
+                            pParam->vColor,
+                            pParam->radius, 
+                            pParam->sectionRadius, 
+                            pParam->numSegSection, 
+                            pParam->numSegCircle);
         }
-        static void CreateLineTorus(FMeshDataPC& meshDataPC);
+        static void CreateLineTorus(FMeshDataPC& meshDataPC,
+                                    const FVector3& vCenter,
+                                    const FVector3& vUp,
+                                    const FVector4& vColor,
+                                    float radius,
+                                    float sectionRadius,
+                                    uint32 numSegSection,
+                                    uint32 numSegCircle);
 
 
     ////////////////////////////////// Flat //////////////////////////////////
@@ -2011,8 +2291,8 @@ namespace LostPeterFoundation
         static void CreateEntityCylinder(FMeshData& meshData, FMeshCreateParam_EntityCylinder* pParam)
         {
             CreateEntityCylinder(meshData, 
-                                 pParam->bottomRadius, 
-                                 pParam->topRadius, 
+                                 pParam->radiusBottom, 
+                                 pParam->radiusTop, 
                                  pParam->height, 
                                  pParam->heightOffset,
                                  pParam->sliceCount, 
@@ -2021,8 +2301,8 @@ namespace LostPeterFoundation
                                  pParam->rightHand);
         }
         static void CreateEntityCylinder(FMeshData& meshData,
-                                         float bottomRadius,
-                                         float topRadius,
+                                         float radiusBottom,
+                                         float radiusTop,
                                          float height,
                                          float heightOffset,
                                          uint32 sliceCount,

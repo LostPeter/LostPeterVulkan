@@ -19,7 +19,7 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 18; 
+static const int g_MeshCount = 22; 
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name                 //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
@@ -30,10 +30,10 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
     "geo_line_circle",          "Pos3Color4",                           "geometry",         "LineCircle",               "", //geo_line_circle
     "geo_line_aabb",            "Pos3Color4",                           "geometry",         "LineAABB",                 "", //geo_line_aabb
     "geo_line_sphere",          "Pos3Color4",                           "geometry",         "LineSphere",               "", //geo_line_sphere
-    //"geo_line_cylinder",        "Pos3Color4",                           "geometry",         "LineCylinder",             "", //geo_line_cylinder
-    //"geo_line_capsule",         "Pos3Color4",                           "geometry",         "LineCapsule",              "", //geo_line_capsule
-    //"geo_line_cone",            "Pos3Color4",                           "geometry",         "LineCone",                 "", //geo_line_cone
-    //"geo_line_torus",           "Pos3Color4",                           "geometry",         "LineTorus",                "", //geo_line_torus
+    "geo_line_cylinder",        "Pos3Color4",                           "geometry",         "LineCylinder",             "", //geo_line_cylinder
+    "geo_line_capsule",         "Pos3Color4",                           "geometry",         "LineCapsule",              "", //geo_line_capsule
+    "geo_line_cone",            "Pos3Color4",                           "geometry",         "LineCone",                 "", //geo_line_cone
+    "geo_line_torus",           "Pos3Color4",                           "geometry",         "LineTorus",                "", //geo_line_torus
 
     "geo_entity_triangle",      "Pos3Color4Normal3Tex2",                "geometry",         "EntityTriangle",           "", //geo_entity_triangle
     "geo_entity_quad",          "Pos3Color4Normal3Tex2",                "geometry",         "EntityQuad",               "", //geo_entity_quad
@@ -59,10 +59,10 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
     false, //geo_line_circle
     false, //geo_line_aabb
     false, //geo_line_sphere
-    //false, //geo_line_cylinder
-    //false, //geo_line_capsule
-    //false, //geo_line_cone
-    //false, //geo_line_torus
+    false, //geo_line_cylinder
+    false, //geo_line_capsule
+    false, //geo_line_cone
+    false, //geo_line_torus
 
     false, //geo_entity_triangle
     false, //geo_entity_quad
@@ -88,10 +88,10 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
     true, //geo_line_circle
     false, //geo_line_aabb
     false, //geo_line_sphere
-    //false, //geo_line_cylinder
-    //false, //geo_line_capsule
-    //false, //geo_line_cone
-    //false, //geo_line_torus
+    false, //geo_line_cylinder
+    false, //geo_line_capsule
+    false, //geo_line_cone
+    false, //geo_line_torus
 
     true, //geo_entity_triangle
     true, //geo_entity_quad
@@ -117,10 +117,10 @@ static FMatrix4 g_MeshTranformLocals[g_MeshCount] =
     FMath::RotateX(90.0f), //geo_line_circle
     FMath::ms_mat4Unit, //geo_line_aabb
     FMath::ms_mat4Unit, //geo_line_sphere
-    //FMath::ms_mat4Unit, //geo_line_cylinder
-    //FMath::ms_mat4Unit, //geo_line_capsule
-    //FMath::ms_mat4Unit, //geo_line_cone
-    //FMath::ms_mat4Unit, //geo_line_torus
+    FMath::ms_mat4Unit, //geo_line_cylinder
+    FMath::ms_mat4Unit, //geo_line_capsule
+    FMath::ms_mat4Unit, //geo_line_cone
+    FMath::ms_mat4Unit, //geo_line_torus
 
     FMath::RotateX(90.0f), //geo_entity_triangle  
     FMath::RotateX(90.0f), //geo_entity_quad 
@@ -210,7 +210,7 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 18; 
+static const int g_Object_Count = 22; 
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                           //Mesh Name        
@@ -221,10 +221,10 @@ static const char* g_Object_Configs[2 * g_Object_Count] =
     "object_geo_line_circle",               "geo_line_circle", //object_geo_line_circle
     "object_geo_line_aabb",                 "geo_line_aabb", //object_geo_line_aabb
     "object_geo_line_sphere",               "geo_line_sphere", //object_geo_line_sphere
-    //"object_geo_line_cylinder",             "geo_line_cylinder", //object_geo_line_cylinder
-    //"object_geo_line_capsule",              "geo_line_capsule", //object_geo_line_capsule
-    //"object_geo_line_cone",                 "geo_line_cone", //object_geo_line_cone
-    //"object_geo_line_torus",                "geo_line_torus", //object_geo_line_torus
+    "object_geo_line_cylinder",             "geo_line_cylinder", //object_geo_line_cylinder
+    "object_geo_line_capsule",              "geo_line_capsule", //object_geo_line_capsule
+    "object_geo_line_cone",                 "geo_line_cone", //object_geo_line_cone
+    "object_geo_line_torus",                "geo_line_torus", //object_geo_line_torus
 
     "object_geo_entity_triangle",           "geo_entity_triangle", //object_geo_entity_triangle
     "object_geo_entity_quad",               "geo_entity_quad", //object_geo_entity_quad
@@ -250,10 +250,10 @@ static const char* g_Object_MeshSubsUsed[g_Object_Count] =
     "0", //object_geo_line_circle
     "0", //object_geo_line_aabb
     "0", //object_geo_line_sphere
-    //"0", //object_geo_line_cylinder
-    //"0", //object_geo_line_capsule
-    //"0", //object_geo_line_cone
-    //"0", //object_geo_line_torus
+    "0", //object_geo_line_cylinder
+    "0", //object_geo_line_capsule
+    "0", //object_geo_line_cone
+    "0", //object_geo_line_torus
 
     "0", //object_geo_entity_triangle
     "0", //object_geo_entity_quad
@@ -281,10 +281,10 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
     1, //object_geo_line_circle
     1, //object_geo_line_aabb
     1, //object_geo_line_sphere
-    //1, //object_geo_line_cylinder
-    //1, //object_geo_line_capsule
-    //1, //object_geo_line_cone
-    //1, //object_geo_line_torus
+    1, //object_geo_line_cylinder
+    1, //object_geo_line_capsule
+    1, //object_geo_line_cone
+    1, //object_geo_line_torus
 
     1, //object_geo_entity_triangle 
     1, //object_geo_entity_quad 
@@ -310,10 +310,10 @@ static bool g_Object_IsShows[] =
     true, //object_geo_line_circle
     true, //object_geo_line_aabb
     true, //object_geo_line_sphere
-    //true, //object_geo_line_cylinder
-    //true, //object_geo_line_capsule
-    //true, //object_geo_line_cone
-    //true, //object_geo_line_torus
+    true, //object_geo_line_cylinder
+    true, //object_geo_line_capsule
+    true, //object_geo_line_cone
+    true, //object_geo_line_torus
 
     true, //object_geo_entity_triangle
     true, //object_geo_entity_quad
@@ -339,10 +339,10 @@ static bool g_Object_IsRotates[g_Object_Count] =
     false, //object_geo_line_circle
     false, //object_geo_line_aabb
     false, //object_geo_line_sphere
-    //false, //object_geo_line_cylinder
-    //false, //object_geo_line_capsule
-    //false, //object_geo_line_cone
-    //false, //object_geo_line_torus
+    false, //object_geo_line_cylinder
+    false, //object_geo_line_capsule
+    false, //object_geo_line_cone
+    false, //object_geo_line_torus
 
     false, //object_geo_entity_triangle
     false, //object_geo_entity_quad
@@ -368,10 +368,10 @@ static bool g_Object_IsLightings[g_Object_Count] =
     false, //object_geo_line_circle
     false, //object_geo_line_aabb
     false, //object_geo_line_sphere
-    //false, //object_geo_line_cylinder
-    //false, //object_geo_line_capsule
-    //false, //object_geo_line_cone
-    //false, //object_geo_line_torus
+    false, //object_geo_line_cylinder
+    false, //object_geo_line_capsule
+    false, //object_geo_line_cone
+    false, //object_geo_line_torus
 
     true, //object_geo_entity_triangle
     true, //object_geo_entity_quad
@@ -397,10 +397,10 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
     false, //object_geo_line_circle
     false, //object_geo_line_aabb
     false, //object_geo_line_sphere
-    //false, //object_geo_line_cylinder
-    //false, //object_geo_line_capsule
-    //false, //object_geo_line_cone
-    //false, //object_geo_line_torus
+    false, //object_geo_line_cylinder
+    false, //object_geo_line_capsule
+    false, //object_geo_line_cone
+    false, //object_geo_line_torus
 
     false, //object_geo_entity_triangle
     false, //object_geo_entity_quad
@@ -420,7 +420,7 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 18; 
+static const int g_ObjectRend_Count = 22; 
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
@@ -431,10 +431,10 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
     "object_geo_line_circle-1",            "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_circle-1
     "object_geo_line_aabb-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_aabb-1
     "object_geo_line_sphere-1",            "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_sphere-1
-    //"object_geo_line_cylinder-1",          "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_cylinder-1
-    //"object_geo_line_capsule-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_capsule-1
-    //"object_geo_line_cone-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_cone-1
-    //"object_geo_line_torus-1",             "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_torus-1
+    "object_geo_line_cylinder-1",          "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_cylinder-1
+    "object_geo_line_capsule-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_capsule-1
+    "object_geo_line_cone-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_cone-1
+    "object_geo_line_torus-1",             "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_torus-1
 
     "object_geo_entity_triangle-1",        "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_triangle-1
     "object_geo_entity_quad-1",            "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_quad-1
@@ -461,10 +461,10 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
     "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_circle-1
     "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_aabb-1
     "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_sphere-1
-    //"vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_cylinder-1
-    //"vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_capsule-1
-    //"vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_cone-1
-    //"vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_torus-1
+    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_cylinder-1
+    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_capsule-1
+    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_cone-1
+    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_torus-1
     
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_triangle-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_quad-1
@@ -491,10 +491,10 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
     "Pass-ObjectLineFlat",                                              "", //object_geo_line_circle-1
     "Pass-ObjectLineFlat",                                              "", //object_geo_line_aabb-1
     "Pass-ObjectLineFlat",                                              "", //object_geo_line_sphere-1
-    //"Pass-ObjectLineFlat",                                              "", //object_geo_line_cylinder-1
-    //"Pass-ObjectLineFlat",                                              "", //object_geo_line_capsule-1
-    //"Pass-ObjectLineFlat",                                              "", //object_geo_line_cone-1
-    //"Pass-ObjectLineFlat",                                              "", //object_geo_line_torus-1
+    "Pass-ObjectLineFlat",                                              "", //object_geo_line_cylinder-1
+    "Pass-ObjectLineFlat",                                              "", //object_geo_line_capsule-1
+    "Pass-ObjectLineFlat",                                              "", //object_geo_line_cone-1
+    "Pass-ObjectLineFlat",                                              "", //object_geo_line_torus-1
 
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_triangle-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_quad-1
@@ -520,10 +520,10 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     FVector3(  -5,  0.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_circle-1
     FVector3(  -5,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_aabb-1
     FVector3(  -5,  0.0,   2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_sphere-1
-    //FVector3(  -5,  0.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_cylinder-1
-    //FVector3(  -5,  0.0,   6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_capsule-1
-    //FVector3(  -5,  0.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_cone-1
-    //FVector3(  -5,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_torus-1
+    FVector3(  -5,  0.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_cylinder-1
+    FVector3(  -5,  0.0,   6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_capsule-1
+    FVector3(  -5,  0.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_cone-1
+    FVector3(  -5,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f),  //object_geo_line_torus-1
 
     FVector3(   0,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_triangle-1
     FVector3(   0,  0.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_quad-1
@@ -549,10 +549,10 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
     false, //object_geo_line_circle-1
     false, //object_geo_line_aabb-1
     false, //object_geo_line_sphere-1
-    //false, //object_geo_line_cylinder-1
-    //false, //object_geo_line_capsule-1
-    //false, //object_geo_line_cone-1
-    //false, //object_geo_line_torus-1
+    false, //object_geo_line_cylinder-1
+    false, //object_geo_line_capsule-1
+    false, //object_geo_line_cone-1
+    false, //object_geo_line_torus-1
 
     false, //object_geo_entity_triangle-1
     false, //object_geo_entity_quad-1
@@ -578,10 +578,10 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
     false, //object_geo_line_circle-1
     false, //object_geo_line_aabb-1
     false, //object_geo_line_sphere-1
-    //false, //object_geo_line_cylinder-1
-    //false, //object_geo_line_capsule-1
-    //false, //object_geo_line_cone-1
-    //false, //object_geo_line_torus-1
+    false, //object_geo_line_cylinder-1
+    false, //object_geo_line_capsule-1
+    false, //object_geo_line_cone-1
+    false, //object_geo_line_torus-1
 
     false, //object_geo_entity_triangle-1
     false, //object_geo_entity_quad-1
@@ -607,10 +607,10 @@ static bool g_ObjectRend_IsLineFlat[g_ObjectRend_Count] =
     true, //object_geo_line_circle-1
     true, //object_geo_line_aabb-1
     true, //object_geo_line_sphere-1
-    //true, //object_geo_line_cylinder-1
-    //true, //object_geo_line_capsule-1
-    //true, //object_geo_line_cone-1
-    //true, //object_geo_line_torus-1
+    true, //object_geo_line_cylinder-1
+    true, //object_geo_line_capsule-1
+    true, //object_geo_line_cone-1
+    true, //object_geo_line_torus-1
 
     false, //object_geo_entity_triangle-1
     false, //object_geo_entity_quad-1
