@@ -793,7 +793,7 @@ namespace LostPeterFoundation
         //         +  +
 
         //Vertex
-        FQuaternion qRot = FMath::ToQuaternionFromSrc2Dst(FMath::ms_v3UnitY, vUp);
+        FQuaternion qRotUpAxis = FMath::ToQuaternionFromSrc2Dst(FMath::ms_v3UnitY, vUp);
         float deltaSection = (FMath::ms_fPI_Two / numSegSection);
         float deltaCircle = (FMath::ms_fPI_Two / numSegCircle);
         for (uint32 i = 0; i <= numSegCircle; i++)
@@ -804,7 +804,7 @@ namespace LostPeterFoundation
                 FVector3 v0(radius + sectionRadius * cosf(j * deltaSection), sectionRadius * sinf(j * deltaSection), 0.0);
                 FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(i * deltaCircle, FMath::ms_v3UnitY);
                 FVector3 vPos = FMath::Transform(qRot, v0);
-                vPos = vCenter +  FMath::Transform(qRot, vPos);
+                vPos = vCenter +  FMath::Transform(qRotUpAxis, vPos);
                 AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
 
                 //Index
@@ -815,7 +815,7 @@ namespace LostPeterFoundation
                         AddIndexLine(meshDataPC, i * (numSegSection + 1) + j, i * (numSegSection + 1) + j + 1);
                     }
                     
-                    AddIndexLine(meshDataPC, i * (numSegSection + 1) + j, i * (numSegSection + 1 + 1) + j);
+                    AddIndexLine(meshDataPC, i * (numSegSection + 1) + j, (i + 1) * (numSegSection + 1) + j);
                 }
             }
         }    
@@ -952,15 +952,51 @@ namespace LostPeterFoundation
     }
 
     //FlatTriangle
-    void FMeshGeometry::CreateFlatTriangle(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateFlatTriangle(FMeshDataPC& meshDataPC,
+                                           const FVector3& vTop,
+                                           const FVector3& vLeft,
+                                           const FVector3& vRight,
+                                           const FVector4& vColor)
     {
+        //        0 
+        //        /\
+        //       /  \
+        //    1 ------ 2
 
+        //Vertex
+        AddVertex(meshDataPC, FMeshVertexPC(vTop, vColor));
+        AddVertex(meshDataPC, FMeshVertexPC(vLeft, vColor));
+        AddVertex(meshDataPC, FMeshVertexPC(vRight, vColor));
+        
+        //Index
+        AddIndexTriangle(meshDataPC, 0, 2, 1);
     }
 
     //FlatQuad
-    void FMeshGeometry::CreateFlatQuad(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateFlatQuad(FMeshDataPC& meshDataPC,
+                                       const FVector3& vLeftTop,
+                                       const FVector3& vLeftBottom,
+                                       const FVector3& vRightBottom,
+                                       const FVector3& vRightTop,
+                                       const FVector4& vColor)
     {
+        //  0       3
+        //   --------
+        //   |\     |
+        //   |  \   |
+        //   |    \ |
+        //   --------
+        //  1        2
 
+        //Vertex
+        AddVertex(meshDataPC, FMeshVertexPC(vLeftTop, vColor));
+        AddVertex(meshDataPC, FMeshVertexPC(vLeftBottom, vColor));
+        AddVertex(meshDataPC, FMeshVertexPC(vRightBottom, vColor));
+        AddVertex(meshDataPC, FMeshVertexPC(vRightTop, vColor));
+
+        //Index
+        AddIndexTriangle(meshDataPC, 0, 3, 2);
+        AddIndexTriangle(meshDataPC, 2, 1, 0);
     }
 
     //FlatCircle

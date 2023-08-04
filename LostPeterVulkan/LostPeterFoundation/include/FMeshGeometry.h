@@ -91,13 +91,13 @@ namespace LostPeterFoundation
         virtual String ToName()
         {
             return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]", 
-                                            ms_nameType.c_str(), 
-                                            this->vStart.x,
-                                            this->vStart.y,
-                                            this->vStart.z,
-                                            this->vEnd.x,
-                                            this->vEnd.y,
-                                            this->vEnd.z);
+                                             ms_nameType.c_str(), 
+                                             this->vStart.x,
+                                             this->vStart.y,
+                                             this->vStart.z,
+                                             this->vEnd.x,
+                                             this->vEnd.y,
+                                             this->vEnd.z);
         }
     };
 
@@ -902,6 +902,33 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_FlatTriangle()
             : FMeshCreateParam(false, false)
+            , vTop( 0.0f,  0.5f, 0.0f)
+            , vLeft(-0.5f, -0.5f, 0.0f)
+            , vRight( 0.5f, -0.5f, 0.0f)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_FlatTriangle(const FVector3& _vTop,
+                                      const FVector3& _vLeft,
+                                      const FVector3& _vRight)
+            : FMeshCreateParam(false, false)
+            , vTop(_vTop)
+            , vLeft(_vLeft)
+            , vRight(_vRight)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_FlatTriangle(const FVector3& _vTop,
+                                      const FVector3& _vLeft,
+                                      const FVector3& _vRight,
+                                      const FVector4& _vColor)
+            : FMeshCreateParam(false, false)
+            , vTop(_vTop)
+            , vLeft(_vLeft)
+            , vRight(_vRight)
+            , vColor(_vColor)
         {
 
         }
@@ -914,14 +941,25 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vTop;
+        FVector3 vLeft;
+        FVector3 vRight;
+        FVector4 vColor;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vTop.x,
+                                             this->vTop.y,
+                                             this->vTop.z,
+                                             this->vLeft.x,
+                                             this->vLeft.y,
+                                             this->vLeft.z,
+                                             this->vRight.x,
+                                             this->vRight.y,
+                                             this->vRight.z);
         }
     };
 
@@ -931,6 +969,38 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_FlatQuad()
             : FMeshCreateParam(false, false)
+            , vLeftTop(-0.5f, 0.5f, 0.0f)
+            , vLeftBottom(-0.5f, -0.5f, 0.0f)
+            , vRightBottom(0.5f, -0.5f, 0.0f)
+            , vRightTop(0.5f, 0.5f, 0.0f)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_FlatQuad(const FVector3& _vLeftTop,
+                                  const FVector3& _vLeftBottom,
+                                  const FVector3& _vRightBottom,
+                                  const FVector3& _vRightTop)
+            : FMeshCreateParam(false, false)
+            , vLeftTop(_vLeftTop)
+            , vLeftBottom(_vLeftBottom)
+            , vRightBottom(_vRightBottom)
+            , vRightTop(_vRightTop)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_FlatQuad(const FVector3& _vLeftTop,
+                                  const FVector3& _vLeftBottom,
+                                  const FVector3& _vRightBottom,
+                                  const FVector3& _vRightTop,
+                                  const FVector4& _vColor)
+            : FMeshCreateParam(false, false)
+            , vLeftTop(_vLeftTop)
+            , vLeftBottom(_vLeftBottom)
+            , vRightBottom(_vRightBottom)
+            , vRightTop(_vRightTop)
+            , vColor(_vColor)
         {
 
         }
@@ -943,14 +1013,29 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vLeftTop; 
+        FVector3 vLeftBottom; 
+        FVector3 vRightBottom; 
+        FVector3 vRightTop; 
+        FVector4 vColor;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vLeftTop.x,
+                                             this->vLeftTop.y,
+                                             this->vLeftTop.z,
+                                             this->vLeftBottom.x,
+                                             this->vLeftBottom.y,
+                                             this->vLeftBottom.z,
+                                             this->vRightBottom.x,
+                                             this->vRightBottom.y,
+                                             this->vRightBottom.z,
+                                             this->vRightTop.x,
+                                             this->vRightTop.y,
+                                             this->vRightTop.z);
         }
     };
 
@@ -2105,16 +2190,34 @@ namespace LostPeterFoundation
         //FlatTriangle
         static void CreateFlatTriangle(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatTriangle* pParam)
         {
-            CreateFlatTriangle(meshDataPC);
+            CreateFlatTriangle(meshDataPC,
+                               pParam->vTop,
+                               pParam->vLeft,
+                               pParam->vRight,
+                               pParam->vColor);
         }
-        static void CreateFlatTriangle(FMeshDataPC& meshDataPC);
+        static void CreateFlatTriangle(FMeshDataPC& meshDataPC,
+                                       const FVector3& vTop,
+                                       const FVector3& vLeft,
+                                       const FVector3& vRight,
+                                       const FVector4& vColor);
 
         //FlatQuad
         static void CreateFlatQuad(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatQuad* pParam)
         {
-            CreateFlatQuad(meshDataPC);
+            CreateFlatQuad(meshDataPC,
+                           pParam->vLeftTop,
+                           pParam->vLeftBottom,
+                           pParam->vRightBottom,
+                           pParam->vRightTop,
+                           pParam->vColor);
         }
-        static void CreateFlatQuad(FMeshDataPC& meshDataPC);
+        static void CreateFlatQuad(FMeshDataPC& meshDataPC,
+                                   const FVector3& vLeftTop,
+                                   const FVector3& vLeftBottom,
+                                   const FVector3& vRightBottom,
+                                   const FVector3& vRightTop,
+                                   const FVector4& vColor);
 
         //FlatCircle
         static void CreateFlatCircle(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatCircle* pParam)

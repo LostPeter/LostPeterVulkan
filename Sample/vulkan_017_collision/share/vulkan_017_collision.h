@@ -34,7 +34,8 @@ public:
         bool isRotate;
         bool isLighting;
         bool isTransparent;
-        bool isLineFlat;
+        bool isGeometryLine;
+        bool isGeometryFlat;
 
         //Texture
         TexturePtrShaderSortMap mapModelTexturesShaderSort;
@@ -104,7 +105,8 @@ public:
             , isRotate(false)
             , isLighting(true)
             , isTransparent(false)
-            , isLineFlat(false)
+            , isGeometryLine(false)
+            , isGeometryFlat(false)
 
             //Uniform
             , countInstance(1)
