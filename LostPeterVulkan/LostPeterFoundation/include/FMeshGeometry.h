@@ -662,7 +662,7 @@ namespace LostPeterFoundation
             , vColor(1.0f, 1.0f, 1.0f, 1.0f)
             , radius(0.5f)
             , height(1.0f)
-            , numRings(5)
+            , numRings(10)
             , numSegments(50)
         {
 
@@ -887,10 +887,18 @@ namespace LostPeterFoundation
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%u_%u]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vUp.x,
+                                             this->vUp.y,
+                                             this->vUp.z,
+                                             this->radius,
+                                             this->sectionRadius,
+                                             this->numSegSection,
+                                             this->numSegCircle);
         }
     };
 
@@ -1045,6 +1053,43 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_FlatCircle()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vDir(1, 0, 0)
+            , vUp(0, 0, -1)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(0.5f)
+            , segment(100)
+        {
+
+        }
+        FMeshCreateParam_FlatCircle(const FVector3& _vCenter,
+                                    const FVector3& _vDir,
+                                    const FVector3& _vUp,
+                                    float _radius,
+                                    uint32 _segment)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vDir(_vDir)
+            , vUp(_vUp)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(_radius)
+            , segment(_segment)
+        {
+
+        }
+        FMeshCreateParam_FlatCircle(const FVector3& _vCenter,
+                                    const FVector3& _vDir,
+                                    const FVector3& _vUp,
+                                    const FVector4& _vColor,
+                                    float _radius,
+                                    uint32 _segment)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vDir(_vDir)
+            , vUp(_vUp)
+            , vColor(_vColor)
+            , radius(_radius)
+            , segment(_segment)
         {
 
         }
@@ -1057,14 +1102,29 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vCenter;
+        FVector3 vDir;
+        FVector3 vUp;
+        FVector4 vColor;
+        float radius;
+        uint32 segment;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f]_[%f_%u]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vDir.x,
+                                             this->vDir.y,
+                                             this->vDir.z,
+                                             this->vUp.x,
+                                             this->vUp.y,
+                                             this->vUp.z,
+                                             this->radius,
+                                             this->segment);
         }
     };
 
@@ -1074,6 +1134,28 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_FlatAABB()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vExtent(0.5, 0.5, 0.5)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_FlatAABB(const FVector3& _vCenter,
+                                  const FVector3& _vExtent)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vExtent(_vExtent)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_FlatAABB(const FVector3& _vCenter,
+                                  const FVector3& _vExtent,
+                                  const FVector4& _vColor)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vExtent(_vExtent)
+            , vColor(_vColor)
         {
 
         }
@@ -1086,14 +1168,21 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vCenter;
+        FVector3 vExtent;
+        FVector4 vColor;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vExtent.x,
+                                             this->vExtent.y,
+                                             this->vExtent.z);
         }
     };
 
@@ -1103,6 +1192,43 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_FlatSphere()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(0.5f)
+            , sliceCount(30)
+            , stackCount(30)
+        {
+
+        }
+        FMeshCreateParam_FlatSphere(const FVector3& _vCenter,
+                                    const FVector3& _vUp,
+                                    float _radius,
+                                    uint32 _sliceCount,
+                                    uint32 _stackCount)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(_radius)
+            , sliceCount(_sliceCount)
+            , stackCount(_stackCount)
+        {
+
+        }
+        FMeshCreateParam_FlatSphere(const FVector3& _vCenter,
+                                    const FVector3& _vUp,
+                                    const FVector4& _vColor,
+                                    float _radius,
+                                    uint32 _sliceCount,
+                                    uint32 _stackCount)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(_vColor)
+            , radius(_radius)
+            , sliceCount(_sliceCount)
+            , stackCount(_stackCount)
         {
 
         }
@@ -1115,14 +1241,27 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vCenter;
+        FVector3 vUp;
+        FVector4 vColor;
+        float radius;
+        uint32 sliceCount;
+        uint32 stackCount;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%u_%u]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vUp.x,
+                                             this->vUp.y,
+                                             this->vUp.z,
+                                             this->radius,
+                                             this->sliceCount,
+                                             this->stackCount);
         }
     };
 
@@ -1132,8 +1271,55 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_FlatCylinder()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radiusBottom(0.5f)
+            , radiusTop(0.5f)
+            , height(1.0f)
+            , sliceCount(50)
+            , stackCount(30)
         {
 
+        }
+        FMeshCreateParam_FlatCylinder(const FVector3& _vCenter,
+                                      const FVector3& _vUp,
+                                      float _radiusBottom,
+                                      float _radiusTop,
+                                      float _height,
+                                      uint32 _sliceCount,
+                                      uint32 _stackCount)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radiusBottom(_radiusBottom)
+            , radiusTop(_radiusTop)
+            , height(_height)
+            , sliceCount(_sliceCount)
+            , stackCount(_stackCount)
+        {
+        
+        }
+        FMeshCreateParam_FlatCylinder(const FVector3& _vCenter,
+                                      const FVector3& _vUp,
+                                      const FVector4& _vColor,
+                                      float _radiusBottom,
+                                      float _radiusTop,
+                                      float _height,
+                                      uint32 _sliceCount,
+                                      uint32 _stackCount)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(_vColor)
+            , radiusBottom(_radiusBottom)
+            , radiusTop(_radiusTop)
+            , height(_height)
+            , sliceCount(_sliceCount)
+            , stackCount(_stackCount)
+        {
+        
         }
         virtual ~FMeshCreateParam_FlatCylinder()
         {
@@ -1144,14 +1330,31 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vCenter;
+        FVector3 vUp;
+        FVector4 vColor;
+        float radiusBottom;
+        float radiusTop;
+        float height;
+        uint32 sliceCount;
+        uint32 stackCount;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f_%u_%u]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vUp.x,
+                                             this->vUp.y,
+                                             this->vUp.z,
+                                             this->radiusBottom,
+                                             this->radiusTop,
+                                             this->height,
+                                             this->sliceCount,
+                                             this->stackCount);
         }
     };
 
@@ -1161,6 +1364,53 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_FlatCapsule()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(0.5f)
+            , height(1.0f)
+            , numRings(10)
+            , numSegments(50)
+            , numSegHeight(30)
+        {
+
+        }
+        FMeshCreateParam_FlatCapsule(const FVector3& _vCenter,
+                                     const FVector3& _vUp,
+                                     float _radius,
+                                     float _height,
+                                     uint32 _numRings,
+                                     uint32 _numSegments,
+                                     uint32 _numSegHeight)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(_radius)
+            , height(_height)
+            , numRings(_numRings)
+            , numSegments(_numSegments)
+            , numSegHeight(_numSegHeight)
+        {
+
+        }
+        FMeshCreateParam_FlatCapsule(const FVector3& _vCenter,
+                                     const FVector3& _vUp,
+                                     const FVector4& _vColor,
+                                     float _radius,
+                                     float _height,
+                                     uint32 _numRings,
+                                     uint32 _numSegments,
+                                     uint32 _numSegHeight)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(_vColor)
+            , radius(_radius)
+            , height(_height)
+            , numRings(_numRings)
+            , numSegments(_numSegments)
+            , numSegHeight(_numSegHeight)
         {
 
         }
@@ -1173,14 +1423,31 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vCenter;
+        FVector3 vUp;
+        FVector4 vColor;
+        float radius;
+        float height;
+        uint32 numRings;
+        uint32 numSegments;
+        uint32 numSegHeight;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%u_%u_%u]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vUp.x,
+                                             this->vUp.y,
+                                             this->vUp.z,
+                                             this->radius,
+                                             this->height,
+                                             this->numRings,
+                                             this->numSegments,
+                                             this->numSegHeight);
         }
     };
 
@@ -1190,6 +1457,48 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_FlatCone()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(0.5f)
+            , height(1.0f)
+            , numSegBase(50)
+            , numSegHeight(30)
+        {
+
+        }
+        FMeshCreateParam_FlatCone(const FVector3& _vCenter,
+                                  const FVector3& _vUp,
+                                  float _radius,
+                                  float _height,
+                                  uint32 _numSegBase,
+                                  uint32 _numSegHeight)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(_radius)
+            , height(_height)
+            , numSegBase(_numSegBase)
+            , numSegHeight(_numSegHeight)
+        {
+
+        }
+        FMeshCreateParam_FlatCone(const FVector3& _vCenter,
+                                  const FVector3& _vUp,
+                                  const FVector4& _vColor,
+                                  float _radius,
+                                  float _height,
+                                  uint32 _numSegBase,
+                                  uint32 _numSegHeight)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(_vColor)
+            , radius(_radius)
+            , height(_height)
+            , numSegBase(_numSegBase)
+            , numSegHeight(_numSegHeight)
         {
 
         }
@@ -1202,14 +1511,29 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vCenter;
+        FVector3 vUp;
+        FVector4 vColor;
+        float radius;
+        float height;
+        uint32 numSegBase;
+        uint32 numSegHeight;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%u_%u]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vUp.x,
+                                             this->vUp.y,
+                                             this->vUp.z,
+                                             this->radius,
+                                             this->height,
+                                             this->numSegBase,
+                                             this->numSegHeight);
         }
     };
 
@@ -1219,6 +1543,48 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_FlatTorus()
             : FMeshCreateParam(false, false)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(0.5f)
+            , sectionRadius(0.2f)
+            , numSegSection(50)
+            , numSegCircle(20)
+        {
+
+        }
+        FMeshCreateParam_FlatTorus(const FVector3& _vCenter,
+                                   const FVector3& _vUp,
+                                   float _radius,
+                                   float _sectionRadius,
+                                   uint32 _numSegSection,
+                                   uint32 _numSegCircle)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(_radius)
+            , sectionRadius(_sectionRadius)
+            , numSegSection(_numSegSection)
+            , numSegCircle(_numSegCircle)
+        {
+
+        }
+        FMeshCreateParam_FlatTorus(const FVector3& _vCenter,
+                                   const FVector3& _vUp,
+                                   const FVector4& _vColor,
+                                   float _radius,
+                                   float _sectionRadius,
+                                   uint32 _numSegSection,
+                                   uint32 _numSegCircle)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vUp(_vUp)
+            , vColor(_vColor)
+            , radius(_radius)
+            , sectionRadius(_sectionRadius)
+            , numSegSection(_numSegSection)
+            , numSegCircle(_numSegCircle)
         {
 
         }
@@ -1231,14 +1597,29 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vCenter;
+        FVector3 vUp;
+        FVector4 vColor;
+        float radius;
+        float sectionRadius;
+        uint32 numSegSection;
+        uint32 numSegCircle;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%u_%u]", 
                                              ms_nameType.c_str(), 
-                                             flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vUp.x,
+                                             this->vUp.y,
+                                             this->vUp.z,
+                                             this->radius,
+                                             this->sectionRadius,
+                                             this->numSegSection,
+                                             this->numSegCircle);
         }
     };
 
@@ -1599,7 +1980,7 @@ namespace LostPeterFoundation
             , height(1.0f)
             , heightOffset(0.0f)
             , sliceCount(50)
-            , stackCount(50)
+            , stackCount(30)
         {
 
         }
@@ -1662,7 +2043,7 @@ namespace LostPeterFoundation
             , radius(0.5f)
             , height(1.0f)
             , heightOffset(0.0f)
-            , numRings(5)
+            , numRings(10)
             , numSegments(50)
             , numSegHeight(30)
         {
@@ -2222,51 +2603,141 @@ namespace LostPeterFoundation
         //FlatCircle
         static void CreateFlatCircle(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatCircle* pParam)
         {
-            CreateFlatCircle(meshDataPC);
+            CreateFlatCircle(meshDataPC,
+                             pParam->vCenter,
+                             pParam->vDir,
+                             pParam->vUp,
+                             pParam->vColor,
+                             pParam->radius,
+                             pParam->segment);
         }
-        static void CreateFlatCircle(FMeshDataPC& meshDataPC);
+        static void CreateFlatCircle(FMeshDataPC& meshDataPC,
+                                     const FVector3& vCenter,
+                                     const FVector3& vDir,
+                                     const FVector3& vUp,
+                                     const FVector4& vColor,
+                                     float radius,
+                                     uint32 segment);
 
         //FlatAABB
         static void CreateFlatAABB(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatAABB* pParam)
         {
-            CreateFlatAABB(meshDataPC);
+            CreateFlatAABB(meshDataPC,
+                           pParam->vCenter, 
+                           pParam->vExtent, 
+                           pParam->vColor);
         }
-        static void CreateFlatAABB(FMeshDataPC& meshDataPC);
+        static void CreateFlatAABB(FMeshDataPC& meshDataPC,
+                                   const FVector3& vCenter,
+                                   const FVector3& vExtent,
+                                   const FVector4& vColor);
 
         //FlatSphere
         static void CreateFlatSphere(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatSphere* pParam)
         {
-            CreateFlatSphere(meshDataPC);
+            CreateFlatSphere(meshDataPC,
+                             pParam->vCenter,
+                             pParam->vUp,
+                             pParam->vColor,
+                             pParam->radius, 
+                             pParam->sliceCount, 
+                             pParam->stackCount);
         }
-        static void CreateFlatSphere(FMeshDataPC& meshDataPC);
+        static void CreateFlatSphere(FMeshDataPC& meshDataPC,
+                                     const FVector3& vCenter,
+                                     const FVector3& vUp,
+                                     const FVector4& vColor,
+                                     float radius,
+                                     uint32 sliceCount,
+                                     uint32 stackCount);
 
         //FlatCylinder
         static void CreateFlatCylinder(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatCylinder* pParam)
         {
-            CreateFlatCylinder(meshDataPC);
+            CreateFlatCylinder(meshDataPC,
+                               pParam->vCenter,
+                               pParam->vUp,
+                               pParam->vColor,
+                               pParam->radiusBottom, 
+                               pParam->radiusTop, 
+                               pParam->height, 
+                               pParam->sliceCount,
+                               pParam->stackCount);
         }
-        static void CreateFlatCylinder(FMeshDataPC& meshDataPC);
+        static void CreateFlatCylinder(FMeshDataPC& meshDataPC,
+                                       const FVector3& vCenter,
+                                       const FVector3& vUp,
+                                       const FVector4& vColor,
+                                       float radiusBottom,
+                                       float radiusTop,
+                                       float height,
+                                       uint32 sliceCount,
+                                       uint32 stackCount);
 
         //FlatCapsule
         static void CreateFlatCapsule(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatCapsule* pParam)
         {
-            CreateFlatCapsule(meshDataPC);
+            CreateFlatCapsule(meshDataPC,
+                              pParam->vCenter,
+                              pParam->vUp,
+                              pParam->vColor,
+                              pParam->radius, 
+                              pParam->height, 
+                              pParam->numRings, 
+                              pParam->numSegments,
+                              pParam->numSegHeight);
         }
-        static void CreateFlatCapsule(FMeshDataPC& meshDataPC);
+        static void CreateFlatCapsule(FMeshDataPC& meshDataPC,
+                                      const FVector3& vCenter,
+                                      const FVector3& vUp,
+                                      const FVector4& vColor,
+                                      float radius,
+                                      float height,
+                                      uint32 numRings,
+                                      uint32 numSegments,
+                                      uint32 numSegHeight);
 
         //FlatCone
         static void CreateFlatCone(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatCone* pParam)
         {
-            CreateFlatCone(meshDataPC);
+            CreateFlatCone(meshDataPC,
+                           pParam->vCenter,
+                           pParam->vUp,
+                           pParam->vColor,
+                           pParam->radius, 
+                           pParam->height, 
+                           pParam->numSegBase,
+                           pParam->numSegHeight);
         }
-        static void CreateFlatCone(FMeshDataPC& meshDataPC);
+        static void CreateFlatCone(FMeshDataPC& meshDataPC,
+                                   const FVector3& _vCenter,
+                                   const FVector3& _vUp,
+                                   const FVector4& _vColor,
+                                   float _radius,
+                                   float _height,
+                                   uint32 _numSegBase,
+                                   uint32 _numSegHeight);
 
         //FlatTorus
         static void CreateFlatTorus(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatTorus* pParam)
         {
-            CreateFlatTorus(meshDataPC);
+            CreateFlatTorus(meshDataPC,
+                            pParam->vCenter,
+                            pParam->vUp,
+                            pParam->vColor,
+                            pParam->radius, 
+                            pParam->sectionRadius, 
+                            pParam->numSegSection, 
+                            pParam->numSegCircle);
         }
-        static void CreateFlatTorus(FMeshDataPC& meshDataPC);
+        static void CreateFlatTorus(FMeshDataPC& meshDataPC,
+                                    const FVector3& vCenter,
+                                    const FVector3& vUp,
+                                    const FVector4& vColor,
+                                    float radius,
+                                    float sectionRadius,
+                                    uint32 numSegSection,
+                                    uint32 numSegCircle);
 
 
     ////////////////////////////////// Entity ////////////////////////////////

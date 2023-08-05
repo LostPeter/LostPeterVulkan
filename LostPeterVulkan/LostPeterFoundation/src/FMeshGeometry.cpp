@@ -1000,45 +1000,520 @@ namespace LostPeterFoundation
     }
 
     //FlatCircle
-    void FMeshGeometry::CreateFlatCircle(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateFlatCircle(FMeshDataPC& meshDataPC,
+                                         const FVector3& vCenter,
+                                         const FVector3& vDir,
+                                         const FVector3& vUp,
+                                         const FVector4& vColor,
+                                         float radius,
+                                         uint32 segment)
     {
+        //          *  * 
+		//		*		   * 2
+		//
+		//	   *	 * 0    * 1
+		//			
+		//      *          * segment
+		//          *   *
 
+        //Vertex
+        uint32 vertexCount = segment + 1;
+        uint32 faceCount = segment;
+        float thetaStep = 2.0f * FMath::ms_fPI / segment;
+        ResizeVertexCount(meshDataPC, vertexCount);
+        SetVertex(meshDataPC, 0, FMeshVertexPC(vCenter, vColor));
+        int index = 1;
+        for (uint32 i = 0; i < segment; i++)
+        {
+            FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(thetaStep * i, vUp);
+            FVector3 vCur = FMath::Transform(qRot, vDir);
+            FVector3 vPos = vCenter + vCur * radius;
+            SetVertex(meshDataPC, index, FMeshVertexPC(vPos, vColor));
+            index++;
+        }
+        meshDataPC.RefreshAABB();
+
+        //Index
+        ResizeIndexCount(meshDataPC, faceCount * 3);
+        for (uint32 i = 0; i < segment; ++i)    
+        {
+            if (i != segment - 1)
+            {
+                SetIndexTriangle(meshDataPC, i * 3 + 0, 0, i + 2, i + 1);
+            }
+            else
+            {
+                SetIndexTriangle(meshDataPC, i * 3 + 0, 0, 1, i);
+            }
+        }
     }
 
     //FlatAABB
-    void FMeshGeometry::CreateFlatAABB(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateFlatAABB(FMeshDataPC& meshDataPC,
+                                       const FVector3& vCenter,
+                                       const FVector3& vExtent,
+                                       const FVector4& vColor)
     {
+        //     7+------+4			  0: -+-
+		//     /|     /|			  1: ---
+		//    / |    / |			  2: +--
+		//   / 6+---/--+5	 y		  3: ++-
+		// 0+------+3 /		 | z	  4: +++
+		//  | /    | /    	 |/		  5: +-+
+		//  |/     |/     	 *---x	  6: --+
+		// 1+------+2        		  7: -++
 
+        //Vertex
+        FVector3 vX = FMath::ms_v3UnitX * vExtent.x;
+        FVector3 vY = FMath::ms_v3UnitY * vExtent.y;
+        FVector3 vZ = FMath::ms_v3UnitZ * vExtent.z;
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter - vX + vY - vZ, vColor)); //0 -+-
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter - vX - vY - vZ, vColor)); //1 ---
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter + vX - vY - vZ, vColor)); //2 +--
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter + vX + vY - vZ, vColor)); //3 ++-
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter + vX + vY + vZ, vColor)); //4 +++
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter + vX - vY + vZ, vColor)); //5 +-+
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter - vX - vY + vZ, vColor)); //6 --+
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter - vX + vY + vZ, vColor)); //7 -++
+
+        //Index
+        AddIndexTriangle(meshDataPC, 0, 3, 2); //Front
+        AddIndexTriangle(meshDataPC, 2, 1, 0); 
+        AddIndexTriangle(meshDataPC, 4, 7, 6); //Back
+        AddIndexTriangle(meshDataPC, 6, 5, 4);
+        AddIndexTriangle(meshDataPC, 7, 4, 3); //Top
+        AddIndexTriangle(meshDataPC, 3, 0, 7);
+        AddIndexTriangle(meshDataPC, 1, 2, 5); //Bottom
+        AddIndexTriangle(meshDataPC, 5, 6, 1);
+        AddIndexTriangle(meshDataPC, 7, 0, 1); //Left
+        AddIndexTriangle(meshDataPC, 1, 6, 7);
+        AddIndexTriangle(meshDataPC, 3, 4, 5); //Right
+        AddIndexTriangle(meshDataPC, 5, 2, 3);
     }
 
     //FlatSphere
-    void FMeshGeometry::CreateFlatSphere(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateFlatSphere(FMeshDataPC& meshDataPC,
+                                         const FVector3& vCenter,
+                                         const FVector3& vUp,
+                                         const FVector4& vColor,
+                                         float radius,
+                                         uint32 sliceCount,
+                                         uint32 stackCount)
     {
+        //           0 
+        //           *   
+	    //	    *    - 2  *  1          
+	    //        -     -          y                   
+	    //   *	     *       *     | z              
+	    //	      -     - l-2      |/
+	    //      *    -    *  l-1   *---x
+	    //           *
+        //           l=(stackCount-1)*(sliceCount+1)+1
 
+        //Vertex
+        //Vertex Top
+        FMeshVertexPC vertexTop(vCenter + vUp * radius, vColor);
+        AddVertex(meshDataPC, vertexTop);
+        {
+            FQuaternion qRot = FMath::ToQuaternionFromSrc2Dst(FMath::ms_v3UnitY, vUp);
+            //Vertex
+            float phiStep = FMath::ms_fPI / stackCount;
+            float thetaStep = 2.0f * FMath::ms_fPI / sliceCount;
+            for (uint32 i = 1; i <= stackCount - 1; ++i)
+            {
+                float phi = i * phiStep;
+                for (uint32 j = 0; j <= sliceCount; ++j)
+                {
+                    float theta = j * thetaStep;
+                    FVector3 vPos(radius * sinf(phi) * cosf(theta),
+                                  radius * cosf(phi),
+                                  radius * sinf(phi) * sinf(theta));
+                    vPos = vCenter + FMath::Transform(qRot, vPos);
+                    FMeshVertexPC vertex(vPos, vColor);
+                    AddVertex(meshDataPC, vertex);
+                }
+            }
+        }
+        //Vertex Bottom
+        FMeshVertexPC vertexBottom(vCenter - vUp * radius, vColor);
+        AddVertex(meshDataPC, vertexBottom);
+
+        //Index Top
+        for (uint32 i = 1; i <= sliceCount; ++i)
+        {
+            AddIndexTriangle(meshDataPC, 
+                             0, 
+                             i + 1, 
+                             i);
+        }
+
+        //Index Inner
+        uint32 baseIndex = 1;
+        uint32 ringVertexCount = sliceCount + 1;
+        for (uint32 i = 0; i < stackCount - 2; ++i)
+        {
+            for (uint32 j = 0; j < sliceCount; ++j)
+            {
+                AddIndexTriangle(meshDataPC, 
+                                 baseIndex + i * ringVertexCount + j,
+                                 baseIndex + (i + 1) * ringVertexCount + j + 1,
+                                 baseIndex + (i + 1) * ringVertexCount + j);
+
+                AddIndexTriangle(meshDataPC, 
+                                 baseIndex + (i + 1) * ringVertexCount + j + 1,
+                                 baseIndex + i * ringVertexCount + j,
+                                 baseIndex + i * ringVertexCount + j + 1);
+            }
+        }
+
+        //Index Bottom
+        uint32 southPoleIndex = GetVertexCount(meshDataPC) - 1;
+        baseIndex = southPoleIndex - ringVertexCount;
+        for (uint32 i = 0; i < sliceCount; ++i)
+        {
+            AddIndexTriangle(meshDataPC, 
+                             southPoleIndex,
+                             baseIndex + i,
+                             baseIndex + i + 1);
+        }
     }
 
     //FlatCylinder
-    void FMeshGeometry::CreateFlatCylinder(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateFlatCylinder(FMeshDataPC& meshDataPC,
+                                           const FVector3& vCenter,
+                                           const FVector3& vUp,
+                                           const FVector4& vColor,
+                                           float radiusBottom,
+                                           float radiusTop,
+                                           float height,
+                                           uint32 sliceCount,
+                                           uint32 stackCount)
     {
+        //       * 
+        //    *     *
+        //    *  *  *
+        //    *     *
+        //    *     *
+        //    *     *
+        //    *  *  *
+        //    *     *
+        //       *       
 
+        //Vertex
+        FQuaternion qRot = FMath::ToQuaternionFromSrc2Dst(FMath::ms_v3UnitY, vUp);
+        float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter - vUp * (0.5f * height), vColor)); //0 - Bottom
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter + vUp * (0.5f * height), vColor)); //1 - Top
+        int indexBottom = 2;
+        float stackHeight = height / stackCount;
+        float radiusStep = (radiusTop - radiusBottom) / stackCount;
+        for (uint32 i = 0; i <= stackCount; ++i)
+        {
+            float y = - 0.5f * height + i * stackHeight;
+            float r = radiusBottom + i * radiusStep;
+
+            float dTheta = 2.0f * FMath::ms_fPI / sliceCount;
+            for (uint32 j = 0; j < sliceCount; ++j)
+            {
+                float c = cosf(j * dTheta);
+                float s = sinf(j * dTheta);
+                FVector3 vPos(r * c, y, r * s);
+                vPos = vCenter +  FMath::Transform(qRot, vPos);
+                FMeshVertexPC vertex(vPos, vColor);
+                AddVertex(meshDataPC, vertex);
+            }
+        }
+        
+        //Index
+        //Bottom/Top
+        int indexTop = indexBottom + stackCount * sliceCount;
+        for (uint32 i = 0; i < sliceCount; ++i)
+        {
+            if (i == sliceCount - 1)
+            {
+                //Bottom
+                AddIndexTriangle(meshDataPC, 
+                                 0,
+                                 indexBottom,
+                                 indexBottom + i);
+                //Top
+                AddIndexTriangle(meshDataPC, 
+                                 1,
+                                 indexTop + i,
+                                 indexTop);
+            }
+            else
+            {
+                //Bottom
+                AddIndexTriangle(meshDataPC, 
+                                 0,
+                                 indexBottom + i + 1,
+                                 indexBottom + i);
+                //Top
+                AddIndexTriangle(meshDataPC, 
+                                 1,
+                                 indexTop + i,
+                                 indexTop + i + 1);
+            }
+        }
+        //Center
+        for (uint32 i = 0; i < stackCount; ++i)
+        {
+            for (uint32 j = 0; j < sliceCount; ++j)
+            {
+                if (j == sliceCount - 1)
+                {
+                    AddIndexTriangle(meshDataPC, 
+                                     indexBottom + i * sliceCount + j,
+                                     indexBottom + (i + 1) * sliceCount + j,
+                                     indexBottom + (i + 1) * sliceCount);
+                    AddIndexTriangle(meshDataPC, 
+                                     indexBottom + (i + 1) * sliceCount,
+                                     indexBottom + i * sliceCount,
+                                     indexBottom + i * sliceCount + j);
+                }
+                else
+                {
+                    AddIndexTriangle(meshDataPC, 
+                                     indexBottom + i * sliceCount + j,
+                                     indexBottom + (i + 1) * sliceCount + j,
+                                     indexBottom + (i + 1) * sliceCount + j + 1);
+                    AddIndexTriangle(meshDataPC, 
+                                     indexBottom + (i + 1) * sliceCount + j + 1,
+                                     indexBottom + i * sliceCount + j + 1,
+                                     indexBottom + i * sliceCount + j);
+                }
+            }
+        }
     }
 
     //FlatCapsule
-    void FMeshGeometry::CreateFlatCapsule(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateFlatCapsule(FMeshDataPC& meshDataPC,
+                                          const FVector3& vCenter,
+                                          const FVector3& vUp,
+                                          const FVector4& vColor,
+                                          float radius,
+                                          float height,
+                                          uint32 numRings,
+                                          uint32 numSegments,
+                                          uint32 numSegHeight)
     {
+        //      *** 
+        //    *  *  *
+        //    *  *  *
+        //    *     *
+        //    *     *
+        //    *     *
+        //    *  *  *
+        //    *  *  *
+        //      ***  
 
+        //Vertex
+        FQuaternion qRot = FMath::ToQuaternionFromSrc2Dst(FMath::ms_v3UnitY, vUp);
+        uint32 nVertexCount = (2 * numRings + 2) * (numSegments + 1) + (numSegHeight - 1) * (numSegments + 1);
+        uint32 nIndexCount = (2 * numRings + 1) * (numSegments + 1) * 6 + (numSegHeight - 1) * (numSegments + 1) * 6;
+        ReserveVertexCount(meshDataPC, nVertexCount);
+        ReserveIndexCount(meshDataPC, nIndexCount);
+
+        float fDeltaRingAngle = (FMath::ms_fPI_Half / numRings);
+        float fDeltaSegAngle = (FMath::ms_fPI_Two / numSegments);
+
+        float sphereRatio = radius / (2 * radius + height);
+        float cylinderRatio = height / (2 * radius + height);
+        int offset = 0;
+
+        //1> Top half sphere
+        for (uint32 ring = 0; ring <= numRings; ring++)
+        {
+            float r0 = radius * sinf(ring * fDeltaRingAngle);
+            float y0 = radius * cosf(ring * fDeltaRingAngle);
+
+            for (uint32 seg = 0; seg <= numSegments; seg++)
+            {
+                float x0 = r0 * cosf(seg * fDeltaSegAngle);
+                float z0 = r0 * sinf(seg * fDeltaSegAngle);
+                FVector3 vPos(x0, +0.5f * height + y0, z0);
+                vPos = vCenter +  FMath::Transform(qRot, vPos);
+                AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+
+                //Index
+                AddIndexTriangle(meshDataPC, offset + numSegments + 1, offset + numSegments, offset);
+                AddIndexTriangle(meshDataPC, offset + numSegments + 1, offset, offset + 1);
+
+                offset ++;
+            }
+        }
+
+        //2> Cylinder part
+        float deltaAngle = (FMath::ms_fPI_Two / numSegments);
+        float deltamHeight = height/(float)numSegHeight;
+        for (uint32 i = 1; i < numSegHeight; i++)
+        {
+            for (uint32 j = 0; j<=numSegments; j++)
+            {
+                float x0 = radius * cosf(j * deltaAngle);
+                float z0 = radius * sinf(j * deltaAngle);
+                FVector3 vPos(x0, 0.5f * height - i * deltamHeight, z0);
+                vPos = vCenter +  FMath::Transform(qRot, vPos);
+                AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+                
+                //Index
+                AddIndexTriangle(meshDataPC, offset + numSegments + 1, offset + numSegments, offset);
+                AddIndexTriangle(meshDataPC, offset + numSegments + 1, offset, offset + 1);
+                
+                offset ++;
+            }
+        }
+
+        //3> Bottom half sphere
+        for (uint32 ring = 0; ring <= numRings; ring++)
+        {
+            float r0 = radius * sinf (FMath::ms_fPI_Half + ring * fDeltaRingAngle);
+            float y0 =  radius * cosf (FMath::ms_fPI_Half + ring * fDeltaRingAngle);
+
+            for (uint32 seg = 0; seg <= numSegments; seg++)
+            {
+                float x0 = r0 * cosf(seg * fDeltaSegAngle);
+                float z0 = r0 * sinf(seg * fDeltaSegAngle);
+                FVector3 vPos(x0, - 0.5f * height + y0, z0);
+                vPos = vCenter +  FMath::Transform(qRot, vPos);
+                AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+
+                if (ring != numRings)
+                {
+                    AddIndexTriangle(meshDataPC, offset + numSegments + 1, offset + numSegments, offset);
+                    AddIndexTriangle(meshDataPC, offset + numSegments + 1, offset, offset + 1);
+                }
+
+                offset ++;
+            } 
+        } 
     }
 
     //FlatCone
-    void FMeshGeometry::CreateFlatCone(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateFlatCone(FMeshDataPC& meshDataPC,
+                                       const FVector3& vCenter,
+                                       const FVector3& vUp,
+                                       const FVector4& vColor,
+                                       float radius,
+                                       float height,
+                                       uint32 numSegBase,
+                                       uint32 numSegHeight)
     {
+        //               *
+        //             *   *
+        //           *       *
+        //         *           *
+        //       *       +       *
+        //     *   +           +   *
+        //    *          *           *
+        //      +                  +
+        //          +          +
+        //               +
 
+        //Vertex
+        FQuaternion qRot = FMath::ToQuaternionFromSrc2Dst(FMath::ms_v3UnitY, vUp);
+        uint32 nVertexCount = (numSegHeight + 1) * (numSegBase + 1) + numSegBase + 2;
+        uint32 nIndexCount = numSegHeight * numSegBase * 6 + 3 * numSegBase;
+        ReserveVertexCount(meshDataPC, nVertexCount);
+        ReserveIndexCount(meshDataPC, nIndexCount);
+
+        float deltaAngle = (FMath::ms_fPI_Two / numSegBase);
+        float deltaHeight = height / (float)numSegHeight;
+        int offset = 0;
+
+        //1> Cone
+        for (uint32 i = 0; i <= numSegHeight; i++)
+        {
+            float r0 = radius * (1 - i / (float)numSegHeight);
+            for (uint32 j = 0; j <= numSegBase; j++)
+            {
+                float x0 = r0 * cosf(j * deltaAngle);
+                float z0 = r0 * sinf(j * deltaAngle);
+                FVector3 vPos(x0, i * deltaHeight, z0);
+                vPos = vCenter +  FMath::Transform(qRot, vPos);
+                AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+
+                if (i != numSegHeight && j != numSegBase)
+                {
+                    //Index
+                    AddIndexTriangle(meshDataPC, offset + numSegBase + 2, offset, offset + numSegBase + 1);
+                    AddIndexTriangle(meshDataPC, offset + numSegBase + 2, offset + 1, offset);
+                }
+
+                offset ++;
+            }
+        }
+
+        //2> Low Cap
+        int centerIndex = offset;
+        AddVertex(meshDataPC, FMeshVertexPC(vCenter, vColor));
+        offset++;
+        for (uint32 j = 0; j <= numSegBase; j++)
+        {
+            float x0 = radius * cosf(j * deltaAngle);
+            float z0 = radius * sinf(j * deltaAngle);
+            FVector3 vPos(x0, 0.0f, z0);
+            vPos = vCenter +  FMath::Transform(qRot, vPos);
+            AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+
+            if (j != numSegBase)
+            {
+                AddIndexTriangle(meshDataPC, centerIndex, offset, offset + 1);
+            }
+            offset++;
+        }
     }
 
     //FlatTorus
-    void FMeshGeometry::CreateFlatTorus(FMeshDataPC& meshDataPC)
+    void FMeshGeometry::CreateFlatTorus(FMeshDataPC& meshDataPC,
+                                        const FVector3& vCenter,
+                                        const FVector3& vUp,
+                                        const FVector4& vColor,
+                                        float radius,
+                                        float sectionRadius,
+                                        uint32 numSegSection,
+                                        uint32 numSegCircle)
     {
+        //         + +
+        //       + * *  +  
+        //     + * - -  *  +
+        //    + * -    - * +
+        //     + * - -  *  + 
+        //       + * *  +
+        //         +  +
 
+        //Vertex
+        FQuaternion qRot = FMath::ToQuaternionFromSrc2Dst(FMath::ms_v3UnitY, vUp);
+        uint32 nVertexCount = (numSegCircle + 1) * (numSegSection + 1);
+        uint32 nIndexCount = (numSegCircle) * (numSegSection + 1) * 6;
+        ReserveVertexCount(meshDataPC, nVertexCount);
+        ReserveIndexCount(meshDataPC, nIndexCount);
+
+        float deltaSection = (FMath::ms_fPI_Two / numSegSection);
+        float deltaCircle = (FMath::ms_fPI_Two / numSegCircle);
+        int offset = 0;
+
+        for (uint32 i = 0; i <= numSegCircle; i++)
+        {   
+            for (uint32 j = 0; j<= numSegSection; j++)
+            {
+                FVector3 c0(radius, 0.0, 0.0);
+                FVector3 v0(radius + sectionRadius * cosf(j * deltaSection), sectionRadius * sinf(j * deltaSection), 0.0);
+                FQuaternion qRotAxis = FMath::ToQuaternionFromRadianAxis(i * deltaCircle, FMath::ms_v3UnitY);
+                FVector3 vPos = FMath::Transform(qRotAxis, v0);
+                vPos = vCenter +  FMath::Transform(qRot, vPos);
+                AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+
+                if (i != numSegCircle)
+                {
+                    //Index
+                    AddIndexTriangle(meshDataPC, offset + numSegSection + 1, offset, offset + numSegSection);
+                    AddIndexTriangle(meshDataPC, offset + numSegSection + 1, offset + 1, offset);
+                }
+                offset ++;
+            }
+        }       
     }
 
 
