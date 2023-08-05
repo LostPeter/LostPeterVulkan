@@ -217,19 +217,20 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
 static const int g_DescriptorSetLayoutCount = 2;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
-    "Pass-ObjectLineFlat",
+    "Pass-ObjectLineFlat3D",
     "Pass-Object-Material-Instance-TextureFS",
 };
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 4;
+static const int g_ShaderCount = 6;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
     ///////////////////////////////////////// vert /////////////////////////////////////////
     "vert_standard_mesh_opaque_tex2d_lit",                     "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
-    "vert_editor_line",                                        "vert",              "Assets/Shader/editor_line.vert.spv", //editor_line vert
+    "vert_editor_line_2d",                                     "vert",              "Assets/Shader/editor_line_2d.vert.spv", //editor_line_2d vert
+    "vert_editor_line_3d",                                     "vert",              "Assets/Shader/editor_line_3d.vert.spv", //editor_line_3d vert
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
    
@@ -241,7 +242,8 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
     ///////////////////////////////////////// frag /////////////////////////////////////////
     "frag_standard_mesh_opaque_tex2d_lit",                     "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
-    "frag_editor_line",                                        "frag",              "Assets/Shader/editor_line.frag.spv", //editor_line frag
+    "frag_editor_line_2d",                                     "frag",              "Assets/Shader/editor_line_2d.frag.spv", //editor_line_2d frag
+    "frag_editor_line_3d",                                     "frag",              "Assets/Shader/editor_line_3d.frag.spv", //editor_line_3d frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
     
@@ -574,27 +576,27 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_line-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_triangle-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_quad-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_grid-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_circle-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_aabb-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_sphere-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_cylinder-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_capsule-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_cone-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_line_torus-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_line-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_triangle-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_quad-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_grid-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_circle-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_aabb-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_sphere-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_cylinder-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_capsule-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_cone-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_torus-1
     
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_flat_triangle-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_flat_quad-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_flat_circle-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_flat_aabb-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_flat_sphere-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_flat_cylinder-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_flat_capsule-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_flat_cone-1
-    "vert_editor_line",                                     "",                                             "",                                         "",                         "frag_editor_line",                                     "", //object_geo_flat_torus-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_triangle-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_quad-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_circle-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_aabb-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_sphere-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_cylinder-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_capsule-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_cone-1
+    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_torus-1
     
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_triangle-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_quad-1
@@ -614,27 +616,27 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
     //Pipeline Graphics                                                 //Pipeline Compute
-    "Pass-ObjectLineFlat",                                              "", //object_geo_line_line-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_line_triangle-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_line_quad-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_line_grid-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_line_circle-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_line_aabb-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_line_sphere-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_line_cylinder-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_line_capsule-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_line_cone-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_line_torus-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_line-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_triangle-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_quad-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_grid-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_circle-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_aabb-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_sphere-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_cylinder-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_capsule-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_cone-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_torus-1
 
-    "Pass-ObjectLineFlat",                                              "", //object_geo_flat_triangle-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_flat_quad-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_flat_circle-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_flat_aabb-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_flat_sphere-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_flat_cylinder-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_flat_capsule-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_flat_cone-1
-    "Pass-ObjectLineFlat",                                              "", //object_geo_flat_torus-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_triangle-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_quad-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_circle-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_aabb-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_sphere-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_cylinder-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_capsule-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_cone-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_torus-1
     
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_triangle-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_quad-1
@@ -876,6 +878,7 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::CleanupSwapChain()
     size_t count = 0;
 
     //1> Uniform Buffer
+    //Object
     count = this->poBuffers_ObjectCB.size();
     for (size_t i = 0; i < count; i++) 
     {
@@ -885,14 +888,18 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::CleanupSwapChain()
     this->poBuffers_ObjectCB.clear();
     this->poBuffersMemory_ObjectCB.clear();
 
-    count = this->poBuffers_ObjectCB_LineFlat.size();
+    //ObjectLineFlat2D
+
+
+    //ObjectLineFlat3D
+    count = this->poBuffers_ObjectCB_LineFlat3D.size();
     for (size_t i = 0; i < count; i++) 
     {
-        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB_LineFlat[i], this->poBuffersMemory_ObjectCB_LineFlat[i]);
+        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB_LineFlat3D[i], this->poBuffersMemory_ObjectCB_LineFlat3D[i]);
     }
-    this->objectCBs_LineFlat.clear();
-    this->poBuffers_ObjectCB_LineFlat.clear();
-    this->poBuffersMemory_ObjectCB_LineFlat.clear();
+    this->objectCBs_LineFlat3D.clear();
+    this->poBuffers_ObjectCB_LineFlat3D.clear();
+    this->poBuffersMemory_ObjectCB_LineFlat3D.clear();
 
     count = this->poBuffers_materialCB.size();
     for (size_t i = 0; i < count; i++) 
@@ -994,6 +1001,8 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandB
 
     //1> Uniform Buffer
     {
+
+
         if (!this->pRend->isGeometryLine && !this->pRend->isGeometryFlat)
         {
             //ObjectConstants
@@ -1007,13 +1016,16 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandB
         }
         else
         {
-            //LineFlatObjectConstants
-            bufferSize = sizeof(LineFlatObjectConstants) * this->objectCBs_LineFlat.size();
-            this->poBuffers_ObjectCB_LineFlat.resize(count_sci);
-            this->poBuffersMemory_ObjectCB_LineFlat.resize(count_sci);
+            //ObjectLineFlat2D
+            
+
+            //ObjectLineFlat3D
+            bufferSize = sizeof(LineFlat3DObjectConstants) * this->objectCBs_LineFlat3D.size();
+            this->poBuffers_ObjectCB_LineFlat3D.resize(count_sci);
+            this->poBuffersMemory_ObjectCB_LineFlat3D.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB_LineFlat[j], this->poBuffersMemory_ObjectCB_LineFlat[j]);
+                this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB_LineFlat3D[j], this->poBuffersMemory_ObjectCB_LineFlat3D[j]);
             }
         }
 
@@ -1049,7 +1061,7 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandB
 void Vulkan_017_Collision::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
     this->objectCBs.clear();
-    this->objectCBs_LineFlat.clear();
+    this->objectCBs_LineFlat3D.clear();
     this->materialCBs.clear();
     this->tessellationCBs.clear();
 
@@ -1062,7 +1074,7 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::UpdateUniformBuffer()
         if (!pR->isGeometryLine && !pR->isGeometryFlat)
             this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
         else
-            this->objectCBs_LineFlat.insert(this->objectCBs_LineFlat.end(), pR->objectCBs_LineFlat.begin(), pR->objectCBs_LineFlat.end());
+            this->objectCBs_LineFlat3D.insert(this->objectCBs_LineFlat3D.end(), pR->objectCBs_LineFlat3D.begin(), pR->objectCBs_LineFlat3D.end());
         this->materialCBs.insert(this->materialCBs.end(), pR->materialCBs.begin(), pR->materialCBs.end());
         if (pRend->isUsedTessellation)
         {
@@ -1427,7 +1439,7 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
 
         pRend->instanceMatWorld.clear();
         pRend->objectCBs.clear();
-        pRend->objectCBs_LineFlat.clear();
+        pRend->objectCBs_LineFlat3D.clear();
         pRend->materialCBs.clear();
         for (int j = 0; j < count_instance; j++)
         {
@@ -1443,12 +1455,14 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
             }
             else
             {
-                //LineFlatObjectConstants
-                LineFlatObjectConstants objectConstants;
+                //ObjectLineFlat2D
+
+                //ObjectLineFlat3D
+                LineFlat3DObjectConstants objectConstants;
                 objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
                                                             g_ObjectRend_Tranforms[3 * i + 1],
                                                             g_ObjectRend_Tranforms[3 * i + 2]);
-                pRend->objectCBs_LineFlat.push_back(objectConstants);
+                pRend->objectCBs_LineFlat3D.push_back(objectConstants);
                 pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
             }
 
@@ -1514,12 +1528,12 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
             }
             else
             {
-                bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_LINEFLAT_COUNT;
-                pRend->poBuffers_ObjectCB_LineFlat.resize(count_sci);
-                pRend->poBuffersMemory_ObjectCB_LineFlat.resize(count_sci);
+                bufferSize = sizeof(LineFlat3DObjectConstants) * MAX_OBJECT_LINEFLAT_3D_COUNT;
+                pRend->poBuffers_ObjectCB_LineFlat3D.resize(count_sci);
+                pRend->poBuffersMemory_ObjectCB_LineFlat3D.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
-                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB_LineFlat[j], pRend->poBuffersMemory_ObjectCB_LineFlat[j]);
+                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB_LineFlat3D[j], pRend->poBuffersMemory_ObjectCB_LineFlat3D[j]);
                 }
             }
 
@@ -2063,8 +2077,8 @@ void Vulkan_017_Collision::createDescriptorSets_Custom()
     }
 }
 void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
-                                                        ModelObjectRend* pRend, 
-                                                        ModelObjectRendIndirect* pRendIndirect)
+                                                         ModelObjectRend* pRend, 
+                                                         ModelObjectRendIndirect* pRendIndirect)
 {
     StringVector* pDescriptorSetLayoutNames = pRend->pPipelineGraphics->poDescriptorSetLayoutNames;
     F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_017_Collision::createDescriptorSets_Graphics")
@@ -2107,12 +2121,25 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
                                             1,
                                             bufferInfo_Object);
             }
-            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectLineFlat)) //ObjectLineFlat
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectLineFlat2D)) //ObjectLineFlat2D
             {
                 VkDescriptorBufferInfo bufferInfo_ObjectLineFlat = {};
-                bufferInfo_ObjectLineFlat.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB_LineFlat[j] : pRend->poBuffers_ObjectCB_LineFlat[j];
+                bufferInfo_ObjectLineFlat.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB_LineFlat2D[j] : pRend->poBuffers_ObjectCB_LineFlat2D[j];
                 bufferInfo_ObjectLineFlat.offset = 0;
-                bufferInfo_ObjectLineFlat.range = sizeof(LineFlatObjectConstants) * MAX_OBJECT_LINEFLAT_COUNT;
+                bufferInfo_ObjectLineFlat.range = sizeof(LineFlat2DObjectConstants) * MAX_OBJECT_LINEFLAT_2D_COUNT;
+                pushVkDescriptorSet_Uniform(descriptorWrites,
+                                            pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
+                                            p,
+                                            0,
+                                            1,
+                                            bufferInfo_ObjectLineFlat);
+            }
+            else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectLineFlat3D)) //ObjectLineFlat3D
+            {
+                VkDescriptorBufferInfo bufferInfo_ObjectLineFlat = {};
+                bufferInfo_ObjectLineFlat.buffer = pRendIndirect != nullptr ? pRendIndirect->poBuffers_ObjectCB_LineFlat3D[j] : pRend->poBuffers_ObjectCB_LineFlat3D[j];
+                bufferInfo_ObjectLineFlat.offset = 0;
+                bufferInfo_ObjectLineFlat.range = sizeof(LineFlat3DObjectConstants) * MAX_OBJECT_LINEFLAT_3D_COUNT;
                 pushVkDescriptorSet_Uniform(descriptorWrites,
                                             pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
                                             p,
@@ -2218,7 +2245,7 @@ void Vulkan_017_Collision::createDescriptorSets_Graphics(VkDescriptorSetVector& 
     }
 }
 void Vulkan_017_Collision::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
-                                                           ModelObjectRend* pRend)
+                                                        ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
     F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_017_Collision::createDescriptorSets_Compute")
@@ -2356,7 +2383,7 @@ void Vulkan_017_Collision::updateCBs_Custom()
         if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
             count_object = pRend->objectCBs.size();
         else
-            count_object = pRend->objectCBs_LineFlat.size();
+            count_object = pRend->objectCBs_LineFlat3D.size();
         for (size_t j = 0; j < count_object; j++)
         {
             if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
@@ -2366,8 +2393,8 @@ void Vulkan_017_Collision::updateCBs_Custom()
                 if (pRend->pModelObject->isRotate || pRend->isRotate || this->cfg_isRotate)
                 {
                     objectCB.g_MatWorld = glm::rotate(pRend->instanceMatWorld[j], 
-                                                    time * glm::radians(90.0f), 
-                                                    FVector3(0.0f, 1.0f, 0.0f));
+                                                      time * glm::radians(90.0f), 
+                                                      FVector3(0.0f, 1.0f, 0.0f));
                 }
                 else
                 {
@@ -2376,13 +2403,15 @@ void Vulkan_017_Collision::updateCBs_Custom()
             }
             else
             {
-                //LineFlatObjectConstants
-                LineFlatObjectConstants& objectCB = pRend->objectCBs_LineFlat[j];
+                //ObjectLineFlat2D
+
+                //ObjectLineFlat3D
+                LineFlat3DObjectConstants& objectCB = pRend->objectCBs_LineFlat3D[j];
                 if (pRend->pModelObject->isRotate || pRend->isRotate || this->cfg_isRotate)
                 {
                     objectCB.g_MatWorld = glm::rotate(pRend->instanceMatWorld[j], 
-                                                    time * glm::radians(90.0f), 
-                                                    FVector3(0.0f, 1.0f, 0.0f));
+                                                      time * glm::radians(90.0f), 
+                                                      FVector3(0.0f, 1.0f, 0.0f));
                 }
                 else
                 {
@@ -2411,10 +2440,10 @@ void Vulkan_017_Collision::updateCBs_Custom()
         }
         else
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB_LineFlat[this->poSwapChainImageIndex];
+            VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB_LineFlat3D[this->poSwapChainImageIndex];
             void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlatObjectConstants) * count_object, 0, &data);
-                memcpy(data, pRend->objectCBs_LineFlat.data(), sizeof(LineFlatObjectConstants) * count_object);
+            vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlat3DObjectConstants) * count_object, 0, &data);
+                memcpy(data, pRend->objectCBs_LineFlat3D.data(), sizeof(LineFlat3DObjectConstants) * count_object);
             vkUnmapMemory(this->poDevice, memory);
         }
 
@@ -2460,12 +2489,14 @@ void Vulkan_017_Collision::updateCBs_Custom()
             }
             else
             {
-                //LineFlatObjectConstants
-                size_t count_object = pRendIndirect->objectCBs_LineFlat.size();
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB_LineFlat[this->poSwapChainImageIndex];
+                //ObjectLineFlat2D
+
+                //ObjectLineFlat3D
+                size_t count_object = pRendIndirect->objectCBs_LineFlat3D.size();
+                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB_LineFlat3D[this->poSwapChainImageIndex];
                 void* data;
-                vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlatObjectConstants) * count_object, 0, &data);
-                    memcpy(data, pRendIndirect->objectCBs_LineFlat.data(), sizeof(LineFlatObjectConstants) * count_object);
+                vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlat3DObjectConstants) * count_object, 0, &data);
+                    memcpy(data, pRendIndirect->objectCBs_LineFlat3D.data(), sizeof(LineFlat3DObjectConstants) * count_object);
                 vkUnmapMemory(this->poDevice, memory);
             }
 
@@ -2798,7 +2829,7 @@ void Vulkan_017_Collision::modelConfig()
                                     }
                                     else
                                     {
-                                        LineFlatObjectConstants& obj = pRend->objectCBs_LineFlat[p];
+                                        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[p];
                                         pMat4World = &obj.g_MatWorld;
                                     }
                                     

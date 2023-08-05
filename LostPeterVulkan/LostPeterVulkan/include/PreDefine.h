@@ -26,7 +26,8 @@ namespace LostPeter
     #define MAX_LIGHT_COUNT 16
     #define MAX_TEXTURE_COUNT 16
     #define MAX_OBJECT_COUNT 1024
-    #define MAX_OBJECT_LINEFLAT_COUNT 1024
+    #define MAX_OBJECT_LINEFLAT_2D_COUNT 2048
+    #define MAX_OBJECT_LINEFLAT_3D_COUNT 512
     #define MAX_MATERIAL_COUNT 64
     #define MAX_INSTANCE_COUNT 1024
 
@@ -349,20 +350,21 @@ namespace LostPeter
         Vulkan_DescriptorSet_ObjectGrid,                    //3:  ObjectGrid
         Vulkan_DescriptorSet_ObjectCameraAxis,              //4:  ObjectCameraAxis
         Vulkan_DescriptorSet_ObjectCoordinateAxis,          //5:  ObjectCoordinateAxis
-        Vulkan_DescriptorSet_ObjectLineFlat,                //6:  ObjectLineFlat
-        Vulkan_DescriptorSet_ObjectCopyBlit,                //7:  ObjectCopyBlit
-        Vulkan_DescriptorSet_Material,                      //8:  Material
-        Vulkan_DescriptorSet_Instance,                      //9:  Instance
-        Vulkan_DescriptorSet_TextureCopy,                   //10: TextureCopy
-        Vulkan_DescriptorSet_Tessellation,                  //11: Tessellation
-        Vulkan_DescriptorSet_Geometry,                      //12: Geometry
-        Vulkan_DescriptorSet_TextureVS,                     //13: TextureVS
-        Vulkan_DescriptorSet_TextureTESC,                   //14: TextureTESC
-        Vulkan_DescriptorSet_TextureTESE,                   //15: TextureTESE
-        Vulkan_DescriptorSet_TextureFS,                     //16: TextureFS
-        Vulkan_DescriptorSet_TextureFrameColor,             //17: TextureFrameColor
-        Vulkan_DescriptorSet_TextureCSR,                    //18: TextureCSR
-        Vulkan_DescriptorSet_TextureCSRW,                   //19: TextureCSRW
+        Vulkan_DescriptorSet_ObjectLineFlat2D,              //6:  ObjectLineFlat2D
+        Vulkan_DescriptorSet_ObjectLineFlat3D,              //7:  ObjectLineFlat3D
+        Vulkan_DescriptorSet_ObjectCopyBlit,                //8:  ObjectCopyBlit
+        Vulkan_DescriptorSet_Material,                      //9:  Material
+        Vulkan_DescriptorSet_Instance,                      //10: Instance
+        Vulkan_DescriptorSet_TextureCopy,                   //11: TextureCopy
+        Vulkan_DescriptorSet_Tessellation,                  //12: Tessellation
+        Vulkan_DescriptorSet_Geometry,                      //13: Geometry
+        Vulkan_DescriptorSet_TextureVS,                     //14: TextureVS
+        Vulkan_DescriptorSet_TextureTESC,                   //15: TextureTESC
+        Vulkan_DescriptorSet_TextureTESE,                   //16: TextureTESE
+        Vulkan_DescriptorSet_TextureFS,                     //17: TextureFS
+        Vulkan_DescriptorSet_TextureFrameColor,             //18: TextureFrameColor
+        Vulkan_DescriptorSet_TextureCSR,                    //19: TextureCSR
+        Vulkan_DescriptorSet_TextureCSRW,                   //20: TextureCSRW
 
         Vulkan_DescriptorSet_Count,
     };
@@ -460,7 +462,7 @@ namespace LostPeter
     struct GridObjectConstants;
     struct CameraAxisObjectConstants;
     struct CoordinateAxisObjectConstants;
-    struct LineFlatObjectConstants;
+    struct LineFlat3DObjectConstants;
     struct CopyBlitObjectConstants;
     struct MaterialConstants;
     struct InstanceConstants;

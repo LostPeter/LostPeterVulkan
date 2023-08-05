@@ -2,17 +2,17 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-07-31
+* Time:     2023-08-05
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-struct VSInput
+struct VSOutput
 {
-    [[vk::location(0)]]float3 inPosition    : POSITION0;
-    [[vk::location(1)]]float4 inColor       : COLOR0;
+    [[vk::location(0)]] float4 inWorldPos       : POSITION0;
+    [[vk::location(1)]] float4 inColor          : COLOR0;
 };
 
 
@@ -81,42 +81,21 @@ struct PassConstants
 }
 
 
-//LineFlatObjectConstants
-#define MAX_OBJECT_COUNT 512
-struct LineFlatObjectConstants
+//LineFlat2DObjectConstants
+#define MAX_OBJECT_COUNT 2048
+struct LineFlat2DObjectConstants
 {
-    float4x4 g_MatWorld;
     float4 color;
 };
 
-[[vk::binding(1)]]cbuffer lineFlatObjectConsts      : register(b1) 
+[[vk::binding(1)]]cbuffer lineFlat2DObjectConsts    : register(b1) 
 {
-    LineFlatObjectConstants lineFlatObjectConsts[MAX_OBJECT_COUNT];
+    LineFlat2DObjectConstants lineFlat2DObjectConsts[MAX_OBJECT_COUNT];
 }
 
-
-struct VSOutput
+float4 main(VSOutput input, uint viewIndex : SV_ViewID) : SV_TARGET
 {
-	float4 outPosition                          : SV_POSITION;
-    [[vk::location(0)]] float4 outWorldPos      : POSITION0;
-    [[vk::location(1)]] float4 outColor         : COLOR0;
-};
-
-
-VSOutput main(VSInput input, 
-              uint viewIndex : SV_ViewID,
-              uint instanceIndex : SV_InstanceID)
-{
-    VSOutput output = (VSOutput)0;
-
-    TransformConstants trans = passConsts.g_Transforms[viewIndex];
-    LineFlatObjectConstants obj = lineFlatObjectConsts[instanceIndex];
-
-    float4 outWorldPos = mul(obj.g_MatWorld, float4(input.inPosition, 1.0));
-    output.outPosition = mul(trans.mat4Proj, mul(trans.mat4View, outWorldPos));
-    output.outWorldPos.xyz = outWorldPos.xyz / outWorldPos.w;
-    output.outWorldPos.w = instanceIndex;
-    output.outColor = input.inColor;
-    
-    return output;
+    LineFlat2DObjectConstants axis = lineFlat2DObjectConsts[floor(input.inWorldPos.w + 0.5)];
+    float4 color = axis.color * input.inColor;
+    return color;
 }

@@ -53,9 +53,13 @@ public:
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
         std::vector<FMatrix4> instanceMatWorld;
 
-        std::vector<LineFlatObjectConstants> objectCBs_LineFlat;
-        std::vector<VkBuffer> poBuffers_ObjectCB_LineFlat;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_LineFlat;
+        std::vector<LineFlat2DObjectConstants> objectCBs_LineFlat2D;
+        std::vector<VkBuffer> poBuffers_ObjectCB_LineFlat2D;
+        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_LineFlat2D;
+
+        std::vector<LineFlat3DObjectConstants> objectCBs_LineFlat3D;
+        std::vector<VkBuffer> poBuffers_ObjectCB_LineFlat3D;
+        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_LineFlat3D;
 
         std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_materialCB;
@@ -155,6 +159,7 @@ public:
         void CleanupSwapChain()
         {
             //Uniform
+            //Object
             size_t count = this->poBuffers_ObjectCB.size();
             for (size_t i = 0; i < count; i++) 
             {
@@ -164,14 +169,25 @@ public:
             this->poBuffers_ObjectCB.clear();
             this->poBuffersMemory_ObjectCB.clear();
 
-            count = this->poBuffers_ObjectCB_LineFlat.size();
-             for (size_t i = 0; i < count; i++) 
+            //ObjectLineFlat2D
+            count = this->poBuffers_ObjectCB_LineFlat2D.size();
+            for (size_t i = 0; i < count; i++) 
             {
-                this->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB_LineFlat[i], this->poBuffersMemory_ObjectCB_LineFlat[i]);
+                this->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB_LineFlat2D[i], this->poBuffersMemory_ObjectCB_LineFlat2D[i]);
             }
-            this->objectCBs_LineFlat.clear();
-            this->poBuffers_ObjectCB_LineFlat.clear();
-            this->poBuffersMemory_ObjectCB_LineFlat.clear();
+            this->objectCBs_LineFlat2D.clear();
+            this->poBuffers_ObjectCB_LineFlat2D.clear();
+            this->poBuffersMemory_ObjectCB_LineFlat2D.clear();
+
+            //ObjectLineFlat3D
+            count = this->poBuffers_ObjectCB_LineFlat3D.size();
+            for (size_t i = 0; i < count; i++) 
+            {
+                this->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB_LineFlat3D[i], this->poBuffersMemory_ObjectCB_LineFlat3D[i]);
+            }
+            this->objectCBs_LineFlat3D.clear();
+            this->poBuffers_ObjectCB_LineFlat3D.clear();
+            this->poBuffersMemory_ObjectCB_LineFlat3D.clear();
 
             count = this->poBuffers_materialCB.size();
             for (size_t i = 0; i < count; i++) 
@@ -294,9 +310,13 @@ public:
         std::vector<VkBuffer> poBuffers_ObjectCB;
         std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB;
 
-        std::vector<LineFlatObjectConstants> objectCBs_LineFlat;
-        std::vector<VkBuffer> poBuffers_ObjectCB_LineFlat;
-        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_LineFlat;
+        std::vector<LineFlat2DObjectConstants> objectCBs_LineFlat2D;
+        std::vector<VkBuffer> poBuffers_ObjectCB_LineFlat2D;
+        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_LineFlat2D;
+
+        std::vector<LineFlat3DObjectConstants> objectCBs_LineFlat3D;
+        std::vector<VkBuffer> poBuffers_ObjectCB_LineFlat3D;
+        std::vector<VkDeviceMemory> poBuffersMemory_ObjectCB_LineFlat3D;
 
         std::vector<MaterialConstants> materialCBs;
         std::vector<VkBuffer> poBuffers_materialCB;

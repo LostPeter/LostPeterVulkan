@@ -1191,12 +1191,22 @@ namespace LostPeter
             
         }
     };
-    struct utilExport LineFlatObjectConstants
+    struct utilExport LineFlat2DObjectConstants
+    {
+        FColor color;
+        
+        LineFlat2DObjectConstants()
+            : color(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+    };
+    struct utilExport LineFlat3DObjectConstants
     {
         FMatrix4 g_MatWorld;
         FColor color;
         
-        LineFlatObjectConstants()
+        LineFlat3DObjectConstants()
             : g_MatWorld(FMath::Identity4x4())
             , color(1.0f, 1.0f, 1.0f, 1.0f)
         {
