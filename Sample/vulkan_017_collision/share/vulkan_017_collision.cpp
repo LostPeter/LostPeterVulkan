@@ -23,27 +23,33 @@ static const int g_MeshCount = 31;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name                 //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
-    "geo_line_line",            "Pos3Color4",                           "geometry",         "Line",                     "", //geo_line_line
-    "geo_line_triangle",        "Pos3Color4",                           "geometry",         "LineTriangle",             "", //geo_line_triangle
-    "geo_line_quad",            "Pos3Color4",                           "geometry",         "LineQuad",                 "", //geo_line_quad
-    "geo_line_grid",            "Pos3Color4",                           "geometry",         "LineGrid",                 "", //geo_line_grid
-    "geo_line_circle",          "Pos3Color4",                           "geometry",         "LineCircle",               "", //geo_line_circle
-    "geo_line_aabb",            "Pos3Color4",                           "geometry",         "LineAABB",                 "", //geo_line_aabb
-    "geo_line_sphere",          "Pos3Color4",                           "geometry",         "LineSphere",               "", //geo_line_sphere
-    "geo_line_cylinder",        "Pos3Color4",                           "geometry",         "LineCylinder",             "", //geo_line_cylinder
-    "geo_line_capsule",         "Pos3Color4",                           "geometry",         "LineCapsule",              "", //geo_line_capsule
-    "geo_line_cone",            "Pos3Color4",                           "geometry",         "LineCone",                 "", //geo_line_cone
-    "geo_line_torus",           "Pos3Color4",                           "geometry",         "LineTorus",                "", //geo_line_torus
+    // "geo_line_line_2d",         "Pos3Color4",                           "geometry",         "Line2D",                     "", //geo_line_line
+    // "geo_line_triangle_2d",     "Pos3Color4",                           "geometry",         "LineTriangle2D",             "", //geo_line_triangle
+    // "geo_line_quad_2d",         "Pos3Color4",                           "geometry",         "LineQuad2D",                 "", //geo_line_quad
+    // "geo_line_grid_2d",         "Pos3Color4",                           "geometry",         "LineGrid2D",                 "", //geo_line_grid
+    // "geo_line_circle_2d",       "Pos3Color4",                           "geometry",         "LineCircle2D",               "", //geo_line_circle
+
+    "geo_line_line",            "Pos3Color4",                           "geometry",         "Line3D",                   "", //geo_line_line
+    "geo_line_triangle",        "Pos3Color4",                           "geometry",         "LineTriangle3D",           "", //geo_line_triangle
+    "geo_line_quad",            "Pos3Color4",                           "geometry",         "LineQuad3D",               "", //geo_line_quad
+    "geo_line_grid",            "Pos3Color4",                           "geometry",         "LineGrid3D",               "", //geo_line_grid
+    "geo_line_circle",          "Pos3Color4",                           "geometry",         "LineCircle3D",             "", //geo_line_circle
+    "geo_line_aabb",            "Pos3Color4",                           "geometry",         "LineAABB3D",               "", //geo_line_aabb
+    "geo_line_sphere",          "Pos3Color4",                           "geometry",         "LineSphere3D",             "", //geo_line_sphere
+    "geo_line_cylinder",        "Pos3Color4",                           "geometry",         "LineCylinder3D",           "", //geo_line_cylinder
+    "geo_line_capsule",         "Pos3Color4",                           "geometry",         "LineCapsule3D",            "", //geo_line_capsule
+    "geo_line_cone",            "Pos3Color4",                           "geometry",         "LineCone3D",               "", //geo_line_cone
+    "geo_line_torus",           "Pos3Color4",                           "geometry",         "LineTorus3D",              "", //geo_line_torus
     
-    "geo_flat_triangle",        "Pos3Color4",                           "geometry",         "FlatTriangle",             "", //geo_flat_triangle
-    "geo_flat_quad",            "Pos3Color4",                           "geometry",         "FlatQuad",                 "", //geo_flat_quad
-    "geo_flat_circle",          "Pos3Color4",                           "geometry",         "FlatCircle",               "", //geo_flat_circle
-    "geo_flat_aabb",            "Pos3Color4",                           "geometry",         "FlatAABB",                 "", //geo_flat_aabb
-    "geo_flat_sphere",          "Pos3Color4",                           "geometry",         "FlatSphere",               "", //geo_flat_sphere
-    "geo_flat_cylinder",        "Pos3Color4",                           "geometry",         "FlatCylinder",             "", //geo_flat_cylinder
-    "geo_flat_capsule",         "Pos3Color4",                           "geometry",         "FlatCapsule",              "", //geo_flat_capsule
-    "geo_flat_cone",            "Pos3Color4",                           "geometry",         "FlatCone",                 "", //geo_flat_cone
-    "geo_flat_torus",           "Pos3Color4",                           "geometry",         "FlatTorus",                "", //geo_flat_torus
+    "geo_flat_triangle",        "Pos3Color4",                           "geometry",         "FlatTriangle3D",           "", //geo_flat_triangle
+    "geo_flat_quad",            "Pos3Color4",                           "geometry",         "FlatQuad3D",               "", //geo_flat_quad
+    "geo_flat_circle",          "Pos3Color4",                           "geometry",         "FlatCircle3D",             "", //geo_flat_circle
+    "geo_flat_aabb",            "Pos3Color4",                           "geometry",         "FlatAABB3D",               "", //geo_flat_aabb
+    "geo_flat_sphere",          "Pos3Color4",                           "geometry",         "FlatSphere3D",             "", //geo_flat_sphere
+    "geo_flat_cylinder",        "Pos3Color4",                           "geometry",         "FlatCylinder3D",           "", //geo_flat_cylinder
+    "geo_flat_capsule",         "Pos3Color4",                           "geometry",         "FlatCapsule3D",            "", //geo_flat_capsule
+    "geo_flat_cone",            "Pos3Color4",                           "geometry",         "FlatCone3D",               "", //geo_flat_cone
+    "geo_flat_torus",           "Pos3Color4",                           "geometry",         "FlatTorus3D",              "", //geo_flat_torus
 
     "geo_entity_triangle",      "Pos3Color4Normal3Tex2",                "geometry",         "EntityTriangle",           "", //geo_entity_triangle
     "geo_entity_quad",          "Pos3Color4Normal3Tex2",                "geometry",         "EntityQuad",               "", //geo_entity_quad

@@ -15,30 +15,34 @@
 
 namespace LostPeterFoundation
 {
-    ////////////////////////////////// Line //////////////////////////////////
-    String FMeshCreateParam_Line::ms_nameType = "MeshLine"; //Line
-    String FMeshCreateParam_LineTriangle::ms_nameType = "MeshLineTriangle"; //LineTriangle
-    String FMeshCreateParam_LineQuad::ms_nameType = "MeshLineQuad"; //LineQuad
-    String FMeshCreateParam_LineGrid::ms_nameType = "MeshLineGrid"; //LineGrid
-    String FMeshCreateParam_LineCircle::ms_nameType = "MeshLineCircle"; //LineCircle
-    String FMeshCreateParam_LineAABB::ms_nameType = "MeshLineAABB"; //LineAABB    
-    String FMeshCreateParam_LineSphere::ms_nameType = "MeshLineSphere"; //LineSphere
-    String FMeshCreateParam_LineCylinder::ms_nameType = "MeshLineCylinder"; //LineCylinder
-    String FMeshCreateParam_LineCapsule::ms_nameType = "MeshLineCapsule"; //LineCapsule
-    String FMeshCreateParam_LineCone::ms_nameType = "MeshLineCone"; //LineCone
-    String FMeshCreateParam_LineTorus::ms_nameType = "MeshLineTorus"; //LineTorus
+    ////////////////////////////////// Line2D ////////////////////////////////
+
+    ////////////////////////////////// Flat2D ////////////////////////////////
+
+    ////////////////////////////////// Line3D ////////////////////////////////
+    String FMeshCreateParam_Line3D::ms_nameType = "MeshLine3D"; //Line3D
+    String FMeshCreateParam_LineTriangle3D::ms_nameType = "MeshLineTriangle3D"; //LineTriangle3D
+    String FMeshCreateParam_LineQuad3D::ms_nameType = "MeshLineQuad3D"; //LineQuad3D
+    String FMeshCreateParam_LineGrid3D::ms_nameType = "MeshLineGrid3D"; //LineGrid3D
+    String FMeshCreateParam_LineCircle3D::ms_nameType = "MeshLineCircle3D"; //LineCircle3D
+    String FMeshCreateParam_LineAABB3D::ms_nameType = "MeshLineAABB3D"; //LineAABB3D    
+    String FMeshCreateParam_LineSphere3D::ms_nameType = "MeshLineSphere3D"; //LineSphere3D
+    String FMeshCreateParam_LineCylinder3D::ms_nameType = "MeshLineCylinder3D"; //LineCylinder3D
+    String FMeshCreateParam_LineCapsule3D::ms_nameType = "MeshLineCapsule3D"; //LineCapsule3D
+    String FMeshCreateParam_LineCone3D::ms_nameType = "MeshLineCone3D"; //LineCone3D
+    String FMeshCreateParam_LineTorus3D::ms_nameType = "MeshLineTorus3D"; //LineTorus3D
 
 
-    ////////////////////////////////// Flat //////////////////////////////////
-    String FMeshCreateParam_FlatTriangle::ms_nameType = "MeshFlatTriangle"; //FlatTriangle
-    String FMeshCreateParam_FlatQuad::ms_nameType = "MeshFlatQuad"; //FlatQuad
-    String FMeshCreateParam_FlatCircle::ms_nameType = "MeshFlatCircle"; //FlatCircle
-    String FMeshCreateParam_FlatAABB::ms_nameType = "MeshFlatAABB"; //FlatAABB
-    String FMeshCreateParam_FlatSphere::ms_nameType = "MeshFlatSphere"; //FlatSphere
-    String FMeshCreateParam_FlatCylinder::ms_nameType = "MeshFlatCylinder"; //FlatCylinder
-    String FMeshCreateParam_FlatCapsule::ms_nameType = "MeshFlatCapsule"; //FlatCapsule
-    String FMeshCreateParam_FlatCone::ms_nameType = "MeshFlatCone"; //FlatCone
-    String FMeshCreateParam_FlatTorus::ms_nameType = "MeshFlatTorus"; //FlatTorus
+    ////////////////////////////////// Flat3D ////////////////////////////////
+    String FMeshCreateParam_FlatTriangle3D::ms_nameType = "MeshFlatTriangle3D"; //FlatTriangle3D
+    String FMeshCreateParam_FlatQuad3D::ms_nameType = "MeshFlatQuad3D"; //FlatQuad3D
+    String FMeshCreateParam_FlatCircle3D::ms_nameType = "MeshFlatCircle3D"; //FlatCircle3D
+    String FMeshCreateParam_FlatAABB3D::ms_nameType = "MeshFlatAABB3D"; //FlatAABB3D
+    String FMeshCreateParam_FlatSphere3D::ms_nameType = "MeshFlatSphere3D"; //FlatSphere3D
+    String FMeshCreateParam_FlatCylinder3D::ms_nameType = "MeshFlatCylinder3D"; //FlatCylinder3D
+    String FMeshCreateParam_FlatCapsule3D::ms_nameType = "MeshFlatCapsule3D"; //FlatCapsule3D
+    String FMeshCreateParam_FlatCone3D::ms_nameType = "MeshFlatCone3D"; //FlatCone3D
+    String FMeshCreateParam_FlatTorus3D::ms_nameType = "MeshFlatTorus3D"; //FlatTorus3D
 
 
     ////////////////////////////////// Entity ////////////////////////////////
@@ -63,18 +67,28 @@ namespace LostPeterFoundation
     {
         if (F_IsMeshGeometryType_Entity(typeMeshGeometry))
         {
-            F_Assert(pMeshData != nullptr && "FMeshGeometry::CreateGeometry");
+            F_Assert(pMeshData != nullptr && "FMeshGeometry::CreateGeometry: CreateEntityGeometry");
             return CreateEntityGeometry(*pMeshData, typeMeshGeometry);
         }
-        else if (F_IsMeshGeometryType_Flat(typeMeshGeometry))
+        else if (F_IsMeshGeometryType_Flat3D(typeMeshGeometry))
         {
-            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometry");
-            return CreateFlatGeometry(*pMeshDataPC, typeMeshGeometry);
+            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometry: CreateFlat3DGeometry");
+            return CreateFlat3DGeometry(*pMeshDataPC, typeMeshGeometry);
         }
-        else if (F_IsMeshGeometryType_Line(typeMeshGeometry))
+        else if (F_IsMeshGeometryType_Line3D(typeMeshGeometry))
         {
-            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometry");
-            return CreateLineGeometry(*pMeshDataPC, typeMeshGeometry);
+            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometry: CreateLine3DGeometry");
+            return CreateLine3DGeometry(*pMeshDataPC, typeMeshGeometry);
+        }
+        else if (F_IsMeshGeometryType_Flat2D(typeMeshGeometry))
+        {
+            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometry: CreateFlat2DGeometry");
+            return CreateFlat2DGeometry(*pMeshDataPC, typeMeshGeometry);
+        }
+        else if (F_IsMeshGeometryType_Line2D(typeMeshGeometry))
+        {
+            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometry: CreateLine2DGeometry");
+            return CreateLine2DGeometry(*pMeshDataPC, typeMeshGeometry);
         }
         
         F_Assert(false && "FMeshGeometry::CreateGeometry: Wrong MeshGeometry type !");
@@ -84,18 +98,28 @@ namespace LostPeterFoundation
     {
         if (F_IsMeshGeometryType_Entity(typeMeshGeometry))
         {
-            F_Assert(pMeshData != nullptr && "FMeshGeometry::CreateGeometryWithParam");
+            F_Assert(pMeshData != nullptr && "FMeshGeometry::CreateGeometryWithParam: CreateEntityGeometryWithParam");
             return CreateEntityGeometryWithParam(*pMeshData, typeMeshGeometry, pParam);
         }
-        else if (F_IsMeshGeometryType_Flat(typeMeshGeometry))
+        else if (F_IsMeshGeometryType_Flat3D(typeMeshGeometry))
         {
-            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometryWithParam");
-            return CreateFlatGeometryWithParam(*pMeshDataPC, typeMeshGeometry, pParam);
+            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometryWithParam: CreateFlat3DGeometryWithParam");
+            return CreateFlat3DGeometryWithParam(*pMeshDataPC, typeMeshGeometry, pParam);
         }
-        else if (F_IsMeshGeometryType_Line(typeMeshGeometry))
+        else if (F_IsMeshGeometryType_Line3D(typeMeshGeometry))
         {
-            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometryWithParam");
-            return CreateLineGeometryWithParam(*pMeshDataPC, typeMeshGeometry, pParam);
+            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometryWithParam: CreateLine3DGeometryWithParam");
+            return CreateLine3DGeometryWithParam(*pMeshDataPC, typeMeshGeometry, pParam);
+        }
+        else if (F_IsMeshGeometryType_Flat2D(typeMeshGeometry))
+        {
+            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometryWithParam: CreateFlat2DGeometryWithParam");
+            return CreateFlat2DGeometryWithParam(*pMeshDataPC, typeMeshGeometry, pParam);
+        }
+        else if (F_IsMeshGeometryType_Line2D(typeMeshGeometry))
+        {
+            F_Assert(pMeshDataPC != nullptr && "FMeshGeometry::CreateGeometryWithParam: CreateLine2DGeometryWithParam");
+            return CreateLine2DGeometryWithParam(*pMeshDataPC, typeMeshGeometry, pParam);
         }
         
         F_Assert(false && "FMeshGeometry::CreateGeometryWithParam: Wrong MeshGeometry type !");
@@ -103,164 +127,187 @@ namespace LostPeterFoundation
     }
 
 
-    ////////////////////////////////// Line //////////////////////////////////
-    bool FMeshGeometry::CreateLineGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry)
+    ////////////////////////////////// Line2D ////////////////////////////////
+    bool FMeshGeometry::CreateLine2DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry)
+    {
+        return false;
+    }
+	bool FMeshGeometry::CreateLine2DGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam)
+    {
+        return false;
+    }
+
+
+
+    ////////////////////////////////// Flat2D ////////////////////////////////
+    bool FMeshGeometry::CreateFlat2DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry)
+    {
+        return false;
+    }
+	bool FMeshGeometry::CreateFlat2DGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam)
+    {
+        return false;
+    }
+
+
+    ////////////////////////////////// Line3D ////////////////////////////////
+    bool FMeshGeometry::CreateLine3DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry)
     {
         switch ((int)typeMeshGeometry)
         {
-        case F_MeshGeometry_Line:
+        case F_MeshGeometry_Line3D:
             {
-                FMeshCreateParam_Line param_Line;
-                FMeshGeometry::CreateLine(meshDataPC, &param_Line);
+                FMeshCreateParam_Line3D param_Line3D;
+                FMeshGeometry::CreateLine3D(meshDataPC, &param_Line3D);
                 return true;
             }
-        case F_MeshGeometry_LineTriangle:
+        case F_MeshGeometry_LineTriangle3D:
             {
-                FMeshCreateParam_LineTriangle param_LineTriangle;
-                FMeshGeometry::CreateLineTriangle(meshDataPC, &param_LineTriangle);
+                FMeshCreateParam_LineTriangle3D param_LineTriangle3D;
+                FMeshGeometry::CreateLineTriangle3D(meshDataPC, &param_LineTriangle3D);
                 return true;
             }
-        case F_MeshGeometry_LineQuad:
+        case F_MeshGeometry_LineQuad3D:
             {
-                FMeshCreateParam_LineQuad param_LineQuad;
-                FMeshGeometry::CreateLineQuad(meshDataPC, &param_LineQuad);
+                FMeshCreateParam_LineQuad3D param_LineQuad3D;
+                FMeshGeometry::CreateLineQuad3D(meshDataPC, &param_LineQuad3D);
                 return true;
             }
-        case F_MeshGeometry_LineGrid:
+        case F_MeshGeometry_LineGrid3D:
             {
-                FMeshCreateParam_LineGrid param_LineGrid;
-                FMeshGeometry::CreateLineGrid(meshDataPC, &param_LineGrid);
+                FMeshCreateParam_LineGrid3D param_LineGrid3D;
+                FMeshGeometry::CreateLineGrid3D(meshDataPC, &param_LineGrid3D);
                 return true;
             }
-        case F_MeshGeometry_LineCircle:
+        case F_MeshGeometry_LineCircle3D:
             {
-                FMeshCreateParam_LineCircle param_LineCircle;
-                FMeshGeometry::CreateLineCircle(meshDataPC, &param_LineCircle);
+                FMeshCreateParam_LineCircle3D param_LineCircle3D;
+                FMeshGeometry::CreateLineCircle3D(meshDataPC, &param_LineCircle3D);
                 return true;
             }
-        case F_MeshGeometry_LineAABB:
+        case F_MeshGeometry_LineAABB3D:
             {
-                FMeshCreateParam_LineAABB param_LineAABB;
-                FMeshGeometry::CreateLineAABB(meshDataPC, &param_LineAABB);
+                FMeshCreateParam_LineAABB3D param_LineAABB3D;
+                FMeshGeometry::CreateLineAABB3D(meshDataPC, &param_LineAABB3D);
                 return true;
             }
-        case F_MeshGeometry_LineSphere:
+        case F_MeshGeometry_LineSphere3D:
             {
-                FMeshCreateParam_LineSphere param_LineSphere;
-                FMeshGeometry::CreateLineSphere(meshDataPC, &param_LineSphere);
+                FMeshCreateParam_LineSphere3D param_LineSphere3D;
+                FMeshGeometry::CreateLineSphere3D(meshDataPC, &param_LineSphere3D);
                 return true;
             }
-        case F_MeshGeometry_LineCylinder:
+        case F_MeshGeometry_LineCylinder3D:
             {
-                FMeshCreateParam_LineCylinder param_LineCylinder;
-                FMeshGeometry::CreateLineCylinder(meshDataPC, &param_LineCylinder);
+                FMeshCreateParam_LineCylinder3D param_LineCylinder3D;
+                FMeshGeometry::CreateLineCylinder3D(meshDataPC, &param_LineCylinder3D);
                 return true;
             }
-        case F_MeshGeometry_LineCapsule:
+        case F_MeshGeometry_LineCapsule3D:
             {
-                FMeshCreateParam_LineCapsule param_LineCapsule;
-                FMeshGeometry::CreateLineCapsule(meshDataPC, &param_LineCapsule);
+                FMeshCreateParam_LineCapsule3D param_LineCapsule3D;
+                FMeshGeometry::CreateLineCapsule3D(meshDataPC, &param_LineCapsule3D);
                 return true;
             }
-        case F_MeshGeometry_LineCone:
+        case F_MeshGeometry_LineCone3D:
             {
-                FMeshCreateParam_LineCone param_LineCone;
-                FMeshGeometry::CreateLineCone(meshDataPC, &param_LineCone);
+                FMeshCreateParam_LineCone3D param_LineCone3D;
+                FMeshGeometry::CreateLineCone3D(meshDataPC, &param_LineCone3D);
                 return true;
             }
-        case F_MeshGeometry_LineTorus:
+        case F_MeshGeometry_LineTorus3D:
             {
-                FMeshCreateParam_LineTorus param_LineTorus;
-                FMeshGeometry::CreateLineTorus(meshDataPC, &param_LineTorus);
+                FMeshCreateParam_LineTorus3D param_LineTorus3D;
+                FMeshGeometry::CreateLineTorus3D(meshDataPC, &param_LineTorus3D);
                 return true;
             }
         }
         return false;
     }
-	bool FMeshGeometry::CreateLineGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam)
+	bool FMeshGeometry::CreateLine3DGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam)
     {
         if (pParam == nullptr)
         {
-            return CreateLineGeometry(meshDataPC, typeMeshGeometry);
+            return CreateLine3DGeometry(meshDataPC, typeMeshGeometry);
         }
 
         switch ((int)typeMeshGeometry)
         {
-        case F_MeshGeometry_Line:
+        case F_MeshGeometry_Line3D:
             {
-                FMeshCreateParam_Line* pParam_Line = static_cast<FMeshCreateParam_Line*>(pParam);
-                FMeshGeometry::CreateLine(meshDataPC, pParam_Line);
+                FMeshCreateParam_Line3D* pParam_Line3D = static_cast<FMeshCreateParam_Line3D*>(pParam);
+                FMeshGeometry::CreateLine3D(meshDataPC, pParam_Line3D);
                 return true;
             }
-        case F_MeshGeometry_LineTriangle:
+        case F_MeshGeometry_LineTriangle3D:
             {
-                FMeshCreateParam_LineTriangle* pParam_LineTriangle = static_cast<FMeshCreateParam_LineTriangle*>(pParam);
-                FMeshGeometry::CreateLineTriangle(meshDataPC, pParam_LineTriangle);
+                FMeshCreateParam_LineTriangle3D* pParam_LineTriangle3D = static_cast<FMeshCreateParam_LineTriangle3D*>(pParam);
+                FMeshGeometry::CreateLineTriangle3D(meshDataPC, pParam_LineTriangle3D);
                 return true;
             }
-        case F_MeshGeometry_LineQuad:
+        case F_MeshGeometry_LineQuad3D:
             {
-                FMeshCreateParam_LineQuad* pParam_LineQuad = static_cast<FMeshCreateParam_LineQuad*>(pParam);
-                FMeshGeometry::CreateLineQuad(meshDataPC, pParam_LineQuad);
+                FMeshCreateParam_LineQuad3D* pParam_LineQuad3D = static_cast<FMeshCreateParam_LineQuad3D*>(pParam);
+                FMeshGeometry::CreateLineQuad3D(meshDataPC, pParam_LineQuad3D);
                 return true;
             }
-        case F_MeshGeometry_LineGrid:
+        case F_MeshGeometry_LineGrid3D:
             {
-                FMeshCreateParam_LineGrid* pParam_LineGrid = static_cast<FMeshCreateParam_LineGrid*>(pParam);
-                FMeshGeometry::CreateLineGrid(meshDataPC, pParam_LineGrid);
+                FMeshCreateParam_LineGrid3D* pParam_LineGrid3D = static_cast<FMeshCreateParam_LineGrid3D*>(pParam);
+                FMeshGeometry::CreateLineGrid3D(meshDataPC, pParam_LineGrid3D);
                 return true;
             }
-        case F_MeshGeometry_LineCircle:
+        case F_MeshGeometry_LineCircle3D:
             {
-                FMeshCreateParam_LineCircle* pParam_LineCircle = static_cast<FMeshCreateParam_LineCircle*>(pParam);
-                FMeshGeometry::CreateLineCircle(meshDataPC, pParam_LineCircle);
+                FMeshCreateParam_LineCircle3D* pParam_LineCircle3D = static_cast<FMeshCreateParam_LineCircle3D*>(pParam);
+                FMeshGeometry::CreateLineCircle3D(meshDataPC, pParam_LineCircle3D);
                 return true;
             }
-        case F_MeshGeometry_LineAABB:
+        case F_MeshGeometry_LineAABB3D:
             {
-                FMeshCreateParam_LineAABB* pParam_LineAABB = static_cast<FMeshCreateParam_LineAABB*>(pParam);
-                FMeshGeometry::CreateLineAABB(meshDataPC, pParam_LineAABB);
+                FMeshCreateParam_LineAABB3D* pParam_LineAABB3D = static_cast<FMeshCreateParam_LineAABB3D*>(pParam);
+                FMeshGeometry::CreateLineAABB3D(meshDataPC, pParam_LineAABB3D);
                 return true;
             }
-        case F_MeshGeometry_LineSphere:
+        case F_MeshGeometry_LineSphere3D:
             {
-                FMeshCreateParam_LineSphere* pParam_LineSphere = static_cast<FMeshCreateParam_LineSphere*>(pParam);
-                FMeshGeometry::CreateLineSphere(meshDataPC, pParam_LineSphere);
+                FMeshCreateParam_LineSphere3D* pParam_LineSphere3D = static_cast<FMeshCreateParam_LineSphere3D*>(pParam);
+                FMeshGeometry::CreateLineSphere3D(meshDataPC, pParam_LineSphere3D);
                 return true;
             }
-        case F_MeshGeometry_LineCylinder:
+        case F_MeshGeometry_LineCylinder3D:
             {
-                FMeshCreateParam_LineCylinder* pParam_LineCylinder = static_cast<FMeshCreateParam_LineCylinder*>(pParam);
-                FMeshGeometry::CreateLineCylinder(meshDataPC, pParam_LineCylinder);
+                FMeshCreateParam_LineCylinder3D* pParam_LineCylinder3D = static_cast<FMeshCreateParam_LineCylinder3D*>(pParam);
+                FMeshGeometry::CreateLineCylinder3D(meshDataPC, pParam_LineCylinder3D);
                 return true;
             }
-        case F_MeshGeometry_LineCapsule:
+        case F_MeshGeometry_LineCapsule3D:
             {
-                FMeshCreateParam_LineCapsule* pParam_LineCapsule = static_cast<FMeshCreateParam_LineCapsule*>(pParam);
-                FMeshGeometry::CreateLineCapsule(meshDataPC, pParam_LineCapsule);
+                FMeshCreateParam_LineCapsule3D* pParam_LineCapsule3D = static_cast<FMeshCreateParam_LineCapsule3D*>(pParam);
+                FMeshGeometry::CreateLineCapsule3D(meshDataPC, pParam_LineCapsule3D);
                 return true;
             }
-        case F_MeshGeometry_LineCone:
+        case F_MeshGeometry_LineCone3D:
             {
-                FMeshCreateParam_LineCone* pParam_LineCone = static_cast<FMeshCreateParam_LineCone*>(pParam);
-                FMeshGeometry::CreateLineCone(meshDataPC, pParam_LineCone);
+                FMeshCreateParam_LineCone3D* pParam_LineCone3D = static_cast<FMeshCreateParam_LineCone3D*>(pParam);
+                FMeshGeometry::CreateLineCone3D(meshDataPC, pParam_LineCone3D);
                 return true;
             }
-        case F_MeshGeometry_LineTorus:
+        case F_MeshGeometry_LineTorus3D:
             {
-                FMeshCreateParam_LineTorus* pParam_LineTorus= static_cast<FMeshCreateParam_LineTorus*>(pParam);
-                FMeshGeometry::CreateLineTorus(meshDataPC, pParam_LineTorus);
+                FMeshCreateParam_LineTorus3D* pParam_LineTorus3D = static_cast<FMeshCreateParam_LineTorus3D*>(pParam);
+                FMeshGeometry::CreateLineTorus3D(meshDataPC, pParam_LineTorus3D);
                 return true;
             }
         }
         return false;
     }
 
-    //Line
-    void FMeshGeometry::CreateLine(FMeshDataPC& meshDataPC,
-                                   const FVector3& vStart,
-                                   const FVector3& vEnd,
-                                   const FVector4& vColor)
+    //Line3D
+    void FMeshGeometry::CreateLine3D(FMeshDataPC& meshDataPC,
+                                     const FVector3& vStart,
+                                     const FVector3& vEnd,
+                                     const FVector4& vColor)
     {
         // 0 ----- 1
 
@@ -272,12 +319,12 @@ namespace LostPeterFoundation
         AddIndexLine(meshDataPC, 0, 1);
     }
 
-    //LineTriangle
-    void FMeshGeometry::CreateLineTriangle(FMeshDataPC& meshDataPC,
-                                           const FVector3& vTop,
-                                           const FVector3& vLeft,
-                                           const FVector3& vRight,
-                                           const FVector4& vColor)
+    //LineTriangle3D
+    void FMeshGeometry::CreateLineTriangle3D(FMeshDataPC& meshDataPC,
+                                             const FVector3& vTop,
+                                             const FVector3& vLeft,
+                                             const FVector3& vRight,
+                                             const FVector4& vColor)
     {
         //        0 
         //        /\
@@ -295,13 +342,13 @@ namespace LostPeterFoundation
         AddIndexLine(meshDataPC, 2, 0);
     }
 
-    //LineQuad
-    void FMeshGeometry::CreateLineQuad(FMeshDataPC& meshDataPC,
-                                       const FVector3& vLeftTop,
-                                       const FVector3& vLeftBottom,
-                                       const FVector3& vRightBottom,
-                                       const FVector3& vRightTop,
-                                       const FVector4& vColor)
+    //LineQuad3D
+    void FMeshGeometry::CreateLineQuad3D(FMeshDataPC& meshDataPC,
+                                         const FVector3& vLeftTop,
+                                         const FVector3& vLeftBottom,
+                                         const FVector3& vRightBottom,
+                                         const FVector3& vRightTop,
+                                         const FVector4& vColor)
     {
         //  0       3
         //   --------
@@ -324,15 +371,15 @@ namespace LostPeterFoundation
         AddIndexLine(meshDataPC, 3, 0);
     }
 
-    //LineGrid
-    void FMeshGeometry::CreateLineGrid(FMeshDataPC& meshDataPC,
-                                       const FVector3& vLeftTop,
-                                       const FVector3& vLeftBottom,
-                                       const FVector3& vRightBottom,
-                                       const FVector3& vRightTop,
-                                       const FVector4& vColor,
-                                       uint32 m,
-                                       uint32 n)
+    //LineGrid3D
+    void FMeshGeometry::CreateLineGrid3D(FMeshDataPC& meshDataPC,
+                                         const FVector3& vLeftTop,
+                                         const FVector3& vLeftBottom,
+                                         const FVector3& vRightBottom,
+                                         const FVector3& vRightTop,
+                                         const FVector4& vColor,
+                                         uint32 m,
+                                         uint32 n)
     {
         // m >= 2, n >= 2
         //
@@ -387,15 +434,15 @@ namespace LostPeterFoundation
         }
     }
 
-    //LineCircle
-    void FMeshGeometry::CreateLineCircle(FMeshDataPC& meshDataPC,
-                                         const FVector3& vCenter,
-                                         const FVector3& vDir,
-                                         const FVector3& vUp,
-                                         const FVector4& vColor,
-                                         float radius,
-                                         uint32 segment,
-                                         bool isDrawCenter)
+    //LineCircle3D
+    void FMeshGeometry::CreateLineCircle3D(FMeshDataPC& meshDataPC,
+                                           const FVector3& vCenter,
+                                           const FVector3& vDir,
+                                           const FVector3& vUp,
+                                           const FVector4& vColor,
+                                           float radius,
+                                           uint32 segment,
+                                           bool isDrawCenter)
     {
         //          *  * 
 		//		*		   * 2
@@ -441,11 +488,11 @@ namespace LostPeterFoundation
         }
     }
 
-    //LineAABB
-    void FMeshGeometry::CreateLineAABB(FMeshDataPC& meshDataPC,
-                                       const FVector3& vCenter,
-                                       const FVector3& vExtent,
-                                       const FVector4& vColor)
+    //LineAABB3D
+    void FMeshGeometry::CreateLineAABB3D(FMeshDataPC& meshDataPC,
+                                         const FVector3& vCenter,
+                                         const FVector3& vExtent,
+                                         const FVector4& vColor)
     {
         //     7+------+4			  0: -+-
 		//     /|     /|			  1: ---
@@ -485,14 +532,14 @@ namespace LostPeterFoundation
         AddIndexLine(meshDataPC, 3, 4);
     }
 
-    //LineSphere
-    void FMeshGeometry::CreateLineSphere(FMeshDataPC& meshDataPC,
-                                         const FVector3& vCenter,
-                                         const FVector3& vUp,
-                                         const FVector4& vColor,
-                                         float radius,
-                                         uint32 sliceCount,
-                                         uint32 stackCount)
+    //LineSphere3D
+    void FMeshGeometry::CreateLineSphere3D(FMeshDataPC& meshDataPC,
+                                           const FVector3& vCenter,
+                                           const FVector3& vUp,
+                                           const FVector4& vColor,
+                                           float radius,
+                                           uint32 sliceCount,
+                                           uint32 stackCount)
     {
         //           0 
         //           *   
@@ -559,16 +606,16 @@ namespace LostPeterFoundation
         }
     }
 
-    //LineCylinder
-    void FMeshGeometry::CreateLineCylinder(FMeshDataPC& meshDataPC,
-                                           const FVector3& vCenter,
-                                           const FVector3& vUp,
-                                           const FVector4& vColor,
-                                           float radiusBottom,
-                                           float radiusTop,
-                                           float height,
-                                           uint32 sliceCount,
-                                           bool isDrawCenter)
+    //LineCylinder3D
+    void FMeshGeometry::CreateLineCylinder3D(FMeshDataPC& meshDataPC,
+                                             const FVector3& vCenter,
+                                             const FVector3& vUp,
+                                             const FVector4& vColor,
+                                             float radiusBottom,
+                                             float radiusTop,
+                                             float height,
+                                             uint32 sliceCount,
+                                             bool isDrawCenter)
     {
         //       * 
         //    *     *
@@ -638,15 +685,15 @@ namespace LostPeterFoundation
         }
     }
 
-    //LineCapsule
-    void FMeshGeometry::CreateLineCapsule(FMeshDataPC& meshDataPC,
-                                          const FVector3& vCenter,
-                                          const FVector3& vUp,
-                                          const FVector4& vColor,
-                                          float radius,
-                                          float height,
-                                          uint32 numRings,
-                                          uint32 numSegments)
+    //LineCapsule3D
+    void FMeshGeometry::CreateLineCapsule3D(FMeshDataPC& meshDataPC,
+                                            const FVector3& vCenter,
+                                            const FVector3& vUp,
+                                            const FVector4& vColor,
+                                            float radius,
+                                            float height,
+                                            uint32 numRings,
+                                            uint32 numSegments)
     {
         //      *** 
         //    *  *  *
@@ -725,14 +772,14 @@ namespace LostPeterFoundation
         }
     }
 
-    //LineCone
-    void FMeshGeometry::CreateLineCone(FMeshDataPC& meshDataPC,
-                                       const FVector3& vCenter,
-                                       const FVector3& vUp,
-                                       const FVector4& vColor,
-                                       float radius,
-                                       float height,
-                                       uint32 numSegBase)
+    //LineCone3D
+    void FMeshGeometry::CreateLineCone3D(FMeshDataPC& meshDataPC,
+                                         const FVector3& vCenter,
+                                         const FVector3& vUp,
+                                         const FVector4& vColor,
+                                         float radius,
+                                         float height,
+                                         uint32 numSegBase)
     {
         //               *
         //             *   *
@@ -774,15 +821,15 @@ namespace LostPeterFoundation
         }
     }
 
-    //LineTorus
-    void FMeshGeometry::CreateLineTorus(FMeshDataPC& meshDataPC,
-                                        const FVector3& vCenter,
-                                        const FVector3& vUp,
-                                        const FVector4& vColor,
-                                        float radius,
-                                        float sectionRadius,
-                                        uint32 numSegSection,
-                                        uint32 numSegCircle)
+    //LineTorus3D
+    void FMeshGeometry::CreateLineTorus3D(FMeshDataPC& meshDataPC,
+                                          const FVector3& vCenter,
+                                          const FVector3& vUp,
+                                          const FVector4& vColor,
+                                          float radius,
+                                          float sectionRadius,
+                                          uint32 numSegSection,
+                                          uint32 numSegCircle)
     {
         //         + +
         //       + * *  +  
@@ -822,141 +869,141 @@ namespace LostPeterFoundation
     }
 
 
-    ////////////////////////////////// Flat //////////////////////////////////
-    bool FMeshGeometry::CreateFlatGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry)
+    ////////////////////////////////// Flat3D ////////////////////////////////
+    bool FMeshGeometry::CreateFlat3DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry)
     {
         switch ((int)typeMeshGeometry)
         {
-        case F_MeshGeometry_FlatTriangle:
+        case F_MeshGeometry_FlatTriangle3D:
             {
-                FMeshCreateParam_FlatTriangle param_FlatTriangle;
-                FMeshGeometry::CreateFlatTriangle(meshDataPC, &param_FlatTriangle);
+                FMeshCreateParam_FlatTriangle3D param_FlatTriangle3D;
+                FMeshGeometry::CreateFlatTriangle3D(meshDataPC, &param_FlatTriangle3D);
                 return true;
             }
-        case F_MeshGeometry_FlatQuad:
+        case F_MeshGeometry_FlatQuad3D:
             {
-                FMeshCreateParam_FlatQuad param_FlatQuad;
-                FMeshGeometry::CreateFlatQuad(meshDataPC, &param_FlatQuad);
+                FMeshCreateParam_FlatQuad3D param_FlatQuad3D;
+                FMeshGeometry::CreateFlatQuad3D(meshDataPC, &param_FlatQuad3D);
                 return true;
             }
-        case F_MeshGeometry_FlatCircle:
+        case F_MeshGeometry_FlatCircle3D:
             {
-                FMeshCreateParam_FlatCircle param_FlatCircle;
-                FMeshGeometry::CreateFlatCircle(meshDataPC, &param_FlatCircle);
+                FMeshCreateParam_FlatCircle3D param_FlatCircle;
+                FMeshGeometry::CreateFlatCircle3D(meshDataPC, &param_FlatCircle);
                 return true;
             }
-        case F_MeshGeometry_FlatAABB:
+        case F_MeshGeometry_FlatAABB3D:
             {
-                FMeshCreateParam_FlatAABB param_FlatAABB;
-                FMeshGeometry::CreateFlatAABB(meshDataPC, &param_FlatAABB);
+                FMeshCreateParam_FlatAABB3D param_FlatAABB3D;
+                FMeshGeometry::CreateFlatAABB3D(meshDataPC, &param_FlatAABB3D);
                 return true;
             }
-        case F_MeshGeometry_FlatSphere:
+        case F_MeshGeometry_FlatSphere3D:
             {
-                FMeshCreateParam_FlatSphere param_FlatSphere;
-                FMeshGeometry::CreateFlatSphere(meshDataPC, &param_FlatSphere);
+                FMeshCreateParam_FlatSphere3D param_FlatSphere3D;
+                FMeshGeometry::CreateFlatSphere3D(meshDataPC, &param_FlatSphere3D);
                 return true;
             }
-        case F_MeshGeometry_FlatCylinder:
+        case F_MeshGeometry_FlatCylinder3D:
             {
-                FMeshCreateParam_FlatCylinder param_FlatCylinder;
-                FMeshGeometry::CreateFlatCylinder(meshDataPC, &param_FlatCylinder);
+                FMeshCreateParam_FlatCylinder3D param_FlatCylinder3D;
+                FMeshGeometry::CreateFlatCylinder3D(meshDataPC, &param_FlatCylinder3D);
                 return true;
             }
-        case F_MeshGeometry_FlatCapsule:
+        case F_MeshGeometry_FlatCapsule3D:
             {
-                FMeshCreateParam_FlatCapsule param_FlatCapsule;
-                FMeshGeometry::CreateFlatCapsule(meshDataPC, &param_FlatCapsule);
+                FMeshCreateParam_FlatCapsule3D param_FlatCapsule3D;
+                FMeshGeometry::CreateFlatCapsule3D(meshDataPC, &param_FlatCapsule3D);
                 return true;
             }
-        case F_MeshGeometry_FlatCone:
+        case F_MeshGeometry_FlatCone3D:
             {
-                FMeshCreateParam_FlatCone param_FlatCone;
-                FMeshGeometry::CreateFlatCone(meshDataPC, &param_FlatCone);
+                FMeshCreateParam_FlatCone3D param_FlatCone3D;
+                FMeshGeometry::CreateFlatCone3D(meshDataPC, &param_FlatCone3D);
                 return true;
             }
-        case F_MeshGeometry_FlatTorus:
+        case F_MeshGeometry_FlatTorus3D:
             {
-                FMeshCreateParam_FlatTorus param_FlatTorus;
-                FMeshGeometry::CreateFlatTorus(meshDataPC, &param_FlatTorus);
+                FMeshCreateParam_FlatTorus3D param_FlatTorus3D;
+                FMeshGeometry::CreateFlatTorus3D(meshDataPC, &param_FlatTorus3D);
                 return true;
             }
         }
         return false;
     }
-	bool FMeshGeometry::CreateFlatGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam)
+	bool FMeshGeometry::CreateFlat3DGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam)
     {
         if (pParam == nullptr)
         {
-            return CreateFlatGeometry(meshDataPC, typeMeshGeometry);
+            return CreateFlat3DGeometry(meshDataPC, typeMeshGeometry);
         }
 
         switch ((int)typeMeshGeometry)
         {
-        case F_MeshGeometry_FlatTriangle:
+        case F_MeshGeometry_FlatTriangle3D:
             {
-                FMeshCreateParam_FlatTriangle* pParam_FlatTriangle = static_cast<FMeshCreateParam_FlatTriangle*>(pParam);
-                FMeshGeometry::CreateFlatTriangle(meshDataPC, pParam_FlatTriangle);
+                FMeshCreateParam_FlatTriangle3D* pParam_FlatTriangle3D = static_cast<FMeshCreateParam_FlatTriangle3D*>(pParam);
+                FMeshGeometry::CreateFlatTriangle3D(meshDataPC, pParam_FlatTriangle3D);
                 return true;
             }
-        case F_MeshGeometry_FlatQuad:
+        case F_MeshGeometry_FlatQuad3D:
             {
-                FMeshCreateParam_FlatQuad* pParam_FlatQuad = static_cast<FMeshCreateParam_FlatQuad*>(pParam);
-                FMeshGeometry::CreateFlatQuad(meshDataPC, pParam_FlatQuad);
+                FMeshCreateParam_FlatQuad3D* pParam_FlatQuad3D = static_cast<FMeshCreateParam_FlatQuad3D*>(pParam);
+                FMeshGeometry::CreateFlatQuad3D(meshDataPC, pParam_FlatQuad3D);
                 return true;
             }
-        case F_MeshGeometry_FlatCircle:
+        case F_MeshGeometry_FlatCircle3D:
             {
-                FMeshCreateParam_FlatCircle* pParam_FlatCircle = static_cast<FMeshCreateParam_FlatCircle*>(pParam);
-                FMeshGeometry::CreateFlatCircle(meshDataPC, pParam_FlatCircle);
+                FMeshCreateParam_FlatCircle3D* pParam_FlatCircle3D = static_cast<FMeshCreateParam_FlatCircle3D*>(pParam);
+                FMeshGeometry::CreateFlatCircle3D(meshDataPC, pParam_FlatCircle3D);
                 return true;
             }
-        case F_MeshGeometry_FlatAABB:
+        case F_MeshGeometry_FlatAABB3D:
             {
-                FMeshCreateParam_FlatAABB* pParam_FlatAABB = static_cast<FMeshCreateParam_FlatAABB*>(pParam);
-                FMeshGeometry::CreateFlatAABB(meshDataPC, pParam_FlatAABB);
+                FMeshCreateParam_FlatAABB3D* pParam_FlatAABB3D = static_cast<FMeshCreateParam_FlatAABB3D*>(pParam);
+                FMeshGeometry::CreateFlatAABB3D(meshDataPC, pParam_FlatAABB3D);
                 return true;
             }
-        case F_MeshGeometry_FlatSphere:
+        case F_MeshGeometry_FlatSphere3D:
             {
-                FMeshCreateParam_FlatSphere* pParam_FlatSphere = static_cast<FMeshCreateParam_FlatSphere*>(pParam);
-                FMeshGeometry::CreateFlatSphere(meshDataPC, pParam_FlatSphere);
+                FMeshCreateParam_FlatSphere3D* pParam_FlatSphere3D = static_cast<FMeshCreateParam_FlatSphere3D*>(pParam);
+                FMeshGeometry::CreateFlatSphere3D(meshDataPC, pParam_FlatSphere3D);
                 return true;
             }
-        case F_MeshGeometry_FlatCylinder:
+        case F_MeshGeometry_FlatCylinder3D:
             {
-                FMeshCreateParam_FlatCylinder* pParam_FlatCylinder = static_cast<FMeshCreateParam_FlatCylinder*>(pParam);
-                FMeshGeometry::CreateFlatCylinder(meshDataPC, pParam_FlatCylinder);
+                FMeshCreateParam_FlatCylinder3D* pParam_FlatCylinder3D = static_cast<FMeshCreateParam_FlatCylinder3D*>(pParam);
+                FMeshGeometry::CreateFlatCylinder3D(meshDataPC, pParam_FlatCylinder3D);
                 return true;
             }
-        case F_MeshGeometry_FlatCapsule:
+        case F_MeshGeometry_FlatCapsule3D:
             {
-                FMeshCreateParam_FlatCapsule* pParam_FlatCapsule = static_cast<FMeshCreateParam_FlatCapsule*>(pParam);
-                FMeshGeometry::CreateFlatCapsule(meshDataPC, pParam_FlatCapsule);
+                FMeshCreateParam_FlatCapsule3D* pParam_FlatCapsule3D = static_cast<FMeshCreateParam_FlatCapsule3D*>(pParam);
+                FMeshGeometry::CreateFlatCapsule3D(meshDataPC, pParam_FlatCapsule3D);
                 return true;
             }
-        case F_MeshGeometry_FlatCone:
+        case F_MeshGeometry_FlatCone3D:
             {
-                FMeshCreateParam_FlatCone* pParam_FlatCone = static_cast<FMeshCreateParam_FlatCone*>(pParam);
-                FMeshGeometry::CreateFlatCone(meshDataPC, pParam_FlatCone);
+                FMeshCreateParam_FlatCone3D* pParam_FlatCone3D = static_cast<FMeshCreateParam_FlatCone3D*>(pParam);
+                FMeshGeometry::CreateFlatCone3D(meshDataPC, pParam_FlatCone3D);
                 return true;
             }
-        case F_MeshGeometry_FlatTorus:
+        case F_MeshGeometry_FlatTorus3D:
             {
-                FMeshCreateParam_FlatTorus* pParam_FlatTorus = static_cast<FMeshCreateParam_FlatTorus*>(pParam);
-                FMeshGeometry::CreateFlatTorus(meshDataPC, pParam_FlatTorus);
+                FMeshCreateParam_FlatTorus3D* pParam_FlatTorus3D = static_cast<FMeshCreateParam_FlatTorus3D*>(pParam);
+                FMeshGeometry::CreateFlatTorus3D(meshDataPC, pParam_FlatTorus3D);
                 return true;
             }
         }
         return false;
     }
 
-    //FlatTriangle
-    void FMeshGeometry::CreateFlatTriangle(FMeshDataPC& meshDataPC,
-                                           const FVector3& vTop,
-                                           const FVector3& vLeft,
-                                           const FVector3& vRight,
-                                           const FVector4& vColor)
+    //FlatTriangle3D
+    void FMeshGeometry::CreateFlatTriangle3D(FMeshDataPC& meshDataPC,
+                                             const FVector3& vTop,
+                                             const FVector3& vLeft,
+                                             const FVector3& vRight,
+                                             const FVector4& vColor)
     {
         //        0 
         //        /\
@@ -972,13 +1019,13 @@ namespace LostPeterFoundation
         AddIndexTriangle(meshDataPC, 0, 2, 1);
     }
 
-    //FlatQuad
-    void FMeshGeometry::CreateFlatQuad(FMeshDataPC& meshDataPC,
-                                       const FVector3& vLeftTop,
-                                       const FVector3& vLeftBottom,
-                                       const FVector3& vRightBottom,
-                                       const FVector3& vRightTop,
-                                       const FVector4& vColor)
+    //FlatQuad3D
+    void FMeshGeometry::CreateFlatQuad3D(FMeshDataPC& meshDataPC,
+                                         const FVector3& vLeftTop,
+                                         const FVector3& vLeftBottom,
+                                         const FVector3& vRightBottom,
+                                         const FVector3& vRightTop,
+                                         const FVector4& vColor)
     {
         //  0       3
         //   --------
@@ -999,14 +1046,14 @@ namespace LostPeterFoundation
         AddIndexTriangle(meshDataPC, 2, 1, 0);
     }
 
-    //FlatCircle
-    void FMeshGeometry::CreateFlatCircle(FMeshDataPC& meshDataPC,
-                                         const FVector3& vCenter,
-                                         const FVector3& vDir,
-                                         const FVector3& vUp,
-                                         const FVector4& vColor,
-                                         float radius,
-                                         uint32 segment)
+    //FlatCircle3D
+    void FMeshGeometry::CreateFlatCircle3D(FMeshDataPC& meshDataPC,
+                                           const FVector3& vCenter,
+                                           const FVector3& vDir,
+                                           const FVector3& vUp,
+                                           const FVector4& vColor,
+                                           float radius,
+                                           uint32 segment)
     {
         //          *  * 
 		//		*		   * 2
@@ -1048,11 +1095,11 @@ namespace LostPeterFoundation
         }
     }
 
-    //FlatAABB
-    void FMeshGeometry::CreateFlatAABB(FMeshDataPC& meshDataPC,
-                                       const FVector3& vCenter,
-                                       const FVector3& vExtent,
-                                       const FVector4& vColor)
+    //FlatAABB3D
+    void FMeshGeometry::CreateFlatAABB3D(FMeshDataPC& meshDataPC,
+                                         const FVector3& vCenter,
+                                         const FVector3& vExtent,
+                                         const FVector4& vColor)
     {
         //     7+------+4			  0: -+-
 		//     /|     /|			  1: ---
@@ -1091,14 +1138,14 @@ namespace LostPeterFoundation
         AddIndexTriangle(meshDataPC, 5, 2, 3);
     }
 
-    //FlatSphere
-    void FMeshGeometry::CreateFlatSphere(FMeshDataPC& meshDataPC,
-                                         const FVector3& vCenter,
-                                         const FVector3& vUp,
-                                         const FVector4& vColor,
-                                         float radius,
-                                         uint32 sliceCount,
-                                         uint32 stackCount)
+    //FlatSphere3D
+    void FMeshGeometry::CreateFlatSphere3D(FMeshDataPC& meshDataPC,
+                                           const FVector3& vCenter,
+                                           const FVector3& vUp,
+                                           const FVector4& vColor,
+                                           float radius,
+                                           uint32 sliceCount,
+                                           uint32 stackCount)
     {
         //           0 
         //           *   
@@ -1178,16 +1225,16 @@ namespace LostPeterFoundation
         }
     }
 
-    //FlatCylinder
-    void FMeshGeometry::CreateFlatCylinder(FMeshDataPC& meshDataPC,
-                                           const FVector3& vCenter,
-                                           const FVector3& vUp,
-                                           const FVector4& vColor,
-                                           float radiusBottom,
-                                           float radiusTop,
-                                           float height,
-                                           uint32 sliceCount,
-                                           uint32 stackCount)
+    //FlatCylinder3D
+    void FMeshGeometry::CreateFlatCylinder3D(FMeshDataPC& meshDataPC,
+                                             const FVector3& vCenter,
+                                             const FVector3& vUp,
+                                             const FVector4& vColor,
+                                             float radiusBottom,
+                                             float radiusTop,
+                                             float height,
+                                             uint32 sliceCount,
+                                             uint32 stackCount)
     {
         //       * 
         //    *     *
@@ -1287,16 +1334,16 @@ namespace LostPeterFoundation
         }
     }
 
-    //FlatCapsule
-    void FMeshGeometry::CreateFlatCapsule(FMeshDataPC& meshDataPC,
-                                          const FVector3& vCenter,
-                                          const FVector3& vUp,
-                                          const FVector4& vColor,
-                                          float radius,
-                                          float height,
-                                          uint32 numRings,
-                                          uint32 numSegments,
-                                          uint32 numSegHeight)
+    //FlatCapsule3D
+    void FMeshGeometry::CreateFlatCapsule3D(FMeshDataPC& meshDataPC,
+                                            const FVector3& vCenter,
+                                            const FVector3& vUp,
+                                            const FVector4& vColor,
+                                            float radius,
+                                            float height,
+                                            uint32 numRings,
+                                            uint32 numSegments,
+                                            uint32 numSegHeight)
     {
         //      *** 
         //    *  *  *
@@ -1390,15 +1437,15 @@ namespace LostPeterFoundation
         } 
     }
 
-    //FlatCone
-    void FMeshGeometry::CreateFlatCone(FMeshDataPC& meshDataPC,
-                                       const FVector3& vCenter,
-                                       const FVector3& vUp,
-                                       const FVector4& vColor,
-                                       float radius,
-                                       float height,
-                                       uint32 numSegBase,
-                                       uint32 numSegHeight)
+    //FlatCone3D
+    void FMeshGeometry::CreateFlatCone3D(FMeshDataPC& meshDataPC,
+                                         const FVector3& vCenter,
+                                         const FVector3& vUp,
+                                         const FVector4& vColor,
+                                         float radius,
+                                         float height,
+                                         uint32 numSegBase,
+                                         uint32 numSegHeight)
     {
         //               *
         //             *   *
@@ -1465,15 +1512,15 @@ namespace LostPeterFoundation
         }
     }
 
-    //FlatTorus
-    void FMeshGeometry::CreateFlatTorus(FMeshDataPC& meshDataPC,
-                                        const FVector3& vCenter,
-                                        const FVector3& vUp,
-                                        const FVector4& vColor,
-                                        float radius,
-                                        float sectionRadius,
-                                        uint32 numSegSection,
-                                        uint32 numSegCircle)
+    //FlatTorus3D
+    void FMeshGeometry::CreateFlatTorus3D(FMeshDataPC& meshDataPC,
+                                          const FVector3& vCenter,
+                                          const FVector3& vUp,
+                                          const FVector4& vColor,
+                                          float radius,
+                                          float sectionRadius,
+                                          uint32 numSegSection,
+                                          uint32 numSegCircle)
     {
         //         + +
         //       + * *  +  

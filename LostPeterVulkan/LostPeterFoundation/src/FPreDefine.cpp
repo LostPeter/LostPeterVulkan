@@ -43,45 +43,57 @@ namespace LostPeterFoundation
     //FMeshGeometryType
     static const String s_nameMeshGeometryTypes[] = 
     {
-    ////////////////////////////////// Line //////////////////////////////////
-        "Line",                     //0:    Line
-        "LineTriangle",             //1:    LineTriangle
-        "LineQuad",                 //2:    LineQuad
-        "LineGrid",                 //3:    LineGrid
-        "LineCircle",               //4:    LineCircle
-        "LineAABB",                 //5:    LineAABB
-        "LineSphere",               //6:    LineSphere   
-        "LineCylinder",             //7:    LineCylinder
-        "LineCapsule",              //8:    LineCapsule
-        "LineCone",                 //9:    LineCone
-        "LineTorus",                //10:   LineTorus
+    ////////////////////////////////// Line2D ////////////////////////////////
+        "Line2D",                   //0:    Line2D
+        "LineTriangle2D",           //1:    LineTriangle2D
+        "LineQuad2D",               //2:    LineQuad2D
+        "LineGrid2D",               //3:    LineGrid2D
+        "LineCircle2D",             //4:    LineCircle2D
 
-    ////////////////////////////////// Flat //////////////////////////////////
-        "FlatTriangle",             //11:   FlatTriangle
-        "FlatQuad",                 //12:   FlatQuad
-        "FlatCircle",               //13:   FlatCircle
-        "FlatAABB",                 //14:   FlatAABB
-        "FlatSphere",               //15:   FlatSphere
-        "FlatCylinder",             //16:   FlatCylinder
-        "FlatCapsule",              //17:   FlatCapsule
-        "FlatCone",                 //18:   FlatCone
-        "FlatTorus",                //19:   FlatTorus
+    ////////////////////////////////// Flat2D ////////////////////////////////
+        "FlatTriangle2D",           //5:    FlatTriangle2D
+        "FlatQuad2D",               //6:    FlatQuad2D
+        "FlatCircle2D",             //7:    FlatCircle2D
+
+    ////////////////////////////////// Line3D ////////////////////////////////
+        "Line3D",                   //8:    Line3D
+        "LineTriangle3D",           //9:    LineTriangle3D
+        "LineQuad3D",               //10:   LineQuad3D
+        "LineGrid3D",               //11:   LineGrid3D
+        "LineCircle3D",             //12:   LineCircle3D
+        "LineAABB3D",               //13:   LineAABB3D
+        "LineSphere3D",             //14:   LineSphere3D
+        "LineCylinder3D",           //15:   LineCylinder3D
+        "LineCapsule3D",            //16:   LineCapsule3D
+        "LineCone3D",               //17:   LineCone3D
+        "LineTorus3D",              //18:   LineTorus3D
+
+    ////////////////////////////////// Flat3D ////////////////////////////////
+        "FlatTriangle3D",           //19:   FlatTriangle3D
+        "FlatQuad3D",               //20:   FlatQuad3D
+        "FlatCircle3D",             //21:   FlatCircle3D
+        "FlatAABB3D",               //22:   FlatAABB3D
+        "FlatSphere3D",             //23:   FlatSphere3D
+        "FlatCylinder3D",           //24:   FlatCylinder3D
+        "FlatCapsule3D",            //25:   FlatCapsule3D
+        "FlatCone3D",               //26:   FlatCone3D
+        "FlatTorus3D",              //27:   FlatTorus3D
 
     ////////////////////////////////// Entity ////////////////////////////////
-        "EntityTriangle",           //20:   EntityTriangle
-        "EntityQuad",               //21:   EntityQuad
-        "EntityGrid",               //22:   EntityGrid
-        "EntityCircle",             //23:   EntityCircle
-        "EntityAABB",               //24:   EntityAABB
-        "EntitySphere",             //25:   EntitySphere
-        "EntityGeoSphere",          //26:   EntityGeoSphere
-        "EntityCylinder",           //27:   EntityCylinder
-        "EntityCapsule",            //28:   EntityCapsule
-        "EntityCone",               //29:   EntityCone
-        "EntityTorus",              //30:   EntityTorus
-        "EntitySkyBox",             //31:   EntitySkyBox
-        "EntitySkyDome",            //32:   EntitySkyDome
-        "EntityTerrain",            //33:   EntityTerrain
+        "EntityTriangle",           //28:   EntityTriangle
+        "EntityQuad",               //29:   EntityQuad
+        "EntityGrid",               //30:   EntityGrid
+        "EntityCircle",             //31:   EntityCircle
+        "EntityAABB",               //32:   EntityAABB
+        "EntitySphere",             //33:   EntitySphere
+        "EntityGeoSphere",          //34:   EntityGeoSphere
+        "EntityCylinder",           //35:   EntityCylinder
+        "EntityCapsule",            //36:   EntityCapsule
+        "EntityCone",               //37:   EntityCone
+        "EntityTorus",              //38:   EntityTorus
+        "EntitySkyBox",             //39:   EntitySkyBox
+        "EntitySkyDome",            //40:   EntitySkyDome
+        "EntityTerrain",            //41:   EntityTerrain
     };
     static std::map<String, FMeshGeometryType> s_mapName2MeshGeometryType;
     const String& F_GetMeshGeometryTypeName(FMeshGeometryType type)
@@ -111,15 +123,27 @@ namespace LostPeterFoundation
         F_Assert(false && "F_ParseMeshGeometryType: Wrong type name !")
         return F_MeshGeometry_EntityTriangle;
     }
-    bool F_IsMeshGeometryType_Line(FMeshGeometryType type)
+    bool F_IsMeshGeometryType_Line2D(FMeshGeometryType type)
     {
-        if ((int)type < (int)F_MeshGeometry_FlatTriangle)
+        if ((int)type < (int)F_MeshGeometry_FlatTriangle2D)
             return true;
         return false;
     }
-    bool F_IsMeshGeometryType_Flat(FMeshGeometryType type)
+    bool F_IsMeshGeometryType_Flat2D(FMeshGeometryType type)
     {
-        if ((int)type >= (int)F_MeshGeometry_FlatTriangle && (int)type < (int)F_MeshGeometry_EntityTriangle)
+        if ((int)type >= (int)F_MeshGeometry_FlatTriangle2D && (int)type < (int)F_MeshGeometry_Line3D)
+            return true;
+        return false;
+    }
+    bool F_IsMeshGeometryType_Line3D(FMeshGeometryType type)
+    {
+        if ((int)type >= (int)F_MeshGeometry_Line3D && (int)type < (int)F_MeshGeometry_FlatTriangle3D)
+            return true;
+        return false;
+    }
+    bool F_IsMeshGeometryType_Flat3D(FMeshGeometryType type)
+    {
+        if ((int)type >= (int)F_MeshGeometry_FlatTriangle3D && (int)type < (int)F_MeshGeometry_EntityTriangle)
             return true;
         return false;
     }

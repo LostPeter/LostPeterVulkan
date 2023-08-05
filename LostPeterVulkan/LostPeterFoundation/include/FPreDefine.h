@@ -186,26 +186,26 @@ namespace LostPeterFoundation
     class FMath;
     class FMeshDataLoader;
     class FMeshCreateParam;
-    class FMeshCreateParam_Line;
-    class FMeshCreateParam_LineTriangle;
-    class FMeshCreateParam_LineQuad;
-    class FMeshCreateParam_LineGrid;
-    class FMeshCreateParam_LineCircle;
-    class FMeshCreateParam_LineAABB;
-    class FMeshCreateParam_LineSphere;
-    class FMeshCreateParam_LineCylinder;
-    class FMeshCreateParam_LineCapsule;
-    class FMeshCreateParam_LineCone;
-    class FMeshCreateParam_LineTorus;
-    class FMeshCreateParam_FlatTriangle;
-    class FMeshCreateParam_FlatQuad;
-    class FMeshCreateParam_FlatCircle;
-    class FMeshCreateParam_FlatAABB;
-    class FMeshCreateParam_FlatSphere;
-    class FMeshCreateParam_FlatCylinder;
-    class FMeshCreateParam_FlatCapsule;
-    class FMeshCreateParam_FlatCone;
-    class FMeshCreateParam_FlatTorus;
+    class FMeshCreateParam_Line3D;
+    class FMeshCreateParam_LineTriangle3D;
+    class FMeshCreateParam_LineQuad3D;
+    class FMeshCreateParam_LineGrid3D;
+    class FMeshCreateParam_LineCircle3D;
+    class FMeshCreateParam_LineAABB3D;
+    class FMeshCreateParam_LineSphere3D;
+    class FMeshCreateParam_LineCylinder3D;
+    class FMeshCreateParam_LineCapsule3D;
+    class FMeshCreateParam_LineCone3D;
+    class FMeshCreateParam_LineTorus3D;
+    class FMeshCreateParam_FlatTriangle3D;
+    class FMeshCreateParam_FlatQuad3D;
+    class FMeshCreateParam_FlatCircle3D;
+    class FMeshCreateParam_FlatAABB3D;
+    class FMeshCreateParam_FlatSphere3D;
+    class FMeshCreateParam_FlatCylinder3D;
+    class FMeshCreateParam_FlatCapsule3D;
+    class FMeshCreateParam_FlatCone3D;
+    class FMeshCreateParam_FlatTorus3D;
     class FMeshCreateParam_EntityTriangle;
     class FMeshCreateParam_EntityQuad;
     class FMeshCreateParam_EntityGrid;
@@ -281,53 +281,67 @@ namespace LostPeterFoundation
 
     enum FMeshGeometryType
     {
-    ////////////////////////////////// Line //////////////////////////////////
-        F_MeshGeometry_Line = 0,                        //0:    Line
-        F_MeshGeometry_LineTriangle,                    //1:    LineTriangle
-        F_MeshGeometry_LineQuad,                        //2:    LineQuad
-        F_MeshGeometry_LineGrid,                        //3:    LineGrid
-        F_MeshGeometry_LineCircle,                      //4:    LineCircle
-        F_MeshGeometry_LineAABB,                        //5:    LineAABB
-        F_MeshGeometry_LineSphere,                      //6:    LineSphere
-        F_MeshGeometry_LineCylinder,                    //7:    LineCylinder
-        F_MeshGeometry_LineCapsule,                     //8:    LineCapsule
-        F_MeshGeometry_LineCone,                        //9:    LineCone
-        F_MeshGeometry_LineTorus,                       //10:   LineTorus
+    ////////////////////////////////// Line2D ////////////////////////////////
+        F_MeshGeometry_Line2D = 0,                      //0:    Line2D
+        F_MeshGeometry_LineTriangle2D,                  //1:    LineTriangle2D
+        F_MeshGeometry_LineQuad2D,                      //2:    LineQuad2D
+        F_MeshGeometry_LineGrid2D,                      //3:    LineGrid2D
+        F_MeshGeometry_LineCircle2D,                    //4:    LineCircle2D
 
-    ////////////////////////////////// Flat //////////////////////////////////
-        F_MeshGeometry_FlatTriangle,                    //11:   FlatTriangle
-        F_MeshGeometry_FlatQuad,                        //12:   FlatQuad
-        F_MeshGeometry_FlatCircle,                      //13:   FlatCircle
-        F_MeshGeometry_FlatAABB,                        //14:   FlatAABB
-        F_MeshGeometry_FlatSphere,                      //15:   FlatSphere
-        F_MeshGeometry_FlatCylinder,                    //16:   FlatCylinder
-        F_MeshGeometry_FlatCapsule,                     //17:   FlatCapsule
-        F_MeshGeometry_FlatCone,                        //18:   FlatCone
-        F_MeshGeometry_FlatTorus,                       //19:   FlatTorus
+    ////////////////////////////////// Flat2D ////////////////////////////////
+        F_MeshGeometry_FlatTriangle2D,                  //5:    FlatTriangle2D
+        F_MeshGeometry_FlatQuad2D,                      //6:    FlatQuad2D
+        F_MeshGeometry_FlatCircle2D,                    //7:    FlatCircle2D
+
+    ////////////////////////////////// Line3D ////////////////////////////////
+        F_MeshGeometry_Line3D,                          //8:    Line3D
+        F_MeshGeometry_LineTriangle3D,                  //9:    LineTriangle3D
+        F_MeshGeometry_LineQuad3D,                      //10:   LineQuad3D
+        F_MeshGeometry_LineGrid3D,                      //11:   LineGrid3D
+        F_MeshGeometry_LineCircle3D,                    //12:   LineCircle3D
+        F_MeshGeometry_LineAABB3D,                      //13:   LineAABB3D
+        F_MeshGeometry_LineSphere3D,                    //14:   LineSphere3D
+        F_MeshGeometry_LineCylinder3D,                  //15:   LineCylinder3D
+        F_MeshGeometry_LineCapsule3D,                   //16:   LineCapsule3D
+        F_MeshGeometry_LineCone3D,                      //17:   LineCone3D
+        F_MeshGeometry_LineTorus3D,                     //18:   LineTorus3D
+
+    ////////////////////////////////// Flat3D ////////////////////////////////
+        F_MeshGeometry_FlatTriangle3D,                  //19:   FlatTriangle3D
+        F_MeshGeometry_FlatQuad3D,                      //20:   FlatQuad3D
+        F_MeshGeometry_FlatCircle3D,                    //21:   FlatCircle3D
+        F_MeshGeometry_FlatAABB3D,                      //22:   FlatAABB3D
+        F_MeshGeometry_FlatSphere3D,                    //23:   FlatSphere3D
+        F_MeshGeometry_FlatCylinder3D,                  //24:   FlatCylinder3D
+        F_MeshGeometry_FlatCapsule3D,                   //25:   FlatCapsule3D
+        F_MeshGeometry_FlatCone3D,                      //26:   FlatCone3D
+        F_MeshGeometry_FlatTorus3D,                     //27:   FlatTorus3D
 
     ////////////////////////////////// Entity ////////////////////////////////
-        F_MeshGeometry_EntityTriangle,                  //20:   EntityTriangle
-        F_MeshGeometry_EntityQuad,                      //21:   EntityQuad
-        F_MeshGeometry_EntityGrid,                      //22:   EntityGrid
-        F_MeshGeometry_EntityCircle,                    //23:   EntityCircle
-        F_MeshGeometry_EntityAABB,                      //24:   EntityAABB
-        F_MeshGeometry_EntitySphere,                    //25:   EntitySphere
-        F_MeshGeometry_EntityGeoSphere,                 //26:   EntityGeoSphere
-        F_MeshGeometry_EntityCylinder,                  //27:   EntityCylinder
-        F_MeshGeometry_EntityCapsule,                   //28:   EntityCapsule
-        F_MeshGeometry_EntityCone,                      //29:   EntityCone
-        F_MeshGeometry_EntityTorus,                     //30:   EntityTorus
-        F_MeshGeometry_EntitySkyBox,                    //31:   EntitySkyBox
-        F_MeshGeometry_EntitySkyDome,                   //32:   EntitySkyDome
-        F_MeshGeometry_EntityTerrain,                   //33:   EntityTerrain
+        F_MeshGeometry_EntityTriangle,                  //28:   EntityTriangle
+        F_MeshGeometry_EntityQuad,                      //29:   EntityQuad
+        F_MeshGeometry_EntityGrid,                      //30:   EntityGrid
+        F_MeshGeometry_EntityCircle,                    //31:   EntityCircle
+        F_MeshGeometry_EntityAABB,                      //32:   EntityAABB
+        F_MeshGeometry_EntitySphere,                    //33:   EntitySphere
+        F_MeshGeometry_EntityGeoSphere,                 //34:   EntityGeoSphere
+        F_MeshGeometry_EntityCylinder,                  //35:   EntityCylinder
+        F_MeshGeometry_EntityCapsule,                   //36:   EntityCapsule
+        F_MeshGeometry_EntityCone,                      //37:   EntityCone
+        F_MeshGeometry_EntityTorus,                     //38:   EntityTorus
+        F_MeshGeometry_EntitySkyBox,                    //39:   EntitySkyBox
+        F_MeshGeometry_EntitySkyDome,                   //40:   EntitySkyDome
+        F_MeshGeometry_EntityTerrain,                   //41:   EntityTerrain
 
         F_MeshGeometry_Count,
     };
     const String& F_GetMeshGeometryTypeName(FMeshGeometryType type);
     const String& F_GetMeshGeometryTypeName(int type);
     FMeshGeometryType F_ParseMeshGeometryType(const String& strName);
-    bool F_IsMeshGeometryType_Line(FMeshGeometryType type);
-    bool F_IsMeshGeometryType_Flat(FMeshGeometryType type);
+    bool F_IsMeshGeometryType_Line2D(FMeshGeometryType type);
+    bool F_IsMeshGeometryType_Flat2D(FMeshGeometryType type);
+    bool F_IsMeshGeometryType_Line3D(FMeshGeometryType type);
+    bool F_IsMeshGeometryType_Flat3D(FMeshGeometryType type);
     bool F_IsMeshGeometryType_Entity(FMeshGeometryType type);
 
 

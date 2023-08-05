@@ -3846,8 +3846,8 @@ namespace LostPeter
                                                  "",
                                                  F_Mesh_Geometry,
                                                  F_MeshVertex_Pos3Color4,
-                                                 F_MeshGeometry_LineQuad,
-                                                 new FMeshCreateParam_LineQuad(FVector3(0, 1, 0), FVector3(0, 0, 0), FVector3(1, 0, 0), FVector3(1, 1, 0)),
+                                                 F_MeshGeometry_LineQuad3D,
+                                                 new FMeshCreateParam_LineQuad3D(FVector3(0, 1, 0), FVector3(0, 0, 0), FVector3(1, 0, 0), FVector3(1, 1, 0)),
                                                  true,
                                                  false,
                                                  FMath::ms_mat4Unit);
