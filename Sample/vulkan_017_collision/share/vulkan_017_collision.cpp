@@ -19,76 +19,90 @@
 
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 31; 
-static const char* g_MeshPaths[5 * g_MeshCount] =
+static const int g_MeshCount = 39; 
+static const char* g_MeshPaths[6 * g_MeshCount] =
 {
-    //Mesh Name                 //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
-    // "geo_line_line_2d",         "Pos3Color4",                           "geometry",         "Line2D",                     "", //geo_line_line
-    // "geo_line_triangle_2d",     "Pos3Color4",                           "geometry",         "LineTriangle2D",             "", //geo_line_triangle
-    // "geo_line_quad_2d",         "Pos3Color4",                           "geometry",         "LineQuad2D",                 "", //geo_line_quad
-    // "geo_line_grid_2d",         "Pos3Color4",                           "geometry",         "LineGrid2D",                 "", //geo_line_grid
-    // "geo_line_circle_2d",       "Pos3Color4",                           "geometry",         "LineCircle2D",               "", //geo_line_circle
+    //Mesh Name                 //Vertex Type                 //Mesh Type         //Mesh Path   //Mesh Geometry Type        //Mesh Geometry Param
+    "geo_line_line_2d",         "Pos3Color4",                 "geometry",         "",           "Line2D",                   "0.5;0.9;0.7;0.9;1;0;0;1", //geo_line_line_2d
+    "geo_line_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle2D",           "0.6;0.8;0.5;0.6;0.7;0.6;0;1;0;1", //geo_line_triangle_2d
+    "geo_line_quad_2d",         "Pos3Color4",                 "geometry",         "",           "LineQuad2D",               "0.5;0.5;0.5;0.3;0.7;0.3;0.7;0.5;0;0;1;1", //geo_line_quad_2d
+    "geo_line_grid_2d",         "Pos3Color4",                 "geometry",         "",           "LineGrid2D",               "0.5;0.2;0.5;0.0;0.7;0.0;0.7;0.2;10;10;1;1;0;1", //geo_line_grid_2d
+    "geo_line_circle_2d",       "Pos3Color4",                 "geometry",         "",           "LineCircle2D",             "0.6;-0.2;1.0;0.0;0.1;50;true;1;0;1;1", //geo_line_circle_2d
 
-    "geo_line_line",            "Pos3Color4",                           "geometry",         "Line3D",                   "", //geo_line_line
-    "geo_line_triangle",        "Pos3Color4",                           "geometry",         "LineTriangle3D",           "", //geo_line_triangle
-    "geo_line_quad",            "Pos3Color4",                           "geometry",         "LineQuad3D",               "", //geo_line_quad
-    "geo_line_grid",            "Pos3Color4",                           "geometry",         "LineGrid3D",               "", //geo_line_grid
-    "geo_line_circle",          "Pos3Color4",                           "geometry",         "LineCircle3D",             "", //geo_line_circle
-    "geo_line_aabb",            "Pos3Color4",                           "geometry",         "LineAABB3D",               "", //geo_line_aabb
-    "geo_line_sphere",          "Pos3Color4",                           "geometry",         "LineSphere3D",             "", //geo_line_sphere
-    "geo_line_cylinder",        "Pos3Color4",                           "geometry",         "LineCylinder3D",           "", //geo_line_cylinder
-    "geo_line_capsule",         "Pos3Color4",                           "geometry",         "LineCapsule3D",            "", //geo_line_capsule
-    "geo_line_cone",            "Pos3Color4",                           "geometry",         "LineCone3D",               "", //geo_line_cone
-    "geo_line_torus",           "Pos3Color4",                           "geometry",         "LineTorus3D",              "", //geo_line_torus
+    "geo_flat_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "FlatTriangle2D",           "0.85;0.8;0.75;0.6;0.95;0.6;0;1;0;1", //geo_flat_triangle_2d
+    "geo_flat_quad_2d",         "Pos3Color4",                 "geometry",         "",           "FlatQuad2D",               "0.75;0.5;0.75;0.3;0.95;0.3;0.95;0.5;0;0;1;1", //geo_flat_quad_2d
+    "geo_flat_circle_2d",       "Pos3Color4",                 "geometry",         "",           "FlatCircle2D",             "0.85;-0.2;1.0;0.0;0.1;50;1;0;1;1", //geo_flat_circle_2d
+
+    "geo_line_line_3d",         "Pos3Color4",                 "geometry",         "",           "Line3D",                   "", //geo_line_line_3d
+    "geo_line_triangle_3d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle3D",           "", //geo_line_triangle_3d
+    "geo_line_quad_3d",         "Pos3Color4",                 "geometry",         "",           "LineQuad3D",               "", //geo_line_quad_3d
+    "geo_line_grid_3d",         "Pos3Color4",                 "geometry",         "",           "LineGrid3D",               "", //geo_line_grid_3d
+    "geo_line_circle_3d",       "Pos3Color4",                 "geometry",         "",           "LineCircle3D",             "", //geo_line_circle_3d
+    "geo_line_aabb_3d",         "Pos3Color4",                 "geometry",         "",           "LineAABB3D",               "", //geo_line_aabb_3d
+    "geo_line_sphere_3d",       "Pos3Color4",                 "geometry",         "",           "LineSphere3D",             "", //geo_line_sphere_3d
+    "geo_line_cylinder_3d",     "Pos3Color4",                 "geometry",         "",           "LineCylinder3D",           "", //geo_line_cylinder_3d
+    "geo_line_capsule_3d",      "Pos3Color4",                 "geometry",         "",           "LineCapsule3D",            "", //geo_line_capsule_3d
+    "geo_line_cone_3d",         "Pos3Color4",                 "geometry",         "",           "LineCone3D",               "", //geo_line_cone_3d
+    "geo_line_torus_3d",        "Pos3Color4",                 "geometry",         "",           "LineTorus3D",              "", //geo_line_torus_3d
     
-    "geo_flat_triangle",        "Pos3Color4",                           "geometry",         "FlatTriangle3D",           "", //geo_flat_triangle
-    "geo_flat_quad",            "Pos3Color4",                           "geometry",         "FlatQuad3D",               "", //geo_flat_quad
-    "geo_flat_circle",          "Pos3Color4",                           "geometry",         "FlatCircle3D",             "", //geo_flat_circle
-    "geo_flat_aabb",            "Pos3Color4",                           "geometry",         "FlatAABB3D",               "", //geo_flat_aabb
-    "geo_flat_sphere",          "Pos3Color4",                           "geometry",         "FlatSphere3D",             "", //geo_flat_sphere
-    "geo_flat_cylinder",        "Pos3Color4",                           "geometry",         "FlatCylinder3D",           "", //geo_flat_cylinder
-    "geo_flat_capsule",         "Pos3Color4",                           "geometry",         "FlatCapsule3D",            "", //geo_flat_capsule
-    "geo_flat_cone",            "Pos3Color4",                           "geometry",         "FlatCone3D",               "", //geo_flat_cone
-    "geo_flat_torus",           "Pos3Color4",                           "geometry",         "FlatTorus3D",              "", //geo_flat_torus
+    "geo_flat_triangle_3d",     "Pos3Color4",                 "geometry",         "",           "FlatTriangle3D",           "", //geo_flat_triangle_3d
+    "geo_flat_quad_3d",         "Pos3Color4",                 "geometry",         "",           "FlatQuad3D",               "", //geo_flat_quad_3d
+    "geo_flat_circle_3d",       "Pos3Color4",                 "geometry",         "",           "FlatCircle3D",             "", //geo_flat_circle_3d
+    "geo_flat_aabb_3d",         "Pos3Color4",                 "geometry",         "",           "FlatAABB3D",               "", //geo_flat_aabb_3d
+    "geo_flat_sphere_3d",       "Pos3Color4",                 "geometry",         "",           "FlatSphere3D",             "", //geo_flat_sphere_3d
+    "geo_flat_cylinder_3d",     "Pos3Color4",                 "geometry",         "",           "FlatCylinder3D",           "", //geo_flat_cylinder_3d
+    "geo_flat_capsule_3d",      "Pos3Color4",                 "geometry",         "",           "FlatCapsule3D",            "", //geo_flat_capsule_3d
+    "geo_flat_cone_3d",         "Pos3Color4",                 "geometry",         "",           "FlatCone3D",               "", //geo_flat_cone_3d
+    "geo_flat_torus_3d",        "Pos3Color4",                 "geometry",         "",           "FlatTorus3D",              "", //geo_flat_torus_3d
 
-    "geo_entity_triangle",      "Pos3Color4Normal3Tex2",                "geometry",         "EntityTriangle",           "", //geo_entity_triangle
-    "geo_entity_quad",          "Pos3Color4Normal3Tex2",                "geometry",         "EntityQuad",               "", //geo_entity_quad
-    "geo_entity_grid",          "Pos3Color4Normal3Tex2",                "geometry",         "EntityGrid",               "", //geo_entity_grid
-    "geo_entity_circle",        "Pos3Color4Normal3Tex2",                "geometry",         "EntityCircle",             "", //geo_entity_circle
-    "geo_entity_aabb",          "Pos3Color4Normal3Tex2",                "geometry",         "EntityAABB",               "", //geo_entity_aabb
-    "geo_entity_sphere",        "Pos3Color4Normal3Tex2",                "geometry",         "EntitySphere",             "", //geo_entity_sphere
-    "geo_entity_geosphere",     "Pos3Color4Normal3Tex2",                "geometry",         "EntityGeoSphere",          "", //geo_entity_geosphere
-    "geo_entity_cylinder",      "Pos3Color4Normal3Tex2",                "geometry",         "EntityCylinder",           "", //geo_entity_cylinder
-    "geo_entity_capsule",       "Pos3Color4Normal3Tex2",                "geometry",         "EntityCapsule",            "", //geo_entity_capsule
-    "geo_entity_cone",          "Pos3Color4Normal3Tex2",                "geometry",         "EntityCone",               "", //geo_entity_cone
-    "geo_entity_torus",         "Pos3Color4Normal3Tex2",                "geometry",         "EntityTorus",              "", //geo_entity_torus
-    //"geo_entity_skybox",       "Pos3Color4Normal3Tex2",                "geometry",         "EntitySkyBox",             "", //geo_entity_skybox
-    //"geo_entity_skydome",      "Pos3Color4Normal3Tex2",                "geometry",         "EntitySkyDome",            "", //geo_entity_skydome
-    //"geo_entity_terrain",      "Pos3Color4Normal3Tex2",                "geometry",         "EntityTerrain",            "", //geo_entity_terrain
+    "geo_entity_triangle",      "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityTriangle",           "", //geo_entity_triangle
+    "geo_entity_quad",          "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityQuad",               "", //geo_entity_quad
+    "geo_entity_grid",          "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityGrid",               "", //geo_entity_grid
+    "geo_entity_circle",        "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityCircle",             "", //geo_entity_circle
+    "geo_entity_aabb",          "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityAABB",               "", //geo_entity_aabb
+    "geo_entity_sphere",        "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntitySphere",             "", //geo_entity_sphere
+    "geo_entity_geosphere",     "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityGeoSphere",          "", //geo_entity_geosphere
+    "geo_entity_cylinder",      "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityCylinder",           "", //geo_entity_cylinder
+    "geo_entity_capsule",       "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityCapsule",            "", //geo_entity_capsule
+    "geo_entity_cone",          "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityCone",               "", //geo_entity_cone
+    "geo_entity_torus",         "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityTorus",              "", //geo_entity_torus
+    //"geo_entity_skybox",       "Pos3Color4Normal3Tex2",      "geometry",         "",          "EntitySkyBox",             "", //geo_entity_skybox
+    //"geo_entity_skydome",      "Pos3Color4Normal3Tex2",      "geometry",         "",          "EntitySkyDome",            "", //geo_entity_skydome
+    //"geo_entity_terrain",      "Pos3Color4Normal3Tex2",      "geometry",         "",          "EntityTerrain",            "", //geo_entity_terrain
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
-    false, //geo_line_line
-    false, //geo_line_triangle
-    false, //geo_line_quad
-    false, //geo_line_grid
-    false, //geo_line_circle
-    false, //geo_line_aabb
-    false, //geo_line_sphere
-    false, //geo_line_cylinder
-    false, //geo_line_capsule
-    false, //geo_line_cone
-    false, //geo_line_torus
+    false, //geo_line_line_2d
+    false, //geo_line_triangle_2d
+    false, //geo_line_quad_2d
+    false, //geo_line_grid_2d
+    false, //geo_line_circle_2d
 
-    false, //geo_flat_triangle
-    false, //geo_flat_quad
-    false, //geo_flat_circle
-    false, //geo_flat_aabb
-    false, //geo_flat_sphere
-    false, //geo_flat_cylinder
-    false, //geo_flat_capsule
-    false, //geo_flat_cone
-    false, //geo_flat_torus
+    false, //geo_flat_triangle_2d
+    false, //geo_flat_quad_2d
+    false, //geo_flat_circle_2d
+
+    false, //geo_line_line_3d
+    false, //geo_line_triangle_3d
+    false, //geo_line_quad_3d
+    false, //geo_line_grid_3d
+    false, //geo_line_circle_3d
+    false, //geo_line_aabb_3d
+    false, //geo_line_sphere_3d
+    false, //geo_line_cylinder_3d
+    false, //geo_line_capsule_3d
+    false, //geo_line_cone_3d
+    false, //geo_line_torus_3d
+
+    false, //geo_flat_triangle_3d
+    false, //geo_flat_quad_3d
+    false, //geo_flat_circle_3d
+    false, //geo_flat_aabb_3d
+    false, //geo_flat_sphere_3d
+    false, //geo_flat_cylinder_3d
+    false, //geo_flat_capsule_3d
+    false, //geo_flat_cone_3d
+    false, //geo_flat_torus_3d
 
     false, //geo_entity_triangle
     false, //geo_entity_quad
@@ -107,27 +121,37 @@ static bool g_MeshIsFlipYs[g_MeshCount] =
 };
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
 {
-    false, //geo_line_line
-    true, //geo_line_triangle
-    true, //geo_line_quad
-    true, //geo_line_grid
-    true, //geo_line_circle
-    false, //geo_line_aabb
-    false, //geo_line_sphere
-    false, //geo_line_cylinder
-    false, //geo_line_capsule
-    false, //geo_line_cone
-    false, //geo_line_torus
+    false, //geo_line_line_2d
+    false, //geo_line_triangle_2d
+    false, //geo_line_quad_2d
+    false, //geo_line_grid_2d
+    false, //geo_line_circle_2d
 
-    true, //geo_flat_triangle
-    true, //geo_flat_quad
-    true, //geo_flat_circle
-    false, //geo_flat_aabb
-    false, //geo_flat_sphere
-    false, //geo_flat_cylinder
-    false, //geo_flat_capsule
-    false, //geo_flat_cone
-    false, //geo_flat_torus
+    false, //geo_flat_triangle_2d
+    false, //geo_flat_quad_2d
+    false, //geo_flat_circle_2d
+
+    false, //geo_line_line_3d
+    true, //geo_line_triangle_3d
+    true, //geo_line_quad_3d
+    true, //geo_line_grid_3d
+    true, //geo_line_circle_3d
+    false, //geo_line_aabb_3d
+    false, //geo_line_sphere_3d
+    false, //geo_line_cylinder_3d
+    false, //geo_line_capsule_3d
+    false, //geo_line_cone_3d
+    false, //geo_line_torus_3d
+
+    true, //geo_flat_triangle_3d
+    true, //geo_flat_quad_3d
+    true, //geo_flat_circle_3d
+    false, //geo_flat_aabb_3d
+    false, //geo_flat_sphere_3d
+    false, //geo_flat_cylinder_3d
+    false, //geo_flat_capsule_3d
+    false, //geo_flat_cone_3d
+    false, //geo_flat_torus_3d
 
     true, //geo_entity_triangle
     true, //geo_entity_quad
@@ -146,27 +170,37 @@ static bool g_MeshIsTranformLocals[g_MeshCount] =
 };
 static FMatrix4 g_MeshTranformLocals[g_MeshCount] = 
 {
-    FMath::ms_mat4Unit, //geo_line_line
-    FMath::RotateX(90.0f), //geo_line_triangle
-    FMath::RotateX(90.0f), //geo_line_quad
-    FMath::RotateX(90.0f), //geo_line_grid
-    FMath::RotateX(90.0f), //geo_line_circle
-    FMath::ms_mat4Unit, //geo_line_aabb
-    FMath::ms_mat4Unit, //geo_line_sphere
-    FMath::ms_mat4Unit, //geo_line_cylinder
-    FMath::ms_mat4Unit, //geo_line_capsule
-    FMath::ms_mat4Unit, //geo_line_cone
-    FMath::ms_mat4Unit, //geo_line_torus
+    FMath::ms_mat4Unit, //geo_line_line_2d
+    FMath::ms_mat4Unit, //geo_line_triangle_2d
+    FMath::ms_mat4Unit, //geo_line_quad_2d
+    FMath::ms_mat4Unit, //geo_line_grid_2d
+    FMath::ms_mat4Unit, //geo_line_circle_2d
 
-    FMath::RotateX(90.0f), //geo_flat_triangle
-    FMath::RotateX(90.0f), //geo_flat_quad
-    FMath::RotateX(90.0f), //geo_flat_circle
-    FMath::ms_mat4Unit, //geo_flat_aabb
-    FMath::ms_mat4Unit, //geo_flat_sphere
-    FMath::ms_mat4Unit, //geo_flat_cylinder
-    FMath::ms_mat4Unit, //geo_flat_capsule
-    FMath::ms_mat4Unit, //geo_flat_cone
-    FMath::ms_mat4Unit, //geo_flat_torus
+    FMath::ms_mat4Unit, //geo_flat_triangle_2d
+    FMath::ms_mat4Unit, //geo_flat_quad_2d
+    FMath::ms_mat4Unit, //geo_flat_circle_2d
+
+    FMath::ms_mat4Unit, //geo_line_line_3d
+    FMath::RotateX(90.0f), //geo_line_triangle_3d
+    FMath::RotateX(90.0f), //geo_line_quad_3d
+    FMath::RotateX(90.0f), //geo_line_grid_3d
+    FMath::RotateX(90.0f), //geo_line_circle_3d
+    FMath::ms_mat4Unit, //geo_line_aabb_3d
+    FMath::ms_mat4Unit, //geo_line_sphere_3d
+    FMath::ms_mat4Unit, //geo_line_cylinder_3d
+    FMath::ms_mat4Unit, //geo_line_capsule_3d
+    FMath::ms_mat4Unit, //geo_line_cone_3d
+    FMath::ms_mat4Unit, //geo_line_torus_3d
+
+    FMath::RotateX(90.0f), //geo_flat_triangle_3d
+    FMath::RotateX(90.0f), //geo_flat_quad_3d
+    FMath::RotateX(90.0f), //geo_flat_circle_3d
+    FMath::ms_mat4Unit, //geo_flat_aabb_3d
+    FMath::ms_mat4Unit, //geo_flat_sphere_3d
+    FMath::ms_mat4Unit, //geo_flat_cylinder_3d
+    FMath::ms_mat4Unit, //geo_flat_capsule_3d
+    FMath::ms_mat4Unit, //geo_flat_cone_3d
+    FMath::ms_mat4Unit, //geo_flat_torus_3d
 
     FMath::RotateX(90.0f), //geo_entity_triangle  
     FMath::RotateX(90.0f), //geo_entity_quad 
@@ -220,9 +254,10 @@ static float g_TextureAnimChunks[2 * g_TextureCount] =
 
 
 /////////////////////////// DescriptorSetLayout /////////////////
-static const int g_DescriptorSetLayoutCount = 2;
+static const int g_DescriptorSetLayoutCount = 3;
 static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 {
+    "Pass-ObjectLineFlat2D",
     "Pass-ObjectLineFlat3D",
     "Pass-Object-Material-Instance-TextureFS",
 };
@@ -258,31 +293,41 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_Object_Count = 31; 
+static const int g_Object_Count = 39; 
 static const char* g_Object_Configs[2 * g_Object_Count] = 
 {
     //Object Name                           //Mesh Name        
-    "object_geo_line_line",                 "geo_line_line", //object_geo_line_line
-    "object_geo_line_triangle",             "geo_line_triangle", //object_geo_line_triangle
-    "object_geo_line_quad",                 "geo_line_quad", //object_geo_line_quad
-    "object_geo_line_grid",                 "geo_line_grid", //object_geo_line_grid
-    "object_geo_line_circle",               "geo_line_circle", //object_geo_line_circle
-    "object_geo_line_aabb",                 "geo_line_aabb", //object_geo_line_aabb
-    "object_geo_line_sphere",               "geo_line_sphere", //object_geo_line_sphere
-    "object_geo_line_cylinder",             "geo_line_cylinder", //object_geo_line_cylinder
-    "object_geo_line_capsule",              "geo_line_capsule", //object_geo_line_capsule
-    "object_geo_line_cone",                 "geo_line_cone", //object_geo_line_cone
-    "object_geo_line_torus",                "geo_line_torus", //object_geo_line_torus
+    "object_geo_line_line_2d",              "geo_line_line_2d", //object_geo_line_line_2d
+    "object_geo_line_triangle_2d",          "geo_line_triangle_2d", //object_geo_line_triangle_2d
+    "object_geo_line_quad_2d",              "geo_line_quad_2d", //object_geo_line_quad_2d
+    "object_geo_line_grid_2d",              "geo_line_grid_2d", //object_geo_line_grid_2d
+    "object_geo_line_circle_2d",            "geo_line_circle_2d", //object_geo_line_circle_2d
 
-    "object_geo_flat_triangle",             "geo_flat_triangle", //object_geo_flat_triangle
-    "object_geo_flat_quad",                 "geo_flat_quad", //object_geo_flat_quad
-    "object_geo_flat_circle",               "geo_flat_circle", //object_geo_flat_circle
-    "object_geo_flat_aabb",                 "geo_flat_aabb", //object_geo_flat_aabb
-    "object_geo_flat_sphere",               "geo_flat_sphere", //object_geo_flat_sphere
-    "object_geo_flat_cylinder",             "geo_flat_cylinder", //object_geo_flat_cylinder
-    "object_geo_flat_capsule",              "geo_flat_capsule", //object_geo_flat_capsule
-    "object_geo_flat_cone",                 "geo_flat_cone", //object_geo_flat_cone
-    "object_geo_flat_torus",                "geo_flat_torus", //object_geo_flat_torus
+    "object_geo_flat_triangle_2d",          "geo_flat_triangle_2d", //object_geo_flat_triangle_2d
+    "object_geo_flat_quad_2d",              "geo_flat_quad_2d", //object_geo_flat_quad_2d
+    "object_geo_flat_circle_2d",            "geo_flat_circle_2d", //object_geo_flat_circle_2d
+
+    "object_geo_line_line_3d",              "geo_line_line_3d", //object_geo_line_line_3d
+    "object_geo_line_triangle_3d",          "geo_line_triangle_3d", //object_geo_line_triangle_3d
+    "object_geo_line_quad_3d",              "geo_line_quad_3d", //object_geo_line_quad_3d
+    "object_geo_line_grid_3d",              "geo_line_grid_3d", //object_geo_line_grid_3d
+    "object_geo_line_circle_3d",            "geo_line_circle_3d", //object_geo_line_circle_3d
+    "object_geo_line_aabb_3d",              "geo_line_aabb_3d", //object_geo_line_aabb_3d
+    "object_geo_line_sphere_3d",            "geo_line_sphere_3d", //object_geo_line_sphere_3d
+    "object_geo_line_cylinder_3d",          "geo_line_cylinder_3d", //object_geo_line_cylinder_3d
+    "object_geo_line_capsule_3d",           "geo_line_capsule_3d", //object_geo_line_capsule_3d
+    "object_geo_line_cone_3d",              "geo_line_cone_3d", //object_geo_line_cone_3d
+    "object_geo_line_torus_3d",             "geo_line_torus_3d", //object_geo_line_torus_3d
+
+    "object_geo_flat_triangle_3d",          "geo_flat_triangle_3d", //object_geo_flat_triangle_3d
+    "object_geo_flat_quad_3d",              "geo_flat_quad_3d", //object_geo_flat_quad_3d
+    "object_geo_flat_circle_3d",            "geo_flat_circle_3d", //object_geo_flat_circle_3d
+    "object_geo_flat_aabb_3d",              "geo_flat_aabb_3d", //object_geo_flat_aabb_3d
+    "object_geo_flat_sphere_3d",            "geo_flat_sphere_3d", //object_geo_flat_sphere_3d
+    "object_geo_flat_cylinder_3d",          "geo_flat_cylinder_3d", //object_geo_flat_cylinder_3d
+    "object_geo_flat_capsule_3d",           "geo_flat_capsule_3d", //object_geo_flat_capsule_3d
+    "object_geo_flat_cone_3d",              "geo_flat_cone_3d", //object_geo_flat_cone_3d
+    "object_geo_flat_torus_3d",             "geo_flat_torus_3d", //object_geo_flat_torus_3d
 
     "object_geo_entity_triangle",           "geo_entity_triangle", //object_geo_entity_triangle
     "object_geo_entity_quad",               "geo_entity_quad", //object_geo_entity_quad
@@ -301,27 +346,37 @@ static const char* g_Object_Configs[2 * g_Object_Count] =
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 {   
-    "0", //object_geo_line_line
-    "0", //object_geo_line_triangle
-    "0", //object_geo_line_quad
-    "0", //object_geo_line_grid
-    "0", //object_geo_line_circle
-    "0", //object_geo_line_aabb
-    "0", //object_geo_line_sphere
-    "0", //object_geo_line_cylinder
-    "0", //object_geo_line_capsule
-    "0", //object_geo_line_cone
-    "0", //object_geo_line_torus
+    "0", //object_geo_line_line_2d
+    "0", //object_geo_line_triangle_2d
+    "0", //object_geo_line_quad_2d
+    "0", //object_geo_line_grid_2d
+    "0", //object_geo_line_circle_2d
 
-    "0", //object_geo_flat_triangle
-    "0", //object_geo_flat_quad
-    "0", //object_geo_flat_circle
-    "0", //object_geo_flat_aabb
-    "0", //object_geo_flat_sphere
-    "0", //object_geo_flat_cylinder
-    "0", //object_geo_flat_capsule
-    "0", //object_geo_flat_cone
-    "0", //object_geo_flat_torus
+    "0", //object_geo_flat_triangle_2d
+    "0", //object_geo_flat_quad_2d
+    "0", //object_geo_flat_circle_2d
+
+    "0", //object_geo_line_line_3d
+    "0", //object_geo_line_triangle_3d
+    "0", //object_geo_line_quad_3d
+    "0", //object_geo_line_grid_3d
+    "0", //object_geo_line_circle_3d
+    "0", //object_geo_line_aabb_3d
+    "0", //object_geo_line_sphere_3d
+    "0", //object_geo_line_cylinder_3d
+    "0", //object_geo_line_capsule_3d
+    "0", //object_geo_line_cone_3d
+    "0", //object_geo_line_torus_3d
+
+    "0", //object_geo_flat_triangle_3d
+    "0", //object_geo_flat_quad_3d
+    "0", //object_geo_flat_circle_3d
+    "0", //object_geo_flat_aabb_3d
+    "0", //object_geo_flat_sphere_3d
+    "0", //object_geo_flat_cylinder_3d
+    "0", //object_geo_flat_capsule_3d
+    "0", //object_geo_flat_cone_3d
+    "0", //object_geo_flat_torus_3d
 
     "0", //object_geo_entity_triangle
     "0", //object_geo_entity_quad
@@ -342,27 +397,37 @@ static const char* g_Object_MeshSubsUsed[g_Object_Count] =
 static float g_Object_InstanceGap = 1.5f;
 static int g_Object_InstanceExtCount[g_Object_Count] =
 {
-    1, //object_geo_line_line
-    1, //object_geo_line_triangle
-    1, //object_geo_line_quad
-    1, //object_geo_line_grid
-    1, //object_geo_line_circle
-    1, //object_geo_line_aabb
-    1, //object_geo_line_sphere
-    1, //object_geo_line_cylinder
-    1, //object_geo_line_capsule
-    1, //object_geo_line_cone
-    1, //object_geo_line_torus
+    0, //object_geo_line_line_2d
+    0, //object_geo_line_triangle_2d
+    0, //object_geo_line_quad_2d
+    0, //object_geo_line_grid_2d
+    0, //object_geo_line_circle_2d
 
-    1, //object_geo_flat_triangle
-    1, //object_geo_flat_quad
-    1, //object_geo_flat_circle
-    1, //object_geo_flat_aabb
-    1, //object_geo_flat_sphere
-    1, //object_geo_flat_cylinder
-    1, //object_geo_flat_capsule
-    1, //object_geo_flat_cone
-    1, //object_geo_flat_torus
+    0, //object_geo_flat_triangle_2d
+    0, //object_geo_flat_quad_2d
+    0, //object_geo_flat_circle_2d
+
+    1, //object_geo_line_line_3d
+    1, //object_geo_line_triangle_3d
+    1, //object_geo_line_quad_3d
+    1, //object_geo_line_grid_3d
+    1, //object_geo_line_circle_3d
+    1, //object_geo_line_aabb_3d
+    1, //object_geo_line_sphere_3d
+    1, //object_geo_line_cylinder_3d
+    1, //object_geo_line_capsule_3d
+    1, //object_geo_line_cone_3d
+    1, //object_geo_line_torus_3d
+
+    1, //object_geo_flat_triangle_3d
+    1, //object_geo_flat_quad_3d
+    1, //object_geo_flat_circle_3d
+    1, //object_geo_flat_aabb_3d
+    1, //object_geo_flat_sphere_3d
+    1, //object_geo_flat_cylinder_3d
+    1, //object_geo_flat_capsule_3d
+    1, //object_geo_flat_cone_3d
+    1, //object_geo_flat_torus_3d
 
     1, //object_geo_entity_triangle 
     1, //object_geo_entity_quad 
@@ -381,27 +446,37 @@ static int g_Object_InstanceExtCount[g_Object_Count] =
 };
 static bool g_Object_IsShows[] = 
 {   
-    true, //object_geo_line_line
-    true, //object_geo_line_triangle
-    true, //object_geo_line_quad
-    true, //object_geo_line_grid
-    true, //object_geo_line_circle
-    true, //object_geo_line_aabb
-    true, //object_geo_line_sphere
-    true, //object_geo_line_cylinder
-    true, //object_geo_line_capsule
-    true, //object_geo_line_cone
-    true, //object_geo_line_torus
+    true, //object_geo_line_line_2d
+    true, //object_geo_line_triangle_2d
+    true, //object_geo_line_quad_2d
+    true, //object_geo_line_grid_2d
+    true, //object_geo_line_circle_2d
 
-    true, //object_geo_flat_triangle
-    true, //object_geo_flat_quad
-    true, //object_geo_flat_circle
-    true, //object_geo_flat_aabb
-    true, //object_geo_flat_sphere
-    true, //object_geo_flat_cylinder
-    true, //object_geo_flat_capsule
-    true, //object_geo_flat_cone
-    true, //object_geo_flat_torus
+    true, //object_geo_flat_triangle_2d
+    true, //object_geo_flat_quad_2d
+    true, //object_geo_flat_circle_2d
+
+    true, //object_geo_line_line_3d
+    true, //object_geo_line_triangle_3d
+    true, //object_geo_line_quad_3d
+    true, //object_geo_line_grid_3d
+    true, //object_geo_line_circle_3d
+    true, //object_geo_line_aabb_3d
+    true, //object_geo_line_sphere_3d
+    true, //object_geo_line_cylinder_3d
+    true, //object_geo_line_capsule_3d
+    true, //object_geo_line_cone_3d
+    true, //object_geo_line_torus_3d
+
+    true, //object_geo_flat_triangle_3d
+    true, //object_geo_flat_quad_3d
+    true, //object_geo_flat_circle_3d
+    true, //object_geo_flat_aabb_3d
+    true, //object_geo_flat_sphere_3d
+    true, //object_geo_flat_cylinder_3d
+    true, //object_geo_flat_capsule_3d
+    true, //object_geo_flat_cone_3d
+    true, //object_geo_flat_torus_3d
 
     true, //object_geo_entity_triangle
     true, //object_geo_entity_quad
@@ -420,27 +495,37 @@ static bool g_Object_IsShows[] =
 };
 static bool g_Object_IsRotates[g_Object_Count] =
 {
-    false, //object_geo_line_line
-    false, //object_geo_line_triangle
-    false, //object_geo_line_quad
-    false, //object_geo_line_grid
-    false, //object_geo_line_circle
-    false, //object_geo_line_aabb
-    false, //object_geo_line_sphere
-    false, //object_geo_line_cylinder
-    false, //object_geo_line_capsule
-    false, //object_geo_line_cone
-    false, //object_geo_line_torus
+    false, //object_geo_line_line_2d
+    false, //object_geo_line_triangle_2d
+    false, //object_geo_line_quad_2d
+    false, //object_geo_line_grid_2d
+    false, //object_geo_line_circle_2d
 
-    false, //object_geo_flat_triangle
-    false, //object_geo_flat_quad
-    false, //object_geo_flat_circle
-    false, //object_geo_flat_aabb
-    false, //object_geo_flat_sphere
-    false, //object_geo_flat_cylinder
-    false, //object_geo_flat_capsule
-    false, //object_geo_flat_cone
-    false, //object_geo_flat_torus
+    false, //object_geo_flat_triangle_2d
+    false, //object_geo_flat_quad_2d
+    false, //object_geo_flat_circle_2d
+
+    false, //object_geo_line_line_3d
+    false, //object_geo_line_triangle_3d
+    false, //object_geo_line_quad_3d
+    false, //object_geo_line_grid_3d
+    false, //object_geo_line_circle_3d
+    false, //object_geo_line_aabb_3d
+    false, //object_geo_line_sphere_3d
+    false, //object_geo_line_cylinder_3d
+    false, //object_geo_line_capsule_3d
+    false, //object_geo_line_cone_3d
+    false, //object_geo_line_torus_3d
+
+    false, //object_geo_flat_triangle_3d
+    false, //object_geo_flat_quad_3d
+    false, //object_geo_flat_circle_3d
+    false, //object_geo_flat_aabb_3d
+    false, //object_geo_flat_sphere_3d
+    false, //object_geo_flat_cylinder_3d
+    false, //object_geo_flat_capsule_3d
+    false, //object_geo_flat_cone_3d
+    false, //object_geo_flat_torus_3d
 
     false, //object_geo_entity_triangle
     false, //object_geo_entity_quad
@@ -459,27 +544,37 @@ static bool g_Object_IsRotates[g_Object_Count] =
 };
 static bool g_Object_IsLightings[g_Object_Count] =
 {
-    false, //object_geo_line_line
-    false, //object_geo_line_triangle
-    false, //object_geo_line_quad
-    false, //object_geo_line_grid
-    false, //object_geo_line_circle
-    false, //object_geo_line_aabb
-    false, //object_geo_line_sphere
-    false, //object_geo_line_cylinder
-    false, //object_geo_line_capsule
-    false, //object_geo_line_cone
-    false, //object_geo_line_torus
+    false, //object_geo_line_line_2d
+    false, //object_geo_line_triangle_2d
+    false, //object_geo_line_quad_2d
+    false, //object_geo_line_grid_2d
+    false, //object_geo_line_circle_2d
 
-    false, //object_geo_flat_triangle
-    false, //object_geo_flat_quad
-    false, //object_geo_flat_circle
-    false, //object_geo_flat_aabb
-    false, //object_geo_flat_sphere
-    false, //object_geo_flat_cylinder
-    false, //object_geo_flat_capsule
-    false, //object_geo_flat_cone
-    false, //object_geo_flat_torus
+    false, //object_geo_flat_triangle_2d
+    false, //object_geo_flat_quad_2d
+    false, //object_geo_flat_circle_2d
+
+    false, //object_geo_line_line_3d
+    false, //object_geo_line_triangle_3d
+    false, //object_geo_line_quad_3d
+    false, //object_geo_line_grid_3d
+    false, //object_geo_line_circle_3d
+    false, //object_geo_line_aabb_3d
+    false, //object_geo_line_sphere_3d
+    false, //object_geo_line_cylinder_3d
+    false, //object_geo_line_capsule_3d
+    false, //object_geo_line_cone_3d
+    false, //object_geo_line_torus_3d
+
+    false, //object_geo_flat_triangle_3d
+    false, //object_geo_flat_quad_3d
+    false, //object_geo_flat_circle_3d
+    false, //object_geo_flat_aabb_3d
+    false, //object_geo_flat_sphere_3d
+    false, //object_geo_flat_cylinder_3d
+    false, //object_geo_flat_capsule_3d
+    false, //object_geo_flat_cone_3d
+    false, //object_geo_flat_torus_3d
 
     true, //object_geo_entity_triangle
     true, //object_geo_entity_quad
@@ -498,27 +593,37 @@ static bool g_Object_IsLightings[g_Object_Count] =
 };
 static bool g_Object_IsIndirectDraw[g_Object_Count] =
 {
-    false, //object_geo_line_line
-    false, //object_geo_line_triangle
-    false, //object_geo_line_quad
-    false, //object_geo_line_grid
-    false, //object_geo_line_circle
-    false, //object_geo_line_aabb
-    false, //object_geo_line_sphere
-    false, //object_geo_line_cylinder
-    false, //object_geo_line_capsule
-    false, //object_geo_line_cone
-    false, //object_geo_line_torus
+    false, //object_geo_line_line_2d
+    false, //object_geo_line_triangle_2d
+    false, //object_geo_line_quad_2d
+    false, //object_geo_line_grid_2d
+    false, //object_geo_line_circle_2d
 
-    false, //object_geo_flat_triangle
-    false, //object_geo_flat_quad
-    false, //object_geo_flat_circle
-    false, //object_geo_flat_aabb
-    false, //object_geo_flat_sphere
-    false, //object_geo_flat_cylinder
-    false, //object_geo_flat_capsule
-    false, //object_geo_flat_cone
-    false, //object_geo_flat_torus
+    false, //object_geo_flat_triangle_2d
+    false, //object_geo_flat_quad_2d
+    false, //object_geo_flat_circle_2d
+
+    false, //object_geo_line_line_3d
+    false, //object_geo_line_triangle_3d
+    false, //object_geo_line_quad_3d
+    false, //object_geo_line_grid_3d
+    false, //object_geo_line_circle_3d
+    false, //object_geo_line_aabb_3d
+    false, //object_geo_line_sphere_3d
+    false, //object_geo_line_cylinder_3d
+    false, //object_geo_line_capsule_3d
+    false, //object_geo_line_cone_3d
+    false, //object_geo_line_torus_3d
+
+    false, //object_geo_flat_triangle_3d
+    false, //object_geo_flat_quad_3d
+    false, //object_geo_flat_circle_3d
+    false, //object_geo_flat_aabb_3d
+    false, //object_geo_flat_sphere_3d
+    false, //object_geo_flat_cylinder_3d
+    false, //object_geo_flat_capsule_3d
+    false, //object_geo_flat_cone_3d
+    false, //object_geo_flat_torus_3d
 
     false, //object_geo_entity_triangle
     false, //object_geo_entity_quad
@@ -538,31 +643,41 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
 
 
 /////////////////////////// ObjectRend //////////////////////////
-static const int g_ObjectRend_Count = 31; 
+static const int g_ObjectRend_Count = 39; 
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
     //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
-    "object_geo_line_line-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_line-1
-    "object_geo_line_triangle-1",          "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_triangle-1
-    "object_geo_line_quad-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_quad-1
-    "object_geo_line_grid-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_grid-1
-    "object_geo_line_circle-1",            "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_circle-1
-    "object_geo_line_aabb-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_aabb-1
-    "object_geo_line_sphere-1",            "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_sphere-1
-    "object_geo_line_cylinder-1",          "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_cylinder-1
-    "object_geo_line_capsule-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_capsule-1
-    "object_geo_line_cone-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_cone-1
-    "object_geo_line_torus-1",             "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_torus-1
+    "object_geo_line_line_2d-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_line_2d-1
+    "object_geo_line_triangle_2d-1",       "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_triangle_2d-1
+    "object_geo_line_quad_2d-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_quad_2d-1
+    "object_geo_line_grid_2d-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_grid_2d-1
+    "object_geo_line_circle_2d-1",         "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_circle_2d-1
 
-    "object_geo_flat_triangle-1",          "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_triangle-1
-    "object_geo_flat_quad-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_quad-1
-    "object_geo_flat_circle-1",            "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_circle-1
-    "object_geo_flat_aabb-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_aabb-1
-    "object_geo_flat_sphere-1",            "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_sphere-1
-    "object_geo_flat_cylinder-1",          "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_cylinder-1
-    "object_geo_flat_capsule-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_capsule-1
-    "object_geo_flat_cone-1",              "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_cone-1
-    "object_geo_flat_torus-1",             "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_torus-1
+    "object_geo_flat_triangle_2d-1",       "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_triangle_2d-1
+    "object_geo_flat_quad_2d-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_quad_2d-1
+    "object_geo_flat_circle_2d-1",         "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_circle_2d-1
+    
+    "object_geo_line_line_3d-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_line_3d-1
+    "object_geo_line_triangle_3d-1",       "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_triangle_3d-1
+    "object_geo_line_quad_3d-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_quad_3d-1
+    "object_geo_line_grid_3d-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_grid_3d-1
+    "object_geo_line_circle_3d-1",         "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_circle_3d-1
+    "object_geo_line_aabb_3d-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_aabb_3d-1
+    "object_geo_line_sphere_3d-1",         "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_sphere_3d-1
+    "object_geo_line_cylinder_3d-1",       "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_cylinder_3d-1
+    "object_geo_line_capsule_3d-1",        "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_capsule_3d-1
+    "object_geo_line_cone_3d-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_cone_3d-1
+    "object_geo_line_torus_3d-1",          "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_line_torus_3d-1
+
+    "object_geo_flat_triangle_3d-1",       "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_triangle_3d-1
+    "object_geo_flat_quad_3d-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_quad_3d-1
+    "object_geo_flat_circle_3d-1",         "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_circle_3d-1
+    "object_geo_flat_aabb_3d-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_aabb_3d-1
+    "object_geo_flat_sphere_3d-1",         "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_sphere_3d-1
+    "object_geo_flat_cylinder_3d-1",       "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_cylinder_3d-1
+    "object_geo_flat_capsule_3d-1",        "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_capsule_3d-1
+    "object_geo_flat_cone_3d-1",           "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_cone_3d-1
+    "object_geo_flat_torus_3d-1",          "",                     "",                              "",                         "",                    "",                                                                             "", //object_geo_flat_torus_3d-1
 
     "object_geo_entity_triangle-1",        "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_triangle-1
     "object_geo_entity_quad-1",            "",                     "",                              "",                         "",                    "bricks_diffuse",                                                               "", //object_geo_entity_quad-1
@@ -582,27 +697,37 @@ static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] =
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
 {
     //vert                                                  //tesc                                          //tese                                      //geom                      //frag                                                  //comp
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_line-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_triangle-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_quad-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_grid-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_circle-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_aabb-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_sphere-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_cylinder-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_capsule-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_cone-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_line_torus-1
+    "vert_editor_line_2d",                                  "",                                             "",                                         "",                         "frag_editor_line_2d",                                  "", //object_geo_line_line_2d-1
+    "vert_editor_line_2d",                                  "",                                             "",                                         "",                         "frag_editor_line_2d",                                  "", //object_geo_line_triangle_2d-1
+    "vert_editor_line_2d",                                  "",                                             "",                                         "",                         "frag_editor_line_2d",                                  "", //object_geo_line_quad_2d-1
+    "vert_editor_line_2d",                                  "",                                             "",                                         "",                         "frag_editor_line_2d",                                  "", //object_geo_line_grid_2d-1
+    "vert_editor_line_2d",                                  "",                                             "",                                         "",                         "frag_editor_line_2d",                                  "", //object_geo_line_circle_2d-1
+
+    "vert_editor_line_2d",                                  "",                                             "",                                         "",                         "frag_editor_line_2d",                                  "", //object_geo_flat_triangle_2d-1
+    "vert_editor_line_2d",                                  "",                                             "",                                         "",                         "frag_editor_line_2d",                                  "", //object_geo_flat_quad_2d-1
+    "vert_editor_line_2d",                                  "",                                             "",                                         "",                         "frag_editor_line_2d",                                  "", //object_geo_flat_circle_2d-1
     
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_triangle-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_quad-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_circle-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_aabb-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_sphere-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_cylinder-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_capsule-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_cone-1
-    "vert_editor_line_3d",                                     "",                                             "",                                         "",                         "frag_editor_line_3d",                                     "", //object_geo_flat_torus-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_line_line_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_line_triangle_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_line_quad_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_line_grid_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_line_circle_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_line_aabb_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_line_sphere_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_line_cylinder_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_line_capsule_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_line_cone_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_line_torus_3d-1
+    
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_flat_triangle_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_flat_quad_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_flat_circle_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_flat_aabb_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_flat_sphere_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_flat_cylinder_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_flat_capsule_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_flat_cone_3d-1
+    "vert_editor_line_3d",                                  "",                                             "",                                         "",                         "frag_editor_line_3d",                                  "", //object_geo_flat_torus_3d-1
     
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_triangle-1
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                         "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //object_geo_entity_quad-1
@@ -622,27 +747,37 @@ static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] =
 static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count] = 
 {
     //Pipeline Graphics                                                 //Pipeline Compute
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_line-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_triangle-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_quad-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_grid-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_circle-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_aabb-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_sphere-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_cylinder-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_capsule-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_cone-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_torus-1
+    "Pass-ObjectLineFlat2D",                                            "", //object_geo_line_line_2d-1
+    "Pass-ObjectLineFlat2D",                                            "", //object_geo_line_triangle_2d-1
+    "Pass-ObjectLineFlat2D",                                            "", //object_geo_line_quad_2d-1
+    "Pass-ObjectLineFlat2D",                                            "", //object_geo_line_grid_2d-1
+    "Pass-ObjectLineFlat2D",                                            "", //object_geo_line_circle_2d-1
 
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_triangle-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_quad-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_circle-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_aabb-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_sphere-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_cylinder-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_capsule-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_cone-1
-    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_torus-1
+    "Pass-ObjectLineFlat2D",                                            "", //object_geo_flat_triangle_2d-1
+    "Pass-ObjectLineFlat2D",                                            "", //object_geo_flat_quad_2d-1
+    "Pass-ObjectLineFlat2D",                                            "", //object_geo_flat_circle_2d-1
+    
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_line_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_triangle_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_quad_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_grid_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_circle_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_aabb_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_sphere_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_cylinder_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_capsule_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_cone_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_line_torus_3d-1
+
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_triangle_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_quad_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_circle_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_aabb_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_sphere_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_cylinder_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_capsule_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_cone_3d-1
+    "Pass-ObjectLineFlat3D",                                            "", //object_geo_flat_torus_3d-1
     
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_triangle-1
     "Pass-Object-Material-Instance-TextureFS",                          "", //object_geo_entity_quad-1
@@ -661,27 +796,37 @@ static const char* g_ObjectRend_NameDescriptorSetLayouts[2 * g_ObjectRend_Count]
 };
 static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] = 
 {   
-    FVector3(  -5,  0.0,  -8.8),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_line-1
-    FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_triangle-1
-    FVector3(  -5,  0.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_quad-1
-    FVector3(  -5,  0.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_grid-1
-    FVector3(  -5,  0.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_circle-1
-    FVector3(  -5,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_aabb-1
-    FVector3(  -5,  0.0,   2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_sphere-1
-    FVector3(  -5,  0.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_cylinder-1
-    FVector3(  -5,  0.0,   6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_capsule-1
-    FVector3(  -5,  0.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_cone-1
-    FVector3(  -5,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_torus-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_line_2d-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_triangle_2d-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_quad_2d-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_grid_2d-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_circle_2d-1
 
-    FVector3(  5,  0.0,   -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_triangle-1
-    FVector3(  5,  0.0,   -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_quad-1
-    FVector3(  5,  0.0,   -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_circle-1
-    FVector3(  5,  0.0,   -2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_aabb-1
-    FVector3(  5,  0.0,    0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_sphere-1
-    FVector3(  5,  0.0,    2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_cylinder-1
-    FVector3(  5,  0.0,    4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_capsule-1
-    FVector3(  5,  0.0,    6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_cone-1
-    FVector3(  5,  0.0,    8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_torus-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_triangle_2d-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_quad_2d-1
+    FVector3(   0,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_circle_2d-1
+
+    FVector3(  -5,  0.0,  -8.8),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_line_3d-1
+    FVector3(  -5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_triangle_3d-1
+    FVector3(  -5,  0.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_quad_3d-1
+    FVector3(  -5,  0.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_grid_3d-1
+    FVector3(  -5,  0.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_circle_3d-1
+    FVector3(  -5,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_aabb_3d-1
+    FVector3(  -5,  0.0,   2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_sphere_3d-1
+    FVector3(  -5,  0.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_cylinder_3d-1
+    FVector3(  -5,  0.0,   6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_capsule_3d-1
+    FVector3(  -5,  0.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_cone_3d-1
+    FVector3(  -5,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_torus_3d-1
+
+    FVector3(  5,  0.0,   -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_triangle_3d-1
+    FVector3(  5,  0.0,   -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_quad_3d-1
+    FVector3(  5,  0.0,   -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_circle_3d-1
+    FVector3(  5,  0.0,   -2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_aabb_3d-1
+    FVector3(  5,  0.0,    0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_sphere_3d-1
+    FVector3(  5,  0.0,    2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_cylinder_3d-1
+    FVector3(  5,  0.0,    4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_capsule_3d-1
+    FVector3(  5,  0.0,    6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_cone_3d-1
+    FVector3(  5,  0.0,    8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_torus_3d-1
 
     FVector3(   0,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_triangle-1
     FVector3(   0,  0.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_quad-1
@@ -700,27 +845,37 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
 };
 static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] = 
 {
-    false, //object_geo_line_line-1
-    false, //object_geo_line_triangle-1
-    false, //object_geo_line_quad-1
-    false, //object_geo_line_grid-1
-    false, //object_geo_line_circle-1
-    false, //object_geo_line_aabb-1
-    false, //object_geo_line_sphere-1
-    false, //object_geo_line_cylinder-1
-    false, //object_geo_line_capsule-1
-    false, //object_geo_line_cone-1
-    false, //object_geo_line_torus-1
+    false, //object_geo_line_line_2d-1
+    false, //object_geo_line_triangle_2d-1
+    false, //object_geo_line_quad_2d-1
+    false, //object_geo_line_grid_2d-1
+    false, //object_geo_line_circle_2d-1
 
-    false, //object_geo_flat_triangle-1
-    false, //object_geo_flat_quad-1
-    false, //object_geo_flat_circle-1
-    false, //object_geo_flat_aabb-1
-    false, //object_geo_flat_sphere-1
-    false, //object_geo_flat_cylinder-1
-    false, //object_geo_flat_capsule-1
-    false, //object_geo_flat_cone-1
-    false, //object_geo_flat_torus-1
+    false, //object_geo_flat_triangle_2d-1
+    false, //object_geo_flat_quad_2d-1
+    false, //object_geo_flat_circle_2d-1
+
+    false, //object_geo_line_line_3d-1
+    false, //object_geo_line_triangle_3d-1
+    false, //object_geo_line_quad_3d-1
+    false, //object_geo_line_grid_3d-1
+    false, //object_geo_line_circle_3d-1
+    false, //object_geo_line_aabb_3d-1
+    false, //object_geo_line_sphere_3d-1
+    false, //object_geo_line_cylinder_3d-1
+    false, //object_geo_line_capsule_3d-1
+    false, //object_geo_line_cone_3d-1
+    false, //object_geo_line_torus_3d-1
+
+    false, //object_geo_flat_triangle_3d-1
+    false, //object_geo_flat_quad_3d-1
+    false, //object_geo_flat_circle_3d-1
+    false, //object_geo_flat_aabb_3d-1
+    false, //object_geo_flat_sphere_3d-1
+    false, //object_geo_flat_cylinder_3d-1
+    false, //object_geo_flat_capsule_3d-1
+    false, //object_geo_flat_cone_3d-1
+    false, //object_geo_flat_torus_3d-1
 
     false, //object_geo_entity_triangle-1
     false, //object_geo_entity_quad-1
@@ -739,27 +894,37 @@ static bool g_ObjectRend_IsTransparents[g_ObjectRend_Count] =
 };
 static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
 {
-    false, //object_geo_line_line-1
-    false, //object_geo_line_triangle-1
-    false, //object_geo_line_quad-1
-    false, //object_geo_line_grid-1
-    false, //object_geo_line_circle-1
-    false, //object_geo_line_aabb-1
-    false, //object_geo_line_sphere-1
-    false, //object_geo_line_cylinder-1
-    false, //object_geo_line_capsule-1
-    false, //object_geo_line_cone-1
-    false, //object_geo_line_torus-1
+    false, //object_geo_line_line_2d-1
+    false, //object_geo_line_triangle_2d-1
+    false, //object_geo_line_quad_2d-1
+    false, //object_geo_line_grid_2d-1
+    false, //object_geo_line_circle_2d-1
 
-    false, //object_geo_flat_triangle-1
-    false, //object_geo_flat_quad-1
-    false, //object_geo_flat_circle-1
-    false, //object_geo_flat_aabb-1
-    false, //object_geo_flat_sphere-1
-    false, //object_geo_flat_cylinder-1
-    false, //object_geo_flat_capsule-1
-    false, //object_geo_flat_cone-1
-    false, //object_geo_flat_torus-1
+    false, //object_geo_flat_triangle_2d-1
+    false, //object_geo_flat_quad_2d-1
+    false, //object_geo_flat_circle_2d-1
+
+    false, //object_geo_line_line_3d-1
+    false, //object_geo_line_triangle_3d-1
+    false, //object_geo_line_quad_3d-1
+    false, //object_geo_line_grid_3d-1
+    false, //object_geo_line_circle_3d-1
+    false, //object_geo_line_aabb_3d-1
+    false, //object_geo_line_sphere_3d-1
+    false, //object_geo_line_cylinder_3d-1
+    false, //object_geo_line_capsule_3d-1
+    false, //object_geo_line_cone_3d-1
+    false, //object_geo_line_torus_3d-1
+
+    false, //object_geo_flat_triangle_3d-1
+    false, //object_geo_flat_quad_3d-1
+    false, //object_geo_flat_circle_3d-1
+    false, //object_geo_flat_aabb_3d-1
+    false, //object_geo_flat_sphere_3d-1
+    false, //object_geo_flat_cylinder_3d-1
+    false, //object_geo_flat_capsule_3d-1
+    false, //object_geo_flat_cone_3d-1
+    false, //object_geo_flat_torus_3d-1
 
     false, //object_geo_entity_triangle-1
     false, //object_geo_entity_quad-1
@@ -776,29 +941,88 @@ static bool g_ObjectRend_IsTopologyPatchLists[g_ObjectRend_Count] =
     //false, //object_geo_entity_skydome-1
     //false, //object_geo_entity_terrain-1
 };
+static bool g_ObjectRend_Is3D[g_ObjectRend_Count] =
+{
+    false, //object_geo_line_line_2d-1
+    false, //object_geo_line_triangle_2d-1
+    false, //object_geo_line_quad_2d-1
+    false, //object_geo_line_grid_2d-1
+    false, //object_geo_line_circle_2d-1
+
+    false, //object_geo_flat_triangle_2d-1
+    false, //object_geo_flat_quad_2d-1
+    false, //object_geo_flat_circle_2d-1
+
+    true, //object_geo_line_line_3d-1
+    true, //object_geo_line_triangle_3d-1
+    true, //object_geo_line_quad_3d-1
+    true, //object_geo_line_grid_3d-1
+    true, //object_geo_line_circle_3d-1
+    true, //object_geo_line_aabb_3d-1
+    true, //object_geo_line_sphere_3d-1
+    true, //object_geo_line_cylinder_3d-1
+    true, //object_geo_line_capsule_3d-1
+    true, //object_geo_line_cone_3d-1
+    true, //object_geo_line_torus_3d-1
+
+    true, //object_geo_flat_triangle_3d-1
+    true, //object_geo_flat_quad_3d-1
+    true, //object_geo_flat_circle_3d-1
+    true, //object_geo_flat_aabb_3d-1
+    true, //object_geo_flat_sphere_3d-1
+    true, //object_geo_flat_cylinder_3d-1
+    true, //object_geo_flat_capsule_3d-1
+    true, //object_geo_flat_cone_3d-1
+    true, //object_geo_flat_torus_3d-1
+
+    true, //object_geo_entity_triangle-1
+    true, //object_geo_entity_quad-1
+    true, //object_geo_entity_grid-1
+    true, //object_geo_entity_circle-1
+    true, //object_geo_entity_aabb-1
+    true, //object_geo_entity_sphere-1
+    true, //object_geo_entity_geosphere-1
+    true, //object_geo_entity_cylinder-1
+    true, //object_geo_entity_capsule-1
+    true, //object_geo_entity_cone-1
+    true, //object_geo_entity_torus-1
+    //true, //object_geo_entity_skybox-1
+    //true, //object_geo_entity_skydome-1
+    //true, //object_geo_entity_terrain-1
+};
 static bool g_ObjectRend_IsLine[g_ObjectRend_Count] =
 {
-    true, //object_geo_line_line-1
-    true, //object_geo_line_triangle-1
-    true, //object_geo_line_quad-1
-    true, //object_geo_line_grid-1
-    true, //object_geo_line_circle-1
-    true, //object_geo_line_aabb-1
-    true, //object_geo_line_sphere-1
-    true, //object_geo_line_cylinder-1
-    true, //object_geo_line_capsule-1
-    true, //object_geo_line_cone-1
-    true, //object_geo_line_torus-1
+    true, //object_geo_line_line_2d-1
+    true, //object_geo_line_triangle_2d-1
+    true, //object_geo_line_quad_2d-1
+    true, //object_geo_line_grid_2d-1
+    true, //object_geo_line_circle_2d-1
 
-    false, //object_geo_flat_triangle-1
-    false, //object_geo_flat_quad-1
-    false, //object_geo_flat_circle-1
-    false, //object_geo_flat_aabb-1
-    false, //object_geo_flat_sphere-1
-    false, //object_geo_flat_cylinder-1
-    false, //object_geo_flat_capsule-1
-    false, //object_geo_flat_cone-1
-    false, //object_geo_flat_torus-1
+    false, //object_geo_flat_triangle_2d-1
+    false, //object_geo_flat_quad_2d-1
+    false, //object_geo_flat_circle_2d-1
+
+    true, //object_geo_line_line_3d-1
+    true, //object_geo_line_triangle_3d-1
+    true, //object_geo_line_quad_3d-1
+    true, //object_geo_line_grid_3d-1
+    true, //object_geo_line_circle_3d-1
+    true, //object_geo_line_aabb_3d-1
+    true, //object_geo_line_sphere_3d-1
+    true, //object_geo_line_cylinder_3d-1
+    true, //object_geo_line_capsule_3d-1
+    true, //object_geo_line_cone_3d-1
+    true, //object_geo_line_torus_3d-1
+
+    false, //object_geo_flat_triangle_3d-1
+    false, //object_geo_flat_quad_3d-1
+    false, //object_geo_flat_circle_3d-1
+    false, //object_geo_flat_aabb_3d-1
+    false, //object_geo_flat_sphere_3d-1
+    false, //object_geo_flat_cylinder_3d-1
+    false, //object_geo_flat_capsule_3d-1
+    false, //object_geo_flat_cone_3d-1
+    false, //object_geo_flat_torus_3d-1
 
     false, //object_geo_entity_triangle-1
     false, //object_geo_entity_quad-1
@@ -817,27 +1041,37 @@ static bool g_ObjectRend_IsLine[g_ObjectRend_Count] =
 };
 static bool g_ObjectRend_IsFlat[g_ObjectRend_Count] =
 {
-    false, //object_geo_line_line-1
-    false, //object_geo_line_triangle-1
-    false, //object_geo_line_quad-1
-    false, //object_geo_line_grid-1
-    false, //object_geo_line_circle-1
-    false, //object_geo_line_aabb-1
-    false, //object_geo_line_sphere-1
-    false, //object_geo_line_cylinder-1
-    false, //object_geo_line_capsule-1
-    false, //object_geo_line_cone-1
-    false, //object_geo_line_torus-1
+    false, //object_geo_line_line_2d-1
+    false, //object_geo_line_triangle_2d-1
+    false, //object_geo_line_quad_2d-1
+    false, //object_geo_line_grid_2d-1
+    false, //object_geo_line_circle_2d-1
 
-    true, //object_geo_flat_triangle-1
-    true, //object_geo_flat_quad-1
-    true, //object_geo_flat_circle-1
-    true, //object_geo_flat_aabb-1
-    true, //object_geo_flat_sphere-1
-    true, //object_geo_flat_cylinder-1
-    true, //object_geo_flat_capsule-1
-    true, //object_geo_flat_cone-1
-    true, //object_geo_flat_torus-1
+    true, //object_geo_flat_triangle_2d-1
+    true, //object_geo_flat_quad_2d-1
+    true, //object_geo_flat_circle_2d-1
+
+    false, //object_geo_line_line_3d-1
+    false, //object_geo_line_triangle_3d-1
+    false, //object_geo_line_quad_3d-1
+    false, //object_geo_line_grid_3d-1
+    false, //object_geo_line_circle_3d-1
+    false, //object_geo_line_aabb_3d-1
+    false, //object_geo_line_sphere_3d-1
+    false, //object_geo_line_cylinder_3d-1
+    false, //object_geo_line_capsule_3d-1
+    false, //object_geo_line_cone_3d-1
+    false, //object_geo_line_torus_3d-1
+
+    true, //object_geo_flat_triangle_3d-1
+    true, //object_geo_flat_quad_3d-1
+    true, //object_geo_flat_circle_3d-1
+    true, //object_geo_flat_aabb_3d-1
+    true, //object_geo_flat_sphere_3d-1
+    true, //object_geo_flat_cylinder_3d-1
+    true, //object_geo_flat_capsule_3d-1
+    true, //object_geo_flat_cone_3d-1
+    true, //object_geo_flat_torus_3d-1
 
     false, //object_geo_entity_triangle-1
     false, //object_geo_entity_quad-1
@@ -895,7 +1129,14 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::CleanupSwapChain()
     this->poBuffersMemory_ObjectCB.clear();
 
     //ObjectLineFlat2D
-
+    count = this->poBuffers_ObjectCB_LineFlat2D.size();
+    for (size_t i = 0; i < count; i++) 
+    {
+        this->pRend->pModelObject->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB_LineFlat2D[i], this->poBuffersMemory_ObjectCB_LineFlat2D[i]);
+    }
+    this->objectCBs_LineFlat2D.clear();
+    this->poBuffers_ObjectCB_LineFlat2D.clear();
+    this->poBuffersMemory_ObjectCB_LineFlat2D.clear();
 
     //ObjectLineFlat3D
     count = this->poBuffers_ObjectCB_LineFlat3D.size();
@@ -1007,31 +1248,40 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandB
 
     //1> Uniform Buffer
     {
-
-
-        if (!this->pRend->isGeometryLine && !this->pRend->isGeometryFlat)
+        if (this->pRend->isGeometry3D)
         {
-            //ObjectConstants
-            bufferSize = sizeof(ObjectConstants) * this->objectCBs.size();
-            this->poBuffers_ObjectCB.resize(count_sci);
-            this->poBuffersMemory_ObjectCB.resize(count_sci);
-            for (size_t j = 0; j < count_sci; j++) 
+            if (!this->pRend->isGeometryLine && !this->pRend->isGeometryFlat)
             {
-                this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
+                //ObjectConstants
+                bufferSize = sizeof(ObjectConstants) * this->objectCBs.size();
+                this->poBuffers_ObjectCB.resize(count_sci);
+                this->poBuffersMemory_ObjectCB.resize(count_sci);
+                for (size_t j = 0; j < count_sci; j++) 
+                {
+                    this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB[j], this->poBuffersMemory_ObjectCB[j]);
+                }
+            }
+            else
+            {
+                //ObjectLineFlat3D
+                bufferSize = sizeof(LineFlat3DObjectConstants) * this->objectCBs_LineFlat3D.size();
+                this->poBuffers_ObjectCB_LineFlat3D.resize(count_sci);
+                this->poBuffersMemory_ObjectCB_LineFlat3D.resize(count_sci);
+                for (size_t j = 0; j < count_sci; j++) 
+                {
+                    this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB_LineFlat3D[j], this->poBuffersMemory_ObjectCB_LineFlat3D[j]);
+                }
             }
         }
         else
         {
             //ObjectLineFlat2D
-            
-
-            //ObjectLineFlat3D
-            bufferSize = sizeof(LineFlat3DObjectConstants) * this->objectCBs_LineFlat3D.size();
-            this->poBuffers_ObjectCB_LineFlat3D.resize(count_sci);
-            this->poBuffersMemory_ObjectCB_LineFlat3D.resize(count_sci);
+            bufferSize = sizeof(LineFlat2DObjectConstants) * this->objectCBs_LineFlat2D.size();
+            this->poBuffers_ObjectCB_LineFlat2D.resize(count_sci);
+            this->poBuffersMemory_ObjectCB_LineFlat2D.resize(count_sci);
             for (size_t j = 0; j < count_sci; j++) 
             {
-                this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB_LineFlat3D[j], this->poBuffersMemory_ObjectCB_LineFlat3D[j]);
+                this->pRend->pModelObject->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB_LineFlat2D[j], this->poBuffersMemory_ObjectCB_LineFlat2D[j]);
             }
         }
 
@@ -1067,6 +1317,7 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::SetupUniformIndirectCommandB
 void Vulkan_017_Collision::ModelObjectRendIndirect::UpdateUniformBuffer()
 {
     this->objectCBs.clear();
+    this->objectCBs_LineFlat2D.clear();
     this->objectCBs_LineFlat3D.clear();
     this->materialCBs.clear();
     this->tessellationCBs.clear();
@@ -1077,10 +1328,17 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::UpdateUniformBuffer()
         ModelObjectRend* pR = this->aRends[i];
         MeshSub* pMeshSub = pR->pMeshSub;
 
-        if (!pR->isGeometryLine && !pR->isGeometryFlat)
-            this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
+        if (pR->isGeometry3D)
+        {
+            if (!pR->isGeometryLine && !pR->isGeometryFlat)
+                this->objectCBs.insert(this->objectCBs.end(), pR->objectCBs.begin(), pR->objectCBs.end());
+            else
+                this->objectCBs_LineFlat3D.insert(this->objectCBs_LineFlat3D.end(), pR->objectCBs_LineFlat3D.begin(), pR->objectCBs_LineFlat3D.end());
+        }
         else
-            this->objectCBs_LineFlat3D.insert(this->objectCBs_LineFlat3D.end(), pR->objectCBs_LineFlat3D.begin(), pR->objectCBs_LineFlat3D.end());
+        {
+            this->objectCBs_LineFlat2D.insert(this->objectCBs_LineFlat2D.end(), pR->objectCBs_LineFlat2D.begin(), pR->objectCBs_LineFlat2D.end());
+        }
         this->materialCBs.insert(this->materialCBs.end(), pR->materialCBs.begin(), pR->materialCBs.end());
         if (pRend->isUsedTessellation)
         {
@@ -1375,6 +1633,7 @@ void Vulkan_017_Collision::loadModel_Custom()
 
                 //Common
                 pRend->isTransparent = g_ObjectRend_IsTransparents[nIndexObjectRend];
+                pRend->isGeometry3D = g_ObjectRend_Is3D[nIndexObjectRend];
                 pRend->isGeometryLine = g_ObjectRend_IsLine[nIndexObjectRend];
                 pRend->isGeometryFlat = g_ObjectRend_IsFlat[nIndexObjectRend];
                 if (pRend->isGeometryLine)
@@ -1382,12 +1641,9 @@ void Vulkan_017_Collision::loadModel_Custom()
                     pRend->cfg_vkPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
                     pRend->cfg_vkPolygonMode = VK_POLYGON_MODE_LINE;
                     pRend->cfg_vkCullModeFlagBits = VK_CULL_MODE_NONE;
-                    //pRend->cfg_LineWidth = 5.0f;
                 }
                 if (pRend->isGeometryFlat)
                 {
-                    // pRend->cfg_vkPrimitiveTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-                    // pRend->cfg_vkPolygonMode = VK_POLYGON_MODE_LINE;
                     pRend->cfg_vkCullModeFlagBits = VK_CULL_MODE_NONE;
                 }
 
@@ -1445,31 +1701,39 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
 
         pRend->instanceMatWorld.clear();
         pRend->objectCBs.clear();
+        pRend->objectCBs_LineFlat2D.clear();
         pRend->objectCBs_LineFlat3D.clear();
         pRend->materialCBs.clear();
         for (int j = 0; j < count_instance; j++)
         {
-            if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
+            if (pRend->isGeometry3D)
             {
-                //ObjectConstants
-                ObjectConstants objectConstants;
-                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
-                                                            g_ObjectRend_Tranforms[3 * i + 1],
-                                                            g_ObjectRend_Tranforms[3 * i + 2]);
-                pRend->objectCBs.push_back(objectConstants);
-                pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+                if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
+                {
+                    //ObjectConstants
+                    ObjectConstants objectConstants;
+                    objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
+                                                                g_ObjectRend_Tranforms[3 * i + 1],
+                                                                g_ObjectRend_Tranforms[3 * i + 2]);
+                    pRend->objectCBs.push_back(objectConstants);
+                    pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+                }
+                else
+                {
+                    //ObjectLineFlat3D
+                    LineFlat3DObjectConstants objectConstants;
+                    objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
+                                                                g_ObjectRend_Tranforms[3 * i + 1],
+                                                                g_ObjectRend_Tranforms[3 * i + 2]);
+                    pRend->objectCBs_LineFlat3D.push_back(objectConstants);
+                    pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+                }
             }
             else
             {
                 //ObjectLineFlat2D
-
-                //ObjectLineFlat3D
-                LineFlat3DObjectConstants objectConstants;
-                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectRend_Tranforms[3 * i + 0] + FVector3((j - pRend->pModelObject->countInstanceExt) * g_Object_InstanceGap , 0, 0),
-                                                            g_ObjectRend_Tranforms[3 * i + 1],
-                                                            g_ObjectRend_Tranforms[3 * i + 2]);
-                pRend->objectCBs_LineFlat3D.push_back(objectConstants);
-                pRend->instanceMatWorld.push_back(objectConstants.g_MatWorld);
+                LineFlat2DObjectConstants objectConstants;
+                pRend->objectCBs_LineFlat2D.push_back(objectConstants);
             }
 
             //MaterialConstants
@@ -1521,28 +1785,43 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
         
         if (isCreateVkBuffer)
         {
-            //ObjectConstants
-            if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
+            if (pRend->isGeometry3D)
             {
-                bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
-                pRend->poBuffers_ObjectCB.resize(count_sci);
-                pRend->poBuffersMemory_ObjectCB.resize(count_sci);
-                for (size_t j = 0; j < count_sci; j++) 
+                //ObjectConstants
+                if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
                 {
-                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
+                    bufferSize = sizeof(ObjectConstants) * MAX_OBJECT_COUNT;
+                    pRend->poBuffers_ObjectCB.resize(count_sci);
+                    pRend->poBuffersMemory_ObjectCB.resize(count_sci);
+                    for (size_t j = 0; j < count_sci; j++) 
+                    {
+                        createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB[j], pRend->poBuffersMemory_ObjectCB[j]);
+                    }
+                }
+                else
+                {
+                    //ObjectLineFlat3D
+                    bufferSize = sizeof(LineFlat3DObjectConstants) * MAX_OBJECT_LINEFLAT_3D_COUNT;
+                    pRend->poBuffers_ObjectCB_LineFlat3D.resize(count_sci);
+                    pRend->poBuffersMemory_ObjectCB_LineFlat3D.resize(count_sci);
+                    for (size_t j = 0; j < count_sci; j++) 
+                    {
+                        createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB_LineFlat3D[j], pRend->poBuffersMemory_ObjectCB_LineFlat3D[j]);
+                    }
                 }
             }
             else
             {
-                bufferSize = sizeof(LineFlat3DObjectConstants) * MAX_OBJECT_LINEFLAT_3D_COUNT;
-                pRend->poBuffers_ObjectCB_LineFlat3D.resize(count_sci);
-                pRend->poBuffersMemory_ObjectCB_LineFlat3D.resize(count_sci);
+                //ObjectLineFlat2D
+                bufferSize = sizeof(LineFlat2DObjectConstants) * MAX_OBJECT_LINEFLAT_2D_COUNT;
+                pRend->poBuffers_ObjectCB_LineFlat2D.resize(count_sci);
+                pRend->poBuffersMemory_ObjectCB_LineFlat2D.resize(count_sci);
                 for (size_t j = 0; j < count_sci; j++) 
                 {
-                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB_LineFlat3D[j], pRend->poBuffersMemory_ObjectCB_LineFlat3D[j]);
+                    createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, pRend->poBuffers_ObjectCB_LineFlat2D[j], pRend->poBuffersMemory_ObjectCB_LineFlat2D[j]);
                 }
             }
-
+            
             //MaterialConstants
             bufferSize = sizeof(MaterialConstants) * MAX_MATERIAL_COUNT;
             pRend->poBuffers_materialCB.resize(count_sci);
@@ -1792,12 +2071,13 @@ void Vulkan_017_Collision::createMeshes()
 {
     for (int i = 0; i < g_MeshCount; i++)
     {
-        String nameMesh = g_MeshPaths[5 * i + 0];
-        String nameVertexType = g_MeshPaths[5 * i + 1];
-        String nameMeshType = g_MeshPaths[5 * i + 2];
-        String nameGeometryType = g_MeshPaths[5 * i + 3];
-        String pathMesh = g_MeshPaths[5 * i + 4];
-        
+        String nameMesh = g_MeshPaths[6 * i + 0];
+        String nameVertexType = g_MeshPaths[6 * i + 1];
+        String nameMeshType = g_MeshPaths[6 * i + 2];
+        String pathMesh = g_MeshPaths[6 * i + 3];
+        String nameGeometryType = g_MeshPaths[6 * i + 4];
+        String nameGeometryParam = g_MeshPaths[6 * i + 5];
+
         FMeshVertexType typeVertex = F_ParseMeshVertexType(nameVertexType); 
         FMeshType typeMesh = F_ParseMeshType(nameMeshType);
         FMeshGeometryType typeGeometryType = F_MeshGeometry_EntityTriangle;
@@ -1805,14 +2085,19 @@ void Vulkan_017_Collision::createMeshes()
         {
             typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);
         }
+        FMeshCreateParam* pParam = nullptr;
+        if (!nameGeometryParam.empty())
+        {
+            pParam = FMeshGeometry::CreateParam(typeGeometryType, nameGeometryParam);
+        }
 
-        Mesh* pMesh = new Mesh(this, 
+        Mesh* pMesh = new Mesh(this,
                                nameMesh,
                                pathMesh,
                                typeMesh,
                                typeVertex,
                                typeGeometryType,
-                               nullptr);
+                               pParam);
         bool isFlipY = g_MeshIsFlipYs[i];
         bool isTransformLocal = g_MeshIsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
@@ -2386,42 +2671,50 @@ void Vulkan_017_Collision::updateCBs_Custom()
         ModelObjectRend* pRend = this->m_aModelObjectRends_All[i];
 
         size_t count_object = 0;
-        if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
-            count_object = pRend->objectCBs.size();
-        else
-            count_object = pRend->objectCBs_LineFlat3D.size();
-        for (size_t j = 0; j < count_object; j++)
+        if (pRend->isGeometry3D)
         {
             if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
-            {
-                //ObjectConstants
-                ObjectConstants& objectCB = pRend->objectCBs[j];
-                if (pRend->pModelObject->isRotate || pRend->isRotate || this->cfg_isRotate)
-                {
-                    objectCB.g_MatWorld = glm::rotate(pRend->instanceMatWorld[j], 
-                                                      time * glm::radians(90.0f), 
-                                                      FVector3(0.0f, 1.0f, 0.0f));
-                }
-                else
-                {
-                    objectCB.g_MatWorld = pRend->instanceMatWorld[j];
-                }
-            }
+                count_object = pRend->objectCBs.size();
             else
+                count_object = pRend->objectCBs_LineFlat3D.size();
+        }
+        else
+        {
+            count_object = pRend->objectCBs_LineFlat2D.size();
+        }
+        for (size_t j = 0; j < count_object; j++)
+        {
+            if (pRend->isGeometry3D)
             {
-                //ObjectLineFlat2D
-
-                //ObjectLineFlat3D
-                LineFlat3DObjectConstants& objectCB = pRend->objectCBs_LineFlat3D[j];
-                if (pRend->pModelObject->isRotate || pRend->isRotate || this->cfg_isRotate)
+                if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
                 {
-                    objectCB.g_MatWorld = glm::rotate(pRend->instanceMatWorld[j], 
-                                                      time * glm::radians(90.0f), 
-                                                      FVector3(0.0f, 1.0f, 0.0f));
+                    //ObjectConstants
+                    ObjectConstants& objectCB = pRend->objectCBs[j];
+                    if (pRend->pModelObject->isRotate || pRend->isRotate || this->cfg_isRotate)
+                    {
+                        objectCB.g_MatWorld = glm::rotate(pRend->instanceMatWorld[j], 
+                                                          time * glm::radians(90.0f), 
+                                                          FVector3(0.0f, 1.0f, 0.0f));
+                    }
+                    else
+                    {
+                        objectCB.g_MatWorld = pRend->instanceMatWorld[j];
+                    }
                 }
                 else
                 {
-                    objectCB.g_MatWorld = pRend->instanceMatWorld[j];
+                    //ObjectLineFlat3D
+                    LineFlat3DObjectConstants& objectCB = pRend->objectCBs_LineFlat3D[j];
+                    if (pRend->pModelObject->isRotate || pRend->isRotate || this->cfg_isRotate)
+                    {
+                        objectCB.g_MatWorld = glm::rotate(pRend->instanceMatWorld[j], 
+                                                          time * glm::radians(90.0f), 
+                                                          FVector3(0.0f, 1.0f, 0.0f));
+                    }
+                    else
+                    {
+                        objectCB.g_MatWorld = pRend->instanceMatWorld[j];
+                    }
                 }
             }
 
@@ -2436,23 +2729,34 @@ void Vulkan_017_Collision::updateCBs_Custom()
         }
 
         //ObjectConstants
-        if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
+        if (pRend->isGeometry3D)
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
-                memcpy(data, pRend->objectCBs.data(), sizeof(ObjectConstants) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
+            if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
+            {
+                VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
+                void* data;
+                vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
+                    memcpy(data, pRend->objectCBs.data(), sizeof(ObjectConstants) * count_object);
+                vkUnmapMemory(this->poDevice, memory);
+            }
+            else
+            {
+                VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB_LineFlat3D[this->poSwapChainImageIndex];
+                void* data;
+                vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlat3DObjectConstants) * count_object, 0, &data);
+                    memcpy(data, pRend->objectCBs_LineFlat3D.data(), sizeof(LineFlat3DObjectConstants) * count_object);
+                vkUnmapMemory(this->poDevice, memory);
+            }
         }
         else
         {
-            VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB_LineFlat3D[this->poSwapChainImageIndex];
+            VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB_LineFlat2D[this->poSwapChainImageIndex];
             void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlat3DObjectConstants) * count_object, 0, &data);
-                memcpy(data, pRend->objectCBs_LineFlat3D.data(), sizeof(LineFlat3DObjectConstants) * count_object);
+            vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlat2DObjectConstants) * count_object, 0, &data);
+                memcpy(data, pRend->objectCBs_LineFlat2D.data(), sizeof(LineFlat2DObjectConstants) * count_object);
             vkUnmapMemory(this->poDevice, memory);
         }
-
+        
         //MaterialConstants
         {
             VkDeviceMemory& memory = pRend->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
@@ -2483,26 +2787,37 @@ void Vulkan_017_Collision::updateCBs_Custom()
         {
             pRendIndirect->UpdateUniformBuffer();
             
-            if (!pRendIndirect->pRend->isGeometryLine && !pRendIndirect->pRend->isGeometryFlat)
+            if (pRendIndirect->pRend->isGeometry3D)
             {
-                //ObjectConstants
-                size_t count_object = pRendIndirect->objectCBs.size();
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-                void* data;
-                vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
-                    memcpy(data, pRendIndirect->objectCBs.data(), sizeof(ObjectConstants) * count_object);
-                vkUnmapMemory(this->poDevice, memory);
+                if (!pRendIndirect->pRend->isGeometryLine && !pRendIndirect->pRend->isGeometryFlat)
+                {
+                    //ObjectConstants
+                    size_t count_object = pRendIndirect->objectCBs.size();
+                    VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
+                    void* data;
+                    vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
+                        memcpy(data, pRendIndirect->objectCBs.data(), sizeof(ObjectConstants) * count_object);
+                    vkUnmapMemory(this->poDevice, memory);
+                }
+                else
+                {
+                    //ObjectLineFlat3D
+                    size_t count_object = pRendIndirect->objectCBs_LineFlat3D.size();
+                    VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB_LineFlat3D[this->poSwapChainImageIndex];
+                    void* data;
+                    vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlat3DObjectConstants) * count_object, 0, &data);
+                        memcpy(data, pRendIndirect->objectCBs_LineFlat3D.data(), sizeof(LineFlat3DObjectConstants) * count_object);
+                    vkUnmapMemory(this->poDevice, memory);
+                }
             }
             else
             {
                 //ObjectLineFlat2D
-
-                //ObjectLineFlat3D
-                size_t count_object = pRendIndirect->objectCBs_LineFlat3D.size();
-                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB_LineFlat3D[this->poSwapChainImageIndex];
+                size_t count_object = pRendIndirect->objectCBs_LineFlat2D.size();
+                VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB_LineFlat2D[this->poSwapChainImageIndex];
                 void* data;
-                vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlat3DObjectConstants) * count_object, 0, &data);
-                    memcpy(data, pRendIndirect->objectCBs_LineFlat3D.data(), sizeof(LineFlat3DObjectConstants) * count_object);
+                vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlat2DObjectConstants) * count_object, 0, &data);
+                    memcpy(data, pRendIndirect->objectCBs_LineFlat2D.data(), sizeof(LineFlat2DObjectConstants) * count_object);
                 vkUnmapMemory(this->poDevice, memory);
             }
 
@@ -2827,16 +3142,23 @@ void Vulkan_017_Collision::modelConfig()
                                 int count_instance = pModelObject->countInstance;
                                 for (int p = 0; p < count_instance; p++)
                                 {
-                                    FMatrix4* pMat4World = nullptr;
-                                    if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
+                                    const FMatrix4* pMat4World = nullptr;
+                                    if (pRend->isGeometry3D)
                                     {
-                                        ObjectConstants& obj = pRend->objectCBs[p];
-                                        pMat4World = &obj.g_MatWorld;
+                                        if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
+                                        {
+                                            ObjectConstants& obj = pRend->objectCBs[p];
+                                            pMat4World = &obj.g_MatWorld;
+                                        }
+                                        else
+                                        {
+                                            LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[p];
+                                            pMat4World = &obj.g_MatWorld;
+                                        }
                                     }
                                     else
                                     {
-                                        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[p];
-                                        pMat4World = &obj.g_MatWorld;
+                                        pMat4World = &FMath::ms_mat4Unit;
                                     }
                                     
                                     MaterialConstants& mat = pRend->materialCBs[p];
@@ -2848,6 +3170,7 @@ void Vulkan_017_Collision::modelConfig()
                                         String nameObject = FUtilString::SaveInt(p) + " - Object - " + nameObjectRend;
                                         if (ImGui::CollapsingHeader(nameObject.c_str()))
                                         {
+                                            //matWorld
                                             const FMatrix4& mat4World = *pMat4World;
                                             String nameTable = FUtilString::SaveInt(p) + " - matWorld - " + nameObjectRend;
                                             if (ImGui::BeginTable(nameTable.c_str(), 4))
@@ -2873,6 +3196,29 @@ void Vulkan_017_Collision::modelConfig()
                                                 ImGui::TableNextColumn(); ImGui::Text("%f", mat4World[3][3]);
 
                                                 ImGui::EndTable();
+                                            }
+
+                                            //color
+                                            if (pRend->isGeometry3D)
+                                            {
+                                                if (pRend->isGeometryLine || pRend->isGeometryFlat)
+                                                {
+                                                    LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[p];
+                                                    String nameColor = "Color - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                    if (ImGui::ColorEdit4(nameColor.c_str(), (float*)&obj.color))
+                                                    {
+
+                                                    }
+                                                }   
+                                            }
+                                            else
+                                            {
+                                                LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[p];
+                                                String nameColor = "Color - " + FUtilString::SaveInt(p) + " - " + nameObjectRend;
+                                                if (ImGui::ColorEdit4(nameColor.c_str(), (float*)&obj.color))
+                                                {
+
+                                                }
                                             }
                                         }
                                         

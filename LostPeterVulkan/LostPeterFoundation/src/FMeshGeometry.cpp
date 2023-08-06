@@ -16,53 +16,1389 @@
 namespace LostPeterFoundation
 {
     ////////////////////////////////// Line2D ////////////////////////////////
+    //Line2D
+    String FMeshCreateParam_Line2D::ms_nameType = "MeshLine2D"; 
+    bool FMeshCreateParam_Line2D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 4)
+        {
+            this->vStart.x = FUtilString::ParserFloat(aParam[0]);
+            this->vStart.y = FUtilString::ParserFloat(aParam[1]);
+            this->vEnd.x = FUtilString::ParserFloat(aParam[2]);
+            this->vEnd.y = FUtilString::ParserFloat(aParam[3]);
+        }
+        else if (count == 8)
+        {
+            this->vStart.x = FUtilString::ParserFloat(aParam[0]);
+            this->vStart.y = FUtilString::ParserFloat(aParam[1]);
+            this->vEnd.x = FUtilString::ParserFloat(aParam[2]);
+            this->vEnd.y = FUtilString::ParserFloat(aParam[3]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[4]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[5]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[6]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[7]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_Line2D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineTriangle2D
+    String FMeshCreateParam_LineTriangle2D::ms_nameType = "MeshLineTriangle2D"; 
+    bool FMeshCreateParam_LineTriangle2D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 6)
+        {
+            this->vTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeft.x = FUtilString::ParserFloat(aParam[2]);
+            this->vLeft.y = FUtilString::ParserFloat(aParam[3]);
+            this->vRight.x = FUtilString::ParserFloat(aParam[4]);
+            this->vRight.y = FUtilString::ParserFloat(aParam[5]);
+        }
+        else if (count == 10)
+        {
+            this->vTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeft.x = FUtilString::ParserFloat(aParam[2]);
+            this->vLeft.y = FUtilString::ParserFloat(aParam[3]);
+            this->vRight.x = FUtilString::ParserFloat(aParam[4]);
+            this->vRight.y = FUtilString::ParserFloat(aParam[5]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[6]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[7]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[8]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[9]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineTriangle2D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineQuad2D
+    String FMeshCreateParam_LineQuad2D::ms_nameType = "MeshLineQuad2D"; 
+    bool FMeshCreateParam_LineQuad2D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 8)
+        {
+            this->vLeftTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vLeftTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeftBottom.x = FUtilString::ParserFloat(aParam[2]);
+            this->vLeftBottom.y = FUtilString::ParserFloat(aParam[3]);
+            this->vRightBottom.x = FUtilString::ParserFloat(aParam[4]);
+            this->vRightBottom.y = FUtilString::ParserFloat(aParam[5]);
+            this->vRightTop.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRightTop.y = FUtilString::ParserFloat(aParam[7]);
+        }
+        else if (count == 12)
+        {
+            this->vLeftTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vLeftTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeftBottom.x = FUtilString::ParserFloat(aParam[2]);
+            this->vLeftBottom.y = FUtilString::ParserFloat(aParam[3]);
+            this->vRightBottom.x = FUtilString::ParserFloat(aParam[4]);
+            this->vRightBottom.y = FUtilString::ParserFloat(aParam[5]);
+            this->vRightTop.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRightTop.y = FUtilString::ParserFloat(aParam[7]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[8]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[9]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[11]);
+        }   
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineQuad2D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineGrid2D
+    String FMeshCreateParam_LineGrid2D::ms_nameType = "MeshLineGrid2D"; 
+    bool FMeshCreateParam_LineGrid2D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 10)
+        {
+            this->vLeftTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vLeftTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeftBottom.x = FUtilString::ParserFloat(aParam[2]);
+            this->vLeftBottom.y = FUtilString::ParserFloat(aParam[3]);
+            this->vRightBottom.x = FUtilString::ParserFloat(aParam[4]);
+            this->vRightBottom.y = FUtilString::ParserFloat(aParam[5]);
+            this->vRightTop.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRightTop.y = FUtilString::ParserFloat(aParam[7]);
+            this->m = FUtilString::ParserUInt(aParam[8]);
+            this->n = FUtilString::ParserUInt(aParam[9]);
+        }
+        else if (count == 14)
+        {
+            this->vLeftTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vLeftTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeftBottom.x = FUtilString::ParserFloat(aParam[2]);
+            this->vLeftBottom.y = FUtilString::ParserFloat(aParam[3]);
+            this->vRightBottom.x = FUtilString::ParserFloat(aParam[4]);
+            this->vRightBottom.y = FUtilString::ParserFloat(aParam[5]);
+            this->vRightTop.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRightTop.y = FUtilString::ParserFloat(aParam[7]);
+            this->m = FUtilString::ParserUInt(aParam[8]);
+            this->n = FUtilString::ParserUInt(aParam[9]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[12]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[13]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineGrid2D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineCircle2D
+    String FMeshCreateParam_LineCircle2D::ms_nameType = "MeshLineCircle2D"; 
+    bool FMeshCreateParam_LineCircle2D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 7)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vDir.x = FUtilString::ParserFloat(aParam[2]);
+            this->vDir.y = FUtilString::ParserFloat(aParam[3]);
+            this->radius = FUtilString::ParserFloat(aParam[4]);
+            this->segment = FUtilString::ParserUInt(aParam[5]);
+            this->isDrawCenter = FUtilString::ParserBool(aParam[6]);
+        }
+        else if (count == 11)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vDir.x = FUtilString::ParserFloat(aParam[2]);
+            this->vDir.y = FUtilString::ParserFloat(aParam[3]);
+            this->radius = FUtilString::ParserFloat(aParam[4]);
+            this->segment = FUtilString::ParserUInt(aParam[5]);
+            this->isDrawCenter = FUtilString::ParserBool(aParam[6]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[7]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[8]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[9]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[10]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineCircle2D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
 
     ////////////////////////////////// Flat2D ////////////////////////////////
+    //FlatTriangle2D
+    String FMeshCreateParam_FlatTriangle2D::ms_nameType = "MeshFlatTriangle2D"; 
+    bool FMeshCreateParam_FlatTriangle2D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 6)
+        {
+            this->vTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeft.x = FUtilString::ParserFloat(aParam[2]);
+            this->vLeft.y = FUtilString::ParserFloat(aParam[3]);
+            this->vRight.x = FUtilString::ParserFloat(aParam[4]);
+            this->vRight.y = FUtilString::ParserFloat(aParam[5]);
+        }
+        else if (count == 10)
+        {
+            this->vTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeft.x = FUtilString::ParserFloat(aParam[2]);
+            this->vLeft.y = FUtilString::ParserFloat(aParam[3]);
+            this->vRight.x = FUtilString::ParserFloat(aParam[4]);
+            this->vRight.y = FUtilString::ParserFloat(aParam[5]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[6]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[7]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[8]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[9]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_FlatTriangle2D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //FlatQuad2D
+    String FMeshCreateParam_FlatQuad2D::ms_nameType = "MeshFlatQuad2D"; 
+    bool FMeshCreateParam_FlatQuad2D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 8)
+        {
+            this->vLeftTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vLeftTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeftBottom.x = FUtilString::ParserFloat(aParam[2]);
+            this->vLeftBottom.y = FUtilString::ParserFloat(aParam[3]);
+            this->vRightBottom.x = FUtilString::ParserFloat(aParam[4]);
+            this->vRightBottom.y = FUtilString::ParserFloat(aParam[5]);
+            this->vRightTop.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRightTop.y = FUtilString::ParserFloat(aParam[7]);
+        }
+        else if (count == 12)
+        {
+            this->vLeftTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vLeftTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeftBottom.x = FUtilString::ParserFloat(aParam[2]);
+            this->vLeftBottom.y = FUtilString::ParserFloat(aParam[3]);
+            this->vRightBottom.x = FUtilString::ParserFloat(aParam[4]);
+            this->vRightBottom.y = FUtilString::ParserFloat(aParam[5]);
+            this->vRightTop.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRightTop.y = FUtilString::ParserFloat(aParam[7]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[8]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[9]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[11]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_FlatQuad2D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //FlatCircle2D
+    String FMeshCreateParam_FlatCircle2D::ms_nameType = "MeshFlatCircle2D"; 
+    bool FMeshCreateParam_FlatCircle2D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 6)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vDir.x = FUtilString::ParserFloat(aParam[2]);
+            this->vDir.y = FUtilString::ParserFloat(aParam[3]);
+            this->radius = FUtilString::ParserFloat(aParam[4]);
+            this->segment = FUtilString::ParserUInt(aParam[5]);
+        }
+        else if (count == 10)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vDir.x = FUtilString::ParserFloat(aParam[2]);
+            this->vDir.y = FUtilString::ParserFloat(aParam[3]);
+            this->radius = FUtilString::ParserFloat(aParam[4]);
+            this->segment = FUtilString::ParserUInt(aParam[5]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[6]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[7]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[8]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[9]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_FlatCircle2D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
 
     ////////////////////////////////// Line3D ////////////////////////////////
-    String FMeshCreateParam_Line3D::ms_nameType = "MeshLine3D"; //Line3D
-    String FMeshCreateParam_LineTriangle3D::ms_nameType = "MeshLineTriangle3D"; //LineTriangle3D
-    String FMeshCreateParam_LineQuad3D::ms_nameType = "MeshLineQuad3D"; //LineQuad3D
-    String FMeshCreateParam_LineGrid3D::ms_nameType = "MeshLineGrid3D"; //LineGrid3D
-    String FMeshCreateParam_LineCircle3D::ms_nameType = "MeshLineCircle3D"; //LineCircle3D
-    String FMeshCreateParam_LineAABB3D::ms_nameType = "MeshLineAABB3D"; //LineAABB3D    
-    String FMeshCreateParam_LineSphere3D::ms_nameType = "MeshLineSphere3D"; //LineSphere3D
-    String FMeshCreateParam_LineCylinder3D::ms_nameType = "MeshLineCylinder3D"; //LineCylinder3D
-    String FMeshCreateParam_LineCapsule3D::ms_nameType = "MeshLineCapsule3D"; //LineCapsule3D
-    String FMeshCreateParam_LineCone3D::ms_nameType = "MeshLineCone3D"; //LineCone3D
-    String FMeshCreateParam_LineTorus3D::ms_nameType = "MeshLineTorus3D"; //LineTorus3D
+    //Line3D
+    String FMeshCreateParam_Line3D::ms_nameType = "MeshLine3D"; 
+    bool FMeshCreateParam_Line3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 6)
+        {
+            this->vStart.x = FUtilString::ParserFloat(aParam[0]);
+            this->vStart.y = FUtilString::ParserFloat(aParam[1]);
+            this->vStart.z = FUtilString::ParserFloat(aParam[2]);
+            this->vEnd.x = FUtilString::ParserFloat(aParam[3]);
+            this->vEnd.y = FUtilString::ParserFloat(aParam[4]);
+            this->vEnd.z = FUtilString::ParserFloat(aParam[5]);
+        }   
+        else if (count == 10)
+        {
+            this->vStart.x = FUtilString::ParserFloat(aParam[0]);
+            this->vStart.y = FUtilString::ParserFloat(aParam[1]);
+            this->vStart.z = FUtilString::ParserFloat(aParam[2]);
+            this->vEnd.x = FUtilString::ParserFloat(aParam[3]);
+            this->vEnd.y = FUtilString::ParserFloat(aParam[4]);
+            this->vEnd.z = FUtilString::ParserFloat(aParam[5]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[6]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[7]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[8]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[9]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_Line3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineTriangle3D
+    String FMeshCreateParam_LineTriangle3D::ms_nameType = "MeshLineTriangle3D"; 
+    bool FMeshCreateParam_LineTriangle3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 9)
+        {
+            this->vTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vTop.z = FUtilString::ParserFloat(aParam[2]);
+            this->vLeft.x = FUtilString::ParserFloat(aParam[3]);
+            this->vLeft.y = FUtilString::ParserFloat(aParam[4]);
+            this->vLeft.z = FUtilString::ParserFloat(aParam[5]);
+            this->vRight.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRight.y = FUtilString::ParserFloat(aParam[7]);
+            this->vRight.z = FUtilString::ParserFloat(aParam[8]);
+        }
+        else if (count == 13)
+        {
+            this->vTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vTop.z = FUtilString::ParserFloat(aParam[2]);
+            this->vLeft.x = FUtilString::ParserFloat(aParam[3]);
+            this->vLeft.y = FUtilString::ParserFloat(aParam[4]);
+            this->vLeft.z = FUtilString::ParserFloat(aParam[5]);
+            this->vRight.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRight.y = FUtilString::ParserFloat(aParam[7]);
+            this->vRight.z = FUtilString::ParserFloat(aParam[8]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[9]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[12]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineTriangle3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineQuad3D
+    String FMeshCreateParam_LineQuad3D::ms_nameType = "MeshLineQuad3D"; 
+    bool FMeshCreateParam_LineQuad3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 12)
+        {
+            this->vLeftTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vLeftTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeftTop.z = FUtilString::ParserFloat(aParam[2]);
+            this->vLeftBottom.x = FUtilString::ParserFloat(aParam[3]);
+            this->vLeftBottom.y = FUtilString::ParserFloat(aParam[4]);
+            this->vLeftBottom.z = FUtilString::ParserFloat(aParam[5]);
+            this->vRightBottom.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRightBottom.y = FUtilString::ParserFloat(aParam[7]);
+            this->vRightBottom.z = FUtilString::ParserFloat(aParam[8]);
+            this->vRightTop.x = FUtilString::ParserFloat(aParam[9]);
+            this->vRightTop.y = FUtilString::ParserFloat(aParam[10]);
+            this->vRightTop.z = FUtilString::ParserFloat(aParam[11]);
+        }
+        else if (count == 16)
+        {
+            this->vLeftTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vLeftTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeftTop.z = FUtilString::ParserFloat(aParam[2]);
+            this->vLeftBottom.x = FUtilString::ParserFloat(aParam[3]);
+            this->vLeftBottom.y = FUtilString::ParserFloat(aParam[4]);
+            this->vLeftBottom.z = FUtilString::ParserFloat(aParam[5]);
+            this->vRightBottom.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRightBottom.y = FUtilString::ParserFloat(aParam[7]);
+            this->vRightBottom.z = FUtilString::ParserFloat(aParam[8]);
+            this->vRightTop.x = FUtilString::ParserFloat(aParam[9]);
+            this->vRightTop.y = FUtilString::ParserFloat(aParam[10]);
+            this->vRightTop.z = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[12]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[13]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[14]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[15]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineQuad3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineGrid3D
+    String FMeshCreateParam_LineGrid3D::ms_nameType = "MeshLineGrid3D"; 
+    bool FMeshCreateParam_LineGrid3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 14)
+        {
+            this->vLeftTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vLeftTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeftTop.z = FUtilString::ParserFloat(aParam[2]);
+            this->vLeftBottom.x = FUtilString::ParserFloat(aParam[3]);
+            this->vLeftBottom.y = FUtilString::ParserFloat(aParam[4]);
+            this->vLeftBottom.z = FUtilString::ParserFloat(aParam[5]);
+            this->vRightBottom.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRightBottom.y = FUtilString::ParserFloat(aParam[7]);
+            this->vRightBottom.z = FUtilString::ParserFloat(aParam[8]);
+            this->vRightTop.x = FUtilString::ParserFloat(aParam[9]);
+            this->vRightTop.y = FUtilString::ParserFloat(aParam[10]);
+            this->vRightTop.z = FUtilString::ParserFloat(aParam[11]);
+            this->m = FUtilString::ParserUInt(aParam[12]);
+            this->n = FUtilString::ParserUInt(aParam[13]);
+        }
+        else if (count == 18)
+        {
+            this->vLeftTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vLeftTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeftTop.z = FUtilString::ParserFloat(aParam[2]);
+            this->vLeftBottom.x = FUtilString::ParserFloat(aParam[3]);
+            this->vLeftBottom.y = FUtilString::ParserFloat(aParam[4]);
+            this->vLeftBottom.z = FUtilString::ParserFloat(aParam[5]);
+            this->vRightBottom.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRightBottom.y = FUtilString::ParserFloat(aParam[7]);
+            this->vRightBottom.z = FUtilString::ParserFloat(aParam[8]);
+            this->vRightTop.x = FUtilString::ParserFloat(aParam[9]);
+            this->vRightTop.y = FUtilString::ParserFloat(aParam[10]);
+            this->vRightTop.z = FUtilString::ParserFloat(aParam[11]);
+            this->m = FUtilString::ParserUInt(aParam[12]);
+            this->n = FUtilString::ParserUInt(aParam[13]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[14]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[15]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[16]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[17]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineGrid3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineCircle3D
+    String FMeshCreateParam_LineCircle3D::ms_nameType = "MeshLineCircle3D"; 
+    bool FMeshCreateParam_LineCircle3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 12)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vDir.x = FUtilString::ParserFloat(aParam[3]);
+            this->vDir.y = FUtilString::ParserFloat(aParam[4]);
+            this->vDir.z = FUtilString::ParserFloat(aParam[5]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[6]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[7]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[8]);
+            this->radius = FUtilString::ParserFloat(aParam[9]);
+            this->segment = FUtilString::ParserUInt(aParam[10]);
+            this->isDrawCenter = FUtilString::ParserBool(aParam[11]);
+        }
+        else if (count == 16)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vDir.x = FUtilString::ParserFloat(aParam[3]);
+            this->vDir.y = FUtilString::ParserFloat(aParam[4]);
+            this->vDir.z = FUtilString::ParserFloat(aParam[5]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[6]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[7]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[8]);
+            this->radius = FUtilString::ParserFloat(aParam[9]);
+            this->segment = FUtilString::ParserUInt(aParam[10]);
+            this->isDrawCenter = FUtilString::ParserBool(aParam[11]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[12]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[13]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[14]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[15]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineCircle3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineAABB3D    
+    String FMeshCreateParam_LineAABB3D::ms_nameType = "MeshLineAABB3D"; 
+    bool FMeshCreateParam_LineAABB3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 6)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vExtent.x = FUtilString::ParserFloat(aParam[3]);
+            this->vExtent.y = FUtilString::ParserFloat(aParam[4]);
+            this->vExtent.z = FUtilString::ParserFloat(aParam[5]);
+        }
+        else if (count == 10)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vExtent.x = FUtilString::ParserFloat(aParam[3]);
+            this->vExtent.y = FUtilString::ParserFloat(aParam[4]);
+            this->vExtent.z = FUtilString::ParserFloat(aParam[5]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[6]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[7]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[8]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[9]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineAABB3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineSphere3D
+    String FMeshCreateParam_LineSphere3D::ms_nameType = "MeshLineSphere3D"; 
+    bool FMeshCreateParam_LineSphere3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 9)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->sliceCount = FUtilString::ParserUInt(aParam[7]);
+            this->stackCount = FUtilString::ParserUInt(aParam[8]);
+        }
+        else if (count == 13)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->sliceCount = FUtilString::ParserUInt(aParam[7]);
+            this->stackCount = FUtilString::ParserUInt(aParam[8]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[9]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[12]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineSphere3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineCylinder3D
+    String FMeshCreateParam_LineCylinder3D::ms_nameType = "MeshLineCylinder3D"; 
+    bool FMeshCreateParam_LineCylinder3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 11)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radiusBottom = FUtilString::ParserFloat(aParam[6]);
+            this->radiusTop = FUtilString::ParserFloat(aParam[7]);
+            this->height = FUtilString::ParserFloat(aParam[8]);
+            this->sliceCount = FUtilString::ParserUInt(aParam[9]);
+            this->isDrawCenter = FUtilString::ParserBool(aParam[10]);
+        }
+        else if (count == 15)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radiusBottom = FUtilString::ParserFloat(aParam[6]);
+            this->radiusTop = FUtilString::ParserFloat(aParam[7]);
+            this->height = FUtilString::ParserFloat(aParam[8]);
+            this->sliceCount = FUtilString::ParserUInt(aParam[9]);
+            this->isDrawCenter = FUtilString::ParserBool(aParam[10]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[12]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[13]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[14]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineCylinder3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineCapsule3D
+    String FMeshCreateParam_LineCapsule3D::ms_nameType = "MeshLineCapsule3D"; 
+    bool FMeshCreateParam_LineCapsule3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 10)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->height = FUtilString::ParserFloat(aParam[7]);
+            this->numRings = FUtilString::ParserUInt(aParam[8]);
+            this->numSegments = FUtilString::ParserUInt(aParam[9]);
+        }
+        else if (count == 14)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->height = FUtilString::ParserFloat(aParam[7]);
+            this->numRings = FUtilString::ParserUInt(aParam[8]);
+            this->numSegments = FUtilString::ParserUInt(aParam[9]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[12]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[13]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineCapsule3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineCone3D
+    String FMeshCreateParam_LineCone3D::ms_nameType = "MeshLineCone3D"; 
+    bool FMeshCreateParam_LineCone3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 9)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->height = FUtilString::ParserFloat(aParam[7]);
+            this->numSegBase = FUtilString::ParserUInt(aParam[8]);
+        }
+        else if (count == 13)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->height = FUtilString::ParserFloat(aParam[7]);
+            this->numSegBase = FUtilString::ParserUInt(aParam[8]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[9]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[12]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineCone3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //LineTorus3D
+    String FMeshCreateParam_LineTorus3D::ms_nameType = "MeshLineTorus3D"; 
+    bool FMeshCreateParam_LineTorus3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 10)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->sectionRadius = FUtilString::ParserFloat(aParam[7]);
+            this->numSegSection = FUtilString::ParserUInt(aParam[8]);
+            this->numSegCircle = FUtilString::ParserUInt(aParam[9]);
+        }
+        else if (count == 14)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->sectionRadius = FUtilString::ParserFloat(aParam[7]);
+            this->numSegSection = FUtilString::ParserUInt(aParam[8]);
+            this->numSegCircle = FUtilString::ParserUInt(aParam[9]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[12]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[13]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_LineTorus3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
 
 
     ////////////////////////////////// Flat3D ////////////////////////////////
-    String FMeshCreateParam_FlatTriangle3D::ms_nameType = "MeshFlatTriangle3D"; //FlatTriangle3D
-    String FMeshCreateParam_FlatQuad3D::ms_nameType = "MeshFlatQuad3D"; //FlatQuad3D
-    String FMeshCreateParam_FlatCircle3D::ms_nameType = "MeshFlatCircle3D"; //FlatCircle3D
-    String FMeshCreateParam_FlatAABB3D::ms_nameType = "MeshFlatAABB3D"; //FlatAABB3D
-    String FMeshCreateParam_FlatSphere3D::ms_nameType = "MeshFlatSphere3D"; //FlatSphere3D
-    String FMeshCreateParam_FlatCylinder3D::ms_nameType = "MeshFlatCylinder3D"; //FlatCylinder3D
-    String FMeshCreateParam_FlatCapsule3D::ms_nameType = "MeshFlatCapsule3D"; //FlatCapsule3D
-    String FMeshCreateParam_FlatCone3D::ms_nameType = "MeshFlatCone3D"; //FlatCone3D
-    String FMeshCreateParam_FlatTorus3D::ms_nameType = "MeshFlatTorus3D"; //FlatTorus3D
+    //FlatTriangle3D
+    String FMeshCreateParam_FlatTriangle3D::ms_nameType = "MeshFlatTriangle3D"; 
+    bool FMeshCreateParam_FlatTriangle3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 9)
+        {
+            this->vTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vTop.z = FUtilString::ParserFloat(aParam[2]);
+            this->vLeft.x = FUtilString::ParserFloat(aParam[3]);
+            this->vLeft.y = FUtilString::ParserFloat(aParam[4]);
+            this->vLeft.z = FUtilString::ParserFloat(aParam[5]);
+            this->vRight.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRight.y = FUtilString::ParserFloat(aParam[7]);
+            this->vRight.z = FUtilString::ParserFloat(aParam[8]);
+        }
+        else if (count == 13)
+        {
+            this->vTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vTop.z = FUtilString::ParserFloat(aParam[2]);
+            this->vLeft.x = FUtilString::ParserFloat(aParam[3]);
+            this->vLeft.y = FUtilString::ParserFloat(aParam[4]);
+            this->vLeft.z = FUtilString::ParserFloat(aParam[5]);
+            this->vRight.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRight.y = FUtilString::ParserFloat(aParam[7]);
+            this->vRight.z = FUtilString::ParserFloat(aParam[8]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[9]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[12]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_FlatTriangle3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //FlatQuad3D
+    String FMeshCreateParam_FlatQuad3D::ms_nameType = "MeshFlatQuad3D"; 
+    bool FMeshCreateParam_FlatQuad3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 12)
+        {
+            this->vLeftTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vLeftTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeftTop.z = FUtilString::ParserFloat(aParam[2]);
+            this->vLeftBottom.x = FUtilString::ParserFloat(aParam[3]);
+            this->vLeftBottom.y = FUtilString::ParserFloat(aParam[4]);
+            this->vLeftBottom.z = FUtilString::ParserFloat(aParam[5]);
+            this->vRightBottom.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRightBottom.y = FUtilString::ParserFloat(aParam[7]);
+            this->vRightBottom.z = FUtilString::ParserFloat(aParam[8]);
+            this->vRightTop.x = FUtilString::ParserFloat(aParam[9]);
+            this->vRightTop.y = FUtilString::ParserFloat(aParam[10]);
+            this->vRightTop.z = FUtilString::ParserFloat(aParam[11]);
+        }
+        else if (count == 16)
+        {
+            this->vLeftTop.x = FUtilString::ParserFloat(aParam[0]);
+            this->vLeftTop.y = FUtilString::ParserFloat(aParam[1]);
+            this->vLeftTop.z = FUtilString::ParserFloat(aParam[2]);
+            this->vLeftBottom.x = FUtilString::ParserFloat(aParam[3]);
+            this->vLeftBottom.y = FUtilString::ParserFloat(aParam[4]);
+            this->vLeftBottom.z = FUtilString::ParserFloat(aParam[5]);
+            this->vRightBottom.x = FUtilString::ParserFloat(aParam[6]);
+            this->vRightBottom.y = FUtilString::ParserFloat(aParam[7]);
+            this->vRightBottom.z = FUtilString::ParserFloat(aParam[8]);
+            this->vRightTop.x = FUtilString::ParserFloat(aParam[9]);
+            this->vRightTop.y = FUtilString::ParserFloat(aParam[10]);
+            this->vRightTop.z = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[12]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[13]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[14]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[15]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_FlatQuad3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //FlatCircle3D
+    String FMeshCreateParam_FlatCircle3D::ms_nameType = "MeshFlatCircle3D"; 
+    bool FMeshCreateParam_FlatCircle3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 11)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vDir.x = FUtilString::ParserFloat(aParam[3]);
+            this->vDir.y = FUtilString::ParserFloat(aParam[4]);
+            this->vDir.z = FUtilString::ParserFloat(aParam[5]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[6]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[7]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[8]);
+            this->radius = FUtilString::ParserFloat(aParam[9]);
+            this->segment = FUtilString::ParserUInt(aParam[10]);
+        }
+        else if (count == 15)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vDir.x = FUtilString::ParserFloat(aParam[3]);
+            this->vDir.y = FUtilString::ParserFloat(aParam[4]);
+            this->vDir.z = FUtilString::ParserFloat(aParam[5]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[6]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[7]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[8]);
+            this->radius = FUtilString::ParserFloat(aParam[9]);
+            this->segment = FUtilString::ParserUInt(aParam[10]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[12]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[13]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[14]);
+        }   
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_FlatCircle3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //FlatAABB3D
+    String FMeshCreateParam_FlatAABB3D::ms_nameType = "MeshFlatAABB3D"; 
+    bool FMeshCreateParam_FlatAABB3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 6)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vExtent.x = FUtilString::ParserFloat(aParam[3]);
+            this->vExtent.y = FUtilString::ParserFloat(aParam[4]);
+            this->vExtent.z = FUtilString::ParserFloat(aParam[5]);
+        }
+        else if (count == 10)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vExtent.x = FUtilString::ParserFloat(aParam[3]);
+            this->vExtent.y = FUtilString::ParserFloat(aParam[4]);
+            this->vExtent.z = FUtilString::ParserFloat(aParam[5]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[6]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[7]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[8]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[9]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_FlatAABB3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //FlatSphere3D
+    String FMeshCreateParam_FlatSphere3D::ms_nameType = "MeshFlatSphere3D"; 
+    bool FMeshCreateParam_FlatSphere3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 9)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->sliceCount = FUtilString::ParserUInt(aParam[7]);
+            this->stackCount = FUtilString::ParserUInt(aParam[8]);
+        }
+        else if (count == 13)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->sliceCount = FUtilString::ParserUInt(aParam[7]);
+            this->stackCount = FUtilString::ParserUInt(aParam[8]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[9]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[12]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_FlatSphere3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //FlatCylinder3D
+    String FMeshCreateParam_FlatCylinder3D::ms_nameType = "MeshFlatCylinder3D"; 
+    bool FMeshCreateParam_FlatCylinder3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 11)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radiusBottom = FUtilString::ParserFloat(aParam[6]);
+            this->radiusTop = FUtilString::ParserFloat(aParam[7]);
+            this->height = FUtilString::ParserFloat(aParam[8]);
+            this->sliceCount = FUtilString::ParserUInt(aParam[9]);
+            this->stackCount = FUtilString::ParserUInt(aParam[10]);
+        }
+        else if (count == 15)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radiusBottom = FUtilString::ParserFloat(aParam[6]);
+            this->radiusTop = FUtilString::ParserFloat(aParam[7]);
+            this->height = FUtilString::ParserFloat(aParam[8]);
+            this->sliceCount = FUtilString::ParserUInt(aParam[9]);
+            this->stackCount = FUtilString::ParserUInt(aParam[10]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[12]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[13]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[14]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_FlatCylinder3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //FlatCapsule3D
+    String FMeshCreateParam_FlatCapsule3D::ms_nameType = "MeshFlatCapsule3D"; 
+    bool FMeshCreateParam_FlatCapsule3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 11)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->height = FUtilString::ParserFloat(aParam[7]);
+            this->numRings = FUtilString::ParserUInt(aParam[8]);
+            this->numSegments = FUtilString::ParserUInt(aParam[9]);
+            this->numSegHeight = FUtilString::ParserUInt(aParam[10]);
+        }
+        else if (count == 15)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->height = FUtilString::ParserFloat(aParam[7]);
+            this->numRings = FUtilString::ParserUInt(aParam[8]);
+            this->numSegments = FUtilString::ParserUInt(aParam[9]);
+            this->numSegHeight = FUtilString::ParserUInt(aParam[10]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[12]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[13]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[14]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_FlatCapsule3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //FlatCone3D
+    String FMeshCreateParam_FlatCone3D::ms_nameType = "MeshFlatCone3D"; 
+    bool FMeshCreateParam_FlatCone3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 10)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->height = FUtilString::ParserFloat(aParam[7]);
+            this->numSegBase = FUtilString::ParserUInt(aParam[8]);
+            this->numSegHeight = FUtilString::ParserUInt(aParam[9]);
+        }
+        else if (count == 14)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->height = FUtilString::ParserFloat(aParam[7]);
+            this->numSegBase = FUtilString::ParserUInt(aParam[8]);
+            this->numSegHeight = FUtilString::ParserUInt(aParam[9]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[12]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[13]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_FlatCone3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
+
+    //FlatTorus3D
+    String FMeshCreateParam_FlatTorus3D::ms_nameType = "MeshFlatTorus3D"; 
+    bool FMeshCreateParam_FlatTorus3D::ParseParam(const String& nameParam)
+    {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 10)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->sectionRadius = FUtilString::ParserFloat(aParam[7]);
+            this->numSegSection = FUtilString::ParserUInt(aParam[8]);
+            this->numSegCircle = FUtilString::ParserUInt(aParam[9]);
+        }
+        else if (count == 14)
+        {
+            this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
+            this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
+            this->vCenter.z = FUtilString::ParserFloat(aParam[2]);
+            this->vUp.x = FUtilString::ParserFloat(aParam[3]);
+            this->vUp.y = FUtilString::ParserFloat(aParam[4]);
+            this->vUp.z = FUtilString::ParserFloat(aParam[5]);
+            this->radius = FUtilString::ParserFloat(aParam[6]);
+            this->sectionRadius = FUtilString::ParserFloat(aParam[7]);
+            this->numSegSection = FUtilString::ParserUInt(aParam[8]);
+            this->numSegCircle = FUtilString::ParserUInt(aParam[9]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[12]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[13]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_FlatTorus3D::ParseParam: Wrong param count !");
+            return false;
+        }
+
+        return true;
+    }
 
 
     ////////////////////////////////// Entity ////////////////////////////////
-    String FMeshCreateParam_EntityTriangle::ms_nameType = "MeshEntityTriangle"; //EntityTriangle
-    String FMeshCreateParam_EntityQuad::ms_nameType = "MeshEntityQuad"; //EntityQuad
-    String FMeshCreateParam_EntityGrid::ms_nameType = "MeshEntityGrid"; //EntityGrid   
-    String FMeshCreateParam_EntityCircle::ms_nameType = "MeshEntityCircle";  //EntityCircle
-    String FMeshCreateParam_EntityAABB::ms_nameType = "MeshEntityAABB"; //EntityAABB
-    String FMeshCreateParam_EntitySphere::ms_nameType = "MeshEntitySphere"; //EntitySphere
-    String FMeshCreateParam_EntityGeoSphere::ms_nameType = "MeshEntityGeoSphere"; //EntityGeoSphere
-    String FMeshCreateParam_EntityCylinder::ms_nameType = "MeshEntityCylinder"; //EntityCylinder
-    String FMeshCreateParam_EntityCapsule::ms_nameType = "MeshEntityCapsule"; //EntityCapsule
-    String FMeshCreateParam_EntityCone::ms_nameType = "MeshEntityCone"; //EntityCone
-    String FMeshCreateParam_EntityTorus::ms_nameType = "MeshEntityTorus"; //EntityTorus
-    String FMeshCreateParam_EntitySkyBox::ms_nameType = "MeshEntitySkyBox"; //EntitySkyBox
-    String FMeshCreateParam_EntitySkyDome::ms_nameType = "MeshEntitySkyDome"; //EntitySkyDome
-    String FMeshCreateParam_EntityTerrain::ms_nameType = "MeshEntityTerrain"; //EntityTerrain
+    //EntityTriangle
+    String FMeshCreateParam_EntityTriangle::ms_nameType = "MeshEntityTriangle"; 
+    bool FMeshCreateParam_EntityTriangle::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntityQuad
+    String FMeshCreateParam_EntityQuad::ms_nameType = "MeshEntityQuad"; 
+    bool FMeshCreateParam_EntityQuad::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntityGrid   
+    String FMeshCreateParam_EntityGrid::ms_nameType = "MeshEntityGrid"; 
+    bool FMeshCreateParam_EntityGrid::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntityCircle
+    String FMeshCreateParam_EntityCircle::ms_nameType = "MeshEntityCircle";  
+    bool FMeshCreateParam_EntityCircle::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntityAABB
+    String FMeshCreateParam_EntityAABB::ms_nameType = "MeshEntityAABB"; 
+    bool FMeshCreateParam_EntityAABB::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntitySphere
+    String FMeshCreateParam_EntitySphere::ms_nameType = "MeshEntitySphere"; 
+    bool FMeshCreateParam_EntitySphere::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntityGeoSphere
+    String FMeshCreateParam_EntityGeoSphere::ms_nameType = "MeshEntityGeoSphere"; 
+    bool FMeshCreateParam_EntityGeoSphere::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntityCylinder
+    String FMeshCreateParam_EntityCylinder::ms_nameType = "MeshEntityCylinder"; 
+    bool FMeshCreateParam_EntityCylinder::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntityCapsule
+    String FMeshCreateParam_EntityCapsule::ms_nameType = "MeshEntityCapsule"; 
+    bool FMeshCreateParam_EntityCapsule::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntityCone
+    String FMeshCreateParam_EntityCone::ms_nameType = "MeshEntityCone"; 
+    bool FMeshCreateParam_EntityCone::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntityTorus
+    String FMeshCreateParam_EntityTorus::ms_nameType = "MeshEntityTorus"; 
+    bool FMeshCreateParam_EntityTorus::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntitySkyBox
+    String FMeshCreateParam_EntitySkyBox::ms_nameType = "MeshEntitySkyBox"; 
+    bool FMeshCreateParam_EntitySkyBox::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntitySkyDome
+    String FMeshCreateParam_EntitySkyDome::ms_nameType = "MeshEntitySkyDome"; 
+    bool FMeshCreateParam_EntitySkyDome::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
+
+    //EntityTerrain
+    String FMeshCreateParam_EntityTerrain::ms_nameType = "MeshEntityTerrain"; 
+    bool FMeshCreateParam_EntityTerrain::ParseParam(const String& nameParam)
+    {
+        return true;
+    }
     
 
     ///////////////////////////////////////// FMeshGeometry //////////////////////////////////////////////
+    FMeshCreateParam* FMeshGeometry::CreateParam(FMeshGeometryType typeMeshGeometry)
+    {
+        FMeshCreateParam* pParam = nullptr;
+        switch ((int)typeMeshGeometry)
+        {
+        ////////////////////////////////// Line2D ////////////////////////////////
+            case F_MeshGeometry_Line2D:             { pParam = new FMeshCreateParam_Line2D(); return pParam; }              //Line2D
+            case F_MeshGeometry_LineTriangle2D:     { pParam = new FMeshCreateParam_LineTriangle2D(); return pParam; }      //LineTriangle2D
+            case F_MeshGeometry_LineQuad2D:         { pParam = new FMeshCreateParam_LineQuad2D(); return pParam; }          //LineQuad2D
+            case F_MeshGeometry_LineGrid2D:         { pParam = new FMeshCreateParam_LineGrid2D(); return pParam; }          //LineGrid2D
+            case F_MeshGeometry_LineCircle2D:       { pParam = new FMeshCreateParam_LineCircle2D(); return pParam; }        //LineCircle2D
+
+        ////////////////////////////////// Flat2D ////////////////////////////////
+            case F_MeshGeometry_FlatTriangle2D:     { pParam = new FMeshCreateParam_FlatTriangle2D(); return pParam; }      //FlatTriangle2D
+            case F_MeshGeometry_FlatQuad2D:         { pParam = new FMeshCreateParam_FlatQuad2D(); return pParam; }          //FlatQuad2D
+            case F_MeshGeometry_FlatCircle2D:       { pParam = new FMeshCreateParam_FlatCircle2D(); return pParam; }        //FlatCircle2D
+
+        ////////////////////////////////// Line3D ////////////////////////////////
+            case F_MeshGeometry_Line3D:             { pParam = new FMeshCreateParam_Line3D(); return pParam; }              //Line3D
+            case F_MeshGeometry_LineTriangle3D:     { pParam = new FMeshCreateParam_LineTriangle3D(); return pParam; }      //LineTriangle3D
+            case F_MeshGeometry_LineQuad3D:         { pParam = new FMeshCreateParam_LineQuad3D(); return pParam; }          //LineQuad3D
+            case F_MeshGeometry_LineGrid3D:         { pParam = new FMeshCreateParam_LineGrid3D(); return pParam; }          //LineGrid3D
+            case F_MeshGeometry_LineCircle3D:       { pParam = new FMeshCreateParam_LineCircle3D(); return pParam; }        //LineCircle3D
+            case F_MeshGeometry_LineAABB3D:         { pParam = new FMeshCreateParam_LineAABB3D(); return pParam; }          //LineAABB3D
+            case F_MeshGeometry_LineSphere3D:       { pParam = new FMeshCreateParam_LineSphere3D(); return pParam; }        //LineSphere3D
+            case F_MeshGeometry_LineCylinder3D:     { pParam = new FMeshCreateParam_LineCylinder3D(); return pParam; }      //LineCylinder3D
+            case F_MeshGeometry_LineCapsule3D:      { pParam = new FMeshCreateParam_LineCapsule3D(); return pParam; }       //LineCapsule3D
+            case F_MeshGeometry_LineCone3D:         { pParam = new FMeshCreateParam_LineCone3D(); return pParam; }          //LineCone3D
+            case F_MeshGeometry_LineTorus3D:        { pParam = new FMeshCreateParam_LineTorus3D(); return pParam; }         //LineTorus3D
+
+        ////////////////////////////////// Flat3D ////////////////////////////////
+            case F_MeshGeometry_FlatTriangle3D:     { pParam = new FMeshCreateParam_FlatTriangle3D(); return pParam; }      //FlatTriangle3D
+            case F_MeshGeometry_FlatQuad3D:         { pParam = new FMeshCreateParam_FlatQuad3D(); return pParam; }          //FlatQuad3D
+            case F_MeshGeometry_FlatCircle3D:       { pParam = new FMeshCreateParam_FlatCircle3D(); return pParam; }        //FlatCircle3D
+            case F_MeshGeometry_FlatAABB3D:         { pParam = new FMeshCreateParam_FlatAABB3D(); return pParam; }          //FlatAABB3D
+            case F_MeshGeometry_FlatSphere3D:       { pParam = new FMeshCreateParam_FlatSphere3D(); return pParam; }        //FlatSphere3D
+            case F_MeshGeometry_FlatCylinder3D:     { pParam = new FMeshCreateParam_FlatCylinder3D(); return pParam; }      //FlatCylinder3D
+            case F_MeshGeometry_FlatCapsule3D:      { pParam = new FMeshCreateParam_FlatCapsule3D(); return pParam; }       //FlatCapsule3D
+            case F_MeshGeometry_FlatCone3D:         { pParam = new FMeshCreateParam_FlatCone3D(); return pParam; }          //FlatCone3D
+            case F_MeshGeometry_FlatTorus3D:        { pParam = new FMeshCreateParam_FlatTorus3D(); return pParam; }         //FlatTorus3D
+
+        ////////////////////////////////// Entity ////////////////////////////////
+            case F_MeshGeometry_EntityTriangle:     { pParam = new FMeshCreateParam_EntityTriangle(); return pParam; }      //EntityTriangle
+            case F_MeshGeometry_EntityQuad:         { pParam = new FMeshCreateParam_EntityQuad(); return pParam; }          //EntityQuad
+            case F_MeshGeometry_EntityGrid:         { pParam = new FMeshCreateParam_EntityGrid(); return pParam; }          //EntityGrid
+            case F_MeshGeometry_EntityCircle:       { pParam = new FMeshCreateParam_EntityCircle(); return pParam; }        //EntityCircle
+            case F_MeshGeometry_EntityAABB:         { pParam = new FMeshCreateParam_EntityAABB(); return pParam; }          //EntityAABB
+            case F_MeshGeometry_EntitySphere:       { pParam = new FMeshCreateParam_EntitySphere(); return pParam; }        //EntitySphere
+            case F_MeshGeometry_EntityGeoSphere:    { pParam = new FMeshCreateParam_EntityGeoSphere(); return pParam; }     //EntityGeoSphere
+            case F_MeshGeometry_EntityCylinder:     { pParam = new FMeshCreateParam_EntityCylinder(); return pParam; }      //EntityCylinder
+            case F_MeshGeometry_EntityCapsule:      { pParam = new FMeshCreateParam_EntityCapsule(); return pParam; }       //EntityCapsule
+            case F_MeshGeometry_EntityCone:         { pParam = new FMeshCreateParam_EntityCone(); return pParam; }          //EntityCone
+            case F_MeshGeometry_EntityTorus:        { pParam = new FMeshCreateParam_EntityTorus(); return pParam; }         //EntityTorus
+            case F_MeshGeometry_EntitySkyBox:       { pParam = new FMeshCreateParam_EntitySkyBox(); return pParam; }        //EntitySkyBox
+            case F_MeshGeometry_EntitySkyDome:      { pParam = new FMeshCreateParam_EntitySkyDome(); return pParam; }       //EntitySkyDome
+            case F_MeshGeometry_EntityTerrain:      { pParam = new FMeshCreateParam_EntityTerrain(); return pParam; }       //EntityTerrain
+
+        default:
+            F_Assert(false && "FMeshGeometry::CreateParam: Wrong geometry type !");
+        }
+        return pParam;
+    }
+    FMeshCreateParam* FMeshGeometry::CreateParam(FMeshGeometryType typeMeshGeometry, const String& nameParam)
+    {   
+        FMeshCreateParam* pParam = CreateParam(typeMeshGeometry);
+        if (pParam == nullptr)
+            return nullptr;
+        pParam->ParseParam(nameParam);
+        return pParam; 
+    }
+
     bool FMeshGeometry::CreateGeometry(FMeshDataPC* pMeshDataPC, FMeshData* pMeshData, FMeshGeometryType typeMeshGeometry)
     {
         if (F_IsMeshGeometryType_Entity(typeMeshGeometry))
@@ -130,23 +1466,427 @@ namespace LostPeterFoundation
     ////////////////////////////////// Line2D ////////////////////////////////
     bool FMeshGeometry::CreateLine2DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry)
     {
+        switch ((int)typeMeshGeometry)
+        {
+        case F_MeshGeometry_Line2D:
+            {
+                FMeshCreateParam_Line2D param_Line2D;
+                FMeshGeometry::CreateLine2D(meshDataPC, &param_Line2D);
+                return true;
+            }
+        case F_MeshGeometry_LineTriangle2D:
+            {
+                FMeshCreateParam_LineTriangle2D param_LineTriangle2D;
+                FMeshGeometry::CreateLineTriangle2D(meshDataPC, &param_LineTriangle2D);
+                return true;
+            }
+        case F_MeshGeometry_LineQuad2D:
+            {
+                FMeshCreateParam_LineQuad2D param_LineQuad2D;
+                FMeshGeometry::CreateLineQuad2D(meshDataPC, &param_LineQuad2D);
+                return true;
+            }
+        case F_MeshGeometry_LineGrid2D:
+            {
+                FMeshCreateParam_LineGrid2D param_LineGrid2D;
+                FMeshGeometry::CreateLineGrid2D(meshDataPC, &param_LineGrid2D);
+                return true;
+            }
+        case F_MeshGeometry_LineCircle2D:
+            {
+                FMeshCreateParam_LineCircle2D param_LineCircle2D;
+                FMeshGeometry::CreateLineCircle2D(meshDataPC, &param_LineCircle2D);
+                return true;
+            }
+        }
         return false;
     }
 	bool FMeshGeometry::CreateLine2DGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam)
     {
+        if (pParam == nullptr)
+        {
+            return CreateLine2DGeometry(meshDataPC, typeMeshGeometry);
+        }
+
+        switch ((int)typeMeshGeometry)
+        {
+        case F_MeshGeometry_Line2D:
+            {
+                FMeshCreateParam_Line2D* pParam_Line2D = static_cast<FMeshCreateParam_Line2D*>(pParam);
+                FMeshGeometry::CreateLine2D(meshDataPC, pParam_Line2D);
+                return true;
+            }
+        case F_MeshGeometry_LineTriangle2D:
+            {
+                FMeshCreateParam_LineTriangle2D* pParam_LineTriangle2D = static_cast<FMeshCreateParam_LineTriangle2D*>(pParam);
+                FMeshGeometry::CreateLineTriangle2D(meshDataPC, pParam_LineTriangle2D);
+                return true;
+            }
+        case F_MeshGeometry_LineQuad2D:
+            {
+                FMeshCreateParam_LineQuad2D* pParam_LineQuad2D = static_cast<FMeshCreateParam_LineQuad2D*>(pParam);
+                FMeshGeometry::CreateLineQuad2D(meshDataPC, pParam_LineQuad2D);
+                return true;
+            }
+        case F_MeshGeometry_LineGrid2D:
+            {
+                FMeshCreateParam_LineGrid2D* pParam_LineGrid2D = static_cast<FMeshCreateParam_LineGrid2D*>(pParam);
+                FMeshGeometry::CreateLineGrid2D(meshDataPC, pParam_LineGrid2D);
+                return true;
+            }
+        case F_MeshGeometry_LineCircle2D:
+            {
+                FMeshCreateParam_LineCircle2D* pParam_LineCircle2D = static_cast<FMeshCreateParam_LineCircle2D*>(pParam);
+                FMeshGeometry::CreateLineCircle2D(meshDataPC, pParam_LineCircle2D);
+                return true;
+            }
+        }
         return false;
     }
 
+    //Line2D
+    void FMeshGeometry::CreateLine2D(FMeshDataPC& meshDataPC,
+                                     const FVector2& vStart,
+                                     const FVector2& vEnd,
+                                     const FVector4& vColor)
+    {
+        // 0 ----- 1
+
+        //Vertex
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vStart.x, vStart.y, 0.0f), vColor));   //0
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vEnd.x, vEnd.y, 0.0f), vColor));       //1
+
+        //Index
+        AddIndexLine(meshDataPC, 0, 1);
+    }
+
+    //LineTriangle2D
+    void FMeshGeometry::CreateLineTriangle2D(FMeshDataPC& meshDataPC,
+                                             const FVector2& vTop,
+                                             const FVector2& vLeft,
+                                             const FVector2& vRight,
+                                             const FVector4& vColor)
+    {
+        //        0 
+        //        /\
+        //       /  \
+        //    1 ------ 2
+
+        //Vertex
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vTop.x, vTop.y, 0.0f), vColor));       //0
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vLeft.x, vLeft.y, 0.0f), vColor));     //1
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vRight.x, vRight.y, 0.0f), vColor));   //2
+        
+        //Index
+        AddIndexLine(meshDataPC, 0, 1);
+        AddIndexLine(meshDataPC, 1, 2);
+        AddIndexLine(meshDataPC, 2, 0);
+    }
+
+    //LineQuad2D
+    void FMeshGeometry::CreateLineQuad2D(FMeshDataPC& meshDataPC,
+                                         const FVector2& vLeftTop,
+                                         const FVector2& vLeftBottom,
+                                         const FVector2& vRightBottom,
+                                         const FVector2& vRightTop,
+                                         const FVector4& vColor)
+    {
+        //  0       3
+        //   --------
+        //   |      |
+        //   |      |
+        //   |      |
+        //   --------
+        //  1        2
+
+        //Vertex
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vLeftTop.x, vLeftTop.y, 0.0f), vColor));           //0
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vLeftBottom.x, vLeftBottom.y, 0.0f), vColor));     //1
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vRightBottom.x, vRightBottom.y, 0.0f), vColor));   //2
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vRightTop.x, vRightTop.y, 0.0f), vColor));         //3
+
+        //Index
+        AddIndexLine(meshDataPC, 0, 1);
+        AddIndexLine(meshDataPC, 1, 2);
+        AddIndexLine(meshDataPC, 2, 3);
+        AddIndexLine(meshDataPC, 3, 0);
+    }
+
+    //LineGrid2D
+    void FMeshGeometry::CreateLineGrid2D(FMeshDataPC& meshDataPC,
+                                         const FVector2& vLeftTop,
+                                         const FVector2& vLeftBottom,
+                                         const FVector2& vRightBottom,
+                                         const FVector2& vRightTop,
+                                         const FVector4& vColor,
+                                         uint32 m,
+                                         uint32 n)
+    {
+        // m >= 2, n >= 2
+        //
+        // (n-1)*(m-2)                  (n-1)*(m-1)
+        //      |      |      |
+        //      |      |      |
+        //      |      |      |
+        //  n*2 ----------------------- (n-1)*3
+        //      |      |      |
+        //      |      |      |
+        //      |      |      |
+        //  n   ----------------------- (n-1)*2
+        //      |      |(n+1) |(n+2)
+        //      |      |      |
+        //      |      |      |
+        //      -----------------------
+        //  0          1      2         (n-1)
+
+        //Vertex
+        FVector3 vRB(vRightBottom.x, vRightBottom.y, 0.0f);
+        FVector3 vLB(vLeftBottom.x, vLeftBottom.y, 0.0f);
+        FVector3 vLT(vLeftTop.x, vLeftTop.y, 0.0f);
+        FVector3 vDirX = FMath::Normalize(vRB - vLB);
+        FVector3 vDirY = FMath::Normalize(vLT - vLB);
+        float fDisX = FMath::Distance(vRB, vLB);
+        float fDisY = FMath::Distance(vLT, vLB);
+        float dx = fDisX / (n - 1);
+        float dy = fDisY / (m - 1);
+        //Bottom/Top
+        for (uint32 i = 0; i < n; ++i)
+        {
+            FVector3 vX = vLB + vDirX * (dx * i);
+            for (uint32 j = 0; j < 2; j++)
+            {
+                FVector3 vPos = vX + vDirY * (fDisY * j);
+                AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+            }   
+        }
+        //Left/Right
+        for (uint32 i = 0; i < m; i++)
+        {
+            FVector3 vY = vLB + vDirY * (dy * i);
+            for (uint32 j = 0; j < 2; j ++)
+            {
+                FVector3 vPos = vY + vDirX * (fDisX * j);
+                AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+            }
+        }
+        
+        //Index
+        uint nVertexCount = n * 2 + m * 2;
+        for (uint32 i = 0; i < nVertexCount / 2; ++i)
+        {
+            AddIndexLine(meshDataPC, 2 * i, 2 * i + 1);
+        }
+    }
+
+    //LineCircle2D
+    void FMeshGeometry::CreateLineCircle2D(FMeshDataPC& meshDataPC,
+                                           const FVector2& vCenter,
+                                           const FVector2& vDir,
+                                           const FVector4& vColor,
+                                           float radius,
+                                           uint32 segment,
+                                           bool isDrawCenter)
+    {
+        //          *  * 
+		//		*		   * 2
+		//
+		//	   *	 * 0    * 1
+		//			
+		//      *          * segment
+		//          *   *
+        
+        uint32 vertexCount = segment + 1;
+        uint32 faceCount = segment;
+
+        //Vertex
+        FVector3 vC(vCenter.x, vCenter.y, 0.0f);
+        FVector3 vD(vDir.x, vDir.y, 0.0f);
+        float thetaStep = 2.0f * FMath::ms_fPI / segment;
+        for (int i = 0; i < segment; i++)
+        {
+            FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(thetaStep * i, - FMath::ms_v3UnitZ);
+            FVector3 vCur = FMath::Transform(qRot, vD);
+            FVector3 vPos = vC + vCur * radius;
+            AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
+        }
+        if (isDrawCenter)
+        {
+            AddVertex(meshDataPC, FMeshVertexPC(vC, vColor));
+        }
+
+        //Index
+        for (uint32 i = 0; i < segment; ++i)    
+        {
+            if (i != segment - 1)
+            {
+                AddIndexLine(meshDataPC, i, i + 1);
+            }
+            else
+            {
+                AddIndexLine(meshDataPC, i, 0);
+            }
+
+            if (isDrawCenter)
+            {
+                AddIndexLine(meshDataPC, i, segment);
+            }
+        }
+    }
 
 
     ////////////////////////////////// Flat2D ////////////////////////////////
     bool FMeshGeometry::CreateFlat2DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry)
     {
+        switch ((int)typeMeshGeometry)
+        {
+        case F_MeshGeometry_FlatTriangle2D:
+            {
+                FMeshCreateParam_FlatTriangle2D param_FlatTriangle2D;
+                FMeshGeometry::CreateFlatTriangle2D(meshDataPC, &param_FlatTriangle2D);
+                return true;
+            }
+        case F_MeshGeometry_FlatQuad2D:
+            {
+                FMeshCreateParam_FlatQuad2D param_FlatQuad2D;
+                FMeshGeometry::CreateFlatQuad2D(meshDataPC, &param_FlatQuad2D);
+                return true;
+            }
+        case F_MeshGeometry_FlatCircle2D:
+            {
+                FMeshCreateParam_FlatCircle2D param_FlatCircle2D;
+                FMeshGeometry::CreateFlatCircle2D(meshDataPC, &param_FlatCircle2D);
+                return true;
+            }
+        }
         return false;
     }
 	bool FMeshGeometry::CreateFlat2DGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam)
     {
+        if (pParam == nullptr)
+        {
+            return CreateFlat2DGeometry(meshDataPC, typeMeshGeometry);
+        }
+
+        switch ((int)typeMeshGeometry)
+        {
+        case F_MeshGeometry_FlatTriangle2D:
+            {
+                FMeshCreateParam_FlatTriangle2D* pParam_FlatTriangle2D = static_cast<FMeshCreateParam_FlatTriangle2D*>(pParam);
+                FMeshGeometry::CreateFlatTriangle2D(meshDataPC, pParam_FlatTriangle2D);
+                return true;
+            }
+        case F_MeshGeometry_FlatQuad2D:
+            {
+                FMeshCreateParam_FlatQuad2D* pParam_FlatQuad2D = static_cast<FMeshCreateParam_FlatQuad2D*>(pParam);
+                FMeshGeometry::CreateFlatQuad2D(meshDataPC, pParam_FlatQuad2D);
+                return true;
+            }
+        case F_MeshGeometry_FlatCircle2D:
+            {
+                FMeshCreateParam_FlatCircle2D* pParam_FlatCircle2D = static_cast<FMeshCreateParam_FlatCircle2D*>(pParam);
+                FMeshGeometry::CreateFlatCircle2D(meshDataPC, pParam_FlatCircle2D);
+                return true;
+            }
+        }
         return false;
+    }
+
+    //FlatTriangle2D
+    void FMeshGeometry::CreateFlatTriangle2D(FMeshDataPC& meshDataPC,
+                                             const FVector2& vTop,
+                                             const FVector2& vLeft,
+                                             const FVector2& vRight,
+                                             const FVector4& vColor)
+    {
+        //        0 
+        //        /\
+        //       /  \
+        //    1 ------ 2
+
+        //Vertex
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vTop.x, vTop.y, 0.0f), vColor));       //0
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vLeft.x, vLeft.y, 0.0f), vColor));     //1
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vRight.x, vRight.y, 0.0f), vColor));   //2
+        
+        //Index
+        AddIndexTriangle(meshDataPC, 0, 2, 1);        
+    }
+
+    //FlatQuad2D
+    void FMeshGeometry::CreateFlatQuad2D(FMeshDataPC& meshDataPC,
+                                         const FVector2& vLeftTop,
+                                         const FVector2& vLeftBottom,
+                                         const FVector2& vRightBottom,
+                                         const FVector2& vRightTop,
+                                         const FVector4& vColor)
+    {
+        //  0       3
+        //   --------
+        //   |      |
+        //   |      |
+        //   |      |
+        //   --------
+        //  1        2
+
+        //Vertex
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vLeftTop.x, vLeftTop.y, 0.0f), vColor));           //0
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vLeftBottom.x, vLeftBottom.y, 0.0f), vColor));     //1
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vRightBottom.x, vRightBottom.y, 0.0f), vColor));   //2
+        AddVertex(meshDataPC, FMeshVertexPC(FVector3(vRightTop.x, vRightTop.y, 0.0f), vColor));         //3
+
+        //Index
+        AddIndexTriangle(meshDataPC, 0, 3, 2);
+        AddIndexTriangle(meshDataPC, 2, 1, 0);
+    }
+
+    //FlatCircle2D
+    void FMeshGeometry::CreateFlatCircle2D(FMeshDataPC& meshDataPC,
+                                           const FVector2& vCenter,
+                                           const FVector2& vDir,
+                                           const FVector4& vColor,
+                                           float radius,
+                                           uint32 segment)
+    {
+        //          *  * 
+		//		*		   * 2
+		//
+		//	   *	 * 0    * 1
+		//			
+		//      *          * segment
+		//          *   *
+
+        //Vertex
+        FVector3 vC(vCenter.x, vCenter.y, 0.0f);
+        FVector3 vD(vDir.x, vDir.y, 0.0f);
+        uint32 vertexCount = segment + 1;
+        uint32 faceCount = segment;
+        float thetaStep = 2.0f * FMath::ms_fPI / segment;
+        ResizeVertexCount(meshDataPC, vertexCount);
+        SetVertex(meshDataPC, 0, FMeshVertexPC(vC, vColor));
+        int index = 1;
+        for (uint32 i = 0; i < segment; i++)
+        {
+            FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(thetaStep * i, -FMath::ms_v3UnitZ);
+            FVector3 vCur = FMath::Transform(qRot, vD);
+            FVector3 vPos = vC + vCur * radius;
+            SetVertex(meshDataPC, index, FMeshVertexPC(vPos, vColor));
+            index++;
+        }
+        meshDataPC.RefreshAABB();
+
+        //Index
+        ResizeIndexCount(meshDataPC, faceCount * 3);
+        for (uint32 i = 0; i < segment; ++i)    
+        {
+            if (i != segment - 1)
+            {
+                SetIndexTriangle(meshDataPC, i * 3 + 0, 0, i + 2, i + 1);
+            }
+            else
+            {
+                SetIndexTriangle(meshDataPC, i * 3 + 0, 0, 1, i);
+            }
+        }
     }
 
 
@@ -888,8 +2628,8 @@ namespace LostPeterFoundation
             }
         case F_MeshGeometry_FlatCircle3D:
             {
-                FMeshCreateParam_FlatCircle3D param_FlatCircle;
-                FMeshGeometry::CreateFlatCircle3D(meshDataPC, &param_FlatCircle);
+                FMeshCreateParam_FlatCircle3D param_FlatCircle3D;
+                FMeshGeometry::CreateFlatCircle3D(meshDataPC, &param_FlatCircle3D);
                 return true;
             }
         case F_MeshGeometry_FlatAABB3D:

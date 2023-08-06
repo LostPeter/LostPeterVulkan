@@ -39,12 +39,588 @@ namespace LostPeterFoundation
         
     public:
         virtual String ToName() = 0;
+        virtual bool ParseParam(const String& nameParam) = 0;
     };
 
+
     ////////////////////////////////// Line2D ////////////////////////////////
+    //Line2D
+    class LPF_Export FMeshCreateParam_Line2D : public FMeshCreateParam
+    {
+    public:
+        FMeshCreateParam_Line2D()
+            : FMeshCreateParam(false, false)
+            , vStart(0, 0)
+            , vEnd(1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_Line2D(const FVector2& _vStart,
+                                const FVector2& _vEnd)
+            : FMeshCreateParam(false, false)
+            , vStart(_vStart)
+            , vEnd(_vEnd)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_Line2D(const FVector2& _vStart,
+                                const FVector2& _vEnd,
+                                const FVector4& _vColor)
+            : FMeshCreateParam(false, false)
+            , vStart(_vStart)
+            , vEnd(_vEnd)
+            , vColor(_vColor)
+        {
+
+        }
+        virtual ~FMeshCreateParam_Line2D()
+        {
+
+        }
+
+    public:
+        static String ms_nameType;
+
+    public:
+        FVector2 vStart;
+        FVector2 vEnd;
+        FVector4 vColor;
+
+    public:
+        virtual String ToName()
+        {
+            return FUtilString::FormatString("%s_[%f_%f]_[%f_%f]", 
+                                             ms_nameType.c_str(), 
+                                             this->vStart.x,
+                                             this->vStart.y,
+                                             this->vEnd.x,
+                                             this->vEnd.y);
+        }
+
+        virtual bool ParseParam(const String& nameParam);
+    };
+
+    //LineTriangle2D
+    class LPF_Export FMeshCreateParam_LineTriangle2D : public FMeshCreateParam
+    {
+    public:
+        FMeshCreateParam_LineTriangle2D()
+            : FMeshCreateParam(false, false)
+            , vTop( 0.0f,  0.5f)
+            , vLeft(-0.5f, -0.5f)
+            , vRight( 0.5f, -0.5f)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_LineTriangle2D(const FVector2& _vTop,
+                                        const FVector2& _vLeft,
+                                        const FVector2& _vRight)
+            : FMeshCreateParam(false, false)
+            , vTop(_vTop)
+            , vLeft(_vLeft)
+            , vRight(_vRight)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_LineTriangle2D(const FVector2& _vTop,
+                                        const FVector2& _vLeft,
+                                        const FVector2& _vRight,
+                                        const FVector4& _vColor)
+            : FMeshCreateParam(false, false)
+            , vTop(_vTop)
+            , vLeft(_vLeft)
+            , vRight(_vRight)
+            , vColor(_vColor)
+        {
+
+        }
+        virtual ~FMeshCreateParam_LineTriangle2D()
+        {
+
+        }
+
+    public:
+        static String ms_nameType;
+
+    public:
+        FVector2 vTop;
+        FVector2 vLeft;
+        FVector2 vRight;
+        FVector4 vColor;
+
+    public:
+        virtual String ToName()
+        {
+            return FUtilString::FormatString("%s_[%f_%f]_[%f_%f]_[%f_%f]", 
+                                             ms_nameType.c_str(), 
+                                             this->vTop.x,
+                                             this->vTop.y,
+                                             this->vLeft.x,
+                                             this->vLeft.y,
+                                             this->vRight.x,
+                                             this->vRight.y);
+        }
+
+        virtual bool ParseParam(const String& nameParam);
+    };
+
+    //LineQuad2D
+    class LPF_Export FMeshCreateParam_LineQuad2D : public FMeshCreateParam
+    {
+    public:
+        FMeshCreateParam_LineQuad2D()
+            : FMeshCreateParam(false, false)
+            , vLeftTop(-0.5f, 0.5f)
+            , vLeftBottom(-0.5f, -0.5f)
+            , vRightBottom(0.5f, -0.5f)
+            , vRightTop(0.5f, 0.5f)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_LineQuad2D(const FVector2& _vLeftTop,
+                                    const FVector2& _vLeftBottom,
+                                    const FVector2& _vRightBottom,
+                                    const FVector2& _vRightTop)
+            : FMeshCreateParam(false, false)
+            , vLeftTop(_vLeftTop)
+            , vLeftBottom(_vLeftBottom)
+            , vRightBottom(_vRightBottom)
+            , vRightTop(_vRightTop)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_LineQuad2D(const FVector2& _vLeftTop,
+                                    const FVector2& _vLeftBottom,
+                                    const FVector2& _vRightBottom,
+                                    const FVector2& _vRightTop,
+                                    const FVector4& _vColor)
+            : FMeshCreateParam(false, false)
+            , vLeftTop(_vLeftTop)
+            , vLeftBottom(_vLeftBottom)
+            , vRightBottom(_vRightBottom)
+            , vRightTop(_vRightTop)
+            , vColor(_vColor)
+        {
+
+        }
+        virtual ~FMeshCreateParam_LineQuad2D()
+        {
+
+        }
+
+    public:
+        static String ms_nameType;
+
+    public:
+        FVector2 vLeftTop; 
+        FVector2 vLeftBottom; 
+        FVector2 vRightBottom; 
+        FVector2 vRightTop; 
+        FVector4 vColor;
+
+    public:
+        virtual String ToName()
+        {
+            return FUtilString::FormatString("%s_[%f_%f]_[%f_%f]_[%f_%f]_[%f_%f]", 
+                                             ms_nameType.c_str(), 
+                                             this->vLeftTop.x,
+                                             this->vLeftTop.y,
+                                             this->vLeftBottom.x,
+                                             this->vLeftBottom.y,
+                                             this->vRightBottom.x,
+                                             this->vRightBottom.y,
+                                             this->vRightTop.x,
+                                             this->vRightTop.y);
+        }
+
+        virtual bool ParseParam(const String& nameParam);
+    };
+
+    //LineGrid2D
+    class LPF_Export FMeshCreateParam_LineGrid2D : public FMeshCreateParam
+    {
+    public:
+        FMeshCreateParam_LineGrid2D()
+            : FMeshCreateParam(false, false)
+            , vLeftTop(-0.5f, 0.5f)
+            , vLeftBottom(-0.5f, -0.5f)
+            , vRightBottom(0.5f, -0.5f)
+            , vRightTop(0.5f, 0.5f)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , m(10)
+            , n(10)
+        {
+
+        }
+        FMeshCreateParam_LineGrid2D(const FVector2& _vLeftTop,
+                                    const FVector2& _vLeftBottom,
+                                    const FVector2& _vRightBottom,
+                                    const FVector2& _vRightTop,
+                                    uint32 _m,
+                                    uint32 _n)
+            : FMeshCreateParam(false, false)
+            , vLeftTop(_vLeftTop)
+            , vLeftBottom(_vLeftBottom)
+            , vRightBottom(_vRightBottom)
+            , vRightTop(_vRightTop)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , m(_m)
+            , n(_n)
+        {
+
+        }
+        FMeshCreateParam_LineGrid2D(const FVector2& _vLeftTop,
+                                    const FVector2& _vLeftBottom,
+                                    const FVector2& _vRightBottom,
+                                    const FVector2& _vRightTop,
+                                    const FVector4& _vColor,
+                                    uint32 _m,
+                                    uint32 _n)
+            : FMeshCreateParam(false, false)
+            , vLeftTop(_vLeftTop)
+            , vLeftBottom(_vLeftBottom)
+            , vRightBottom(_vRightBottom)
+            , vRightTop(_vRightTop)
+            , vColor(_vColor)
+            , m(_m)
+            , n(_n)
+        {
+
+        }
+        virtual ~FMeshCreateParam_LineGrid2D()
+        {
+
+        }
+
+    public:
+        static String ms_nameType;
+
+    public:
+        FVector2 vLeftTop; 
+        FVector2 vLeftBottom; 
+        FVector2 vRightBottom; 
+        FVector2 vRightTop; 
+        FVector4 vColor;
+        uint32 m;
+        uint32 n;
+
+    public:
+        virtual String ToName()
+        {
+            return FUtilString::FormatString("%s_[%f_%f]_[%f_%f]_[%f_%f]_[%f_%f]_[%u_%u]", 
+                                             ms_nameType.c_str(), 
+                                             this->vLeftTop.x,
+                                             this->vLeftTop.y,
+                                             this->vLeftBottom.x,
+                                             this->vLeftBottom.y,
+                                             this->vRightBottom.x,
+                                             this->vRightBottom.y,
+                                             this->vRightTop.x,
+                                             this->vRightTop.y,
+                                             this->m,
+                                             this->n);
+        }
+
+        virtual bool ParseParam(const String& nameParam);
+    };
+
+    //LineCircle2D
+    class LPF_Export FMeshCreateParam_LineCircle2D : public FMeshCreateParam
+    {
+    public:
+        FMeshCreateParam_LineCircle2D()
+            : FMeshCreateParam(false, false)
+            , vCenter(0, 0)
+            , vDir(1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(0.5f)
+            , segment(100)
+            , isDrawCenter(true)
+        {
+
+        }
+        FMeshCreateParam_LineCircle2D(const FVector2& _vCenter,
+                                      const FVector2& _vDir,
+                                      float _radius,
+                                      uint32 _segment,
+                                      bool _isDrawCenter)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vDir(_vDir)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(_radius)
+            , segment(_segment)
+            , isDrawCenter(_isDrawCenter)
+        {
+
+        }
+        FMeshCreateParam_LineCircle2D(const FVector2& _vCenter,
+                                      const FVector2& _vDir,
+                                      const FVector4& _vColor,
+                                      float _radius,
+                                      uint32 _segment,
+                                      bool _isDrawCenter)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vDir(_vDir)
+            , vColor(_vColor)
+            , radius(_radius)
+            , segment(_segment)
+            , isDrawCenter(_isDrawCenter)
+        {
+
+        }
+        virtual ~FMeshCreateParam_LineCircle2D()
+        {
+
+        }
+
+    public:
+        static String ms_nameType;
+
+    public:
+        FVector2 vCenter;
+        FVector2 vDir;
+        FVector4 vColor;
+        float radius;
+        uint32 segment;
+        bool isDrawCenter;
+
+    public:
+        virtual String ToName()
+        {
+            return FUtilString::FormatString("%s_[%f_%f]_[%f_%f]_[%f_%u]", 
+                                             ms_nameType.c_str(), 
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vDir.x,
+                                             this->vDir.y,
+                                             this->radius,
+                                             this->segment);
+        }
+
+        virtual bool ParseParam(const String& nameParam);
+    };
 
 
     ////////////////////////////////// Flat2D ////////////////////////////////
+    //FlatTriangle2D
+    class LPF_Export FMeshCreateParam_FlatTriangle2D : public FMeshCreateParam
+    {
+    public:
+        FMeshCreateParam_FlatTriangle2D()
+            : FMeshCreateParam(false, false)
+            , vTop( 0.0f,  0.5f)
+            , vLeft(-0.5f, -0.5f)
+            , vRight( 0.5f, -0.5f)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_FlatTriangle2D(const FVector2& _vTop,
+                                        const FVector2& _vLeft,
+                                        const FVector2& _vRight)
+            : FMeshCreateParam(false, false)
+            , vTop(_vTop)
+            , vLeft(_vLeft)
+            , vRight(_vRight)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_FlatTriangle2D(const FVector2& _vTop,
+                                        const FVector2& _vLeft,
+                                        const FVector2& _vRight,
+                                        const FVector4& _vColor)
+            : FMeshCreateParam(false, false)
+            , vTop(_vTop)
+            , vLeft(_vLeft)
+            , vRight(_vRight)
+            , vColor(_vColor)
+        {
+
+        }
+        virtual ~FMeshCreateParam_FlatTriangle2D()
+        {
+
+        }
+
+    public:
+        static String ms_nameType;
+
+    public:
+        FVector2 vTop;
+        FVector2 vLeft;
+        FVector2 vRight;
+        FVector4 vColor;
+
+    public:
+        virtual String ToName()
+        {
+            return FUtilString::FormatString("%s_[%f_%f]_[%f_%f]_[%f_%f]", 
+                                             ms_nameType.c_str(), 
+                                             this->vTop.x,
+                                             this->vTop.y,
+                                             this->vLeft.x,
+                                             this->vLeft.y,
+                                             this->vRight.x,
+                                             this->vRight.y);
+        }
+
+        virtual bool ParseParam(const String& nameParam);
+    };
+
+    //FlatQuad2D
+    class LPF_Export FMeshCreateParam_FlatQuad2D : public FMeshCreateParam
+    {
+    public:
+        FMeshCreateParam_FlatQuad2D()
+            : FMeshCreateParam(false, false)
+            , vLeftTop(-0.5f, 0.5f)
+            , vLeftBottom(-0.5f, -0.5f)
+            , vRightBottom(0.5f, -0.5f)
+            , vRightTop(0.5f, 0.5f)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_FlatQuad2D(const FVector2& _vLeftTop,
+                                    const FVector2& _vLeftBottom,
+                                    const FVector2& _vRightBottom,
+                                    const FVector2& _vRightTop)
+            : FMeshCreateParam(false, false)
+            , vLeftTop(_vLeftTop)
+            , vLeftBottom(_vLeftBottom)
+            , vRightBottom(_vRightBottom)
+            , vRightTop(_vRightTop)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+        {
+
+        }
+        FMeshCreateParam_FlatQuad2D(const FVector2& _vLeftTop,
+                                    const FVector2& _vLeftBottom,
+                                    const FVector2& _vRightBottom,
+                                    const FVector2& _vRightTop,
+                                    const FVector4& _vColor)
+            : FMeshCreateParam(false, false)
+            , vLeftTop(_vLeftTop)
+            , vLeftBottom(_vLeftBottom)
+            , vRightBottom(_vRightBottom)
+            , vRightTop(_vRightTop)
+            , vColor(_vColor)
+        {
+
+        }
+        virtual ~FMeshCreateParam_FlatQuad2D()
+        {
+
+        }
+
+    public:
+        static String ms_nameType;
+
+    public:
+        FVector2 vLeftTop; 
+        FVector2 vLeftBottom; 
+        FVector2 vRightBottom; 
+        FVector2 vRightTop; 
+        FVector4 vColor;
+
+    public:
+        virtual String ToName()
+        {
+            return FUtilString::FormatString("%s_[%f_%f]_[%f_%f]_[%f_%f]_[%f_%f]", 
+                                             ms_nameType.c_str(), 
+                                             this->vLeftTop.x,
+                                             this->vLeftTop.y,
+                                             this->vLeftBottom.x,
+                                             this->vLeftBottom.y,
+                                             this->vRightBottom.x,
+                                             this->vRightBottom.y,
+                                             this->vRightTop.x,
+                                             this->vRightTop.y);
+        }
+
+        virtual bool ParseParam(const String& nameParam);
+    };
+
+    //FlatCircle2D
+    class LPF_Export FMeshCreateParam_FlatCircle2D : public FMeshCreateParam
+    {
+    public:
+        FMeshCreateParam_FlatCircle2D()
+            : FMeshCreateParam(false, false)
+            , vCenter(0, 0)
+            , vDir(1, 0)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(0.5f)
+            , segment(100)
+        {
+
+        }
+        FMeshCreateParam_FlatCircle2D(const FVector2& _vCenter,
+                                      const FVector2& _vDir,
+                                      float _radius,
+                                      uint32 _segment)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vDir(_vDir)
+            , vColor(1.0f, 1.0f, 1.0f, 1.0f)
+            , radius(_radius)
+            , segment(_segment)
+        {
+
+        }
+        FMeshCreateParam_FlatCircle2D(const FVector2& _vCenter,
+                                      const FVector2& _vDir,
+                                      const FVector4& _vColor,
+                                      float _radius,
+                                      uint32 _segment)
+            : FMeshCreateParam(false, false)
+            , vCenter(_vCenter)
+            , vDir(_vDir)
+            , vColor(_vColor)
+            , radius(_radius)
+            , segment(_segment)
+        {
+
+        }
+        virtual ~FMeshCreateParam_FlatCircle2D()
+        {
+
+        }
+
+    public:
+        static String ms_nameType;
+
+    public:
+        FVector2 vCenter;
+        FVector2 vDir;
+        FVector4 vColor;
+        float radius;
+        uint32 segment;
+
+    public:
+        virtual String ToName()
+        {
+            return FUtilString::FormatString("%s_[%f_%f]_[%f_%f]_[%f_%u]", 
+                                             ms_nameType.c_str(), 
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vDir.x,
+                                             this->vDir.y,
+                                             this->radius,
+                                             this->segment);
+        }
+
+        virtual bool ParseParam(const String& nameParam);
+    };
 
 
     ////////////////////////////////// Line3D ////////////////////////////////
@@ -104,6 +680,8 @@ namespace LostPeterFoundation
                                              this->vEnd.y,
                                              this->vEnd.z);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //LineTriangle3D
@@ -171,6 +749,8 @@ namespace LostPeterFoundation
                                              this->vRight.y,
                                              this->vRight.z);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //LineQuad3D
@@ -247,6 +827,8 @@ namespace LostPeterFoundation
                                              this->vRightTop.y,
                                              this->vRightTop.z);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //LineGrid3D
@@ -337,6 +919,8 @@ namespace LostPeterFoundation
                                              this->m,
                                              this->n);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //LineCircle3D
@@ -424,6 +1008,8 @@ namespace LostPeterFoundation
                                              this->radius,
                                              this->segment);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //LineAABB3D
@@ -482,6 +1068,8 @@ namespace LostPeterFoundation
                                              this->vExtent.y,
                                              this->vExtent.z);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //LineSphere3D
@@ -561,6 +1149,8 @@ namespace LostPeterFoundation
                                              this->sliceCount,
                                              this->stackCount);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //LineCylinder3D
@@ -653,6 +1243,8 @@ namespace LostPeterFoundation
                                              this->height,
                                              this->sliceCount);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
 
@@ -740,6 +1332,8 @@ namespace LostPeterFoundation
                                              this->numRings,
                                              this->numSegments);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //LineCone3D
@@ -819,6 +1413,8 @@ namespace LostPeterFoundation
                                              this->height,
                                              this->numSegBase);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //LineTorus3D
@@ -905,6 +1501,8 @@ namespace LostPeterFoundation
                                              this->numSegSection,
                                              this->numSegCircle);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
 
@@ -974,6 +1572,8 @@ namespace LostPeterFoundation
                                              this->vRight.y,
                                              this->vRight.z);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //FlatQuad3D
@@ -1050,6 +1650,8 @@ namespace LostPeterFoundation
                                              this->vRightTop.y,
                                              this->vRightTop.z);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //FlatCircle3D
@@ -1131,6 +1733,8 @@ namespace LostPeterFoundation
                                              this->radius,
                                              this->segment);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //FlatAABB3D
@@ -1189,6 +1793,8 @@ namespace LostPeterFoundation
                                              this->vExtent.y,
                                              this->vExtent.z);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //FlatSphere3D
@@ -1268,6 +1874,8 @@ namespace LostPeterFoundation
                                              this->sliceCount,
                                              this->stackCount);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //FlatCylinder3D
@@ -1361,6 +1969,8 @@ namespace LostPeterFoundation
                                              this->sliceCount,
                                              this->stackCount);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //FlatCapsule3D
@@ -1454,6 +2064,8 @@ namespace LostPeterFoundation
                                              this->numSegments,
                                              this->numSegHeight);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //FlatCone3D
@@ -1540,6 +2152,8 @@ namespace LostPeterFoundation
                                              this->numSegBase,
                                              this->numSegHeight);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //FlatTorus3D
@@ -1626,6 +2240,8 @@ namespace LostPeterFoundation
                                              this->numSegSection,
                                              this->numSegCircle);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
 
@@ -1662,6 +2278,8 @@ namespace LostPeterFoundation
                                              flipV ? 1 : 0,
                                              rightHand ? 1 : 0);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntityQuad
@@ -1722,6 +2340,8 @@ namespace LostPeterFoundation
                                              height,
                                              depth);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntityGrid
@@ -1777,6 +2397,8 @@ namespace LostPeterFoundation
                                              m,
                                              n);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntityCircle
@@ -1822,6 +2444,8 @@ namespace LostPeterFoundation
                                              radius,
                                              segment);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntityAABB
@@ -1877,6 +2501,8 @@ namespace LostPeterFoundation
                                              depth,
                                              numSubdivisions);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntitySphere
@@ -1927,6 +2553,8 @@ namespace LostPeterFoundation
                                              sliceCount,
                                              stackCount);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntityGeoSphere
@@ -1972,6 +2600,8 @@ namespace LostPeterFoundation
                                              radius,
                                              numSubdivisions);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntityCylinder
@@ -2037,6 +2667,8 @@ namespace LostPeterFoundation
                                              sliceCount,
                                              stackCount);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntityCapsule
@@ -2102,6 +2734,8 @@ namespace LostPeterFoundation
                                              numSegments,
                                              numSegHeight);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntityCone
@@ -2162,6 +2796,8 @@ namespace LostPeterFoundation
                                              numSegBase,
                                              numSegHeight);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntityTorus
@@ -2217,6 +2853,8 @@ namespace LostPeterFoundation
                                              numSegSection,
                                              numSegCircle);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntitySkyBox
@@ -2247,6 +2885,8 @@ namespace LostPeterFoundation
                                              flipV ? 1 : 0,
                                              rightHand ? 1 : 0);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntitySkyDome
@@ -2277,6 +2917,8 @@ namespace LostPeterFoundation
                                              flipV ? 1 : 0,
                                              rightHand ? 1 : 0);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     //EntityTerrain
@@ -2350,11 +2992,17 @@ namespace LostPeterFoundation
                                              vertexX,
                                              vertexZ);
         }
+
+        virtual bool ParseParam(const String& nameParam);
     };
 
     ///////////////////////////////////////// FMeshGeometry //////////////////////////////////////////////
     class LPF_Export FMeshGeometry
 	{
+    public:
+        static FMeshCreateParam* CreateParam(FMeshGeometryType typeMeshGeometry);
+        static FMeshCreateParam* CreateParam(FMeshGeometryType typeMeshGeometry, const String& nameParam);
+
     public:
         static bool CreateGeometry(FMeshDataPC* pMeshDataPC, FMeshData* pMeshData, FMeshGeometryType typeMeshGeometry);
 		static bool CreateGeometryWithParam(FMeshDataPC* pMeshDataPC, FMeshData* pMeshData, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam);
@@ -2364,14 +3012,145 @@ namespace LostPeterFoundation
         static bool CreateLine2DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry);
 		static bool CreateLine2DGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam);
 
+        //Line2D
+        static void CreateLine2D(FMeshDataPC& meshDataPC, FMeshCreateParam_Line2D* pParam)
+        {
+            CreateLine2D(meshDataPC, 
+                         pParam->vStart,
+                         pParam->vEnd,
+                         pParam->vColor);
+        }
+        static void CreateLine2D(FMeshDataPC& meshDataPC,
+                                 const FVector2& vStart,
+                                 const FVector2& vEnd,
+                                 const FVector4& vColor);
 
-    
+        //LineTriangle2D
+        static void CreateLineTriangle2D(FMeshDataPC& meshDataPC, FMeshCreateParam_LineTriangle2D* pParam)
+        {
+            CreateLineTriangle2D(meshDataPC,
+                                 pParam->vTop,
+                                 pParam->vLeft,
+                                 pParam->vRight,
+                                 pParam->vColor);
+        }
+        static void CreateLineTriangle2D(FMeshDataPC& meshDataPC,
+                                         const FVector2& vTop,
+                                         const FVector2& vLeft,
+                                         const FVector2& vRight,
+                                         const FVector4& vColor);
+
+        //LineQuad2D
+        static void CreateLineQuad2D(FMeshDataPC& meshDataPC, FMeshCreateParam_LineQuad2D* pParam)
+        {
+            CreateLineQuad2D(meshDataPC,
+                             pParam->vLeftTop,
+                             pParam->vLeftBottom,
+                             pParam->vRightBottom,
+                             pParam->vRightTop,
+                             pParam->vColor);
+        }
+        static void CreateLineQuad2D(FMeshDataPC& meshDataPC,
+                                     const FVector2& vLeftTop,
+                                     const FVector2& vLeftBottom,
+                                     const FVector2& vRightBottom,
+                                     const FVector2& vRightTop,
+                                     const FVector4& vColor);
+
+        //LineGrid2D
+        static void CreateLineGrid2D(FMeshDataPC& meshDataPC, FMeshCreateParam_LineGrid2D* pParam)
+        {
+            CreateLineGrid2D(meshDataPC,
+                             pParam->vLeftTop,
+                             pParam->vLeftBottom,
+                             pParam->vRightBottom,
+                             pParam->vRightTop,
+                             pParam->vColor,
+                             pParam->m,
+                             pParam->n);
+        }
+        static void CreateLineGrid2D(FMeshDataPC& meshDataPC,
+                                     const FVector2& vLeftTop,
+                                     const FVector2& vLeftBottom,
+                                     const FVector2& vRightBottom,
+                                     const FVector2& vRightTop,
+                                     const FVector4& vColor,
+                                     uint32 m,
+                                     uint32 n);
+
+        //LineCircle2D
+        static void CreateLineCircle2D(FMeshDataPC& meshDataPC, FMeshCreateParam_LineCircle2D* pParam)
+        {
+            CreateLineCircle2D(meshDataPC, 
+                               pParam->vCenter,
+                               pParam->vDir,
+                               pParam->vColor,
+                               pParam->radius,
+                               pParam->segment,
+                               pParam->isDrawCenter);
+        }
+        static void CreateLineCircle2D(FMeshDataPC& meshDataPC,
+                                       const FVector2& vCenter,
+                                       const FVector2& vDir,
+                                       const FVector4& vColor,
+                                       float radius,
+                                       uint32 segment,
+                                       bool isDrawCenter);
+
     ////////////////////////////////// Flat2D ////////////////////////////////
     public:
         static bool CreateFlat2DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry);
 		static bool CreateFlat2DGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam);
 
-	
+        //FlatTriangle2D
+        static void CreateFlatTriangle2D(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatTriangle2D* pParam)
+        {
+            CreateFlatTriangle2D(meshDataPC,
+                                 pParam->vTop,
+                                 pParam->vLeft,
+                                 pParam->vRight,
+                                 pParam->vColor);
+        }
+        static void CreateFlatTriangle2D(FMeshDataPC& meshDataPC,
+                                         const FVector2& vTop,
+                                         const FVector2& vLeft,
+                                         const FVector2& vRight,
+                                         const FVector4& vColor);
+
+        //FlatQuad2D
+        static void CreateFlatQuad2D(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatQuad2D* pParam)
+        {
+            CreateFlatQuad2D(meshDataPC,
+                             pParam->vLeftTop,
+                             pParam->vLeftBottom,
+                             pParam->vRightBottom,
+                             pParam->vRightTop,
+                             pParam->vColor);
+        }
+        static void CreateFlatQuad2D(FMeshDataPC& meshDataPC,
+                                     const FVector2& vLeftTop,
+                                     const FVector2& vLeftBottom,
+                                     const FVector2& vRightBottom,
+                                     const FVector2& vRightTop,
+                                     const FVector4& vColor);
+
+        //FlatCircle2D
+        static void CreateFlatCircle2D(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatCircle2D* pParam)
+        {
+            CreateFlatCircle2D(meshDataPC,
+                               pParam->vCenter,
+                               pParam->vDir,
+                               pParam->vColor,
+                               pParam->radius,
+                               pParam->segment);
+        }
+        static void CreateFlatCircle2D(FMeshDataPC& meshDataPC,
+                                       const FVector2& vCenter,
+                                       const FVector2& vDir,
+                                       const FVector4& vColor,
+                                       float radius,
+                                       uint32 segment);
+
     ////////////////////////////////// Line3D ////////////////////////////////
     public:
         static bool CreateLine3DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry);

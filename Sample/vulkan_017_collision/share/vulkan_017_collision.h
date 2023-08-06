@@ -34,6 +34,7 @@ public:
         bool isRotate;
         bool isLighting;
         bool isTransparent;
+        bool isGeometry3D;
         bool isGeometryLine;
         bool isGeometryFlat;
 
@@ -109,6 +110,7 @@ public:
             , isRotate(false)
             , isLighting(true)
             , isTransparent(false)
+            , isGeometry3D(true)
             , isGeometryLine(false)
             , isGeometryFlat(false)
 
