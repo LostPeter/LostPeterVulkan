@@ -556,7 +556,36 @@ namespace LostPeterFoundation
         static float GetRadiusFromAABB(const FAABB& aabb);
 
     public:
-        //static bool Intersects_PointLine();
+        //Point - Line
+        template<typename T>
+		static bool Intersects_PointInLine(const FTPoint<T>& pt, const FTLine<T>& line)
+		{
+
+            return false;
+		}
+        static bool Intersects_PointInLineI(const FPointI& pt, const FLineI& line)
+        {
+            return Intersects_PointInLine<int32>(pt, line);
+        }
+        static bool Intersects_PointInLineF(const FPointF& pt, const FLineF& line)
+        {
+            return Intersects_PointInLine<float>(pt, line);
+        }
+
+        //Point - Rect
+        template<typename T>
+		static bool Intersects_PointInRect(const FTPoint<T>& pt, const FTRect<T>& rect)
+		{
+            return false;
+		}
+        static bool Intersects_PointInRectI(const FPointI& pt, const FRectI& rect)
+        {
+            return Intersects_PointInRect<int32>(pt, rect);
+        }
+        static bool Intersects_PointInRectF(const FPointF& pt, const FRectF& rect)
+        {
+            return Intersects_PointInRect<float>(pt, rect);
+        }
         
 
     public:

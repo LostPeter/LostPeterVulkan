@@ -2739,6 +2739,8 @@ namespace LostPeter
         , typeElementSelect(CoordinateElement_None)
 
         , isButtonLeftDown(false)
+        , ptLastX(0)
+        , ptLastY(0)
     {
         this->pCamera = _pWindow->GetCamera();
         this->vViewport = _pWindow->GetViewportVector4();
@@ -3765,39 +3767,111 @@ namespace LostPeter
         }
     }
 
+    void VulkanWindow::EditorCoordinateAxis::Move(double deltaX, double deltaY)
+    {
+
+    }
+    void VulkanWindow::EditorCoordinateAxis::Rotate(double deltaX, double deltaY)
+    {
+
+    }
+    void VulkanWindow::EditorCoordinateAxis::Scale(double deltaX, double deltaY)
+    {
+
+    }
+
     void VulkanWindow::EditorCoordinateAxis::MouseLeftDown(double x, double y)
     {
         this->isButtonLeftDown = true;
-        
-        switch ((int)this->typeState)
         {
-        case CoordinateState_Select:
-        case CoordinateState_Move:
+            switch ((int)this->typeState)
             {
-                CheckStateMove(x, y);
-                break;
-            }
-        case CoordinateState_Rotate:
-            {
-                CheckStateRotate(x, y);
-                break;
-            }
+            case CoordinateState_Select:
+            case CoordinateState_Move:
+                {
+                    CheckStateMove(x, y);
+                    break;
+                }
+            case CoordinateState_Rotate:
+                {
+                    CheckStateRotate(x, y);
+                    break;
+                }
 
-        case CoordinateState_Scale:
-            {
-                CheckStateScale(x, y);
-                break;
+            case CoordinateState_Scale:
+                {
+                    CheckStateScale(x, y);
+                    break;
+                }
             }
         }
+        this->ptLastX = x;
+        this->ptLastY = y;
     }
     void VulkanWindow::EditorCoordinateAxis::MouseMove(double x, double y)
     {
-        
+        double deltaX = x - this->ptLastX;
+        double deltaY = y - this->ptLastY;
+        {
+            switch ((int)this->typeState)
+            {
+            case CoordinateState_Select:
+                {
+                    break;
+                }
+            case CoordinateState_Move:
+                {
+                    Move(deltaX, deltaY);
+                    break;
+                }
+            case CoordinateState_Rotate:
+                {
+                    Rotate(deltaX, deltaY);
+                    break;
+                }
+
+            case CoordinateState_Scale:
+                {
+                    Scale(deltaX, deltaY);
+                    break;
+                }
+            }
+        }
+        this->ptLastX = x;
+        this->ptLastY = y;
     }
     void VulkanWindow::EditorCoordinateAxis::MouseLeftUp(double x, double y)
     {
         this->isButtonLeftDown = false;
+        double deltaX = x - this->ptLastX;
+        double deltaY = y - this->ptLastY;
+        {
+            switch ((int)this->typeState)
+            {
+            case CoordinateState_Select:
+                {
+                    break;
+                }
+            case CoordinateState_Move:
+                {
+                    Move(deltaX, deltaY);
+                    break;
+                }
+            case CoordinateState_Rotate:
+                {
+                    Rotate(deltaX, deltaY);
+                    break;
+                }
 
+            case CoordinateState_Scale:
+                {
+                    Scale(deltaX, deltaY);
+                    break;
+                }
+            }
+        }
+        this->ptLastX = 0;
+        this->ptLastY = 0;
     }
     void VulkanWindow::EditorCoordinateAxis::MouseHover(double x, double y)
     {
@@ -3824,7 +3898,6 @@ namespace LostPeter
                 break;
             }
         }
-        
     }
     void VulkanWindow::EditorCoordinateAxis::initConfigs()
     {
@@ -4693,7 +4766,10 @@ namespace LostPeter
         , cfg_isEditorGridShow(false)
         , cfg_isEditorCameraAxisShow(false)
         , cfg_isEditorCoordinateAxisShow(false)
-        , cfg_editorGridColor(0.5f, 0.5f, 0.5f, 1.0f)
+        , cfg_editorGrid_Color(0.5f, 0.5f, 0.5f, 1.0f)
+        , cfg_editorCoordinateAxis_MoveSpeed(0.01f)
+        , cfg_editorCoordinateAxis_RotateSpeed(0.01f)
+        , cfg_editorCoordinateAxis_ScaleSpeed(0.01f)
         , pEditorGrid(nullptr)
         , pEditorCameraAxis(nullptr)
         , pEditorCoordinateAxis(nullptr)
@@ -11131,10 +11207,18 @@ namespace LostPeter
                                 if (ImGui::CollapsingHeader("EditorGrid Settings"))
                                 {
                                     ImGui::Checkbox("Is EditorGridShow", &cfg_isEditorGridShow);
+                                    if (this->pEditorGrid != nullptr)
+                                    {
+                                        if (ImGui::ColorEdit4("EditorGrid Color", (float*)&this->cfg_editorGrid_Color))
+                                        {
+                                            this->pEditorGrid->SetColor(this->cfg_editorGrid_Color);
+                                        }
+                                    }
                                 }
                                 if (ImGui::CollapsingHeader("EditorCameraAxis Settings"))
                                 {
                                     ImGui::Checkbox("Is EditorCameraAxisShow", &cfg_isEditorCameraAxisShow);
+
                                 }
                                 if (ImGui::CollapsingHeader("EditorCoordinateAxis Settings"))
                                 {
@@ -11165,8 +11249,22 @@ namespace LostPeter
                                         {
                                             this->pEditorCoordinateAxis->SetStateType(EditorCoordinateAxis::CoordinateState_Scale);
                                         }
+
+                                        ImGui::Separator();
+
+                                        if (ImGui::DragFloat("Move Speed", &this->cfg_editorCoordinateAxis_MoveSpeed, 0.01f, 0.01f, 100.0f))
+                                        {
+                                            
+                                        }
+                                        if (ImGui::DragFloat("Rotate Speed", &this->cfg_editorCoordinateAxis_RotateSpeed, 0.01f, 0.01f, 100.0f))
+                                        {
+                                            
+                                        }
+                                        if (ImGui::DragFloat("Scale Speed", &this->cfg_editorCoordinateAxis_ScaleSpeed, 0.01f, 0.01f, 100.0f))
+                                        {
+                                            
+                                        }
                                     }
-                                    
                                 }
                             }
                             ImGui::Separator();

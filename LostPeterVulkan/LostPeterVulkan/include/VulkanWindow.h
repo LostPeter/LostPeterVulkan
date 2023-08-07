@@ -845,7 +845,6 @@ namespace LostPeter
                 CoordinateState_Move,
                 CoordinateState_Rotate,
                 CoordinateState_Scale,
-
             };
             enum CoordinateElementType
             {
@@ -878,6 +877,8 @@ namespace LostPeter
             CoordinateStateType typeState; 
             CoordinateElementType typeElementSelect;
             bool isButtonLeftDown;
+            double ptLastX;
+            double ptLastY;
             
             FVector3 aAxisX[2];
             FVector3 aAxisY[2];
@@ -955,6 +956,10 @@ namespace LostPeter
             virtual void CheckStateMove(double x, double y);
             virtual void CheckStateRotate(double x, double y);
             virtual void CheckStateScale(double x, double y);
+
+            virtual void Move(double deltaX, double deltaY);
+            virtual void Rotate(double deltaX, double deltaY);
+            virtual void Scale(double deltaX, double deltaY);
 
             virtual void MouseLeftDown(double x, double y);
             virtual void MouseMove(double x, double y);
@@ -1306,7 +1311,10 @@ namespace LostPeter
         bool cfg_isEditorGridShow;
         bool cfg_isEditorCameraAxisShow;
         bool cfg_isEditorCoordinateAxisShow;
-        FColor cfg_editorGridColor;
+        FColor cfg_editorGrid_Color;
+        float cfg_editorCoordinateAxis_MoveSpeed;
+        float cfg_editorCoordinateAxis_RotateSpeed;
+        float cfg_editorCoordinateAxis_ScaleSpeed;
         EditorGrid* pEditorGrid;
         EditorCameraAxis* pEditorCameraAxis;
         EditorCoordinateAxis* pEditorCoordinateAxis;

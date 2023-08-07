@@ -514,6 +514,7 @@ namespace LostPeterFoundation
         return FMath::Length(magnitude);
     }
 
+
     std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
                                                          bool positiveSide /*= true*/, bool negativeSide /*= true*/)
     {
