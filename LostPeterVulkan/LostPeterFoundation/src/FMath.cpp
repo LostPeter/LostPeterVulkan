@@ -501,7 +501,7 @@ namespace LostPeterFoundation
         return glm::transpose(mat4);
     }
     
-     float FMath::GetRadiusFromAABB(const FAABB& aabb)
+    float FMath::GetRadiusFromAABB(const FAABB& aabb)
     {
         const FVector3& max = aabb.GetMax();
         const FVector3& min = aabb.GetMin();
@@ -514,7 +514,43 @@ namespace LostPeterFoundation
         return FMath::Length(magnitude);
     }
 
+    //Point - Line
+    bool FMath::Intersects_PointInLine(const FVector3& pt, const FVector3& ptLineStart, const FVector3& ptLineEnd)
+    {
+        FVector3 vDirES = ptLineEnd - ptLineStart;
+        FVector3 vDirPS = pt - ptLineStart;
+        FVector3 vCross = Cross(vDirES, vDirPS);
+        if (Abs(Length(Normalize(vCross))) > std::numeric_limits<float>::epsilon())
+            return false;
+        float fDot = Dot(vDirES, vDirPS);
+        if (fDot > 0 && fDot < Length2(vDirES))
+            return true;
 
+        return false;
+    }
+
+    //Point - Triangle
+    bool FMath::Intersects_PointInTriangle(const FVector3& pt, const FVector3& a, const FVector3& b, const FVector3& c)
+    {
+        
+        return false;
+    }
+
+    //Point - Rect
+    bool FMath::Intersects_PointInRect(const FVector3& pt, const FVector3& rtLeftTop, const FVector3& rtLeftBottom, const FVector3& rtRightTop, const FVector3& rtRightBottom)
+    {
+        
+        return false;
+    }
+
+    //Point - Circle
+    bool FMath::Intersects_PointInCircle(const FVector3& pt, const FVector3& center, float radius)
+    {
+        
+        return false;
+    }
+
+    //Ray - Shape
     std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
                                                          bool positiveSide /*= true*/, bool negativeSide /*= true*/)
     {
@@ -969,6 +1005,7 @@ namespace LostPeterFoundation
         return true;
     }
 
+    //Sphere - Shape
     bool FMath::Intersects_SpherePlane(const FSphere& sphere, const FPlane& plane)
     {
         return (FMath::Abs(plane.GetDistance(sphere.GetCenter())) <= sphere.GetRadius());
@@ -1024,6 +1061,7 @@ namespace LostPeterFoundation
     //  return true;
     //}
 
+    //Plane - Shape
     bool FMath::Intersects_PlaneAABB(const FPlane& plane, const FAABB& aabb)
     {
         return (plane.GetSide(aabb) == F_PlaneSide_Both);

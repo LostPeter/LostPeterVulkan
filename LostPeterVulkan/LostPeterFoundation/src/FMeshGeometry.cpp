@@ -1702,7 +1702,7 @@ namespace LostPeterFoundation
         FVector3 vC(vCenter.x, vCenter.y, 0.0f);
         FVector3 vD(vDir.x, vDir.y, 0.0f);
         float thetaStep = 2.0f * FMath::ms_fPI / segment;
-        for (int i = 0; i < segment; i++)
+        for (uint32 i = 0; i < segment; i++)
         {
             FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(thetaStep * i, - FMath::ms_v3UnitZ);
             FVector3 vCur = FMath::Transform(qRot, vD);
@@ -2197,7 +2197,7 @@ namespace LostPeterFoundation
 
         //Vertex
         float thetaStep = 2.0f * FMath::ms_fPI / segment;
-        for (int i = 0; i < segment; i++)
+        for (uint32 i = 0; i < segment; i++)
         {
             FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(thetaStep * i, vUp);
             FVector3 vCur = FMath::Transform(qRot, vDir);

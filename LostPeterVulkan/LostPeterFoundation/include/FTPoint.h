@@ -51,7 +51,7 @@ namespace LostPeterFoundation
 			x = _x; 
 			y = _y; 
 		}
-
+		
 		friend bool operator !=(const FTPoint& pt1, const FTPoint& pt2) 
 		{ 
 			return pt1.x != pt2.x || pt1.y != pt2.y; 

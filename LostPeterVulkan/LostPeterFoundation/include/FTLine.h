@@ -48,8 +48,28 @@ namespace LostPeterFoundation
 		FTPoint<T>	m_ptEnd;
 
 	public:
-        
+		T Min(T x, T y) const
+		{
+			if (x <= y)
+				return x;
+			return y;
+		}
 
+		T Max(T x, T y) const
+		{
+			if (x >= y)
+				return x;
+			return y;
+		}
+
+        bool PtInLine(const FTPoint<T>& pt) const 
+		{
+			if ((pt.x - m_ptStart.x) * (m_ptEnd.y - m_ptStart.y) == (pt.y - m_ptStart.y) * (m_ptEnd.x - m_ptStart.x)
+				&& Min(m_ptStart.x, m_ptEnd.x) <= pt.x && pt.x <= Max(m_ptStart.x, m_ptEnd.x)
+				&& Min(m_ptStart.y, m_ptEnd.y) <= pt.y && pt.y <= Max(m_ptStart.y, m_ptEnd.y))
+				return true;
+			return false;
+		}
 	};
 
 }; //LostPeterFoundation

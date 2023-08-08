@@ -558,37 +558,78 @@ namespace LostPeterFoundation
     public:
         //Point - Line
         template<typename T>
-		static bool Intersects_PointInLine(const FTPoint<T>& pt, const FTLine<T>& line)
+		static bool Intersects_PointInLine2D(const FTPoint<T>& pt, const FTLine<T>& line)
 		{
-
-            return false;
+            return line.PtInLine(pt);
 		}
-        static bool Intersects_PointInLineI(const FPointI& pt, const FLineI& line)
+        static bool Intersects_PointInLine2DI(const FPointI& pt, const FLineI& line)
         {
-            return Intersects_PointInLine<int32>(pt, line);
+            return Intersects_PointInLine2D<int32>(pt, line);
         }
-        static bool Intersects_PointInLineF(const FPointF& pt, const FLineF& line)
+        static bool Intersects_PointInLine2DF(const FPointF& pt, const FLineF& line)
         {
-            return Intersects_PointInLine<float>(pt, line);
+            return Intersects_PointInLine2D<float>(pt, line);
         }
+        static bool Intersects_PointInLine(const FVector3& pt, const FVector3& ptLineStart, const FVector3& ptLineEnd);
+        
+
+        //Point - Triangle
+        template<typename T>
+        static T CalculateTriangleArea(const FTPoint<T>& a, const FTPoint<T>& b, const FTPoint<T>& c)
+        {
+            T x1 = b.x - a.x;  
+            T y1 = b.y - a.y;  
+            T x2 = c.x - a.x;  
+            T y2 = c.y - a.y;  
+            return Abs(x1 * y2 - x2 * y1) / 2;
+        }
+        template<typename T>
+        static bool Intersects_PointInTriangle2D(const FTPoint<T>& pt, const FTPoint<T>& a, const FTPoint<T>& b, const FTPoint<T>& c)
+        {
+            T area_ABC = CalculateTriangleArea(a, b, c);
+            T area_PAB = CalculateTriangleArea(pt, a, b);
+            T area_PAC = CalculateTriangleArea(pt, a, c);
+            T area_PBC = CalculateTriangleArea(pt, b, c);
+
+            if (Abs(area_PAB + area_PBC + area_PAC - area_ABC) < 0.000001f)
+                return true;
+            return false;
+        }
+        static bool Intersects_PointInTriangle(const FVector3& pt, const FVector3& a, const FVector3& b, const FVector3& c);
+
 
         //Point - Rect
         template<typename T>
-		static bool Intersects_PointInRect(const FTPoint<T>& pt, const FTRect<T>& rect)
+		static bool Intersects_PointInRect2D(const FTPoint<T>& pt, const FTRect<T>& rect)
 		{
-            return false;
+            return rect.PtInRect(pt);
 		}
-        static bool Intersects_PointInRectI(const FPointI& pt, const FRectI& rect)
+        static bool Intersects_PointInRect2DI(const FPointI& pt, const FRectI& rect)
         {
-            return Intersects_PointInRect<int32>(pt, rect);
+            return Intersects_PointInRect2D<int32>(pt, rect);
         }
-        static bool Intersects_PointInRectF(const FPointF& pt, const FRectF& rect)
+        static bool Intersects_PointInRect2DF(const FPointF& pt, const FRectF& rect)
         {
-            return Intersects_PointInRect<float>(pt, rect);
+            return Intersects_PointInRect2D<float>(pt, rect);
         }
-        
+        static bool Intersects_PointInRect(const FVector3& pt, const FVector3& rtLeftTop, const FVector3& rtLeftBottom, const FVector3& rtRightTop, const FVector3& rtRightBottom);
+
+
+        //Point - Circle
+        template<typename T>
+		static bool Intersects_PointInCircle2D(const FTPoint<T>& pt, const FTPoint<T>& center, T radius)
+        {
+            float x = pt.x - center.x;
+            float y = pt.y - center.y;
+            float dis =  sqrt(pow(x, 2) + pow(y, 2));
+            if (dis < 0.000001f)
+                return true;
+            return false;
+        }
+        static bool Intersects_PointInCircle(const FVector3& pt, const FVector3& center, float radius);
 
     public:
+        //Ray - Shape
         static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
                                                              bool positiveSide = true, bool negativeSide = true);
         static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& normal,
@@ -600,13 +641,15 @@ namespace LostPeterFoundation
         static std::pair<bool, float> Intersects_RayAABB(const FRay& ray, const FAABB& aabb);
         static bool Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb);
         static bool	Intersects_RayAABB(const FRay& ray, const FAABB& aabb, float* d1, float* d2);
-            
+        
+        //Sphere - Shape
         static bool	Intersects_SpherePlane(const FSphere& sphere, const FPlane& plane);
         static bool Intersects_SphereAABB(const FSphere& sphere, const FAABB& aabb);
         static bool	Intersects_SphereFrustum(const FSphere& sphere, const FFrustum& frustum);
         
         //static bool Intersects_SegmentAABB(const FSegment& s, const FAABB& aabb);
 
+        //Plane - Shape
         static bool	Intersects_PlaneAABB(const FPlane& plane, const FAABB& aabb);
 
     public:
