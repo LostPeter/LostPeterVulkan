@@ -818,15 +818,15 @@ static FVector3 g_ObjectRend_Tranforms[3 * g_ObjectRend_Count] =
     FVector3(  -5,  0.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_cone_3d-1
     FVector3(  -5,  0.0,  10.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_line_torus_3d-1
 
-    FVector3(  5,  0.0,   -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_triangle_3d-1
-    FVector3(  5,  0.0,   -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_quad_3d-1
-    FVector3(  5,  0.0,   -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_circle_3d-1
-    FVector3(  5,  0.0,   -2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_aabb_3d-1
-    FVector3(  5,  0.0,    0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_sphere_3d-1
-    FVector3(  5,  0.0,    2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_cylinder_3d-1
-    FVector3(  5,  0.0,    4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_capsule_3d-1
-    FVector3(  5,  0.0,    6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_cone_3d-1
-    FVector3(  5,  0.0,    8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_torus_3d-1
+    FVector3(   5,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_triangle_3d-1
+    FVector3(   5,  0.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_quad_3d-1
+    FVector3(   5,  0.0,  -4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_circle_3d-1
+    FVector3(   5,  0.0,  -2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_aabb_3d-1
+    FVector3(   5,  0.0,   0.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_sphere_3d-1
+    FVector3(   5,  0.0,   2.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_cylinder_3d-1
+    FVector3(   5,  0.0,   4.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_capsule_3d-1
+    FVector3(   5,  0.0,   6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_cone_3d-1
+    FVector3(   5,  0.0,   8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_flat_torus_3d-1
 
     FVector3(   0,  0.0,  -8.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_triangle-1
     FVector3(   0,  0.0,  -6.0),    FVector3(     0,  0,  0),    FVector3(    1.0f,      1.0f,      1.0f), //object_geo_entity_quad-1
@@ -1384,6 +1384,14 @@ Vulkan_017_Collision::Vulkan_017_Collision(int width, int height, String name)
     : VulkanWindow(width, height, name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
+    , pRend_Line2D(nullptr)
+    , pRend_LineTriangle2D(nullptr)
+    , pRend_LineQuad2D(nullptr)
+    , pRend_LineGrid2D(nullptr)
+    , pRend_LineCircle2D(nullptr)
+    , pRend_FlatTriangle2D(nullptr)
+    , pRend_FlatQuad2D(nullptr)
+    , pRend_FlatCircle2D(nullptr)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -1398,29 +1406,149 @@ Vulkan_017_Collision::Vulkan_017_Collision(int width, int height, String name)
     this->mainLight.direction = FVector3(0, -1, 0); //y-
 }
 
+FColor Vulkan_017_Collision::s_colorSelect = FColor(1, 0, 0, 1);
+FColor Vulkan_017_Collision::s_colorHover = FColor(1, 1, 0, 1);
+
+FPointI Vulkan_017_Collision::Convert2PointI(double x, double y)
+{
+    FVector2 vSceen = ConvertNDC2Screen((float)x, (float)y);
+    return FPointI((int32)vSceen.x, (int32)vSceen.y);
+}
+FPointF Vulkan_017_Collision::Convert2PointF(double x, double y)
+{
+    FVector2 vSceen = ConvertNDC2Screen((float)x, (float)y);
+    return FPointF(vSceen.x, vSceen.y);
+}
+void Vulkan_017_Collision::IsCollision(double x, double y, bool isHover)
+{
+    if (isHover)
+    {
+        //Line 2D
+        IsCollision_Line2D(x, y, this->pRend_Line2D, s_colorHover);
+        IsCollision_LineTriangle2D(x, y, this->pRend_LineTriangle2D, s_colorHover);
+        IsCollision_LineQuad2D(x, y, this->pRend_LineQuad2D, s_colorHover);
+        IsCollision_LineGrid2D(x, y, this->pRend_LineGrid2D, s_colorHover);
+        IsCollision_LineCircle2D(x, y, this->pRend_LineCircle2D, s_colorHover);
+        
+        //Flat 2D
+        IsCollision_FlatTriangle2D(x, y, this->pRend_FlatTriangle2D, s_colorHover);
+        IsCollision_FlatQuad2D(x, y, this->pRend_FlatQuad2D, s_colorHover);
+        IsCollision_FlatCircle2D(x, y, this->pRend_FlatCircle2D, s_colorHover);
+    }
+    else
+    {
+        //Line 2D
+        IsCollision_Line2D(x, y, this->pRend_Line2D, s_colorSelect);
+        IsCollision_LineTriangle2D(x, y, this->pRend_LineTriangle2D, s_colorSelect);
+        IsCollision_LineQuad2D(x, y, this->pRend_LineQuad2D, s_colorSelect);
+        IsCollision_LineGrid2D(x, y, this->pRend_LineGrid2D, s_colorSelect);
+        IsCollision_LineCircle2D(x, y, this->pRend_LineCircle2D, s_colorSelect);
+        
+        //Flat 2D
+        IsCollision_FlatTriangle2D(x, y, this->pRend_FlatTriangle2D, s_colorSelect);
+        IsCollision_FlatQuad2D(x, y, this->pRend_FlatQuad2D, s_colorSelect);
+        IsCollision_FlatCircle2D(x, y, this->pRend_FlatCircle2D, s_colorSelect);
+    }
+}
+
+bool Vulkan_017_Collision::IsCollision_Line2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+{
+    FPointI ptMouse((int32)x, (int32)y);
+    FMeshCreateParam_Line2D* pLine2D = (FMeshCreateParam_Line2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    FPointI ptLine_Start = ConvertNDC2ScreenPointI(pLine2D->vStart);
+    FPointI ptLine_End = ConvertNDC2ScreenPointI(pLine2D->vEnd);
+    if (FMath::Intersects_PointInLine2DI(ptMouse, FLineI(ptLine_Start, ptLine_End)))
+    {
+        LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
+        obj.color = color;
+
+        //F_LogInfo("Vulkan_017_Collision::IsCollision_Line2D: Mouse In Line 2D !");
+        return true;
+    }
+    return false;
+}
+bool Vulkan_017_Collision::IsCollision_LineTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+{
+    FPointI ptMouse((int32)x, (int32)y);
+    FMeshCreateParam_LineTriangle2D* pLineTriangle2D = (FMeshCreateParam_LineTriangle2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    FPointI ptTriangle_Top = ConvertNDC2ScreenPointI(pLineTriangle2D->vTop);
+    FPointI ptTriangle_Left = ConvertNDC2ScreenPointI(pLineTriangle2D->vLeft);
+    FPointI ptTriangle_Right = ConvertNDC2ScreenPointI(pLineTriangle2D->vRight);
+    if (FMath::Intersects_PointInTriangle2DI(ptMouse, ptTriangle_Top, ptTriangle_Left, ptTriangle_Right))
+    {
+        LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
+        obj.color = color;
+
+        //F_LogInfo("Vulkan_017_Collision::IsCollision_LineTriangle2D: Mouse In Triangle 2D !");
+        return true;
+    }
+    return false;
+}
+bool Vulkan_017_Collision::IsCollision_LineQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+{
+    FPointI ptMouse((int32)x, (int32)y);
+
+    return false;
+}
+bool Vulkan_017_Collision::IsCollision_LineGrid2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+{
+    FPointI ptMouse((int32)x, (int32)y);
+
+    return false;
+}
+bool Vulkan_017_Collision::IsCollision_LineCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+{
+    FPointI ptMouse((int32)x, (int32)y);
+
+    return false;
+}
+
+bool Vulkan_017_Collision::IsCollision_FlatTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+{   
+    FPointI ptMouse((int32)x, (int32)y);
+
+    return false;
+}
+bool Vulkan_017_Collision::IsCollision_FlatQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+{
+    FPointI ptMouse((int32)x, (int32)y);
+
+    return false;   
+}
+bool Vulkan_017_Collision::IsCollision_FlatCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+{
+    FPointI ptMouse((int32)x, (int32)y);
+
+    return false;
+}
+
 void Vulkan_017_Collision::OnMouseLeftDown(double x, double y)
 {
     VulkanWindow::OnMouseLeftDown(x, y);
     //F_LogInfo("Vulkan_017_Collision::OnMouseLeftDown: Mouse Left Down !");
     
+    IsCollision(x, y, false);
 }
 void Vulkan_017_Collision::OnMouseLeftUp(double x, double y)
 {
     VulkanWindow::OnMouseLeftUp(x, y);
     //F_LogInfo("Vulkan_017_Collision::OnMouseLeftUp: Mouse Left Up !");
 
+    IsCollision(x, y, false);
 }
 void Vulkan_017_Collision::OnMouseMove(int button, double x, double y)
 {
     VulkanWindow::OnMouseMove(button, x, y);
     //F_LogInfo("Vulkan_017_Collision::OnMouseMove: Mouse Move !");
 
+    IsCollision(x, y, false);
 }
 void Vulkan_017_Collision::OnMouseHover(double x, double y)
 {
     VulkanWindow::OnMouseHover(x, y);
     //F_LogInfo("Vulkan_017_Collision::OnMouseHover: Mouse Hover !");
 
+    IsCollision(x, y, true);
 }
 
 void Vulkan_017_Collision::setUpEnabledFeatures()
@@ -1510,6 +1638,21 @@ void Vulkan_017_Collision::loadModel_Custom()
                 MeshSub* pMeshSub = pModelObject->pMesh->aMeshSubs[indexMeshSub];
                 String nameObjectRend = g_ObjectRend_Configs[7 * nIndexObjectRend + 0];
                 ModelObjectRend* pRend = new ModelObjectRend(nameObjectRend, pModelObject, pMeshSub);
+                if (pModelObject->pMesh->typeMesh == F_Mesh_Geometry)
+                {
+                    switch ((int)pModelObject->pMesh->typeGeometryType)
+                    {
+                        case F_MeshGeometry_Line2D:         this->pRend_Line2D = pRend;           break;
+                        case F_MeshGeometry_LineTriangle2D: this->pRend_LineTriangle2D = pRend;   break;
+                        case F_MeshGeometry_LineQuad2D:     this->pRend_LineQuad2D = pRend;       break;
+                        case F_MeshGeometry_LineGrid2D:     this->pRend_LineGrid2D = pRend;       break;
+                        case F_MeshGeometry_LineCircle2D:   this->pRend_LineCircle2D = pRend;     break;
+
+                        case F_MeshGeometry_FlatTriangle2D: this->pRend_FlatTriangle2D = pRend;   break;
+                        case F_MeshGeometry_FlatQuad2D:     this->pRend_FlatQuad2D = pRend;       break;
+                        case F_MeshGeometry_FlatCircle2D:   this->pRend_FlatCircle2D = pRend;     break;
+                    }
+                }
 
                 //Texture VS
                 {
@@ -1645,6 +1788,10 @@ void Vulkan_017_Collision::loadModel_Custom()
                 if (pRend->isGeometryFlat)
                 {
                     pRend->cfg_vkCullModeFlagBits = VK_CULL_MODE_NONE;
+                }
+                if (!pRend->isGeometry3D)
+                {
+                    pModelObject->isInstanceDynamic = false;
                 }
 
                 pModelObject->AddObjectRend(pRend);
@@ -3004,8 +3151,11 @@ void Vulkan_017_Collision::modelConfig()
                 ImGui::DragInt(nameInstances.c_str(), &countInstanceExt, 1, 0, 3);
                 if (countInstanceExt != pModelObject->countInstanceExt)
                 {
-                    pModelObject->countInstanceExt = countInstanceExt;
-                    pModelObject->countInstance = countInstanceExt * 2 + 1;
+                    if (pModelObject->isInstanceDynamic)
+                    {
+                        pModelObject->countInstanceExt = countInstanceExt;
+                        pModelObject->countInstance = countInstanceExt * 2 + 1;
+                    }
                     rebuildInstanceCBs(false);
                 }
 

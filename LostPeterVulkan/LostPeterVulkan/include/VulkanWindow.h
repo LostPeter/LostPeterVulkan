@@ -1389,13 +1389,44 @@ namespace LostPeter
         }
         FVector4 GetViewportVector4()
         {
-            FVector4 vViewport;
-            vViewport.x = this->poViewport.x;
-            vViewport.y = this->poViewport.y;
-            vViewport.z = this->poViewport.width;
-            vViewport.w = this->poViewport.height;
-            return vViewport;
+            FVector4 vVP;
+            vVP.x = this->poViewport.x;
+            vVP.y = this->poViewport.y;
+            vVP.z = this->poViewport.width;
+            vVP.w = this->poViewport.height;
+            return vVP;
         } 
+        FVector2 ConvertNDC2Screen(float x, float y) //x: [-1, 1]; y: [-1, 1]
+        {
+            FVector2 vScreen;
+            vScreen.x = (x + 1.0f) * this->poViewport.width / 2.0f + this->poViewport.x;
+		    vScreen.y = (1.0f - y) * this->poViewport.height / 2.0f + this->poViewport.y;
+            return vScreen;
+        }
+        FVector2 ConvertNDC2Screen(const FVector2& vNdc)
+        {
+            return ConvertNDC2Screen(vNdc.x, vNdc.y);
+        }
+        FPointI ConvertNDC2ScreenPointI(float x, float y)
+        {
+            FVector2 vScreen = ConvertNDC2Screen(x, y);
+            return FPointI((int32)vScreen.x, (int32)vScreen.y);
+        }
+        FPointI ConvertNDC2ScreenPointI(const FVector2& v)
+        {
+            return ConvertNDC2ScreenPointI(v.x, v.y);
+        }
+        FVector2 ConvertScreen2NDC(float x, float y) //x: [0 - width]; y: [0 - height]
+        {
+            FVector2 vNdc;
+            vNdc.x = (x - this->poViewport.x) * 2.0f / this->poViewport.width - 1.0f;
+		    vNdc.y = 1.0f - (y - this->poViewport.y) * 2.0f / this->poViewport.height;
+            return vNdc;
+        }
+        FVector2 ConvertScreen2NDC(const FVector2& vScreen)
+        {
+            return ConvertScreen2NDC(vScreen.x, vScreen.y);
+        }
 
     protected:
         //Create Pipeline

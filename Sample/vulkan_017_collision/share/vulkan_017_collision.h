@@ -415,6 +415,7 @@ public:
 
         int countInstanceExt;
         int countInstance;
+        bool isInstanceDynamic;
 
         //Mesh
         Mesh* pMesh;
@@ -442,6 +443,7 @@ public:
 
             , countInstanceExt(0)
             , countInstance(1)
+            , isInstanceDynamic(true)
 
             //Mesh
             , pMesh(nullptr)
@@ -537,6 +539,16 @@ public:
     bool m_isDrawIndirect;
     bool m_isDrawIndirectMulti;
 
+    ModelObjectRend* pRend_Line2D;
+    ModelObjectRend* pRend_LineTriangle2D;
+    ModelObjectRend* pRend_LineQuad2D;
+    ModelObjectRend* pRend_LineGrid2D;
+    ModelObjectRend* pRend_LineCircle2D;
+
+    ModelObjectRend* pRend_FlatTriangle2D;
+    ModelObjectRend* pRend_FlatQuad2D;
+    ModelObjectRend* pRend_FlatCircle2D;
+
     VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
     VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
     std::map<String, StringVector> m_mapName2Layouts;
@@ -552,6 +564,24 @@ public:
     virtual void OnMouseLeftUp(double x, double y);
     virtual void OnMouseMove(int button, double x, double y);
     virtual void OnMouseHover(double x, double y);
+
+public:
+    static FColor s_colorSelect;
+    static FColor s_colorHover;
+
+    FPointI Convert2PointI(double x, double y);
+    FPointF Convert2PointF(double x, double y);
+    void IsCollision(double x, double y, bool isHover);
+
+    bool IsCollision_Line2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
+    bool IsCollision_LineTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
+    bool IsCollision_LineQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
+    bool IsCollision_LineGrid2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
+    bool IsCollision_LineCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
+
+    bool IsCollision_FlatTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
+    bool IsCollision_FlatQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
+    bool IsCollision_FlatCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
     
 protected:
     //Create Pipeline

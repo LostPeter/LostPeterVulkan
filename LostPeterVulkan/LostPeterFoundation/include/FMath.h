@@ -595,6 +595,14 @@ namespace LostPeterFoundation
                 return true;
             return false;
         }
+        static bool Intersects_PointInTriangle2DI(const FPointI& pt, const FPointI& a, const FPointI& b, const FPointI& c)
+        {
+            return Intersects_PointInTriangle2D<int32>(pt, a, b, c);
+        }
+        static bool Intersects_PointInTriangle2DF(const FPointF& pt, const FPointF& a, const FPointF& b, const FPointF& c)
+        {
+            return Intersects_PointInTriangle2D<float>(pt, a, b, c);
+        }
         static bool Intersects_PointInTriangle(const FVector3& pt, const FVector3& a, const FVector3& b, const FVector3& c);
 
 
