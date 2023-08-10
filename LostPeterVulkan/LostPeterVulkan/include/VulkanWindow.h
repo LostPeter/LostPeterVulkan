@@ -101,7 +101,9 @@ namespace LostPeter
                     const String& _nameMeshSub,
                     const String& _nameOriginal,
                     int _indexMeshSub,
-                    FMeshVertexType _poTypeVertex);
+                    FMeshVertexType _poTypeVertex,
+                    bool isUpdateVertexBuffer,
+                    bool isUpdateIndexBuffer);
             virtual ~MeshSub();
 
         public:
@@ -109,6 +111,8 @@ namespace LostPeter
             String nameMeshSub;
             String nameOriginal;
             int indexMeshSub;
+            bool isNeedUpdate_VertexBuffer;
+            bool isNeedUpdate_IndexBuffer;
 
             //Vertex
             FMeshVertexType poTypeVertex;
@@ -123,6 +127,8 @@ namespace LostPeter
             void* poVertexBuffer_Data;
             VkBuffer poVertexBuffer;
             VkDeviceMemory poVertexBufferMemory;
+            VkBuffer poVertexBuffer_Staging;
+            VkDeviceMemory poVertexBufferMemory_Staging;
 
             //Index
             std::vector<uint32_t> indices;
@@ -131,6 +137,8 @@ namespace LostPeter
             void* poIndexBuffer_Data;
             VkBuffer poIndexBuffer;
             VkDeviceMemory poIndexBufferMemory;
+            VkBuffer poIndexBuffer_Staging;
+            VkDeviceMemory poIndexBufferMemory_Staging;
 
             //Instance
             uint32_t instanceCount;
@@ -145,6 +153,9 @@ namespace LostPeter
             virtual void WriteVertexData(std::vector<FVertex_Pos3Color4Normal3Tex2>& aPos3Color4Normal3Tex2,
                                          std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2>& aPos3Color4Normal3Tangent3Tex2);
             virtual void WriteIndexData(std::vector<uint32_t>& indexData);
+
+            virtual void UpdateVertexBuffer();
+            virtual void UpdateIndexBuffer();
         };
         typedef std::vector<MeshSub*> MeshSubPtrVector;
         typedef std::map<String, MeshSub*> MeshSubPtrMap;
@@ -178,7 +189,11 @@ namespace LostPeter
             void Destroy();
 
             virtual bool AddMeshSub(MeshSub* pMeshSub);
-            virtual bool LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal);
+            virtual bool LoadMesh(bool isFlipY, 
+                                  bool isTransformLocal, 
+                                  const FMatrix4& matTransformLocal,
+                                  bool isUpdateVertexBuffer = false,
+                                  bool isUpdateIndexBuffer = false);
         };
         typedef std::vector<Mesh*> MeshPtrVector;
         typedef std::map<String, Mesh*> MeshPtrMap;
@@ -1550,10 +1565,28 @@ namespace LostPeter
                                                     void* pBuf, 
                                                     VkBuffer& vertexBuffer, 
                                                     VkDeviceMemory& vertexBufferMemory);
+                    virtual void createVertexBuffer(size_t bufSize, 
+                                                    void* pBuf, 
+                                                    VkBuffer& vertexBuffer, 
+                                                    VkDeviceMemory& vertexBufferMemory,
+                                                    VkBuffer& stagingBuffer,
+                                                    VkDeviceMemory& stagingBufferMemory);
+                    virtual void updateVertexBuffer(size_t bufSize, 
+                                                    void* pBuf, 
+                                                    VkDeviceMemory& vertexBufferMemory);
                     virtual void createIndexBuffer(size_t bufSize, 
                                                    void* pBuf, 
                                                    VkBuffer& indexBuffer, 
                                                    VkDeviceMemory& indexBufferMemory);
+                    virtual void createIndexBuffer(size_t bufSize, 
+                                                   void* pBuf, 
+                                                   VkBuffer& indexBuffer, 
+                                                   VkDeviceMemory& indexBufferMemory,
+                                                   VkBuffer& stagingBuffer,
+                                                   VkDeviceMemory& stagingBufferMemory);
+                     virtual void updateIndexBuffer(size_t bufSize, 
+                                                    void* pBuf, 
+                                                    VkDeviceMemory& indexBufferMemory);
                         virtual void createVkBuffer(VkDeviceSize size, 
                                                     VkBufferUsageFlags usage, 
                                                     VkMemoryPropertyFlags properties, 
@@ -1561,6 +1594,7 @@ namespace LostPeter
                                                     VkDeviceMemory& bufferMemory);
                         virtual uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
                         virtual void copyVkBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+                        virtual void updateVKBuffer(size_t offset, size_t bufSize, void* pBuf, VkDeviceMemory& vertexBufferMemory, VkMemoryMapFlags flags = 0);
 
                         virtual void destroyVkBuffer(VkBuffer buffer, VkDeviceMemory bufferMemory);
                 

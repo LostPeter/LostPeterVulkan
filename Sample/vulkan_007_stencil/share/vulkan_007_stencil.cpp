@@ -560,18 +560,12 @@ void Vulkan_007_Stencil::updateCBs_Custom()
         //Stencil
         {
             VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
-                memcpy(data, pModelObject->objectCBs.data(), sizeof(ObjectConstants) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
+            updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pModelObject->objectCBs.data(), memory);
         }
         //Outline
         {
             VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB_Outline[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants_Outline) * count_object, 0, &data);
-                memcpy(data, pModelObject->objectCBs_Outline.data(), sizeof(ObjectConstants_Outline) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
+            updateVKBuffer(0, sizeof(ObjectConstants_Outline) * count_object, pModelObject->objectCBs_Outline.data(), memory);
         }
     }
 }

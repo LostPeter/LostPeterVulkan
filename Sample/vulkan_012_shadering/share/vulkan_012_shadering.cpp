@@ -1665,10 +1665,7 @@ void Vulkan_012_Shadering::updateCompute_Custom(VkCommandBuffer& commandBuffer)
                 pPipelineCompute->pTextureCopy->texClearColor.w = 1;
 
                 VkDeviceMemory& memory = pPipelineCompute->poBufferMemory_TextureCopy;
-                void* data;
-                vkMapMemory(this->poDevice, memory, 0, sizeof(TextureCopyConstants), 0, &data);
-                    memcpy(data, pPipelineCompute->pTextureCopy, sizeof(TextureCopyConstants));
-                vkUnmapMemory(this->poDevice, memory);
+                updateVKBuffer(0, sizeof(TextureCopyConstants), pPipelineCompute->pTextureCopy, memory);
 
                 bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipeline);
                 bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipelineLayout, 0, 1, &pPipelineCompute->poDescriptorSet, 0, 0);
@@ -1724,39 +1721,27 @@ void Vulkan_012_Shadering::updateCBs_Custom()
         //ObjectConstants
         {
             VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
-                memcpy(data, pModelObject->objectCBs.data(), sizeof(ObjectConstants) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
+            updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pModelObject->objectCBs.data(), memory);
         }
 
         //MaterialConstants
         {
             VkDeviceMemory& memory = pModelObject->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(MaterialConstants) * count_object, 0, &data);
-                memcpy(data, pModelObject->materialCBs.data(), sizeof(MaterialConstants) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
+            updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pModelObject->materialCBs.data(), memory);
         }
 
         //TessellationConstants
         if (pModelObject->isUsedTessellation)
         {
             VkDeviceMemory& memory = pModelObject->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(TessellationConstants) * count_object, 0, &data);
-                memcpy(data, pModelObject->tessellationCBs.data(), sizeof(TessellationConstants) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
+            updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pModelObject->tessellationCBs.data(), memory);
         }
 
         //GeometryConstants
         if (pModelObject->isUsedGeometry)
         {
             VkDeviceMemory& memory = pModelObject->poBuffersMemory_geometryCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(GeometryConstants) * count_object, 0, &data);
-                memcpy(data, pModelObject->geometryCBs.data(), sizeof(GeometryConstants) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
+            updateVKBuffer(0, sizeof(GeometryConstants) * count_object, pModelObject->geometryCBs.data(), memory);
         }
     }
 }

@@ -31,11 +31,15 @@ namespace LostPeter
                                    const String& _nameMeshSub,
                                    const String& _nameOriginal,
                                    int _indexMeshSub,
-                                   FMeshVertexType _poTypeVertex)
+                                   FMeshVertexType _poTypeVertex,
+                                   bool isUpdateVertexBuffer,
+                                   bool isUpdateIndexBuffer)
         : pMesh(_pMesh)
         , nameMeshSub(_nameMeshSub)
         , nameOriginal(_nameOriginal)
         , indexMeshSub(_indexMeshSub)
+        , isNeedUpdate_VertexBuffer(isUpdateVertexBuffer)
+        , isNeedUpdate_IndexBuffer(isUpdateIndexBuffer)
 
         //Vertex
         , poTypeVertex(_poTypeVertex)
@@ -44,6 +48,8 @@ namespace LostPeter
         , poVertexBuffer_Data(nullptr)
         , poVertexBuffer(VK_NULL_HANDLE)
         , poVertexBufferMemory(VK_NULL_HANDLE)
+        , poVertexBuffer_Staging(VK_NULL_HANDLE)
+        , poVertexBufferMemory_Staging(VK_NULL_HANDLE)
 
         //Index
         , poIndexCount(0)
@@ -51,6 +57,8 @@ namespace LostPeter
         , poIndexBuffer_Data(nullptr)
         , poIndexBuffer(VK_NULL_HANDLE)
         , poIndexBufferMemory(VK_NULL_HANDLE)
+        , poIndexBuffer_Staging(VK_NULL_HANDLE)
+        , poIndexBufferMemory_Staging(VK_NULL_HANDLE)
 
         //Instance
         , instanceCount(1)
@@ -71,6 +79,13 @@ namespace LostPeter
         this->poVertexBuffer = VK_NULL_HANDLE;
         this->poVertexBufferMemory = VK_NULL_HANDLE;
 
+        if (this->poVertexBuffer_Staging != VK_NULL_HANDLE)
+        {
+            this->pMesh->pWindow->destroyVkBuffer(this->poVertexBuffer_Staging, this->poVertexBufferMemory_Staging);
+        }
+        this->poVertexBuffer_Staging = VK_NULL_HANDLE;
+        this->poVertexBufferMemory_Staging = VK_NULL_HANDLE;
+
         //Index
         if (this->poIndexBuffer != VK_NULL_HANDLE)
         {
@@ -78,6 +93,13 @@ namespace LostPeter
         }
         this->poIndexBuffer = VK_NULL_HANDLE;
         this->poIndexBufferMemory = VK_NULL_HANDLE;
+
+        if (this->poIndexBuffer_Staging != VK_NULL_HANDLE)
+        {
+            this->pMesh->pWindow->destroyVkBuffer(this->poIndexBuffer_Staging, this->poIndexBufferMemory_Staging);
+        }
+        this->poIndexBuffer_Staging = VK_NULL_HANDLE;
+        this->poIndexBufferMemory_Staging = VK_NULL_HANDLE;
     }
     uint32_t VulkanWindow::MeshSub::GetVertexSize() 
     {
@@ -147,13 +169,43 @@ namespace LostPeter
                   (int)this->indices.size());
 
         //2> createVertexBuffer
-        this->pMesh->pWindow->createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
+        if (!this->isNeedUpdate_VertexBuffer)
+        {
+            this->pMesh->pWindow->createVertexBuffer(this->poVertexBuffer_Size, 
+                                                     this->poVertexBuffer_Data, 
+                                                     this->poVertexBuffer, 
+                                                     this->poVertexBufferMemory);
+        }
+        else
+        {
+            this->pMesh->pWindow->createVertexBuffer(this->poVertexBuffer_Size, 
+                                                     this->poVertexBuffer_Data, 
+                                                     this->poVertexBuffer, 
+                                                     this->poVertexBufferMemory,
+                                                     this->poVertexBuffer_Staging, 
+                                                     this->poVertexBufferMemory_Staging);
+        }
 
         //3> createIndexBuffer
         if (this->poIndexBuffer_Size > 0 &&
             this->poIndexBuffer_Data != nullptr)
         {
-            this->pMesh->pWindow->createIndexBuffer(this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+            if (!this->isNeedUpdate_VertexBuffer)
+            {
+                this->pMesh->pWindow->createIndexBuffer(this->poIndexBuffer_Size, 
+                                                        this->poIndexBuffer_Data, 
+                                                        this->poIndexBuffer, 
+                                                        this->poIndexBufferMemory);
+            }   
+            else
+            {
+                this->pMesh->pWindow->createIndexBuffer(this->poIndexBuffer_Size, 
+                                                        this->poIndexBuffer_Data, 
+                                                        this->poIndexBuffer, 
+                                                        this->poIndexBufferMemory,
+                                                        this->poIndexBuffer_Staging, 
+                                                        this->poIndexBufferMemory_Staging);
+            }
         }
 
         return true;
@@ -365,13 +417,43 @@ namespace LostPeter
         }
 
         //2> createVertexBuffer
-        this->pMesh->pWindow->createVertexBuffer(this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBuffer, this->poVertexBufferMemory);
+        if (!this->isNeedUpdate_VertexBuffer)
+        {
+            this->pMesh->pWindow->createVertexBuffer(this->poVertexBuffer_Size, 
+                                                     this->poVertexBuffer_Data, 
+                                                     this->poVertexBuffer, 
+                                                     this->poVertexBufferMemory);
+        }
+        else
+        {
+            this->pMesh->pWindow->createVertexBuffer(this->poVertexBuffer_Size, 
+                                                     this->poVertexBuffer_Data, 
+                                                     this->poVertexBuffer, 
+                                                     this->poVertexBufferMemory,
+                                                     this->poVertexBuffer_Staging, 
+                                                     this->poVertexBufferMemory_Staging);
+        }
 
         //3> createIndexBuffer
         if (this->poIndexBuffer_Size > 0 &&
             this->poIndexBuffer_Data != nullptr)
         {
-            this->pMesh->pWindow->createIndexBuffer(this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBuffer, this->poIndexBufferMemory);
+            if (!this->isNeedUpdate_VertexBuffer)
+            {
+                this->pMesh->pWindow->createIndexBuffer(this->poIndexBuffer_Size, 
+                                                        this->poIndexBuffer_Data, 
+                                                        this->poIndexBuffer, 
+                                                        this->poIndexBufferMemory);
+            }   
+            else
+            {
+                this->pMesh->pWindow->createIndexBuffer(this->poIndexBuffer_Size, 
+                                                        this->poIndexBuffer_Data, 
+                                                        this->poIndexBuffer, 
+                                                        this->poIndexBufferMemory,
+                                                        this->poIndexBuffer_Staging, 
+                                                        this->poIndexBufferMemory_Staging);
+            }
         }
 
         return true;
@@ -429,6 +511,26 @@ namespace LostPeter
         indexData.insert(indexData.end(), indices.begin(), indices.end());
     }
 
+    void VulkanWindow::MeshSub::UpdateVertexBuffer()
+    {
+        if (!this->isNeedUpdate_VertexBuffer ||
+            this->poVertexBuffer_Staging == VK_NULL_HANDLE ||
+            this->poVertexBufferMemory_Staging == VK_NULL_HANDLE)
+            return;
+        
+        this->pMesh->pWindow->updateVKBuffer(0, this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBufferMemory_Staging);
+        this->pMesh->pWindow->copyVkBuffer(this->poVertexBuffer_Staging, this->poVertexBuffer, this->poVertexBuffer_Size);
+    }
+    void VulkanWindow::MeshSub::UpdateIndexBuffer()
+    {
+        if (!this->isNeedUpdate_IndexBuffer ||
+            this->poIndexBuffer_Staging == VK_NULL_HANDLE ||
+            this->poIndexBufferMemory_Staging == VK_NULL_HANDLE)
+            return;
+
+        this->pMesh->pWindow->updateVKBuffer(0, this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBufferMemory_Staging);
+        this->pMesh->pWindow->copyVkBuffer(this->poIndexBuffer_Staging, this->poIndexBuffer, this->poIndexBuffer_Size);
+    }
 
     /////////////////////////// Mesh //////////////////////////////
     VulkanWindow::Mesh::Mesh(VulkanWindow* _pWindow, 
@@ -479,7 +581,11 @@ namespace LostPeter
         this->mapMeshSubs[pMeshSub->nameMeshSub] = pMeshSub;
         return true;
     }   
-    bool VulkanWindow::Mesh::LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
+    bool VulkanWindow::Mesh::LoadMesh(bool isFlipY, 
+                                      bool isTransformLocal, 
+                                      const FMatrix4& matTransformLocal,
+                                      bool isUpdateVertexBuffer /*= false*/,
+                                      bool isUpdateIndexBuffer /*= false*/)
     {
         //1> Load
         FMeshDataPCVector aMeshDataPCs;
@@ -530,7 +636,9 @@ namespace LostPeter
                                             nameMeshSub,
                                             meshData.nameMesh,
                                             i,
-                                            this->typeVertex);
+                                            this->typeVertex,
+                                            isUpdateVertexBuffer,
+                                            isUpdateIndexBuffer);
             if (!pMeshSub->CreateMeshSub(meshData, isTransformLocal, matTransformLocal))
             {
                 F_LogError("VulkanWindow::Mesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
@@ -550,7 +658,9 @@ namespace LostPeter
                                             nameMeshSub,
                                             meshDataPC.nameMesh,
                                             i,
-                                            this->typeVertex);
+                                            this->typeVertex,
+                                            isUpdateVertexBuffer,
+                                            isUpdateIndexBuffer);
             if (!pMeshSub->CreateMeshSub(meshDataPC, isTransformLocal, matTransformLocal))
             {
                 F_LogError("VulkanWindow::Mesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
@@ -912,10 +1022,7 @@ namespace LostPeter
 
         //2> MapData to stagingBuffer
         VkDeviceSize bufSize = this->width * this->height * this->depth;
-        void* data;
-        vkMapMemory(this->pWindow->poDevice, this->stagingBufferMemory, 0, bufSize, 0, &data);
-            memcpy(data, this->pDataRGBA, bufSize);
-        vkUnmapMemory(this->pWindow->poDevice, this->stagingBufferMemory);
+        this->pWindow->updateVKBuffer(0, bufSize, (void*)this->pDataRGBA, this->stagingBufferMemory);
 
         //3> CopyToImage
         VkCommandBuffer cmdBuffer = this->pWindow->beginSingleTimeCommands();
@@ -1664,10 +1771,7 @@ namespace LostPeter
             return;
         SetIsNeedUpdate(false);
 
-        void* data;
-        vkMapMemory(this->pWindow->poDevice, this->poBuffersMemory_ObjectCB, 0, sizeof(GridObjectConstants), 0, &data);
-            memcpy(data, &gridObjectCB, sizeof(GridObjectConstants));
-        vkUnmapMemory(this->pWindow->poDevice, this->poBuffersMemory_ObjectCB);
+        this->pWindow->updateVKBuffer(0, sizeof(GridObjectConstants), &gridObjectCB, this->poBuffersMemory_ObjectCB);
     }
     void VulkanWindow::EditorGrid::initConfigs()
     {
@@ -1944,10 +2048,7 @@ namespace LostPeter
             this->pCamera->LookAtLH(vPos, s_vCameraLookTarget, s_vCameraUp);
             this->pCamera->UpdateViewMatrix();
             this->pWindow->updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
-            void* data;
-            vkMapMemory(this->pWindow->poDevice, this->poBuffersMemory_PassCB, 0, sizeof(PassConstants), 0, &data);
-                memcpy(data, &this->passCB, sizeof(PassConstants));
-            vkUnmapMemory(this->pWindow->poDevice, this->poBuffersMemory_PassCB);
+            this->pWindow->updateVKBuffer(0, sizeof(PassConstants), &this->passCB, this->poBuffersMemory_PassCB);
         }
         
         if (!IsNeedUpdate())
@@ -1956,17 +2057,11 @@ namespace LostPeter
 
         //CameraAxis
         {
-            void* data;
-            vkMapMemory(this->pWindow->poDevice, this->poBuffersMemory_ObjectCB, 0, sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size(), 0, &data);
-                memcpy(data, &this->cameraAxisObjectCBs[0], sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size());
-            vkUnmapMemory(this->pWindow->poDevice, this->poBuffersMemory_ObjectCB);
+            this->pWindow->updateVKBuffer(0, sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size(), &this->cameraAxisObjectCBs[0], this->poBuffersMemory_ObjectCB);
         }
         //Quad Blit
         {
-            void* data;
-            vkMapMemory(this->pWindow->poDevice, this->poBuffersMemory_CopyBlitObjectCB, 0, sizeof(CopyBlitObjectConstants), 0, &data);
-                memcpy(data, &this->copyBlitObjectCB, sizeof(CopyBlitObjectConstants));
-            vkUnmapMemory(this->pWindow->poDevice, this->poBuffersMemory_CopyBlitObjectCB);
+            this->pWindow->updateVKBuffer(0, sizeof(CopyBlitObjectConstants), &this->copyBlitObjectCB, this->poBuffersMemory_CopyBlitObjectCB);
         }
     }
     void VulkanWindow::EditorCameraAxis::Draw(VkCommandBuffer& commandBuffer)
@@ -2942,10 +3037,9 @@ namespace LostPeter
             }
         }
         
-        void* data;
-        vkMapMemory(this->pWindow->poDevice, this->poBuffersMemory_ObjectCB, 0, sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size(), 0, &data);
-            memcpy(data, &this->coordinateAxisObjectCBs[0], sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size());
-        vkUnmapMemory(this->pWindow->poDevice, this->poBuffersMemory_ObjectCB);
+        size_t bufSize = sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size();
+        void* pBuf = &this->coordinateAxisObjectCBs[0];
+        this->pWindow->updateVKBuffer(0, bufSize, pBuf, this->poBuffersMemory_ObjectCB);
     }
         void VulkanWindow::EditorCoordinateAxis::UpdateCBs_Move()
         {
@@ -7224,27 +7318,42 @@ namespace LostPeter
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
+        createVertexBuffer(bufSize,
+                           pBuf,
+                           vertexBuffer,
+                           vertexBufferMemory,
+                           stagingBuffer,
+                           stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
+    }
+    void VulkanWindow::createVertexBuffer(size_t bufSize, 
+                                          void* pBuf, 
+                                          VkBuffer& vertexBuffer, 
+                                          VkDeviceMemory& vertexBufferMemory,
+                                          VkBuffer& stagingBuffer,
+                                          VkDeviceMemory& stagingBufferMemory)
+    {
         createVkBuffer(bufSize, 
                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                        stagingBuffer, 
                        stagingBufferMemory);
         {
-            void* data;
-            vkMapMemory(this->poDevice, stagingBufferMemory, 0, bufSize, 0, &data);
-                memcpy(data, pBuf, bufSize);
-            vkUnmapMemory(this->poDevice, stagingBufferMemory);
+            updateVertexBuffer(bufSize, pBuf, stagingBufferMemory);
         }
         createVkBuffer(bufSize, 
                        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                        vertexBuffer,
                        vertexBufferMemory);
-
         copyVkBuffer(stagingBuffer, vertexBuffer, bufSize);
-
-        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
+    void VulkanWindow::updateVertexBuffer(size_t bufSize, 
+                                          void* pBuf, 
+                                          VkDeviceMemory& vertexBufferMemory)
+    {
+        updateVKBuffer(0, bufSize, pBuf, vertexBufferMemory);
+    }   
     void VulkanWindow::createIndexBuffer(size_t bufSize, 
                                          void* pBuf, 
                                          VkBuffer& indexBuffer, 
@@ -7252,27 +7361,42 @@ namespace LostPeter
     {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
+        createIndexBuffer(bufSize,
+                          pBuf,
+                          indexBuffer,
+                          indexBufferMemory,
+                          stagingBuffer,
+                          stagingBufferMemory);
+        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
+    }
+    void VulkanWindow::createIndexBuffer(size_t bufSize, 
+                                         void* pBuf, 
+                                         VkBuffer& indexBuffer, 
+                                         VkDeviceMemory& indexBufferMemory,
+                                         VkBuffer& stagingBuffer,
+                                         VkDeviceMemory& stagingBufferMemory)
+    {
         createVkBuffer(bufSize, 
                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
                        stagingBuffer, 
                        stagingBufferMemory);
         {
-            void* data;
-            vkMapMemory(this->poDevice, stagingBufferMemory, 0, bufSize, 0, &data);
-                memcpy(data, pBuf, bufSize);
-            vkUnmapMemory(this->poDevice, stagingBufferMemory);
+            updateIndexBuffer(bufSize, pBuf, stagingBufferMemory);
         }
         createVkBuffer(bufSize, 
                        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                        indexBuffer, 
                        indexBufferMemory);
-
         copyVkBuffer(stagingBuffer, indexBuffer, bufSize);    
-
-        destroyVkBuffer(stagingBuffer, stagingBufferMemory);
     }
+    void VulkanWindow::updateIndexBuffer(size_t bufSize, 
+                                         void* pBuf, 
+                                         VkDeviceMemory& indexBufferMemory)
+    {
+        updateVKBuffer(0, bufSize, pBuf, indexBufferMemory);
+    }   
         void VulkanWindow::createVkBuffer(VkDeviceSize size, 
                                           VkBufferUsageFlags usage, 
                                           VkMemoryPropertyFlags properties, 
@@ -7333,6 +7457,13 @@ namespace LostPeter
                     vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
                 }
                 endSingleTimeCommands(commandBuffer);
+            }
+            void VulkanWindow::updateVKBuffer(size_t offset, size_t bufSize, void* pBuf, VkDeviceMemory& vertexBufferMemory, VkMemoryMapFlags flags /*= 0*/)
+            {
+                void* data;
+                vkMapMemory(this->poDevice, vertexBufferMemory, offset, bufSize, flags, &data);
+                    memcpy(data, pBuf, bufSize);
+                vkUnmapMemory(this->poDevice, vertexBufferMemory);
             }
             void VulkanWindow::destroyVkBuffer(VkBuffer buffer, VkDeviceMemory bufferMemory)
             {
@@ -7423,10 +7554,7 @@ namespace LostPeter
                        buffer, 
                        bufferMemory);
 
-        void* data;
-        vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
-            memcpy(data, pixels, static_cast<size_t>(imageSize));
-        vkUnmapMemory(this->poDevice, bufferMemory);
+        updateVKBuffer(0, imageSize, pixels, bufferMemory);
 
         stbi_image_free(pixels);
 
@@ -7619,11 +7747,7 @@ namespace LostPeter
         for (size_t i = 0; i < count_tex; i++)
         {
             stbi_uc* pixels = aPixels[i];
-
-            void* data;
-            vkMapMemory(this->poDevice, bufferMemory, width * height * 4 * i, imageSize, 0, &data);
-                memcpy(data, pixels, static_cast<size_t>(imageSize));
-            vkUnmapMemory(this->poDevice, bufferMemory);
+            updateVKBuffer(width * height * 4 * i, imageSize, pixels, bufferMemory);
         }
         s_DeletePixels(aPixels);
 
@@ -7756,10 +7880,7 @@ namespace LostPeter
                        buffer, 
                        bufferMemory);
 
-        void* data;
-        vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
-            memcpy(data, pDataRGBA, static_cast<size_t>(imageSize));
-        vkUnmapMemory(this->poDevice, bufferMemory);
+        updateVKBuffer(0, imageSize, (void*)pDataRGBA, bufferMemory);
 
         //2> CreateImage
         createVkImage(width, 
@@ -7925,11 +8046,7 @@ namespace LostPeter
         for (size_t i = 0; i < count_tex; i++)
         {
             stbi_uc* pixels = aPixels[i];
-
-            void* data;
-            vkMapMemory(this->poDevice, bufferMemory, width * height * 4 * i, imageSize, 0, &data);
-                memcpy(data, pixels, static_cast<size_t>(imageSize));
-            vkUnmapMemory(this->poDevice, bufferMemory);
+            updateVKBuffer(width * height * 4 * i, imageSize, pixels, bufferMemory);
         }
         s_DeletePixels(aPixels);
 
@@ -8219,12 +8336,7 @@ namespace LostPeter
                        bufferMemory);
         if (pData != nullptr)
         {
-            void* data;
-            vkMapMemory(this->poDevice, bufferMemory, 0, imageSize, 0, &data);
-            {
-                memcpy(data, pData, imageSize);
-            }
-            vkUnmapMemory(this->poDevice, bufferMemory);
+            updateVKBuffer(0, imageSize, pData, bufferMemory);
         }
         
         //2> CreateImage
@@ -10121,10 +10233,16 @@ namespace LostPeter
                      (int)this->poTerrainGridInstanceVertexCount);
 
             //2> createVertexBuffer
-            createVertexBuffer(this->poTerrainVertexBuffer_Size, this->poTerrainVertexBuffer_Data, this->poTerrainVertexBuffer, this->poTerrainVertexBufferMemory);
+            createVertexBuffer(this->poTerrainVertexBuffer_Size, 
+                               this->poTerrainVertexBuffer_Data, 
+                               this->poTerrainVertexBuffer, 
+                               this->poTerrainVertexBufferMemory);
 
             //3> createIndexBuffer
-            createIndexBuffer(this->poTerrainIndexBuffer_Size, this->poTerrainIndexBuffer_Data, this->poTerrainIndexBuffer, this->poTerrainIndexBufferMemory);
+            createIndexBuffer(this->poTerrainIndexBuffer_Size, 
+                              this->poTerrainIndexBuffer_Data, 
+                              this->poTerrainIndexBuffer, 
+                              this->poTerrainIndexBufferMemory);
             
         }
         void VulkanWindow::setupTerrainTexture()
@@ -10360,10 +10478,7 @@ namespace LostPeter
                 this->poTerrainTextureCopy.texInfo.y = this->poTerrainHeightMapSize;
                 VkDeviceSize bufferSize = sizeof(TextureCopyConstants);
                 createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TerrainTextureCopy, this->poBufferMemory_TerrainTextureCopy);
-                void* data;
-                vkMapMemory(this->poDevice, this->poBufferMemory_TerrainTextureCopy, 0, sizeof(TextureCopyConstants), 0, &data);
-                    memcpy(data, &this->poTerrainTextureCopy, sizeof(TextureCopyConstants));
-                vkUnmapMemory(this->poDevice, this->poBufferMemory_TerrainTextureCopy);
+                updateVKBuffer(0, sizeof(TextureCopyConstants), &this->poTerrainTextureCopy, this->poBufferMemory_TerrainTextureCopy);
             }
 
             //1> poTerrainComputeDescriptorSetLayout
@@ -10481,10 +10596,7 @@ namespace LostPeter
                 }
                 VkDeviceSize bufferSize = sizeof(TerrainObjectConstants) * this->terrainObjectCBs.size();
                 createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TerrainObjectCB, this->poBufferMemory_TerrainObjectCB);
-                void* data;
-                vkMapMemory(this->poDevice, this->poBufferMemory_TerrainObjectCB, 0, bufferSize, 0, &data);
-                    memcpy(data, &this->terrainObjectCBs[0], bufferSize);
-                vkUnmapMemory(this->poDevice, this->poBufferMemory_TerrainObjectCB);
+                updateVKBuffer(0, bufferSize, &this->terrainObjectCBs[0], this->poBufferMemory_TerrainObjectCB);
             }
 
             //1> poTerrainGraphicsDescriptorSetLayout
@@ -11066,10 +11178,7 @@ namespace LostPeter
 
                     //Update Buffer
                     VkDeviceMemory& memory = this->poBuffersMemory_PassCB[this->poSwapChainImageIndex];
-                    void* data;
-                    vkMapMemory(this->poDevice, memory, 0, sizeof(PassConstants), 0, &data);
-                        memcpy(data, &this->passCB, sizeof(PassConstants));
-                    vkUnmapMemory(this->poDevice, memory);
+                    updateVKBuffer(0, sizeof(PassConstants), &this->passCB, memory);
                 }
                     void VulkanWindow::updateCBs_PassTransformAndCamera(PassConstants& pass, FCamera* pCam, int nIndex)
                     {
@@ -11102,10 +11211,7 @@ namespace LostPeter
                     updateCBs_ObjectsContent();
 
                     VkDeviceMemory& memory = this->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-                    void* data;
-                    vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count, 0, &data);
-                        memcpy(data, this->objectCBs.data(), sizeof(ObjectConstants) * count);
-                    vkUnmapMemory(this->poDevice, memory);
+                    updateVKBuffer(0, sizeof(ObjectConstants) * count, this->objectCBs.data(), memory);
                 }
                     void VulkanWindow::updateCBs_ObjectsContent()
                     {
@@ -11136,10 +11242,7 @@ namespace LostPeter
                     updateCBs_MaterialsContent();
 
                     VkDeviceMemory& memory = this->poBuffersMemory_MaterialCB[this->poSwapChainImageIndex];
-                    void* data;
-                    vkMapMemory(this->poDevice, memory, 0, sizeof(MaterialConstants) * count, 0, &data);
-                        memcpy(data, this->materialCBs.data(), sizeof(MaterialConstants) * count);
-                    vkUnmapMemory(this->poDevice, memory);
+                    updateVKBuffer(0, sizeof(MaterialConstants) * count, this->materialCBs.data(), memory);
                 }
                     void VulkanWindow::updateCBs_MaterialsContent()
                     {   
@@ -11159,10 +11262,7 @@ namespace LostPeter
                     updateCBs_InstancesContent();
 
                     VkDeviceMemory& memory = this->poBuffersMemory_InstanceCB[this->poSwapChainImageIndex];
-                    void* data;
-                    vkMapMemory(this->poDevice, memory, 0, sizeof(InstanceConstants) * count, 0, &data);
-                        memcpy(data, this->instanceCBs.data(), sizeof(InstanceConstants) * count);
-                    vkUnmapMemory(this->poDevice, memory);
+                    updateVKBuffer(0, sizeof(InstanceConstants) * count, this->instanceCBs.data(), memory);
                 }
                     void VulkanWindow::updateCBs_InstancesContent()
                     {

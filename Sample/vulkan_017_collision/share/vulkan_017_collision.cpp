@@ -23,15 +23,15 @@ static const int g_MeshCount = 39;
 static const char* g_MeshPaths[6 * g_MeshCount] =
 {
     //Mesh Name                 //Vertex Type                 //Mesh Type         //Mesh Path   //Mesh Geometry Type        //Mesh Geometry Param
-    "geo_line_line_2d",         "Pos3Color4",                 "geometry",         "",           "Line2D",                   "0.5;0.9;0.7;0.9;1;0;0;1", //geo_line_line_2d
-    "geo_line_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle2D",           "0.6;0.8;0.5;0.6;0.7;0.6;0;1;0;1", //geo_line_triangle_2d
-    "geo_line_quad_2d",         "Pos3Color4",                 "geometry",         "",           "LineQuad2D",               "0.5;0.5;0.5;0.3;0.7;0.3;0.7;0.5;0;0;1;1", //geo_line_quad_2d
-    "geo_line_grid_2d",         "Pos3Color4",                 "geometry",         "",           "LineGrid2D",               "0.5;0.2;0.5;0.0;0.7;0.0;0.7;0.2;10;10;1;1;0;1", //geo_line_grid_2d
+    "geo_line_line_2d",         "Pos3Color4",                 "geometry",         "",           "Line2D",                   "0.5;0.9;0.7;0.9;1;1;1;1", //geo_line_line_2d
+    "geo_line_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle2D",           "0.6;0.8;0.5;0.6;0.7;0.6;1;1;1;1", //geo_line_triangle_2d
+    "geo_line_quad_2d",         "Pos3Color4",                 "geometry",         "",           "LineQuad2D",               "0.5;0.5;0.5;0.3;0.7;0.3;0.7;0.5;1;1;1;1", //geo_line_quad_2d
+    "geo_line_grid_2d",         "Pos3Color4",                 "geometry",         "",           "LineGrid2D",               "0.5;0.2;0.5;0.0;0.7;0.0;0.7;0.2;10;10;1;1;1;1", //geo_line_grid_2d
     "geo_line_circle_2d",       "Pos3Color4",                 "geometry",         "",           "LineCircle2D",             "0.6;-0.2;1.0;0.0;0.1;50;true;1;0;1;1", //geo_line_circle_2d
 
-    "geo_flat_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "FlatTriangle2D",           "0.85;0.8;0.75;0.6;0.95;0.6;0;1;0;1", //geo_flat_triangle_2d
-    "geo_flat_quad_2d",         "Pos3Color4",                 "geometry",         "",           "FlatQuad2D",               "0.75;0.5;0.75;0.3;0.95;0.3;0.95;0.5;0;0;1;1", //geo_flat_quad_2d
-    "geo_flat_circle_2d",       "Pos3Color4",                 "geometry",         "",           "FlatCircle2D",             "0.85;-0.2;1.0;0.0;0.1;50;1;0;1;1", //geo_flat_circle_2d
+    "geo_flat_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "FlatTriangle2D",           "0.85;0.8;0.75;0.6;0.95;0.6;1;1;1;1", //geo_flat_triangle_2d
+    "geo_flat_quad_2d",         "Pos3Color4",                 "geometry",         "",           "FlatQuad2D",               "0.75;0.5;0.75;0.3;0.95;0.3;0.95;0.5;1;1;1;1", //geo_flat_quad_2d
+    "geo_flat_circle_2d",       "Pos3Color4",                 "geometry",         "",           "FlatCircle2D",             "0.85;-0.2;1.0;0.0;0.1;50;1;1;1;1", //geo_flat_circle_2d
 
     "geo_line_line_3d",         "Pos3Color4",                 "geometry",         "",           "Line3D",                   "", //geo_line_line_3d
     "geo_line_triangle_3d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle3D",           "", //geo_line_triangle_3d
@@ -1379,6 +1379,18 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::UpdateIndirectCommandBuffer(
 /////////////////////////// ModelObject /////////////////////////
 
 
+FColor Vulkan_017_Collision::s_color_Select = FColor(1, 0, 0, 1);
+FColor Vulkan_017_Collision::s_color_Hover = FColor(1, 1, 0, 1);
+
+FColor Vulkan_017_Collision::s_color_Line2D = FColor(0, 1, 0, 1);
+FColor Vulkan_017_Collision::s_color_LineTriangle2D = FColor(0, 0, 1, 1);
+FColor Vulkan_017_Collision::s_color_LineQuad2D = FColor(0, 1, 1, 1);
+FColor Vulkan_017_Collision::s_color_LineGrid2D = FColor(0, 1, 1, 1);
+FColor Vulkan_017_Collision::s_color_LineCircle2D = FColor(1, 0, 1, 1);
+
+FColor Vulkan_017_Collision::s_color_FlatTriangle2D = FColor(0, 0, 1, 1);
+FColor Vulkan_017_Collision::s_color_FlatQuad2D = FColor(0, 1, 1, 1);
+FColor Vulkan_017_Collision::s_color_FlatCircle2D = FColor(1, 0, 1, 1);
 
 Vulkan_017_Collision::Vulkan_017_Collision(int width, int height, String name)
     : VulkanWindow(width, height, name)
@@ -1406,9 +1418,6 @@ Vulkan_017_Collision::Vulkan_017_Collision(int width, int height, String name)
     this->mainLight.direction = FVector3(0, -1, 0); //y-
 }
 
-FColor Vulkan_017_Collision::s_colorSelect = FColor(1, 0, 0, 1);
-FColor Vulkan_017_Collision::s_colorHover = FColor(1, 1, 0, 1);
-
 FPointI Vulkan_017_Collision::Convert2PointI(double x, double y)
 {
     FVector2 vSceen = ConvertNDC2Screen((float)x, (float)y);
@@ -1424,30 +1433,30 @@ void Vulkan_017_Collision::IsCollision(double x, double y, bool isHover)
     if (isHover)
     {
         //Line 2D
-        IsCollision_Line2D(x, y, this->pRend_Line2D, s_colorHover);
-        IsCollision_LineTriangle2D(x, y, this->pRend_LineTriangle2D, s_colorHover);
-        IsCollision_LineQuad2D(x, y, this->pRend_LineQuad2D, s_colorHover);
-        IsCollision_LineGrid2D(x, y, this->pRend_LineGrid2D, s_colorHover);
-        IsCollision_LineCircle2D(x, y, this->pRend_LineCircle2D, s_colorHover);
+        IsCollision_Line2D(x, y, this->pRend_Line2D, s_color_Hover);
+        IsCollision_LineTriangle2D(x, y, this->pRend_LineTriangle2D, s_color_Hover);
+        IsCollision_LineQuad2D(x, y, this->pRend_LineQuad2D, s_color_Hover);
+        IsCollision_LineGrid2D(x, y, this->pRend_LineGrid2D, s_color_Hover);
+        IsCollision_LineCircle2D(x, y, this->pRend_LineCircle2D, s_color_Hover);
         
         //Flat 2D
-        IsCollision_FlatTriangle2D(x, y, this->pRend_FlatTriangle2D, s_colorHover);
-        IsCollision_FlatQuad2D(x, y, this->pRend_FlatQuad2D, s_colorHover);
-        IsCollision_FlatCircle2D(x, y, this->pRend_FlatCircle2D, s_colorHover);
+        IsCollision_FlatTriangle2D(x, y, this->pRend_FlatTriangle2D, s_color_Hover);
+        IsCollision_FlatQuad2D(x, y, this->pRend_FlatQuad2D, s_color_Hover);
+        IsCollision_FlatCircle2D(x, y, this->pRend_FlatCircle2D, s_color_Hover);
     }
     else
     {
         //Line 2D
-        IsCollision_Line2D(x, y, this->pRend_Line2D, s_colorSelect);
-        IsCollision_LineTriangle2D(x, y, this->pRend_LineTriangle2D, s_colorSelect);
-        IsCollision_LineQuad2D(x, y, this->pRend_LineQuad2D, s_colorSelect);
-        IsCollision_LineGrid2D(x, y, this->pRend_LineGrid2D, s_colorSelect);
-        IsCollision_LineCircle2D(x, y, this->pRend_LineCircle2D, s_colorSelect);
+        IsCollision_Line2D(x, y, this->pRend_Line2D, s_color_Select);
+        IsCollision_LineTriangle2D(x, y, this->pRend_LineTriangle2D, s_color_Select);
+        IsCollision_LineQuad2D(x, y, this->pRend_LineQuad2D, s_color_Select);
+        IsCollision_LineGrid2D(x, y, this->pRend_LineGrid2D, s_color_Select);
+        IsCollision_LineCircle2D(x, y, this->pRend_LineCircle2D, s_color_Select);
         
         //Flat 2D
-        IsCollision_FlatTriangle2D(x, y, this->pRend_FlatTriangle2D, s_colorSelect);
-        IsCollision_FlatQuad2D(x, y, this->pRend_FlatQuad2D, s_colorSelect);
-        IsCollision_FlatCircle2D(x, y, this->pRend_FlatCircle2D, s_colorSelect);
+        IsCollision_FlatTriangle2D(x, y, this->pRend_FlatTriangle2D, s_color_Select);
+        IsCollision_FlatQuad2D(x, y, this->pRend_FlatQuad2D, s_color_Select);
+        IsCollision_FlatCircle2D(x, y, this->pRend_FlatCircle2D, s_color_Select);
     }
 }
 
@@ -1457,14 +1466,15 @@ bool Vulkan_017_Collision::IsCollision_Line2D(double x, double y, ModelObjectRen
     FMeshCreateParam_Line2D* pLine2D = (FMeshCreateParam_Line2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
     FPointI ptLine_Start = ConvertNDC2ScreenPointI(pLine2D->vStart);
     FPointI ptLine_End = ConvertNDC2ScreenPointI(pLine2D->vEnd);
+
+    LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
     if (FMath::Intersects_PointInLine2DI(ptMouse, FLineI(ptLine_Start, ptLine_End)))
     {
-        LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
         obj.color = color;
-
-        //F_LogInfo("Vulkan_017_Collision::IsCollision_Line2D: Mouse In Line 2D !");
+        //F_LogInfo("Vulkan_017_Collision::IsCollision_Line2D: Mouse In LineLine 2D !");
         return true;
     }
+    obj.color = s_color_Line2D;
     return false;
 }
 bool Vulkan_017_Collision::IsCollision_LineTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
@@ -1474,26 +1484,46 @@ bool Vulkan_017_Collision::IsCollision_LineTriangle2D(double x, double y, ModelO
     FPointI ptTriangle_Top = ConvertNDC2ScreenPointI(pLineTriangle2D->vTop);
     FPointI ptTriangle_Left = ConvertNDC2ScreenPointI(pLineTriangle2D->vLeft);
     FPointI ptTriangle_Right = ConvertNDC2ScreenPointI(pLineTriangle2D->vRight);
+    LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
     if (FMath::Intersects_PointInTriangle2DI(ptMouse, ptTriangle_Top, ptTriangle_Left, ptTriangle_Right))
     {
-        LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
         obj.color = color;
-
-        //F_LogInfo("Vulkan_017_Collision::IsCollision_LineTriangle2D: Mouse In Triangle 2D !");
+        //F_LogInfo("Vulkan_017_Collision::IsCollision_LineTriangle2D: Mouse In LineTriangle 2D !");
         return true;
     }
+    obj.color = s_color_LineTriangle2D;
     return false;
 }
 bool Vulkan_017_Collision::IsCollision_LineQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
 {
     FPointI ptMouse((int32)x, (int32)y);
-
+    FMeshCreateParam_LineQuad2D* pLineQuad2D = (FMeshCreateParam_LineQuad2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    FPointI ptQuad_LeftTop = ConvertNDC2ScreenPointI(pLineQuad2D->vLeftTop);
+    FPointI ptQuad_RightBottom = ConvertNDC2ScreenPointI(pLineQuad2D->vRightBottom);
+    LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
+    if (FMath::Intersects_PointInRect2DI(ptMouse, FRectI(ptQuad_LeftTop.x, ptQuad_LeftTop.y, ptQuad_RightBottom.x, ptQuad_RightBottom.y)))
+    {
+        obj.color = color;
+        //F_LogInfo("Vulkan_017_Collision::IsCollision_LineQuad2D: Mouse In LineQuad 2D !");
+        return true;
+    }
+    obj.color = s_color_LineQuad2D;
     return false;
 }
 bool Vulkan_017_Collision::IsCollision_LineGrid2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
 {
     FPointI ptMouse((int32)x, (int32)y);
-
+    FMeshCreateParam_LineGrid2D* pLineGrid2D = (FMeshCreateParam_LineGrid2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    FPointI ptGrid_LeftTop = ConvertNDC2ScreenPointI(pLineGrid2D->vLeftTop);
+    FPointI ptGrid_RightBottom = ConvertNDC2ScreenPointI(pLineGrid2D->vRightBottom);
+    LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
+    if (FMath::Intersects_PointInRect2DI(ptMouse, FRectI(ptGrid_LeftTop.x, ptGrid_LeftTop.y, ptGrid_RightBottom.x, ptGrid_RightBottom.y)))
+    {
+        obj.color = color;
+        //F_LogInfo("Vulkan_017_Collision::IsCollision_LineGrid2D: Mouse In LineGrid 2D !");
+        return true;
+    }
+    obj.color = s_color_LineGrid2D;
     return false;
 }
 bool Vulkan_017_Collision::IsCollision_LineCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
@@ -1506,13 +1536,34 @@ bool Vulkan_017_Collision::IsCollision_LineCircle2D(double x, double y, ModelObj
 bool Vulkan_017_Collision::IsCollision_FlatTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
 {   
     FPointI ptMouse((int32)x, (int32)y);
-
+    FMeshCreateParam_FlatTriangle2D* pFlatTriangle2D = (FMeshCreateParam_FlatTriangle2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    FPointI ptTriangle_Top = ConvertNDC2ScreenPointI(pFlatTriangle2D->vTop);
+    FPointI ptTriangle_Left = ConvertNDC2ScreenPointI(pFlatTriangle2D->vLeft);
+    FPointI ptTriangle_Right = ConvertNDC2ScreenPointI(pFlatTriangle2D->vRight);
+    LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
+    if (FMath::Intersects_PointInTriangle2DI(ptMouse, ptTriangle_Top, ptTriangle_Left, ptTriangle_Right))
+    {
+        obj.color = color;
+        //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatTriangle2D: Mouse In FlatTriangle 2D !");
+        return true;
+    }
+    obj.color = s_color_FlatTriangle2D;
     return false;
 }
 bool Vulkan_017_Collision::IsCollision_FlatQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
 {
     FPointI ptMouse((int32)x, (int32)y);
-
+    FMeshCreateParam_FlatQuad2D* pFlatQuad2D = (FMeshCreateParam_FlatQuad2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    FPointI ptQuad_LeftTop = ConvertNDC2ScreenPointI(pFlatQuad2D->vLeftTop);
+    FPointI ptQuad_RightBottom = ConvertNDC2ScreenPointI(pFlatQuad2D->vRightBottom);
+    LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
+    if (FMath::Intersects_PointInRect2DI(ptMouse, FRectI(ptQuad_LeftTop.x, ptQuad_LeftTop.y, ptQuad_RightBottom.x, ptQuad_RightBottom.y)))
+    {
+        obj.color = color;
+        //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatQuad2D: Mouse In FlatQuad 2D !");
+        return true;
+    }
+    obj.color = s_color_FlatQuad2D;
     return false;   
 }
 bool Vulkan_017_Collision::IsCollision_FlatCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
@@ -1880,6 +1931,18 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
             {
                 //ObjectLineFlat2D
                 LineFlat2DObjectConstants objectConstants;
+                switch ((int32)pRend->pMeshSub->pMesh->typeGeometryType)
+                {
+                    case F_MeshGeometry_Line2D: objectConstants.color = s_color_Line2D; break;
+                    case F_MeshGeometry_LineTriangle2D: objectConstants.color = s_color_LineTriangle2D; break;
+                    case F_MeshGeometry_LineQuad2D: objectConstants.color = s_color_LineQuad2D; break;
+                    case F_MeshGeometry_LineGrid2D: objectConstants.color = s_color_LineGrid2D; break;
+                    case F_MeshGeometry_LineCircle2D: objectConstants.color = s_color_LineCircle2D; break;
+
+                    case F_MeshGeometry_FlatTriangle2D: objectConstants.color = s_color_FlatTriangle2D; break;
+                    case F_MeshGeometry_FlatQuad2D: objectConstants.color = s_color_FlatQuad2D; break;
+                    case F_MeshGeometry_FlatCircle2D: objectConstants.color = s_color_FlatCircle2D; break;
+                }
                 pRend->objectCBs_LineFlat2D.push_back(objectConstants);
             }
 
@@ -2792,10 +2855,7 @@ void Vulkan_017_Collision::updateCompute_Custom(VkCommandBuffer& commandBuffer)
                 pPipelineCompute->pTextureCopy->texClearColor.w = 1;
 
                 VkDeviceMemory& memory = pPipelineCompute->poBufferMemory_TextureCopy;
-                void* data;
-                vkMapMemory(this->poDevice, memory, 0, sizeof(TextureCopyConstants), 0, &data);
-                    memcpy(data, pPipelineCompute->pTextureCopy, sizeof(TextureCopyConstants));
-                vkUnmapMemory(this->poDevice, memory);
+                updateVKBuffer(0, sizeof(TextureCopyConstants), pPipelineCompute->pTextureCopy, memory);
 
                 bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipeline);
                 bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pPipelineCompute->poPipelineLayout, 0, 1, &pPipelineCompute->poDescriptorSet, 0, 0);
@@ -2881,46 +2941,31 @@ void Vulkan_017_Collision::updateCBs_Custom()
             if (!pRend->isGeometryLine && !pRend->isGeometryFlat)
             {
                 VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-                void* data;
-                vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
-                    memcpy(data, pRend->objectCBs.data(), sizeof(ObjectConstants) * count_object);
-                vkUnmapMemory(this->poDevice, memory);
+                updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pRend->objectCBs.data(), memory);
             }
             else
             {
                 VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB_LineFlat3D[this->poSwapChainImageIndex];
-                void* data;
-                vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlat3DObjectConstants) * count_object, 0, &data);
-                    memcpy(data, pRend->objectCBs_LineFlat3D.data(), sizeof(LineFlat3DObjectConstants) * count_object);
-                vkUnmapMemory(this->poDevice, memory);
+                updateVKBuffer(0, sizeof(LineFlat3DObjectConstants) * count_object, pRend->objectCBs_LineFlat3D.data(), memory);
             }
         }
         else
         {
             VkDeviceMemory& memory = pRend->poBuffersMemory_ObjectCB_LineFlat2D[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlat2DObjectConstants) * count_object, 0, &data);
-                memcpy(data, pRend->objectCBs_LineFlat2D.data(), sizeof(LineFlat2DObjectConstants) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
+            updateVKBuffer(0, sizeof(LineFlat2DObjectConstants) * count_object, pRend->objectCBs_LineFlat2D.data(), memory);
         }
         
         //MaterialConstants
         {
             VkDeviceMemory& memory = pRend->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(MaterialConstants) * count_object, 0, &data);
-                memcpy(data, pRend->materialCBs.data(), sizeof(MaterialConstants) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
+            updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pRend->materialCBs.data(), memory);
         }
 
         //TessellationConstants
         if (pRend->isUsedTessellation)
         {
             VkDeviceMemory& memory = pRend->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(TessellationConstants) * count_object, 0, &data);
-                memcpy(data, pRend->tessellationCBs.data(), sizeof(TessellationConstants) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
+            updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRend->tessellationCBs.data(), memory);
         }
     }
 
@@ -2941,20 +2986,14 @@ void Vulkan_017_Collision::updateCBs_Custom()
                     //ObjectConstants
                     size_t count_object = pRendIndirect->objectCBs.size();
                     VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-                    void* data;
-                    vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
-                        memcpy(data, pRendIndirect->objectCBs.data(), sizeof(ObjectConstants) * count_object);
-                    vkUnmapMemory(this->poDevice, memory);
+                    updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pRendIndirect->objectCBs.data(), memory);
                 }
                 else
                 {
                     //ObjectLineFlat3D
                     size_t count_object = pRendIndirect->objectCBs_LineFlat3D.size();
                     VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB_LineFlat3D[this->poSwapChainImageIndex];
-                    void* data;
-                    vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlat3DObjectConstants) * count_object, 0, &data);
-                        memcpy(data, pRendIndirect->objectCBs_LineFlat3D.data(), sizeof(LineFlat3DObjectConstants) * count_object);
-                    vkUnmapMemory(this->poDevice, memory);
+                    updateVKBuffer(0, sizeof(LineFlat3DObjectConstants) * count_object, pRendIndirect->objectCBs_LineFlat3D.data(), memory);
                 }
             }
             else
@@ -2962,38 +3001,26 @@ void Vulkan_017_Collision::updateCBs_Custom()
                 //ObjectLineFlat2D
                 size_t count_object = pRendIndirect->objectCBs_LineFlat2D.size();
                 VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_ObjectCB_LineFlat2D[this->poSwapChainImageIndex];
-                void* data;
-                vkMapMemory(this->poDevice, memory, 0, sizeof(LineFlat2DObjectConstants) * count_object, 0, &data);
-                    memcpy(data, pRendIndirect->objectCBs_LineFlat2D.data(), sizeof(LineFlat2DObjectConstants) * count_object);
-                vkUnmapMemory(this->poDevice, memory);
+                updateVKBuffer(0, sizeof(LineFlat2DObjectConstants) * count_object, pRendIndirect->objectCBs_LineFlat2D.data(), memory);
             }
 
             //MaterialConstants
             {
                 VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-                void* data;
-                vkMapMemory(this->poDevice, memory, 0, sizeof(MaterialConstants) * count_object, 0, &data);
-                    memcpy(data, pRendIndirect->materialCBs.data(), sizeof(MaterialConstants) * count_object);
-                vkUnmapMemory(this->poDevice, memory);
+                updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pRendIndirect->materialCBs.data(), memory);
             }
 
             //TessellationConstants
             if (pRendIndirect->pRend->isUsedTessellation)
             {
                 VkDeviceMemory& memory = pRendIndirect->poBuffersMemory_tessellationCB[this->poSwapChainImageIndex];
-                void* data;
-                vkMapMemory(this->poDevice, memory, 0, sizeof(TessellationConstants) * count_object, 0, &data);
-                    memcpy(data, pRendIndirect->tessellationCBs.data(), sizeof(TessellationConstants) * count_object);
-                vkUnmapMemory(this->poDevice, memory);
+                updateVKBuffer(0, sizeof(TessellationConstants) * count_object, pRendIndirect->tessellationCBs.data(), memory);
             }
 
             //IndirectCommand
             {
                 size_t count_indirectcommand = pRendIndirect->indirectCommandCBs.size();
-                void* data;
-                vkMapMemory(this->poDevice, pRendIndirect->poBuffersMemory_indirectCommandCB, 0, sizeof(VkDrawIndexedIndirectCommand) * count_indirectcommand, 0, &data);
-                    memcpy(data, pRendIndirect->indirectCommandCBs.data(), sizeof(VkDrawIndexedIndirectCommand) * count_indirectcommand);
-                vkUnmapMemory(this->poDevice, pRendIndirect->poBuffersMemory_indirectCommandCB);
+                updateVKBuffer(0, sizeof(VkDrawIndexedIndirectCommand) * count_indirectcommand, pRendIndirect->indirectCommandCBs.data(), pRendIndirect->poBuffersMemory_indirectCommandCB);
             }
         }
     }

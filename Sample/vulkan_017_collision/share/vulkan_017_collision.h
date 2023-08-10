@@ -566,8 +566,18 @@ public:
     virtual void OnMouseHover(double x, double y);
 
 public:
-    static FColor s_colorSelect;
-    static FColor s_colorHover;
+    static FColor s_color_Select;
+    static FColor s_color_Hover;
+
+    static FColor s_color_Line2D;
+    static FColor s_color_LineTriangle2D;
+    static FColor s_color_LineQuad2D;
+    static FColor s_color_LineGrid2D;
+    static FColor s_color_LineCircle2D;
+
+    static FColor s_color_FlatTriangle2D;
+    static FColor s_color_FlatQuad2D;
+    static FColor s_color_FlatCircle2D;
 
     FPointI Convert2PointI(double x, double y);
     FPointF Convert2PointF(double x, double y);

@@ -456,10 +456,7 @@ void Vulkan_006_Depth::updateCBs_Custom()
             }
         }
         VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-        void* data;
-        vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
-            memcpy(data, pModelObject->objectCBs.data(), sizeof(ObjectConstants) * count_object);
-        vkUnmapMemory(this->poDevice, memory);
+        updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pModelObject->objectCBs.data(), memory);
     }
 }
 

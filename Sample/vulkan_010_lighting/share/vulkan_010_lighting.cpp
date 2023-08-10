@@ -534,19 +534,13 @@ void Vulkan_010_Lighting::updateCBs_Custom()
         //ObjectConstants
         {
             VkDeviceMemory& memory = pModelObject->poBuffersMemory_ObjectCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(ObjectConstants) * count_object, 0, &data);
-                memcpy(data, pModelObject->objectCBs.data(), sizeof(ObjectConstants) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
+            updateVKBuffer(0, sizeof(ObjectConstants) * count_object, pModelObject->objectCBs.data(), memory);
         }
 
         //MaterialConstants
         {
             VkDeviceMemory& memory = pModelObject->poBuffersMemory_materialCB[this->poSwapChainImageIndex];
-            void* data;
-            vkMapMemory(this->poDevice, memory, 0, sizeof(MaterialConstants) * count_object, 0, &data);
-                memcpy(data, pModelObject->materialCBs.data(), sizeof(MaterialConstants) * count_object);
-            vkUnmapMemory(this->poDevice, memory);
+            updateVKBuffer(0, sizeof(MaterialConstants) * count_object, pModelObject->materialCBs.data(), memory);
         }
     }
 }
