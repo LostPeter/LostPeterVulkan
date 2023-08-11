@@ -340,6 +340,8 @@ namespace LostPeterFoundation
             , vDir(1, 0)
             , vColor(1.0f, 1.0f, 1.0f, 1.0f)
             , radius(0.5f)
+            , viewWidth(1280)
+            , viewHeight(720)
             , segment(100)
             , isDrawCenter(true)
         {
@@ -348,6 +350,8 @@ namespace LostPeterFoundation
         FMeshCreateParam_LineCircle2D(const FVector2& _vCenter,
                                       const FVector2& _vDir,
                                       float _radius,
+                                      int32 _viewWidth,
+                                      int32 _viewHeight,
                                       uint32 _segment,
                                       bool _isDrawCenter)
             : FMeshCreateParam(false, false)
@@ -355,6 +359,8 @@ namespace LostPeterFoundation
             , vDir(_vDir)
             , vColor(1.0f, 1.0f, 1.0f, 1.0f)
             , radius(_radius)
+            , viewWidth(_viewWidth)
+            , viewHeight(_viewHeight)
             , segment(_segment)
             , isDrawCenter(_isDrawCenter)
         {
@@ -364,6 +370,8 @@ namespace LostPeterFoundation
                                       const FVector2& _vDir,
                                       const FVector4& _vColor,
                                       float _radius,
+                                      int32 _viewWidth,
+                                      int32 _viewHeight,
                                       uint32 _segment,
                                       bool _isDrawCenter)
             : FMeshCreateParam(false, false)
@@ -371,6 +379,8 @@ namespace LostPeterFoundation
             , vDir(_vDir)
             , vColor(_vColor)
             , radius(_radius)
+            , viewWidth(_viewWidth)
+            , viewHeight(_viewHeight)
             , segment(_segment)
             , isDrawCenter(_isDrawCenter)
         {
@@ -389,23 +399,29 @@ namespace LostPeterFoundation
         FVector2 vDir;
         FVector4 vColor;
         float radius;
+        int32 viewWidth;
+        int32 viewHeight;
         uint32 segment;
         bool isDrawCenter;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_[%f_%f]_[%f_%f]_[%f_%u]", 
+            return FUtilString::FormatString("%s_[%f_%f]_[%f_%f]_[%f_%d_%d_%u]", 
                                              ms_nameType.c_str(), 
                                              this->vCenter.x,
                                              this->vCenter.y,
                                              this->vDir.x,
                                              this->vDir.y,
                                              this->radius,
+                                             this->viewWidth,
+                                             this->viewHeight,
                                              this->segment);
         }
 
         virtual bool ParseParam(const String& nameParam);
+
+        virtual int32 GetRadiusI();
     };
 
 
@@ -560,6 +576,8 @@ namespace LostPeterFoundation
             , vDir(1, 0)
             , vColor(1.0f, 1.0f, 1.0f, 1.0f)
             , radius(0.5f)
+            , viewWidth(1280)
+            , viewHeight(720)
             , segment(100)
         {
 
@@ -567,12 +585,16 @@ namespace LostPeterFoundation
         FMeshCreateParam_FlatCircle2D(const FVector2& _vCenter,
                                       const FVector2& _vDir,
                                       float _radius,
+                                      int32 _viewWidth,
+                                      int32 _viewHeight,
                                       uint32 _segment)
             : FMeshCreateParam(false, false)
             , vCenter(_vCenter)
             , vDir(_vDir)
             , vColor(1.0f, 1.0f, 1.0f, 1.0f)
             , radius(_radius)
+            , viewWidth(_viewWidth)
+            , viewHeight(_viewHeight)
             , segment(_segment)
         {
 
@@ -581,12 +603,16 @@ namespace LostPeterFoundation
                                       const FVector2& _vDir,
                                       const FVector4& _vColor,
                                       float _radius,
+                                      int32 _viewWidth,
+                                      int32 _viewHeight,
                                       uint32 _segment)
             : FMeshCreateParam(false, false)
             , vCenter(_vCenter)
             , vDir(_vDir)
             , vColor(_vColor)
             , radius(_radius)
+            , viewWidth(_viewWidth)
+            , viewHeight(_viewHeight)
             , segment(_segment)
         {
 
@@ -604,22 +630,28 @@ namespace LostPeterFoundation
         FVector2 vDir;
         FVector4 vColor;
         float radius;
+        int32 viewWidth;
+        int32 viewHeight;
         uint32 segment;
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_[%f_%f]_[%f_%f]_[%f_%u]", 
+            return FUtilString::FormatString("%s_[%f_%f]_[%f_%f]_[%f_%d_%d_%u]", 
                                              ms_nameType.c_str(), 
                                              this->vCenter.x,
                                              this->vCenter.y,
                                              this->vDir.x,
                                              this->vDir.y,
                                              this->radius,
+                                             this->viewWidth,
+                                             this->viewHeight,
                                              this->segment);
         }
 
         virtual bool ParseParam(const String& nameParam);
+
+        virtual int32 GetRadiusI();
     };
 
 
@@ -3086,6 +3118,8 @@ namespace LostPeterFoundation
                                pParam->vDir,
                                pParam->vColor,
                                pParam->radius,
+                               pParam->viewWidth,
+                               pParam->viewHeight,
                                pParam->segment,
                                pParam->isDrawCenter);
         }
@@ -3094,6 +3128,50 @@ namespace LostPeterFoundation
                                        const FVector2& vDir,
                                        const FVector4& vColor,
                                        float radius,
+                                       int32 viewWidth,
+                                       int32 viewHeight,
+                                       uint32 segment,
+                                       bool isDrawCenter);
+        static void UpdateLineCircle2D(FMeshDataPC& meshDataPC, FMeshCreateParam_LineCircle2D* pParam)
+        {
+            UpdateLineCircle2D(meshDataPC, 
+                               pParam->vCenter,
+                               pParam->vDir,
+                               pParam->vColor,
+                               pParam->radius,
+                               pParam->viewWidth,
+                               pParam->viewHeight,
+                               pParam->segment,
+                               pParam->isDrawCenter);
+        }
+        static void UpdateLineCircle2D(FMeshDataPC& meshDataPC, 
+                                       const FVector2& vCenter,
+                                       const FVector2& vDir,
+                                       const FVector4& vColor,
+                                       float radius,
+                                       int32 viewWidth,
+                                       int32 viewHeight,
+                                       uint32 segment,
+                                       bool isDrawCenter);
+        static void UpdateLineCircle2D(FMeshVertexPCVector& aVertexPC, FMeshCreateParam_LineCircle2D* pParam)
+        {
+            UpdateLineCircle2D(aVertexPC,
+                               pParam->vCenter,
+                               pParam->vDir,
+                               pParam->vColor,
+                               pParam->radius,
+                               pParam->viewWidth,
+                               pParam->viewHeight,
+                               pParam->segment,
+                               pParam->isDrawCenter);
+        }
+        static void UpdateLineCircle2D(FMeshVertexPCVector& aVertexPC, 
+                                       const FVector2& vCenter,
+                                       const FVector2& vDir,
+                                       const FVector4& vColor,
+                                       float radius,
+                                       int32 viewWidth,
+                                       int32 viewHeight,
                                        uint32 segment,
                                        bool isDrawCenter);
 
@@ -3142,6 +3220,8 @@ namespace LostPeterFoundation
                                pParam->vDir,
                                pParam->vColor,
                                pParam->radius,
+                               pParam->viewWidth,
+                               pParam->viewHeight,
                                pParam->segment);
         }
         static void CreateFlatCircle2D(FMeshDataPC& meshDataPC,
@@ -3149,6 +3229,46 @@ namespace LostPeterFoundation
                                        const FVector2& vDir,
                                        const FVector4& vColor,
                                        float radius,
+                                       int32 viewWidth,
+                                       int32 viewHeight,
+                                       uint32 segment);
+        static void UpdateFlatCircle2D(FMeshDataPC& meshDataPC, FMeshCreateParam_FlatCircle2D* pParam)
+        {
+            UpdateFlatCircle2D(meshDataPC, 
+                               pParam->vCenter,
+                               pParam->vDir,
+                               pParam->vColor,
+                               pParam->radius,
+                               pParam->viewWidth,
+                               pParam->viewHeight,
+                               pParam->segment);
+        }
+        static void UpdateFlatCircle2D(FMeshDataPC& meshDataPC, 
+                                       const FVector2& vCenter,
+                                       const FVector2& vDir,
+                                       const FVector4& vColor,
+                                       float radius,
+                                       int32 viewWidth,
+                                       int32 viewHeight,
+                                       uint32 segment);
+        static void UpdateFlatCircle2D(FMeshVertexPCVector& aVertexPC, FMeshCreateParam_FlatCircle2D* pParam)
+        {
+            UpdateFlatCircle2D(aVertexPC, 
+                               pParam->vCenter,
+                               pParam->vDir,
+                               pParam->vColor,
+                               pParam->radius,
+                               pParam->viewWidth,
+                               pParam->viewHeight,
+                               pParam->segment);
+        }
+        static void UpdateFlatCircle2D(FMeshVertexPCVector& aVertexPC, 
+                                       const FVector2& vCenter,
+                                       const FVector2& vDir,
+                                       const FVector4& vColor,
+                                       float radius,
+                                       int32 viewWidth,
+                                       int32 viewHeight,
                                        uint32 segment);
 
     ////////////////////////////////// Line3D ////////////////////////////////

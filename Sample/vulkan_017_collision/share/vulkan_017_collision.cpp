@@ -27,11 +27,11 @@ static const char* g_MeshPaths[6 * g_MeshCount] =
     "geo_line_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle2D",           "0.6;0.8;0.5;0.6;0.7;0.6;1;1;1;1", //geo_line_triangle_2d
     "geo_line_quad_2d",         "Pos3Color4",                 "geometry",         "",           "LineQuad2D",               "0.5;0.5;0.5;0.3;0.7;0.3;0.7;0.5;1;1;1;1", //geo_line_quad_2d
     "geo_line_grid_2d",         "Pos3Color4",                 "geometry",         "",           "LineGrid2D",               "0.5;0.2;0.5;0.0;0.7;0.0;0.7;0.2;10;10;1;1;1;1", //geo_line_grid_2d
-    "geo_line_circle_2d",       "Pos3Color4",                 "geometry",         "",           "LineCircle2D",             "0.6;-0.2;1.0;0.0;0.1;50;true;1;0;1;1", //geo_line_circle_2d
+    "geo_line_circle_2d",       "Pos3Color4",                 "geometry",         "",           "LineCircle2D",             "0.6;-0.2;1.0;0.0;0.1;1280;720;50;true;1;1;1;1", //geo_line_circle_2d
 
     "geo_flat_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "FlatTriangle2D",           "0.85;0.8;0.75;0.6;0.95;0.6;1;1;1;1", //geo_flat_triangle_2d
     "geo_flat_quad_2d",         "Pos3Color4",                 "geometry",         "",           "FlatQuad2D",               "0.75;0.5;0.75;0.3;0.95;0.3;0.95;0.5;1;1;1;1", //geo_flat_quad_2d
-    "geo_flat_circle_2d",       "Pos3Color4",                 "geometry",         "",           "FlatCircle2D",             "0.85;-0.2;1.0;0.0;0.1;50;1;1;1;1", //geo_flat_circle_2d
+    "geo_flat_circle_2d",       "Pos3Color4",                 "geometry",         "",           "FlatCircle2D",             "0.85;-0.2;1.0;0.0;0.1;1280;720;50;1;1;1;1", //geo_flat_circle_2d
 
     "geo_line_line_3d",         "Pos3Color4",                 "geometry",         "",           "Line3D",                   "", //geo_line_line_3d
     "geo_line_triangle_3d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle3D",           "", //geo_line_triangle_3d
@@ -1091,6 +1091,30 @@ static bool g_ObjectRend_IsFlat[g_ObjectRend_Count] =
 
 
 /////////////////////////// ModelObjectRend /////////////////////
+void Vulkan_017_Collision::ModelObjectRend::RecreateSwapChain()
+{
+    if (this->pMeshSub == nullptr)
+        return;
+    if (this->pMeshSub->pMesh->typeMesh != F_Mesh_Geometry)
+        return;
+    
+    if (this->pMeshSub->pMesh->typeGeometryType == F_MeshGeometry_LineCircle2D)
+    {
+        FMeshCreateParam_LineCircle2D* pLineCircle2D = (FMeshCreateParam_LineCircle2D*)(this->pMeshSub->pMesh->pMeshCreateParam);
+        pLineCircle2D->viewWidth = this->pModelObject->pWindow->poViewport.width;
+        pLineCircle2D->viewHeight = this->pModelObject->pWindow->poViewport.height;
+        FMeshGeometry::UpdateLineCircle2D(pMeshSub->vertices_Pos3Color4, pLineCircle2D);
+        pMeshSub->UpdateVertexBuffer();
+    }
+    else if (this->pMeshSub->pMesh->typeGeometryType == F_MeshGeometry_FlatCircle2D)
+    {
+        FMeshCreateParam_FlatCircle2D* pFlatCircle2D = (FMeshCreateParam_FlatCircle2D*)(this->pMeshSub->pMesh->pMeshCreateParam);
+        pFlatCircle2D->viewWidth = this->pModelObject->pWindow->poViewport.width;
+        pFlatCircle2D->viewHeight = this->pModelObject->pWindow->poViewport.height;
+        FMeshGeometry::UpdateFlatCircle2D(pMeshSub->vertices_Pos3Color4, pFlatCircle2D);
+        pMeshSub->UpdateVertexBuffer();
+    }
+}   
 
 
 /////////////////////////// ModelObjectRendIndirect /////////////
@@ -1529,7 +1553,17 @@ bool Vulkan_017_Collision::IsCollision_LineGrid2D(double x, double y, ModelObjec
 bool Vulkan_017_Collision::IsCollision_LineCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
 {
     FPointI ptMouse((int32)x, (int32)y);
-
+    FMeshCreateParam_LineCircle2D* pLineCircle2D = (FMeshCreateParam_LineCircle2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    FPointI ptCircle_Center = ConvertNDC2ScreenPointI(pLineCircle2D->vCenter);
+    int32 radius = pLineCircle2D->GetRadiusI();
+    LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
+    if (FMath::Intersects_PointInCircle2DI(ptMouse, ptCircle_Center, radius))
+    {
+        obj.color = color;
+        //F_LogInfo("Vulkan_017_Collision::IsCollision_LineCircle2D: Mouse In LineCircle 2D !");
+        return true;
+    }
+    obj.color = s_color_LineCircle2D;
     return false;
 }
 
@@ -1569,7 +1603,17 @@ bool Vulkan_017_Collision::IsCollision_FlatQuad2D(double x, double y, ModelObjec
 bool Vulkan_017_Collision::IsCollision_FlatCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
 {
     FPointI ptMouse((int32)x, (int32)y);
-
+    FMeshCreateParam_FlatCircle2D* pFlatCircle2D = (FMeshCreateParam_FlatCircle2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    FPointI ptCircle_Center = ConvertNDC2ScreenPointI(pFlatCircle2D->vCenter);
+    int32 radius = pFlatCircle2D->GetRadiusI();
+    LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
+    if (FMath::Intersects_PointInCircle2DI(ptMouse, ptCircle_Center, radius))
+    {
+        obj.color = color;
+        //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatCircle2D: Mouse In FlatCircle 2D !");
+        return true;
+    }
+    obj.color = s_color_LineCircle2D;
     return false;
 }
 
@@ -1933,15 +1977,47 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
                 LineFlat2DObjectConstants objectConstants;
                 switch ((int32)pRend->pMeshSub->pMesh->typeGeometryType)
                 {
-                    case F_MeshGeometry_Line2D: objectConstants.color = s_color_Line2D; break;
-                    case F_MeshGeometry_LineTriangle2D: objectConstants.color = s_color_LineTriangle2D; break;
-                    case F_MeshGeometry_LineQuad2D: objectConstants.color = s_color_LineQuad2D; break;
-                    case F_MeshGeometry_LineGrid2D: objectConstants.color = s_color_LineGrid2D; break;
-                    case F_MeshGeometry_LineCircle2D: objectConstants.color = s_color_LineCircle2D; break;
+                    case F_MeshGeometry_Line2D: 
+                        {
+                            objectConstants.color = s_color_Line2D; 
+                            break;
+                        }
+                    case F_MeshGeometry_LineTriangle2D: 
+                        {
+                            objectConstants.color = s_color_LineTriangle2D; 
+                            break;
+                        }
+                    case F_MeshGeometry_LineQuad2D: 
+                        {
+                            objectConstants.color = s_color_LineQuad2D; 
+                            break;
+                        }
+                    case F_MeshGeometry_LineGrid2D: 
+                        {
+                            objectConstants.color = s_color_LineGrid2D; 
+                            break;
+                        }
+                    case F_MeshGeometry_LineCircle2D: 
+                        {
+                            objectConstants.color = s_color_LineCircle2D;
+                            break;
+                        }
 
-                    case F_MeshGeometry_FlatTriangle2D: objectConstants.color = s_color_FlatTriangle2D; break;
-                    case F_MeshGeometry_FlatQuad2D: objectConstants.color = s_color_FlatQuad2D; break;
-                    case F_MeshGeometry_FlatCircle2D: objectConstants.color = s_color_FlatCircle2D; break;
+                    case F_MeshGeometry_FlatTriangle2D: 
+                        {
+                            objectConstants.color = s_color_FlatTriangle2D; 
+                            break;
+                        }
+                    case F_MeshGeometry_FlatQuad2D: 
+                        {
+                            objectConstants.color = s_color_FlatQuad2D; 
+                            break;
+                        }
+                    case F_MeshGeometry_FlatCircle2D: 
+                        {
+                            objectConstants.color = s_color_FlatCircle2D;
+                            break;
+                        }
                 }
                 pRend->objectCBs_LineFlat2D.push_back(objectConstants);
             }

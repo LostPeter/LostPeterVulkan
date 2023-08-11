@@ -423,6 +423,23 @@ namespace LostPeterFoundation
             return q / len;
         }
 
+        static float Length(const FVector2& v)
+        {
+            return glm::length(v);
+        }
+        static float Length2(const FVector2& v)
+        {
+            return glm::length2(v);
+        }
+        static float Distance(const FVector2& v1, const FVector2& v2)
+        {
+            return Length(v1 - v2);
+        }
+        static float Distance2(const FVector2& v1, const FVector2& v2)
+        {
+            return Length2(v1 - v2);
+        }
+
         static float Length(const FVector3& v)
         {
             return glm::length(v);
@@ -431,12 +448,10 @@ namespace LostPeterFoundation
         {
             return glm::length2(v);
         }
-
         static float Distance(const FVector3& v1, const FVector3& v2)
         {
             return Length(v1 - v2);
         }
-
         static float Distance2(const FVector3& v1, const FVector3& v2)
         {
             return Length2(v1 - v2);
@@ -627,12 +642,18 @@ namespace LostPeterFoundation
         template<typename T>
 		static bool Intersects_PointInCircle2D(const FTPoint<T>& pt, const FTPoint<T>& center, T radius)
         {
-            float x = pt.x - center.x;
-            float y = pt.y - center.y;
-            float dis =  sqrt(pow(x, 2) + pow(y, 2));
-            if (dis < 0.000001f)
+            FVector2 v((float)(pt.x - center.x), (float)(pt.y - center.y));
+            if (Length(v) <= radius)
                 return true;
             return false;
+        }
+        static bool Intersects_PointInCircle2DI(const FPointI& pt, const FPointI& center, int32 radius)
+        {
+            return Intersects_PointInCircle2D<int32>(pt, center, radius);
+        }
+        static bool Intersects_PointInCircle2DF(const FPointF& pt, const FPointF& center, float radius)
+        {
+            return Intersects_PointInCircle2D<float>(pt, center, radius);
         }
         static bool Intersects_PointInCircle(const FVector3& pt, const FVector3& center, float radius);
 

@@ -116,7 +116,7 @@ namespace LostPeter
 
             //Vertex
             FMeshVertexType poTypeVertex;
-            std::vector<FVertex_Pos3Color4> vertices_Pos3Color4;
+            FMeshVertexPCVector vertices_Pos3Color4;
             std::vector<FVertex_Pos3Color4Tex2> vertices_Pos3Color4Tex2;
             std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
             std::vector<FVertex_Pos3Color4Normal3Tex4> vertices_Pos3Color4Normal3Tex4;

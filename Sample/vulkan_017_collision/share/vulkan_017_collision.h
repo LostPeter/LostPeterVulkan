@@ -227,10 +227,7 @@ public:
             this->aPipelineComputes.clear();
         }
 
-        void RecreateSwapChain()
-        {
-
-        }   
+        void RecreateSwapChain();
 
     ////Textures
         void AddTexture(const String& nameShaderSort, Texture* pTexture)

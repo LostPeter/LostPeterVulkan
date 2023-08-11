@@ -178,29 +178,33 @@ namespace LostPeterFoundation
     {
         StringVector aParam = FUtilString::Split(nameParam, ";");
         size_t count = aParam.size();
-        if (count == 7)
+        if (count == 9)
         {
             this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
             this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
             this->vDir.x = FUtilString::ParserFloat(aParam[2]);
             this->vDir.y = FUtilString::ParserFloat(aParam[3]);
             this->radius = FUtilString::ParserFloat(aParam[4]);
-            this->segment = FUtilString::ParserUInt(aParam[5]);
-            this->isDrawCenter = FUtilString::ParserBool(aParam[6]);
+            this->viewWidth = FUtilString::ParserInt(aParam[5]);
+            this->viewHeight = FUtilString::ParserInt(aParam[6]);
+            this->segment = FUtilString::ParserUInt(aParam[7]);
+            this->isDrawCenter = FUtilString::ParserBool(aParam[8]);
         }
-        else if (count == 11)
+        else if (count == 13)
         {
             this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
             this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
             this->vDir.x = FUtilString::ParserFloat(aParam[2]);
             this->vDir.y = FUtilString::ParserFloat(aParam[3]);
             this->radius = FUtilString::ParserFloat(aParam[4]);
-            this->segment = FUtilString::ParserUInt(aParam[5]);
-            this->isDrawCenter = FUtilString::ParserBool(aParam[6]);
-            this->vColor.x = FUtilString::ParserFloat(aParam[7]);
-            this->vColor.y = FUtilString::ParserFloat(aParam[8]);
-            this->vColor.z = FUtilString::ParserFloat(aParam[9]);
-            this->vColor.w = FUtilString::ParserFloat(aParam[10]);
+            this->viewWidth = FUtilString::ParserInt(aParam[5]);
+            this->viewHeight = FUtilString::ParserInt(aParam[6]);
+            this->segment = FUtilString::ParserUInt(aParam[7]);
+            this->isDrawCenter = FUtilString::ParserBool(aParam[8]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[9]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[11]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[12]);
         }
         else
         {
@@ -210,7 +214,14 @@ namespace LostPeterFoundation
 
         return true;
     }
-
+    int32 FMeshCreateParam_LineCircle2D::GetRadiusI()
+    {
+        if (this->viewWidth >= this->viewHeight)
+        {
+            return (int32)(this->radius * this->viewHeight);
+        }
+        return (int32)(this->radius * this->viewWidth);
+    }
 
     ////////////////////////////////// Flat2D ////////////////////////////////
     //FlatTriangle2D
@@ -297,27 +308,31 @@ namespace LostPeterFoundation
     {
         StringVector aParam = FUtilString::Split(nameParam, ";");
         size_t count = aParam.size();
-        if (count == 6)
+        if (count == 8)
         {
             this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
             this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
             this->vDir.x = FUtilString::ParserFloat(aParam[2]);
             this->vDir.y = FUtilString::ParserFloat(aParam[3]);
             this->radius = FUtilString::ParserFloat(aParam[4]);
-            this->segment = FUtilString::ParserUInt(aParam[5]);
+            this->viewWidth = FUtilString::ParserInt(aParam[5]);
+            this->viewHeight = FUtilString::ParserInt(aParam[6]);
+            this->segment = FUtilString::ParserUInt(aParam[7]);
         }
-        else if (count == 10)
+        else if (count == 12)
         {
             this->vCenter.x = FUtilString::ParserFloat(aParam[0]);
             this->vCenter.y = FUtilString::ParserFloat(aParam[1]);
             this->vDir.x = FUtilString::ParserFloat(aParam[2]);
             this->vDir.y = FUtilString::ParserFloat(aParam[3]);
             this->radius = FUtilString::ParserFloat(aParam[4]);
-            this->segment = FUtilString::ParserUInt(aParam[5]);
-            this->vColor.x = FUtilString::ParserFloat(aParam[6]);
-            this->vColor.y = FUtilString::ParserFloat(aParam[7]);
-            this->vColor.z = FUtilString::ParserFloat(aParam[8]);
-            this->vColor.w = FUtilString::ParserFloat(aParam[9]);
+            this->viewWidth = FUtilString::ParserInt(aParam[5]);
+            this->viewHeight = FUtilString::ParserInt(aParam[6]);
+            this->segment = FUtilString::ParserUInt(aParam[7]);
+            this->vColor.x = FUtilString::ParserFloat(aParam[8]);
+            this->vColor.y = FUtilString::ParserFloat(aParam[9]);
+            this->vColor.z = FUtilString::ParserFloat(aParam[10]);
+            this->vColor.w = FUtilString::ParserFloat(aParam[11]);
         }
         else
         {
@@ -326,6 +341,15 @@ namespace LostPeterFoundation
         }
 
         return true;
+    }
+
+    int32 FMeshCreateParam_FlatCircle2D::GetRadiusI()
+    {
+        if (this->viewWidth >= this->viewHeight)
+        {
+            return (int32)(this->radius * this->viewHeight);
+        }
+        return (int32)(this->radius * this->viewWidth);
     }
 
 
@@ -1684,6 +1708,8 @@ namespace LostPeterFoundation
                                            const FVector2& vDir,
                                            const FVector4& vColor,
                                            float radius,
+                                           int32 viewWidth,
+                                           int32 viewHeight,
                                            uint32 segment,
                                            bool isDrawCenter)
     {
@@ -1695,8 +1721,19 @@ namespace LostPeterFoundation
 		//      *          * segment
 		//          *   *
         
-        uint32 vertexCount = segment + 1;
-        uint32 faceCount = segment;
+        bool isW = false;
+        bool isH = false;
+        float fPerf = 1.0f;
+        if (viewWidth >= viewHeight)
+        {
+            isW = true;
+            fPerf = (float)viewHeight / viewWidth;
+        }
+        else
+        {
+            isH = true;
+            fPerf = (float)viewWidth / viewHeight;
+        }
 
         //Vertex
         FVector3 vC(vCenter.x, vCenter.y, 0.0f);
@@ -1706,7 +1743,16 @@ namespace LostPeterFoundation
         {
             FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(thetaStep * i, - FMath::ms_v3UnitZ);
             FVector3 vCur = FMath::Transform(qRot, vD);
-            FVector3 vPos = vC + vCur * radius;
+            vCur *= radius;
+            if (isW)
+            {
+                vCur.x *= fPerf;
+            }
+            if (isH)
+            {
+                vCur.y *= fPerf;
+            }
+            FVector3 vPos = vC + vCur;
             AddVertex(meshDataPC, FMeshVertexPC(vPos, vColor));
         }
         if (isDrawCenter)
@@ -1732,7 +1778,150 @@ namespace LostPeterFoundation
             }
         }
     }
+    void FMeshGeometry::UpdateLineCircle2D(FMeshDataPC& meshDataPC, 
+                                           const FVector2& vCenter,
+                                           const FVector2& vDir,
+                                           const FVector4& vColor,
+                                           float radius,
+                                           int32 viewWidth,
+                                           int32 viewHeight,
+                                           uint32 segment,
+                                           bool isDrawCenter)
+    {
+        //          *  * 
+		//		*		   * 2
+		//
+		//	   *	 * 0    * 1
+		//			
+		//      *          * segment
+		//          *   *
+        
+        uint32 vertexCount = segment;
+        if (isDrawCenter)
+            vertexCount += 1;
+        uint32 count = meshDataPC.GetVertexCount();
+        if (count != vertexCount)
+        {
+            F_Assert(false && "FMeshGeometry::UpdateLineCircle2D: Wrong vertex count !");
+            return;
+        }
 
+        bool isW = false;
+        bool isH = false;
+        float fPerf = 1.0f;
+        if (viewWidth >= viewHeight)
+        {
+            isW = true;
+            fPerf = (float)viewHeight / viewWidth;
+        }
+        else
+        {
+            isH = true;
+            fPerf = (float)viewWidth / viewHeight;
+        }
+
+        //Vertex
+        FVector3 vC(vCenter.x, vCenter.y, 0.0f);
+        FVector3 vD(vDir.x, vDir.y, 0.0f);
+        float thetaStep = 2.0f * FMath::ms_fPI / segment;
+        for (uint32 i = 0; i < segment; i++)
+        {
+            FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(thetaStep * i, - FMath::ms_v3UnitZ);
+            FVector3 vCur = FMath::Transform(qRot, vD);
+            vCur *= radius;
+            if (isW)
+            {
+                vCur.x *= fPerf;
+            }
+            if (isH)
+            {
+                vCur.y *= fPerf;
+            }
+            FVector3 vPos = vC + vCur;
+
+            FMeshVertexPC& vertexPC = GetVertex(meshDataPC, i);
+            vertexPC.pos = vPos;
+            vertexPC.color = vColor;
+        }
+        if (isDrawCenter)
+        {
+            FMeshVertexPC& vertexPC = GetVertex(meshDataPC, segment);
+            vertexPC.pos = vC;
+            vertexPC.color = vColor;
+        }
+    }
+    void FMeshGeometry::UpdateLineCircle2D(FMeshVertexPCVector& aVertexPC, 
+                                           const FVector2& vCenter,
+                                           const FVector2& vDir,
+                                           const FVector4& vColor,
+                                           float radius,
+                                           int32 viewWidth,
+                                           int32 viewHeight,
+                                           uint32 segment,
+                                           bool isDrawCenter)
+    {
+        //          *  * 
+		//		*		   * 2
+		//
+		//	   *	 * 0    * 1
+		//			
+		//      *          * segment
+		//          *   *
+        
+        uint32 vertexCount = segment;
+        if (isDrawCenter)
+            vertexCount += 1;
+        uint32 count = (uint32)aVertexPC.size();
+        if (count != vertexCount)
+        {
+            F_Assert(false && "FMeshGeometry::UpdateLineCircle2D: Wrong vertex count !");
+            return;
+        }
+
+        bool isW = false;
+        bool isH = false;
+        float fPerf = 1.0f;
+        if (viewWidth >= viewHeight)
+        {
+            isW = true;
+            fPerf = (float)viewHeight / viewWidth;
+        }
+        else
+        {
+            isH = true;
+            fPerf = (float)viewWidth / viewHeight;
+        }
+
+        //Vertex
+        FVector3 vC(vCenter.x, vCenter.y, 0.0f);
+        FVector3 vD(vDir.x, vDir.y, 0.0f);
+        float thetaStep = 2.0f * FMath::ms_fPI / segment;
+        for (uint32 i = 0; i < segment; i++)
+        {
+            FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(thetaStep * i, - FMath::ms_v3UnitZ);
+            FVector3 vCur = FMath::Transform(qRot, vD);
+            vCur *= radius;
+            if (isW)
+            {
+                vCur.x *= fPerf;
+            }
+            if (isH)
+            {
+                vCur.y *= fPerf;
+            }
+            FVector3 vPos = vC + vCur;
+
+            FMeshVertexPC& vertexPC = aVertexPC[i];
+            vertexPC.pos = vPos;
+            vertexPC.color = vColor;
+        }
+        if (isDrawCenter)
+        {
+            FMeshVertexPC& vertexPC = aVertexPC[segment];
+            vertexPC.pos = vC;
+            vertexPC.color = vColor;
+        }
+    }
 
     ////////////////////////////////// Flat2D ////////////////////////////////
     bool FMeshGeometry::CreateFlat2DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry)
@@ -1845,6 +2034,8 @@ namespace LostPeterFoundation
                                            const FVector2& vDir,
                                            const FVector4& vColor,
                                            float radius,
+                                           int32 viewWidth,
+                                           int32 viewHeight,
                                            uint32 segment)
     {
         //          *  * 
@@ -1860,6 +2051,19 @@ namespace LostPeterFoundation
         FVector3 vD(vDir.x, vDir.y, 0.0f);
         uint32 vertexCount = segment + 1;
         uint32 faceCount = segment;
+        bool isW = false;
+        bool isH = false;
+        float fPerf = 1.0f;
+        if (viewWidth >= viewHeight)
+        {
+            isW = true;
+            fPerf = (float)viewHeight / viewWidth;
+        }
+        else
+        {
+            isH = true;
+            fPerf = (float)viewWidth / viewHeight;
+        }
         float thetaStep = 2.0f * FMath::ms_fPI / segment;
         ResizeVertexCount(meshDataPC, vertexCount);
         SetVertex(meshDataPC, 0, FMeshVertexPC(vC, vColor));
@@ -1868,7 +2072,16 @@ namespace LostPeterFoundation
         {
             FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(thetaStep * i, -FMath::ms_v3UnitZ);
             FVector3 vCur = FMath::Transform(qRot, vD);
-            FVector3 vPos = vC + vCur * radius;
+            vCur *= radius;
+            if (isW)
+            {
+                vCur.x *= fPerf;
+            }
+            if (isH)
+            {
+                vCur.y *= fPerf;
+            }
+            FVector3 vPos = vC + vCur;
             SetVertex(meshDataPC, index, FMeshVertexPC(vPos, vColor));
             index++;
         }
@@ -1888,7 +2101,147 @@ namespace LostPeterFoundation
             }
         }
     }
+    void FMeshGeometry::UpdateFlatCircle2D(FMeshDataPC& meshDataPC, 
+                                           const FVector2& vCenter,
+                                           const FVector2& vDir,
+                                           const FVector4& vColor,
+                                           float radius,
+                                           int32 viewWidth,
+                                           int32 viewHeight,
+                                           uint32 segment)
+    {
+        //          *  * 
+		//		*		   * 2
+		//
+		//	   *	 * 0    * 1
+		//			
+		//      *          * segment
+		//          *   *
 
+        //Vertex
+        uint32 vertexCount = segment + 1;
+        uint32 count = meshDataPC.GetVertexCount();
+        if (count != vertexCount)
+        {
+            F_Assert(false && "FMeshGeometry::UpdateFlatCircle2D: Wrong vertex count !");
+            return;
+        }
+
+        FVector3 vC(vCenter.x, vCenter.y, 0.0f);
+        FVector3 vD(vDir.x, vDir.y, 0.0f);
+        
+        uint32 faceCount = segment;
+        bool isW = false;
+        bool isH = false;
+        float fPerf = 1.0f;
+        if (viewWidth >= viewHeight)
+        {
+            isW = true;
+            fPerf = (float)viewHeight / viewWidth;
+        }
+        else
+        {
+            isH = true;
+            fPerf = (float)viewWidth / viewHeight;
+        }
+        float thetaStep = 2.0f * FMath::ms_fPI / segment;
+        FMeshVertexPC& vertexPC_C = GetVertex(meshDataPC, 0);
+        vertexPC_C.pos = vC;
+        vertexPC_C.color = vColor;
+        int index = 1;
+        for (uint32 i = 0; i < segment; i++)
+        {
+            FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(thetaStep * i, -FMath::ms_v3UnitZ);
+            FVector3 vCur = FMath::Transform(qRot, vD);
+            vCur *= radius;
+            if (isW)
+            {
+                vCur.x *= fPerf;
+            }
+            if (isH)
+            {
+                vCur.y *= fPerf;
+            }
+            FVector3 vPos = vC + vCur;
+
+            FMeshVertexPC& vertexPC = GetVertex(meshDataPC, index);
+            vertexPC.pos = vPos;
+            vertexPC.color = vColor;
+
+            index++;
+        }
+        meshDataPC.RefreshAABB();
+    }
+    void FMeshGeometry::UpdateFlatCircle2D(FMeshVertexPCVector& aVertexPC, 
+                                           const FVector2& vCenter,
+                                           const FVector2& vDir,
+                                           const FVector4& vColor,
+                                           float radius,
+                                           int32 viewWidth,
+                                           int32 viewHeight,
+                                           uint32 segment)
+    {
+        //          *  * 
+		//		*		   * 2
+		//
+		//	   *	 * 0    * 1
+		//			
+		//      *          * segment
+		//          *   *
+
+        //Vertex
+        uint32 vertexCount = segment + 1;
+        uint32 count = (uint32)aVertexPC.size();
+        if (count != vertexCount)
+        {
+            F_Assert(false && "FMeshGeometry::UpdateFlatCircle2D: Wrong vertex count !");
+            return;
+        }
+
+        FVector3 vC(vCenter.x, vCenter.y, 0.0f);
+        FVector3 vD(vDir.x, vDir.y, 0.0f);
+        
+        uint32 faceCount = segment;
+        bool isW = false;
+        bool isH = false;
+        float fPerf = 1.0f;
+        if (viewWidth >= viewHeight)
+        {
+            isW = true;
+            fPerf = (float)viewHeight / viewWidth;
+        }
+        else
+        {
+            isH = true;
+            fPerf = (float)viewWidth / viewHeight;
+        }
+        float thetaStep = 2.0f * FMath::ms_fPI / segment;
+        FMeshVertexPC& vertexPC_C = aVertexPC[0];
+        vertexPC_C.pos = vC;
+        vertexPC_C.color = vColor;
+        int index = 1;
+        for (uint32 i = 0; i < segment; i++)
+        {
+            FQuaternion qRot = FMath::ToQuaternionFromRadianAxis(thetaStep * i, -FMath::ms_v3UnitZ);
+            FVector3 vCur = FMath::Transform(qRot, vD);
+            vCur *= radius;
+            if (isW)
+            {
+                vCur.x *= fPerf;
+            }
+            if (isH)
+            {
+                vCur.y *= fPerf;
+            }
+            FVector3 vPos = vC + vCur;
+
+            FMeshVertexPC& vertexPC = aVertexPC[index];
+            vertexPC.pos = vPos;
+            vertexPC.color = vColor;
+
+            index++;
+        }
+    }
 
     ////////////////////////////////// Line3D ////////////////////////////////
     bool FMeshGeometry::CreateLine3DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry)
