@@ -22,7 +22,7 @@
             //"program": "${workspaceFolder}/Bin/MacOS/vulkan_014_multirenderpass_d",
             //"program": "${workspaceFolder}/Bin/MacOS/vulkan_015_multiview_d",
             //"program": "${workspaceFolder}/Bin/MacOS/vulkan_016_geometry_d",
-            "program": "${workspaceFolder}/Bin/MacOS/vulkan_017_collision_d",
+            //"program": "${workspaceFolder}/Bin/MacOS/vulkan_017_collision_d",
             //"program": "${workspaceFolder}/Bin/MacOS/vulkan_018_terrain_d",
             "args": [],
             "stopAtEntry": false,
