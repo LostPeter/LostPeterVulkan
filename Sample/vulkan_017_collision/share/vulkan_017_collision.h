@@ -580,15 +580,15 @@ public:
     FPointF Convert2PointF(double x, double y);
     void IsCollision(double x, double y, bool isHover);
 
-    bool IsCollision_Line2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
-    bool IsCollision_LineTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
-    bool IsCollision_LineQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
-    bool IsCollision_LineGrid2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
-    bool IsCollision_LineCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
+    bool IsCollision_Line2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_LineTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_LineQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_LineGrid2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_LineCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
 
-    bool IsCollision_FlatTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
-    bool IsCollision_FlatQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
-    bool IsCollision_FlatCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color);
+    bool IsCollision_FlatTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_FlatQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_FlatCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
     
 protected:
     //Create Pipeline

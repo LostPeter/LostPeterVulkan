@@ -421,7 +421,7 @@ namespace LostPeterFoundation
 
         virtual bool ParseParam(const String& nameParam);
 
-        virtual int32 GetRadiusI();
+        virtual int32 GetRadiusI(const FVector2& scaleWindow);
     };
 
 
@@ -651,7 +651,7 @@ namespace LostPeterFoundation
 
         virtual bool ParseParam(const String& nameParam);
 
-        virtual int32 GetRadiusI();
+        virtual int32 GetRadiusI(const FVector2& scaleWindow);
     };
 
 

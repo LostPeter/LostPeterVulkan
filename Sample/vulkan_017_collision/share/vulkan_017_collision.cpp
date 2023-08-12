@@ -20,55 +20,55 @@
 
 /////////////////////////// Mesh ////////////////////////////////
 static const int g_MeshCount = 39; 
-static const char* g_MeshPaths[6 * g_MeshCount] =
+static const char* g_MeshPaths[7 * g_MeshCount] =
 {
-    //Mesh Name                 //Vertex Type                 //Mesh Type         //Mesh Path   //Mesh Geometry Type        //Mesh Geometry Param
-    "geo_line_line_2d",         "Pos3Color4",                 "geometry",         "",           "Line2D",                   "0.5;0.9;0.7;0.9;1;1;1;1", //geo_line_line_2d
-    "geo_line_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle2D",           "0.6;0.8;0.5;0.6;0.7;0.6;1;1;1;1", //geo_line_triangle_2d
-    "geo_line_quad_2d",         "Pos3Color4",                 "geometry",         "",           "LineQuad2D",               "0.5;0.5;0.5;0.3;0.7;0.3;0.7;0.5;1;1;1;1", //geo_line_quad_2d
-    "geo_line_grid_2d",         "Pos3Color4",                 "geometry",         "",           "LineGrid2D",               "0.5;0.2;0.5;0.0;0.7;0.0;0.7;0.2;10;10;1;1;1;1", //geo_line_grid_2d
-    "geo_line_circle_2d",       "Pos3Color4",                 "geometry",         "",           "LineCircle2D",             "0.6;-0.2;1.0;0.0;0.1;1280;720;50;true;1;1;1;1", //geo_line_circle_2d
+    //Mesh Name                 //Vertex Type                 //Mesh Type         //Mesh Path   //Mesh Geometry Type        //Mesh Geometry Param                               //Mesh Geometry Vertex Is Update
+    "geo_line_line_2d",         "Pos3Color4",                 "geometry",         "",           "Line2D",                   "0.5;0.9;0.7;0.9;1;1;1;1",                          "false", //geo_line_line_2d
+    "geo_line_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle2D",           "0.6;0.8;0.5;0.6;0.7;0.6;1;1;1;1",                  "false", //geo_line_triangle_2d
+    "geo_line_quad_2d",         "Pos3Color4",                 "geometry",         "",           "LineQuad2D",               "0.5;0.5;0.5;0.3;0.7;0.3;0.7;0.5;1;1;1;1",          "false", //geo_line_quad_2d
+    "geo_line_grid_2d",         "Pos3Color4",                 "geometry",         "",           "LineGrid2D",               "0.5;0.2;0.5;0.0;0.7;0.0;0.7;0.2;10;10;1;1;1;1",    "false", //geo_line_grid_2d
+    "geo_line_circle_2d",       "Pos3Color4",                 "geometry",         "",           "LineCircle2D",             "0.6;-0.2;1.0;0.0;0.1;1280;720;50;true;1;1;1;1",    "true", //geo_line_circle_2d
 
-    "geo_flat_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "FlatTriangle2D",           "0.85;0.8;0.75;0.6;0.95;0.6;1;1;1;1", //geo_flat_triangle_2d
-    "geo_flat_quad_2d",         "Pos3Color4",                 "geometry",         "",           "FlatQuad2D",               "0.75;0.5;0.75;0.3;0.95;0.3;0.95;0.5;1;1;1;1", //geo_flat_quad_2d
-    "geo_flat_circle_2d",       "Pos3Color4",                 "geometry",         "",           "FlatCircle2D",             "0.85;-0.2;1.0;0.0;0.1;1280;720;50;1;1;1;1", //geo_flat_circle_2d
+    "geo_flat_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "FlatTriangle2D",           "0.85;0.8;0.75;0.6;0.95;0.6;1;1;1;1",               "false", //geo_flat_triangle_2d
+    "geo_flat_quad_2d",         "Pos3Color4",                 "geometry",         "",           "FlatQuad2D",               "0.75;0.5;0.75;0.3;0.95;0.3;0.95;0.5;1;1;1;1",      "false", //geo_flat_quad_2d
+    "geo_flat_circle_2d",       "Pos3Color4",                 "geometry",         "",           "FlatCircle2D",             "0.85;-0.2;1.0;0.0;0.1;1280;720;50;1;1;1;1",        "true", //geo_flat_circle_2d
 
-    "geo_line_line_3d",         "Pos3Color4",                 "geometry",         "",           "Line3D",                   "", //geo_line_line_3d
-    "geo_line_triangle_3d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle3D",           "", //geo_line_triangle_3d
-    "geo_line_quad_3d",         "Pos3Color4",                 "geometry",         "",           "LineQuad3D",               "", //geo_line_quad_3d
-    "geo_line_grid_3d",         "Pos3Color4",                 "geometry",         "",           "LineGrid3D",               "", //geo_line_grid_3d
-    "geo_line_circle_3d",       "Pos3Color4",                 "geometry",         "",           "LineCircle3D",             "", //geo_line_circle_3d
-    "geo_line_aabb_3d",         "Pos3Color4",                 "geometry",         "",           "LineAABB3D",               "", //geo_line_aabb_3d
-    "geo_line_sphere_3d",       "Pos3Color4",                 "geometry",         "",           "LineSphere3D",             "", //geo_line_sphere_3d
-    "geo_line_cylinder_3d",     "Pos3Color4",                 "geometry",         "",           "LineCylinder3D",           "", //geo_line_cylinder_3d
-    "geo_line_capsule_3d",      "Pos3Color4",                 "geometry",         "",           "LineCapsule3D",            "", //geo_line_capsule_3d
-    "geo_line_cone_3d",         "Pos3Color4",                 "geometry",         "",           "LineCone3D",               "", //geo_line_cone_3d
-    "geo_line_torus_3d",        "Pos3Color4",                 "geometry",         "",           "LineTorus3D",              "", //geo_line_torus_3d
+    "geo_line_line_3d",         "Pos3Color4",                 "geometry",         "",           "Line3D",                   "",                                                 "false", //geo_line_line_3d
+    "geo_line_triangle_3d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle3D",           "",                                                 "false", //geo_line_triangle_3d
+    "geo_line_quad_3d",         "Pos3Color4",                 "geometry",         "",           "LineQuad3D",               "",                                                 "false", //geo_line_quad_3d
+    "geo_line_grid_3d",         "Pos3Color4",                 "geometry",         "",           "LineGrid3D",               "",                                                 "false", //geo_line_grid_3d
+    "geo_line_circle_3d",       "Pos3Color4",                 "geometry",         "",           "LineCircle3D",             "",                                                 "false", //geo_line_circle_3d
+    "geo_line_aabb_3d",         "Pos3Color4",                 "geometry",         "",           "LineAABB3D",               "",                                                 "false", //geo_line_aabb_3d
+    "geo_line_sphere_3d",       "Pos3Color4",                 "geometry",         "",           "LineSphere3D",             "",                                                 "false", //geo_line_sphere_3d
+    "geo_line_cylinder_3d",     "Pos3Color4",                 "geometry",         "",           "LineCylinder3D",           "",                                                 "false", //geo_line_cylinder_3d
+    "geo_line_capsule_3d",      "Pos3Color4",                 "geometry",         "",           "LineCapsule3D",            "",                                                 "false", //geo_line_capsule_3d
+    "geo_line_cone_3d",         "Pos3Color4",                 "geometry",         "",           "LineCone3D",               "",                                                 "false", //geo_line_cone_3d
+    "geo_line_torus_3d",        "Pos3Color4",                 "geometry",         "",           "LineTorus3D",              "",                                                 "false", //geo_line_torus_3d
     
-    "geo_flat_triangle_3d",     "Pos3Color4",                 "geometry",         "",           "FlatTriangle3D",           "", //geo_flat_triangle_3d
-    "geo_flat_quad_3d",         "Pos3Color4",                 "geometry",         "",           "FlatQuad3D",               "", //geo_flat_quad_3d
-    "geo_flat_circle_3d",       "Pos3Color4",                 "geometry",         "",           "FlatCircle3D",             "", //geo_flat_circle_3d
-    "geo_flat_aabb_3d",         "Pos3Color4",                 "geometry",         "",           "FlatAABB3D",               "", //geo_flat_aabb_3d
-    "geo_flat_sphere_3d",       "Pos3Color4",                 "geometry",         "",           "FlatSphere3D",             "", //geo_flat_sphere_3d
-    "geo_flat_cylinder_3d",     "Pos3Color4",                 "geometry",         "",           "FlatCylinder3D",           "", //geo_flat_cylinder_3d
-    "geo_flat_capsule_3d",      "Pos3Color4",                 "geometry",         "",           "FlatCapsule3D",            "", //geo_flat_capsule_3d
-    "geo_flat_cone_3d",         "Pos3Color4",                 "geometry",         "",           "FlatCone3D",               "", //geo_flat_cone_3d
-    "geo_flat_torus_3d",        "Pos3Color4",                 "geometry",         "",           "FlatTorus3D",              "", //geo_flat_torus_3d
+    "geo_flat_triangle_3d",     "Pos3Color4",                 "geometry",         "",           "FlatTriangle3D",           "",                                                 "false", //geo_flat_triangle_3d
+    "geo_flat_quad_3d",         "Pos3Color4",                 "geometry",         "",           "FlatQuad3D",               "",                                                 "false", //geo_flat_quad_3d
+    "geo_flat_circle_3d",       "Pos3Color4",                 "geometry",         "",           "FlatCircle3D",             "",                                                 "false", //geo_flat_circle_3d
+    "geo_flat_aabb_3d",         "Pos3Color4",                 "geometry",         "",           "FlatAABB3D",               "",                                                 "false", //geo_flat_aabb_3d
+    "geo_flat_sphere_3d",       "Pos3Color4",                 "geometry",         "",           "FlatSphere3D",             "",                                                 "false", //geo_flat_sphere_3d
+    "geo_flat_cylinder_3d",     "Pos3Color4",                 "geometry",         "",           "FlatCylinder3D",           "",                                                 "false", //geo_flat_cylinder_3d
+    "geo_flat_capsule_3d",      "Pos3Color4",                 "geometry",         "",           "FlatCapsule3D",            "",                                                 "false", //geo_flat_capsule_3d
+    "geo_flat_cone_3d",         "Pos3Color4",                 "geometry",         "",           "FlatCone3D",               "",                                                 "false", //geo_flat_cone_3d
+    "geo_flat_torus_3d",        "Pos3Color4",                 "geometry",         "",           "FlatTorus3D",              "",                                                 "false", //geo_flat_torus_3d
 
-    "geo_entity_triangle",      "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityTriangle",           "", //geo_entity_triangle
-    "geo_entity_quad",          "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityQuad",               "", //geo_entity_quad
-    "geo_entity_grid",          "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityGrid",               "", //geo_entity_grid
-    "geo_entity_circle",        "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityCircle",             "", //geo_entity_circle
-    "geo_entity_aabb",          "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityAABB",               "", //geo_entity_aabb
-    "geo_entity_sphere",        "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntitySphere",             "", //geo_entity_sphere
-    "geo_entity_geosphere",     "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityGeoSphere",          "", //geo_entity_geosphere
-    "geo_entity_cylinder",      "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityCylinder",           "", //geo_entity_cylinder
-    "geo_entity_capsule",       "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityCapsule",            "", //geo_entity_capsule
-    "geo_entity_cone",          "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityCone",               "", //geo_entity_cone
-    "geo_entity_torus",         "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityTorus",              "", //geo_entity_torus
-    //"geo_entity_skybox",       "Pos3Color4Normal3Tex2",      "geometry",         "",          "EntitySkyBox",             "", //geo_entity_skybox
-    //"geo_entity_skydome",      "Pos3Color4Normal3Tex2",      "geometry",         "",          "EntitySkyDome",            "", //geo_entity_skydome
-    //"geo_entity_terrain",      "Pos3Color4Normal3Tex2",      "geometry",         "",          "EntityTerrain",            "", //geo_entity_terrain
+    "geo_entity_triangle",      "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityTriangle",           "",                                                 "false", //geo_entity_triangle
+    "geo_entity_quad",          "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityQuad",               "",                                                 "false", //geo_entity_quad
+    "geo_entity_grid",          "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityGrid",               "",                                                 "false", //geo_entity_grid
+    "geo_entity_circle",        "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityCircle",             "",                                                 "false", //geo_entity_circle
+    "geo_entity_aabb",          "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityAABB",               "",                                                 "false", //geo_entity_aabb
+    "geo_entity_sphere",        "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntitySphere",             "",                                                 "false", //geo_entity_sphere
+    "geo_entity_geosphere",     "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityGeoSphere",          "",                                                 "false", //geo_entity_geosphere
+    "geo_entity_cylinder",      "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityCylinder",           "",                                                 "false", //geo_entity_cylinder
+    "geo_entity_capsule",       "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityCapsule",            "",                                                 "false", //geo_entity_capsule
+    "geo_entity_cone",          "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityCone",               "",                                                 "false", //geo_entity_cone
+    "geo_entity_torus",         "Pos3Color4Normal3Tex2",      "geometry",         "",           "EntityTorus",              "",                                                 "false", //geo_entity_torus
+    //"geo_entity_skybox",       "Pos3Color4Normal3Tex2",      "geometry",         "",          "EntitySkyBox",             "",                                                 "false", //geo_entity_skybox
+    //"geo_entity_skydome",      "Pos3Color4Normal3Tex2",      "geometry",         "",          "EntitySkyDome",            "",                                                 "false", //geo_entity_skydome
+    //"geo_entity_terrain",      "Pos3Color4Normal3Tex2",      "geometry",         "",          "EntityTerrain",            "",                                                 "false", //geo_entity_terrain
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
@@ -1454,37 +1454,30 @@ FPointF Vulkan_017_Collision::Convert2PointF(double x, double y)
 }
 void Vulkan_017_Collision::IsCollision(double x, double y, bool isHover)
 {
+    FColor color;
     if (isHover)
     {
-        //Line 2D
-        IsCollision_Line2D(x, y, this->pRend_Line2D, s_color_Hover);
-        IsCollision_LineTriangle2D(x, y, this->pRend_LineTriangle2D, s_color_Hover);
-        IsCollision_LineQuad2D(x, y, this->pRend_LineQuad2D, s_color_Hover);
-        IsCollision_LineGrid2D(x, y, this->pRend_LineGrid2D, s_color_Hover);
-        IsCollision_LineCircle2D(x, y, this->pRend_LineCircle2D, s_color_Hover);
-        
-        //Flat 2D
-        IsCollision_FlatTriangle2D(x, y, this->pRend_FlatTriangle2D, s_color_Hover);
-        IsCollision_FlatQuad2D(x, y, this->pRend_FlatQuad2D, s_color_Hover);
-        IsCollision_FlatCircle2D(x, y, this->pRend_FlatCircle2D, s_color_Hover);
+        color = s_color_Hover;
     }
     else
     {
-        //Line 2D
-        IsCollision_Line2D(x, y, this->pRend_Line2D, s_color_Select);
-        IsCollision_LineTriangle2D(x, y, this->pRend_LineTriangle2D, s_color_Select);
-        IsCollision_LineQuad2D(x, y, this->pRend_LineQuad2D, s_color_Select);
-        IsCollision_LineGrid2D(x, y, this->pRend_LineGrid2D, s_color_Select);
-        IsCollision_LineCircle2D(x, y, this->pRend_LineCircle2D, s_color_Select);
-        
-        //Flat 2D
-        IsCollision_FlatTriangle2D(x, y, this->pRend_FlatTriangle2D, s_color_Select);
-        IsCollision_FlatQuad2D(x, y, this->pRend_FlatQuad2D, s_color_Select);
-        IsCollision_FlatCircle2D(x, y, this->pRend_FlatCircle2D, s_color_Select);
+        color = s_color_Select;
     }
+
+    //Line 2D
+    IsCollision_Line2D(x, y, this->pRend_Line2D, color, isHover);
+    IsCollision_LineTriangle2D(x, y, this->pRend_LineTriangle2D, color, isHover);
+    IsCollision_LineQuad2D(x, y, this->pRend_LineQuad2D, color, isHover);
+    IsCollision_LineGrid2D(x, y, this->pRend_LineGrid2D, color, isHover);
+    IsCollision_LineCircle2D(x, y, this->pRend_LineCircle2D, color, isHover);
+    
+    //Flat 2D
+    IsCollision_FlatTriangle2D(x, y, this->pRend_FlatTriangle2D, color, isHover);
+    IsCollision_FlatQuad2D(x, y, this->pRend_FlatQuad2D, color, isHover);
+    IsCollision_FlatCircle2D(x, y, this->pRend_FlatCircle2D, color, isHover);
 }
 
-bool Vulkan_017_Collision::IsCollision_Line2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+bool Vulkan_017_Collision::IsCollision_Line2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
     FPointI ptMouse((int32)x, (int32)y);
     FMeshCreateParam_Line2D* pLine2D = (FMeshCreateParam_Line2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
@@ -1501,7 +1494,7 @@ bool Vulkan_017_Collision::IsCollision_Line2D(double x, double y, ModelObjectRen
     obj.color = s_color_Line2D;
     return false;
 }
-bool Vulkan_017_Collision::IsCollision_LineTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+bool Vulkan_017_Collision::IsCollision_LineTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
     FPointI ptMouse((int32)x, (int32)y);
     FMeshCreateParam_LineTriangle2D* pLineTriangle2D = (FMeshCreateParam_LineTriangle2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
@@ -1518,7 +1511,7 @@ bool Vulkan_017_Collision::IsCollision_LineTriangle2D(double x, double y, ModelO
     obj.color = s_color_LineTriangle2D;
     return false;
 }
-bool Vulkan_017_Collision::IsCollision_LineQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+bool Vulkan_017_Collision::IsCollision_LineQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
     FPointI ptMouse((int32)x, (int32)y);
     FMeshCreateParam_LineQuad2D* pLineQuad2D = (FMeshCreateParam_LineQuad2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
@@ -1534,7 +1527,7 @@ bool Vulkan_017_Collision::IsCollision_LineQuad2D(double x, double y, ModelObjec
     obj.color = s_color_LineQuad2D;
     return false;
 }
-bool Vulkan_017_Collision::IsCollision_LineGrid2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+bool Vulkan_017_Collision::IsCollision_LineGrid2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
     FPointI ptMouse((int32)x, (int32)y);
     FMeshCreateParam_LineGrid2D* pLineGrid2D = (FMeshCreateParam_LineGrid2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
@@ -1550,12 +1543,12 @@ bool Vulkan_017_Collision::IsCollision_LineGrid2D(double x, double y, ModelObjec
     obj.color = s_color_LineGrid2D;
     return false;
 }
-bool Vulkan_017_Collision::IsCollision_LineCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+bool Vulkan_017_Collision::IsCollision_LineCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
     FPointI ptMouse((int32)x, (int32)y);
     FMeshCreateParam_LineCircle2D* pLineCircle2D = (FMeshCreateParam_LineCircle2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
     FPointI ptCircle_Center = ConvertNDC2ScreenPointI(pLineCircle2D->vCenter);
-    int32 radius = pLineCircle2D->GetRadiusI();
+    int32 radius = pLineCircle2D->GetRadiusI(this->poWindowContentScale);
     LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
     if (FMath::Intersects_PointInCircle2DI(ptMouse, ptCircle_Center, radius))
     {
@@ -1567,7 +1560,7 @@ bool Vulkan_017_Collision::IsCollision_LineCircle2D(double x, double y, ModelObj
     return false;
 }
 
-bool Vulkan_017_Collision::IsCollision_FlatTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+bool Vulkan_017_Collision::IsCollision_FlatTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {   
     FPointI ptMouse((int32)x, (int32)y);
     FMeshCreateParam_FlatTriangle2D* pFlatTriangle2D = (FMeshCreateParam_FlatTriangle2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
@@ -1584,7 +1577,7 @@ bool Vulkan_017_Collision::IsCollision_FlatTriangle2D(double x, double y, ModelO
     obj.color = s_color_FlatTriangle2D;
     return false;
 }
-bool Vulkan_017_Collision::IsCollision_FlatQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+bool Vulkan_017_Collision::IsCollision_FlatQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
     FPointI ptMouse((int32)x, (int32)y);
     FMeshCreateParam_FlatQuad2D* pFlatQuad2D = (FMeshCreateParam_FlatQuad2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
@@ -1600,12 +1593,12 @@ bool Vulkan_017_Collision::IsCollision_FlatQuad2D(double x, double y, ModelObjec
     obj.color = s_color_FlatQuad2D;
     return false;   
 }
-bool Vulkan_017_Collision::IsCollision_FlatCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color)
+bool Vulkan_017_Collision::IsCollision_FlatCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
     FPointI ptMouse((int32)x, (int32)y);
     FMeshCreateParam_FlatCircle2D* pFlatCircle2D = (FMeshCreateParam_FlatCircle2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
     FPointI ptCircle_Center = ConvertNDC2ScreenPointI(pFlatCircle2D->vCenter);
-    int32 radius = pFlatCircle2D->GetRadiusI();
+    int32 radius = pFlatCircle2D->GetRadiusI(this->poWindowContentScale);
     LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
     if (FMath::Intersects_PointInCircle2DI(ptMouse, ptCircle_Center, radius))
     {
@@ -2357,12 +2350,14 @@ void Vulkan_017_Collision::createMeshes()
 {
     for (int i = 0; i < g_MeshCount; i++)
     {
-        String nameMesh = g_MeshPaths[6 * i + 0];
-        String nameVertexType = g_MeshPaths[6 * i + 1];
-        String nameMeshType = g_MeshPaths[6 * i + 2];
-        String pathMesh = g_MeshPaths[6 * i + 3];
-        String nameGeometryType = g_MeshPaths[6 * i + 4];
-        String nameGeometryParam = g_MeshPaths[6 * i + 5];
+        String nameMesh = g_MeshPaths[7 * i + 0];
+        String nameVertexType = g_MeshPaths[7 * i + 1];
+        String nameMeshType = g_MeshPaths[7 * i + 2];
+        String pathMesh = g_MeshPaths[7 * i + 3];
+        String nameGeometryType = g_MeshPaths[7 * i + 4];
+        String nameGeometryParam = g_MeshPaths[7 * i + 5];
+        String nameGeometryIsVertexUpdate = g_MeshPaths[7 * i + 6];
+        bool isVertexUpdate = FUtilString::ParserBool(nameGeometryIsVertexUpdate);
 
         FMeshVertexType typeVertex = F_ParseMeshVertexType(nameVertexType); 
         FMeshType typeMesh = F_ParseMeshType(nameMeshType);
@@ -2375,6 +2370,18 @@ void Vulkan_017_Collision::createMeshes()
         if (!nameGeometryParam.empty())
         {
             pParam = FMeshGeometry::CreateParam(typeGeometryType, nameGeometryParam);
+            if (typeGeometryType == F_MeshGeometry_LineCircle2D)
+            {
+                FMeshCreateParam_LineCircle2D* pParam_LineCircle2D = (FMeshCreateParam_LineCircle2D*)pParam;
+                pParam_LineCircle2D->viewWidth = this->poViewport.width;
+                pParam_LineCircle2D->viewHeight = this->poViewport.height;
+            }
+            else if (typeGeometryType == F_MeshGeometry_FlatCircle2D)
+            {
+                FMeshCreateParam_FlatCircle2D* pParam_FlatCircle2D = (FMeshCreateParam_FlatCircle2D*)pParam;
+                pParam_FlatCircle2D->viewWidth = this->poViewport.width;
+                pParam_FlatCircle2D->viewHeight = this->poViewport.height;
+            }
         }
 
         Mesh* pMesh = new Mesh(this,
@@ -2386,7 +2393,7 @@ void Vulkan_017_Collision::createMeshes()
                                pParam);
         bool isFlipY = g_MeshIsFlipYs[i];
         bool isTransformLocal = g_MeshIsTranformLocals[i];
-        if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
+        if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i], isVertexUpdate))
         {
             String msg = "Vulkan_017_Collision::createMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());

@@ -132,6 +132,14 @@ namespace LostPeter
         }
 
         //1> Vertex/Index Data
+        this->sphere = meshDataPC.sphere;
+        this->aabb = meshDataPC.aabb;
+        if (isTransformLocal)
+        {
+            this->sphere.Transform(matTransformLocal);
+            this->aabb.TransformAffine(matTransformLocal);
+        }
+
         int count_vertex = (int)meshDataPC.vertices.size();
         this->vertices_Pos3Color4.clear();
         this->vertices_Pos3Color4.reserve(count_vertex);
@@ -213,6 +221,14 @@ namespace LostPeter
     bool VulkanWindow::MeshSub::CreateMeshSub(FMeshData& meshData, bool isTransformLocal, const FMatrix4& matTransformLocal)
     {
         //1> Vertex/Index Data
+        this->sphere = meshData.sphere;
+        this->aabb = meshData.aabb;
+        if (isTransformLocal)
+        {
+            this->sphere.Transform(matTransformLocal);
+            this->aabb.TransformAffine(matTransformLocal);
+        }
+
         int count_vertex = (int)meshData.vertices.size();
         if (this->poTypeVertex == F_MeshVertex_Pos3Color4Tex2)
         {   
@@ -5039,6 +5055,9 @@ namespace LostPeter
         {
             OnMouseHover(cursorX, cursorY);
         }
+
+        this->mousePosLast.x = (float)cursorX;
+        this->mousePosLast.y = (float)cursorY;
     }
     void VulkanWindow::OnMouseLeftDown(double x, double y)
     {
@@ -5046,8 +5065,6 @@ namespace LostPeter
         {
             OnEditorCoordinateMouseLeftDown(x, y);
         }
-        this->mousePosLast.x = (float)x;
-        this->mousePosLast.y = (float)y;
     }
     void VulkanWindow::OnMouseLeftUp(double x, double y)
     {   
@@ -5061,8 +5078,6 @@ namespace LostPeter
         {
 
         }
-        this->mousePosLast.x = (float)x;
-        this->mousePosLast.y = (float)y;
     }
     void VulkanWindow::OnMouseRightUp(double x, double y)
     {
@@ -5075,8 +5090,6 @@ namespace LostPeter
         {
 
         }
-        this->mousePosLast.x = (float)x;
-        this->mousePosLast.y = (float)y;
     }
     void VulkanWindow::OnMouseMiddleUp(double x, double y)
     {
@@ -5099,9 +5112,6 @@ namespace LostPeter
         {
             
         }
-
-        this->mousePosLast.x = (float)x;
-        this->mousePosLast.y = (float)y;
     }
     void VulkanWindow::OnMouseHover(double x, double y)
     {
@@ -6151,6 +6161,8 @@ namespace LostPeter
 
         int width, height;
         glfwGetFramebufferSize(this->pWindow, &width, &height);
+        this->poFramebufferSize.x = width;
+        this->poFramebufferSize.y = height;
         float scaleX, scaleY;
         glfwGetWindowContentScale(this->pWindow, &scaleX, &scaleY);
         this->poWindowContentScale.x = scaleX;
@@ -11292,14 +11304,60 @@ namespace LostPeter
                     void VulkanWindow::commonConfig()
                     {
                         ImGui::Text("Frametime: %f", this->fFPS);
-                        ImGui::Text("[R - ResetCamera]; [F - WireFrame]; [T - Rotate];");
-                        ImGui::Separator();
 
-                        commonOpConfig();
+                        ImGui::Separator();
+                        commonShowConfig();
+
+                        ImGui::Separator();
+                        commonEditorConfig();
                     }
-                        void VulkanWindow::commonOpConfig()
+                        void VulkanWindow::commonShowConfig()
                         {
-                            if (ImGui::CollapsingHeader("Common Settings"))
+                            if (ImGui::CollapsingHeader("Common Show"))
+                            {
+                                ImGui::Text("Op ResetCamera -- Key R");
+                                ImGui::Text("Op WireFrame -- Key F");
+                                ImGui::Text("Op Rotate -- Key T");
+
+                                ImGui::Separator();
+                                ImGui::Text("Viewport Offset: [%f, %f]",
+                                            this->poViewport.x,
+                                            this->poViewport.y);
+                                ImGui::Text("Viewport Size: [%f, %f]",
+                                            this->poViewport.width,
+                                            this->poViewport.height);
+                                ImGui::Text("Framebuffer Size: [%f, %f]",
+                                            this->poFramebufferSize.x,
+                                            this->poFramebufferSize.y);
+                                ImGui::Text("Glfw WindowContent Scale: [%f, %f]",
+                                            this->poWindowContentScale.x,
+                                            this->poWindowContentScale.y);
+
+                                ImGui::Separator();
+                                ImGui::Text("Mouse Screen XY: [%f, %f]", 
+                                            this->mousePosLast.x,
+                                            this->mousePosLast.y);
+                                if (this->poViewport.width > 0 && this->poViewport.height > 0)
+                                ImGui::Text("Mouse Viewport XY: [%f, %f]", 
+                                            this->mousePosLast.x / this->poViewport.width,
+                                            this->mousePosLast.y / this->poViewport.height);
+                                ImGui::Text("Mouse NDC XY: [%f, %f]", 
+                                            (float)((this->mousePosLast.x - this->poViewport.x) * 2.0f / this->poViewport.width - 1.0f),
+                                            (float)(1.0f - (this->mousePosLast.y - this->poViewport.y) * 2.0f / this->poViewport.height));
+                                ImGui::Text("Mouse LeftDown: [%s]", 
+                                            this->mouseButtonDownLeft ? "true" : "false");
+                                ImGui::Text("Mouse RightDown: [%s]", 
+                                            this->mouseButtonDownRight ? "true" : "false");
+                                ImGui::Text("Mouse MiddleDown: [%s]", 
+                                            this->mouseButtonDownMiddle ? "true" : "false");
+
+                                ImGui::Separator();
+                                
+                            }
+                        }
+                        void VulkanWindow::commonEditorConfig()
+                        {
+                            if (ImGui::CollapsingHeader("Common Op Settings"))
                             {
                                 ImGui::Checkbox("Is WireFrame", &cfg_isWireFrame);
                                 ImGui::Checkbox("Is Rotate", &cfg_isRotate);

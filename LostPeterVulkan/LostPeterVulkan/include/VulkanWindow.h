@@ -113,6 +113,8 @@ namespace LostPeter
             int indexMeshSub;
             bool isNeedUpdate_VertexBuffer;
             bool isNeedUpdate_IndexBuffer;
+            FSphere sphere;
+            FAABB aabb;
 
             //Vertex
             FMeshVertexType poTypeVertex;
@@ -1079,6 +1081,7 @@ namespace LostPeter
         std::vector<VkImage> poSwapChainImages;
         VkFormat poSwapChainImageFormat;
         VkExtent2D poSwapChainExtent;
+        FVector2 poFramebufferSize;
         FVector2 poWindowContentScale;
         VkImageViewVector poSwapChainImageViews;
         VkFramebufferVector poSwapChainFrameBuffers;
@@ -2096,7 +2099,8 @@ namespace LostPeter
                     virtual bool beginRenderImgui();
                         //Common
                         virtual void commonConfig();
-                            virtual void commonOpConfig();
+                            virtual void commonShowConfig();
+                            virtual void commonEditorConfig();
                         //Camera
                         virtual void cameraConfig();
                             virtual void cameraReset();

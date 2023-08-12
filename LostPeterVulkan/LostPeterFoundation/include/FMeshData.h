@@ -14,6 +14,7 @@
 
 #include "FPreDefine.h"
 #include "FMeshVertex.h"
+#include "FSphere.h"
 #include "FAABB.h"
 
 namespace LostPeterFoundation
@@ -28,6 +29,7 @@ namespace LostPeterFoundation
         Indices16Vector indices16;
         Indices32Vector indices32;
         bool bIsFlipY;
+        FSphere sphere;
         FAABB aabb;
 
         FMeshDataPC()
@@ -58,6 +60,7 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertexPC& meshVertex)
         {
+            sphere.Merge(meshVertex.pos);
             aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
         }
@@ -65,13 +68,15 @@ namespace LostPeterFoundation
         {
             vertices[nIndex] = meshVertex;
         }
-        void RefreshAABB()
+        void RefreshSphereAndAABB(const FVector3& vCenter)
         {
+            sphere.Set(vCenter, 0.001f);
             aabb.SetNull();
             size_t count = vertices.size();
             for (size_t i = 0; i < count; i++)
             {
                 FMeshVertexPC& meshVertex = vertices[i];
+                sphere.Merge(meshVertex.pos);
                 aabb.Merge(meshVertex.pos);
             }
         }
@@ -197,6 +202,7 @@ namespace LostPeterFoundation
         Indices16Vector indices16;
         Indices32Vector indices32;
         bool bIsFlipY;
+        FSphere sphere;
         FAABB aabb;
 
         FMeshDataPCT()
@@ -226,6 +232,7 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertexPCT& meshVertex)
         {
+            sphere.Merge(meshVertex.pos);
             aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
         }
@@ -233,13 +240,15 @@ namespace LostPeterFoundation
         {
             vertices[nIndex] = meshVertex;
         }
-        void RefreshAABB()
+        void RefreshSphereAndAABB(const FVector3& vCenter)
         {
+            sphere.Set(vCenter, 0.001f);
             aabb.SetNull();
             size_t count = vertices.size();
             for (size_t i = 0; i < count; i++)
             {
                 FMeshVertexPCT& meshVertex = vertices[i];
+                sphere.Merge(meshVertex.pos);
                 aabb.Merge(meshVertex.pos);
             }
         }
@@ -366,6 +375,7 @@ namespace LostPeterFoundation
         Indices16Vector indices16;
         Indices32Vector indices32;
         bool bIsFlipY;
+        FSphere sphere;
         FAABB aabb;
 
         FMeshData()
@@ -396,6 +406,7 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertex& meshVertex)
         {
+            sphere.Merge(meshVertex.pos);
             aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
         }
@@ -403,13 +414,15 @@ namespace LostPeterFoundation
         {
             vertices[nIndex] = meshVertex;
         }
-        void RefreshAABB()
+        void RefreshSphereAndAABB(const FVector3& vCenter)
         {
+            sphere.Set(vCenter, 0.001f);
             aabb.SetNull();
             size_t count = vertices.size();
             for (size_t i = 0; i < count; i++)
             {
                 FMeshVertex& meshVertex = vertices[i];
+                sphere.Merge(meshVertex.pos);
                 aabb.Merge(meshVertex.pos);
             }
         }
@@ -535,6 +548,7 @@ namespace LostPeterFoundation
         Indices16Vector indices16;
         Indices32Vector indices32;
         bool bIsFlipY;
+        FSphere sphere;
         FAABB aabb;
 
         FMeshDataUV2()
@@ -564,6 +578,7 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertexUV2& meshVertex)
         {
+            sphere.Merge(meshVertex.pos);
             aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
         }
@@ -571,13 +586,15 @@ namespace LostPeterFoundation
         {
             vertices[nIndex] = meshVertex;
         }
-        void RefreshAABB()
+        void RefreshSphereAndAABB(const FVector3& vCenter)
         {
+            sphere.Set(vCenter, 0.001f);
             aabb.SetNull();
             size_t count = vertices.size();
             for (size_t i = 0; i < count; i++)
             {
                 FMeshVertexUV2& meshVertex = vertices[i];
+                sphere.Merge(meshVertex.pos);
                 aabb.Merge(meshVertex.pos);
             }
         }
@@ -703,6 +720,7 @@ namespace LostPeterFoundation
         Indices16Vector indices16;
         Indices32Vector indices32;
         bool bIsFlipY;
+        FSphere sphere;
         FAABB aabb;
 
         FMeshDataSkin()
@@ -732,6 +750,7 @@ namespace LostPeterFoundation
         }
         void AddVertex(const FMeshVertexSkin& meshVertex)
         {
+            sphere.Merge(meshVertex.pos);
             aabb.Merge(meshVertex.pos);
             vertices.push_back(meshVertex);
         }
@@ -739,13 +758,15 @@ namespace LostPeterFoundation
         {
             vertices[nIndex] = meshVertex;
         }
-        void RefreshAABB()
+        void RefreshSphereAndAABB(const FVector3& vCenter)
         {
+            sphere.Set(vCenter, 0.001f);
             aabb.SetNull();
             size_t count = vertices.size();
             for (size_t i = 0; i < count; i++)
             {
                 FMeshVertexSkin& meshVertex = vertices[i];
+                sphere.Merge(meshVertex.pos);
                 aabb.Merge(meshVertex.pos);
             }
         }

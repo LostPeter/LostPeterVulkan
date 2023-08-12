@@ -44,18 +44,30 @@ namespace LostPeterFoundation
 
     bool FSphere::IfInSphere(const FSphere& sphere) const
     {
-        float d = sphere.m_fRadius - m_fRadius;
-        if (d < 0.0f)
+        float dis = sphere.m_fRadius - m_fRadius;
+        if (dis < 0.0f)
             return false;
-        return (FMath::Length2(m_vCenter - sphere.m_vCenter) < d * d);
+        return (FMath::Length2(m_vCenter - sphere.m_vCenter) < dis * dis);
     }
 
     bool FSphere::IfOutOfSphere(const FSphere& sphere) const
     {
-        float d = sphere.m_fRadius - m_fRadius;
-        if (d > 0.0f)
-            return false;
-        return (FMath::Length2(m_vCenter - sphere.m_vCenter) < d * d);
+        if (!IfInSphere(sphere))
+            return true;
+        return false;
+    }
+
+    void FSphere::Merge(const FVector3& point)
+    {
+        float dis = FMath::Length2(this->m_vCenter - point);
+        if (dis <= this->m_fRadius)
+            return;
+        this->m_fRadius = dis;
+    }
+
+    void FSphere::Transform(const FMatrix4& matTransform)
+    {
+        this->m_vCenter = FMath::Transform(matTransform, this->m_vCenter);
     }
 
     bool FSphere::operator ==(const FSphere& sphere) const

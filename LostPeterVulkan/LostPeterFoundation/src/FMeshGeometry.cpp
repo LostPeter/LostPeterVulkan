@@ -214,13 +214,13 @@ namespace LostPeterFoundation
 
         return true;
     }
-    int32 FMeshCreateParam_LineCircle2D::GetRadiusI()
+    int32 FMeshCreateParam_LineCircle2D::GetRadiusI(const FVector2& scaleWindow)
     {
         if (this->viewWidth >= this->viewHeight)
         {
-            return (int32)(this->radius * this->viewHeight);
+            return (int32)(this->radius * this->viewHeight / scaleWindow.y);
         }
-        return (int32)(this->radius * this->viewWidth);
+        return (int32)(this->radius * this->viewWidth / scaleWindow.x);
     }
 
     ////////////////////////////////// Flat2D ////////////////////////////////
@@ -343,13 +343,13 @@ namespace LostPeterFoundation
         return true;
     }
 
-    int32 FMeshCreateParam_FlatCircle2D::GetRadiusI()
+    int32 FMeshCreateParam_FlatCircle2D::GetRadiusI(const FVector2& scaleWindow)
     {
         if (this->viewWidth >= this->viewHeight)
         {
-            return (int32)(this->radius * this->viewHeight);
+            return (int32)(this->radius * this->viewHeight / scaleWindow.y);
         }
-        return (int32)(this->radius * this->viewWidth);
+        return (int32)(this->radius * this->viewWidth / scaleWindow.x);
     }
 
 
@@ -2085,7 +2085,7 @@ namespace LostPeterFoundation
             SetVertex(meshDataPC, index, FMeshVertexPC(vPos, vColor));
             index++;
         }
-        meshDataPC.RefreshAABB();
+        meshDataPC.RefreshSphereAndAABB(vC);
 
         //Index
         ResizeIndexCount(meshDataPC, faceCount * 3);
@@ -2170,7 +2170,7 @@ namespace LostPeterFoundation
 
             index++;
         }
-        meshDataPC.RefreshAABB();
+        meshDataPC.RefreshSphereAndAABB(vC);
     }
     void FMeshGeometry::UpdateFlatCircle2D(FMeshVertexPCVector& aVertexPC, 
                                            const FVector2& vCenter,
@@ -3171,7 +3171,7 @@ namespace LostPeterFoundation
             SetVertex(meshDataPC, index, FMeshVertexPC(vPos, vColor));
             index++;
         }
-        meshDataPC.RefreshAABB();
+        meshDataPC.RefreshSphereAndAABB(vCenter);
 
         //Index
         ResizeIndexCount(meshDataPC, faceCount * 3);
@@ -3985,7 +3985,7 @@ namespace LostPeterFoundation
                 SetVertex(meshData, i * n + j, vertex);
             }
         }
-        meshData.RefreshAABB();
+        meshData.RefreshSphereAndAABB(FVector3(0, 0, 0));
 
         //Index
         ResizeIndexCount(meshData, faceCount * 3);
@@ -4064,7 +4064,7 @@ namespace LostPeterFoundation
                                   (1.0f + ux) / 2.0f,  flipV ? (1.0f - (1.0f - uy) / 2.0f) : (1.0f - uy) / 2.0f));
             index++;
         }
-        meshData.RefreshAABB();
+        meshData.RefreshSphereAndAABB(FVector3(0, 0, 0));
 
         //Index
         ResizeIndexCount(meshData, faceCount * 3);
@@ -4448,7 +4448,7 @@ namespace LostPeterFoundation
             vertex.tangent.z = +radius * sinf(phi) * cosf(theta);
             vertex.tangent = FMath::Normalize(vertex.tangent);
         }
-        meshData.RefreshAABB();
+        meshData.RefreshSphereAndAABB(FVector3(0, 0 ,0));
     }
 
     void s_BuildCylinderTopCap(FMeshData& meshData, 
@@ -5043,7 +5043,7 @@ namespace LostPeterFoundation
                 SetVertex(meshData, i * vertexZ + j, vertex);
             }
         }
-        meshData.RefreshAABB();
+        meshData.RefreshSphereAndAABB(FVector3(offsetX, 0, offsetZ));
 
         //Index
         ResizeIndexCount(meshData, faceCount * 3);

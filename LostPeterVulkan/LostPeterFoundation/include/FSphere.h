@@ -65,9 +65,12 @@ namespace LostPeterFoundation
         bool Intersects_AABB(const FAABB& aabb) const;
         bool Intersects_Frustum(const FFrustum& frustum) const;
 
-
         bool IfInSphere(const FSphere& sphere) const;
         bool IfOutOfSphere(const FSphere& sphere) const;
+
+        void Merge(const FVector3& point);
+
+        void Transform(const FMatrix4& matTransform);
 
     public:
         bool operator ==(const FSphere& sphere) const;
