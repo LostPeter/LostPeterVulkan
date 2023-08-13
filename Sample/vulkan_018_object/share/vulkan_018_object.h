@@ -2,26 +2,26 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-05-22
+* Time:     2023-08-13
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VULKAN_018_TERRAIN_H_
-#define _VULKAN_018_TERRAIN_H_
+#ifndef _VULKAN_018_OBJECT_H_
+#define _VULKAN_018_OBJECT_H_
 
 #include "VulkanWindow.h"
 #include "FMath.h"
 using namespace LostPeter; 
 
-class Vulkan_018_Terrain : public VulkanWindow
+class Vulkan_018_Object : public VulkanWindow
 {
 public:
-    Vulkan_018_Terrain(int width, int height, String name);
+    Vulkan_018_Object(int width, int height, String name);
 
-public:
+public: 
     /////////////////////////// ModelObjectRend /////////////////////
     struct ModelObject;
     struct ModelObjectRend
@@ -356,7 +356,7 @@ public:
     struct ModelObject
     {
         //Window
-        Vulkan_018_Terrain* pWindow;
+        Vulkan_018_Object* pWindow;
         int index;
 
         //Name
@@ -381,7 +381,7 @@ public:
         ModelObjectRendPtrVector aRends;
         ModelObjectRendIndirect* pRendIndirect;
 
-        ModelObject(Vulkan_018_Terrain* _pWindow,
+        ModelObject(Vulkan_018_Object* _pWindow,
                     int _index)
             //Window
             : pWindow(_pWindow)

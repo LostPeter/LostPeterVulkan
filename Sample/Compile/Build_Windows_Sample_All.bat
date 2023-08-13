@@ -30,4 +30,5 @@ call ./Build_Windows_Sample.bat vulkan_014_multirenderpass %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_015_multiview %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_016_geometry %debug% %rebuild%
 call ./Build_Windows_Sample.bat vulkan_017_collision %debug% %rebuild%
-call ./Build_Windows_Sample.bat vulkan_018_terrain %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_018_object %debug% %rebuild%
+call ./Build_Windows_Sample.bat vulkan_019_terrain %debug% %rebuild%
