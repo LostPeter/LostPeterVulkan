@@ -880,6 +880,13 @@ namespace LostPeterFoundation
         return std::pair<bool, float>(hit, lowt);
     }
 
+    bool FMath::Intersects_RayTriangle_Test(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
+                                            bool positiveSide /*= true*/, bool negativeSide /*= true*/)
+    {
+        std::pair<bool, float> ret = Intersects_RayTriangle(ray, a, b, c, positiveSide, negativeSide);
+        return ret.first;
+    }
+
     bool FMath::Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb)
     {   
         std::pair<bool, float> ret = Intersects_RayAABB(ray, aabb);
@@ -907,7 +914,7 @@ namespace LostPeterFoundation
             end = newend;
         return true;
     }
-    bool FMath::Intersects_RayAABB(const FRay& ray, const FAABB& aabb, float* d1, float* d2)
+    bool FMath::Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb, float* d1, float* d2)
     {
         if (!aabb.IsValid())
             return false;

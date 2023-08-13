@@ -1256,6 +1256,19 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntityTriangle::ms_nameType = "MeshEntityTriangle"; 
     bool FMeshCreateParam_EntityTriangle::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 2)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntityTriangle::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1263,6 +1276,24 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntityQuad::ms_nameType = "MeshEntityQuad"; 
     bool FMeshCreateParam_EntityQuad::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 7)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+            this->centerX = FUtilString::ParserFloat(aParam[2]);
+            this->centerY = FUtilString::ParserFloat(aParam[3]);
+            this->width = FUtilString::ParserFloat(aParam[4]);
+            this->height = FUtilString::ParserFloat(aParam[5]);
+            this->depth = FUtilString::ParserFloat(aParam[6]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntityQuad::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1270,6 +1301,23 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntityGrid::ms_nameType = "MeshEntityGrid"; 
     bool FMeshCreateParam_EntityGrid::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 6)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+            this->width = FUtilString::ParserFloat(aParam[2]);
+            this->height = FUtilString::ParserFloat(aParam[3]);
+            this->m = FUtilString::ParserUInt(aParam[4]);
+            this->n = FUtilString::ParserUInt(aParam[5]);
+        }   
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntityGrid::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1277,6 +1325,21 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntityCircle::ms_nameType = "MeshEntityCircle";  
     bool FMeshCreateParam_EntityCircle::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 4)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+            this->radius = FUtilString::ParserFloat(aParam[2]);
+            this->segment = FUtilString::ParserUInt(aParam[3]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntityCircle::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1284,6 +1347,23 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntityAABB::ms_nameType = "MeshEntityAABB"; 
     bool FMeshCreateParam_EntityAABB::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 6)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+            this->width = FUtilString::ParserFloat(aParam[2]);
+            this->height = FUtilString::ParserFloat(aParam[3]);
+            this->depth = FUtilString::ParserFloat(aParam[4]);
+            this->numSubdivisions = FUtilString::ParserUInt(aParam[5]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntityAABB::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1291,6 +1371,22 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntitySphere::ms_nameType = "MeshEntitySphere"; 
     bool FMeshCreateParam_EntitySphere::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 5)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+            this->radius = FUtilString::ParserFloat(aParam[2]);
+            this->sliceCount = FUtilString::ParserUInt(aParam[3]);
+            this->stackCount = FUtilString::ParserUInt(aParam[4]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntitySphere::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1298,6 +1394,21 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntityGeoSphere::ms_nameType = "MeshEntityGeoSphere"; 
     bool FMeshCreateParam_EntityGeoSphere::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 4)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+            this->radius = FUtilString::ParserFloat(aParam[2]);
+            this->numSubdivisions = FUtilString::ParserUInt(aParam[3]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntityGeoSphere::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1305,6 +1416,25 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntityCylinder::ms_nameType = "MeshEntityCylinder"; 
     bool FMeshCreateParam_EntityCylinder::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 8)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+            this->radiusBottom = FUtilString::ParserFloat(aParam[2]);
+            this->radiusTop = FUtilString::ParserFloat(aParam[3]);
+            this->height = FUtilString::ParserFloat(aParam[4]);
+            this->heightOffset = FUtilString::ParserFloat(aParam[5]);
+            this->sliceCount = FUtilString::ParserUInt(aParam[6]);
+            this->stackCount = FUtilString::ParserUInt(aParam[7]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntityCylinder::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1312,6 +1442,25 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntityCapsule::ms_nameType = "MeshEntityCapsule"; 
     bool FMeshCreateParam_EntityCapsule::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 8)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+            this->radius = FUtilString::ParserFloat(aParam[2]);
+            this->height = FUtilString::ParserFloat(aParam[3]);
+            this->heightOffset = FUtilString::ParserFloat(aParam[4]);
+            this->numRings = FUtilString::ParserUInt(aParam[5]);
+            this->numSegments = FUtilString::ParserUInt(aParam[6]);
+            this->numSegHeight = FUtilString::ParserUInt(aParam[7]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntityCapsule::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1319,6 +1468,24 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntityCone::ms_nameType = "MeshEntityCone"; 
     bool FMeshCreateParam_EntityCone::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 7)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+            this->radius = FUtilString::ParserFloat(aParam[2]);
+            this->height = FUtilString::ParserFloat(aParam[3]);
+            this->heightOffset = FUtilString::ParserFloat(aParam[4]);
+            this->numSegBase = FUtilString::ParserUInt(aParam[5]);
+            this->numSegHeight = FUtilString::ParserUInt(aParam[6]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntityCone::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1326,6 +1493,23 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntityTorus::ms_nameType = "MeshEntityTorus"; 
     bool FMeshCreateParam_EntityTorus::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 6)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+            this->radius = FUtilString::ParserFloat(aParam[2]);
+            this->sectionRadius = FUtilString::ParserFloat(aParam[3]);
+            this->numSegSection = FUtilString::ParserUInt(aParam[4]);
+            this->numSegCircle = FUtilString::ParserUInt(aParam[5]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntityTorus::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1333,6 +1517,19 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntitySkyBox::ms_nameType = "MeshEntitySkyBox"; 
     bool FMeshCreateParam_EntitySkyBox::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 10)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntitySkyBox::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1340,6 +1537,19 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntitySkyDome::ms_nameType = "MeshEntitySkyDome"; 
     bool FMeshCreateParam_EntitySkyDome::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 10)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntitySkyDome::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
 
@@ -1347,6 +1557,19 @@ namespace LostPeterFoundation
     String FMeshCreateParam_EntityTerrain::ms_nameType = "MeshEntityTerrain"; 
     bool FMeshCreateParam_EntityTerrain::ParseParam(const String& nameParam)
     {
+        StringVector aParam = FUtilString::Split(nameParam, ";");
+        size_t count = aParam.size();
+        if (count == 2)
+        {
+            this->flipV = FUtilString::ParserBool(aParam[0]);
+            this->rightHand = FUtilString::ParserBool(aParam[1]);
+        }
+        else
+        {
+            F_Assert(false && "FMeshCreateParam_EntityTerrain::ParseParam: Wrong param count !");
+            return false;
+        }
+
         return true;
     }
     

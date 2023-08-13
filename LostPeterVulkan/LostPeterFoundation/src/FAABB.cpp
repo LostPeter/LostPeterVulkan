@@ -186,7 +186,7 @@ namespace LostPeterFoundation
     bool FAABB::Intersects_Ray(const FRay& ray) const
     {
         float d1,d2;
-        return FMath::Intersects_RayAABB(ray, *this, &d1, &d2);
+        return FMath::Intersects_RayAABB_Test(ray, *this, &d1, &d2);
     }
 
     bool FAABB::Intersects_Plane(const FPlane& plane) const

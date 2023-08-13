@@ -155,12 +155,12 @@ float3 calculate_Specular_Phong(float3 specularMaterial,
     return specularMaterial * specularLight * pow(max(dot(V, R), 0), shininess);
 }
 float3 calculate_Specular_BlinnPhong(float3 specularMaterial, 
-                                    float3 specularLight,
-                                    float shininess,
-                                    float3 posWorld,
-                                    float3 posEye,
-                                    float3 L,
-                                    float3 N)
+                                     float3 specularLight,
+                                     float shininess,
+                                     float3 posWorld,
+                                     float3 posEye,
+                                     float3 L,
+                                     float3 N)
 {
     float3 V = normalize(posEye - posWorld);
     float3 H = normalize(L + V);

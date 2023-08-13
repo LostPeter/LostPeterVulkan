@@ -4361,6 +4361,92 @@ namespace LostPeter
     }
 
 
+    /////////////////////////// EditorLineFlat2DCollector /////////
+    const String VulkanWindow::EditorLineFlat2DCollector::s_strNameShader_LineFlat2D_Vert = "vert_editor_line_2d";
+    const String VulkanWindow::EditorLineFlat2DCollector::s_strNameShader_LineFlat2D_Frag = "frag_editor_line_2d";
+    VulkanWindow::EditorLineFlat2DCollector::EditorLineFlat2DCollector(VulkanWindow* _pWindow)
+        : EditorBase(_pWindow)
+
+        , poBuffers_ObjectCB(VK_NULL_HANDLE)
+        , poBuffersMemory_ObjectCB(VK_NULL_HANDLE)
+    {
+
+    }
+    VulkanWindow::EditorLineFlat2DCollector::~EditorLineFlat2DCollector()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat2DCollector::Destroy()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat2DCollector::UpdateCBs()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat2DCollector::initConfigs()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat2DCollector::initBufferUniforms()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat2DCollector::initPipelineGraphics()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat2DCollector::updateDescriptorSets_Graphics()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat2DCollector::destroyBufferUniforms()
+    {
+
+    }
+
+    /////////////////////////// EditorLineFlat3DCollector /////////
+    const String VulkanWindow::EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Vert = "vert_editor_line_3d";
+    const String VulkanWindow::EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Frag = "frag_editor_line_3d";
+    VulkanWindow::EditorLineFlat3DCollector::EditorLineFlat3DCollector(VulkanWindow* _pWindow)
+        : EditorBase(_pWindow)
+    {
+
+    }
+    VulkanWindow::EditorLineFlat3DCollector::~EditorLineFlat3DCollector()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat3DCollector::Destroy()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat3DCollector::UpdateCBs()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat3DCollector::initConfigs()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat3DCollector::initBufferUniforms()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat3DCollector::initPipelineGraphics()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat3DCollector::updateDescriptorSets_Graphics()
+    {
+
+    }
+    void VulkanWindow::EditorLineFlat3DCollector::destroyBufferUniforms()
+    {
+
+    }
+
+    /////////////////////////// VulkanWindow //////////////////////
     VulkanWindow::Mesh* VulkanWindow::CreateMesh(const MeshInfo* pMI)
     {
         Mesh* pMesh = new VulkanWindow::Mesh(this, 
@@ -4883,6 +4969,8 @@ namespace LostPeter
         , pEditorGrid(nullptr)
         , pEditorCameraAxis(nullptr)
         , pEditorCoordinateAxis(nullptr)
+        , pEditorLineFlat2DCollector(nullptr)
+        , pEditorLineFlat3DCollector(nullptr)
     {
         cfg_StencilOpFront.failOp = VK_STENCIL_OP_KEEP;
         cfg_StencilOpFront.passOp = VK_STENCIL_OP_KEEP;
@@ -10956,6 +11044,12 @@ namespace LostPeter
 
             //3> createEditor_CoordinateAxis
             createEditor_CoordinateAxis();
+
+            //4> createEditor_LineFlat2DCollector
+            createEditor_LineFlat2DCollector();
+
+            //5> createEditor_LineFlat3DCollector
+            createEditor_LineFlat3DCollector();
         }
         F_LogInfo("**********<2-5> VulkanWindow::createEditor finish **********");
     }
@@ -10980,11 +11074,27 @@ namespace LostPeter
 
             F_LogInfo("<2-5-3> VulkanWindow::createEditor_CoordinateAxis finish !");
         }
+        void VulkanWindow::createEditor_LineFlat2DCollector()
+        {
+            this->pEditorLineFlat2DCollector = new EditorLineFlat2DCollector(this);
+            this->pEditorLineFlat2DCollector->Init();
+
+            F_LogInfo("<2-5-4> VulkanWindow::createEditor_LineFlat2DCollector finish !");
+        }
+        void VulkanWindow::createEditor_LineFlat3DCollector()
+        {
+            this->pEditorLineFlat3DCollector = new EditorLineFlat3DCollector(this);
+            this->pEditorLineFlat3DCollector->Init();
+
+            F_LogInfo("<2-5-5> VulkanWindow::createEditor_LineFlat3DCollector finish !");
+        }
     void VulkanWindow::destroyEditor()
     {
         F_DELETE(this->pEditorGrid)
         F_DELETE(this->pEditorCameraAxis)
         F_DELETE(this->pEditorCoordinateAxis)
+        F_DELETE(this->pEditorLineFlat2DCollector)
+        F_DELETE(this->pEditorLineFlat3DCollector)
     }
 
     void VulkanWindow::resizeWindow(int w, int h, bool force)

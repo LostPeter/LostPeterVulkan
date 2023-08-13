@@ -668,8 +668,11 @@ namespace LostPeterFoundation
         static std::pair<bool, float> Intersects_RayPlaneList(const FRay& ray, FPlaneList& listPlanes, bool normalIsOutside);
         static std::pair<bool, float> Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool discardInside = true);			
         static std::pair<bool, float> Intersects_RayAABB(const FRay& ray, const FAABB& aabb);
+
+        static bool Intersects_RayTriangle_Test(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
+                                                bool positiveSide = true, bool negativeSide = true);
         static bool Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb);
-        static bool	Intersects_RayAABB(const FRay& ray, const FAABB& aabb, float* d1, float* d2);
+        static bool	Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb, float* d1, float* d2);
         
         //Sphere - Shape
         static bool	Intersects_SpherePlane(const FSphere& sphere, const FPlane& plane);

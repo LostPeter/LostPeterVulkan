@@ -996,18 +996,68 @@ namespace LostPeter
             virtual void destroyBufferUniforms();
             virtual void destroyPipelineGraphics();
         };
-
-        /////////////////////////// EditorLineFlatCollector ///////////
-        class utilExport EditorLineFlatCollector : public EditorBase
+        
+        /////////////////////////// EditorLineFlat2DCollector /////////
+        class utilExport EditorLineFlat2DCollector : public EditorBase
         {
         public:
-            EditorLineFlatCollector(VulkanWindow* _pWindow);
-            virtual ~EditorLineFlatCollector();
+            EditorLineFlat2DCollector(VulkanWindow* _pWindow);
+            virtual ~EditorLineFlat2DCollector();
 
         public:
+            static const String s_strNameShader_LineFlat2D_Vert;
+            static const String s_strNameShader_LineFlat2D_Frag;
+
+        public:
+            LineFlat2DObjectConstants lineFlat2DObjectCB;
+            VkBuffer poBuffers_ObjectCB;
+            VkDeviceMemory poBuffersMemory_ObjectCB;
+
             
 
+        public:
+            virtual void Destroy();
+
+            virtual void UpdateCBs();
+
+        protected:
+            virtual void initConfigs();
+            
+            virtual void initBufferUniforms();
+            
+            virtual void initPipelineGraphics();
+            virtual void updateDescriptorSets_Graphics();
+
+            virtual void destroyBufferUniforms();
         };
+
+        /////////////////////////// EditorLineFlat3DCollector /////////
+        class utilExport EditorLineFlat3DCollector : public EditorBase
+        {
+        public:
+            EditorLineFlat3DCollector(VulkanWindow* _pWindow);
+            virtual ~EditorLineFlat3DCollector();
+
+        public:
+            static const String s_strNameShader_LineFlat3D_Vert;
+            static const String s_strNameShader_LineFlat3D_Frag;
+            
+        public:
+            virtual void Destroy();
+
+            virtual void UpdateCBs();
+
+        protected:
+            virtual void initConfigs();
+            
+            virtual void initBufferUniforms();
+            
+            virtual void initPipelineGraphics();
+            virtual void updateDescriptorSets_Graphics();
+
+            virtual void destroyBufferUniforms();
+        };
+
 
     public:
         //Mesh
@@ -1336,6 +1386,8 @@ namespace LostPeter
         EditorGrid* pEditorGrid;
         EditorCameraAxis* pEditorCameraAxis;
         EditorCoordinateAxis* pEditorCoordinateAxis;
+        EditorLineFlat2DCollector* pEditorLineFlat2DCollector;
+        EditorLineFlat3DCollector* pEditorLineFlat3DCollector;
 
     protected:
         ConstCharPtrVector aInstanceLayers;
@@ -2066,7 +2118,9 @@ namespace LostPeter
             virtual void createEditor();
                 virtual void createEditor_Grid();
                 virtual void createEditor_CameraAxis();
-                virtual void createEditor_CoordinateAxis();       
+                virtual void createEditor_CoordinateAxis();      
+                virtual void createEditor_LineFlat2DCollector();
+                virtual void createEditor_LineFlat3DCollector();  
             virtual void destroyEditor();
 
         //Resize

@@ -2283,7 +2283,7 @@ namespace LostPeterFoundation
     {
     public:
         FMeshCreateParam_EntityTriangle()
-            : FMeshCreateParam(true, false)
+            : FMeshCreateParam(false, false)
         {
 
         }
