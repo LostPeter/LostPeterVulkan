@@ -661,8 +661,11 @@ namespace LostPeterFoundation
         //Ray - Shape
         static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
                                                              bool positiveSide = true, bool negativeSide = true);
-        static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& normal,
-                                                             bool positiveSide = true, bool negativeSide = true);
+        static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, 
+                                                             const FVector3& normal, bool positiveSide = true, bool negativeSide = true);
+        static std::pair<bool, float> Intersects_RayQuad(const FRay& ray, const FVector3& a, const FVector3& b, 
+                                                         const FVector3& c, const FVector3& d);
+        static std::pair<bool, float> Intersects_RayCircle(const FRay& ray, const FPlane& plane, const FVector3& center, float radius);
         static std::pair<bool, float> Intersects_RayPlane(const FRay& ray, const FPlane& plane);
         static std::pair<bool, float> Intersects_RayPlaneVector(const FRay& ray, const FPlaneVector& aPlanes, bool normalIsOutside);
         static std::pair<bool, float> Intersects_RayPlaneList(const FRay& ray, FPlaneList& listPlanes, bool normalIsOutside);
@@ -671,6 +674,10 @@ namespace LostPeterFoundation
 
         static bool Intersects_RayTriangle_Test(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
                                                 bool positiveSide = true, bool negativeSide = true);
+        static bool Intersects_RayQuad_Test(const FRay& ray, const FVector3& a, const FVector3& b, 
+                                            const FVector3& c, const FVector3& d);
+        static bool Intersects_RayCircle_Test(const FRay& ray, const FPlane& plane, const FVector3& center, float radius);
+
         static bool Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb);
         static bool	Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb, float* d1, float* d2);
         

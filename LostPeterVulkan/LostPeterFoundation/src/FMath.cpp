@@ -558,8 +558,8 @@ namespace LostPeterFoundation
         return Intersects_RayTriangle(ray, a, b, c, vNormal, positiveSide, negativeSide);
     }
 
-    std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& normal,
-                                                         bool positiveSide /*= true*/, bool negativeSide /*= true*/)
+    std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, 
+                                                         const FVector3& normal, bool positiveSide /*= true*/, bool negativeSide /*= true*/)
     {
         float t;
         {
@@ -634,6 +634,44 @@ namespace LostPeterFoundation
         }
 
         return std::pair<bool, float>(true, t);
+    }
+
+    std::pair<bool, float> FMath::Intersects_RayQuad(const FRay& ray, const FVector3& a, const FVector3& b, 
+                                                     const FVector3& c, const FVector3& d)
+    {
+        const FVector3& vRayOri = ray.m_vOrigin;
+        const FVector3& vRayDir = ray.m_vDirection;
+        FVector3 vOA = a - vRayOri;
+        FVector3 vOB = b - vRayOri;
+        FVector3 vOC = c - vRayOri;
+        FVector3 vCross = FMath::Cross(vOC, vRayDir);
+        float fDotV = FMath::Dot(vOA, vCross);
+        if (fDotV >= 0.0f)
+        {
+            //abc
+            return Intersects_RayTriangle(ray, a, b, c);
+        }
+        else
+        {
+            //dac
+            return Intersects_RayTriangle(ray, d, a, c);
+        }
+        return std::pair<bool, float>(false, 0);
+    }
+
+    std::pair<bool, float> FMath::Intersects_RayCircle(const FRay& ray, const FPlane& plane, const FVector3& center, float radius)
+    {
+        std::pair<bool, float> ret = Intersects_RayPlane(ray, plane);
+        if (!ret.first)
+        {
+            return ret;
+        }
+        FVector3 vInter = ray.GetPoint(ret.second);
+        if (FMath::Distance2(center, vInter) <= radius * radius)
+        {
+            return ret;
+        }
+        return std::pair<bool, float>(false, 0);
     }
 
     std::pair<bool, float> FMath::Intersects_RayPlane(const FRay& ray, const FPlane& plane)
@@ -884,6 +922,19 @@ namespace LostPeterFoundation
                                             bool positiveSide /*= true*/, bool negativeSide /*= true*/)
     {
         std::pair<bool, float> ret = Intersects_RayTriangle(ray, a, b, c, positiveSide, negativeSide);
+        return ret.first;
+    }
+
+    bool FMath::Intersects_RayQuad_Test(const FRay& ray, const FVector3& a, const FVector3& b, 
+                                        const FVector3& c, const FVector3& d)
+    {
+        std::pair<bool, float> ret = Intersects_RayQuad(ray, a, b, c, d);
+        return ret.first;
+    }
+
+    bool FMath::Intersects_RayCircle_Test(const FRay& ray, const FPlane& plane, const FVector3& center, float radius)
+    {
+        std::pair<bool, float> ret = Intersects_RayCircle(ray, plane, center, radius);
         return ret.first;
     }
 

@@ -1751,7 +1751,7 @@ bool Vulkan_017_Collision::IsCollision_LineTriangle3D(double x, double y, const 
         FVector3 vTop = FMath::Transform(obj.g_MatWorld, pLineTriangle3D->vTop);
         FVector3 vLeft = FMath::Transform(obj.g_MatWorld, pLineTriangle3D->vLeft);
         FVector3 vRight = FMath::Transform(obj.g_MatWorld, pLineTriangle3D->vRight);
-        if (FMath::Intersects_RayTriangle_Test(ray, vTop, vLeft, vRight))
+        if (FMath::Intersects_RayTriangle_Test(ray, vTop, vRight, vLeft))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_LineTriangle3D: Ray trace in LineTriangle 3D !");
@@ -1766,18 +1766,77 @@ bool Vulkan_017_Collision::IsCollision_LineTriangle3D(double x, double y, const 
 }
 bool Vulkan_017_Collision::IsCollision_LineQuad3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_LineQuad3D* pLineQuad3D = (FMeshCreateParam_LineQuad3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vLeftTop = FMath::Transform(obj.g_MatWorld, pLineQuad3D->vLeftTop);
+        FVector3 vRightTop = FMath::Transform(obj.g_MatWorld, pLineQuad3D->vRightTop);
+        FVector3 vRightBottom = FMath::Transform(obj.g_MatWorld, pLineQuad3D->vRightBottom);
+        FVector3 vLeftBottom = FMath::Transform(obj.g_MatWorld, pLineQuad3D->vLeftBottom);
+        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_LineQuad3D: Ray trace in LineQuad 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineTriangle3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_LineGrid3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_LineGrid3D* pLineGrid3D = (FMeshCreateParam_LineGrid3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vLeftTop = FMath::Transform(obj.g_MatWorld, pLineGrid3D->vLeftTop);
+        FVector3 vRightTop = FMath::Transform(obj.g_MatWorld, pLineGrid3D->vRightTop);
+        FVector3 vRightBottom = FMath::Transform(obj.g_MatWorld, pLineGrid3D->vRightBottom);
+        FVector3 vLeftBottom = FMath::Transform(obj.g_MatWorld, pLineGrid3D->vLeftBottom);
+        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_LineGrid3D: Ray trace in LineGrid 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineTriangle3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_LineCircle3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_LineCircle3D* pLineCircle3D = (FMeshCreateParam_LineCircle3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pLineCircle3D->vCenter);
+        FVector3 vUp = FMath::Transform(obj.g_MatWorld, pLineCircle3D->vUp);
+        FPlane plane(vUp, vCenter);
+        if (FMath::Intersects_RayCircle_Test(ray, plane, vCenter, pLineCircle3D->radius))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_LineCircle3D: Ray trace in LineCircle 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineTriangle3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_LineAABB3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
@@ -1808,15 +1867,76 @@ bool Vulkan_017_Collision::IsCollision_LineTorus3D(double x, double y, const FRa
 //Flat3D
 bool Vulkan_017_Collision::IsCollision_FlatTriangle3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_FlatTriangle3D* pFlatTriangle3D = (FMeshCreateParam_FlatTriangle3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vTop = FMath::Transform(obj.g_MatWorld, pFlatTriangle3D->vTop);
+        FVector3 vLeft = FMath::Transform(obj.g_MatWorld, pFlatTriangle3D->vLeft);
+        FVector3 vRight = FMath::Transform(obj.g_MatWorld, pFlatTriangle3D->vRight);
+        if (FMath::Intersects_RayTriangle_Test(ray, vTop, vRight, vLeft))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatTriangle3D: Ray trace in FlatTriangle 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineTriangle3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_FlatQuad3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_FlatQuad3D* pFlatQuad3D = (FMeshCreateParam_FlatQuad3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vLeftTop = FMath::Transform(obj.g_MatWorld, pFlatQuad3D->vLeftTop);
+        FVector3 vRightTop = FMath::Transform(obj.g_MatWorld, pFlatQuad3D->vRightTop);
+        FVector3 vRightBottom = FMath::Transform(obj.g_MatWorld, pFlatQuad3D->vRightBottom);
+        FVector3 vLeftBottom = FMath::Transform(obj.g_MatWorld, pFlatQuad3D->vLeftBottom);
+        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatQuad3D: Ray trace in FlatQuad 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineTriangle3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_FlatCircle3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_FlatCircle3D* pFlatCircle3D = (FMeshCreateParam_FlatCircle3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pFlatCircle3D->vCenter);
+        FVector3 vUp = FMath::Transform(obj.g_MatWorld, pFlatCircle3D->vUp);
+        FPlane plane(vUp, vCenter);
+        if (FMath::Intersects_RayCircle_Test(ray, plane, vCenter, pFlatCircle3D->radius))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatCircle3D: Ray trace in LineCircle 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineTriangle3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_FlatAABB3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
