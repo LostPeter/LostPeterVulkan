@@ -938,6 +938,12 @@ namespace LostPeterFoundation
         return ret.first;
     }
 
+    bool FMath::Intersects_RaySphere_Test(const FRay& ray, const FSphere& sphere, bool discardInside /*= true*/)
+    {
+        std::pair<bool, float> ret = Intersects_RaySphere(ray, sphere, discardInside);
+        return ret.first;
+    }
+
     bool FMath::Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb)
     {   
         std::pair<bool, float> ret = Intersects_RayAABB(ray, aabb);

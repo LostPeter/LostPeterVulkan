@@ -14,11 +14,11 @@
 
 namespace LostPeterFoundation
 {
-    bool FCylinder::IsPointIn(const FVector3& vPos)
+    bool FCylinder::Intersects_Point(const FVector3& point) const
 	{
-		if (FMath::Abs(vPos.y) > m_fHalfLenY ||
-			FMath::Abs(vPos.x) > m_fRadius ||
-			FMath::Abs(vPos.z) > m_fRadius)
+		if (FMath::Abs(point.y) > m_fHalfLenY ||
+			FMath::Abs(point.x) > m_fRadius ||
+			FMath::Abs(point.z) > m_fRadius)
 		{
             return false;
         }

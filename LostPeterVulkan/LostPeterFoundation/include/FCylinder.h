@@ -52,7 +52,8 @@ namespace LostPeterFoundation
 		float m_fRadius;		
 
 	public:
-		bool IsPointIn(const FVector3& vPos);
+		bool Intersects_Point(const FVector3& point) const;
+		
 	};
 
 }; //LostPeterFoundation

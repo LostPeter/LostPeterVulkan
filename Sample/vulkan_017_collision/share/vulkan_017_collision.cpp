@@ -1784,7 +1784,7 @@ bool Vulkan_017_Collision::IsCollision_LineQuad3D(double x, double y, const FRay
         }
         else
         {
-            obj.color = s_color_LineTriangle3D;
+            obj.color = s_color_LineQuad3D;
         }
     }
     return isCollision;
@@ -1809,7 +1809,7 @@ bool Vulkan_017_Collision::IsCollision_LineGrid3D(double x, double y, const FRay
         }
         else
         {
-            obj.color = s_color_LineTriangle3D;
+            obj.color = s_color_LineGrid3D;
         }
     }
     return isCollision;
@@ -1833,19 +1833,56 @@ bool Vulkan_017_Collision::IsCollision_LineCircle3D(double x, double y, const FR
         }
         else
         {
-            obj.color = s_color_LineTriangle3D;
+            obj.color = s_color_LineCircle3D;
         }
     }
     return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_LineAABB3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-
-    return false;
+    bool isCollision = false;
+    FAABB& aabb = pRend->pMeshSub->aabb;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FAABB aabbWorld(aabb);
+        aabbWorld.Transform(obj.g_MatWorld);
+        if (FMath::Intersects_RayAABB_Test(ray, aabbWorld))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_LineAABB3D: Ray trace in LineAABB 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineAABB3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_LineSphere3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FSphere& sphere = pRend->pMeshSub->sphere;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FSphere sphereWorld(sphere);
+        sphereWorld.Transform(obj.g_MatWorld);
+        if (FMath::Intersects_RaySphere_Test(ray, sphereWorld, false))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_LineSphere3D: Ray trace in LineSphere 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineSphere3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_LineCylinder3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
@@ -1909,7 +1946,7 @@ bool Vulkan_017_Collision::IsCollision_FlatQuad3D(double x, double y, const FRay
         }
         else
         {
-            obj.color = s_color_LineTriangle3D;
+            obj.color = s_color_FlatQuad3D;
         }
     }
     return isCollision;
@@ -1933,19 +1970,56 @@ bool Vulkan_017_Collision::IsCollision_FlatCircle3D(double x, double y, const FR
         }
         else
         {
-            obj.color = s_color_LineTriangle3D;
+            obj.color = s_color_FlatCircle3D;
         }
     }
     return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_FlatAABB3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-
-    return false;
+    bool isCollision = false;
+    FAABB& aabb = pRend->pMeshSub->aabb;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FAABB aabbWorld(aabb);
+        aabbWorld.Transform(obj.g_MatWorld);
+        if (FMath::Intersects_RayAABB_Test(ray, aabbWorld))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatAABB3D: Ray trace in FlatAABB 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_FlatAABB3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_FlatSphere3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FSphere& sphere = pRend->pMeshSub->sphere;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FSphere sphereWorld(sphere);
+        sphereWorld.Transform(obj.g_MatWorld);
+        if (FMath::Intersects_RaySphere_Test(ray, sphereWorld, false))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatSphere3D: Ray trace in FlatSphere 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_FlatSphere3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_FlatCylinder3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
@@ -1983,6 +2057,7 @@ bool Vulkan_017_Collision::IsCollision_EntityCircle(double x, double y, const FR
 }
 bool Vulkan_017_Collision::IsCollision_EntityAABB(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
+    
     return false;
 }
 bool Vulkan_017_Collision::IsCollision_EntitySphere(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
