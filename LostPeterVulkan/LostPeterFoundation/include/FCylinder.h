@@ -53,7 +53,7 @@ namespace LostPeterFoundation
 
 	public:
 		bool Intersects_Point(const FVector3& point) const;
-		
+		bool Intersects_Ray(const FRay& ray) const;
 	};
 
 }; //LostPeterFoundation

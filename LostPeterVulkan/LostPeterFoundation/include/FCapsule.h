@@ -2,33 +2,37 @@
 * LostPeterFoundation - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-06-01
+* Time:     2023-08-20
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/FCylinder.h"
-#include "../include/FMath.h"
+#ifndef _F_CAPSULE_H_
+#define _F_CAPSULE_H_
+
+#include "FPreDefine.h"
 
 namespace LostPeterFoundation
 {
-    bool FCylinder::Intersects_Point(const FVector3& point) const
+    class LPF_Export FCapsule
 	{
-		if (FMath::Abs(point.y) > m_fHalfLenY ||
-			FMath::Abs(point.x) > m_fRadius ||
-			FMath::Abs(point.z) > m_fRadius)
+	public:
+		LP_FORCEINLINE FCapsule()
 		{
-            return false;
-        }
 
-		return true;	
-	}
+		}
+		
 
-	bool FCylinder::Intersects_Ray(const FRay& ray) const
-	{
-		return FMath::Intersects_RayCylinder_Test(ray, *this, true);
-	}
-    
+	public:
+			
+
+	public:
+		bool Intersects_Point(const FVector3& point) const;
+		bool Intersects_Ray(const FRay& ray) const;
+	};
+
 }; //LostPeterFoundation
+
+#endif

@@ -171,6 +171,8 @@ namespace LostPeterFoundation
     class FBitwise;
     class FBox;
     class FCamera;
+    class FCapsule;
+    class FCone;
     class FCylinder;
     class FDynamicLib;
 	class FDynamicLibManager;
@@ -231,8 +233,10 @@ namespace LostPeterFoundation
 	class FPluginManager;
     class FRay;
     class FRefCount;
+    class FSegment;
     class FSphere;
     class FTimer;
+    class FTorus;
     class FUtil;
     class FUtilString;
 

@@ -60,6 +60,7 @@ namespace LostPeterFoundation
         }
 
         bool Intersects_Point(const FVector3& point) const;
+        bool Intersects_Ray(const FRay& ray) const;
         bool Intersects_Plane(const FPlane& plane) const;
         bool Intersects_Sphere(const FSphere& sphere) const;
         bool Intersects_AABB(const FAABB& aabb) const;

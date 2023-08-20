@@ -22,6 +22,11 @@ namespace LostPeterFoundation
         return (FMath::Length2(point - m_vCenter) <= m_fRadius * m_fRadius);
     }
 
+    bool FSphere::Intersects_Ray(const FRay& ray) const
+    {
+        return FMath::Intersects_RaySphere_Test(ray, *this, true);
+    }
+
     bool FSphere::Intersects_Plane(const FPlane& plane) const
     {
         return FMath::Intersects_SpherePlane(*this, plane);

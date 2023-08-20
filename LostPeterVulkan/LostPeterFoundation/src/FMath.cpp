@@ -10,12 +10,17 @@
 ****************************************************************************/
 
 #include "../include/FMath.h"
-#include "../include/FAABB.h"
-#include "../include/FFrustum.h"
+#include "../include/FRay.h"
+#include "../include/FSegment.h"
 #include "../include/FPlane.h"
 #include "../include/FPlaneBoundedVolume.h"
-#include "../include/FRay.h"
 #include "../include/FSphere.h"
+#include "../include/FAABB.h"
+#include "../include/FFrustum.h"
+#include "../include/FCylinder.h"
+#include "../include/FCapsule.h"
+#include "../include/FCone.h"
+#include "../include/FTorus.h"
 
 namespace LostPeterFoundation
 {
@@ -551,6 +556,12 @@ namespace LostPeterFoundation
     }
 
     //Ray - Shape
+    std::pair<bool, float> FMath::Intersects_RaySegment(const FRay& ray, const FSegment& segment)
+    {
+
+        return std::pair<bool, float>(true, 0);
+    }
+
     std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
                                                          bool positiveSide /*= true*/, bool negativeSide /*= true*/)
     {
@@ -767,36 +778,6 @@ namespace LostPeterFoundation
         return ret;
     }
 
-    std::pair<bool, float> FMath::Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool discardInside /*= true*/)		
-    {
-        const FVector3& raydir = ray.GetDirection();
-        const FVector3& rayorig = ray.GetOrigin() - sphere.GetCenter();
-        float radius = sphere.GetRadius();
-
-        if (FMath::Length2(rayorig) <= radius * radius && discardInside)
-        {
-            return std::pair<bool, float>(true, 0);
-        }
-
-        // ie t = (-b +/- sqrt(b*b + 4ac)) / 2a
-        float a = FMath::Dot(raydir, raydir);
-        float b = 2 * FMath::Dot(rayorig, raydir);
-        float c = FMath::Dot(rayorig, rayorig) - radius * radius;
-
-        float d = (b*b) - (4 * a * c);
-        if (d < 0)
-        {
-            return std::pair<bool, float>(false, 0);
-        }
-        else
-        {
-            float t = ( -b - FMath::Sqrt(d) ) / (2 * a);
-            if (t < 0)
-                t = ( -b + FMath::Sqrt(d) ) / (2 * a);
-            return std::pair<bool, float>(true, t);
-        }
-    }
-
     std::pair<bool, float> FMath::Intersects_RayAABB(const FRay& ray, const FAABB& aabb)
     {
         if (!aabb.IsValid()) 
@@ -918,37 +899,114 @@ namespace LostPeterFoundation
         return std::pair<bool, float>(hit, lowt);
     }
 
+    std::pair<bool, float> FMath::Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool discardInside /*= true*/)		
+    {
+        const FVector3& raydir = ray.GetDirection();
+        const FVector3& rayorig = ray.GetOrigin() - sphere.GetCenter();
+        float radius = sphere.GetRadius();
+
+        if (FMath::Length2(rayorig) <= radius * radius && discardInside)
+        {
+            return std::pair<bool, float>(true, 0);
+        }
+
+        // ie t = (-b +/- sqrt(b*b + 4ac)) / 2a
+        float a = FMath::Dot(raydir, raydir);
+        float b = 2 * FMath::Dot(rayorig, raydir);
+        float c = FMath::Dot(rayorig, rayorig) - radius * radius;
+
+        float d = (b*b) - (4 * a * c);
+        if (d < 0)
+        {
+            return std::pair<bool, float>(false, 0);
+        }
+        else
+        {
+            float t = ( -b - FMath::Sqrt(d) ) / (2 * a);
+            if (t < 0)
+                t = ( -b + FMath::Sqrt(d) ) / (2 * a);
+            return std::pair<bool, float>(true, t);
+        }
+    }
+
+    std::pair<bool, float> FMath::Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool discardInside /*= true*/)
+    {   
+
+        return std::pair<bool, float>(true, 0);
+    }
+
+    std::pair<bool, float> FMath::Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool discardInside /*= true*/)
+    {
+
+        return std::pair<bool, float>(true, 0);
+    }
+
+    std::pair<bool, float> FMath::Intersects_RayCone(const FRay& ray, const FCone& cone, bool discardInside /*= true*/)
+    {
+
+        return std::pair<bool, float>(true, 0);
+    }
+
+    std::pair<bool, float> FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool discardInside /*= true*/)
+    {
+
+        return std::pair<bool, float>(true, 0);
+    }
+
+
+    bool FMath::Intersects_RaySegment_Test(const FRay& ray, const FSegment& segment)
+    {
+        std::pair<bool, float> ret = Intersects_RaySegment(ray, segment);
+        return ret.first;
+    }
     bool FMath::Intersects_RayTriangle_Test(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
                                             bool positiveSide /*= true*/, bool negativeSide /*= true*/)
     {
         std::pair<bool, float> ret = Intersects_RayTriangle(ray, a, b, c, positiveSide, negativeSide);
         return ret.first;
     }
-
     bool FMath::Intersects_RayQuad_Test(const FRay& ray, const FVector3& a, const FVector3& b, 
                                         const FVector3& c, const FVector3& d)
     {
         std::pair<bool, float> ret = Intersects_RayQuad(ray, a, b, c, d);
         return ret.first;
     }
-
     bool FMath::Intersects_RayCircle_Test(const FRay& ray, const FPlane& plane, const FVector3& center, float radius)
     {
         std::pair<bool, float> ret = Intersects_RayCircle(ray, plane, center, radius);
         return ret.first;
     }
-
-    bool FMath::Intersects_RaySphere_Test(const FRay& ray, const FSphere& sphere, bool discardInside /*= true*/)
-    {
-        std::pair<bool, float> ret = Intersects_RaySphere(ray, sphere, discardInside);
-        return ret.first;
-    }
-
     bool FMath::Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb)
     {   
         std::pair<bool, float> ret = Intersects_RayAABB(ray, aabb);
         return ret.first;
     }
+    bool FMath::Intersects_RaySphere_Test(const FRay& ray, const FSphere& sphere, bool discardInside /*= true*/)
+    {
+        std::pair<bool, float> ret = Intersects_RaySphere(ray, sphere, discardInside);
+        return ret.first;
+    }
+    bool FMath::Intersects_RayCylinder_Test(const FRay& ray, const FCylinder& cylinder, bool discardInside /*= true*/)
+    {
+        std::pair<bool, float> ret = Intersects_RayCylinder(ray, cylinder, discardInside);
+        return ret.first;
+    }
+    bool FMath::Intersects_RayCapsule_Test(const FRay& ray, const FCapsule& capsule, bool discardInside /*= true*/)
+    {
+        std::pair<bool, float> ret = Intersects_RayCapsule(ray, capsule, discardInside);
+        return ret.first;
+    }
+    bool FMath::Intersects_RayCone_Test(const FRay& ray, const FCone& cone, bool discardInside /*= true*/)
+    {
+        std::pair<bool, float> ret = Intersects_RayCone(ray, cone, discardInside);
+        return ret.first;
+    }
+    bool FMath::Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool discardInside /*= true*/)
+    {
+        std::pair<bool, float> ret = Intersects_RayTorus(ray, torus, discardInside);
+        return ret.first;
+    }   
+
 
     static bool s_CheckAxis(const FVector3& rayorig, 
                             const FVector3& raydir,
