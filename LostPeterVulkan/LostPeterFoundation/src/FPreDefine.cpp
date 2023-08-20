@@ -190,5 +190,31 @@ namespace LostPeterFoundation
         return F_MeshVertex_Pos3Color4Normal3Tex2;
     }
 
+
+    //FCameraType
+    static const String s_nameCameraTypes[] = 
+    {
+        "Perspective",
+        "Orthogonal",
+    };
+    const String& F_GetCameraTypeTypeName(FCameraType type)
+    {
+        return s_nameCameraTypes[(int)type];
+    }
+    const String& F_GetCameraTypeTypeName(int type)
+    {
+        return s_nameCameraTypes[(int)type];
+    }
+    FCameraType F_ParseCameraTypeType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_Camera_Count; i++)
+        {
+            if (s_nameCameraTypes[i] == strName)
+                return (FCameraType)(i);
+        }
+        F_Assert(false && "F_ParseCameraTypeType: Wrong type name !")
+        return F_Camera_Perspective;
+    }
     
+
 }; //LostPeterFoundation

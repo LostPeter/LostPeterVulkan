@@ -23,9 +23,10 @@ namespace LostPeterFoundation
 		virtual ~FCamera();
 
     protected:
+		FCameraType m_typeCamera;
+
 		FVector3 m_vPos;
 		FQuaternion m_qRot;
-
 		float m_fNearZ;
 		float m_fFarZ;
 		float m_fAspect;
@@ -39,6 +40,10 @@ namespace LostPeterFoundation
 		FMatrix4 m_mat4Projection;
 
     public:
+		LP_FORCEINLINE FCameraType GetCameraType() const  { return this->m_typeCamera; }
+		LP_FORCEINLINE bool IsPerspective() const { return this->m_typeCamera == F_Camera_Perspective; }
+		LP_FORCEINLINE bool IsOrthogonal() const { return this->m_typeCamera == F_Camera_Orthogonal; }
+
 		LP_FORCEINLINE const FVector3& GetPos() const  { return this->m_vPos; }
 		LP_FORCEINLINE void SetPos(float x, float y, float z) { SetPos(FVector3(x, y, z)); }
 		LP_FORCEINLINE void SetPos(const FVector3& v)

@@ -16,9 +16,9 @@
 namespace LostPeterFoundation
 {
     FCamera::FCamera()
-		: m_vPos(FMath::ms_v3Zero)
+		: m_typeCamera(F_Camera_Perspective)
+		, m_vPos(FMath::ms_v3Zero)
 		, m_qRot(FMath::ms_qUnit)
-
 		, m_fNearZ(0.0f)
 		, m_fFarZ(0.0f)
 		, m_fAspect(0.0f)
@@ -118,8 +118,7 @@ namespace LostPeterFoundation
 			float fDistToPlane = FMath::Dot(vDir, vForward);
 			if (FMath::Abs(fDistToPlane) >= 1.0e-6f)
 			{
-				bool isPerspective = true;
-				if (isPerspective)
+				if (IsPerspective())
 				{
 					vDir *= vPosScreen.z / fDistToPlane;
 					vPosWorld = vCameraPos + vDir;

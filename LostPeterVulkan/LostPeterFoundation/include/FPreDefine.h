@@ -401,6 +401,18 @@ namespace LostPeterFoundation
     };
 
 
+    enum FCameraType
+    {
+        F_Camera_Perspective = 0,                       //0: Perspective
+        F_Camera_Orthogonal,                            //1: Orthogonal
+
+        F_Camera_Count,
+    };
+    const String& F_GetCameraTypeTypeName(FCameraType type);
+    const String& F_GetCameraTypeTypeName(int type);
+    FCameraType F_ParseCameraTypeType(const String& strName);
+
+
 }; //LostPeterFoundation
 
 #endif
