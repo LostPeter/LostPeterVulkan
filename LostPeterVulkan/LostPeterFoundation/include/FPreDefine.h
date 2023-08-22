@@ -188,7 +188,15 @@ namespace LostPeterFoundation
     class FMath;
     class FMeshDataLoader;
     class FMeshCreateParam;
-    class FMeshCreateParam_Line3D;
+    class FMeshCreateParam_LineLine2D;
+    class FMeshCreateParam_LineTriangle2D;
+    class FMeshCreateParam_LineQuad2D;
+    class FMeshCreateParam_LineGrid2D;
+    class FMeshCreateParam_LineCircle2D;
+    class FMeshCreateParam_FlatTriangle2D;
+    class FMeshCreateParam_FlatQuad2D;
+    class FMeshCreateParam_FlatCircle2D;
+    class FMeshCreateParam_LineLine3D;
     class FMeshCreateParam_LineTriangle3D;
     class FMeshCreateParam_LineQuad3D;
     class FMeshCreateParam_LineGrid3D;
@@ -286,7 +294,7 @@ namespace LostPeterFoundation
     enum FMeshGeometryType
     {
     ////////////////////////////////// Line2D ////////////////////////////////
-        F_MeshGeometry_Line2D = 0,                      //0:    Line2D
+        F_MeshGeometry_LineLine2D = 0,                  //0:    LineLine2D
         F_MeshGeometry_LineTriangle2D,                  //1:    LineTriangle2D
         F_MeshGeometry_LineQuad2D,                      //2:    LineQuad2D
         F_MeshGeometry_LineGrid2D,                      //3:    LineGrid2D
@@ -298,7 +306,7 @@ namespace LostPeterFoundation
         F_MeshGeometry_FlatCircle2D,                    //7:    FlatCircle2D
 
     ////////////////////////////////// Line3D ////////////////////////////////
-        F_MeshGeometry_Line3D,                          //8:    Line3D
+        F_MeshGeometry_LineLine3D,                      //8:    LineLine3D
         F_MeshGeometry_LineTriangle3D,                  //9:    LineTriangle3D
         F_MeshGeometry_LineQuad3D,                      //10:   LineQuad3D
         F_MeshGeometry_LineGrid3D,                      //11:   LineGrid3D

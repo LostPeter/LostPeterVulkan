@@ -69,8 +69,7 @@ namespace LostPeterFoundation
 
     bool FSegment::Intersects_Point(const FVector3& point) const
 	{
-		
-		return true;	
+		return FMath::Intersects_PointInLine(point, *this, true);
 	}
 
 	bool FSegment::Intersects_Ray(const FRay& ray) const

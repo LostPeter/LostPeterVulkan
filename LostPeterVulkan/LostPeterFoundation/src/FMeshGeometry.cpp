@@ -16,9 +16,9 @@
 namespace LostPeterFoundation
 {
     ////////////////////////////////// Line2D ////////////////////////////////
-    //Line2D
-    String FMeshCreateParam_Line2D::ms_nameType = "MeshLine2D"; 
-    bool FMeshCreateParam_Line2D::ParseParam(const String& nameParam)
+    //LineLine2D
+    String FMeshCreateParam_LineLine2D::ms_nameType = "MeshLineLine2D"; 
+    bool FMeshCreateParam_LineLine2D::ParseParam(const String& nameParam)
     {
         StringVector aParam = FUtilString::Split(nameParam, ";");
         size_t count = aParam.size();
@@ -42,7 +42,7 @@ namespace LostPeterFoundation
         }
         else
         {
-            F_Assert(false && "FMeshCreateParam_Line2D::ParseParam: Wrong param count !");
+            F_Assert(false && "FMeshCreateParam_LineLine2D::ParseParam: Wrong param count !");
             return false;
         }
 
@@ -354,9 +354,9 @@ namespace LostPeterFoundation
 
 
     ////////////////////////////////// Line3D ////////////////////////////////
-    //Line3D
-    String FMeshCreateParam_Line3D::ms_nameType = "MeshLine3D"; 
-    bool FMeshCreateParam_Line3D::ParseParam(const String& nameParam)
+    //LineLine3D
+    String FMeshCreateParam_LineLine3D::ms_nameType = "MeshLine3D"; 
+    bool FMeshCreateParam_LineLine3D::ParseParam(const String& nameParam)
     {
         StringVector aParam = FUtilString::Split(nameParam, ";");
         size_t count = aParam.size();
@@ -384,7 +384,7 @@ namespace LostPeterFoundation
         }
         else
         {
-            F_Assert(false && "FMeshCreateParam_Line3D::ParseParam: Wrong param count !");
+            F_Assert(false && "FMeshCreateParam_LineLine3D::ParseParam: Wrong param count !");
             return false;
         }
 
@@ -1581,7 +1581,7 @@ namespace LostPeterFoundation
         switch ((int)typeMeshGeometry)
         {
         ////////////////////////////////// Line2D ////////////////////////////////
-            case F_MeshGeometry_Line2D:             { pParam = new FMeshCreateParam_Line2D(); return pParam; }              //Line2D
+            case F_MeshGeometry_LineLine2D:         { pParam = new FMeshCreateParam_LineLine2D(); return pParam; }          //LineLine2D
             case F_MeshGeometry_LineTriangle2D:     { pParam = new FMeshCreateParam_LineTriangle2D(); return pParam; }      //LineTriangle2D
             case F_MeshGeometry_LineQuad2D:         { pParam = new FMeshCreateParam_LineQuad2D(); return pParam; }          //LineQuad2D
             case F_MeshGeometry_LineGrid2D:         { pParam = new FMeshCreateParam_LineGrid2D(); return pParam; }          //LineGrid2D
@@ -1593,7 +1593,7 @@ namespace LostPeterFoundation
             case F_MeshGeometry_FlatCircle2D:       { pParam = new FMeshCreateParam_FlatCircle2D(); return pParam; }        //FlatCircle2D
 
         ////////////////////////////////// Line3D ////////////////////////////////
-            case F_MeshGeometry_Line3D:             { pParam = new FMeshCreateParam_Line3D(); return pParam; }              //Line3D
+            case F_MeshGeometry_LineLine3D:         { pParam = new FMeshCreateParam_LineLine3D(); return pParam; }          //LineLine3D
             case F_MeshGeometry_LineTriangle3D:     { pParam = new FMeshCreateParam_LineTriangle3D(); return pParam; }      //LineTriangle3D
             case F_MeshGeometry_LineQuad3D:         { pParam = new FMeshCreateParam_LineQuad3D(); return pParam; }          //LineQuad3D
             case F_MeshGeometry_LineGrid3D:         { pParam = new FMeshCreateParam_LineGrid3D(); return pParam; }          //LineGrid3D
@@ -1715,10 +1715,10 @@ namespace LostPeterFoundation
     {
         switch ((int)typeMeshGeometry)
         {
-        case F_MeshGeometry_Line2D:
+        case F_MeshGeometry_LineLine2D:
             {
-                FMeshCreateParam_Line2D param_Line2D;
-                FMeshGeometry::CreateLine2D(meshDataPC, &param_Line2D);
+                FMeshCreateParam_LineLine2D param_LineLine2D;
+                FMeshGeometry::CreateLineLine2D(meshDataPC, &param_LineLine2D);
                 return true;
             }
         case F_MeshGeometry_LineTriangle2D:
@@ -1757,10 +1757,10 @@ namespace LostPeterFoundation
 
         switch ((int)typeMeshGeometry)
         {
-        case F_MeshGeometry_Line2D:
+        case F_MeshGeometry_LineLine2D:
             {
-                FMeshCreateParam_Line2D* pParam_Line2D = static_cast<FMeshCreateParam_Line2D*>(pParam);
-                FMeshGeometry::CreateLine2D(meshDataPC, pParam_Line2D);
+                FMeshCreateParam_LineLine2D* pParam_LineLine2D = static_cast<FMeshCreateParam_LineLine2D*>(pParam);
+                FMeshGeometry::CreateLineLine2D(meshDataPC, pParam_LineLine2D);
                 return true;
             }
         case F_MeshGeometry_LineTriangle2D:
@@ -1791,11 +1791,11 @@ namespace LostPeterFoundation
         return false;
     }
 
-    //Line2D
-    void FMeshGeometry::CreateLine2D(FMeshDataPC& meshDataPC,
-                                     const FVector2& vStart,
-                                     const FVector2& vEnd,
-                                     const FVector4& vColor)
+    //LineLine2D
+    void FMeshGeometry::CreateLineLine2D(FMeshDataPC& meshDataPC,
+                                         const FVector2& vStart,
+                                         const FVector2& vEnd,
+                                         const FVector4& vColor)
     {
         // 0 ----- 1
 
@@ -2471,10 +2471,10 @@ namespace LostPeterFoundation
     {
         switch ((int)typeMeshGeometry)
         {
-        case F_MeshGeometry_Line3D:
+        case F_MeshGeometry_LineLine3D:
             {
-                FMeshCreateParam_Line3D param_Line3D;
-                FMeshGeometry::CreateLine3D(meshDataPC, &param_Line3D);
+                FMeshCreateParam_LineLine3D param_LineLine3D;
+                FMeshGeometry::CreateLineLine3D(meshDataPC, &param_LineLine3D);
                 return true;
             }
         case F_MeshGeometry_LineTriangle3D:
@@ -2549,10 +2549,10 @@ namespace LostPeterFoundation
 
         switch ((int)typeMeshGeometry)
         {
-        case F_MeshGeometry_Line3D:
+        case F_MeshGeometry_LineLine3D:
             {
-                FMeshCreateParam_Line3D* pParam_Line3D = static_cast<FMeshCreateParam_Line3D*>(pParam);
-                FMeshGeometry::CreateLine3D(meshDataPC, pParam_Line3D);
+                FMeshCreateParam_LineLine3D* pParam_LineLine3D = static_cast<FMeshCreateParam_LineLine3D*>(pParam);
+                FMeshGeometry::CreateLineLine3D(meshDataPC, pParam_LineLine3D);
                 return true;
             }
         case F_MeshGeometry_LineTriangle3D:
@@ -2619,11 +2619,11 @@ namespace LostPeterFoundation
         return false;
     }
 
-    //Line3D
-    void FMeshGeometry::CreateLine3D(FMeshDataPC& meshDataPC,
-                                     const FVector3& vStart,
-                                     const FVector3& vEnd,
-                                     const FVector4& vColor)
+    //LineLine3D
+    void FMeshGeometry::CreateLineLine3D(FMeshDataPC& meshDataPC,
+                                         const FVector3& vStart,
+                                         const FVector3& vEnd,
+                                         const FVector4& vColor)
     {
         // 0 ----- 1
 

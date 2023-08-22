@@ -44,7 +44,7 @@ namespace LostPeterFoundation
     static const String s_nameMeshGeometryTypes[] = 
     {
     ////////////////////////////////// Line2D ////////////////////////////////
-        "Line2D",                   //0:    Line2D
+        "LineLine2D",               //0:    LineLine2D
         "LineTriangle2D",           //1:    LineTriangle2D
         "LineQuad2D",               //2:    LineQuad2D
         "LineGrid2D",               //3:    LineGrid2D
@@ -56,7 +56,7 @@ namespace LostPeterFoundation
         "FlatCircle2D",             //7:    FlatCircle2D
 
     ////////////////////////////////// Line3D ////////////////////////////////
-        "Line3D",                   //8:    Line3D
+        "LineLine3D",               //8:    LineLine3D
         "LineTriangle3D",           //9:    LineTriangle3D
         "LineQuad3D",               //10:   LineQuad3D
         "LineGrid3D",               //11:   LineGrid3D
@@ -131,13 +131,13 @@ namespace LostPeterFoundation
     }
     bool F_IsMeshGeometryType_Flat2D(FMeshGeometryType type)
     {
-        if ((int)type >= (int)F_MeshGeometry_FlatTriangle2D && (int)type < (int)F_MeshGeometry_Line3D)
+        if ((int)type >= (int)F_MeshGeometry_FlatTriangle2D && (int)type < (int)F_MeshGeometry_LineLine3D)
             return true;
         return false;
     }
     bool F_IsMeshGeometryType_Line3D(FMeshGeometryType type)
     {
-        if ((int)type >= (int)F_MeshGeometry_Line3D && (int)type < (int)F_MeshGeometry_FlatTriangle3D)
+        if ((int)type >= (int)F_MeshGeometry_LineLine3D && (int)type < (int)F_MeshGeometry_FlatTriangle3D)
             return true;
         return false;
     }

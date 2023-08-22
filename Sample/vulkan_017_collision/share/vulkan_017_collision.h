@@ -537,7 +537,7 @@ public:
     bool m_isDrawIndirectMulti;
 
     //Line2D
-    ModelObjectRend* pRend_Line2D;
+    ModelObjectRend* pRend_LineLine2D;
     ModelObjectRend* pRend_LineTriangle2D;
     ModelObjectRend* pRend_LineQuad2D;
     ModelObjectRend* pRend_LineGrid2D;
@@ -547,7 +547,7 @@ public:
     ModelObjectRend* pRend_FlatQuad2D;
     ModelObjectRend* pRend_FlatCircle2D;
     //Line3D
-    ModelObjectRend* pRend_Line3D;
+    ModelObjectRend* pRend_LineLine3D;
     ModelObjectRend* pRend_LineTriangle3D;
     ModelObjectRend* pRend_LineQuad3D;
     ModelObjectRend* pRend_LineGrid3D;
@@ -605,7 +605,7 @@ public:
     static FColor s_color_Hover;
 
     //Line2D
-    static FColor s_color_Line2D;                   //Line2D
+    static FColor s_color_LineLine2D;               //LineLine2D
     static FColor s_color_LineTriangle2D;           //LineTriangle2D
     static FColor s_color_LineQuad2D;               //LineQuad2D
     static FColor s_color_LineGrid2D;               //LineGrid2D
@@ -617,7 +617,7 @@ public:
     static FColor s_color_FlatCircle2D;             //FlatCircle2D
 
     //Line3D
-    static FColor s_color_Line3D;                   //Line3D
+    static FColor s_color_LineLine3D;               //LineLine3D
     static FColor s_color_LineTriangle3D;           //LineTriangle3D
     static FColor s_color_LineQuad3D;               //LineQuad3D
     static FColor s_color_LineGrid3D;               //LineGrid3D
@@ -661,7 +661,7 @@ public:
     void IsCollision(double x, double y, bool isHover);
 
     //Line2D
-    bool IsCollision_Line2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_LineLine2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineGrid2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
@@ -673,7 +673,7 @@ public:
     bool IsCollision_FlatCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
 
     //Line3D
-    bool IsCollision_Line3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_LineLine3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineTriangle3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineQuad3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineGrid3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);

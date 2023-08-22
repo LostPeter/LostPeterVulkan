@@ -33,6 +33,7 @@ namespace LostPeterFoundation
 
     const float FMath::ms_fPosInfinity =  std::numeric_limits<float>::infinity();	
     const float FMath::ms_fNegInfinity = -std::numeric_limits<float>::infinity();
+    const float FMath::ms_fEpsilon = std::numeric_limits<float>::epsilon();
 
     const FVector2 FMath::ms_v2Zero = FVector2(0.0f, 0.0f);
     const FVector2 FMath::ms_v2One = FVector2(1.0f, 1.0f);
@@ -519,19 +520,51 @@ namespace LostPeterFoundation
         return FMath::Length(magnitude);
     }
 
-    //Point - Line
-    bool FMath::Intersects_PointInLine(const FVector3& pt, const FVector3& ptLineStart, const FVector3& ptLineEnd)
+    bool FMath::Points3_InLine(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
     {
-        FVector3 vDirES = ptLineEnd - ptLineStart;
-        FVector3 vDirPS = pt - ptLineStart;
-        FVector3 vCross = Cross(vDirES, vDirPS);
-        if (Abs(Length(Normalize(vCross))) > std::numeric_limits<float>::epsilon())
+        FVector3 v21 = pt2 - pt1;
+        FVector3 v31 = pt3 - pt1;
+        FVector3 vCross = Cross(v21, v31);
+        if (Abs(Length(Cross(v21, v31))) > FMath::ms_fEpsilon)
             return false;
-        float fDot = Dot(vDirES, vDirPS);
-        if (fDot > 0 && fDot < Length2(vDirES))
+        return true;
+    }
+    bool FMath::Points4_OnPlane(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, const FVector3& pt4)
+    {
+        return true;
+    }
+
+    //Point - Line
+    bool FMath::Intersects_PointInLine(const FVector3& pt, const FVector3& ptLineStart, const FVector3& ptLineEnd, bool includeSE /*= true*/)
+    {
+        //Is In Line
+        if (!Points3_InLine(ptLineStart, ptLineEnd, pt))
+        {
+            return false;
+        }
+
+        if (!includeSE)
+        {
+            //Except ptLineStart/ptLineEnd
+            if (IsEqual(pt, ptLineStart) || IsEqual(pt, ptLineEnd))
+            {
+                return false;
+            }
+        }
+
+        //pt is between ptLineStart and ptLineEnd
+        if ((ptLineStart.x - pt.x)*(ptLineEnd.x - pt.x) < FMath::ms_fEpsilon &&
+            (ptLineStart.y - pt.y)*(ptLineEnd.y - pt.y) < FMath::ms_fEpsilon &&
+            (ptLineStart.z - pt.z)*(ptLineEnd.z - pt.z) < FMath::ms_fEpsilon)
+        {
             return true;
+        }
 
         return false;
+    }
+    bool FMath::Intersects_PointInLine(const FVector3& pt, const FSegment& segment, bool includeSE /*= true*/)
+    {
+        return Intersects_PointInLine(pt, segment.m_P0, segment.m_P1, includeSE);
     }
 
     //Point - Triangle
@@ -556,10 +589,13 @@ namespace LostPeterFoundation
     }
 
     //Ray - Shape
+    std::pair<bool, float>FMath::Intersects_RaySegment(const FRay& ray, const FVector3& s, const FVector3& e)
+    {
+        return std::pair<bool, float>(true, 0);
+    }
     std::pair<bool, float> FMath::Intersects_RaySegment(const FRay& ray, const FSegment& segment)
     {
-
-        return std::pair<bool, float>(true, 0);
+        return Intersects_RaySegment(ray, segment.m_P0, segment.m_P1);
     }
 
     std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
@@ -575,12 +611,12 @@ namespace LostPeterFoundation
         float t;
         {
             float denom = FMath::Dot(normal, ray.GetDirection());
-            if (denom > + std::numeric_limits<float>::epsilon())
+            if (denom > + FMath::ms_fEpsilon)
             {
                 if (!negativeSide)
                     return std::pair<bool, float>(false, 0);
             }
-            else if (denom < - std::numeric_limits<float>::epsilon())
+            else if (denom < - FMath::ms_fEpsilon)
             {
                 if (!positiveSide)
                     return std::pair<bool, float>(false, 0);
@@ -688,7 +724,7 @@ namespace LostPeterFoundation
     std::pair<bool, float> FMath::Intersects_RayPlane(const FRay& ray, const FPlane& plane)
     {
         float denom = FMath::Dot(plane.m_vNormal, ray.GetDirection());
-        if (FMath::Abs(denom) < std::numeric_limits<float>::epsilon())
+        if (FMath::Abs(denom) < FMath::ms_fEpsilon)
         {
             return std::pair<bool, float>(false, 0);
         }
@@ -954,6 +990,11 @@ namespace LostPeterFoundation
     }
 
 
+    bool FMath::Intersects_RaySegment_Test(const FRay& ray, const FVector3& s, const FVector3& e)
+    {
+        std::pair<bool, float> ret = Intersects_RaySegment(ray, s, e);
+        return ret.first;
+    }
     bool FMath::Intersects_RaySegment_Test(const FRay& ray, const FSegment& segment)
     {
         std::pair<bool, float> ret = Intersects_RaySegment(ray, segment);
@@ -1076,7 +1117,7 @@ namespace LostPeterFoundation
             return false;
         }
 
-        if (absDir[imid] < std::numeric_limits<float>::epsilon())
+        if (absDir[imid] < FMath::ms_fEpsilon)
         {
             // Parallel with middle and minimise axis, check bounds only
             if (rayorig[imid] < min[imid] || rayorig[imid] > max[imid] ||
@@ -1098,7 +1139,7 @@ namespace LostPeterFoundation
                 return false;
             }
 
-            if (absDir[imin] < std::numeric_limits<float>::epsilon())
+            if (absDir[imin] < FMath::ms_fEpsilon)
             {
                 // Parallel with minimise axis, check bounds only
                 if (rayorig[imin] < min[imin] || rayorig[imin] > max[imin])

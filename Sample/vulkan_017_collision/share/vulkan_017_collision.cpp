@@ -23,7 +23,7 @@ static const int g_MeshCount = 39;
 static const char* g_MeshPaths[7 * g_MeshCount] =
 {
     //Mesh Name                 //Vertex Type                 //Mesh Type         //Mesh Path   //Mesh Geometry Type        //Mesh Geometry Param                                           //Mesh Geometry Vertex Is Update
-    "geo_line_line_2d",         "Pos3Color4",                 "geometry",         "",           "Line2D",                   "0.5;0.9;0.7;0.9;1;1;1;1",                                      "false", //geo_line_line_2d
+    "geo_line_line_2d",         "Pos3Color4",                 "geometry",         "",           "LineLine2D",               "0.5;0.9;0.7;0.9;1;1;1;1",                                      "false", //geo_line_line_2d
     "geo_line_triangle_2d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle2D",           "0.6;0.8;0.5;0.6;0.7;0.6;1;1;1;1",                              "false", //geo_line_triangle_2d
     "geo_line_quad_2d",         "Pos3Color4",                 "geometry",         "",           "LineQuad2D",               "0.5;0.5;0.5;0.3;0.7;0.3;0.7;0.5;1;1;1;1",                      "false", //geo_line_quad_2d
     "geo_line_grid_2d",         "Pos3Color4",                 "geometry",         "",           "LineGrid2D",               "0.5;0.2;0.5;0.0;0.7;0.0;0.7;0.2;10;10;1;1;1;1",                "false", //geo_line_grid_2d
@@ -33,7 +33,7 @@ static const char* g_MeshPaths[7 * g_MeshCount] =
     "geo_flat_quad_2d",         "Pos3Color4",                 "geometry",         "",           "FlatQuad2D",               "0.75;0.5;0.75;0.3;0.95;0.3;0.95;0.5;1;1;1;1",                  "false", //geo_flat_quad_2d
     "geo_flat_circle_2d",       "Pos3Color4",                 "geometry",         "",           "FlatCircle2D",             "0.85;-0.2;1.0;0.0;0.1;1280;720;50;1;1;1;1",                    "true", //geo_flat_circle_2d
 
-    "geo_line_line_3d",         "Pos3Color4",                 "geometry",         "",           "Line3D",                   "0;0;0;1;0;0;1;1;1;1",                                          "false", //geo_line_line_3d
+    "geo_line_line_3d",         "Pos3Color4",                 "geometry",         "",           "LineLine3D",               "0;0;0;1;0;0;1;1;1;1",                                          "false", //geo_line_line_3d
     "geo_line_triangle_3d",     "Pos3Color4",                 "geometry",         "",           "LineTriangle3D",           "0;0.5;0;-0.5;-0.5;0;0.5;-0.5;0;1;1;1;1",                       "false", //geo_line_triangle_3d
     "geo_line_quad_3d",         "Pos3Color4",                 "geometry",         "",           "LineQuad3D",               "-0.5;0.5;0;-0.5;-0.5;0;0.5;-0.5;0;0.5;0.5;0;1;1;1;1",          "false", //geo_line_quad_3d
     "geo_line_grid_3d",         "Pos3Color4",                 "geometry",         "",           "LineGrid3D",               "-0.5;0.5;0;-0.5;-0.5;0;0.5;-0.5;0;0.5;0.5;0;10;10;1;1;1;1",    "false", //geo_line_grid_3d
@@ -1407,7 +1407,7 @@ void Vulkan_017_Collision::ModelObjectRendIndirect::UpdateIndirectCommandBuffer(
 FColor Vulkan_017_Collision::s_color_Select = FColor(1, 0, 0, 1);
 FColor Vulkan_017_Collision::s_color_Hover = FColor(1, 1, 0, 1);
 //Line2D
-FColor Vulkan_017_Collision::s_color_Line2D = FColor(0, 0, 1, 1);                   //Line2D
+FColor Vulkan_017_Collision::s_color_LineLine2D = FColor(0, 0, 1, 1);               //LineLine2D
 FColor Vulkan_017_Collision::s_color_LineTriangle2D = FColor(0, 1, 0, 1);           //LineTriangle2D
 FColor Vulkan_017_Collision::s_color_LineQuad2D = FColor(0, 1, 1, 1);               //LineQuad2D
 FColor Vulkan_017_Collision::s_color_LineGrid2D = FColor(0, 1, 1, 1);               //LineGrid2D
@@ -1417,7 +1417,7 @@ FColor Vulkan_017_Collision::s_color_FlatTriangle2D = FColor(0, 1, 0, 1);       
 FColor Vulkan_017_Collision::s_color_FlatQuad2D = FColor(0, 1, 1, 1);               //FlatQuad2D
 FColor Vulkan_017_Collision::s_color_FlatCircle2D = FColor(1, 0, 1, 1);             //FlatCircle2D
 //Line3D
-FColor Vulkan_017_Collision::s_color_Line3D = FColor(1, 1, 1, 1);                   //Line3D
+FColor Vulkan_017_Collision::s_color_LineLine3D = FColor(1, 1, 1, 1);               //LineLine3D
 FColor Vulkan_017_Collision::s_color_LineTriangle3D = FColor(1, 1, 1, 1);           //LineTriangle3D
 FColor Vulkan_017_Collision::s_color_LineQuad3D = FColor(1, 1, 1, 1);               //LineQuad3D
 FColor Vulkan_017_Collision::s_color_LineGrid3D = FColor(1, 1, 1, 1);               //LineGrid3D
@@ -1460,7 +1460,7 @@ Vulkan_017_Collision::Vulkan_017_Collision(int width, int height, String name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
     //Line2D
-    , pRend_Line2D(nullptr)
+    , pRend_LineLine2D(nullptr)
     , pRend_LineTriangle2D(nullptr)
     , pRend_LineQuad2D(nullptr)
     , pRend_LineGrid2D(nullptr)
@@ -1470,7 +1470,7 @@ Vulkan_017_Collision::Vulkan_017_Collision(int width, int height, String name)
     , pRend_FlatQuad2D(nullptr)
     , pRend_FlatCircle2D(nullptr)
     //Line3D
-    , pRend_Line3D(nullptr)
+    , pRend_LineLine3D(nullptr)
     , pRend_LineTriangle3D(nullptr)
     , pRend_LineQuad3D(nullptr)
     , pRend_LineGrid3D(nullptr)
@@ -1546,20 +1546,20 @@ void Vulkan_017_Collision::IsCollision(double x, double y, bool isHover)
     FVector4 vViewport = GetViewportVector4();
     this->pCamera->ConvertScreenPos2ToWorldRay((float)x, (float)y, vViewport, &ray);
 
-    //Line 2D
-    IsCollision_Line2D(x, y, this->pRend_Line2D, color, isHover);
+    //Line2D
+    IsCollision_LineLine2D(x, y, this->pRend_LineLine2D, color, isHover);
     IsCollision_LineTriangle2D(x, y, this->pRend_LineTriangle2D, color, isHover);
     IsCollision_LineQuad2D(x, y, this->pRend_LineQuad2D, color, isHover);
     IsCollision_LineGrid2D(x, y, this->pRend_LineGrid2D, color, isHover);
     IsCollision_LineCircle2D(x, y, this->pRend_LineCircle2D, color, isHover);
     
-    //Flat 2D
+    //Flat2D
     IsCollision_FlatTriangle2D(x, y, this->pRend_FlatTriangle2D, color, isHover);
     IsCollision_FlatQuad2D(x, y, this->pRend_FlatQuad2D, color, isHover);
     IsCollision_FlatCircle2D(x, y, this->pRend_FlatCircle2D, color, isHover);
 
     //Line3D
-    IsCollision_Line3D(x, y, ray, this->pRend_Line3D, color, isHover);
+    IsCollision_LineLine3D(x, y, ray, this->pRend_LineLine3D, color, isHover);
     IsCollision_LineTriangle3D(x, y, ray, this->pRend_LineTriangle3D, color, isHover);
     IsCollision_LineQuad3D(x, y, ray, this->pRend_LineQuad3D, color, isHover);
     IsCollision_LineGrid3D(x, y, ray, this->pRend_LineGrid3D, color, isHover);
@@ -1600,21 +1600,20 @@ void Vulkan_017_Collision::IsCollision(double x, double y, bool isHover)
 }
 
 //Line2D
-bool Vulkan_017_Collision::IsCollision_Line2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover)
+bool Vulkan_017_Collision::IsCollision_LineLine2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
     FPointI ptMouse((int32)x, (int32)y);
-    FMeshCreateParam_Line2D* pLine2D = (FMeshCreateParam_Line2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
-    FPointI ptLine_Start = ConvertNDC2ScreenPointI(pLine2D->vStart);
-    FPointI ptLine_End = ConvertNDC2ScreenPointI(pLine2D->vEnd);
-
+    FMeshCreateParam_LineLine2D* pLineLine2D = (FMeshCreateParam_LineLine2D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    FPointI ptLine_Start = ConvertNDC2ScreenPointI(pLineLine2D->vStart);
+    FPointI ptLine_End = ConvertNDC2ScreenPointI(pLineLine2D->vEnd);
     LineFlat2DObjectConstants& obj = pRend->objectCBs_LineFlat2D[0];
     if (FMath::Intersects_PointInLine2DI(ptMouse, FLineI(ptLine_Start, ptLine_End)))
     {
         obj.color = color;
-        //F_LogInfo("Vulkan_017_Collision::IsCollision_Line2D: Mouse In LineLine 2D !");
+        //F_LogInfo("Vulkan_017_Collision::IsCollision_LineLine2D: Mouse In LineLine 2D !");
         return true;
     }
-    obj.color = s_color_Line2D;
+    obj.color = s_color_LineLine2D;
     return false;
 }
 bool Vulkan_017_Collision::IsCollision_LineTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover)
@@ -1730,15 +1729,33 @@ bool Vulkan_017_Collision::IsCollision_FlatCircle2D(double x, double y, ModelObj
         //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatCircle2D: Mouse In FlatCircle 2D !");
         return true;
     }
-    obj.color = s_color_LineCircle2D;
+    obj.color = s_color_FlatCircle2D;
     return false;
 }
 
 //Line3D
-bool Vulkan_017_Collision::IsCollision_Line3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
+bool Vulkan_017_Collision::IsCollision_LineLine3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_LineLine3D* pLineLine3D = (FMeshCreateParam_LineLine3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vStart = FMath::Transform(obj.g_MatWorld, pLineLine3D->vStart);
+        FVector3 vEnd = FMath::Transform(obj.g_MatWorld, pLineLine3D->vEnd);
+        if (FMath::Intersects_RaySegment_Test(ray, vStart, vEnd))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_LineLine3D: Ray trace in LineLine 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineLine3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_LineTriangle3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
@@ -1921,7 +1938,7 @@ bool Vulkan_017_Collision::IsCollision_FlatTriangle3D(double x, double y, const 
         }
         else
         {
-            obj.color = s_color_LineTriangle3D;
+            obj.color = s_color_FlatTriangle3D;
         }
     }
     return isCollision;
@@ -2218,7 +2235,7 @@ void Vulkan_017_Collision::loadModel_Custom()
                     switch ((int)pModelObject->pMesh->typeGeometryType)
                     {
                         //Line2D
-                        case F_MeshGeometry_Line2D:             this->pRend_Line2D = pRend;                 break;
+                        case F_MeshGeometry_LineLine2D:         this->pRend_LineLine2D = pRend;             break;
                         case F_MeshGeometry_LineTriangle2D:     this->pRend_LineTriangle2D = pRend;         break;
                         case F_MeshGeometry_LineQuad2D:         this->pRend_LineQuad2D = pRend;             break;
                         case F_MeshGeometry_LineGrid2D:         this->pRend_LineGrid2D = pRend;             break;
@@ -2228,7 +2245,7 @@ void Vulkan_017_Collision::loadModel_Custom()
                         case F_MeshGeometry_FlatQuad2D:         this->pRend_FlatQuad2D = pRend;             break;
                         case F_MeshGeometry_FlatCircle2D:       this->pRend_FlatCircle2D = pRend;           break;
                         //Line3D
-                        case F_MeshGeometry_Line3D:             this->pRend_Line3D = pRend;                 break;
+                        case F_MeshGeometry_LineLine3D:         this->pRend_LineLine3D = pRend;             break;
                         case F_MeshGeometry_LineTriangle3D:     this->pRend_LineTriangle3D = pRend;         break;
                         case F_MeshGeometry_LineQuad3D:         this->pRend_LineQuad3D = pRend;             break;
                         case F_MeshGeometry_LineGrid3D:         this->pRend_LineGrid3D = pRend;             break;
@@ -2488,7 +2505,7 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
                     switch ((int32)pRend->pMeshSub->pMesh->typeGeometryType)
                     {
                         //Line3D
-                        case F_MeshGeometry_Line3D:             { objectConstants.color = s_color_Line3D;               break; }
+                        case F_MeshGeometry_LineLine3D:         { objectConstants.color = s_color_LineLine3D;           break; }
                         case F_MeshGeometry_LineTriangle3D:     { objectConstants.color = s_color_LineTriangle3D;       break; }
                         case F_MeshGeometry_LineQuad3D:         { objectConstants.color = s_color_LineQuad3D;           break; }
                         case F_MeshGeometry_LineGrid3D:         { objectConstants.color = s_color_LineGrid3D;           break; }
@@ -2521,7 +2538,7 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
                 switch ((int32)pRend->pMeshSub->pMesh->typeGeometryType)
                 {
                     //Line2D
-                    case F_MeshGeometry_Line2D:             { objectConstants.color = s_color_Line2D;               break; }
+                    case F_MeshGeometry_LineLine2D:         { objectConstants.color = s_color_LineLine2D;           break; }
                     case F_MeshGeometry_LineTriangle2D:     { objectConstants.color = s_color_LineTriangle2D;       break; }
                     case F_MeshGeometry_LineQuad2D:         { objectConstants.color = s_color_LineQuad2D;           break; }
                     case F_MeshGeometry_LineGrid2D:         { objectConstants.color = s_color_LineGrid2D;           break; }

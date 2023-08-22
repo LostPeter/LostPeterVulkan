@@ -44,11 +44,11 @@ namespace LostPeterFoundation
 
 
     ////////////////////////////////// Line2D ////////////////////////////////
-    //Line2D
-    class LPF_Export FMeshCreateParam_Line2D : public FMeshCreateParam
+    //LineLine2D
+    class LPF_Export FMeshCreateParam_LineLine2D : public FMeshCreateParam
     {
     public:
-        FMeshCreateParam_Line2D()
+        FMeshCreateParam_LineLine2D()
             : FMeshCreateParam(false, false)
             , vStart(0, 0)
             , vEnd(1, 0)
@@ -56,8 +56,8 @@ namespace LostPeterFoundation
         {
 
         }
-        FMeshCreateParam_Line2D(const FVector2& _vStart,
-                                const FVector2& _vEnd)
+        FMeshCreateParam_LineLine2D(const FVector2& _vStart,
+                                    const FVector2& _vEnd)
             : FMeshCreateParam(false, false)
             , vStart(_vStart)
             , vEnd(_vEnd)
@@ -65,9 +65,9 @@ namespace LostPeterFoundation
         {
 
         }
-        FMeshCreateParam_Line2D(const FVector2& _vStart,
-                                const FVector2& _vEnd,
-                                const FVector4& _vColor)
+        FMeshCreateParam_LineLine2D(const FVector2& _vStart,
+                                    const FVector2& _vEnd,
+                                    const FVector4& _vColor)
             : FMeshCreateParam(false, false)
             , vStart(_vStart)
             , vEnd(_vEnd)
@@ -75,7 +75,7 @@ namespace LostPeterFoundation
         {
 
         }
-        virtual ~FMeshCreateParam_Line2D()
+        virtual ~FMeshCreateParam_LineLine2D()
         {
 
         }
@@ -656,11 +656,11 @@ namespace LostPeterFoundation
 
 
     ////////////////////////////////// Line3D ////////////////////////////////
-    //Line3D
-    class LPF_Export FMeshCreateParam_Line3D : public FMeshCreateParam
+    //LineLine3D
+    class LPF_Export FMeshCreateParam_LineLine3D : public FMeshCreateParam
     {
     public:
-        FMeshCreateParam_Line3D()
+        FMeshCreateParam_LineLine3D()
             : FMeshCreateParam(false, false)
             , vStart(0, 0, 0)
             , vEnd(1, 0, 0)
@@ -668,8 +668,8 @@ namespace LostPeterFoundation
         {
 
         }
-        FMeshCreateParam_Line3D(const FVector3& _vStart,
-                                const FVector3& _vEnd)
+        FMeshCreateParam_LineLine3D(const FVector3& _vStart,
+                                    const FVector3& _vEnd)
             : FMeshCreateParam(false, false)
             , vStart(_vStart)
             , vEnd(_vEnd)
@@ -677,9 +677,9 @@ namespace LostPeterFoundation
         {
 
         }
-        FMeshCreateParam_Line3D(const FVector3& _vStart,
-                                const FVector3& _vEnd,
-                                const FVector4& _vColor)
+        FMeshCreateParam_LineLine3D(const FVector3& _vStart,
+                                    const FVector3& _vEnd,
+                                    const FVector4& _vColor)
             : FMeshCreateParam(false, false)
             , vStart(_vStart)
             , vEnd(_vEnd)
@@ -687,7 +687,7 @@ namespace LostPeterFoundation
         {
 
         }
-        virtual ~FMeshCreateParam_Line3D()
+        virtual ~FMeshCreateParam_LineLine3D()
         {
 
         }
@@ -3044,18 +3044,18 @@ namespace LostPeterFoundation
         static bool CreateLine2DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry);
 		static bool CreateLine2DGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam);
 
-        //Line2D
-        static void CreateLine2D(FMeshDataPC& meshDataPC, FMeshCreateParam_Line2D* pParam)
+        //LineLine2D
+        static void CreateLineLine2D(FMeshDataPC& meshDataPC, FMeshCreateParam_LineLine2D* pParam)
         {
-            CreateLine2D(meshDataPC, 
-                         pParam->vStart,
-                         pParam->vEnd,
-                         pParam->vColor);
+            CreateLineLine2D(meshDataPC, 
+                             pParam->vStart,
+                             pParam->vEnd,
+                             pParam->vColor);
         }
-        static void CreateLine2D(FMeshDataPC& meshDataPC,
-                                 const FVector2& vStart,
-                                 const FVector2& vEnd,
-                                 const FVector4& vColor);
+        static void CreateLineLine2D(FMeshDataPC& meshDataPC,
+                                     const FVector2& vStart,
+                                     const FVector2& vEnd,
+                                     const FVector4& vColor);
 
         //LineTriangle2D
         static void CreateLineTriangle2D(FMeshDataPC& meshDataPC, FMeshCreateParam_LineTriangle2D* pParam)
@@ -3276,18 +3276,18 @@ namespace LostPeterFoundation
         static bool CreateLine3DGeometry(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry);
 		static bool CreateLine3DGeometryWithParam(FMeshDataPC& meshDataPC, FMeshGeometryType typeMeshGeometry, FMeshCreateParam* pParam);
 
-        //Line3D
-        static void CreateLine3D(FMeshDataPC& meshDataPC, FMeshCreateParam_Line3D* pParam)
+        //LineLine3D
+        static void CreateLineLine3D(FMeshDataPC& meshDataPC, FMeshCreateParam_LineLine3D* pParam)
         {
-            CreateLine3D(meshDataPC, 
-                         pParam->vStart,
-                         pParam->vEnd,
-                         pParam->vColor);
+            CreateLineLine3D(meshDataPC, 
+                             pParam->vStart,
+                             pParam->vEnd,
+                             pParam->vColor);
         }
-        static void CreateLine3D(FMeshDataPC& meshDataPC,
-                                 const FVector3& vStart,
-                                 const FVector3& vEnd,
-                                 const FVector4& vColor);
+        static void CreateLineLine3D(FMeshDataPC& meshDataPC,
+                                     const FVector3& vStart,
+                                     const FVector3& vEnd,
+                                     const FVector4& vColor);
 
         //LineTriangle3D
         static void CreateLineTriangle3D(FMeshDataPC& meshDataPC, FMeshCreateParam_LineTriangle3D* pParam)

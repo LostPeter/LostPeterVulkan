@@ -28,6 +28,7 @@ namespace LostPeterFoundation
 
         static const float ms_fPosInfinity;		
         static const float ms_fNegInfinity;
+        static const float ms_fEpsilon;
 
         static const FVector2 ms_v2Zero;
         static const FVector2 ms_v2One;
@@ -81,6 +82,7 @@ namespace LostPeterFoundation
         static const FVector4 ms_clTransparent;
 
 	public:
+        //Rand
 		static float RandF()
 		{
 			return (float)(rand()) / (float)RAND_MAX;
@@ -126,24 +128,28 @@ namespace LostPeterFoundation
 			return FVector4(r, g, b, a);
 		}
 
+        //Min
 		template<typename T>
 		static T Min(const T& a, const T& b)
 		{
 			return a < b ? a : b;
 		}
 
+        //Max
 		template<typename T>
 		static T Max(const T& a, const T& b)
 		{
 			return a > b ? a : b;
 		}
 
+        //Lerp
 		template<typename T>
 		static T Lerp(const T& a, const T& b, float t)
 		{
 			return a + (b - a) * t;
 		}
 
+        //Clamp
 		template<typename T>
 		static T Clamp(const T& x, const T& low, const T& high)
 		{
@@ -162,11 +168,10 @@ namespace LostPeterFoundation
 		static FMatrix4 Identity4x4()
 		{
 			static FMatrix4 I(1.0f);
-
 			return I;
 		}
 
-    ////Abs
+        //Abs
         static int32 Abs(int32 iValue)											
         {
             return (iValue >= 0 ? iValue : -iValue); 
@@ -177,7 +182,7 @@ namespace LostPeterFoundation
             return float(fabs(fValue)); 
         }
 
-    ////Sqrt
+        //Sqrt
         static float Sqrt(float fValue)
         {
             return float(sqrt(fValue));
@@ -188,13 +193,13 @@ namespace LostPeterFoundation
             return float(1.0f / sqrt(fValue));
         }
     
-    ////Square
+        //Square
         static float Square(float fValue)
 		{ 
 			return fValue * fValue; 
 		}
 
-    ////Pow
+        //Pow
         static float Pow(float fBase,float fExponent)
 		{ 
 			return float(pow(fBase, fExponent)); 
@@ -203,12 +208,13 @@ namespace LostPeterFoundation
 		static uint32 Power2PlusOne(uint32 number);
 		static bool IsPower2(size_t nValue, size_t& nNearestPow);
 
-    ////Log
+        //Exp
 		static float Exp(float fValue)
 		{ 
 			return float(exp(fValue));
 		}
 
+        //Log
 		static float Log(float fValue)
 		{ 
 			return float(log(fValue)); 
@@ -224,39 +230,35 @@ namespace LostPeterFoundation
 			return float(log(fValue) / log(base)); 
 		}
 		
-	////Ceil/Floor
+	    //Ceil/Floor
 		static int32 CeilI(float fValue)										
 		{
 			return int32(ceil(fValue));
 		}
-
 		static float CeilR(float fValue)
 		{ 
 			return float(ceil(fValue));
 		}
-
 		static int32 FloorI(float fValue)								
 		{
 			return int32(floor(fValue)); 
 		}
-
 		static float FloorR(float fValue)								
 		{
 			return float(floor(fValue)); 
 		}
 		
-	////Sign
+	    //Sign
 		static int32 Sign(int32 iValue)											
 		{
 			return (iValue > 0 ? +1 : (iValue < 0 ? -1 : 0));
 		}
-		
 		static float Sign(float fValue)
 		{
 			return (fValue > 0.0f ? +1.0f : (fValue < 0.0f ? -1.0f : 0.0f));
 		}
 
-	////Saturate
+	    //Saturate
         static float Saturate(float t) 
         { 
             return (t < 0) ? 0 : ((t > 1) ? 1 : t); 
@@ -266,10 +268,19 @@ namespace LostPeterFoundation
             return (t < 0) ? 0 : ((t > 1) ? 1 : t); 
         }
 
-	////Value
-		static float Min(const FVector2& v) { return glm::min(v.x, v.y); }
-        static float Min(const FVector3& v) { return glm::min(v.x, v.y, v.z); }
-        static float Min(const FVector4& v) { return glm::min(v.x, v.y, v.z, v.w); }
+	    //Min
+		static float Min(const FVector2& v) 
+        { 
+            return glm::min(v.x, v.y); 
+        }
+        static float Min(const FVector3& v) 
+        { 
+            return glm::min(v.x, v.y, v.z); 
+        }
+        static float Min(const FVector4& v) 
+        { 
+            return glm::min(v.x, v.y, v.z, v.w); 
+        }
         static FVector2 Min(const FVector2& v1, const FVector2& v2) 
         { 
             return FVector2(glm::min(v1.x, v2.x),
@@ -307,9 +318,19 @@ namespace LostPeterFoundation
             vSrc.w = glm::min(vSrc.w, vIn.w);
         } 
 
-        static float Max(const FVector2& v) { return glm::max(v.x, v.y); }
-        static float Max(const FVector3& v) { return glm::max(v.x, v.y, v.z); }
-        static float Max(const FVector4& v) { return glm::max(v.x, v.y, v.z, v.w); }
+        //Max
+        static float Max(const FVector2& v) 
+        { 
+            return glm::max(v.x, v.y); 
+        }
+        static float Max(const FVector3& v) 
+        { 
+            return glm::max(v.x, v.y, v.z); 
+        }
+        static float Max(const FVector4& v) 
+        { 
+            return glm::max(v.x, v.y, v.z, v.w); 
+        }
         static FVector2 Max(const FVector2& v1, const FVector2& v2) 
         { 
             return FVector2(glm::max(v1.x, v2.x),
@@ -347,6 +368,7 @@ namespace LostPeterFoundation
             vSrc.w = glm::max(vSrc.w, vIn.w);
         } 
 
+        //Compare
         static bool IsGreat(const FVector3& v1, const FVector3& v2)
         {
             if (v1.x > v2.x && v1.y > v2.y && v1.z > v2.z)
@@ -384,6 +406,16 @@ namespace LostPeterFoundation
         }
 
 	public:
+        //Dot
+        static float Dot(const FVector2& v1, const FVector2& v2)
+        {
+            return glm::dot(v1, v2);
+        }
+        static float DotAbs(const FVector2& v1, const FVector2& v2)
+        {
+            return abs(glm::dot(v1, v2));
+        }
+
 		static float Dot(const FVector3& v1, const FVector3& v2)
         {
             return glm::dot(v1, v2);
@@ -407,11 +439,13 @@ namespace LostPeterFoundation
             return glm::dot(q1, q2);
         }
 
+        //Cross
         static FVector3 Cross(const FVector3& v1, const FVector3& v2)
         {
             return glm::cross(v1, v2);
         }
 
+        //Normalize
         static FVector3 Normalize(const FVector3& v)
         {
             return glm::normalize(v);
@@ -423,6 +457,7 @@ namespace LostPeterFoundation
             return q / len;
         }
 
+        //Length
         static float Length(const FVector2& v)
         {
             return glm::length(v);
@@ -430,14 +465,6 @@ namespace LostPeterFoundation
         static float Length2(const FVector2& v)
         {
             return glm::length2(v);
-        }
-        static float Distance(const FVector2& v1, const FVector2& v2)
-        {
-            return Length(v1 - v2);
-        }
-        static float Distance2(const FVector2& v1, const FVector2& v2)
-        {
-            return Length2(v1 - v2);
         }
 
         static float Length(const FVector3& v)
@@ -448,6 +475,17 @@ namespace LostPeterFoundation
         {
             return glm::length2(v);
         }
+
+        //Distance
+        static float Distance(const FVector2& v1, const FVector2& v2)
+        {
+            return Length(v1 - v2);
+        }
+        static float Distance2(const FVector2& v1, const FVector2& v2)
+        {
+            return Length2(v1 - v2);
+        }
+
         static float Distance(const FVector3& v1, const FVector3& v2)
         {
             return Length(v1 - v2);
@@ -457,6 +495,7 @@ namespace LostPeterFoundation
             return Length2(v1 - v2);
         }
 
+        //Floor - Ceil
         static void	MakeFloor(FVector3& src, const FVector3& cmp)
         {
             if (cmp.x < src.x) src.x = cmp.x;
@@ -470,16 +509,19 @@ namespace LostPeterFoundation
             if (cmp.z > src.z) src.z = cmp.z;
         }
 
+        //Reflect
         static FVector3 Reflect(const FVector3& vI, const FVector3& vN)
         {
             return glm::reflect(vI, vN);
         }
 
+        //Refract
         static FVector3 Refract(const FVector3& vI, const FVector3& vN, float eta)
         {
             return glm::refract(vI, vN, eta);
         }
 
+        //Add - Sub - Half
         static FVector3 Add(const FVector3& v1, const FVector3& v2)
         {
             return FVector3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
@@ -571,6 +613,11 @@ namespace LostPeterFoundation
         static float GetRadiusFromAABB(const FAABB& aabb);
 
     public:
+        static bool Points3_InLine(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+        static bool Points4_OnPlane(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, const FVector3& pt4);
+
+        
+    public:
         //Point - Line
         template<typename T>
 		static bool Intersects_PointInLine2D(const FTPoint<T>& pt, const FTLine<T>& line)
@@ -585,8 +632,8 @@ namespace LostPeterFoundation
         {
             return Intersects_PointInLine2D<float>(pt, line);
         }
-        static bool Intersects_PointInLine(const FVector3& pt, const FVector3& ptLineStart, const FVector3& ptLineEnd);
-        
+        static bool Intersects_PointInLine(const FVector3& pt, const FVector3& ptLineStart, const FVector3& ptLineEnd, bool includeSE = true);
+        static bool Intersects_PointInLine(const FVector3& pt, const FSegment& segment, bool includeSE = true);
 
         //Point - Triangle
         template<typename T>
@@ -659,6 +706,7 @@ namespace LostPeterFoundation
 
     public:
         //Ray - Shape
+        static std::pair<bool, float> Intersects_RaySegment(const FRay& ray, const FVector3& s, const FVector3& e);
         static std::pair<bool, float> Intersects_RaySegment(const FRay& ray, const FSegment& segment);
         static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
                                                              bool positiveSide = true, bool negativeSide = true);
@@ -678,6 +726,7 @@ namespace LostPeterFoundation
         static std::pair<bool, float> Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool discardInside = true);
 
 
+        static bool Intersects_RaySegment_Test(const FRay& ray, const FVector3& s, const FVector3& e);
         static bool Intersects_RaySegment_Test(const FRay& ray, const FSegment& segment);
         static bool Intersects_RayTriangle_Test(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
                                                 bool positiveSide = true, bool negativeSide = true);
