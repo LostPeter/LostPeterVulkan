@@ -62,7 +62,46 @@ namespace LostPeterFoundation
 		float Distance2(const FVector3& point, float* t = 0) const;
 		float Distance(const FVector3& point, float* t = 0) const;
 
+		//Point - InLineSameSide/NotInLineSameSide
+		bool IsPoint2InSameSide(const FVector3& pt1, const FVector3& pt2);
+		bool IsPoint2NotInSameSide(const FVector3& pt1, const FVector3& pt2);
+
+		//Line - Line Parallel/NotParallel
+		bool IsLineLineParallel(const FVector3& pt1, const FVector3& pt2);
+		bool IsLineLineParallel(const FSegment& segment);
+		bool IsLineLineNotParallel(const FVector3& pt1, const FVector3& pt2);
+		bool IsLineLineNotParallel(const FSegment& segment);
+
+		//Line - Line Perpendicular/NotPerpendicular
+		bool IsLineLinePerpendicular(const FVector3& pt1, const FVector3& pt2);
+		bool IsLineLinePerpendicular(const FSegment& segment);
+		bool IsLineLineNotPerpendicular(const FVector3& pt1, const FVector3& pt2);
+		bool IsLineLineNotPerpendicular(const FSegment& segment);
+
+		//Line - Line Intersect/NotIntersect
+		bool IsLineLineIntersect(const FVector3& pt1, const FVector3& pt2, bool includeBorder = true);
+		bool IsLineLineIntersect(const FSegment& segment, bool includeBorder = true);
+		bool IsLineLineNotIntersect(const FVector3& pt1, const FVector3& pt2, bool includeBorder = true);
+		bool IsLineLineNotIntersect(const FSegment& segment, bool includeBorder = true);
+
+		//Line - Plane Parallel/NotParallel
+		bool IsLinePlaneParallel(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+		bool IsLinePlaneParallel(const FPlane& plane);
+		bool IsLinePlaneNotParallel(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+		bool IsLinePlaneNotParallel(const FPlane& plane);
+
+		//Line - Plane Perpendicular/NotPerpendicular
+		bool IsLinePlanePerpendicular(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+		bool IsLinePlanePerpendicular(const FPlane& plane);
+		bool IsLinePlaneNotPerpendicular(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+		bool IsLinePlaneNotPerpendicular(const FPlane& plane);
+
+		//Line - Triangle Intersect/NotIntersect
+		bool IsLineTriangleIntersect(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder = true);
+		bool IsLineTriangleNotIntersect(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder = true);
+
 	public:
+		//Intersects
 		bool Intersects_Point(const FVector3& point) const;
 		bool Intersects_Ray(const FRay& ray) const;
 	};

@@ -85,13 +85,23 @@ namespace LostPeterFoundation
     float FPlane::Normalize()														
     {
         float fLength = FMath::Length(m_vNormal);
-        if (fLength > 1e-08f)
+        if (fLength > FMath::ms_fEpsilon)
         {
             float fInvLength = 1 / fLength;
             m_vNormal *= fInvLength;
             m_fDistance *= fInvLength;
         }
         return fLength;
+    }
+
+    //Point - InPlaneSameSide/NotInPlaneSameSide
+    bool FPlane::IsPoint2InSameSide(const FVector3& pt1, const FVector3& pt2)
+    {
+        return FMath::Points2_InPlaneSameSide(pt1, pt2, *this);
+    }
+	bool FPlane::IsPoint2NotInSameSide(const FVector3& pt1, const FVector3& pt2)
+    {
+        return FMath::Points2_NotInPlaneSameSide(pt1, pt2, *this);
     }
 
     FPlane FPlane::operator *(const FMatrix4& mat4) const

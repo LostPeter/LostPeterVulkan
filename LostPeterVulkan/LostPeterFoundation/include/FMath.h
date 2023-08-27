@@ -402,10 +402,42 @@ namespace LostPeterFoundation
         static bool IsZeroLength(const FVector3& v)
         {
             float fLen = (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
-			return (fLen < (1e-06 * 1e-06));
+			return (fLen < (ms_fEpsilon * ms_fEpsilon));
         }
 
 	public:
+        //Zero
+        static bool Zero(float f)
+        {
+            if (Abs(f) < ms_fEpsilon)
+                return true;
+            return false;
+        }
+        static bool Zero(const FVector2& v2)
+        {
+            if (Abs(v2.x) < ms_fEpsilon &&
+                Abs(v2.y) < ms_fEpsilon)
+                return true;
+            return false;
+        }
+        static bool Zero(const FVector3& v3)
+        {
+            if (Abs(v3.x) < ms_fEpsilon &&
+                Abs(v3.y) < ms_fEpsilon &&
+                Abs(v3.z) < ms_fEpsilon)
+                return true;
+            return false;
+        }
+        static bool Zero(const FVector4& v4)
+        {
+            if (Abs(v4.x) < ms_fEpsilon &&
+                Abs(v4.y) < ms_fEpsilon &&
+                Abs(v4.z) < ms_fEpsilon &&
+                Abs(v4.w) < ms_fEpsilon)
+                return true;
+            return false;
+        }
+
         //Dot
         static float Dot(const FVector2& v1, const FVector2& v2)
         {
@@ -610,13 +642,154 @@ namespace LostPeterFoundation
         static FMatrix4 TransposeMatrix4(const FMatrix4& mat4);
 
     public:
+        //Direction From Point2
+        static FVector3 GetDirectionWithoutNormalizeFromPoint2(const FVector3& v1, const FVector3& v2);
+        static FVector3 GetDirectionFromPoint2(const FVector3& v1, const FVector3& v2);
+
+        //Normal From Point3
+        static FVector3 GetNormal3WithoutNormalizeFromPoints3(const FVector3& v1, const FVector3& v2, const FVector3& v3);
+        static FVector4 GetNormal4WithoutNormalizeFromPoints3(const FVector3& v1, const FVector3& v2, const FVector3& v3);
+        static FVector3 GetNormal3FromPoints3(const FVector3& v1, const FVector3& v2, const FVector3& v3);
+        static FVector4 GetNormal4FromPoints3(const FVector3& v1, const FVector3& v2, const FVector3& v3);
+
+        //Angle Cos From Direction2/Segment2/Plane2
+        static float GetAngleCosFromDirection2(const FVector3& v1, const FVector3& v2);
+        static float GetAngleCosFromSegment2(const FSegment& s1, const FSegment& s2);
+        static float GetAngleCosFromPlane2(const FVector3& p11, const FVector3& p12, const FVector3& p13, const FVector3& p21, const FVector3& p22, const FVector3& p23);
+
+        //Angle Sin From Line-Plane
+        static float GetAngleSinFromLinePlane(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+        static float GetAngleSinFromLinePlane(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+
+        //Distance From Point-Line
+        static float GetDistanceFromPointLine(const FVector3& pt, const FVector3& ptLine11, const FVector3& ptLine12);
+        static float GetDistanceFromPointLine(const FVector3& pt, const FSegment& segment);
+
+        //Distance From Point-Plane
+        static float GetDistanceFromPointPlane(const FVector3& pt, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+
+        //Distance From Line2
+        static float GetDistanceFromLine2(const FVector3& ptLine11, const FVector3& ptLine12, const FVector3& ptLine21, const FVector3& ptLine22);
+        static float GetDistanceFromLine2(const FSegment& segment1, const FSegment& segment2);
+
+        //Intersection Point From Line2
+        static bool GetIntersectionPointFromLine2(const FVector3& ptLine11, const FVector3& ptLine12, const FVector3& ptLine21, const FVector3& ptLine22, FVector3& vIntersection);
+        static bool GetIntersectionPointFromLine2(const FSegment& segment1, const FSegment& segment2, FVector3& vIntersection);
+
+        //Intersection Point From Line-Plane
+        static bool GetIntersectionPointFromLinePlane(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, FVector3& vIntersection);
+        static bool GetIntersectionPointFromLinePlane(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, FVector3& vIntersection);
+
+        //Intersection Line From Plane2
+        static bool GetIntersectionLineFromPlane2(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23, FVector3& pL1, FVector3& pL2);
+        static bool GetIntersectionLineFromPlane2(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23, FSegment& segment);
+
+        //Area From Triangle
+        template<typename T>
+        static T GetAreaFromTriangle(const FTPoint<T>& a, const FTPoint<T>& b, const FTPoint<T>& c)
+        {
+            T x1 = b.x - a.x;  
+            T y1 = b.y - a.y;  
+            T x2 = c.x - a.x;  
+            T y2 = c.y - a.y;  
+            return Abs(x1 * y2 - x2 * y1) / 2;
+        }
+
+        //Radius From AABB
         static float GetRadiusFromAABB(const FAABB& aabb);
 
+
     public:
+        //Direction - IsParallel/IsPerpendicular
+        static bool Direction_IsParallel(const FVector3& vDir1, const FVector3& vDir2);
+        static bool Direction_IsPerpendicular(const FVector3& vDir1, const FVector3& vDir2);
+
+        //Point - InLine
         static bool Points3_InLine(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+
+        //Point - InLineSameSide/NotInLineSameSide
+        static bool Points2_InLineSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptLine1, const FVector3& ptLine2);
+        static bool Points2_InLineSameSide(const FVector3& pt1, const FVector3& pt2, const FSegment& segment);
+        static bool Points2_NotInLineSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptLine1, const FVector3& ptLine2);
+        static bool Points2_NotInLineSameSide(const FVector3& pt1, const FVector3& pt2, const FSegment& segment);
+
+        //Point - OnPlane
         static bool Points4_OnPlane(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, const FVector3& pt4);
 
-        
+        //Point - InPlaneSameSide/NotInPlaneSameSide
+        static bool Points2_InPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptPlane, const FVector3& vPlaneNormal);
+        static bool Points2_InPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptPlane1, const FVector3& ptPlane2, const FVector3& ptPlane3);
+        static bool Points2_InPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FPlane& plane);
+        static bool Points2_NotInPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptPlane, const FVector3& vPlaneNormal);
+        static bool Points2_NotInPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptPlane1, const FVector3& ptPlane2, const FVector3& ptPlane3);
+        static bool Points2_NotInPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FPlane& plane);
+
+        //Line - Line Parallel/NotParallel
+        static bool LineLine_Parallel(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22);
+        static bool LineLine_Parallel(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment);
+        static bool LineLine_Parallel(const FSegment& segment1, const FSegment& segment2);
+        static bool LineLine_NotParallel(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22);
+        static bool LineLine_NotParallel(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment);
+        static bool LineLine_NotParallel(const FSegment& segment1, const FSegment& segment2);
+
+        //Line - Line Perpendicular/NotPerpendicular
+        static bool LineLine_Perpendicular(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22);
+        static bool LineLine_Perpendicular(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment);
+        static bool LineLine_Perpendicular(const FSegment& segment1, const FSegment& segment2);
+        static bool LineLine_NotPerpendicular(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22);
+        static bool LineLine_NotPerpendicular(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment);
+        static bool LineLine_NotPerpendicular(const FSegment& segment1, const FSegment& segment2);
+
+        //Line - Line Intersect/NotIntersect
+        static bool LineLine_Intersect(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22, bool includeBorder = true);
+        static bool LineLine_Intersect(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment, bool includeBorder = true);
+        static bool LineLine_Intersect(const FSegment& segment1, const FSegment& segment2, bool includeBorder = true);
+        static bool LineLine_NotIntersect(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22, bool includeBorder = true);
+        static bool LineLine_NotIntersect(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment, bool includeBorder = true);
+        static bool LineLine_NotIntersect(const FSegment& segment1, const FSegment& segment2, bool includeBorder = true);
+
+        //Line - Plane Parallel/NotParallel
+        static bool LinePlane_Parallel(const FVector3& vDir, const FVector3& vNormal);
+        static bool LinePlane_Parallel(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+        static bool LinePlane_Parallel(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane);
+        static bool LinePlane_Parallel(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+        static bool LinePlane_Parallel(const FSegment& segment, const FPlane& plane);
+        static bool LinePlane_NotParallel(const FVector3& vDir, const FVector3& vNormal);
+        static bool LinePlane_NotParallel(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+        static bool LinePlane_NotParallel(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane);
+        static bool LinePlane_NotParallel(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+        static bool LinePlane_NotParallel(const FSegment& segment, const FPlane& plane);
+
+        //Line - Plane Perpendicular/NotPerpendicular
+        static bool LinePlane_Perpendicular(const FVector3& vDir, const FVector3& vNormal);
+        static bool LinePlane_Perpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+        static bool LinePlane_Perpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane);
+        static bool LinePlane_Perpendicular(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+        static bool LinePlane_Perpendicular(const FSegment& segment, const FPlane& plane);
+        static bool LinePlane_NotPerpendicular(const FVector3& vDir, const FVector3& vNormal);
+        static bool LinePlane_NotPerpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+        static bool LinePlane_NotPerpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane);
+        static bool LinePlane_NotPerpendicular(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+        static bool LinePlane_NotPerpendicular(const FSegment& segment, const FPlane& plane);
+
+        //Line - Triangle Intersect/NotIntersect
+        static bool LineTriangle_Intersect(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder = true);
+        static bool LineTriangle_Intersect(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder = true);
+        static bool LineTriangle_NotIntersect(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder = true);
+        static bool LineTriangle_NotIntersect(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder = true);
+
+        //Plane - Plane Parallel/NotParallel
+        static bool PlanePlane_Parallel(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23);
+        static bool PlanePlane_NotParallel(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23);
+        static bool PlanePlane_Parallel(const FPlane& plane1, const FPlane& plane2); 
+        static bool PlanePlane_NotParallel(const FPlane& plane1, const FPlane& plane2); 
+
+        //Plane - Plane Perpendicular/NotPerpendicular
+        static bool PlanePlane_Perpendicular(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23);
+        static bool PlanePlane_NotPerpendicular(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23);
+        static bool PlanePlane_Perpendicular(const FPlane& plane1, const FPlane& plane2);
+        static bool PlanePlane_NotPerpendicular(const FPlane& plane1, const FPlane& plane2);
+
     public:
         //Point - Line
         template<typename T>
@@ -637,21 +810,12 @@ namespace LostPeterFoundation
 
         //Point - Triangle
         template<typename T>
-        static T CalculateTriangleArea(const FTPoint<T>& a, const FTPoint<T>& b, const FTPoint<T>& c)
-        {
-            T x1 = b.x - a.x;  
-            T y1 = b.y - a.y;  
-            T x2 = c.x - a.x;  
-            T y2 = c.y - a.y;  
-            return Abs(x1 * y2 - x2 * y1) / 2;
-        }
-        template<typename T>
         static bool Intersects_PointInTriangle2D(const FTPoint<T>& pt, const FTPoint<T>& a, const FTPoint<T>& b, const FTPoint<T>& c)
         {
-            T area_ABC = CalculateTriangleArea(a, b, c);
-            T area_PAB = CalculateTriangleArea(pt, a, b);
-            T area_PAC = CalculateTriangleArea(pt, a, c);
-            T area_PBC = CalculateTriangleArea(pt, b, c);
+            T area_ABC = GetAreaFromTriangle(a, b, c);
+            T area_PAB = GetAreaFromTriangle(pt, a, b);
+            T area_PAC = GetAreaFromTriangle(pt, a, c);
+            T area_PBC = GetAreaFromTriangle(pt, b, c);
 
             if (Abs(area_PAB + area_PBC + area_PAC - area_ABC) < 0.000001f)
                 return true;
@@ -665,7 +829,7 @@ namespace LostPeterFoundation
         {
             return Intersects_PointInTriangle2D<float>(pt, a, b, c);
         }
-        static bool Intersects_PointInTriangle(const FVector3& pt, const FVector3& a, const FVector3& b, const FVector3& c);
+        static bool Intersects_PointInTriangle(const FVector3& pt, const FVector3& a, const FVector3& b, const FVector3& c, bool includeBorder = true);
 
 
         //Point - Rect
@@ -752,18 +916,13 @@ namespace LostPeterFoundation
         static bool	Intersects_PlaneAABB(const FPlane& plane, const FAABB& aabb);
 
     public:
+        static float GaussianDistribution(float x, float offset = 0.0f, float scale = 1.0f);
+
 		static FMatrix4 BuildReflectionMatrix(const FPlane& p);	
 
         static FVector3 CalculateTangentSpaceVector(const FVector3& position1, const FVector3& position2, const FVector3& position3,
 												    float u1, float v1, float u2, float v2, float u3, float v3);
-
-        static FVector4 CalculateFaceNormal(const FVector3& v1, const FVector3& v2, const FVector3& v3);
-		static FVector3 CalculateBasicFaceNormal(const FVector3& v1, const FVector3& v2, const FVector3& v3);
-		static FVector4 CalculateFaceNormalWithoutNormalize(const FVector3& v1, const FVector3& v2, const FVector3& v3);
-		static FVector3 CalculateBasicFaceNormalWithoutNormalize(const FVector3& v1, const FVector3& v2, const FVector3& v3);
-
-		static float GaussianDistribution(float x, float offset = 0.0f, float scale = 1.0f);
-
+        
 		static FMatrix4 MakeMatrix4ViewLH(const FVector3& vPos, const FQuaternion& qRot, const FMatrix4* pReflectMatrix = nullptr);
         static FMatrix4 MakeMatrix4ProjectionPerspectiveLH(float rFovY, float fAspect, float fNear, float fFar);
 

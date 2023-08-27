@@ -73,7 +73,11 @@ namespace LostPeterFoundation
         void Redefine(const FVector3& vPoint0, const FVector3& vPoint1, const FVector3& vPoint2);
         void Redefine(const FVector3& vNormal, const FVector3& vPoint);			
         FVector3 ProjectVector(const FVector3& v) const;									
-        float Normalize();							
+        float Normalize();		
+
+        //Point - InPlaneSameSide/NotInPlaneSameSide
+        bool IsPoint2InSameSide(const FVector3& pt1, const FVector3& pt2);
+		bool IsPoint2NotInSameSide(const FVector3& pt1, const FVector3& pt2); 
 
     public:
         bool operator ==(const FPlane& rhs) const

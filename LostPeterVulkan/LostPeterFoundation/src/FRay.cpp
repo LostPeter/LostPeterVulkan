@@ -18,6 +18,11 @@
 
 namespace LostPeterFoundation
 {
+    float FRay::GetDistance(const FVector3& vRayPt) const
+    {
+        return FMath::Length(vRayPt - m_vOrigin);
+    }
+
     std::pair<bool, float> FRay::Intersects_Plane(const FPlane& plane) const
     {
         return FMath::Intersects_RayPlane(*this, plane);

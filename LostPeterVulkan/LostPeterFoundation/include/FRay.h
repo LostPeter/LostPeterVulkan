@@ -49,6 +49,7 @@ namespace LostPeterFoundation
         LP_FORCEINLINE void SetDirection(const FVector3& vDir) { m_vDirection	= vDir; }	
 
         LP_FORCEINLINE FVector3 GetPoint(float t) const { return m_vOrigin + (m_vDirection * t); }
+        float GetDistance(const FVector3& vRayPt) const;
 
         std::pair<bool, float> Intersects_Plane(const FPlane& plane) const;		
         std::pair<bool, float> Intersects_PlaneBoundedVolume(const FPlaneBoundedVolume& planeBoundedVolume) const;
