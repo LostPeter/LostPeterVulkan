@@ -79,10 +79,10 @@ namespace LostPeterFoundation
 		bool IsLineLineNotPerpendicular(const FSegment& segment);
 
 		//Line - Line Intersect/NotIntersect
-		bool IsLineLineIntersect(const FVector3& pt1, const FVector3& pt2, bool includeBorder = true);
-		bool IsLineLineIntersect(const FSegment& segment, bool includeBorder = true);
-		bool IsLineLineNotIntersect(const FVector3& pt1, const FVector3& pt2, bool includeBorder = true);
-		bool IsLineLineNotIntersect(const FSegment& segment, bool includeBorder = true);
+		bool IsLineLineIntersect(const FVector3& pt1, const FVector3& pt2, float fEpsilon, bool includeBorder = true);
+		bool IsLineLineIntersect(const FSegment& segment, float fEpsilon, bool includeBorder = true);
+		bool IsLineLineNotIntersect(const FVector3& pt1, const FVector3& pt2, float fEpsilon, bool includeBorder = true);
+		bool IsLineLineNotIntersect(const FSegment& segment, float fEpsilon, bool includeBorder = true);
 
 		//Line - Plane Parallel/NotParallel
 		bool IsLinePlaneParallel(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);

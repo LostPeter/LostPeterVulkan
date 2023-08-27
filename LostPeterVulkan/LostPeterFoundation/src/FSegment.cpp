@@ -114,21 +114,21 @@ namespace LostPeterFoundation
 	}
 
 	//Line - Line Intersect/NotIntersect
-	bool FSegment::IsLineLineIntersect(const FVector3& pt1, const FVector3& pt2, bool includeBorder /*= true*/)
+	bool FSegment::IsLineLineIntersect(const FVector3& pt1, const FVector3& pt2, float fEpsilon, bool includeBorder /*= true*/)
 	{
-		return FMath::LineLine_Intersect(m_P0, m_P1, pt1, pt2, includeBorder);
+		return FMath::LineLine_Intersect(m_P0, m_P1, pt1, pt2, includeBorder, fEpsilon);
 	}
-	bool FSegment::IsLineLineIntersect(const FSegment& segment, bool includeBorder /*= true*/)
+	bool FSegment::IsLineLineIntersect(const FSegment& segment, float fEpsilon, bool includeBorder /*= true*/)
 	{
-		return FMath::LineLine_Intersect(segment.m_P0, segment.m_P1, m_P0, m_P1, includeBorder);
+		return FMath::LineLine_Intersect(segment.m_P0, segment.m_P1, m_P0, m_P1, includeBorder, fEpsilon);
 	}
-	bool FSegment::IsLineLineNotIntersect(const FVector3& pt1, const FVector3& pt2, bool includeBorder /*= true*/)
+	bool FSegment::IsLineLineNotIntersect(const FVector3& pt1, const FVector3& pt2, float fEpsilon, bool includeBorder /*= true*/)
 	{
-		return FMath::LineLine_NotIntersect(m_P0, m_P1, pt1, pt2, includeBorder);
+		return FMath::LineLine_NotIntersect(m_P0, m_P1, pt1, pt2, includeBorder, fEpsilon);
 	}
-	bool FSegment::IsLineLineNotIntersect(const FSegment& segment, bool includeBorder /*= true*/)
+	bool FSegment::IsLineLineNotIntersect(const FSegment& segment, float fEpsilon, bool includeBorder /*= true*/)
 	{
-		return FMath::LineLine_NotIntersect(segment.m_P0, segment.m_P1, m_P0, m_P1, includeBorder);
+		return FMath::LineLine_NotIntersect(segment.m_P0, segment.m_P1, m_P0, m_P1, includeBorder, fEpsilon);
 	}
 
 	//Line - Plane Parallel/NotParallel

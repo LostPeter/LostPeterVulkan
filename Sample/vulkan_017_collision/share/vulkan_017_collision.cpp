@@ -1737,6 +1737,10 @@ bool Vulkan_017_Collision::IsCollision_FlatCircle2D(double x, double y, ModelObj
 bool Vulkan_017_Collision::IsCollision_LineLine3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
     bool isCollision = false;
+    if (!isHover)
+    {
+        isCollision = false;
+    }
     FMeshCreateParam_LineLine3D* pLineLine3D = (FMeshCreateParam_LineLine3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
     size_t count = pRend->objectCBs_LineFlat3D.size();
     for (size_t i = 0; i < count; i++)
@@ -1744,7 +1748,7 @@ bool Vulkan_017_Collision::IsCollision_LineLine3D(double x, double y, const FRay
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
         FVector3 vStart = FMath::Transform(obj.g_MatWorld, pLineLine3D->vStart);
         FVector3 vEnd = FMath::Transform(obj.g_MatWorld, pLineLine3D->vEnd);
-        if (FMath::Intersects_RaySegment_Test(ray, vStart, vEnd))
+        if (FMath::Intersects_RaySegment_Test(ray, vStart, vEnd, 1000, 0.01f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_LineLine3D: Ray trace in LineLine 3D !");
