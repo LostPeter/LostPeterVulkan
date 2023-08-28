@@ -881,7 +881,7 @@ namespace LostPeterFoundation
         if (includeBorder)
         {
             if (!Points3_InLine(ptL_11, ptL_12, ptL_21, fEpsilon) || !Points3_InLine(ptL_11, ptL_12, ptL_22, fEpsilon))
-                return !Points2_InLineSameSide(ptL_11, ptL_12, ptL_21, ptL_22) && !Points2_InLineSameSide(ptL_12, ptL_22, ptL_11, ptL_12);
+                return !Points2_InLineSameSide(ptL_11, ptL_12, ptL_21, ptL_22) && !Points2_InLineSameSide(ptL_21, ptL_22, ptL_11, ptL_12);
 
             isIntersect = Intersects_PointInLine(ptL_11, ptL_21, ptL_22, fEpsilon) || 
                           Intersects_PointInLine(ptL_12, ptL_21, ptL_22, fEpsilon) || 

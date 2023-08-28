@@ -1748,7 +1748,7 @@ bool Vulkan_017_Collision::IsCollision_LineLine3D(double x, double y, const FRay
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
         FVector3 vStart = FMath::Transform(obj.g_MatWorld, pLineLine3D->vStart);
         FVector3 vEnd = FMath::Transform(obj.g_MatWorld, pLineLine3D->vEnd);
-        if (FMath::Intersects_RaySegment_Test(ray, vStart, vEnd, 1000, 0.01f))
+        if (FMath::Intersects_RaySegment_Test(ray, vStart, vEnd, 1000, 0.005f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_LineLine3D: Ray trace in LineLine 3D !");
