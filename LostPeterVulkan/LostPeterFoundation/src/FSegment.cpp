@@ -16,23 +16,23 @@ namespace LostPeterFoundation
 {
 	FVector3 FSegment::GetDirectionNormalized() const
 	{
-		return FMath::Normalize(m_P1 - m_P0);
+		return FMath::Normalize(m_pt1 - m_pt0);
 	}
 
 	float FSegment::Length() const 
 	{ 
-		return FMath::Distance(m_P1, m_P0);
+		return FMath::Distance(m_pt1, m_pt0);
 	}
 
 	float FSegment::Length2() const	
 	{ 
-		return FMath::Distance2(m_P1, m_P0);
+		return FMath::Distance2(m_pt1, m_pt0);
 	}
 
 	float FSegment::Distance2(const FVector3& point, float* t /*= 0*/) const
 	{
-		FVector3 Diff = point - m_P0;
-		FVector3 Dir = m_P1 - m_P0;
+		FVector3 Diff = point - m_pt0;
+		FVector3 Dir = m_pt1 - m_pt0;
 		float fT = FMath::Dot(Diff, Dir);
 
 		if(fT <= 0.0f)
@@ -70,71 +70,71 @@ namespace LostPeterFoundation
 	//Point - InLineSameSide/NotInLineSameSide
 	bool FSegment::IsPoint2InSameSide(const FVector3& pt1, const FVector3& pt2)
 	{
-		return FMath::Points2_InLineSameSide(pt1, pt2, m_P0, m_P1);
+		return FMath::Points2_InLineSameSide(pt1, pt2, m_pt0, m_pt1);
 	}
 	bool FSegment::IsPoint2NotInSameSide(const FVector3& pt1, const FVector3& pt2)
 	{
-		return FMath::Points2_NotInLineSameSide(pt1, pt2, m_P0, m_P1);
+		return FMath::Points2_NotInLineSameSide(pt1, pt2, m_pt0, m_pt1);
 	}
 
 	//Line - Line Parallel/NotParallel
 	bool FSegment::IsLineLineParallel(const FVector3& pt1, const FVector3& pt2)
 	{
-		return FMath::LineLine_Parallel(pt1, pt2, m_P0, m_P1);
+		return FMath::LineLine_Parallel(pt1, pt2, m_pt0, m_pt1);
 	}
 	bool FSegment::IsLineLineParallel(const FSegment& segment)
 	{
-		return FMath::LineLine_Parallel(segment.m_P0, segment.m_P1, m_P0, m_P1);
+		return FMath::LineLine_Parallel(segment.m_pt0, segment.m_pt1, m_pt0, m_pt1);
 	}
 	bool FSegment::IsLineLineNotParallel(const FVector3& pt1, const FVector3& pt2)
 	{
-		return FMath::LineLine_NotParallel(pt1, pt2, m_P0, m_P1);
+		return FMath::LineLine_NotParallel(pt1, pt2, m_pt0, m_pt1);
 	}
 	bool FSegment::IsLineLineNotParallel(const FSegment& segment)
 	{
-		return FMath::LineLine_NotParallel(segment.m_P0, segment.m_P1, m_P0, m_P1);
+		return FMath::LineLine_NotParallel(segment.m_pt0, segment.m_pt1, m_pt0, m_pt1);
 	}
 
 	//Line - Line Perpendicular/NotPerpendicular
 	bool FSegment::IsLineLinePerpendicular(const FVector3& pt1, const FVector3& pt2)
 	{
-		return FMath::LineLine_Perpendicular(pt1, pt2, m_P0, m_P1);
+		return FMath::LineLine_Perpendicular(pt1, pt2, m_pt0, m_pt1);
 	}
 	bool FSegment::IsLineLinePerpendicular(const FSegment& segment)
 	{
-		return FMath::LineLine_Perpendicular(segment.m_P0, segment.m_P1, m_P0, m_P1);
+		return FMath::LineLine_Perpendicular(segment.m_pt0, segment.m_pt1, m_pt0, m_pt1);
 	}
 	bool FSegment::IsLineLineNotPerpendicular(const FVector3& pt1, const FVector3& pt2)
 	{
-		return FMath::LineLine_NotPerpendicular(pt1, pt2, m_P0, m_P1);
+		return FMath::LineLine_NotPerpendicular(pt1, pt2, m_pt0, m_pt1);
 	}
 	bool FSegment::IsLineLineNotPerpendicular(const FSegment& segment)
 	{
-		return FMath::LineLine_NotPerpendicular(segment.m_P0, segment.m_P1, m_P0, m_P1);
+		return FMath::LineLine_NotPerpendicular(segment.m_pt0, segment.m_pt1, m_pt0, m_pt1);
 	}
 
 	//Line - Line Intersect/NotIntersect
 	bool FSegment::IsLineLineIntersect(const FVector3& pt1, const FVector3& pt2, float fEpsilon, bool includeBorder /*= true*/)
 	{
-		return FMath::LineLine_Intersect(m_P0, m_P1, pt1, pt2, includeBorder, fEpsilon);
+		return FMath::LineLine_Intersect(m_pt0, m_pt1, pt1, pt2, includeBorder, fEpsilon);
 	}
 	bool FSegment::IsLineLineIntersect(const FSegment& segment, float fEpsilon, bool includeBorder /*= true*/)
 	{
-		return FMath::LineLine_Intersect(segment.m_P0, segment.m_P1, m_P0, m_P1, includeBorder, fEpsilon);
+		return FMath::LineLine_Intersect(segment.m_pt0, segment.m_pt1, m_pt0, m_pt1, includeBorder, fEpsilon);
 	}
 	bool FSegment::IsLineLineNotIntersect(const FVector3& pt1, const FVector3& pt2, float fEpsilon, bool includeBorder /*= true*/)
 	{
-		return FMath::LineLine_NotIntersect(m_P0, m_P1, pt1, pt2, includeBorder, fEpsilon);
+		return FMath::LineLine_NotIntersect(m_pt0, m_pt1, pt1, pt2, includeBorder, fEpsilon);
 	}
 	bool FSegment::IsLineLineNotIntersect(const FSegment& segment, float fEpsilon, bool includeBorder /*= true*/)
 	{
-		return FMath::LineLine_NotIntersect(segment.m_P0, segment.m_P1, m_P0, m_P1, includeBorder, fEpsilon);
+		return FMath::LineLine_NotIntersect(segment.m_pt0, segment.m_pt1, m_pt0, m_pt1, includeBorder, fEpsilon);
 	}
 
 	//Line - Plane Parallel/NotParallel
 	bool FSegment::IsLinePlaneParallel(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
 	{
-		return FMath::LinePlane_Parallel(m_P0, m_P1, pt1, pt2, pt3);
+		return FMath::LinePlane_Parallel(m_pt0, m_pt1, pt1, pt2, pt3);
 	}
 	bool FSegment::IsLinePlaneParallel(const FPlane& plane)
 	{
@@ -142,7 +142,7 @@ namespace LostPeterFoundation
 	}
 	bool FSegment::IsLinePlaneNotParallel(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
 	{
-		return FMath::LinePlane_NotParallel(m_P0, m_P1, pt1, pt2, pt3);
+		return FMath::LinePlane_NotParallel(m_pt0, m_pt1, pt1, pt2, pt3);
 	}
 	bool FSegment::IsLinePlaneNotParallel(const FPlane& plane)
 	{
@@ -152,7 +152,7 @@ namespace LostPeterFoundation
 	//Line - Plane Perpendicular/NotPerpendicular
 	bool FSegment::IsLinePlanePerpendicular(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
 	{
-		return FMath::LinePlane_Perpendicular(m_P0, m_P1, pt1, pt2, pt3);
+		return FMath::LinePlane_Perpendicular(m_pt0, m_pt1, pt1, pt2, pt3);
 	}
 	bool FSegment::IsLinePlanePerpendicular(const FPlane& plane)
 	{
@@ -160,7 +160,7 @@ namespace LostPeterFoundation
 	}
 	bool FSegment::IsLinePlaneNotPerpendicular(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
 	{
-		return FMath::LinePlane_NotPerpendicular(m_P0, m_P1, pt1, pt2, pt3);
+		return FMath::LinePlane_NotPerpendicular(m_pt0, m_pt1, pt1, pt2, pt3);
 	}
 	bool FSegment::IsLinePlaneNotPerpendicular(const FPlane& plane)
 	{
@@ -170,11 +170,11 @@ namespace LostPeterFoundation
 	//Line - Triangle Intersect/NotIntersect
 	bool FSegment::IsLineTriangleIntersect(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder /*= true*/)
 	{
-		return FMath::LineTriangle_Intersect(m_P0, m_P1, pt1, pt2, pt3, includeBorder);
+		return FMath::LineTriangle_Intersect(m_pt0, m_pt1, pt1, pt2, pt3, includeBorder);
 	}
 	bool FSegment::IsLineTriangleNotIntersect(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder /*= true*/)
 	{
-		return FMath::LineTriangle_NotIntersect(m_P0, m_P1, pt1, pt2, pt3, includeBorder);
+		return FMath::LineTriangle_NotIntersect(m_pt0, m_pt1, pt1, pt2, pt3, includeBorder);
 	}
 
 

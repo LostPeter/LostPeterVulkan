@@ -12,8 +12,11 @@
 #include "../include/FMath.h"
 #include "../include/FRay.h"
 #include "../include/FSegment.h"
+#include "../include/FTriangle.h"
+#include "../include/FQuad.h"
 #include "../include/FPlane.h"
 #include "../include/FPlaneBoundedVolume.h"
+#include "../include/FCircle.h"
 #include "../include/FSphere.h"
 #include "../include/FAABB.h"
 #include "../include/FFrustum.h"
@@ -34,6 +37,7 @@ namespace LostPeterFoundation
     const float FMath::ms_fPosInfinity =  std::numeric_limits<float>::infinity();	
     const float FMath::ms_fNegInfinity = -std::numeric_limits<float>::infinity();
     const float FMath::ms_fEpsilon = std::numeric_limits<float>::epsilon();
+    const float FMath::ms_fRayFar = 10000000000.0f;
 
     const FVector2 FMath::ms_v2Zero = FVector2(0.0f, 0.0f);
     const FVector2 FMath::ms_v2One = FVector2(1.0f, 1.0f);
@@ -563,7 +567,7 @@ namespace LostPeterFoundation
     }
     float FMath::GetAngleSinFromLinePlane(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
     {
-        return GetAngleSinFromLinePlane(segment.m_P0, segment.m_P1, pt1, pt2, pt3);
+        return GetAngleSinFromLinePlane(segment.m_pt0, segment.m_pt1, pt1, pt2, pt3);
     }
 
     //Distance From Point-Line
@@ -576,7 +580,7 @@ namespace LostPeterFoundation
     }
     float FMath::GetDistanceFromPointLine(const FVector3& pt, const FSegment& segment)
     {
-        return GetDistanceFromPointLine(pt, segment.m_P0, segment.m_P1);
+        return GetDistanceFromPointLine(pt, segment.m_pt0, segment.m_pt1);
     }
 
     //Distance From Point-Plane
@@ -596,7 +600,7 @@ namespace LostPeterFoundation
     }
     float FMath::GetDistanceFromLine2(const FSegment& segment1, const FSegment& segment2)
     {
-        return GetDistanceFromLine2(segment1.m_P0, segment1.m_P1, segment2.m_P0, segment2.m_P1);
+        return GetDistanceFromLine2(segment1.m_pt0, segment1.m_pt1, segment2.m_pt0, segment2.m_pt1);
     }
 
     //Intersection Point From Line2
@@ -617,14 +621,14 @@ namespace LostPeterFoundation
     }
     bool FMath::GetIntersectionPointFromLine2(const FSegment& segment1, const FSegment& segment2, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return GetIntersectionPointFromLine2(segment1.m_P0, segment1.m_P1, segment2.m_P0, segment2.m_P1, vIntersection, fEpsilon);
+        return GetIntersectionPointFromLine2(segment1.m_pt0, segment1.m_pt1, segment2.m_pt0, segment2.m_pt1, vIntersection, fEpsilon);
     }
 
     //Intersection Point From Line-Plane
-    bool FMath::GetIntersectionPointFromLinePlane(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, FVector3& vIntersection)
+    bool FMath::GetIntersectionPointFromLineTriangle(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         vIntersection = FMath::ms_v3Zero;
-        if (LineTriangle_NotIntersect(ptLine1, ptLine2, pt1, pt2, pt3, true))
+        if (LineTriangle_NotIntersect(ptLine1, ptLine2, pt1, pt2, pt3, true, fEpsilon))
             return false;
 
         FVector3 vNormal = GetNormal3WithoutNormalizeFromPoints3(pt1, pt2, pt3);
@@ -637,29 +641,137 @@ namespace LostPeterFoundation
 
         return true;
     }
-    bool FMath::GetIntersectionPointFromLinePlane(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, FVector3& vIntersection)
+    bool FMath::GetIntersectionPointFromLineTriangle(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return GetIntersectionPointFromLinePlane(segment.m_P0, segment.m_P1, pt1, pt2, pt3, vIntersection);
+        return GetIntersectionPointFromLineTriangle(segment.m_pt0, segment.m_pt1, pt1, pt2, pt3, vIntersection, fEpsilon);
+    }
+
+    bool FMath::GetIntersectionPointFromLineQuad(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, const FVector3& pt4, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        vIntersection = FMath::ms_v3Zero;
+        if (!Points4_OnPlane(pt1, pt2, pt3, pt4, fEpsilon))
+            return false;
+
+        FVector3 vOri = ptLine1;
+        FVector3 vDir = Normalize(ptLine2 - ptLine1);
+        FVector3 vOA = pt1 - vOri;
+        FVector3 vOB = pt2 - vOri;
+        FVector3 vOC = pt3 - vOri;
+        FVector3 vCross = FMath::Cross(vOC, vDir);
+        float fDotV = FMath::Dot(vOA, vCross);
+        if (fDotV >= 0.0f)
+        {
+            return GetIntersectionPointFromLineTriangle(ptLine1, ptLine2, pt1, pt2, pt3, vIntersection, fEpsilon);
+        }
+        else
+        {
+            return GetIntersectionPointFromLineTriangle(ptLine1, ptLine2, pt4, pt1, pt3, vIntersection, fEpsilon);
+        }
+        return false;
+    }
+    bool FMath::GetIntersectionPointFromLineQuad(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, const FVector3& pt4, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        return GetIntersectionPointFromLineQuad(segment.m_pt0, segment.m_pt1, pt1, pt2, pt3, pt4, vIntersection, fEpsilon);
+    }
+
+    bool FMath::GetIntersectionPointFromLinePlane(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        vIntersection = FMath::ms_v3Zero;
+        FVector3 vDir = ptLine2 - ptLine1;
+        FVector3 vNormal = plane.GetNormal();
+        if (Direction_IsPerpendicular(vDir, vNormal, fEpsilon))
+            return false;
+
+        float denom = FMath::Dot(vNormal, vDir);
+        float nom = FMath::Dot(vNormal, ptLine1) + plane.GetDistance();
+        float t = -(nom / denom);
+        if (t >= 0)
+        {
+            vIntersection = ptLine1 + vDir * t;
+            return true;
+        }
+        return false;
+    }
+    bool FMath::GetIntersectionPointFromLinePlane(const FSegment& segment, const FPlane& plane, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        return GetIntersectionPointFromLinePlane(segment.m_pt0, segment.m_pt1, plane, vIntersection, fEpsilon);
+    }
+
+    //Intersection Point From Ray-Line/Triangle/Quad/Plane
+    bool FMath::GetIntersectionPointFromRayLine(const FRay& ray, const FVector3& pt1, const FVector3& pt2, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        FVector3 ptLine2 = ray.GetDirection() * ms_fRayFar;
+        return GetIntersectionPointFromLine2(ray.GetOrigin(), ptLine2, pt1, pt2, vIntersection, fEpsilon);
+    }
+    bool FMath::GetIntersectionPointFromRayLine(const FRay& ray, const FSegment& segment, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        return GetIntersectionPointFromRayLine(ray, segment.m_pt0, segment.m_pt1, vIntersection, fEpsilon);
+    }
+    bool FMath::GetIntersectionPointFromRayTriangle(const FRay& ray, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        FVector3 ptLine2 = ray.GetDirection() * ms_fRayFar;
+        return GetIntersectionPointFromLineTriangle(ray.GetOrigin(), ptLine2, pt1, pt2, pt3, vIntersection, fEpsilon);
+    }
+    bool FMath::GetIntersectionPointFromRayTriangle(const FRay& ray, const FTriangle& triangle, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        return GetIntersectionPointFromRayTriangle(ray, triangle.m_pt0, triangle.m_pt1, triangle.m_pt2, vIntersection, fEpsilon);
+    }
+    bool FMath::GetIntersectionPointFromRayQuad(const FRay& ray, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, const FVector3& pt4, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        FVector3 ptLine2 = ray.GetDirection() * ms_fRayFar;
+        return GetIntersectionPointFromLineQuad(ray.GetOrigin(), ptLine2, pt1, pt2, pt3, pt4, vIntersection, fEpsilon);
+    }
+    bool FMath::GetIntersectionPointFromRayQuad(const FRay& ray, const FQuad& quad, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        return GetIntersectionPointFromRayQuad(ray, quad.m_pt0, quad.m_pt1, quad.m_pt2, quad.m_pt3, vIntersection, fEpsilon);
+    }
+    bool FMath::GetIntersectionPointFromRayPlane(const FRay& ray, const FPlane& plane, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        FVector3 ptLine2 = ray.GetDirection() * ms_fRayFar;
+        return GetIntersectionPointFromLinePlane(ray.GetOrigin(), ptLine2, plane, vIntersection, fEpsilon);
+    }
+    bool FMath::GetIntersectionPointFromRayCircle(const FRay& ray, const FCircle& circle, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {   
+        FPlane plane(circle.GetNormal(), circle.GetDistance());
+        if (!GetIntersectionPointFromRayPlane(ray, plane, vIntersection, fEpsilon))
+        {
+            return false;
+        }
+
+        float radius = circle.GetRadius(); 
+        if (FMath::Distance2(circle.GetCenter(), vIntersection) <= radius * radius)
+        {
+            return true;
+        }
+        return false;
+    }
+    bool FMath::GetIntersectionPointFromRayAABB(const FRay& ray, const FAABB& aabb, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        return false;
+    }
+    bool FMath::GetIntersectionPointFromRaySphere(const FRay& ray, const FSphere& sphere, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        return false;
     }
 
     //Intersection Line From Plane-Plane
-    bool FMath::GetIntersectionLineFromPlane2(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23, FVector3& pL1, FVector3& pL2)
+    bool FMath::GetIntersectionLineFromPlane2(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23, FVector3& pL1, FVector3& pL2, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         pL1 = FMath::ms_v3Zero;
         pL2 = FMath::ms_v3Zero;
-        if (PlanePlane_Parallel(pP11, pP12, pP13, pP21, pP22, pP23))
+        if (PlanePlane_Parallel(pP11, pP12, pP13, pP21, pP22, pP23, fEpsilon))
             return false;
 
-        if (LinePlane_Parallel(pP21, pP22, pP11, pP12, pP13))
+        if (LinePlane_Parallel(pP21, pP22, pP11, pP12, pP13, fEpsilon))
         {
-            if (!GetIntersectionPointFromLinePlane(pP22, pP23, pP11, pP12, pP13, pL1))
+            if (!GetIntersectionPointFromLineTriangle(pP22, pP23, pP11, pP12, pP13, pL1, fEpsilon))
             {
                 return false;
             }
         }
         else
         {
-            if (!GetIntersectionPointFromLinePlane(pP21, pP22, pP11, pP12, pP13, pL1))
+            if (!GetIntersectionPointFromLineTriangle(pP21, pP22, pP11, pP12, pP13, pL1, fEpsilon))
             {
                 return false;
             }
@@ -667,14 +779,14 @@ namespace LostPeterFoundation
 
         if (LinePlane_Parallel(pP23, pP21, pP11, pP12, pP13))
         {
-            if (!GetIntersectionPointFromLinePlane(pP22, pP23, pP11, pP12, pP13, pL2))
+            if (!GetIntersectionPointFromLineTriangle(pP22, pP23, pP11, pP12, pP13, pL2, fEpsilon))
             {
                 return false;
             }
         }
         else
         {
-            if (!GetIntersectionPointFromLinePlane(pP23, pP21, pP11, pP12, pP13, pL2))
+            if (!GetIntersectionPointFromLineTriangle(pP23, pP21, pP11, pP12, pP13, pL2, fEpsilon))
             {
                 return false;
             }
@@ -682,9 +794,9 @@ namespace LostPeterFoundation
 
         return true;
     }
-    bool FMath::GetIntersectionLineFromPlane2(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23, FSegment& segment)
+    bool FMath::GetIntersectionLineFromPlane2(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23, FSegment& segment, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return GetIntersectionLineFromPlane2(pP11, pP12, pP13, pP21, pP22, pP23, segment.m_P0, segment.m_P1);
+        return GetIntersectionLineFromPlane2(pP11, pP12, pP13, pP21, pP22, pP23, segment.m_pt0, segment.m_pt1, fEpsilon);
     }
 
     //Radius From AABB
@@ -729,33 +841,33 @@ namespace LostPeterFoundation
     }
 
     //Point - InLineSameSide/NotInLineSameSide
-    bool FMath::Points2_InLineSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptLine1, const FVector3& ptLine2)
+    bool FMath::Points2_InLineSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptLine1, const FVector3& ptLine2, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vLine12 = ptLine2 - ptLine1;
         FVector3 vLine1Pt1 = pt1 - ptLine1;
         FVector3 vLine1Pt2 = pt2 - ptLine1;
         float fDot = Dot(Cross(vLine12, vLine1Pt1), Cross(vLine12, vLine1Pt2));
-        if (fDot > FMath::ms_fEpsilon)
+        if (fDot > fEpsilon)
             return true;
         return false;
     }
-    bool FMath::Points2_InLineSameSide(const FVector3& pt1, const FVector3& pt2, const FSegment& segment)
+    bool FMath::Points2_InLineSameSide(const FVector3& pt1, const FVector3& pt2, const FSegment& segment, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Points2_InLineSameSide(pt1, pt2, segment.m_P0, segment.m_P1);
+        return Points2_InLineSameSide(pt1, pt2, segment.m_pt0, segment.m_pt1, fEpsilon);
     }
-    bool FMath::Points2_NotInLineSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptLine1, const FVector3& ptLine2)
+    bool FMath::Points2_NotInLineSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptLine1, const FVector3& ptLine2, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vLine12 = ptLine2 - ptLine1;
         FVector3 vLine1Pt1 = pt1 - ptLine1;
         FVector3 vLine1Pt2 = pt2 - ptLine1;
         float fDot = Dot(Cross(vLine12, vLine1Pt1), Cross(vLine12, vLine1Pt2));
-        if (fDot < -FMath::ms_fEpsilon)
+        if (fDot < -fEpsilon)
             return true;
         return false;
     }
-    bool FMath::Points2_NotInLineSameSide(const FVector3& pt1, const FVector3& pt2, const FSegment& segment)
+    bool FMath::Points2_NotInLineSameSide(const FVector3& pt1, const FVector3& pt2, const FSegment& segment, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Points2_NotInLineSameSide(pt1, pt2, segment.m_P0, segment.m_P1);
+        return Points2_NotInLineSameSide(pt1, pt2, segment.m_pt0, segment.m_pt1, fEpsilon);
     }
 
     //Point - OnPlane
@@ -770,105 +882,105 @@ namespace LostPeterFoundation
     }
 
     //Point - InPlaneSameSide/NotInPlaneSameSide
-    bool FMath::Points2_InPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptPlane, const FVector3& vPlaneNormal)
+    bool FMath::Points2_InPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptPlane, const FVector3& vPlaneNormal, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 v1 = pt1 - ptPlane;
         FVector3 v2 = pt2 - ptPlane;
         float fDot = Dot(vPlaneNormal, v1) * Dot(vPlaneNormal, v2);
-        if (fDot > FMath::ms_fEpsilon)
+        if (fDot > fEpsilon)
             return true;
         return false;
     }
-    bool FMath::Points2_InPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptPlane1, const FVector3& ptPlane2, const FVector3& ptPlane3)
+    bool FMath::Points2_InPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptPlane1, const FVector3& ptPlane2, const FVector3& ptPlane3, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vPlaneNormal = GetNormal3WithoutNormalizeFromPoints3(ptPlane1, ptPlane2, ptPlane3);
-        return Points2_InPlaneSameSide(pt1, pt2, ptPlane1, vPlaneNormal);
+        return Points2_InPlaneSameSide(pt1, pt2, ptPlane1, vPlaneNormal, fEpsilon);
     }
-    bool FMath::Points2_InPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FPlane& plane)
+    bool FMath::Points2_InPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vNormal = FMath::Normalize(plane.GetNormal());
         FVector3 ptPlane = vNormal * plane.GetDistance();
-        return Points2_InPlaneSameSide(pt1, pt2, ptPlane, vNormal);
+        return Points2_InPlaneSameSide(pt1, pt2, ptPlane, vNormal, fEpsilon);
     }
-    bool FMath::Points2_NotInPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptPlane, const FVector3& vPlaneNormal)
+    bool FMath::Points2_NotInPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptPlane, const FVector3& vPlaneNormal, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 v1 = pt1 - ptPlane;
         FVector3 v2 = pt2 - ptPlane;
         float fDot = Dot(vPlaneNormal, v1) * Dot(vPlaneNormal, v2);
-        if (fDot < -FMath::ms_fEpsilon)
+        if (fDot < -fEpsilon)
             return true;
         return false;
     }
-    bool FMath::Points2_NotInPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptPlane1, const FVector3& ptPlane2, const FVector3& ptPlane3)
+    bool FMath::Points2_NotInPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FVector3& ptPlane1, const FVector3& ptPlane2, const FVector3& ptPlane3, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vPlaneNormal = GetNormal3WithoutNormalizeFromPoints3(ptPlane1, ptPlane2, ptPlane3);
-        return Points2_InPlaneSameSide(pt1, pt2, ptPlane1, vPlaneNormal);
+        return Points2_InPlaneSameSide(pt1, pt2, ptPlane1, vPlaneNormal, fEpsilon);
     }
-    bool FMath::Points2_NotInPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FPlane& plane)
+    bool FMath::Points2_NotInPlaneSameSide(const FVector3& pt1, const FVector3& pt2, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vNormal = FMath::Normalize(plane.GetNormal());
         FVector3 ptPlane = vNormal * plane.GetDistance();
-        return Points2_NotInPlaneSameSide(pt1, pt2, ptPlane, vNormal);
+        return Points2_NotInPlaneSameSide(pt1, pt2, ptPlane, vNormal, fEpsilon);
     }
 
     //Line - Line Parallel/NotParallel
-    bool FMath::LineLine_Parallel(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22)
+    bool FMath::LineLine_Parallel(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 v1 = ptL_12 - ptL_11;
         FVector3 v2 = ptL_22 - ptL_21;
-        if (Direction_IsParallel(v1, v2))
+        if (Direction_IsParallel(v1, v2, fEpsilon))
             return true;
         return false;
     }
-    bool FMath::LineLine_Parallel(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment)
+    bool FMath::LineLine_Parallel(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineLine_Parallel(ptL_11, ptL_12, segment.m_P0, segment.m_P1);
+        return LineLine_Parallel(ptL_11, ptL_12, segment.m_pt0, segment.m_pt1, fEpsilon);
     }
-    bool FMath::LineLine_Parallel(const FSegment& segment1, const FSegment& segment2)
+    bool FMath::LineLine_Parallel(const FSegment& segment1, const FSegment& segment2, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineLine_Parallel(segment1.m_P0, segment1.m_P1, segment2.m_P0, segment2.m_P1);
+        return LineLine_Parallel(segment1.m_pt0, segment1.m_pt1, segment2.m_pt0, segment2.m_pt1, fEpsilon);
     }
-    bool FMath::LineLine_NotParallel(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22)
+    bool FMath::LineLine_NotParallel(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return !LineLine_Parallel(ptL_11, ptL_12, ptL_21, ptL_22);
+        return !LineLine_Parallel(ptL_11, ptL_12, ptL_21, ptL_22, fEpsilon);
     }
-    bool FMath::LineLine_NotParallel(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment)
+    bool FMath::LineLine_NotParallel(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineLine_NotParallel(ptL_11, ptL_12, segment.m_P0, segment.m_P1);
+        return LineLine_NotParallel(ptL_11, ptL_12, segment.m_pt0, segment.m_pt1, fEpsilon);
     }
-    bool FMath::LineLine_NotParallel(const FSegment& segment1, const FSegment& segment2)
+    bool FMath::LineLine_NotParallel(const FSegment& segment1, const FSegment& segment2, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineLine_NotParallel(segment1.m_P0, segment1.m_P1, segment2.m_P0, segment2.m_P1);
+        return LineLine_NotParallel(segment1.m_pt0, segment1.m_pt1, segment2.m_pt0, segment2.m_pt1, fEpsilon);
     }
 
     //Line - Line Perpendicular/NotPerpendicular
-    bool FMath::LineLine_Perpendicular(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22)
+    bool FMath::LineLine_Perpendicular(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 v1 = ptL_12 - ptL_11;
         FVector3 v2 = ptL_22 - ptL_21;
-        if (Direction_IsPerpendicular(v1, v2))
+        if (Direction_IsPerpendicular(v1, v2, fEpsilon))
             return true;
         return false;
     }
-    bool FMath::LineLine_Perpendicular(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment)
+    bool FMath::LineLine_Perpendicular(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineLine_Perpendicular(ptL_11, ptL_12, segment.m_P0, segment.m_P1);
+        return LineLine_Perpendicular(ptL_11, ptL_12, segment.m_pt0, segment.m_pt1, fEpsilon);
     }
-    bool FMath::LineLine_Perpendicular(const FSegment& segment1, const FSegment& segment2)
+    bool FMath::LineLine_Perpendicular(const FSegment& segment1, const FSegment& segment2, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineLine_Perpendicular(segment1.m_P0, segment1.m_P1, segment2.m_P0, segment2.m_P1);
+        return LineLine_Perpendicular(segment1.m_pt0, segment1.m_pt1, segment2.m_pt0, segment2.m_pt1, fEpsilon);
     }
-    bool FMath::LineLine_NotPerpendicular(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22)
+    bool FMath::LineLine_NotPerpendicular(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return !LineLine_Perpendicular(ptL_11, ptL_12, ptL_21, ptL_22);
+        return !LineLine_Perpendicular(ptL_11, ptL_12, ptL_21, ptL_22, fEpsilon);
     }
-    bool FMath::LineLine_NotPerpendicular(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment)
+    bool FMath::LineLine_NotPerpendicular(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineLine_NotPerpendicular(ptL_11, ptL_12, segment.m_P0, segment.m_P1); 
+        return LineLine_NotPerpendicular(ptL_11, ptL_12, segment.m_pt0, segment.m_pt1, fEpsilon); 
     }
-    bool FMath::LineLine_NotPerpendicular(const FSegment& segment1, const FSegment& segment2)
+    bool FMath::LineLine_NotPerpendicular(const FSegment& segment1, const FSegment& segment2, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineLine_NotPerpendicular(segment1.m_P0, segment1.m_P1, segment2.m_P0, segment2.m_P1);
+        return LineLine_NotPerpendicular(segment1.m_pt0, segment1.m_pt1, segment2.m_pt0, segment2.m_pt1, fEpsilon);
     }
 
     //Line - Line Intersect/NotIntersect
@@ -881,7 +993,7 @@ namespace LostPeterFoundation
         if (includeBorder)
         {
             if (!Points3_InLine(ptL_11, ptL_12, ptL_21, fEpsilon) || !Points3_InLine(ptL_11, ptL_12, ptL_22, fEpsilon))
-                return !Points2_InLineSameSide(ptL_11, ptL_12, ptL_21, ptL_22) && !Points2_InLineSameSide(ptL_21, ptL_22, ptL_11, ptL_12);
+                return !Points2_InLineSameSide(ptL_11, ptL_12, ptL_21, ptL_22, fEpsilon) && !Points2_InLineSameSide(ptL_21, ptL_22, ptL_11, ptL_12, fEpsilon);
 
             isIntersect = Intersects_PointInLine(ptL_11, ptL_21, ptL_22, fEpsilon) || 
                           Intersects_PointInLine(ptL_12, ptL_21, ptL_22, fEpsilon) || 
@@ -890,18 +1002,18 @@ namespace LostPeterFoundation
         }
         else
         {
-            isIntersect = Points2_NotInLineSameSide(ptL_11, ptL_12, ptL_21, ptL_22) &&
-                          Points2_NotInLineSameSide(ptL_21, ptL_22, ptL_11, ptL_12);
+            isIntersect = Points2_NotInLineSameSide(ptL_11, ptL_12, ptL_21, ptL_22, fEpsilon) &&
+                          Points2_NotInLineSameSide(ptL_21, ptL_22, ptL_11, ptL_12, fEpsilon);
         }
         return isIntersect;
     }
     bool FMath::LineLine_Intersect(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment, bool includeBorder /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineLine_Intersect(ptL_11, ptL_12, segment.m_P0, segment.m_P1, includeBorder, fEpsilon);
+        return LineLine_Intersect(ptL_11, ptL_12, segment.m_pt0, segment.m_pt1, includeBorder, fEpsilon);
     }
     bool FMath::LineLine_Intersect(const FSegment& segment1, const FSegment& segment2, bool includeBorder /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineLine_Intersect(segment1.m_P0, segment1.m_P1, segment2.m_P0, segment2.m_P1, includeBorder, fEpsilon);
+        return LineLine_Intersect(segment1.m_pt0, segment1.m_pt1, segment2.m_pt0, segment2.m_pt1, includeBorder, fEpsilon);
     }
     bool FMath::LineLine_NotIntersect(const FVector3& ptL_11, const FVector3& ptL_12, const FVector3& ptL_21, const FVector3& ptL_22, bool includeBorder /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
@@ -909,185 +1021,185 @@ namespace LostPeterFoundation
     }
     bool FMath::LineLine_NotIntersect(const FVector3& ptL_11, const FVector3& ptL_12, const FSegment& segment, bool includeBorder /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineLine_NotIntersect(ptL_11, ptL_12, segment.m_P0, segment.m_P1, includeBorder, fEpsilon); 
+        return LineLine_NotIntersect(ptL_11, ptL_12, segment.m_pt0, segment.m_pt1, includeBorder, fEpsilon); 
     }
     bool FMath::LineLine_NotIntersect(const FSegment& segment1, const FSegment& segment2, bool includeBorder /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineLine_NotIntersect(segment1.m_P0, segment1.m_P1, segment2.m_P0, segment2.m_P1, includeBorder, fEpsilon);
+        return LineLine_NotIntersect(segment1.m_pt0, segment1.m_pt1, segment2.m_pt0, segment2.m_pt1, includeBorder, fEpsilon);
     }
 
     //Line - Plane Parallel/NotParallel
-    bool FMath::LinePlane_Parallel(const FVector3& vDir, const FVector3& vNormal)
+    bool FMath::LinePlane_Parallel(const FVector3& vDir, const FVector3& vNormal, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        if (Direction_IsParallel(vDir, vNormal))
+        if (Direction_IsParallel(vDir, vNormal, fEpsilon))
             return true;
         return false;
     }
-    bool FMath::LinePlane_Parallel(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
+    bool FMath::LinePlane_Parallel(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vDir = ptLine2 - ptLine1;
         FVector3 vNormal = GetNormal3WithoutNormalizeFromPoints3(pt1, pt2, pt3);
-        return LinePlane_Parallel(vDir, vNormal);
+        return LinePlane_Parallel(vDir, vNormal, fEpsilon);
     }
-    bool FMath::LinePlane_Parallel(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane)
+    bool FMath::LinePlane_Parallel(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vDir = ptLine2 - ptLine1;
-        return LinePlane_Parallel(vDir, plane.GetNormal());
+        return LinePlane_Parallel(vDir, plane.GetNormal(), fEpsilon);
     }
-    bool FMath::LinePlane_Parallel(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
+    bool FMath::LinePlane_Parallel(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LinePlane_Parallel(segment.m_P0, segment.m_P1, pt1, pt2, pt3);
+        return LinePlane_Parallel(segment.m_pt0, segment.m_pt1, pt1, pt2, pt3, fEpsilon);
     }
-    bool FMath::LinePlane_Parallel(const FSegment& segment, const FPlane& plane)
+    bool FMath::LinePlane_Parallel(const FSegment& segment, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LinePlane_Parallel(segment.GetDirection(), plane.GetNormal());
+        return LinePlane_Parallel(segment.GetDirection(), plane.GetNormal(), fEpsilon);
     }
-    bool FMath::LinePlane_NotParallel(const FVector3& vDir, const FVector3& vNormal)
+    bool FMath::LinePlane_NotParallel(const FVector3& vDir, const FVector3& vNormal, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return !LinePlane_Parallel(vDir, vNormal);
+        return !LinePlane_Parallel(vDir, vNormal, fEpsilon);
     }
-    bool FMath::LinePlane_NotParallel(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
+    bool FMath::LinePlane_NotParallel(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return !LinePlane_Parallel(ptLine1, ptLine2, pt1, pt2, pt3);
+        return !LinePlane_Parallel(ptLine1, ptLine2, pt1, pt2, pt3, fEpsilon);
     }
-    bool FMath::LinePlane_NotParallel(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane)
+    bool FMath::LinePlane_NotParallel(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vDir = ptLine2 - ptLine1;
-        return LinePlane_NotParallel(vDir, plane.GetNormal());
+        return LinePlane_NotParallel(vDir, plane.GetNormal(), fEpsilon);
     }
-    bool FMath::LinePlane_NotParallel(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
+    bool FMath::LinePlane_NotParallel(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LinePlane_NotParallel(segment.m_P0, segment.m_P1, pt1, pt2, pt3);
+        return LinePlane_NotParallel(segment.m_pt0, segment.m_pt1, pt1, pt2, pt3, fEpsilon);
     }
-    bool FMath::LinePlane_NotParallel(const FSegment& segment, const FPlane& plane)
+    bool FMath::LinePlane_NotParallel(const FSegment& segment, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LinePlane_NotParallel(segment.GetDirection(), plane.GetNormal());
+        return LinePlane_NotParallel(segment.GetDirection(), plane.GetNormal(), fEpsilon);
     }
 
     //Line - Plane Perpendicular/NotPerpendicular
-    bool FMath::LinePlane_Perpendicular(const FVector3& vDir, const FVector3& vNormal)
+    bool FMath::LinePlane_Perpendicular(const FVector3& vDir, const FVector3& vNormal, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        if (Direction_IsPerpendicular(vDir, vNormal))
+        if (Direction_IsPerpendicular(vDir, vNormal, fEpsilon))
             return true;
         return false;
     }
-    bool FMath::LinePlane_Perpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
+    bool FMath::LinePlane_Perpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vDir = ptLine2 - ptLine1;
         FVector3 vNormal = GetNormal3WithoutNormalizeFromPoints3(pt1, pt2, pt3);
-        return LinePlane_Perpendicular(vDir, vNormal);
+        return LinePlane_Perpendicular(vDir, vNormal, fEpsilon);
     }
-    bool FMath::LinePlane_Perpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane)
+    bool FMath::LinePlane_Perpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vDir = ptLine2 - ptLine1;
-        return LinePlane_Perpendicular(vDir, plane.GetNormal());
+        return LinePlane_Perpendicular(vDir, plane.GetNormal(), fEpsilon);
     }
-    bool FMath::LinePlane_Perpendicular(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
+    bool FMath::LinePlane_Perpendicular(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LinePlane_Perpendicular(segment.m_P0, segment.m_P1, pt1, pt2, pt3);
+        return LinePlane_Perpendicular(segment.m_pt0, segment.m_pt1, pt1, pt2, pt3, fEpsilon);
     }
-    bool FMath::LinePlane_Perpendicular(const FSegment& segment, const FPlane& plane)
+    bool FMath::LinePlane_Perpendicular(const FSegment& segment, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LinePlane_Perpendicular(segment.GetDirection(), plane.GetNormal());
+        return LinePlane_Perpendicular(segment.GetDirection(), plane.GetNormal(), fEpsilon);
     }
-    bool FMath::LinePlane_NotPerpendicular(const FVector3& vDir, const FVector3& vNormal)
+    bool FMath::LinePlane_NotPerpendicular(const FVector3& vDir, const FVector3& vNormal, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return !LinePlane_Perpendicular(vDir, vNormal);
+        return !LinePlane_Perpendicular(vDir, vNormal, fEpsilon);
     }
-    bool FMath::LinePlane_NotPerpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
+    bool FMath::LinePlane_NotPerpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return !LinePlane_NotPerpendicular(ptLine1, ptLine2, pt1, pt2, pt3);
+        return !LinePlane_NotPerpendicular(ptLine1, ptLine2, pt1, pt2, pt3, fEpsilon);
     }
-    bool FMath::LinePlane_NotPerpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane)
+    bool FMath::LinePlane_NotPerpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vDir = ptLine2 - ptLine1;
-        return LinePlane_NotPerpendicular(vDir, plane.GetNormal());
+        return LinePlane_NotPerpendicular(vDir, plane.GetNormal(), fEpsilon);
     }
-    bool FMath::LinePlane_NotPerpendicular(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
+    bool FMath::LinePlane_NotPerpendicular(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LinePlane_NotPerpendicular(segment.m_P0, segment.m_P1, pt1, pt2, pt3);
+        return LinePlane_NotPerpendicular(segment.m_pt0, segment.m_pt1, pt1, pt2, pt3, fEpsilon);
     }
-    bool FMath::LinePlane_NotPerpendicular(const FSegment& segment, const FPlane& plane)
+    bool FMath::LinePlane_NotPerpendicular(const FSegment& segment, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LinePlane_NotPerpendicular(segment.GetDirection(), plane.GetNormal());
+        return LinePlane_NotPerpendicular(segment.GetDirection(), plane.GetNormal(), fEpsilon);
     }
 
     //Line - Triangle Intersect/NotIntersect
-    bool FMath::LineTriangle_Intersect(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder /*= true*/)
+    bool FMath::LineTriangle_Intersect(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         if (includeBorder)
         {
-            if (!Points2_InPlaneSameSide(ptLine1, ptLine2, pt1, pt2, pt3) &&
-                !Points2_InPlaneSameSide(pt1, pt2, ptLine1, ptLine2, pt3) &&
-                !Points2_InPlaneSameSide(pt2, pt3, ptLine1, ptLine2, pt1) &&
-                !Points2_InPlaneSameSide(pt3, pt1, ptLine1, ptLine2, pt2))
+            if (!Points2_InPlaneSameSide(ptLine1, ptLine2, pt1, pt2, pt3, fEpsilon) &&
+                !Points2_InPlaneSameSide(pt1, pt2, ptLine1, ptLine2, pt3, fEpsilon) &&
+                !Points2_InPlaneSameSide(pt2, pt3, ptLine1, ptLine2, pt1, fEpsilon) &&
+                !Points2_InPlaneSameSide(pt3, pt1, ptLine1, ptLine2, pt2, fEpsilon))
             {
                 return true; 
             }
         }
         else
         {
-            if (!Points2_NotInPlaneSameSide(ptLine1, ptLine2, pt1, pt2, pt3) &&
-                !Points2_NotInPlaneSameSide(pt1, pt2, ptLine1, ptLine2, pt3) &&
-                !Points2_NotInPlaneSameSide(pt2, pt3, ptLine1, ptLine2, pt1) &&
-                !Points2_NotInPlaneSameSide(pt3, pt1, ptLine1, ptLine2, pt2))
+            if (!Points2_NotInPlaneSameSide(ptLine1, ptLine2, pt1, pt2, pt3, fEpsilon) &&
+                !Points2_NotInPlaneSameSide(pt1, pt2, ptLine1, ptLine2, pt3, fEpsilon) &&
+                !Points2_NotInPlaneSameSide(pt2, pt3, ptLine1, ptLine2, pt1, fEpsilon) &&
+                !Points2_NotInPlaneSameSide(pt3, pt1, ptLine1, ptLine2, pt2, fEpsilon))
             {
                 return true; 
             }
         }
         return false;
     }
-    bool FMath::LineTriangle_Intersect(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder /*= true*/)
+    bool FMath::LineTriangle_Intersect(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineTriangle_Intersect(segment.m_P0, segment.m_P1, pt1, pt2, pt3, includeBorder);
+        return LineTriangle_Intersect(segment.m_pt0, segment.m_pt1, pt1, pt2, pt3, includeBorder, fEpsilon);
     }
-    bool FMath::LineTriangle_NotIntersect(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder /*= true*/)
+    bool FMath::LineTriangle_NotIntersect(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return !LineTriangle_Intersect(ptLine1, ptLine2, pt1, pt2, pt3, includeBorder);
+        return !LineTriangle_Intersect(ptLine1, ptLine2, pt1, pt2, pt3, includeBorder, fEpsilon);
     }
-    bool FMath::LineTriangle_NotIntersect(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder /*= true*/)
+    bool FMath::LineTriangle_NotIntersect(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, bool includeBorder /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return LineTriangle_NotIntersect(segment.m_P0, segment.m_P1, pt1, pt2, pt3, includeBorder);
+        return LineTriangle_NotIntersect(segment.m_pt0, segment.m_pt1, pt1, pt2, pt3, includeBorder, fEpsilon);
     }
 
     //Plane - Plane Parallel/NotParallel
-    bool FMath::PlanePlane_Parallel(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23)
+    bool FMath::PlanePlane_Parallel(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vNormal1 = GetNormal3WithoutNormalizeFromPoints3(pP11, pP12, pP13);
         FVector3 vNormal2 = GetNormal3WithoutNormalizeFromPoints3(pP21, pP22, pP23);
-        return Direction_IsParallel(vNormal1, vNormal2);
+        return Direction_IsParallel(vNormal1, vNormal2, fEpsilon);
     }
-    bool FMath::PlanePlane_NotParallel(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23)
+    bool FMath::PlanePlane_NotParallel(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return !PlanePlane_Parallel(pP11, pP12, pP13, pP21, pP22, pP23);
+        return !PlanePlane_Parallel(pP11, pP12, pP13, pP21, pP22, pP23, fEpsilon);
     }
-    bool FMath::PlanePlane_Parallel(const FPlane& plane1, const FPlane& plane2)
+    bool FMath::PlanePlane_Parallel(const FPlane& plane1, const FPlane& plane2, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Direction_IsParallel(plane1.GetNormal(), plane2.GetNormal());
+        return Direction_IsParallel(plane1.GetNormal(), plane2.GetNormal(), fEpsilon);
     }
-    bool FMath::PlanePlane_NotParallel(const FPlane& plane1, const FPlane& plane2)
+    bool FMath::PlanePlane_NotParallel(const FPlane& plane1, const FPlane& plane2, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return !PlanePlane_Parallel(plane1, plane2);
+        return !PlanePlane_Parallel(plane1, plane2, fEpsilon);
     }
 
     //Plane - Plane Perpendicular/NotPerpendicular
-    bool FMath::PlanePlane_Perpendicular(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23)
+    bool FMath::PlanePlane_Perpendicular(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vNormal1 = GetNormal3WithoutNormalizeFromPoints3(pP11, pP12, pP13);
         FVector3 vNormal2 = GetNormal3WithoutNormalizeFromPoints3(pP21, pP22, pP23);
-        return Direction_IsPerpendicular(vNormal1, vNormal2);
+        return Direction_IsPerpendicular(vNormal1, vNormal2, fEpsilon);
     }
-    bool FMath::PlanePlane_NotPerpendicular(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23)
+    bool FMath::PlanePlane_NotPerpendicular(const FVector3& pP11, const FVector3& pP12, const FVector3& pP13, const FVector3& pP21, const FVector3& pP22, const FVector3& pP23, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return !PlanePlane_Perpendicular(pP11, pP12, pP13, pP21, pP22, pP23);
+        return !PlanePlane_Perpendicular(pP11, pP12, pP13, pP21, pP22, pP23, fEpsilon);
     }
-    bool FMath::PlanePlane_Perpendicular(const FPlane& plane1, const FPlane& plane2)
+    bool FMath::PlanePlane_Perpendicular(const FPlane& plane1, const FPlane& plane2, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Direction_IsPerpendicular(plane1.GetNormal(), plane2.GetNormal());
+        return Direction_IsPerpendicular(plane1.GetNormal(), plane2.GetNormal(), fEpsilon);
     }
-    bool FMath::PlanePlane_NotPerpendicular(const FPlane& plane1, const FPlane& plane2)
+    bool FMath::PlanePlane_NotPerpendicular(const FPlane& plane1, const FPlane& plane2, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return !PlanePlane_Perpendicular(plane1, plane2);
+        return !PlanePlane_Perpendicular(plane1, plane2, fEpsilon);
     }
 
     //Point - Line
@@ -1120,7 +1232,7 @@ namespace LostPeterFoundation
     }
     bool FMath::Intersects_PointInLine(const FVector3& pt, const FSegment& segment, bool includeSE /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Intersects_PointInLine(pt, segment.m_P0, segment.m_P1, includeSE, fEpsilon);
+        return Intersects_PointInLine(pt, segment.m_pt0, segment.m_pt1, includeSE, fEpsilon);
     }
 
     //Point - Triangle
@@ -1161,157 +1273,56 @@ namespace LostPeterFoundation
     }
 
     //Ray - Shape
-    std::pair<bool, float>FMath::Intersects_RaySegment(const FRay& ray, const FVector3& s, const FVector3& e, float fRayDis /*= 100000.0f*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    std::pair<bool, float>FMath::Intersects_RaySegment(const FRay& ray, const FVector3& s, const FVector3& e, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FVector3 vIntersection;
-        FVector3 vDir = ray.GetPoint(fRayDis);
-        if (GetIntersectionPointFromLine2(ray.GetOrigin(), vDir, s, e, vIntersection, fEpsilon))
+        if (GetIntersectionPointFromRayLine(ray, s, e, vIntersection, fEpsilon))
         {
             return std::pair<bool, float>(true, ray.GetDistance(vIntersection));
         }
         return std::pair<bool, float>(false, 0);
     }
-    std::pair<bool, float> FMath::Intersects_RaySegment(const FRay& ray, const FSegment& segment, float fRayDis /*= 100000.0f*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    std::pair<bool, float> FMath::Intersects_RaySegment(const FRay& ray, const FSegment& segment, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Intersects_RaySegment(ray, segment.m_P0, segment.m_P1, fRayDis, fEpsilon);
+        return Intersects_RaySegment(ray, segment.m_pt0, segment.m_pt1, fEpsilon);
     }
 
-    std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
-                                                         bool positiveSide /*= true*/, bool negativeSide /*= true*/)
+    std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        FVector3 vNormal = GetNormal3WithoutNormalizeFromPoints3(a, b, c);
-        return Intersects_RayTriangle(ray, a, b, c, vNormal, positiveSide, negativeSide);
-    }
-
-    std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, 
-                                                         const FVector3& normal, bool positiveSide /*= true*/, bool negativeSide /*= true*/)
-    {
-        float t;
+        FVector3 vIntersection;
+        if (GetIntersectionPointFromRayTriangle(ray, a, b, c, vIntersection, fEpsilon))
         {
-            float denom = FMath::Dot(normal, ray.GetDirection());
-            if (denom > + FMath::ms_fEpsilon)
-            {
-                if (!negativeSide)
-                    return std::pair<bool, float>(false, 0);
-            }
-            else if (denom < - FMath::ms_fEpsilon)
-            {
-                if (!positiveSide)
-                    return std::pair<bool, float>(false, 0);
-            }
-            else
-            {
-                return std::pair<bool, float>(false, 0);
-            }
-
-            t = FMath::Dot(normal, a - ray.GetOrigin()) / denom;
-            if (t < 0)
-            {
-                return std::pair<bool, float>(false, 0);
-            }
-        }
-
-        int i0, i1;
-        {
-            float n0 = FMath::Abs(normal[0]);
-            float n1 = FMath::Abs(normal[1]);
-            float n2 = FMath::Abs(normal[2]);
-
-            i0 = 1; i1 = 2;
-            if (n1 > n2)
-            {
-                if (n1 > n0) 
-                    i0 = 0;
-            }
-            else
-            {
-                if (n2 > n0) 
-                    i1 = 0;
-            }
-        }
-
-        {
-            float u1 = b[i0] - a[i0];
-            float v1 = b[i1] - a[i1];
-            float u2 = c[i0] - a[i0];
-            float v2 = c[i1] - a[i1];
-            float u0 = t * ray.GetDirection()[i0] + ray.GetOrigin()[i0] - a[i0];
-            float v0 = t * ray.GetDirection()[i1] + ray.GetOrigin()[i1] - a[i1];
-
-            float alpha = u0 * v2 - u2 * v0;
-            float beta  = u1 * v0 - u0 * v1;
-            float area  = u1 * v2 - u2 * v1;
-
-            const float EPSILON = 1e-6f;
-
-            float tolerance = - EPSILON * area;
-
-            if (area > 0)
-            {
-                if (alpha < tolerance || beta < tolerance || alpha+beta > area-tolerance)
-                    return std::pair<bool, float>(false, 0);
-            }
-            else
-            {
-                if (alpha > tolerance || beta > tolerance || alpha+beta < area-tolerance)
-                    return std::pair<bool, float>(false, 0);
-            }
-        }
-
-        return std::pair<bool, float>(true, t);
-    }
-
-    std::pair<bool, float> FMath::Intersects_RayQuad(const FRay& ray, const FVector3& a, const FVector3& b, 
-                                                     const FVector3& c, const FVector3& d)
-    {
-        const FVector3& vRayOri = ray.m_vOrigin;
-        const FVector3& vRayDir = ray.m_vDirection;
-        FVector3 vOA = a - vRayOri;
-        FVector3 vOB = b - vRayOri;
-        FVector3 vOC = c - vRayOri;
-        FVector3 vCross = FMath::Cross(vOC, vRayDir);
-        float fDotV = FMath::Dot(vOA, vCross);
-        if (fDotV >= 0.0f)
-        {
-            //abc
-            return Intersects_RayTriangle(ray, a, b, c);
-        }
-        else
-        {
-            //dac
-            return Intersects_RayTriangle(ray, d, a, c);
+            return std::pair<bool, float>(true, ray.GetDistance(vIntersection));
         }
         return std::pair<bool, float>(false, 0);
     }
-
-    std::pair<bool, float> FMath::Intersects_RayCircle(const FRay& ray, const FPlane& plane, const FVector3& center, float radius)
+    std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FTriangle& triangle, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        std::pair<bool, float> ret = Intersects_RayPlane(ray, plane);
-        if (!ret.first)
+        return Intersects_RayTriangle(ray, triangle.m_pt0, triangle.m_pt1, triangle.m_pt2, fEpsilon);
+    }
+
+    std::pair<bool, float> FMath::Intersects_RayQuad(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& d, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        FVector3 vIntersection;
+        if (GetIntersectionPointFromRayQuad(ray, a, b, c, d, vIntersection, fEpsilon))
         {
-            return ret;
-        }
-        FVector3 vInter = ray.GetPoint(ret.second);
-        if (FMath::Distance2(center, vInter) <= radius * radius)
-        {
-            return ret;
+            return std::pair<bool, float>(true, ray.GetDistance(vIntersection));
         }
         return std::pair<bool, float>(false, 0);
     }
-
-    std::pair<bool, float> FMath::Intersects_RayPlane(const FRay& ray, const FPlane& plane)
+    std::pair<bool, float> FMath::Intersects_RayQuad(const FRay& ray, const FQuad& quad, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        float denom = FMath::Dot(plane.m_vNormal, ray.GetDirection());
-        if (FMath::Abs(denom) < FMath::ms_fEpsilon)
+        return Intersects_RayQuad(ray, quad.m_pt0, quad.m_pt1, quad.m_pt2, quad.m_pt3, fEpsilon);
+    }
+
+    std::pair<bool, float> FMath::Intersects_RayPlane(const FRay& ray, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        FVector3 vIntersection;
+        if (GetIntersectionPointFromRayPlane(ray, plane, vIntersection, fEpsilon))
         {
-            return std::pair<bool, float>(false, 0);
-        }
-        else
-        {
-            float nom = FMath::Dot(plane.m_vNormal, ray.GetOrigin()) + plane.m_fDistance;
-            float t = -(nom/denom);
-            return std::pair<bool, float>(t >= 0, t);
-        }
+            return std::pair<bool, float>(true, ray.GetDistance(vIntersection));
+        }   
+        return std::pair<bool, float>(false, 0);
     }
 
     std::pair<bool, float> FMath::Intersects_RayPlaneVector(const FRay& ray, const FPlaneVector& aPlanes, bool normalIsOutside)
@@ -1390,6 +1401,21 @@ namespace LostPeterFoundation
             }
         }
         return ret;
+    }
+
+    std::pair<bool, float> FMath::Intersects_RayCircle(const FRay& ray, const FPlane& plane, const FVector3& center, float radius, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        FCircle circle(plane.GetNormal(), plane.GetDistance(), center, radius);
+        return Intersects_RayCircle(ray, circle, fEpsilon);
+    }
+    std::pair<bool, float> FMath::Intersects_RayCircle(const FRay& ray, const FCircle& circle, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        FVector3 vIntersection;
+        if (GetIntersectionPointFromRayCircle(ray, circle, vIntersection, fEpsilon))
+        {
+            return std::pair<bool, float>(true, ray.GetDistance(vIntersection));
+        }  
+        return std::pair<bool, float>(false, 0);
     }
 
     std::pair<bool, float> FMath::Intersects_RayAABB(const FRay& ray, const FAABB& aabb)
@@ -1568,32 +1594,42 @@ namespace LostPeterFoundation
     }
 
 
-    bool FMath::Intersects_RaySegment_Test(const FRay& ray, const FVector3& s, const FVector3& e, float fRayDis /*= 100000.0f*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    bool FMath::Intersects_RaySegment_Test(const FRay& ray, const FVector3& s, const FVector3& e, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        std::pair<bool, float> ret = Intersects_RaySegment(ray, s, e, fRayDis, fEpsilon);
+        std::pair<bool, float> ret = Intersects_RaySegment(ray, s, e, fEpsilon);
         return ret.first;
     }
-    bool FMath::Intersects_RaySegment_Test(const FRay& ray, const FSegment& segment, float fRayDis /*= 100000.0f*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    bool FMath::Intersects_RaySegment_Test(const FRay& ray, const FSegment& segment, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        std::pair<bool, float> ret = Intersects_RaySegment(ray, segment, fRayDis, fEpsilon);
+        std::pair<bool, float> ret = Intersects_RaySegment(ray, segment, fEpsilon);
         return ret.first;
     }
-    bool FMath::Intersects_RayTriangle_Test(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c,
-                                            bool positiveSide /*= true*/, bool negativeSide /*= true*/)
+    bool FMath::Intersects_RayTriangle_Test(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        std::pair<bool, float> ret = Intersects_RayTriangle(ray, a, b, c, positiveSide, negativeSide);
+        std::pair<bool, float> ret = Intersects_RayTriangle(ray, a, b, c, fEpsilon);
         return ret.first;
     }
-    bool FMath::Intersects_RayQuad_Test(const FRay& ray, const FVector3& a, const FVector3& b, 
-                                        const FVector3& c, const FVector3& d)
+    bool FMath::Intersects_RayTriangle_Test(const FRay& ray, const FTriangle& triangle, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        std::pair<bool, float> ret = Intersects_RayQuad(ray, a, b, c, d);
+        return Intersects_RayTriangle_Test(ray, triangle, fEpsilon);
+    }
+    bool FMath::Intersects_RayQuad_Test(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& d, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        std::pair<bool, float> ret = Intersects_RayQuad(ray, a, b, c, d, fEpsilon);
         return ret.first;
     }
-    bool FMath::Intersects_RayCircle_Test(const FRay& ray, const FPlane& plane, const FVector3& center, float radius)
+    bool FMath::Intersects_RayQuad_Test(const FRay& ray, const FQuad& quad, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        std::pair<bool, float> ret = Intersects_RayCircle(ray, plane, center, radius);
+        return Intersects_RayQuad_Test(ray, quad, fEpsilon);
+    }
+    bool FMath::Intersects_RayCircle_Test(const FRay& ray, const FPlane& plane, const FVector3& center, float radius, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        std::pair<bool, float> ret = Intersects_RayCircle(ray, plane, center, radius, fEpsilon);
         return ret.first;
+    }
+    bool FMath::Intersects_RayCircle_Test(const FRay& ray, const FCircle& circle, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        return Intersects_RayCircle_Test(ray, circle, fEpsilon);
     }
     bool FMath::Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb)
     {   

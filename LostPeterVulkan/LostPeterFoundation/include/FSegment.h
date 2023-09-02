@@ -24,36 +24,36 @@ namespace LostPeterFoundation
 
 		}
 		LP_FORCEINLINE FSegment(const FVector3& p0, const FVector3& p1)
-			: m_P0(p0)
-			, m_P1(p1)
+			: m_pt0(p0)
+			, m_pt1(p1)
 		{
 
 		}
 		LP_FORCEINLINE FSegment(const FSegment& src)
-			: m_P0(src.m_P0)
-			, m_P1(src.m_P1)
+			: m_pt0(src.m_pt0)
+			, m_pt1(src.m_pt1)
 		{
 
 		}
 
 	public:
-		FVector3 m_P0;		
-		FVector3 m_P1;	
+		FVector3 m_pt0;		
+		FVector3 m_pt1;	
 
 	public:
-		LP_FORCEINLINE const FVector3& GetOrigin() const { return m_P0; }
+		LP_FORCEINLINE const FVector3& GetOrigin() const { return m_pt0; }
 		LP_FORCEINLINE void	GetPoint(FVector3& pt, float t) const
 		{
-			pt = m_P0 + t * (m_P1 - m_P0);		
+			pt = m_pt0 + t * (m_pt1 - m_pt0);		
 		}
 
-		LP_FORCEINLINE FVector3 GetDirection() const { return m_P1 - m_P0; }
-		LP_FORCEINLINE void	 GetDirection(FVector3& dir) const	{ dir = m_P1 - m_P0; }
+		LP_FORCEINLINE FVector3 GetDirection() const { return m_pt1 - m_pt0; }
+		LP_FORCEINLINE void	 GetDirection(FVector3& dir) const	{ dir = m_pt1 - m_pt0; }
 		FVector3 GetDirectionNormalized() const;
 		LP_FORCEINLINE void	SetOriginDirection(const FVector3& origin, const FVector3& direction)
 		{
-			m_P0 = m_P1 = origin;
-			m_P1 += direction;
+			m_pt0 = m_pt1 = origin;
+			m_pt1 += direction;
 		}
 
 		float Length() const;

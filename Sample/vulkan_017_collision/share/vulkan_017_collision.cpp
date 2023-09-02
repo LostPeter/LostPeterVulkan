@@ -1748,7 +1748,7 @@ bool Vulkan_017_Collision::IsCollision_LineLine3D(double x, double y, const FRay
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
         FVector3 vStart = FMath::Transform(obj.g_MatWorld, pLineLine3D->vStart);
         FVector3 vEnd = FMath::Transform(obj.g_MatWorld, pLineLine3D->vEnd);
-        if (FMath::Intersects_RaySegment_Test(ray, vStart, vEnd, 1000, 0.005f))
+        if (FMath::Intersects_RaySegment_Test(ray, vStart, vEnd, 0.005f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_LineLine3D: Ray trace in LineLine 3D !");
@@ -1772,7 +1772,7 @@ bool Vulkan_017_Collision::IsCollision_LineTriangle3D(double x, double y, const 
         FVector3 vTop = FMath::Transform(obj.g_MatWorld, pLineTriangle3D->vTop);
         FVector3 vLeft = FMath::Transform(obj.g_MatWorld, pLineTriangle3D->vLeft);
         FVector3 vRight = FMath::Transform(obj.g_MatWorld, pLineTriangle3D->vRight);
-        if (FMath::Intersects_RayTriangle_Test(ray, vTop, vRight, vLeft))
+        if (FMath::Intersects_RayTriangle_Test(ray, vTop, vRight, vLeft, 0.005f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_LineTriangle3D: Ray trace in LineTriangle 3D !");
@@ -1797,7 +1797,7 @@ bool Vulkan_017_Collision::IsCollision_LineQuad3D(double x, double y, const FRay
         FVector3 vRightTop = FMath::Transform(obj.g_MatWorld, pLineQuad3D->vRightTop);
         FVector3 vRightBottom = FMath::Transform(obj.g_MatWorld, pLineQuad3D->vRightBottom);
         FVector3 vLeftBottom = FMath::Transform(obj.g_MatWorld, pLineQuad3D->vLeftBottom);
-        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom))
+        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom, 0.005f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_LineQuad3D: Ray trace in LineQuad 3D !");
@@ -1822,7 +1822,7 @@ bool Vulkan_017_Collision::IsCollision_LineGrid3D(double x, double y, const FRay
         FVector3 vRightTop = FMath::Transform(obj.g_MatWorld, pLineGrid3D->vRightTop);
         FVector3 vRightBottom = FMath::Transform(obj.g_MatWorld, pLineGrid3D->vRightBottom);
         FVector3 vLeftBottom = FMath::Transform(obj.g_MatWorld, pLineGrid3D->vLeftBottom);
-        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom))
+        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom, 0.005f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_LineGrid3D: Ray trace in LineGrid 3D !");
@@ -1846,7 +1846,7 @@ bool Vulkan_017_Collision::IsCollision_LineCircle3D(double x, double y, const FR
         FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pLineCircle3D->vCenter);
         FVector3 vUp = FMath::Transform(obj.g_MatWorld, pLineCircle3D->vUp);
         FPlane plane(vUp, vCenter);
-        if (FMath::Intersects_RayCircle_Test(ray, plane, vCenter, pLineCircle3D->radius))
+        if (FMath::Intersects_RayCircle_Test(ray, plane, vCenter, pLineCircle3D->radius, 0.005f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_LineCircle3D: Ray trace in LineCircle 3D !");
@@ -1934,7 +1934,7 @@ bool Vulkan_017_Collision::IsCollision_FlatTriangle3D(double x, double y, const 
         FVector3 vTop = FMath::Transform(obj.g_MatWorld, pFlatTriangle3D->vTop);
         FVector3 vLeft = FMath::Transform(obj.g_MatWorld, pFlatTriangle3D->vLeft);
         FVector3 vRight = FMath::Transform(obj.g_MatWorld, pFlatTriangle3D->vRight);
-        if (FMath::Intersects_RayTriangle_Test(ray, vTop, vRight, vLeft))
+        if (FMath::Intersects_RayTriangle_Test(ray, vTop, vRight, vLeft, 0.005f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatTriangle3D: Ray trace in FlatTriangle 3D !");
@@ -1959,7 +1959,7 @@ bool Vulkan_017_Collision::IsCollision_FlatQuad3D(double x, double y, const FRay
         FVector3 vRightTop = FMath::Transform(obj.g_MatWorld, pFlatQuad3D->vRightTop);
         FVector3 vRightBottom = FMath::Transform(obj.g_MatWorld, pFlatQuad3D->vRightBottom);
         FVector3 vLeftBottom = FMath::Transform(obj.g_MatWorld, pFlatQuad3D->vLeftBottom);
-        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom))
+        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom, 0.005f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatQuad3D: Ray trace in FlatQuad 3D !");
@@ -1983,7 +1983,7 @@ bool Vulkan_017_Collision::IsCollision_FlatCircle3D(double x, double y, const FR
         FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pFlatCircle3D->vCenter);
         FVector3 vUp = FMath::Transform(obj.g_MatWorld, pFlatCircle3D->vUp);
         FPlane plane(vUp, vCenter);
-        if (FMath::Intersects_RayCircle_Test(ray, plane, vCenter, pFlatCircle3D->radius))
+        if (FMath::Intersects_RayCircle_Test(ray, plane, vCenter, pFlatCircle3D->radius, 0.005f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatCircle3D: Ray trace in LineCircle 3D !");

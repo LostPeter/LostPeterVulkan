@@ -172,6 +172,7 @@ namespace LostPeterFoundation
     class FBox;
     class FCamera;
     class FCapsule;
+    class FCircle;
     class FCone;
     class FCylinder;
     class FDynamicLib;
@@ -239,12 +240,14 @@ namespace LostPeterFoundation
     class FPlaneBoundedVolume;
     class FPlugin;
 	class FPluginManager;
+    class FQuad;
     class FRay;
     class FRefCount;
     class FSegment;
     class FSphere;
     class FTimer;
     class FTorus;
+    class FTriangle;
     class FUtil;
     class FUtilString;
 
