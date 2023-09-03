@@ -1202,6 +1202,71 @@ namespace LostPeterFoundation
         return !PlanePlane_Perpendicular(plane1, plane2, fEpsilon);
     }
 
+    //Quad - Convex
+    bool FMath::Quad_IsConvex(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, const FVector3& pt4, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        if (!Points4_OnPlane(pt1, pt2, pt3, pt4, fEpsilon))
+            return false;
+
+        if (!Intersects_PointInTriangle(pt1, pt2, pt3, pt4, false, fEpsilon) && //1 - 234
+            !Intersects_PointInTriangle(pt2, pt1, pt3, pt4, false, fEpsilon) && //2 - 134
+            !Intersects_PointInTriangle(pt3, pt1, pt2, pt4, false, fEpsilon) && //3 - 124
+            !Intersects_PointInTriangle(pt4, pt1, pt2, pt3, false, fEpsilon)) //4 - 123
+        {
+            return true;
+        }
+        return false;
+    }
+    bool FMath::Quad_IsConvex(const FQuad& quad, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        return Quad_IsConvex(quad.m_pt0, quad.m_pt1, quad.m_pt2, quad.m_pt3, fEpsilon); 
+    }
+    bool FMath::Quad_IsConcave(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, const FVector3& pt4, FVector3& vConcave, int& nIndex, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        vConcave = pt1;
+        nIndex = 0;
+        if (!Points4_OnPlane(pt1, pt2, pt3, pt4, fEpsilon))
+            return false;
+
+        bool isPIT_1_234 = Intersects_PointInTriangle(pt1, pt2, pt3, pt4, false, fEpsilon); //1 - 234
+        bool isPIT_2_134 = Intersects_PointInTriangle(pt2, pt1, pt3, pt4, false, fEpsilon); //2 - 134
+        bool isPIT_3_124 = Intersects_PointInTriangle(pt3, pt1, pt2, pt4, false, fEpsilon); //3 - 124
+        bool isPIT_4_123 = Intersects_PointInTriangle(pt4, pt1, pt2, pt3, false, fEpsilon); //4 - 123
+        if (isPIT_1_234 && !isPIT_2_134 && !isPIT_3_124 && !isPIT_4_123)
+        {
+            vConcave = pt1;
+            nIndex = 0;
+            return true;
+        }
+        if (!isPIT_1_234 && isPIT_2_134 && !isPIT_3_124 && !isPIT_4_123)
+        {
+            vConcave = pt2;
+            nIndex = 1;
+            return true;
+        }
+        if (!isPIT_1_234 && !isPIT_2_134 && isPIT_3_124 && !isPIT_4_123)
+        {
+            vConcave = pt3;
+            nIndex = 2;
+            return true;
+        }
+        if (!isPIT_1_234 && !isPIT_2_134 && !isPIT_3_124 && isPIT_4_123)
+        {
+            vConcave = pt4;
+            nIndex = 3;
+            return true;
+        }   
+        return false;
+    }
+    bool FMath::Quad_IsConcave(const FVector3* pPt, FVector3& vConcave, int& nIndex, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        return Quad_IsConcave(pPt[0], pPt[1], pPt[2], pPt[3], vConcave, nIndex, fEpsilon);
+    }
+    bool FMath::Quad_IsConcave(const FQuad& quad, FVector3& vConcave, int& nIndex, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        return Quad_IsConcave(quad.m_pt0, quad.m_pt1, quad.m_pt2, quad.m_pt3, vConcave, nIndex, fEpsilon);
+    }
+
     //Point - Line
     bool FMath::Intersects_PointInLine(const FVector3& pt, const FVector3& ptLineStart, const FVector3& ptLineEnd, bool includeSE /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
@@ -1259,9 +1324,60 @@ namespace LostPeterFoundation
     }
 
     //Point - Rect
-    bool FMath::Intersects_PointInRect(const FVector3& pt, const FVector3& rtLeftTop, const FVector3& rtLeftBottom, const FVector3& rtRightTop, const FVector3& rtRightBottom)
+    bool FMath::Intersects_PointInRect2DI(const FPointI& pt, const FPointI& a, const FPointI& b, const FPointI& c, const FPointI& d)
     {
-        
+        FVector3 pt3(pt.x, pt.y, 0);
+        FVector3 a3(a.x, a.y, 0);
+        FVector3 b3(b.x, b.y, 0);
+        FVector3 c3(c.x, c.y, 0);
+        FVector3 d3(d.x, d.y, 0);
+        return Intersects_PointInRect(pt3, a3, b3, c3, d3);
+    }
+    bool FMath::Intersects_PointInRect2DF(const FPointF& pt, const FPointF& a, const FPointF& b, const FPointF& c, const FPointF& d)
+    {
+        FVector3 pt3(pt.x, pt.y, 0);
+        FVector3 a3(a.x, a.y, 0);
+        FVector3 b3(b.x, b.y, 0);
+        FVector3 c3(c.x, c.y, 0);
+        FVector3 d3(d.x, d.y, 0);
+        return Intersects_PointInRect(pt3, a3, b3, c3, d3);
+    }
+    bool FMath::Intersects_PointInRect(const FVector3& pt, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& d, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        if (!Points4_OnPlane(a, b, c, d))
+            return false;
+
+        FVector3 vConcave; 
+        FVector3 aV[4] = 
+        {
+            a, b, c, d
+        };
+        int nIndex = 0;
+        if (Quad_IsConcave(a, b, c, d, vConcave, nIndex, fEpsilon))
+        {
+            FVector3& t11 = aV[nIndex%4]; nIndex++;
+            FVector3& t12 = aV[nIndex%4]; nIndex++;
+            FVector3& t13 = aV[nIndex%4]; 
+
+            FVector3& t21 = aV[nIndex%4]; nIndex++;
+            FVector3& t22 = aV[nIndex%4]; nIndex++;
+            FVector3& t23 = aV[nIndex%4]; 
+
+            if (Intersects_PointInTriangle(pt, t11, t12, t13, true, fEpsilon) ||
+                Intersects_PointInTriangle(pt, t21, t22, t23, true, fEpsilon))
+            {
+                return true;
+            }
+        }   
+        else
+        {
+            if (Intersects_PointInTriangle(pt, a, b, c, true, fEpsilon) ||
+                Intersects_PointInTriangle(pt, a, c, d, true, fEpsilon))
+            {
+                return true;
+            }
+        }
+
         return false;
     }
 

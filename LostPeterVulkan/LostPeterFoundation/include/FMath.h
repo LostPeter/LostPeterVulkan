@@ -807,6 +807,13 @@ namespace LostPeterFoundation
         static bool PlanePlane_Perpendicular(const FPlane& plane1, const FPlane& plane2, float fEpsilon = FMath::ms_fEpsilon);
         static bool PlanePlane_NotPerpendicular(const FPlane& plane1, const FPlane& plane2, float fEpsilon = FMath::ms_fEpsilon);
 
+        //Quad - Convex
+        static bool Quad_IsConvex(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, const FVector3& pt4, float fEpsilon = FMath::ms_fEpsilon);
+        static bool Quad_IsConvex(const FQuad& quad, float fEpsilon = FMath::ms_fEpsilon);
+        static bool Quad_IsConcave(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, const FVector3& pt4, FVector3& vConcave, int& nIndex, float fEpsilon = FMath::ms_fEpsilon);
+        static bool Quad_IsConcave(const FVector3* pPt, FVector3& vConcave, int& nIndex, float fEpsilon = FMath::ms_fEpsilon);
+        static bool Quad_IsConcave(const FQuad& quad, FVector3& vConcave, int& nIndex, float fEpsilon = FMath::ms_fEpsilon);
+
     public:
         //Point - Line
         template<typename T>
@@ -834,7 +841,7 @@ namespace LostPeterFoundation
             T area_PAC = GetAreaFromTriangle(pt, a, c);
             T area_PBC = GetAreaFromTriangle(pt, b, c);
 
-            if (Abs(area_PAB + area_PBC + area_PAC - area_ABC) < 0.000001f)
+            if (Abs(area_PAB + area_PBC + area_PAC - area_ABC) < ms_fEpsilon)
                 return true;
             return false;
         }
@@ -863,7 +870,10 @@ namespace LostPeterFoundation
         {
             return Intersects_PointInRect2D<float>(pt, rect);
         }
-        static bool Intersects_PointInRect(const FVector3& pt, const FVector3& rtLeftTop, const FVector3& rtLeftBottom, const FVector3& rtRightTop, const FVector3& rtRightBottom);
+
+        static bool Intersects_PointInRect2DI(const FPointI& pt, const FPointI& a, const FPointI& b, const FPointI& c, const FPointI& d);
+        static bool Intersects_PointInRect2DF(const FPointF& pt, const FPointF& a, const FPointF& b, const FPointF& c, const FPointF& d);
+        static bool Intersects_PointInRect(const FVector3& pt, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& d, float fEpsilon = FMath::ms_fEpsilon);
 
 
         //Point - Circle

@@ -541,16 +541,22 @@ public:
     ModelObjectRend* pRend_LineTriangle2D;
     ModelObjectRend* pRend_LineQuad2D;
     ModelObjectRend* pRend_LineGrid2D;
+    ModelObjectRend* pRend_LineQuadConvex2D;
+    ModelObjectRend* pRend_LineQuadConcave2D;
     ModelObjectRend* pRend_LineCircle2D;
     //Flat2D
     ModelObjectRend* pRend_FlatTriangle2D;
     ModelObjectRend* pRend_FlatQuad2D;
+    ModelObjectRend* pRend_FlatQuadConvex2D;
+    ModelObjectRend* pRend_FlatQuadConcave2D;
     ModelObjectRend* pRend_FlatCircle2D;
     //Line3D
     ModelObjectRend* pRend_LineLine3D;
     ModelObjectRend* pRend_LineTriangle3D;
     ModelObjectRend* pRend_LineQuad3D;
     ModelObjectRend* pRend_LineGrid3D;
+    ModelObjectRend* pRend_LineQuadConvex3D;
+    ModelObjectRend* pRend_LineQuadConcave3D;
     ModelObjectRend* pRend_LineCircle3D;
     ModelObjectRend* pRend_LineAABB3D;
     ModelObjectRend* pRend_LineSphere3D;
@@ -561,6 +567,8 @@ public:
     //Flat3D
     ModelObjectRend* pRend_FlatTriangle3D;
     ModelObjectRend* pRend_FlatQuad3D;
+    ModelObjectRend* pRend_FlatQuadConvex3D;
+    ModelObjectRend* pRend_FlatQuadConcave3D;
     ModelObjectRend* pRend_FlatCircle3D;
     ModelObjectRend* pRend_FlatAABB3D;
     ModelObjectRend* pRend_FlatSphere3D;
@@ -609,11 +617,15 @@ public:
     static FColor s_color_LineTriangle2D;           //LineTriangle2D
     static FColor s_color_LineQuad2D;               //LineQuad2D
     static FColor s_color_LineGrid2D;               //LineGrid2D
+    static FColor s_color_LineQuadConvex2D;         //LineQuad2D Convex
+    static FColor s_color_LineQuadConcave2D;        //LineQuad2D Concave
     static FColor s_color_LineCircle2D;             //LineCircle2D
 
     //Flat2D
     static FColor s_color_FlatTriangle2D;           //FlatTriangle2D
     static FColor s_color_FlatQuad2D;               //FlatQuad2D
+    static FColor s_color_FlatQuadConvex2D;         //FlatQuad2D Convex
+    static FColor s_color_FlatQuadConcave2D;        //FlatQuad2D Concave
     static FColor s_color_FlatCircle2D;             //FlatCircle2D
 
     //Line3D
@@ -621,6 +633,8 @@ public:
     static FColor s_color_LineTriangle3D;           //LineTriangle3D
     static FColor s_color_LineQuad3D;               //LineQuad3D
     static FColor s_color_LineGrid3D;               //LineGrid3D
+    static FColor s_color_LineQuadConvex3D;         //LineQuad3D Convex
+    static FColor s_color_LineQuadConcave3D;        //LineQuad3D Concave
     static FColor s_color_LineCircle3D;             //LineCircle3D
     static FColor s_color_LineAABB3D;               //LineAABB3D
     static FColor s_color_LineSphere3D;             //LineSphere3D
@@ -632,6 +646,8 @@ public:
     //Flat3D
     static FColor s_color_FlatTriangle3D;           //FlatTriangle3D
     static FColor s_color_FlatQuad3D;               //FlatQuad3D
+    static FColor s_color_FlatQuadConvex3D;         //FlatQuad3D Convex
+    static FColor s_color_FlatQuadConcave3D;        //FlatQuad3D Concave
     static FColor s_color_FlatCircle3D;             //FlatCircle3D
     static FColor s_color_FlatAABB3D;               //FlatAABB3D
     static FColor s_color_FlatSphere3D;             //FlatSphere3D
@@ -665,11 +681,15 @@ public:
     bool IsCollision_LineTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineGrid2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_LineQuadConvex2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_LineQuadConcave2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
 
     //Flat2D
     bool IsCollision_FlatTriangle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_FlatQuad2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_FlatQuadConvex2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_FlatQuadConcave2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_FlatCircle2D(double x, double y, ModelObjectRend* pRend, const FColor& color, bool isHover);
 
     //Line3D
@@ -677,6 +697,8 @@ public:
     bool IsCollision_LineTriangle3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineQuad3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineGrid3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_LineQuadConvex3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_LineQuadConcave3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineCircle3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineAABB3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_LineSphere3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
@@ -688,6 +710,8 @@ public:
     //Flat3D
     bool IsCollision_FlatTriangle3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_FlatQuad3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_FlatQuadConvex3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
+    bool IsCollision_FlatQuadConcave3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_FlatCircle3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_FlatAABB3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
     bool IsCollision_FlatSphere3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover);
