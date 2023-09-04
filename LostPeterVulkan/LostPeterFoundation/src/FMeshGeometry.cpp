@@ -1296,6 +1296,13 @@ namespace LostPeterFoundation
 
         return true;
     }
+    void FMeshCreateParam_EntityQuad::RefreshVertexPos()
+    {
+        this->vLeftTop = FVector3(this->centerX - this->width/2, this->centerY + this->height/2, this->depth);
+        this->vLeftBottom = FVector3(this->centerX - this->width/2, this->centerY - this->height/2, this->depth);
+        this->vRightBottom = FVector3(this->centerX + this->width/2, this->centerY - this->height/2, this->depth);
+        this->vRightTop = FVector3(this->centerX + this->width/2, this->centerY + this->height/2, this->depth);
+    }
 
     //EntityGrid   
     String FMeshCreateParam_EntityGrid::ms_nameType = "MeshEntityGrid"; 
@@ -1319,6 +1326,13 @@ namespace LostPeterFoundation
         }
 
         return true;
+    }
+    void FMeshCreateParam_EntityGrid::RefreshVertexPos()
+    {
+        this->vLeftTop = FVector3(-this->width/2, this->height/2, 0);
+        this->vLeftBottom = FVector3(-this->width/2, - this->height/2, 0);
+        this->vRightBottom = FVector3(this->width/2, - this->height/2, 0);
+        this->vRightTop = FVector3(this->width/2, this->height/2, 0);
     }
 
     //EntityCircle
@@ -4069,8 +4083,11 @@ namespace LostPeterFoundation
         return false;
     }
 
-
+    //EntityTriangle
     void FMeshGeometry::CreateEntityTriangle(FMeshData& meshData, 
+                                             const FVector3& vTop,
+                                             const FVector3& vLeft,
+                                             const FVector3& vRight,
                                              bool flipV,
                                              bool rightHand)
     {
@@ -4080,17 +4097,17 @@ namespace LostPeterFoundation
         //    1 ------ 2
 
         //Vertex
-        AddVertex(meshData, FMeshVertex( 0.0f,  0.5f,   0.0f,
+        AddVertex(meshData, FMeshVertex( vTop.x, vTop.y, vTop.z,
                                          0.0f,  0.0f,  -1.0f,
                                          1.0f,  0.0f,   0.0f,
                                          0.5f,  flipV ? 1.0f : 0.0f));
 
-        AddVertex(meshData, FMeshVertex(-0.5f, -0.5f,   0.0f,
+        AddVertex(meshData, FMeshVertex( vLeft.x, vLeft.y, vLeft.z,
                                          0.0f,  0.0f,  -1.0f,
                                          1.0f,  0.0f,   0.0f,
                                          0.0f,  flipV ? 0.0f : 1.0f));
 
-        AddVertex(meshData, FMeshVertex( 0.5f, -0.5f,   0.0f,
+        AddVertex(meshData, FMeshVertex( vRight.x, vRight.y, vRight.z,
                                          0.0f,  0.0f,  -1.0f,
                                          1.0f,  0.0f,   0.0f,
                                          1.0f,  flipV ? 0.0f : 1.0f));
@@ -4106,6 +4123,7 @@ namespace LostPeterFoundation
         }
     }
 
+    //EntityQuad
     void FMeshGeometry::CreateEntityQuad(FMeshData& meshData, 
                                          float centerX, 
                                          float centerY, 
@@ -4157,6 +4175,7 @@ namespace LostPeterFoundation
         }
     }
 
+    //EntityGrid
     void FMeshGeometry::CreateEntityGrid(FMeshData& meshData, 
                                          float width, 
                                          float height, 
@@ -4247,6 +4266,7 @@ namespace LostPeterFoundation
         }
     }
 
+    //EntityCircle
     void FMeshGeometry::CreateEntityCircle(FMeshData& meshData,
                                            float radius,
                                            uint32 segment,
@@ -4330,6 +4350,7 @@ namespace LostPeterFoundation
         }
     }
 
+    //EntityAABB
     void FMeshGeometry::CreateEntityAABB(FMeshData& meshData, 
                                          float width, 
                                          float height, 
@@ -4442,6 +4463,7 @@ namespace LostPeterFoundation
         }
     }
 
+    //EntitySphere
     void FMeshGeometry::CreateEntitySphere(FMeshData& meshData, 
                                            float radius, 
                                            uint32 sliceCount, 
@@ -4576,6 +4598,7 @@ namespace LostPeterFoundation
         }
     }
 
+    //EntityGeoSphere
     void FMeshGeometry::CreateEntityGeoSphere(FMeshData& meshData, 
                                               float radius, 
                                               uint32 numSubdivisions,
@@ -4674,6 +4697,7 @@ namespace LostPeterFoundation
         meshData.RefreshSphereAndAABB(FVector3(0, 0 ,0));
     }
 
+    //EntityCylinder
     void s_BuildCylinderTopCap(FMeshData& meshData, 
                                float radiusBottom, 
                                float radiusTop, 
@@ -4883,6 +4907,7 @@ namespace LostPeterFoundation
                                  rightHand);
     }
 
+    //EntityCapsule
     void FMeshGeometry::CreateEntityCapsule(FMeshData& meshData,
                                             float radius,
                                             float height,
@@ -5033,6 +5058,7 @@ namespace LostPeterFoundation
         } 
     }
 
+    //EntityCone
     void FMeshGeometry::CreateEntityCone(FMeshData& meshData,
                                          float radius,
                                          float height,
@@ -5144,6 +5170,7 @@ namespace LostPeterFoundation
         }
     }
 
+    //EntityTorus
     void FMeshGeometry::CreateEntityTorus(FMeshData& meshData,
                                           float radius,
                                           float sectionRadius,
@@ -5207,6 +5234,7 @@ namespace LostPeterFoundation
         }       
     }
 
+    //EntitySkyBox
     void FMeshGeometry::CreateEntitySkyBox(FMeshData& meshData,
                                            bool flipV,
                                            bool rightHand)
@@ -5214,6 +5242,7 @@ namespace LostPeterFoundation
 
     }
 
+    //EntitySkyDome
     void FMeshGeometry::CreateEntitySkyDome(FMeshData& meshData,
                                             bool flipV,
                                             bool rightHand)
@@ -5221,6 +5250,7 @@ namespace LostPeterFoundation
 
     }
 
+    //EntityTerrain
     void FMeshGeometry::CreateEntityTerrain(FMeshData& meshData,
                                             float offsetX,
                                             float offsetZ,

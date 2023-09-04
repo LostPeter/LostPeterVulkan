@@ -2093,12 +2093,53 @@ bool Vulkan_017_Collision::IsCollision_LineGrid3D(double x, double y, const FRay
 }
 bool Vulkan_017_Collision::IsCollision_LineQuadConvex3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_LineQuad3D* pLineQuadConvex3D = (FMeshCreateParam_LineQuad3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vLeftTop = FMath::Transform(obj.g_MatWorld, pLineQuadConvex3D->vLeftTop);
+        FVector3 vRightTop = FMath::Transform(obj.g_MatWorld, pLineQuadConvex3D->vRightTop);
+        FVector3 vRightBottom = FMath::Transform(obj.g_MatWorld, pLineQuadConvex3D->vRightBottom);
+        FVector3 vLeftBottom = FMath::Transform(obj.g_MatWorld, pLineQuadConvex3D->vLeftBottom);
+        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom, 0.005f))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_LineQuadConvex3D: Ray trace in LineQuad Convex 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineQuadConvex3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_LineQuadConcave3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_LineQuad3D* pLineQuadConcave3D = (FMeshCreateParam_LineQuad3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vLeftTop = FMath::Transform(obj.g_MatWorld, pLineQuadConcave3D->vLeftTop);
+        FVector3 vRightTop = FMath::Transform(obj.g_MatWorld, pLineQuadConcave3D->vRightTop);
+        FVector3 vRightBottom = FMath::Transform(obj.g_MatWorld, pLineQuadConcave3D->vRightBottom);
+        FVector3 vLeftBottom = FMath::Transform(obj.g_MatWorld, pLineQuadConcave3D->vLeftBottom);
+        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom, 0.005f))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_LineQuadConcave3D: Ray trace in LineQuad Concave 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineQuadConcave3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_LineCircle3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
@@ -2239,11 +2280,53 @@ bool Vulkan_017_Collision::IsCollision_FlatQuad3D(double x, double y, const FRay
 }
 bool Vulkan_017_Collision::IsCollision_FlatQuadConvex3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_FlatQuad3D* pFlatQuadConvex3D = (FMeshCreateParam_FlatQuad3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vLeftTop = FMath::Transform(obj.g_MatWorld, pFlatQuadConvex3D->vLeftTop);
+        FVector3 vRightTop = FMath::Transform(obj.g_MatWorld, pFlatQuadConvex3D->vRightTop);
+        FVector3 vRightBottom = FMath::Transform(obj.g_MatWorld, pFlatQuadConvex3D->vRightBottom);
+        FVector3 vLeftBottom = FMath::Transform(obj.g_MatWorld, pFlatQuadConvex3D->vLeftBottom);
+        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom, 0.005f))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatQuadConvex3D: Ray trace in FlatQuad Convex 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_FlatQuadConvex3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_FlatQuadConcave3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_FlatQuad3D* pFlatQuadConcave3D = (FMeshCreateParam_FlatQuad3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vLeftTop = FMath::Transform(obj.g_MatWorld, pFlatQuadConcave3D->vLeftTop);
+        FVector3 vRightTop = FMath::Transform(obj.g_MatWorld, pFlatQuadConcave3D->vRightTop);
+        FVector3 vRightBottom = FMath::Transform(obj.g_MatWorld, pFlatQuadConcave3D->vRightBottom);
+        FVector3 vLeftBottom = FMath::Transform(obj.g_MatWorld, pFlatQuadConcave3D->vLeftBottom);
+        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom, 0.005f))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatQuadConcave3D: Ray trace in FlatQuad Concave 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_FlatQuadConcave3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_FlatCircle3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
@@ -2335,32 +2418,177 @@ bool Vulkan_017_Collision::IsCollision_FlatTorus3D(double x, double y, const FRa
 //Entity
 bool Vulkan_017_Collision::IsCollision_EntityTriangle(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_EntityTriangle* pEntityTriangle = (FMeshCreateParam_EntityTriangle*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ObjectConstants& obj = pRend->objectCBs[i];
+        MaterialConstants& mat = pRend->materialCBs[i];
+        FVector3 vTop = FMath::Transform(obj.g_MatWorld, pEntityTriangle->vTop);
+        FVector3 vLeft = FMath::Transform(obj.g_MatWorld, pEntityTriangle->vLeft);
+        FVector3 vRight = FMath::Transform(obj.g_MatWorld, pEntityTriangle->vRight);
+        if (FMath::Intersects_RayTriangle_Test(ray, vTop, vRight, vLeft, 0.005f))
+        {
+            mat.factorAmbient = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_EntityTriangle: Ray trace in EntityTriangle !");
+            isCollision = true;
+        }
+        else
+        {
+            mat.factorAmbient = s_color_EntityTriangle;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_EntityQuad(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_EntityQuad* pEntityQuad = (FMeshCreateParam_EntityQuad*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ObjectConstants& obj = pRend->objectCBs[i];
+        MaterialConstants& mat = pRend->materialCBs[i];
+        FVector3 vLeftTop = FMath::Transform(obj.g_MatWorld, pEntityQuad->vLeftTop);
+        FVector3 vRightTop = FMath::Transform(obj.g_MatWorld, pEntityQuad->vRightTop);
+        FVector3 vRightBottom = FMath::Transform(obj.g_MatWorld, pEntityQuad->vRightBottom);
+        FVector3 vLeftBottom = FMath::Transform(obj.g_MatWorld, pEntityQuad->vLeftBottom);
+        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom, 0.005f))
+        {
+            mat.factorAmbient = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_EntityQuad: Ray trace in EntityQuad !");
+            isCollision = true;
+        }
+        else
+        {
+            mat.factorAmbient = s_color_EntityQuad;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_EntityGrid(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_EntityGrid* pEntityGrid = (FMeshCreateParam_EntityGrid*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ObjectConstants& obj = pRend->objectCBs[i];
+        MaterialConstants& mat = pRend->materialCBs[i];
+        FVector3 vLeftTop = FMath::Transform(obj.g_MatWorld, pEntityGrid->vLeftTop);
+        FVector3 vRightTop = FMath::Transform(obj.g_MatWorld, pEntityGrid->vRightTop);
+        FVector3 vRightBottom = FMath::Transform(obj.g_MatWorld, pEntityGrid->vRightBottom);
+        FVector3 vLeftBottom = FMath::Transform(obj.g_MatWorld, pEntityGrid->vLeftBottom);
+        if (FMath::Intersects_RayQuad_Test(ray, vLeftTop, vRightTop, vRightBottom, vLeftBottom, 0.005f))
+        {
+            mat.factorAmbient = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_EntityGrid: Ray trace in EntityGrid !");
+            isCollision = true;
+        }
+        else
+        {
+            mat.factorAmbient = s_color_EntityGrid;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_EntityCircle(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_EntityCircle* pEntityCircle = (FMeshCreateParam_EntityCircle*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ObjectConstants& obj = pRend->objectCBs[i];
+        MaterialConstants& mat = pRend->materialCBs[i];
+        FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pEntityCircle->vCenter);
+        FVector3 vUp = FMath::Transform(obj.g_MatWorld, pEntityCircle->vUp);
+        FPlane plane(vUp, vCenter);
+        if (FMath::Intersects_RayCircle_Test(ray, plane, vCenter, pEntityCircle->radius, 0.005f))
+        {
+            mat.factorAmbient = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_EntityCircle: Ray trace in EntityCircle !");
+            isCollision = true;
+        }
+        else
+        {
+            mat.factorAmbient = s_color_EntityCircle;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_EntityAABB(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    
-    return false;
+    bool isCollision = false;
+    FAABB& aabb = pRend->pMeshSub->aabb;
+    size_t count = pRend->objectCBs.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ObjectConstants& obj = pRend->objectCBs[i];
+        MaterialConstants& mat = pRend->materialCBs[i];
+        FAABB aabbWorld(aabb);
+        aabbWorld.Transform(obj.g_MatWorld);
+        if (FMath::Intersects_RayAABB_Test(ray, aabbWorld))
+        {
+            mat.factorAmbient = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_EntityAABB: Ray trace in EntityAABB !");
+            isCollision = true;
+        }
+        else
+        {
+            mat.factorAmbient = s_color_EntityAABB;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_EntitySphere(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FSphere& sphere = pRend->pMeshSub->sphere;
+    size_t count = pRend->objectCBs.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ObjectConstants& obj = pRend->objectCBs[i];
+        MaterialConstants& mat = pRend->materialCBs[i];
+        FSphere sphereWorld(sphere);
+        sphereWorld.Transform(obj.g_MatWorld);
+        if (FMath::Intersects_RaySphere_Test(ray, sphereWorld, false))
+        {
+            mat.factorAmbient = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_EntitySphere: Ray trace in EntitySphere !");
+            isCollision = true;
+        }
+        else
+        {
+            mat.factorAmbient = s_color_EntitySphere;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_EntityGeoSphere(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FSphere& sphere = pRend->pMeshSub->sphere;
+    size_t count = pRend->objectCBs.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ObjectConstants& obj = pRend->objectCBs[i];
+        MaterialConstants& mat = pRend->materialCBs[i];
+        FSphere sphereWorld(sphere);
+        sphereWorld.Transform(obj.g_MatWorld);
+        if (FMath::Intersects_RaySphere_Test(ray, sphereWorld, false))
+        {
+            mat.factorAmbient = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_EntityGeoSphere: Ray trace in EntityGeoSphere !");
+            isCollision = true;
+        }
+        else
+        {
+            mat.factorAmbient = s_color_EntityGeoSphere;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_EntityCylinder(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
@@ -2876,20 +3104,20 @@ void Vulkan_017_Collision::rebuildInstanceCBs(bool isCreateVkBuffer)
                 switch ((int32)pRend->pMeshSub->pMesh->typeGeometryType)
                 {
                     //Entity
-                    case F_MeshGeometry_EntityTriangle:     { materialConstants.factorDiffuse = s_color_EntityTriangle;       break; }
-                    case F_MeshGeometry_EntityQuad:         { materialConstants.factorDiffuse = s_color_EntityQuad;           break; }
-                    case F_MeshGeometry_EntityGrid:         { materialConstants.factorDiffuse = s_color_EntityGrid;           break; }
-                    case F_MeshGeometry_EntityCircle:       { materialConstants.factorDiffuse = s_color_EntityCircle;         break; }
-                    case F_MeshGeometry_EntityAABB:         { materialConstants.factorDiffuse = s_color_EntityAABB;           break; }
-                    case F_MeshGeometry_EntitySphere:       { materialConstants.factorDiffuse = s_color_EntitySphere;         break; }
-                    case F_MeshGeometry_EntityGeoSphere:    { materialConstants.factorDiffuse = s_color_EntityGeoSphere;      break; }
-                    case F_MeshGeometry_EntityCylinder:     { materialConstants.factorDiffuse = s_color_EntityCylinder;       break; }
-                    case F_MeshGeometry_EntityCapsule:      { materialConstants.factorDiffuse = s_color_EntityCapsule;        break; }
-                    case F_MeshGeometry_EntityCone:         { materialConstants.factorDiffuse = s_color_EntityCone;           break; }
-                    case F_MeshGeometry_EntityTorus:        { materialConstants.factorDiffuse = s_color_EntityTorus;          break; }
-                    case F_MeshGeometry_EntitySkyBox:       { materialConstants.factorDiffuse = s_color_EntitySkyBox;         break; }
-                    case F_MeshGeometry_EntitySkyDome:      { materialConstants.factorDiffuse = s_color_EntitySkyDome;        break; }
-                    case F_MeshGeometry_EntityTerrain:      { materialConstants.factorDiffuse = s_color_EntityTerrain;        break; }
+                    case F_MeshGeometry_EntityTriangle:     { materialConstants.factorAmbient = s_color_EntityTriangle;       break; }
+                    case F_MeshGeometry_EntityQuad:         { materialConstants.factorAmbient = s_color_EntityQuad;           break; }
+                    case F_MeshGeometry_EntityGrid:         { materialConstants.factorAmbient = s_color_EntityGrid;           break; }
+                    case F_MeshGeometry_EntityCircle:       { materialConstants.factorAmbient = s_color_EntityCircle;         break; }
+                    case F_MeshGeometry_EntityAABB:         { materialConstants.factorAmbient = s_color_EntityAABB;           break; }
+                    case F_MeshGeometry_EntitySphere:       { materialConstants.factorAmbient = s_color_EntitySphere;         break; }
+                    case F_MeshGeometry_EntityGeoSphere:    { materialConstants.factorAmbient = s_color_EntityGeoSphere;      break; }
+                    case F_MeshGeometry_EntityCylinder:     { materialConstants.factorAmbient = s_color_EntityCylinder;       break; }
+                    case F_MeshGeometry_EntityCapsule:      { materialConstants.factorAmbient = s_color_EntityCapsule;        break; }
+                    case F_MeshGeometry_EntityCone:         { materialConstants.factorAmbient = s_color_EntityCone;           break; }
+                    case F_MeshGeometry_EntityTorus:        { materialConstants.factorAmbient = s_color_EntityTorus;          break; }
+                    case F_MeshGeometry_EntitySkyBox:       { materialConstants.factorAmbient = s_color_EntitySkyBox;         break; }
+                    case F_MeshGeometry_EntitySkyDome:      { materialConstants.factorAmbient = s_color_EntitySkyDome;        break; }
+                    case F_MeshGeometry_EntityTerrain:      { materialConstants.factorAmbient = s_color_EntityTerrain;        break; }
                 }
                 //Texture VS
                 {

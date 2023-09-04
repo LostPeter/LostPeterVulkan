@@ -2284,11 +2284,17 @@ namespace LostPeterFoundation
     public:
         FMeshCreateParam_EntityTriangle()
             : FMeshCreateParam(false, false)
+            , vTop( 0.0f,  0.5f, 0.0f)
+            , vLeft(-0.5f, -0.5f, 0.0f)
+            , vRight( 0.5f, -0.5f, 0.0f)
         {
 
         }
         FMeshCreateParam_EntityTriangle(bool _flipV, bool _rightHand)
             : FMeshCreateParam(_flipV, _rightHand)
+            , vTop( 0.0f,  0.5f, 0.0f)
+            , vLeft(-0.5f, -0.5f, 0.0f)
+            , vRight( 0.5f, -0.5f, 0.0f)
         {
 
         }
@@ -2301,14 +2307,26 @@ namespace LostPeterFoundation
         static String ms_nameType;
 
     public:
+        FVector3 vTop;
+        FVector3 vLeft;
+        FVector3 vRight; 
 
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d_%d", 
+            return FUtilString::FormatString("%s_%d_%d_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
                                              flipV ? 1 : 0,
-                                             rightHand ? 1 : 0);
+                                             rightHand ? 1 : 0,
+                                             this->vTop.x,
+                                             this->vTop.y,
+                                             this->vTop.z,
+                                             this->vLeft.x,
+                                             this->vLeft.y,
+                                             this->vLeft.z,
+                                             this->vRight.x,
+                                             this->vRight.y,
+                                             this->vRight.z);
         }
 
         virtual bool ParseParam(const String& nameParam);
@@ -2326,7 +2344,7 @@ namespace LostPeterFoundation
             , height(1)
             , depth(0)
         {
-
+            RefreshVertexPos();
         }
         FMeshCreateParam_EntityQuad(float _centerX,
                                     float _centerY,
@@ -2342,7 +2360,7 @@ namespace LostPeterFoundation
             , height(_height)
             , depth(_depth)
         {
-
+            RefreshVertexPos();
         }
         virtual ~FMeshCreateParam_EntityQuad()
         {
@@ -2359,10 +2377,15 @@ namespace LostPeterFoundation
         float height;
         float depth;
 
+        FVector3 vLeftTop; 
+        FVector3 vLeftBottom; 
+        FVector3 vRightBottom; 
+        FVector3 vRightTop; 
+
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%f", 
+            return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%f-%f-[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
                                              flipV ? 1 : 0, 
                                              rightHand ? 1 : 0,
@@ -2370,10 +2393,24 @@ namespace LostPeterFoundation
                                              centerY,
                                              width,
                                              height,
-                                             depth);
+                                             depth,
+                                             this->vLeftTop.x,
+                                             this->vLeftTop.y,
+                                             this->vLeftTop.z,
+                                             this->vLeftBottom.x,
+                                             this->vLeftBottom.y,
+                                             this->vLeftBottom.z,
+                                             this->vRightBottom.x,
+                                             this->vRightBottom.y,
+                                             this->vRightBottom.z,
+                                             this->vRightTop.x,
+                                             this->vRightTop.y,
+                                             this->vRightTop.z);
         }
 
         virtual bool ParseParam(const String& nameParam);
+
+        virtual void RefreshVertexPos();
     };
 
     //EntityGrid
@@ -2387,7 +2424,7 @@ namespace LostPeterFoundation
             , m(10)
             , n(10)
         {
-
+            RefreshVertexPos();
         }
         FMeshCreateParam_EntityGrid(float _width,
                                     float _height,
@@ -2401,7 +2438,7 @@ namespace LostPeterFoundation
             , m(_m)
             , n(_n)
         {
-
+            RefreshVertexPos();
         }
         virtual ~FMeshCreateParam_EntityGrid()
         {
@@ -2417,20 +2454,39 @@ namespace LostPeterFoundation
         uint32 m;
         uint32 n;
 
+        FVector3 vLeftTop; 
+        FVector3 vLeftBottom; 
+        FVector3 vRightBottom; 
+        FVector3 vRightTop; 
+
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d-%d-%f-%f-%u-%u", 
+            return FUtilString::FormatString("%s_%d-%d-%f-%f-%u-%u-[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
                                              flipV ? 1 : 0, 
                                              rightHand ? 1 : 0,
                                              width,
                                              height,
                                              m,
-                                             n);
+                                             n,
+                                             this->vLeftTop.x,
+                                             this->vLeftTop.y,
+                                             this->vLeftTop.z,
+                                             this->vLeftBottom.x,
+                                             this->vLeftBottom.y,
+                                             this->vLeftBottom.z,
+                                             this->vRightBottom.x,
+                                             this->vRightBottom.y,
+                                             this->vRightBottom.z,
+                                             this->vRightTop.x,
+                                             this->vRightTop.y,
+                                             this->vRightTop.z);
         }
 
         virtual bool ParseParam(const String& nameParam);
+
+        virtual void RefreshVertexPos();
     };
 
     //EntityCircle
@@ -2441,6 +2497,9 @@ namespace LostPeterFoundation
             : FMeshCreateParam(false, false)
             , radius(0.5f)
             , segment(100)
+            , vCenter(0, 0, 0)
+            , vDir(1, 0, 0)
+            , vUp(0, 0, -1)
         {
 
         }
@@ -2451,6 +2510,9 @@ namespace LostPeterFoundation
             : FMeshCreateParam(_flipV, _rightHand)
             , radius(_radius)
             , segment(_segment)
+            , vCenter(0, 0, 0)
+            , vDir(1, 0, 0)
+            , vUp(0, 0, -1)
         {
 
         }
@@ -2466,15 +2528,28 @@ namespace LostPeterFoundation
         float radius;
         uint32 segment;
 
+        FVector3 vCenter; 
+        FVector3 vDir;
+        FVector3 vUp;
+
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d-%d-%f-%u", 
+            return FUtilString::FormatString("%s_%d-%d-%f-%u-[%f_%f_%f]-[%f_%f_%f]-[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
                                              flipV ? 1 : 0, 
                                              rightHand ? 1 : 0,
                                              radius,
-                                             segment);
+                                             segment,
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vDir.x,
+                                             this->vDir.y,
+                                             this->vDir.z,
+                                             this->vUp.x,
+                                             this->vUp.y,
+                                             this->vUp.z);
         }
 
         virtual bool ParseParam(const String& nameParam);
@@ -2490,8 +2565,11 @@ namespace LostPeterFoundation
             , height(1)
             , depth(1)
             , numSubdivisions(0)
+            , vCenter(0, 0, 0)
         {
-
+            vExtent.x = width / 2;
+            vExtent.y = height / 2;
+            vExtent.z = depth / 2;
         }
         FMeshCreateParam_EntityAABB(float _width,
                                     float _height,
@@ -2504,8 +2582,11 @@ namespace LostPeterFoundation
             , height(_height)
             , depth(_depth)
             , numSubdivisions(_numSubdivisions)
+            , vCenter(0, 0, 0)
         {
-
+            vExtent.x = width / 2;
+            vExtent.y = height / 2;
+            vExtent.z = depth / 2;
         }
         virtual ~FMeshCreateParam_EntityAABB()
         {
@@ -2521,17 +2602,26 @@ namespace LostPeterFoundation
         float depth;
         uint32 numSubdivisions;
 
+        FVector3 vCenter;
+        FVector3 vExtent;
+
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u", 
+            return FUtilString::FormatString("%s_%d-%d-%f-%f-%f-%u-[%f_%f_%f]_[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
                                              flipV ? 1 : 0, 
                                              rightHand ? 1 : 0,
                                              width,
                                              height,
                                              depth,
-                                             numSubdivisions);
+                                             numSubdivisions,
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z,
+                                             this->vExtent.x,
+                                             this->vExtent.y,
+                                             this->vExtent.z);
         }
 
         virtual bool ParseParam(const String& nameParam);
@@ -2546,6 +2636,7 @@ namespace LostPeterFoundation
             , radius(0.5f)
             , sliceCount(30)
             , stackCount(30)
+            , vCenter(0, 0, 0)
         {
 
         }
@@ -2558,6 +2649,7 @@ namespace LostPeterFoundation
             , radius(_radius)
             , sliceCount(_sliceCount)
             , stackCount(_stackCount)
+            , vCenter(0, 0, 0)
         {
 
         }
@@ -2574,16 +2666,21 @@ namespace LostPeterFoundation
         uint32 sliceCount;
         uint32 stackCount;
 
+        FVector3 vCenter;
+
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d-%d-%f-%u-%u", 
+            return FUtilString::FormatString("%s_%d-%d-%f-%u-%u-[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
                                              flipV ? 1 : 0, 
                                              rightHand ? 1 : 0,
                                              radius,
                                              sliceCount,
-                                             stackCount);
+                                             stackCount,
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z);
         }
 
         virtual bool ParseParam(const String& nameParam);
@@ -2597,6 +2694,7 @@ namespace LostPeterFoundation
             : FMeshCreateParam(false, false)
             , radius(0.5f)
             , numSubdivisions(5)
+            , vCenter(0, 0, 0)
         {
 
         }
@@ -2607,6 +2705,7 @@ namespace LostPeterFoundation
             : FMeshCreateParam(_flipV, _rightHand)
             , radius(_radius)
             , numSubdivisions(_numSubdivisions)
+            , vCenter(0, 0, 0)
         {
 
         }
@@ -2622,15 +2721,20 @@ namespace LostPeterFoundation
         float radius;
         uint32 numSubdivisions;
 
+        FVector3 vCenter;
+
     public:
         virtual String ToName()
         {
-            return FUtilString::FormatString("%s_%d-%d-%f-%u", 
+            return FUtilString::FormatString("%s_%d-%d-%f-%u-[%f_%f_%f]", 
                                              ms_nameType.c_str(), 
                                              flipV ? 1 : 0, 
                                              rightHand ? 1 : 0,
                                              radius,
-                                             numSubdivisions);
+                                             numSubdivisions,
+                                             this->vCenter.x,
+                                             this->vCenter.y,
+                                             this->vCenter.z);
         }
 
         virtual bool ParseParam(const String& nameParam);
@@ -3666,10 +3770,16 @@ namespace LostPeterFoundation
         static void CreateEntityTriangle(FMeshData& meshData, FMeshCreateParam_EntityTriangle* pParam)
         {
             CreateEntityTriangle(meshData, 
+                                 pParam->vTop,
+                                 pParam->vLeft,
+                                 pParam->vRight,
                                  pParam->flipV, 
                                  pParam->rightHand);
         }
         static void CreateEntityTriangle(FMeshData& meshData, 
+                                         const FVector3& vTop,
+                                         const FVector3& vLeft,
+                                         const FVector3& vRight,
                                          bool flipV,
                                          bool rightHand);
 

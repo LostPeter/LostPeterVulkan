@@ -652,20 +652,45 @@ namespace LostPeterFoundation
         if (!Points4_OnPlane(pt1, pt2, pt3, pt4, fEpsilon))
             return false;
 
-        FVector3 vOri = ptLine1;
-        FVector3 vDir = Normalize(ptLine2 - ptLine1);
-        FVector3 vOA = pt1 - vOri;
-        FVector3 vOB = pt2 - vOri;
-        FVector3 vOC = pt3 - vOri;
-        FVector3 vCross = FMath::Cross(vOC, vDir);
-        float fDotV = FMath::Dot(vOA, vCross);
-        if (fDotV >= 0.0f)
+        FVector3 vConcave; 
+        FVector3 aV[4] = 
         {
-            return GetIntersectionPointFromLineTriangle(ptLine1, ptLine2, pt1, pt2, pt3, vIntersection, fEpsilon);
-        }
+            pt1, pt2, pt3, pt4
+        };
+        int nIndex = 0;
+        if (Quad_IsConcave(pt1, pt2, pt3, pt4, vConcave, nIndex, fEpsilon))
+        {
+            FVector3& t11 = aV[nIndex%4]; nIndex++;
+            FVector3& t12 = aV[nIndex%4]; nIndex++;
+            FVector3& t13 = aV[nIndex%4]; 
+
+            FVector3& t21 = aV[nIndex%4]; nIndex++;
+            FVector3& t22 = aV[nIndex%4]; nIndex++;
+            FVector3& t23 = aV[nIndex%4]; 
+
+            if (GetIntersectionPointFromLineTriangle(ptLine1, ptLine2, t11, t12, t13, vIntersection, fEpsilon) ||
+                GetIntersectionPointFromLineTriangle(ptLine1, ptLine2, t21, t22, t23, vIntersection, fEpsilon))
+            {
+                return true;
+            }
+        }   
         else
         {
-            return GetIntersectionPointFromLineTriangle(ptLine1, ptLine2, pt4, pt1, pt3, vIntersection, fEpsilon);
+            FVector3 vOri = ptLine1;
+            FVector3 vDir = Normalize(ptLine2 - ptLine1);
+            FVector3 vOA = pt1 - vOri;
+            FVector3 vOB = pt2 - vOri;
+            FVector3 vOC = pt3 - vOri;
+            FVector3 vCross = FMath::Cross(vOC, vDir);
+            float fDotV = FMath::Dot(vOA, vCross);
+            if (fDotV >= 0.0f)
+            {
+                return GetIntersectionPointFromLineTriangle(ptLine1, ptLine2, pt1, pt2, pt3, vIntersection, fEpsilon);
+            }
+            else
+            {
+                return GetIntersectionPointFromLineTriangle(ptLine1, ptLine2, pt4, pt1, pt3, vIntersection, fEpsilon);
+            }
         }
         return false;
     }
