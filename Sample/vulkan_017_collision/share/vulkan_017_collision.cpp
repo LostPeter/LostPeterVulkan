@@ -1607,20 +1607,20 @@ FColor Vulkan_017_Collision::s_color_FlatCapsule3D = FColor(1, 1, 1, 1);        
 FColor Vulkan_017_Collision::s_color_FlatCone3D = FColor(1, 1, 1, 1);               //FlatCone3D
 FColor Vulkan_017_Collision::s_color_FlatTorus3D = FColor(1, 1, 1, 1);              //FlatTorus3D
 //Entity
-FColor Vulkan_017_Collision::s_color_EntityTriangle = FColor(1, 1, 1, 1);           //EntityTriangle
-FColor Vulkan_017_Collision::s_color_EntityQuad = FColor(1, 1, 1, 1);               //EntityQuad
-FColor Vulkan_017_Collision::s_color_EntityGrid = FColor(1, 1, 1, 1);               //EntityGrid
-FColor Vulkan_017_Collision::s_color_EntityCircle = FColor(1, 1, 1, 1);             //EntityCircle
-FColor Vulkan_017_Collision::s_color_EntityAABB = FColor(1, 1, 1, 1);               //EntityAABB
-FColor Vulkan_017_Collision::s_color_EntitySphere = FColor(1, 1, 1, 1);             //EntitySphere
-FColor Vulkan_017_Collision::s_color_EntityGeoSphere = FColor(1, 1, 1, 1);          //EntityGeoSphere
-FColor Vulkan_017_Collision::s_color_EntityCylinder = FColor(1, 1, 1, 1);           //EntityCylinder
-FColor Vulkan_017_Collision::s_color_EntityCapsule = FColor(1, 1, 1, 1);            //EntityCapsule
-FColor Vulkan_017_Collision::s_color_EntityCone = FColor(1, 1, 1, 1);               //EntityCone
-FColor Vulkan_017_Collision::s_color_EntityTorus = FColor(1, 1, 1, 1);              //EntityTorus
-FColor Vulkan_017_Collision::s_color_EntitySkyBox = FColor(1, 1, 1, 1);             //EntitySkyBox
-FColor Vulkan_017_Collision::s_color_EntitySkyDome = FColor(1, 1, 1, 1);            //EntitySkyDome
-FColor Vulkan_017_Collision::s_color_EntityTerrain = FColor(1, 1, 1, 1);            //EntityTerrain
+FColor Vulkan_017_Collision::s_color_EntityTriangle = FColor(0.5, 0.5, 0.5, 1);     //EntityTriangle
+FColor Vulkan_017_Collision::s_color_EntityQuad = FColor(0.5, 0.5, 0.5, 1);         //EntityQuad
+FColor Vulkan_017_Collision::s_color_EntityGrid = FColor(0.5, 0.5, 0.5, 1);         //EntityGrid
+FColor Vulkan_017_Collision::s_color_EntityCircle = FColor(0.5, 0.5, 0.5, 1);       //EntityCircle
+FColor Vulkan_017_Collision::s_color_EntityAABB = FColor(0.5, 0.5, 0.5, 1);         //EntityAABB
+FColor Vulkan_017_Collision::s_color_EntitySphere = FColor(0.5, 0.5, 0.5, 1);       //EntitySphere
+FColor Vulkan_017_Collision::s_color_EntityGeoSphere = FColor(0.5, 0.5, 0.5, 1);    //EntityGeoSphere
+FColor Vulkan_017_Collision::s_color_EntityCylinder = FColor(0.5, 0.5, 0.5, 1);     //EntityCylinder
+FColor Vulkan_017_Collision::s_color_EntityCapsule = FColor(0.5, 0.5, 0.5, 1);      //EntityCapsule
+FColor Vulkan_017_Collision::s_color_EntityCone = FColor(0.5, 0.5, 0.5, 1);         //EntityCone
+FColor Vulkan_017_Collision::s_color_EntityTorus = FColor(0.5, 0.5, 0.5, 1);        //EntityTorus
+FColor Vulkan_017_Collision::s_color_EntitySkyBox = FColor(0.5, 0.5, 0.5, 1);       //EntitySkyBox
+FColor Vulkan_017_Collision::s_color_EntitySkyDome = FColor(0.5, 0.5, 0.5, 1);      //EntitySkyDome
+FColor Vulkan_017_Collision::s_color_EntityTerrain = FColor(0.5, 0.5, 0.5, 1);      //EntityTerrain
 
 
 Vulkan_017_Collision::Vulkan_017_Collision(int width, int height, String name)
