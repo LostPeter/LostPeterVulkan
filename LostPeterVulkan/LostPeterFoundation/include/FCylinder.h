@@ -20,36 +20,55 @@ namespace LostPeterFoundation
 	{
 	public:
 		LP_FORCEINLINE FCylinder()
+			: m_vCenterTop(0, 1, 0)
+			, m_vCenterBottom(0, 0, 0)
+			, m_fRadius(0.5f)
 		{
-
+			Refresh();
 		}
-		LP_FORCEINLINE FCylinder(FVector3& vCenter, FVector3& vX, FVector3& vY, FVector3& vZ, float fHalfHeight, float fRad)
-			: m_vCenter(vCenter)
-			, m_vAxisX(vX)
-			, m_vAxisY(vY)
-			, m_vAxisZ(vZ)
-			, m_fHalfLenY(fHalfHeight)
-			, m_fRadius(fRad)
+		LP_FORCEINLINE FCylinder(const FVector3& vCenterTop, const FVector3& vCenterBottom, float fRadius)
+			: m_vCenterTop(vCenterTop)
+			, m_vCenterBottom(vCenterBottom)
+			, m_fRadius(fRadius)
 		{
-
+			Refresh();
 		}
-		LP_FORCEINLINE FCylinder(const FCylinder& src) 
-			: m_vCenter(src.m_vCenter),
-			m_vAxisX(src.m_vAxisX),
-			m_vAxisY(src.m_vAxisY),
-			m_vAxisZ(src.m_vAxisZ)
+		LP_FORCEINLINE FCylinder(const FCylinder& cylinder) 
+			: m_vCenterTop(cylinder.m_vCenterTop)
+			, m_vCenterBottom(cylinder.m_vCenterBottom)
+			, m_fRadius(cylinder.m_fRadius)
 		{
-			m_fHalfLenY	= src.m_fHalfLenY;
-			m_fRadius	= src.m_fRadius;
+			Refresh();
 		}
 
 	public:
-		FVector3 m_vCenter;		
-		FVector3 m_vAxisX;		
-		FVector3 m_vAxisY;		
-		FVector3 m_vAxisZ;		
-		float m_fHalfLenY;	
+		FVector3 m_vCenterTop;
+		FVector3 m_vCenterBottom;
 		float m_fRadius;		
+
+		FVector3 m_vCenter;
+		FVector3 m_vDirection;
+		float m_fHeight;
+
+	public:
+		LP_FORCEINLINE const FVector3& GetCenterTop() const { return m_vCenterTop; }
+        LP_FORCEINLINE FVector3& GetCenterTop() { return m_vCenterTop; } 
+		LP_FORCEINLINE const FVector3& GetCenterBottom() const { return m_vCenterBottom; }
+        LP_FORCEINLINE FVector3& GetCenterBottom() { return m_vCenterBottom; } 
+        LP_FORCEINLINE float GetRadius() const { return m_fRadius; }
+
+		FVector3 GetCenter() const;
+		LP_FORCEINLINE FVector3 GetDirection() const { return m_vCenterTop - m_vCenterBottom; }
+		FVector3 GetDirectionNormalized() const;
+		float GetHeight() const;
+
+	public:
+		void Refresh()
+		{
+			this->m_vCenter = GetCenter();
+			this->m_vDirection = GetDirectionNormalized();
+			this->m_fHeight = GetHeight();
+		}
 
 	public:
 		bool Intersects_Point(const FVector3& point) const;

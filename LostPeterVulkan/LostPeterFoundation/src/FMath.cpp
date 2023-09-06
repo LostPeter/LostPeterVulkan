@@ -574,9 +574,8 @@ namespace LostPeterFoundation
     float FMath::GetDistanceFromPointLine(const FVector3& pt, const FVector3& ptLine11, const FVector3& ptLine12)
     {
         FVector3 v12 = ptLine12 - ptLine11;
-        FVector3 vPL1 = ptLine11 - pt;
-        FVector3 vPL2 = ptLine11 - pt;
-        return Length(Cross(vPL1, v12)) / Distance(ptLine11, ptLine12);
+        FVector3 vL1P =  pt - ptLine11;
+        return Length(Cross(vL1P, v12)) / Distance(ptLine11, ptLine12);
     }
     float FMath::GetDistanceFromPointLine(const FVector3& pt, const FSegment& segment)
     {

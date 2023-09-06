@@ -14,15 +14,32 @@
 
 namespace LostPeterFoundation
 {
+	FVector3 FCylinder::GetCenter() const
+	{
+		return (m_vCenterTop + m_vCenterBottom) / 2.0f;
+	}
+	FVector3 FCylinder::GetDirectionNormalized() const
+	{
+		return FMath::Normalize(m_vCenterTop - m_vCenterBottom);
+	}
+	float FCylinder::GetHeight() const
+	{
+		return FMath::Distance(m_vCenterTop, m_vCenterBottom);
+	}
+
     bool FCylinder::Intersects_Point(const FVector3& point) const
 	{
-		if (FMath::Abs(point.y) > m_fHalfLenY ||
-			FMath::Abs(point.x) > m_fRadius ||
-			FMath::Abs(point.z) > m_fRadius)
+		float fDistance = FMath::GetDistanceFromPointLine(point, m_vCenterBottom, m_vCenterTop);
+		if (fDistance > m_fRadius)
 		{
-            return false;
-        }
-
+			return false;
+		}
+		float fHeight = GetHeight();
+		FVector3 vDir = GetDirectionNormalized();
+		FVector3 vCenter = GetCenter();
+		float fDot = FMath::Dot((point - vCenter), vDir);
+		if (FMath::Abs(fDot) > fHeight / 2.0f)
+			return false;
 		return true;	
 	}
 
