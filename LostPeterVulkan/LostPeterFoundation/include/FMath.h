@@ -897,18 +897,20 @@ namespace LostPeterFoundation
 
     public:
         //Ray - Shape
-        static std::pair<bool, float> Intersects_RaySegment(const FRay& ray, const FVector3& s, const FVector3& e, float fEpsilon = FMath::ms_fEpsilon);
-        static std::pair<bool, float> Intersects_RaySegment(const FRay& ray, const FSegment& segment, float fEpsilon = FMath::ms_fEpsilon);
-        static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, float fEpsilon = FMath::ms_fEpsilon);
-        static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FTriangle& triangle, float fEpsilon = FMath::ms_fEpsilon);
-        static std::pair<bool, float> Intersects_RayQuad(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& d, float fEpsilon = FMath::ms_fEpsilon);
-        static std::pair<bool, float> Intersects_RayQuad(const FRay& ray, const FQuad& quad, float fEpsilon = FMath::ms_fEpsilon);
-        static std::pair<bool, float> Intersects_RayPlane(const FRay& ray, const FPlane& plane, float fEpsilon = FMath::ms_fEpsilon);
+        static std::pair<bool, float> Intersects_RaySegment(const FRay& ray, const FVector3& s, const FVector3& e, FVector3& vIntersection, float fEpsilon = FMath::ms_fEpsilon);
+        static std::pair<bool, float> Intersects_RaySegment(const FRay& ray, const FSegment& segment, FVector3& vIntersection, float fEpsilon = FMath::ms_fEpsilon);
+        static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, FVector3& vIntersection, float fEpsilon = FMath::ms_fEpsilon);
+        static std::pair<bool, float> Intersects_RayTriangle(const FRay& ray, const FTriangle& triangle, FVector3& vIntersection, float fEpsilon = FMath::ms_fEpsilon);
+        static std::pair<bool, float> Intersects_RayQuad(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& d, FVector3& vIntersection, float fEpsilon = FMath::ms_fEpsilon);
+        static std::pair<bool, float> Intersects_RayQuad(const FRay& ray, const FQuad& quad, FVector3& vIntersection, float fEpsilon = FMath::ms_fEpsilon);
+        static std::pair<bool, float> Intersects_RayPlane(const FRay& ray, const FPlane& plane, FVector3& vIntersection, float fEpsilon = FMath::ms_fEpsilon);
         static std::pair<bool, float> Intersects_RayPlaneVector(const FRay& ray, const FPlaneVector& aPlanes, bool normalIsOutside);
         static std::pair<bool, float> Intersects_RayPlaneList(const FRay& ray, FPlaneList& listPlanes, bool normalIsOutside);
-        static std::pair<bool, float> Intersects_RayCircle(const FRay& ray, const FPlane& plane, const FVector3& center, float radius, float fEpsilon = FMath::ms_fEpsilon);
-        static std::pair<bool, float> Intersects_RayCircle(const FRay& ray, const FCircle& circle, float fEpsilon = FMath::ms_fEpsilon);
+        static std::pair<bool, float> Intersects_RayCircle(const FRay& ray, const FPlane& plane, const FVector3& center, float radius, FVector3& vIntersection, float fEpsilon = FMath::ms_fEpsilon);
+        static std::pair<bool, float> Intersects_RayCircle(const FRay& ray, const FCircle& circle, FVector3& vIntersection, float fEpsilon = FMath::ms_fEpsilon);
         static std::pair<bool, float> Intersects_RayAABB(const FRay& ray, const FAABB& aabb);
+        static bool Intersects_RayAABB(const FRay& ray, const FAABB& aabb, float* d1, float* d2);
+        static bool Intersects_RayAABB(const FRay& ray, const FAABB& aabb, FVector3& vIntersection1, FVector3& vIntersection2);
         static std::pair<bool, float> Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool discardInside = true);		
         static std::pair<bool, float> Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool discardInside = true);	
         static std::pair<bool, float> Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool discardInside = true);
@@ -922,6 +924,7 @@ namespace LostPeterFoundation
         static bool Intersects_RayTriangle_Test(const FRay& ray, const FTriangle& triangle, float fEpsilon = FMath::ms_fEpsilon);
         static bool Intersects_RayQuad_Test(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& d, float fEpsilon = FMath::ms_fEpsilon);
         static bool Intersects_RayQuad_Test(const FRay& ray, const FQuad& quad, float fEpsilon = FMath::ms_fEpsilon);
+        static bool Intersects_RayPlane_Test(const FRay& ray, const FPlane& plane, float fEpsilon = FMath::ms_fEpsilon);
         static bool Intersects_RayCircle_Test(const FRay& ray, const FPlane& plane, const FVector3& center, float radius, float fEpsilon = FMath::ms_fEpsilon);
         static bool Intersects_RayCircle_Test(const FRay& ray, const FCircle& circle, float fEpsilon = FMath::ms_fEpsilon);
         static bool Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb);

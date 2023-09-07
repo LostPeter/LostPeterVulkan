@@ -1413,51 +1413,47 @@ namespace LostPeterFoundation
     }
 
     //Ray - Shape
-    std::pair<bool, float>FMath::Intersects_RaySegment(const FRay& ray, const FVector3& s, const FVector3& e, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    std::pair<bool, float>FMath::Intersects_RaySegment(const FRay& ray, const FVector3& s, const FVector3& e, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        FVector3 vIntersection;
         if (GetIntersectionPointFromRayLine(ray, s, e, vIntersection, fEpsilon))
         {
             return std::pair<bool, float>(true, ray.GetDistance(vIntersection));
         }
         return std::pair<bool, float>(false, 0);
     }
-    std::pair<bool, float> FMath::Intersects_RaySegment(const FRay& ray, const FSegment& segment, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    std::pair<bool, float> FMath::Intersects_RaySegment(const FRay& ray, const FSegment& segment, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Intersects_RaySegment(ray, segment.m_pt0, segment.m_pt1, fEpsilon);
+        return Intersects_RaySegment(ray, segment.m_pt0, segment.m_pt1, vIntersection, fEpsilon);
     }
 
-    std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        FVector3 vIntersection;
         if (GetIntersectionPointFromRayTriangle(ray, a, b, c, vIntersection, fEpsilon))
         {
             return std::pair<bool, float>(true, ray.GetDistance(vIntersection));
         }
         return std::pair<bool, float>(false, 0);
     }
-    std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FTriangle& triangle, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    std::pair<bool, float> FMath::Intersects_RayTriangle(const FRay& ray, const FTriangle& triangle, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Intersects_RayTriangle(ray, triangle.m_pt0, triangle.m_pt1, triangle.m_pt2, fEpsilon);
+        return Intersects_RayTriangle(ray, triangle.m_pt0, triangle.m_pt1, triangle.m_pt2, vIntersection, fEpsilon);
     }
 
-    std::pair<bool, float> FMath::Intersects_RayQuad(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& d, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    std::pair<bool, float> FMath::Intersects_RayQuad(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& d, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        FVector3 vIntersection;
         if (GetIntersectionPointFromRayQuad(ray, a, b, c, d, vIntersection, fEpsilon))
         {
             return std::pair<bool, float>(true, ray.GetDistance(vIntersection));
         }
         return std::pair<bool, float>(false, 0);
     }
-    std::pair<bool, float> FMath::Intersects_RayQuad(const FRay& ray, const FQuad& quad, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    std::pair<bool, float> FMath::Intersects_RayQuad(const FRay& ray, const FQuad& quad, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Intersects_RayQuad(ray, quad.m_pt0, quad.m_pt1, quad.m_pt2, quad.m_pt3, fEpsilon);
+        return Intersects_RayQuad(ray, quad.m_pt0, quad.m_pt1, quad.m_pt2, quad.m_pt3, vIntersection, fEpsilon);
     }
 
-    std::pair<bool, float> FMath::Intersects_RayPlane(const FRay& ray, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    std::pair<bool, float> FMath::Intersects_RayPlane(const FRay& ray, const FPlane& plane, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        FVector3 vIntersection;
         if (GetIntersectionPointFromRayPlane(ray, plane, vIntersection, fEpsilon))
         {
             return std::pair<bool, float>(true, ray.GetDistance(vIntersection));
@@ -1543,14 +1539,13 @@ namespace LostPeterFoundation
         return ret;
     }
 
-    std::pair<bool, float> FMath::Intersects_RayCircle(const FRay& ray, const FPlane& plane, const FVector3& center, float radius, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    std::pair<bool, float> FMath::Intersects_RayCircle(const FRay& ray, const FPlane& plane, const FVector3& center, float radius, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         FCircle circle(plane.GetNormal(), plane.GetDistance(), center, radius);
-        return Intersects_RayCircle(ray, circle, fEpsilon);
+        return Intersects_RayCircle(ray, circle, vIntersection, fEpsilon);
     }
-    std::pair<bool, float> FMath::Intersects_RayCircle(const FRay& ray, const FCircle& circle, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    std::pair<bool, float> FMath::Intersects_RayCircle(const FRay& ray, const FCircle& circle, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        FVector3 vIntersection;
         if (GetIntersectionPointFromRayCircle(ray, circle, vIntersection, fEpsilon))
         {
             return std::pair<bool, float>(true, ray.GetDistance(vIntersection));
@@ -1569,23 +1564,23 @@ namespace LostPeterFoundation
         FVector3 hitpoint;
         const FVector3& min = aabb.GetMin();
         const FVector3& max = aabb.GetMax();
-        const FVector3& rayorig = ray.GetOrigin();
-        const FVector3& raydir = ray.GetDirection();
+        const FVector3& rayOrig = ray.GetOrigin();
+        const FVector3& rayDir = ray.GetDirection();
 
         //1> Check origin inside first
-        if (FMath::IsGreat(rayorig, min) &&  FMath::IsLess(rayorig, max))
+        if (FMath::IsGreat(rayOrig, min) &&  FMath::IsLess(rayOrig, max))
         {
             return std::pair<bool, float>(true, 0);
         }
 
         //2> Check each face in turn, only check closest 3
         // Min x
-        if (rayorig.x <= min.x && raydir.x > 0)
+        if (rayOrig.x <= min.x && rayDir.x > 0)
         {
-            t = (min.x - rayorig.x) / raydir.x;
+            t = (min.x - rayOrig.x) / rayDir.x;
             if (t >= 0)
             {
-                hitpoint = rayorig + raydir * t;
+                hitpoint = rayOrig + rayDir * t;
                 if (hitpoint.y >= min.y && hitpoint.y <= max.y &&
                     hitpoint.z >= min.z && hitpoint.z <= max.z &&
                     (!hit || t < lowt))
@@ -1596,12 +1591,12 @@ namespace LostPeterFoundation
             }
         }
         // Max x
-        if (rayorig.x >= max.x && raydir.x < 0)
+        if (rayOrig.x >= max.x && rayDir.x < 0)
         {
-            t = (max.x - rayorig.x) / raydir.x;
+            t = (max.x - rayOrig.x) / rayDir.x;
             if (t >= 0)
             {
-                hitpoint = rayorig + raydir * t;
+                hitpoint = rayOrig + rayDir * t;
                 if (hitpoint.y >= min.y && hitpoint.y <= max.y &&
                     hitpoint.z >= min.z && hitpoint.z <= max.z &&
                     (!hit || t < lowt))
@@ -1612,12 +1607,12 @@ namespace LostPeterFoundation
             }
         }
         // Min y
-        if (rayorig.y <= min.y && raydir.y > 0)
+        if (rayOrig.y <= min.y && rayDir.y > 0)
         {
-            t = (min.y - rayorig.y) / raydir.y;
+            t = (min.y - rayOrig.y) / rayDir.y;
             if (t >= 0)
             {
-                hitpoint = rayorig + raydir * t;
+                hitpoint = rayOrig + rayDir * t;
                 if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
                     hitpoint.z >= min.z && hitpoint.z <= max.z &&
                     (!hit || t < lowt))
@@ -1628,12 +1623,12 @@ namespace LostPeterFoundation
             }
         }
         // Max y
-        if (rayorig.y >= max.y && raydir.y < 0)
+        if (rayOrig.y >= max.y && rayDir.y < 0)
         {
-            t = (max.y - rayorig.y) / raydir.y;
+            t = (max.y - rayOrig.y) / rayDir.y;
             if (t >= 0)
             {
-                hitpoint = rayorig + raydir * t;
+                hitpoint = rayOrig + rayDir * t;
                 if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
                     hitpoint.z >= min.z && hitpoint.z <= max.z &&
                     (!hit || t < lowt))
@@ -1644,12 +1639,12 @@ namespace LostPeterFoundation
             }
         }
         // Min z
-        if (rayorig.z <= min.z && raydir.z > 0)
+        if (rayOrig.z <= min.z && rayDir.z > 0)
         {
-            t = (min.z - rayorig.z) / raydir.z;
+            t = (min.z - rayOrig.z) / rayDir.z;
             if (t >= 0)
             {
-                hitpoint = rayorig + raydir * t;
+                hitpoint = rayOrig + rayDir * t;
                 if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
                     hitpoint.y >= min.y && hitpoint.y <= max.y &&
                     (!hit || t < lowt))
@@ -1660,12 +1655,12 @@ namespace LostPeterFoundation
             }
         }
         // Max z
-        if (rayorig.z >= max.z && raydir.z < 0)
+        if (rayOrig.z >= max.z && rayDir.z < 0)
         {
-            t = (max.z - rayorig.z) / raydir.z;
+            t = (max.z - rayOrig.z) / rayDir.z;
             if (t >= 0)
             {
-                hitpoint = rayorig + raydir * t;
+                hitpoint = rayOrig + rayDir * t;
                 if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
                     hitpoint.y >= min.y && hitpoint.y <= max.y &&
                     (!hit || t < lowt))
@@ -1679,21 +1674,151 @@ namespace LostPeterFoundation
         return std::pair<bool, float>(hit, lowt);
     }
 
+    static bool s_CheckAxis(const FVector3& rayOrig, 
+                            const FVector3& rayDir,
+                            const FVector3& min,
+                            const FVector3& max,
+                            int32 iAxis,
+                            float& start,
+                            float& end)
+    {
+        float denom = 1 / rayDir[iAxis];
+        float newstart = (min[iAxis] - rayOrig[iAxis]) * denom;	
+        float newend = (max[iAxis] - rayOrig[iAxis]) * denom;
+        if (newstart > newend) 
+            std::swap(newstart, newend);		
+        if (newstart > end || newend < start) 
+            return false;		
+        if (newstart > start) 
+            start = newstart;					
+        if (newend < end) 
+            end = newend;
+        return true;
+    }
+    bool FMath::Intersects_RayAABB(const FRay& ray, const FAABB& aabb, float* d1, float* d2)
+    {
+         if (!aabb.IsValid())
+            return false;
+
+        const FVector3& min = aabb.GetMin();
+        const FVector3& max = aabb.GetMax();
+        const FVector3& rayOrig = ray.GetOrigin();
+        const FVector3& rayDir = ray.GetDirection();
+
+        FVector3 absDir;
+        absDir[0] = FMath::Abs(rayDir[0]);
+        absDir[1] = FMath::Abs(rayDir[1]);
+        absDir[2] = FMath::Abs(rayDir[2]);
+
+        // Sort the axis, ensure check minimise floating error axis first
+        int32 imax = 0, imid = 1, imin = 2;
+        if (absDir[0] < absDir[2])
+        {
+            imax = 2;
+            imin = 0;
+        }
+        if (absDir[1] < absDir[imin])
+        {
+            imid = imin;
+            imin = 1;
+        }
+        else if (absDir[1] > absDir[imax])
+        {
+            imid = imax;
+            imax = 1;
+        }
+
+        float start = 0;
+        float end = FMath::ms_fPosInfinity;
+        // Check each axis in turn
+        if (!s_CheckAxis(rayOrig,
+                         rayDir,
+                         min,
+                         max,
+                         imax,
+                         start,
+                         end))
+        {
+            return false;
+        }
+
+        if (absDir[imid] < FMath::ms_fEpsilon)
+        {
+            // Parallel with middle and minimise axis, check bounds only
+            if (rayOrig[imid] < min[imid] || rayOrig[imid] > max[imid] ||
+                rayOrig[imin] < min[imin] || rayOrig[imin] > max[imin])
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (!s_CheckAxis(rayOrig,
+                             rayDir,
+                             min,
+                             max,
+                             imid,
+                             start,
+                             end))
+            {
+                return false;
+            }
+
+            if (absDir[imin] < FMath::ms_fEpsilon)
+            {
+                // Parallel with minimise axis, check bounds only
+                if (rayOrig[imin] < min[imin] || rayOrig[imin] > max[imin])
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (!s_CheckAxis(rayOrig,
+                                 rayDir,
+                                 min,
+                                 max,
+                                 imin,
+                                 start,
+                                 end))
+                {
+                    return false;
+                }
+            }
+        }
+
+        if (d1) *d1 = start;
+        if (d2) *d2 = end;
+        return true;
+    }
+    bool FMath::Intersects_RayAABB(const FRay& ray, const FAABB& aabb, FVector3& vIntersection1, FVector3& vIntersection2)
+    { 
+        float start,end;
+        if (Intersects_RayAABB(ray, aabb, &start, &end))
+        {
+            vIntersection1 = ray.GetPoint(start);
+            vIntersection2 = ray.GetPoint(end);
+            return true;
+        }
+        return false;
+    }
+
     std::pair<bool, float> FMath::Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool discardInside /*= true*/)		
     {
-        const FVector3& raydir = ray.GetDirection();
-        const FVector3& rayorig = ray.GetOrigin() - sphere.GetCenter();
+        const FVector3& rayOrig = ray.GetOrigin() - sphere.GetCenter();
+        const FVector3& rayDir = ray.GetDirection();
         float radius = sphere.GetRadius();
 
-        if (FMath::Length2(rayorig) <= radius * radius && discardInside)
+        float distance = FMath::Length2(rayOrig);
+        if (discardInside && distance <= radius * radius)
         {
-            return std::pair<bool, float>(true, 0);
+            return std::pair<bool, float>(true, distance);
         }
 
         // ie t = (-b +/- sqrt(b*b + 4ac)) / 2a
-        float a = FMath::Dot(raydir, raydir);
-        float b = 2 * FMath::Dot(rayorig, raydir);
-        float c = FMath::Dot(rayorig, rayorig) - radius * radius;
+        float a = FMath::Dot(rayDir, rayDir);
+        float b = 2 * FMath::Dot(rayOrig, rayDir);
+        float c = FMath::Dot(rayOrig, rayOrig) - radius * radius;
 
         float d = (b*b) - (4 * a * c);
         if (d < 0)
@@ -1711,6 +1836,10 @@ namespace LostPeterFoundation
 
     std::pair<bool, float> FMath::Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool discardInside /*= true*/)
     {   
+        if (discardInside)
+        {
+            return std::pair<bool, float>(true, 0);
+        }
 
         return std::pair<bool, float>(true, 0);
     }
@@ -1736,45 +1865,67 @@ namespace LostPeterFoundation
 
     bool FMath::Intersects_RaySegment_Test(const FRay& ray, const FVector3& s, const FVector3& e, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        std::pair<bool, float> ret = Intersects_RaySegment(ray, s, e, fEpsilon);
+        FVector3 vIntersection;
+        std::pair<bool, float> ret = Intersects_RaySegment(ray, s, e, vIntersection, fEpsilon);
         return ret.first;
     }
     bool FMath::Intersects_RaySegment_Test(const FRay& ray, const FSegment& segment, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        std::pair<bool, float> ret = Intersects_RaySegment(ray, segment, fEpsilon);
+        FVector3 vIntersection;
+        std::pair<bool, float> ret = Intersects_RaySegment(ray, segment, vIntersection, fEpsilon);
         return ret.first;
     }
     bool FMath::Intersects_RayTriangle_Test(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        std::pair<bool, float> ret = Intersects_RayTriangle(ray, a, b, c, fEpsilon);
+        FVector3 vIntersection;
+        std::pair<bool, float> ret = Intersects_RayTriangle(ray, a, b, c, vIntersection, fEpsilon);
         return ret.first;
     }
     bool FMath::Intersects_RayTriangle_Test(const FRay& ray, const FTriangle& triangle, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Intersects_RayTriangle_Test(ray, triangle, fEpsilon);
+        FVector3 vIntersection;
+        std::pair<bool, float> ret = Intersects_RayTriangle(ray, triangle, vIntersection, fEpsilon);
+        return ret.first;
     }
     bool FMath::Intersects_RayQuad_Test(const FRay& ray, const FVector3& a, const FVector3& b, const FVector3& c, const FVector3& d, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        std::pair<bool, float> ret = Intersects_RayQuad(ray, a, b, c, d, fEpsilon);
+        FVector3 vIntersection;
+        std::pair<bool, float> ret = Intersects_RayQuad(ray, a, b, c, d, vIntersection, fEpsilon);
         return ret.first;
     }
     bool FMath::Intersects_RayQuad_Test(const FRay& ray, const FQuad& quad, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Intersects_RayQuad_Test(ray, quad, fEpsilon);
+        FVector3 vIntersection;
+        std::pair<bool, float> ret = Intersects_RayQuad(ray, quad, vIntersection, fEpsilon);
+        return ret.first;
+    }
+    bool FMath::Intersects_RayPlane_Test(const FRay& ray, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        FVector3 vIntersection;
+        std::pair<bool, float> ret = Intersects_RayPlane(ray, plane, vIntersection, fEpsilon);
+        return ret.first;
     }
     bool FMath::Intersects_RayCircle_Test(const FRay& ray, const FPlane& plane, const FVector3& center, float radius, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        std::pair<bool, float> ret = Intersects_RayCircle(ray, plane, center, radius, fEpsilon);
+        FVector3 vIntersection;
+        std::pair<bool, float> ret = Intersects_RayCircle(ray, plane, center, radius, vIntersection, fEpsilon);
         return ret.first;
     }
     bool FMath::Intersects_RayCircle_Test(const FRay& ray, const FCircle& circle, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Intersects_RayCircle_Test(ray, circle, fEpsilon);
+        FVector3 vIntersection;
+        std::pair<bool, float> ret = Intersects_RayCircle(ray, circle, vIntersection, fEpsilon);
+        return ret.first;
     }
     bool FMath::Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb)
     {   
         std::pair<bool, float> ret = Intersects_RayAABB(ray, aabb);
         return ret.first;
+    }
+    bool FMath::Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb, float* d1, float* d2)
+    {
+        bool ret = Intersects_RayAABB(ray, aabb, d1, d2);
+        return ret;
     }
     bool FMath::Intersects_RaySphere_Test(const FRay& ray, const FSphere& sphere, bool discardInside /*= true*/)
     {
@@ -1801,126 +1952,6 @@ namespace LostPeterFoundation
         std::pair<bool, float> ret = Intersects_RayTorus(ray, torus, discardInside);
         return ret.first;
     }   
-
-
-    static bool s_CheckAxis(const FVector3& rayorig, 
-                            const FVector3& raydir,
-                            const FVector3& min,
-                            const FVector3& max,
-                            int32 iAxis,
-                            float& start,
-                            float& end)
-    {
-        float denom = 1 / raydir[iAxis];
-        float newstart = (min[iAxis] - rayorig[iAxis]) * denom;	
-        float newend = (max[iAxis] - rayorig[iAxis]) * denom;
-        if (newstart > newend) 
-            std::swap(newstart, newend);		
-        if (newstart > end || newend < start) 
-            return false;		
-        if (newstart > start) 
-            start = newstart;					
-        if (newend < end) 
-            end = newend;
-        return true;
-    }
-    bool FMath::Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb, float* d1, float* d2)
-    {
-        if (!aabb.IsValid())
-            return false;
-
-        const FVector3& min = aabb.GetMin();
-        const FVector3& max = aabb.GetMax();
-        const FVector3& rayorig = ray.GetOrigin();
-        const FVector3& raydir = ray.GetDirection();
-
-        FVector3 absDir;
-        absDir[0] = FMath::Abs(raydir[0]);
-        absDir[1] = FMath::Abs(raydir[1]);
-        absDir[2] = FMath::Abs(raydir[2]);
-
-        // Sort the axis, ensure check minimise floating error axis first
-        int32 imax = 0, imid = 1, imin = 2;
-        if (absDir[0] < absDir[2])
-        {
-            imax = 2;
-            imin = 0;
-        }
-        if (absDir[1] < absDir[imin])
-        {
-            imid = imin;
-            imin = 1;
-        }
-        else if (absDir[1] > absDir[imax])
-        {
-            imid = imax;
-            imax = 1;
-        }
-
-        float start = 0;
-        float end = FMath::ms_fPosInfinity;
-        // Check each axis in turn
-        if (!s_CheckAxis(rayorig,
-                         raydir,
-                         min,
-                         max,
-                         imax,
-                         start,
-                         end))
-        {
-            return false;
-        }
-
-        if (absDir[imid] < FMath::ms_fEpsilon)
-        {
-            // Parallel with middle and minimise axis, check bounds only
-            if (rayorig[imid] < min[imid] || rayorig[imid] > max[imid] ||
-                rayorig[imin] < min[imin] || rayorig[imin] > max[imin])
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (!s_CheckAxis(rayorig,
-                             raydir,
-                             min,
-                             max,
-                             imid,
-                             start,
-                             end))
-            {
-                return false;
-            }
-
-            if (absDir[imin] < FMath::ms_fEpsilon)
-            {
-                // Parallel with minimise axis, check bounds only
-                if (rayorig[imin] < min[imin] || rayorig[imin] > max[imin])
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (!s_CheckAxis(rayorig,
-                                 raydir,
-                                 min,
-                                 max,
-                                 imin,
-                                 start,
-                                 end))
-                {
-                    return false;
-                }
-            }
-        }
-
-        if (d1) *d1 = start;
-        if (d2) *d2 = end;
-
-        return true;
-    }
 
     //Sphere - Shape
     bool FMath::Intersects_SpherePlane(const FSphere& sphere, const FPlane& plane)

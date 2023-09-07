@@ -25,7 +25,8 @@ namespace LostPeterFoundation
 
     std::pair<bool, float> FRay::Intersects_Plane(const FPlane& plane) const
     {
-        return FMath::Intersects_RayPlane(*this, plane);
+        FVector3 vIntersection;
+        return FMath::Intersects_RayPlane(*this, plane, vIntersection);
     }
     std::pair<bool, float> FRay::Intersects_PlaneBoundedVolume(const FPlaneBoundedVolume& planeBoundedVolume) const
     {
