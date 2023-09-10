@@ -602,6 +602,20 @@ namespace LostPeterFoundation
         return GetDistanceFromLine2(segment1.m_pt0, segment1.m_pt1, segment2.m_pt0, segment2.m_pt1);
     }
 
+    //Intersection Point Perpendicular To Line/Plane
+    void FMath::GetIntersectionPointPerpendicularToLine(const FVector3& pt, const FVector3& ptLine1, const FVector3& ptLine2, FVector3& vIntersection)
+    {
+        FVector3 v12 = Normalize(ptLine2 - ptLine1);
+        FVector3 vDir = pt - ptLine1;
+        vIntersection = ptLine1 + v12 * Dot(vDir, v12);
+    }
+    void FMath::GetIntersectionPointPerpendicularToPlane(const FVector3& pt, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, FVector3& vIntersection)
+    {
+        FVector3 vNormal = GetNormal3FromPoints3(pt1, pt2, pt3);
+        FVector3 vDir = pt - pt1;
+        vIntersection = pt - vNormal * Dot(vNormal, vDir);
+    }
+
     //Intersection Point From Line2
     bool FMath::GetIntersectionPointFromLine2(const FVector3& ptLine11, const FVector3& ptLine12, const FVector3& ptLine21, const FVector3& ptLine22, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
@@ -609,9 +623,15 @@ namespace LostPeterFoundation
         if (LineLine_NotIntersect(ptLine11, ptLine12, ptLine21, ptLine22, true, fEpsilon))
             return false;
         
-        vIntersection = ptLine11;
-        float t = ((ptLine11.x - ptLine21.x)*(ptLine21.y - ptLine22.y) - (ptLine11.y - ptLine21.y)*(ptLine21.x - ptLine22.x)) / 
-                  ((ptLine11.x - ptLine12.x)*(ptLine21.y - ptLine22.y) - (ptLine11.y - ptLine12.y)*(ptLine21.x - ptLine22.x));
+        //method 1:
+        // float d1 = GetDistanceFromPointLine(ptLine11, ptLine21, ptLine22);
+        // float d2 = GetDistanceFromPointLine(ptLine12, ptLine21, ptLine22);
+        // vIntersection = ptLine11;
+        // float t = d1 / (d1 + d2);
+
+        //method 2: Length(Cross(ptLine21 - ptLine11, ptLine22 - ptLine21)) / Length(Cross(ptLine12 - ptLine11, ptLine22 - ptLine21))
+        float t = ((ptLine21.x - ptLine11.x)*(ptLine22.y - ptLine21.y) - (ptLine21.y - ptLine11.y)*(ptLine22.x - ptLine21.x)) / 
+                  ((ptLine12.x - ptLine11.x)*(ptLine22.y - ptLine21.y) - (ptLine12.y - ptLine11.y)*(ptLine22.x - ptLine21.x));
         vIntersection.x += (ptLine12.x - ptLine11.x) * t;
         vIntersection.y += (ptLine12.y - ptLine11.y) * t;
         vIntersection.z += (ptLine12.z - ptLine11.z) * t;
@@ -631,13 +651,13 @@ namespace LostPeterFoundation
             return false;
 
         FVector3 vNormal = GetNormal3WithoutNormalizeFromPoints3(pt1, pt2, pt3);
-        vIntersection = vNormal;
+        //t = Dot(pt1 - ptLine1, vNormal)/Dot(ptLine2 - ptLine1, vNormal)
         float t = (vNormal.x * (pt1.x - ptLine1.x) + vNormal.y * (pt1.y - ptLine1.y) + vNormal.z * (pt1.z - ptLine1.z)) /
                   (vNormal.x * (ptLine2.x - ptLine1.x) + vNormal.y * (ptLine2.y - ptLine1.y) + vNormal.z * (ptLine2.z - ptLine1.z));
         vIntersection.x = ptLine1.x + (ptLine2.x - ptLine1.x) * t;
         vIntersection.y = ptLine1.y + (ptLine2.y - ptLine1.y) * t;
         vIntersection.z = ptLine1.z + (ptLine2.z - ptLine1.z) * t;
-
+        
         return true;
     }
     bool FMath::GetIntersectionPointFromLineTriangle(const FSegment& segment, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, FVector3& vIntersection, float fEpsilon /*= FMath::ms_fEpsilon*/)
@@ -852,6 +872,31 @@ namespace LostPeterFoundation
             return true;
         return false;
     }
+    bool FMath::Direction_IsSameDirection(const FVector3& vDir1, const FVector3& vDir2)
+    {
+        if (Dot(vDir1, vDir2) >= 0)
+            return true;
+        return false;
+    }
+
+    //Point - InPlaneNormalSide
+    bool FMath::Point_InPlaneNormalSide(const FVector3& pt, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
+    {
+        FVector3 vNormal = GetNormal3WithoutNormalizeFromPoints3(pt1, pt2, pt3);
+        FVector3 vDir = pt1 - pt;
+        if (!Direction_IsSameDirection(vNormal, vDir))
+            return true;
+        return false;
+    }
+    bool FMath::Point_InPlaneNormalSide(const FVector3& pt, const FPlane& plane)
+    {
+        FVector3 vNormal = Normalize(plane.GetNormal());
+        FVector3 ptPlane = vNormal * plane.GetDistance();
+        FVector3 vDir = ptPlane - pt;
+        if (!Direction_IsSameDirection(vNormal, vDir))
+            return true;
+        return false;
+    }
 
     //Point - InLine
     bool FMath::Points3_InLine(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, float fEpsilon /*= FMath::ms_fEpsilon*/)
@@ -897,9 +942,9 @@ namespace LostPeterFoundation
     //Point - OnPlane
     bool FMath::Points4_OnPlane(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, const FVector3& pt4, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        FVector3 vNormal = GetNormal3WithoutNormalizeFromPoints3(pt1, pt2, pt3);
-        FVector3 v14 = GetDirectionWithoutNormalizeFromPoint2(pt1, pt4);
-        float fDot = Dot(Normalize(vNormal), Normalize(v14));
+        FVector3 vNormal = GetNormal3FromPoints3(pt1, pt2, pt3);
+        FVector3 v14 = Normalize(pt4 - pt1);
+        float fDot = Dot(vNormal, v14);
         if (Zero(fDot, fEpsilon))
             return true;
         return false;
@@ -1805,49 +1850,96 @@ namespace LostPeterFoundation
 
     std::pair<bool, float> FMath::Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool discardInside /*= true*/)		
     {
-        const FVector3& rayOrig = ray.GetOrigin() - sphere.GetCenter();
+        const FVector3& sphereCenter = sphere.GetCenter();
+        float sphereRadius = sphere.GetRadius();
+        const FVector3& rayPos = ray.GetOrigin();
         const FVector3& rayDir = ray.GetDirection();
-        float radius = sphere.GetRadius();
+        const FVector3& rayOrig = rayPos - sphereCenter;
 
-        float distance = FMath::Length2(rayOrig);
-        if (discardInside && distance <= radius * radius)
+        float disRay2Center = FMath::Length2(rayOrig);
+        if (discardInside && disRay2Center <= sphereRadius * sphereRadius)
         {
-            return std::pair<bool, float>(true, distance);
+            //float dis = GetDistanceFromPointLine(sphereCenter, rayPos, ray.GetPoint(sphereRadius * 4));
+            return std::pair<bool, float>(true, disRay2Center + sphereRadius);
         }
 
         // ie t = (-b +/- sqrt(b*b + 4ac)) / 2a
         float a = FMath::Dot(rayDir, rayDir);
         float b = 2 * FMath::Dot(rayOrig, rayDir);
-        float c = FMath::Dot(rayOrig, rayOrig) - radius * radius;
+        float c = FMath::Dot(rayOrig, rayOrig) - sphereRadius * sphereRadius;
 
         float d = (b*b) - (4 * a * c);
         if (d < 0)
         {
             return std::pair<bool, float>(false, 0);
         }
+        
+        float t = ( -b - FMath::Sqrt(d) ) / (2 * a);
+        if (t < 0)
+            t = ( -b + FMath::Sqrt(d) ) / (2 * a);
+        return std::pair<bool, float>(true, t);
+    }
+    int FMath::Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool& isInside, float* d1, float* d2)
+    {
+        const FVector3& rayOrig = ray.GetOrigin() - sphere.GetCenter();
+        const FVector3& rayDir = ray.GetDirection();
+        float radius = sphere.GetRadius();
+
+        float distance = FMath::Length2(rayOrig);
+        if (distance <= radius * radius)
+        {
+
+             
+        }
         else
         {
-            float t = ( -b - FMath::Sqrt(d) ) / (2 * a);
-            if (t < 0)
-                t = ( -b + FMath::Sqrt(d) ) / (2 * a);
-            return std::pair<bool, float>(true, t);
+
         }
+
+        return 0;
+    }
+    int FMath::Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
+    {
+        float start,end;
+        int nNum = Intersects_RaySphere(ray, sphere, isInside, &start, &end);
+        if (nNum > 0)
+        {
+            vIntersection1 = ray.GetPoint(start);
+            vIntersection2 = ray.GetPoint(end);
+        }
+        else
+        {
+            vIntersection1 = FMath::ms_v3Zero;
+            vIntersection2 = FMath::ms_v3Zero;
+        }
+        return nNum;
     }
 
     std::pair<bool, float> FMath::Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool discardInside /*= true*/)
-    {   
-        if (discardInside)
-        {
-            return std::pair<bool, float>(true, 0);
-        }
-
+    {
         return std::pair<bool, float>(true, 0);
     }
-
+    int FMath::Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool& isInside, float* d1, float* d2)
+    {
+        return 0;
+    }
+    int FMath::Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
+    {   
+        return 0;
+    }
+    
     std::pair<bool, float> FMath::Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool discardInside /*= true*/)
     {
 
         return std::pair<bool, float>(true, 0);
+    }
+    int FMath::Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool& isInside, float* d1, float* d2)
+    {
+        return 0;
+    }
+    int FMath::Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
+    {   
+        return 0;
     }
 
     std::pair<bool, float> FMath::Intersects_RayCone(const FRay& ray, const FCone& cone, bool discardInside /*= true*/)
@@ -1855,13 +1947,28 @@ namespace LostPeterFoundation
 
         return std::pair<bool, float>(true, 0);
     }
+    int FMath::Intersects_RayCone(const FRay& ray, const FCone& cone, bool& isInside, float* d1, float* d2)
+    {
+        return 0;
+    }
+    int FMath::Intersects_RayCone(const FRay& ray, const FCone& cone, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
+    {   
+        return 0;
+    }
 
     std::pair<bool, float> FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool discardInside /*= true*/)
     {
 
         return std::pair<bool, float>(true, 0);
     }
-
+    int FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2)
+    {
+        return 0;
+    }
+    int FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
+    {   
+        return 0;
+    }
 
     bool FMath::Intersects_RaySegment_Test(const FRay& ray, const FVector3& s, const FVector3& e, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
@@ -1924,34 +2031,77 @@ namespace LostPeterFoundation
     }
     bool FMath::Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb, float* d1, float* d2)
     {
-        bool ret = Intersects_RayAABB(ray, aabb, d1, d2);
-        return ret;
+        return Intersects_RayAABB(ray, aabb, d1, d2);
+    }
+    bool FMath::Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb, FVector3& vIntersection1, FVector3& vIntersection2)
+    {
+        return Intersects_RayAABB(ray, aabb, vIntersection1, vIntersection2);
     }
     bool FMath::Intersects_RaySphere_Test(const FRay& ray, const FSphere& sphere, bool discardInside /*= true*/)
     {
         std::pair<bool, float> ret = Intersects_RaySphere(ray, sphere, discardInside);
         return ret.first;
     }
+    bool FMath::Intersects_RaySphere_Test(const FRay& ray, const FSphere& sphere, bool& isInside, float* d1, float* d2)
+    {
+        return Intersects_RaySphere(ray, sphere, isInside, d1, d2) > 0;
+    }
+    bool FMath::Intersects_RaySphere_Test(const FRay& ray, const FSphere& sphere, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
+    {
+        return Intersects_RaySphere(ray, sphere, isInside, vIntersection1, vIntersection2) > 0;
+    }
     bool FMath::Intersects_RayCylinder_Test(const FRay& ray, const FCylinder& cylinder, bool discardInside /*= true*/)
     {
         std::pair<bool, float> ret = Intersects_RayCylinder(ray, cylinder, discardInside);
         return ret.first;
+    }
+    bool FMath::Intersects_RayCylinder_Test(const FRay& ray, const FCylinder& cylinder, bool& isInside, float* d1, float* d2)
+    {
+        return Intersects_RayCylinder(ray, cylinder, isInside, d1, d2) > 0;
+    }   
+    bool FMath::Intersects_RayCylinder_Test(const FRay& ray, const FCylinder& cylinder, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
+    {
+        return Intersects_RayCylinder(ray, cylinder, isInside, vIntersection1, vIntersection2) > 0;
     }
     bool FMath::Intersects_RayCapsule_Test(const FRay& ray, const FCapsule& capsule, bool discardInside /*= true*/)
     {
         std::pair<bool, float> ret = Intersects_RayCapsule(ray, capsule, discardInside);
         return ret.first;
     }
+    bool FMath::Intersects_RayCapsule_Test(const FRay& ray, const FCapsule& capsule, bool& isInside, float* d1, float* d2)
+    {
+        return Intersects_RayCapsule(ray, capsule, isInside, d1, d2) > 0;
+    }   
+    bool FMath::Intersects_RayCapsule_Test(const FRay& ray, const FCapsule& capsule, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
+    {
+        return Intersects_RayCapsule(ray, capsule, isInside, vIntersection1, vIntersection2) > 0;
+    }
     bool FMath::Intersects_RayCone_Test(const FRay& ray, const FCone& cone, bool discardInside /*= true*/)
     {
         std::pair<bool, float> ret = Intersects_RayCone(ray, cone, discardInside);
         return ret.first;
+    }
+    bool FMath::Intersects_RayCone_Test(const FRay& ray, const FCone& cone, bool& isInside, float* d1, float* d2)
+    {
+        return Intersects_RayCone(ray, cone, isInside, d1, d2) > 0;
+    }   
+    bool FMath::Intersects_RayCone_Test(const FRay& ray, const FCone& cone, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
+    {
+        return Intersects_RayCone(ray, cone, isInside, vIntersection1, vIntersection2) > 0;
     }
     bool FMath::Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool discardInside /*= true*/)
     {
         std::pair<bool, float> ret = Intersects_RayTorus(ray, torus, discardInside);
         return ret.first;
     }   
+    bool FMath::Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2)
+    {
+        return Intersects_RayTorus(ray, torus, isInside, d1, d2) > 0;
+    }   
+    bool FMath::Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
+    {
+        return Intersects_RayTorus(ray, torus, isInside, vIntersection1, vIntersection2) > 0;
+    }
 
     //Sphere - Shape
     bool FMath::Intersects_SpherePlane(const FSphere& sphere, const FPlane& plane)

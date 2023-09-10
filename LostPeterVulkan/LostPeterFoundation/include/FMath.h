@@ -673,6 +673,10 @@ namespace LostPeterFoundation
         static float GetDistanceFromLine2(const FVector3& ptLine11, const FVector3& ptLine12, const FVector3& ptLine21, const FVector3& ptLine22);
         static float GetDistanceFromLine2(const FSegment& segment1, const FSegment& segment2);
 
+        //Intersection Point Perpendicular To Line/Plane
+        static void GetIntersectionPointPerpendicularToLine(const FVector3& pt, const FVector3& ptLine1, const FVector3& ptLine2, FVector3& vIntersection);
+        static void GetIntersectionPointPerpendicularToPlane(const FVector3& pt, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, FVector3& vIntersection);
+
         //Intersection Point From Line2
         static bool GetIntersectionPointFromLine2(const FVector3& ptLine11, const FVector3& ptLine12, const FVector3& ptLine21, const FVector3& ptLine22, FVector3& vIntersection, float fEpsilon = FMath::ms_fEpsilon);
         static bool GetIntersectionPointFromLine2(const FSegment& segment1, const FSegment& segment2, FVector3& vIntersection, float fEpsilon = FMath::ms_fEpsilon);
@@ -720,6 +724,11 @@ namespace LostPeterFoundation
         //Direction - IsParallel/IsPerpendicular
         static bool Direction_IsParallel(const FVector3& vDir1, const FVector3& vDir2, float fEpsilon = FMath::ms_fEpsilon);
         static bool Direction_IsPerpendicular(const FVector3& vDir1, const FVector3& vDir2, float fEpsilon = FMath::ms_fEpsilon);
+        static bool Direction_IsSameDirection(const FVector3& vDir1, const FVector3& vDir2);
+
+        //Point - InPlaneNormalSide
+        static bool Point_InPlaneNormalSide(const FVector3& pt, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+        static bool Point_InPlaneNormalSide(const FVector3& pt, const FPlane& plane);
 
         //Point - InLine
         static bool Points3_InLine(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, float fEpsilon = FMath::ms_fEpsilon);
@@ -911,11 +920,21 @@ namespace LostPeterFoundation
         static std::pair<bool, float> Intersects_RayAABB(const FRay& ray, const FAABB& aabb);
         static bool Intersects_RayAABB(const FRay& ray, const FAABB& aabb, float* d1, float* d2);
         static bool Intersects_RayAABB(const FRay& ray, const FAABB& aabb, FVector3& vIntersection1, FVector3& vIntersection2);
-        static std::pair<bool, float> Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool discardInside = true);		
-        static std::pair<bool, float> Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool discardInside = true);	
+        static std::pair<bool, float> Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool discardInside = true);
+        static int Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool& isInside, float* d1, float* d2);
+        static int Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
+        static std::pair<bool, float> Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool discardInside = true);
+        static int Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool& isInside, float* d1, float* d2);
+        static int Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);	
         static std::pair<bool, float> Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool discardInside = true);
+        static int Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool& isInside, float* d1, float* d2);
+        static int Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
         static std::pair<bool, float> Intersects_RayCone(const FRay& ray, const FCone& cone, bool discardInside = true);
+        static int Intersects_RayCone(const FRay& ray, const FCone& cone, bool& isInside, float* d1, float* d2);
+        static int Intersects_RayCone(const FRay& ray, const FCone& cone, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
         static std::pair<bool, float> Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool discardInside = true);
+        static int Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2);
+        static int Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
 
         //Ray - Shape Test
         static bool Intersects_RaySegment_Test(const FRay& ray, const FVector3& s, const FVector3& e, float fEpsilon = FMath::ms_fEpsilon);
@@ -929,11 +948,22 @@ namespace LostPeterFoundation
         static bool Intersects_RayCircle_Test(const FRay& ray, const FCircle& circle, float fEpsilon = FMath::ms_fEpsilon);
         static bool Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb);
         static bool	Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb, float* d1, float* d2);
+        static bool	Intersects_RayAABB_Test(const FRay& ray, const FAABB& aabb, FVector3& vIntersection1, FVector3& vIntersection2);
         static bool Intersects_RaySphere_Test(const FRay& ray, const FSphere& sphere, bool discardInside = true);
+        static bool Intersects_RaySphere_Test(const FRay& ray, const FSphere& sphere, bool& isInside, float* d1, float* d2);
+        static bool Intersects_RaySphere_Test(const FRay& ray, const FSphere& sphere, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
         static bool Intersects_RayCylinder_Test(const FRay& ray, const FCylinder& cylinder, bool discardInside = true);
+        static bool Intersects_RayCylinder_Test(const FRay& ray, const FCylinder& cylinder, bool& isInside, float* d1, float* d2);
+        static bool Intersects_RayCylinder_Test(const FRay& ray, const FCylinder& cylinder, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
         static bool Intersects_RayCapsule_Test(const FRay& ray, const FCapsule& capsule, bool discardInside = true);
+        static bool Intersects_RayCapsule_Test(const FRay& ray, const FCapsule& capsule, bool& isInside, float* d1, float* d2);
+        static bool Intersects_RayCapsule_Test(const FRay& ray, const FCapsule& capsule, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
         static bool Intersects_RayCone_Test(const FRay& ray, const FCone& cone, bool discardInside = true);
+        static bool Intersects_RayCone_Test(const FRay& ray, const FCone& cone, bool& isInside, float* d1, float* d2);
+        static bool Intersects_RayCone_Test(const FRay& ray, const FCone& cone, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
         static bool Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool discardInside = true);
+        static bool Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2);
+        static bool Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
         
         //Sphere - Shape
         static bool	Intersects_SpherePlane(const FSphere& sphere, const FPlane& plane);
