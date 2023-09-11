@@ -1603,14 +1603,15 @@ namespace LostPeterFoundation
         if (!aabb.IsValid()) 
             return std::pair<bool, float>(false, 0);
 
-        float lowt = 0.0f;
-        float t;
-        bool hit = false;
-        FVector3 hitpoint;
         const FVector3& min = aabb.GetMin();
         const FVector3& max = aabb.GetMax();
         const FVector3& rayOrig = ray.GetOrigin();
         const FVector3& rayDir = ray.GetDirection();
+
+        bool isHit = false;
+        float tLow = 0.0f;
+        float t;
+        FVector3 vHit;
 
         //1> Check origin inside first
         if (FMath::IsGreat(rayOrig, min) &&  FMath::IsLess(rayOrig, max))
@@ -1625,13 +1626,13 @@ namespace LostPeterFoundation
             t = (min.x - rayOrig.x) / rayDir.x;
             if (t >= 0)
             {
-                hitpoint = rayOrig + rayDir * t;
-                if (hitpoint.y >= min.y && hitpoint.y <= max.y &&
-                    hitpoint.z >= min.z && hitpoint.z <= max.z &&
-                    (!hit || t < lowt))
+                vHit = rayOrig + rayDir * t;
+                if (vHit.y >= min.y && vHit.y <= max.y &&
+                    vHit.z >= min.z && vHit.z <= max.z &&
+                    (!isHit || t < tLow))
                 {
-                    hit = true;
-                    lowt = t;
+                    isHit = true;
+                    tLow = t;
                 }
             }
         }
@@ -1641,13 +1642,13 @@ namespace LostPeterFoundation
             t = (max.x - rayOrig.x) / rayDir.x;
             if (t >= 0)
             {
-                hitpoint = rayOrig + rayDir * t;
-                if (hitpoint.y >= min.y && hitpoint.y <= max.y &&
-                    hitpoint.z >= min.z && hitpoint.z <= max.z &&
-                    (!hit || t < lowt))
+                vHit = rayOrig + rayDir * t;
+                if (vHit.y >= min.y && vHit.y <= max.y &&
+                    vHit.z >= min.z && vHit.z <= max.z &&
+                    (!isHit || t < tLow))
                 {
-                    hit = true;
-                    lowt = t;
+                    isHit = true;
+                    tLow = t;
                 }
             }
         }
@@ -1657,13 +1658,13 @@ namespace LostPeterFoundation
             t = (min.y - rayOrig.y) / rayDir.y;
             if (t >= 0)
             {
-                hitpoint = rayOrig + rayDir * t;
-                if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
-                    hitpoint.z >= min.z && hitpoint.z <= max.z &&
-                    (!hit || t < lowt))
+                vHit = rayOrig + rayDir * t;
+                if (vHit.x >= min.x && vHit.x <= max.x &&
+                    vHit.z >= min.z && vHit.z <= max.z &&
+                    (!isHit || t < tLow))
                 {
-                    hit = true;
-                    lowt = t;
+                    isHit = true;
+                    tLow = t;
                 }
             }
         }
@@ -1673,13 +1674,13 @@ namespace LostPeterFoundation
             t = (max.y - rayOrig.y) / rayDir.y;
             if (t >= 0)
             {
-                hitpoint = rayOrig + rayDir * t;
-                if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
-                    hitpoint.z >= min.z && hitpoint.z <= max.z &&
-                    (!hit || t < lowt))
+                vHit = rayOrig + rayDir * t;
+                if (vHit.x >= min.x && vHit.x <= max.x &&
+                    vHit.z >= min.z && vHit.z <= max.z &&
+                    (!isHit || t < tLow))
                 {
-                    hit = true;
-                    lowt = t;
+                    isHit = true;
+                    tLow = t;
                 }
             }
         }
@@ -1689,13 +1690,13 @@ namespace LostPeterFoundation
             t = (min.z - rayOrig.z) / rayDir.z;
             if (t >= 0)
             {
-                hitpoint = rayOrig + rayDir * t;
-                if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
-                    hitpoint.y >= min.y && hitpoint.y <= max.y &&
-                    (!hit || t < lowt))
+                vHit = rayOrig + rayDir * t;
+                if (vHit.x >= min.x && vHit.x <= max.x &&
+                    vHit.y >= min.y && vHit.y <= max.y &&
+                    (!isHit || t < tLow))
                 {
-                    hit = true;
-                    lowt = t;
+                    isHit = true;
+                    tLow = t;
                 }
             }
         }
@@ -1705,18 +1706,18 @@ namespace LostPeterFoundation
             t = (max.z - rayOrig.z) / rayDir.z;
             if (t >= 0)
             {
-                hitpoint = rayOrig + rayDir * t;
-                if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
-                    hitpoint.y >= min.y && hitpoint.y <= max.y &&
-                    (!hit || t < lowt))
+                vHit = rayOrig + rayDir * t;
+                if (vHit.x >= min.x && vHit.x <= max.x &&
+                    vHit.y >= min.y && vHit.y <= max.y &&
+                    (!isHit || t < tLow))
                 {
-                    hit = true;
-                    lowt = t;
+                    isHit = true;
+                    tLow = t;
                 }
             }
         }
 
-        return std::pair<bool, float>(hit, lowt);
+        return std::pair<bool, float>(isHit, tLow);
     }
 
     static bool s_CheckAxis(const FVector3& rayOrig, 
