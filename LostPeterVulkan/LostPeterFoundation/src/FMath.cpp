@@ -1860,44 +1860,61 @@ namespace LostPeterFoundation
         float disRay2Center = FMath::Length2(rayOrig);
         if (discardInside && disRay2Center <= sphereRadius * sphereRadius)
         {
-            //float dis = GetDistanceFromPointLine(sphereCenter, rayPos, ray.GetPoint(sphereRadius * 4));
-            return std::pair<bool, float>(true, disRay2Center + sphereRadius);
+            return std::pair<bool, float>(true, 0);
         }
 
-        // ie t = (-b +/- sqrt(b*b + 4ac)) / 2a
+        //t = (-b +/- sqrt(b*b + 4ac)) / 2a
         float a = FMath::Dot(rayDir, rayDir);
         float b = 2 * FMath::Dot(rayOrig, rayDir);
         float c = FMath::Dot(rayOrig, rayOrig) - sphereRadius * sphereRadius;
 
-        float d = (b*b) - (4 * a * c);
+        float d = b*b - 4*a*c;
         if (d < 0)
         {
             return std::pair<bool, float>(false, 0);
         }
         
-        float t = ( -b - FMath::Sqrt(d) ) / (2 * a);
+        float t = (-b - FMath::Sqrt(d)) / (2*a);
         if (t < 0)
-            t = ( -b + FMath::Sqrt(d) ) / (2 * a);
+            t = (-b + FMath::Sqrt(d)) / (2*a);
         return std::pair<bool, float>(true, t);
     }
     int FMath::Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool& isInside, float* d1, float* d2)
     {
-        const FVector3& rayOrig = ray.GetOrigin() - sphere.GetCenter();
+        *d1 = 0.0f;
+        *d2 = 0.0f;
+
+        const FVector3& sphereCenter = sphere.GetCenter();
+        float sphereRadius = sphere.GetRadius();
+        const FVector3& rayPos = ray.GetOrigin();
         const FVector3& rayDir = ray.GetDirection();
-        float radius = sphere.GetRadius();
+        const FVector3& rayOrig = rayPos - sphereCenter;
 
-        float distance = FMath::Length2(rayOrig);
-        if (distance <= radius * radius)
+        //t = (-b +/- sqrt(b * b + 4ac)) / 2a
+        float a = FMath::Dot(rayDir, rayDir);
+        float b = 2 * FMath::Dot(rayOrig, rayDir);
+        float c = FMath::Dot(rayOrig, rayOrig) - sphereRadius * sphereRadius;
+
+        int count = 0;
+        float d = b*b - 4*a*c;
+        if (d < 0)
         {
-
-             
+            return count;
         }
-        else
+        
+        float t1 = (-b - FMath::Sqrt(d)) / (2*a);
+        if (t1 >= 0)
         {
-
+            count ++;
+            *d1 = t1;
         }
-
-        return 0;
+        float t2 = (-b + FMath::Sqrt(d)) / (2*a);
+        if (t2 >= 0)
+        {
+            count ++;
+            *d2 = t2;
+        }
+        return count;
     }
     int FMath::Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
     {
