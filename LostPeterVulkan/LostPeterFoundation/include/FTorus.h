@@ -23,10 +23,34 @@ namespace LostPeterFoundation
 		{
 
 		}
-		
+		LP_FORCEINLINE FTorus(const FVector3& vCenter, const FVector3& vDirection, float fRadius, float fSectionRadius)
+			: m_vCenter(vCenter)
+			, m_vDirection(vDirection)
+			, m_fRadius(fRadius)
+			, m_fSectionRadius(fSectionRadius)
+		{
+
+		}
+		LP_FORCEINLINE FTorus(const FTorus& torus) 
+			: m_vCenter(torus.m_vCenter)
+			, m_vDirection(torus.m_vDirection)
+			, m_fRadius(torus.m_fRadius)
+			, m_fSectionRadius(torus.m_fSectionRadius)
+		{
+			
+		}
 
 	public:
+		FVector3 m_vCenter;
+		FVector3 m_vDirection;
+		float m_fRadius;		
+		float m_fSectionRadius;
 		
+	public:
+		LP_FORCEINLINE const FVector3& GetCenter() const { return m_vCenter; }
+		LP_FORCEINLINE const FVector3& GetDirection() const { return m_vDirection; }
+        LP_FORCEINLINE float GetRadius() const { return m_fRadius; }
+		LP_FORCEINLINE float GetSectionRadius() const { return m_fSectionRadius; }
 
 	public:
 		bool Intersects_Point(const FVector3& point) const;

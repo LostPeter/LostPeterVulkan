@@ -14,6 +14,19 @@
 
 namespace LostPeterFoundation
 {
+	FVector3 FCapsule::GetCenter() const
+	{
+		return (m_vCenterTop + m_vCenterBottom) / 2.0f;
+	}
+	FVector3 FCapsule::GetDirectionNormalized() const
+	{
+		return FMath::Normalize(m_vCenterTop - m_vCenterBottom);
+	}
+	float FCapsule::GetHeight() const
+	{
+		return FMath::Distance(m_vCenterTop, m_vCenterBottom);
+	}
+
     bool FCapsule::Intersects_Point(const FVector3& point) const
 	{
 		

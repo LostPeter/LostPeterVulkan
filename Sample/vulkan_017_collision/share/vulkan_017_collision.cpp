@@ -2151,8 +2151,9 @@ bool Vulkan_017_Collision::IsCollision_LineCircle3D(double x, double y, const FR
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
         FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pLineCircle3D->vCenter);
         FVector3 vUp = FMath::Transform(obj.g_MatWorld, pLineCircle3D->vUp);
+        float fRadius = pLineCircle3D->radius;
         FPlane plane(vUp, vCenter);
-        if (FMath::Intersects_RayCircle_Test(ray, plane, vCenter, pLineCircle3D->radius, 0.005f))
+        if (FMath::Intersects_RayCircle_Test(ray, plane, vCenter, fRadius, 0.005f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_LineCircle3D: Ray trace in LineCircle 3D !");
@@ -2213,19 +2214,105 @@ bool Vulkan_017_Collision::IsCollision_LineSphere3D(double x, double y, const FR
 }
 bool Vulkan_017_Collision::IsCollision_LineCylinder3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_LineCylinder3D* pLineCylinder3D = (FMeshCreateParam_LineCylinder3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vCenterTop = FMath::Transform(obj.g_MatWorld, pLineCylinder3D->GetCenterTop());
+        FVector3 vCenterBottom = FMath::Transform(obj.g_MatWorld, pLineCylinder3D->GetCenterBottom());
+        float fRadius = pLineCylinder3D->GetRadius();
+        FCylinder cylinderWorld(vCenterTop, vCenterBottom, fRadius);
+        if (FMath::Intersects_RayCylinder_Test(ray, cylinderWorld))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_LineCylinder3D: Ray trace in LineCylinder 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineCylinder3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_LineCapsule3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_LineCapsule3D* pLineCapsule3D = (FMeshCreateParam_LineCapsule3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vCenterTop = FMath::Transform(obj.g_MatWorld, pLineCapsule3D->GetCenterTop());
+        FVector3 vCenterBottom = FMath::Transform(obj.g_MatWorld, pLineCapsule3D->GetCenterBottom());
+        float fRadius = pLineCapsule3D->GetRadius();
+        FCapsule capsuleWorld(vCenterTop, vCenterBottom, fRadius);
+        if (FMath::Intersects_RayCapsule_Test(ray, capsuleWorld))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_LineCapsule3D: Ray trace in LineCapsule 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineCapsule3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_LineCone3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_LineCone3D* pLineCone3D = (FMeshCreateParam_LineCone3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pLineCone3D->GetCenter());
+        FVector3 vDirection = FMath::Transform(obj.g_MatWorld, pLineCone3D->GetUp());
+        float fRadius = pLineCone3D->GetRadius();
+        float fHeight = pLineCone3D->GetHeight();
+        FCone coneWorld(vCenter, vDirection, fRadius, fHeight);
+        if (FMath::Intersects_RayCone_Test(ray, coneWorld))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_LineCone3D: Ray trace in LineCone 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineCone3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_LineTorus3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_LineTorus3D* pLineTorus3D = (FMeshCreateParam_LineTorus3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pLineTorus3D->GetCenter());
+        FVector3 vDirection = FMath::Transform(obj.g_MatWorld, pLineTorus3D->GetUp());
+        float fRadius = pLineTorus3D->GetRadius();
+        float fSectionRadius = pLineTorus3D->GetSectionRadius();
+        FTorus torusWorld(vCenter, vDirection, fRadius, fSectionRadius);
+        if (FMath::Intersects_RayTorus_Test(ray, torusWorld))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_LineTorus3D: Ray trace in LineTorus 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_LineTorus3D;
+        }
+    }
+    return isCollision;
 }
 
 //Flat3D
@@ -2400,19 +2487,105 @@ bool Vulkan_017_Collision::IsCollision_FlatSphere3D(double x, double y, const FR
 }
 bool Vulkan_017_Collision::IsCollision_FlatCylinder3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_FlatCylinder3D* pFlatCylinder3D = (FMeshCreateParam_FlatCylinder3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vCenterTop = FMath::Transform(obj.g_MatWorld, pFlatCylinder3D->GetCenterTop());
+        FVector3 vCenterBottom = FMath::Transform(obj.g_MatWorld, pFlatCylinder3D->GetCenterBottom());
+        float fRadius = pFlatCylinder3D->GetRadius();
+        FCylinder cylinderWorld(vCenterTop, vCenterBottom, fRadius);
+        if (FMath::Intersects_RayCylinder_Test(ray, cylinderWorld))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatCylinder3D: Ray trace in FlatCylinder 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_FlatCylinder3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_FlatCapsule3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_FlatCapsule3D* pFlatCapsule3D = (FMeshCreateParam_FlatCapsule3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vCenterTop = FMath::Transform(obj.g_MatWorld, pFlatCapsule3D->GetCenterTop());
+        FVector3 vCenterBottom = FMath::Transform(obj.g_MatWorld, pFlatCapsule3D->GetCenterBottom());
+        float fRadius = pFlatCapsule3D->GetRadius();
+        FCapsule capsuleWorld(vCenterTop, vCenterBottom, fRadius);
+        if (FMath::Intersects_RayCapsule_Test(ray, capsuleWorld))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatCapsule3D: Ray trace in FlatCapsule 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_FlatCapsule3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_FlatCone3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_FlatCone3D* pFlatCone3D = (FMeshCreateParam_FlatCone3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pFlatCone3D->GetCenter());
+        FVector3 vDirection = FMath::Transform(obj.g_MatWorld, pFlatCone3D->GetUp());
+        float fRadius = pFlatCone3D->GetRadius();
+        float fHeight = pFlatCone3D->GetHeight();
+        FCone coneWorld(vCenter, vDirection, fRadius, fHeight);
+        if (FMath::Intersects_RayCone_Test(ray, coneWorld))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatCone3D: Ray trace in FlatCone 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_FlatCone3D;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_FlatTorus3D(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_FlatTorus3D* pFlatTorus3D = (FMeshCreateParam_FlatTorus3D*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs_LineFlat3D.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
+        FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pFlatTorus3D->GetCenter());
+        FVector3 vDirection = FMath::Transform(obj.g_MatWorld, pFlatTorus3D->GetUp());
+        float fRadius = pFlatTorus3D->GetRadius();
+        float fSectionRadius = pFlatTorus3D->GetSectionRadius();
+        FTorus torusWorld(vCenter, vDirection, fRadius, fSectionRadius);
+        if (FMath::Intersects_RayTorus_Test(ray, torusWorld))
+        {
+            obj.color = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatTorus3D: Ray trace in FlatTorus 3D !");
+            isCollision = true;
+        }
+        else
+        {
+            obj.color = s_color_FlatTorus3D;
+        }
+    }
+    return isCollision;
 }
 
 //Entity
@@ -2592,19 +2765,109 @@ bool Vulkan_017_Collision::IsCollision_EntityGeoSphere(double x, double y, const
 }
 bool Vulkan_017_Collision::IsCollision_EntityCylinder(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_EntityCylinder* pEntityCylinder = (FMeshCreateParam_EntityCylinder*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ObjectConstants& obj = pRend->objectCBs[i];
+        MaterialConstants& mat = pRend->materialCBs[i];
+        FVector3 vCenterTop = FMath::Transform(obj.g_MatWorld, pEntityCylinder->GetCenterTop());
+        FVector3 vCenterBottom = FMath::Transform(obj.g_MatWorld, pEntityCylinder->GetCenterBottom());
+        float fRadius = pEntityCylinder->GetRadius();
+        FCylinder cylinderWorld(vCenterTop, vCenterBottom, fRadius);
+        if (FMath::Intersects_RayCylinder_Test(ray, cylinderWorld))
+        {
+            mat.factorAmbient = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_EntityCylinder: Ray trace in EntityCylinder !");
+            isCollision = true;
+        }
+        else
+        {
+            mat.factorAmbient = s_color_EntityCylinder;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_EntityCapsule(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_EntityCapsule* pEntityCapsule = (FMeshCreateParam_EntityCapsule*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ObjectConstants& obj = pRend->objectCBs[i];
+        MaterialConstants& mat = pRend->materialCBs[i];
+        FVector3 vCenterTop = FMath::Transform(obj.g_MatWorld, pEntityCapsule->GetCenterTop());
+        FVector3 vCenterBottom = FMath::Transform(obj.g_MatWorld, pEntityCapsule->GetCenterBottom());
+        float fRadius = pEntityCapsule->GetRadius();
+        FCapsule capsuleWorld(vCenterTop, vCenterBottom, fRadius);
+        if (FMath::Intersects_RayCapsule_Test(ray, capsuleWorld))
+        {
+            mat.factorAmbient = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_EntityCapsule: Ray trace in EntityCapsule !");
+            isCollision = true;
+        }
+        else
+        {
+            mat.factorAmbient = s_color_EntityCapsule;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_EntityCone(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_EntityCone* pEntityCone = (FMeshCreateParam_EntityCone*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ObjectConstants& obj = pRend->objectCBs[i];
+        MaterialConstants& mat = pRend->materialCBs[i];
+        FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pEntityCone->GetCenter());
+        FVector3 vDirection = FMath::Transform(obj.g_MatWorld, pEntityCone->GetUp());
+        float fRadius = pEntityCone->GetRadius();
+        float fHeight = pEntityCone->GetHeight();
+        FCone coneWorld(vCenter, vDirection, fRadius, fHeight);
+        if (FMath::Intersects_RayCone_Test(ray, coneWorld))
+        {
+            mat.factorAmbient = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_EntityCone: Ray trace in EntityCone !");
+            isCollision = true;
+        }
+        else
+        {
+            mat.factorAmbient = s_color_EntityCone;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_EntityTorus(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {
-    return false;
+    bool isCollision = false;
+    FMeshCreateParam_EntityTorus* pEntityTorus = (FMeshCreateParam_EntityTorus*)pRend->pMeshSub->pMesh->pMeshCreateParam;
+    size_t count = pRend->objectCBs.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ObjectConstants& obj = pRend->objectCBs[i];
+        MaterialConstants& mat = pRend->materialCBs[i];
+        FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pEntityTorus->GetCenter());
+        FVector3 vDirection = FMath::Transform(obj.g_MatWorld, pEntityTorus->GetUp());
+        float fRadius = pEntityTorus->GetRadius();
+        float fSectionRadius = pEntityTorus->GetSectionRadius();
+        FTorus torusWorld(vCenter, vDirection, fRadius, fSectionRadius);
+        if (FMath::Intersects_RayTorus_Test(ray, torusWorld))
+        {
+            mat.factorAmbient = color;
+            //F_LogInfo("Vulkan_017_Collision::IsCollision_EntityTorus: Ray trace in EntityTorus !");
+            isCollision = true;
+        }
+        else
+        {
+            mat.factorAmbient = s_color_EntityTorus;
+        }
+    }
+    return isCollision;
 }
 bool Vulkan_017_Collision::IsCollision_EntitySkyBox(double x, double y, const FRay& ray, ModelObjectRend* pRend, const FColor& color, bool isHover)
 {

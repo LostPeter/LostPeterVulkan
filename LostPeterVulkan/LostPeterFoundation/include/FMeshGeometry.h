@@ -1260,6 +1260,20 @@ namespace LostPeterFoundation
         bool isDrawCenter;
 
     public:
+        FVector3 GetCenterTop() const
+        {
+            return this->vCenter + this->vUp * this->height / 2.0f;
+        }
+        FVector3 GetCenterBottom() const
+        {
+            return this->vCenter - this->vUp * this->height / 2.0f;
+        }
+        float GetRadius() const
+        {
+            return (this->radiusBottom + this->radiusTop) / 2.0f;
+        }
+
+    public:
         virtual String ToName()
         {
             return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f_%u]", 
@@ -1349,6 +1363,20 @@ namespace LostPeterFoundation
         uint32 numSegments;
 
     public:
+        FVector3 GetCenterTop() const
+        {
+            return this->vCenter + this->vUp * this->height / 2.0f;
+        }
+        FVector3 GetCenterBottom() const
+        {
+            return this->vCenter - this->vUp * this->height / 2.0f;
+        }
+        float GetRadius() const
+        {
+            return this->radius;
+        }
+
+    public:
         virtual String ToName()
         {
             return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%u_%u]", 
@@ -1429,6 +1457,24 @@ namespace LostPeterFoundation
         float radius;
         float height;
         uint32 numSegBase;
+
+    public:
+        const FVector3& GetCenter() const
+        {
+            return this->vCenter;
+        }
+        const FVector3& GetUp() const
+        {
+            return this->vUp;
+        }
+        float GetRadius() const
+        {
+            return this->radius;
+        }
+        float GetHeight() const
+        {
+            return this->height;
+        }
 
     public:
         virtual String ToName()
@@ -1516,6 +1562,24 @@ namespace LostPeterFoundation
         float sectionRadius;
         uint32 numSegSection;
         uint32 numSegCircle;
+
+    public:
+        const FVector3& GetCenter() const
+        {
+            return this->vCenter;
+        }
+        const FVector3& GetUp() const
+        {
+            return this->vUp;
+        }
+        float GetRadius() const
+        {
+            return this->radius;
+        }
+        float GetSectionRadius() const
+        {
+            return this->sectionRadius;
+        }
 
     public:
         virtual String ToName()
@@ -1985,6 +2049,20 @@ namespace LostPeterFoundation
         uint32 stackCount;
 
     public:
+        FVector3 GetCenterTop() const
+        {
+            return this->vCenter + this->vUp * this->height / 2.0f;
+        }
+        FVector3 GetCenterBottom() const
+        {
+            return this->vCenter - this->vUp * this->height / 2.0f;
+        }
+        float GetRadius() const
+        {
+            return (this->radiusBottom + this->radiusTop) / 2.0f;
+        }
+
+    public:
         virtual String ToName()
         {
             return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%f_%u_%u]", 
@@ -2080,6 +2158,20 @@ namespace LostPeterFoundation
         uint32 numSegHeight;
 
     public:
+        FVector3 GetCenterTop() const
+        {
+            return this->vCenter + this->vUp * this->height / 2.0f;
+        }
+        FVector3 GetCenterBottom() const
+        {
+            return this->vCenter - this->vUp * this->height / 2.0f;
+        }
+        float GetRadius() const
+        {
+            return this->radius;
+        }
+
+    public:
         virtual String ToName()
         {
             return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%u_%u_%u]", 
@@ -2169,6 +2261,24 @@ namespace LostPeterFoundation
         uint32 numSegHeight;
 
     public:
+        const FVector3& GetCenter() const
+        {
+            return this->vCenter;
+        }
+        const FVector3& GetUp() const
+        {
+            return this->vUp;
+        }
+        float GetRadius() const
+        {
+            return this->radius;
+        }
+        float GetHeight() const
+        {
+            return this->height;
+        }
+
+    public:
         virtual String ToName()
         {
             return FUtilString::FormatString("%s_[%f_%f_%f]_[%f_%f_%f]_[%f_%f_%u_%u]", 
@@ -2255,6 +2365,24 @@ namespace LostPeterFoundation
         float sectionRadius;
         uint32 numSegSection;
         uint32 numSegCircle;
+
+    public:
+        const FVector3& GetCenter() const
+        {
+            return this->vCenter;
+        }
+        const FVector3& GetUp() const
+        {
+            return this->vUp;
+        }
+        float GetRadius() const
+        {
+            return this->radius;
+        }
+        float GetSectionRadius() const
+        {
+            return this->sectionRadius;
+        }
 
     public:
         virtual String ToName()
@@ -2752,8 +2880,10 @@ namespace LostPeterFoundation
             , heightOffset(0.0f)
             , sliceCount(50)
             , stackCount(30)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
         {
-
+            
         }
         FMeshCreateParam_EntityCylinder(float _radiusBottom,
                                         float _radiusTop,
@@ -2770,8 +2900,10 @@ namespace LostPeterFoundation
             , heightOffset(_heightOffset)
             , sliceCount(_sliceCount)
             , stackCount(_stackCount)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
         {
-        
+            this->vCenter.y += this->heightOffset;
         }
         virtual ~FMeshCreateParam_EntityCylinder()
         {
@@ -2788,6 +2920,23 @@ namespace LostPeterFoundation
         float heightOffset;
         uint32 sliceCount;
         uint32 stackCount;
+
+        FVector3 vCenter;
+        FVector3 vUp;
+
+    public:
+        FVector3 GetCenterTop() const
+        {
+            return this->vCenter + this->vUp * this->height / 2.0f;
+        }
+        FVector3 GetCenterBottom() const
+        {
+            return this->vCenter - this->vUp * this->height / 2.0f;
+        }
+        float GetRadius() const
+        {
+            return (this->radiusBottom + this->radiusTop) / 2.0f;
+        }
 
     public:
         virtual String ToName()
@@ -2819,6 +2968,8 @@ namespace LostPeterFoundation
             , numRings(10)
             , numSegments(50)
             , numSegHeight(30)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
         {
 
         }
@@ -2837,8 +2988,10 @@ namespace LostPeterFoundation
             , numRings(_numRings)
             , numSegments(_numSegments)
             , numSegHeight(_numSegHeight)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
         {
-
+            this->vCenter.y += this->heightOffset;
         }
         virtual ~FMeshCreateParam_EntityCapsule()
         {
@@ -2855,6 +3008,23 @@ namespace LostPeterFoundation
         uint32 numRings;
         uint32 numSegments;
         uint32 numSegHeight;
+
+        FVector3 vCenter;
+        FVector3 vUp;
+
+    public:
+        FVector3 GetCenterTop() const
+        {
+            return this->vCenter + this->vUp * this->height / 2.0f;
+        }
+        FVector3 GetCenterBottom() const
+        {
+            return this->vCenter - this->vUp * this->height / 2.0f;
+        }
+        float GetRadius() const
+        {
+            return this->radius;
+        }
 
     public:
         virtual String ToName()
@@ -2885,6 +3055,8 @@ namespace LostPeterFoundation
             , heightOffset(0.0f)
             , numSegBase(50)
             , numSegHeight(30)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
         {
 
         }
@@ -2901,8 +3073,10 @@ namespace LostPeterFoundation
             , heightOffset(_heightOffset)
             , numSegBase(_numSegBase)
             , numSegHeight(_numSegHeight)
+            , vCenter(0, 0, 0)
+            , vUp(0, 1, 0)
         {
-
+            this->vCenter.y += this->heightOffset;
         }
         virtual ~FMeshCreateParam_EntityCone()
         {
@@ -2918,6 +3092,27 @@ namespace LostPeterFoundation
         float heightOffset;
         uint32 numSegBase;
 	    uint32 numSegHeight;
+
+        FVector3 vCenter;
+        FVector3 vUp;
+
+    public:
+        const FVector3& GetCenter() const
+        {
+            return this->vCenter;
+        }
+        const FVector3& GetUp() const
+        {
+            return this->vUp;
+        }
+        float GetRadius() const
+        {
+            return this->radius;
+        }
+        float GetHeight() const
+        {
+            return this->height;
+        }
 
     public:
         virtual String ToName()
@@ -2976,6 +3171,27 @@ namespace LostPeterFoundation
         float sectionRadius;
         uint32 numSegSection;
         uint32 numSegCircle;
+
+        FVector3 vCenter;
+        FVector3 vUp;
+
+    public:
+        const FVector3& GetCenter() const
+        {
+            return this->vCenter;
+        }
+        const FVector3& GetUp() const
+        {
+            return this->vUp;
+        }
+        float GetRadius() const
+        {
+            return this->radius;
+        }
+        float GetSectionRadius() const
+        {
+            return this->sectionRadius;
+        }
 
     public:
         virtual String ToName()

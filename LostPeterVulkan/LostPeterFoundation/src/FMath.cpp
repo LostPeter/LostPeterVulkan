@@ -1933,7 +1933,7 @@ namespace LostPeterFoundation
 
     std::pair<bool, float> FMath::Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool discardInside /*= true*/)
     {
-        return std::pair<bool, float>(true, 0);
+        return std::pair<bool, float>(false, 0);
     }
     int FMath::Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool& isInside, float* d1, float* d2)
     {
@@ -1947,7 +1947,7 @@ namespace LostPeterFoundation
     std::pair<bool, float> FMath::Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool discardInside /*= true*/)
     {
 
-        return std::pair<bool, float>(true, 0);
+        return std::pair<bool, float>(false, 0);
     }
     int FMath::Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool& isInside, float* d1, float* d2)
     {
@@ -1961,7 +1961,7 @@ namespace LostPeterFoundation
     std::pair<bool, float> FMath::Intersects_RayCone(const FRay& ray, const FCone& cone, bool discardInside /*= true*/)
     {
 
-        return std::pair<bool, float>(true, 0);
+        return std::pair<bool, float>(false, 0);
     }
     int FMath::Intersects_RayCone(const FRay& ray, const FCone& cone, bool& isInside, float* d1, float* d2)
     {
@@ -1975,7 +1975,7 @@ namespace LostPeterFoundation
     std::pair<bool, float> FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool discardInside /*= true*/)
     {
 
-        return std::pair<bool, float>(true, 0);
+        return std::pair<bool, float>(false, 0);
     }
     int FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2)
     {
