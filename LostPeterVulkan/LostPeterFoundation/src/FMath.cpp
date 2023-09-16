@@ -602,6 +602,27 @@ namespace LostPeterFoundation
         return GetDistanceFromLine2(segment1.m_pt0, segment1.m_pt1, segment2.m_pt0, segment2.m_pt1);
     }
 
+    //Distance From Ray-AABB-Axis
+    bool FMath::GetDistanceFromRayAABBAxis(const FVector3& rayOrig, const FVector3& rayDir, const FVector3& min, const FVector3& max, int32 nAxis, float& fStart, float& fEnd)
+    {
+        float denom = 1 / rayDir[nAxis];
+        float fNewStart = (min[nAxis] - rayOrig[nAxis]) * denom;	
+        float fNewEnd = (max[nAxis] - rayOrig[nAxis]) * denom;
+        if (fNewStart > fNewEnd) 
+            std::swap(fNewStart, fNewEnd);		
+        if (fNewStart > fEnd || fNewEnd < fStart) 
+            return false;		
+        if (fNewStart > fStart) 
+            fStart = fNewStart;					
+        if (fNewEnd < fEnd) 
+            fEnd = fNewEnd;
+        return true;
+    }
+    bool FMath::GetDistanceFromRayAABBAxis(const FRay& ray, const FAABB& aabb, int32 nAxis, float& fStart, float& fEnd)
+    {
+        return GetDistanceFromRayAABBAxis(ray.GetOrigin(), ray.GetDirection(), aabb.GetMin(), aabb.GetMax(), nAxis, fStart, fEnd);
+    }
+
     //Intersection Point Perpendicular To Line/Plane
     void FMath::GetIntersectionPointPerpendicularToLine(const FVector3& pt, const FVector3& ptLine1, const FVector3& ptLine2, FVector3& vIntersection)
     {
@@ -1620,7 +1641,7 @@ namespace LostPeterFoundation
         }
 
         //2> Check each face in turn, only check closest 3
-        // Min x
+        //Min x
         if (rayOrig.x <= min.x && rayDir.x > 0)
         {
             t = (min.x - rayOrig.x) / rayDir.x;
@@ -1636,7 +1657,7 @@ namespace LostPeterFoundation
                 }
             }
         }
-        // Max x
+        //Max x
         if (rayOrig.x >= max.x && rayDir.x < 0)
         {
             t = (max.x - rayOrig.x) / rayDir.x;
@@ -1652,7 +1673,8 @@ namespace LostPeterFoundation
                 }
             }
         }
-        // Min y
+
+        //Min y
         if (rayOrig.y <= min.y && rayDir.y > 0)
         {
             t = (min.y - rayOrig.y) / rayDir.y;
@@ -1668,7 +1690,7 @@ namespace LostPeterFoundation
                 }
             }
         }
-        // Max y
+        //Max y
         if (rayOrig.y >= max.y && rayDir.y < 0)
         {
             t = (max.y - rayOrig.y) / rayDir.y;
@@ -1684,7 +1706,8 @@ namespace LostPeterFoundation
                 }
             }
         }
-        // Min z
+
+        //Min z
         if (rayOrig.z <= min.z && rayDir.z > 0)
         {
             t = (min.z - rayOrig.z) / rayDir.z;
@@ -1700,7 +1723,7 @@ namespace LostPeterFoundation
                 }
             }
         }
-        // Max z
+        //Max z
         if (rayOrig.z >= max.z && rayDir.z < 0)
         {
             t = (max.z - rayOrig.z) / rayDir.z;
@@ -1720,27 +1743,6 @@ namespace LostPeterFoundation
         return std::pair<bool, float>(isHit, tLow);
     }
 
-    static bool s_CheckAxis(const FVector3& rayOrig, 
-                            const FVector3& rayDir,
-                            const FVector3& min,
-                            const FVector3& max,
-                            int32 iAxis,
-                            float& start,
-                            float& end)
-    {
-        float denom = 1 / rayDir[iAxis];
-        float newstart = (min[iAxis] - rayOrig[iAxis]) * denom;	
-        float newend = (max[iAxis] - rayOrig[iAxis]) * denom;
-        if (newstart > newend) 
-            std::swap(newstart, newend);		
-        if (newstart > end || newend < start) 
-            return false;		
-        if (newstart > start) 
-            start = newstart;					
-        if (newend < end) 
-            end = newend;
-        return true;
-    }
     bool FMath::Intersects_RayAABB(const FRay& ray, const FAABB& aabb, float* d1, float* d2)
     {
          if (!aabb.IsValid())
@@ -1750,100 +1752,96 @@ namespace LostPeterFoundation
         const FVector3& max = aabb.GetMax();
         const FVector3& rayOrig = ray.GetOrigin();
         const FVector3& rayDir = ray.GetDirection();
+        FVector3 rayDirAbs = FMath::Abs(rayDir);
 
-        FVector3 absDir;
-        absDir[0] = FMath::Abs(rayDir[0]);
-        absDir[1] = FMath::Abs(rayDir[1]);
-        absDir[2] = FMath::Abs(rayDir[2]);
-
-        // Sort the axis, ensure check minimise floating error axis first
-        int32 imax = 0, imid = 1, imin = 2;
-        if (absDir[0] < absDir[2])
+        //1> Sort the axis, ensure check minimize floating error axis first
+        int32 nMax = 0, nMid = 1, nMin = 2;
+        if (rayDirAbs[0] < rayDirAbs[2])
         {
-            imax = 2;
-            imin = 0;
+            nMax = 2;
+            nMin = 0;
         }
-        if (absDir[1] < absDir[imin])
+        if (rayDirAbs[1] < rayDirAbs[nMin])
         {
-            imid = imin;
-            imin = 1;
+            nMid = nMin;
+            nMin = 1;
         }
-        else if (absDir[1] > absDir[imax])
+        else if (rayDirAbs[1] > rayDirAbs[nMax])
         {
-            imid = imax;
-            imax = 1;
+            nMid = nMax;
+            nMax = 1;
         }
 
-        float start = 0;
-        float end = FMath::ms_fPosInfinity;
-        // Check each axis in turn
-        if (!s_CheckAxis(rayOrig,
-                         rayDir,
-                         min,
-                         max,
-                         imax,
-                         start,
-                         end))
+        //2> Check each axis in turn
+        float fStart = 0;
+        float fEnd = FMath::ms_fPosInfinity;
+        if (!GetDistanceFromRayAABBAxis(rayOrig,
+                                        rayDir,
+                                        min,
+                                        max,
+                                        nMax,
+                                        fStart,
+                                        fEnd))
         {
             return false;
         }
 
-        if (absDir[imid] < FMath::ms_fEpsilon)
+        if (rayDirAbs[nMid] < FMath::ms_fEpsilon)
         {
-            // Parallel with middle and minimise axis, check bounds only
-            if (rayOrig[imid] < min[imid] || rayOrig[imid] > max[imid] ||
-                rayOrig[imin] < min[imin] || rayOrig[imin] > max[imin])
+            //Parallel with middle and minimize axis, check bounds only
+            if (rayOrig[nMid] < min[nMid] || rayOrig[nMid] > max[nMid] ||
+                rayOrig[nMin] < min[nMin] || rayOrig[nMin] > max[nMin])
             {
                 return false;
             }
         }
         else
         {
-            if (!s_CheckAxis(rayOrig,
-                             rayDir,
-                             min,
-                             max,
-                             imid,
-                             start,
-                             end))
+            if (!GetDistanceFromRayAABBAxis(rayOrig,
+                                            rayDir,
+                                            min,
+                                            max,
+                                            nMid,
+                                            fStart,
+                                            fEnd))
             {
                 return false;
             }
 
-            if (absDir[imin] < FMath::ms_fEpsilon)
+            if (rayDirAbs[nMin] < FMath::ms_fEpsilon)
             {
-                // Parallel with minimise axis, check bounds only
-                if (rayOrig[imin] < min[imin] || rayOrig[imin] > max[imin])
+                //Parallel with minimize axis, check bounds only
+                if (rayOrig[nMin] < min[nMin] || rayOrig[nMin] > max[nMin])
                 {
                     return false;
                 }
             }
             else
             {
-                if (!s_CheckAxis(rayOrig,
-                                 rayDir,
-                                 min,
-                                 max,
-                                 imin,
-                                 start,
-                                 end))
+                if (!GetDistanceFromRayAABBAxis(rayOrig,
+                                                rayDir,
+                                                min,
+                                                max,
+                                                nMin,
+                                                fStart,
+                                                fEnd))
                 {
                     return false;
                 }
             }
         }
 
-        if (d1) *d1 = start;
-        if (d2) *d2 = end;
+        if (d1) *d1 = fStart;
+        if (d2) *d2 = fEnd;
         return true;
     }
     bool FMath::Intersects_RayAABB(const FRay& ray, const FAABB& aabb, FVector3& vIntersection1, FVector3& vIntersection2)
     { 
-        float start,end;
-        if (Intersects_RayAABB(ray, aabb, &start, &end))
+        float fStart, fEnd;
+        if (Intersects_RayAABB(ray, aabb, &fStart, &fEnd))
         {
-            vIntersection1 = ray.GetPoint(start);
-            vIntersection2 = ray.GetPoint(end);
+            vIntersection1 = ray.GetPoint(fStart);
+            vIntersection2 = ray.GetPoint(fEnd);
             return true;
         }
         return false;
@@ -1918,12 +1916,12 @@ namespace LostPeterFoundation
     }
     int FMath::Intersects_RaySphere(const FRay& ray, const FSphere& sphere, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
     {
-        float start,end;
-        int nNum = Intersects_RaySphere(ray, sphere, isInside, &start, &end);
+        float fStart, fEnd;
+        int nNum = Intersects_RaySphere(ray, sphere, isInside, &fStart, &fEnd);
         if (nNum > 0)
         {
-            vIntersection1 = ray.GetPoint(start);
-            vIntersection2 = ray.GetPoint(end);
+            vIntersection1 = ray.GetPoint(fStart);
+            vIntersection2 = ray.GetPoint(fEnd);
         }
         else
         {

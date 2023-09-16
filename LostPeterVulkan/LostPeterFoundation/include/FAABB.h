@@ -285,7 +285,6 @@ namespace LostPeterFoundation
                 v.z >= m_vMin.z && v.z <= m_vMax.z;
         }
 
-
         bool Intersects_Axis(const FAABB& aabb, uint32 axis) const
         {
             if (IsNull() || aabb.IsNull())

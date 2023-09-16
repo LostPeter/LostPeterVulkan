@@ -177,11 +177,23 @@ namespace LostPeterFoundation
         {
             return (iValue >= 0 ? iValue : -iValue); 
         }
-
         static float Abs(float fValue)	
         {
             return float(fabs(fValue)); 
         }
+        static FVector2 Abs(const FVector2& v2)
+        {
+            return FVector2(fabs(v2.x), fabs(v2.y));
+        }
+        static FVector3 Abs(const FVector3& v3)
+        {
+            return FVector3(fabs(v3.x), fabs(v3.y), fabs(v3.z));
+        }
+        static FVector4 Abs(const FVector4& v4)
+        {
+            return FVector4(fabs(v4.x), fabs(v4.y), fabs(v4.z), fabs(v4.w));
+        }
+
 
         //Sqrt
         static float Sqrt(float fValue)
@@ -673,6 +685,10 @@ namespace LostPeterFoundation
         static float GetDistanceFromLine2(const FVector3& ptLine11, const FVector3& ptLine12, const FVector3& ptLine21, const FVector3& ptLine22);
         static float GetDistanceFromLine2(const FSegment& segment1, const FSegment& segment2);
 
+        //Distance From Ray-AABB-Axis
+        static bool GetDistanceFromRayAABBAxis(const FVector3& rayOrig, const FVector3& rayDir, const FVector3& min, const FVector3& max, int32 nAxis, float& fStart, float& fEnd);
+        static bool GetDistanceFromRayAABBAxis(const FRay& ray, const FAABB& aabb, int32 nAxis, float& fStart, float& fEnd);
+
         //Intersection Point Perpendicular To Line/Plane
         static void GetIntersectionPointPerpendicularToLine(const FVector3& pt, const FVector3& ptLine1, const FVector3& ptLine2, FVector3& vIntersection);
         static void GetIntersectionPointPerpendicularToPlane(const FVector3& pt, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, FVector3& vIntersection);
@@ -822,6 +838,7 @@ namespace LostPeterFoundation
         static bool Quad_IsConcave(const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, const FVector3& pt4, FVector3& vConcave, int& nIndex, float fEpsilon = FMath::ms_fEpsilon);
         static bool Quad_IsConcave(const FVector3* pPt, FVector3& vConcave, int& nIndex, float fEpsilon = FMath::ms_fEpsilon);
         static bool Quad_IsConcave(const FQuad& quad, FVector3& vConcave, int& nIndex, float fEpsilon = FMath::ms_fEpsilon);
+
 
     public:
         //Point - Line
