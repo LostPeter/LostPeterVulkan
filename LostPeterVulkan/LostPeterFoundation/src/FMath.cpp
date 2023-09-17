@@ -1855,13 +1855,14 @@ namespace LostPeterFoundation
         const FVector3& rayDir = ray.GetDirection();
         const FVector3& rayOrig = rayPos - sphereCenter;
 
+        //1> rayPos In Sphere
         float disRay2Center = FMath::Length2(rayOrig);
         if (discardInside && disRay2Center <= sphereRadius * sphereRadius)
         {
             return std::pair<bool, float>(true, 0);
         }
 
-        //t = (-b +/- sqrt(b*b + 4ac)) / 2a
+        //2> t = (-b +/- sqrt(b*b + 4ac)) / 2a
         float a = FMath::Dot(rayDir, rayDir);
         float b = 2 * FMath::Dot(rayOrig, rayDir);
         float c = FMath::Dot(rayOrig, rayOrig) - sphereRadius * sphereRadius;
@@ -1888,7 +1889,7 @@ namespace LostPeterFoundation
         const FVector3& rayDir = ray.GetDirection();
         const FVector3& rayOrig = rayPos - sphereCenter;
 
-        //t = (-b +/- sqrt(b * b + 4ac)) / 2a
+        //1> t = (-b +/- sqrt(b * b + 4ac)) / 2a
         float a = FMath::Dot(rayDir, rayDir);
         float b = 2 * FMath::Dot(rayOrig, rayDir);
         float c = FMath::Dot(rayOrig, rayOrig) - sphereRadius * sphereRadius;
@@ -1933,7 +1934,95 @@ namespace LostPeterFoundation
 
     std::pair<bool, float> FMath::Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool discardInside /*= true*/)
     {
-        return std::pair<bool, float>(false, 0);
+        float t = 0;
+        const FVector3& rayPos = ray.GetOrigin();
+        //1> rayPos In Cylinder
+        if (discardInside && cylinder.Intersects_Point(rayPos))
+        {
+            return std::pair<bool, float>(true, t);
+        }
+        
+        //Ray far point
+        FVector3 rayPosFar = ray.GetPoint(ms_fRayFar);
+
+        const FVector3& vCenterTop = cylinder.GetCenterTop();
+        const FVector3& vCenterBottom = cylinder.GetCenterBottom();
+        float fRadius = cylinder.GetRadius();
+        float fHeight = FMath::Distance(vCenterTop, vCenterBottom);
+        FVector3 vCenter = (vCenterTop + vCenterBottom) / 2.0f;
+
+        FVector3 d = vCenterTop - vCenterBottom;
+		FVector3 m = rayPos - vCenterBottom;
+        FVector3 n = rayPosFar - rayPos;
+        float md = FMath::Dot(m, d);
+        float nd = FMath::Dot(n, d);
+        float dd = FMath::Dot(d, d);
+
+        //2> Test if segment rayPos-rayPosFar fully outside either endcap of cylinder
+        if (md < 0.0f && md + nd < 0.0f) //outside 'rayPos' side of cylinder
+            return std::pair<bool, float>(false, t);
+        if (md > dd && md + nd > dd) //outside 'rayPosFar' side of cylinder
+            return std::pair<bool, float>(false, t);
+
+        float nn = FMath::Dot(n, n);
+        float mn = FMath::Dot(m, n);
+        float a = dd * nn - nd * nd;
+        float k = FMath::Dot(m, m) - fRadius * fRadius;
+        float c = dd * k - md * md;
+        if (FMath::Abs(a) < FMath::ms_fEpsilon)
+        {
+            //segment ayPos-rayPosFar parallel to cylinder axis
+            if (c > 0.0f)
+            {
+                return std::pair<bool, float>(false, t);
+            }
+
+            //segment ayPos-rayPosFar intersect cylinder
+            if (md < 0.0f) //intersect segment against 'rayPos' endcap
+                t = - mn / nn; 
+            else if (md > dd) //intersect segment against 'rayPosFar' endcap
+                t = (nd - mn) / nn; 
+            else //lies inside cylinder
+                t = 0.0f; 
+            return std::pair<bool, float>(true, t);
+        }
+
+        float b = dd * mn - nd * md;
+        float discr = b * b - a * c;
+        if (discr < 0.0f) //no real roots; no intersection
+            return std::pair<bool, float>(false, t); 
+
+        t = (-b - FMath::Sqrt(discr)) / a;
+        if (t < 0.0f || t > 1.0f) //intersection lies outside segment
+            return std::pair<bool, float>(false, t); 
+
+        if (md + t * nd < 0.0f)
+        {
+            //intersection outside cylinder on 'rayPos' side
+            if (nd <= 0.0f) //segment pointing away from endcap
+                return std::pair<bool, float>(false, t); 
+            
+            t = -md / nd;
+
+            //keep intersection if Dot(S(t) - p, S(t) - p) <= r~2
+            bool isInter = k + 2 * t * (mn + t * nn) <= 0.0f;
+            return std::pair<bool, float>(isInter, t); 
+        }
+        else if (md + t * nd > dd)
+        {
+            //intersection outside cylinder on 'rayPosFar' side
+            if (nd >= 0.0f) //segment pointing away from endcap
+                return std::pair<bool, float>(false, t);
+            
+            t = (dd - md) / nd;
+
+            //keep intersection if Dot(S(t) - q, S(t) - q) <= r~2
+            bool isInter = k + dd - 2 * md +  t * (2 * (mn - nd) + t * nn) <= 0.0f;
+            return std::pair<bool, float>(isInter, t);
+        }
+
+        //segment intersects cylinder between endcaps; t is correct
+        return std::pair<bool, float>(true, t);
     }
     int FMath::Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool& isInside, float* d1, float* d2)
     {
