@@ -132,7 +132,7 @@ public:
 
             
         {
-            this->pPipelineGraphics = new PipelineGraphics(_pModelObject->pWindow);
+            this->pPipelineGraphics = new PipelineGraphics("PipelineG-Model");
         }
         ~ModelObjectRend()
         {

@@ -154,7 +154,7 @@ public:
             , cfg_BlendAlphaOp(VK_BLEND_OP_ADD)
             , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
         {
-            this->pPipelineGraphics = new PipelineGraphics(_pWindow);
+            this->pPipelineGraphics = new PipelineGraphics("PipelineG-Model");
         }
         ~ModelObject()
         {

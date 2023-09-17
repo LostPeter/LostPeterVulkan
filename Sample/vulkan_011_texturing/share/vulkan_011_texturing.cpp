@@ -962,7 +962,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
             for (size_t j = 0; j < count_dsl; j++)
             {
                 const String& nameDescriptorSetLayout = aDescriptorSetLayout[j];
-                PipelineCompute* pPipelineCompute = new PipelineCompute(this);
+                PipelineCompute* pPipelineCompute = new PipelineCompute("PipelineC-Object");
                 pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
                 pModelObject->AddPipelineCompute(pPipelineCompute);
             }
@@ -1458,8 +1458,7 @@ void Vulkan_011_Texturing::createTextures()
         String pathTextures = g_TexturePaths[5 * i + 4];
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
-        Texture* pTexture = new Texture(this, 
-                                        nameTexture,
+        Texture* pTexture = new Texture(nameTexture,
                                         typeTexture,
                                         isRenderTarget,
                                         isGraphicsComputeShared,

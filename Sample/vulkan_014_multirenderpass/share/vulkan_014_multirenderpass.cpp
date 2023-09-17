@@ -1225,7 +1225,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                     for (size_t p = 0; p < count_dsl; p++)
                     {
                         const String& nameDescriptorSetLayout = aDescriptorSetLayout[p];
-                        PipelineCompute* pPipelineCompute = new PipelineCompute(this);
+                        PipelineCompute* pPipelineCompute = new PipelineCompute("PipelineC-Object");
                         pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
                         pRend->AddPipelineCompute(pPipelineCompute);
                     }
@@ -1702,8 +1702,7 @@ void Vulkan_014_MultiRenderPass::createTextures()
         String pathTextures = g_Texture_Paths[5 * i + 4];
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
-        Texture* pTexture = new Texture(this, 
-                                        nameTexture,
+        Texture* pTexture = new Texture(nameTexture,
                                         typeTexture,
                                         isRenderTarget,
                                         isGraphicsComputeShared,
@@ -1901,7 +1900,7 @@ void Vulkan_014_MultiRenderPass::createMultiRenderPasses()
         String nameRenderPass = g_RenderPass_Names[i];
         bool isDefault = g_RenderPass_IsDefault[i];
 
-        MultiRenderPass* pMultiRenderPass = new MultiRenderPass(this, nameRenderPass, isDefault, false);
+        MultiRenderPass* pMultiRenderPass = new MultiRenderPass(nameRenderPass, isDefault, false);
         pMultiRenderPass->Init(this->poSwapChainExtent.width, this->poSwapChainExtent.height);
 
         this->m_aMultiRenderPasses.push_back(pMultiRenderPass);

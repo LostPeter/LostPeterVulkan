@@ -705,8 +705,7 @@ namespace LostPeter
 
 
     /////////////////////////// Texture ///////////////////////////
-    VulkanWindow::Texture::Texture(VulkanWindow* _pWindow, 
-                                   const String& _nameTexture,
+    VulkanWindow::Texture::Texture(const String& _nameTexture,
                                    VulkanTextureType _typeTexture,
                                    bool _isRenderTarget,
                                    bool _isGraphicsComputeShared,
@@ -715,8 +714,7 @@ namespace LostPeter
                                    VulkanTextureAddressingType _typeAddressing,
                                    VulkanTextureBorderColorType _typeBorderColor,
                                    const StringVector& _aPathTexture)
-        : pWindow(_pWindow)
-        , nameTexture(_nameTexture)
+        : Base(_nameTexture)
         , typeTexture(_typeTexture)
         , isRenderTarget(_isRenderTarget)
         , isGraphicsComputeShared(_isGraphicsComputeShared)
@@ -766,13 +764,13 @@ namespace LostPeter
     {
         if (this->stagingBuffer != VK_NULL_HANDLE)
         {
-            this->pWindow->destroyVkBuffer(this->stagingBuffer, this->stagingBufferMemory);
+            Base::GetWindowPtr()->destroyVkBuffer(this->stagingBuffer, this->stagingBufferMemory);
         }
-        this->pWindow->destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
+        Base::GetWindowPtr()->destroyVkImage(this->poTextureImage, this->poTextureImageMemory, this->poTextureImageView);
         this->poTextureImage = VK_NULL_HANDLE;
         this->poTextureImageMemory = VK_NULL_HANDLE;
         this->poTextureImageView = VK_NULL_HANDLE;
-        this->pWindow->destroyVkImageSampler(this->poTextureSampler);
+        Base::GetWindowPtr()->destroyVkImageSampler(this->poTextureSampler);
         this->poTextureSampler = VK_NULL_HANDLE;
         F_DELETE_T(pDataRGBA)
     }
@@ -797,52 +795,52 @@ namespace LostPeter
         {
             if (this->typeTexture == Vulkan_Texture_1D)
             {
-                this->pWindow->createTexture1D(this->aPathTexture[0], 
-                                               this->poMipMapCount, 
-                                               this->poTextureImage, 
-                                               this->poTextureImageMemory);
-                this->pWindow->createVkImageView(this->poTextureImage, 
-                                                 VK_IMAGE_VIEW_TYPE_1D, 
-                                                 this->typeFormat, 
-                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                 this->poMipMapCount, 
-                                                 1, 
-                                                 this->poTextureImageView);
+                Base::GetWindowPtr()->createTexture1D(this->aPathTexture[0], 
+                                                      this->poMipMapCount, 
+                                                      this->poTextureImage, 
+                                                      this->poTextureImageMemory);
+                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                                                        VK_IMAGE_VIEW_TYPE_1D, 
+                                                        this->typeFormat, 
+                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                        this->poMipMapCount, 
+                                                        1, 
+                                                        this->poTextureImageView);
             }
             else if (this->typeTexture == Vulkan_Texture_2D)
             {
-                this->pWindow->createTexture2D(this->aPathTexture[0], 
-                                               VK_IMAGE_TYPE_2D, 
-                                               VK_SAMPLE_COUNT_1_BIT, 
-                                               this->typeFormat, true, 
-                                               this->poMipMapCount, 
-                                               this->poTextureImage, 
-                                               this->poTextureImageMemory);
-                this->pWindow->createVkImageView(this->poTextureImage, 
-                                                 VK_IMAGE_VIEW_TYPE_2D, 
-                                                 this->typeFormat, 
-                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                 this->poMipMapCount, 
-                                                 1, 
-                                                 this->poTextureImageView);
+                Base::GetWindowPtr()->createTexture2D(this->aPathTexture[0], 
+                                                      VK_IMAGE_TYPE_2D, 
+                                                      VK_SAMPLE_COUNT_1_BIT, 
+                                                      this->typeFormat, true, 
+                                                      this->poMipMapCount, 
+                                                      this->poTextureImage, 
+                                                      this->poTextureImageMemory);
+                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                                                        VK_IMAGE_VIEW_TYPE_2D, 
+                                                        this->typeFormat, 
+                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                        this->poMipMapCount, 
+                                                        1, 
+                                                        this->poTextureImageView);
             }
             else if (this->typeTexture == Vulkan_Texture_2DArray)
             {
-                this->pWindow->createTexture2DArray(this->aPathTexture, 
-                                                    VK_IMAGE_TYPE_2D,
-                                                    VK_SAMPLE_COUNT_1_BIT, 
-                                                    this->typeFormat, 
-                                                    true, 
-                                                    this->poMipMapCount, 
-                                                    this->poTextureImage, 
-                                                    this->poTextureImageMemory);
-                this->pWindow->createVkImageView(this->poTextureImage, 
-                                                 VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
-                                                 this->typeFormat, 
-                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                 this->poMipMapCount, 
-                                                 (int)this->aPathTexture.size(), 
-                                                 this->poTextureImageView);
+                Base::GetWindowPtr()->createTexture2DArray(this->aPathTexture, 
+                                                           VK_IMAGE_TYPE_2D,
+                                                           VK_SAMPLE_COUNT_1_BIT, 
+                                                           this->typeFormat, 
+                                                           true, 
+                                                           this->poMipMapCount, 
+                                                           this->poTextureImage, 
+                                                           this->poTextureImageMemory);
+                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                                                        VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
+                                                        this->typeFormat, 
+                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                        this->poMipMapCount, 
+                                                        (int)this->aPathTexture.size(), 
+                                                        this->poTextureImageView);
             }
             else if (this->typeTexture == Vulkan_Texture_3D)
             {
@@ -850,41 +848,41 @@ namespace LostPeter
                 this->pDataRGBA = new uint8[size];
                 memset(this->pDataRGBA, 0, (size_t)size);
                 updateNoiseTextureData();
-                this->pWindow->createTexture3D(this->typeFormat, 
-                                               this->pDataRGBA, 
-                                               size, 
-                                               width, 
-                                               height, 
-                                               depth, 
-                                               this->poTextureImage, 
-                                               this->poTextureImageMemory, 
-                                               this->stagingBuffer, 
-                                               this->stagingBufferMemory);
-                this->pWindow->createVkImageView(this->poTextureImage, 
-                                                 VK_IMAGE_VIEW_TYPE_3D, 
-                                                 this->typeFormat, 
-                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                 this->poMipMapCount, 
-                                                 1, 
-                                                 this->poTextureImageView);
+                Base::GetWindowPtr()->createTexture3D(this->typeFormat, 
+                                                      this->pDataRGBA, 
+                                                      size, 
+                                                      width, 
+                                                      height, 
+                                                      depth, 
+                                                      this->poTextureImage, 
+                                                      this->poTextureImageMemory, 
+                                                      this->stagingBuffer, 
+                                                      this->stagingBufferMemory);
+                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                                                        VK_IMAGE_VIEW_TYPE_3D, 
+                                                        this->typeFormat, 
+                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                        this->poMipMapCount, 
+                                                        1, 
+                                                        this->poTextureImageView);
             }
             else if (this->typeTexture == Vulkan_Texture_CubeMap)
             {
-                this->pWindow->createTextureCubeMap(this->aPathTexture, 
-                                                    this->poMipMapCount, 
-                                                    this->poTextureImage, 
-                                                    this->poTextureImageMemory);
-                this->pWindow->createVkImageView(this->poTextureImage, 
-                                                 VK_IMAGE_VIEW_TYPE_CUBE, 
-                                                 this->typeFormat, 
-                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                 this->poMipMapCount, 
-                                                 (int)this->aPathTexture.size(), 
-                                                 this->poTextureImageView);
+                Base::GetWindowPtr()->createTextureCubeMap(this->aPathTexture, 
+                                                           this->poMipMapCount, 
+                                                           this->poTextureImage, 
+                                                           this->poTextureImageMemory);
+                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                                                        VK_IMAGE_VIEW_TYPE_CUBE, 
+                                                        this->typeFormat, 
+                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                        this->poMipMapCount, 
+                                                        (int)this->aPathTexture.size(), 
+                                                        this->poTextureImageView);
             }   
             else
             {
-                String msg = "Texture::LoadTexture: Wrong texture type, Create from file, name: [" + this->nameTexture + "] !";
+                String msg = "Texture::LoadTexture: Wrong texture type, Create from file, name: [" + this->name + "] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -893,125 +891,125 @@ namespace LostPeter
         {
             if (this->typeTexture == Vulkan_Texture_1D)
             {
-                this->pWindow->createTextureRenderTarget1D(this->rtColorDefault, 
-                                                           this->rtIsSetColor, 
-                                                           this->width, 
-                                                           this->poMipMapCount, 
-                                                           VK_SAMPLE_COUNT_1_BIT, 
-                                                           this->typeFormat, 
-                                                           this->rtImageUsage,
-                                                           this->isGraphicsComputeShared,
-                                                           this->poTextureImage, 
-                                                           this->poTextureImageMemory);
-                this->pWindow->createVkImageView(this->poTextureImage, 
-                                                 VK_IMAGE_VIEW_TYPE_1D, 
-                                                 this->typeFormat, 
-                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                 this->poMipMapCount, 
-                                                 1, 
-                                                 this->poTextureImageView);
+                Base::GetWindowPtr()->createTextureRenderTarget1D(this->rtColorDefault, 
+                                                                  this->rtIsSetColor, 
+                                                                  this->width, 
+                                                                  this->poMipMapCount, 
+                                                                  VK_SAMPLE_COUNT_1_BIT, 
+                                                                  this->typeFormat, 
+                                                                  this->rtImageUsage,
+                                                                  this->isGraphicsComputeShared,
+                                                                  this->poTextureImage, 
+                                                                  this->poTextureImageMemory);
+                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                                                        VK_IMAGE_VIEW_TYPE_1D, 
+                                                        this->typeFormat, 
+                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                        this->poMipMapCount, 
+                                                        1, 
+                                                        this->poTextureImageView);
             } 
             else if (this->typeTexture == Vulkan_Texture_2D)
             {
-                this->pWindow->createTextureRenderTarget2D(this->rtColorDefault, 
-                                                           this->rtIsSetColor, 
-                                                           this->width, 
-                                                           this->height,
-                                                           this->poMipMapCount, 
-                                                           VK_SAMPLE_COUNT_1_BIT, 
-                                                           this->typeFormat, 
-                                                           this->rtImageUsage,
-                                                           this->isGraphicsComputeShared,
-                                                           this->poTextureImage, 
-                                                           this->poTextureImageMemory);
-                this->pWindow->createVkImageView(this->poTextureImage, 
-                                                 VK_IMAGE_VIEW_TYPE_2D, 
-                                                 this->typeFormat, 
-                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                 this->poMipMapCount, 
-                                                 1, 
-                                                 this->poTextureImageView);
+                Base::GetWindowPtr()->createTextureRenderTarget2D(this->rtColorDefault, 
+                                                                  this->rtIsSetColor, 
+                                                                  this->width, 
+                                                                  this->height,
+                                                                  this->poMipMapCount, 
+                                                                  VK_SAMPLE_COUNT_1_BIT, 
+                                                                  this->typeFormat, 
+                                                                  this->rtImageUsage,
+                                                                  this->isGraphicsComputeShared,
+                                                                  this->poTextureImage, 
+                                                                  this->poTextureImageMemory);
+                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                                                        VK_IMAGE_VIEW_TYPE_2D, 
+                                                        this->typeFormat, 
+                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                        this->poMipMapCount, 
+                                                        1, 
+                                                        this->poTextureImageView);
             }
             else if (this->typeTexture == Vulkan_Texture_2DArray)
             {
-                this->pWindow->createTextureRenderTarget2DArray(this->rtColorDefault, 
-                                                                this->rtIsSetColor, 
-                                                                this->width, 
-                                                                this->height,
-                                                                this->poMipMapCount, 
-                                                                VK_IMAGE_TYPE_2D,
-                                                                VK_SAMPLE_COUNT_1_BIT, 
-                                                                this->typeFormat, 
-                                                                this->rtImageUsage,
-                                                                this->isGraphicsComputeShared,
-                                                                this->poTextureImage, 
-                                                                this->poTextureImageMemory);
-                this->pWindow->createVkImageView(this->poTextureImage, 
-                                                 VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
-                                                 this->typeFormat, 
-                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                 this->poMipMapCount, 
-                                                 (int)this->aPathTexture.size(), 
-                                                 this->poTextureImageView);
+                Base::GetWindowPtr()->createTextureRenderTarget2DArray(this->rtColorDefault, 
+                                                                       this->rtIsSetColor, 
+                                                                       this->width, 
+                                                                       this->height,
+                                                                       this->poMipMapCount, 
+                                                                       VK_IMAGE_TYPE_2D,
+                                                                       VK_SAMPLE_COUNT_1_BIT, 
+                                                                       this->typeFormat, 
+                                                                       this->rtImageUsage,
+                                                                       this->isGraphicsComputeShared,
+                                                                       this->poTextureImage, 
+                                                                       this->poTextureImageMemory);
+                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                                                        VK_IMAGE_VIEW_TYPE_2D_ARRAY, 
+                                                        this->typeFormat, 
+                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                        this->poMipMapCount, 
+                                                        (int)this->aPathTexture.size(), 
+                                                        this->poTextureImageView);
             }
             else if (this->typeTexture == Vulkan_Texture_3D)
             {
-                this->pWindow->createTextureRenderTarget3D(this->rtColorDefault, 
-                                                           this->rtIsSetColor, 
-                                                           this->width, 
-                                                           this->height,
-                                                           this->depth,
-                                                           this->poMipMapCount, 
-                                                           VK_SAMPLE_COUNT_1_BIT,
-                                                           this->typeFormat, 
-                                                           this->rtImageUsage,
-                                                           this->isGraphicsComputeShared,
-                                                           this->poTextureImage, 
-                                                           this->poTextureImageMemory);
-                this->pWindow->createVkImageView(this->poTextureImage, 
-                                                 VK_IMAGE_VIEW_TYPE_3D, 
-                                                 this->typeFormat, 
-                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                 this->poMipMapCount, 
-                                                 1, 
-                                                 this->poTextureImageView);
+                Base::GetWindowPtr()->createTextureRenderTarget3D(this->rtColorDefault, 
+                                                                  this->rtIsSetColor, 
+                                                                  this->width, 
+                                                                  this->height,
+                                                                  this->depth,
+                                                                  this->poMipMapCount, 
+                                                                  VK_SAMPLE_COUNT_1_BIT,
+                                                                  this->typeFormat, 
+                                                                  this->rtImageUsage,
+                                                                  this->isGraphicsComputeShared,
+                                                                  this->poTextureImage, 
+                                                                  this->poTextureImageMemory);
+                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                                                        VK_IMAGE_VIEW_TYPE_3D, 
+                                                        this->typeFormat, 
+                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                        this->poMipMapCount, 
+                                                        1, 
+                                                        this->poTextureImageView);
             }
             else if (this->typeTexture == Vulkan_Texture_CubeMap)
             {
-                this->pWindow->createTextureRenderTargetCubeMap(this->width, 
-                                                                this->height,
-                                                                this->poMipMapCount, 
-                                                                VK_SAMPLE_COUNT_1_BIT,
-                                                                this->typeFormat, 
-                                                                this->rtImageUsage,
-                                                                this->isGraphicsComputeShared,
-                                                                this->poTextureImage, 
-                                                                this->poTextureImageMemory);
-                this->pWindow->createVkImageView(this->poTextureImage, 
-                                                 VK_IMAGE_VIEW_TYPE_CUBE, 
-                                                 this->typeFormat, 
-                                                 VK_IMAGE_ASPECT_COLOR_BIT, 
-                                                 this->poMipMapCount, 
-                                                 6, 
-                                                 this->poTextureImageView);
+                Base::GetWindowPtr()->createTextureRenderTargetCubeMap(this->width, 
+                                                                       this->height,
+                                                                       this->poMipMapCount, 
+                                                                       VK_SAMPLE_COUNT_1_BIT,
+                                                                       this->typeFormat, 
+                                                                       this->rtImageUsage,
+                                                                       this->isGraphicsComputeShared,
+                                                                       this->poTextureImage, 
+                                                                       this->poTextureImageMemory);
+                Base::GetWindowPtr()->createVkImageView(this->poTextureImage, 
+                                                        VK_IMAGE_VIEW_TYPE_CUBE, 
+                                                        this->typeFormat, 
+                                                        VK_IMAGE_ASPECT_COLOR_BIT, 
+                                                        this->poMipMapCount, 
+                                                        6, 
+                                                        this->poTextureImageView);
             }
             else
             {
-                String msg = "Texture::LoadTexture: Wrong texture type, Create render target, name: [" + this->nameTexture + "] !";
+                String msg = "Texture::LoadTexture: Wrong texture type, Create render target, name: [" + this->name + "] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
         }
 
-        this->pWindow->createVkSampler(this->typeFilter, 
-                                       this->typeAddressing,
-                                       this->typeBorderColor,
-                                       true,
-                                       this->pWindow->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
-                                       0.0f,
-                                       static_cast<float>(this->poMipMapCount),
-                                       0.0f,
-                                       this->poTextureSampler);
+        Base::GetWindowPtr()->createVkSampler(this->typeFilter, 
+                                              this->typeAddressing,
+                                              this->typeBorderColor,
+                                              true,
+                                              Base::GetWindowPtr()->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+                                              0.0f,
+                                              static_cast<float>(this->poMipMapCount),
+                                              0.0f,
+                                              this->poTextureSampler);
 
         this->poTextureImageInfo = {};
         this->poTextureImageInfo.imageLayout = this->poTextureImageLayout;
@@ -1053,28 +1051,26 @@ namespace LostPeter
 
         //2> MapData to stagingBuffer
         VkDeviceSize bufSize = this->width * this->height * this->depth;
-        this->pWindow->updateVKBuffer(0, bufSize, (void*)this->pDataRGBA, this->stagingBufferMemory);
+        Base::GetWindowPtr()->updateVKBuffer(0, bufSize, (void*)this->pDataRGBA, this->stagingBufferMemory);
 
         //3> CopyToImage
-        VkCommandBuffer cmdBuffer = this->pWindow->beginSingleTimeCommands();
+        VkCommandBuffer cmdBuffer = Base::GetWindowPtr()->beginSingleTimeCommands();
         {   
-            this->pWindow->copyBufferToImage(cmdBuffer,
-                                            this->stagingBuffer, 
-                                            this->poTextureImage, 
-                                            static_cast<uint32_t>(this->width), 
-                                            static_cast<uint32_t>(this->height),
-                                            static_cast<uint32_t>(this->depth), 
-                                            1);
+            Base::GetWindowPtr()->copyBufferToImage(cmdBuffer,
+                                                    this->stagingBuffer, 
+                                                    this->poTextureImage, 
+                                                    static_cast<uint32_t>(this->width), 
+                                                    static_cast<uint32_t>(this->height),
+                                                    static_cast<uint32_t>(this->depth), 
+                                                    1);
         }
-        this->pWindow->endSingleTimeCommands(cmdBuffer);
+        Base::GetWindowPtr()->endSingleTimeCommands(cmdBuffer);
     }
 
 
     /////////////////////////// Shader ////////////////////////////
-    VulkanWindow::Shader::Shader(VulkanWindow* _pWindow,
-                                 const String& _nameShader)
-        : pWindow(_pWindow)
-        , nameShader(_nameShader)
+    VulkanWindow::Shader::Shader(const String& nameShader)
+        : Base(nameShader)
     {
 
     }
@@ -1085,10 +1081,8 @@ namespace LostPeter
 
 
     /////////////////////////// Material //////////////////////////
-    VulkanWindow::Material::Material(VulkanWindow* _pWindow,
-                                     const String& _nameMaterial)
-        : pWindow(_pWindow)
-        , nameMaterial(_nameMaterial)
+    VulkanWindow::Material::Material(const String& nameMaterial)
+        : Base(nameMaterial)
     {
         
     }
@@ -1112,18 +1106,17 @@ namespace LostPeter
     {
 
     }
-    void VulkanWindow::FrameBufferAttachment::Destroy(VulkanWindow* pWindow)
+    void VulkanWindow::FrameBufferAttachment::Destroy()
     {
         if (this->image != VK_NULL_HANDLE)
         {
-            pWindow->destroyVkImage(this->image, this->memory, this->view);
+            Base::GetWindowPtr()->destroyVkImage(this->image, this->memory, this->view);
         }
         this->image = VK_NULL_HANDLE;
         this->memory = VK_NULL_HANDLE;
         this->view = VK_NULL_HANDLE;
     }
-    void VulkanWindow::FrameBufferAttachment::Init(VulkanWindow* pWindow, 
-                                                   uint32_t width, 
+    void VulkanWindow::FrameBufferAttachment::Init(uint32_t width, 
                                                    uint32_t height, 
                                                    bool _isDepth,
                                                    bool _isImageArray)
@@ -1135,8 +1128,8 @@ namespace LostPeter
         uint32_t numArray = 1;
         uint32_t mipMapCount = 1;
         VkImageType imageType = VK_IMAGE_TYPE_2D;
-        VkSampleCountFlagBits numSamples = pWindow->poMSAASamples;
-        VkFormat format = pWindow->poSwapChainImageFormat;
+        VkSampleCountFlagBits numSamples = Base::GetWindowPtr()->poMSAASamples;
+        VkFormat format = Base::GetWindowPtr()->poSwapChainImageFormat;
         VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
         VkImageUsageFlags usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
         VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -1147,7 +1140,7 @@ namespace LostPeter
 
         if (_isDepth)
         {
-            format = pWindow->poDepthImageFormat;
+            format = Base::GetWindowPtr()->poDepthImageFormat;
             usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
             aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
         }
@@ -1158,40 +1151,38 @@ namespace LostPeter
             imageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
         }
 
-        pWindow->createVkImage(width, 
-                               height, 
-                               depth,
-                               numArray,
-                               mipMapCount,
-                               imageType, 
-                               false,
-                               numSamples, 
-                               format, 
-                               tiling, 
-                               usage,
-                               sharingMode,
-                               false,
-                               properties, 
-                               this->image, 
-                               this->memory);
+        Base::GetWindowPtr()->createVkImage(width, 
+                                            height, 
+                                            depth,
+                                            numArray,
+                                            mipMapCount,
+                                            imageType, 
+                                            false,
+                                            numSamples, 
+                                            format, 
+                                            tiling, 
+                                            usage,
+                                            sharingMode,
+                                            false,
+                                            properties, 
+                                            this->image, 
+                                            this->memory);
         
-        pWindow->createVkImageView(this->image, 
-                                   imageViewType,
-                                   format, 
-                                   aspectFlags, 
-                                   mipMapCount,
-                                   numArray,
-                                   this->view);
+        Base::GetWindowPtr()->createVkImageView(this->image, 
+                                                imageViewType,
+                                                format, 
+                                                aspectFlags, 
+                                                mipMapCount,
+                                                numArray,
+                                                this->view);
     }
 
 
-    VulkanWindow::MultiRenderPass::MultiRenderPass(VulkanWindow* _pWindow, 
-                                                   const String& _nameRenderPass,
+    VulkanWindow::MultiRenderPass::MultiRenderPass(const String& _nameRenderPass,
                                                    bool _isUseDefault,
                                                    bool _isMultiView2)
         //Window
-        : pWindow(_pWindow)
-        , nameRenderPass(_nameRenderPass)
+        : Base(_nameRenderPass)
         , isUseDefault(_isUseDefault)
         , isMultiView2(_isMultiView2)
 
@@ -1214,17 +1205,17 @@ namespace LostPeter
         if (this->poRenderPass != VK_NULL_HANDLE &&
             !this->isUseDefault)
         {
-            this->pWindow->destroyVkRenderPass(this->poRenderPass);
+            Base::GetWindowPtr()->destroyVkRenderPass(this->poRenderPass);
         }
         this->poRenderPass = VK_NULL_HANDLE;
 
         //FrameBuffer
-        this->framebufferColor.Destroy(this->pWindow);
-        this->framebufferDepth.Destroy(this->pWindow);
-        this->pWindow->destroyVkImageSampler(this->sampler);
+        this->framebufferColor.Destroy();
+        this->framebufferDepth.Destroy();
+        Base::GetWindowPtr()->destroyVkImageSampler(this->sampler);
         this->sampler = VK_NULL_HANDLE;
 
-        this->pWindow->destroyVkFramebuffer(this->poFrameBuffer);
+        Base::GetWindowPtr()->destroyVkFramebuffer(this->poFrameBuffer);
         this->poFrameBuffer = VK_NULL_HANDLE;
 
         this->imageInfo.imageView = VK_NULL_HANDLE;
@@ -1234,23 +1225,23 @@ namespace LostPeter
     {
         if (this->isUseDefault)
         {
-            this->poRenderPass = this->pWindow->poRenderPass;
+            this->poRenderPass = Base::GetWindowPtr()->poRenderPass;
         }
         else
         {
             //1> Attachment
             {
-                this->framebufferColor.Init(this->pWindow, width, height, false, this->isMultiView2);
-                this->framebufferDepth.Init(this->pWindow, width, height, true, this->isMultiView2);
-                this->pWindow->createVkSampler(Vulkan_TextureFilter_Bilinear, 
-                                               Vulkan_TextureAddressing_Clamp,
-                                               Vulkan_TextureBorderColor_OpaqueWhite,
-                                               false,
-                                               1.0f,
-                                               0.0f,
-                                               1.0f,
-                                               0.0f,
-                                               this->sampler);
+                this->framebufferColor.Init(width, height, false, this->isMultiView2);
+                this->framebufferDepth.Init(width, height, true, this->isMultiView2);
+                Base::GetWindowPtr()->createVkSampler(Vulkan_TextureFilter_Bilinear, 
+                                                      Vulkan_TextureAddressing_Clamp,
+                                                      Vulkan_TextureBorderColor_OpaqueWhite,
+                                                      false,
+                                                      1.0f,
+                                                      0.0f,
+                                                      1.0f,
+                                                      0.0f,
+                                                      this->sampler);
                 
                 this->imageInfo.sampler = this->sampler;
                 this->imageInfo.imageView = this->framebufferColor.view;
@@ -1265,30 +1256,30 @@ namespace LostPeter
                 
                 //VkAttachmentDescription Color
                 VkAttachmentDescription attachmentSR_Color = {};
-                this->pWindow->createAttachmentDescription(attachmentSR_Color,
-                                                           0,
-                                                           pWindow->poSwapChainImageFormat,
-                                                           VK_SAMPLE_COUNT_1_BIT,
-                                                           VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                                           VK_ATTACHMENT_STORE_OP_STORE,
-                                                           VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                                           VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                                           VK_IMAGE_LAYOUT_UNDEFINED,
-                                                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                Base::GetWindowPtr()->createAttachmentDescription(attachmentSR_Color,
+                                                                  0,
+                                                                  Base::GetWindowPtr()->poSwapChainImageFormat,
+                                                                  VK_SAMPLE_COUNT_1_BIT,
+                                                                  VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                                  VK_ATTACHMENT_STORE_OP_STORE,
+                                                                  VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                                                  VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                                  VK_IMAGE_LAYOUT_UNDEFINED,
+                                                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
                 aAttachmentDescription.push_back(attachmentSR_Color);
 
                 //VkAttachmentDescription Depth
                 VkAttachmentDescription attachmentSR_Depth = {};
-                this->pWindow->createAttachmentDescription(attachmentSR_Depth,
-                                                           0,
-                                                           pWindow->poDepthImageFormat,
-                                                           VK_SAMPLE_COUNT_1_BIT,
-                                                           VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                                           VK_ATTACHMENT_STORE_OP_STORE,
-                                                           VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                                           VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                                                           VK_IMAGE_LAYOUT_UNDEFINED,
-                                                           VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+                Base::GetWindowPtr()->createAttachmentDescription(attachmentSR_Depth,
+                                                                  0,
+                                                                  Base::GetWindowPtr()->poDepthImageFormat,
+                                                                  VK_SAMPLE_COUNT_1_BIT,
+                                                                  VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                                  VK_ATTACHMENT_STORE_OP_STORE,
+                                                                  VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                                                  VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                                                  VK_IMAGE_LAYOUT_UNDEFINED,
+                                                                  VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
                 aAttachmentDescription.push_back(attachmentSR_Depth);
 
                 //VkSubpassDescription 
@@ -1333,14 +1324,14 @@ namespace LostPeter
                 {
                     pMultiviewCI = &renderPassMultiviewCI;
                 }
-                if (!this->pWindow->createVkRenderPass(this->nameRenderPass,
-                                                       aAttachmentDescription,
-                                                       aSubpassDescription,
-                                                       aSubpassDependency,
-                                                       pMultiviewCI,
-                                                       this->poRenderPass))
+                if (!Base::GetWindowPtr()->createVkRenderPass(GetName(),
+                                                              aAttachmentDescription,
+                                                              aSubpassDescription,
+                                                              aSubpassDependency,
+                                                              pMultiviewCI,
+                                                              this->poRenderPass))
                 {
-                    String msg = "VulkanWindow::MultiRenderPass::Init: Failed to create renderpass: " + this->nameRenderPass;
+                    String msg = "VulkanWindow::MultiRenderPass::Init: Failed to create renderpass: " + GetName();
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -1351,16 +1342,16 @@ namespace LostPeter
                 VkImageViewVector aImageViews;
                 aImageViews.push_back(this->framebufferColor.view);
                 aImageViews.push_back(this->framebufferDepth.view);
-                if (!this->pWindow->createVkFramebuffer(this->nameRenderPass,
-                                                        aImageViews, 
-                                                        this->poRenderPass,
-                                                        0,
-                                                        width,
-                                                        height,
-                                                        1,
-                                                        this->poFrameBuffer))
+                if (!Base::GetWindowPtr()->createVkFramebuffer(GetName(),
+                                                               aImageViews, 
+                                                               this->poRenderPass,
+                                                               0,
+                                                               width,
+                                                               height,
+                                                               1,
+                                                               this->poFrameBuffer))
                 {
-                    String msg = "VulkanWindow::MultiRenderPass::Init: Failed to create framebuffer: " + this->nameRenderPass;
+                    String msg = "VulkanWindow::MultiRenderPass::Init: Failed to create framebuffer: " + GetName();
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -1378,8 +1369,8 @@ namespace LostPeter
 
 
     /////////////////////////// PipelineGraphics //////////////////
-    VulkanWindow::PipelineGraphics::PipelineGraphics(VulkanWindow* _pWindow)
-        : pWindow(_pWindow)
+    VulkanWindow::PipelineGraphics::PipelineGraphics(const String& namePipelineGraphics)
+        : Base(namePipelineGraphics)
         , nameDescriptorSetLayout("")
         , poDescriptorSetLayoutNames(nullptr)
         , poDescriptorSetLayout(VK_NULL_HANDLE)
@@ -1410,25 +1401,25 @@ namespace LostPeter
         this->poPipelineLayout = VK_NULL_HANDLE;
         if (this->poPipeline_WireFrame != VK_NULL_HANDLE)
         {
-            this->pWindow->destroyVkPipeline(this->poPipeline_WireFrame);
+            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_WireFrame);
         }
         this->poPipeline_WireFrame = VK_NULL_HANDLE;
 
         if (this->poPipeline != VK_NULL_HANDLE)
         {
-            this->pWindow->destroyVkPipeline(this->poPipeline);
+            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline);
         }
         this->poPipeline = VK_NULL_HANDLE;
         this->poDescriptorSets.clear();
 
         if (this->poPipeline_WireFrame2 != VK_NULL_HANDLE)
         {
-            this->pWindow->destroyVkPipeline(this->poPipeline_WireFrame2);
+            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline_WireFrame2);
         }
         this->poPipeline_WireFrame2 = VK_NULL_HANDLE;
         if (this->poPipeline2 != VK_NULL_HANDLE)
         {
-            this->pWindow->destroyVkPipeline(this->poPipeline2);
+            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline2);
         }
         this->poPipeline2 = VK_NULL_HANDLE;
 
@@ -1437,8 +1428,8 @@ namespace LostPeter
 
 
     /////////////////////////// PipelineCompute ///////////////////
-    VulkanWindow::PipelineCompute::PipelineCompute(VulkanWindow* _pWindow)
-        : pWindow(_pWindow)
+    VulkanWindow::PipelineCompute::PipelineCompute(const String& namePipelineCompute)
+        : Base(namePipelineCompute)
         , nameDescriptorSetLayout("")
         , poDescriptorSetLayoutNames(nullptr)
         , poDescriptorSetLayout(VK_NULL_HANDLE)
@@ -1469,7 +1460,7 @@ namespace LostPeter
         this->poPipelineLayout = VK_NULL_HANDLE;
         if (this->poPipeline != VK_NULL_HANDLE)
         {
-            this->pWindow->destroyVkPipeline(this->poPipeline);
+            Base::GetWindowPtr()->destroyVkPipeline(this->poPipeline);
         }       
         this->poPipeline = VK_NULL_HANDLE;
         this->poDescriptorSet = VK_NULL_HANDLE;
@@ -1481,14 +1472,14 @@ namespace LostPeter
         DestroyTextureCopy();
         this->pTextureCopy = new TextureCopyConstants();
         VkDeviceSize bufferSize = sizeof(TextureCopyConstants);
-        this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
+        Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
     }
     void VulkanWindow::PipelineCompute::DestroyTextureCopy()
     {
         F_DELETE(this->pTextureCopy)
         if (this->poBuffer_TextureCopy != VK_NULL_HANDLE)
         {
-            this->pWindow->destroyVkBuffer(this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
+            Base::GetWindowPtr()->destroyVkBuffer(this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
         }
         this->poBuffer_TextureCopy = VK_NULL_HANDLE;
         this->poBufferMemory_TextureCopy = VK_NULL_HANDLE;
@@ -1496,8 +1487,8 @@ namespace LostPeter
 
 
     /////////////////////////// Renderable ////////////////////////
-    VulkanWindow::Renderable::Renderable(const String& _name)
-        : Base(_name)
+    VulkanWindow::Renderable::Renderable(const String& nameRenderable)
+        : Base(nameRenderable)
     {
 
     }
@@ -1508,8 +1499,8 @@ namespace LostPeter
 
 
     /////////////////////////// RenderableIndirect ////////////////
-    VulkanWindow::RenderableIndirect::RenderableIndirect(const String& _name)
-        : Renderable(_name)
+    VulkanWindow::RenderableIndirect::RenderableIndirect(const String& nameRenderableIndirect)
+        : Renderable(nameRenderableIndirect)
     {
 
     }
@@ -1520,8 +1511,8 @@ namespace LostPeter
 
 
     /////////////////////////// Movable ///////////////////////////
-    VulkanWindow::Movable::Movable(const String& _name)
-        : Base(_name)
+    VulkanWindow::Movable::Movable(const String& nameMovable)
+        : Base(nameMovable)
     {
 
     }
@@ -1532,8 +1523,8 @@ namespace LostPeter
 
 
     /////////////////////////// Node //////////////////////////////
-    VulkanWindow::Node::Node(const String& _name)
-        : Base(_name)
+    VulkanWindow::Node::Node(const String& nameNode)
+        : Base(nameNode)
     {
 
     }
@@ -1544,8 +1535,8 @@ namespace LostPeter
 
 
     /////////////////////////// SceneNode /////////////////////////
-    VulkanWindow::SceneNode::SceneNode(const String& _name)
-        : Node(_name)
+    VulkanWindow::SceneNode::SceneNode(const String& nameSceneNode)
+        : Node(nameSceneNode)
     {
 
     }
@@ -1556,8 +1547,8 @@ namespace LostPeter
 
 
     /////////////////////////// Object ////////////////////////////
-    VulkanWindow::Object::Object(const String& _name)
-        : Base(_name)
+    VulkanWindow::Object::Object(const String& nameObject)
+        : Base(nameObject)
     {
 
     }
@@ -1568,8 +1559,8 @@ namespace LostPeter
 
 
     /////////////////////////// ObjectTerrain /////////////////////
-    VulkanWindow::ObjectTerrain::ObjectTerrain(const String& _name)
-        : Object(_name)
+    VulkanWindow::ObjectTerrain::ObjectTerrain(const String& nameObjectTerrain)
+        : Object(nameObjectTerrain)
     {
 
     }
@@ -1580,8 +1571,8 @@ namespace LostPeter
 
 
     /////////////////////////// Scene /////////////////////////////
-    VulkanWindow::Scene::Scene(const String& _name)
-        : Base(_name)
+    VulkanWindow::Scene::Scene(const String& nameScene)
+        : Base(nameScene)
     {
 
     }
@@ -1592,8 +1583,8 @@ namespace LostPeter
 
 
     /////////////////////////// SceneManager //////////////////////
-    VulkanWindow::SceneManager::SceneManager(const String& _name)
-        : Base(_name)
+    VulkanWindow::SceneManager::SceneManager(const String& nameSceneManager)
+        : Base(nameSceneManager)
     {
 
     }
@@ -1604,8 +1595,8 @@ namespace LostPeter
 
 
     /////////////////////////// EditorBase ////////////////////////
-    VulkanWindow::EditorBase::EditorBase(VulkanWindow* _pWindow)
-        : pWindow(_pWindow)
+    VulkanWindow::EditorBase::EditorBase(const String& nameEditor)
+        : Base(nameEditor)
 
         //DescriptorSetLayouts
         , nameDescriptorSetLayout("")
@@ -1648,15 +1639,15 @@ namespace LostPeter
     }
     void VulkanWindow::EditorBase::initMeshes()
     {
-        this->pWindow->CreateMeshes(this->aMeshInfos, this->aMeshes, this->mapMeshes);
+        Base::GetWindowPtr()->CreateMeshes(this->aMeshInfos, this->aMeshes, this->mapMeshes);
     }
     void VulkanWindow::EditorBase::initShaders()
     {   
-        this->pWindow->CreateShaderModules(this->aShaderModuleInfos, this->aShaderModules, this->mapShaderModules);
+        Base::GetWindowPtr()->CreateShaderModules(this->aShaderModuleInfos, this->aShaderModules, this->mapShaderModules);
     }
     void VulkanWindow::EditorBase::initDescriptorSetLayout()
     {
-        this->poDescriptorSetLayout = this->pWindow->CreateDescriptorSetLayout(this->nameDescriptorSetLayout, &this->aNameDescriptorSetLayouts);
+        this->poDescriptorSetLayout = Base::GetWindowPtr()->CreateDescriptorSetLayout(this->nameDescriptorSetLayout, &this->aNameDescriptorSetLayouts);
         if (this->poDescriptorSetLayout == VK_NULL_HANDLE)
         {
             String msg = "VulkanWindow::EditorBase::initDescriptorSetLayout: Can not create VkDescriptorSetLayout by name: " + this->nameDescriptorSetLayout;
@@ -1668,7 +1659,7 @@ namespace LostPeter
     {
         VkDescriptorSetLayoutVector aDescriptorSetLayout;
         aDescriptorSetLayout.push_back(this->poDescriptorSetLayout);
-        this->poPipelineLayout = this->pWindow->createVkPipelineLayout(aDescriptorSetLayout);
+        this->poPipelineLayout = Base::GetWindowPtr()->createVkPipelineLayout(aDescriptorSetLayout);
         if (this->poPipelineLayout == VK_NULL_HANDLE)
         {
             String msg = "VulkanWindow::EditorBase::initPipelineLayout: Can not create VkPipelineLayout by descriptorSetLayout name: " + this->nameDescriptorSetLayout;
@@ -1701,7 +1692,7 @@ namespace LostPeter
         for (size_t i = 0; i < count; i++)
         {
             VkShaderModule& vkShaderModule= this->aShaderModules[i];
-            this->pWindow->destroyVkShaderModule(vkShaderModule);
+            Base::GetWindowPtr()->destroyVkShaderModule(vkShaderModule);
         }
         this->aShaderModules.clear();
         this->mapShaderModules.clear();
@@ -1714,7 +1705,7 @@ namespace LostPeter
     {
         if (this->poPipelineLayout != VK_NULL_HANDLE)
         {
-            this->pWindow->destroyVkPipelineLayout(this->poPipelineLayout);
+            Base::GetWindowPtr()->destroyVkPipelineLayout(this->poPipelineLayout);
         }
         this->poPipelineLayout = VK_NULL_HANDLE;
     }
@@ -1722,7 +1713,7 @@ namespace LostPeter
     {
         if (this->poDescriptorSetLayout != VK_NULL_HANDLE)
         {
-            this->pWindow->destroyVkDescriptorSetLayout(this->poDescriptorSetLayout);
+            Base::GetWindowPtr()->destroyVkDescriptorSetLayout(this->poDescriptorSetLayout);
         }
         this->poDescriptorSetLayout = VK_NULL_HANDLE;
     }   
@@ -1740,14 +1731,14 @@ namespace LostPeter
 
                 VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
                 VkDeviceSize offsets[] = { 0 };
-                this->pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-                this->pWindow->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-                if (this->pWindow->cfg_isWireFrame)
-                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+                Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+                Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+                if (Base::GetWindowPtr()->cfg_isWireFrame)
+                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
                 else
-                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
-                this->pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[this->pWindow->poSwapChainImageIndex], 0, nullptr);
-                this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
+                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+                Base::GetWindowPtr()->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[Base::GetWindowPtr()->poSwapChainImageIndex], 0, nullptr);
+                Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
             }
         }
     }   
@@ -1772,8 +1763,8 @@ namespace LostPeter
     /////////////////////////// EditorGrid ////////////////////////
     const String VulkanWindow::EditorGrid::s_strNameShader_Grid_Vert = "vert_editor_grid";
     const String VulkanWindow::EditorGrid::s_strNameShader_Grid_Frag = "frag_editor_grid";
-    VulkanWindow::EditorGrid::EditorGrid(VulkanWindow* _pWindow)
-        : EditorBase(_pWindow)
+    VulkanWindow::EditorGrid::EditorGrid()
+        : EditorBase("EditorGrid")
 
         , poBuffers_ObjectCB(VK_NULL_HANDLE)
         , poBuffersMemory_ObjectCB(VK_NULL_HANDLE)
@@ -1802,7 +1793,7 @@ namespace LostPeter
             return;
         SetIsNeedUpdate(false);
 
-        this->pWindow->updateVKBuffer(0, sizeof(GridObjectConstants), &gridObjectCB, this->poBuffersMemory_ObjectCB);
+        Base::GetWindowPtr()->updateVKBuffer(0, sizeof(GridObjectConstants), &gridObjectCB, this->poBuffersMemory_ObjectCB);
     }
     void VulkanWindow::EditorGrid::initConfigs()
     {
@@ -1849,31 +1840,32 @@ namespace LostPeter
     void VulkanWindow::EditorGrid::initBufferUniforms()
     {
         VkDeviceSize bufferSize = sizeof(GridObjectConstants);
-        this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+        Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
         SetIsNeedUpdate(true);
     }
     void VulkanWindow::EditorGrid::initPipelineGraphics()
     {
-        this->pPipelineGraphics = new PipelineGraphics(this->pWindow);
+        String namePipelineGraphics = "PipelineG-" + GetName();
+        this->pPipelineGraphics = new PipelineGraphics(namePipelineGraphics);
         this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
         this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
         //1> DescriptorSetLayout 
         this->pPipelineGraphics->poDescriptorSetLayout = this->poDescriptorSetLayout;
         //2> DescriptorSets
-        this->pWindow->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
+        Base::GetWindowPtr()->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
         updateDescriptorSets_Graphics();
         //3> PipelineLayout
         this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
         //4> Pipeline
         {
             VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
-            if (!this->pWindow->CreatePipelineShaderStageCreateInfos(s_strNameShader_Grid_Vert,
-                                                                     "",
-                                                                     "",
-                                                                     "",
-                                                                     s_strNameShader_Grid_Frag,
-                                                                     this->mapShaderModules,
-                                                                     aShaderStageCreateInfos_Graphics))
+            if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_Grid_Vert,
+                                                                            "",
+                                                                            "",
+                                                                            "",
+                                                                            s_strNameShader_Grid_Frag,
+                                                                            this->mapShaderModules,
+                                                                            aShaderStageCreateInfos_Graphics))
             {
                 String msg = "VulkanWindow::EditorGrid::initPipelineGraphics: Can not find shader used !";
                 F_LogError(msg.c_str());
@@ -1881,25 +1873,25 @@ namespace LostPeter
             }
 
             VkViewportVector aViewports;
-            aViewports.push_back(this->pWindow->poViewport);
+            aViewports.push_back(Base::GetWindowPtr()->poViewport);
             VkRect2DVector aScissors;
-            aScissors.push_back(this->pWindow->poScissor);
+            aScissors.push_back(Base::GetWindowPtr()->poScissor);
 
             VkStencilOpState stencilOpFront; 
             VkStencilOpState stencilOpBack; 
 
             //pPipelineGraphics->poPipeline
-            this->pPipelineGraphics->poPipeline = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
-                                                                                          false, 0, 3,
-                                                                                          Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                          Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                          this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                          VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
-                                                                                          VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS,
-                                                                                          VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                          VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                          VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                          VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                                 false, 0, 3,
+                                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                                 Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                 VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
+                                                                                                 VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS,
+                                                                                                 VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                 VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                 VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                 VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "VulkanWindow::EditorGrid::initPipelineGraphics: Failed to create pipeline graphics for [EditorGrid] !";
@@ -1909,17 +1901,17 @@ namespace LostPeter
             F_LogInfo("VulkanWindow::EditorGrid::initPipelineGraphics: [EditorGrid] Create pipeline graphics success !");
 
             //pPipelineGraphics->poPipeline_WireFrame
-            this->pPipelineGraphics->poPipeline_WireFrame = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
-                                                                                                    false, 0, 3,
-                                                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                    this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                                    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
-                                                                                                    VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS,
-                                                                                                    VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                    VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                    VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                    VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                                           false, 0, 3,
+                                                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                                           Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
+                                                                                                           VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS,
+                                                                                                           VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                           VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                           VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                           VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
                 String msg = "VulkanWindow::EditorGrid::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorGrid] !";
@@ -1945,15 +1937,15 @@ namespace LostPeter
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass = {};
-                    bufferInfo_Pass.buffer = this->pWindow->poBuffers_PassCB[i];
+                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i];
                     bufferInfo_Pass.offset = 0;
                     bufferInfo_Pass.range = sizeof(PassConstants);
-                    this->pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                               this->pPipelineGraphics->poDescriptorSets[i],
-                                                               j,
-                                                               0,
-                                                               1,
-                                                               bufferInfo_Pass);
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                      this->pPipelineGraphics->poDescriptorSets[i],
+                                                                      j,
+                                                                      0,
+                                                                      1,
+                                                                      bufferInfo_Pass);
                 }
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectGrid)) //ObjectGrid
                 {
@@ -1961,12 +1953,12 @@ namespace LostPeter
                     bufferInfo_ObjectGrid.buffer = this->poBuffers_ObjectCB;
                     bufferInfo_ObjectGrid.offset = 0;
                     bufferInfo_ObjectGrid.range = sizeof(GridObjectConstants);
-                    this->pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                               this->pPipelineGraphics->poDescriptorSets[i],
-                                                               j,
-                                                               0,
-                                                               1,
-                                                               bufferInfo_ObjectGrid);
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                      this->pPipelineGraphics->poDescriptorSets[i],
+                                                                      j,
+                                                                      0,
+                                                                      1,
+                                                                      bufferInfo_ObjectGrid);
                 }
                 else
                 {
@@ -1975,14 +1967,14 @@ namespace LostPeter
                     throw std::runtime_error(msg.c_str());
                 }
             }
-            this->pWindow->updateVkDescriptorSets(descriptorWrites);
+            Base::GetWindowPtr()->updateVkDescriptorSets(descriptorWrites);
         }
     }
     void VulkanWindow::EditorGrid::destroyBufferUniforms()
     {
         if (this->poBuffers_ObjectCB != VK_NULL_HANDLE)
         {
-            this->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+            Base::GetWindowPtr()->destroyVkBuffer(this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
         }
         this->poBuffers_ObjectCB = VK_NULL_HANDLE;
         this->poBuffersMemory_ObjectCB = VK_NULL_HANDLE;
@@ -2032,8 +2024,8 @@ namespace LostPeter
     float VulkanWindow::EditorCameraAxis::s_fCameraAspectRatio = 1.0f;
     float VulkanWindow::EditorCameraAxis::s_fCameraZNear = 0.01f;
     float VulkanWindow::EditorCameraAxis::s_fCameraZFar = 10000.0f;
-    VulkanWindow::EditorCameraAxis::EditorCameraAxis(VulkanWindow* _pWindow)
-        : EditorBase(_pWindow)
+    VulkanWindow::EditorCameraAxis::EditorCameraAxis()
+        : EditorBase("EditorCameraAxis")
 
         //CameraAxis
         , pCamera(nullptr)
@@ -2074,12 +2066,12 @@ namespace LostPeter
     {
         //Pass
         {
-            FVector3 vDir = this->pWindow->pCamera->GetDir();
+            FVector3 vDir = Base::GetWindowPtr()->pCamera->GetDir();
             FVector3 vPos = -vDir * s_fCameraDistance;
             this->pCamera->LookAtLH(vPos, s_vCameraLookTarget, s_vCameraUp);
             this->pCamera->UpdateViewMatrix();
-            this->pWindow->updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
-            this->pWindow->updateVKBuffer(0, sizeof(PassConstants), &this->passCB, this->poBuffersMemory_PassCB);
+            Base::GetWindowPtr()->updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
+            Base::GetWindowPtr()->updateVKBuffer(0, sizeof(PassConstants), &this->passCB, this->poBuffersMemory_PassCB);
         }
         
         if (!IsNeedUpdate())
@@ -2088,11 +2080,11 @@ namespace LostPeter
 
         //CameraAxis
         {
-            this->pWindow->updateVKBuffer(0, sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size(), &this->cameraAxisObjectCBs[0], this->poBuffersMemory_ObjectCB);
+            Base::GetWindowPtr()->updateVKBuffer(0, sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size(), &this->cameraAxisObjectCBs[0], this->poBuffersMemory_ObjectCB);
         }
         //Quad Blit
         {
-            this->pWindow->updateVKBuffer(0, sizeof(CopyBlitObjectConstants), &this->copyBlitObjectCB, this->poBuffersMemory_CopyBlitObjectCB);
+            Base::GetWindowPtr()->updateVKBuffer(0, sizeof(CopyBlitObjectConstants), &this->copyBlitObjectCB, this->poBuffersMemory_CopyBlitObjectCB);
         }
     }
     void VulkanWindow::EditorCameraAxis::Draw(VkCommandBuffer& commandBuffer)
@@ -2109,14 +2101,14 @@ namespace LostPeter
 
                 VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
                 VkDeviceSize offsets[] = { 0 };
-                this->pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-                this->pWindow->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-                if (this->pWindow->cfg_isWireFrame)
-                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+                Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+                Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+                if (Base::GetWindowPtr()->cfg_isWireFrame)
+                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
                 else
-                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
-                this->pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[this->pWindow->poSwapChainImageIndex], 0, nullptr);
-                this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
+                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+                Base::GetWindowPtr()->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[Base::GetWindowPtr()->poSwapChainImageIndex], 0, nullptr);
+                Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
                 instanceStart += pMeshSub->instanceCount;
             }
         }
@@ -2127,14 +2119,14 @@ namespace LostPeter
         MeshSub* pMeshSub = pMesh->aMeshSubs[0];
         VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
         VkDeviceSize offsets[] = { 0 };
-        this->pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-        this->pWindow->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-        if (this->pWindow->cfg_isWireFrame)
-            this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame);
+        Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+        Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        if (Base::GetWindowPtr()->cfg_isWireFrame)
+            Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame);
         else
-            this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipeline);
-        this->pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipelineLayout, 0, 1, &this->pPipelineGraphics_CopyBlit->poDescriptorSets[this->pWindow->poSwapChainImageIndex], 0, nullptr);
-        this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
+            Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipeline);
+        Base::GetWindowPtr()->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics_CopyBlit->poPipelineLayout, 0, 1, &this->pPipelineGraphics_CopyBlit->poDescriptorSets[Base::GetWindowPtr()->poSwapChainImageIndex], 0, nullptr);
+        Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, 0);
     }
     void VulkanWindow::EditorCameraAxis::initConfigs()
     {
@@ -2239,10 +2231,10 @@ namespace LostPeter
         }
         void VulkanWindow::EditorCameraAxis::initViewport()
         {
-            this->pWindow->createViewport(s_fBlitAreaWidth,
-                                          s_fBlitAreaHeight,
-                                          this->poViewport,
-                                          this->poScissor);
+            Base::GetWindowPtr()->createViewport(s_fBlitAreaWidth,
+                                                 s_fBlitAreaHeight,
+                                                 this->poViewport,
+                                                 this->poScissor);
             this->poOffset.x = 0.0f;
             this->poOffset.y = 0.0f;
             this->poExtent.width = s_fBlitAreaWidth;
@@ -2253,8 +2245,8 @@ namespace LostPeter
         //CameraAxis
         {
             //Pass
-            this->pWindow->updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
-            this->pWindow->createVkBuffer(sizeof(PassConstants), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_PassCB, this->poBuffersMemory_PassCB);
+            Base::GetWindowPtr()->updateCBs_PassTransformAndCamera(this->passCB, this->pCamera, 0);
+            Base::GetWindowPtr()->createVkBuffer(sizeof(PassConstants), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_PassCB, this->poBuffersMemory_PassCB);
 
             this->cameraAxisObjectCBs.clear();
             int indexConst = 0;
@@ -2315,7 +2307,7 @@ namespace LostPeter
                 indexConst++;
             }
             VkDeviceSize bufferSize = sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size();
-            this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
 
             Mesh* pMesh = this->aMeshes[s_nMeshConeIndex]; //Cone
             MeshSub* pMeshSub = pMesh->aMeshSubs[0];
@@ -2326,14 +2318,14 @@ namespace LostPeter
         }
         //Quad Blit
         {
-            float width = (float)this->pWindow->poSwapChainExtent.width;
-            float height = (float)this->pWindow->poSwapChainExtent.height;
+            float width = (float)Base::GetWindowPtr()->poSwapChainExtent.width;
+            float height = (float)Base::GetWindowPtr()->poSwapChainExtent.height;
             this->copyBlitObjectCB.offsetX = 1.0f - s_fBlitAreaWidth / width;
             this->copyBlitObjectCB.offsetY = 1.0f - s_fBlitAreaHeight / height;
             this->copyBlitObjectCB.scaleX = 2.0f * s_fBlitAreaWidth / width;
             this->copyBlitObjectCB.scaleY = 2.0f * s_fBlitAreaHeight / height;
             VkDeviceSize bufferSize = sizeof(CopyBlitObjectConstants);
-            this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_CopyBlitObjectCB, this->poBuffersMemory_CopyBlitObjectCB);
+            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_CopyBlitObjectCB, this->poBuffersMemory_CopyBlitObjectCB);
         }
         SetIsNeedUpdate(true);
     }
@@ -2342,7 +2334,7 @@ namespace LostPeter
         VulkanWindow::EditorBase::initDescriptorSetLayout();
         //Quad Blit
         {   
-            this->poDescriptorSetLayout_CopyBlit = this->pWindow->CreateDescriptorSetLayout(this->nameDescriptorSetLayout_CopyBlit, &this->aNameDescriptorSetLayouts_CopyBlit);
+            this->poDescriptorSetLayout_CopyBlit = Base::GetWindowPtr()->CreateDescriptorSetLayout(this->nameDescriptorSetLayout_CopyBlit, &this->aNameDescriptorSetLayouts_CopyBlit);
             if (this->poDescriptorSetLayout_CopyBlit == VK_NULL_HANDLE)
             {
                 String msg = "VulkanWindow::EditorCameraAxis::initDescriptorSetLayout: Can not create VkDescriptorSetLayout by name: " + this->nameDescriptorSetLayout_CopyBlit;
@@ -2358,7 +2350,7 @@ namespace LostPeter
         {   
             VkDescriptorSetLayoutVector aDescriptorSetLayout;
             aDescriptorSetLayout.push_back(this->poDescriptorSetLayout_CopyBlit);
-            this->poPipelineLayout_CopyBlit = this->pWindow->createVkPipelineLayout(aDescriptorSetLayout);
+            this->poPipelineLayout_CopyBlit = Base::GetWindowPtr()->createVkPipelineLayout(aDescriptorSetLayout);
             if (this->poPipelineLayout_CopyBlit == VK_NULL_HANDLE)
             {
                 String msg = "VulkanWindow::EditorCameraAxis::initPipelineLayout: Can not create VkPipelineLayout by descriptorSetLayout name: " + this->nameDescriptorSetLayout_CopyBlit;
@@ -2373,28 +2365,28 @@ namespace LostPeter
         {
             //CameraAxis
             {
-                this->pPipelineGraphics = new PipelineGraphics(this->pWindow);
+                this->pPipelineGraphics = new PipelineGraphics("PipelineG-EditorCameraAxis");
                 this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
                 this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
                 //1> DescriptorSetLayout / PipelineLayout
                 this->pPipelineGraphics->poDescriptorSetLayout = this->poDescriptorSetLayout;
                 this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
                 //2> DescriptorSets
-                this->pWindow->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
+                Base::GetWindowPtr()->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
                 //3> MultiRenderPass
-                this->pPipelineGraphics->pRenderPass = new MultiRenderPass(this->pWindow, "rp_editor_camera_axis", false, false);
+                this->pPipelineGraphics->pRenderPass = new MultiRenderPass("rp_editor_camera_axis", false, false);
                 this->pPipelineGraphics->pRenderPass->Init(s_fBlitAreaWidth, s_fBlitAreaHeight);
             }
             //Quad Blit
             {
-                this->pPipelineGraphics_CopyBlit = new PipelineGraphics(this->pWindow);
+                this->pPipelineGraphics_CopyBlit = new PipelineGraphics("PipelineG-QuadBlit");
                 this->pPipelineGraphics_CopyBlit->nameDescriptorSetLayout = this->nameDescriptorSetLayout_CopyBlit;
                 this->pPipelineGraphics_CopyBlit->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts_CopyBlit;
                 //1> DescriptorSetLayout / PipelineLayout
                 this->pPipelineGraphics_CopyBlit->poDescriptorSetLayout = this->poDescriptorSetLayout_CopyBlit;
                 this->pPipelineGraphics_CopyBlit->poPipelineLayout = this->poPipelineLayout_CopyBlit;
                 //2> DescriptorSets
-                this->pWindow->createVkDescriptorSets(this->pPipelineGraphics_CopyBlit->poDescriptorSetLayout, this->pPipelineGraphics_CopyBlit->poDescriptorSets);
+                Base::GetWindowPtr()->createVkDescriptorSets(this->pPipelineGraphics_CopyBlit->poDescriptorSetLayout, this->pPipelineGraphics_CopyBlit->poDescriptorSets);
             }
             updateDescriptorSets_Graphics();
         }
@@ -2412,13 +2404,13 @@ namespace LostPeter
                 aScissors.push_back(this->poScissor);
 
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
-                if (!this->pWindow->CreatePipelineShaderStageCreateInfos(s_strNameShader_CameraAxis_Vert,
-                                                                         "",
-                                                                         "",
-                                                                         "",
-                                                                         s_strNameShader_CameraAxis_Frag,
-                                                                         this->mapShaderModules,
-                                                                         aShaderStageCreateInfos_Graphics))
+                if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_CameraAxis_Vert,
+                                                                                "",
+                                                                                "",
+                                                                                "",
+                                                                                s_strNameShader_CameraAxis_Frag,
+                                                                                this->mapShaderModules,
+                                                                                aShaderStageCreateInfos_Graphics))
                 {
                     String msg = "VulkanWindow::EditorCameraAxis::initPipelineGraphics: Can not find shader used !";
                     F_LogError(msg.c_str());
@@ -2426,17 +2418,17 @@ namespace LostPeter
                 }
 
                 //pPipelineGraphics->poPipeline
-                this->pPipelineGraphics->poPipeline = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
-                                                                                              false, 0, 3,
-                                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                              this->pPipelineGraphics->pRenderPass->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                              VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
-                                                                                              VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
-                                                                                              VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                              VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                              VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                              VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+                this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                                     false, 0, 3,
+                                                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                                     this->pPipelineGraphics->pRenderPass->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                     VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
+                                                                                                     VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
+                                                                                                     VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                     VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                     VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                     VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
                 if (this->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
                 {
                     String msg = "VulkanWindow::EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCameraAxis] !";
@@ -2446,17 +2438,17 @@ namespace LostPeter
                 F_LogInfo("VulkanWindow::EditorCameraAxis::initPipelineGraphics: [EditorCameraAxis] Create pipeline graphics success !");
 
                 //pPipelineGraphics->poPipeline_WireFrame
-                this->pPipelineGraphics->poPipeline_WireFrame = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
-                                                                                                        false, 0, 3,
-                                                                                                        Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                        Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                        this->pPipelineGraphics->pRenderPass->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
-                                                                                                        VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
-                                                                                                        VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                        VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                        VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+                this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                                               false, 0, 3,
+                                                                                                               Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                                               Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                                               this->pPipelineGraphics->pRenderPass->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                               VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
+                                                                                                               VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
+                                                                                                               VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                               VK_FALSE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                               VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                               VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
                 if (this->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
                 {
                     String msg = "VulkanWindow::EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCameraAxis] !";
@@ -2468,18 +2460,18 @@ namespace LostPeter
             //Quad Blit
             {
                 VkViewportVector aViewports;
-                aViewports.push_back(this->pWindow->poViewport);
+                aViewports.push_back(Base::GetWindowPtr()->poViewport);
                 VkRect2DVector aScissors;
-                aScissors.push_back(this->pWindow->poScissor);
+                aScissors.push_back(Base::GetWindowPtr()->poScissor);
 
                 VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
-                if (!this->pWindow->CreatePipelineShaderStageCreateInfos(s_strNameShader_QuadBlit_Vert,
-                                                                         "",
-                                                                         "",
-                                                                         "",
-                                                                         s_strNameShader_QuadBlit_Frag,
-                                                                         this->mapShaderModules,
-                                                                         aShaderStageCreateInfos_Graphics))
+                if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_QuadBlit_Vert,
+                                                                                "",
+                                                                                "",
+                                                                                "",
+                                                                                s_strNameShader_QuadBlit_Frag,
+                                                                                this->mapShaderModules,
+                                                                                aShaderStageCreateInfos_Graphics))
                 {
                     String msg = "VulkanWindow::EditorCameraAxis::initPipelineGraphics: Can not find shader used !";
                     F_LogError(msg.c_str());
@@ -2487,17 +2479,17 @@ namespace LostPeter
                 }
 
                 //pPipelineGraphics_CopyBlit->poPipeline
-                this->pPipelineGraphics_CopyBlit->poPipeline = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
-                                                                                                       false, 0, 3,
-                                                                                                       Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                       Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                       this->pWindow->poRenderPass, this->pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
-                                                                                                       VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
-                                                                                                       VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
-                                                                                                       VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                       VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                       VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                       VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+                this->pPipelineGraphics_CopyBlit->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                                              false, 0, 3,
+                                                                                                              Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                                              Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                                              Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
+                                                                                                              VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
+                                                                                                              VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
+                                                                                                              VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                              VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                              VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                              VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
                 if (this->pPipelineGraphics_CopyBlit->poPipeline == VK_NULL_HANDLE)
                 {
                     String msg = "VulkanWindow::EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCameraAxis_CopyBlit] !";
@@ -2507,17 +2499,17 @@ namespace LostPeter
                 F_LogInfo("VulkanWindow::EditorCameraAxis::initPipelineGraphics: [EditorCameraAxis_CopyBlit] Create pipeline graphics success !");
 
                 //pPipelineGraphics_CopyBlit->poPipeline_WireFrame
-                this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
-                                                                                                                 false, 0, 3,
-                                                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                                 this->pWindow->poRenderPass, this->pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
-                                                                                                                 VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
-                                                                                                                 VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
-                                                                                                                 VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                                 VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                                 VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                                 VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+                this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                                                        false, 0, 3,
+                                                                                                                        Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                                                        Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                                                        Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics_CopyBlit->poPipelineLayout, aViewports, aScissors,
+                                                                                                                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
+                                                                                                                        VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS,
+                                                                                                                        VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                                        VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                                        VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                                        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
                 if (this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame == VK_NULL_HANDLE)
                 {
                     String msg = "VulkanWindow::EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCameraAxis_CopyBlit] !";
@@ -2549,12 +2541,12 @@ namespace LostPeter
                         bufferInfo_Pass.buffer = this->poBuffers_PassCB;
                         bufferInfo_Pass.offset = 0;
                         bufferInfo_Pass.range = sizeof(PassConstants);
-                        this->pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                   this->pPipelineGraphics->poDescriptorSets[i],
-                                                                   j,
-                                                                   0,
-                                                                   1,
-                                                                   bufferInfo_Pass);
+                        Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                          this->pPipelineGraphics->poDescriptorSets[i],
+                                                                          j,
+                                                                          0,
+                                                                          1,
+                                                                          bufferInfo_Pass);
                     }
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCameraAxis)) //ObjectCameraAxis
                     {
@@ -2562,12 +2554,12 @@ namespace LostPeter
                         bufferInfo_ObjectCameraAxis.buffer = this->poBuffers_ObjectCB;
                         bufferInfo_ObjectCameraAxis.offset = 0;
                         bufferInfo_ObjectCameraAxis.range = sizeof(CameraAxisObjectConstants) * this->cameraAxisObjectCBs.size();
-                        this->pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                   this->pPipelineGraphics->poDescriptorSets[i],
-                                                                   j,
-                                                                   0,
-                                                                   1,
-                                                                   bufferInfo_ObjectCameraAxis);
+                        Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                          this->pPipelineGraphics->poDescriptorSets[i],
+                                                                          j,
+                                                                          0,
+                                                                          1,
+                                                                          bufferInfo_ObjectCameraAxis);
                     }
                     else
                     {
@@ -2576,7 +2568,7 @@ namespace LostPeter
                         throw std::runtime_error(msg.c_str());
                     }
                 }
-                this->pWindow->updateVkDescriptorSets(descriptorWrites);
+                Base::GetWindowPtr()->updateVkDescriptorSets(descriptorWrites);
             }
         }
         //Quad Blit
@@ -2598,22 +2590,22 @@ namespace LostPeter
                         bufferInfo_ObjectCopyBlit.buffer = this->poBuffers_CopyBlitObjectCB;
                         bufferInfo_ObjectCopyBlit.offset = 0;
                         bufferInfo_ObjectCopyBlit.range = sizeof(CopyBlitObjectConstants);
-                        this->pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                                   this->pPipelineGraphics_CopyBlit->poDescriptorSets[i],
-                                                                   j,
-                                                                   0,
-                                                                   1,
-                                                                   bufferInfo_ObjectCopyBlit);
+                        Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                          this->pPipelineGraphics_CopyBlit->poDescriptorSets[i],
+                                                                          j,
+                                                                          0,
+                                                                          1,
+                                                                          bufferInfo_ObjectCopyBlit);
                     }
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFrameColor)) //TextureFrameColor
                     {
-                        this->pWindow->pushVkDescriptorSet_Image(descriptorWrites,
-                                                                 this->pPipelineGraphics_CopyBlit->poDescriptorSets[i],
-                                                                 j,
-                                                                 0,
-                                                                 1,
-                                                                 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                                                 this->pPipelineGraphics->pRenderPass->imageInfo);
+                        Base::GetWindowPtr()->pushVkDescriptorSet_Image(descriptorWrites,
+                                                                        this->pPipelineGraphics_CopyBlit->poDescriptorSets[i],
+                                                                        j,
+                                                                        0,
+                                                                        1,
+                                                                        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                                                        this->pPipelineGraphics->pRenderPass->imageInfo);
                     }
                     else
                     {
@@ -2622,7 +2614,7 @@ namespace LostPeter
                         throw std::runtime_error(msg.c_str());
                     }
                 }
-                this->pWindow->updateVkDescriptorSets(descriptorWrites);
+                Base::GetWindowPtr()->updateVkDescriptorSets(descriptorWrites);
             }
         }
     }
@@ -2632,7 +2624,7 @@ namespace LostPeter
         {
             if (this->poBuffers_ObjectCB != VK_NULL_HANDLE)
             {
-                this->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
             }
             this->poBuffers_ObjectCB = VK_NULL_HANDLE;
             this->poBuffersMemory_ObjectCB = VK_NULL_HANDLE;
@@ -2642,7 +2634,7 @@ namespace LostPeter
         {
             if (this->poBuffers_CopyBlitObjectCB != VK_NULL_HANDLE)
             {
-                this->pWindow->destroyVkBuffer(this->poBuffers_CopyBlitObjectCB, this->poBuffersMemory_CopyBlitObjectCB);
+                Base::GetWindowPtr()->destroyVkBuffer(this->poBuffers_CopyBlitObjectCB, this->poBuffersMemory_CopyBlitObjectCB);
             }
             this->poBuffers_CopyBlitObjectCB = VK_NULL_HANDLE;
             this->poBuffersMemory_CopyBlitObjectCB = VK_NULL_HANDLE;
@@ -2664,7 +2656,7 @@ namespace LostPeter
         {   
             if (this->poPipelineLayout_CopyBlit != VK_NULL_HANDLE)
             {
-                this->pWindow->destroyVkPipelineLayout(this->poPipelineLayout_CopyBlit);
+                Base::GetWindowPtr()->destroyVkPipelineLayout(this->poPipelineLayout_CopyBlit);
             }
             this->poPipelineLayout_CopyBlit = VK_NULL_HANDLE;
         }   
@@ -2676,7 +2668,7 @@ namespace LostPeter
         {   
             if (this->poDescriptorSetLayout_CopyBlit != VK_NULL_HANDLE)
             {
-                this->pWindow->destroyVkDescriptorSetLayout(this->poDescriptorSetLayout_CopyBlit);
+                Base::GetWindowPtr()->destroyVkDescriptorSetLayout(this->poDescriptorSetLayout_CopyBlit);
             }
             this->poDescriptorSetLayout_CopyBlit = VK_NULL_HANDLE;
         } 
@@ -2851,8 +2843,8 @@ namespace LostPeter
     const float VulkanWindow::EditorCoordinateAxis::s_fScale_WhenSelect_AxisTorus = 1.05f;
     const float VulkanWindow::EditorCoordinateAxis::s_fScale_WhenSelect_AxisAABB = 1.2f;
     
-    VulkanWindow::EditorCoordinateAxis::EditorCoordinateAxis(VulkanWindow* _pWindow)
-        : EditorBase(_pWindow)
+    VulkanWindow::EditorCoordinateAxis::EditorCoordinateAxis()
+        : EditorBase("EditorCoordinateAxis")
 
         , poBuffers_ObjectCB(VK_NULL_HANDLE)
         , poBuffersMemory_ObjectCB(VK_NULL_HANDLE)
@@ -2868,8 +2860,8 @@ namespace LostPeter
         , ptLastX(0)
         , ptLastY(0)
     {
-        this->pCamera = _pWindow->GetCamera();
-        this->vViewport = _pWindow->GetViewportVector4();
+        this->pCamera = Base::GetWindowPtr()->GetCamera();
+        this->vViewport = Base::GetWindowPtr()->GetViewportVector4();
         ClearSelectState();
     }
     VulkanWindow::EditorCoordinateAxis::~EditorCoordinateAxis()
@@ -3070,7 +3062,7 @@ namespace LostPeter
         
         size_t bufSize = sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size();
         void* pBuf = &this->coordinateAxisObjectCBs[0];
-        this->pWindow->updateVKBuffer(0, bufSize, pBuf, this->poBuffersMemory_ObjectCB);
+        Base::GetWindowPtr()->updateVKBuffer(0, bufSize, pBuf, this->poBuffersMemory_ObjectCB);
     }
         void VulkanWindow::EditorCoordinateAxis::UpdateCBs_Move()
         {
@@ -3648,7 +3640,7 @@ namespace LostPeter
 
     void VulkanWindow::EditorCoordinateAxis::Draw(VkCommandBuffer& commandBuffer)
     {
-        this->pWindow->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[this->pWindow->poSwapChainImageIndex], 0, nullptr);
+        Base::GetWindowPtr()->bindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipelineLayout, 0, 1, &this->pPipelineGraphics->poDescriptorSets[Base::GetWindowPtr()->poSwapChainImageIndex], 0, nullptr);
         
         switch ((int)this->typeState)
         {
@@ -3696,10 +3688,10 @@ namespace LostPeter
             //Cylinder - Cone
             instanceStart = 6;
             {
-                if (this->pWindow->cfg_isWireFrame)
-                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+                if (Base::GetWindowPtr()->cfg_isWireFrame)
+                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
                 else
-                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
 
                 Mesh* pMesh_Cylinder = this->aMeshes[s_nMeshCylinderIndex];
                 MeshSub* pMeshSub_Cylinder = pMesh_Cylinder->aMeshSubs[0];
@@ -3721,10 +3713,10 @@ namespace LostPeter
             int instanceStart = 12;
             //Torus
             {
-                if (this->pWindow->cfg_isWireFrame)
-                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+                if (Base::GetWindowPtr()->cfg_isWireFrame)
+                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
                 else
-                    this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+                    Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
 
                 Mesh* pMesh_Torus = this->aMeshes[s_nMeshTorusIndex];
                 MeshSub* pMeshSub_Torus = pMesh_Torus->aMeshSubs[0];
@@ -3738,10 +3730,10 @@ namespace LostPeter
         }
         void VulkanWindow::EditorCoordinateAxis::Draw_Scale(VkCommandBuffer& commandBuffer)
         {
-            if (this->pWindow->cfg_isWireFrame)
-                this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+            if (Base::GetWindowPtr()->cfg_isWireFrame)
+                Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
             else
-                this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+                Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
 
             //Cylinder - Cone
             //AABB
@@ -3768,35 +3760,35 @@ namespace LostPeter
         }
         void VulkanWindow::EditorCoordinateAxis::DrawQuad(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
         {
-            if (this->pWindow->cfg_isWireFrame)
-                this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
+            if (Base::GetWindowPtr()->cfg_isWireFrame)
+                Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame);
             else
-                this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
+                Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline);
 
             VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
             VkDeviceSize offsets[] = { 0 };
-            this->pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-            this->pWindow->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-            this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
+            Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+            Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
         }
         void VulkanWindow::EditorCoordinateAxis::DrawQuadLine(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
         {
-            this->pWindow->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame2);
+            Base::GetWindowPtr()->bindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pPipelineGraphics->poPipeline_WireFrame2);
 
             VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
             VkDeviceSize offsets[] = { 0 };
-            this->pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-            this->pWindow->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-            this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
+            Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+            Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
         }
         void VulkanWindow::EditorCoordinateAxis::DrawShape(VkCommandBuffer& commandBuffer, MeshSub* pMeshSub, int instanceStart)
         {
             VkBuffer vertexBuffers[] = { pMeshSub->poVertexBuffer };
             VkDeviceSize offsets[] = { 0 };
-            this->pWindow->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
-            this->pWindow->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            Base::GetWindowPtr()->bindVertexBuffer(commandBuffer, 0, 1, vertexBuffers, offsets);
+            Base::GetWindowPtr()->bindIndexBuffer(commandBuffer, pMeshSub->poIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
             
-            this->pWindow->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
+            Base::GetWindowPtr()->drawIndexed(commandBuffer, pMeshSub->poIndexCount, pMeshSub->instanceCount, 0, 0, instanceStart);
         }
 
     void VulkanWindow::EditorCoordinateAxis::CheckStateMove(double x, double y)
@@ -4161,7 +4153,7 @@ namespace LostPeter
             }
             
             VkDeviceSize bufferSize = sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size();
-            this->pWindow->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+            Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
 
             //Quad
             Mesh* pMesh = this->aMeshes[s_nMeshQuadIndex]; 
@@ -4192,26 +4184,26 @@ namespace LostPeter
     void VulkanWindow::EditorCoordinateAxis::initPipelineGraphics()
     {
         //0> PipelineGraphics/PipelineGraphicsQuadLine
-        this->pPipelineGraphics = new PipelineGraphics(this->pWindow);
+        this->pPipelineGraphics = new PipelineGraphics("PipelineG-EditorCoordinateAxis");
         this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
         this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
         //1> DescriptorSetLayout 
         this->pPipelineGraphics->poDescriptorSetLayout = this->poDescriptorSetLayout;
         //2> DescriptorSets
-        this->pWindow->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
+        Base::GetWindowPtr()->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
         updateDescriptorSets_Graphics();
         //3> PipelineLayout
         this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
         //4> Pipeline
         {
             VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics;
-            if (!this->pWindow->CreatePipelineShaderStageCreateInfos(s_strNameShader_CoordinateAxis_Vert,
-                                                                     "",
-                                                                     "",
-                                                                     "",
-                                                                     s_strNameShader_CoordinateAxis_Frag,
-                                                                     this->mapShaderModules,
-                                                                     aShaderStageCreateInfos_Graphics))
+            if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_CoordinateAxis_Vert,
+                                                                            "",
+                                                                            "",
+                                                                            "",
+                                                                            s_strNameShader_CoordinateAxis_Frag,
+                                                                            this->mapShaderModules,
+                                                                            aShaderStageCreateInfos_Graphics))
             {
                 String msg = "VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: Can not find shader used !";
                 F_LogError(msg.c_str());
@@ -4219,25 +4211,25 @@ namespace LostPeter
             }
 
             VkViewportVector aViewports;
-            aViewports.push_back(this->pWindow->poViewport);
+            aViewports.push_back(Base::GetWindowPtr()->poViewport);
             VkRect2DVector aScissors;
-            aScissors.push_back(this->pWindow->poScissor);
+            aScissors.push_back(Base::GetWindowPtr()->poScissor);
 
             VkStencilOpState stencilOpFront; 
             VkStencilOpState stencilOpBack; 
 
             //pPipelineGraphics->poPipeline
-            this->pPipelineGraphics->poPipeline = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
-                                                                                          false, 0, 3,
-                                                                                          Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                          Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                          this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                          VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
-                                                                                          VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
-                                                                                          VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                          VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                          VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                          VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            this->pPipelineGraphics->poPipeline = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                                 false, 0, 3,
+                                                                                                 Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                                 Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                                 Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                 VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, 1.0f,
+                                                                                                 VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
+                                                                                                 VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                 VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                 VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                 VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
                 String msg = "VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCoordinateAxis] !";
@@ -4247,17 +4239,17 @@ namespace LostPeter
             F_LogInfo("VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: [EditorCoordinateAxis] Create pipeline graphics success !");
 
             //pPipelineGraphics->poPipeline_WireFrame
-            this->pPipelineGraphics->poPipeline_WireFrame = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
-                                                                                                    false, 0, 3,
-                                                                                                    Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
-                                                                                                    Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
-                                                                                                    this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                                    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
-                                                                                                    VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
-                                                                                                    VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                    VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                    VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                    VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            this->pPipelineGraphics->poPipeline_WireFrame = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics,
+                                                                                                           false, 0, 3,
+                                                                                                           Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2), 
+                                                                                                           Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4Tex2),
+                                                                                                           Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                           VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
+                                                                                                           VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
+                                                                                                           VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                           VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                           VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                           VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
                 String msg = "VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCoordinateAxis] !";
@@ -4268,29 +4260,29 @@ namespace LostPeter
 
             //pPipelineGraphics->poPipeline_WireFrame2
             VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos_Graphics_Wire;
-            if (!this->pWindow->CreatePipelineShaderStageCreateInfos(s_strNameShader_CoordinateAxisLine_Vert,
-                                                                     "",
-                                                                     "",
-                                                                     "",
-                                                                     s_strNameShader_CoordinateAxisLine_Frag,
-                                                                     this->mapShaderModules,
-                                                                     aShaderStageCreateInfos_Graphics_Wire))
+            if (!Base::GetWindowPtr()->CreatePipelineShaderStageCreateInfos(s_strNameShader_CoordinateAxisLine_Vert,
+                                                                            "",
+                                                                            "",
+                                                                            "",
+                                                                            s_strNameShader_CoordinateAxisLine_Frag,
+                                                                            this->mapShaderModules,
+                                                                            aShaderStageCreateInfos_Graphics_Wire))
             {
                 String msg = "VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: Can not find shader used !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            this->pPipelineGraphics->poPipeline_WireFrame2 = this->pWindow->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics_Wire,
-                                                                                                     false, 0, 3,
-                                                                                                     Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
-                                                                                                     Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
-                                                                                                     this->pWindow->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
-                                                                                                     VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
-                                                                                                     VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
-                                                                                                     VK_FALSE, stencilOpFront, stencilOpBack, 
-                                                                                                     VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
-                                                                                                     VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
-                                                                                                     VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
+            this->pPipelineGraphics->poPipeline_WireFrame2 = Base::GetWindowPtr()->createVkGraphicsPipeline(aShaderStageCreateInfos_Graphics_Wire,
+                                                                                                            false, 0, 3,
+                                                                                                            Util_GetVkVertexInputBindingDescriptionVectorPtr(F_MeshVertex_Pos3Color4), 
+                                                                                                            Util_GetVkVertexInputAttributeDescriptionVectorPtr(F_MeshVertex_Pos3Color4),
+                                                                                                            Base::GetWindowPtr()->poRenderPass, this->pPipelineGraphics->poPipelineLayout, aViewports, aScissors,
+                                                                                                            VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_FRONT_FACE_CLOCKWISE, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, 1.0f,
+                                                                                                            VK_TRUE, VK_FALSE, VK_COMPARE_OP_ALWAYS,
+                                                                                                            VK_FALSE, stencilOpFront, stencilOpBack, 
+                                                                                                            VK_TRUE, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_OP_ADD,
+                                                                                                            VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO, VK_BLEND_OP_ADD,
+                                                                                                            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->pPipelineGraphics->poPipeline_WireFrame2 == VK_NULL_HANDLE)
             {
                 String msg = "VulkanWindow::EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame 2 for [EditorCoordinateAxis] !";
@@ -4316,15 +4308,15 @@ namespace LostPeter
                 if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_Pass)) //Pass
                 {
                     VkDescriptorBufferInfo bufferInfo_Pass = {};
-                    bufferInfo_Pass.buffer = this->pWindow->poBuffers_PassCB[i];
+                    bufferInfo_Pass.buffer = Base::GetWindowPtr()->poBuffers_PassCB[i];
                     bufferInfo_Pass.offset = 0;
                     bufferInfo_Pass.range = sizeof(PassConstants);
-                    this->pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                               this->pPipelineGraphics->poDescriptorSets[i],
-                                                               j,
-                                                               0,
-                                                               1,
-                                                               bufferInfo_Pass);
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                      this->pPipelineGraphics->poDescriptorSets[i],
+                                                                      j,
+                                                                      0,
+                                                                      1,
+                                                                      bufferInfo_Pass);
                 }
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_ObjectCoordinateAxis)) //ObjectCoordinateAxis
                 {
@@ -4332,12 +4324,12 @@ namespace LostPeter
                     bufferInfo_ObjectCameraAxis.buffer = this->poBuffers_ObjectCB;
                     bufferInfo_ObjectCameraAxis.offset = 0;
                     bufferInfo_ObjectCameraAxis.range = sizeof(CoordinateAxisObjectConstants) * this->coordinateAxisObjectCBs.size();
-                    this->pWindow->pushVkDescriptorSet_Uniform(descriptorWrites,
-                                                               this->pPipelineGraphics->poDescriptorSets[i],
-                                                               j,
-                                                               0,
-                                                               1,
-                                                               bufferInfo_ObjectCameraAxis);
+                    Base::GetWindowPtr()->pushVkDescriptorSet_Uniform(descriptorWrites,
+                                                                      this->pPipelineGraphics->poDescriptorSets[i],
+                                                                      j,
+                                                                      0,
+                                                                      1,
+                                                                      bufferInfo_ObjectCameraAxis);
                 }
                 else
                 {
@@ -4346,14 +4338,14 @@ namespace LostPeter
                     throw std::runtime_error(msg.c_str());
                 }
             }
-            this->pWindow->updateVkDescriptorSets(descriptorWrites);
+            Base::GetWindowPtr()->updateVkDescriptorSets(descriptorWrites);
         }
     }
     void VulkanWindow::EditorCoordinateAxis::destroyBufferUniforms()
     {
         if (this->poBuffers_ObjectCB != VK_NULL_HANDLE)
         {
-            this->pWindow->destroyVkBuffer(this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
+            Base::GetWindowPtr()->destroyVkBuffer(this->poBuffers_ObjectCB, this->poBuffersMemory_ObjectCB);
         }
         this->poBuffers_ObjectCB = VK_NULL_HANDLE;
         this->poBuffersMemory_ObjectCB = VK_NULL_HANDLE;
@@ -4372,15 +4364,15 @@ namespace LostPeter
     {
         VulkanWindow::EditorBase::RecreateSwapChain();
 
-        this->vViewport = this->pWindow->GetViewportVector4();
+        this->vViewport = Base::GetWindowPtr()->GetViewportVector4();
     }
 
 
     /////////////////////////// EditorLineFlat2DCollector /////////
     const String VulkanWindow::EditorLineFlat2DCollector::s_strNameShader_LineFlat2D_Vert = "vert_editor_line_2d";
     const String VulkanWindow::EditorLineFlat2DCollector::s_strNameShader_LineFlat2D_Frag = "frag_editor_line_2d";
-    VulkanWindow::EditorLineFlat2DCollector::EditorLineFlat2DCollector(VulkanWindow* _pWindow)
-        : EditorBase(_pWindow)
+    VulkanWindow::EditorLineFlat2DCollector::EditorLineFlat2DCollector()
+        : EditorBase("EditorLineFlat2DCollector")
 
         , poBuffers_ObjectCB(VK_NULL_HANDLE)
         , poBuffersMemory_ObjectCB(VK_NULL_HANDLE)
@@ -4423,8 +4415,8 @@ namespace LostPeter
     /////////////////////////// EditorLineFlat3DCollector /////////
     const String VulkanWindow::EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Vert = "vert_editor_line_3d";
     const String VulkanWindow::EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Frag = "frag_editor_line_3d";
-    VulkanWindow::EditorLineFlat3DCollector::EditorLineFlat3DCollector(VulkanWindow* _pWindow)
-        : EditorBase(_pWindow)
+    VulkanWindow::EditorLineFlat3DCollector::EditorLineFlat3DCollector()
+        : EditorBase("EditorLineFlat3DCollector")
     {
 
     }
@@ -11071,35 +11063,35 @@ namespace LostPeter
     }
         void VulkanWindow::createEditor_Grid()
         {
-            this->pEditorGrid = new EditorGrid(this);
+            this->pEditorGrid = new EditorGrid();
             this->pEditorGrid->Init();
 
             F_LogInfo("<2-5-1> VulkanWindow::createEditor_Grid finish !");
         }
         void VulkanWindow::createEditor_CameraAxis()
         {
-            this->pEditorCameraAxis = new EditorCameraAxis(this);
+            this->pEditorCameraAxis = new EditorCameraAxis();
             this->pEditorCameraAxis->Init();
 
             F_LogInfo("<2-5-2> VulkanWindow::createEditor_CameraAxis finish !");
         }
         void VulkanWindow::createEditor_CoordinateAxis()
         {
-            this->pEditorCoordinateAxis = new EditorCoordinateAxis(this);
+            this->pEditorCoordinateAxis = new EditorCoordinateAxis();
             this->pEditorCoordinateAxis->Init();
 
             F_LogInfo("<2-5-3> VulkanWindow::createEditor_CoordinateAxis finish !");
         }
         void VulkanWindow::createEditor_LineFlat2DCollector()
         {
-            this->pEditorLineFlat2DCollector = new EditorLineFlat2DCollector(this);
+            this->pEditorLineFlat2DCollector = new EditorLineFlat2DCollector();
             this->pEditorLineFlat2DCollector->Init();
 
             F_LogInfo("<2-5-4> VulkanWindow::createEditor_LineFlat2DCollector finish !");
         }
         void VulkanWindow::createEditor_LineFlat3DCollector()
         {
-            this->pEditorLineFlat3DCollector = new EditorLineFlat3DCollector(this);
+            this->pEditorLineFlat3DCollector = new EditorLineFlat3DCollector();
             this->pEditorLineFlat3DCollector->Init();
 
             F_LogInfo("<2-5-5> VulkanWindow::createEditor_LineFlat3DCollector finish !");

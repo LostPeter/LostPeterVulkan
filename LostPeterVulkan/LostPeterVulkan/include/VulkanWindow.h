@@ -232,11 +232,10 @@ namespace LostPeter
 
 
         /////////////////////////// Texture ///////////////////////////
-        class utilExport Texture
+        class utilExport Texture : public Base
         {
         public:
-             Texture(VulkanWindow* _pWindow, 
-                     const String& _nameTexture,
+             Texture(const String& _nameTexture,
                      VulkanTextureType _typeTexture,
                      bool _isRenderTarget,
                      bool _isGraphicsComputeShared,
@@ -248,8 +247,6 @@ namespace LostPeter
             virtual ~Texture();
 
         public:
-            VulkanWindow* pWindow;
-            String nameTexture;
             StringVector aPathTexture;
             VulkanTextureType typeTexture;
             bool isRenderTarget;
@@ -312,16 +309,14 @@ namespace LostPeter
 
 
         /////////////////////////// Shader ////////////////////////////
-        class utilExport Shader
+        class utilExport Shader : public Base
         {
         public:
-            Shader(VulkanWindow* _pWindow,
-                   const String& _nameShader);
+            Shader(const String& nameShader);
             virtual ~Shader();
 
         public:
-            VulkanWindow* pWindow;
-            String nameShader;
+
 
         public:
 
@@ -332,16 +327,13 @@ namespace LostPeter
 
 
         /////////////////////////// Material //////////////////////////
-        class utilExport Material
+        class utilExport Material : public Base
         {
         public:
-            Material(VulkanWindow* _pWindow,
-                     const String& _nameMaterial);
+            Material(const String& nameMaterial);
             virtual ~Material();
 
         public:
-            VulkanWindow* pWindow;
-            String nameMaterial;
 
         public:
 
@@ -366,26 +358,22 @@ namespace LostPeter
             VkImageView view;
 
         public:
-            void Destroy(VulkanWindow* pWindow);
-            virtual void Init(VulkanWindow* pWindow, 
-                              uint32_t width, 
+            void Destroy();
+            virtual void Init(uint32_t width, 
                               uint32_t height, 
                               bool _isDepth,
                               bool _isImageArray);
         };
-        class utilExport MultiRenderPass
+        class utilExport MultiRenderPass : public Base
         {
         public:
-            MultiRenderPass(VulkanWindow* _pWindow, 
-                            const String& _nameRenderPass,
+            MultiRenderPass(const String& _nameRenderPass,
                             bool _isUseDefault,
                             bool _isMultiView2);
             virtual ~MultiRenderPass();
 
         public:
-            //Window
-            VulkanWindow* pWindow;
-            String nameRenderPass;
+            //Common
             bool isUseDefault;
             bool isMultiView2;
 
@@ -415,14 +403,13 @@ namespace LostPeter
 
 
         /////////////////////////// PipelineGraphics //////////////////
-        class utilExport PipelineGraphics
+        class utilExport PipelineGraphics : public Base
         {
         public:
-            PipelineGraphics(VulkanWindow* _pWindow);
+            PipelineGraphics(const String& namePipelineGraphics);
             virtual ~PipelineGraphics();
 
         public:
-            VulkanWindow* pWindow;
             String nameDescriptorSetLayout;
             StringVector* poDescriptorSetLayoutNames;
             VkDescriptorSetLayout poDescriptorSetLayout;
@@ -448,14 +435,13 @@ namespace LostPeter
 
 
         /////////////////////////// PipelineCompute ///////////////////
-        class utilExport PipelineCompute
+        class utilExport PipelineCompute : public Base
         {
         public:
-            PipelineCompute(VulkanWindow* _pWindow);
+            PipelineCompute(const String& namePipelineCompute);
             virtual ~PipelineCompute();
 
         public:
-            VulkanWindow* pWindow;
             String nameDescriptorSetLayout;
             StringVector* poDescriptorSetLayoutNames;
             VkDescriptorSetLayout poDescriptorSetLayout;
@@ -487,7 +473,7 @@ namespace LostPeter
         class utilExport Renderable : public Base
         {
         public:
-            Renderable(const String& _name);
+            Renderable(const String& nameRenderable);
             virtual ~Renderable();
 
         public:
@@ -504,7 +490,7 @@ namespace LostPeter
         class utilExport RenderableIndirect : public Renderable
         {
         public:
-            RenderableIndirect(const String& _name);
+            RenderableIndirect(const String& nameRenderableIndirect);
             virtual ~RenderableIndirect();
 
         public:
@@ -520,7 +506,7 @@ namespace LostPeter
         class utilExport Movable : public Base
         {
         public:
-            Movable(const String& _name);
+            Movable(const String& nameMovable);
             virtual ~Movable();
 
         public:
@@ -536,7 +522,7 @@ namespace LostPeter
         class utilExport Node : public Base
         {
         public:
-            Node(const String& _name);
+            Node(const String& nameNode);
             virtual ~Node();
 
         public:
@@ -552,7 +538,7 @@ namespace LostPeter
         class utilExport SceneNode : public Node
         {
         public:
-            SceneNode(const String& _name);
+            SceneNode(const String& nameSceneNode);
             virtual ~SceneNode();
 
         public:
@@ -569,7 +555,7 @@ namespace LostPeter
         class utilExport Object : public Base
         {
         public:
-            Object(const String& _name);
+            Object(const String& nameObject);
             virtual ~Object();
 
         public:
@@ -585,7 +571,7 @@ namespace LostPeter
         class utilExport ObjectTerrain : public Object
         {
         public:
-            ObjectTerrain(const String& _name);
+            ObjectTerrain(const String& nameObjectTerrain);
             virtual ~ObjectTerrain();
 
         public:
@@ -602,7 +588,7 @@ namespace LostPeter
         class utilExport Scene : public Base
         {
         public:
-            Scene(const String& _name);
+            Scene(const String& nameScene);
             virtual ~Scene();
 
         public:
@@ -619,7 +605,7 @@ namespace LostPeter
         class utilExport SceneManager : public Base
         {
         public:
-            SceneManager(const String& _name);
+            SceneManager(const String& nameSceneManager);
             virtual ~SceneManager();
 
         public:
@@ -633,15 +619,13 @@ namespace LostPeter
 
 
         /////////////////////////// EditorBase ////////////////////////
-        class utilExport EditorBase
+        class utilExport EditorBase : public Base
         {
         public:
-            EditorBase(VulkanWindow* _pWindow);
+            EditorBase(const String& nameEditor);
             virtual ~EditorBase();
         
         public:
-            VulkanWindow* pWindow;
-
             //Meshes
             MeshInfoPtrVector aMeshInfos;
             MeshPtrVector aMeshes;
@@ -698,7 +682,7 @@ namespace LostPeter
         class utilExport EditorGrid : public EditorBase
         {
         public:
-            EditorGrid(VulkanWindow* _pWindow);
+            EditorGrid();
             virtual ~EditorGrid();
 
         public:
@@ -747,7 +731,7 @@ namespace LostPeter
         class utilExport EditorCameraAxis : public EditorBase
         {
         public:
-            EditorCameraAxis(VulkanWindow* _pWindow);
+            EditorCameraAxis();
             virtual ~EditorCameraAxis();
 
         public:
@@ -849,7 +833,7 @@ namespace LostPeter
         class utilExport EditorCoordinateAxis : public EditorBase
         {
         public:
-            EditorCoordinateAxis(VulkanWindow* _pWindow);
+            EditorCoordinateAxis();
             virtual ~EditorCoordinateAxis();
 
         public:
@@ -1032,7 +1016,7 @@ namespace LostPeter
         class utilExport EditorLineFlat2DCollector : public EditorBase
         {
         public:
-            EditorLineFlat2DCollector(VulkanWindow* _pWindow);
+            EditorLineFlat2DCollector();
             virtual ~EditorLineFlat2DCollector();
 
         public:
@@ -1066,7 +1050,7 @@ namespace LostPeter
         class utilExport EditorLineFlat3DCollector : public EditorBase
         {
         public:
-            EditorLineFlat3DCollector(VulkanWindow* _pWindow);
+            EditorLineFlat3DCollector();
             virtual ~EditorLineFlat3DCollector();
 
         public:

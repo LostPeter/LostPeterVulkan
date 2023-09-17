@@ -1135,7 +1135,7 @@ void Vulkan_019_Terrain::loadModel_Custom()
                     for (size_t p = 0; p < count_dsl; p++)
                     {
                         const String& nameDescriptorSetLayout = aDescriptorSetLayout[p];
-                        PipelineCompute* pPipelineCompute = new PipelineCompute(this);
+                        PipelineCompute* pPipelineCompute = new PipelineCompute("PipelineC-Object");
                         pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
                         pRend->AddPipelineCompute(pPipelineCompute);
                     }
@@ -1590,8 +1590,7 @@ void Vulkan_019_Terrain::createTextures()
         String pathTextures = g_TexturePaths[5 * i + 4];
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
-        Texture* pTexture = new Texture(this, 
-                                        nameTexture,
+        Texture* pTexture = new Texture(nameTexture,
                                         typeTexture,
                                         isRenderTarget,
                                         isGraphicsComputeShared,
