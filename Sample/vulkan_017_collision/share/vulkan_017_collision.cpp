@@ -3742,8 +3742,7 @@ void Vulkan_017_Collision::createMeshes()
             }
         }
 
-        Mesh* pMesh = new Mesh(this,
-                               nameMesh,
+        Mesh* pMesh = new Mesh(nameMesh,
                                pathMesh,
                                typeMesh,
                                typeVertex,

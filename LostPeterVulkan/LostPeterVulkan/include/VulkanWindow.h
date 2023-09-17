@@ -92,14 +92,48 @@ namespace LostPeter
 
     public:
         class Mesh;
+
+
+        /////////////////////////// Base //////////////////////////////
+        class utilExport Base
+        {
+        public:
+            Base(const String& _name);
+            virtual ~Base();
+
+        public:
+            static VulkanWindow* ms_pVulkanWindow;
+
+        public:
+            static VulkanWindow* GetWindowPtr() { return ms_pVulkanWindow; }
+
+        protected:
+            String name;
+            int refCount;
+
+            bool isInit;
+
+        public:
+            UTIL_FORCEINLINE const String& GetName() const { return name; }
+            UTIL_FORCEINLINE void SetName(const String& _name) { name = _name; }
+
+            UTIL_FORCEINLINE int GetRef() const { return refCount; }
+            UTIL_FORCEINLINE bool HasRef() const { return refCount <= 0 ? false : true; }
+            UTIL_FORCEINLINE int AddRef() { return ++refCount; }
+            UTIL_FORCEINLINE int DelRef() { return --refCount; }
+
+            UTIL_FORCEINLINE bool IsInit() const { return isInit; }
+            UTIL_FORCEINLINE void SetIsInit(bool b) { isInit = b; }
+        };
+
         
         /////////////////////////// MeshSub ///////////////////////////
-        class utilExport MeshSub
+        class utilExport MeshSub : public Base
         {
         public:
             MeshSub(Mesh* _pMesh, 
-                    const String& _nameMeshSub,
                     const String& _nameOriginal,
+                    const String& _nameMeshSub,
                     int _indexMeshSub,
                     FMeshVertexType _poTypeVertex,
                     bool isUpdateVertexBuffer,
@@ -109,7 +143,6 @@ namespace LostPeter
         public:
             Mesh* pMesh;
             String nameMeshSub;
-            String nameOriginal;
             int indexMeshSub;
             bool isNeedUpdate_VertexBuffer;
             bool isNeedUpdate_IndexBuffer;
@@ -164,11 +197,10 @@ namespace LostPeter
 
 
         /////////////////////////// Mesh //////////////////////////////
-        class utilExport Mesh
+        class utilExport Mesh : public Base
         {
         public:
-            Mesh(VulkanWindow* _pWindow, 
-                 const String& _nameMesh,
+            Mesh(const String& _nameMesh,
                  const String& _pathMesh,
                  FMeshType _typeMesh,
                  FMeshVertexType _typeVertex,
@@ -177,8 +209,6 @@ namespace LostPeter
             virtual ~Mesh();
 
         public:
-            VulkanWindow* pWindow;
-            String nameMesh;
             String pathMesh;
             FMeshType typeMesh;
             FMeshVertexType typeVertex;
@@ -454,14 +484,14 @@ namespace LostPeter
 
 
         /////////////////////////// Renderable ////////////////////////
-        class utilExport Renderable
+        class utilExport Renderable : public Base
         {
         public:
-            Renderable(const String& _nameRenderable);
+            Renderable(const String& _name);
             virtual ~Renderable();
 
         public:
-            String nameRenderable;
+
 
         public:
 
@@ -474,7 +504,7 @@ namespace LostPeter
         class utilExport RenderableIndirect : public Renderable
         {
         public:
-            RenderableIndirect(const String& _nameRenderable);
+            RenderableIndirect(const String& _name);
             virtual ~RenderableIndirect();
 
         public:
@@ -487,14 +517,13 @@ namespace LostPeter
 
 
         /////////////////////////// Movable ///////////////////////////
-        class utilExport Movable
+        class utilExport Movable : public Base
         {
         public:
-            Movable(const String& _nameMovable);
+            Movable(const String& _name);
             virtual ~Movable();
 
         public:
-            String nameMovable;
 
         public:
 
@@ -504,14 +533,13 @@ namespace LostPeter
 
 
         /////////////////////////// Node //////////////////////////////
-        class utilExport Node
+        class utilExport Node : public Base
         {
         public:
-            Node(const String& _nameNode);
+            Node(const String& _name);
             virtual ~Node();
 
         public:
-            String nameNode;
 
         public:
 
@@ -524,7 +552,7 @@ namespace LostPeter
         class utilExport SceneNode : public Node
         {
         public:
-            SceneNode(const String& _nameNode);
+            SceneNode(const String& _name);
             virtual ~SceneNode();
 
         public:
@@ -538,14 +566,13 @@ namespace LostPeter
 
 
         /////////////////////////// Object ////////////////////////////
-        class utilExport Object
+        class utilExport Object : public Base
         {
         public:
-            Object(const String& _nameObject);
+            Object(const String& _name);
             virtual ~Object();
 
         public:
-             String nameObject;
 
         public:
 
@@ -555,14 +582,14 @@ namespace LostPeter
 
 
         /////////////////////////// ObjectTerrain /////////////////////
-        class utilExport ObjectTerrain
+        class utilExport ObjectTerrain : public Object
         {
         public:
-            ObjectTerrain(const String& _nameTerrain);
+            ObjectTerrain(const String& _name);
             virtual ~ObjectTerrain();
 
         public:
-             String nameTerrain;
+
 
         public:
 
@@ -572,33 +599,37 @@ namespace LostPeter
 
 
         /////////////////////////// Scene /////////////////////////////
-        class utilExport Scene
+        class utilExport Scene : public Base
         {
         public:
-            Scene(const String& _nameScene);
+            Scene(const String& _name);
             virtual ~Scene();
 
         public:
-             String nameScene;
+
 
         public:
 
         };
+        typedef std::vector<Scene*> ScenePtrVector;
+        typedef std::map<String, Scene*> ScenePtrMap;
 
 
         /////////////////////////// SceneManager //////////////////////
-        class utilExport SceneManager
+        class utilExport SceneManager : public Base
         {
         public:
-            SceneManager(const String& _nameSceneManager);
+            SceneManager(const String& _name);
             virtual ~SceneManager();
 
         public:
-             String nameSceneManager;
+
 
         public:
 
         };
+        typedef std::vector<SceneManager*> SceneManagerPtrVector;
+        typedef std::map<String, SceneManager*> SceneManagerPtrMap;
 
 
         /////////////////////////// EditorBase ////////////////////////

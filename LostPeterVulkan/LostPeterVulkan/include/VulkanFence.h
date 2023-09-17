@@ -31,7 +31,7 @@ namespace LostPeter
         VulkanFenceStateType m_eFenceState;
 
     public:
-         UTIL_FORCEINLINE VulkanFenceManager* GetFenceManager() { return m_pFenceManager; }
+        UTIL_FORCEINLINE VulkanFenceManager* GetFenceManager() { return m_pFenceManager; }
         UTIL_FORCEINLINE const VkFence& GetVkFence() const { return m_vkFence; }
         UTIL_FORCEINLINE VkFence GetVkFence() { return m_vkFence; }
         UTIL_FORCEINLINE bool IsSignaled() const { return m_eFenceState == Vulkan_FenceState_Signaled; }

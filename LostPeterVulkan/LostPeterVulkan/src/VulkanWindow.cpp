@@ -26,17 +26,33 @@ namespace LostPeter
 #endif
     int VulkanWindow::s_maxFramesInFight = 2;
 
+
+    ////////////////////////// Base ///////////////////////////////
+    VulkanWindow* VulkanWindow::Base::ms_pVulkanWindow = nullptr;
+    VulkanWindow::Base::Base(const String& _name)
+        : name(_name)
+        , refCount(0)
+        , isInit(false)
+    {
+       
+    }
+    VulkanWindow::Base::~Base()
+    {
+
+    }
+
+
     /////////////////////////// MeshSub ///////////////////////////
     VulkanWindow::MeshSub::MeshSub(Mesh* _pMesh, 
-                                   const String& _nameMeshSub,
                                    const String& _nameOriginal,
+                                   const String& _nameMeshSub,
                                    int _indexMeshSub,
                                    FMeshVertexType _poTypeVertex,
                                    bool isUpdateVertexBuffer,
                                    bool isUpdateIndexBuffer)
-        : pMesh(_pMesh)
+        : Base(_nameOriginal)
+        , pMesh(_pMesh)
         , nameMeshSub(_nameMeshSub)
-        , nameOriginal(_nameOriginal)
         , indexMeshSub(_indexMeshSub)
         , isNeedUpdate_VertexBuffer(isUpdateVertexBuffer)
         , isNeedUpdate_IndexBuffer(isUpdateIndexBuffer)
@@ -74,14 +90,14 @@ namespace LostPeter
         //Vertex
         if (this->poVertexBuffer != VK_NULL_HANDLE)
         {
-            this->pMesh->pWindow->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
+            Base::GetWindowPtr()->destroyVkBuffer(this->poVertexBuffer, this->poVertexBufferMemory);
         }
         this->poVertexBuffer = VK_NULL_HANDLE;
         this->poVertexBufferMemory = VK_NULL_HANDLE;
 
         if (this->poVertexBuffer_Staging != VK_NULL_HANDLE)
         {
-            this->pMesh->pWindow->destroyVkBuffer(this->poVertexBuffer_Staging, this->poVertexBufferMemory_Staging);
+            Base::GetWindowPtr()->destroyVkBuffer(this->poVertexBuffer_Staging, this->poVertexBufferMemory_Staging);
         }
         this->poVertexBuffer_Staging = VK_NULL_HANDLE;
         this->poVertexBufferMemory_Staging = VK_NULL_HANDLE;
@@ -89,14 +105,14 @@ namespace LostPeter
         //Index
         if (this->poIndexBuffer != VK_NULL_HANDLE)
         {
-            this->pMesh->pWindow->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
+            Base::GetWindowPtr()->destroyVkBuffer(this->poIndexBuffer, this->poIndexBufferMemory);
         }
         this->poIndexBuffer = VK_NULL_HANDLE;
         this->poIndexBufferMemory = VK_NULL_HANDLE;
 
         if (this->poIndexBuffer_Staging != VK_NULL_HANDLE)
         {
-            this->pMesh->pWindow->destroyVkBuffer(this->poIndexBuffer_Staging, this->poIndexBufferMemory_Staging);
+            Base::GetWindowPtr()->destroyVkBuffer(this->poIndexBuffer_Staging, this->poIndexBufferMemory_Staging);
         }
         this->poIndexBuffer_Staging = VK_NULL_HANDLE;
         this->poIndexBufferMemory_Staging = VK_NULL_HANDLE;
@@ -172,21 +188,21 @@ namespace LostPeter
 
         F_LogInfo("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4]: Vertex count: [%d], Index count: [%d] !", 
                   this->nameMeshSub.c_str(),
-                  this->nameOriginal.c_str(),
+                  this->name.c_str(),
                   (int)this->vertices_Pos3Color4.size(),
                   (int)this->indices.size());
 
         //2> createVertexBuffer
         if (!this->isNeedUpdate_VertexBuffer)
         {
-            this->pMesh->pWindow->createVertexBuffer(this->poVertexBuffer_Size, 
+            Base::GetWindowPtr()->createVertexBuffer(this->poVertexBuffer_Size, 
                                                      this->poVertexBuffer_Data, 
                                                      this->poVertexBuffer, 
                                                      this->poVertexBufferMemory);
         }
         else
         {
-            this->pMesh->pWindow->createVertexBuffer(this->poVertexBuffer_Size, 
+            Base::GetWindowPtr()->createVertexBuffer(this->poVertexBuffer_Size, 
                                                      this->poVertexBuffer_Data, 
                                                      this->poVertexBuffer, 
                                                      this->poVertexBufferMemory,
@@ -200,14 +216,14 @@ namespace LostPeter
         {
             if (!this->isNeedUpdate_VertexBuffer)
             {
-                this->pMesh->pWindow->createIndexBuffer(this->poIndexBuffer_Size, 
+                Base::GetWindowPtr()->createIndexBuffer(this->poIndexBuffer_Size, 
                                                         this->poIndexBuffer_Data, 
                                                         this->poIndexBuffer, 
                                                         this->poIndexBufferMemory);
             }   
             else
             {
-                this->pMesh->pWindow->createIndexBuffer(this->poIndexBuffer_Size, 
+                Base::GetWindowPtr()->createIndexBuffer(this->poIndexBuffer_Size, 
                                                         this->poIndexBuffer_Data, 
                                                         this->poIndexBuffer, 
                                                         this->poIndexBufferMemory,
@@ -264,7 +280,7 @@ namespace LostPeter
 
             F_LogInfo("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Tex2]: Vertex count: [%d], Index count: [%d] !", 
                       this->nameMeshSub.c_str(),
-                      this->nameOriginal.c_str(),
+                      this->name.c_str(),
                       (int)this->vertices_Pos3Color4Tex2.size(), 
                       (int)this->indices.size());
         }
@@ -303,7 +319,7 @@ namespace LostPeter
 
             F_LogInfo("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                       this->nameMeshSub.c_str(),
-                      this->nameOriginal.c_str(),
+                      this->name.c_str(),
                       (int)this->vertices_Pos3Color4Normal3Tex2.size(), 
                       (int)this->indices.size());
         }
@@ -342,7 +358,7 @@ namespace LostPeter
 
             F_LogInfo("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tex4]: Vertex count: [%d], Index count: [%d] !", 
                       this->nameMeshSub.c_str(),
-                      this->nameOriginal.c_str(),
+                      this->name.c_str(),
                       (int)this->vertices_Pos3Color4Normal3Tex4.size(), 
                       (int)this->indices.size());
         }
@@ -382,7 +398,7 @@ namespace LostPeter
 
             F_LogInfo("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex2]: Vertex count: [%d], Index count: [%d] !", 
                       this->nameMeshSub.c_str(),
-                      this->nameOriginal.c_str(),
+                      this->name.c_str(),
                       (int)this->vertices_Pos3Color4Normal3Tangent3Tex2.size(), 
                       (int)this->indices.size());
         }
@@ -422,7 +438,7 @@ namespace LostPeter
 
             F_LogInfo("VulkanWindow::MeshSub::CreateMeshSub: create mesh sub: [%s] - [%s] success, [Pos3Color4Normal3Tangent3Tex4]: Vertex count: [%d], Index count: [%d] !", 
                       this->nameMeshSub.c_str(),
-                      this->nameOriginal.c_str(),
+                      this->name.c_str(),
                       (int)this->vertices_Pos3Color4Normal3Tangent3Tex4.size(), 
                       (int)this->indices.size());
         }
@@ -435,14 +451,14 @@ namespace LostPeter
         //2> createVertexBuffer
         if (!this->isNeedUpdate_VertexBuffer)
         {
-            this->pMesh->pWindow->createVertexBuffer(this->poVertexBuffer_Size, 
+            Base::GetWindowPtr()->createVertexBuffer(this->poVertexBuffer_Size, 
                                                      this->poVertexBuffer_Data, 
                                                      this->poVertexBuffer, 
                                                      this->poVertexBufferMemory);
         }
         else
         {
-            this->pMesh->pWindow->createVertexBuffer(this->poVertexBuffer_Size, 
+            Base::GetWindowPtr()->createVertexBuffer(this->poVertexBuffer_Size, 
                                                      this->poVertexBuffer_Data, 
                                                      this->poVertexBuffer, 
                                                      this->poVertexBufferMemory,
@@ -456,14 +472,14 @@ namespace LostPeter
         {
             if (!this->isNeedUpdate_VertexBuffer)
             {
-                this->pMesh->pWindow->createIndexBuffer(this->poIndexBuffer_Size, 
+                Base::GetWindowPtr()->createIndexBuffer(this->poIndexBuffer_Size, 
                                                         this->poIndexBuffer_Data, 
                                                         this->poIndexBuffer, 
                                                         this->poIndexBufferMemory);
             }   
             else
             {
-                this->pMesh->pWindow->createIndexBuffer(this->poIndexBuffer_Size, 
+                Base::GetWindowPtr()->createIndexBuffer(this->poIndexBuffer_Size, 
                                                         this->poIndexBuffer_Data, 
                                                         this->poIndexBuffer, 
                                                         this->poIndexBufferMemory,
@@ -534,8 +550,8 @@ namespace LostPeter
             this->poVertexBufferMemory_Staging == VK_NULL_HANDLE)
             return;
         
-        this->pMesh->pWindow->updateVKBuffer(0, this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBufferMemory_Staging);
-        this->pMesh->pWindow->copyVkBuffer(this->poVertexBuffer_Staging, this->poVertexBuffer, this->poVertexBuffer_Size);
+        Base::GetWindowPtr()->updateVKBuffer(0, this->poVertexBuffer_Size, this->poVertexBuffer_Data, this->poVertexBufferMemory_Staging);
+        Base::GetWindowPtr()->copyVkBuffer(this->poVertexBuffer_Staging, this->poVertexBuffer, this->poVertexBuffer_Size);
     }
     void VulkanWindow::MeshSub::UpdateIndexBuffer()
     {
@@ -544,20 +560,18 @@ namespace LostPeter
             this->poIndexBufferMemory_Staging == VK_NULL_HANDLE)
             return;
 
-        this->pMesh->pWindow->updateVKBuffer(0, this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBufferMemory_Staging);
-        this->pMesh->pWindow->copyVkBuffer(this->poIndexBuffer_Staging, this->poIndexBuffer, this->poIndexBuffer_Size);
+        Base::GetWindowPtr()->updateVKBuffer(0, this->poIndexBuffer_Size, this->poIndexBuffer_Data, this->poIndexBufferMemory_Staging);
+        Base::GetWindowPtr()->copyVkBuffer(this->poIndexBuffer_Staging, this->poIndexBuffer, this->poIndexBuffer_Size);
     }
 
     /////////////////////////// Mesh //////////////////////////////
-    VulkanWindow::Mesh::Mesh(VulkanWindow* _pWindow, 
-                             const String& _nameMesh,
+    VulkanWindow::Mesh::Mesh(const String& _nameMesh,
                              const String& _pathMesh,
                              FMeshType _typeMesh,
                              FMeshVertexType _typeVertex,
                              FMeshGeometryType _typeGeometryType,
                              FMeshCreateParam* _pMeshCreateParam)
-        : pWindow(_pWindow)
-        , nameMesh(_nameMesh)
+        : Base(_nameMesh)
         , pathMesh(_pathMesh)
         , typeMesh(_typeMesh)
         , typeVertex(_typeVertex)
@@ -641,16 +655,17 @@ namespace LostPeter
             return false;
         }
 
+        const String& nameMesh = GetName();
         //MeshData
         int count_mesh_sub = (int)aMeshDatas.size();
         for (int i = 0; i < count_mesh_sub; i++)
         {
             FMeshData& meshData = aMeshDatas[i];
             
-            String nameMeshSub = this->nameMesh + "-" + FUtilString::SaveInt(i);
+            String nameMeshSub = nameMesh + "-" + FUtilString::SaveInt(i);
             MeshSub* pMeshSub = new MeshSub(this,
-                                            nameMeshSub,
                                             meshData.nameMesh,
+                                            nameMeshSub,
                                             i,
                                             this->typeVertex,
                                             isUpdateVertexBuffer,
@@ -669,10 +684,10 @@ namespace LostPeter
         {
             FMeshDataPC& meshDataPC = aMeshDataPCs[i];
             
-            String nameMeshSub = this->nameMesh + "-" + FUtilString::SaveInt(i);
+            String nameMeshSub = nameMesh + "-" + FUtilString::SaveInt(i);
             MeshSub* pMeshSub = new MeshSub(this,
-                                            nameMeshSub,
                                             meshDataPC.nameMesh,
+                                            nameMeshSub,
                                             i,
                                             this->typeVertex,
                                             isUpdateVertexBuffer,
@@ -1481,8 +1496,8 @@ namespace LostPeter
 
 
     /////////////////////////// Renderable ////////////////////////
-    VulkanWindow::Renderable::Renderable(const String& _nameRenderable)
-        : nameRenderable(_nameRenderable)
+    VulkanWindow::Renderable::Renderable(const String& _name)
+        : Base(_name)
     {
 
     }
@@ -1493,8 +1508,8 @@ namespace LostPeter
 
 
     /////////////////////////// RenderableIndirect ////////////////
-    VulkanWindow::RenderableIndirect::RenderableIndirect(const String& _nameRenderable)
-        : Renderable(_nameRenderable)
+    VulkanWindow::RenderableIndirect::RenderableIndirect(const String& _name)
+        : Renderable(_name)
     {
 
     }
@@ -1505,8 +1520,8 @@ namespace LostPeter
 
 
     /////////////////////////// Movable ///////////////////////////
-    VulkanWindow::Movable::Movable(const String& _nameMovable)
-        : nameMovable(_nameMovable)
+    VulkanWindow::Movable::Movable(const String& _name)
+        : Base(_name)
     {
 
     }
@@ -1517,8 +1532,8 @@ namespace LostPeter
 
 
     /////////////////////////// Node //////////////////////////////
-    VulkanWindow::Node::Node(const String& _nameNode)
-        : nameNode(_nameNode)
+    VulkanWindow::Node::Node(const String& _name)
+        : Base(_name)
     {
 
     }
@@ -1529,8 +1544,8 @@ namespace LostPeter
 
 
     /////////////////////////// SceneNode /////////////////////////
-    VulkanWindow::SceneNode::SceneNode(const String& _nameNode)
-        : Node(_nameNode)
+    VulkanWindow::SceneNode::SceneNode(const String& _name)
+        : Node(_name)
     {
 
     }
@@ -1541,8 +1556,8 @@ namespace LostPeter
 
 
     /////////////////////////// Object ////////////////////////////
-    VulkanWindow::Object::Object(const String& _nameObject)
-        : nameObject(_nameObject)
+    VulkanWindow::Object::Object(const String& _name)
+        : Base(_name)
     {
 
     }
@@ -1553,8 +1568,8 @@ namespace LostPeter
 
 
     /////////////////////////// ObjectTerrain /////////////////////
-    VulkanWindow::ObjectTerrain::ObjectTerrain(const String& _nameTerrain)
-        : nameTerrain(_nameTerrain)
+    VulkanWindow::ObjectTerrain::ObjectTerrain(const String& _name)
+        : Object(_name)
     {
 
     }
@@ -1565,8 +1580,8 @@ namespace LostPeter
 
 
     /////////////////////////// Scene /////////////////////////////
-    VulkanWindow::Scene::Scene(const String& _nameScene)
-        : nameScene(_nameScene)
+    VulkanWindow::Scene::Scene(const String& _name)
+        : Base(_name)
     {
 
     }
@@ -1577,8 +1592,8 @@ namespace LostPeter
 
 
     /////////////////////////// SceneManager //////////////////////
-    VulkanWindow::SceneManager::SceneManager(const String& _nameSceneManager)
-        : nameSceneManager(_nameSceneManager)
+    VulkanWindow::SceneManager::SceneManager(const String& _name)
+        : Base(_name)
     {
 
     }
@@ -4449,8 +4464,7 @@ namespace LostPeter
     /////////////////////////// VulkanWindow //////////////////////
     VulkanWindow::Mesh* VulkanWindow::CreateMesh(const MeshInfo* pMI)
     {
-        Mesh* pMesh = new VulkanWindow::Mesh(this, 
-                                             pMI->nameMesh,
+        Mesh* pMesh = new VulkanWindow::Mesh(pMI->nameMesh,
                                              pMI->pathMesh,
                                              pMI->typeMesh,
                                              pMI->typeVertex,
@@ -4476,7 +4490,7 @@ namespace LostPeter
             if (pMesh != nullptr)
             {
                 aMeshes.push_back(pMesh);
-                mapMeshes[pMesh->nameMesh] = pMesh;
+                mapMeshes[pMesh->GetName()] = pMesh;
             }
         }
     }
@@ -4987,6 +5001,8 @@ namespace LostPeter
         cfg_StencilOpBack.compareMask = 0;
         cfg_StencilOpBack.writeMask = 0;
         cfg_StencilOpBack.reference = 0;
+
+        Base::ms_pVulkanWindow = this;
     }
 
     VulkanWindow::~VulkanWindow()

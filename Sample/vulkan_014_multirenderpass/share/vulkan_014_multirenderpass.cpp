@@ -1644,8 +1644,7 @@ void Vulkan_014_MultiRenderPass::createMeshes()
             typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);
         }
 
-        Mesh* pMesh = new Mesh(this, 
-                               nameMesh,
+        Mesh* pMesh = new Mesh(nameMesh,
                                pathMesh,
                                typeMesh,
                                typeVertex,
