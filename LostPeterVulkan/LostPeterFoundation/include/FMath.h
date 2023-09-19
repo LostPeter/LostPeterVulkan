@@ -420,7 +420,7 @@ namespace LostPeterFoundation
 
 	public:
         //Zero
-        static bool Zero(float f, float fEpsilon /*= FMath::ms_fEpsilon*/)
+        static bool Zero(float f, float fEpsilon)
         {
             if (Abs(f) < fEpsilon)
                 return true;

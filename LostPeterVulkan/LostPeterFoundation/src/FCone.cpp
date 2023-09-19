@@ -17,7 +17,7 @@ namespace LostPeterFoundation
     bool FCone::Intersects_Point(const FVector3& point) const
 	{
 		
-		return true;	
+		return false;	
 	}
 
 	bool FCone::Intersects_Ray(const FRay& ray) const

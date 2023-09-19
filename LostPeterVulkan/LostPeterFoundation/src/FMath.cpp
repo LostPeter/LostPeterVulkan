@@ -2049,6 +2049,50 @@ namespace LostPeterFoundation
 
     std::pair<bool, float> FMath::Intersects_RayCone(const FRay& ray, const FCone& cone, bool discardInside /*= true*/)
     {
+        float t = 0;
+        const FVector3& rayPos = ray.GetOrigin();
+        //1> rayPos In Cone
+        if (discardInside && cone.Intersects_Point(rayPos))
+        {
+            return std::pair<bool, float>(true, t);
+        }
+
+        const FVector3& rayDir = ray.GetDirection();
+
+        const FVector3& coneCenter = cone.GetCenter();
+        const FVector3& coneTop = cone.GetTop();
+        float fRadius = cone.GetRadius();
+		float fHeight = cone.GetHeight();
+
+        //2> 
+        float A = rayPos.x - coneCenter.x;
+        float B = rayPos.z - coneCenter.z;
+        float D = fHeight - rayPos.y + coneCenter.y;
+
+        float tan = (fRadius / fHeight) * (fRadius / fHeight);
+        float a = (rayDir.x * rayDir.x) + (rayDir.z * rayDir.z) - (tan * (rayDir.y * rayDir.y));
+        float b = (2 * A * rayDir.x) + (2 * B * rayDir.z) + (2 * tan * D * rayDir.y);
+        float c = (A * A) + (B * B) - (tan * (D * D));
+
+        float delta = b * b - 4 * a * c;
+        if (delta < 0.0f || FMath::Zero(delta, FMath::ms_fEpsilon))
+        {
+            return std::pair<bool, float>(false, 0);
+        } 
+        
+        float t1 = (-b - FMath::Sqrt(delta)) / (2*a);
+        float t2 = (-b + FMath::Sqrt(delta)) / (2*a);
+               
+        if (t1 > t2) 
+            t = t2;
+        else 
+            t = t1;
+        
+        float r = rayPos.y + t * rayDir.y;
+        if ((r > coneCenter.y) && (r < coneCenter.y + fHeight)) 
+        {
+            return std::pair<bool, float>(true, t);
+        }
 
         return std::pair<bool, float>(false, 0);
     }

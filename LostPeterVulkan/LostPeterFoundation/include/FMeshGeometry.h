@@ -1467,6 +1467,10 @@ namespace LostPeterFoundation
         {
             return this->vUp;
         }
+        FVector3 GetTop() const
+        {
+            return this->vCenter + this->vUp * this->height;
+        }
         float GetRadius() const
         {
             return this->radius;
@@ -2268,6 +2272,10 @@ namespace LostPeterFoundation
         const FVector3& GetUp() const
         {
             return this->vUp;
+        }
+        FVector3 GetTop() const
+        {
+            return this->vCenter + this->vUp * this->height;
         }
         float GetRadius() const
         {
@@ -3104,6 +3112,10 @@ namespace LostPeterFoundation
         const FVector3& GetUp() const
         {
             return this->vUp;
+        }
+        FVector3 GetTop() const
+        {
+            return this->vCenter + this->vUp * this->height;
         }
         float GetRadius() const
         {

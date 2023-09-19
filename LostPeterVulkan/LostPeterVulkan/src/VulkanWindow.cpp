@@ -2859,6 +2859,8 @@ namespace LostPeter
         , isButtonLeftDown(false)
         , ptLastX(0)
         , ptLastY(0)
+
+        , pEntityCone(nullptr)
     {
         this->pCamera = Base::GetWindowPtr()->GetCamera();
         this->vViewport = Base::GetWindowPtr()->GetViewportVector4();
@@ -3074,21 +3076,24 @@ namespace LostPeter
             FVector3 vCenter = FMath::Transform(this->mat4Trans, FMath::ms_v3Zero);
             float fLength = this->scaleCoordinate * s_fScale_Quad;
             //X
-            this->aAxisX[0] = vCenter; 
-            this->aAxisX[1] = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate, 0.0f, 0.0f));
+            FVector3 vAxisX = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate, 0.0f, 0.0f));
+            this->aAxis[0].m_pt0 = vCenter;
+            this->aAxis[0].m_pt1 = vAxisX;
             //Y
-            this->aAxisY[0] = vCenter; 
-            this->aAxisY[1] = FMath::Transform(this->mat4Trans, FVector3(0.0f, this->scaleCoordinate, 0.0f)); 
+            FVector3 vAxisY = FMath::Transform(this->mat4Trans, FVector3(0.0f, this->scaleCoordinate, 0.0f)); 
+            this->aAxis[1].m_pt0 = vCenter; 
+            this->aAxis[1].m_pt1 = vAxisY;
             //Z
-            this->aAxisZ[0] = vCenter; 
-            this->aAxisZ[1] = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, this->scaleCoordinate));
+            FVector3 vAxisZ = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, this->scaleCoordinate));
+            this->aAxis[2].m_pt0 = vCenter; 
+            this->aAxis[2].m_pt1 = vAxisZ;
             
             //Distance 
             float aDistances[3] = 
             {
-                FMath::Length2(vCameraPos - this->aAxisX[1]),
-                FMath::Length2(vCameraPos - this->aAxisY[1]),
-                FMath::Length2(vCameraPos - this->aAxisZ[1]),
+                FMath::Length2(vCameraPos - vAxisX),
+                FMath::Length2(vCameraPos - vAxisY),
+                FMath::Length2(vCameraPos - vAxisZ),
             };
             int aSequences[3] = { 0, 1, 2 };
             FUtil::SortBubble(3, aDistances, aSequences);
@@ -3313,6 +3318,17 @@ namespace LostPeter
                     this->mat4Trans * FMath::FromTRS(FVector3(0.0f, this->scaleCoordinate, 0.0f), FVector3(  0.0f,   0.0f,  0.0f), FVector3(scaleCones[1], scaleCones[1], scaleCones[1])) * s_aMatrix4Transforms[countStart + 1], //Y+
                     this->mat4Trans * FMath::FromTRS(FVector3(0.0f, 0.0f, this->scaleCoordinate), FVector3(  0.0f,   0.0f,  0.0f), FVector3(scaleCones[2], scaleCones[2], scaleCones[2])) * s_aMatrix4Transforms[countStart + 2], //Z+
                 };
+                const FVector3& vCenter = this->pEntityCone->GetCenter();
+                FVector3 vTop = this->pEntityCone->GetTop();
+                float fRadius = this->pEntityCone->GetRadius();
+                float fHeight = this->pEntityCone->GetHeight();
+                //X
+                this->aCone[0].SetConeParam(FMath::Transform(aWorldCones[0], vCenter), FMath::Transform(aWorldCones[0], vTop), fRadius * scaleCones[0] * s_fScale_Cone, fHeight * scaleCones[0] * s_fScale_Cone);
+                //Y
+                this->aCone[1].SetConeParam(FMath::Transform(aWorldCones[1], vCenter), FMath::Transform(aWorldCones[1], vTop), fRadius * scaleCones[1] * s_fScale_Cone, fHeight * scaleCones[1] * s_fScale_Cone);
+                //Z
+                this->aCone[2].SetConeParam(FMath::Transform(aWorldCones[2], vCenter), FMath::Transform(aWorldCones[2], vTop), fRadius * scaleCones[0] * s_fScale_Cone, fHeight * scaleCones[2] * s_fScale_Cone);
+                
                 for (int i = 0; i < countNumber; i++)
                 {
                     CoordinateAxisObjectConstants& objConsts = this->coordinateAxisObjectCBs[countStart + i];
@@ -3452,21 +3468,24 @@ namespace LostPeter
             FVector3 vCenter = FMath::Transform(this->mat4Trans, FMath::ms_v3Zero);
             float fLength = this->scaleCoordinate * s_fScale_Quad;
             //X
-            this->aAxisX[0] = vCenter; 
-            this->aAxisX[1] = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate, 0.0f, 0.0f));
+            FVector3 vAxisX = FMath::Transform(this->mat4Trans, FVector3(this->scaleCoordinate, 0.0f, 0.0f));
+            this->aAxis[0].m_pt0 = vCenter;
+            this->aAxis[0].m_pt1 = vAxisX;
             //Y
-            this->aAxisY[0] = vCenter; 
-            this->aAxisY[1] = FMath::Transform(this->mat4Trans, FVector3(0.0f, this->scaleCoordinate, 0.0f)); 
+            FVector3 vAxisY = FMath::Transform(this->mat4Trans, FVector3(0.0f, this->scaleCoordinate, 0.0f)); 
+            this->aAxis[1].m_pt0 = vCenter;
+            this->aAxis[1].m_pt1 = vAxisY;
             //Z
-            this->aAxisZ[0] = vCenter; 
-            this->aAxisZ[1] = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, this->scaleCoordinate));
+            FVector3 vAxisZ = FMath::Transform(this->mat4Trans, FVector3(0.0f, 0.0f, this->scaleCoordinate));
+            this->aAxis[2].m_pt0 = vCenter;
+            this->aAxis[2].m_pt1 = vAxisZ;
 
             //Distance 
             float aDistances[3] = 
             {
-                FMath::Length2(vCameraPos - this->aAxisX[1]),
-                FMath::Length2(vCameraPos - this->aAxisY[1]),
-                FMath::Length2(vCameraPos - this->aAxisZ[1]),
+                FMath::Length2(vCameraPos - vAxisX),
+                FMath::Length2(vCameraPos - vAxisY),
+                FMath::Length2(vCameraPos - vAxisZ),
             };
             int aSequences[3] = { 0, 1, 2 };
             FUtil::SortBubble(3, aDistances, aSequences);
@@ -3808,15 +3827,15 @@ namespace LostPeter
         {
             SetQuadSelected(CoordinateElement_Quad_ZX);
         }
-        else if (FUtil::IntersectLines((float)x, (float)y, this->aAxisX, 2, this->pCamera, this->vViewport, vInter, false))
+        else if (FMath::Intersects_RaySegment_Test(ray, this->aAxis[0], 0.01f) || FMath::Intersects_RayCone_Test(ray, this->aCone[0]))
         {
             SetAxisSelected(CoordinateElement_Axis_X);
         }
-        else if (FUtil::IntersectLines((float)x, (float)y, this->aAxisY, 2, this->pCamera, this->vViewport, vInter, false))
+        else if (FMath::Intersects_RaySegment_Test(ray, this->aAxis[1], 0.01f) || FMath::Intersects_RayCone_Test(ray, this->aCone[1]))
         {
             SetAxisSelected(CoordinateElement_Axis_Y);
         }
-        else if (FUtil::IntersectLines((float)x, (float)y, this->aAxisZ, 2, this->pCamera, this->vViewport, vInter, false))
+        else if (FMath::Intersects_RaySegment_Test(ray, this->aAxis[2], 0.01f) || FMath::Intersects_RayCone_Test(ray, this->aCone[2]))
         {
             SetAxisSelected(CoordinateElement_Axis_Z);
         }
@@ -3866,15 +3885,15 @@ namespace LostPeter
         {
             SetScaleAABBSelected(CoordinateElement_Axis_Z);
         }
-        else if (FUtil::IntersectLines((float)x, (float)y, this->aAxisX, 2, this->pCamera, this->vViewport, vInter, false))
+        else if (FMath::Intersects_RaySegment_Test(ray, this->aAxis[0], 0.01f))
         {
             SetScaleAABBSelected(CoordinateElement_Axis_X);
         }
-        else if (FUtil::IntersectLines((float)x, (float)y, this->aAxisY, 2, this->pCamera, this->vViewport, vInter, false))
+        else if (FMath::Intersects_RaySegment_Test(ray, this->aAxis[1], 0.01f))
         {
             SetScaleAABBSelected(CoordinateElement_Axis_Y);
         }
-        else if (FUtil::IntersectLines((float)x, (float)y, this->aAxisZ, 2, this->pCamera, this->vViewport, vInter, false))
+        else if (FMath::Intersects_RaySegment_Test(ray, this->aAxis[2], 0.01f))
         {
             SetScaleAABBSelected(CoordinateElement_Axis_Z);
         }
@@ -4054,12 +4073,13 @@ namespace LostPeter
                                                  FMath::ms_mat4Unit);
             this->aMeshInfos.push_back(pMICylinder);
             //3: Cone
+            this->pEntityCone = new FMeshCreateParam_EntityCone(0.5f, 2.0f, 0.0f, 16, 1, false, false);
             MeshInfo* pMICone = new MeshInfo("EditorCoordinateAxis_Cone",
                                              "",
                                              F_Mesh_Geometry,
                                              F_MeshVertex_Pos3Color4Tex2,
                                              F_MeshGeometry_EntityCone,
-                                             new FMeshCreateParam_EntityCone(0.5f, 2.0f, 0.0f, 16, 1, false, false),
+                                             this->pEntityCone,
                                              false,
                                              false,
                                              FMath::ms_mat4Unit);

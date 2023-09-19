@@ -912,14 +912,16 @@ namespace LostPeter
             double ptLastX;
             double ptLastY;
             
-            FVector3 aAxisX[2];
-            FVector3 aAxisY[2];
-            FVector3 aAxisZ[2];
+            FSegment aAxis[3];
+            FCone aCone[3];
             FAABB aQuadAABB[3];
             FVector3 aTorusX[30];
             FVector3 aTorusY[30];
             FVector3 aTorusZ[30];
             FAABB aScaleAABB[4];
+
+        private:
+            FMeshCreateParam_EntityCone* pEntityCone;
             
         public:
             LP_FORCEINLINE float GetScaleCoordinate() const { return this->scaleCoordinate; }

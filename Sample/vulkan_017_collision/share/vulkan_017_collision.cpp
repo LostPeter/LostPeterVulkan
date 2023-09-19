@@ -2271,10 +2271,10 @@ bool Vulkan_017_Collision::IsCollision_LineCone3D(double x, double y, const FRay
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
         FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pLineCone3D->GetCenter());
-        FVector3 vDirection = FMath::Transform(obj.g_MatWorld, pLineCone3D->GetUp());
+        FVector3 vTop = FMath::Transform(obj.g_MatWorld, pLineCone3D->GetTop());
         float fRadius = pLineCone3D->GetRadius();
         float fHeight = pLineCone3D->GetHeight();
-        FCone coneWorld(vCenter, vDirection, fRadius, fHeight);
+        FCone coneWorld(vCenter, vTop, fRadius, fHeight);
         if (FMath::Intersects_RayCone_Test(ray, coneWorld))
         {
             obj.color = color;
@@ -2544,10 +2544,10 @@ bool Vulkan_017_Collision::IsCollision_FlatCone3D(double x, double y, const FRay
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
         FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pFlatCone3D->GetCenter());
-        FVector3 vDirection = FMath::Transform(obj.g_MatWorld, pFlatCone3D->GetUp());
+        FVector3 vTop = FMath::Transform(obj.g_MatWorld, pFlatCone3D->GetTop());
         float fRadius = pFlatCone3D->GetRadius();
         float fHeight = pFlatCone3D->GetHeight();
-        FCone coneWorld(vCenter, vDirection, fRadius, fHeight);
+        FCone coneWorld(vCenter, vTop, fRadius, fHeight);
         if (FMath::Intersects_RayCone_Test(ray, coneWorld))
         {
             obj.color = color;
@@ -2825,10 +2825,10 @@ bool Vulkan_017_Collision::IsCollision_EntityCone(double x, double y, const FRay
         ObjectConstants& obj = pRend->objectCBs[i];
         MaterialConstants& mat = pRend->materialCBs[i];
         FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pEntityCone->GetCenter());
-        FVector3 vDirection = FMath::Transform(obj.g_MatWorld, pEntityCone->GetUp());
+        FVector3 vTop = FMath::Transform(obj.g_MatWorld, pEntityCone->GetTop());
         float fRadius = pEntityCone->GetRadius();
         float fHeight = pEntityCone->GetHeight();
-        FCone coneWorld(vCenter, vDirection, fRadius, fHeight);
+        FCone coneWorld(vCenter, vTop, fRadius, fHeight);
         if (FMath::Intersects_RayCone_Test(ray, coneWorld))
         {
             mat.factorAmbient = color;
