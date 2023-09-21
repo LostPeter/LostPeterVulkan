@@ -30,7 +30,7 @@ namespace LostPeterFoundation
     bool FCapsule::Intersects_Point(const FVector3& point) const
 	{
 		
-		return true;	
+		return false;	
 	}
 
 	bool FCapsule::Intersects_Ray(const FRay& ray) const

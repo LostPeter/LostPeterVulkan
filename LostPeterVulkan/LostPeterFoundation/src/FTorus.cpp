@@ -18,7 +18,7 @@ namespace LostPeterFoundation
 	{
 		
 
-		return true;	
+		return false;	
 	}
 
 	bool FTorus::Intersects_Ray(const FRay& ray) const

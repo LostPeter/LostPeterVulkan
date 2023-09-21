@@ -71,7 +71,7 @@ namespace LostPeterFoundation
 
     const FMatrix3 FMath::ms_mat3Zero = FMatrix3(0.0f, 0.0f, 0.0f,
                                                  0.0f, 0.0f, 0.0f,
-                                                 0.0f, 0.0f, 0.0);
+                                                 0.0f, 0.0f, 0.0f);
     const FMatrix3 FMath::ms_mat3Unit = FMatrix3(1.0f, 0.0f, 0.0f,
                                                  0.0f, 1.0f, 0.0f,
                                                  0.0f, 0.0f, 1.0);
@@ -1971,13 +1971,13 @@ namespace LostPeterFoundation
         float c = dd * k - md * md;
         if (FMath::Abs(a) < FMath::ms_fEpsilon)
         {
-            //segment ayPos-rayPosFar parallel to cylinder axis
+            //segment rayPos-rayPosFar parallel to cylinder axis
             if (c > 0.0f)
             {
                 return std::pair<bool, float>(false, t);
             }
 
-            //segment ayPos-rayPosFar intersect cylinder
+            //segment rayPos-rayPosFar intersect cylinder
             if (md < 0.0f) //intersect segment against 'rayPos' endcap
                 t = - mn / nn; 
             else if (md > dd) //intersect segment against 'rayPosFar' endcap
@@ -2035,7 +2035,52 @@ namespace LostPeterFoundation
     
     std::pair<bool, float> FMath::Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool discardInside /*= true*/)
     {
+        float t = 0;
+        const FVector3& rayPos = ray.GetOrigin();
+        const FVector3& rayDir = ray.GetDirection();
+        //1> rayPos In Capsule
+        if (discardInside && capsule.Intersects_Point(rayPos))
+        {
+            return std::pair<bool, float>(true, t);
+        }
 
+        const FVector3& vCenterTop = capsule.GetCenterTop();
+        const FVector3& vCenterBottom = capsule.GetCenterBottom();
+        float fRadius = capsule.GetRadius();
+
+        //2> Calculate
+        FVector3 ba = vCenterTop - vCenterBottom;
+        FVector3 oa = rayPos - vCenterBottom;
+
+        float baba = FMath::Dot(ba, ba);
+        float bard = FMath::Dot(ba, rayDir);
+        float baoa = FMath::Dot(ba, oa);
+        float rdoa = FMath::Dot(rayDir, oa);
+        float oaoa = FMath::Dot(oa, oa);
+
+        float a = baba - bard*bard;
+        float b = baba * rdoa - baoa * bard;
+        float c = baba * oaoa - baoa * baoa - fRadius * fRadius * baba;
+        float h = b * b - a * c;
+        if (h >= 0.0f)
+        {
+            float t = (-b - FMath::Sqrt(h)) / a;
+            float y = baoa + t * bard;
+            //body
+            if(y > 0.0f && y < baba) 
+                return std::pair<bool, float>(true, t);
+
+            //caps
+            FVector3 oc = (y <= 0.0f) ? oa : rayPos - vCenterTop;
+            b = FMath::Dot(rayDir,oc);
+            c = FMath::Dot(oc,oc) - fRadius * fRadius;
+            h = b * b - c;
+            if (h > 0.0f) 
+            {
+                t = -b - FMath::Sqrt(h);
+                return  std::pair<bool, float>(true, t);
+            }
+        }
         return std::pair<bool, float>(false, 0);
     }
     int FMath::Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool& isInside, float* d1, float* d2)
@@ -2064,7 +2109,7 @@ namespace LostPeterFoundation
         float fRadius = cone.GetRadius();
 		float fHeight = cone.GetHeight();
 
-        //2> 
+        //2> Calculate
         float A = rayPos.x - coneCenter.x;
         float B = rayPos.z - coneCenter.z;
         float D = fHeight - rayPos.y + coneCenter.y;
@@ -2107,6 +2152,20 @@ namespace LostPeterFoundation
 
     std::pair<bool, float> FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool discardInside /*= true*/)
     {
+        float t = 0;
+        const FVector3& rayPos = ray.GetOrigin();
+        //1> rayPos In Torus
+        if (discardInside && torus.Intersects_Point(rayPos))
+        {
+            return std::pair<bool, float>(true, t);
+        }
+
+        const FVector3& rayDir = ray.GetDirection();
+
+  
+
+        //2> Calculate
+
 
         return std::pair<bool, float>(false, 0);
     }
