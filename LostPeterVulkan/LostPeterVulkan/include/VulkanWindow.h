@@ -230,6 +230,20 @@ namespace LostPeter
         typedef std::vector<Mesh*> MeshPtrVector;
         typedef std::map<String, Mesh*> MeshPtrMap;
 
+        /////////////////////////// MeshManager ///////////////////////
+        class utilExport MeshManager : public Base
+        {
+        public:
+            MeshManager();
+            virtual ~MeshManager();
+
+        public:
+
+        public:
+
+
+        };
+
 
         /////////////////////////// Texture ///////////////////////////
         class utilExport Texture : public Base
@@ -307,6 +321,20 @@ namespace LostPeter
         typedef std::map<String, Texture*> TexturePtrMap;
         typedef std::map<String, TexturePtrVector> TexturePtrShaderSortMap;
 
+        /////////////////////////// TextureManager ////////////////////
+        class utilExport TextureManager : public Base
+        {
+        public:
+            TextureManager();
+            virtual ~TextureManager();
+
+        public:
+
+        public:
+
+
+        };
+
 
         /////////////////////////// Shader ////////////////////////////
         class utilExport Shader : public Base
@@ -325,6 +353,20 @@ namespace LostPeter
         typedef std::vector<Shader*> ShaderPtrVector;
         typedef std::map<String, Shader*> ShaderPtrMap;
 
+        /////////////////////////// ShaderManager /////////////////////
+        class utilExport ShaderManager : public Base
+        {
+        public:
+            ShaderManager();
+            virtual ~ShaderManager();
+
+        public:
+
+        public:
+        
+
+        };
+
 
         /////////////////////////// Material //////////////////////////
         class utilExport Material : public Base
@@ -340,6 +382,20 @@ namespace LostPeter
         };
         typedef std::vector<Material*> MaterialPtrVector;
         typedef std::map<String, Material*> MaterialPtrMap;
+
+        /////////////////////////// MaterialManager ///////////////////
+        class utilExport MaterialManager : public Base
+        {
+        public:
+            MaterialManager();
+            virtual ~MaterialManager();
+
+        public:
+
+        public:
+        
+
+        };
 
 
         /////////////////////////// MultiRenderPass ///////////////////
@@ -566,6 +622,125 @@ namespace LostPeter
         typedef std::vector<Object*> ObjectPtrVector;
         typedef std::map<String, Object*> ObjectPtrMap;
 
+        /////////////////////////// ObjectCamera //////////////////////
+        class utilExport ObjectCamera : public Object
+        {
+        public:
+            ObjectCamera(const String& nameCamera);
+            virtual ~ObjectCamera();
+
+        public:
+
+        public:
+
+        };
+        typedef std::vector<ObjectCamera*> ObjectCameraPtrVector;
+        typedef std::map<String, ObjectCamera*> ObjectCameraPtrMap;
+
+        /////////////////////////// ObjectLight ///////////////////////
+        class utilExport ObjectLight : public Object
+        {
+        public:
+            ObjectLight(const String& nameLight);
+            virtual ~ObjectLight();
+
+        public:
+
+        public:
+
+        };
+        typedef std::vector<ObjectLight*> ObjectLightPtrVector;
+        typedef std::map<String, ObjectLight*> ObjectLightPtrMap;
+
+        /////////////////////////// ObjectMesh ////////////////////////
+        class utilExport ObjectMesh : public Object
+        {
+        public:
+            ObjectMesh(const String& nameMesh);
+            virtual ~ObjectMesh();
+
+        public:
+
+        public:
+
+        };
+        typedef std::vector<ObjectMesh*> ObjectMeshPtrVector;
+        typedef std::map<String, ObjectMesh*> ObjectMeshPtrMap;
+
+        /////////////////////////// ObjectSkinMesh ////////////////////
+        class utilExport ObjectSkinMesh : public Object
+        {
+        public:
+            ObjectSkinMesh(const String& nameSkinMesh);
+            virtual ~ObjectSkinMesh();
+
+        public:
+
+        public:
+
+        };
+        typedef std::vector<ObjectSkinMesh*> ObjectSkinMeshPtrVector;
+        typedef std::map<String, ObjectSkinMesh*> ObjectSkinMeshPtrMap;
+
+        /////////////////////////// ObjectParticle ////////////////////
+        class utilExport ObjectParticle : public Object
+        {
+        public:
+            ObjectParticle(const String& nameParticle);
+            virtual ~ObjectParticle();
+
+        public:
+
+        public:
+
+        };
+        typedef std::vector<ObjectParticle*> ObjectParticlePtrVector;
+        typedef std::map<String, ObjectParticle*> ObjectParticlePtrMap;
+
+        /////////////////////////// ObjectSky /////////////////////////
+        class utilExport ObjectSky : public Object
+        {
+        public:
+            ObjectSky(const String& nameSky);
+            virtual ~ObjectSky();
+
+        public:
+
+        public:
+
+        };
+        typedef std::vector<ObjectSky*> ObjectSkyPtrVector;
+        typedef std::map<String, ObjectSky*> ObjectSkyPtrMap;
+
+        /////////////////////////// ObjectCloud ///////////////////////
+        class utilExport ObjectCloud : public Object
+        {
+        public:
+            ObjectCloud(const String& nameCloud);
+            virtual ~ObjectCloud();
+
+        public:
+
+        public:
+
+        };
+        typedef std::vector<ObjectCloud*> ObjectCloudPtrVector;
+        typedef std::map<String, ObjectCloud*> ObjectCloudPtrMap;
+
+        /////////////////////////// ObjectWater ///////////////////////
+        class utilExport ObjectWater : public Object
+        {
+        public:
+            ObjectWater(const String& nameWater);
+            virtual ~ObjectWater();
+
+        public:
+
+        public:
+
+        };
+        typedef std::vector<ObjectWater*> ObjectWaterPtrVector;
+        typedef std::map<String, ObjectWater*> ObjectWaterPtrMap;
 
         /////////////////////////// ObjectTerrain /////////////////////
         class utilExport ObjectTerrain : public Object
@@ -592,9 +767,12 @@ namespace LostPeter
             virtual ~Scene();
 
         public:
+            ObjectPtrVector m_aObjects;
+            ObjectPtrMap m_mapObjects;
 
 
         public:
+
 
         };
         typedef std::vector<Scene*> ScenePtrVector;
@@ -609,13 +787,39 @@ namespace LostPeter
             virtual ~SceneManager();
 
         public:
-
+            ScenePtrVector m_aScenes;
+            ScenePtrMap m_mapScenes;
 
         public:
+            void Destroy();
+            bool Init();
+
+        protected:
+
 
         };
         typedef std::vector<SceneManager*> SceneManagerPtrVector;
         typedef std::map<String, SceneManager*> SceneManagerPtrMap;
+
+
+        /////////////////////////// SceneManagerEnumerator ////////////
+        class utilExport SceneManagerEnumerator : public Base
+        {
+        public:
+            SceneManagerEnumerator(const String& nameSceneManagerEnumerator);
+            virtual ~SceneManagerEnumerator();
+
+         public:
+            SceneManagerPtrVector m_aSceneManagers;
+            SceneManagerPtrMap m_mapSceneManagers;
+
+        public:
+            void Destroy();
+            bool Init();
+
+        protected:
+
+        };
 
 
         /////////////////////////// EditorBase ////////////////////////
@@ -1388,7 +1592,9 @@ namespace LostPeter
         bool mouseButtonDownRight;
         bool mouseButtonDownMiddle;
 
-        //Terrain
+       
+        //SceneManagerEnumerator
+        SceneManagerEnumerator* pSceneManagerEnumerator;
 
 
         //Editor

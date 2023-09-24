@@ -703,6 +703,17 @@ namespace LostPeter
         return true;
     }
 
+    /////////////////////////// MeshManager ///////////////////////
+    VulkanWindow::MeshManager::MeshManager()
+        : Base("MeshManager")
+    {
+
+    }
+    VulkanWindow::MeshManager::~MeshManager()
+    {
+
+    }
+
 
     /////////////////////////// Texture ///////////////////////////
     VulkanWindow::Texture::Texture(const String& _nameTexture,
@@ -1067,6 +1078,17 @@ namespace LostPeter
         Base::GetWindowPtr()->endSingleTimeCommands(cmdBuffer);
     }
 
+    /////////////////////////// TextureManager ////////////////////
+    VulkanWindow::TextureManager::TextureManager()
+        : Base("TextureManager")
+    {
+
+    }
+    VulkanWindow::TextureManager::~TextureManager()
+    {
+        
+    }
+
 
     /////////////////////////// Shader ////////////////////////////
     VulkanWindow::Shader::Shader(const String& nameShader)
@@ -1079,6 +1101,17 @@ namespace LostPeter
 
     }
 
+    /////////////////////////// ShaderManager /////////////////////
+    VulkanWindow::ShaderManager::ShaderManager()
+        : Base("ShaderManager")
+    {
+
+    }
+    VulkanWindow::ShaderManager::~ShaderManager()
+    {
+
+    }
+
 
     /////////////////////////// Material //////////////////////////
     VulkanWindow::Material::Material(const String& nameMaterial)
@@ -1087,6 +1120,17 @@ namespace LostPeter
         
     }
     VulkanWindow::Material::~Material()
+    {
+
+    }
+    
+    /////////////////////////// MaterialManager ///////////////////
+    VulkanWindow::MaterialManager::MaterialManager()
+        : Base("MaterialManager")
+    {
+
+    }
+    VulkanWindow::MaterialManager::~MaterialManager()
     {
 
     }
@@ -1557,6 +1601,94 @@ namespace LostPeter
 
     }
 
+    /////////////////////////// ObjectCamera //////////////////////
+    VulkanWindow::ObjectCamera::ObjectCamera(const String& nameCamera)
+        : Object(nameCamera)
+    {
+
+    }
+    VulkanWindow::ObjectCamera::~ObjectCamera()
+    {
+
+    }
+
+    /////////////////////////// ObjectLight ///////////////////////
+    VulkanWindow::ObjectLight::ObjectLight(const String& nameLight)
+        : Object(nameLight)
+    {
+
+    }
+    VulkanWindow::ObjectLight::~ObjectLight()
+    {
+
+    }
+
+    /////////////////////////// ObjectMesh ////////////////////////
+    VulkanWindow::ObjectMesh::ObjectMesh(const String& nameMesh)
+        : Object(nameMesh)
+    {
+
+    }
+    VulkanWindow::ObjectMesh::~ObjectMesh()
+    {
+
+    }
+
+    /////////////////////////// ObjectSkinMesh ////////////////////
+    VulkanWindow::ObjectSkinMesh::ObjectSkinMesh(const String& nameSkinMesh)
+        : Object(nameSkinMesh)
+    {
+
+    }
+    VulkanWindow::ObjectSkinMesh::~ObjectSkinMesh()
+    {
+
+    }
+
+    /////////////////////////// ObjectParticle ////////////////////
+    VulkanWindow::ObjectParticle::ObjectParticle(const String& nameParticle)
+        : Object(nameParticle)
+    {
+
+    }
+    VulkanWindow::ObjectParticle::~ObjectParticle()
+    {
+
+    }
+
+    /////////////////////////// ObjectSky /////////////////////////
+    VulkanWindow::ObjectSky::ObjectSky(const String& nameSky)
+        : Object(nameSky)
+    {
+
+    }
+    VulkanWindow::ObjectSky::~ObjectSky()
+    {
+
+    }
+
+    /////////////////////////// ObjectCloud ///////////////////////
+    VulkanWindow::ObjectCloud::ObjectCloud(const String& nameCloud)
+        : Object(nameCloud)
+    {
+
+    }
+    VulkanWindow::ObjectCloud::~ObjectCloud()
+    {
+
+    }
+
+    /////////////////////////// ObjectWater ///////////////////////
+    VulkanWindow::ObjectWater::ObjectWater(const String& nameWater)
+        : Object(nameWater)
+    {
+
+    }
+    VulkanWindow::ObjectWater::~ObjectWater()
+    {
+
+    }
+
 
     /////////////////////////// ObjectTerrain /////////////////////
     VulkanWindow::ObjectTerrain::ObjectTerrain(const String& nameObjectTerrain)
@@ -1589,6 +1721,18 @@ namespace LostPeter
 
     }
     VulkanWindow::SceneManager::~SceneManager()
+    {
+
+    }
+
+
+    /////////////////////////// SceneManagerEnumerator ////////////
+    VulkanWindow::SceneManagerEnumerator::SceneManagerEnumerator(const String& nameSceneManagerEnumerator)
+        : Base(nameSceneManagerEnumerator)
+    {
+
+    }
+    VulkanWindow::SceneManagerEnumerator::~SceneManagerEnumerator()
     {
 
     }
@@ -4983,7 +5127,9 @@ namespace LostPeter
         , mouseButtonDownLeft(false)
         , mouseButtonDownRight(false)
         , mouseButtonDownMiddle(false)
-        
+
+        , pSceneManagerEnumerator(nullptr)
+
         , cfg_isEditorCreate(false)
         , cfg_isEditorGridShow(false)
         , cfg_isEditorCameraAxisShow(false)

@@ -29,8 +29,30 @@ namespace LostPeterFoundation
 
     bool FCapsule::Intersects_Point(const FVector3& point) const
 	{
-		
-		return false;	
+		float fDistance = FMath::GetDistanceFromPointLine(point, m_vCenterBottom, m_vCenterTop);
+		if (fDistance > m_fRadius)
+		{
+			return false;
+		}
+		float fHeight = GetHeight();
+		FVector3 vDir = GetDirectionNormalized();
+		FVector3 vCenter = GetCenter();
+		float fDot = FMath::Dot((point - vCenter), vDir);
+		if (FMath::Abs(fDot) > fHeight / 2.0f)
+		{
+			if (fDot > 0)
+			{
+				if (FMath::Distance(point, m_vCenterTop) <= m_fRadius)
+					return true;
+			}
+			else if (fDot < 0)
+			{
+				if (FMath::Distance(point, m_vCenterBottom) <= m_fRadius)
+					return true;
+			}
+			return false;
+		}
+		return true;	
 	}
 
 	bool FCapsule::Intersects_Ray(const FRay& ray) const
