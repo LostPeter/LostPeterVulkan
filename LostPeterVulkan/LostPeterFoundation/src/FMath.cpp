@@ -2004,8 +2004,8 @@ namespace LostPeterFoundation
             
             t = -md / nd;
 
-            //keep intersection if Dot(S(t) - p, S(t) - p) <= r~2
-            bool isInter = k + 2 * t * (mn + t * nn) <= 0.0f;
+            //keep intersection if Dot(L(t) - P, L(t) - P) <= r^2
+            bool isInter = k + 2 * t * mn + t * t * nn <= 0.0f;
             return std::pair<bool, float>(isInter, t); 
         }
         else if (md + t * nd > dd)
@@ -2016,8 +2016,8 @@ namespace LostPeterFoundation
             
             t = (dd - md) / nd;
 
-            //keep intersection if Dot(S(t) - q, S(t) - q) <= r~2
-            bool isInter = k + dd - 2 * md +  t * (2 * (mn - nd) + t * nn) <= 0.0f;
+            //keep intersection if Dot(L(t) - Q, L(t) - Q) <= r^2
+            bool isInter = k + dd - 2 * md + 2 * t * (mn - nd) + t * t * nn <= 0.0f;
             return std::pair<bool, float>(isInter, t);
         }
 
@@ -2131,8 +2131,8 @@ namespace LostPeterFoundation
                 
                 t1 = -md / nd;
 
-                //keep intersection if Dot(S(t) - p, S(t) - p) <= r~2
-                isInter = k + 2 * t1 * (mn + t1 * nn) <= 0.0f;
+                //keep intersection if Dot(L(t) - P, L(t) - P) <= r^2
+                isInter = k + 2 * t1 * mn + t1 * t1 * nn <= 0.0f;
             }
             else if (md + t1 * nd > dd)
             {
@@ -2144,8 +2144,8 @@ namespace LostPeterFoundation
                 
                 t1 = (dd - md) / nd;
 
-                //keep intersection if Dot(S(t) - q, S(t) - q) <= r~2
-                isInter = k + dd - 2 * md +  t1 * (2 * (mn - nd) + t1 * nn) <= 0.0f;
+                //keep intersection if Dot(L(t) - Q, L(t) - Q) <= r^2
+                isInter = k + dd - 2 * md +  2 * t1 * (mn - nd) + t1 * t1 * nn <= 0.0f;
             }
             else
             {
@@ -2178,8 +2178,8 @@ namespace LostPeterFoundation
                 
                 t2 = -md / nd;
 
-                //keep intersection if Dot(S(t) - p, S(t) - p) <= r~2
-                isInter = k + 2 * t2 * (mn + t2 * nn) <= 0.0f;
+                //keep intersection if Dot(L(t) - P, L(t) - P) <= r^2
+                isInter = k + 2 * t2 * mn + t2 * t2 * nn <= 0.0f;
             }
             else if (md + t2 * nd > dd)
             {
@@ -2191,8 +2191,8 @@ namespace LostPeterFoundation
                 
                 t2 = (dd - md) / nd;
 
-                //keep intersection if Dot(S(t) - q, S(t) - q) <= r~2
-                isInter = k + dd - 2 * md +  t2 * (2 * (mn - nd) + t2 * nn) <= 0.0f;
+                //keep intersection if Dot(L(t) - Q, L(t) - Q) <= r^2
+                isInter = k + dd - 2 * md + 2 * t2 * (mn - nd) + t2 * t2 * nn <= 0.0f;
             }
             else
             {
@@ -2313,10 +2313,12 @@ namespace LostPeterFoundation
         // if (md > dd && md + nd > dd + fRadius) //outside 'rayPosFar' side of capsule
         //     return std::pair<bool, float>(false, t);
 
+        // float mm = FMath::Dot(m, m);
+        // float rr = fRadius * fRadius;
         // float nn = FMath::Dot(n, n);
         // float mn = FMath::Dot(m, n);
         // float a = dd * nn - nd * nd;
-        // float k = FMath::Dot(m, m) - fRadius * fRadius;
+        // float k = mm - rr;
         // float c = dd * k - md * md;
         // //segment rayPos-rayPosFar parallel to capsule axis
         // if (FMath::Abs(a) < FMath::ms_fEpsilon)
@@ -2329,11 +2331,19 @@ namespace LostPeterFoundation
 
         //     //segment rayPos-rayPosFar intersect capsule
         //     if (md < 0.0f) //intersect segment against 'rayPos' endcap
+        //     {
         //         t = - mn / nn; 
+        //         t = t - FMath::Sqrt(rr - (mm - t*t));
+        //     }
         //     else if (md > dd) //intersect segment against 'rayPosFar' endcap
+        //     {
         //         t = (nd - mn) / nn; 
+        //         t = t - FMath::Sqrt(rr - (mm - (t + fHeight)*(t + fHeight)));
+        //     }
         //     else //lies inside capsule
+        //     {
         //         t = 0.0f; 
+        //     }
         //     return std::pair<bool, float>(true, t);
         // }
 
