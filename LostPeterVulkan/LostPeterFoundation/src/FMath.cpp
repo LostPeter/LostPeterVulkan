@@ -1959,11 +1959,12 @@ namespace LostPeterFoundation
 
         //2> Test if segment rayPos-rayPosFar fully outside either endcap of cylinder
         if (md < 0.0f && md + nd < 0.0f) //outside 'rayPos' side of cylinder
-            return std::pair<bool, float>(false, t);
+            return std::pair<bool, float>(false, 0);
         if (md > dd && md + nd > dd) //outside 'rayPosFar' side of cylinder
-            return std::pair<bool, float>(false, t);
+            return std::pair<bool, float>(false, 0);
 
         float nn = FMath::Dot(n, n);
+        float nl = FMath::Sqrt(nn);
         float mn = FMath::Dot(m, n);
         float a = dd * nn - nd * nd;
         float k = FMath::Dot(m, m) - fRadius * fRadius;
@@ -1974,7 +1975,7 @@ namespace LostPeterFoundation
             //out of r range
             if (c > 0.0f)
             {
-                return std::pair<bool, float>(false, t);
+                return std::pair<bool, float>(false, 0);
             }
 
             //segment rayPos-rayPosFar intersect cylinder
@@ -1984,45 +1985,45 @@ namespace LostPeterFoundation
                 t = (nd - mn) / nn; 
             else //lies inside cylinder
                 t = 0.0f; 
-            return std::pair<bool, float>(true, t);
+            return std::pair<bool, float>(true, t*nl);
         }
 
         float b = dd * mn - nd * md;
         float discr = b * b - a * c;
         if (discr < 0.0f) //no real roots; no intersection
-            return std::pair<bool, float>(false, t); 
+            return std::pair<bool, float>(false, 0); 
 
         t = (-b - FMath::Sqrt(discr)) / a;
         if (t < 0.0f || t > 1.0f) //intersection lies outside segment
-            return std::pair<bool, float>(false, t); 
+            return std::pair<bool, float>(false, 0); 
 
         if (md + t * nd < 0.0f)
         {
             //intersection outside cylinder on 'rayPos' side
             if (nd <= 0.0f) //segment pointing away from endcap
-                return std::pair<bool, float>(false, t); 
+                return std::pair<bool, float>(false, 0); 
             
             t = -md / nd;
 
             //keep intersection if Dot(L(t) - P, L(t) - P) <= r^2
             bool isInter = k + 2 * t * mn + t * t * nn <= 0.0f;
-            return std::pair<bool, float>(isInter, t); 
+            return std::pair<bool, float>(isInter, t*nl); 
         }
         else if (md + t * nd > dd)
         {
             //intersection outside cylinder on 'rayPosFar' side
             if (nd >= 0.0f) //segment pointing away from endcap
-                return std::pair<bool, float>(false, t);
+                return std::pair<bool, float>(false, 0);
             
             t = (dd - md) / nd;
 
             //keep intersection if Dot(L(t) - Q, L(t) - Q) <= r^2
             bool isInter = k + dd - 2 * md + 2 * t * (mn - nd) + t * t * nn <= 0.0f;
-            return std::pair<bool, float>(isInter, t);
+            return std::pair<bool, float>(isInter, t*nl);
         }
 
         //segment intersects cylinder between endcaps; t is correct
-        return std::pair<bool, float>(true, t);
+        return std::pair<bool, float>(true, t*nl);
     }
     int FMath::Intersects_RayCylinder(const FRay& ray, const FCylinder& cylinder, bool& isInside, float* d1, float* d2)
     {
@@ -2053,6 +2054,7 @@ namespace LostPeterFoundation
             return count;
 
         float nn = FMath::Dot(n, n);
+        float nl = FMath::Sqrt(nn);
         float mn = FMath::Dot(m, n);
         float a = dd * nn - nd * nd;
         float k = FMath::Dot(m, m) - fRadius * fRadius;
@@ -2069,11 +2071,11 @@ namespace LostPeterFoundation
             //segment rayPos-rayPosFar intersect cylinder
             if (md < 0.0f) //intersect segment against 'rayPos' endcap
             {
-                *d1 = - mn / nn; 
+                *d1 = (-mn / nn) * nl;
                 count ++;
 
-                *d2 = *d1 + fHeight / FMath::Sqrt(nn);
-                if (*d2 <= 1.0f)
+                *d2 = *d1 + fHeight;
+                if (*d2 <= nl)
                 {
                     count ++;
                 }
@@ -2085,11 +2087,11 @@ namespace LostPeterFoundation
             }
             else if (md > dd) //intersect segment against 'rayPosFar' endcap
             {
-                *d1 = (nd - mn) / nn; 
+                *d1 = ((nd - mn) / nn) * nl; 
                 count ++;
 
-                *d2 = *d1 + fHeight / FMath::Sqrt(nn);
-                if (*d2 <= 1.0f)
+                *d2 = *d1 + fHeight;
+                if (*d2 <= nl)
                 {
                     count ++;
                 }
@@ -2156,7 +2158,7 @@ namespace LostPeterFoundation
             if (isInter)
             {
                 hasD1 = true;
-                *d1 = t1;
+                *d1 = t1 * nl;
                 count ++;   
             }
         }
@@ -2204,12 +2206,12 @@ namespace LostPeterFoundation
             {
                 if (hasD1)
                 {
-                    *d2 = t2;
+                    *d2 = t2 * nl;
                     count ++;
                 }
                 else
                 {
-                    *d1 = t2;
+                    *d1 = t2 * nl;
                     count ++;
                 }
             }
@@ -2238,155 +2240,262 @@ namespace LostPeterFoundation
     {
         float t = 0;
         const FVector3& rayPos = ray.GetOrigin();
-        const FVector3& rayDir = ray.GetDirection();
         //1> rayPos In Capsule
         if (discardInside && capsule.Intersects_Point(rayPos))
         {
-            return std::pair<bool, float>(true, t);
+            return std::pair<bool, float>(true, 0);
         }
+        
+        //Ray far point
+        FVector3 rayPosFar = ray.GetPoint(ms_fRayFar);
 
         const FVector3& vCenterTop = capsule.GetCenterTop();
         const FVector3& vCenterBottom = capsule.GetCenterBottom();
         float fRadius = capsule.GetRadius();
+        float fHeight = FMath::Distance(vCenterTop, vCenterBottom);
 
-        //2> Calculate
-        FVector3 ba = vCenterTop - vCenterBottom;
-        FVector3 oa = rayPos - vCenterBottom;
+        FVector3 d = vCenterTop - vCenterBottom;
+		FVector3 m = rayPos - vCenterBottom;
+        FVector3 n = rayPosFar - rayPos;
+        float md = FMath::Dot(m, d);
+        float nd = FMath::Dot(n, d);
+        float dd = FMath::Dot(d, d);
 
-        float baba = FMath::Dot(ba, ba);
-        float bard = FMath::Dot(ba, rayDir);
-        float baoa = FMath::Dot(ba, oa);
-        float rdoa = FMath::Dot(rayDir, oa);
-        float oaoa = FMath::Dot(oa, oa);
+        //2> Test if segment rayPos-rayPosFar fully outside either endsphere of capsule
+        if (md < 0.0f && md + nd < fRadius) //outside 'rayPos' side of capsule
+            return std::pair<bool, float>(false, 0);
+        if (md > dd && md + nd > dd + fRadius) //outside 'rayPosFar' side of capsule
+            return std::pair<bool, float>(false, 0);
 
-        float a = baba - bard*bard;
-        float b = baba * rdoa - baoa * bard;
-        float c = baba * oaoa - baoa * baoa - fRadius * fRadius * baba;
-        float h = b * b - a * c;
-        if (h >= 0.0f)
+        float mm = FMath::Dot(m, m);
+        float rr = fRadius * fRadius;
+        float nn = FMath::Dot(n, n);
+        float nl = FMath::Sqrt(nn);
+        float mn = FMath::Dot(m, n);
+        float a = dd * nn - nd * nd;
+        float k = mm - rr;
+        float c = dd * k - md * md;
+        //segment rayPos-rayPosFar parallel to capsule axis
+        if (FMath::Abs(a) < FMath::ms_fEpsilon)
         {
-            float t = (-b - FMath::Sqrt(h)) / a;
-            float y = baoa + t * bard;
-            //body
-            if(y > 0.0f && y < baba) 
-                return std::pair<bool, float>(true, t);
-
-            //caps
-            FVector3 oc = (y <= 0.0f) ? oa : rayPos - vCenterTop;
-            b = FMath::Dot(rayDir,oc);
-            c = FMath::Dot(oc,oc) - fRadius * fRadius;
-            h = b * b - c;
-            if (h > 0.0f) 
+            //out of r range
+            if (c > 0.0f)
             {
-                t = -b - FMath::Sqrt(h);
-                return  std::pair<bool, float>(true, t);
+                return std::pair<bool, float>(false, 0);
             }
+
+            //segment rayPos-rayPosFar intersect capsule
+            if (md < 0.0f) //intersect segment against 'rayPos' endcap
+            {
+                t = (- mn / nn) * nl; 
+                t = t - FMath::Sqrt(rr - (mm - t*t));
+            }
+            else if (md > dd) //intersect segment against 'rayPosFar' endcap
+            {
+                t = ((nd - mn) / nn) * nl; 
+                t = t - FMath::Sqrt(rr - (mm - (t + fHeight)*(t + fHeight)));
+            }
+            else //lies inside capsule
+            {
+                t = 0.0f; 
+            }
+            return std::pair<bool, float>(true, t);
         }
-        return std::pair<bool, float>(false, 0);
 
-        // float t = 0;
-        // const FVector3& rayPos = ray.GetOrigin();
-        // //1> rayPos In Capsule
-        // if (discardInside && capsule.Intersects_Point(rayPos))
-        // {
-        //     return std::pair<bool, float>(true, t);
-        // }
-        
-        // //Ray far point
-        // FVector3 rayPosFar = ray.GetPoint(ms_fRayFar);
+        float b = dd * mn - nd * md;
+        float discr = b * b - a * c;
+        if (discr < 0.0f) //no real roots; no intersection
+            return std::pair<bool, float>(false, 0); 
 
-        // const FVector3& vCenterTop = capsule.GetCenterTop();
-        // const FVector3& vCenterBottom = capsule.GetCenterBottom();
-        // float fRadius = capsule.GetRadius();
-        // float fHeight = FMath::Distance(vCenterTop, vCenterBottom);
+        t = (-b - FMath::Sqrt(discr)) / a;
+        if (t < 0.0f || t > 1.0f) //intersection lies outside segment
+            return std::pair<bool, float>(false, 0); 
 
-        // FVector3 d = vCenterTop - vCenterBottom;
-		// FVector3 m = rayPos - vCenterBottom;
-        // FVector3 n = rayPosFar - rayPos;
-        // float md = FMath::Dot(m, d);
-        // float nd = FMath::Dot(n, d);
-        // float dd = FMath::Dot(d, d);
+        if (md + t * nd < 0.0f)
+        {
+            return Intersects_RaySphere(ray, FSphere(vCenterBottom, fRadius));
+        }
+        else if (md + t * nd > dd)
+        {
+            return Intersects_RaySphere(ray, FSphere(vCenterTop, fRadius));
+        }
 
-        // //2> Test if segment rayPos-rayPosFar fully outside either endsphere of capsule
-        // if (md < 0.0f && md + nd < fRadius) //outside 'rayPos' side of capsule
-        //     return std::pair<bool, float>(false, t);
-        // if (md > dd && md + nd > dd + fRadius) //outside 'rayPosFar' side of capsule
-        //     return std::pair<bool, float>(false, t);
-
-        // float mm = FMath::Dot(m, m);
-        // float rr = fRadius * fRadius;
-        // float nn = FMath::Dot(n, n);
-        // float mn = FMath::Dot(m, n);
-        // float a = dd * nn - nd * nd;
-        // float k = mm - rr;
-        // float c = dd * k - md * md;
-        // //segment rayPos-rayPosFar parallel to capsule axis
-        // if (FMath::Abs(a) < FMath::ms_fEpsilon)
-        // {
-        //     //out of r range
-        //     if (c > 0.0f)
-        //     {
-        //         return std::pair<bool, float>(false, t);
-        //     }
-
-        //     //segment rayPos-rayPosFar intersect capsule
-        //     if (md < 0.0f) //intersect segment against 'rayPos' endcap
-        //     {
-        //         t = - mn / nn; 
-        //         t = t - FMath::Sqrt(rr - (mm - t*t));
-        //     }
-        //     else if (md > dd) //intersect segment against 'rayPosFar' endcap
-        //     {
-        //         t = (nd - mn) / nn; 
-        //         t = t - FMath::Sqrt(rr - (mm - (t + fHeight)*(t + fHeight)));
-        //     }
-        //     else //lies inside capsule
-        //     {
-        //         t = 0.0f; 
-        //     }
-        //     return std::pair<bool, float>(true, t);
-        // }
-
-        // float b = dd * mn - nd * md;
-        // float discr = b * b - a * c;
-        // if (discr < 0.0f) //no real roots; no intersection
-        //     return std::pair<bool, float>(false, t); 
-
-        // t = (-b - FMath::Sqrt(discr)) / a;
-        // if (t < 0.0f || t > 1.0f) //intersection lies outside segment
-        //     return std::pair<bool, float>(false, t); 
-
-        // if (md + t * nd < 0.0f)
-        // {
-        //     //intersection outside capsule on 'rayPos' side
-        //     if (nd <= 0.0f) //segment pointing away from endcap
-        //         return std::pair<bool, float>(false, t); 
-            
-        //     t = -md / nd;
-
-        //     //keep intersection if Dot(S(t) - p, S(t) - p) <= r~2
-        //     bool isInter = k + 2 * t * (mn + t * nn) <= 0.0f;
-        //     return std::pair<bool, float>(isInter, t); 
-        // }
-        // else if (md + t * nd > dd)
-        // {
-        //     //intersection outside capsule on 'rayPosFar' side
-        //     if (nd >= 0.0f) //segment pointing away from endcap
-        //         return std::pair<bool, float>(false, t);
-            
-        //     t = (dd - md) / nd;
-
-        //     //keep intersection if Dot(S(t) - q, S(t) - q) <= r~2
-        //     bool isInter = k + dd - 2 * md +  t * (2 * (mn - nd) + t * nn) <= 0.0f;
-        //     return std::pair<bool, float>(isInter, t);
-        // }
-
-        // //segment intersects capsule between endcaps; t is correct
-        // return std::pair<bool, float>(true, t);
+        //segment intersects capsule between endcaps; t is correct
+        return std::pair<bool, float>(true, t*nl);
     }
     int FMath::Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool& isInside, float* d1, float* d2)
     {
-        return 0;
+        *d1 = 0;
+        *d2 = 0;
+        bool hasD1 = false;
+        int count = 0;
+
+        const FVector3& rayPos = ray.GetOrigin();  
+        FVector3 rayPosFar = ray.GetPoint(ms_fRayFar); //Ray far point
+
+        const FVector3& vCenterTop = capsule.GetCenterTop();
+        const FVector3& vCenterBottom = capsule.GetCenterBottom();
+        float fRadius = capsule.GetRadius();
+        float fHeight = FMath::Distance(vCenterTop, vCenterBottom);
+
+        FVector3 d = vCenterTop - vCenterBottom;
+		FVector3 m = rayPos - vCenterBottom;
+        FVector3 n = rayPosFar - rayPos;
+        float md = FMath::Dot(m, d);
+        float nd = FMath::Dot(n, d);
+        float dd = FMath::Dot(d, d);
+
+        //1> Test if segment rayPos-rayPosFar fully outside either endcap of capsule
+        if (md < 0.0f && md + nd < 0.0f) //outside 'rayPos' side of capsule
+            return count;
+        if (md > dd && md + nd > dd) //outside 'rayPosFar' side of capsule
+            return count;
+
+        float nn = FMath::Dot(n, n);
+        float nl = FMath::Sqrt(nn);
+        float mn = FMath::Dot(m, n);
+        float a = dd * nn - nd * nd;
+        float k = FMath::Dot(m, m) - fRadius * fRadius;
+        float c = dd * k - md * md;
+        //segment rayPos-rayPosFar parallel to capsule axis
+        if (FMath::Abs(a) < FMath::ms_fEpsilon)
+        {
+            //out of r range
+            if (c > 0.0f)
+            {
+                return count;
+            }
+
+            //segment rayPos-rayPosFar intersect capsule
+            if (md < 0.0f) //intersect segment against 'rayPos' endcap
+            {
+                *d1 = (-mn / nn) * nl;
+                count ++;
+
+                *d2 = *d1 + fHeight;
+                if (*d2 <= nl)
+                {
+                    count ++;
+                }
+                else
+                {
+                    *d2 = 0.0f;
+                }
+                return count;
+            }
+            else if (md > dd) //intersect segment against 'rayPosFar' endcap
+            {
+                *d1 = ((nd - mn) / nn) * nl; 
+                count ++;
+
+                *d2 = *d1 + fHeight;
+                if (*d2 <= nl)
+                {
+                    count ++;
+                }
+                else
+                {
+                    *d2 = 0.0f;
+                }
+                return count;
+            }
+            else //lies inside capsule
+            {
+                *d1 = 0.0f;
+                *d2 = 0.0f;
+                return count;
+            }
+        }
+
+        float b = dd * mn - nd * md;
+        float discr = b * b - a * c;
+        if (discr < 0.0f) //no real roots; no intersection
+        {
+            return count;
+        }
+
+        //2> t1
+        {
+            float t1 = (-b - FMath::Sqrt(discr)) / a;
+            if (t1 < 0.0f || t1 > 1.0f) //intersection lies outside segment
+                return count;
+
+            bool isInter = false;
+            if (md + t1 * nd < 0.0f)
+            {
+                std::pair<bool, float> tt1 = Intersects_RaySphere(ray, FSphere(vCenterBottom, fRadius));
+                if (tt1.first)
+                {
+                    t1 = tt1.second;
+                }
+            }
+            else if (md + t1 * nd > dd)
+            {
+                std::pair<bool, float> tt1 = Intersects_RaySphere(ray, FSphere(vCenterTop, fRadius));
+                if (tt1.first)
+                {
+                    t1 = tt1.second;
+                }
+            }
+            else
+            {
+                //segment intersects capsule between endcaps; t is correct
+                isInter = true;
+            }
+
+            if (isInter)
+            {
+                hasD1 = true;
+                *d1 = t1;
+                count ++;   
+            }
+        }
+        
+        //3> t2
+        {
+            float t2 = (-b + FMath::Sqrt(discr)) / a;
+            if (t2 < 0.0f || t2 > 1.0f) //intersection lies outside segment
+                return count;
+
+            bool isInter = false;
+            if (md + t2 * nd < 0.0f)
+            {
+                std::pair<bool, float> tt2 = Intersects_RaySphere(ray, FSphere(vCenterBottom, fRadius));
+                if (tt2.first)
+                {
+                    t2 = tt2.second;
+                }
+            }
+            else if (md + t2 * nd > dd)
+            {
+                std::pair<bool, float> tt2 = Intersects_RaySphere(ray, FSphere(vCenterTop, fRadius));
+                if (tt2.first)
+                {
+                    t2 = tt2.second;
+                }
+            }
+            else
+            {
+                //segment intersects capsule between endcaps; t is correct
+                isInter = true;
+            }
+
+            if (isInter)
+            {
+                if (hasD1)
+                {
+                    *d2 = t2;
+                    count ++;
+                }
+                else
+                {
+                    *d1 = t2;
+                    count ++;
+                }
+            }
+        }
+
+        return count;
     }
     int FMath::Intersects_RayCapsule(const FRay& ray, const FCapsule& capsule, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
     {   

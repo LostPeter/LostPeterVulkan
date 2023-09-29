@@ -14,10 +14,34 @@
 
 namespace LostPeterFoundation
 {
+	FVector3 FCone::GetRealTop() const
+	{
+		if (m_fRadiusTop == 0.0f)
+			return m_vTop;
+
+		//tan(a) = rb / x = ra / (x + h)
+		//x = rb*h / (ra - rb)
+		float x = m_fRadiusTop * m_fHeight / (m_fRadius - m_fRadiusTop);
+		return m_vCenter + FMath::Normalize(m_vTop - m_vCenter) * (m_fHeight + x);
+	}
+
     bool FCone::Intersects_Point(const FVector3& point) const
 	{
+		float fDistance = FMath::GetDistanceFromPointLine(point, m_vCenterBottom, m_vCenterTop);
+		if (fDistance < m_fRadiusTop || fDistance > m_fRadius)
+		{
+			return false;
+		}
 		
-		return false;	
+		FVector3 vTop = GetRealTop();
+		float fLen2 = FMath::Distance2(vTop, point) - fDistance * fDistance;
+		float fHeight = FMath::Distance2(vTop, m_vCenter);
+		if (fDistance * fDistance / fLen2 > m_fRadius * m_fRadius / fHeight)
+		{
+			return false;
+		}
+
+		return true;	
 	}
 
 	bool FCone::Intersects_Ray(const FRay& ray) const

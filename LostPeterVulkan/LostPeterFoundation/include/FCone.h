@@ -22,6 +22,7 @@ namespace LostPeterFoundation
 		LP_FORCEINLINE FCone()
 			: m_vCenter(0, 0, 0)
 			, m_vTop(0, 1, 0)
+			, m_fRadiusTop(0.0f)
 			, m_fRadius(0.5f)
 			, m_fHeight(1.0f)
 		{
@@ -30,6 +31,16 @@ namespace LostPeterFoundation
 		LP_FORCEINLINE FCone(const FVector3& vCenter, const FVector3& vTop, float fRadius, float fHeight)
 			: m_vCenter(vCenter)
 			, m_vTop(vTop)
+			, m_fRadiusTop(0.0f)
+			, m_fRadius(fRadius)
+			, m_fHeight(fHeight)
+		{
+
+		}
+		LP_FORCEINLINE FCone(const FVector3& vCenter, const FVector3& vTop, float fRadiusTop, float fRadius, float fHeight)
+			: m_vCenter(vCenter)
+			, m_vTop(vTop)
+			, m_fRadiusTop(fRadiusTop)
 			, m_fRadius(fRadius)
 			, m_fHeight(fHeight)
 		{
@@ -38,6 +49,7 @@ namespace LostPeterFoundation
 		LP_FORCEINLINE FCone(const FCone& cone) 
 			: m_vCenter(cone.m_vCenter)
 			, m_vTop(cone.m_vTop)
+			, m_fRadiusTop(cone.m_fRadiusTop)
 			, m_fRadius(cone.m_fRadius)
 			, m_fHeight(cone.m_fHeight)
 		{
@@ -47,12 +59,14 @@ namespace LostPeterFoundation
 	public:
 		FVector3 m_vCenter;
 		FVector3 m_vTop;
+		float m_fRadiusTop;		
 		float m_fRadius;		
 		float m_fHeight;
 
 	public:
 		LP_FORCEINLINE const FVector3& GetCenter() const { return m_vCenter; }
 		LP_FORCEINLINE const FVector3& GetTop() const { return m_vTop; }
+		LP_FORCEINLINE float GetRadiusTop() const { return m_fRadiusTop; }
         LP_FORCEINLINE float GetRadius() const { return m_fRadius; }
 		LP_FORCEINLINE float GetHeight() const { return m_fHeight; }
 
@@ -60,9 +74,12 @@ namespace LostPeterFoundation
 		{
 			m_vCenter = vCenter;
 			m_vTop = vTop;
+			m_fRadiusTop = 0.0f;
 			m_fRadius = fRadius;
 			m_fHeight = fHeight;
 		}
+
+		FVector3 GetRealTop() const;
 
 	public:
 		bool Intersects_Point(const FVector3& point) const;
