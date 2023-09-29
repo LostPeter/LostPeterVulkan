@@ -27,7 +27,7 @@ namespace LostPeterFoundation
 
     bool FCone::Intersects_Point(const FVector3& point) const
 	{
-		float fDistance = FMath::GetDistanceFromPointLine(point, m_vCenterBottom, m_vCenterTop);
+		float fDistance = FMath::GetDistanceFromPointLine(point, m_vCenter, m_vTop);
 		if (fDistance < m_fRadiusTop || fDistance > m_fRadius)
 		{
 			return false;
