@@ -2516,7 +2516,7 @@ namespace LostPeterFoundation
 
     std::pair<bool, float> FMath::Intersects_RayCone(const FRay& ray, const FCone& cone, bool discardInside /*= true*/)
     {
-        return false;
+        return std::pair<bool, float>(false, 0);
 
         // float t = 0;
         // const FVector3& rayPos = ray.GetOrigin();
