@@ -460,6 +460,10 @@ namespace LostPeterFoundation
         {
             return abs(glm::dot(v1, v2));
         }
+        static float Dot2(const FVector2& v1)
+        {
+            return Dot(v1, v1);
+        }
 
 		static float Dot(const FVector3& v1, const FVector3& v2)
         {
@@ -468,6 +472,10 @@ namespace LostPeterFoundation
         static float DotAbs(const FVector3& v1, const FVector3& v2)
         {
             return abs(glm::dot(v1, v2));
+        }
+        static float Dot2(const FVector3& v1)
+        {
+            return Dot(v1, v1);
         }
         
         static float Dot(const FVector4& v1, const FVector4& v2)

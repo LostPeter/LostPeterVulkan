@@ -1939,7 +1939,7 @@ namespace LostPeterFoundation
         //1> rayPos In Cylinder
         if (discardInside && cylinder.Intersects_Point(rayPos))
         {
-            return std::pair<bool, float>(true, t);
+            return std::pair<bool, float>(true, 0);
         }
         
         //Ray far point
@@ -2516,52 +2516,65 @@ namespace LostPeterFoundation
 
     std::pair<bool, float> FMath::Intersects_RayCone(const FRay& ray, const FCone& cone, bool discardInside /*= true*/)
     {
-        float t = 0;
-        const FVector3& rayPos = ray.GetOrigin();
-        //1> rayPos In Cone
-        if (discardInside && cone.Intersects_Point(rayPos))
-        {
-            return std::pair<bool, float>(true, t);
-        }
+        return false;
 
-        const FVector3& rayDir = ray.GetDirection();
+        // float t = 0;
+        // const FVector3& rayPos = ray.GetOrigin();
+        // //1> rayPos In Cone
+        // if (discardInside && cone.Intersects_Point(rayPos))
+        // {
+        //     return std::pair<bool, float>(true, 0);
+        // }
 
-        const FVector3& coneCenter = cone.GetCenter();
-        const FVector3& coneTop = cone.GetTop();
-        float fRadius = cone.GetRadius();
-		float fHeight = cone.GetHeight();
+        // //Ray far point
+        // FVector3 rayPosFar = ray.GetPoint(ms_fRayFar);
 
-        //2> Calculate
-        float A = rayPos.x - coneCenter.x;
-        float B = rayPos.z - coneCenter.z;
-        float D = fHeight - rayPos.y + coneCenter.y;
+        // const FVector3& vCenterTop = cone.GetTop();
+        // const FVector3& vCenterBottom = cone.GetCenter();
+        // float fRadiusTop = cone.GetRadiusTop();
+        // float fRadius = cone.GetRadius();
+        // float fHeight = FMath::Distance(vCenterTop, vCenterBottom);
 
-        float tan = (fRadius / fHeight) * (fRadius / fHeight);
-        float a = (rayDir.x * rayDir.x) + (rayDir.z * rayDir.z) - (tan * (rayDir.y * rayDir.y));
-        float b = (2 * A * rayDir.x) + (2 * B * rayDir.z) + (2 * tan * D * rayDir.y);
-        float c = (A * A) + (B * B) - (tan * (D * D));
+        // FVector3 d = vCenterTop - vCenterBottom;
+		// FVector3 m = rayPos - vCenterBottom;
+        // FVector3 n = rayPosFar - rayPos;
+        // float md = FMath::Dot(m, d);
+        // float nd = FMath::Dot(n, d);
+        // float dd = FMath::Dot(d, d);
 
-        float delta = b * b - 4 * a * c;
-        if (delta < 0.0f || FMath::Zero(delta, FMath::ms_fEpsilon))
-        {
-            return std::pair<bool, float>(false, 0);
-        } 
-        
-        float t1 = (-b - FMath::Sqrt(delta)) / (2*a);
-        float t2 = (-b + FMath::Sqrt(delta)) / (2*a);
-               
-        if (t1 > t2) 
-            t = t2;
-        else 
-            t = t1;
-        
-        float r = rayPos.y + t * rayDir.y;
-        if ((r > coneCenter.y) && (r < coneCenter.y + fHeight)) 
-        {
-            return std::pair<bool, float>(true, t);
-        }
+        // //2> Test if segment rayPos-rayPosFar fully outside either endcap of cone
+        // if (md < 0.0f && md + nd < 0.0f) //outside 'rayPos' side of cone
+        //     return std::pair<bool, float>(false, 0);
+        // if (md > dd && md + nd > dd) //outside 'rayPosFar' side of cone
+        //     return std::pair<bool, float>(false, 0);
 
-        return std::pair<bool, float>(false, 0);
+        // float nn = FMath::Dot(n, n);
+        // float nl = FMath::Sqrt(nn);
+        // float mn = FMath::Dot(m, n);
+        // float a = dd * nn - nd * nd;
+        // float k = FMath::Dot(m, m) - fRadius * fRadius;
+        // float c = dd * k - md * md;
+        // //segment rayPos-rayPosFar parallel to cone axis
+        // if (FMath::Abs(a) < FMath::ms_fEpsilon)
+        // {
+        //     //out of r range
+        //     if (c > 0.0f)
+        //     {
+        //         return std::pair<bool, float>(false, 0);
+        //     }
+
+        //     //segment rayPos-rayPosFar intersect cone
+        //     if (md < 0.0f) //intersect segment against 'rayPos' endcap
+        //         t = - mn / nn; 
+        //     else if (md > dd) //intersect segment against 'rayPosFar' endcap
+        //         t = (nd - mn) / nn; 
+        //     else //lies inside cone
+        //         t = 0.0f; 
+        //     return std::pair<bool, float>(true, t*nl);
+        // }
+
+
+       
     }
     int FMath::Intersects_RayCone(const FRay& ray, const FCone& cone, bool& isInside, float* d1, float* d2)
     {
