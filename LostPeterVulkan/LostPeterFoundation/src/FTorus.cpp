@@ -16,7 +16,20 @@ namespace LostPeterFoundation
 {
     bool FTorus::Intersects_Point(const FVector3& point) const
 	{
-		
+		float fDisR2 = FMath::Distance2(point, m_vCenter);
+		if (fDisR2 < (m_fRadius - m_fSectionRadius) * (m_fRadius - m_fSectionRadius) ||
+		    fDisR2 > (m_fRadius + m_fSectionRadius) * (m_fRadius + m_fSectionRadius))
+		{
+			return false;
+		}
+
+		FVector3 vD = FMath::Normalize(point - m_vCenter) - m_vDirection;
+		FVector3 vR = FMath::Normalize(vD) * m_fRadius;
+		float fDis2 = FMath::Distance2(vR, point);
+		if (fDis2 > m_fSectionRadius * m_fSectionRadius)
+		{
+			return false;
+		}
 
 		return false;	
 	}

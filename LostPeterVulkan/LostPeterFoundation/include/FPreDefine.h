@@ -173,10 +173,14 @@ namespace LostPeterFoundation
     class FCamera;
     class FCapsule;
     class FCircle;
+    class FComplex;
     class FCone;
     class FCylinder;
     class FDynamicLib;
 	class FDynamicLibManager;
+    class FEquationCubic;
+    class FEquationQuadratic;
+    class FEquationQuartic;
     class FFileBase;
 	class FFileBinary;
 	class FFileIO;

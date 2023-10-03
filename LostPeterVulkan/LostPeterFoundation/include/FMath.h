@@ -29,6 +29,7 @@ namespace LostPeterFoundation
         static const float ms_fPosInfinity;		
         static const float ms_fNegInfinity;
         static const float ms_fEpsilon;
+        static const double ms_dEpsilon;
         static const float ms_fRayFar;
 
         static const FVector2 ms_v2Zero;
@@ -180,6 +181,10 @@ namespace LostPeterFoundation
         static float Abs(float fValue)	
         {
             return float(fabs(fValue)); 
+        }
+        static double Abs(double fValue)
+        {
+            return fabs(fValue);
         }
         static FVector2 Abs(const FVector2& v2)
         {
@@ -663,6 +668,21 @@ namespace LostPeterFoundation
         static FMatrix4 TransposeMatrix4(const FMatrix4& mat4);
 
     public:
+        //Equation - Quadratic/Cubic/Quartic
+        //ax^2 + bx + c = 0
+        static int Equation_Quadratic(float a, float b, float c, float& x1, float& x2);
+        static int Equation_Quadratic(float a, float b, float c, FComplex& x1, FComplex& x2);
+        
+        //ax^3 + bx^2 + cx + d = 0
+        static int Equation_Cubic_Cardano(float a, float b, float c, float d, float& x1, float& x2, float& x3);
+        static int Equation_Cubic_ShengJin(float a, float b, float c, float d, float& x1, float& x2, float& x3);
+        static int Equation_Cubic(float a, float b, float c, float d, FComplex& x1, FComplex& x2, FComplex& x3);
+
+        //ax^4 + bx^3 + cx^2 + dx + e = 0
+        static int Equation_Quartic(float a, float b, float c, float d, float e, float& x1, float& x2, float& x3, float& x4, float fEpsilon = FMath::ms_fEpsilon);
+        static int Equation_Quartic(float a, float b, float c, float d, float e, FComplex& x1, FComplex& x2, FComplex& x3, FComplex& x4, float fEpsilon = FMath::ms_fEpsilon);
+
+    public:
         //Direction From Point2
         static FVector3 GetDirectionWithoutNormalizeFromPoint2(const FVector3& v1, const FVector3& v2);
         static FVector3 GetDirectionFromPoint2(const FVector3& v1, const FVector3& v2);
@@ -687,7 +707,9 @@ namespace LostPeterFoundation
         static float GetDistanceFromPointLine(const FVector3& pt, const FSegment& segment);
 
         //Distance From Point-Plane
+        static float GetDistanceFromPointPlane(const FVector3& pt, const FVector3& planePoint, const FVector3& planeNormal);
         static float GetDistanceFromPointPlane(const FVector3& pt, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3);
+        static float GetDistanceFromPointPlane(const FVector3& pt, const FPlane& plane);
 
         //Distance From Line2
         static float GetDistanceFromLine2(const FVector3& ptLine11, const FVector3& ptLine12, const FVector3& ptLine21, const FVector3& ptLine22);
@@ -957,9 +979,9 @@ namespace LostPeterFoundation
         static std::pair<bool, float> Intersects_RayCone(const FRay& ray, const FCone& cone, bool discardInside = true);
         static int Intersects_RayCone(const FRay& ray, const FCone& cone, bool& isInside, float* d1, float* d2);
         static int Intersects_RayCone(const FRay& ray, const FCone& cone, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
-        static std::pair<bool, float> Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool discardInside = true);
-        static int Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2);
-        static int Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
+        static std::pair<bool, float> Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool discardInside = true, float fEpsilon = FMath::ms_fEpsilon);
+        static int Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2, float* d3, float* d4, float fEpsilon = FMath::ms_fEpsilon);
+        static int Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2, FVector3& vIntersection3, FVector3& vIntersection4, float fEpsilon = FMath::ms_fEpsilon);
 
         //Ray - Shape Test
         static bool Intersects_RaySegment_Test(const FRay& ray, const FVector3& s, const FVector3& e, float fEpsilon = FMath::ms_fEpsilon);
@@ -986,9 +1008,9 @@ namespace LostPeterFoundation
         static bool Intersects_RayCone_Test(const FRay& ray, const FCone& cone, bool discardInside = true);
         static bool Intersects_RayCone_Test(const FRay& ray, const FCone& cone, bool& isInside, float* d1, float* d2);
         static bool Intersects_RayCone_Test(const FRay& ray, const FCone& cone, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
-        static bool Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool discardInside = true);
-        static bool Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2);
-        static bool Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2);
+        static bool Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool discardInside = true, float fEpsilon = FMath::ms_fEpsilon);
+        static bool Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2, float* d3, float* d4, float fEpsilon = FMath::ms_fEpsilon);
+        static bool Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2, FVector3& vIntersection3, FVector3& vIntersection4, float fEpsilon = FMath::ms_fEpsilon);
         
         //Sphere - Shape
         static bool	Intersects_SpherePlane(const FSphere& sphere, const FPlane& plane);

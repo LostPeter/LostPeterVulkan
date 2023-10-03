@@ -24,6 +24,9 @@
 #include "../include/FCapsule.h"
 #include "../include/FCone.h"
 #include "../include/FTorus.h"
+#include "../include/FEquationQuadratic.h"
+#include "../include/FEquationCubic.h"
+#include "../include/FEquationQuartic.h"
 
 namespace LostPeterFoundation
 {
@@ -37,6 +40,7 @@ namespace LostPeterFoundation
     const float FMath::ms_fPosInfinity =  std::numeric_limits<float>::infinity();	
     const float FMath::ms_fNegInfinity = -std::numeric_limits<float>::infinity();
     const float FMath::ms_fEpsilon = std::numeric_limits<float>::epsilon();
+    const double FMath::ms_dEpsilon = std::numeric_limits<double>::epsilon();
     const float FMath::ms_fRayFar = 10000000000.0f;
 
     const FVector2 FMath::ms_v2Zero = FVector2(0.0f, 0.0f);
@@ -524,6 +528,297 @@ namespace LostPeterFoundation
         return glm::transpose(mat4);
     }
 
+    //Equation - Quadratic/Cubic/Quartic
+    //ax^2 + bx + c = 0
+    int FMath::Equation_Quadratic(float a, float b, float c, float& x1, float& x2)
+    {
+        x1 = 0.0f;
+        x2 = 0.0f;
+        int count = 0;
+
+        float delta = b * b - 4 * a * c;
+        if (delta < 0)
+            return count;
+        if (FMath::Abs(delta) < ms_fEpsilon)
+        {
+            x1 = x2 = -b / (2 * a);
+            count = 1;
+            return count;
+        }
+
+        delta = FMath::Sqrt(delta); 
+        x1 = (-b - delta) / (2 * a);
+        x2 = (-b + delta) / (2 * a);
+        count = 2;
+        return count;
+    }
+    int FMath::Equation_Quadratic(float a, float b, float c, FComplex& x1, FComplex& x2)
+    {
+        FComplex A((double)a);
+        FComplex B((double)b);
+        FComplex C((double)c);
+        FEquationQuadratic eQuadratic(A, B, C);
+        eQuadratic.Solve();  
+        x1 = eQuadratic.x[0];
+        x2 = eQuadratic.x[1];
+        return 2;
+    }
+
+    //ax^3 + bx^2 + cx + d = 0
+    int FMath::Equation_Cubic_Cardano(float a, float b, float c, float d, float& x1, float& x2, float& x3)
+    {
+        static const float cos120 = -0.5f;
+        static const float sin120 = 0.866025404f;
+
+        x1 = 0.0f;
+        x2 = 0.0f;
+        x3 = 0.0f;
+        int count = 0;
+
+        if (FMath::Abs(d) < ms_fEpsilon)
+        {
+            //first solution is x = 0
+            x1 = 0.0f;
+            ++count;
+            //divide all terms by x, converting to quadratic equation
+            d = c;
+            c = b;
+            b = a;
+            a = 0.0f;
+        }
+        if (FMath::Abs(a) < ms_fEpsilon)
+        {
+            if (FMath::Abs(b) < ms_fEpsilon)
+            {
+                //linear equation
+                if(FMath::Abs(c) > ms_fEpsilon)
+                {
+                    x1 = -d/c;
+                    count += 1;
+                }
+            }
+            else
+            {
+                //quadratic equation
+                float yy = c*c - 4*b*d;
+                if (yy >= 0)
+                {
+                    float inv2b = 1/(2*b); 
+                    float y = FMath::Sqrt(yy);
+                    x1 = (-c + y) * inv2b;
+                    x2 = (-c - y) * inv2b;
+                    count += 2;
+                }
+            }
+        }
+        else
+        {
+            //cubic equation
+            float inva = 1/a;
+            float invaa = inva*inva;
+            float bb = b*b;
+            float bover3a = b*(1/3.0f)*inva;
+            float p = (3*a*c - bb)*(1/3.0f)*invaa;
+            float halfq = (2*bb*b - 9*a*b*c + 27*a*a*d)*(0.5f/27)*invaa*inva;
+            float yy = p*p*p/27 + halfq*halfq;
+            if (yy > ms_fEpsilon)
+            {
+                // sqrt is positive: one real solution
+                float y = FMath::Sqrt(yy);
+                float uuu = -halfq + y;
+                float vvv = -halfq - y;
+                float www = FMath::Abs(uuu) > FMath::Abs(vvv) ? uuu : vvv;
+                float w = (www < 0) ? -pow(FMath::Abs(www),1/3.0f) : pow(www, 1/3.0f);
+                x1 = w - p/(3*w) - bover3a;
+                count = 1;
+            }
+            else if (yy < -ms_fEpsilon)
+            {
+                //sqrt is negative: three real solutions
+                float x = -halfq;
+                float y = FMath::Sqrt(-yy);
+                float theta;
+                float r;
+                float ux;
+                float uyi;
+                //convert to polar form
+                if (FMath::Abs(x) > ms_fEpsilon)
+                {
+                    theta = (x > 0) ? atan(y/x) : (atan(y/x) + 3.14159625f);
+                    r = FMath::Sqrt(x*x - yy);
+                }
+                else
+                {
+                    //vertical line
+                    theta = 3.14159625f/2;
+                    r = y;
+                }
+                //calc cube root
+                theta /= 3.0f;
+                r = pow(r, 1/3.0f);
+                //convert to complex coordinate
+                ux = cos(theta)*r;
+                uyi = sin(theta)*r;
+                //first solution
+                x1 = ux+ux - bover3a;
+                //second solution, rotate +120 degrees
+                x2 = 2*(ux*cos120 - uyi*sin120) - bover3a;
+                //third solution, rotate -120 degrees
+                x3 = 2*(ux*cos120 + uyi*sin120) - bover3a;
+                count = 3;
+            }
+            else
+            {
+                //sqrt is zero: two real solutions
+                float www = -halfq;
+                float w = (www < 0) ? -pow(FMath::Abs(www),1/3.0f) : pow(www,1/3.0f); 
+                //first solution           
+                x1 = w+w - bover3a;
+                //second solution, rotate +120 degrees
+                x2 = 2*w*cos120 - bover3a;
+                count = 2;
+            }
+        }
+
+        return count;
+    }
+    int FMath::Equation_Cubic_ShengJin(float a, float b, float c, float d, float& x1, float& x2, float& x3)
+    {
+        x1 = 0.0f;
+        x2 = 0.0f;
+        x3 = 0.0f;
+        int count = 0;
+
+        float A = b*b - 3*a*c;
+        float B = b*c - 9*a*d;
+        float C = c*c - 3*b*d;
+        float f = B*B - 4*A*C;
+        
+        if (FMath::Abs(A) < ms_fEpsilon && FMath::Abs(B) < ms_fEpsilon)
+        {
+            x1 = x2 = x3 = -b / (3 * a);
+            count = 3;
+        }
+        else if (FMath::Abs(f) < ms_fEpsilon)
+        {
+            float K = B/A;
+            x1 = -b / a + K;
+            x2 = x3 = -K / 2;
+            count = 3;
+        }
+        else if (f > ms_fEpsilon)
+        {
+            float Y1 = A*b + 3*a*(-B + FMath::Sqrt(f)) / 2;
+            float Y2 = A*b + 3*a*(-B - FMath::Sqrt(f)) / 2;
+            float Y1_value = (Y1/FMath::Abs(Y1)) * FMath::Pow(FMath::Abs(Y1), 1.0f/3.0f);
+            float Y2_value = (Y2/FMath::Abs(Y2)) * FMath::Pow(FMath::Abs(Y2), 1.0f/3.0f);
+            x1 = (-b - Y1_value - Y2_value) / (3 * a);
+            count = 1;
+            //give up -i 
+        }
+        else if (f < ms_fEpsilon)
+        {
+            float sqrtA = FMath::Sqrt(A);
+            float sqrt3 = FMath::Sqrt(3);
+            
+            float T = (2*A*b - 3*a*B)/(2*A*sqrtA);
+            float S = acos(T);
+            float sinS = sin(S/3);
+            float cosS = cos(S/3);
+            x1 = (-b - 2*sqrtA*cosS)/(3*a);
+            x2 = (-b + sqrtA*(cosS + sqrt3*sinS))/(3*a);
+            x3 = (-b + sqrtA*(cosS - sqrt3*sinS))/(3*a);
+            count = 3;
+        }
+
+        return count;
+    }
+    int FMath::Equation_Cubic(float a, float b, float c, float d, FComplex& x1, FComplex& x2, FComplex& x3)
+    {
+        FComplex A((double)a);
+        FComplex B((double)b);
+        FComplex C((double)c);
+        FComplex D((double)d);
+        FEquationCubic eCubic(A, B, C, D);
+        eCubic.Solve();  
+        x1 = eCubic.x[0];
+        x2 = eCubic.x[1];
+        x3 = eCubic.x[2];
+        return 3;
+    }
+
+    //ax^4 + bx^3 + cx^2 + dx + e = 0
+    int FMath::Equation_Quartic(float a, float b, float c, float d, float e, float& x1, float& x2, float& x3, float& x4, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        FComplex xx1,xx2,xx3,xx4;
+        Equation_Quartic(a, b, c, d, e, xx1, xx2, xx3, xx4, fEpsilon);
+        std::vector<float> aTs;
+        if (FMath::Abs(xx1.imaginary) < ms_fEpsilon)
+        {
+            aTs.push_back((float)xx1.real);
+        }
+        if (FMath::Abs(xx2.imaginary) < ms_fEpsilon)
+        {
+            aTs.push_back((float)xx2.real);
+        }
+        if (FMath::Abs(xx3.imaginary) < ms_fEpsilon)
+        {
+            aTs.push_back((float)xx3.real);
+        }
+        if (FMath::Abs(xx4.imaginary) < ms_fEpsilon)
+        {
+            aTs.push_back((float)xx4.real);
+        }
+
+        std::sort(aTs.begin(), aTs.end(), float_less);
+        int count = (int)aTs.size();
+
+        x1 = 0.0f;
+        x2 = 0.0f;
+        x3 = 0.0f;
+        x4 = 0.0f;
+        
+        if (count > 3)
+        {
+            x1 = aTs[0];
+            x2 = aTs[1];
+            x3 = aTs[2];
+            x4 = aTs[3];
+        }
+        else if (count > 2)
+        {
+            x1 = aTs[0];
+            x2 = aTs[1];
+            x3 = aTs[2];
+        }
+        else if (count > 1)
+        {
+            x1 = aTs[0];
+            x2 = aTs[1];
+        }
+        else if (count > 0)
+        {
+            x1 = aTs[0];
+        } 
+
+        return count;
+    }
+    int FMath::Equation_Quartic(float a, float b, float c, float d, float e, FComplex& x1, FComplex& x2, FComplex& x3, FComplex& x4, float fEpsilon /*= FMath::ms_fEpsilon*/)
+    {
+        FComplex A((double)a);
+        FComplex B((double)b);
+        FComplex C((double)c);
+        FComplex D((double)d);
+        FComplex E((double)e);
+        FEquationQuartic eQuartic(A, B, C, D, E, fEpsilon);
+        eQuartic.Solve();
+        x1 = eQuartic.x[0];
+        x2 = eQuartic.x[1];
+        x3 = eQuartic.x[2];
+        x4 = eQuartic.x[3];
+        return 4;
+    }
+
     //Direction From Point2
     FVector3 FMath::GetDirectionWithoutNormalizeFromPoint2(const FVector3& v1, const FVector3& v2)
     {
@@ -596,10 +891,18 @@ namespace LostPeterFoundation
     }
 
     //Distance From Point-Plane
+    float FMath::GetDistanceFromPointPlane(const FVector3& pt, const FVector3& planePoint, const FVector3& planeNormal)
+    {
+        return Abs(Dot(planeNormal, (pt - planePoint))) / Length(planeNormal);
+    }
     float FMath::GetDistanceFromPointPlane(const FVector3& pt, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
     {
         FVector3 vNormal = GetNormal3WithoutNormalizeFromPoints3(pt1, pt2, pt3);
-        return Abs(Dot(vNormal, (pt - pt1))) / Length(vNormal);
+        return GetDistanceFromPointPlane(pt, pt1, vNormal);
+    }
+    float FMath::GetDistanceFromPointPlane(const FVector3& pt, const FPlane& plane)
+    {
+        return GetDistanceFromPointPlane(pt, plane.GetPlanePoint(), plane.GetNormal());
     }
 
     //Distance From Line2
@@ -2708,32 +3011,75 @@ namespace LostPeterFoundation
         return nNum;
     }
 
-    std::pair<bool, float> FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool discardInside /*= true*/)
+    std::pair<bool, float> FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool discardInside /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
         float t = 0;
         const FVector3& rayPos = ray.GetOrigin();
         //1> rayPos In Torus
         if (discardInside && torus.Intersects_Point(rayPos))
         {
-            return std::pair<bool, float>(true, t);
+            return std::pair<bool, float>(true, 0);
         }
 
-        const FVector3& rayDir = ray.GetDirection();
-
-  
-
-        //2> Calculate
-
+        //2> Ray - Torus
+        float fD1, fD2, fD3, fD4;
+        int nNum = Intersects_RayTorus(ray, torus, discardInside, &fD1, &fD2, &fD3, &fD4, fEpsilon);
+        if (nNum > 0)
+        {
+            return std::pair<bool, float>(true, fD1);
+        }
 
         return std::pair<bool, float>(false, 0);
     }
-    int FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2)
+    int FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2, float* d3, float* d4, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return 0;
+        *d1 = 0;
+        *d2 = 0;
+        *d3 = 0;
+        *d4 = 0;
+
+        const FVector3& rayPos = ray.GetOrigin();
+        const FVector3& rayDir = ray.GetDirection();
+        const FVector3& vCenter = torus.GetCenter();
+        const FVector3& vDir = torus.GetDirection();
+        float R = torus.GetRadius();
+        float r = torus.GetSectionRadius();
+        FVector3 x = rayPos - vCenter;
+
+        float m = FMath::Dot(rayDir, rayDir);
+        float n = FMath::Dot(rayDir, x);
+        float o = FMath::Dot(x, x);
+        float p = FMath::Dot(rayDir, vDir);
+        float q = FMath::Dot(x, vDir);
+
+        float a = m*m;
+        float b = 4*m*n;
+        float c = 4*n*n + 2*m*o - 2*(R*R + r*r)*m + 4*R*R*p*p;
+        float d = 4*n*o - 4*(R*R + r*r)*n + 8*R*R*p*q;
+        float e = o*o - 2*(R*R + r*r)*o + 4*R*R*q*q + (R*R - r*r)*(R*R - r*r);
+
+        int count = Equation_Quartic(a, b, c, d, e, *d1, *d2, *d3, *d4, fEpsilon);
+        return count;
     }
-    int FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
+    int FMath::Intersects_RayTorus(const FRay& ray, const FTorus& torus, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2, FVector3& vIntersection3, FVector3& vIntersection4, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {   
-        return 0;
+        float fD1, fD2, fD3, fD4;
+        int nNum = Intersects_RayTorus(ray, torus, isInside, &fD1, &fD2, &fD3, &fD4, fEpsilon);
+        if (nNum > 0)
+        {
+            vIntersection1 = ray.GetPoint(fD1);
+            vIntersection2 = ray.GetPoint(fD2);
+            vIntersection3 = ray.GetPoint(fD3);
+            vIntersection4 = ray.GetPoint(fD4);
+        }
+        else
+        {
+            vIntersection1 = FMath::ms_v3Zero;
+            vIntersection2 = FMath::ms_v3Zero;
+            vIntersection3 = FMath::ms_v3Zero;
+            vIntersection4 = FMath::ms_v3Zero;
+        }
+        return nNum;
     }
 
     bool FMath::Intersects_RaySegment_Test(const FRay& ray, const FVector3& s, const FVector3& e, float fEpsilon /*= FMath::ms_fEpsilon*/)
@@ -2855,18 +3201,18 @@ namespace LostPeterFoundation
     {
         return Intersects_RayCone(ray, cone, isInside, vIntersection1, vIntersection2) > 0;
     }
-    bool FMath::Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool discardInside /*= true*/)
+    bool FMath::Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool discardInside /*= true*/, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        std::pair<bool, float> ret = Intersects_RayTorus(ray, torus, discardInside);
+        std::pair<bool, float> ret = Intersects_RayTorus(ray, torus, discardInside, fEpsilon);
         return ret.first;
     }   
-    bool FMath::Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2)
+    bool FMath::Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool& isInside, float* d1, float* d2, float* d3, float* d4, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Intersects_RayTorus(ray, torus, isInside, d1, d2) > 0;
+        return Intersects_RayTorus(ray, torus, isInside, d1, d2, d3, d4, fEpsilon) > 0;
     }   
-    bool FMath::Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2)
+    bool FMath::Intersects_RayTorus_Test(const FRay& ray, const FTorus& torus, bool& isInside, FVector3& vIntersection1, FVector3& vIntersection2, FVector3& vIntersection3, FVector3& vIntersection4, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return Intersects_RayTorus(ray, torus, isInside, vIntersection1, vIntersection2) > 0;
+        return Intersects_RayTorus(ray, torus, isInside, vIntersection1, vIntersection2, vIntersection3, vIntersection4, fEpsilon) > 0;
     }
 
     //Sphere - Shape

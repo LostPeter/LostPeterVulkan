@@ -64,6 +64,7 @@ namespace LostPeterFoundation
         LP_FORCEINLINE const FVector3& GetNormal() const { return m_vNormal; }
         LP_FORCEINLINE FVector3& GetNormal() { return m_vNormal; }
         LP_FORCEINLINE float GetDistance() const { return m_fDistance; }
+        LP_FORCEINLINE FVector3 GetPlanePoint() const { return m_vNormal * m_fDistance; }
 
     public:
         FPlaneSideType GetSide(const FVector3& vPoint) const;								

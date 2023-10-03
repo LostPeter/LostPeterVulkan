@@ -2150,7 +2150,7 @@ bool Vulkan_017_Collision::IsCollision_LineCircle3D(double x, double y, const FR
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
         FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pLineCircle3D->vCenter);
-        FVector3 vUp = FMath::Transform(obj.g_MatWorld, pLineCircle3D->vUp);
+        FVector3 vUp = FMath::ToMatrix3(obj.g_MatWorld) * pLineCircle3D->vUp;
         float fRadius = pLineCircle3D->radius;
         FPlane plane(vUp, vCenter);
         if (FMath::Intersects_RayCircle_Test(ray, plane, vCenter, fRadius, 0.005f))
@@ -2297,11 +2297,11 @@ bool Vulkan_017_Collision::IsCollision_LineTorus3D(double x, double y, const FRa
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
         FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pLineTorus3D->GetCenter());
-        FVector3 vDirection = FMath::Transform(obj.g_MatWorld, pLineTorus3D->GetUp());
+        FVector3 vDirection = FMath::ToMatrix3(obj.g_MatWorld) * pLineTorus3D->GetUp();
         float fRadius = pLineTorus3D->GetRadius();
         float fSectionRadius = pLineTorus3D->GetSectionRadius();
         FTorus torusWorld(vCenter, vDirection, fRadius, fSectionRadius);
-        if (FMath::Intersects_RayTorus_Test(ray, torusWorld))
+        if (FMath::Intersects_RayTorus_Test(ray, torusWorld, true, 0.0001f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_LineTorus3D: Ray trace in LineTorus 3D !");
@@ -2424,7 +2424,7 @@ bool Vulkan_017_Collision::IsCollision_FlatCircle3D(double x, double y, const FR
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
         FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pFlatCircle3D->vCenter);
-        FVector3 vUp = FMath::Transform(obj.g_MatWorld, pFlatCircle3D->vUp);
+        FVector3 vUp = FMath::ToMatrix3(obj.g_MatWorld) * pFlatCircle3D->vUp;
         FPlane plane(vUp, vCenter);
         if (FMath::Intersects_RayCircle_Test(ray, plane, vCenter, pFlatCircle3D->radius, 0.005f))
         {
@@ -2570,11 +2570,11 @@ bool Vulkan_017_Collision::IsCollision_FlatTorus3D(double x, double y, const FRa
     {
         LineFlat3DObjectConstants& obj = pRend->objectCBs_LineFlat3D[i];
         FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pFlatTorus3D->GetCenter());
-        FVector3 vDirection = FMath::Transform(obj.g_MatWorld, pFlatTorus3D->GetUp());
+        FVector3 vDirection = FMath::ToMatrix3(obj.g_MatWorld) * pFlatTorus3D->GetUp();
         float fRadius = pFlatTorus3D->GetRadius();
         float fSectionRadius = pFlatTorus3D->GetSectionRadius();
         FTorus torusWorld(vCenter, vDirection, fRadius, fSectionRadius);
-        if (FMath::Intersects_RayTorus_Test(ray, torusWorld))
+        if (FMath::Intersects_RayTorus_Test(ray, torusWorld, true, 0.0001f))
         {
             obj.color = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_FlatTorus3D: Ray trace in FlatTorus 3D !");
@@ -2676,7 +2676,7 @@ bool Vulkan_017_Collision::IsCollision_EntityCircle(double x, double y, const FR
         ObjectConstants& obj = pRend->objectCBs[i];
         MaterialConstants& mat = pRend->materialCBs[i];
         FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pEntityCircle->vCenter);
-        FVector3 vUp = FMath::Transform(obj.g_MatWorld, pEntityCircle->vUp);
+        FVector3 vUp = FMath::ToMatrix3(obj.g_MatWorld) * pEntityCircle->vUp;
         FPlane plane(vUp, vCenter);
         if (FMath::Intersects_RayCircle_Test(ray, plane, vCenter, pEntityCircle->radius, 0.005f))
         {
@@ -2852,11 +2852,11 @@ bool Vulkan_017_Collision::IsCollision_EntityTorus(double x, double y, const FRa
         ObjectConstants& obj = pRend->objectCBs[i];
         MaterialConstants& mat = pRend->materialCBs[i];
         FVector3 vCenter = FMath::Transform(obj.g_MatWorld, pEntityTorus->GetCenter());
-        FVector3 vDirection = FMath::Transform(obj.g_MatWorld, pEntityTorus->GetUp());
+        FVector3 vDirection = FMath::ToMatrix3(obj.g_MatWorld) * pEntityTorus->GetUp();
         float fRadius = pEntityTorus->GetRadius();
         float fSectionRadius = pEntityTorus->GetSectionRadius();
         FTorus torusWorld(vCenter, vDirection, fRadius, fSectionRadius);
-        if (FMath::Intersects_RayTorus_Test(ray, torusWorld))
+        if (FMath::Intersects_RayTorus_Test(ray, torusWorld, true, 0.0001f))
         {
             mat.factorAmbient = color;
             //F_LogInfo("Vulkan_017_Collision::IsCollision_EntityTorus: Ray trace in EntityTorus !");
