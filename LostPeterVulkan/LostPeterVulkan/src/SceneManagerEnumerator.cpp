@@ -12,8 +12,20 @@
 #include "../include/SceneManagerEnumerator.h"
 #include "../include/VulkanWindow.h"
 
+template<> LostPeter::SceneManagerEnumerator* LostPeterFoundation::FSingleton<LostPeter::SceneManagerEnumerator>::ms_Singleton = nullptr;
+
 namespace LostPeter
 {
+	SceneManagerEnumerator* SceneManagerEnumerator::GetSingletonPtr()
+	{
+		return ms_Singleton;
+	}
+	SceneManagerEnumerator& SceneManagerEnumerator::GetSingleton()
+	{  
+		assert(ms_Singleton && "SceneManagerEnumerator::GetSingleton");
+		return (*ms_Singleton);     
+	}
+
     SceneManagerEnumerator::SceneManagerEnumerator(const String& nameSceneManagerEnumerator)
         : Base(nameSceneManagerEnumerator)
     {

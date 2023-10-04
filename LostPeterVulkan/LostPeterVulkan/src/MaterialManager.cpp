@@ -12,8 +12,20 @@
 #include "../include/MaterialManager.h"
 #include "../include/VulkanWindow.h"
 
+template<> LostPeter::MaterialManager* LostPeterFoundation::FSingleton<LostPeter::MaterialManager>::ms_Singleton = nullptr;
+
 namespace LostPeter
 {
+    MaterialManager* MaterialManager::GetSingletonPtr()
+	{
+		return ms_Singleton;
+	}
+	MaterialManager& MaterialManager::GetSingleton()
+	{  
+		assert(ms_Singleton && "MaterialManager::GetSingleton");
+		return (*ms_Singleton);     
+	}
+
     MaterialManager::MaterialManager()
         : Base("MaterialManager")
     {

@@ -55,6 +55,7 @@
 #include "FRefCount.h"
 #include "FSingleton.h"
 #include "FSegment.h"
+#include "FSerializer.h"
 #include "FSphere.h"
 #include "FTimer.h"
 #include "FTorus.h"

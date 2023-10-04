@@ -9,28 +9,19 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _MATERIAL_MANAGER_H_
-#define _MATERIAL_MANAGER_H_
-
-#include "Base.h"
+#include "../include/MaterialData.h"
+#include "../include/VulkanWindow.h"
 
 namespace LostPeter
 {
-    class utilExport MaterialManager : public FSingleton<MaterialManager>
-                                     , public Base
+    MaterialData::MaterialData(const String& nameMaterialData)
+        : Base(nameMaterialData)
     {
-    public:
-        MaterialManager();
-        virtual ~MaterialManager();
+        
+    }
+    MaterialData::~MaterialData()
+    {
 
-    public:
-
-    public:
-        static MaterialManager&	GetSingleton();
-		static MaterialManager*	GetSingletonPtr();
-
-    };
-
+    }
+    
 }; //LostPeter
-
-#endif

@@ -16,7 +16,8 @@
 
 namespace LostPeter
 {
-    class utilExport TextureManager : public Base
+    class utilExport TextureManager : public FSingleton<TextureManager>
+                                    , public Base
     {
     public:
         TextureManager();
@@ -25,7 +26,8 @@ namespace LostPeter
     public:
 
     public:
-
+        static TextureManager& GetSingleton();
+		static TextureManager* GetSingletonPtr();
 
     };
 

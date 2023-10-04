@@ -16,7 +16,8 @@
 
 namespace LostPeter
 {
-   class utilExport MeshManager : public Base
+   class utilExport MeshManager : public FSingleton<MeshManager>
+                                , public Base
     {
     public:
         MeshManager();
@@ -26,7 +27,8 @@ namespace LostPeter
         
 
     public:
-
+        static MeshManager&	GetSingleton();
+		static MeshManager*	GetSingletonPtr();
 
     };
 

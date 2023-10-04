@@ -9,26 +9,32 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _MATERIAL_MANAGER_H_
-#define _MATERIAL_MANAGER_H_
+#ifndef _SHADER_SERIALIZER_H_
+#define _SHADER_SERIALIZER_H_
 
 #include "Base.h"
 
 namespace LostPeter
 {
-    class utilExport MaterialManager : public FSingleton<MaterialManager>
-                                     , public Base
+    class utilExport ShaderSerializer : public FSerializer
+                                      , public Base
     {
     public:
-        MaterialManager();
-        virtual ~MaterialManager();
+        ShaderSerializer();
+        virtual ~ShaderSerializer();
 
     public:
 
     public:
-        static MaterialManager&	GetSingleton();
-		static MaterialManager*	GetSingletonPtr();
 
+    protected:
+        //File Content XML
+        virtual bool serializeXML();
+        virtual bool deserializeXML();
+
+        //File Content Binary
+        virtual bool serializeBinary();
+        virtual bool deserializeBinary();
     };
 
 }; //LostPeter

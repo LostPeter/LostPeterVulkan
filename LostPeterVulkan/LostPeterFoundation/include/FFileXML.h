@@ -96,11 +96,11 @@ namespace LostPeterFoundation
     public:
         void Destroy();
 
+    ////Element
         FXMLElement* SetElementParent(FXMLElement* pElementParent);
 
         int GetElementChildrenCount() const;
         FXMLElement* GetElementChild(int index);
-
         FXMLElement* InsertElementChild(FXMLElement* pElementChild, int index);
         FXMLElement* AddElementChild(FXMLElement* pElementChild);
 
@@ -113,9 +113,61 @@ namespace LostPeterFoundation
 
         void DeleteElements(FXMLElementPtrVector& aElements);
 
+    ////Attribute
+        int GetAttributeCount() const;
+        FXMLAttribute* GetAttribute(int index);
         void AddAttribute(const String& strName, const String& strValue);
-        void AddAttribute(FXMLAttribute& attribute);
-        void AddAttributes(FXMLAttributeVector& aAttributes);
+        void AddAttribute(const FXMLAttribute& attribute);
+        void AddAttributes(const FXMLAttributeVector& aAttributes);
+
+        FXMLAttribute* FindAttribute(const String& strName);
+
+        void RemoveAttribute(const String& strName);
+        void RemoveAttributes(const StringVector& aNames);
+        void RemoveAttributeAll();
+
+    public:
+        bool ParserAttribute_Bool(const String& strName, bool& b);
+        bool ParserAttribute_Int(const String& strName, int32& i);
+        bool ParserAttribute_UInt(const String& strName, uint32& u);
+        bool ParserAttribute_SizeT(const String& strName, size_t& s);
+        bool ParserAttribute_Float(const String& strName, float& f);
+        bool ParserAttribute_Double(const String& strName, double& d);
+        bool ParserAttribute_Color(const String& strName, FColor& color);
+        bool ParserAttribute_PointI(const String& strName, FPointI& pi);
+        bool ParserAttribute_PointF(const String& strName, FPointF& pf);
+        bool ParserAttribute_SizeI(const String& strName, FSizeI& si);
+        bool ParserAttribute_SizeF(const String& strName, FSizeF& sf);
+        bool ParserAttribute_RectI(const String& strName, FRectI& ri);
+        bool ParserAttribute_RectF(const String& strName, FRectF& rf);
+        bool ParserAttribute_Vector2(const String& strName, FVector2& v2);
+        bool ParserAttribute_Vector3(const String& strName, FVector3& v3);
+        bool ParserAttribute_Vector4(const String& strName, FVector4& v4);
+        bool ParserAttribute_Quaternion(const String& strName, FQuaternion& q);
+        bool ParserAttribute_Matrix3(const String& strName, FMatrix3& mat3);
+        bool ParserAttribute_Matrix4(const String& strName, FMatrix4& mat4);
+        bool ParserAttribute_String(const String& strName, String& str);
+
+        void SaveAttribute_Bool(const String& strName, bool bValue);
+        void SaveAttribute_Int(const String& strName, int32 nValue);
+        void SaveAttribute_UInt(const String& strName, uint32 nValue);
+        void SaveAttribute_SizeT(const String& strName, size_t sValue);
+        void SaveAttribute_Float(const String& strName, float fValue);
+        void SaveAttribute_Double(const String& strName, double dValue);
+        void SaveAttribute_Color(const String& strName, const FColor& clValue);
+        void SaveAttribute_PointI(const String& strName, const FPointI& pointI);
+        void SaveAttribute_PointF(const String& strName, const FPointF& pointF);
+        void SaveAttribute_SizeI(const String& strName, const FSizeI& sizeI);
+        void SaveAttribute_SizeF(const String& strName, const FSizeF& sizeF);
+        void SaveAttribute_RectI(const String& strName, const FRectI& rectI);
+        void SaveAttribute_RectF(const String& strName, const FRectF& rectF);
+        void SaveAttribute_Vector2(const String& strName, const FVector2& v2Value);
+        void SaveAttribute_Vector3(const String& strName, const FVector3& v3Value);
+        void SaveAttribute_Vector4(const String& strName, const FVector4& v4Value);
+        void SaveAttribute_Quaternion(const String& strName, const FQuaternion& qValue);
+        void SaveAttribute_Matrix3(const String& strName, const FMatrix3& mat3Value);
+        void SaveAttribute_Matrix4(const String& strName, const FMatrix4& mat4Value);
+        void SaveAttribute_String(const String& strName, const String& strValue);
     };
 
     ////////////////////////// FXMLDocument //////////////////////

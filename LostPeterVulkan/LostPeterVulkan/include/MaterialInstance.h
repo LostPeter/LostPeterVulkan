@@ -9,25 +9,22 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _MATERIAL_MANAGER_H_
-#define _MATERIAL_MANAGER_H_
+#ifndef _MATERIAL_INSTANCE_H_
+#define _MATERIAL_INSTANCE_H_
 
 #include "Base.h"
 
 namespace LostPeter
 {
-    class utilExport MaterialManager : public FSingleton<MaterialManager>
-                                     , public Base
+    class utilExport MaterialInstance : public Base
     {
     public:
-        MaterialManager();
-        virtual ~MaterialManager();
+        MaterialInstance(const String& nameMaterialInstance);
+        virtual ~MaterialInstance();
 
     public:
 
     public:
-        static MaterialManager&	GetSingleton();
-		static MaterialManager*	GetSingletonPtr();
 
     };
 

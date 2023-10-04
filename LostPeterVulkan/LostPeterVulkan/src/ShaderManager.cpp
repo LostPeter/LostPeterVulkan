@@ -12,8 +12,20 @@
 #include "../include/ShaderManager.h"
 #include "../include/VulkanWindow.h"
 
+template<> LostPeter::ShaderManager* LostPeterFoundation::FSingleton<LostPeter::ShaderManager>::ms_Singleton = nullptr;
+
 namespace LostPeter
 {
+    ShaderManager* ShaderManager::GetSingletonPtr()
+	{
+		return ms_Singleton;
+	}
+	ShaderManager& ShaderManager::GetSingleton()
+	{  
+		assert(ms_Singleton && "ShaderManager::GetSingleton");
+		return (*ms_Singleton);     
+	}
+
     ShaderManager::ShaderManager()
         : Base("ShaderManager")
     {

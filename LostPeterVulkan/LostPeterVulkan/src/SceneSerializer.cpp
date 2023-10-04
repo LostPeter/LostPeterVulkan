@@ -9,31 +9,39 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/MeshManager.h"
+#include "../include/SceneSerializer.h"
 #include "../include/VulkanWindow.h"
-
-template<> LostPeter::MeshManager* LostPeterFoundation::FSingleton<LostPeter::MeshManager>::ms_Singleton = nullptr;
 
 namespace LostPeter
 {
-    MeshManager* MeshManager::GetSingletonPtr()
-	{
-		return ms_Singleton;
-	}
-	MeshManager& MeshManager::GetSingleton()
-	{  
-		assert(ms_Singleton && "MeshManager::GetSingleton");
-		return (*ms_Singleton);     
-	}
-
-    MeshManager::MeshManager()
-        : Base("MeshManager")
+    SceneSerializer::SceneSerializer()
+        : Base("SceneSerializer")
     {
-
+        
     }
-    MeshManager::~MeshManager()
+    SceneSerializer::~SceneSerializer()
     {
 
     }
     
+    //File Content XML
+    bool SceneSerializer::serializeXML()
+    {
+        return false;
+    }
+    bool SceneSerializer::deserializeXML()
+    {
+        return false;
+    }
+
+    //File Content Binary
+    bool SceneSerializer::serializeBinary()
+    {
+        return false;
+    }
+    bool SceneSerializer::deserializeBinary()
+    {
+        return false;
+    }
+
 }; //LostPeter

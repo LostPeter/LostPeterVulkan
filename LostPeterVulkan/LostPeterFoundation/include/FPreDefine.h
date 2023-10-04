@@ -248,6 +248,7 @@ namespace LostPeterFoundation
     class FRay;
     class FRefCount;
     class FSegment;
+    class FSerializer;
     class FSphere;
     class FTimer;
     class FTorus;

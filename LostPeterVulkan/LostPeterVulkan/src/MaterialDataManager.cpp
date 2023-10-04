@@ -9,29 +9,29 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/MeshManager.h"
+#include "../include/MaterialDataManager.h"
 #include "../include/VulkanWindow.h"
 
-template<> LostPeter::MeshManager* LostPeterFoundation::FSingleton<LostPeter::MeshManager>::ms_Singleton = nullptr;
+template<> LostPeter::MaterialDataManager* LostPeterFoundation::FSingleton<LostPeter::MaterialDataManager>::ms_Singleton = nullptr;
 
 namespace LostPeter
 {
-    MeshManager* MeshManager::GetSingletonPtr()
+	MaterialDataManager* MaterialDataManager::GetSingletonPtr()
 	{
 		return ms_Singleton;
 	}
-	MeshManager& MeshManager::GetSingleton()
+	MaterialDataManager& MaterialDataManager::GetSingleton()
 	{  
-		assert(ms_Singleton && "MeshManager::GetSingleton");
+		assert(ms_Singleton && "MaterialDataManager::GetSingleton");
 		return (*ms_Singleton);     
 	}
 
-    MeshManager::MeshManager()
-        : Base("MeshManager")
+    MaterialDataManager::MaterialDataManager()
+        : Base("MaterialDataManager")
     {
-
+        
     }
-    MeshManager::~MeshManager()
+    MaterialDataManager::~MaterialDataManager()
     {
 
     }

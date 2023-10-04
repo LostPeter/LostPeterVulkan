@@ -47,7 +47,7 @@ namespace LostPeterFoundation
 	bool FFileBinary::CreateBinary(const char* szFilePath)
 	{
 		Release();
-		m_pFile = fopen(szFilePath,"wb");
+		m_pFile = fopen(szFilePath, "wb");
 		if (!m_pFile)
 			return false;
 		
@@ -57,7 +57,7 @@ namespace LostPeterFoundation
 	bool FFileBinary::OpenBinary(const char* szFilePath)
 	{
 		Release();
-		m_pFile = fopen(szFilePath,"rb");
+		m_pFile = fopen(szFilePath, "rb");
 		if (!m_pFile)
 			return false;
 

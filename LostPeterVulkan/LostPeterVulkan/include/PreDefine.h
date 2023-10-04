@@ -502,9 +502,14 @@ namespace LostPeter
     class EditorLineFlat2DCollector;
     class EditorLineFlat3DCollector;
     class Material;
+    class MaterialData;
+    class MaterialDataManager;
+    class MaterialDataSerializer;
+    class MaterialInstance;
     class MaterialManager;
     class Mesh;
     class MeshManager;
+    class MeshSerializer;
     class MeshSub;
     class Movable;
     class Node;
@@ -524,8 +529,10 @@ namespace LostPeter
     class SceneManager;
     class SceneManagerEnumerator;
     class SceneNode;
+    class SceneSerializer;
     class Shader;
     class ShaderManager;
+    class ShaderSerializer;
     class Texture;
     class TextureManager;
 

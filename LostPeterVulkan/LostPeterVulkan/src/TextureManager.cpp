@@ -12,8 +12,20 @@
 #include "../include/TextureManager.h"
 #include "../include/VulkanWindow.h"
 
+template<> LostPeter::TextureManager* LostPeterFoundation::FSingleton<LostPeter::TextureManager>::ms_Singleton = nullptr;
+
 namespace LostPeter
 {
+    TextureManager* TextureManager::GetSingletonPtr()
+	{
+		return ms_Singleton;
+	}
+	TextureManager& TextureManager::GetSingleton()
+	{  
+		assert(ms_Singleton && "TextureManager::GetSingleton");
+		return (*ms_Singleton);  
+	}
+
     TextureManager::TextureManager()
         : Base("TextureManager")
     {

@@ -16,13 +16,18 @@
 
 namespace LostPeter
 {
-    class utilExport SceneManagerEnumerator : public Base
+    class utilExport SceneManagerEnumerator : public FSingleton<SceneManagerEnumerator>
+                                            , public Base
     {
     public:
         SceneManagerEnumerator(const String& nameSceneManagerEnumerator);
         virtual ~SceneManagerEnumerator();
 
-        public:
+    public:
+        static SceneManagerEnumerator&	GetSingleton();
+		static SceneManagerEnumerator*	GetSingletonPtr();
+
+    public:
         SceneManagerPtrVector m_aSceneManagers;
         SceneManagerPtrMap m_mapSceneManagers;
 

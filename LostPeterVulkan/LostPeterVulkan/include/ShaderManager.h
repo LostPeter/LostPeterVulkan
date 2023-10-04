@@ -16,7 +16,8 @@
 
 namespace LostPeter
 {
-    class utilExport ShaderManager : public Base
+    class utilExport ShaderManager : public FSingleton<ShaderManager>
+                                   , public Base
     {
     public:
         ShaderManager();
@@ -25,7 +26,8 @@ namespace LostPeter
     public:
 
     public:
-    
+        static ShaderManager& GetSingleton();
+		static ShaderManager* GetSingletonPtr();
 
     };
 
