@@ -1552,7 +1552,7 @@ void Vulkan_018_Object::createMeshes()
                   nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
     }
 }
-Vulkan_018_Object::Mesh* Vulkan_018_Object::findMesh(const String& nameMesh)
+Mesh* Vulkan_018_Object::findMesh(const String& nameMesh)
 {
     MeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
     if (itFind == this->m_mapModelMesh.end())
@@ -1623,7 +1623,7 @@ void Vulkan_018_Object::createTextures()
                   pathTextures.c_str());
     }
 }
-Vulkan_018_Object::Texture* Vulkan_018_Object::findTexture(const String& nameTexture)
+Texture* Vulkan_018_Object::findTexture(const String& nameTexture)
 {
     TexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
     if (itFind == this->m_mapModelTexture.end())

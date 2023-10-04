@@ -16,6 +16,7 @@
 #include "PreIncludeThird.h"
 
 #include "FPreDefine.h"
+#include "FPreInclude.h"
 using namespace LostPeterFoundation;
 #include "UIPreDefine.h"
 using namespace LostPeterUI;
@@ -427,34 +428,6 @@ namespace LostPeter
 
 
 ////////////////////////////// Class ///////////////////////////////
-    class App;
-    class AppEx;
-    
-    class VulkanBase;
-    class VulkanDevice;
-    class VulkanDeviceMemoryAllocation;
-    class VulkanDeviceMemoryManager;
-    class VulkanFence;
-    class VulkanFenceManager;
-    class VulkanInstance;
-    class VulkanLight;
-    class VulkanManager;
-    class VulkanMaterial;
-    class VulkanMesh;
-    class VulkanMeshSub;
-    class VulkanObject;
-    class VulkanPixelBox;
-    class VulkanPixelFormat;
-    class VulkanQueue;
-    class VulkanSample;
-    class VulkanSceneManager;
-    class VulkanSceneObject;
-    class VulkanSemaphore;
-    class VulkanSwapChain;
-    class VulkanTexture;
-    class VulkanWindow;
-    class VulkanWindowEx;
-
     struct LightConstants;
     struct PassConstants;
     struct ObjectConstants;
@@ -466,15 +439,153 @@ namespace LostPeter
     struct CopyBlitObjectConstants;
     struct MaterialConstants;
     struct InstanceConstants;
+
+    struct utilExport MeshInfo
+    {
+        MeshInfo();
+        MeshInfo(const String& _nameMesh,
+                 const String& _pathMesh,
+                 FMeshType _typeMesh,
+                 FMeshVertexType _typeVertex,
+                 FMeshGeometryType _typeGeometryType,
+                 FMeshCreateParam* _pMeshCreateParam,
+                 bool _isFlipY,
+                 bool _isTransformLocal,
+                 const FMatrix4& _matTransformLocal);
+        ~MeshInfo();
+
+        String nameMesh;
+        String pathMesh;
+        
+        FMeshType typeMesh;
+        FMeshVertexType typeVertex;
+        FMeshGeometryType typeGeometryType;
+        FMeshCreateParam* pMeshCreateParam;
+
+        bool isFlipY;
+        bool isTransformLocal;
+        FMatrix4 matTransformLocal;
+    };
+    typedef std::vector<MeshInfo*> MeshInfoPtrVector;
+
+    struct utilExport ShaderModuleInfo
+    {
+        String nameShader;
+        String nameShaderType;
+        String pathShader;
+    };
+    typedef std::vector<ShaderModuleInfo> ShaderModuleInfoVector;
+
+
+    class App;
+    class VulkanBase;
+    class VulkanWindow;
+
+    class FrameBufferAttachment;
+    class MultiRenderPass;
+    class PipelineGraphics;
+    class PipelineCompute;
+
+    typedef std::vector<MultiRenderPass*> MultiRenderPassPtrVector;
+    typedef std::map<String, MultiRenderPass*> MultiRenderPassPtrMap;
+    typedef std::vector<PipelineGraphics*> PipelineGraphicsPtrVector;
+    typedef std::map<String, PipelineGraphics*> PipelineGraphicsPtrMap;
+    typedef std::vector<PipelineCompute*> PipelineComputePtrVector;
+    typedef std::map<String, PipelineCompute*> PipelineComputePtrMap;
+
+
+    class Base;
+    class EditorBase;
+    class EditorCameraAxis;
+    class EditorCoordinateAxis;
+    class EditorGrid;
+    class EditorLineFlat2DCollector;
+    class EditorLineFlat3DCollector;
+    class Material;
+    class MaterialManager;
+    class Mesh;
+    class MeshManager;
+    class MeshSub;
+    class Movable;
+    class Node;
+    class Object;
+    class ObjectCamera;
+    class ObjectCloud;
+    class ObjectLight;
+    class ObjectMesh;
+    class ObjectParticle;
+    class ObjectSkinMesh;
+    class ObjectSky;
+    class ObjectTerrain;
+    class ObjectWater;
+    class Renderable;
+    class RenderableIndirect;
+    class Scene;
+    class SceneManager;
+    class SceneManagerEnumerator;
+    class SceneNode;
+    class Shader;
+    class ShaderManager;
+    class Texture;
+    class TextureManager;
+
+
+    typedef std::vector<MeshSub*> MeshSubPtrVector;
+    typedef std::map<String, MeshSub*> MeshSubPtrMap;
     
+    typedef std::vector<Mesh*> MeshPtrVector;
+    typedef std::map<String, Mesh*> MeshPtrMap;
 
-    typedef std::vector<VulkanWindowEx*> VulkanWindowExPtrVector;
-    typedef std::map<String, VulkanWindowEx*> VulkanWindowExPtrMap;
+    typedef std::vector<Texture*> TexturePtrVector;
+    typedef std::map<String, Texture*> TexturePtrMap;
+    typedef std::map<String, TexturePtrVector> TexturePtrShaderSortMap;
 
-    typedef std::vector<VulkanFence*> VulkanFencePtrVector;
+    typedef std::vector<Shader*> ShaderPtrVector;
+    typedef std::map<String, Shader*> ShaderPtrMap;
 
-    typedef std::vector<VulkanDeviceMemoryAllocation*> VulkanDeviceMemoryAllocationPtrVector;
-    
+    typedef std::vector<Material*> MaterialPtrVector;
+    typedef std::map<String, Material*> MaterialPtrMap;
+
+    typedef std::vector<Renderable*> RenderablePtrVector;
+    typedef std::map<String, Renderable*> RenderablePtrMap;
+
+    typedef std::vector<RenderableIndirect*> RenderableIndirectPtrVector;
+    typedef std::map<String, RenderableIndirect*> RenderableIndirectPtrMap;
+
+    typedef std::vector<Movable*> MovablePtrVector;
+    typedef std::map<String, Movable*> MovablePtrMap;
+
+    typedef std::vector<Node*> NodePtrVector;
+    typedef std::map<String, Node*> NodePtrMap;
+
+    typedef std::vector<SceneNode*> SceneNodePtrVector;
+    typedef std::map<String, SceneNode*> SceneNodePtrMap;
+
+    typedef std::vector<Object*> ObjectPtrVector;
+    typedef std::map<String, Object*> ObjectPtrMap;
+    typedef std::vector<ObjectCamera*> ObjectCameraPtrVector;
+    typedef std::map<String, ObjectCamera*> ObjectCameraPtrMap;
+    typedef std::vector<ObjectLight*> ObjectLightPtrVector;
+    typedef std::map<String, ObjectLight*> ObjectLightPtrMap;
+    typedef std::vector<ObjectMesh*> ObjectMeshPtrVector;
+    typedef std::map<String, ObjectMesh*> ObjectMeshPtrMap;
+    typedef std::vector<ObjectSkinMesh*> ObjectSkinMeshPtrVector;
+    typedef std::map<String, ObjectSkinMesh*> ObjectSkinMeshPtrMap;
+    typedef std::vector<ObjectParticle*> ObjectParticlePtrVector;
+    typedef std::map<String, ObjectParticle*> ObjectParticlePtrMap;
+    typedef std::vector<ObjectSky*> ObjectSkyPtrVector;
+    typedef std::map<String, ObjectSky*> ObjectSkyPtrMap;
+    typedef std::vector<ObjectCloud*> ObjectCloudPtrVector;
+    typedef std::map<String, ObjectCloud*> ObjectCloudPtrMap;
+    typedef std::vector<ObjectWater*> ObjectWaterPtrVector;
+    typedef std::map<String, ObjectWater*> ObjectWaterPtrMap;
+    typedef std::vector<ObjectTerrain*> ObjectTerrainPtrVector;
+    typedef std::map<String, ObjectTerrain*> ObjectTerrainPtrMap;
+
+    typedef std::vector<Scene*> ScenePtrVector;
+    typedef std::map<String, Scene*> ScenePtrMap;
+    typedef std::vector<SceneManager*> SceneManagerPtrVector;
+    typedef std::map<String, SceneManager*> SceneManagerPtrMap;
 
 }; //LostPeter
 

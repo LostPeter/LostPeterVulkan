@@ -693,4 +693,45 @@ namespace LostPeter
     }
 
 
+
+    ////////////////////////////// Class ///////////////////////////////
+    MeshInfo::MeshInfo()
+        : nameMesh("")
+        , pathMesh("")
+        , typeMesh(F_Mesh_File)
+        , typeVertex(F_MeshVertex_Pos3Color4Tex2)
+        , typeGeometryType(F_MeshGeometry_EntityGrid)
+        , pMeshCreateParam(nullptr)
+        , isFlipY(false)
+        , isTransformLocal(false)
+        , matTransformLocal(FMath::ms_mat4Unit)
+    {
+
+    }
+    MeshInfo::MeshInfo(const String& _nameMesh,
+                       const String& _pathMesh,
+                       FMeshType _typeMesh,
+                       FMeshVertexType _typeVertex,
+                       FMeshGeometryType _typeGeometryType,
+                       FMeshCreateParam* _pMeshCreateParam,
+                       bool _isFlipY,
+                       bool _isTransformLocal,
+                       const FMatrix4& _matTransformLocal)
+        : nameMesh(_nameMesh)
+        , pathMesh(_pathMesh)
+        , typeMesh(_typeMesh)
+        , typeVertex(_typeVertex)
+        , typeGeometryType(_typeGeometryType)
+        , pMeshCreateParam(_pMeshCreateParam)
+        , isFlipY(_isFlipY)
+        , isTransformLocal(_isTransformLocal)
+        , matTransformLocal(_matTransformLocal)
+    {
+
+    }
+    MeshInfo::~MeshInfo()
+    {
+        F_DELETE(this->pMeshCreateParam)
+    }
+
 }; //LostPeter

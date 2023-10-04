@@ -1493,7 +1493,7 @@ void Vulkan_011_Texturing::createTextures()
                   pathTextures.c_str());
     }
 }
-Vulkan_011_Texturing::Texture* Vulkan_011_Texturing::findTexture(const String& nameTexture)
+Texture* Vulkan_011_Texturing::findTexture(const String& nameTexture)
 {
     TexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
     if (itFind == this->m_mapModelTexture.end())
