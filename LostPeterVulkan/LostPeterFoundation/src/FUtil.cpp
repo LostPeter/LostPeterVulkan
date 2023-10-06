@@ -29,6 +29,16 @@ namespace LostPeterFoundation
 
 
     //////////////////////// Common ////////////////////////
+    String FUtil::ms_strPathBin = "";
+    const String& FUtil::GetPathBinSaved()
+    {
+        if (ms_strPathBin.size() <= 0)
+        {
+            ms_strPathBin = GetPathBin() + "/";
+        }
+        return ms_strPathBin;
+    }
+
     //Path
     String FUtil::GetPathExecute()
     {
@@ -88,7 +98,7 @@ namespace LostPeterFoundation
 
 
 ////File
-    bool FUtil::FileIsExist(const String& strPath)
+    bool FUtil::IsExistFile(const String& strPath)
     {
     #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
         String pathReal = GetPathReal(strPath);
@@ -103,7 +113,7 @@ namespace LostPeterFoundation
         
     #endif
 
-    F_Assert(false && "FUtil::FileIsExist, Not implement !")
+    F_Assert(false && "FUtil::IsExistFile, Not implement !")
     return false;
     }
 
@@ -157,14 +167,43 @@ namespace LostPeterFoundation
     }
 
 
-////Folder
+    bool FUtil::IsExistAssetFile(const String& strPath)
+    {
+        String strPathReal = GetPathBinSaved() + strPath;
+        return IsExistFile(strPathReal);
+    }
+    bool FUtil::DeleteAssetFile(const String& strPath)
+    {   
+        String strPathReal = GetPathBinSaved() + strPath;
+        return DeleteFile(strPathReal);
+    }
+    bool FUtil::ClearAssetFile(const String& strPath)
+    {
+        String strPathReal = GetPathBinSaved() + strPath;
+        return ClearFile(strPathReal);
+    }
+    bool FUtil::CopyAssetFile(const String& strSrcPath, const String& strDstPath)
+    {
+        String strSrcPathReal = GetPathBinSaved() + strSrcPath;
+        String strDstPathReal = GetPathBinSaved() + strDstPath;
+        return CopyFile(strSrcPathReal, strDstPathReal);
+    }
+
+
+////Directory
     bool FUtil::IsDirectory(const String& strPath)
     {
     #if LP_PLATFORM == LP_PLATFORM_WIN32
         return ::PathIsDirectory(strPath.c_str()) ? true : false;
 
     #elif LP_PLATFORM == LP_PLATFORM_MAC
-        return opendir(strPath.c_str()) != nullptr ? true : false;
+        DIR* dir = opendir(strPath.c_str());
+        if (dir != nullptr)
+        {
+            closedir(dir);
+            return true;
+        }
+        return false;
 
     #else
     
@@ -209,6 +248,25 @@ namespace LostPeterFoundation
         return false;
     }
 
+
+    bool FUtil::IsAssetDirectory(const String& strPath)
+    {
+        String strPathReal = GetPathBinSaved() + strPath;
+        return IsDirectory(strPathReal);
+    }
+	bool FUtil::CreateAssetDirectory(const String& strPath)
+    {
+        String strPathReal = GetPathBinSaved() + strPath;
+        return CreateDirectory(strPathReal);
+    }
+    bool FUtil::DeleteAssetDirectory(const String& strPath)
+    {
+        String strPathReal = GetPathBinSaved() + strPath;
+        return DeleteDirectory(strPathReal);
+    }
+
+
+////File/Folder Op
     bool FUtil::EnumFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath)
     {
     #if LP_PLATFORM == LP_PLATFORM_WIN32
@@ -262,9 +320,7 @@ namespace LostPeterFoundation
         struct dirent* pDir;
 
         DIR* dir = opendir(strFolderPath.c_str());
-        pDir = readdir(dir);
-
-        while (pDir != nullptr)
+        while ((pDir = readdir(dir)) != nullptr)
         {
             String nameFile = pDir->d_name;
 
@@ -347,9 +403,7 @@ namespace LostPeterFoundation
         struct dirent* pDir;
 
         DIR* dir = opendir(strFolderPath.c_str());
-        pDir = readdir(dir);
-
-        while (pDir != nullptr)
+        while ((pDir = readdir(dir)) != nullptr)
         {
             String nameFile = pDir->d_name;
             String strFilePath = strFolderPath + "/" + nameFile;
@@ -431,9 +485,7 @@ namespace LostPeterFoundation
         struct dirent* pDir;
 
         DIR* dir = opendir(strFolderPath.c_str());
-        pDir = readdir(dir);
-
-        while (pDir != nullptr)
+        while ((pDir = readdir(dir)) != nullptr)
         {
             String nameFile = pDir->d_name;
             String strFilePath = strFolderPath + "/" + nameFile;
@@ -469,7 +521,7 @@ namespace LostPeterFoundation
     return false;
     }
 
-    bool FUtil::CheckAndGeneratePath(const String& strPath)
+    bool FUtil::GenerateFolders(const String& strPath)
     {
         String strDupPath(strPath);
 		std::replace(strDupPath.begin(),strDupPath.end(),'\\','/');
@@ -490,7 +542,7 @@ namespace LostPeterFoundation
 			iFind++;
 		} while (true);
 
-		F_Assert(false && "FUtil::CheckAndGeneratePath, error !")
+		F_Assert(false && "FUtil::GenerateFolders, error !")
 		return false;
     }
 
@@ -542,9 +594,7 @@ namespace LostPeterFoundation
         struct dirent* pDir;
 
         DIR* dir = opendir(strFolderPath.c_str());
-        pDir = readdir(dir);
-
-        while (pDir != nullptr)
+        while ((pDir = readdir(dir)) != nullptr)
         {
             String nameFile = pDir->d_name;
             String strFilePath = strFolderPath + "/" + nameFile;
@@ -572,6 +622,66 @@ namespace LostPeterFoundation
 
         F_Assert(false && "FUtil::DeleteFolders, error !")
 		return false;
+    }
+
+
+    bool FUtil::EnumAssetFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath)
+    {
+        const String& strBase = GetPathBinSaved();
+        String strFolderPathReal = strBase + strFolderPath;
+        bool bRet = EnumFiles(strFolderPathReal, aFiles, bFilePath);
+        if (bRet && bFilePath)
+        {
+            size_t count = aFiles.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                String& strPath = aFiles[i];
+                aFiles[i] = strPath.substr(strBase.size());
+            }
+        }
+        return bRet;
+    }
+    bool FUtil::EnumAssetFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive)
+    {
+        const String& strBase = GetPathBinSaved();
+        String strFolderPathReal = strBase + strFolderPath;
+        bool bRet = EnumFiles(strFolderPathReal, mapFiles, bIsRecursive);
+        if (bRet)
+        {
+            for (String2StringMap::iterator it = mapFiles.begin();
+                 it != mapFiles.end(); ++it)
+            {
+                String& strPath = it->second;
+                it->second = strPath.substr(strBase.size());
+            }
+        }
+        return bRet;
+    }
+    bool FUtil::EnumAssetFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive)
+    {
+        const String& strBase = GetPathBinSaved();
+        String strFolderPathReal = strBase + strFolderPath;
+        bool bRet = EnumFolders(strFolderPathReal, aFolders, bFolderPath, bIsRecursive);
+        if (bRet && bFolderPath)
+        {
+            size_t count = aFolders.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                String& strPath = aFolders[i];
+                aFolders[i] = strPath.substr(strBase.size());
+            }
+        }
+        return bRet;
+    }
+    bool FUtil::GenerateAssetFolders(const String& strPath)
+    {
+        String strPathReal = GetPathBinSaved() + strPath;
+        return GenerateFolders(strPathReal);
+    }
+    bool FUtil::DeleteAssetFolders(const String& strFolderPath)
+    {
+        String strFolderPathReal = GetPathBinSaved() + strFolderPath;
+        return DeleteFolders(strFolderPathReal);
     }
 
 ////LoadFile

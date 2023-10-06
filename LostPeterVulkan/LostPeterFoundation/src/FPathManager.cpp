@@ -167,7 +167,7 @@ namespace LostPeterFoundation
 		}
 		
 		String2StringMap mapN2P;
-		if (!FUtil::EnumFiles(strPath, mapN2P, bIsRecursive))
+		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive))
 		{
 			F_LogError("FPathManager::RegisterUserGroup, Enum file in path group: [%u] failed !", nGroup);
 			F_Assert(false && "FPathManager::RegisterUserGroup, Enum file in path group failed !")
@@ -191,7 +191,7 @@ namespace LostPeterFoundation
 		}
 		
 		String2StringMap mapN2P;
-		if (!FUtil::EnumFiles(strPath, mapN2P, bIsRecursive))
+		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive))
 		{
 			F_LogError("FPathManager::registerGroup, Enum file in path group: [%u] failed !", nGroup);
 			F_Assert(false && "FPathManager::registerGroup, Enum file in path group failed !")
@@ -215,7 +215,7 @@ namespace LostPeterFoundation
 		}
 
 		String2StringMap mapN2P;
-		if (!FUtil::EnumFiles(itFindBase->second, mapN2P, bIsRecursive))
+		if (!FUtil::EnumAssetFiles(itFindBase->second, mapN2P, bIsRecursive))
 		{
 			F_LogError("FPathManager::registerGroup, Enum file in path group: [%u] failed !", nGroup);
 			F_Assert(false && "FPathManager::registerGroup, Enum file in path group failed !")
@@ -273,13 +273,13 @@ namespace LostPeterFoundation
 				}
 
 				bool bIsRecursive = false;
-				if(pChild->ParserAttribute_Bool(PATH_TAG_ATTRIBUTE_RECURSIVE, bIsRecursive))
+				if (pChild->ParserAttribute_Bool(PATH_TAG_ATTRIBUTE_RECURSIVE, bIsRecursive))
 				{
 					bIsRecursive = true;
 				}
-				m_mapGroupRecursive[(uint32)nGroup] = bIsRecursive;
+				m_mapGroupRecursive[nGroup] = bIsRecursive;
 				
-				if (!registerGroup((uint32)nGroup,strPath,bIsRecursive))
+				if (!registerGroup(nGroup, strPath, bIsRecursive))
 				{
 					return false;
 				}

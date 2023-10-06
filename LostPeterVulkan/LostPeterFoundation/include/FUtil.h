@@ -20,6 +20,9 @@ namespace LostPeterFoundation
     {
     //////////////////////// Common ////////////////////////
     public:
+        static String ms_strPathBin;
+        static const String& GetPathBinSaved(); 
+
     ////Path
         static String GetPathExecute();
         static String GetPathBin();
@@ -28,35 +31,61 @@ namespace LostPeterFoundation
         static String GetPathReal(const String& strPath);
 
     ////File
-        static bool FileIsExist(const String& strPath);
+        //Path Absolute
+        static bool IsExistFile(const String& strPath);
         static bool DeleteFile(const String& strPath);
         static bool ClearFile(const String& strPath);
         static bool CopyFile(const String& strSrcPath, const String& strDstPath);
 
-    ////Folder
+        static bool IsExistAssetFile(const String& strPath);
+        static bool DeleteAssetFile(const String& strPath);
+        static bool ClearAssetFile(const String& strPath);
+        static bool CopyAssetFile(const String& strSrcPath, const String& strDstPath);
+
+    ////Directory
+        //Path Absolute
         static bool IsDirectory(const String& strPath);
 		static bool CreateDirectory(const String& strPath);
         static bool DeleteDirectory(const String& strPath);
+
+        //Path Relative Assets/XXX
+        static bool IsAssetDirectory(const String& strPath);
+		static bool CreateAssetDirectory(const String& strPath);
+        static bool DeleteAssetDirectory(const String& strPath);
+
+    ////File/Folder Op
+        //Path Absolute
 		static bool EnumFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath);
 		static bool EnumFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive);
 		static bool EnumFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive);
-        static bool	CheckAndGeneratePath(const String& strPath);	
+        static bool	GenerateFolders(const String& strPath);	
         static bool DeleteFolders(const String& strFolderPath);
+
+        //Path Relative Assets/XXX
+        static bool EnumAssetFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath);
+		static bool EnumAssetFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive);
+		static bool EnumAssetFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive);
+        static bool	GenerateAssetFolders(const String& strPath);	
+        static bool DeleteAssetFolders(const String& strFolderPath);
         
     ////LoadFile
+        //Path Absolute
         static bool LoadFileContent(const char* szFile, CharVector& content, bool addEnd0 = false);
         static bool LoadFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 = false);
         static bool LoadFileToString(const char* szFile, String& contentFile);
 
+        //Path Relative Assets/XXX
         static bool LoadAssetFileContent(const char* szFile, CharVector& content, bool addEnd0 = false);
         static bool LoadAssetFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 = false);
         static bool LoadAssetFileToString(const char* szFile, String& contentFile);
 
     ////SaveFile
+        //Path Absolute
         static bool SaveFileContent(const char* szFile, CharVector& content);
         static bool SaveFileContent(const char* szFile, uint8* pData, int32 sizeData);
         static bool SaveFileContent(const char* szFile, String& contentFile);
 
+        //Path Relative Assets/XXX
         static bool SaveAssetFileContent(const char* szFile, CharVector& content);
         static bool SaveAssetFileContent(const char* szFile, uint8* pData, int32 sizeData);
         static bool SaveAssetFileContent(const char* szFile, String& contentFile);

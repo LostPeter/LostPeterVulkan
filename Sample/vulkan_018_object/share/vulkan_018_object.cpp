@@ -930,7 +930,7 @@ Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
     this->mainLight.direction = FVector3(0, -1, 0); //y-
 
     m_pPathManager = new FPathManager();
-    //m_pPathManager->Init();
+    m_pPathManager->Init();
 }
 
 void Vulkan_018_Object::setUpEnabledFeatures()
