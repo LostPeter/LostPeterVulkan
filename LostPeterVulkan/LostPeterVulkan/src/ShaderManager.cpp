@@ -22,7 +22,7 @@ namespace LostPeter
 	}
 	ShaderManager& ShaderManager::GetSingleton()
 	{  
-		assert(ms_Singleton && "ShaderManager::GetSingleton");
+		F_Assert(ms_Singleton && "ShaderManager::GetSingleton")
 		return (*ms_Singleton);     
 	}
 

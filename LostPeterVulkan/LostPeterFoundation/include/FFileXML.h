@@ -243,6 +243,9 @@ namespace LostPeterFoundation
         bool LoadXML(const String& strPath);
         bool SaveXML(const String& strPath);
 
+        bool LoadXMLIndirect(const String& strPathRel);
+        bool SaveXMLIndirect(const String& strPathRel);
+
     protected:
         void init(FFileXMLType eFileXML);
     };

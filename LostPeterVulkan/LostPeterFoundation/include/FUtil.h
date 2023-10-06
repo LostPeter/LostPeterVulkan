@@ -36,10 +36,13 @@ namespace LostPeterFoundation
     ////Folder
         static bool IsDirectory(const String& strPath);
 		static bool CreateDirectory(const String& strPath);
+        static bool DeleteDirectory(const String& strPath);
 		static bool EnumFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath);
 		static bool EnumFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive);
 		static bool EnumFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive);
-
+        static bool	CheckAndGeneratePath(const String& strPath);	
+        static bool DeleteFolders(const String& strFolderPath);
+        
     ////LoadFile
         static bool LoadFileContent(const char* szFile, CharVector& content, bool addEnd0 = false);
         static bool LoadFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 = false);
@@ -48,6 +51,15 @@ namespace LostPeterFoundation
         static bool LoadAssetFileContent(const char* szFile, CharVector& content, bool addEnd0 = false);
         static bool LoadAssetFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 = false);
         static bool LoadAssetFileToString(const char* szFile, String& contentFile);
+
+    ////SaveFile
+        static bool SaveFileContent(const char* szFile, CharVector& content);
+        static bool SaveFileContent(const char* szFile, uint8* pData, int32 sizeData);
+        static bool SaveFileContent(const char* szFile, String& contentFile);
+
+        static bool SaveAssetFileContent(const char* szFile, CharVector& content);
+        static bool SaveAssetFileContent(const char* szFile, uint8* pData, int32 sizeData);
+        static bool SaveAssetFileContent(const char* szFile, String& contentFile);
 
     ////Screen - World Transform
         static bool TransformScreenPos2ToWorldRay(const FVector2& vPosSceen2, FCamera* pCamera, const FVector4& vViewport, FRay* pOutRay);

@@ -22,6 +22,15 @@
 namespace LostPeterFoundation
 {
     ////////////////////////////// Define //////////////////////////////
+    using int8 = std::int8_t;
+    using uint8 = std::uint8_t;
+    using int16 = std::int16_t;
+    using int32 = std::int32_t;
+    using uint16 = std::uint16_t;
+    using uint32 = std::uint32_t;
+    using int64 = std::int64_t;
+    using uint64 = std::uint64_t;
+
     #define F_C_PI                              3.14159265f                                         // PI
     #define F_C_PI_HALF				            1.57079632f                                         // 0.5 * PI
     #define	F_C_PI_TWO					        6.28318530717958647692							    // 2.0 * PI
@@ -83,15 +92,6 @@ namespace LostPeterFoundation
 
 
     ////////////////////////////// Typedef /////////////////////////////
-    using int8 = std::int8_t;
-    using uint8 = std::uint8_t;
-    using int16 = std::int16_t;
-    using int32 = std::int32_t;
-    using uint16 = std::uint16_t;
-    using uint32 = std::uint32_t;
-    using int64 = std::int64_t;
-    using uint64 = std::uint64_t;
-
     typedef std::chrono::steady_clock::time_point TimePoint;
     typedef std::string String;
     typedef std::vector<String> StringVector;
@@ -240,6 +240,7 @@ namespace LostPeterFoundation
     class FLogConsole;
     class FLogFile;
     class FLogManager;
+    class FPathManager;
     class FPlane;
     class FPlaneBoundedVolume;
     class FPlugin;
@@ -271,6 +272,11 @@ namespace LostPeterFoundation
     typedef std::vector<FPlane> FPlaneVector; 
     typedef std::list<FPlane> FPlaneList;
 	typedef std::vector<FPlaneBoundedVolume> FPlaneBoundedVolumeVector;
+
+    typedef std::map<uint32, String2StringMap> FPathGroupMap;
+	typedef std::map<uint32, uint32> FPathGroupIDMap;
+	typedef std::map<uint32, String> FPathGroupBaseMap;
+	typedef std::map<uint32, bool> FPathGroupRecursiveMap;
 
 
     ////////////////////////////// Enum ////////////////////////////////

@@ -21,11 +21,11 @@
 static const int g_CountLen = 4;
 static const char* g_pathModels[3 * g_CountLen] = 
 {
-    "plane",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture2d.jpg", //plane
-    "cube",             "Assets/Model/Fbx/cube.fbx",                        "Assets/Texture/texture2d.jpg", //cube
+    "plane",            "Assets/Mesh/Common/plane.fbx",                     "Assets/Texture/Common/texture2d.jpg", //plane
+    "cube",             "Assets/Mesh/Common/cube.fbx",                      "Assets/Texture/Common/texture2d.jpg", //cube
 
-    "viking_room",      "Assets/Model/Obj/viking_room/viking_room.obj",     "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
-    "bunny",            "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp", //bunny
+    "viking_room",      "Assets/Mesh/Model/viking_room/viking_room.obj",    "Assets/Texture/Model/viking_room/viking_room.png", //viking_room
+    "bunny",            "Assets/Mesh/Model/bunny/bunny.obj",                "Assets/Texture/Common/default_white.bmp", //bunny
 };
 
 static FVector3 g_tranformModels[3 * g_CountLen] = 

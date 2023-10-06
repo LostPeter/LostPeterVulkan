@@ -22,7 +22,7 @@ namespace LostPeter
 	}
 	MeshManager& MeshManager::GetSingleton()
 	{  
-		assert(ms_Singleton && "MeshManager::GetSingleton");
+		F_Assert(ms_Singleton && "MeshManager::GetSingleton")
 		return (*ms_Singleton);     
 	}
 

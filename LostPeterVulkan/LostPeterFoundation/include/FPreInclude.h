@@ -45,6 +45,7 @@
 #include "FMeshGeometry.h"
 #include "FMeshVertex.h"
 #include "FNonCopyable.h"
+#include "FPathManager.h"
 #include "FPlane.h"
 #include "FPlaneBoundedVolume.h"
 #include "FPlatform.h"

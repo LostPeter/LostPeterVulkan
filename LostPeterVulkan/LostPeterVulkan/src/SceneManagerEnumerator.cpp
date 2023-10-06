@@ -22,7 +22,7 @@ namespace LostPeter
 	}
 	SceneManagerEnumerator& SceneManagerEnumerator::GetSingleton()
 	{  
-		assert(ms_Singleton && "SceneManagerEnumerator::GetSingleton");
+		F_Assert(ms_Singleton && "SceneManagerEnumerator::GetSingleton")
 		return (*ms_Singleton);     
 	}
 

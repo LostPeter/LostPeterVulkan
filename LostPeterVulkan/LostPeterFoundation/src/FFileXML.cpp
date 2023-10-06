@@ -10,6 +10,7 @@
 ****************************************************************************/
 
 #include "../include/FFileXML.h"
+#include "../include/FUtil.h"
 #include "../include/FUtilString.h"
 
 //RapidXML
@@ -700,15 +701,17 @@ namespace LostPeterFoundation
     FFileXML::FFileXML()
         : m_eFileXML(F_FileXML_RapidXML)
         , m_pXMLDocument(nullptr)
+        , m_pFileXMLImplement(nullptr)
     {
-        init(m_eFileXML);
+        
     }
 
     FFileXML::FFileXML(FFileXMLType eFileXML)
         : m_eFileXML(eFileXML)
         , m_pXMLDocument(nullptr)
+        , m_pFileXMLImplement(nullptr)
     {
-        init(m_eFileXML);
+        
     }
 
     FFileXML::~FFileXML()
@@ -729,7 +732,9 @@ namespace LostPeterFoundation
             break;
         default:
             F_Assert(false && "FFileXML::init: Wrong FFileXMLType type !")
+            return;
         }   
+        m_pFileXMLImplement->CreateXML();
     }
 
     void FFileXML::Destroy()
@@ -741,8 +746,7 @@ namespace LostPeterFoundation
     void FFileXML::CreateXML()
     {
         Destroy();
-        m_pXMLDocument = new FXMLDocument();
-        m_pFileXMLImplement->CreateXML();
+        init(m_eFileXML);
     }
     bool FFileXML::CreateXML(const String& strContent)
     {
@@ -765,4 +769,21 @@ namespace LostPeterFoundation
         return m_pFileXMLImplement->SaveXML(strPath, m_pXMLDocument);
     }
     
+    bool FFileXML::LoadXMLIndirect(const String& strPathRel)
+    {
+        CharVector content;
+        if (!FUtil::LoadAssetFileContent(strPathRel.c_str(), content))
+        {
+            F_LogError("FFileXML::LoadXMLIndirect: FUtil::LoadAssetFileContent failed, path: [%s] !", strPathRel.c_str());
+            return false;
+        }
+        return CreateXML(content.data());
+    }
+
+    bool FFileXML::SaveXMLIndirect(const String& strPathRel)
+    {
+        
+        return true;
+    }
+
 }; //LostPeterFoundation

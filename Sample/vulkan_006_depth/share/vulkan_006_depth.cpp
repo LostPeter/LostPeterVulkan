@@ -21,11 +21,11 @@
 static const int g_CountLen = 4;
 static const char* g_pathModels[3 * g_CountLen] = 
 {
-    "viking_room",      "Assets/Model/Obj/viking_room/viking_room.obj",     "Assets/Model/Obj/viking_room/viking_room.png", //viking_room
-    "bunny",            "Assets/Model/Obj/bunny/bunny.obj",                 "Assets/Texture/white.bmp", //bunny
+    "viking_room",      "Assets/Mesh/Model/viking_room/viking_room.obj",    "Assets/Texture/Model/viking_room/viking_room.png", //viking_room
+    "bunny",            "Assets/Mesh/Model/bunny/bunny.obj",                "Assets/Texture/Common/default_white.bmp", //bunny
 
-    "plane",            "Assets/Model/Fbx/plane.fbx",                       "Assets/Texture/texture2d.jpg", //plane
-    "cube",             "Assets/Model/Fbx/cube.fbx",                        "Assets/Texture/texture2d.jpg", //cube
+    "plane",            "Assets/Mesh/Common/plane.fbx",                     "Assets/Texture/Common/texture2d.jpg", //plane
+    "cube",             "Assets/Mesh/Common/cube.fbx",                      "Assets/Texture/Common/texture2d.jpg", //cube
 };
 
 static FVector3 g_tranformModels[3 * g_CountLen] = 
@@ -78,7 +78,7 @@ Vulkan_006_Depth::Vulkan_006_Depth(int width, int height, String name)
     this->poTypeVertex = F_MeshVertex_Pos3Color4Tex2;
     this->cfg_shaderVertex_Path = "Assets/Shader/pos3_color4_tex2_ubo.vert.spv";
     this->cfg_shaderFragment_Path = "Assets/Shader/pos3_color4_tex2_ubo.frag.spv";
-    this->cfg_texture_Path = "Assets/Texture/texture2d.jpg";
+    this->cfg_texture_Path = "Assets/Texture/Common/texture2d.jpg";
 
     this->cfg_cameraPos = FVector3(-0.65f, 2.5f, -4.0f);
 }

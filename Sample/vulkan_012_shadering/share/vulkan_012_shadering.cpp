@@ -26,10 +26,10 @@ static const char* g_MeshPaths[5 * g_MeshCount] =
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
     "geo_triangle",     "Pos3Color4Normal3Tex2",                "geometry",         "EntityTriangle",           "", //geo_triangle
 
-    "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
-    "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
-    "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
-    "bunny",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/bunny/bunny.obj", //bunny
+    "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/plane.fbx", //plane
+    "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/cube.obj", //cube
+    "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/sphere.fbx", //sphere
+    "bunny",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/bunny/bunny.obj", //bunny
 
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
@@ -66,18 +66,17 @@ static FMatrix4 g_MeshTranformLocals[g_MeshCount] =
 
 
 /////////////////////////// Texture /////////////////////////////
-static const String g_TextureDefault = "default_blackwhite";
 static const int g_TextureCount = 11;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
-    "white",                            "2d",            "false",                  "false",                           "Assets/Texture/white.bmp", //white  
-    "default_blackwhite",               "2d",            "false",                  "false",                           "Assets/Texture/default_blackwhite.png", //default_blackwhite
-    "bricks_diffuse",                   "2d",            "false",                  "false",                           "Assets/Texture/bricks_diffuse.png", //bricks_diffuse
-    "terrain",                          "2d",            "false",                  "false",                           "Assets/Texture/terrain.png", //terrain
-    "texture2d",                        "2d",            "false",                  "false",                           "Assets/Texture/texture2d.jpg", //texture2d
+    "default_white",                    "2d",            "false",                  "false",                           "Assets/Texture/Common/default_white.bmp", //default_white  
+    "default_blackwhite",               "2d",            "false",                  "false",                           "Assets/Texture/Common/default_blackwhite.png", //default_blackwhite
+    "bricks_diffuse",                   "2d",            "false",                  "false",                           "Assets/Texture/Common/bricks_diffuse.png", //bricks_diffuse
+    "terrain",                          "2d",            "false",                  "false",                           "Assets/Texture/Common/terrain.png", //terrain
+    "texture2d",                        "2d",            "false",                  "false",                           "Assets/Texture/Common/texture2d.jpg", //texture2d
     
-    "texturecubemap",                   "cubemap",       "false",                  "false",                           "Assets/Texture/texturecubemap_x_right.png;Assets/Texture/texturecubemap_x_left.png;Assets/Texture/texturecubemap_y_up.png;Assets/Texture/texturecubemap_y_down.png;Assets/Texture/texturecubemap_z_front.png;Assets/Texture/texturecubemap_z_back.png", //texturecubemap
+    "texturecubemap",                   "cubemap",       "false",                  "false",                           "Assets/Texture/Sky/texturecubemap_x_right.png;Assets/Texture/Sky/texturecubemap_x_left.png;Assets/Texture/Sky/texturecubemap_y_up.png;Assets/Texture/Sky/texturecubemap_y_down.png;Assets/Texture/Sky/texturecubemap_z_front.png;Assets/Texture/Sky/texturecubemap_z_back.png", //texturecubemap
 
     "texture_terrain_diffuse",          "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture_terrain_diffuse
     "texture_terrain_normal",           "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png", //texture_terrain_normal
@@ -89,7 +88,7 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
 };
 static VkFormat g_TextureFormats[g_TextureCount] = 
 {
-    VK_FORMAT_R8G8B8A8_SRGB, //white
+    VK_FORMAT_R8G8B8A8_SRGB, //default_white
     VK_FORMAT_R8G8B8A8_SRGB, //default_blackwhite
     VK_FORMAT_R8G8B8A8_SRGB, //bricks_diffuse
     VK_FORMAT_R8G8B8A8_SRGB, //terrain
@@ -107,7 +106,7 @@ static VkFormat g_TextureFormats[g_TextureCount] =
 };
 static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
-    Vulkan_TextureFilter_Bilinear, //white
+    Vulkan_TextureFilter_Bilinear, //default_white
     Vulkan_TextureFilter_Bilinear, //default_blackwhite
     Vulkan_TextureFilter_Bilinear, //bricks_diffuse
     Vulkan_TextureFilter_Bilinear, //terrain
@@ -125,7 +124,7 @@ static VulkanTextureFilterType g_TextureFilters[g_TextureCount] =
 };
 static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
 {
-    Vulkan_TextureAddressing_Clamp, //white
+    Vulkan_TextureAddressing_Clamp, //default_white
     Vulkan_TextureAddressing_Clamp, //default_blackwhite
     Vulkan_TextureAddressing_Clamp, //bricks_diffuse
     Vulkan_TextureAddressing_Clamp, //terrain
@@ -143,7 +142,7 @@ static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] =
 };
 static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
-    Vulkan_TextureBorderColor_OpaqueBlack, //white
+    Vulkan_TextureBorderColor_OpaqueBlack, //default_white
     Vulkan_TextureBorderColor_OpaqueBlack, //default_blackwhite
     Vulkan_TextureBorderColor_OpaqueBlack, //bricks_diffuse
     Vulkan_TextureBorderColor_OpaqueBlack, //terrain
@@ -161,7 +160,7 @@ static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] =
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
 {
-     64,     64,    1, //white
+     64,     64,    1, //default_white
     512,    512,    1, //default_blackwhite
     512,    512,    1, //bricks_diffuse
     512,    512,    1, //terrain
@@ -179,7 +178,7 @@ static int g_TextureSizes[3 * g_TextureCount] =
 };
 static float g_TextureAnimChunks[2 * g_TextureCount] = 
 {
-    0,    0, //white
+    0,    0, //default_white
     0,    0, //default_blackwhite
     0,    0, //bricks_diffuse
     0,    0, //terrain
@@ -287,7 +286,7 @@ static const char* g_ObjectConfigs[5 * g_ObjectCount] =
     "tessellation_triangle_pow2",               "geo_triangle",     "",                     "bricks_diffuse",                                                               "", //tessellation_triangle_pow2
     "tessellation_pntriangles",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_pntriangles
 
-    "geometry_show",                            "bunny",            "",                     "white",                                                                        "", //geometry_show 
+    "geometry_show",                            "bunny",            "",                     "default_white",                                                                        "", //geometry_show 
     "geometry_normal",                          "bunny",            "",                     "",                                                                             "", //geometry_normal         
 
     "terrain",                                  "plane",            "",                     "texture_terrain_diffuse;texture_terrain_normal;texture_terrain_control",       "", //terrain

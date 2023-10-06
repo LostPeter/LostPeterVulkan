@@ -100,7 +100,7 @@ static const int g_TextureCount = 1;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
-    "bricks_diffuse",                   "2d",            "false",                  "false",                           "Assets/Texture/bricks_diffuse.png", //bricks_diffuse
+    "bricks_diffuse",                   "2d",            "false",                  "false",                           "Assets/Texture/Common/bricks_diffuse.png", //bricks_diffuse
 
 };
 static VkFormat g_TextureFormats[g_TextureCount] = 

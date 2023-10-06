@@ -480,6 +480,8 @@ public:
     typedef std::map<String, ModelObject*> ModelObjectPtrMap;
 
 public:
+    FPathManager* m_pPathManager;
+
     MeshPtrVector m_aModelMesh;
     MeshPtrMap m_mapModelMesh;    
 

@@ -22,7 +22,7 @@ namespace LostPeter
 	}
 	MaterialManager& MaterialManager::GetSingleton()
 	{  
-		assert(ms_Singleton && "MaterialManager::GetSingleton");
+		F_Assert(ms_Singleton && "MaterialManager::GetSingleton")
 		return (*ms_Singleton);     
 	}
 

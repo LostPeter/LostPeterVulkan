@@ -22,7 +22,7 @@ namespace LostPeter
 	}
 	TextureManager& TextureManager::GetSingleton()
 	{  
-		assert(ms_Singleton && "TextureManager::GetSingleton");
+		F_Assert(ms_Singleton && "TextureManager::GetSingleton")
 		return (*ms_Singleton);  
 	}
 

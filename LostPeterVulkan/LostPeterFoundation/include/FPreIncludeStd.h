@@ -86,7 +86,8 @@
 	}
 	#include <dirent.h>
     #include <dlfcn.h>
-
+    #include <filesystem>
+    
 #elif LP_PLATFORM == LP_PLATFORM_LINUX
 
 #elif LP_PLATFORM == LP_PLATFORM_ANDROID

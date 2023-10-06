@@ -24,20 +24,20 @@ static const char* g_Mesh_Paths[5 * g_Mesh_Count] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
     "quad",             "Pos3Color4Tex2",                       "geometry",         "EntityQuad",               "", //plane
-    "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/plane.fbx", //plane
-    "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Obj/cube/cube.obj", //cube
-    "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/sphere.fbx", //sphere
+    "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/plane.fbx", //plane
+    "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/cube.obj", //cube
+    "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/sphere.fbx", //sphere
 
-    "mountain",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Obj/mountain/mountain.obj", //mountain
+    "mountain",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/mountain/mountain.obj", //mountain
 
-    "rock",             "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Fbx/rock/rock.fbx", //rock
-    "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Model/Obj/cliff/cliff.obj", //cliff
+    "rock",             "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/rock/rock.fbx", //rock
+    "cliff",            "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Model/cliff/cliff.obj", //cliff
 
-    "tree",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree/tree.fbx", //tree
-    "tree_spruce",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/tree_spruce/tree_spruce.fbx", //tree_spruce
+    "tree",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/tree/tree.fbx", //tree
+    "tree_spruce",      "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/tree_spruce/tree_spruce.fbx", //tree_spruce
 
-    "grass",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/grass/grass.fbx", //grass
-    "flower",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Model/Fbx/flower/flower.fbx", //flower
+    "grass",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/grass/grass.fbx", //grass
+    "flower",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Model/flower/flower.fbx", //flower
 
 };
 static bool g_Mesh_IsFlipYs[g_Mesh_Count] = 
@@ -105,37 +105,37 @@ static const int g_Texture_Count = 24;
 static const char* g_Texture_Paths[5 * g_Texture_Count] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
-    "default_blackwhite",               "2d",            "false",                  "false",                           "Assets/Texture/default_blackwhite.png", //default_blackwhite
-    "bricks_diffuse",                   "2d",            "false",                  "false",                           "Assets/Texture/bricks_diffuse.png", //bricks_diffuse
-    "terrain",                          "2d",            "false",                  "false",                           "Assets/Texture/terrain.png", //terrain
-    "texture2d",                        "2d",            "false",                  "false",                           "Assets/Texture/texture2d.jpg", //texture2d
+    "default_blackwhite",               "2d",            "false",                  "false",                           "Assets/Texture/Common/default_blackwhite.png", //default_blackwhite
+    "bricks_diffuse",                   "2d",            "false",                  "false",                           "Assets/Texture/Common/bricks_diffuse.png", //bricks_diffuse
+    "terrain",                          "2d",            "false",                  "false",                           "Assets/Texture/Common/terrain.png", //terrain
+    "texture2d",                        "2d",            "false",                  "false",                           "Assets/Texture/Common/texture2d.jpg", //texture2d
     
-    "texturecubemap",                   "cubemap",       "false",                  "false",                           "Assets/Texture/texturecubemap_x_right.png;Assets/Texture/texturecubemap_x_left.png;Assets/Texture/texturecubemap_y_up.png;Assets/Texture/texturecubemap_y_down.png;Assets/Texture/texturecubemap_z_front.png;Assets/Texture/texturecubemap_z_back.png", //texturecubemap
+    "texturecubemap",                   "cubemap",       "false",                  "false",                           "Assets/Texture/Sky/texturecubemap_x_right.png;Assets/Texture/Sky/texturecubemap_x_left.png;Assets/Texture/Sky/texturecubemap_y_up.png;Assets/Texture/Sky/texturecubemap_y_down.png;Assets/Texture/Sky/texturecubemap_z_front.png;Assets/Texture/Sky/texturecubemap_z_back.png", //texturecubemap
 
     "texture_terrain_diffuse",          "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture_terrain_diffuse
     "texture_terrain_normal",           "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png", //texture_terrain_normal
     "texture_terrain_control",          "2darray",       "false",                  "false",                           "Assets/Texture/Terrain/terrain_control.png", //texture_terrain_control
 
-    "mountain_diffuse",                 "2d",            "false",                  "false",                           "Assets/Model/Obj/mountain/mountain_diffuse.png", //mountain_diffuse
-    "mountain_normal",                  "2d",            "false",                  "false",                           "Assets/Model/Obj/mountain/mountain_normal.png", //mountain_normal
+    "mountain_diffuse",                 "2d",            "false",                  "false",                           "Assets/Texture/Model/mountain/mountain_diffuse.png", //mountain_diffuse
+    "mountain_normal",                  "2d",            "false",                  "false",                           "Assets/Texture/Model/mountain/mountain_normal.png", //mountain_normal
 
-    "rock_diffuse",                     "2d",            "false",                  "false",                           "Assets/Model/Fbx/rock/rock_diffuse.png", //rock_diffuse
-    "rock_normal",                      "2d",            "false",                  "false",                           "Assets/Model/Fbx/rock/rock_normal.png", //rock_normal
-    "cliff_diffuse",                    "2d",            "false",                  "false",                           "Assets/Model/Obj/cliff/cliff_diffuse.png", //cliff_diffuse
-    "cliff_normal",                     "2d",            "false",                  "false",                           "Assets/Model/Obj/cliff/cliff_normal.png", //cliff_normal
+    "rock_diffuse",                     "2d",            "false",                  "false",                           "Assets/Texture/Model/rock/rock_diffuse.png", //rock_diffuse
+    "rock_normal",                      "2d",            "false",                  "false",                           "Assets/Texture/Model/rock/rock_normal.png", //rock_normal
+    "cliff_diffuse",                    "2d",            "false",                  "false",                           "Assets/Texture/Model/cliff/cliff_diffuse.png", //cliff_diffuse
+    "cliff_normal",                     "2d",            "false",                  "false",                           "Assets/Texture/Model/cliff/cliff_normal.png", //cliff_normal
 
-    "tree_diffuse",                     "2d",            "false",                  "false",                           "Assets/Model/Fbx/tree/tree_diffuse.png", //tree_diffuse
-    "tree_spruce_diffuse",              "2d",            "false",                  "false",                           "Assets/Model/Fbx/tree_spruce/tree_spruce_diffuse.png", //tree_spruce_diffuse
+    "tree_diffuse",                     "2d",            "false",                  "false",                           "Assets/Texture/Model/tree/tree_diffuse.png", //tree_diffuse
+    "tree_spruce_diffuse",              "2d",            "false",                  "false",                           "Assets/Texture/Model/tree_spruce/tree_spruce_diffuse.png", //tree_spruce_diffuse
 
-    "grass_alien",                      "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_alien.png", //grass_alien
-    "grass_field",                      "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_field.png", //grass_field
-    "grass_pixelated",                  "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_pixelated.png", //grass_pixelated
-    "grass_tall",                       "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_tall.png", //grass_tall
-    "grass_thick",                      "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_thick.png", //grass_thick
-    "grass_thin",                       "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_thin.png", //grass_thin
-    "grass_wheat",                      "2d",            "false",                  "false",                           "Assets/Model/Fbx/grass/grass_wheat.png", //grass_wheat
+    "grass_alien",                      "2d",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_alien.png", //grass_alien
+    "grass_field",                      "2d",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_field.png", //grass_field
+    "grass_pixelated",                  "2d",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_pixelated.png", //grass_pixelated
+    "grass_tall",                       "2d",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_tall.png", //grass_tall
+    "grass_thick",                      "2d",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_thick.png", //grass_thick
+    "grass_thin",                       "2d",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_thin.png", //grass_thin
+    "grass_wheat",                      "2d",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_wheat.png", //grass_wheat
     
-    "flower_atlas",                     "2d",            "false",                  "false",                           "Assets/Model/Fbx/flower/flower_atlas.png", //flower_atlas
+    "flower_atlas",                     "2d",            "false",                  "false",                           "Assets/Texture/Model/flower/flower_atlas.png", //flower_atlas
 
 };
 static VkFormat g_Texture_Formats[g_Texture_Count] = 

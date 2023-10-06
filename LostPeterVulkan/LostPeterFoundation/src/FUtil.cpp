@@ -102,33 +102,57 @@ namespace LostPeterFoundation
     #else
         
     #endif
+
+    F_Assert(false && "FUtil::FileIsExist, Not implement !")
     return false;
     }
+
     bool FUtil::DeleteFile(const String& strPath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32
+		return ::DeleteFile(strPath.c_str()) ? true : false;
 
-    #else
+    #elif LP_PLATFORM == LP_PLATFORM_MAC
+        return remove(strPath.c_str());
+
+    #else 
 
     #endif
+
+    F_Assert(false && "FUtil::DeleteFile, Not implement !")
     return false;
     }
+
     bool FUtil::ClearFile(const String& strPath)
     {
     #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
-
+        FILE* pFile = fopen(strPath.c_str(), "wb");
+		if (pFile)
+		{
+			fclose(pFile);
+			return true;
+		}
     #else
     
     #endif
+
+    F_Assert(false && "FUtil::ClearFile, Not implement !")
     return false;
     }
+
     bool FUtil::CopyFile(const String& strSrcPath, const String& strDstPath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32
+        return ::CopyFile(strSrcPath.c_str(), strDstPath.c_str(), FALSE) ? true : false;
+
+    #elif LP_PLATFORM == LP_PLATFORM_MAC
+        return std::__fs::filesystem::copy_file(strSrcPath.c_str(), strDstPath.c_str());
 
     #else
     
     #endif
+
+    F_Assert(false && "FUtil::CopyFile, Not implement !")
     return false;
     }
 
@@ -136,50 +160,419 @@ namespace LostPeterFoundation
 ////Folder
     bool FUtil::IsDirectory(const String& strPath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32
+        return ::PathIsDirectory(strPath.c_str()) ? true : false;
+
+    #elif LP_PLATFORM == LP_PLATFORM_MAC
+        return opendir(strPath.c_str()) != nullptr ? true : false;
 
     #else
     
     #endif
+
+    F_Assert(false && "FUtil::IsDirectory, Not implement !")
     return false;
     }
+
     bool FUtil::CreateDirectory(const String& strPath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32
+        if (IsDirectory(strPath))
+			return true;
+
+		return ::CreateDirectory(strPath.c_str(), 0) ? true : false;
+
+    #elif LP_PLATFORM == LP_PLATFORM_MAC
+        return mkdir(strPath.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) == 0 ? true : false;
 
     #else
     
     #endif
+
+    F_Assert(false && "FUtil::CreateDirectory, Not implement !")
     return false;
     }
+
+    bool FUtil::DeleteDirectory(const String& strPath)
+    {
+    #if LP_PLATFORM == LP_PLATFORM_WIN32
+        return ::RemoveDirectory(strPath.c_str()) ? true : false;
+
+    #elif LP_PLATFORM == LP_PLATFORM_MAC
+        return rmdir(strPath.c_str()) == 0 ? true : false;
+
+    #else
+    
+    #endif
+
+        F_Assert(false && "FUtil::DeleteDirectory, Not implement !")
+        return false;
+    }
+
     bool FUtil::EnumFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32
+        String strWild = strFolderPath + "/*.*";
+		WIN32_FIND_DATA fd;
+		HANDLE findFile = ::FindFirstFile(strWild.c_str(), &fd);
+		if (findFile == INVALID_HANDLE_VALUE)
+		{
+			::FindClose(findFile);
+			return false;
+		}
+
+		while (true)
+		{
+			//file
+			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 && 
+			    (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0)
+			{
+				if (bFilePath)
+				{
+					String strFilePath = strFolderPath + "/";
+					strFilePath += fd.cFileName;
+					aFiles.push_back(strFilePath);
+				}
+				else
+				{
+					aFiles.push_back(String(fd.cFileName));
+				}
+			}
+			//folder
+			else if (strcmp(fd.cFileName,".") != 0 && strcmp(fd.cFileName, "..") != 0 &&
+				     (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 && 
+				     (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0)
+			{
+				String strFolderP = strFolderPath + "/";
+				strFolderP += fd.cFileName;
+
+				EnumFiles(strFolderP, aFiles, bFilePath);
+			}
+
+			if (!::FindNextFile(findFile, &fd))
+			{	
+				::FindClose(findFile);
+				return true;
+			}
+		}
+		::FindClose(findFile);
+		return true;
+
+    #elif LP_PLATFORM == LP_PLATFORM_MAC
+        struct dirent* pDir;
+
+        DIR* dir = opendir(strFolderPath.c_str());
+        pDir = readdir(dir);
+
+        while (pDir != nullptr)
+        {
+            String nameFile = pDir->d_name;
+
+            if (pDir->d_type == DT_REG)
+            {
+                if (bFilePath)
+                {
+                    String strFilePath = strFolderPath + "/" + nameFile;
+                    aFiles.push_back(strFilePath);
+                }
+                else
+                {
+                    aFiles.push_back(nameFile);
+                }
+            }
+            else if (pDir->d_type == DT_DIR)
+            {
+                if (nameFile != "." && nameFile != "..")
+                {
+                    String strFolderPathNew = strFolderPath + "/" + nameFile;
+                    EnumFiles(strFolderPathNew, aFiles, bFilePath);
+                }
+            }
+        }
+        closedir(dir);
+        return true;
 
     #else
     
     #endif
+
+    F_Assert(false && "FUtil::EnumFiles, Not implement !")
     return false;
     }
+
     bool FUtil::EnumFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32
+        String strWild = strFolderPath + "/*.*";
+		WIN32_FIND_DATA fd;
+		HANDLE findFile = ::FindFirstFile(strWild.c_str(), &fd);
+		if (findFile == INVALID_HANDLE_VALUE)
+		{
+			::FindClose(findFile);
+			return false;
+		}
+
+		while (true)
+		{
+			//file
+			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 && 
+				(fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0)
+			{
+				String strName(fd.cFileName);
+				String strPath = strFolderPath + "/";
+				strPath += fd.cFileName;
+				mapFiles[strName] = strPath;
+			}
+			//folder
+			else if (bIsRecursive && strcmp(fd.cFileName, ".") != 0 && strcmp(fd.cFileName, "..") != 0 &&
+				     (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 && 
+				     (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0)
+			{
+				String strFolderP = strFolderPath + "/";
+				strFolderP += fd.cFileName;
+
+				EnumFiles(strFolderP, mapFiles, bIsRecursive);
+			}
+
+			if (!::FindNextFile(findFile, &fd))
+			{	
+				::FindClose(findFile);
+				return true;
+			}
+		}
+		::FindClose(findFile);
+		return true;
+
+    #elif LP_PLATFORM == LP_PLATFORM_MAC
+        struct dirent* pDir;
+
+        DIR* dir = opendir(strFolderPath.c_str());
+        pDir = readdir(dir);
+
+        while (pDir != nullptr)
+        {
+            String nameFile = pDir->d_name;
+            String strFilePath = strFolderPath + "/" + nameFile;
+
+            if (pDir->d_type == DT_REG)
+            {
+                mapFiles[nameFile] = strFilePath;
+            }
+            else if (pDir->d_type == DT_DIR)
+            {
+                if (bIsRecursive)
+                {
+                    if (nameFile != "." && nameFile != "..")
+                    {
+                        EnumFiles(strFilePath, mapFiles, bIsRecursive);
+                    }
+                }
+            }
+        }
+        closedir(dir);
+        return true;
 
     #else
     
     #endif
+
+    F_Assert(false && "FUtil::EnumFiles, Not implement !")
     return false;
     }
+
     bool FUtil::EnumFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
+    #if LP_PLATFORM == LP_PLATFORM_WIN32
+        String strWild = strFolderPath + "/*.*";
+		WIN32_FIND_DATA fd;
+		HANDLE findFile = ::FindFirstFile(strWild.c_str(), &fd);
+		if (findFile == INVALID_HANDLE_VALUE)
+		{
+			::FindClose(findFile);
+			return false;
+		}
+
+		while (true)
+		{
+			//file
+			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 && 
+				(fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0)
+			{
+
+			}
+			//folder
+			else if (strcmp(fd.cFileName, ".") != 0 && strcmp(fd.cFileName, "..") != 0 &&
+                     (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 && 
+                     (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0)
+			{
+				String strFolderP = strFolderPath + "/";
+				strFolderP += fd.cFileName;
+				if (bFolderPath)
+					aFolders.push_back(strFolderP);
+				else
+					aFolders.push_back(String(fd.cFileName));
+
+				if (bIsRecursive)
+				{
+                    EnumFolders(strFolderP, aFolders, bFolderPath, bIsRecursive);
+                }
+			}
+
+			if (!::FindNextFile(findFile, &fd))
+			{	
+				::FindClose(findFile);
+				return true;
+			}
+		}
+		::FindClose(findFile);
+		return true;
+
+    #elif LP_PLATFORM == LP_PLATFORM_MAC
+        struct dirent* pDir;
+
+        DIR* dir = opendir(strFolderPath.c_str());
+        pDir = readdir(dir);
+
+        while (pDir != nullptr)
+        {
+            String nameFile = pDir->d_name;
+            String strFilePath = strFolderPath + "/" + nameFile;
+
+            if (pDir->d_type == DT_REG)
+            {
+                
+            }
+            else if (pDir->d_type == DT_DIR)
+            {
+                if (nameFile != "." && nameFile != "..")
+                {
+                    if (bFolderPath)
+                        aFolders.push_back(strFilePath);
+                    else
+                        aFolders.push_back(nameFile);
+
+                    if (bIsRecursive)
+                    {
+                        EnumFolders(strFilePath, aFolders, bFolderPath, bIsRecursive);
+                    }
+                }
+            }
+        }
+        closedir(dir);
+        return true;
 
     #else
     
     #endif
+
+    F_Assert(false && "FUtil::EnumFolders, Not implement !")
     return false;
     }
 
+    bool FUtil::CheckAndGeneratePath(const String& strPath)
+    {
+        String strDupPath(strPath);
+		std::replace(strDupPath.begin(),strDupPath.end(),'\\','/');
+
+		size_t iFind = 0;
+		do
+		{
+			iFind = strDupPath.find('/', iFind);
+			if (iFind == strDupPath.npos)
+				return true;
+
+			String sub = strDupPath.substr(0, iFind);
+			if (!IsDirectory(sub)) 
+			{
+				if (!CreateDirectory(sub))
+					return false;
+			}
+			iFind++;
+		} while (true);
+
+		F_Assert(false && "FUtil::CheckAndGeneratePath, error !")
+		return false;
+    }
+
+    bool FUtil::DeleteFolders(const String& strFolderPath)
+    {
+    #if LP_PLATFORM == LP_PLATFORM_WIN32
+        String strWild = strFolderPath + "/*.*";
+		WIN32_FIND_DATA fd;
+		HANDLE findFile = ::FindFirstFile(strWild.c_str(), &fd);
+		if (findFile == INVALID_HANDLE_VALUE)
+		{
+			::FindClose(findFile);
+			return false;
+		}
+
+		while (true)
+		{
+			//file
+			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 && 
+				(fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0)
+			{
+				String strPath = strFolderPath + "/";
+				strPath += fd.cFileName;
+				::DeleteFile(strPath.c_str());
+			}
+			//folder
+			else if (bIsRecursive && strcmp(fd.cFileName, ".") != 0 && strcmp(fd.cFileName, "..") != 0 &&
+				     (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 && 
+				     (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0)
+			{
+				String strFolderP = strFolderPath + "/";
+				strFolderP += fd.cFileName;
+
+				DeleteFolders(strFolderP);
+			}
+
+			if (!::FindNextFile(findFile, &fd))
+			{	
+				::FindClose(findFile);
+				return true;
+			}
+		}
+		::FindClose(findFile);
+
+        ::RemoveDirectory(strFolderPath.c_str());
+		return true;
+
+    #elif LP_PLATFORM == LP_PLATFORM_MAC
+        struct dirent* pDir;
+
+        DIR* dir = opendir(strFolderPath.c_str());
+        pDir = readdir(dir);
+
+        while (pDir != nullptr)
+        {
+            String nameFile = pDir->d_name;
+            String strFilePath = strFolderPath + "/" + nameFile;
+
+            if (pDir->d_type == DT_REG)
+            {
+                remove(strFilePath.c_str());
+            }
+            else if (pDir->d_type == DT_DIR)
+            {
+                if (nameFile != "." && nameFile != "..")
+                {
+                    DeleteFolders(strFilePath);
+                }
+            }
+        }
+        closedir(dir);
+
+        rmdir(strFolderPath.c_str());
+        return true;
+
+    #else
+    
+    #endif
+
+        F_Assert(false && "FUtil::DeleteFolders, error !")
+		return false;
+    }
 
 ////LoadFile
     bool FUtil::LoadFileContent(const char* szFile, CharVector& content, bool addEnd0 /*= false*/)
@@ -260,6 +653,46 @@ namespace LostPeterFoundation
     {
         String pathReal = GetPathReal(szFile);
         return LoadFileToString(pathReal.c_str(), contentFile); 
+    }
+
+
+////SaveFile
+    bool FUtil::SaveFileContent(const char* szFile, CharVector& content)
+    {   
+        return SaveFileContent(szFile, (uint8*)content.data(), (int32)content.size());
+    }
+    bool FUtil::SaveFileContent(const char* szFile, uint8* pData, int32 sizeData)
+    {
+        std::ofstream file(szFile, std::ios::out | std::ios::binary);
+        if (!file.is_open())
+        {
+            F_LogError("*********************** FUtil::SaveFileContent: Write file failed: [%s] !", szFile);
+            return false;
+        }
+
+        file.write((const char*)pData, sizeData);
+        file.close();
+        return true;
+    }
+    bool FUtil::SaveFileContent(const char* szFile, String& contentFile)
+    {
+        return SaveFileContent(szFile, (uint8*)contentFile.data(), (int32)contentFile.size());
+    }
+
+    bool FUtil::SaveAssetFileContent(const char* szFile, CharVector& content)
+    {
+        String pathReal = GetPathReal(szFile);
+        return SaveFileContent(pathReal.c_str(), content);
+    }
+    bool FUtil::SaveAssetFileContent(const char* szFile, uint8* pData, int32 sizeData)
+    {
+        String pathReal = GetPathReal(szFile);
+        return SaveFileContent(pathReal.c_str(), pData, sizeData);
+    }
+    bool FUtil::SaveAssetFileContent(const char* szFile, String& contentFile)
+    {
+        String pathReal = GetPathReal(szFile);
+        return SaveFileContent(pathReal.c_str(), contentFile); 
     }
 
 
