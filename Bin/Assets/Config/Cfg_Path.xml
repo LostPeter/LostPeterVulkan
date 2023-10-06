@@ -2,7 +2,7 @@
 <cfg_path>
     <path group="0" max="0" path="Assets/Config" recursive="true" />
     <path group="1000" max="1000" path="Assets/Data" recursive="true" />
-    <path group="2000" max="2000" path="Assets/Editor" recursive="true" />
+    <path group="2000" max="2000" path="Assets/Editor" />
     <path group="3000" max="3000" path="Assets/Font" recursive="true" />
     <path group="4000" max="4000" path="Assets/Shader" recursive="true" />
     <path group="5000" max="5003" path="Assets/Mesh" />

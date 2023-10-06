@@ -481,6 +481,8 @@ public:
 
 public:
     FPathManager* m_pPathManager;
+    MeshManager* m_pMeshManager;
+    TextureManager* m_pTextureManager;
 
     MeshPtrVector m_aModelMesh;
     MeshPtrMap m_mapModelMesh;    

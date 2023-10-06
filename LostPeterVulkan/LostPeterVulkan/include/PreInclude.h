@@ -35,6 +35,7 @@
 #include "MaterialDataSerializer.h"
 #include "MaterialInstance.h"
 #include "MaterialManager.h"
+#include "MaterialSerializer.h"
 #include "Mesh.h"
 #include "MeshManager.h"
 #include "MeshSerializer.h"
@@ -66,6 +67,7 @@
 #include "ShaderSerializer.h"
 #include "Texture.h"
 #include "TextureManager.h"
+#include "TextureSerializer.h"
 
 namespace LostPeter
 {	

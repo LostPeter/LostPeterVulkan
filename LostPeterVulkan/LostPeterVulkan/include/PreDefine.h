@@ -507,6 +507,7 @@ namespace LostPeter
     class MaterialDataSerializer;
     class MaterialInstance;
     class MaterialManager;
+    class MaterialSerializer;
     class Mesh;
     class MeshManager;
     class MeshSerializer;
@@ -535,6 +536,7 @@ namespace LostPeter
     class ShaderSerializer;
     class Texture;
     class TextureManager;
+    class TextureSerializer;
 
 
     typedef std::vector<MeshSub*> MeshSubPtrVector;
