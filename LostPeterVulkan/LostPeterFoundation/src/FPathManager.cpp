@@ -191,6 +191,15 @@ namespace LostPeterFoundation
 		}
 		
 		String2StringMap mapN2P;
+		if (!FUtil::IsAssetDirectory(strPath))
+		{
+			if (!FUtil::CreateAssetDirectory(strPath))
+			{
+				F_LogError("FPathManager::registerGroup, Create directory in path: [%s] failed !", strPath.c_str());
+				F_Assert(false && "FPathManager::registerGroup, Create directory in path failed !")
+				return false;
+			}
+		}
 		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive))
 		{
 			F_LogError("FPathManager::registerGroup, Enum file in path group: [%u] failed !", nGroup);
@@ -217,8 +226,8 @@ namespace LostPeterFoundation
 		String2StringMap mapN2P;
 		if (!FUtil::EnumAssetFiles(itFindBase->second, mapN2P, bIsRecursive))
 		{
-			F_LogError("FPathManager::registerGroup, Enum file in path group: [%u] failed !", nGroup);
-			F_Assert(false && "FPathManager::registerGroup, Enum file in path group failed !")
+			F_LogError("FPathManager::ReloadGroup, Enum file in path group: [%u] failed !", nGroup);
+			F_Assert(false && "FPathManager::ReloadGroup, Enum file in path group failed !")
 			return false;
 		}
 		
@@ -267,7 +276,7 @@ namespace LostPeterFoundation
 				String strPath;
 				if (!pChild->ParserAttribute_String(PATH_TAG_ATTRIBUTE_PATH, strPath))
 				{
-					F_LogError("FPathManager::LoadCfg: Can not find path from group: [%u] !", nGroup);
+					F_LogError("FPathManager::LoadCfg: Can not find path from group: [%u], path: [%s] !", nGroup, strPath.c_str());
 					F_Assert(false && "FPathManager::LoadCfg: Can not find path from group !")
 					continue;
 				}

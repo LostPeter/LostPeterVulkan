@@ -318,11 +318,16 @@ namespace LostPeterFoundation
 
     #elif LP_PLATFORM == LP_PLATFORM_MAC
         struct dirent* pDir;
-
         DIR* dir = opendir(strFolderPath.c_str());
+        if (dir == nullptr)
+        {
+            return false;
+        }
         while ((pDir = readdir(dir)) != nullptr)
         {
             String nameFile = pDir->d_name;
+            if (nameFile == ".DS_Store")
+                continue;
 
             if (pDir->d_type == DT_REG)
             {
@@ -338,7 +343,8 @@ namespace LostPeterFoundation
             }
             else if (pDir->d_type == DT_DIR)
             {
-                if (nameFile != "." && nameFile != "..")
+                if (nameFile != "." && 
+                    nameFile != "..")
                 {
                     String strFolderPathNew = strFolderPath + "/" + nameFile;
                     EnumFiles(strFolderPathNew, aFiles, bFilePath);
@@ -401,11 +407,17 @@ namespace LostPeterFoundation
 
     #elif LP_PLATFORM == LP_PLATFORM_MAC
         struct dirent* pDir;
-
         DIR* dir = opendir(strFolderPath.c_str());
+        if (dir == nullptr)
+        {
+            return false;
+        }
         while ((pDir = readdir(dir)) != nullptr)
         {
             String nameFile = pDir->d_name;
+            if (nameFile == ".DS_Store")
+                continue;
+
             String strFilePath = strFolderPath + "/" + nameFile;
 
             if (pDir->d_type == DT_REG)
@@ -416,7 +428,8 @@ namespace LostPeterFoundation
             {
                 if (bIsRecursive)
                 {
-                    if (nameFile != "." && nameFile != "..")
+                    if (nameFile != "." && 
+                        nameFile != "..")
                     {
                         EnumFiles(strFilePath, mapFiles, bIsRecursive);
                     }
@@ -483,11 +496,17 @@ namespace LostPeterFoundation
 
     #elif LP_PLATFORM == LP_PLATFORM_MAC
         struct dirent* pDir;
-
         DIR* dir = opendir(strFolderPath.c_str());
+        if (dir == nullptr)
+        {
+            return false;
+        }
         while ((pDir = readdir(dir)) != nullptr)
         {
             String nameFile = pDir->d_name;
+            if (nameFile == ".DS_Store")
+                continue;
+
             String strFilePath = strFolderPath + "/" + nameFile;
 
             if (pDir->d_type == DT_REG)
@@ -496,7 +515,8 @@ namespace LostPeterFoundation
             }
             else if (pDir->d_type == DT_DIR)
             {
-                if (nameFile != "." && nameFile != "..")
+                if (nameFile != "." && 
+                    nameFile != "..")
                 {
                     if (bFolderPath)
                         aFolders.push_back(strFilePath);
@@ -592,20 +612,26 @@ namespace LostPeterFoundation
 
     #elif LP_PLATFORM == LP_PLATFORM_MAC
         struct dirent* pDir;
-
         DIR* dir = opendir(strFolderPath.c_str());
+        if (dir == nullptr)
+        {
+            return false;
+        }
         while ((pDir = readdir(dir)) != nullptr)
         {
             String nameFile = pDir->d_name;
-            String strFilePath = strFolderPath + "/" + nameFile;
+            if (nameFile == ".DS_Store")
+                continue;
 
+            String strFilePath = strFolderPath + "/" + nameFile;
             if (pDir->d_type == DT_REG)
             {
                 remove(strFilePath.c_str());
             }
             else if (pDir->d_type == DT_DIR)
             {
-                if (nameFile != "." && nameFile != "..")
+                if (nameFile != "." && 
+                    nameFile != "..")
                 {
                     DeleteFolders(strFilePath);
                 }
