@@ -1,36 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <cfg_path>
-    <path group="0" max="0" path="Assets/Config" />
-    <path group="1000" max="1000" path="Assets/Data" />
-    <path group="2000" max="2000" path="Assets/Editor" />
-    <path group="3000" max="3000" path="Assets/Font" />
-    <path group="4000" max="4000" path="Assets/Shader" />
+    <path group="0" max="0" path="Assets/Config" recursive="true" />
+    <path group="1000" max="1000" path="Assets/Data" recursive="true" />
+    <path group="2000" max="2000" path="Assets/Editor" recursive="true" />
+    <path group="3000" max="3000" path="Assets/Font" recursive="true" />
+    <path group="4000" max="4000" path="Assets/Shader" recursive="true" />
     <path group="5000" max="5003" path="Assets/Mesh" />
     <path group="5001" path="Assets/Mesh/Common" />
-    <path group="5002" path="Assets/Mesh/Model" />
-    <path group="5003" path="Assets/Mesh/Character" />
+    <path group="5002" path="Assets/Mesh/Model" recursive="true" />
+    <path group="5003" path="Assets/Mesh/Character" recursive="true" />
     <path group="6000" max="6006" path="Assets/Texture" />
     <path group="6001" path="Assets/Texture/Common" />
-    <path group="6002" path="Assets/Texture/Model" />
-    <path group="6003" path="Assets/Texture/Character" />
-    <path group="6004" path="Assets/Texture/Terrain" />
-    <path group="6005" path="Assets/Texture/Gfx" />
-    <path group="6006" path="Assets/Texture/Sky" />
+    <path group="6002" path="Assets/Texture/Model" recursive="true" />
+    <path group="6003" path="Assets/Texture/Character" recursive="true" />
+    <path group="6004" path="Assets/Texture/Terrain" recursive="true" />
+    <path group="6005" path="Assets/Texture/Gfx" recursive="true" />
+    <path group="6006" path="Assets/Texture/Sky" recursive="true" />
     <path group="7000" max="7003" path="Assets/Material" />
     <path group="7001" path="Assets/Material/Common" />
-    <path group="7002" path="Assets/Material/Model" />
-    <path group="7003" path="Assets/Material/Character" />
+    <path group="7002" path="Assets/Material/Model" recursive="true" />
+    <path group="7003" path="Assets/Material/Character" recursive="true" />
     <path group="8000" max="8003" path="Assets/Audio" />
     <path group="8001" path="Assets/Audio/Common" />
-    <path group="8002" path="Assets/Audio/Model" />
-    <path group="8003" path="Assets/Audio/Character" />
+    <path group="8002" path="Assets/Audio/Model" recursive="true" />
+    <path group="8003" path="Assets/Audio/Character" recursive="true" />
     <path group="9000" max="9003" path="Assets/Gfx" />
     <path group="9001" path="Assets/Gfx/Common" />
-    <path group="9002" path="Assets/Gfx/Model" />
-    <path group="9003" path="Assets/Gfx/Character" />
-    <path group="10000" max="10000" path="Assets/Terrain" />
-    <path group="11000" max="11000" path="Assets/UI" />
-    <path group="12000" max="12000" path="Assets/PostEffect" />
-    <path group="13000" max="13000" path="Assets/Script" />
-    <path group="14000" max="14000" path="Assets/Scene" />
+    <path group="9002" path="Assets/Gfx/Model" recursive="true" />
+    <path group="9003" path="Assets/Gfx/Character" recursive="true" />
+    <path group="10000" max="10000" path="Assets/Terrain" recursive="true" />
+    <path group="11000" max="11000" path="Assets/UI" recursive="true" />
+    <path group="12000" max="12000" path="Assets/PostEffect" recursive="true" />
+    <path group="13000" max="13000" path="Assets/Script" recursive="true" />
+    <path group="14000" max="14000" path="Assets/Scene" recursive="true" />
 </cfg_path>

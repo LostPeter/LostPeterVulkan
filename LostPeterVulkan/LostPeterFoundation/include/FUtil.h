@@ -62,9 +62,9 @@ namespace LostPeterFoundation
         static bool DeleteFolders(const String& strFolderPath);
 
         //Path Relative Assets/XXX
-        static bool EnumAssetFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath);
-		static bool EnumAssetFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive);
-		static bool EnumAssetFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive);
+        static bool EnumAssetFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath, bool bLog = false);
+		static bool EnumAssetFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive, bool bLog = false);
+		static bool EnumAssetFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive, bool bLog = false);
         static bool	GenerateAssetFolders(const String& strPath);	
         static bool DeleteAssetFolders(const String& strFolderPath);
         

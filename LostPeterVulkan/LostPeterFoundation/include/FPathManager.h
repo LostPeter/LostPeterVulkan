@@ -78,6 +78,7 @@ namespace LostPeterFoundation
 		};
 
 		static const String ms_strPathCfgPath;
+		static bool ms_bIsLog;
 
 	private:
 		FPathGroupMap m_mapGroup;

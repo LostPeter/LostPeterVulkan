@@ -651,7 +651,7 @@ namespace LostPeterFoundation
     }
 
 
-    bool FUtil::EnumAssetFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath)
+    bool FUtil::EnumAssetFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath, bool bLog /*= false*/)
     {
         const String& strBase = GetPathBinSaved();
         String strFolderPathReal = strBase + strFolderPath;
@@ -663,11 +663,16 @@ namespace LostPeterFoundation
             {
                 String& strPath = aFiles[i];
                 aFiles[i] = strPath.substr(strBase.size());
+
+                if (bLog)
+                {
+                    F_LogInfo("********** FUtil::EnumAssetFiles: File path: [%s] !", aFiles[i].c_str());
+                }
             }
         }
         return bRet;
     }
-    bool FUtil::EnumAssetFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive)
+    bool FUtil::EnumAssetFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive, bool bLog /*= false*/)
     {
         const String& strBase = GetPathBinSaved();
         String strFolderPathReal = strBase + strFolderPath;
@@ -679,11 +684,16 @@ namespace LostPeterFoundation
             {
                 String& strPath = it->second;
                 it->second = strPath.substr(strBase.size());
+
+                if (bLog)
+                {   
+                    F_LogInfo("********** FUtil::EnumAssetFiles: File name: [%s], path: [%s] !", it->first.c_str(), it->second.c_str());
+                }
             }
         }
         return bRet;
     }
-    bool FUtil::EnumAssetFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive)
+    bool FUtil::EnumAssetFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive, bool bLog /*= false*/)
     {
         const String& strBase = GetPathBinSaved();
         String strFolderPathReal = strBase + strFolderPath;
@@ -695,6 +705,11 @@ namespace LostPeterFoundation
             {
                 String& strPath = aFolders[i];
                 aFolders[i] = strPath.substr(strBase.size());
+
+                if (bLog)
+                {
+                    F_LogInfo("********** FUtil::EnumAssetFolders: Folder path: [%s] !", aFolders[i].c_str());
+                }
             }
         }
         return bRet;

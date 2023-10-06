@@ -929,6 +929,7 @@ Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
     this->mainLight.direction = FVector3(0, -1, 0); //y-
 
+    FPathManager::ms_bIsLog = true;
     m_pPathManager = new FPathManager();
     m_pPathManager->Init();
 }

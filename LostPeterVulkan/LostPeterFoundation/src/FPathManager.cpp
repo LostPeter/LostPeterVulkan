@@ -41,6 +41,7 @@ namespace LostPeterFoundation
 	}
 	
 	const String FPathManager::ms_strPathCfgPath = "Assets/Config/Cfg_Path.xml";
+	bool FPathManager::ms_bIsLog = false;
 	FPathManager::FPathManager()
 		: m_strWorkFolder("")
 	{
@@ -167,7 +168,7 @@ namespace LostPeterFoundation
 		}
 		
 		String2StringMap mapN2P;
-		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive))
+		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive, ms_bIsLog))
 		{
 			F_LogError("FPathManager::RegisterUserGroup, Enum file in path group: [%u] failed !", nGroup);
 			F_Assert(false && "FPathManager::RegisterUserGroup, Enum file in path group failed !")
@@ -200,7 +201,7 @@ namespace LostPeterFoundation
 				return false;
 			}
 		}
-		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive))
+		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive, ms_bIsLog))
 		{
 			F_LogError("FPathManager::registerGroup, Enum file in path group: [%u] failed !", nGroup);
 			F_Assert(false && "FPathManager::registerGroup, Enum file in path group failed !")
@@ -224,7 +225,7 @@ namespace LostPeterFoundation
 		}
 
 		String2StringMap mapN2P;
-		if (!FUtil::EnumAssetFiles(itFindBase->second, mapN2P, bIsRecursive))
+		if (!FUtil::EnumAssetFiles(itFindBase->second, mapN2P, bIsRecursive, ms_bIsLog))
 		{
 			F_LogError("FPathManager::ReloadGroup, Enum file in path group: [%u] failed !", nGroup);
 			F_Assert(false && "FPathManager::ReloadGroup, Enum file in path group failed !")
