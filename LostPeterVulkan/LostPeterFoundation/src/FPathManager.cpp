@@ -50,10 +50,10 @@ namespace LostPeterFoundation
 
 	FPathManager::~FPathManager()
 	{
-		Release();
+		Destroy();
 	}
 
-	void FPathManager::Release()
+	void FPathManager::Destroy()
 	{
 		m_mapGroup.clear();
 	}
@@ -178,6 +178,8 @@ namespace LostPeterFoundation
 		m_mapGroup[nGroup] = mapN2P;
 		m_mapGroupBase[nGroup] = strPath;
 		itFindID->second = nGroup;
+
+		F_LogInfo("FPathManager::RegisterUserGroup, Register user path group: [%u], base group: [%u] path: [%s], recursive: [%s] success!", nGroup, nBaseGroup, strPath.c_str(), FUtilString::SaveBool(bIsRecursive).c_str());
 		return true;
 	}
 
@@ -238,7 +240,7 @@ namespace LostPeterFoundation
 
 	bool FPathManager::LoadCfg()
 	{
-		Release();
+		Destroy();
 
 		String strPathCfg(ms_strPathCfgPath);
 		FFileXML xmlCfg;

@@ -11,6 +11,7 @@
 
 #include "../include/TextureManager.h"
 #include "../include/VulkanWindow.h"
+#include "../include/TextureSerializer.h"
 
 template<> LostPeter::TextureManager* LostPeterFoundation::FSingleton<LostPeter::TextureManager>::ms_Singleton = nullptr;
 
@@ -28,12 +29,24 @@ namespace LostPeter
 
     TextureManager::TextureManager()
         : Base("TextureManager")
+        , m_pTextureSerializer(nullptr)
     {
 
     }
     TextureManager::~TextureManager()
     {
         
+    }
+
+    void TextureManager::Destroy()
+    {
+        F_DELETE(m_pTextureSerializer)
+    }
+    bool TextureManager::Init(uint nGroup, const String& strNameCfgTexture)
+    {
+        
+
+        return true;
     }
 
 }; //LostPeter

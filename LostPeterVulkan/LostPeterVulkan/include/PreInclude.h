@@ -37,6 +37,7 @@
 #include "MaterialManager.h"
 #include "MaterialSerializer.h"
 #include "Mesh.h"
+#include "MeshDataSerializer.h"
 #include "MeshManager.h"
 #include "MeshSerializer.h"
 #include "MeshSub.h"

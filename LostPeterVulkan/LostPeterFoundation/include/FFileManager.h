@@ -52,7 +52,7 @@ namespace LostPeterFoundation
         static FFileManager* GetSingletonPtr();
 
     public:
-		void Release();
+		void Destroy();
 		
 		FFileIO* CreateFileIO();
 		void DeleteFileIO(FFileIO* pFIO);

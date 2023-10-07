@@ -932,6 +932,7 @@ Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
     FPathManager::ms_bIsLog = true;
     m_pPathManager = new FPathManager();
     m_pPathManager->Init();
+    m_pPathManager->RegisterUserGroup(FPathManager::PathGroup_Editor, FPathManager::PathGroup_Editor + 1, "Assets/Editor/Sample/Vulkan_018_Object", true);
 }
 
 void Vulkan_018_Object::setUpEnabledFeatures()

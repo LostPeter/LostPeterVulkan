@@ -2,43 +2,39 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-10-04
+* Time:     2023-10-07
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _MESH_MANAGER_H_
-#define _MESH_MANAGER_H_
+#ifndef _MESH_DATA_SERIALIZER_H_
+#define _MESH_DATA_SERIALIZER_H_
 
 #include "Base.h"
 
 namespace LostPeter
 {
-   class utilExport MeshManager : public FSingleton<MeshManager>
-                                , public Base
+    class utilExport MeshDataSerializer : public FSerializer
+                                        , public Base
     {
     public:
-        MeshManager();
-        virtual ~MeshManager();
+        MeshDataSerializer();
+        virtual ~MeshDataSerializer();
 
     public:
+
+    public:
+
     protected:
-        MeshSerializer* m_pMeshSerializer;
-        MeshPtrVector m_aMesh;
-        MeshPtrMap m_mapMesh;    
+        //File Content XML
+        virtual bool serializeXML();
+        virtual bool deserializeXML();
 
-
-    public:
-        static MeshManager&	GetSingleton();
-		static MeshManager*	GetSingletonPtr();
-
-    public:
-        void Destroy();
-        bool Init(uint nGroup, const String& strNameCfgMesh);
-
-
+        //File Content Binary
+        virtual bool serializeBinary();
+        virtual bool deserializeBinary();
     };
 
 }; //LostPeter

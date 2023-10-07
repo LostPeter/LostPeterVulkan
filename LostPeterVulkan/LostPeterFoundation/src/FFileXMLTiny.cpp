@@ -26,10 +26,10 @@ namespace LostPeterFoundation
 
 	FFileXMLTiny::~FFileXMLTiny()
 	{
-		Release();
+		Destroy();
 	}
 
-	void FFileXMLTiny::Release()
+	void FFileXMLTiny::Destroy()
 	{
 		F_DELETE(m_pDocXml)
 		m_bIsOpenXML = false;
@@ -37,7 +37,7 @@ namespace LostPeterFoundation
 
 	bool FFileXMLTiny::LoadXML(const char* szXMLPath)
 	{
-		Release();
+		Destroy();
 		m_pDocXml = new TiXmlDocument;
 		if (!m_pDocXml)
 			return false;
@@ -78,7 +78,7 @@ namespace LostPeterFoundation
 	bool FFileXMLTiny::CreateXML(bool bIsEmpty /*= true*/)
 	{
 		if (m_pDocXml)
-			Release();
+			Destroy();
 
 		m_pDocXml = new TiXmlDocument;
 		if (!m_pDocXml)

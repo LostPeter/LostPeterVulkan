@@ -26,6 +26,12 @@ namespace LostPeterFoundation
 		static const float ms_fRad2Deg;			
 		static const float ms_fLog2;	
 
+        static const double ms_dPI_Half;
+        static const double ms_dPI;
+        static const double ms_dPI_Two;
+        static const double ms_dDeg2Rad;			
+		static const double ms_dRad2Deg;		
+
         static const float ms_fPosInfinity;		
         static const float ms_fNegInfinity;
         static const float ms_fEpsilon;

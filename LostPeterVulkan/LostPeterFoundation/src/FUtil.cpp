@@ -287,9 +287,9 @@ namespace LostPeterFoundation
 			{
 				if (bFilePath)
 				{
-					String strFilePath = strFolderPath + "/";
-					strFilePath += fd.cFileName;
-					aFiles.push_back(strFilePath);
+					String strPath = strFolderPath + "/";
+					strPath += fd.cFileName;
+					aFiles.push_back(strPath);
 				}
 				else
 				{
@@ -325,28 +325,28 @@ namespace LostPeterFoundation
         }
         while ((pDir = readdir(dir)) != nullptr)
         {
-            String nameFile = pDir->d_name;
-            if (nameFile == ".DS_Store")
+            String strName = pDir->d_name;
+            if (strName == ".DS_Store")
                 continue;
 
             if (pDir->d_type == DT_REG)
             {
                 if (bFilePath)
                 {
-                    String strFilePath = strFolderPath + "/" + nameFile;
-                    aFiles.push_back(strFilePath);
+                    String strPath = strFolderPath + "/" + strName;
+                    aFiles.push_back(strPath);
                 }
                 else
                 {
-                    aFiles.push_back(nameFile);
+                    aFiles.push_back(strName);
                 }
             }
             else if (pDir->d_type == DT_DIR)
             {
-                if (nameFile != "." && 
-                    nameFile != "..")
+                if (strName != "." && 
+                    strName != "..")
                 {
-                    String strFolderPathNew = strFolderPath + "/" + nameFile;
+                    String strFolderPathNew = strFolderPath + "/" + strName;
                     EnumFiles(strFolderPathNew, aFiles, bFilePath);
                 }
             }
@@ -383,6 +383,11 @@ namespace LostPeterFoundation
 				String strName(fd.cFileName);
 				String strPath = strFolderPath + "/";
 				strPath += fd.cFileName;
+                if (mapFiles.find(strName) != mapFiles.end())
+                {
+                    F_LogError("*********************** FUtil::EnumFiles: File name: [%s] already exist, path: [%s] !", strName.c_str(), strPath.c_str());
+                    return false;
+                }
 				mapFiles[strName] = strPath;
 			}
 			//folder
@@ -414,24 +419,28 @@ namespace LostPeterFoundation
         }
         while ((pDir = readdir(dir)) != nullptr)
         {
-            String nameFile = pDir->d_name;
-            if (nameFile == ".DS_Store")
+            String strName = pDir->d_name;
+            if (strName == ".DS_Store")
                 continue;
 
-            String strFilePath = strFolderPath + "/" + nameFile;
-
+            String strPath = strFolderPath + "/" + strName;
             if (pDir->d_type == DT_REG)
             {
-                mapFiles[nameFile] = strFilePath;
+                if (mapFiles.find(strName) != mapFiles.end())
+                {
+                    F_LogError("*********************** FUtil::EnumFiles: File name: [%s] already exist, path: [%s] !", strName.c_str(), strPath.c_str());
+                    return false;
+                }
+                mapFiles[strName] = strPath;
             }
             else if (pDir->d_type == DT_DIR)
             {
                 if (bIsRecursive)
                 {
-                    if (nameFile != "." && 
-                        nameFile != "..")
+                    if (strName != "." && 
+                        strName != "..")
                     {
-                        EnumFiles(strFilePath, mapFiles, bIsRecursive);
+                        EnumFiles(strPath, mapFiles, bIsRecursive);
                     }
                 }
             }
@@ -503,29 +512,28 @@ namespace LostPeterFoundation
         }
         while ((pDir = readdir(dir)) != nullptr)
         {
-            String nameFile = pDir->d_name;
-            if (nameFile == ".DS_Store")
+            String strName = pDir->d_name;
+            if (strName == ".DS_Store")
                 continue;
 
-            String strFilePath = strFolderPath + "/" + nameFile;
-
+            String strPath = strFolderPath + "/" + strName;
             if (pDir->d_type == DT_REG)
             {
                 
             }
             else if (pDir->d_type == DT_DIR)
             {
-                if (nameFile != "." && 
-                    nameFile != "..")
+                if (strName != "." && 
+                    strName != "..")
                 {
                     if (bFolderPath)
-                        aFolders.push_back(strFilePath);
+                        aFolders.push_back(strPath);
                     else
-                        aFolders.push_back(nameFile);
+                        aFolders.push_back(strName);
 
                     if (bIsRecursive)
                     {
-                        EnumFolders(strFilePath, aFolders, bFolderPath, bIsRecursive);
+                        EnumFolders(strPath, aFolders, bFolderPath, bIsRecursive);
                     }
                 }
             }
@@ -589,7 +597,7 @@ namespace LostPeterFoundation
 				::DeleteFile(strPath.c_str());
 			}
 			//folder
-			else if (bIsRecursive && strcmp(fd.cFileName, ".") != 0 && strcmp(fd.cFileName, "..") != 0 &&
+			else if (strcmp(fd.cFileName, ".") != 0 && strcmp(fd.cFileName, "..") != 0 &&
 				     (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 && 
 				     (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0)
 			{
@@ -619,21 +627,21 @@ namespace LostPeterFoundation
         }
         while ((pDir = readdir(dir)) != nullptr)
         {
-            String nameFile = pDir->d_name;
-            if (nameFile == ".DS_Store")
+            String strName = pDir->d_name;
+            if (strName == ".DS_Store")
                 continue;
 
-            String strFilePath = strFolderPath + "/" + nameFile;
+            String strPath = strFolderPath + "/" + strName;
             if (pDir->d_type == DT_REG)
             {
-                remove(strFilePath.c_str());
+                remove(strPath.c_str());
             }
             else if (pDir->d_type == DT_DIR)
             {
-                if (nameFile != "." && 
-                    nameFile != "..")
+                if (strName != "." && 
+                    strName != "..")
                 {
-                    DeleteFolders(strFilePath);
+                    DeleteFolders(strPath);
                 }
             }
         }

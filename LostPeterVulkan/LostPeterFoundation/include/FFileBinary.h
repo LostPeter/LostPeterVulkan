@@ -58,7 +58,7 @@ namespace LostPeterFoundation
 		LP_FORCEINLINE bool GetFlipEndian() const { return m_bFlipEndian; }
 
 	public:
-		void Release();
+		void Destroy();
 
 		bool CreateBinary(const char* szFilePath);
 		bool OpenBinary(const char* szFilePath);

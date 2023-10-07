@@ -37,7 +37,7 @@ namespace LostPeterFoundation
 		bool CreateXML(bool bIsEmpty = true);		
 		bool LoadXML(const char* szXMLPath);			
 		bool SaveXML(const char* szXMLPath);			
-		void Release();								
+		void Destroy();								
 		
 		TiXmlDocument* GetDocument();
 		TiXmlElement* GetRootItem();

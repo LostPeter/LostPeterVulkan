@@ -37,6 +37,12 @@ namespace LostPeterFoundation
     const float FMath::ms_fRad2Deg = float(180.0f) / FMath::ms_fPI;	
     const float FMath::ms_fLog2 = log(float(2.0f));
 
+    const double FMath::ms_dPI_Half = glm::pi<double>() / 2.0;
+    const double FMath::ms_dPI = glm::pi<double>();
+    const double FMath::ms_dPI_Two = glm::pi<double>() * 2.0;
+    const double FMath::ms_dDeg2Rad = FMath::ms_dPI / float(180.0);		
+    const double FMath::ms_dRad2Deg = float(180.0) / FMath::ms_dPI;	
+
     const float FMath::ms_fPosInfinity =  std::numeric_limits<float>::infinity();	
     const float FMath::ms_fNegInfinity = -std::numeric_limits<float>::infinity();
     const float FMath::ms_fEpsilon = std::numeric_limits<float>::epsilon();

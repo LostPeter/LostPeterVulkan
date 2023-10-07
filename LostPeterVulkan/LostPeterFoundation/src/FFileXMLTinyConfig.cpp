@@ -25,7 +25,7 @@ namespace LostPeterFoundation
 
 	FFileXMLTinyConfig::~FFileXMLTinyConfig()
 	{
-		m_FileXML.Release();
+		m_FileXML.Destroy();
 	}
 	
 	bool FFileXMLTinyConfig::Create(const char* szRootName)

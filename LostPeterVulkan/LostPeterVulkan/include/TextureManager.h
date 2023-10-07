@@ -24,10 +24,19 @@ namespace LostPeter
         virtual ~TextureManager();
 
     public:
+    protected:
+        TextureSerializer* m_pTextureSerializer;
+        TexturePtrVector m_aTexture;
+        TexturePtrMap m_mapTexture;
 
     public:
         static TextureManager& GetSingleton();
 		static TextureManager* GetSingletonPtr();
+
+    public:
+        void Destroy();
+        bool Init(uint nGroup, const String& strNameCfgTexture);
+
 
     };
 

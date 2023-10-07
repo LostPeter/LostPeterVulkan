@@ -11,6 +11,7 @@
 
 #include "../include/FComplex.h"
 #include "../include/FUtilString.h"
+#include "../include/FMath.h"
 
 namespace LostPeterFoundation
 {
@@ -505,7 +506,7 @@ namespace LostPeterFoundation
 
         // Compute nth roots of FComplex number with k = 0, 1, ... n-1
         double nthPhi = GetArgument() / n;
-        double slice = 2 * M_PI / n;
+        double slice = FMath::ms_dPI_Two / n;
         double innerPart = nthPhi;
         for (int k = 0; k < n; k++)
         {

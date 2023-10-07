@@ -32,10 +32,10 @@ namespace LostPeterFoundation
 	FFileBinary::~FFileBinary()
 	{
         F_DELETE_T(m_pBufTemp)
-		Release();
+		Destroy();
 	}
 
-	void FFileBinary::Release()
+	void FFileBinary::Destroy()
 	{
 		if (m_pFile)
 		{
@@ -46,7 +46,7 @@ namespace LostPeterFoundation
 
 	bool FFileBinary::CreateBinary(const char* szFilePath)
 	{
-		Release();
+		Destroy();
 		m_pFile = fopen(szFilePath, "wb");
 		if (!m_pFile)
 			return false;
@@ -56,7 +56,7 @@ namespace LostPeterFoundation
 
 	bool FFileBinary::OpenBinary(const char* szFilePath)
 	{
-		Release();
+		Destroy();
 		m_pFile = fopen(szFilePath, "rb");
 		if (!m_pFile)
 			return false;

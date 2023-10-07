@@ -69,10 +69,10 @@ namespace LostPeterFoundation
 
     FFileManager::~FFileManager()
     {
-        Release();
+        Destroy();
     }
 
-    void FFileManager::Release()
+    void FFileManager::Destroy()
 	{
 		//file io
 		for (FFileIOPtrMap::iterator it = m_mapFileIO.begin();

@@ -509,6 +509,7 @@ namespace LostPeter
     class MaterialManager;
     class MaterialSerializer;
     class Mesh;
+    class MeshDataSerializer;
     class MeshManager;
     class MeshSerializer;
     class MeshSub;

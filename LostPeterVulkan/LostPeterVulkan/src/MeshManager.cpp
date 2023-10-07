@@ -11,6 +11,7 @@
 
 #include "../include/MeshManager.h"
 #include "../include/VulkanWindow.h"
+#include "../include/MeshSerializer.h"
 
 template<> LostPeter::MeshManager* LostPeterFoundation::FSingleton<LostPeter::MeshManager>::ms_Singleton = nullptr;
 
@@ -28,12 +29,24 @@ namespace LostPeter
 
     MeshManager::MeshManager()
         : Base("MeshManager")
+        , m_pMeshSerializer(nullptr)
     {
 
     }
     MeshManager::~MeshManager()
     {
-
+        Destroy();
     }
-    
+
+    void MeshManager::Destroy()
+    {
+        F_DELETE(m_pMeshSerializer)
+    }
+    bool MeshManager::Init(uint nGroup, const String& strNameCfgMesh)
+    {
+        
+
+        return true;
+    }
+
 }; //LostPeter

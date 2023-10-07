@@ -103,8 +103,8 @@ namespace LostPeterFoundation
 		bool GetGroupInfo(uint32 nGroup, uint32& nMaxID, String& strBaseName);
 
 	public:
+		void Destroy();
 		bool Init();
-		void Release();
 
 		bool RegisterUserGroup(uint32 nBaseGroup, uint32 nGroup, const String& strPath, bool bIsRecursive);
 		bool ReloadGroup(uint32 nGroup, bool bIsRecursive);
