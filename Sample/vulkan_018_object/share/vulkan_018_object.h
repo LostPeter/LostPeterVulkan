@@ -482,7 +482,9 @@ public:
 public:
     FPathManager* m_pPathManager;
     MeshManager* m_pMeshManager;
+    ShaderManager* m_pShaderManager;
     TextureManager* m_pTextureManager;
+    MaterialManager* m_pMaterialManager;
 
     MeshPtrVector m_aModelMesh;
     MeshPtrMap m_mapModelMesh;    
@@ -522,6 +524,8 @@ protected:
         //Geometry/Texture
         virtual void loadModel_Custom();
             void createIndirectCommands();
+
+        virtual void loadTexture_Custom();
 
         //ConstBuffers
         virtual void createCustomCB();

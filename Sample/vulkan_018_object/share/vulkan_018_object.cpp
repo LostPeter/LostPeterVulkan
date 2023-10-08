@@ -911,11 +911,23 @@ void Vulkan_018_Object::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 /////////////////////////// ModelObject /////////////////////////
 
 
+static uint32 s_nGroup_Sample = FPathManager::PathGroup_Editor + 1;
+static const String s_strGroup_Sample = "Assets/Editor/Sample/Vulkan_018_Object";
+static const String s_strNameMesh_Sample = "Cfg_Mesh.xml";
+static const String s_strNameTexture_Sample = "Cfg_Texture.xml";
+static const String s_strNameShader_Sample = "Cfg_Shader.xml";
+static const String s_strNameMaterial_Sample = "Cfg_Material.xml";
+
 
 Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
     : VulkanWindow(width, height, name)
     , m_isDrawIndirect(false)
     , m_isDrawIndirectMulti(false)
+    , m_pPathManager(nullptr)
+    , m_pMeshManager(nullptr)
+    , m_pShaderManager(nullptr)
+    , m_pTextureManager(nullptr)
+    , m_pMaterialManager(nullptr)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -932,7 +944,7 @@ Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
     FPathManager::ms_bIsLog = true;
     m_pPathManager = new FPathManager();
     m_pPathManager->Init();
-    m_pPathManager->RegisterUserGroup(FPathManager::PathGroup_Editor, FPathManager::PathGroup_Editor + 1, "Assets/Editor/Sample/Vulkan_018_Object", true);
+    m_pPathManager->RegisterUserGroup(FPathManager::PathGroup_Editor, s_nGroup_Sample, s_strGroup_Sample, true);
 }
 
 void Vulkan_018_Object::setUpEnabledFeatures()
@@ -971,6 +983,9 @@ void Vulkan_018_Object::cameraReset()
 
 void Vulkan_018_Object::loadModel_Custom()
 {
+    m_pMeshManager = new MeshManager();
+    m_pMeshManager->Init(s_nGroup_Sample, s_strNameMesh_Sample);
+
     createMeshes();
     createTextures();
 
@@ -1176,6 +1191,11 @@ void Vulkan_018_Object::loadModel_Custom()
     }
 }
 void Vulkan_018_Object::createIndirectCommands()
+{
+
+}
+
+void Vulkan_018_Object::loadTexture_Custom()
 {
 
 }
@@ -2864,6 +2884,12 @@ void Vulkan_018_Object::drawModelObjectRend(VkCommandBuffer& commandBuffer, Mode
 
 void Vulkan_018_Object::cleanupCustom()
 {   
+    F_DELETE(m_pMaterialManager)
+    F_DELETE(m_pTextureManager)
+    F_DELETE(m_pShaderManager)
+    F_DELETE(m_pMeshManager)
+    F_DELETE(m_pPathManager)
+    
     destroyTextures();
     destroyMeshes();
 

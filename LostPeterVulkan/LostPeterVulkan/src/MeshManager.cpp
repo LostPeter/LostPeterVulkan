@@ -46,7 +46,7 @@ namespace LostPeter
     bool MeshManager::Init(uint nGroup, const String& strNameCfgMesh)
     {
         m_pMeshSerializer = new MeshSerializer();
-
+        
 
         return true;
     }
