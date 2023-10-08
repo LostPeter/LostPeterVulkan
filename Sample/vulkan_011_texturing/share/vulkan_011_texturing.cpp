@@ -674,7 +674,7 @@ bool Vulkan_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTransformLoc
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!FMeshDataLoader::LoadMeshData(this->pathMesh, meshData, eMeshParserFlags))
     {
-        F_LogError("Vulkan_011_Texturing::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
+        F_LogError("*********************** Vulkan_011_Texturing::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
         return false; 
     }
 
@@ -804,7 +804,7 @@ void Vulkan_011_Texturing::setUpEnabledFeatures()
     }
     else
     {
-        F_LogError("Vulkan_011_Texturing::setUpEnabledFeatures: tessellationShader is not supported !");
+        F_LogError("*********************** Vulkan_011_Texturing::setUpEnabledFeatures: tessellationShader is not supported !");
     }
     
 }
@@ -1218,7 +1218,7 @@ void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
                                                   m_mapVkShaderModules,
                                                   pModelObject->aShaderStageCreateInfos_Graphics))
         {
-            String msg = "Vulkan_011_Texturing::createGraphicsPipeline_Custom: Can not find shader used !";
+            String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Can not find shader used !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1228,21 +1228,21 @@ void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
             pModelObject->pPipelineGraphics->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(pModelObject->pPipelineGraphics->nameDescriptorSetLayout);
             if (pModelObject->pPipelineGraphics->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "Vulkan_011_Texturing::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pModelObject->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + pModelObject->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pModelObject->pPipelineGraphics->poDescriptorSetLayout = findDescriptorSetLayout(pModelObject->pPipelineGraphics->nameDescriptorSetLayout);
             if (pModelObject->pPipelineGraphics->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_011_Texturing::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pModelObject->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Can not find DescriptorSetLayout by name: " + pModelObject->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             pModelObject->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pModelObject->pPipelineGraphics->nameDescriptorSetLayout);
             if (pModelObject->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_011_Texturing::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pModelObject->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pModelObject->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1261,7 +1261,7 @@ void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
                                                                                              pModelObject->cfg_ColorWriteMask);
             if (pModelObject->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_011_Texturing::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
+                String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1295,7 +1295,7 @@ void Vulkan_011_Texturing::createGraphicsPipeline_Custom()
                                                                                    pModelObject->cfg_ColorWriteMask);
             if (pModelObject->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_011_Texturing::createGraphicsPipeline_Custom: Failed to create pipeline !";
+                String msg = "*********************** Vulkan_011_Texturing::createGraphicsPipeline_Custom: Failed to create pipeline !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1320,7 +1320,7 @@ void Vulkan_011_Texturing::createComputePipeline_Custom()
                                                   pModelObject->aShaderStageCreateInfos_Computes,
                                                   pModelObject->mapShaderStageCreateInfos_Computes))
         {
-            String msg = "Vulkan_011_Texturing::createComputePipeline_Custom: Can not find shader used !";
+            String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Can not find shader used !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1328,7 +1328,7 @@ void Vulkan_011_Texturing::createComputePipeline_Custom()
         //[2] Pipeline Compute
         if (count_pipeline != pModelObject->aShaderStageCreateInfos_Computes.size())
         {
-            String msg = "Vulkan_011_Texturing::createComputePipeline_Custom: Pipeline count is not equal shader count !";
+            String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Pipeline count is not equal shader count !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -1340,21 +1340,21 @@ void Vulkan_011_Texturing::createComputePipeline_Custom()
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayoutNames == nullptr)
             {
-                String msg = "Vulkan_011_Texturing::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Can not find DescriptorSetLayoutNames by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poDescriptorSetLayout = findDescriptorSetLayout(p->nameDescriptorSetLayout);
             if (p->poDescriptorSetLayout == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_011_Texturing::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Can not find DescriptorSetLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
             p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
             if (p->poPipelineLayout == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_011_Texturing::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1362,7 +1362,7 @@ void Vulkan_011_Texturing::createComputePipeline_Custom()
             p->poPipeline = createVkComputePipeline(shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "Vulkan_011_Texturing::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_011_Texturing::createComputePipeline_Custom: Create compute pipeline failed, PipelineLayout name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1409,7 +1409,7 @@ void Vulkan_011_Texturing::createMeshes()
         bool isTransformLocal = g_MeshIsTranformLocals[i];
         if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
         {
-            String msg = "Vulkan_011_Texturing::createMeshes: create mesh: [" + nameMesh + "] failed !";
+            String msg = "*********************** Vulkan_011_Texturing::createMeshes: create mesh: [" + nameMesh + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1522,7 +1522,7 @@ void Vulkan_011_Texturing::createDescriptorSetLayouts()
         VkDescriptorSetLayout vkDescriptorSetLayout = CreateDescriptorSetLayout(nameLayout, &aLayouts);
         if (vkDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            String msg = "Vulkan_011_Texturing::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
+            String msg = "*********************** Vulkan_011_Texturing::createDescriptorSetLayouts: Failed to create descriptor set layout: " + nameLayout;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -1776,7 +1776,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                     }
                     else
                     {
-                        String msg = "Vulkan_011_Texturing::createDescriptorSets_Custom: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                        String msg = "*********************** Vulkan_011_Texturing::createDescriptorSets_Custom: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                         F_LogError(msg.c_str());
                         throw std::runtime_error(msg.c_str());
                     }
@@ -1842,7 +1842,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
                 }
                 else
                 {
-                    String msg = "Vulkan_011_Texturing::createDescriptorSets_Custom: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                    String msg = "*********************** Vulkan_011_Texturing::createDescriptorSets_Custom: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }

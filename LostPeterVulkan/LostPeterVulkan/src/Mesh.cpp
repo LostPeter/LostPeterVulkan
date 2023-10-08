@@ -58,7 +58,7 @@ namespace LostPeter
         MeshSubPtrMap::iterator itFind = this->mapMeshSubs.find(pMeshSub->nameMeshSub);
         if (itFind != this->mapMeshSubs.end())
         {
-            F_LogError("Mesh::AddMeshSub: Mesh sub is exist: [%s] !", pMeshSub->nameMeshSub.c_str());
+            F_LogError("*********************** Mesh::AddMeshSub: Mesh sub is exist: [%s] !", pMeshSub->nameMeshSub.c_str());
             return false;
         }
 
@@ -80,7 +80,7 @@ namespace LostPeter
             unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
             if (!FMeshDataLoader::LoadMeshDatas(this->pathMesh, aMeshDatas, isFlipY, eMeshParserFlags))
             {
-                F_LogError("Mesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
+                F_LogError("*********************** Mesh::LoadMesh: load meshes failed: [%s] !", this->pathMesh.c_str());
                 return false; 
             }
         }
@@ -91,7 +91,7 @@ namespace LostPeter
             meshData.bIsFlipY = isFlipY;
             if (!FMeshGeometry::CreateGeometryWithParam(&meshDataPC, &meshData, this->typeGeometryType, this->pMeshCreateParam))
             {
-                F_LogError("Mesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", F_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
+                F_LogError("*********************** Mesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", F_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
                 return false; 
             }
 
@@ -127,7 +127,7 @@ namespace LostPeter
                                             isUpdateIndexBuffer);
             if (!pMeshSub->CreateMeshSub(meshData, isTransformLocal, matTransformLocal))
             {
-                F_LogError("Mesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
+                F_LogError("*********************** Mesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
                 return false;
             }
             AddMeshSub(pMeshSub);
@@ -149,7 +149,7 @@ namespace LostPeter
                                             isUpdateIndexBuffer);
             if (!pMeshSub->CreateMeshSub(meshDataPC, isTransformLocal, matTransformLocal))
             {
-                F_LogError("Mesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
+                F_LogError("*********************** Mesh::LoadMesh: Create mesh sub failed: [%s] !", nameMeshSub.c_str());
                 return false;
             }
             AddMeshSub(pMeshSub);

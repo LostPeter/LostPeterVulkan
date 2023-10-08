@@ -124,7 +124,7 @@ namespace LostPeterFoundation
 		FFileIO file;
 		if (!file.Open(strPath.c_str(), "rb"))
 		{
-			F_LogError("FFileManager::CreateFileMemory: Open file: [%s] failed !", strPath.c_str());
+			F_LogError("*********************** FFileManager::CreateFileMemory: Open file: [%s] failed !", strPath.c_str());
 			return 0;
 		}
 		long nSize = file.Size();

@@ -581,7 +581,7 @@ namespace LostPeter
             virtual void loadGeometry();
                 virtual void loadVertexIndexBuffer();
                     virtual void loadModel();
-                        virtual void loadModel_Assimp();
+                        virtual void loadModel_Default();
                         virtual void loadModel_Custom();
                     virtual void createVertexBuffer(size_t bufSize, 
                                                     void* pBuf, 
@@ -621,6 +621,9 @@ namespace LostPeter
                         virtual void destroyVkBuffer(VkBuffer buffer, VkDeviceMemory bufferMemory);
                 
                 virtual void loadTexture();
+                    virtual void loadTexture_Default();
+                    virtual void loadTexture_Custom();
+                    
                     virtual void destroyVkImage(VkImage image, VkDeviceMemory imageMemory, VkImageView imageView);
                     virtual void destroyVkImageView(VkImageView imageView);
                     virtual void destroyVkImageSampler(VkSampler sampler);

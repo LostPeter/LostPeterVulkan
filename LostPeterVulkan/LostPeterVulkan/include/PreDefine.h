@@ -79,7 +79,7 @@ namespace LostPeter
         { \
             String vkfunc = #vkcall; \
             vkfunc = vkfunc.substr(0, vkfunc.find('(')); \
-            F_LogError("UTIL_VK_CHECK: [%s] failed with: %s", vkfunc.c_str(), Utile_VkResult2String(result).c_str()); \
+            F_LogError("*********************** UTIL_VK_CHECK: [%s] failed with: %s", vkfunc.c_str(), Utile_VkResult2String(result).c_str()); \
         } \
     }
 
@@ -467,6 +467,9 @@ namespace LostPeter
         FMatrix4 matTransformLocal;
     };
     typedef std::vector<MeshInfo*> MeshInfoPtrVector;
+    typedef std::map<String, MeshInfo*> MeshInfoPtrMap;
+    typedef std::map<uint, MeshInfoPtrMap> MeshInfoGroupPtrMap;
+
 
     struct utilExport ShaderModuleInfo
     {
@@ -545,9 +548,11 @@ namespace LostPeter
     
     typedef std::vector<Mesh*> MeshPtrVector;
     typedef std::map<String, Mesh*> MeshPtrMap;
+    typedef std::map<uint, MeshPtrMap> MeshGroupPtrMap;
 
     typedef std::vector<Texture*> TexturePtrVector;
     typedef std::map<String, Texture*> TexturePtrMap;
+    typedef std::map<uint, TexturePtrMap> TextureGroupPtrMap;
     typedef std::map<String, TexturePtrVector> TexturePtrShaderSortMap;
 
     typedef std::vector<Shader*> ShaderPtrVector;
@@ -555,6 +560,7 @@ namespace LostPeter
 
     typedef std::vector<Material*> MaterialPtrVector;
     typedef std::map<String, Material*> MaterialPtrMap;
+    typedef std::map<uint, MaterialPtrMap> MaterialGroupPtrMap;
 
     typedef std::vector<Renderable*> RenderablePtrVector;
     typedef std::map<String, Renderable*> RenderablePtrMap;

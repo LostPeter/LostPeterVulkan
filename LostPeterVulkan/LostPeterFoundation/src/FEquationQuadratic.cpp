@@ -21,7 +21,7 @@ namespace LostPeterFoundation
     {
         if (a.Equals(FComplex::ZERO)) 
         {
-            F_LogError("FEquationQuadratic::FEquationQuadratic: a must be != 0 !");
+            F_LogError("*********************** FEquationQuadratic::FEquationQuadratic: a must be != 0 !");
         }
     }
 

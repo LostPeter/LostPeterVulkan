@@ -24,8 +24,13 @@ namespace LostPeter
         virtual ~MeshSerializer();
 
     public:
+    protected:
+        MeshInfoPtrVector m_aMeshInfo;
+        MeshInfoGroupPtrMap m_mapMeshInfoGroup;
 
     public:
+
+
 
     protected:
         //File Content XML

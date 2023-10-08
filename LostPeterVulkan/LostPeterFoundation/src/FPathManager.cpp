@@ -64,7 +64,7 @@ namespace LostPeterFoundation
 		m_strWorkFolder = FUtil::GetPathBin();
 		if (m_strWorkFolder.size() <= 0)
 		{
-			F_LogError("FPathManager::Init: Get working folder failed !");
+			F_LogError("*********************** FPathManager::Init: Get working folder failed !");
 			F_Assert(false && "FPathManager::Init: Get working folder failed !")
 			return false;	
 		}
@@ -78,7 +78,7 @@ namespace LostPeterFoundation
 		{
 			if (!LoadCfg())
 			{
-				F_LogError("FPathManager::Init: Load path cfg file failed !");
+				F_LogError("*********************** FPathManager::Init: Load path cfg file failed !");
 				F_Assert(false && "FPathManager::Init: Load path cfg file failed !")
 				return false;
 			}
@@ -92,7 +92,7 @@ namespace LostPeterFoundation
 		FPathGroupMap::iterator itFind = m_mapGroup.find(nGroup);
 		if (itFind == m_mapGroup.end())
 		{
-			F_LogError("FPathManager::GetFilePath: Can not find path group: [%u] !", nGroup);
+			F_LogError("*********************** FPathManager::GetFilePath: Can not find path group: [%u] !", nGroup);
 			F_Assert(false && "FPathManager::GetFilePath: Can not find path group!")
 			return FUtilString::BLANK;
 		}
@@ -100,7 +100,7 @@ namespace LostPeterFoundation
 		String2StringMap::iterator itN2P = mapN2P.find(strName);
 		if (itN2P == mapN2P.end())
 		{
-			F_LogError("FPathManager::GetFilePath: Can not find file: [%s], in path group: [%u] !", strName.c_str(), nGroup);
+			F_LogError("*********************** FPathManager::GetFilePath: Can not find file: [%s], in path group: [%u] !", strName.c_str(), nGroup);
 			return FUtilString::BLANK;
 		}
 
@@ -148,21 +148,21 @@ namespace LostPeterFoundation
 		FPathGroupIDMap::iterator itFindID = m_mapGroupID.find(nBaseGroup);
 		if (itFindID == m_mapGroupID.end())
 		{
-			F_LogError("FPathManager::RegisterUserGroup: Path group: [%u] is not a valid base group !", nBaseGroup);
+			F_LogError("*********************** FPathManager::RegisterUserGroup: Path group: [%u] is not a valid base group !", nBaseGroup);
 			F_Assert(false && "FPathManager::RegisterUserGroup: Path group is not a valid base group !")
 			return false;
 		}
 		uint32 nMaxID = itFindID->second;
 		if (nGroup <= nBaseGroup || nGroup < nMaxID || nGroup >= nBaseGroup + PATH_GAP_DEFAULT)
 		{
-			F_LogError("FPathManager::RegisterUserGroup: Path group: [%u] is not a valid group value !", nGroup);
+			F_LogError("*********************** FPathManager::RegisterUserGroup: Path group: [%u] is not a valid group value !", nGroup);
 			F_Assert(false && "FPathManager::RegisterUserGroup: Path group is not a valid group value !")
 			return false;
 		}
 		FPathGroupMap::iterator itFind = m_mapGroup.find(nGroup);
 		if (itFind != m_mapGroup.end())
 		{
-			F_LogError("FPathManager::RegisterUserGroup, Path group: [%u] already exist !", nGroup);
+			F_LogError("*********************** FPathManager::RegisterUserGroup, Path group: [%u] already exist !", nGroup);
 			F_Assert(false && "FPathManager::RegisterUserGroup, Path group already exist !")
 			return false;
 		}
@@ -170,7 +170,7 @@ namespace LostPeterFoundation
 		String2StringMap mapN2P;
 		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive, ms_bIsLog))
 		{
-			F_LogError("FPathManager::RegisterUserGroup, Enum file in path group: [%u] failed !", nGroup);
+			F_LogError("*********************** FPathManager::RegisterUserGroup, Enum file in path group: [%u] failed !", nGroup);
 			F_Assert(false && "FPathManager::RegisterUserGroup, Enum file in path group failed !")
 			return false;
 		}
@@ -188,7 +188,7 @@ namespace LostPeterFoundation
 		FPathGroupMap::iterator itFind = m_mapGroup.find(nGroup);
 		if (itFind != m_mapGroup.end())
 		{
-			F_LogError("FPathManager::registerGroup, Path group: [%u] already exist !", nGroup);
+			F_LogError("*********************** FPathManager::registerGroup, Path group: [%u] already exist !", nGroup);
 			F_Assert(false && "FPathManager::registerGroup, Path group already exist !")
 			return false;
 		}
@@ -198,14 +198,14 @@ namespace LostPeterFoundation
 		{
 			if (!FUtil::CreateAssetDirectory(strPath))
 			{
-				F_LogError("FPathManager::registerGroup, Create directory in path: [%s] failed !", strPath.c_str());
+				F_LogError("*********************** FPathManager::registerGroup, Create directory in path: [%s] failed !", strPath.c_str());
 				F_Assert(false && "FPathManager::registerGroup, Create directory in path failed !")
 				return false;
 			}
 		}
 		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive, ms_bIsLog))
 		{
-			F_LogError("FPathManager::registerGroup, Enum file in path group: [%u] failed !", nGroup);
+			F_LogError("*********************** FPathManager::registerGroup, Enum file in path group: [%u] failed !", nGroup);
 			F_Assert(false && "FPathManager::registerGroup, Enum file in path group failed !")
 			return false;
 		}
@@ -221,7 +221,7 @@ namespace LostPeterFoundation
 		FPathGroupBaseMap::iterator itFindBase = m_mapGroupBase.find(nGroup);
 		if (itFind == m_mapGroup.end() || itFindBase == m_mapGroupBase.end())
 		{
-			F_LogError("FPathManager::ReloadGroup, Path group: [%u] is not exist !", nGroup);
+			F_LogError("*********************** FPathManager::ReloadGroup, Path group: [%u] is not exist !", nGroup);
 			F_Assert(false && "FPathManager::ReloadGroup, Path group is not exist !")
 			return false;
 		}
@@ -229,7 +229,7 @@ namespace LostPeterFoundation
 		String2StringMap mapN2P;
 		if (!FUtil::EnumAssetFiles(itFindBase->second, mapN2P, bIsRecursive, ms_bIsLog))
 		{
-			F_LogError("FPathManager::ReloadGroup, Enum file in path group: [%u] failed !", nGroup);
+			F_LogError("*********************** FPathManager::ReloadGroup, Enum file in path group: [%u] failed !", nGroup);
 			F_Assert(false && "FPathManager::ReloadGroup, Enum file in path group failed !")
 			return false;
 		}
@@ -246,7 +246,7 @@ namespace LostPeterFoundation
 		FFileXML xmlCfg;
 		if (!xmlCfg.LoadXMLIndirect(strPathCfg))
 		{
-			F_LogError("FPathManager::LoadCfg, Load path cfg file: [%s] failed !", strPathCfg.c_str());
+			F_LogError("*********************** FPathManager::LoadCfg, Load path cfg file: [%s] failed !", strPathCfg.c_str());
 			F_Assert(false && "FPathManager::LoadCfg, Load 'media/config/path_cfg.xml' file failed !")
 			return false;
 		}
@@ -264,7 +264,7 @@ namespace LostPeterFoundation
 				FPathGroupIDMap::iterator itFind = m_mapGroupID.find(nGroup);
 				if (itFind == m_mapGroupID.end())
 				{
-					F_LogError("FPathManager::LoadCfg: Can not find group: [%u] in group map !", nGroup);
+					F_LogError("*********************** FPathManager::LoadCfg: Can not find group: [%u] in group map !", nGroup);
 					F_Assert(false && "FPathManager::LoadCfg: Can not find group in group map !")
 					continue;
 				}
@@ -279,7 +279,7 @@ namespace LostPeterFoundation
 				String strPath;
 				if (!pChild->ParserAttribute_String(PATH_TAG_ATTRIBUTE_PATH, strPath))
 				{
-					F_LogError("FPathManager::LoadCfg: Can not find path from group: [%u], path: [%s] !", nGroup, strPath.c_str());
+					F_LogError("*********************** FPathManager::LoadCfg: Can not find path from group: [%u], path: [%s] !", nGroup, strPath.c_str());
 					F_Assert(false && "FPathManager::LoadCfg: Can not find path from group !")
 					continue;
 				}

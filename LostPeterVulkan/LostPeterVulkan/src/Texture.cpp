@@ -190,7 +190,7 @@ namespace LostPeter
             }   
             else
             {
-                String msg = "Texture::LoadTexture: Wrong texture type, Create from file, name: [" + this->name + "] !";
+                String msg = "*********************** Texture::LoadTexture: Wrong texture type, Create from file, name: [" + this->name + "] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }
@@ -303,7 +303,7 @@ namespace LostPeter
             }
             else
             {
-                String msg = "Texture::LoadTexture: Wrong texture type, Create render target, name: [" + this->name + "] !";
+                String msg = "*********************** Texture::LoadTexture: Wrong texture type, Create render target, name: [" + this->name + "] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg);
             }

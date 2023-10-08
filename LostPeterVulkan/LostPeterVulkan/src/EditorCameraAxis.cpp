@@ -359,7 +359,7 @@ namespace LostPeter
             this->poDescriptorSetLayout_CopyBlit = Base::GetWindowPtr()->CreateDescriptorSetLayout(this->nameDescriptorSetLayout_CopyBlit, &this->aNameDescriptorSetLayouts_CopyBlit);
             if (this->poDescriptorSetLayout_CopyBlit == VK_NULL_HANDLE)
             {
-                String msg = "EditorCameraAxis::initDescriptorSetLayout: Can not create VkDescriptorSetLayout by name: " + this->nameDescriptorSetLayout_CopyBlit;
+                String msg = "*********************** EditorCameraAxis::initDescriptorSetLayout: Can not create VkDescriptorSetLayout by name: " + this->nameDescriptorSetLayout_CopyBlit;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -375,7 +375,7 @@ namespace LostPeter
             this->poPipelineLayout_CopyBlit = Base::GetWindowPtr()->createVkPipelineLayout(aDescriptorSetLayout);
             if (this->poPipelineLayout_CopyBlit == VK_NULL_HANDLE)
             {
-                String msg = "EditorCameraAxis::initPipelineLayout: Can not create VkPipelineLayout by descriptorSetLayout name: " + this->nameDescriptorSetLayout_CopyBlit;
+                String msg = "*********************** EditorCameraAxis::initPipelineLayout: Can not create VkPipelineLayout by descriptorSetLayout name: " + this->nameDescriptorSetLayout_CopyBlit;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -434,7 +434,7 @@ namespace LostPeter
                                                                                 this->mapShaderModules,
                                                                                 aShaderStageCreateInfos_Graphics))
                 {
-                    String msg = "EditorCameraAxis::initPipelineGraphics: Can not find shader used !";
+                    String msg = "*********************** EditorCameraAxis::initPipelineGraphics: Can not find shader used !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }
@@ -453,7 +453,7 @@ namespace LostPeter
                                                                                                      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
                 if (this->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
                 {
-                    String msg = "EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCameraAxis] !";
+                    String msg = "*********************** EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCameraAxis] !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }
@@ -473,7 +473,7 @@ namespace LostPeter
                                                                                                                VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
                 if (this->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
                 {
-                    String msg = "EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCameraAxis] !";
+                    String msg = "*********************** EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCameraAxis] !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }
@@ -495,7 +495,7 @@ namespace LostPeter
                                                                                 this->mapShaderModules,
                                                                                 aShaderStageCreateInfos_Graphics))
                 {
-                    String msg = "EditorCameraAxis::initPipelineGraphics: Can not find shader used !";
+                    String msg = "*********************** EditorCameraAxis::initPipelineGraphics: Can not find shader used !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }
@@ -514,7 +514,7 @@ namespace LostPeter
                                                                                                               VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
                 if (this->pPipelineGraphics_CopyBlit->poPipeline == VK_NULL_HANDLE)
                 {
-                    String msg = "EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCameraAxis_CopyBlit] !";
+                    String msg = "*********************** EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCameraAxis_CopyBlit] !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }
@@ -534,7 +534,7 @@ namespace LostPeter
                                                                                                                         VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
                 if (this->pPipelineGraphics_CopyBlit->poPipeline_WireFrame == VK_NULL_HANDLE)
                 {
-                    String msg = "EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCameraAxis_CopyBlit] !";
+                    String msg = "*********************** EditorCameraAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCameraAxis_CopyBlit] !";
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }
@@ -585,7 +585,7 @@ namespace LostPeter
                     }
                     else
                     {
-                        String msg = "EditorCameraAxis::updateDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                        String msg = "*********************** EditorCameraAxis::updateDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                         F_LogError(msg.c_str());
                         throw std::runtime_error(msg.c_str());
                     }
@@ -631,7 +631,7 @@ namespace LostPeter
                     }
                     else
                     {
-                        String msg = "EditorCameraAxis::updateDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                        String msg = "*********************** EditorCameraAxis::updateDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                         F_LogError(msg.c_str());
                         throw std::runtime_error(msg.c_str());
                     }

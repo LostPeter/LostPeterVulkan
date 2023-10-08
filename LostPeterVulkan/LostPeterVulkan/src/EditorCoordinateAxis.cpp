@@ -1557,7 +1557,7 @@ namespace LostPeter
                                                                             this->mapShaderModules,
                                                                             aShaderStageCreateInfos_Graphics))
             {
-                String msg = "EditorCoordinateAxis::initPipelineGraphics: Can not find shader used !";
+                String msg = "*********************** EditorCoordinateAxis::initPipelineGraphics: Can not find shader used !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1584,7 +1584,7 @@ namespace LostPeter
                                                                                                  VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCoordinateAxis] !";
+                String msg = "*********************** EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics for [EditorCoordinateAxis] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1604,7 +1604,7 @@ namespace LostPeter
                                                                                                            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                String msg = "EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCoordinateAxis] !";
+                String msg = "*********************** EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorCoordinateAxis] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1620,7 +1620,7 @@ namespace LostPeter
                                                                             this->mapShaderModules,
                                                                             aShaderStageCreateInfos_Graphics_Wire))
             {
-                String msg = "EditorCoordinateAxis::initPipelineGraphics: Can not find shader used !";
+                String msg = "*********************** EditorCoordinateAxis::initPipelineGraphics: Can not find shader used !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1637,7 +1637,7 @@ namespace LostPeter
                                                                                                             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->pPipelineGraphics->poPipeline_WireFrame2 == VK_NULL_HANDLE)
             {
-                String msg = "EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame 2 for [EditorCoordinateAxis] !";
+                String msg = "*********************** EditorCoordinateAxis::initPipelineGraphics: Failed to create pipeline graphics wire frame 2 for [EditorCoordinateAxis] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1685,7 +1685,7 @@ namespace LostPeter
                 }
                 else
                 {
-                    String msg = "EditorCoordinateAxis::updateDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                    String msg = "*********************** EditorCoordinateAxis::updateDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }

@@ -159,14 +159,14 @@ void Vulkan_005_Camera::createCamera()
     cameraReset();
 }
 
-void Vulkan_005_Camera::loadModel_Assimp()
+void Vulkan_005_Camera::loadModel_Default()
 {
     FMeshData meshData;
     meshData.bIsFlipY = g_isFlipY;
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!FMeshDataLoader::LoadMeshData(this->cfg_model_Path, meshData, eMeshParserFlags))
     {
-        F_LogError("Vulkan_005_Camera::loadModel_Assimp load model failed: [%s] !", this->cfg_model_Path.c_str());
+        F_LogError("*********************** Vulkan_005_Camera::loadModel_Default load model failed: [%s] !", this->cfg_model_Path.c_str());
         return;
     }
 

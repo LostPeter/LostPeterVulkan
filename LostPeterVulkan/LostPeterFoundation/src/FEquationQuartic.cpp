@@ -25,7 +25,7 @@ namespace LostPeterFoundation
     {
         if (a.Equals(FComplex::ZERO)) 
         {
-            F_LogError("FEquationQuartic::FEquationQuartic: a must be != 0 !");
+            F_LogError("*********************** FEquationQuartic::FEquationQuartic: a must be != 0 !");
         }
     }
 
@@ -108,7 +108,7 @@ namespace LostPeterFoundation
             FComplex z = A*xi2*xi2 + B*xi2*x[i] + C*xi2 + D*x[i] + E;
             if (z.Abs() > this->dEpsilon)
             {
-                F_LogError("FEquationQuartic::Check: Bad root !");
+                F_LogError("*********************** FEquationQuartic::Check: Bad root !");
             }
         }
     }

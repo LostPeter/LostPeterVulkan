@@ -55,7 +55,7 @@ namespace LostPeter
     {
         if (result != VK_SUCCESS)
         {
-            String msg = "UTIL_VK_CHECK: " + nameFunc + " failed with: " + Utile_VkResult2String(result);
+            String msg = "*********************** UTIL_VK_CHECK: " + nameFunc + " failed with: " + Utile_VkResult2String(result);
             F_LogError("%s", msg.c_str());
             return false;
         }

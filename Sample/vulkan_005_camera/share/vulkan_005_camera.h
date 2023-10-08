@@ -32,7 +32,7 @@ protected:
         virtual void createCamera();
 
         //Geometry
-        virtual void loadModel_Assimp();
+        virtual void loadModel_Default();
 
     //Render/Update
         virtual bool beginRenderImgui();

@@ -23,7 +23,7 @@ namespace LostPeterFoundation
     {
         if (a.Equals(FComplex::ZERO)) 
         {
-            F_LogError("FEquationCubic::FEquationCubic: a must be != 0 !");
+            F_LogError("*********************** FEquationCubic::FEquationCubic: a must be != 0 !");
         }
     }
 
@@ -60,7 +60,7 @@ namespace LostPeterFoundation
         case 0: return 0;
         case 1: return 2;
         case 2: return 1;
-        default: F_LogError("FEquationCubic::find_l_for_m: Is not possible !");
+        default: F_LogError("*********************** FEquationCubic::find_l_for_m: Is not possible !");
         }
         return 0;
     }
@@ -127,7 +127,7 @@ namespace LostPeterFoundation
             FComplex z = A* xi2* x[i] + B * xi2 + C * x[i] + D;
             if (z.Abs() > this->dEpsilon)
             {
-                F_LogError("FEquationCubic::Check: Bad root !");
+                F_LogError("*********************** FEquationCubic::Check: Bad root !");
             }
         }
     }

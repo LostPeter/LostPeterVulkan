@@ -106,7 +106,7 @@ void Vulkan_007_Stencil::loadModel_Custom()
         //Model
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTransformLocal, g_tranformLocalModels[i]))
         {
-            String msg = "Vulkan_007_Stencil::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
+            String msg = "*********************** Vulkan_007_Stencil::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -117,7 +117,7 @@ void Vulkan_007_Stencil::loadModel_Custom()
         //Texture
         if (!loadModel_Texture(pModelObject))
         {   
-            String msg = "Vulkan_007_Stencil::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
+            String msg = "*********************** Vulkan_007_Stencil::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -134,7 +134,7 @@ bool Vulkan_007_Stencil::loadModel_VertexIndex(ModelObject* pModelObject, bool i
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!FMeshDataLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
     {
-        F_LogError("Vulkan_007_Stencil::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
+        F_LogError("*********************** Vulkan_007_Stencil::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
         return false; 
     }
 
@@ -295,7 +295,7 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
                                                                               pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
         {
-            String msg = "Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
+            String msg = "*********************** Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -323,7 +323,7 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
                                                                             pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_Stencil == VK_NULL_HANDLE)
         {
-            String msg = "Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline stencil !";
+            String msg = "*********************** Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline stencil !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -347,7 +347,7 @@ void Vulkan_007_Stencil::createGraphicsPipeline_Custom()
                                                                             pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_Outline == VK_NULL_HANDLE)
         {
-            String msg = "Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline outline !";
+            String msg = "*********************** Vulkan_007_Stencil::createGraphicsPipeline_Custom: Failed to create pipeline outline !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -366,7 +366,7 @@ void Vulkan_007_Stencil::createPipelineLayout_Outline()
     this->poPipelineLayout_Outline = createVkPipelineLayout(aDescriptorSetLayout);
     if (this->poPipelineLayout_Outline == VK_NULL_HANDLE)
     {
-        String msg = "Vulkan_007_Stencil::createPipelineLayout_Outline: createVkPipelineLayout failed !";
+        String msg = "*********************** Vulkan_007_Stencil::createPipelineLayout_Outline: createVkPipelineLayout failed !";
         F_LogError(msg.c_str());
         throw std::runtime_error(msg.c_str());
     }

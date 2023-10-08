@@ -416,7 +416,7 @@ namespace LostPeter
         }
         else
         {
-            F_LogError("MeshSub::CreateMeshSub: create mesh sub failed: [%s], wrong poTypeVertex !", this->nameMeshSub.c_str());
+            F_LogError("*********************** MeshSub::CreateMeshSub: create mesh sub failed: [%s], wrong poTypeVertex !", this->nameMeshSub.c_str());
             return false; 
         }
 

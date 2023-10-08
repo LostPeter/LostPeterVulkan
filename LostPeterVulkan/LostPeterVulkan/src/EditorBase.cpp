@@ -72,7 +72,7 @@ namespace LostPeter
         this->poDescriptorSetLayout = Base::GetWindowPtr()->CreateDescriptorSetLayout(this->nameDescriptorSetLayout, &this->aNameDescriptorSetLayouts);
         if (this->poDescriptorSetLayout == VK_NULL_HANDLE)
         {
-            String msg = "EditorBase::initDescriptorSetLayout: Can not create VkDescriptorSetLayout by name: " + this->nameDescriptorSetLayout;
+            String msg = "*********************** EditorBase::initDescriptorSetLayout: Can not create VkDescriptorSetLayout by name: " + this->nameDescriptorSetLayout;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -84,7 +84,7 @@ namespace LostPeter
         this->poPipelineLayout = Base::GetWindowPtr()->createVkPipelineLayout(aDescriptorSetLayout);
         if (this->poPipelineLayout == VK_NULL_HANDLE)
         {
-            String msg = "EditorBase::initPipelineLayout: Can not create VkPipelineLayout by descriptorSetLayout name: " + this->nameDescriptorSetLayout;
+            String msg = "*********************** EditorBase::initPipelineLayout: Can not create VkPipelineLayout by descriptorSetLayout name: " + this->nameDescriptorSetLayout;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }

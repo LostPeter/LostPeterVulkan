@@ -41,12 +41,51 @@ namespace LostPeter
     void MeshManager::Destroy()
     {
         F_DELETE(m_pMeshSerializer)
+        DeleteMeshAll();
     }
     bool MeshManager::Init(uint nGroup, const String& strNameCfgMesh)
     {
-        
+        m_pMeshSerializer = new MeshSerializer();
+
 
         return true;
+    }
+
+    Mesh* MeshManager::GetMesh(uint nGroup, const String& strNameMesh)
+    {
+        MeshGroupPtrMap::iterator itFindGroup = m_mapMeshGroup.find(nGroup);
+        if (itFindGroup == m_mapMeshGroup.end())
+        {
+            F_LogError("*********************** MeshManager::GetMesh: Can not find group: [%u], name: [%s]", nGroup, strNameMesh.c_str());
+            return nullptr;
+        }
+
+        MeshPtrMap::iterator itFindMesh = itFindGroup->second.find(strNameMesh);
+        if (itFindMesh == itFindGroup->second.end())
+        {
+            F_LogError("*********************** MeshManager::GetMesh: Can not find mesh from group: [%u], name: [%s]", nGroup, strNameMesh.c_str());
+            return nullptr;
+        }
+        return itFindMesh->second;
+    }
+
+    bool MeshManager::LoadMeshAll()
+    {
+        return true;
+    }
+    bool MeshManager::LoadMesh(uint nGroup, const String& strNameMesh)
+    {
+        return true;
+    }
+
+    void MeshManager::DeleteMesh(uint nGroup, const String& strNameMesh)
+    {
+
+    }
+
+    void MeshManager::DeleteMeshAll()
+    {
+
     }
 
 }; //LostPeter

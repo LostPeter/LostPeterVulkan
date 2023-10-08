@@ -144,7 +144,7 @@ void Vulkan_010_Lighting::loadModel_Custom()
         //Model
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTransformLocal, g_tranformLocalModels[i]))
         {
-            String msg = "Vulkan_010_Lighting::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
+            String msg = "*********************** Vulkan_010_Lighting::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -152,7 +152,7 @@ void Vulkan_010_Lighting::loadModel_Custom()
         //Texture
         if (!loadModel_Texture(pModelObject))
         {   
-            String msg = "Vulkan_010_Lighting::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
+            String msg = "*********************** Vulkan_010_Lighting::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -173,7 +173,7 @@ bool Vulkan_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool 
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!FMeshDataLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
     {
-        F_LogError("Vulkan_010_Lighting::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
+        F_LogError("*********************** Vulkan_010_Lighting::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
         return false; 
     }
 
@@ -339,7 +339,7 @@ void Vulkan_010_Lighting::createGraphicsPipeline_Custom()
                                                                               pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
         {
-            String msg = "Vulkan_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
+            String msg = "*********************** Vulkan_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -372,7 +372,7 @@ void Vulkan_010_Lighting::createGraphicsPipeline_Custom()
                                                                     pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics == VK_NULL_HANDLE)
         {
-            String msg = "Vulkan_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline !";
+            String msg = "*********************** Vulkan_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }

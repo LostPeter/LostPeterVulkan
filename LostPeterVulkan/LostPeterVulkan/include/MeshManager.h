@@ -27,8 +27,7 @@ namespace LostPeter
     protected:
         MeshSerializer* m_pMeshSerializer;
         MeshPtrVector m_aMesh;
-        MeshPtrMap m_mapMesh;    
-
+        MeshGroupPtrMap m_mapMeshGroup;
 
     public:
         static MeshManager&	GetSingleton();
@@ -36,8 +35,15 @@ namespace LostPeter
 
     public:
         void Destroy();
-        bool Init(uint nGroup, const String& strNameCfgMesh);
+        bool Init(uint nGroupCfgMesh, const String& strNameCfgMesh);
 
+    public:
+        Mesh* GetMesh(uint nGroup, const String& strNameMesh);
+        
+        bool LoadMeshAll();
+        bool LoadMesh(uint nGroup, const String& strNameMesh);
+        void DeleteMesh(uint nGroup, const String& strNameMesh);
+        void DeleteMeshAll();
 
     };
 

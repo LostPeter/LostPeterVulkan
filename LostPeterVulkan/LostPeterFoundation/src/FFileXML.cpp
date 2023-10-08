@@ -774,7 +774,7 @@ namespace LostPeterFoundation
         CharVector content;
         if (!FUtil::LoadAssetFileContent(strPathRel.c_str(), content, true))
         {
-            F_LogError("FFileXML::LoadXMLIndirect: FUtil::LoadAssetFileContent failed, path: [%s] !", strPathRel.c_str());
+            F_LogError("*********************** FFileXML::LoadXMLIndirect: FUtil::LoadAssetFileContent failed, path: [%s] !", strPathRel.c_str());
             return false;
         }
         return CreateXML(content.data());

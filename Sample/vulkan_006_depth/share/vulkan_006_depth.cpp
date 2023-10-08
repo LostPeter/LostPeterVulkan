@@ -104,7 +104,7 @@ void Vulkan_006_Depth::loadModel_Custom()
         //Model
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTransformLocal, g_tranformLocalModels[i]))
         {
-            String msg = "Vulkan_006_Depth::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
+            String msg = "*********************** Vulkan_006_Depth::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -115,7 +115,7 @@ void Vulkan_006_Depth::loadModel_Custom()
         //Texture
         if (!loadModel_Texture(pModelObject))
         {   
-            String msg = "Vulkan_006_Depth::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
+            String msg = "*********************** Vulkan_006_Depth::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -132,7 +132,7 @@ bool Vulkan_006_Depth::loadModel_VertexIndex(ModelObject* pModelObject, bool isF
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!FMeshDataLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
     {
-        F_LogError("Vulkan_006_Depth::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
+        F_LogError("*********************** Vulkan_006_Depth::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
         return false; 
     }
 
@@ -262,7 +262,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
                                                                     pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics == VK_NULL_HANDLE)
         {
-            String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline !";
+            String msg = "*********************** Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -281,7 +281,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
                                                                               pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_WireFrame == VK_NULL_HANDLE)
         {
-            String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
+            String msg = "*********************** Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline wire frame !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -300,7 +300,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
                                                                                 pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_NoDepthTest == VK_NULL_HANDLE)
         {
-            String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth test !";
+            String msg = "*********************** Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth test !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -319,7 +319,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
                                                                                  pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_NoDepthWrite == VK_NULL_HANDLE)
         {
-            String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth write !";
+            String msg = "*********************** Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth write !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -338,7 +338,7 @@ void Vulkan_006_Depth::createGraphicsPipeline_Custom()
                                                                                      pModelObject->cfg_ColorWriteMask);
         if (pModelObject->poPipelineGraphics_NoDepthTestWrite == VK_NULL_HANDLE)
         {
-            String msg = "Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth test and write !";
+            String msg = "*********************** Vulkan_006_Depth::createGraphicsPipeline_Custom: Failed to create pipeline no depth test and write !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg.c_str());
         }

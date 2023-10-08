@@ -65,7 +65,7 @@ namespace LostPeterFoundation
 
 		if (!this->m_hInst)
 		{
-			F_LogError("FDynamicLib::Load: Load library [%s] failed!  System Error: [%s] !", this->m_strName.c_str(), _dynlibError().c_str());
+			F_LogError("*********************** FDynamicLib::Load: Load library [%s] failed!  System Error: [%s] !", this->m_strName.c_str(), _dynlibError().c_str());
 			return false;
 		}
 
@@ -81,7 +81,7 @@ namespace LostPeterFoundation
 		{
 			if (DYNLIB_UNLOAD(this->m_hInst))
 			{
-				F_LogError("FDynamicLib::Unload: Unload library [%s] failed!  System Error: [%s] !", this->m_strName.c_str(), _dynlibError().c_str());
+				F_LogError("*********************** FDynamicLib::Unload: Unload library [%s] failed!  System Error: [%s] !", this->m_strName.c_str(), _dynlibError().c_str());
 				return false;
 			}
 		}

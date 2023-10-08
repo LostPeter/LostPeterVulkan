@@ -53,7 +53,7 @@ namespace LostPeterFoundation
 		FFileXMLTinyConfig xmlCfg;
 		if (!xmlCfg.Load(strPluginsCfgPath.c_str()))
 		{
-			F_LogError("FPluginManager::LoadPlugins: Load plugin cfg file: [%s] failed !", strPluginsCfgPath.c_str());
+			F_LogError("*********************** FPluginManager::LoadPlugins: Load plugin cfg file: [%s] failed !", strPluginsCfgPath.c_str());
 			return false;
 		}
 		m_strFolderPlugin = strPluginsFolder;
@@ -132,14 +132,14 @@ namespace LostPeterFoundation
 		FDynamicLib* pDynlib = m_pDynamicLibManager->LoadDynamicLib(strPluginName, strPluginPath);
 		if (!pDynlib)
 		{
-			F_LogError("FPluginManager::LoadPlugin: Load plugin [%s] failed !", strPluginName.c_str());
+			F_LogError("*********************** FPluginManager::LoadPlugin: Load plugin [%s] failed !", strPluginName.c_str());
 			return false;
 		}
 
 		DLL_START_PLUGIN pFunc = (DLL_START_PLUGIN)pDynlib->GetSymbol("dllStartPlugin");
 		if (!pFunc)
 		{
-			F_LogError("FPluginManager::LoadPlugin: Cannot find symbol 'dllStartPlugin' in library [%s] !", strPluginName.c_str());
+			F_LogError("*********************** FPluginManager::LoadPlugin: Cannot find symbol 'dllStartPlugin' in library [%s] !", strPluginName.c_str());
 			return false;
 		}
 
@@ -188,7 +188,7 @@ namespace LostPeterFoundation
 		DLL_STOP_PLUGIN pFunc = (DLL_STOP_PLUGIN)pLib->GetSymbol("dllStopPlugin");
 		if (!pFunc)
 		{
-			F_LogError("FPluginManager::UnloadPlugin: Cannot find symbol 'dllStopPlugin' in library [%s] !", strDynLibName.c_str());
+			F_LogError("*********************** FPluginManager::UnloadPlugin: Cannot find symbol 'dllStopPlugin' in library [%s] !", strDynLibName.c_str());
 			return false;
 		}
 

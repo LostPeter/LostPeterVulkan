@@ -252,7 +252,7 @@ namespace LostPeter
                                                               pMultiviewCI,
                                                               this->poRenderPass))
                 {
-                    String msg = "MultiRenderPass::Init: Failed to create renderpass: " + GetName();
+                    String msg = "*********************** MultiRenderPass::Init: Failed to create renderpass: " + GetName();
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -272,7 +272,7 @@ namespace LostPeter
                                                                1,
                                                                this->poFrameBuffer))
                 {
-                    String msg = "MultiRenderPass::Init: Failed to create framebuffer: " + GetName();
+                    String msg = "*********************** MultiRenderPass::Init: Failed to create framebuffer: " + GetName();
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }

@@ -28,7 +28,7 @@ namespace LostPeter
         glfwSetErrorCallback(error_callback);
         if (!glfwInit()) {
 
-            F_LogError("App::Run: glfwInit failed !");
+            F_LogError("*********************** App::Run: glfwInit failed !");
             return -1;
         }
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -36,7 +36,7 @@ namespace LostPeter
         //3> glfw window creation
         s_pWindow = glfwCreateWindow(pBase->width, pBase->height, pBase->GetTitle().c_str(), NULL, NULL);
         if (!s_pWindow) {
-            F_LogError("App::Run: glfwCreateWindow failed !");
+            F_LogError("*********************** App::Run: glfwCreateWindow failed !");
             glfwTerminate();
             return -1;
         }
@@ -116,7 +116,7 @@ namespace LostPeter
 
     void App::error_callback(int error, const char* description)
     {
-        F_LogError("App::error_callback: [%s]", description);
+        F_LogError("*********************** App::error_callback: [%s]", description);
     }
     void App::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {

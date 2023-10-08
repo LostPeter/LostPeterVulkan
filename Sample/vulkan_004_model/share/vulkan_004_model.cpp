@@ -149,14 +149,14 @@ void Vulkan_004_Model::changeModel(int index)
     updateDescriptorSets(this->poDescriptorSets, this->poTextureImageView, this->poTextureSampler);
 }
 
-void Vulkan_004_Model::loadModel_Assimp()
+void Vulkan_004_Model::loadModel_Default()
 {
     FMeshData meshData;
     meshData.bIsFlipY = g_isFlipY;
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!FMeshDataLoader::LoadMeshData(this->cfg_model_Path, meshData, eMeshParserFlags))
     {
-        F_LogError("Vulkan_004_Model::loadModel_Assimp load model failed: [%s] !", this->cfg_model_Path.c_str());
+        F_LogError("*********************** Vulkan_004_Model::loadModel_Default load model failed: [%s] !", this->cfg_model_Path.c_str());
         return;
     }
 

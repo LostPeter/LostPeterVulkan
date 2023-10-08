@@ -123,7 +123,7 @@ namespace LostPeter
                                                                             this->mapShaderModules,
                                                                             aShaderStageCreateInfos_Graphics))
             {
-                String msg = "EditorGrid::initPipelineGraphics: Can not find shader used !";
+                String msg = "*********************** EditorGrid::initPipelineGraphics: Can not find shader used !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -150,7 +150,7 @@ namespace LostPeter
                                                                                                  VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->pPipelineGraphics->poPipeline == VK_NULL_HANDLE)
             {
-                String msg = "EditorGrid::initPipelineGraphics: Failed to create pipeline graphics for [EditorGrid] !";
+                String msg = "*********************** EditorGrid::initPipelineGraphics: Failed to create pipeline graphics for [EditorGrid] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -170,7 +170,7 @@ namespace LostPeter
                                                                                                            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
             if (this->pPipelineGraphics->poPipeline_WireFrame == VK_NULL_HANDLE)
             {
-                String msg = "EditorGrid::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorGrid] !";
+                String msg = "*********************** EditorGrid::initPipelineGraphics: Failed to create pipeline graphics wire frame for [EditorGrid] !";
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -218,7 +218,7 @@ namespace LostPeter
                 }
                 else
                 {
-                    String msg = "EditorGrid::updateDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                    String msg = "*********************** EditorGrid::updateDescriptorSets_Graphics: Graphics: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg.c_str());
                 }

@@ -33,7 +33,7 @@ namespace LostPeter
                                pMI->pMeshCreateParam);
         if (!pMesh->LoadMesh(pMI->isFlipY, pMI->isTransformLocal, pMI->matTransformLocal))
         {
-            String msg = "VulkanWindow::CreateMesh: create mesh: name: [" + pMI->nameMesh + "], path: [" + pMI->pathMesh + "] failed !";
+            String msg = "*********************** VulkanWindow::CreateMesh: create mesh: name: [" + pMI->nameMesh + "], path: [" + pMI->pathMesh + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -61,7 +61,7 @@ namespace LostPeter
         VkShaderModule shaderModule = createVkShaderModule(si.nameShaderType, si.pathShader);
         if (shaderModule == VK_NULL_HANDLE)
         {
-            String msg = "VulkanWindow::CreateShaderModule: create shader: name: [" + si.nameShader + "], type: [" + si.nameShaderType + "], path: [" + si.pathShader + "] failed !";
+            String msg = "*********************** VulkanWindow::CreateShaderModule: create shader: name: [" + si.nameShader + "], type: [" + si.nameShaderType + "], path: [" + si.pathShader + "] failed !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -130,7 +130,7 @@ namespace LostPeter
             VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderVert);
             if (itFind == mapVkShaderModules.end())
             {
-                F_LogError("VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
+                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find vert shader module: [%s] !", nameShaderVert.c_str());
                 return false;
             }
             VkPipelineShaderStageCreateInfo shaderStageInfo = {};
@@ -146,7 +146,7 @@ namespace LostPeter
             VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderTesc);
             if (itFind == mapVkShaderModules.end())
             {
-                F_LogError("VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
+                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find tesc shader module: [%s] !", nameShaderTesc.c_str());
                 return false;
             }
 
@@ -163,7 +163,7 @@ namespace LostPeter
             VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderTese);
             if (itFind == mapVkShaderModules.end())
             {
-                F_LogError("VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
+                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find tese shader module: [%s] !", nameShaderTese.c_str());
                 return false;
             }
 
@@ -180,7 +180,7 @@ namespace LostPeter
             VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderGeom);
             if (itFind == mapVkShaderModules.end())
             {
-                F_LogError("VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
+                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find geom shader module: [%s] !", nameShaderGeom.c_str());
                 return false;
             }
 
@@ -196,7 +196,7 @@ namespace LostPeter
             VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameShaderFrag);
             if (itFind == mapVkShaderModules.end())
             {
-                F_LogError("VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
+                F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find frag shader module: [%s] !", nameShaderFrag.c_str());
                 return false;
             }
 
@@ -226,7 +226,7 @@ namespace LostPeter
                 VkShaderModuleMap::iterator itFind = mapVkShaderModules.find(nameSC);
                 if (itFind == mapVkShaderModules.end())
                 {
-                    F_LogError("VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
+                    F_LogError("*********************** VulkanWindow::CreatePipelineShaderStageCreateInfos: Can not find comp shader module: [%s] !", nameSC.c_str());
                     return false;
                 }
 
@@ -337,7 +337,7 @@ namespace LostPeter
             }
             else
             {
-                String msg = "VulkanWindow::CreateDescriptorSetLayout: Wrong DescriptorSetLayout type: " + strLayout;
+                String msg = "*********************** VulkanWindow::CreateDescriptorSetLayout: Wrong DescriptorSetLayout type: " + strLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -345,7 +345,7 @@ namespace LostPeter
 
         if (!createVkDescriptorSetLayout(bindings, vkDescriptorSetLayout))
         {
-            String msg = "VulkanWindow::CreateDescriptorSetLayout: Failed to create descriptor set layout: " + nameLayout;
+            String msg = "*********************** VulkanWindow::CreateDescriptorSetLayout: Failed to create descriptor set layout: " + nameLayout;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -2972,7 +2972,7 @@ namespace LostPeter
             //1> model 
             if (!this->cfg_model_Path.empty())
             {
-                loadModel_Assimp();
+                loadModel_Default();
             }
             //2> model user
             else
@@ -2982,7 +2982,7 @@ namespace LostPeter
         }
         F_LogInfo("**<2-2-1-1> VulkanWindow::loadModel finish **");
     }
-        void VulkanWindow::loadModel_Assimp()
+        void VulkanWindow::loadModel_Default()
         {
             
         }
@@ -3155,15 +3155,31 @@ namespace LostPeter
 
     void VulkanWindow::loadTexture()
     {
-        if (!this->cfg_texture_Path.empty())
+        F_LogInfo("**<2-2-2> VulkanWindow::loadTexture start **");
         {
-            createTexture2D(this->cfg_texture_Path, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
-            createVkImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
-            createVkSampler(this->poMipMapCount, this->poTextureSampler);
+            //1> Texture Default 
+            loadTexture_Default();
 
-            F_LogInfo("<2-2-2> VulkanWindow::loadTexture finish !");
+            //2> Texture Custom
+            loadTexture_Custom();
         }
+        F_LogInfo("**<2-2-2> VulkanWindow::loadTexture finish **");
     }
+        void VulkanWindow::loadTexture_Default()
+        {
+            if (!this->cfg_texture_Path.empty())
+            {
+                createTexture2D(this->cfg_texture_Path, this->poMipMapCount, this->poTextureImage, this->poTextureImageMemory);
+                createVkImageView(this->poTextureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, this->poMipMapCount, 1, this->poTextureImageView);
+                createVkSampler(this->poMipMapCount, this->poTextureSampler);
+
+                F_LogInfo("<2-2-2-1> VulkanWindow::loadTexture_Default finish !");
+            }
+        }
+        void VulkanWindow::loadTexture_Custom()
+        {
+            
+        }
     void VulkanWindow::destroyVkImage(VkImage image, VkDeviceMemory imageMemory, VkImageView imageView)
     {
         if (image != VK_NULL_HANDLE)
