@@ -1,8 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <cfg_mesh>
+	<!-- <mesh name="plane" path="Assets/Mesh/Common/plane.fbx" type_mesh="file" type_mesh_geometry="" type_vertex="Pos3Color4Normal3Tex2" is_flip_y="true" is_trans_local="false" trans_local="" /> -->
+
+	<!-- Mesh Common -->
 	<mesh name="plane" path="Assets/Mesh/Common/plane.fbx" type_mesh="file" type_vertex="Pos3Color4Normal3Tex2" is_flip_y="true" is_trans_local="false" />
     <mesh name="cube" path="Assets/Mesh/Common/cube.obj" type_mesh="file" type_vertex="Pos3Color4Normal3Tex2" is_flip_y="false" is_trans_local="false" />
 	<mesh name="sphere" path="Assets/Mesh/Common/sphere.fbx" type_mesh="file" type_vertex="Pos3Color4Normal3Tex2" is_flip_y="false" is_trans_local="false" />
 
-	<!-- <mesh name="plane" path="Assets/Mesh/Common/plane.fbx" type_mesh="file" type_mesh_geometry="" type_vertex="Pos3Color4Normal3Tex2" is_flip_y="true" is_trans_local="false" trans_local="" /> -->
+	<!-- Mesh Model -->
+
+
+	<!-- Mesh Character -->
+	
+
 </cfg_mesh>

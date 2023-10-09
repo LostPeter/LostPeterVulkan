@@ -45,9 +45,22 @@ namespace LostPeter
     }
     bool MeshManager::Init(uint nGroup, const String& strNameCfgMesh)
     {
-        m_pMeshSerializer = new MeshSerializer();
-        
+        //1> Mesh Cfg Path 
+        String strPathCfgMesh = FPathManager::GetSingleton().GetFilePath(nGroup, strNameCfgMesh);
+        if (strPathCfgMesh.empty())
+        {
+            F_LogError("*********************** MeshManager::Init: Can not get file path from group: [%u], name: [%s] !", nGroup, strNameCfgMesh.c_str());
+            return false;
+        }
 
+        //2> Mesh Serializer
+        m_pMeshSerializer = new MeshSerializer();
+        if (!m_pMeshSerializer->LoadFile(strPathCfgMesh))
+        {
+            F_LogError("*********************** MeshManager::Init: Load file mesh cfg failed, group: [%u], name: [%s] !", nGroup, strNameCfgMesh.c_str());
+            return false;
+        }
+        
         return true;
     }
 

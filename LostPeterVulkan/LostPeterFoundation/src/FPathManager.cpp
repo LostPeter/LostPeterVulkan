@@ -107,6 +107,11 @@ namespace LostPeterFoundation
 		return itN2P->second;
 	}
 
+	bool FPathManager::HasGroup(uint32 nGroup)
+	{
+		return m_mapGroupID.find(nGroup) != m_mapGroupID.end();
+	}
+
 	bool FPathManager::GetGroupMaxID(uint32 nGroup, uint32& nMaxID)
 	{
 		FPathGroupIDMap::iterator itFind = m_mapGroupID.find(nGroup);
@@ -116,6 +121,30 @@ namespace LostPeterFoundation
 		nMaxID = itFind->second;
 		F_Assert(nMaxID >= nGroup && "FPathManager::GetGroupMaxID")
 		return true;
+	}
+
+	bool FPathManager::GetGroup(uint32 nGroupBase, const String& strPath, uint32& nGroup)
+	{
+		uint32 nMaxID = 0;
+		if (!GetGroupMaxID(nGroupBase, nMaxID))
+		{
+			return false;
+		}
+
+		FPathGroupBaseMap::iterator itFind;
+		for (uint32 i = nMaxID; i >= nGroupBase; i--)
+		{
+			itFind = m_mapGroupBase.find(i);
+			if (itFind == m_mapGroupBase.end())
+				continue;
+			if (FUtilString::StartsWith(strPath, itFind->second, false))
+			{
+				nGroup = i;
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	bool FPathManager::GetGroupBasePath(uint32 nGroup,String& strBaseName)
@@ -324,7 +353,7 @@ namespace LostPeterFoundation
 			FPathGroupIDMap::iterator itFindID = m_mapGroupID.find(nGroup);
 			if (itFindID != m_mapGroupID.end())
 			{
-				uint nMax = itFindID->second;
+				uint32 nMax = itFindID->second;
 				pChild->SaveAttribute_UInt(PATH_TAG_ATTRIBUTE_MAX, nMax);
 			}
 			FPathGroupBaseMap::iterator itFindBase = m_mapGroupBase.find(nGroup);

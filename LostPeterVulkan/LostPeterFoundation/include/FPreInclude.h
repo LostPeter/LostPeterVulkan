@@ -34,6 +34,7 @@
 #include "FFileIO.h"
 #include "FFileManager.h"
 #include "FFileMemory.h"
+#include "FFileXML.h"
 #include "FFileXMLTiny.h"
 #include "FFileXMLTinyConfig.h"
 #include "FFrustum.h"

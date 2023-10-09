@@ -98,9 +98,12 @@ namespace LostPeterFoundation
 		
 	public:
 		String GetFilePath(uint32 nGroup, const String& strName);
+		bool HasGroup(uint32 nGroup);
 		bool GetGroupMaxID(uint32 nGroup, uint32& nMaxID);
+		bool GetGroup(uint32 nGroupBase, const String& strPath, uint32& nGroup);
 		bool GetGroupBasePath(uint32 nGroup, String& strBaseName);
 		bool GetGroupInfo(uint32 nGroup, uint32& nMaxID, String& strBaseName);
+		
 
 	public:
 		void Destroy();

@@ -31,6 +31,12 @@ namespace LostPeter
     public:
 
 
+    public:
+        bool HasMeshInfo(uint nGroup, const String& strName);
+        MeshInfo* GetMeshInfo(uint nGroup, const String& strName);
+        bool AddMeshInfo(MeshInfo* pMeshInfo);
+        void DeleteMeshInfo(uint nGroup, const String& strName);
+        void DeleteMeshInfoAll();
 
     protected:
         //File Content XML
