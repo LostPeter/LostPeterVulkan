@@ -696,7 +696,8 @@ namespace LostPeter
 
     ////////////////////////////// Class ///////////////////////////////
     MeshInfo::MeshInfo()
-        : nameMesh("")
+        : group(0)
+        , nameMesh("")
         , pathMesh("")
         , typeMesh(F_Mesh_File)
         , typeVertex(F_MeshVertex_Pos3Color4Tex2)
@@ -717,7 +718,8 @@ namespace LostPeter
                        bool _isFlipY,
                        bool _isTransformLocal,
                        const FMatrix4& _matTransformLocal)
-        : nameMesh(_nameMesh)
+        : group(0)
+        , nameMesh(_nameMesh)
         , pathMesh(_pathMesh)
         , typeMesh(_typeMesh)
         , typeVertex(_typeVertex)
@@ -732,6 +734,19 @@ namespace LostPeter
     MeshInfo::~MeshInfo()
     {
         F_DELETE(this->pMeshCreateParam)
+    }
+
+
+    TextureInfo::TextureInfo()
+        : group(0)
+        , nameTexture("")
+        , pathTexture("")
+    {
+
+    }
+    TextureInfo::~TextureInfo()
+    {
+
     }
 
 }; //LostPeter

@@ -454,6 +454,7 @@ namespace LostPeter
                  const FMatrix4& _matTransformLocal);
         ~MeshInfo();
 
+        uint32 group;
         String nameMesh;
         String pathMesh;
         
@@ -469,6 +470,21 @@ namespace LostPeter
     typedef std::vector<MeshInfo*> MeshInfoPtrVector;
     typedef std::map<String, MeshInfo*> MeshInfoPtrMap;
     typedef std::map<uint, MeshInfoPtrMap> MeshInfoGroupPtrMap;
+
+
+    struct utilExport TextureInfo
+    {
+        TextureInfo();
+        ~TextureInfo();
+
+        uint32 group;
+        String nameTexture;
+        String pathTexture;
+
+    };
+    typedef std::vector<TextureInfo*> TextureInfoPtrVector;
+    typedef std::map<String, TextureInfo*> TextureInfoPtrMap;
+    typedef std::map<uint, TextureInfoPtrMap> TextureInfoGroupPtrMap;
 
 
     struct utilExport ShaderModuleInfo

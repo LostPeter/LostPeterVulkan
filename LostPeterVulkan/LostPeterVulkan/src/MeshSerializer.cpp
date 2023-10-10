@@ -77,6 +77,7 @@ namespace LostPeter
             return false;
         }
 
+        pMeshInfo->group = nGroup;
         itFind->second.insert(MeshInfoPtrMap::value_type(pMeshInfo->nameMesh, pMeshInfo));
         m_aMeshInfo.push_back(pMeshInfo);
         return true;
@@ -118,7 +119,7 @@ namespace LostPeter
     //File Content XML
     bool MeshSerializer::serializeXML()
     {
-        F_Assert(m_pFileXML != nullptr && "MeshSerializer::deserializeXML")
+        F_Assert(m_pFileXML != nullptr && "MeshSerializer::serializeXML")
 
 
         return false;

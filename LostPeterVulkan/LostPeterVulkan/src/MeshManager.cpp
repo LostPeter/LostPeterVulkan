@@ -12,6 +12,7 @@
 #include "../include/MeshManager.h"
 #include "../include/VulkanWindow.h"
 #include "../include/MeshSerializer.h"
+#include "../include/Mesh.h"
 
 template<> LostPeter::MeshManager* LostPeterFoundation::FSingleton<LostPeter::MeshManager>::ms_Singleton = nullptr;
 
@@ -64,6 +65,74 @@ namespace LostPeter
         return true;
     }
 
+    bool MeshManager::LoadMeshAll()
+    {
+        if (m_pMeshSerializer == nullptr)
+            return false;
+
+        DeleteMeshAll();
+        MeshInfoPtrVector& aMeshInfos = m_pMeshSerializer->GetMeshInfos();
+        for (MeshInfoPtrVector::iterator it = aMeshInfos.begin();
+             it != aMeshInfos.end(); ++it)
+        {
+            if (!loadMesh(*it))
+                continue;
+        }
+
+        return true;
+    }
+    Mesh* MeshManager::LoadMesh(uint nGroup, const String& strNameMesh)
+    {
+        if (m_pMeshSerializer == nullptr)
+            return nullptr;
+
+        Mesh* pMesh = GetMesh(nGroup, strNameMesh);
+        if (pMesh == nullptr)
+        {
+            MeshInfo* pMeshInfo = m_pMeshSerializer->GetMeshInfo(nGroup, strNameMesh);
+            if (pMeshInfo == nullptr)
+            {
+                F_LogError("*********************** MeshManager::LoadMesh: Can not find mesh info, group: [%u], name: [%s] !", nGroup, strNameMesh.c_str());
+                return nullptr;
+            }
+            if (!loadMesh(pMeshInfo))
+            {
+                return nullptr;
+            }
+        }
+        return pMesh;
+    }
+    Mesh* MeshManager::loadMesh(MeshInfo* pMI)
+    {
+        Mesh* pMesh = new Mesh(pMI->nameMesh,
+                               pMI->pathMesh,
+                               pMI->typeMesh,
+                               pMI->typeVertex,
+                               pMI->typeGeometryType,
+                               nullptr);
+        if (!pMesh->LoadMesh(pMI->isFlipY, pMI->isTransformLocal, pMI->matTransformLocal))
+        {
+            F_LogError("*********************** MeshManager::loadMesh: Load mesh failed, name: [%s], path: [%s] !", pMI->nameMesh.c_str(), pMI->pathMesh.c_str());
+            F_DELETE(pMesh)
+            return nullptr;
+        }
+
+        if (AddMesh(pMI->group, pMesh))
+        {
+            F_LogInfo("MeshManager::loadMesh: Load mesh success, [%u - %s - %s - %d] !", 
+                      pMI->group, 
+                      pMI->nameMesh.c_str(), 
+                      pMI->pathMesh.c_str(), 
+                      (int)pMesh->aMeshSubs.size());
+        }
+        return pMesh;
+    }
+
+    bool MeshManager::HasMesh(uint nGroup, const String& strNameMesh)
+    {
+        return GetMesh(nGroup, strNameMesh) != nullptr;
+    }
+
     Mesh* MeshManager::GetMesh(uint nGroup, const String& strNameMesh)
     {
         MeshGroupPtrMap::iterator itFindGroup = m_mapMeshGroup.find(nGroup);
@@ -82,23 +151,62 @@ namespace LostPeter
         return itFindMesh->second;
     }
 
-    bool MeshManager::LoadMeshAll()
+    bool MeshManager::AddMesh(uint nGroup, Mesh* pMesh)
     {
-        return true;
-    }
-    bool MeshManager::LoadMesh(uint nGroup, const String& strNameMesh)
-    {
+        MeshGroupPtrMap::iterator itFind = m_mapMeshGroup.find(nGroup);
+        if (itFind == m_mapMeshGroup.end())
+        {
+            MeshPtrMap mapMesh;
+            m_mapMeshGroup[nGroup] = mapMesh;
+            itFind = m_mapMeshGroup.find(nGroup);
+        }
+        const String& strNameMesh = pMesh->GetName();
+        MeshPtrMap::iterator itFindMesh = itFind->second.find(strNameMesh);
+        if (itFindMesh != itFind->second.end())
+        {
+            F_LogError("*********************** MeshManager::AddMesh: Mesh name already exist: [%s] !", strNameMesh.c_str());
+            F_DELETE(pMesh)
+            return false;
+        }
+
+        itFind->second.insert(MeshPtrMap::value_type(strNameMesh, pMesh));
+        m_aMesh.push_back(pMesh);
         return true;
     }
 
     void MeshManager::DeleteMesh(uint nGroup, const String& strNameMesh)
     {
+        MeshGroupPtrMap::iterator itFind = m_mapMeshGroup.find(nGroup);
+        if (itFind == m_mapMeshGroup.end())
+        {
+            return;
+        }
 
+        MeshPtrMap::iterator itFindMesh = itFind->second.find(strNameMesh);
+        if (itFindMesh != itFind->second.end())
+        {
+            MeshPtrVector::iterator itFindA = std::find(m_aMesh.begin(), m_aMesh.end(), itFindMesh->second);
+            if (itFindA != m_aMesh.end())
+                m_aMesh.erase(itFindA);
+            F_DELETE(itFindMesh->second)
+            itFind->second.erase(itFindMesh);
+        }
     }
 
     void MeshManager::DeleteMeshAll()
     {
-
+        for (MeshGroupPtrMap::iterator it = m_mapMeshGroup.begin();
+             it != m_mapMeshGroup.end(); ++it)
+        {
+            MeshPtrMap& mapMesh = it->second;
+            for (MeshPtrMap::iterator itMesh = mapMesh.begin(); 
+                 itMesh != mapMesh.end(); ++itMesh)
+            {
+                F_DELETE(itMesh->second)
+            }
+        }
+        m_aMesh.clear();
+        m_mapMeshGroup.clear();
     }
 
 }; //LostPeter

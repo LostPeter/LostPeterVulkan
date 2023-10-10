@@ -486,8 +486,6 @@ public:
     TextureManager* m_pTextureManager;
     MaterialManager* m_pMaterialManager;
 
-    MeshPtrVector m_aModelMesh;
-    MeshPtrMap m_mapModelMesh;    
 
     TexturePtrVector m_aModelTexture;
     TexturePtrMap m_mapModelTexture;
@@ -567,11 +565,6 @@ protected:
 
 private:
     void rebuildInstanceCBs(bool isCreateVkBuffer);
-
-////Mesh
-    void destroyMeshes();
-    void createMeshes();
-    Mesh* findMesh(const String& nameMesh);
 
 ////Texture
     void destroyTextures();

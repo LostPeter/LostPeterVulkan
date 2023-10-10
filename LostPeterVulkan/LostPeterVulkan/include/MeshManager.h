@@ -38,13 +38,17 @@ namespace LostPeter
         bool Init(uint nGroupCfgMesh, const String& strNameCfgMesh);
 
     public:
-        Mesh* GetMesh(uint nGroup, const String& strNameMesh);
-        
         bool LoadMeshAll();
-        bool LoadMesh(uint nGroup, const String& strNameMesh);
+        Mesh* LoadMesh(uint nGroup, const String& strNameMesh);
+
+        bool HasMesh(uint nGroup, const String& strNameMesh);
+        Mesh* GetMesh(uint nGroup, const String& strNameMesh);
+        bool AddMesh(uint nGroup, Mesh* pMesh);
         void DeleteMesh(uint nGroup, const String& strNameMesh);
         void DeleteMeshAll();
 
+    private:
+        Mesh* loadMesh(MeshInfo* pMI);
     };
 
 }; //LostPeter

@@ -403,20 +403,20 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
 
 /////////////////////////// Object //////////////////////////////
 static const int g_Object_Count = 8;
-static const char* g_Object_Configs[2 * g_Object_Count] = 
+static const char* g_Object_Configs[3 * g_Object_Count] = 
 {
-    //Object Name                          //Mesh Name                                                                    
-    "object_skybox",                       "cube", //object_skybox
-    "object_mountain",                     "mountain", //object_mountain   
+    //Object Name                      //Mesh Group         //Mesh Name                                                                    
+    "object_skybox",                   "5001",              "cube", //object_skybox
+    "object_mountain",                 "5002",              "mountain", //object_mountain   
 
-    "object_rock",                         "rock", //object_rock   
-    "object_cliff",                        "cliff", //object_cliff   
+    "object_rock",                     "5002",              "rock", //object_rock   
+    "object_cliff",                    "5002",              "cliff", //object_cliff   
 
-    "object_tree",                         "tree", //object_tree        
-    "object_tree_spruce",                  "tree_spruce", //object_tree_spruce
+    "object_tree",                     "5002",              "tree", //object_tree        
+    "object_tree_spruce",              "5002",              "tree_spruce", //object_tree_spruce
     
-    "object_grass",                        "grass", //object_grass        
-    "object_flower",                       "flower", //object_flower
+    "object_grass",                    "5002",              "grass", //object_grass        
+    "object_flower",                   "5002",              "flower", //object_flower
 
 };
 static const char* g_Object_MeshSubsUsed[g_Object_Count] =
@@ -985,8 +985,8 @@ void Vulkan_018_Object::loadModel_Custom()
 {
     m_pMeshManager = new MeshManager();
     m_pMeshManager->Init(s_nGroup_Sample, s_strNameMesh_Sample);
+    m_pMeshManager->LoadMeshAll();
 
-    createMeshes();
     createTextures();
 
     int nIndexObjectRend = 0;
@@ -997,11 +997,13 @@ void Vulkan_018_Object::loadModel_Custom()
         //1> Object
         {
             pModelObject->indexModel = i;
-            pModelObject->nameObject = g_Object_Configs[2 * i + 0];
-            pModelObject->nameMesh = g_Object_Configs[2 * i + 1];
+            pModelObject->nameObject = g_Object_Configs[3 * i + 0];
+            String nameGroup = g_Object_Configs[3 * i + 1];
+            uint32 nGroup = FUtilString::ParserUInt(nameGroup);
+            pModelObject->nameMesh = g_Object_Configs[3 * i + 2];
             //Mesh
             {
-                Mesh* pMesh = this->findMesh(pModelObject->nameMesh);
+                Mesh* pMesh = MeshManager::GetSingleton().GetMesh(nGroup, pModelObject->nameMesh);
                 F_Assert(pMesh != nullptr && "Vulkan_018_Object::loadModel_Custom")
                 pModelObject->SetMesh(pMesh);
             }
@@ -1523,67 +1525,6 @@ void Vulkan_018_Object::createComputePipeline_Custom()
             }
         }
     }   
-}
-
-void Vulkan_018_Object::destroyMeshes()
-{
-    size_t count = this->m_aModelMesh.size();
-    for (size_t i = 0; i < count; i++)
-    {
-        Mesh* pMesh = this->m_aModelMesh[i];
-        delete pMesh;
-    }
-    this->m_aModelMesh.clear();
-    this->m_mapModelMesh.clear();
-}
-void Vulkan_018_Object::createMeshes()
-{
-    for (int i = 0; i < g_MeshCount; i++)
-    {
-        String nameMesh = g_MeshPaths[5 * i + 0];
-        String nameVertexType = g_MeshPaths[5 * i + 1];
-        String nameMeshType = g_MeshPaths[5 * i + 2];
-        String nameGeometryType = g_MeshPaths[5 * i + 3];
-        String pathMesh = g_MeshPaths[5 * i + 4];
-        
-        FMeshVertexType typeVertex = F_ParseMeshVertexType(nameVertexType); 
-        FMeshType typeMesh = F_ParseMeshType(nameMeshType);
-        FMeshGeometryType typeGeometryType = F_MeshGeometry_EntityTriangle;
-        if (!nameGeometryType.empty())
-        {
-            typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);
-        }
-
-        Mesh* pMesh = new Mesh(nameMesh,
-                               pathMesh,
-                               typeMesh,
-                               typeVertex,
-                               typeGeometryType,
-                               nullptr);
-        bool isFlipY = g_MeshIsFlipYs[i];
-        bool isTransformLocal = g_MeshIsTranformLocals[i];
-        if (!pMesh->LoadMesh(isFlipY, isTransformLocal, g_MeshTranformLocals[i]))
-        {
-            String msg = "*********************** Vulkan_018_Object::createMeshes: create mesh: [" + nameMesh + "] failed !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
-
-        this->m_aModelMesh.push_back(pMesh);
-        this->m_mapModelMesh[nameMesh] = pMesh;
-
-        F_LogInfo("Vulkan_018_Object::createMeshes: create mesh: [%s], vertex type: [%s], mesh type: [%s], geometry type: [%s], mesh sub count: [%d], path: [%s] success !", 
-                  nameMesh.c_str(), nameVertexType.c_str(), nameMeshType.c_str(), nameGeometryType.c_str(), (int)pMesh->aMeshSubs.size(), pathMesh.c_str());
-    }
-}
-Mesh* Vulkan_018_Object::findMesh(const String& nameMesh)
-{
-    MeshPtrMap::iterator itFind = this->m_mapModelMesh.find(nameMesh);
-    if (itFind == this->m_mapModelMesh.end())
-    {
-        return nullptr;
-    }
-    return itFind->second;
 }
 
 
@@ -2891,7 +2832,6 @@ void Vulkan_018_Object::cleanupCustom()
     F_DELETE(m_pPathManager)
     
     destroyTextures();
-    destroyMeshes();
 
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

@@ -24,8 +24,23 @@ namespace LostPeter
         virtual ~TextureSerializer();
 
     public:
+    protected:
+        TextureInfoPtrVector m_aTextureInfo;
+        TextureInfoGroupPtrMap m_mapTextureInfoGroup;
 
     public:
+        LP_FORCEINLINE const TextureInfoPtrVector& GetTextureInfos() const { return m_aTextureInfo; }
+        LP_FORCEINLINE TextureInfoPtrVector& GetTextureInfos() { return m_aTextureInfo; }
+        LP_FORCEINLINE const TextureInfoGroupPtrMap& GetTextureInfoGroups() const { return m_mapTextureInfoGroup; }
+        LP_FORCEINLINE TextureInfoGroupPtrMap& GetTextureInfoGroups() { return m_mapTextureInfoGroup; }
+
+
+    public:
+        bool HasTextureInfo(uint nGroup, const String& strName);
+        TextureInfo* GetTextureInfo(uint nGroup, const String& strName);
+        bool AddTextureInfo(TextureInfo* pTextureInfo);
+        void DeleteTextureInfo(uint nGroup, const String& strName);
+        void DeleteTextureInfoAll();
 
     protected:
         //File Content XML
