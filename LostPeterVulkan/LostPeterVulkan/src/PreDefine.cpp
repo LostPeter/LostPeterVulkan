@@ -144,55 +144,28 @@ namespace LostPeter
     }
 
 
-    //VulkanTextureType
-    static String s_nameTextures[] = 
-    {
-        "1d",                   //0: 1D
-        "2d",                   //1: 2D
-        "2darray",              //2: 2DArray        
-        "3d",                   //3: 3D
-        "cubemap"               //4: CubeMap
-    };
-    const String& Util_GetTextureTypeName(VulkanTextureType type)
-    {
-        return s_nameTextures[(int)type];
-    }
-    const String& Util_GetTextureTypeName(int type)
-    {
-        return s_nameTextures[type];
-    }
-    VulkanTextureType Util_ParseTextureType(const String& strName)
-    {
-        for (size_t i = 0; i < (int)Vulkan_Texture_Count; i++)
-        {
-            if (s_nameTextures[i] == strName)
-                return (VulkanTextureType)(i);
-        }
-        F_Assert(false && "Util_ParseTextureType: Wrong type name !")
-        return Vulkan_Texture_2D;
-    }
-    VkImageType Util_Transform2VkImageType(VulkanTextureType type)
+    VkImageType Util_Transform2VkImageType(FTextureType type)
     {
         switch ((int)type)
         {
-        case Vulkan_Texture_1D: return VK_IMAGE_TYPE_1D;
-        case Vulkan_Texture_2D: return VK_IMAGE_TYPE_2D;
-        case Vulkan_Texture_2DArray: return VK_IMAGE_TYPE_2D;
-        case Vulkan_Texture_3D: return VK_IMAGE_TYPE_3D;
-        case Vulkan_Texture_CubeMap: return VK_IMAGE_TYPE_2D;
+        case F_Texture_1D: return VK_IMAGE_TYPE_1D;
+        case F_Texture_2D: return VK_IMAGE_TYPE_2D;
+        case F_Texture_2DArray: return VK_IMAGE_TYPE_2D;
+        case F_Texture_3D: return VK_IMAGE_TYPE_3D;
+        case F_Texture_CubeMap: return VK_IMAGE_TYPE_2D;
         }
         F_Assert(false && "Util_Transform2VkImageType: Wrong type !")
         return VK_IMAGE_TYPE_2D;
     }
-    VkImageViewType Util_Transform2VkImageViewType(VulkanTextureType type)
+    VkImageViewType Util_Transform2VkImageViewType(FTextureType type)
     {
         switch ((int)type)
         {
-        case Vulkan_Texture_1D: return VK_IMAGE_VIEW_TYPE_1D;
-        case Vulkan_Texture_2D: return VK_IMAGE_VIEW_TYPE_2D;
-        case Vulkan_Texture_2DArray: return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
-        case Vulkan_Texture_3D: return VK_IMAGE_VIEW_TYPE_3D;
-        case Vulkan_Texture_CubeMap: return VK_IMAGE_VIEW_TYPE_CUBE;
+        case F_Texture_1D: return VK_IMAGE_VIEW_TYPE_1D;
+        case F_Texture_2D: return VK_IMAGE_VIEW_TYPE_2D;
+        case F_Texture_2DArray: return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+        case F_Texture_3D: return VK_IMAGE_VIEW_TYPE_3D;
+        case F_Texture_CubeMap: return VK_IMAGE_VIEW_TYPE_CUBE;
         }
         F_Assert(false && "Util_Transform2VkImageViewType: Wrong type !")
         return VK_IMAGE_VIEW_TYPE_2D;

@@ -393,6 +393,21 @@ namespace LostPeterFoundation
     FMeshVertexType F_ParseMeshVertexType(const String& strName);
 
 
+    enum FTextureType
+    {
+        F_Texture_1D = 0,                              //0: 1D
+        F_Texture_2D,                                  //1: 2D
+        F_Texture_2DArray,                             //2: 2DArray
+        F_Texture_3D,                                  //3: 3D
+        F_Texture_CubeMap,                             //4: CubeMap
+
+        F_Texture_Count,
+    };
+    const String& F_GetTextureTypeName(FTextureType type);
+    const String& F_GetTextureTypeName(int type);
+    FTextureType F_ParseTextureType(const String& strName);
+
+
     enum FPlaneSideType
     {
         F_PlaneSide_None = 0,                           //0: None

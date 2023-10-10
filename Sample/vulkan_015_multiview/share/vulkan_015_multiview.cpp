@@ -1797,7 +1797,7 @@ void Vulkan_015_MultiView::createTextures()
     {
         String nameTexture = g_Texture_Paths[5 * i + 0];
         String nameType = g_Texture_Paths[5 * i + 1];
-        VulkanTextureType typeTexture = Util_ParseTextureType(nameType);
+        FTextureType typeTexture = F_ParseTextureType(nameType);
         String nameIsRenderTarget = g_Texture_Paths[5 * i + 2];
         bool isRenderTarget = FUtilString::ParserBool(nameIsRenderTarget);
         String nameIsGraphicsComputeShared = g_Texture_Paths[5 * i + 3];
@@ -2868,7 +2868,7 @@ void Vulkan_015_MultiView::modelConfig()
 
                                                             //indexTextureArray
                                                             String nameIndexTextureArray = "IndexTextureArray - " + FUtilString::SaveInt(p) + " - " + FUtilString::SaveInt(q) + " - " + nameObjectRend;
-                                                            if (pTexture->typeTexture == Vulkan_Texture_2DArray)
+                                                            if (pTexture->typeTexture == F_Texture_2DArray)
                                                             {
                                                                 int count_tex = (int)pTexture->aPathTexture.size();
                                                                 int indexTextureArray = (int)mat.aTexLayers[q].indexTextureArray;

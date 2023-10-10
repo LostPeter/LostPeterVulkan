@@ -191,11 +191,40 @@ namespace LostPeterFoundation
     }
 
 
+    //FTextureType
+    static const String s_nameTextureTypes[] = 
+    {
+        "1d",                   //0: 1D
+        "2d",                   //1: 2D
+        "2darray",              //2: 2DArray        
+        "3d",                   //3: 3D
+        "cubemap"               //4: CubeMap
+    };
+    const String& F_GetTextureTypeName(FTextureType type)
+    {
+        return s_nameTextureTypes[(int)type];
+    }
+    const String& F_GetTextureTypeName(int type)
+    {
+        return s_nameTextureTypes[(int)type];
+    }
+    FTextureType F_ParseTextureType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_Texture_Count; i++)
+        {
+            if (s_nameTextureTypes[i] == strName)
+                return (FTextureType)(i);
+        }
+        F_Assert(false && "F_ParseTextureType: Wrong type name !")
+        return F_Texture_2D;
+    }
+
+
     //FCameraType
     static const String s_nameCameraTypes[] = 
     {
-        "Perspective",
-        "Orthogonal",
+        "Perspective",          //0: Perspective
+        "Orthogonal",           //1: Orthogonal
     };
     const String& F_GetCameraTypeTypeName(FCameraType type)
     {

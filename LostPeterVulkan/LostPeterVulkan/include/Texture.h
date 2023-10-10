@@ -20,7 +20,7 @@ namespace LostPeter
     {
     public:
         Texture(const String& _nameTexture,
-                VulkanTextureType _typeTexture,
+                FTextureType _typeTexture,
                 bool _isRenderTarget,
                 bool _isGraphicsComputeShared,
                 VkFormat _typeFormat,
@@ -32,7 +32,7 @@ namespace LostPeter
 
     public:
         StringVector aPathTexture;
-        VulkanTextureType typeTexture;
+        FTextureType typeTexture;
         bool isRenderTarget;
         bool isGraphicsComputeShared;
         VkFormat typeFormat; 

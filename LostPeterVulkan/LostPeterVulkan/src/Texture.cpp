@@ -15,7 +15,7 @@
 namespace LostPeter
 {
     Texture::Texture(const String& _nameTexture,
-                     VulkanTextureType _typeTexture,
+                     FTextureType _typeTexture,
                      bool _isRenderTarget,
                      bool _isGraphicsComputeShared,
                      VkFormat _typeFormat,
@@ -84,7 +84,7 @@ namespace LostPeter
     }
     int Texture::RandomTextureIndex()
     {
-        if (this->typeTexture == Vulkan_Texture_2DArray)
+        if (this->typeTexture == F_Texture_2DArray)
         {
             int count = (int)this->aPathTexture.size();
             return FMath::Rand(0, count - 1);
@@ -101,7 +101,7 @@ namespace LostPeter
 
         if (!this->isRenderTarget)
         {
-            if (this->typeTexture == Vulkan_Texture_1D)
+            if (this->typeTexture == F_Texture_1D)
             {
                 Base::GetWindowPtr()->createTexture1D(this->aPathTexture[0], 
                                                       this->poMipMapCount, 
@@ -115,7 +115,7 @@ namespace LostPeter
                                                         1, 
                                                         this->poTextureImageView);
             }
-            else if (this->typeTexture == Vulkan_Texture_2D)
+            else if (this->typeTexture == F_Texture_2D)
             {
                 Base::GetWindowPtr()->createTexture2D(this->aPathTexture[0], 
                                                       VK_IMAGE_TYPE_2D, 
@@ -132,7 +132,7 @@ namespace LostPeter
                                                         1, 
                                                         this->poTextureImageView);
             }
-            else if (this->typeTexture == Vulkan_Texture_2DArray)
+            else if (this->typeTexture == F_Texture_2DArray)
             {
                 Base::GetWindowPtr()->createTexture2DArray(this->aPathTexture, 
                                                            VK_IMAGE_TYPE_2D,
@@ -150,7 +150,7 @@ namespace LostPeter
                                                         (int)this->aPathTexture.size(), 
                                                         this->poTextureImageView);
             }
-            else if (this->typeTexture == Vulkan_Texture_3D)
+            else if (this->typeTexture == F_Texture_3D)
             {
                 uint32_t size = width * height * depth;
                 this->pDataRGBA = new uint8[size];
@@ -174,7 +174,7 @@ namespace LostPeter
                                                         1, 
                                                         this->poTextureImageView);
             }
-            else if (this->typeTexture == Vulkan_Texture_CubeMap)
+            else if (this->typeTexture == F_Texture_CubeMap)
             {
                 Base::GetWindowPtr()->createTextureCubeMap(this->aPathTexture, 
                                                            this->poMipMapCount, 
@@ -197,7 +197,7 @@ namespace LostPeter
         }
         else
         {
-            if (this->typeTexture == Vulkan_Texture_1D)
+            if (this->typeTexture == F_Texture_1D)
             {
                 Base::GetWindowPtr()->createTextureRenderTarget1D(this->rtColorDefault, 
                                                                   this->rtIsSetColor, 
@@ -217,7 +217,7 @@ namespace LostPeter
                                                         1, 
                                                         this->poTextureImageView);
             } 
-            else if (this->typeTexture == Vulkan_Texture_2D)
+            else if (this->typeTexture == F_Texture_2D)
             {
                 Base::GetWindowPtr()->createTextureRenderTarget2D(this->rtColorDefault, 
                                                                   this->rtIsSetColor, 
@@ -238,7 +238,7 @@ namespace LostPeter
                                                         1, 
                                                         this->poTextureImageView);
             }
-            else if (this->typeTexture == Vulkan_Texture_2DArray)
+            else if (this->typeTexture == F_Texture_2DArray)
             {
                 Base::GetWindowPtr()->createTextureRenderTarget2DArray(this->rtColorDefault, 
                                                                        this->rtIsSetColor, 
@@ -260,7 +260,7 @@ namespace LostPeter
                                                         (int)this->aPathTexture.size(), 
                                                         this->poTextureImageView);
             }
-            else if (this->typeTexture == Vulkan_Texture_3D)
+            else if (this->typeTexture == F_Texture_3D)
             {
                 Base::GetWindowPtr()->createTextureRenderTarget3D(this->rtColorDefault, 
                                                                   this->rtIsSetColor, 
@@ -282,7 +282,7 @@ namespace LostPeter
                                                         1, 
                                                         this->poTextureImageView);
             }
-            else if (this->typeTexture == Vulkan_Texture_CubeMap)
+            else if (this->typeTexture == F_Texture_CubeMap)
             {
                 Base::GetWindowPtr()->createTextureRenderTargetCubeMap(this->width, 
                                                                        this->height,
@@ -326,7 +326,7 @@ namespace LostPeter
     }   
     void Texture::UpdateTexture()
     {
-        if (this->typeTexture == Vulkan_Texture_3D)
+        if (this->typeTexture == F_Texture_3D)
         {
             updateNoiseTexture();
         }

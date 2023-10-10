@@ -1,4 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <cfg_texture>
-	<texture />
+
+	<!-- Texture Common -->
+	<texture name="" path="" />
+
+	<!-- Texture Model -->
+	
+
+	<!-- Texture Character -->
+
+
 </cfg_texture>

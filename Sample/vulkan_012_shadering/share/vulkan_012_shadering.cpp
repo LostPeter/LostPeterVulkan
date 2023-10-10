@@ -1197,7 +1197,7 @@ void Vulkan_012_Shadering::createTextures()
     {
         String nameTexture = g_TexturePaths[5 * i + 0];
         String nameType = g_TexturePaths[5 * i + 1];
-        VulkanTextureType typeTexture = Util_ParseTextureType(nameType);
+        FTextureType typeTexture = F_ParseTextureType(nameType);
         String nameIsRenderTarget = g_TexturePaths[5 * i + 2];
         bool isRenderTarget = FUtilString::ParserBool(nameIsRenderTarget);
         String nameIsGraphicsComputeShared = g_TexturePaths[5 * i + 3];
@@ -1997,7 +1997,7 @@ void Vulkan_012_Shadering::modelConfig()
 
                                                 //indexTextureArray
                                                 String nameIndexTextureArray = "IndexTextureArray - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
-                                                if (pTexture->typeTexture == Vulkan_Texture_2DArray)
+                                                if (pTexture->typeTexture == F_Texture_2DArray)
                                                 {
                                                     int count_tex = (int)pTexture->aPathTexture.size();
                                                     int indexTextureArray = (int)mat.aTexLayers[p].indexTextureArray;

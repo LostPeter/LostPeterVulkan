@@ -217,21 +217,8 @@ namespace LostPeter
     };
 
 
-    enum VulkanTextureType
-    {
-        Vulkan_Texture_1D = 0,                              //0: 1D
-        Vulkan_Texture_2D,                                  //1: 2D
-        Vulkan_Texture_2DArray,                             //2: 2DArray
-        Vulkan_Texture_3D,                                  //3: 3D
-        Vulkan_Texture_CubeMap,                             //4: CubeMap
-
-        Vulkan_Texture_Count,
-    };
-    const String& Util_GetTextureTypeName(VulkanTextureType type);
-    const String& Util_GetTextureTypeName(int type);
-    VulkanTextureType Util_ParseTextureType(const String& strName);
-    VkImageType Util_Transform2VkImageType(VulkanTextureType type);
-    VkImageViewType Util_Transform2VkImageViewType(VulkanTextureType type);
+    VkImageType Util_Transform2VkImageType(FTextureType type);
+    VkImageViewType Util_Transform2VkImageViewType(FTextureType type);
 
 
     enum VulkanTextureFilterSizeType
