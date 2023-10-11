@@ -24,9 +24,9 @@ namespace LostPeter
                 bool _isRenderTarget,
                 bool _isGraphicsComputeShared,
                 VkFormat _typeFormat,
-                VulkanTextureFilterType _typeFilter,
-                VulkanTextureAddressingType _typeAddressing,
-                VulkanTextureBorderColorType _typeBorderColor,
+                FTextureFilterType _typeFilter,
+                FTextureAddressingType _typeAddressing,
+                FTextureBorderColorType _typeBorderColor,
                 const StringVector& _aPathTexture);
         virtual ~Texture();
 
@@ -36,9 +36,9 @@ namespace LostPeter
         bool isRenderTarget;
         bool isGraphicsComputeShared;
         VkFormat typeFormat; 
-        VulkanTextureFilterType typeFilter;
-        VulkanTextureAddressingType typeAddressing;
-        VulkanTextureBorderColorType typeBorderColor;
+        FTextureFilterType typeFilter;
+        FTextureAddressingType typeAddressing;
+        FTextureBorderColorType typeBorderColor;
         int width;
         int height;
         int depth;

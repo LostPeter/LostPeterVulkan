@@ -395,17 +395,114 @@ namespace LostPeterFoundation
 
     enum FTextureType
     {
-        F_Texture_1D = 0,                              //0: 1D
-        F_Texture_2D,                                  //1: 2D
-        F_Texture_2DArray,                             //2: 2DArray
-        F_Texture_3D,                                  //3: 3D
-        F_Texture_CubeMap,                             //4: CubeMap
+        F_Texture_1D = 0,                               //0: 1D
+        F_Texture_2D,                                   //1: 2D
+        F_Texture_2DArray,                              //2: 2DArray
+        F_Texture_3D,                                   //3: 3D
+        F_Texture_CubeMap,                              //4: CubeMap
 
         F_Texture_Count,
     };
     const String& F_GetTextureTypeName(FTextureType type);
     const String& F_GetTextureTypeName(int type);
     FTextureType F_ParseTextureType(const String& strName);
+
+
+    enum FTextureFormatType
+    {
+        F_TextureFormat_R8G8B8A8_SRGB = 0,              //0: R8G8B8A8_SRGB
+        F_TextureFormat_R8G8B8A8_UNORM,                 //1: R8G8B8A8_UNORM
+
+        F_TextureFormat_Count,
+    };
+    const String& F_GetTextureFormatTypeName(FTextureFormatType type);
+    const String& F_GetTextureFormatTypeName(int type);
+    FTextureFormatType F_ParseTextureFormatType(const String& strName);
+
+
+    enum FTextureFilterSizeType
+    {
+        F_TextureFilterSize_Min = 0,	                //0: Min		
+        F_TextureFilterSize_Mag,				        //1: Mag
+        F_TextureFilterSize_Mip,				        //2: Mip
+
+        F_TextureFilterSize_Count,
+    };
+    const String& F_GetTextureFilterSizeTypeName(FTextureFilterSizeType type);
+    const String& F_GetTextureFilterSizeTypeName(int type);
+    FTextureFilterSizeType F_ParseTextureFilterSizeType(const String& strName);
+
+
+    enum FTextureFilterPixelType
+    {
+        F_TextureFilterPixel_None	= 0,	            //0: None
+        F_TextureFilterPixel_Point,			            //1: Point
+        F_TextureFilterPixel_Linear,			        //2: Linear
+        F_TextureFilterPixel_Anisotropic,		        //3: Anisotropic
+
+        F_TextureFilterPixel_Count,
+    };
+    const String& F_GetTextureFilterPixelTypeName(FTextureFilterPixelType type);
+    const String& F_GetTextureFilterPixelTypeName(int type);
+    FTextureFilterPixelType F_ParseTextureFilterPixelType(const String& strName);
+
+
+     enum FTextureFilterType
+    {
+        F_TextureFilter_None = 0,					    //0: Min=F_TextureFilterPixel_Point,        Mag=F_TextureFilterPixel_Point,  	   Mip=F_TextureFilterPixel_None
+        F_TextureFilter_Bilinear,				        //1: Min=F_TextureFilterPixel_Linear,       Mag=F_TextureFilterPixel_Linear, 	   Mip=F_TextureFilterPixel_Point
+        F_TextureFilter_Trilinear,			            //2: Min=F_TextureFilterPixel_Linear,	    Mag=F_TextureFilterPixel_Linear, 	   Mip=F_TextureFilterPixel_Linear
+        F_TextureFilter_Anisotropic,			        //3: Min=F_TextureFilterPixel_Anisotropic,  Mag=F_TextureFilterPixel_Anisotropic,  Mip=F_TextureFilterPixel_Linear
+
+        F_TextureFilter_Count,
+    };
+    const String& F_GetTextureFilterTypeName(FTextureFilterType type);
+    const String& F_GetTextureFilterTypeName(int type);
+    FTextureFilterType F_ParseTextureFilterType(const String& strName);
+
+
+    enum FTextureAddressingType
+    {
+        F_TextureAddressing_Wrap = 0,	                //0: Wrap
+        F_TextureAddressing_Mirror,			            //1: Mirror
+        F_TextureAddressing_Clamp,			            //2: Clamp
+        F_TextureAddressing_Border,			            //3: Border
+
+        F_TextureAddressing_Count,
+    };
+    const String& F_GetTextureAddressingTypeName(FTextureAddressingType type);
+    const String& F_GetTextureAddressingTypeName(int type);
+    FTextureAddressingType F_ParseTextureAddressingType(const String& strName);
+
+
+    enum FTextureBorderColorType
+    {
+        F_TextureBorderColor_OpaqueBlack = 0,          //0: OpaqueBlack
+        F_TextureBorderColor_OpaqueWhite,              //1: OpaqueWhite
+        F_TextureBorderColor_TransparentBlack,         //2: TransparentBlack
+
+        F_TextureBorderColor_Count,
+    };
+    const String& F_GetTextureBorderColorTypeName(FTextureBorderColorType type);
+    const String& F_GetTextureBorderColorTypeName(int type);
+    FTextureBorderColorType F_ParseTextureBorderColorType(const String& strName);
+
+
+    enum FMSAASampleCountType
+    {
+        F_MSAASampleCount_1_Bit = 0,                   //0: 1_Bit
+        F_MSAASampleCount_2_Bit,                       //1: 2_Bit
+        F_MSAASampleCount_4_Bit,                       //2: 4_Bit
+        F_MSAASampleCount_8_Bit,                       //3: 8_Bit
+        F_MSAASampleCount_16_Bit,                      //4: 16_Bit
+        F_MSAASampleCount_32_Bit,                      //5: 32_Bit
+        F_MSAASampleCount_64_Bit,                      //6: 64_Bit
+
+        F_MSAASampleCount_Count,
+    };
+    const String& F_GetMSAASampleCountTypeName(FMSAASampleCountType type);
+    const String& F_GetMSAASampleCountTypeName(int type);
+    FMSAASampleCountType F_ParseMSAASampleCountType(const String& strName);
 
 
     enum FPlaneSideType

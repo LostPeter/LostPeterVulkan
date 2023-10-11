@@ -154,9 +154,9 @@ namespace LostPeter
             {
                 this->framebufferColor.Init(width, height, false, this->isMultiView2);
                 this->framebufferDepth.Init(width, height, true, this->isMultiView2);
-                Base::GetWindowPtr()->createVkSampler(Vulkan_TextureFilter_Bilinear, 
-                                                      Vulkan_TextureAddressing_Clamp,
-                                                      Vulkan_TextureBorderColor_OpaqueWhite,
+                Base::GetWindowPtr()->createVkSampler(F_TextureFilter_Bilinear, 
+                                                      F_TextureAddressing_Clamp,
+                                                      F_TextureBorderColor_OpaqueWhite,
                                                       false,
                                                       1.0f,
                                                       0.0f,

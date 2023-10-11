@@ -219,98 +219,13 @@ namespace LostPeter
 
     VkImageType Util_Transform2VkImageType(FTextureType type);
     VkImageViewType Util_Transform2VkImageViewType(FTextureType type);
-
-
-    enum VulkanTextureFilterSizeType
-    {
-        Vulkan_TextureFilterSize_Min = 0,	                //0: Min		
-        Vulkan_TextureFilterSize_Mag,				        //1: Mag
-        Vulkan_TextureFilterSize_Mip,				        //2: Mip
-
-        Vulkan_TextureFilterSize_Count,
-    };
-    const String& Util_GetTextureFilterSizeTypeName(VulkanTextureFilterSizeType type);
-    const String& Util_GetTextureFilterSizeTypeName(int type);
-    VulkanTextureFilterSizeType Util_ParseTextureFilterSizeType(const String& strName);
-
-
-    enum VulkanTextureFilterPixelType
-    {
-        Vulkan_TextureFilterPixel_None	= 0,	            //0: None
-        Vulkan_TextureFilterPixel_Point,			        //1: Point
-        Vulkan_TextureFilterPixel_Linear,			        //2: Linear
-        Vulkan_TextureFilterPixel_Anisotropic,		        //3: Anisotropic
-
-        Vulkan_TextureFilterPixel_Count,
-    };
-    const String& Util_GetTextureFilterPixelTypeName(VulkanTextureFilterPixelType type);
-    const String& Util_GetTextureFilterPixelTypeName(int type);
-    VulkanTextureFilterPixelType Util_ParseTextureFilterPixelType(const String& strName);
-    VkFilter Util_Transform2VkFilter(VulkanTextureFilterPixelType type);
-    VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(VulkanTextureFilterPixelType type);
-
-
-    enum VulkanTextureFilterType
-    {
-        Vulkan_TextureFilter_None = 0,					    //0: min=Vulkan_TextureFilterPixel_Point,       mag=Vulkan_TextureFilterPixel_Point,  	   mip=Vulkan_TextureFilterPixel_None
-        Vulkan_TextureFilter_Bilinear,				        //1: min=Vulkan_TextureFilterPixel_Linear,      mag=Vulkan_TextureFilterPixel_Linear, 	   mip=Vulkan_TextureFilterPixel_Point
-        Vulkan_TextureFilter_Trilinear,			            //2: min=Vulkan_TextureFilterPixel_Linear,	    mag=Vulkan_TextureFilterPixel_Linear, 	   mip=Vulkan_TextureFilterPixel_Linear
-        Vulkan_TextureFilter_Anisotropic,			        //3: min=Vulkan_TextureFilterPixel_Anisotropic, mag=Vulkan_TextureFilterPixel_Anisotropic, mip=Vulkan_TextureFilterPixel_Linear
-
-        Vulkan_TextureFilter_Count,
-    };
-    const String& Util_GetTextureFilterTypeName(VulkanTextureFilterType type);
-    const String& Util_GetTextureFilterTypeName(int type);
-    VulkanTextureFilterType Util_ParseTextureFilterType(const String& strName);
-    VkFilter Util_Transform2VkFilter(VulkanTextureFilterType typeFilter, VulkanTextureFilterSizeType typeFilterSize);
-    VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(VulkanTextureFilterType typeFilter);
-
-
-    enum VulkanTextureAddressingType
-    {
-        Vulkan_TextureAddressing_Wrap = 0,	                //0: Wrap
-        Vulkan_TextureAddressing_Mirror,			        //1: Mirror
-        Vulkan_TextureAddressing_Clamp,			            //2: Clamp
-        Vulkan_TextureAddressing_Border,			        //3: Border
-
-        Vulkan_TextureAddressing_Count,
-    };
-    const String& Util_GetTextureAddressingTypeName(VulkanTextureAddressingType type);
-    const String& Util_GetTextureAddressingTypeName(int type);
-    VulkanTextureAddressingType Util_ParseTextureAddressingType(const String& strName);
-    VkSamplerAddressMode Util_Transform2VkSamplerAddressMode(VulkanTextureAddressingType type);
-
-
-    enum VulkanTextureBorderColorType
-    {
-        Vulkan_TextureBorderColor_OpaqueBlack = 0,          //0: OpaqueBlack
-        Vulkan_TextureBorderColor_OpaqueWhite,              //1: OpaqueWhite
-        Vulkan_TextureBorderColor_TransparentBlack,         //2: TransparentBlack
-
-        Vulkan_TextureBorderColor_Count,
-    };
-    const String& Util_GetTextureBorderColorTypeName(VulkanTextureBorderColorType type);
-    const String& Util_GetTextureBorderColorTypeName(int type);
-    VulkanTextureBorderColorType Util_ParseTextureBorderColorType(const String& strName);
-    VkBorderColor Util_Transform2VkBorderColor(VulkanTextureBorderColorType type);
-
-
-    enum VulkanMSAASampleCountType
-    {
-        Vulkan_MSAASampleCount_1_Bit = 0,                   //0: 1_Bit
-        Vulkan_MSAASampleCount_2_Bit,                       //1: 2_Bit
-        Vulkan_MSAASampleCount_4_Bit,                       //2: 4_Bit
-        Vulkan_MSAASampleCount_8_Bit,                       //3: 8_Bit
-        Vulkan_MSAASampleCount_16_Bit,                      //4: 16_Bit
-        Vulkan_MSAASampleCount_32_Bit,                      //5: 32_Bit
-        Vulkan_MSAASampleCount_64_Bit,                      //6: 64_Bit
-
-        Vulkan_MSAASampleCount_Count,
-    };
-    const String& Util_GetMSAASampleCountTypeName(VulkanMSAASampleCountType type);
-    const String& Util_GetMSAASampleCountTypeName(int type);
-    VulkanMSAASampleCountType Util_ParseMSAASampleCountType(const String& strName);
-    VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(VulkanMSAASampleCountType type);
+    VkFilter Util_Transform2VkFilter(FTextureFilterPixelType type);
+    VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterPixelType type);
+    VkFilter Util_Transform2VkFilter(FTextureFilterType typeFilter, FTextureFilterSizeType typeFilterSize);
+    VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterType typeFilter);
+    VkSamplerAddressMode Util_Transform2VkSamplerAddressMode(FTextureAddressingType type);
+    VkBorderColor Util_Transform2VkBorderColor(FTextureBorderColorType type);
+    VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(FMSAASampleCountType type);
 
     
     enum VulkanShaderType
@@ -456,7 +371,7 @@ namespace LostPeter
     };
     typedef std::vector<MeshInfo*> MeshInfoPtrVector;
     typedef std::map<String, MeshInfo*> MeshInfoPtrMap;
-    typedef std::map<uint, MeshInfoPtrMap> MeshInfoGroupPtrMap;
+    typedef std::map<uint32, MeshInfoPtrMap> MeshInfoGroupPtrMap;
 
 
     struct utilExport TextureInfo
@@ -471,7 +386,7 @@ namespace LostPeter
     };
     typedef std::vector<TextureInfo*> TextureInfoPtrVector;
     typedef std::map<String, TextureInfo*> TextureInfoPtrMap;
-    typedef std::map<uint, TextureInfoPtrMap> TextureInfoGroupPtrMap;
+    typedef std::map<uint32, TextureInfoPtrMap> TextureInfoGroupPtrMap;
 
 
     struct utilExport ShaderModuleInfo
@@ -551,11 +466,11 @@ namespace LostPeter
     
     typedef std::vector<Mesh*> MeshPtrVector;
     typedef std::map<String, Mesh*> MeshPtrMap;
-    typedef std::map<uint, MeshPtrMap> MeshGroupPtrMap;
+    typedef std::map<uint32, MeshPtrMap> MeshGroupPtrMap;
 
     typedef std::vector<Texture*> TexturePtrVector;
     typedef std::map<String, Texture*> TexturePtrMap;
-    typedef std::map<uint, TexturePtrMap> TextureGroupPtrMap;
+    typedef std::map<uint32, TexturePtrMap> TextureGroupPtrMap;
     typedef std::map<String, TexturePtrVector> TexturePtrShaderSortMap;
 
     typedef std::vector<Shader*> ShaderPtrVector;
@@ -563,7 +478,7 @@ namespace LostPeter
 
     typedef std::vector<Material*> MaterialPtrVector;
     typedef std::map<String, Material*> MaterialPtrMap;
-    typedef std::map<uint, MaterialPtrMap> MaterialGroupPtrMap;
+    typedef std::map<uint32, MaterialPtrMap> MaterialGroupPtrMap;
 
     typedef std::vector<Renderable*> RenderablePtrVector;
     typedef std::map<String, Renderable*> RenderablePtrMap;

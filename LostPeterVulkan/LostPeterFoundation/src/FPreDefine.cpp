@@ -194,11 +194,11 @@ namespace LostPeterFoundation
     //FTextureType
     static const String s_nameTextureTypes[] = 
     {
-        "1d",                   //0: 1D
-        "2d",                   //1: 2D
-        "2darray",              //2: 2DArray        
-        "3d",                   //3: 3D
-        "cubemap"               //4: CubeMap
+        "1D",                   //0: 1D
+        "2D",                   //1: 2D
+        "2DArray",              //2: 2DArray        
+        "3D",                   //3: 3D
+        "CubeMap"               //4: CubeMap
     };
     const String& F_GetTextureTypeName(FTextureType type)
     {
@@ -220,11 +220,206 @@ namespace LostPeterFoundation
     }
 
 
+    //FTextureFormatType
+    static const String s_nameTextureFormatTypes[] = 
+    {
+        "R8G8B8A8_SRGB",            //0: R8G8B8A8_SRGB
+        "R8G8B8A8_UNORM",           //1: R8G8B8A8_UNORM
+    };
+    const String& F_GetTextureFormatTypeName(FTextureFormatType type)
+    {
+        return s_nameTextureFormatTypes[(int)type];
+    }
+    const String& F_GetTextureFormatTypeName(int type)
+    {
+        return s_nameTextureFormatTypes[(int)type];
+    }
+    FTextureFormatType F_ParseTextureFormatType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_TextureFormat_Count; i++)
+        {
+            if (s_nameTextureFormatTypes[i] == strName)
+                return (FTextureFormatType)(i);
+        }
+        F_Assert(false && "F_ParseTextureFormatType: Wrong type name !")
+        return F_TextureFormat_R8G8B8A8_SRGB;
+    }
+
+    
+    //FTextureFilterSizeType
+    static const String s_nameTextureFilterSizeTypes[] = 
+    {
+        "Min",          //0: Min	
+        "Mag",          //1: Mag
+        "Mip",          //2: Mip
+    };
+    const String& F_GetTextureFilterSizeTypeName(FTextureFilterSizeType type)
+    {
+        return s_nameTextureFilterSizeTypes[(int)type];
+    }
+    const String& F_GetTextureFilterSizeTypeName(int type)
+    {
+        return s_nameTextureFilterSizeTypes[(int)type];
+    }
+    FTextureFilterSizeType F_ParseTextureFilterSizeType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_TextureFilterSize_Count; i++)
+        {
+            if (s_nameTextureFilterSizeTypes[i] == strName)
+                return (FTextureFilterSizeType)(i);
+        }
+        F_Assert(false && "F_ParseTextureFilterSizeType: Wrong type name !")
+        return F_TextureFilterSize_Min;
+    }
+
+
+    //FTextureFilterPixelType
+    static const String s_nameTextureFilterPixelTypes[] = 
+    {
+        "None",                 //0: None
+        "Point",                //1: Point
+        "Linear",               //2: Linear
+        "Anisotropic",          //3: Anisotropic
+    };
+    const String& F_GetTextureFilterPixelTypeName(FTextureFilterPixelType type)
+    {
+        return s_nameTextureFilterPixelTypes[(int)type];
+    }
+    const String& F_GetTextureFilterPixelTypeName(int type)
+    {
+        return s_nameTextureFilterPixelTypes[(int)type];
+    }
+    FTextureFilterPixelType F_ParseTextureFilterPixelType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_TextureFilterPixel_Count; i++)
+        {
+            if (s_nameTextureFilterPixelTypes[i] == strName)
+                return (FTextureFilterPixelType)(i);
+        }
+        F_Assert(false && "F_ParseTextureFilterPixelType: Wrong type name !")
+        return F_TextureFilterPixel_None;
+    }
+
+
+    //FTextureFilterType
+    static const String s_nameTextureFilterTypes[] = 
+    {
+        "None",                 //0: Min=F_TextureFilterPixel_Point,        Mag=F_TextureFilterPixel_Point,  	   Mip=F_TextureFilterPixel_None
+        "Bilinear",             //1: Min=F_TextureFilterPixel_Linear,       Mag=F_TextureFilterPixel_Linear, 	   Mip=F_TextureFilterPixel_Point
+        "Trilinear",            //2: Min=F_TextureFilterPixel_Linear,	    Mag=F_TextureFilterPixel_Linear, 	   Mip=F_TextureFilterPixel_Linear
+        "Anisotropic",          //3: Min=F_TextureFilterPixel_Anisotropic,  Mag=F_TextureFilterPixel_Anisotropic,  Mip=F_TextureFilterPixel_Linear
+    };
+    const String& F_GetTextureFilterTypeName(FTextureFilterType type)
+    {
+        return s_nameTextureFilterTypes[(int)type];
+    }
+    const String& F_GetTextureFilterTypeName(int type)
+    {
+        return s_nameTextureFilterTypes[(int)type];
+    }
+    FTextureFilterType F_ParseTextureFilterType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_TextureFilter_Count; i++)
+        {
+            if (s_nameTextureFilterTypes[i] == strName)
+                return (FTextureFilterType)(i);
+        }
+        F_Assert(false && "F_ParseTextureFormatType: Wrong type name !")
+        return F_TextureFilter_None;
+    }
+
+
+    //FTextureAddressingType
+    static const String s_nameTextureAddressingTypes[] = 
+    {
+        "Wrap",                 //0: Wrap
+        "Mirror",               //1: Mirror
+        "Clamp",                //2: Clamp
+        "Border",               //3: Border
+    };
+    const String& F_GetTextureAddressingTypeName(FTextureAddressingType type)
+    {
+        return s_nameTextureAddressingTypes[(int)type];
+    }
+    const String& F_GetTextureAddressingTypeName(int type)
+    {
+        return s_nameTextureAddressingTypes[(int)type];
+    }
+    FTextureAddressingType F_ParseTextureAddressingType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_TextureAddressing_Count; i++)
+        {
+            if (s_nameTextureAddressingTypes[i] == strName)
+                return (FTextureAddressingType)(i);
+        }
+        F_Assert(false && "F_ParseTextureAddressingType: Wrong type name !")
+        return F_TextureAddressing_Wrap;
+    }
+
+
+    //FTextureBorderColorType
+    static const String s_nameTextureBorderColorTypes[] = 
+    {
+        "OpaqueBlack",          //0: OpaqueBlack
+        "OpaqueWhite",          //1: OpaqueWhite
+        "TransparentBlack",     //2: TransparentBlack
+    };
+    const String& F_GetTextureBorderColorTypeName(FTextureBorderColorType type)
+    {
+        return s_nameTextureBorderColorTypes[(int)type];
+    }
+    const String& F_GetTextureBorderColorTypeName(int type)
+    {
+        return s_nameTextureBorderColorTypes[(int)type];
+    }
+    FTextureBorderColorType F_ParseTextureBorderColorType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_TextureBorderColor_Count; i++)
+        {
+            if (s_nameTextureBorderColorTypes[i] == strName)
+                return (FTextureBorderColorType)(i);
+        }
+        F_Assert(false && "F_ParseTextureBorderColorType: Wrong type name !")
+        return F_TextureBorderColor_OpaqueBlack;
+    }
+
+
+    //FMSAASampleCountType
+    static String s_nameMSAASampleCounts[] = 
+    {
+        "1-Bit",                //0: 1_Bit
+        "2-Bit",                //1: 2_Bit
+        "4-Bit",                //2: 4_Bit
+        "8-Bit",                //3: 8_Bit
+        "16-Bit",               //4: 16_Bit
+        "32-Bit",               //5: 32_Bit
+        "64-Bit",               //6: 64_Bit
+    };
+    const String& F_GetMSAASampleCountTypeName(FMSAASampleCountType type)
+    {
+        return s_nameMSAASampleCounts[(int)type];
+    }
+    const String& F_GetMSAASampleCountTypeName(int type)
+    {
+        return s_nameMSAASampleCounts[type];
+    }
+    FMSAASampleCountType F_ParseMSAASampleCountType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_MSAASampleCount_Count; i++)
+        {
+            if (s_nameMSAASampleCounts[i] == strName)
+                return (FMSAASampleCountType)(i);
+        }
+        F_Assert(false && "F_ParseMSAASampleCountType: Wrong type name !")
+        return F_MSAASampleCount_1_Bit;
+    }
+
+
     //FCameraType
     static const String s_nameCameraTypes[] = 
     {
-        "Perspective",          //0: Perspective
-        "Orthogonal",           //1: Orthogonal
+        "Perspective",              //0: Perspective
+        "Orthogonal",               //1: Orthogonal
     };
     const String& F_GetCameraTypeTypeName(FCameraType type)
     {

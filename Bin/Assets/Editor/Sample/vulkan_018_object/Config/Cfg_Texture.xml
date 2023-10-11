@@ -2,7 +2,7 @@
 <cfg_texture>
 
 	<!-- Texture Common -->
-	<texture name="" path="" />
+	<texture name="default_blackwhite" path="Assets/Texture/Common/default_blackwhite.png" type="2D"  />
 
 	<!-- Texture Model -->
 	

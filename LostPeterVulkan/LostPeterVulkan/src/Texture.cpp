@@ -19,9 +19,9 @@ namespace LostPeter
                      bool _isRenderTarget,
                      bool _isGraphicsComputeShared,
                      VkFormat _typeFormat,
-                     VulkanTextureFilterType _typeFilter,
-                     VulkanTextureAddressingType _typeAddressing,
-                     VulkanTextureBorderColorType _typeBorderColor,
+                     FTextureFilterType _typeFilter,
+                     FTextureAddressingType _typeAddressing,
+                     FTextureBorderColorType _typeBorderColor,
                     const StringVector& _aPathTexture)
         : Base(_nameTexture)
         , typeTexture(_typeTexture)

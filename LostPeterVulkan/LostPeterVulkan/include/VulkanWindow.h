@@ -896,9 +896,9 @@ namespace LostPeter
                                                      
                         virtual void createVkSampler(uint32_t mipMapCount, 
                                                      VkSampler& sampler);
-                        virtual void createVkSampler(VulkanTextureFilterType eTextureFilter,
-                                                     VulkanTextureAddressingType eTextureAddressing,
-                                                     VulkanTextureBorderColorType eTextureBorderColor,
+                        virtual void createVkSampler(FTextureFilterType eTextureFilter,
+                                                     FTextureAddressingType eTextureAddressing,
+                                                     FTextureBorderColorType eTextureBorderColor,
                                                      bool enableAnisotropy,
                                                      float maxAnisotropy,
                                                      float minLod, 

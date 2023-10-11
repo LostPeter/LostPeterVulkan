@@ -81,18 +81,18 @@ namespace LostPeter
 
         return true;
     }
-    Mesh* MeshManager::LoadMesh(uint nGroup, const String& strNameMesh)
+    Mesh* MeshManager::LoadMesh(uint nGroup, const String& strName)
     {
         if (m_pMeshSerializer == nullptr)
             return nullptr;
 
-        Mesh* pMesh = GetMesh(nGroup, strNameMesh);
+        Mesh* pMesh = GetMesh(nGroup, strName);
         if (pMesh == nullptr)
         {
-            MeshInfo* pMeshInfo = m_pMeshSerializer->GetMeshInfo(nGroup, strNameMesh);
+            MeshInfo* pMeshInfo = m_pMeshSerializer->GetMeshInfo(nGroup, strName);
             if (pMeshInfo == nullptr)
             {
-                F_LogError("*********************** MeshManager::LoadMesh: Can not find mesh info, group: [%u], name: [%s] !", nGroup, strNameMesh.c_str());
+                F_LogError("*********************** MeshManager::LoadMesh: Can not find mesh info, group: [%u], name: [%s] !", nGroup, strName.c_str());
                 return nullptr;
             }
             if (!loadMesh(pMeshInfo))
@@ -128,24 +128,24 @@ namespace LostPeter
         return pMesh;
     }
 
-    bool MeshManager::HasMesh(uint nGroup, const String& strNameMesh)
+    bool MeshManager::HasMesh(uint nGroup, const String& strName)
     {
-        return GetMesh(nGroup, strNameMesh) != nullptr;
+        return GetMesh(nGroup, strName) != nullptr;
     }
 
-    Mesh* MeshManager::GetMesh(uint nGroup, const String& strNameMesh)
+    Mesh* MeshManager::GetMesh(uint nGroup, const String& strName)
     {
         MeshGroupPtrMap::iterator itFindGroup = m_mapMeshGroup.find(nGroup);
         if (itFindGroup == m_mapMeshGroup.end())
         {
-            F_LogError("*********************** MeshManager::GetMesh: Can not find group: [%u], name: [%s]", nGroup, strNameMesh.c_str());
+            F_LogError("*********************** MeshManager::GetMesh: Can not find group: [%u], name: [%s]", nGroup, strName.c_str());
             return nullptr;
         }
 
-        MeshPtrMap::iterator itFindMesh = itFindGroup->second.find(strNameMesh);
+        MeshPtrMap::iterator itFindMesh = itFindGroup->second.find(strName);
         if (itFindMesh == itFindGroup->second.end())
         {
-            F_LogError("*********************** MeshManager::GetMesh: Can not find mesh from group: [%u], name: [%s]", nGroup, strNameMesh.c_str());
+            F_LogError("*********************** MeshManager::GetMesh: Can not find mesh from group: [%u], name: [%s]", nGroup, strName.c_str());
             return nullptr;
         }
         return itFindMesh->second;
@@ -160,21 +160,21 @@ namespace LostPeter
             m_mapMeshGroup[nGroup] = mapMesh;
             itFind = m_mapMeshGroup.find(nGroup);
         }
-        const String& strNameMesh = pMesh->GetName();
-        MeshPtrMap::iterator itFindMesh = itFind->second.find(strNameMesh);
+        const String& strName = pMesh->GetName();
+        MeshPtrMap::iterator itFindMesh = itFind->second.find(strName);
         if (itFindMesh != itFind->second.end())
         {
-            F_LogError("*********************** MeshManager::AddMesh: Mesh name already exist: [%s] !", strNameMesh.c_str());
+            F_LogError("*********************** MeshManager::AddMesh: Mesh name already exist: [%s] !", strName.c_str());
             F_DELETE(pMesh)
             return false;
         }
 
-        itFind->second.insert(MeshPtrMap::value_type(strNameMesh, pMesh));
+        itFind->second.insert(MeshPtrMap::value_type(strName, pMesh));
         m_aMesh.push_back(pMesh);
         return true;
     }
 
-    void MeshManager::DeleteMesh(uint nGroup, const String& strNameMesh)
+    void MeshManager::DeleteMesh(uint nGroup, const String& strName)
     {
         MeshGroupPtrMap::iterator itFind = m_mapMeshGroup.find(nGroup);
         if (itFind == m_mapMeshGroup.end())
@@ -182,7 +182,7 @@ namespace LostPeter
             return;
         }
 
-        MeshPtrMap::iterator itFindMesh = itFind->second.find(strNameMesh);
+        MeshPtrMap::iterator itFindMesh = itFind->second.find(strName);
         if (itFindMesh != itFind->second.end())
         {
             MeshPtrVector::iterator itFindA = std::find(m_aMesh.begin(), m_aMesh.end(), itFindMesh->second);

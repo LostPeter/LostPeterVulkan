@@ -114,32 +114,32 @@ static const int g_TextureCount = 20;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                  //Texture Type  //TextureIsRenderTarget  //TextureIsGraphicsComputeShared  //Texture Path
-    "default_blackwhite",           "2d",           "false",                 "false",                          "Assets/Texture/Common/default_blackwhite.png", //default_blackwhite
-    "terrain",                      "2d",           "false",                 "false",                          "Assets/Texture/Common/terrain.png", //terrain
-    "default_white",                "2d",           "false",                 "false",                          "Assets/Texture/Common/default_white.bmp", //default_white
+    "default_blackwhite",           "2D",           "false",                 "false",                          "Assets/Texture/Common/default_blackwhite.png", //default_blackwhite
+    "terrain",                      "2D",           "false",                 "false",                          "Assets/Texture/Common/terrain.png", //terrain
+    "default_white",                "2D",           "false",                 "false",                          "Assets/Texture/Common/default_white.bmp", //default_white
     
 ////Basic-Level Texture Operation
-    "texturesampler_wrap",          "2d",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texturesampler_wrap
-    "texturesampler_mirror",        "2d",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texturesampler_mirror
-    "texturesampler_clamp",         "2d",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texturesampler_clamp
-    "texturesampler_border",        "2d",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texturesampler_border
-    "texture1d",                    "1d",           "false",                 "false",                          "Assets/Texture/Common/texture1d.tga", //texture1d
-    "texture2d",                    "2d",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texture2d
-    "texture2darray",               "2darray",      "false",                 "false",                          "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture2darray
-    "texture3d",                    "3d",           "false",                 "false",                          "", //texture3d
-    "texturecubemap",               "cubemap",      "false",                 "false",                          "Assets/Texture/Sky/texturecubemap_x_right.png;Assets/Texture/Sky/texturecubemap_x_left.png;Assets/Texture/Sky/texturecubemap_y_up.png;Assets/Texture/Sky/texturecubemap_y_down.png;Assets/Texture/Sky/texturecubemap_z_front.png;Assets/Texture/Sky/texturecubemap_z_back.png", //texturecubemap
-    "textureanimation_scroll",      "2darray",      "false",                 "false",                          "Assets/Texture/Common/textureanimation1.png;Assets/Texture/Common/textureanimation2.png", //textureanimation_scroll
-    "textureanimation_chunk",       "2darray",      "false",                 "false",                          "Assets/Texture/Common/textureanimation3.png", //textureanimation_chunk
+    "texturesampler_wrap",          "2D",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texturesampler_wrap
+    "texturesampler_mirror",        "2D",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texturesampler_mirror
+    "texturesampler_clamp",         "2D",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texturesampler_clamp
+    "texturesampler_border",        "2D",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texturesampler_border
+    "texture1d",                    "1D",           "false",                 "false",                          "Assets/Texture/Common/texture1d.tga", //texture1d
+    "texture2d",                    "2D",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texture2d
+    "texture2darray",               "2DArray",      "false",                 "false",                          "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture2darray
+    "texture3d",                    "3D",           "false",                 "false",                          "", //texture3d
+    "texturecubemap",               "CubeMap",      "false",                 "false",                          "Assets/Texture/Sky/texturecubemap_x_right.png;Assets/Texture/Sky/texturecubemap_x_left.png;Assets/Texture/Sky/texturecubemap_y_up.png;Assets/Texture/Sky/texturecubemap_y_down.png;Assets/Texture/Sky/texturecubemap_z_front.png;Assets/Texture/Sky/texturecubemap_z_back.png", //texturecubemap
+    "textureanimation_scroll",      "2DArray",      "false",                 "false",                          "Assets/Texture/Common/textureanimation1.png;Assets/Texture/Common/textureanimation2.png", //textureanimation_scroll
+    "textureanimation_chunk",       "2DArray",      "false",                 "false",                          "Assets/Texture/Common/textureanimation3.png", //textureanimation_chunk
 
 ////High-Level Texture Operation
-    "texturebumpmap_diffuse",       "2d",           "false",                 "false",                          "Assets/Texture/Common/bricks_diffuse.png", //texturebumpmap_diffuse
-    "texturebumpmap_bumpmap",       "2d",           "false",                 "false",                          "Assets/Texture/Common/bricks_bumpmap.png", //texturebumpmap_bumpmap
-    "texturenormalmap_normalmap",   "2d",           "false",                 "false",                          "Assets/Texture/Common/bricks_normalmap.png", //texturenormalmap_normalmap
+    "texturebumpmap_diffuse",       "2D",           "false",                 "false",                          "Assets/Texture/Common/bricks_diffuse.png", //texturebumpmap_diffuse
+    "texturebumpmap_bumpmap",       "2D",           "false",                 "false",                          "Assets/Texture/Common/bricks_bumpmap.png", //texturebumpmap_bumpmap
+    "texturenormalmap_normalmap",   "2D",           "false",                 "false",                          "Assets/Texture/Common/bricks_normalmap.png", //texturenormalmap_normalmap
 
-    "rocks_color",                  "2d",           "false",                 "false",                          "Assets/Texture/Common/rocks_color.png", //rocks_color
-    "rocks_normal_height",          "2d",           "false",                 "false",                          "Assets/Texture/Common/rocks_normal_height.png", //rocks_normal_height
+    "rocks_color",                  "2D",           "false",                 "false",                          "Assets/Texture/Common/rocks_color.png", //rocks_color
+    "rocks_normal_height",          "2D",           "false",                 "false",                          "Assets/Texture/Common/rocks_normal_height.png", //rocks_normal_height
 
-    "stonefloor_color_height",      "2d",           "false",                 "false",                          "Assets/Texture/Common/stonefloor_color_height.png", //stonefloor_color_height
+    "stonefloor_color_height",      "2D",           "false",                 "false",                          "Assets/Texture/Common/stonefloor_color_height.png", //stonefloor_color_height
 
 };
 static VkFormat g_TextureFormats[g_TextureCount] = 
@@ -172,94 +172,94 @@ static VkFormat g_TextureFormats[g_TextureCount] =
     VK_FORMAT_R8G8B8A8_UNORM, //stonefloor_color_height
 
 };
-static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
+static FTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
-    Vulkan_TextureFilter_Bilinear, //default_blackwhite
-    Vulkan_TextureFilter_Bilinear, //terrain
-    Vulkan_TextureFilter_Bilinear, //default_white
+    F_TextureFilter_Bilinear, //default_blackwhite
+    F_TextureFilter_Bilinear, //terrain
+    F_TextureFilter_Bilinear, //default_white
 
 ////Basic-Level Texture Operation
-    Vulkan_TextureFilter_Bilinear, //texturesampler_wrap
-    Vulkan_TextureFilter_Bilinear, //texturesampler_mirror
-    Vulkan_TextureFilter_Bilinear, //texturesampler_clamp
-    Vulkan_TextureFilter_Bilinear, //texturesampler_border
-    Vulkan_TextureFilter_Bilinear, //texture1d
-    Vulkan_TextureFilter_Bilinear, //texture2d
-    Vulkan_TextureFilter_Bilinear, //texture2darray
-    Vulkan_TextureFilter_Bilinear, //texture3d
-    Vulkan_TextureFilter_Bilinear, //texturecubemap
-    Vulkan_TextureFilter_Bilinear, //textureanimation_scroll
-    Vulkan_TextureFilter_Bilinear, //textureanimation_chunk
+    F_TextureFilter_Bilinear, //texturesampler_wrap
+    F_TextureFilter_Bilinear, //texturesampler_mirror
+    F_TextureFilter_Bilinear, //texturesampler_clamp
+    F_TextureFilter_Bilinear, //texturesampler_border
+    F_TextureFilter_Bilinear, //texture1d
+    F_TextureFilter_Bilinear, //texture2d
+    F_TextureFilter_Bilinear, //texture2darray
+    F_TextureFilter_Bilinear, //texture3d
+    F_TextureFilter_Bilinear, //texturecubemap
+    F_TextureFilter_Bilinear, //textureanimation_scroll
+    F_TextureFilter_Bilinear, //textureanimation_chunk
 
 ////High-Level Texture Operation
-    Vulkan_TextureFilter_Bilinear, //texturebumpmap_diffuse
-    Vulkan_TextureFilter_Bilinear, //texturebumpmap_bumpmap
-    Vulkan_TextureFilter_Bilinear, //texturenormalmap_normalmap
+    F_TextureFilter_Bilinear, //texturebumpmap_diffuse
+    F_TextureFilter_Bilinear, //texturebumpmap_bumpmap
+    F_TextureFilter_Bilinear, //texturenormalmap_normalmap
 
-    Vulkan_TextureFilter_Bilinear, //rocks_color
-    Vulkan_TextureFilter_Bilinear, //rocks_normal_height
+    F_TextureFilter_Bilinear, //rocks_color
+    F_TextureFilter_Bilinear, //rocks_normal_height
 
-    Vulkan_TextureFilter_Bilinear, //stonefloor_color_height
+    F_TextureFilter_Bilinear, //stonefloor_color_height
 
 };
-static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
+static FTextureAddressingType g_TextureAddressings[g_TextureCount] = 
 {
-    Vulkan_TextureAddressing_Clamp, //default_blackwhite
-    Vulkan_TextureAddressing_Clamp, //terrain
-    Vulkan_TextureAddressing_Clamp, //default_white
+    F_TextureAddressing_Clamp, //default_blackwhite
+    F_TextureAddressing_Clamp, //terrain
+    F_TextureAddressing_Clamp, //default_white
 
 ////Basic-Level Texture Operation
-    Vulkan_TextureAddressing_Wrap, //texturesampler_wrap
-    Vulkan_TextureAddressing_Mirror, //texturesampler_mirror
-    Vulkan_TextureAddressing_Clamp, //texturesampler_clamp
-    Vulkan_TextureAddressing_Border, //texturesampler_border
-    Vulkan_TextureAddressing_Clamp, //texture1d
-    Vulkan_TextureAddressing_Clamp, //texture2d
-    Vulkan_TextureAddressing_Clamp, //texture2darray
-    Vulkan_TextureAddressing_Clamp, //texture3d
-    Vulkan_TextureAddressing_Wrap, //texturecubemap
-    Vulkan_TextureAddressing_Wrap, //textureanimation_scroll
-    Vulkan_TextureAddressing_Wrap, //textureanimation_chunk
+    F_TextureAddressing_Wrap, //texturesampler_wrap
+    F_TextureAddressing_Mirror, //texturesampler_mirror
+    F_TextureAddressing_Clamp, //texturesampler_clamp
+    F_TextureAddressing_Border, //texturesampler_border
+    F_TextureAddressing_Clamp, //texture1d
+    F_TextureAddressing_Clamp, //texture2d
+    F_TextureAddressing_Clamp, //texture2darray
+    F_TextureAddressing_Clamp, //texture3d
+    F_TextureAddressing_Wrap, //texturecubemap
+    F_TextureAddressing_Wrap, //textureanimation_scroll
+    F_TextureAddressing_Wrap, //textureanimation_chunk
 
 ////High-Level Texture Operation
-    Vulkan_TextureAddressing_Clamp, //texturebumpmap_diffuse
-    Vulkan_TextureAddressing_Clamp, //texturebumpmap_bumpmap
-    Vulkan_TextureAddressing_Clamp, //texturenormalmap_normalmap
+    F_TextureAddressing_Clamp, //texturebumpmap_diffuse
+    F_TextureAddressing_Clamp, //texturebumpmap_bumpmap
+    F_TextureAddressing_Clamp, //texturenormalmap_normalmap
 
-    Vulkan_TextureAddressing_Clamp, //rocks_color
-    Vulkan_TextureAddressing_Clamp, //rocks_normal_height
+    F_TextureAddressing_Clamp, //rocks_color
+    F_TextureAddressing_Clamp, //rocks_normal_height
 
-    Vulkan_TextureAddressing_Clamp, //stonefloor_color_height
+    F_TextureAddressing_Clamp, //stonefloor_color_height
 
 };
-static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
+static FTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
-    Vulkan_TextureBorderColor_OpaqueBlack, //default_blackwhite
-    Vulkan_TextureBorderColor_OpaqueBlack, //terrain
-    Vulkan_TextureBorderColor_OpaqueBlack, //default_white
+    F_TextureBorderColor_OpaqueBlack, //default_blackwhite
+    F_TextureBorderColor_OpaqueBlack, //terrain
+    F_TextureBorderColor_OpaqueBlack, //default_white
 
 ////Basic-Level Texture Operation
-    Vulkan_TextureBorderColor_OpaqueBlack, //texturesampler_wrap
-    Vulkan_TextureBorderColor_OpaqueBlack, //texturesampler_mirror
-    Vulkan_TextureBorderColor_OpaqueBlack, //texturesampler_clamp
-    Vulkan_TextureBorderColor_OpaqueBlack, //texturesampler_border
-    Vulkan_TextureBorderColor_OpaqueBlack, //texture1d
-    Vulkan_TextureBorderColor_OpaqueBlack, //texture2d
-    Vulkan_TextureBorderColor_OpaqueBlack, //texture2darray
-    Vulkan_TextureBorderColor_OpaqueBlack, //texture3d
-    Vulkan_TextureBorderColor_OpaqueBlack, //texturecubemap
-    Vulkan_TextureBorderColor_OpaqueBlack, //textureanimation_scroll
-    Vulkan_TextureBorderColor_OpaqueBlack, //textureanimation_chunk
+    F_TextureBorderColor_OpaqueBlack, //texturesampler_wrap
+    F_TextureBorderColor_OpaqueBlack, //texturesampler_mirror
+    F_TextureBorderColor_OpaqueBlack, //texturesampler_clamp
+    F_TextureBorderColor_OpaqueBlack, //texturesampler_border
+    F_TextureBorderColor_OpaqueBlack, //texture1d
+    F_TextureBorderColor_OpaqueBlack, //texture2d
+    F_TextureBorderColor_OpaqueBlack, //texture2darray
+    F_TextureBorderColor_OpaqueBlack, //texture3d
+    F_TextureBorderColor_OpaqueBlack, //texturecubemap
+    F_TextureBorderColor_OpaqueBlack, //textureanimation_scroll
+    F_TextureBorderColor_OpaqueBlack, //textureanimation_chunk
 
 ////High-Level Texture Operation
-    Vulkan_TextureBorderColor_OpaqueBlack, //texturebumpmap_diffuse
-    Vulkan_TextureBorderColor_OpaqueBlack, //texturebumpmap_bumpmap
-    Vulkan_TextureBorderColor_OpaqueBlack, //texturenormalmap_normalmap
+    F_TextureBorderColor_OpaqueBlack, //texturebumpmap_diffuse
+    F_TextureBorderColor_OpaqueBlack, //texturebumpmap_bumpmap
+    F_TextureBorderColor_OpaqueBlack, //texturenormalmap_normalmap
 
-    Vulkan_TextureBorderColor_OpaqueBlack, //rocks_color
-    Vulkan_TextureBorderColor_OpaqueBlack, //rocks_normal_height
+    F_TextureBorderColor_OpaqueBlack, //rocks_color
+    F_TextureBorderColor_OpaqueBlack, //rocks_normal_height
 
-    Vulkan_TextureBorderColor_OpaqueBlack, //stonefloor_color_height
+    F_TextureBorderColor_OpaqueBlack, //stonefloor_color_height
 
 };
 static int g_TextureSizes[3 * g_TextureCount] = 

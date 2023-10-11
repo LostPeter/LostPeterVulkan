@@ -27,7 +27,7 @@ namespace LostPeter
     protected:
         TextureSerializer* m_pTextureSerializer;
         TexturePtrVector m_aTexture;
-        TexturePtrMap m_mapTexture;
+        TextureGroupPtrMap m_mapTextureGroup;
 
     public:
         static TextureManager& GetSingleton();
@@ -37,7 +37,18 @@ namespace LostPeter
         void Destroy();
         bool Init(uint nGroup, const String& strNameCfgTexture);
 
+    public:
+        bool LoadTextureAll();
+        Texture* LoadTexture(uint nGroup, const String& strName);
 
+        bool HasTexture(uint nGroup, const String& strName);
+        Texture* GetTexture(uint nGroup, const String& strName);
+        bool AddTexture(uint nGroup, Texture* pTexture);
+        void DeleteTexture(uint nGroup, const String& strName);
+        void DeleteTextureAll();
+
+    private:
+        Texture* loadTexture(TextureInfo* pTI);
     };
 
 }; //LostPeter

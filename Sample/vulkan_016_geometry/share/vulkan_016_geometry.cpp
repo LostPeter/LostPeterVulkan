@@ -100,24 +100,24 @@ static const int g_TextureCount = 1;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
-    "bricks_diffuse",                   "2d",            "false",                  "false",                           "Assets/Texture/Common/bricks_diffuse.png", //bricks_diffuse
+    "bricks_diffuse",                   "2D",            "false",                  "false",                           "Assets/Texture/Common/bricks_diffuse.png", //bricks_diffuse
 
 };
 static VkFormat g_TextureFormats[g_TextureCount] = 
 {
     VK_FORMAT_R8G8B8A8_SRGB, //bricks_diffuse
 };
-static VulkanTextureFilterType g_TextureFilters[g_TextureCount] = 
+static FTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
-    Vulkan_TextureFilter_Bilinear, //bricks_diffuse
+    F_TextureFilter_Bilinear, //bricks_diffuse
 };
-static VulkanTextureAddressingType g_TextureAddressings[g_TextureCount] = 
+static FTextureAddressingType g_TextureAddressings[g_TextureCount] = 
 {
-    Vulkan_TextureAddressing_Clamp, //bricks_diffuse
+    F_TextureAddressing_Clamp, //bricks_diffuse
 };
-static VulkanTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
+static FTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
 {
-    Vulkan_TextureBorderColor_OpaqueBlack, //bricks_diffuse
+    F_TextureBorderColor_OpaqueBlack, //bricks_diffuse
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
 {

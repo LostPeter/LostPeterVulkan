@@ -4486,9 +4486,9 @@ namespace LostPeter
         void VulkanWindow::createVkSampler(uint32_t mipMapCount, 
                                            VkSampler& sampler)
         {
-            createVkSampler(Vulkan_TextureFilter_Bilinear,
-                            Vulkan_TextureAddressing_Clamp,
-                            Vulkan_TextureBorderColor_OpaqueBlack,
+            createVkSampler(F_TextureFilter_Bilinear,
+                            F_TextureAddressing_Clamp,
+                            F_TextureBorderColor_OpaqueBlack,
                             true,
                             this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
                             0.0f,
@@ -4496,9 +4496,9 @@ namespace LostPeter
                             0.0f,
                             sampler);
         }
-        void VulkanWindow::createVkSampler(VulkanTextureFilterType eTextureFilter,
-                                           VulkanTextureAddressingType eTextureAddressing,
-                                           VulkanTextureBorderColorType eTextureBorderColor,
+        void VulkanWindow::createVkSampler(FTextureFilterType eTextureFilter,
+                                           FTextureAddressingType eTextureAddressing,
+                                           FTextureBorderColorType eTextureBorderColor,
                                            bool enableAnisotropy,
                                            float maxAnisotropy,
                                            float minLod, 
@@ -4508,8 +4508,8 @@ namespace LostPeter
         {
             VkSamplerCreateInfo samplerInfo = {};
             samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-            samplerInfo.minFilter = Util_Transform2VkFilter(eTextureFilter, Vulkan_TextureFilterSize_Min);
-            samplerInfo.magFilter = Util_Transform2VkFilter(eTextureFilter, Vulkan_TextureFilterSize_Mag);
+            samplerInfo.minFilter = Util_Transform2VkFilter(eTextureFilter, F_TextureFilterSize_Min);
+            samplerInfo.magFilter = Util_Transform2VkFilter(eTextureFilter, F_TextureFilterSize_Mag);
             samplerInfo.addressModeU = Util_Transform2VkSamplerAddressMode(eTextureAddressing);
             samplerInfo.addressModeV = Util_Transform2VkSamplerAddressMode(eTextureAddressing);
             samplerInfo.addressModeW = Util_Transform2VkSamplerAddressMode(eTextureAddressing);
@@ -5990,9 +5990,9 @@ namespace LostPeter
                 }
                 //3> Terrain ImageSampler
                 {
-                    createVkSampler(Vulkan_TextureFilter_Bilinear, 
-                                    Vulkan_TextureAddressing_Clamp,
-                                    Vulkan_TextureBorderColor_OpaqueBlack,
+                    createVkSampler(F_TextureFilter_Bilinear, 
+                                    F_TextureAddressing_Clamp,
+                                    F_TextureBorderColor_OpaqueBlack,
                                     true,
                                     this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
                                     0.0f,
@@ -6035,9 +6035,9 @@ namespace LostPeter
                                       mipMapCount, 
                                       (int)aPathTextureDiffuse.size(), 
                                       this->poTerrainDiffuseImageView);
-                    createVkSampler(Vulkan_TextureFilter_Bilinear, 
-                                    Vulkan_TextureAddressing_Clamp,
-                                    Vulkan_TextureBorderColor_OpaqueBlack,
+                    createVkSampler(F_TextureFilter_Bilinear, 
+                                    F_TextureAddressing_Clamp,
+                                    F_TextureBorderColor_OpaqueBlack,
                                     true,
                                     this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
                                     0.0f,
@@ -6071,9 +6071,9 @@ namespace LostPeter
                                       mipMapCount, 
                                       (int)aPathTextureNormal.size(), 
                                       this->poTerrainNormalImageView);
-                    createVkSampler(Vulkan_TextureFilter_Bilinear, 
-                                    Vulkan_TextureAddressing_Clamp,
-                                    Vulkan_TextureBorderColor_OpaqueBlack,
+                    createVkSampler(F_TextureFilter_Bilinear, 
+                                    F_TextureAddressing_Clamp,
+                                    F_TextureBorderColor_OpaqueBlack,
                                     true,
                                     this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
                                     0.0f,
@@ -6107,9 +6107,9 @@ namespace LostPeter
                                       mipMapCount, 
                                       (int)aPathTextureControl.size(), 
                                       this->poTerrainControlImageView);
-                    createVkSampler(Vulkan_TextureFilter_Bilinear, 
-                                    Vulkan_TextureAddressing_Clamp,
-                                    Vulkan_TextureBorderColor_OpaqueBlack,
+                    createVkSampler(F_TextureFilter_Bilinear, 
+                                    F_TextureAddressing_Clamp,
+                                    F_TextureBorderColor_OpaqueBlack,
                                     true,
                                     this->poPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
                                     0.0f,
