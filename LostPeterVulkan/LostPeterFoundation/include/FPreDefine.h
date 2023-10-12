@@ -408,16 +408,16 @@ namespace LostPeterFoundation
     FTextureType F_ParseTextureType(const String& strName);
 
 
-    enum FTextureFormatType
+    enum FTexturePixelFormatType
     {
-        F_TextureFormat_R8G8B8A8_SRGB = 0,              //0: R8G8B8A8_SRGB
-        F_TextureFormat_R8G8B8A8_UNORM,                 //1: R8G8B8A8_UNORM
+        F_TexturePixelFormat_R8G8B8A8_SRGB = 0,         //0: R8G8B8A8_SRGB
+        F_TexturePixelFormat_R8G8B8A8_UNORM,            //1: R8G8B8A8_UNORM
 
         F_TextureFormat_Count,
     };
-    const String& F_GetTextureFormatTypeName(FTextureFormatType type);
-    const String& F_GetTextureFormatTypeName(int type);
-    FTextureFormatType F_ParseTextureFormatType(const String& strName);
+    const String& F_GetTexturePixelFormatTypeName(FTexturePixelFormatType type);
+    const String& F_GetTexturePixelFormatTypeName(int type);
+    FTexturePixelFormatType F_ParseTexturePixelFormatType(const String& strName);
 
 
     enum FTextureFilterSizeType

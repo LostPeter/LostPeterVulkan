@@ -220,29 +220,29 @@ namespace LostPeterFoundation
     }
 
 
-    //FTextureFormatType
-    static const String s_nameTextureFormatTypes[] = 
+    //FTexturePixelFormatType
+    static const String s_nameTexturePixelFormatTypes[] = 
     {
         "R8G8B8A8_SRGB",            //0: R8G8B8A8_SRGB
         "R8G8B8A8_UNORM",           //1: R8G8B8A8_UNORM
     };
-    const String& F_GetTextureFormatTypeName(FTextureFormatType type)
+    const String& F_GetTexturePixelFormatTypeName(FTexturePixelFormatType type)
     {
-        return s_nameTextureFormatTypes[(int)type];
+        return s_nameTexturePixelFormatTypes[(int)type];
     }
-    const String& F_GetTextureFormatTypeName(int type)
+    const String& F_GetTexturePixelFormatTypeName(int type)
     {
-        return s_nameTextureFormatTypes[(int)type];
+        return s_nameTexturePixelFormatTypes[(int)type];
     }
-    FTextureFormatType F_ParseTextureFormatType(const String& strName)
+    FTexturePixelFormatType F_ParseTexturePixelFormatType(const String& strName)
     {
         for (size_t i = 0; i < (int)F_TextureFormat_Count; i++)
         {
-            if (s_nameTextureFormatTypes[i] == strName)
-                return (FTextureFormatType)(i);
+            if (s_nameTexturePixelFormatTypes[i] == strName)
+                return (FTexturePixelFormatType)(i);
         }
-        F_Assert(false && "F_ParseTextureFormatType: Wrong type name !")
-        return F_TextureFormat_R8G8B8A8_SRGB;
+        F_Assert(false && "F_ParseTexturePixelFormatType: Wrong type name !")
+        return F_TexturePixelFormat_R8G8B8A8_SRGB;
     }
 
     
@@ -324,7 +324,7 @@ namespace LostPeterFoundation
             if (s_nameTextureFilterTypes[i] == strName)
                 return (FTextureFilterType)(i);
         }
-        F_Assert(false && "F_ParseTextureFormatType: Wrong type name !")
+        F_Assert(false && "F_ParseTextureFilterType: Wrong type name !")
         return F_TextureFilter_None;
     }
 

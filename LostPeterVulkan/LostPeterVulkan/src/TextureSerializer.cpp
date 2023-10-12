@@ -18,7 +18,17 @@ namespace LostPeter
     #define TEXTURE_TAG_TEXTURE_CFG								"cfg_texture"
     #define	TEXTURE_TAG_TEXTURE									"texture"
 
-
+#define TEXTURE_TAG_ATTRIBUTE_NAME		            "name"
+#define TEXTURE_TAG_ATTRIBUTE_PATH			        "path"
+#define TEXTURE_TAG_ATTRIBUTE_TYPE			        "type"
+#define TEXTURE_TAG_ATTRIBUTE_FORMAT			    "format"
+#define TEXTURE_TAG_ATTRIBUTE_FILTER			    "filter"
+#define TEXTURE_TAG_ATTRIBUTE_ADDRESSING			"addressing"
+#define TEXTURE_TAG_ATTRIBUTE_BORDER_COLOR			"border_color"
+#define TEXTURE_TAG_ATTRIBUTE_SIZE			        "size"
+#define TEXTURE_TAG_ATTRIBUTE_ANIM_CHUNK			"anim_chunk"
+#define TEXTURE_TAG_ATTRIBUTE_IS_RT			        "is_rt"
+#define TEXTURE_TAG_ATTRIBUTE_IS_GCS			    "is_gcs"
 
 
     TextureSerializer::TextureSerializer()
@@ -128,9 +138,116 @@ namespace LostPeter
         {
             FXMLElement* pChild = pRoot->GetElementChild(i);
             
+            //name
+            String strNameTexture;
+            if (!pChild->ParserAttribute_String(TEXTURE_TAG_ATTRIBUTE_NAME, strNameTexture))
+            {
+                F_LogError("*********************** TextureSerializer::deserializeXML: Can not find attribute: 'name', texture index: [%d] !", i);
+                continue;
+            }
+            //path
+            String strPathTexture;
+            if (!pChild->ParserAttribute_String(TEXTURE_TAG_ATTRIBUTE_PATH, strPathTexture))
+            {
+                F_LogError("*********************** TextureSerializer::deserializeXML: Can not find attribute: 'path', texture index: [%d] !", i);
+                continue;
+            }
+            //type
+            String strType;
+            if (!pChild->ParserAttribute_String(TEXTURE_TAG_ATTRIBUTE_TYPE, strType))
+            {
+                F_LogError("*********************** TextureSerializer::deserializeXML: Can not find attribute: 'type', texture index: [%d] !", i);
+                continue;
+            }
+            FTextureType typeTexture = F_ParseTextureType(strType);
+            //format
+            String strFormat;
+            if (!pChild->ParserAttribute_String(TEXTURE_TAG_ATTRIBUTE_FORMAT, strFormat))
+            {
+                F_LogError("*********************** TextureSerializer::deserializeXML: Can not find attribute: 'format', texture index: [%d] !", i);
+                continue;
+            }
+            FTexturePixelFormatType typeTexturePixelFormat = F_ParseTexturePixelFormatType(strFormat);
+            //filter
+            String strFilter;
+            if (!pChild->ParserAttribute_String(TEXTURE_TAG_ATTRIBUTE_FILTER, strFilter))
+            {
+                F_LogError("*********************** TextureSerializer::deserializeXML: Can not find attribute: 'filter', texture index: [%d] !", i);
+                continue;
+            }
+            FTextureFilterType typeTextureFilter = F_ParseTextureFilterType(strFilter);
+            //addressing
+            String strAddressing;
+            if (!pChild->ParserAttribute_String(TEXTURE_TAG_ATTRIBUTE_ADDRESSING, strAddressing))
+            {
+                F_LogError("*********************** TextureSerializer::deserializeXML: Can not find attribute: 'addressing', texture index: [%d] !", i);
+                continue;
+            }
+            FTextureAddressingType typeTextureAddressing = F_ParseTextureAddressingType(strAddressing);
+            //border_color
+            String strBorderColor;
+            if (!pChild->ParserAttribute_String(TEXTURE_TAG_ATTRIBUTE_BORDER_COLOR, strBorderColor))
+            {
+                F_LogError("*********************** TextureSerializer::deserializeXML: Can not find attribute: 'border_color', texture index: [%d] !", i);
+                continue;
+            }
+            FTextureBorderColorType typeTextureBorderColor = F_ParseTextureBorderColorType(strBorderColor);
+            //size
+            FVector3 vSize;
+            if (!pChild->ParserAttribute_Vector3(TEXTURE_TAG_ATTRIBUTE_SIZE, vSize))
+            {
+                F_LogError("*********************** TextureSerializer::deserializeXML: Can not find attribute: 'size', texture index: [%d] !", i);
+                continue;
+            }
+            int width = (int)vSize.x;
+            int height = (int)vSize.y;
+            int depth = (int)vSize.z;
+            //anim_chunk
+            FVector2 vAnimChunk;
+            if (!pChild->ParserAttribute_Vector2(TEXTURE_TAG_ATTRIBUTE_ANIM_CHUNK, vAnimChunk))
+            {
+                F_LogError("*********************** TextureSerializer::deserializeXML: Can not find attribute: 'anim_chunk', texture index: [%d] !", i);
+                continue;
+            }
+            int animChunkX = (int)vAnimChunk.x;
+            int animChunkY = (int)vAnimChunk.y;
+            //is_rt
+            bool isRT = false;
+            pChild->ParserAttribute_Bool(TEXTURE_TAG_ATTRIBUTE_IS_RT, isRT);
+            //is_gcs
+            bool isGCS = false;
+            pChild->ParserAttribute_Bool(TEXTURE_TAG_ATTRIBUTE_IS_GCS, isGCS);
+
+
+            TextureInfo* pTextureInfo = new TextureInfo(strNameTexture,
+                                                        strPathTexture,
+                                                        typeTexture,
+                                                        typeTexturePixelFormat,
+                                                        typeTextureFilter,
+                                                        typeTextureAddressing,
+                                                        typeTextureBorderColor,
+                                                        width, height, depth,
+                                                        animChunkX, animChunkY,
+                                                        isRT,
+                                                        isGCS);
+            if (AddTextureInfo(pTextureInfo))
+            {
+                F_LogInfo("TextureSerializer::deserializeXML: Add texture info success, [%s] - [%s] - [%s] - [%s] - [%s] - [%s] - [%s] - [%d - %d - %d] - [%d - %d] - [%d] - [%d] !",
+                          strNameTexture.c_str(), 
+                          strPathTexture.c_str(), 
+                          strType.c_str(), 
+                          strFormat.c_str(), 
+                          strFilter.c_str(), 
+                          strAddressing.c_str(), 
+                          strBorderColor.c_str(), 
+                          width, height, depth,
+                          animChunkX, animChunkY, 
+                          isRT ? 1 : 0, 
+                          isGCS ? 1 : 0);
+            }
         }
 
-        return false;
+        return true;
     }
 
     //File Content Binary

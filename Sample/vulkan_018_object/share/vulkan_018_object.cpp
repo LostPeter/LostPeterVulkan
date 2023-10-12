@@ -848,8 +848,8 @@ Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
     , m_isDrawIndirectMulti(false)
     , m_pPathManager(nullptr)
     , m_pMeshManager(nullptr)
-    , m_pShaderManager(nullptr)
     , m_pTextureManager(nullptr)
+    , m_pShaderManager(nullptr)
     , m_pMaterialManager(nullptr)
 {
     this->cfg_isImgui = true;
@@ -906,9 +906,15 @@ void Vulkan_018_Object::cameraReset()
 
 void Vulkan_018_Object::loadModel_Custom()
 {
+    //Mesh
     m_pMeshManager = new MeshManager();
     m_pMeshManager->Init(s_nGroup_Sample, s_strNameMesh_Sample);
     m_pMeshManager->LoadMeshAll();
+
+    //Texture
+    m_pTextureManager = new TextureManager();
+    m_pTextureManager->Init(s_nGroup_Sample, s_strNameTexture_Sample);
+
 
     createTextures();
 
@@ -1477,14 +1483,14 @@ void Vulkan_018_Object::createTextures()
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
         Texture* pTexture = new Texture(nameTexture,
+                                        aPathTexture,
                                         typeTexture,
-                                        isRenderTarget,
-                                        isGraphicsComputeShared,
                                         g_TextureFormats[i],
                                         g_TextureFilters[i],
                                         g_TextureAddressings[i],
                                         g_TextureBorderColors[i],
-                                        aPathTexture);
+                                        isRenderTarget,
+                                        isGraphicsComputeShared);
         pTexture->texChunkMaxX = g_TextureAnimChunks[i * 2 + 0];
         pTexture->texChunkMaxY = g_TextureAnimChunks[i * 2 + 1];
         if (pTexture->texChunkMaxX > 0 && 
@@ -2749,8 +2755,8 @@ void Vulkan_018_Object::drawModelObjectRend(VkCommandBuffer& commandBuffer, Mode
 void Vulkan_018_Object::cleanupCustom()
 {   
     F_DELETE(m_pMaterialManager)
-    F_DELETE(m_pTextureManager)
     F_DELETE(m_pShaderManager)
+    F_DELETE(m_pTextureManager)
     F_DELETE(m_pMeshManager)
     F_DELETE(m_pPathManager)
     

@@ -1206,14 +1206,14 @@ void Vulkan_012_Shadering::createTextures()
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
         Texture* pTexture = new Texture(nameTexture,
+                                        aPathTexture,
                                         typeTexture,
-                                        isRenderTarget,
-                                        isGraphicsComputeShared,
                                         g_TextureFormats[i],
                                         g_TextureFilters[i],
                                         g_TextureAddressings[i],
                                         g_TextureBorderColors[i],
-                                        aPathTexture);
+                                        isRenderTarget,
+                                        isGraphicsComputeShared);
         pTexture->texChunkMaxX = g_TextureAnimChunks[i * 2 + 0];
         pTexture->texChunkMaxY = g_TextureAnimChunks[i * 2 + 1];
         if (pTexture->texChunkMaxX > 0 && 

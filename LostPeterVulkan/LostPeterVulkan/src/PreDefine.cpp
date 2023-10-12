@@ -91,34 +91,6 @@ namespace LostPeter
     }
 
 
-    //VulkanPixelFormatType
-    VkFormat Util_Transform2VkFormat(VulkanPixelFormatType type)
-    {
-        switch ((int32)type)
-        {
-            case Vulkan_PixelFormat_BYTE_A8R8G8B8_UNORM:            return VK_FORMAT_B8G8R8A8_UNORM; 
-        }
-
-        return VK_FORMAT_UNDEFINED;
-    }
-    VkComponentMapping Util_Transform2VkComponentMapping(VulkanPixelFormatType type)
-    {
-        VkComponentMapping componentMapping;
-        componentMapping.r = VK_COMPONENT_SWIZZLE_R;
-		componentMapping.g = VK_COMPONENT_SWIZZLE_G;
-		componentMapping.b = VK_COMPONENT_SWIZZLE_B;
-		componentMapping.a = VK_COMPONENT_SWIZZLE_A;
-        
-        switch ((int32)type)
-        {
-        case Vulkan_PixelFormat_BYTE_A8R8G8B8_UNORM:                
-            break;
-        }
-
-        return componentMapping;
-    }
-
-
     //VulkanPixelFormatComponentType
     static String s_namePixelFormatComponents[] = 
     {
@@ -169,6 +141,32 @@ namespace LostPeter
         }
         F_Assert(false && "Util_Transform2VkImageViewType: Wrong type !")
         return VK_IMAGE_VIEW_TYPE_2D;
+    }
+    VkFormat Util_Transform2VkFormat(FTexturePixelFormatType type)
+    {
+        switch ((int32)type)
+        {
+            case F_TexturePixelFormat_R8G8B8A8_SRGB:     return VK_FORMAT_R8G8B8A8_SRGB;
+            case F_TexturePixelFormat_R8G8B8A8_UNORM:    return VK_FORMAT_R8G8B8A8_UNORM;
+        }
+        F_Assert(false && "Util_Transform2VkFormat: Wrong type !")
+        return VK_FORMAT_R8G8B8A8_SRGB;
+    }
+    VkComponentMapping Util_Transform2VkComponentMapping(FTexturePixelFormatType type)
+    {
+        VkComponentMapping componentMapping;
+        componentMapping.r = VK_COMPONENT_SWIZZLE_R;
+		componentMapping.g = VK_COMPONENT_SWIZZLE_G;
+		componentMapping.b = VK_COMPONENT_SWIZZLE_B;
+		componentMapping.a = VK_COMPONENT_SWIZZLE_A;
+        
+        switch ((int32)type)
+        {
+        case F_TexturePixelFormat_R8G8B8A8_SRGB:                
+            break;
+        }
+
+        return componentMapping;
     }
     VkFilter Util_Transform2VkFilter(FTextureFilterPixelType type)
     {
@@ -545,6 +543,50 @@ namespace LostPeter
         : group(0)
         , nameTexture("")
         , pathTexture("")
+        , typeTexture(F_Texture_2D)
+        , typeTexturePixelFormat(F_TexturePixelFormat_R8G8B8A8_SRGB)
+        , typeTextureFilter(F_TextureFilter_Bilinear)
+        , typeTextureAddressing(F_TextureAddressing_Clamp)
+        , typeTextureBorderColor(F_TextureBorderColor_OpaqueBlack)
+        , width(512)
+        , height(512)
+        , depth(1)
+        , animChunkX(0)
+        , animChunkY(0)
+        , isRT(false)
+        , isGCS(false)
+    {
+
+    }
+    TextureInfo::TextureInfo(const String& _nameMesh,
+                             const String& _pathMesh,
+                             FTextureType _typeTexture,
+                             FTexturePixelFormatType _typeTexturePixelFormat,
+                             FTextureFilterType _typeTextureFilter,
+                             FTextureAddressingType _typeTextureAddressing,
+                             FTextureBorderColorType _typeTextureBorderColor,
+                             int _width,
+                             int _height,
+                             int _depth,
+                             int _animChunkX,
+                             int _animChunkY,
+                             bool _isRT,
+                             bool _isGCS)
+        : group(0)
+        , nameTexture(_nameMesh)
+        , pathTexture(_pathMesh)
+        , typeTexture(_typeTexture)
+        , typeTexturePixelFormat(_typeTexturePixelFormat)
+        , typeTextureFilter(_typeTextureFilter)
+        , typeTextureAddressing(_typeTextureAddressing)
+        , typeTextureBorderColor(_typeTextureBorderColor)
+        , width(_width)
+        , height(_height)
+        , depth(_depth)
+        , animChunkX(_animChunkX)
+        , animChunkY(_animChunkY)
+        , isRT(_isRT)
+        , isGCS(_isGCS)
     {
 
     }

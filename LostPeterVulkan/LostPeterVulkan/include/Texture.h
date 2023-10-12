@@ -20,25 +20,26 @@ namespace LostPeter
     {
     public:
         Texture(const String& _nameTexture,
+                const StringVector& _aPathTexture,
                 FTextureType _typeTexture,
-                bool _isRenderTarget,
-                bool _isGraphicsComputeShared,
                 VkFormat _typeFormat,
                 FTextureFilterType _typeFilter,
                 FTextureAddressingType _typeAddressing,
                 FTextureBorderColorType _typeBorderColor,
-                const StringVector& _aPathTexture);
+                bool _isRenderTarget,
+                bool _isGraphicsComputeShared);
         virtual ~Texture();
 
     public:
         StringVector aPathTexture;
         FTextureType typeTexture;
-        bool isRenderTarget;
-        bool isGraphicsComputeShared;
         VkFormat typeFormat; 
         FTextureFilterType typeFilter;
         FTextureAddressingType typeAddressing;
         FTextureBorderColorType typeBorderColor;
+        bool isRenderTarget;
+        bool isGraphicsComputeShared;
+
         int width;
         int height;
         int depth;

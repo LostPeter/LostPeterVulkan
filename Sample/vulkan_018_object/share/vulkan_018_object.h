@@ -482,8 +482,8 @@ public:
 public:
     FPathManager* m_pPathManager;
     MeshManager* m_pMeshManager;
-    ShaderManager* m_pShaderManager;
     TextureManager* m_pTextureManager;
+    ShaderManager* m_pShaderManager;
     MaterialManager* m_pMaterialManager;
 
 

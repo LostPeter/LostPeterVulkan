@@ -123,16 +123,6 @@ namespace LostPeter
     };
 
 
-    enum VulkanPixelFormatType
-    {
-        Vulkan_PixelFormat_Unknown = 0,
-
-        Vulkan_PixelFormat_BYTE_A8R8G8B8_UNORM,
-
-        Vulkan_PixelFormat_Count,                           
-    };
-    VkFormat Util_Transform2VkFormat(VulkanPixelFormatType type);
-    VkComponentMapping Util_Transform2VkComponentMapping(VulkanPixelFormatType type);
 
     struct utilExport VulkanPixelFormatDes
 	{
@@ -219,6 +209,8 @@ namespace LostPeter
 
     VkImageType Util_Transform2VkImageType(FTextureType type);
     VkImageViewType Util_Transform2VkImageViewType(FTextureType type);
+    VkFormat Util_Transform2VkFormat(FTexturePixelFormatType type);
+    VkComponentMapping Util_Transform2VkComponentMapping(FTexturePixelFormatType type);
     VkFilter Util_Transform2VkFilter(FTextureFilterPixelType type);
     VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterPixelType type);
     VkFilter Util_Transform2VkFilter(FTextureFilterType typeFilter, FTextureFilterSizeType typeFilterSize);
@@ -377,12 +369,38 @@ namespace LostPeter
     struct utilExport TextureInfo
     {
         TextureInfo();
+        TextureInfo(const String& _nameMesh,
+                    const String& _pathMesh,
+                    FTextureType _typeTexture,
+                    FTexturePixelFormatType _typeTexturePixelFormat,
+                    FTextureFilterType _typeTextureFilter,
+                    FTextureAddressingType _typeTextureAddressing,
+                    FTextureBorderColorType _typeTextureBorderColor,
+                    int _width,
+                    int _height,
+                    int _depth,
+                    int _animChunkX,
+                    int _animChunkY,
+                    bool _isRT,
+                    bool _isGCS);
         ~TextureInfo();
 
         uint32 group;
         String nameTexture;
         String pathTexture;
-
+        
+        FTextureType typeTexture;
+        FTexturePixelFormatType typeTexturePixelFormat;
+        FTextureFilterType typeTextureFilter;
+        FTextureAddressingType typeTextureAddressing;
+        FTextureBorderColorType typeTextureBorderColor;
+        int width;
+        int height;
+        int depth;
+        int animChunkX;
+        int animChunkY;
+        bool isRT;
+        bool isGCS;
     };
     typedef std::vector<TextureInfo*> TextureInfoPtrVector;
     typedef std::map<String, TextureInfo*> TextureInfoPtrMap;

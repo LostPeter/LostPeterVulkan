@@ -105,7 +105,28 @@ namespace LostPeter
     }
     Texture* TextureManager::loadTexture(TextureInfo* pTI)
     {
-        Texture* pTexture;
+        StringVector aPathTexture = FUtilString::Split(pTI->pathTexture, ";");
+        VkFormat typeFormat = Util_Transform2VkFormat(pTI->typeTexturePixelFormat);
+        Texture* pTexture = new Texture(pTI->nameTexture,
+                                        aPathTexture,
+                                        pTI->typeTexture,
+                                        typeFormat,
+                                        pTI->typeTextureFilter,
+                                        pTI->typeTextureAddressing,
+                                        pTI->typeTextureBorderColor,
+                                        pTI->isRT,
+                                        pTI->isGCS);
+        pTexture->texChunkMaxX = pTI->animChunkX;
+        pTexture->texChunkMaxY = pTI->animChunkY;
+        if (pTexture->texChunkMaxX > 0 && 
+            pTexture->texChunkMaxY > 0)
+        {
+            pTexture->texChunkIndex = FMath::Rand(0, pTexture->texChunkMaxX * pTexture->texChunkMaxY - 1);
+        }
+        pTexture->AddRef();
+        pTexture->LoadTexture(pTI->width, 
+                              pTI->height,
+                              pTI->depth);
 
         if (AddTexture(pTI->group, pTexture))
         {

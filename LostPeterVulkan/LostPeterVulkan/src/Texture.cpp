@@ -15,23 +15,24 @@
 namespace LostPeter
 {
     Texture::Texture(const String& _nameTexture,
+                     const StringVector& _aPathTexture,
                      FTextureType _typeTexture,
-                     bool _isRenderTarget,
-                     bool _isGraphicsComputeShared,
                      VkFormat _typeFormat,
                      FTextureFilterType _typeFilter,
                      FTextureAddressingType _typeAddressing,
                      FTextureBorderColorType _typeBorderColor,
-                    const StringVector& _aPathTexture)
+                     bool _isRenderTarget,
+                     bool _isGraphicsComputeShared)
         : Base(_nameTexture)
+        , aPathTexture(_aPathTexture)
         , typeTexture(_typeTexture)
-        , isRenderTarget(_isRenderTarget)
-        , isGraphicsComputeShared(_isGraphicsComputeShared)
         , typeFormat(_typeFormat)
         , typeFilter(_typeFilter)
         , typeAddressing(_typeAddressing)
         , typeBorderColor(_typeBorderColor)
-        , aPathTexture(_aPathTexture)
+        , isRenderTarget(_isRenderTarget)
+        , isGraphicsComputeShared(_isGraphicsComputeShared)
+        
         , width(0)
         , height(0)
         , depth(0)

@@ -1805,15 +1805,15 @@ void Vulkan_015_MultiView::createTextures()
         String pathTextures = g_Texture_Paths[5 * i + 4];
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
-        Texture* pTexture = new Texture(nameTexture,
+        Texture* pTexture = new Texture(nameTexture,    
+                                        aPathTexture,
                                         typeTexture,
-                                        isRenderTarget,
-                                        isGraphicsComputeShared,
                                         g_Texture_Formats[i],
                                         g_Texture_Filters[i],
                                         g_Texture_Addressings[i],
                                         g_Texture_BorderColors[i],
-                                        aPathTexture);
+                                        isRenderTarget,
+                                        isGraphicsComputeShared);
         pTexture->texChunkMaxX = g_Texture_AnimChunks[i * 2 + 0];
         pTexture->texChunkMaxY = g_Texture_AnimChunks[i * 2 + 1];
         if (pTexture->texChunkMaxX > 0 && 
