@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <cfg_mesh>
-	<!-- <mesh name="plane" path="Assets/Mesh/Common/plane.fbx" type_mesh="file" type_mesh_geometry="" type_vertex="Pos3Color4Normal3Tex2" is_flip_y="true" is_trans_local="false" trans_local="" /> -->
+	<!-- <mesh name="" path="" type_mesh="" type_mesh_geometry="" type_vertex="" is_flip_y="" is_trans_local="" trans_local="" /> -->
 
 	<!-- Mesh Common -->
 	<mesh name="plane" path="Assets/Mesh/Common/plane.fbx" type_mesh="file" type_vertex="Pos3Color4Normal3Tex2" is_flip_y="true" is_trans_local="false" />
@@ -8,8 +8,14 @@
 	<mesh name="sphere" path="Assets/Mesh/Common/sphere.fbx" type_mesh="file" type_vertex="Pos3Color4Normal3Tex2" is_flip_y="false" is_trans_local="false" />
 
 	<!-- Mesh Model -->
-
-
+	<mesh name="mountain" path="Assets/Mesh/Model/mountain/mountain.obj" type_mesh="file" type_vertex="Pos3Color4Normal3Tangent3Tex2" is_flip_y="false" is_trans_local="false" />
+	<mesh name="rock" path="Assets/Mesh/Model/rock/rock.fbx" type_mesh="file" type_vertex="Pos3Color4Normal3Tangent3Tex2" is_flip_y="false" is_trans_local="false" />
+	<mesh name="cliff" path="Assets/Mesh/Model/cliff/cliff.obj" type_mesh="file" type_vertex="Pos3Color4Normal3Tangent3Tex2" is_flip_y="false" is_trans_local="false" />
+	<mesh name="tree" path="Assets/Mesh/Model/tree/tree.fbx" type_mesh="file" type_vertex="Pos3Color4Normal3Tex2" is_flip_y="false" is_trans_local="false" />
+	<mesh name="tree_spruce" path="Assets/Mesh/Model/tree_spruce/tree_spruce.fbx" type_mesh="file" type_vertex="Pos3Color4Normal3Tex2" is_flip_y="false" is_trans_local="false" />
+	<mesh name="grass" path="Assets/Mesh/Model/grass/grass.fbx" type_mesh="file" type_vertex="Pos3Color4Normal3Tex2" is_flip_y="false" is_trans_local="false" />
+	<mesh name="flower" path="Assets/Mesh/Model/flower/flower.fbx" type_mesh="file" type_vertex="Pos3Color4Normal3Tex2" is_flip_y="false" is_trans_local="false" />
+	
 	<!-- Mesh Character -->
 	
 

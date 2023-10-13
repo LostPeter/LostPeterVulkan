@@ -707,7 +707,7 @@ void Vulkan_012_Shadering::loadModel_Custom()
                 {
                     String nameTex = aTextureVS[j];
                     Texture* pTextureVS = this->findTexture(nameTex);
-                    pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), pTextureVS);
+                    pModelObject->AddTexture(F_GetShaderTypeName(F_Shader_Vertex), pTextureVS);
                 }
             }
         }
@@ -722,7 +722,7 @@ void Vulkan_012_Shadering::loadModel_Custom()
                 {
                     String nameTex = aTextureFS[j];
                     Texture* pTextureFS = this->findTexture(nameTex);
-                    pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), pTextureFS);
+                    pModelObject->AddTexture(F_GetShaderTypeName(F_Shader_Fragment), pTextureFS);
                 }
             }
         }
@@ -737,7 +737,7 @@ void Vulkan_012_Shadering::loadModel_Custom()
                 {
                     String nameTex = aTextureCS[j];
                     Texture* pTextureCS = this->findTexture(nameTex);
-                    pModelObject->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), pTextureCS);
+                    pModelObject->AddTexture(F_GetShaderTypeName(F_Shader_Compute), pTextureCS);
                 }
             }
         }
@@ -834,7 +834,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
                 materialConstants.lighting = g_ObjectIsLightings[i];
                 //Texture VS
                 {
-                    TexturePtrVector* pTextureVSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
+                    TexturePtrVector* pTextureVSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Vertex));
                     if (pTextureVSs != nullptr)
                     {
 
@@ -842,7 +842,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
                 }
                 //Texture FS
                 {
-                    TexturePtrVector* pTextureFSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                    TexturePtrVector* pTextureFSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Fragment));
                     if (pTextureFSs != nullptr)
                     {
 
@@ -850,7 +850,7 @@ void Vulkan_012_Shadering::rebuildInstanceCBs(bool isCreateVkBuffer)
                 }
                 //Texture CS
                 {
-                    TexturePtrVector* pTextureCSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
+                    TexturePtrVector* pTextureCSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Compute));
                     if (pTextureCSs != nullptr)
                     {
 
@@ -1491,7 +1491,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                     }
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureVS)) //TextureVS
                     {
-                        Texture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
+                        Texture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Vertex), nIndexTextureVS);
                         nIndexTextureVS ++;
                         pushVkDescriptorSet_Image(descriptorWrites,
                                                   pModelObject->pPipelineGraphics->poDescriptorSets[j],
@@ -1503,7 +1503,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                     }
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESC))//TextureTESC
                     {
-                        Texture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), nIndexTextureTESC);
+                        Texture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_TessellationControl), nIndexTextureTESC);
                         nIndexTextureTESC ++;
                         pushVkDescriptorSet_Image(descriptorWrites,
                                                   pModelObject->pPipelineGraphics->poDescriptorSets[j],
@@ -1515,7 +1515,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                     }
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESE))//TextureTESE
                     {
-                        Texture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), nIndexTextureTESE);
+                        Texture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_TessellationEvaluation), nIndexTextureTESE);
                         nIndexTextureTESE ++;
                         pushVkDescriptorSet_Image(descriptorWrites,
                                                   pModelObject->pPipelineGraphics->poDescriptorSets[j],
@@ -1527,7 +1527,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                     }
                     else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS)) //TextureFS
                     {
-                        Texture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), nIndexTextureFS);
+                        Texture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Fragment), nIndexTextureFS);
                         nIndexTextureFS ++;
                         pushVkDescriptorSet_Image(descriptorWrites,
                                                   pModelObject->pPipelineGraphics->poDescriptorSets[j],
@@ -1581,7 +1581,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                 }   
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSR)) //TextureCSR
                 {
-                    Texture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
+                    Texture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
                     nIndexTextureCS ++;
                     pPipelineCompute->pTextureSource = pTexture;
                     pushVkDescriptorSet_Image(descriptorWrites,
@@ -1594,7 +1594,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
                 }
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW)) //TextureCSRW
                 {
-                    Texture* pTexture = pModelObject->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
+                    Texture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
                     nIndexTextureCS ++;
                     pPipelineCompute->pTextureTarget = pTexture;
                     pushVkDescriptorSet_Image(descriptorWrites,
@@ -1961,7 +1961,7 @@ void Vulkan_012_Shadering::modelConfig()
 
                                 //Texture VS
                                 {
-                                    TexturePtrVector* pTextureVSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
+                                    TexturePtrVector* pTextureVSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Vertex));
                                     if (pTextureVSs != nullptr)
                                     {
 
@@ -1969,7 +1969,7 @@ void Vulkan_012_Shadering::modelConfig()
                                 }
                                 //Texture FS
                                 {
-                                    TexturePtrVector* pTextureFSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                                    TexturePtrVector* pTextureFSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Fragment));
                                     if (pTextureFSs != nullptr)
                                     {
                                         size_t count_texture = pTextureFSs->size();
@@ -2055,7 +2055,7 @@ void Vulkan_012_Shadering::modelConfig()
                                 }
                                 //Texture CS
                                 {
-                                    TexturePtrVector* pTextureCSs = pModelObject->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
+                                    TexturePtrVector* pTextureCSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Compute));
                                     if (pTextureCSs != nullptr)
                                     {
 

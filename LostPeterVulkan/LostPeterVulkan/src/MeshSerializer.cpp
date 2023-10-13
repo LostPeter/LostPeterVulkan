@@ -213,7 +213,7 @@ namespace LostPeter
                                                matTransformLocal);
             if (AddMeshInfo(pMeshInfo))
             {
-                F_LogInfo("MeshSerializer::deserializeXML: Add mesh info success, [%s] - [%s] - [%s] - [%s] - [%s] - [%d] - [%d] !",
+                F_LogInfo("MeshSerializer::deserializeXML: Add mesh info success, [%s]-[%s]-[%s]-[%s]-[%s]-[%d]-[%d] !",
                           strNameMesh.c_str(), 
                           strPathMesh.c_str(), 
                           strTypeMesh.c_str(), 

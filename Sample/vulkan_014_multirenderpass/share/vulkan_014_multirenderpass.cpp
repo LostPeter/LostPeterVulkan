@@ -1120,7 +1120,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                         {
                             String nameTex = aTextureVS[p];
                             Texture* pTextureVS = this->findTexture(nameTex);
-                            pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), pTextureVS);
+                            pRend->AddTexture(F_GetShaderTypeName(F_Shader_Vertex), pTextureVS);
                         }
                     }
                 }
@@ -1135,7 +1135,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                         {
                             String nameTex = aTextureTESC[p];
                             Texture* pTextureTESC = this->findTexture(nameTex);
-                            pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), pTextureTESC);
+                            pRend->AddTexture(F_GetShaderTypeName(F_Shader_TessellationControl), pTextureTESC);
                         }
                     }
                 }
@@ -1150,7 +1150,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                         {
                             String nameTex = aTextureTESE[p];
                             Texture* pTextureTESE = this->findTexture(nameTex);
-                            pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), pTextureTESE);
+                            pRend->AddTexture(F_GetShaderTypeName(F_Shader_TessellationEvaluation), pTextureTESE);
                         }
                     }
                 }
@@ -1165,7 +1165,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                         {
                             String nameTex = aTextureGS[p];
                             Texture* pTextureGS = this->findTexture(nameTex);
-                            pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), pTextureGS);
+                            pRend->AddTexture(F_GetShaderTypeName(F_Shader_Fragment), pTextureGS);
                         }
                     }
                 }
@@ -1180,7 +1180,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                         {
                             String nameTex = aTextureFS[p];
                             Texture* pTextureFS = this->findTexture(nameTex);
-                            pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), pTextureFS);
+                            pRend->AddTexture(F_GetShaderTypeName(F_Shader_Fragment), pTextureFS);
                         }
                     }
                 }
@@ -1195,7 +1195,7 @@ void Vulkan_014_MultiRenderPass::loadModel_Custom()
                         {
                             String nameTex = aTextureCS[p];
                             Texture* pTextureCS = this->findTexture(nameTex);
-                            pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), pTextureCS);
+                            pRend->AddTexture(F_GetShaderTypeName(F_Shader_Compute), pTextureCS);
                         }
                     }
                 }
@@ -1308,7 +1308,7 @@ void Vulkan_014_MultiRenderPass::rebuildInstanceCBs(bool isCreateVkBuffer)
                 materialConstants.lighting = isObjectLighting;
                 //Texture VS
                 {
-                    TexturePtrVector* pTextureVSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
+                    TexturePtrVector* pTextureVSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Vertex));
                     if (pTextureVSs != nullptr)
                     {
 
@@ -1316,7 +1316,7 @@ void Vulkan_014_MultiRenderPass::rebuildInstanceCBs(bool isCreateVkBuffer)
                 }
                 //Texture FS
                 {
-                    TexturePtrVector* pTextureFSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                    TexturePtrVector* pTextureFSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Fragment));
                     if (pTextureFSs != nullptr)
                     {
 
@@ -1324,7 +1324,7 @@ void Vulkan_014_MultiRenderPass::rebuildInstanceCBs(bool isCreateVkBuffer)
                 }
                 //Texture CS
                 {
-                    TexturePtrVector* pTextureCSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
+                    TexturePtrVector* pTextureCSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Compute));
                     if (pTextureCSs != nullptr)
                     {
 
@@ -2040,7 +2040,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureVS)) //TextureVS
             {
-                Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
+                Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Vertex), nIndexTextureVS);
                 nIndexTextureVS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -2052,7 +2052,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESC))//TextureTESC
             {
-                Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), nIndexTextureTESC);
+                Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationControl), nIndexTextureTESC);
                 nIndexTextureTESC ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -2064,7 +2064,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESE))//TextureTESE
             {
-                Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), nIndexTextureTESE);
+                Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationEvaluation), nIndexTextureTESE);
                 nIndexTextureTESE ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -2076,7 +2076,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Graphics(VkDescriptorSetVe
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS)) //TextureFS
             {
-                Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), nIndexTextureFS);
+                Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Fragment), nIndexTextureFS);
                 nIndexTextureFS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -2138,7 +2138,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Compute(PipelineCompute* p
         }   
         else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSR)) //TextureCSR
         {
-            Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
+            Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
             pPipelineCompute->pTextureSource = pTexture;
             pushVkDescriptorSet_Image(descriptorWrites,
@@ -2151,7 +2151,7 @@ void Vulkan_014_MultiRenderPass::createDescriptorSets_Compute(PipelineCompute* p
         }
         else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW)) //TextureCSRW
         {
-            Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
+            Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
             pPipelineCompute->pTextureTarget = pTexture;
             pushVkDescriptorSet_Image(descriptorWrites,
@@ -2729,7 +2729,7 @@ void Vulkan_014_MultiRenderPass::modelConfig()
 
                                             //Texture VS
                                             {
-                                                TexturePtrVector* pTextureVSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
+                                                TexturePtrVector* pTextureVSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Vertex));
                                                 if (pTextureVSs != nullptr)
                                                 {
 
@@ -2737,7 +2737,7 @@ void Vulkan_014_MultiRenderPass::modelConfig()
                                             }
                                             //Texture FS
                                             {
-                                                TexturePtrVector* pTextureFSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                                                TexturePtrVector* pTextureFSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Fragment));
                                                 if (pTextureFSs != nullptr)
                                                 {
                                                     size_t count_texture = pTextureFSs->size();
@@ -2823,7 +2823,7 @@ void Vulkan_014_MultiRenderPass::modelConfig()
                                             }
                                             //Texture CS
                                             {
-                                                TexturePtrVector* pTextureCSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
+                                                TexturePtrVector* pTextureCSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Compute));
                                                 if (pTextureCSs != nullptr)
                                                 {
 

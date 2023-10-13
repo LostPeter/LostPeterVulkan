@@ -1,4 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <cfg_shader>
-	<shader />
+	<!-- <shader name="" path="" type="" /> -->
+
+	<!-- Shader vert -->
+	<shader name="vert_standard_mesh_opaque_tex2d_lit" path="Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv" type="vert" />
+	<shader name="vert_standard_mesh_transparent_lit" path="Assets/Shader/standard_mesh_transparent_lit.vert.spv" type="vert" />
+	<shader name="vert_standard_mesh_opaque_texcubemap_lit" path="Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv" type="vert" />
+	<shader name="vert_standard_mesh_opaque_tex2darray_lit" path="Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv" type="vert" />
+	<shader name="vert_standard_terrain_opaque_lit" path="Assets/Shader/standard_terrain_opaque_lit.vert.spv" type="vert" />
+	<shader name="vert_standard_mesh_opaque_normalmap_lit" path="Assets/Shader/standard_mesh_opaque_normalmap_lit.vert.spv" type="vert" />
+	<shader name="vert_standard_mesh_transparent_tree_lit" path="Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv" type="vert" />
+	<shader name="vert_standard_mesh_opaque_tree_alphatest_lit" path="Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.vert.spv" type="vert" />
+	<shader name="vert_standard_mesh_opaque_grass_alphatest_lit" path="Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv" type="vert" />
+
+	<!-- Shader tesc -->
+	
+	<!-- Shader tese -->
+	
+	<!-- Shader geom -->
+	
+	<!-- Shader frag -->
+	<shader name="frag_standard_mesh_opaque_tex2d_lit" path="Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv" type="frag" />
+	<shader name="frag_standard_mesh_transparent_lit" path="Assets/Shader/standard_mesh_transparent_lit.frag.spv" type="frag" />
+	<shader name="frag_standard_mesh_opaque_texcubemap_lit" path="Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv" type="frag" />
+	<shader name="frag_standard_mesh_opaque_tex2darray_lit" path="Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv" type="frag" />
+	<shader name="frag_standard_terrain_opaque_lit" path="Assets/Shader/standard_terrain_opaque_lit.frag.spv" type="frag" />
+	<shader name="frag_standard_mesh_opaque_normalmap_lit" path="Assets/Shader/standard_mesh_opaque_normalmap_lit.frag.spv" type="frag" />
+	<shader name="frag_standard_mesh_transparent_tree_lit" path="Assets/Shader/standard_mesh_transparent_tree_lit.frag.spv" type="frag" />
+	<shader name="frag_standard_mesh_opaque_tree_alphatest_lit" path="Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv" type="frag" />
+	<shader name="frag_standard_mesh_opaque_grass_alphatest_lit" path="Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv" type="frag" />
+
+	<!-- Shader comp -->
+		
+
 </cfg_shader>

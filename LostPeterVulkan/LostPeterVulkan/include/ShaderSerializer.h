@@ -24,8 +24,23 @@ namespace LostPeter
         virtual ~ShaderSerializer();
 
     public:
+    protected:
+        ShaderInfoPtrVector m_aShaderInfo;
+        ShaderInfoGroupPtrMap m_mapShaderInfoGroup;
 
     public:
+        LP_FORCEINLINE const ShaderInfoPtrVector& GetShaderInfos() const { return m_aShaderInfo; }
+        LP_FORCEINLINE ShaderInfoPtrVector& GetShaderInfos() { return m_aShaderInfo; }
+        LP_FORCEINLINE const ShaderInfoGroupPtrMap& GetShaderInfoGroups() const { return m_mapShaderInfoGroup; }
+        LP_FORCEINLINE ShaderInfoGroupPtrMap& GetShaderInfoGroups() { return m_mapShaderInfoGroup; }
+
+    
+    public:
+        bool HasShaderInfo(uint nGroup, const String& strName);
+        ShaderInfo* GetShaderInfo(uint nGroup, const String& strName);
+        bool AddShaderInfo(ShaderInfo* pShaderInfo);
+        void DeleteShaderInfo(uint nGroup, const String& strName);
+        void DeleteShaderInfoAll();
 
     protected:
         //File Content XML

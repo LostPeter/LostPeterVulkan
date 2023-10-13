@@ -232,7 +232,7 @@ namespace LostPeter
                                                         isGCS);
             if (AddTextureInfo(pTextureInfo))
             {
-                F_LogInfo("TextureSerializer::deserializeXML: Add texture info success, [%s] - [%s] - [%s] - [%s] - [%s] - [%s] - [%s] - [%d - %d - %d] - [%d - %d] - [%d] - [%d] !",
+                F_LogInfo("TextureSerializer::deserializeXML: Add texture info success, [%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%d-%d-%d]-[%d-%d]-[%d]-[%d] !",
                           strNameTexture.c_str(), 
                           strPathTexture.c_str(), 
                           strType.c_str(), 

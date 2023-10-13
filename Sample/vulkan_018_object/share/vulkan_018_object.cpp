@@ -12,261 +12,6 @@
 #include "PreInclude.h"
 #include "vulkan_018_object.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/matrix4x4.h>
-#include <assimp/postprocess.h>
-
-
-/////////////////////////// Texture /////////////////////////////
-static const int g_TextureCount = 24;
-static const char* g_TexturePaths[5 * g_TextureCount] = 
-{
-    //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
-    "default_blackwhite",               "2D",            "false",                  "false",                           "Assets/Texture/Common/default_blackwhite.png", //default_blackwhite
-    "bricks_diffuse",                   "2D",            "false",                  "false",                           "Assets/Texture/Common/bricks_diffuse.png", //bricks_diffuse
-    "terrain",                          "2D",            "false",                  "false",                           "Assets/Texture/Common/terrain.png", //terrain
-    "texture2d",                        "2D",            "false",                  "false",                           "Assets/Texture/Common/texture2d.jpg", //texture2d
-    
-    "texturecubemap",                   "CubeMap",       "false",                  "false",                           "Assets/Texture/Sky/texturecubemap_x_right.png;Assets/Texture/Sky/texturecubemap_x_left.png;Assets/Texture/Sky/texturecubemap_y_up.png;Assets/Texture/Sky/texturecubemap_y_down.png;Assets/Texture/Sky/texturecubemap_z_front.png;Assets/Texture/Sky/texturecubemap_z_back.png", //texturecubemap
-
-    "texture_terrain_diffuse",          "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture_terrain_diffuse
-    "texture_terrain_normal",           "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png", //texture_terrain_normal
-    "texture_terrain_control",          "2DArray",       "false",                  "false",                           "Assets/Texture/Terrain/terrain_control.png", //texture_terrain_control
-
-    "mountain_diffuse",                 "2D",            "false",                  "false",                           "Assets/Texture/Model/mountain/mountain_diffuse.png", //mountain_diffuse
-    "mountain_normal",                  "2D",            "false",                  "false",                           "Assets/Texture/Model/mountain/mountain_normal.png", //mountain_normal
-
-    "rock_diffuse",                     "2D",            "false",                  "false",                           "Assets/Texture/Model/rock/rock_diffuse.png", //rock_diffuse
-    "rock_normal",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/rock/rock_normal.png", //rock_normal
-    "cliff_diffuse",                    "2D",            "false",                  "false",                           "Assets/Texture/Model/cliff/cliff_diffuse.png", //cliff_diffuse
-    "cliff_normal",                     "2D",            "false",                  "false",                           "Assets/Texture/Model/cliff/cliff_normal.png", //cliff_normal
-
-    "tree_diffuse",                     "2D",            "false",                  "false",                           "Assets/Texture/Model/tree/tree_diffuse.png", //tree_diffuse
-    "tree_spruce_diffuse",              "2D",            "false",                  "false",                           "Assets/Texture/Model/tree_spruce/tree_spruce_diffuse.png", //tree_spruce_diffuse
-
-    "grass_alien",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_alien.png", //grass_alien
-    "grass_field",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_field.png", //grass_field
-    "grass_pixelated",                  "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_pixelated.png", //grass_pixelated
-    "grass_tall",                       "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_tall.png", //grass_tall
-    "grass_thick",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_thick.png", //grass_thick
-    "grass_thin",                       "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_thin.png", //grass_thin
-    "grass_wheat",                      "2D",            "false",                  "false",                           "Assets/Texture/Model/grass/grass_wheat.png", //grass_wheat
-    
-    "flower_atlas",                     "2D",            "false",                  "false",                           "Assets/Texture/Model/flower/flower_atlas.png", //flower_atlas
-
-};
-static VkFormat g_TextureFormats[g_TextureCount] = 
-{
-    VK_FORMAT_R8G8B8A8_SRGB, //default_blackwhite
-    VK_FORMAT_R8G8B8A8_SRGB, //bricks_diffuse
-    VK_FORMAT_R8G8B8A8_SRGB, //terrain
-    VK_FORMAT_R8G8B8A8_SRGB, //texture2d
-
-    VK_FORMAT_R8G8B8A8_SRGB, //texturecubemap
-
-    VK_FORMAT_R8G8B8A8_SRGB, //texture_terrain_diffuse
-    VK_FORMAT_R8G8B8A8_UNORM, //texture_terrain_normal
-    VK_FORMAT_R8G8B8A8_UNORM, //texture_terrain_control
-
-    VK_FORMAT_R8G8B8A8_SRGB, //mountain_diffuse
-    VK_FORMAT_R8G8B8A8_UNORM, //mountain_normal
-
-    VK_FORMAT_R8G8B8A8_SRGB, //rock_diffuse
-    VK_FORMAT_R8G8B8A8_UNORM, //rock_normal
-    VK_FORMAT_R8G8B8A8_SRGB, //cliff_diffuse
-    VK_FORMAT_R8G8B8A8_UNORM, //cliff_normal
-
-    VK_FORMAT_R8G8B8A8_SRGB, //tree_diffuse
-    VK_FORMAT_R8G8B8A8_SRGB, //tree_spruce_diffuse
-
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_alien
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_field
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_pixelated
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_tall
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_thick
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_thin
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_wheat
-
-    VK_FORMAT_R8G8B8A8_SRGB, //flower_atlas
-
-};
-static FTextureFilterType g_TextureFilters[g_TextureCount] = 
-{
-    F_TextureFilter_Bilinear, //default_blackwhite
-    F_TextureFilter_Bilinear, //bricks_diffuse
-    F_TextureFilter_Bilinear, //terrain
-    F_TextureFilter_Bilinear, //texture2d
-
-    F_TextureFilter_Bilinear, //texturecubemap
-
-    F_TextureFilter_Bilinear, //texture_terrain_diffuse
-    F_TextureFilter_Bilinear, //texture_terrain_normal
-    F_TextureFilter_Bilinear, //texture_terrain_control
-
-    F_TextureFilter_Bilinear, //mountain_diffuse
-    F_TextureFilter_Bilinear, //mountain_normal
-
-    F_TextureFilter_Bilinear, //rock_diffuse
-    F_TextureFilter_Bilinear, //rock_normal
-    F_TextureFilter_Bilinear, //cliff_diffuse
-    F_TextureFilter_Bilinear, //cliff_normal
-
-    F_TextureFilter_Bilinear, //tree_diffuse
-    F_TextureFilter_Bilinear, //tree_spruce_diffuse
-
-    F_TextureFilter_Bilinear, //grass_alien
-    F_TextureFilter_Bilinear, //grass_field
-    F_TextureFilter_Bilinear, //grass_pixelated
-    F_TextureFilter_Bilinear, //grass_tall
-    F_TextureFilter_Bilinear, //grass_thick
-    F_TextureFilter_Bilinear, //grass_thin
-    F_TextureFilter_Bilinear, //grass_wheat
-
-    F_TextureFilter_Bilinear, //flower_atlas
-
-};
-static FTextureAddressingType g_TextureAddressings[g_TextureCount] = 
-{
-    F_TextureAddressing_Clamp, //default_blackwhite
-    F_TextureAddressing_Clamp, //bricks_diffuse
-    F_TextureAddressing_Clamp, //terrain
-    F_TextureAddressing_Clamp, //texture2d
-
-    F_TextureAddressing_Wrap, //texturecubemap
-
-    F_TextureAddressing_Clamp, //texture_terrain_diffuse
-    F_TextureAddressing_Clamp, //texture_terrain_normal
-    F_TextureAddressing_Clamp, //texture_terrain_control
-
-    F_TextureAddressing_Clamp, //mountain_diffuse
-    F_TextureAddressing_Clamp, //mountain_normal
-
-    F_TextureAddressing_Clamp, //rock_diffuse
-    F_TextureAddressing_Clamp, //rock_normal
-    F_TextureAddressing_Clamp, //cliff_diffuse
-    F_TextureAddressing_Clamp, //cliff_normal
-
-    F_TextureAddressing_Clamp, //tree_diffuse
-    F_TextureAddressing_Clamp, //tree_spruce_diffuse
-
-    F_TextureAddressing_Clamp, //grass_alien
-    F_TextureAddressing_Clamp, //grass_field
-    F_TextureAddressing_Clamp, //grass_pixelated
-    F_TextureAddressing_Clamp, //grass_tall
-    F_TextureAddressing_Clamp, //grass_thick
-    F_TextureAddressing_Clamp, //grass_thin
-    F_TextureAddressing_Clamp, //grass_wheat
-
-    F_TextureAddressing_Clamp, //flower_atlas
-
-};
-static FTextureBorderColorType g_TextureBorderColors[g_TextureCount] = 
-{
-    F_TextureBorderColor_OpaqueBlack, //default_blackwhite
-    F_TextureBorderColor_OpaqueBlack, //bricks_diffuse
-    F_TextureBorderColor_OpaqueBlack, //terrain
-    F_TextureBorderColor_OpaqueBlack, //texture2d
-
-    F_TextureBorderColor_OpaqueBlack, //texturecubemap
-
-    F_TextureBorderColor_OpaqueBlack, //texture_terrain_diffuse
-    F_TextureBorderColor_OpaqueBlack, //texture_terrain_normal
-    F_TextureBorderColor_OpaqueBlack, //texture_terrain_control
-
-    F_TextureBorderColor_OpaqueBlack, //mountain_diffuse
-    F_TextureBorderColor_OpaqueBlack, //mountain_normal
-
-    F_TextureBorderColor_OpaqueBlack, //rock_diffuse
-    F_TextureBorderColor_OpaqueBlack, //rock_normal
-    F_TextureBorderColor_OpaqueBlack, //cliff_diffuse
-    F_TextureBorderColor_OpaqueBlack, //cliff_normal
-
-    F_TextureBorderColor_OpaqueBlack, //tree_diffuse
-    F_TextureBorderColor_OpaqueBlack, //tree_spruce_diffuse
-
-    F_TextureBorderColor_OpaqueBlack, //grass_alien
-    F_TextureBorderColor_OpaqueBlack, //grass_field
-    F_TextureBorderColor_OpaqueBlack, //grass_pixelated
-    F_TextureBorderColor_OpaqueBlack, //grass_tall
-    F_TextureBorderColor_OpaqueBlack, //grass_thick
-    F_TextureBorderColor_OpaqueBlack, //grass_thin
-    F_TextureBorderColor_OpaqueBlack, //grass_wheat
-
-    F_TextureBorderColor_OpaqueBlack, //flower_atlas
-
-};
-static int g_TextureSizes[3 * g_TextureCount] = 
-{
-    512,    512,    1, //default_blackwhite
-    512,    512,    1, //bricks_diffuse
-    512,    512,    1, //terrain
-    512,    512,    1, //texture2d
-
-    512,    512,    1, //texturecubemap
-
-   1024,   1024,    1, //texture_terrain_diffuse
-   1024,   1024,    1, //texture_terrain_normal
-    512,    512,    1, //texture_terrain_control
-
-   1024,   1024,    1, //mountain_diffuse
-   1024,   1024,    1, //mountain_normal
-
-    512,    512,    1, //rock_diffuse
-    512,    512,    1, //rock_normal
-    512,    512,    1, //cliff_diffuse
-   1024,   1024,    1, //cliff_normal
-
-   1024,   1024,    1, //tree_diffuse
-   1024,   1024,    1, //tree_spruce_diffuse
-
-   1024,   1024,    1, //grass_alien
-   1024,   1024,    1, //grass_field
-    128,    128,    1, //grass_pixelated
-   1024,   1024,    1, //grass_tall
-   1024,   1024,    1, //grass_thick
-   1024,   1024,    1, //grass_thin
-    128,    512,    1, //grass_wheat
-
-   1024,   1024,    1, //flower_atlas
-
-};
-static float g_TextureAnimChunks[2 * g_TextureCount] = 
-{
-    0,    0, //default_blackwhite
-    0,    0, //bricks_diffuse
-    0,    0, //terrain
-    0,    0, //texture2d
-
-    0,    0, //texturecubemap
-
-    0,    0, //texture_terrain_diffuse
-    0,    0, //texture_terrain_normal
-    0,    0, //texture_terrain_control
-
-    0,    0, //mountain_diffuse
-    0,    0, //mountain_normal
-
-    0,    0, //rock_diffuse
-    0,    0, //rock_normal
-    0,    0, //cliff_diffuse
-    0,    0, //cliff_normal
-
-    0,    0, //tree_diffuse
-    0,    0, //tree_spruce_diffuse
-
-    0,    0, //grass_alien
-    0,    0, //grass_field
-    0,    0, //grass_pixelated
-    0,    0, //grass_tall
-    0,    0, //grass_thick
-    0,    0, //grass_thin
-    0,    0, //grass_wheat
-
-    0,    0, //flower_atlas
-
-};
-
 
 /////////////////////////// DescriptorSetLayout /////////////////
 static const int g_DescriptorSetLayoutCount = 3;
@@ -440,30 +185,30 @@ static bool g_Object_IsIndirectDraw[g_Object_Count] =
 static const int g_ObjectRend_Count = 20;
 static const char* g_ObjectRend_Configs[7 * g_ObjectRend_Count] = 
 {
-    //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                    //Texture CS
-    "object_skybox-1",                     "",                     "",                              "",                         "",                    "texturecubemap",                                                               "", //object_skybox-1
-    "object_mountain-1",                   "",                     "",                              "",                         "",                    "mountain_diffuse;mountain_normal",                                             "", //object_mountain-1
+    //Object Rend Name                     //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS            //Texture FS                                                                         //Texture CS
+    "object_skybox-1",                     "",                     "",                              "",                         "",                    "6006:texturecubemap",                                                               "", //object_skybox-1
+    "object_mountain-1",                   "",                     "",                              "",                         "",                    "6002:mountain_diffuse;6002:mountain_normal",                                        "", //object_mountain-1
 
-    "object_rock-1",                       "",                     "",                              "",                         "",                    "rock_diffuse;rock_normal",                                                     "", //object_rock-1
-    "object_cliff-1",                      "",                     "",                              "",                         "",                    "cliff_diffuse;cliff_normal",                                                   "", //object_cliff-1
+    "object_rock-1",                       "",                     "",                              "",                         "",                    "6002:rock_diffuse;6002:rock_normal",                                                "", //object_rock-1
+    "object_cliff-1",                      "",                     "",                              "",                         "",                    "6002:cliff_diffuse;6002:cliff_normal",                                              "", //object_cliff-1
 
-    "object_tree-1",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-1
-    "object_tree-2",                       "",                     "",                              "",                         "",                    "tree_diffuse",                                                                 "", //object_tree-2
-    "object_tree_spruce-1",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-1
-    "object_tree_spruce-2",                "",                     "",                              "",                         "",                    "tree_spruce_diffuse",                                                          "", //object_tree_spruce-2
+    "object_tree-1",                       "",                     "",                              "",                         "",                    "6002:tree_diffuse",                                                                 "", //object_tree-1
+    "object_tree-2",                       "",                     "",                              "",                         "",                    "6002:tree_diffuse",                                                                 "", //object_tree-2
+    "object_tree_spruce-1",                "",                     "",                              "",                         "",                    "6002:tree_spruce_diffuse",                                                          "", //object_tree_spruce-1
+    "object_tree_spruce-2",                "",                     "",                              "",                         "",                    "6002:tree_spruce_diffuse",                                                          "", //object_tree_spruce-2
 
-    "object_grass-1",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-1
-    "object_grass-2",                      "",                     "",                              "",                         "",                    "grass_wheat",                                                                  "", //object_grass-2
-    "object_grass-3",                      "",                     "",                              "",                         "",                    "grass_tall",                                                                   "", //object_grass-3
-    "object_grass-4",                      "",                     "",                              "",                         "",                    "grass_field",                                                                  "", //object_grass-4
-    "object_flower-1",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-1
-    "object_flower-2",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-2
-    "object_flower-3",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-3
-    "object_flower-4",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-4
-    "object_flower-5",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-5
-    "object_flower-6",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-6
-    "object_flower-7",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-7
-    "object_flower-8",                     "",                     "",                              "",                         "",                    "flower_atlas",                                                                 "", //object_flower-8
+    "object_grass-1",                      "",                     "",                              "",                         "",                    "6002:grass_field",                                                                  "", //object_grass-1
+    "object_grass-2",                      "",                     "",                              "",                         "",                    "6002:grass_wheat",                                                                  "", //object_grass-2
+    "object_grass-3",                      "",                     "",                              "",                         "",                    "6002:grass_tall",                                                                   "", //object_grass-3
+    "object_grass-4",                      "",                     "",                              "",                         "",                    "6002:grass_field",                                                                  "", //object_grass-4
+    "object_flower-1",                     "",                     "",                              "",                         "",                    "6002:flower_atlas",                                                                 "", //object_flower-1
+    "object_flower-2",                     "",                     "",                              "",                         "",                    "6002:flower_atlas",                                                                 "", //object_flower-2
+    "object_flower-3",                     "",                     "",                              "",                         "",                    "6002:flower_atlas",                                                                 "", //object_flower-3
+    "object_flower-4",                     "",                     "",                              "",                         "",                    "6002:flower_atlas",                                                                 "", //object_flower-4
+    "object_flower-5",                     "",                     "",                              "",                         "",                    "6002:flower_atlas",                                                                 "", //object_flower-5
+    "object_flower-6",                     "",                     "",                              "",                         "",                    "6002:flower_atlas",                                                                 "", //object_flower-6
+    "object_flower-7",                     "",                     "",                              "",                         "",                    "6002:flower_atlas",                                                                 "", //object_flower-7
+    "object_flower-8",                     "",                     "",                              "",                         "",                    "6002:flower_atlas",                                                                 "", //object_flower-8
 
 };
 static const char* g_ObjectRend_NameShaderModules[6 * g_ObjectRend_Count] = 
@@ -914,9 +659,12 @@ void Vulkan_018_Object::loadModel_Custom()
     //Texture
     m_pTextureManager = new TextureManager();
     m_pTextureManager->Init(s_nGroup_Sample, s_strNameTexture_Sample);
+    m_pTextureManager->LoadTextureAll();
 
-
-    createTextures();
+    //Shader
+    m_pShaderManager = new ShaderManager();
+    m_pShaderManager->Init(s_nGroup_Sample, s_strNameShader_Sample);
+    
 
     int nIndexObjectRend = 0;
     for (int i = 0; i < g_Object_Count; i++)
@@ -978,9 +726,11 @@ void Vulkan_018_Object::loadModel_Custom()
                         size_t count_tex = aTextureVS.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
-                            String nameTex = aTextureVS[p];
-                            Texture* pTextureVS = this->findTexture(nameTex);
-                            pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), pTextureVS);
+                            StringVector aArr = FUtilString::Split(aTextureVS[p], ":");
+                            uint32 group = FUtilString::ParserUInt(aArr[0]);
+                            String nameTex = aArr[1];
+                            Texture* pTextureVS = TextureManager::GetSingleton().GetTexture(group, nameTex);
+                            pRend->AddTexture(F_GetShaderTypeName(F_Shader_Vertex), pTextureVS);
                         }
                     }
                 }
@@ -993,9 +743,11 @@ void Vulkan_018_Object::loadModel_Custom()
                         size_t count_tex = aTextureTESC.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
-                            String nameTex = aTextureTESC[p];
-                            Texture* pTextureTESC = this->findTexture(nameTex);
-                            pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), pTextureTESC);
+                            StringVector aArr = FUtilString::Split(aTextureTESC[p], ":");
+                            uint32 group = FUtilString::ParserUInt(aArr[0]);
+                            String nameTex = aArr[1];
+                            Texture* pTextureTESC = TextureManager::GetSingleton().GetTexture(group, nameTex);
+                            pRend->AddTexture(F_GetShaderTypeName(F_Shader_TessellationControl), pTextureTESC);
                         }
                     }
                 }
@@ -1008,9 +760,11 @@ void Vulkan_018_Object::loadModel_Custom()
                         size_t count_tex = aTextureTESE.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
-                            String nameTex = aTextureTESE[p];
-                            Texture* pTextureTESE = this->findTexture(nameTex);
-                            pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), pTextureTESE);
+                            StringVector aArr = FUtilString::Split(aTextureTESE[p], ":");
+                            uint32 group = FUtilString::ParserUInt(aArr[0]);
+                            String nameTex = aArr[1];
+                            Texture* pTextureTESE = TextureManager::GetSingleton().GetTexture(group, nameTex);
+                            pRend->AddTexture(F_GetShaderTypeName(F_Shader_TessellationEvaluation), pTextureTESE);
                         }
                     }
                 }
@@ -1023,9 +777,11 @@ void Vulkan_018_Object::loadModel_Custom()
                         size_t count_tex = aTextureGS.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
-                            String nameTex = aTextureGS[p];
-                            Texture* pTextureGS = this->findTexture(nameTex);
-                            pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), pTextureGS);
+                            StringVector aArr = FUtilString::Split(aTextureGS[p], ":");
+                            uint32 group = FUtilString::ParserUInt(aArr[0]);
+                            String nameTex = aArr[1];
+                            Texture* pTextureGS = TextureManager::GetSingleton().GetTexture(group, nameTex);
+                            pRend->AddTexture(F_GetShaderTypeName(F_Shader_Fragment), pTextureGS);
                         }
                     }
                 }
@@ -1038,9 +794,11 @@ void Vulkan_018_Object::loadModel_Custom()
                         size_t count_tex = aTextureFS.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
-                            String nameTex = aTextureFS[p];
-                            Texture* pTextureFS = this->findTexture(nameTex);
-                            pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), pTextureFS);
+                            StringVector aArr = FUtilString::Split(aTextureFS[p], ":");
+                            uint32 group = FUtilString::ParserUInt(aArr[0]);
+                            String nameTex = aArr[1];
+                            Texture* pTextureFS = TextureManager::GetSingleton().GetTexture(group, nameTex);
+                            pRend->AddTexture(F_GetShaderTypeName(F_Shader_Fragment), pTextureFS);
                         }
                     }
                 }
@@ -1053,9 +811,11 @@ void Vulkan_018_Object::loadModel_Custom()
                         size_t count_tex = aTextureCS.size();
                         for (size_t p = 0; p < count_tex; p++)
                         {
-                            String nameTex = aTextureCS[p];
-                            Texture* pTextureCS = this->findTexture(nameTex);
-                            pRend->AddTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), pTextureCS);
+                            StringVector aArr = FUtilString::Split(aTextureCS[p], ":");
+                            uint32 group = FUtilString::ParserUInt(aArr[0]);
+                            String nameTex = aArr[1];
+                            Texture* pTextureCS = TextureManager::GetSingleton().GetTexture(group, nameTex);
+                            pRend->AddTexture(F_GetShaderTypeName(F_Shader_Compute), pTextureCS);
                         }
                     }
                 }
@@ -1175,7 +935,7 @@ void Vulkan_018_Object::rebuildInstanceCBs(bool isCreateVkBuffer)
                 materialConstants.lighting = isObjectLighting;
                 //Texture VS
                 {
-                    TexturePtrVector* pTextureVSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
+                    TexturePtrVector* pTextureVSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Vertex));
                     if (pTextureVSs != nullptr)
                     {
 
@@ -1183,7 +943,7 @@ void Vulkan_018_Object::rebuildInstanceCBs(bool isCreateVkBuffer)
                 }
                 //Texture FS
                 {
-                    TexturePtrVector* pTextureFSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                    TexturePtrVector* pTextureFSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Fragment));
                     if (pTextureFSs != nullptr)
                     {
 
@@ -1191,7 +951,7 @@ void Vulkan_018_Object::rebuildInstanceCBs(bool isCreateVkBuffer)
                 }
                 //Texture CS
                 {
-                    TexturePtrVector* pTextureCSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
+                    TexturePtrVector* pTextureCSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Compute));
                     if (pTextureCSs != nullptr)
                     {
 
@@ -1456,78 +1216,6 @@ void Vulkan_018_Object::createComputePipeline_Custom()
     }   
 }
 
-
-void Vulkan_018_Object::destroyTextures()
-{
-    size_t count = this->m_aModelTexture.size();
-    for (size_t i = 0; i < count; i++)
-    {
-        Texture* pTexture = this->m_aModelTexture[i];
-        delete pTexture;
-    }
-    this->m_aModelTexture.clear();
-    this->m_mapModelTexture.clear();
-}
-void Vulkan_018_Object::createTextures()
-{
-    for (int i = 0; i < g_TextureCount; i++)
-    {
-        String nameTexture = g_TexturePaths[5 * i + 0];
-        String nameType = g_TexturePaths[5 * i + 1];
-        FTextureType typeTexture = F_ParseTextureType(nameType);
-        String nameIsRenderTarget = g_TexturePaths[5 * i + 2];
-        bool isRenderTarget = FUtilString::ParserBool(nameIsRenderTarget);
-        String nameIsGraphicsComputeShared = g_TexturePaths[5 * i + 3];
-        bool isGraphicsComputeShared = FUtilString::ParserBool(nameIsGraphicsComputeShared);
-        String pathTextures = g_TexturePaths[5 * i + 4];
-
-        StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
-        Texture* pTexture = new Texture(nameTexture,
-                                        aPathTexture,
-                                        typeTexture,
-                                        g_TextureFormats[i],
-                                        g_TextureFilters[i],
-                                        g_TextureAddressings[i],
-                                        g_TextureBorderColors[i],
-                                        isRenderTarget,
-                                        isGraphicsComputeShared);
-        pTexture->texChunkMaxX = g_TextureAnimChunks[i * 2 + 0];
-        pTexture->texChunkMaxY = g_TextureAnimChunks[i * 2 + 1];
-        if (pTexture->texChunkMaxX > 0 && 
-            pTexture->texChunkMaxY > 0)
-        {
-            pTexture->texChunkIndex = FMath::Rand(0, pTexture->texChunkMaxX * pTexture->texChunkMaxY - 1);
-        }
-        pTexture->AddRef();
-
-        int width = g_TextureSizes[3 * i + 0];
-        int height = g_TextureSizes[3 * i + 1];
-        int depth = g_TextureSizes[3 * i + 1];
-        pTexture->LoadTexture(width, 
-                              height,
-                              depth);
-
-        this->m_aModelTexture.push_back(pTexture);
-        this->m_mapModelTexture[nameTexture] = pTexture;
-
-        F_LogInfo("Vulkan_018_Object::createTextures: create texture: [%s], type: [%s], isRT: [%s], path: [%s] success !", 
-                  nameTexture.c_str(), 
-                  nameType.c_str(), 
-                  isRenderTarget ? "true" : "false",
-                  pathTextures.c_str());
-    }
-}
-Texture* Vulkan_018_Object::findTexture(const String& nameTexture)
-{
-    TexturePtrMap::iterator itFind = this->m_mapModelTexture.find(nameTexture);
-    if (itFind == this->m_mapModelTexture.end())
-    {
-        return nullptr;
-    }
-    return itFind->second;
-}
-
-
 void Vulkan_018_Object::destroyDescriptorSetLayouts()
 {
     size_t count = this->m_aVkDescriptorSetLayouts.size();
@@ -1784,7 +1472,7 @@ void Vulkan_018_Object::createDescriptorSets_Graphics(VkDescriptorSetVector& poD
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureVS)) //TextureVS
             {
-                Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Vertex), nIndexTextureVS);
+                Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Vertex), nIndexTextureVS);
                 nIndexTextureVS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -1796,7 +1484,7 @@ void Vulkan_018_Object::createDescriptorSets_Graphics(VkDescriptorSetVector& poD
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESC))//TextureTESC
             {
-                Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationControl), nIndexTextureTESC);
+                Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationControl), nIndexTextureTESC);
                 nIndexTextureTESC ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -1808,7 +1496,7 @@ void Vulkan_018_Object::createDescriptorSets_Graphics(VkDescriptorSetVector& poD
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureTESE))//TextureTESE
             {
-                Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_TessellationEvaluation), nIndexTextureTESE);
+                Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_TessellationEvaluation), nIndexTextureTESE);
                 nIndexTextureTESE ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -1820,7 +1508,7 @@ void Vulkan_018_Object::createDescriptorSets_Graphics(VkDescriptorSetVector& poD
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFS)) //TextureFS
             {
-                Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Fragment), nIndexTextureFS);
+                Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Fragment), nIndexTextureFS);
                 nIndexTextureFS ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRendIndirect != nullptr ? pRendIndirect->poDescriptorSets[j] : pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -1870,7 +1558,7 @@ void Vulkan_018_Object::createDescriptorSets_Compute(PipelineCompute* pPipelineC
         }   
         else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSR)) //TextureCSR
         {
-            Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
+            Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
             pPipelineCompute->pTextureSource = pTexture;
             pushVkDescriptorSet_Image(descriptorWrites,
@@ -1883,7 +1571,7 @@ void Vulkan_018_Object::createDescriptorSets_Compute(PipelineCompute* pPipelineC
         }
         else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureCSRW)) //TextureCSRW
         {
-            Texture* pTexture = pRend->GetTexture(Util_GetShaderTypeName(Vulkan_Shader_Compute), nIndexTextureCS);
+            Texture* pTexture = pRend->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
             nIndexTextureCS ++;
             pPipelineCompute->pTextureTarget = pTexture;
             pushVkDescriptorSet_Image(descriptorWrites,
@@ -2439,7 +2127,7 @@ void Vulkan_018_Object::modelConfig()
 
                                             //Texture VS
                                             {
-                                                TexturePtrVector* pTextureVSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Vertex));
+                                                TexturePtrVector* pTextureVSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Vertex));
                                                 if (pTextureVSs != nullptr)
                                                 {
 
@@ -2447,7 +2135,7 @@ void Vulkan_018_Object::modelConfig()
                                             }
                                             //Texture FS
                                             {
-                                                TexturePtrVector* pTextureFSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Fragment));
+                                                TexturePtrVector* pTextureFSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Fragment));
                                                 if (pTextureFSs != nullptr)
                                                 {
                                                     size_t count_texture = pTextureFSs->size();
@@ -2533,7 +2221,7 @@ void Vulkan_018_Object::modelConfig()
                                             }
                                             //Texture CS
                                             {
-                                                TexturePtrVector* pTextureCSs = pRend->GetTextures(Util_GetShaderTypeName(Vulkan_Shader_Compute));
+                                                TexturePtrVector* pTextureCSs = pRend->GetTextures(F_GetShaderTypeName(F_Shader_Compute));
                                                 if (pTextureCSs != nullptr)
                                                 {
 
@@ -2759,8 +2447,6 @@ void Vulkan_018_Object::cleanupCustom()
     F_DELETE(m_pTextureManager)
     F_DELETE(m_pMeshManager)
     F_DELETE(m_pPathManager)
-    
-    destroyTextures();
 
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)

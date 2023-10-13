@@ -291,45 +291,16 @@ namespace LostPeter
         return VK_SAMPLE_COUNT_1_BIT;
     }
 
-
-    //VulkanShaderType
-    static String s_nameShaders[] = 
-    {
-        "vert",                 //0: Vertex
-        "tesc",                 //1: TessellationControl
-        "tese",                 //2: TessellationEvaluation
-        "geom",                 //3: Geometry
-        "frag",                 //4: Fragment
-        "comp",                 //5: Compute
-    };
-    const String& Util_GetShaderTypeName(VulkanShaderType type)
-    {
-        return s_nameShaders[(int)type];
-    }
-    const String& Util_GetShaderTypeName(int type)
-    {
-        return s_nameShaders[type];
-    }
-    VulkanShaderType Util_ParseShaderType(const String& strName)
-    {
-        for (size_t i = 0; i < (int)Vulkan_Shader_Count; i++)
-        {
-            if (s_nameShaders[i] == strName)
-                return (VulkanShaderType)(i);
-        }
-        F_Assert(false && "Util_ParseShaderType: Wrong type name !")
-        return Vulkan_Shader_Vertex;
-    }
-    VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(VulkanShaderType type)
+    VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(FShaderType type)
     {
         switch((int)type)
         {
-        case Vulkan_Shader_Vertex:                  return VK_SHADER_STAGE_VERTEX_BIT;
-        case Vulkan_Shader_TessellationControl:     return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-        case Vulkan_Shader_TessellationEvaluation:  return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-        case Vulkan_Shader_Geometry:                return VK_SHADER_STAGE_GEOMETRY_BIT;
-        case Vulkan_Shader_Fragment:                return VK_SHADER_STAGE_FRAGMENT_BIT;
-        case Vulkan_Shader_Compute:                 return VK_SHADER_STAGE_COMPUTE_BIT;
+        case F_Shader_Vertex:                  return VK_SHADER_STAGE_VERTEX_BIT;
+        case F_Shader_TessellationControl:     return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+        case F_Shader_TessellationEvaluation:  return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+        case F_Shader_Geometry:                return VK_SHADER_STAGE_GEOMETRY_BIT;
+        case F_Shader_Fragment:                return VK_SHADER_STAGE_FRAGMENT_BIT;
+        case F_Shader_Compute:                 return VK_SHADER_STAGE_COMPUTE_BIT;
         }
         F_Assert(false && "Util_Transform2VkShaderStageFlagBits: Wrong type !")
         return VK_SHADER_STAGE_VERTEX_BIT;
@@ -558,8 +529,8 @@ namespace LostPeter
     {
 
     }
-    TextureInfo::TextureInfo(const String& _nameMesh,
-                             const String& _pathMesh,
+    TextureInfo::TextureInfo(const String& _nameTexture,
+                             const String& _pathTexture,
                              FTextureType _typeTexture,
                              FTexturePixelFormatType _typeTexturePixelFormat,
                              FTextureFilterType _typeTextureFilter,
@@ -573,8 +544,8 @@ namespace LostPeter
                              bool _isRT,
                              bool _isGCS)
         : group(0)
-        , nameTexture(_nameMesh)
-        , pathTexture(_pathMesh)
+        , nameTexture(_nameTexture)
+        , pathTexture(_pathTexture)
         , typeTexture(_typeTexture)
         , typeTexturePixelFormat(_typeTexturePixelFormat)
         , typeTextureFilter(_typeTextureFilter)
@@ -594,5 +565,30 @@ namespace LostPeter
     {
 
     }
+
+
+    ShaderInfo::ShaderInfo()
+        : group(0)
+        , nameShader("")
+        , pathShader("")
+        , typeShader(F_Shader_Vertex)
+    {
+
+    }
+    ShaderInfo::ShaderInfo(const String& _nameShader,
+                           const String& _pathShader,
+                           FShaderType _typeShader)
+        : group(0)
+        , nameShader(_nameShader)
+        , pathShader(_pathShader)
+        , typeShader(_typeShader)
+    {
+
+    }
+    ShaderInfo::~ShaderInfo()
+    {
+
+    }
+
 
 }; //LostPeter

@@ -219,22 +219,7 @@ namespace LostPeter
     VkBorderColor Util_Transform2VkBorderColor(FTextureBorderColorType type);
     VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(FMSAASampleCountType type);
 
-    
-    enum VulkanShaderType
-    {
-        Vulkan_Shader_Vertex = 0,                           //0: Vertex
-        Vulkan_Shader_TessellationControl,                  //1: TessellationControl
-        Vulkan_Shader_TessellationEvaluation,               //2: TessellationEvaluation
-        Vulkan_Shader_Geometry,                             //3: Geometry
-        Vulkan_Shader_Fragment,                             //4: Fragment
-        Vulkan_Shader_Compute,                              //5: Compute
-
-        Vulkan_Shader_Count,
-    };
-    const String& Util_GetShaderTypeName(VulkanShaderType type);
-    const String& Util_GetShaderTypeName(int type);
-    VulkanShaderType Util_ParseShaderType(const String& strName);
-    VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(VulkanShaderType type);
+    VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(FShaderType type);    
 
 
     enum VulkanDescriptorSetType
@@ -369,8 +354,8 @@ namespace LostPeter
     struct utilExport TextureInfo
     {
         TextureInfo();
-        TextureInfo(const String& _nameMesh,
-                    const String& _pathMesh,
+        TextureInfo(const String& _nameTexture,
+                    const String& _pathTexture,
                     FTextureType _typeTexture,
                     FTexturePixelFormatType _typeTexturePixelFormat,
                     FTextureFilterType _typeTextureFilter,
@@ -405,6 +390,25 @@ namespace LostPeter
     typedef std::vector<TextureInfo*> TextureInfoPtrVector;
     typedef std::map<String, TextureInfo*> TextureInfoPtrMap;
     typedef std::map<uint32, TextureInfoPtrMap> TextureInfoGroupPtrMap;
+
+
+    struct utilExport ShaderInfo
+    {
+        ShaderInfo();
+        ShaderInfo(const String& _nameShader,
+                   const String& _pathShader,
+                   FShaderType _typeShader);
+        ~ShaderInfo();
+
+        uint32 group;
+        String nameShader;
+        String pathShader;
+        FShaderType typeShader;
+
+    };
+    typedef std::vector<ShaderInfo*> ShaderInfoPtrVector;
+    typedef std::map<String, ShaderInfo*> ShaderInfoPtrMap;
+    typedef std::map<uint32, ShaderInfoPtrMap> ShaderInfoGroupPtrMap;
 
 
     struct utilExport ShaderModuleInfo
@@ -493,6 +497,7 @@ namespace LostPeter
 
     typedef std::vector<Shader*> ShaderPtrVector;
     typedef std::map<String, Shader*> ShaderPtrMap;
+    typedef std::map<uint32, ShaderPtrMap> ShaderGroupPtrMap;
 
     typedef std::vector<Material*> MaterialPtrVector;
     typedef std::map<String, Material*> MaterialPtrMap;

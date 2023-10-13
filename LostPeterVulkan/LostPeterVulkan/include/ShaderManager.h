@@ -24,11 +24,31 @@ namespace LostPeter
         virtual ~ShaderManager();
 
     public:
+    protected:
+        ShaderSerializer* m_pShaderSerializer;
+        ShaderPtrVector m_aShader;
+        ShaderGroupPtrMap m_mapShaderGroup;
 
     public:
         static ShaderManager& GetSingleton();
 		static ShaderManager* GetSingletonPtr();
 
+    public:
+        void Destroy();
+        bool Init(uint nGroup, const String& strNameCfgShader);
+
+    public:
+        bool LoadShaderAll();
+        Shader* LoadShader(uint nGroup, const String& strName);
+
+        bool HasShader(uint nGroup, const String& strName);
+        Shader* GetShader(uint nGroup, const String& strName);
+        bool AddShader(uint nGroup, Shader* pShader);
+        void DeleteShader(uint nGroup, const String& strName);
+        void DeleteShaderAll();
+
+    private:
+        Shader* loadShader(ShaderInfo* pSI);
     };
 
 }; //LostPeter

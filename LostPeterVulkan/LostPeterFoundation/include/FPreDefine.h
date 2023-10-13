@@ -505,6 +505,22 @@ namespace LostPeterFoundation
     FMSAASampleCountType F_ParseMSAASampleCountType(const String& strName);
 
 
+    enum FShaderType
+    {
+        F_Shader_Vertex = 0,                           //0: Vertex
+        F_Shader_TessellationControl,                  //1: TessellationControl
+        F_Shader_TessellationEvaluation,               //2: TessellationEvaluation
+        F_Shader_Geometry,                             //3: Geometry
+        F_Shader_Fragment,                             //4: Fragment
+        F_Shader_Compute,                              //5: Compute
+
+        F_Shader_Count,
+    };
+    const String& F_GetShaderTypeName(FShaderType type);
+    const String& F_GetShaderTypeName(int type);
+    FShaderType F_ParseShaderType(const String& strName);
+
+
     enum FPlaneSideType
     {
         F_PlaneSide_None = 0,                           //0: None

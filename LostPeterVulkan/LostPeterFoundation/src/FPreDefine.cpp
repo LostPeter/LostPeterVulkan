@@ -385,7 +385,7 @@ namespace LostPeterFoundation
 
 
     //FMSAASampleCountType
-    static String s_nameMSAASampleCounts[] = 
+    static String s_nameMSAASampleCountTypes[] = 
     {
         "1-Bit",                //0: 1_Bit
         "2-Bit",                //1: 2_Bit
@@ -397,22 +397,53 @@ namespace LostPeterFoundation
     };
     const String& F_GetMSAASampleCountTypeName(FMSAASampleCountType type)
     {
-        return s_nameMSAASampleCounts[(int)type];
+        return s_nameMSAASampleCountTypes[(int)type];
     }
     const String& F_GetMSAASampleCountTypeName(int type)
     {
-        return s_nameMSAASampleCounts[type];
+        return s_nameMSAASampleCountTypes[type];
     }
     FMSAASampleCountType F_ParseMSAASampleCountType(const String& strName)
     {
         for (size_t i = 0; i < (int)F_MSAASampleCount_Count; i++)
         {
-            if (s_nameMSAASampleCounts[i] == strName)
+            if (s_nameMSAASampleCountTypes[i] == strName)
                 return (FMSAASampleCountType)(i);
         }
         F_Assert(false && "F_ParseMSAASampleCountType: Wrong type name !")
         return F_MSAASampleCount_1_Bit;
     }
+
+
+    //FShaderType
+    static String s_nameShaderTypes[] = 
+    {
+        "vert",                 //0: Vertex
+        "tesc",                 //1: TessellationControl
+        "tese",                 //2: TessellationEvaluation
+        "geom",                 //3: Geometry
+        "frag",                 //4: Fragment
+        "comp",                 //5: Compute
+    };
+    const String& F_GetShaderTypeName(FShaderType type)
+    {
+        return s_nameShaderTypes[(int)type];
+    }
+    const String& F_GetShaderTypeName(int type)
+    {
+        return s_nameShaderTypes[type];
+    }
+    FShaderType F_ParseShaderType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_Shader_Count; i++)
+        {
+            if (s_nameShaderTypes[i] == strName)
+                return (FShaderType)(i);
+        }
+        F_Assert(false && "F_ParseShaderType: Wrong type name !")
+        return F_Shader_Vertex;
+    }
+
 
 
     //FCameraType

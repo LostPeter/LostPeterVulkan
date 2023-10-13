@@ -486,10 +486,7 @@ public:
     ShaderManager* m_pShaderManager;
     MaterialManager* m_pMaterialManager;
 
-
-    TexturePtrVector m_aModelTexture;
-    TexturePtrMap m_mapModelTexture;
-
+    
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrMap m_mapModelObjects;
     ModelObjectRendPtrVector m_aModelObjectRends_All;
@@ -565,11 +562,6 @@ protected:
 
 private:
     void rebuildInstanceCBs(bool isCreateVkBuffer);
-
-////Texture
-    void destroyTextures();
-    void createTextures();
-    Texture* findTexture(const String& nameTexture);
 
 ////DescriptorSetLayout
     void destroyDescriptorSetLayouts();
