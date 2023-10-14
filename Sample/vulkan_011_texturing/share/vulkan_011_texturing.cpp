@@ -961,7 +961,7 @@ void Vulkan_011_Texturing::loadModel_Custom()
             for (size_t j = 0; j < count_dsl; j++)
             {
                 const String& nameDescriptorSetLayout = aDescriptorSetLayout[j];
-                PipelineCompute* pPipelineCompute = new PipelineCompute("PipelineC-Object");
+                VKPipelineCompute* pPipelineCompute = new VKPipelineCompute("PipelineC-Object");
                 pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
                 pModelObject->AddPipelineCompute(pPipelineCompute);
             }
@@ -1334,7 +1334,7 @@ void Vulkan_011_Texturing::createComputePipeline_Custom()
         }
         for (size_t j = 0; j < count_pipeline; j ++)
         {
-            PipelineCompute* p = pModelObject->aPipelineComputes[j];
+            VKPipelineCompute* p = pModelObject->aPipelineComputes[j];
             VkPipelineShaderStageCreateInfo& shaderStageCreateInfo = pModelObject->aShaderStageCreateInfos_Computes[j];
 
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
@@ -1790,7 +1790,7 @@ void Vulkan_011_Texturing::createDescriptorSets_Custom()
         size_t count_comp = pModelObject->aPipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {       
-            PipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
 
             StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
             F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_011_Texturing::createDescriptorSets_Custom")

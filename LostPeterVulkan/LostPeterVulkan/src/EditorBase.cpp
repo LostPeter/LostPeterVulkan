@@ -13,7 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
-#include "../include/PipelineGraphics.h"
+#include "../include/VKPipelineGraphics.h"
 
 namespace LostPeter
 {
@@ -27,7 +27,7 @@ namespace LostPeter
         //PipelineLayout
         , poPipelineLayout(VK_NULL_HANDLE)
 
-        //PipelineGraphics
+        //VKPipelineGraphics
         , pPipelineGraphics(nullptr)
     {
 

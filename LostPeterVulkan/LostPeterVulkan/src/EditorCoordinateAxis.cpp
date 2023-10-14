@@ -13,7 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
-#include "../include/PipelineGraphics.h"
+#include "../include/VKPipelineGraphics.h"
 
 namespace LostPeter
 {
@@ -1535,8 +1535,8 @@ namespace LostPeter
     }
     void EditorCoordinateAxis::initPipelineGraphics()
     {
-        //0> PipelineGraphics/PipelineGraphicsQuadLine
-        this->pPipelineGraphics = new PipelineGraphics("PipelineG-EditorCoordinateAxis");
+        //0> Pipeline Graphics/Pipeline GraphicsQuadLine
+        this->pPipelineGraphics = new VKPipelineGraphics("PipelineG-EditorCoordinateAxis");
         this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
         this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
         //1> DescriptorSetLayout 

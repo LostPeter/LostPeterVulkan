@@ -41,8 +41,8 @@ namespace LostPeter
         //PipelineLayout
         VkPipelineLayout poPipelineLayout;
 
-        //PipelineGraphics
-        PipelineGraphics* pPipelineGraphics;
+        //VKPipelineGraphics
+        VKPipelineGraphics* pPipelineGraphics;
 
     public:
         virtual void Destroy() = 0;

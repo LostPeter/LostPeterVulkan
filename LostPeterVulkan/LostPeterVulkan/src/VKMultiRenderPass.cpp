@@ -9,99 +9,14 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/MultiRenderPass.h"
+#include "../include/VKMultiRenderPass.h"
 #include "../include/VulkanWindow.h"
 
 namespace LostPeter
 {
-    FrameBufferAttachment::FrameBufferAttachment()
-        : isDepth(false)
-        , isImageArray(false)
-        , image(VK_NULL_HANDLE)
-        , memory(VK_NULL_HANDLE)
-        , view(VK_NULL_HANDLE)
-    {
-
-    }
-    FrameBufferAttachment::~FrameBufferAttachment()
-    {
-
-    }
-    void FrameBufferAttachment::Destroy()
-    {
-        if (this->image != VK_NULL_HANDLE)
-        {
-            Base::GetWindowPtr()->destroyVkImage(this->image, this->memory, this->view);
-        }
-        this->image = VK_NULL_HANDLE;
-        this->memory = VK_NULL_HANDLE;
-        this->view = VK_NULL_HANDLE;
-    }
-    void FrameBufferAttachment::Init(uint32_t width, 
-                                     uint32_t height, 
-                                     bool _isDepth,
-                                     bool _isImageArray)
-    {
-        this->isDepth = _isDepth;
-        this->isImageArray = _isImageArray;
-
-        uint32_t depth = 1;
-        uint32_t numArray = 1;
-        uint32_t mipMapCount = 1;
-        VkImageType imageType = VK_IMAGE_TYPE_2D;
-        VkSampleCountFlagBits numSamples = Base::GetWindowPtr()->poMSAASamples;
-        VkFormat format = Base::GetWindowPtr()->poSwapChainImageFormat;
-        VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
-        VkImageUsageFlags usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-        VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-
-        VkImageViewType imageViewType = VK_IMAGE_VIEW_TYPE_2D;
-        VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-
-        if (_isDepth)
-        {
-            format = Base::GetWindowPtr()->poDepthImageFormat;
-            usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-            aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
-        }
-
-        if (_isImageArray)
-        {
-            numArray = 2;
-            imageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
-        }
-
-        Base::GetWindowPtr()->createVkImage(width, 
-                                            height, 
-                                            depth,
-                                            numArray,
-                                            mipMapCount,
-                                            imageType, 
-                                            false,
-                                            numSamples, 
-                                            format, 
-                                            tiling, 
-                                            usage,
-                                            sharingMode,
-                                            false,
-                                            properties, 
-                                            this->image, 
-                                            this->memory);
-        
-        Base::GetWindowPtr()->createVkImageView(this->image, 
-                                                imageViewType,
-                                                format, 
-                                                aspectFlags, 
-                                                mipMapCount,
-                                                numArray,
-                                                this->view);
-    }
-
-
-    MultiRenderPass::MultiRenderPass(const String& _nameRenderPass,
-                                     bool _isUseDefault,
-                                     bool _isMultiView2)
+    VKMultiRenderPass::VKMultiRenderPass(const String& _nameRenderPass,
+                                         bool _isUseDefault,
+                                         bool _isMultiView2)
         //Window
         : Base(_nameRenderPass)
         , isUseDefault(_isUseDefault)
@@ -116,11 +31,11 @@ namespace LostPeter
     {
 
     }
-    MultiRenderPass::~MultiRenderPass()
+    VKMultiRenderPass::~VKMultiRenderPass()
     {
         Destroy();
     }   
-    void MultiRenderPass::Destroy()
+    void VKMultiRenderPass::Destroy()
     {
         //RenderPass
         if (this->poRenderPass != VK_NULL_HANDLE &&
@@ -142,7 +57,7 @@ namespace LostPeter
         this->imageInfo.imageView = VK_NULL_HANDLE;
         this->imageInfo.sampler = VK_NULL_HANDLE;
     } 
-    void MultiRenderPass::Init(uint32_t width, uint32_t height)
+    void VKMultiRenderPass::Init(uint32_t width, uint32_t height)
     {
         if (this->isUseDefault)
         {
@@ -252,7 +167,7 @@ namespace LostPeter
                                                               pMultiviewCI,
                                                               this->poRenderPass))
                 {
-                    String msg = "*********************** MultiRenderPass::Init: Failed to create renderpass: " + GetName();
+                    String msg = "*********************** VKMultiRenderPass::Init: Failed to create renderpass: " + GetName();
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
@@ -272,18 +187,18 @@ namespace LostPeter
                                                                1,
                                                                this->poFrameBuffer))
                 {
-                    String msg = "*********************** MultiRenderPass::Init: Failed to create framebuffer: " + GetName();
+                    String msg = "*********************** VKMultiRenderPass::Init: Failed to create framebuffer: " + GetName();
                     F_LogError(msg.c_str());
                     throw std::runtime_error(msg);
                 }
             }
         }
     }
-    void MultiRenderPass::CleanupSwapChain()
+    void VKMultiRenderPass::CleanupSwapChain()
     {
          Destroy();
     }
-    void MultiRenderPass::RecreateSwapChain()
+    void VKMultiRenderPass::RecreateSwapChain()
     {
 
     }

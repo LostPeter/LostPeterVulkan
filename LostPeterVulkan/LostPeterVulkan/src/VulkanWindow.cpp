@@ -7647,7 +7647,7 @@ namespace LostPeter
                         return;
                     }
 
-                    MultiRenderPass* pRenderPass = this->pEditorCameraAxis->pPipelineGraphics->pRenderPass;
+                    VKMultiRenderPass* pRenderPass = this->pEditorCameraAxis->pPipelineGraphics->pRenderPass;
                     if (pRenderPass == nullptr)
                         return;
 

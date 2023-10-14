@@ -64,7 +64,7 @@ public:
         bool isUsedTessellation;
 
         //Pipeline Graphics
-        PipelineGraphics* pPipelineGraphics;
+        VKPipelineGraphics* pPipelineGraphics;
 
         //Pipeline Computes
         PipelineComputePtrVector aPipelineComputes;
@@ -132,7 +132,7 @@ public:
 
             
         {
-            this->pPipelineGraphics = new PipelineGraphics("PipelineG-Model");
+            this->pPipelineGraphics = new VKPipelineGraphics("PipelineG-Model");
         }
         ~ModelObjectRend()
         {
@@ -192,7 +192,7 @@ public:
             count = this->aPipelineComputes.size();
             for (size_t i = 0; i < count; i++)
             {
-                PipelineCompute* p = this->aPipelineComputes[i];
+                VKPipelineCompute* p = this->aPipelineComputes[i];
                 F_DELETE(p)
             }
             this->aPipelineComputes.clear();
@@ -204,11 +204,11 @@ public:
         }   
 
     ////RenderPasses
-        void AddRenderPass(MultiRenderPass* pRenderPass)
+        void AddRenderPass(VKMultiRenderPass* pRenderPass)
         {
             this->aRenderPassesRef.push_back(pRenderPass);
         }
-        MultiRenderPass* GetRenderPass(int index)
+        VKMultiRenderPass* GetRenderPass(int index)
         {
             return this->aRenderPassesRef[index];
         }
@@ -242,11 +242,11 @@ public:
         }
 
     //Pipeline Computes
-        void AddPipelineCompute(PipelineCompute* pPipelineCompute)
+        void AddPipelineCompute(VKPipelineCompute* pPipelineCompute)
         {
             this->aPipelineComputes.push_back(pPipelineCompute);
         }
-        PipelineCompute* GetPipelineCompute(int index)
+        VKPipelineCompute* GetPipelineCompute(int index)
         {
             F_Assert(index >= 0 && index < (int)this->aPipelineComputes.size() && "ModelObjectRend::GetPipelineCompute")
             return this->aPipelineComputes[index];
@@ -256,7 +256,7 @@ public:
     typedef std::vector<ModelObjectRend*> ModelObjectRendPtrVector;
     typedef std::map<String, ModelObjectRend*> ModelObjectRendPtrMap;
 
-    typedef std::map<MultiRenderPass*, ModelObjectRendPtrVector> MultiRenderPass2ObjectRendsMap;
+    typedef std::map<VKMultiRenderPass*, ModelObjectRendPtrVector> MultiRenderPass2ObjectRendsMap;
 
 
     /////////////////////////// ModelObjectRendIndirect /////////////
@@ -560,7 +560,7 @@ protected:
             void createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
                                                ModelObjectRend* pRend, 
                                                ModelObjectRendIndirect* pRendIndirect);
-            void createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
+            void createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
                                               ModelObjectRend* pRend);
 
     //Compute/Update
@@ -579,7 +579,7 @@ protected:
         virtual void endRenderImgui();
 
         virtual void updateRenderPass_CustomBeforeDefault(VkCommandBuffer& commandBuffer);
-            virtual void drawMeshCustom(VkCommandBuffer& commandBuffer, MultiRenderPass* pRenderPass); 
+            virtual void drawMeshCustom(VkCommandBuffer& commandBuffer, VKMultiRenderPass* pRenderPass); 
 
         virtual void updateRenderPass_Default(VkCommandBuffer& commandBuffer);
             
@@ -622,13 +622,13 @@ private:
 ////RenderPass
     void destroyMultiRenderPasses();
     void createMultiRenderPasses();
-    MultiRenderPass* findMultiRenderPass(const String& nameRenderPass);
+    VKMultiRenderPass* findMultiRenderPass(const String& nameRenderPass);
 
 ////Draw
-    void addRenderPass2ModelObjectRendMap(MultiRenderPass* pRenderPass, ModelObjectRend* pRend);
-    void addRenderPass2ModelObjectRendMap(MultiRenderPass2ObjectRendsMap& mapRP2OR, MultiRenderPass* pRenderPass, ModelObjectRend* pRend);
+    void addRenderPass2ModelObjectRendMap(VKMultiRenderPass* pRenderPass, ModelObjectRend* pRend);
+    void addRenderPass2ModelObjectRendMap(MultiRenderPass2ObjectRendsMap& mapRP2OR, VKMultiRenderPass* pRenderPass, ModelObjectRend* pRend);
 
-    void drawModelObjectRendByRenderPass(VkCommandBuffer& commandBuffer, MultiRenderPass* pRenderPass);
+    void drawModelObjectRendByRenderPass(VkCommandBuffer& commandBuffer, VKMultiRenderPass* pRenderPass);
 
     void drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect);

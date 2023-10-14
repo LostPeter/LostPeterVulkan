@@ -9,12 +9,12 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/PipelineGraphics.h"
+#include "../include/VKPipelineGraphics.h"
 #include "../include/VulkanWindow.h"
 
 namespace LostPeter
 {
-    PipelineGraphics::PipelineGraphics(const String& namePipelineGraphics)
+    VKPipelineGraphics::VKPipelineGraphics(const String& namePipelineGraphics)
         : Base(namePipelineGraphics)
         , nameDescriptorSetLayout("")
         , poDescriptorSetLayoutNames(nullptr)
@@ -31,15 +31,15 @@ namespace LostPeter
     {
 
     }
-    PipelineGraphics::~PipelineGraphics()
+    VKPipelineGraphics::~VKPipelineGraphics()
     {
         Destroy();
     }
-    void PipelineGraphics::Destroy()
+    void VKPipelineGraphics::Destroy()
     {
         CleanupSwapChain();
     }
-    void PipelineGraphics::CleanupSwapChain()
+    void VKPipelineGraphics::CleanupSwapChain()
     {
         this->poDescriptorSetLayoutNames = nullptr;
         this->poDescriptorSetLayout = VK_NULL_HANDLE;

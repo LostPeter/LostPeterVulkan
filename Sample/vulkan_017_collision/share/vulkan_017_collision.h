@@ -72,7 +72,7 @@ public:
         bool isUsedTessellation;
 
         //Pipeline Graphics
-        PipelineGraphics* pPipelineGraphics;
+        VKPipelineGraphics* pPipelineGraphics;
 
         //Pipeline Computes
         PipelineComputePtrVector aPipelineComputes;
@@ -143,7 +143,7 @@ public:
 
             
         {
-            this->pPipelineGraphics = new PipelineGraphics("PipelineG-Model");
+            this->pPipelineGraphics = new VKPipelineGraphics("PipelineG-Model");
         }
         ~ModelObjectRend()
         {
@@ -221,7 +221,7 @@ public:
             count = this->aPipelineComputes.size();
             for (size_t i = 0; i < count; i++)
             {
-                PipelineCompute* p = this->aPipelineComputes[i];
+                VKPipelineCompute* p = this->aPipelineComputes[i];
                 F_DELETE(p)
             }
             this->aPipelineComputes.clear();
@@ -258,11 +258,11 @@ public:
         }
 
     //Pipeline Computes
-        void AddPipelineCompute(PipelineCompute* pPipelineCompute)
+        void AddPipelineCompute(VKPipelineCompute* pPipelineCompute)
         {
             this->aPipelineComputes.push_back(pPipelineCompute);
         }
-        PipelineCompute* GetPipelineCompute(int index)
+        VKPipelineCompute* GetPipelineCompute(int index)
         {
             F_Assert(index >= 0 && index < (int)this->aPipelineComputes.size() && "ModelObjectRend::GetPipelineCompute")
             return this->aPipelineComputes[index];
@@ -764,7 +764,7 @@ protected:
             void createDescriptorSets_Graphics(VkDescriptorSetVector& poDescriptorSets, 
                                                ModelObjectRend* pRend, 
                                                ModelObjectRendIndirect* pRendIndirect);
-            void createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
+            void createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
                                               ModelObjectRend* pRend);
 
     //Compute/Update

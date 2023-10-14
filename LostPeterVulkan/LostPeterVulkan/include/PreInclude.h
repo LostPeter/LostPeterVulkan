@@ -22,6 +22,11 @@
 #include "VulkanBase.h"
 #include "VulkanWindow.h"
 
+#include "VKFrameBufferAttachment.h"
+#include "VKMultiRenderPass.h"
+#include "VKPipelineCompute.h"
+#include "VKPipelineGraphics.h"
+
 #include "Base.h"
 #include "EditorBase.h"
 #include "EditorCameraAxis.h"
@@ -42,7 +47,6 @@
 #include "MeshSerializer.h"
 #include "MeshSub.h"
 #include "Movable.h"
-#include "MultiRenderPass.h"
 #include "Node.h"
 #include "Object.h"
 #include "ObjectCamera.h"
@@ -54,8 +58,6 @@
 #include "ObjectSky.h"
 #include "ObjectTerrain.h"
 #include "ObjectWater.h"
-#include "PipelineCompute.h"
-#include "PipelineGraphics.h"
 #include "Renderable.h"
 #include "RenderableIndirect.h"
 #include "Scene.h"

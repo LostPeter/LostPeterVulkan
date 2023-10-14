@@ -13,7 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
-#include "../include/PipelineGraphics.h"
+#include "../include/VKPipelineGraphics.h"
 
 namespace LostPeter
 {
@@ -102,7 +102,7 @@ namespace LostPeter
     void EditorGrid::initPipelineGraphics()
     {
         String namePipelineGraphics = "PipelineG-" + GetName();
-        this->pPipelineGraphics = new PipelineGraphics(namePipelineGraphics);
+        this->pPipelineGraphics = new VKPipelineGraphics(namePipelineGraphics);
         this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
         this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
         //1> DescriptorSetLayout 

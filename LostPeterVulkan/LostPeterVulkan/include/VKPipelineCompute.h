@@ -9,18 +9,18 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _PIPELINE_COMPUTE_H_
-#define _PIPELINE_COMPUTE_H_
+#ifndef _VK_PIPELINE_COMPUTE_H_
+#define _VK_PIPELINE_COMPUTE_H_
 
 #include "Base.h"
 
 namespace LostPeter
 {
-    class utilExport PipelineCompute : public Base
+    class utilExport VKPipelineCompute : public Base
     {
     public:
-        PipelineCompute(const String& namePipelineCompute);
-        virtual ~PipelineCompute();
+        VKPipelineCompute(const String& namePipelineCompute);
+        virtual ~VKPipelineCompute();
 
     public:
         String nameDescriptorSetLayout;

@@ -9,12 +9,12 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/PipelineCompute.h"
+#include "../include/VKPipelineCompute.h"
 #include "../include/VulkanWindow.h"
 
 namespace LostPeter
 {
-    PipelineCompute::PipelineCompute(const String& namePipelineCompute)
+    VKPipelineCompute::VKPipelineCompute(const String& namePipelineCompute)
         : Base(namePipelineCompute)
         , nameDescriptorSetLayout("")
         , poDescriptorSetLayoutNames(nullptr)
@@ -31,15 +31,15 @@ namespace LostPeter
     {
 
     }
-    PipelineCompute::~PipelineCompute()
+    VKPipelineCompute::~VKPipelineCompute()
     {
         Destroy();
     }
-    void PipelineCompute::Destroy()
+    void VKPipelineCompute::Destroy()
     {
         CleanupSwapChain();
     }
-    void PipelineCompute::CleanupSwapChain()
+    void VKPipelineCompute::CleanupSwapChain()
     {
         this->poDescriptorSetLayoutNames = nullptr;
         this->poDescriptorSetLayout = VK_NULL_HANDLE;
@@ -53,14 +53,14 @@ namespace LostPeter
 
         DestroyTextureCopy();
     }  
-    void PipelineCompute::CreateTextureCopy()
+    void VKPipelineCompute::CreateTextureCopy()
     {
         DestroyTextureCopy();
         this->pTextureCopy = new TextureCopyConstants();
         VkDeviceSize bufferSize = sizeof(TextureCopyConstants);
         Base::GetWindowPtr()->createVkBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, this->poBuffer_TextureCopy, this->poBufferMemory_TextureCopy);
     }
-    void PipelineCompute::DestroyTextureCopy()
+    void VKPipelineCompute::DestroyTextureCopy()
     {
         F_DELETE(this->pTextureCopy)
         if (this->poBuffer_TextureCopy != VK_NULL_HANDLE)

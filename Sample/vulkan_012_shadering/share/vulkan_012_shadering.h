@@ -154,7 +154,7 @@ public:
             , cfg_BlendAlphaOp(VK_BLEND_OP_ADD)
             , cfg_ColorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
         {
-            this->pPipelineGraphics = new PipelineGraphics("PipelineG-Model");
+            this->pPipelineGraphics = new VKPipelineGraphics("PipelineG-Model");
         }
         ~ModelObject()
         {
@@ -220,7 +220,7 @@ public:
             count = this->aPipelineComputes.size();
             for (size_t i = 0; i < count; i++)
             {
-                PipelineCompute* p = this->aPipelineComputes[i];
+                VKPipelineCompute* p = this->aPipelineComputes[i];
                 F_DELETE(p)
             }
             this->aPipelineComputes.clear();
@@ -279,7 +279,7 @@ public:
         bool isUsedGeometry;
 
         //Pipeline Graphics
-        PipelineGraphics* pPipelineGraphics;
+        VKPipelineGraphics* pPipelineGraphics;
 
         //Pipeline Computes
         PipelineComputePtrVector aPipelineComputes;
@@ -354,11 +354,11 @@ public:
         }
 
     //Pipeline Computes
-        void AddPipelineCompute(PipelineCompute* pPipelineCompute)
+        void AddPipelineCompute(VKPipelineCompute* pPipelineCompute)
         {
             this->aPipelineComputes.push_back(pPipelineCompute);
         }
-        PipelineCompute* GetPipelineCompute(int index)
+        VKPipelineCompute* GetPipelineCompute(int index)
         {
             F_Assert(index >= 0 && index < (int)this->aPipelineComputes.size() && "ModelObject::GetPipelineCompute")
             return this->aPipelineComputes[index];

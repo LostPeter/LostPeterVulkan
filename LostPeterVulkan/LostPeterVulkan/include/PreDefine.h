@@ -424,17 +424,17 @@ namespace LostPeter
     class VulkanBase;
     class VulkanWindow;
 
-    class FrameBufferAttachment;
-    class MultiRenderPass;
-    class PipelineGraphics;
-    class PipelineCompute;
+    class VKFrameBufferAttachment;
+    class VKMultiRenderPass;
+    class VKPipelineGraphics;
+    class VKPipelineCompute;
 
-    typedef std::vector<MultiRenderPass*> MultiRenderPassPtrVector;
-    typedef std::map<String, MultiRenderPass*> MultiRenderPassPtrMap;
-    typedef std::vector<PipelineGraphics*> PipelineGraphicsPtrVector;
-    typedef std::map<String, PipelineGraphics*> PipelineGraphicsPtrMap;
-    typedef std::vector<PipelineCompute*> PipelineComputePtrVector;
-    typedef std::map<String, PipelineCompute*> PipelineComputePtrMap;
+    typedef std::vector<VKMultiRenderPass*> MultiRenderPassPtrVector;
+    typedef std::map<String, VKMultiRenderPass*> MultiRenderPassPtrMap;
+    typedef std::vector<VKPipelineGraphics*> PipelineGraphicsPtrVector;
+    typedef std::map<String, VKPipelineGraphics*> PipelineGraphicsPtrMap;
+    typedef std::vector<VKPipelineCompute*> PipelineComputePtrVector;
+    typedef std::map<String, VKPipelineCompute*> PipelineComputePtrMap;
 
 
     class Base;

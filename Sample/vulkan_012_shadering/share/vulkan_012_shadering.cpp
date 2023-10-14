@@ -773,7 +773,7 @@ void Vulkan_012_Shadering::loadModel_Custom()
             for (size_t j = 0; j < count_dsl; j++)
             {
                 const String& nameDescriptorSetLayout = aDescriptorSetLayout[j];
-                PipelineCompute* pPipelineCompute = new PipelineCompute("PipelineC-Object");
+                VKPipelineCompute* pPipelineCompute = new VKPipelineCompute("PipelineC-Object");
                 pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
                 pModelObject->AddPipelineCompute(pPipelineCompute);
             }
@@ -1082,7 +1082,7 @@ void Vulkan_012_Shadering::createComputePipeline_Custom()
         }
         for (size_t j = 0; j < count_pipeline; j ++)
         {
-            PipelineCompute* p = pModelObject->aPipelineComputes[j];
+            VKPipelineCompute* p = pModelObject->aPipelineComputes[j];
             VkPipelineShaderStageCreateInfo& shaderStageCreateInfo = pModelObject->aShaderStageCreateInfos_Computes[j];
 
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
@@ -1553,7 +1553,7 @@ void Vulkan_012_Shadering::createDescriptorSets_Custom()
         size_t count_comp = pModelObject->aPipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {       
-            PipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
 
             StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
             F_Assert(pDescriptorSetLayoutNames != nullptr && "Vulkan_012_Shadering::createDescriptorSets_Custom")
@@ -1628,7 +1628,7 @@ void Vulkan_012_Shadering::updateCompute_Custom(VkCommandBuffer& commandBuffer)
         size_t count_comp = pModelObject->aPipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {
-            PipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
             if (pPipelineCompute->pTextureSource != nullptr &&
                 pPipelineCompute->pTextureTarget != nullptr &&
                 pPipelineCompute->pTextureCopy != nullptr)
@@ -1755,7 +1755,7 @@ void Vulkan_012_Shadering::updateRenderPass_SyncComputeGraphics(VkCommandBuffer&
         size_t count_comp = pModelObject->aPipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {
-            PipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pModelObject->aPipelineComputes[j];
             if (pPipelineCompute->pTextureSource != nullptr &&
                 pPipelineCompute->pTextureTarget != nullptr &&
                 pPipelineCompute->pTextureCopy != nullptr)

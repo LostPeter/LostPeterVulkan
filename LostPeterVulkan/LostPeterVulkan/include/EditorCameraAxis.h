@@ -74,8 +74,8 @@ namespace LostPeter
         //PipelineLayout
         VkPipelineLayout poPipelineLayout_CopyBlit;
 
-        //PipelineGraphics
-        PipelineGraphics* pPipelineGraphics_CopyBlit;
+        //VKPipelineGraphics
+        VKPipelineGraphics* pPipelineGraphics_CopyBlit;
 
         //Uniform Buffer
         CopyBlitObjectConstants copyBlitObjectCB;

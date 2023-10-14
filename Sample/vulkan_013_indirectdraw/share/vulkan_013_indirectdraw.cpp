@@ -1132,7 +1132,7 @@ void Vulkan_013_IndirectDraw::loadModel_Custom()
                     for (size_t p = 0; p < count_dsl; p++)
                     {
                         const String& nameDescriptorSetLayout = aDescriptorSetLayout[p];
-                        PipelineCompute* pPipelineCompute = new PipelineCompute("PipelineC-Object");
+                        VKPipelineCompute* pPipelineCompute = new VKPipelineCompute("PipelineC-Object");
                         pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
                         pRend->AddPipelineCompute(pPipelineCompute);
                     }
@@ -1464,7 +1464,7 @@ void Vulkan_013_IndirectDraw::createComputePipeline_Custom()
         }
         for (size_t j = 0; j < count_pipeline; j ++)
         {
-            PipelineCompute* p = pRend->aPipelineComputes[j];
+            VKPipelineCompute* p = pRend->aPipelineComputes[j];
             VkPipelineShaderStageCreateInfo& shaderStageCreateInfo = pRend->aShaderStageCreateInfos_Computes[j];
 
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
@@ -1788,7 +1788,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Custom()
         size_t count_comp_rend = pRend->aPipelineComputes.size();
         for (int j = 0; j < count_comp_rend; j++)
         {       
-            PipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
             createDescriptorSets_Compute(pPipelineCompute, pRend);
         }
     }
@@ -1947,7 +1947,7 @@ void Vulkan_013_IndirectDraw::createDescriptorSets_Graphics(VkDescriptorSetVecto
         updateVkDescriptorSets(descriptorWrites);
     }
 }
-void Vulkan_013_IndirectDraw::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
+void Vulkan_013_IndirectDraw::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
                                                            ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
@@ -2021,7 +2021,7 @@ void Vulkan_013_IndirectDraw::updateCompute_Custom(VkCommandBuffer& commandBuffe
         size_t count_comp = pRend->aPipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {
-            PipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
             if (pPipelineCompute->pTextureSource != nullptr &&
                 pPipelineCompute->pTextureTarget != nullptr &&
                 pPipelineCompute->pTextureCopy != nullptr)
@@ -2174,7 +2174,7 @@ void Vulkan_013_IndirectDraw::updateRenderPass_SyncComputeGraphics(VkCommandBuff
         size_t count_comp = pRend->aPipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {
-            PipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
             if (pPipelineCompute->pTextureSource != nullptr &&
                 pPipelineCompute->pTextureTarget != nullptr &&
                 pPipelineCompute->pTextureCopy != nullptr)

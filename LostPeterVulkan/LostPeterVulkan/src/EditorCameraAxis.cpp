@@ -13,8 +13,8 @@
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
-#include "../include/PipelineGraphics.h"
-#include "../include/MultiRenderPass.h"
+#include "../include/VKPipelineGraphics.h"
+#include "../include/VKMultiRenderPass.h"
 
 namespace LostPeter
 {
@@ -383,11 +383,11 @@ namespace LostPeter
     }
     void EditorCameraAxis::initPipelineGraphics()
     {
-        //PipelineGraphics
+        //VKPipelineGraphics
         {
             //CameraAxis
             {
-                this->pPipelineGraphics = new PipelineGraphics("PipelineG-EditorCameraAxis");
+                this->pPipelineGraphics = new VKPipelineGraphics("PipelineG-EditorCameraAxis");
                 this->pPipelineGraphics->nameDescriptorSetLayout = this->nameDescriptorSetLayout;
                 this->pPipelineGraphics->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts;
                 //1> DescriptorSetLayout / PipelineLayout
@@ -395,13 +395,13 @@ namespace LostPeter
                 this->pPipelineGraphics->poPipelineLayout = this->poPipelineLayout;
                 //2> DescriptorSets
                 Base::GetWindowPtr()->createVkDescriptorSets(this->pPipelineGraphics->poDescriptorSetLayout, this->pPipelineGraphics->poDescriptorSets);
-                //3> MultiRenderPass
-                this->pPipelineGraphics->pRenderPass = new MultiRenderPass("rp_editor_camera_axis", false, false);
+                //3> VKMultiRenderPass
+                this->pPipelineGraphics->pRenderPass = new VKMultiRenderPass("rp_editor_camera_axis", false, false);
                 this->pPipelineGraphics->pRenderPass->Init(s_fBlitAreaWidth, s_fBlitAreaHeight);
             }
             //Quad Blit
             {
-                this->pPipelineGraphics_CopyBlit = new PipelineGraphics("PipelineG-QuadBlit");
+                this->pPipelineGraphics_CopyBlit = new VKPipelineGraphics("PipelineG-QuadBlit");
                 this->pPipelineGraphics_CopyBlit->nameDescriptorSetLayout = this->nameDescriptorSetLayout_CopyBlit;
                 this->pPipelineGraphics_CopyBlit->poDescriptorSetLayoutNames = &this->aNameDescriptorSetLayouts_CopyBlit;
                 //1> DescriptorSetLayout / PipelineLayout

@@ -9,42 +9,21 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _MULTI_RENDER_PASS_H_
-#define _MULTI_RENDER_PASS_H_
+#ifndef _VK_MULTI_RENDER_PASS_H_
+#define _VK_MULTI_RENDER_PASS_H_
 
 #include "Base.h"
+#include "VKFrameBufferAttachment.h"
 
 namespace LostPeter
 {
-    class utilExport FrameBufferAttachment
+    class utilExport VKMultiRenderPass : public Base
     {
     public:
-        FrameBufferAttachment();
-        virtual ~FrameBufferAttachment();
-
-    public:
-        bool isDepth;
-        bool isImageArray;
-
-        VkImage image;
-        VkDeviceMemory memory;
-        VkImageView view;
-
-    public:
-        void Destroy();
-        virtual void Init(uint32_t width, 
-                          uint32_t height, 
-                          bool _isDepth,
-                          bool _isImageArray);
-    };
-
-    class utilExport MultiRenderPass : public Base
-    {
-    public:
-        MultiRenderPass(const String& _nameRenderPass,
-                        bool _isUseDefault,
-                        bool _isMultiView2);
-        virtual ~MultiRenderPass();
+        VKMultiRenderPass(const String& _nameRenderPass,
+                          bool _isUseDefault,
+                          bool _isMultiView2);
+        virtual ~VKMultiRenderPass();
 
     public:
         //Common
@@ -52,8 +31,8 @@ namespace LostPeter
         bool isMultiView2;
 
         //Attachment
-        FrameBufferAttachment framebufferColor;
-        FrameBufferAttachment framebufferDepth;
+        VKFrameBufferAttachment framebufferColor;
+        VKFrameBufferAttachment framebufferDepth;
         VkSampler sampler;
         VkDescriptorImageInfo imageInfo;
         

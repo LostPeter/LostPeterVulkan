@@ -799,7 +799,7 @@ void Vulkan_018_Object::loadModel_Custom()
                     for (size_t p = 0; p < count_dsl; p++)
                     {
                         const String& nameDescriptorSetLayout = aDescriptorSetLayout[p];
-                        PipelineCompute* pPipelineCompute = new PipelineCompute("PipelineC-Object");
+                        VKPipelineCompute* pPipelineCompute = new VKPipelineCompute("PipelineC-Object");
                         pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
                         pRend->AddPipelineCompute(pPipelineCompute);
                     }
@@ -1133,7 +1133,7 @@ void Vulkan_018_Object::createComputePipeline_Custom()
         }
         for (size_t j = 0; j < count_pipeline; j ++)
         {
-            PipelineCompute* p = pRend->aPipelineComputes[j];
+            VKPipelineCompute* p = pRend->aPipelineComputes[j];
             VkPipelineShaderStageCreateInfo& shaderStageCreateInfo = pRend->aShaderStageCreateInfos_Computes[j];
 
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
@@ -1285,7 +1285,7 @@ void Vulkan_018_Object::createDescriptorSets_Custom()
         size_t count_comp_rend = pRend->aPipelineComputes.size();
         for (int j = 0; j < count_comp_rend; j++)
         {       
-            PipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
             createDescriptorSets_Compute(pPipelineCompute, pRend);
         }
     }
@@ -1444,7 +1444,7 @@ void Vulkan_018_Object::createDescriptorSets_Graphics(VkDescriptorSetVector& poD
         updateVkDescriptorSets(descriptorWrites);
     }
 }
-void Vulkan_018_Object::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
+void Vulkan_018_Object::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
                                                            ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
@@ -1518,7 +1518,7 @@ void Vulkan_018_Object::updateCompute_Custom(VkCommandBuffer& commandBuffer)
         size_t count_comp = pRend->aPipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {
-            PipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
             if (pPipelineCompute->pTextureSource != nullptr &&
                 pPipelineCompute->pTextureTarget != nullptr &&
                 pPipelineCompute->pTextureCopy != nullptr)
@@ -1671,7 +1671,7 @@ void Vulkan_018_Object::updateRenderPass_SyncComputeGraphics(VkCommandBuffer& co
         size_t count_comp = pRend->aPipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {
-            PipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
             if (pPipelineCompute->pTextureSource != nullptr &&
                 pPipelineCompute->pTextureTarget != nullptr &&
                 pPipelineCompute->pTextureCopy != nullptr)

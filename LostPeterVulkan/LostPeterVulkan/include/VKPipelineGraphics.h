@@ -9,18 +9,18 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _PIPELINE_GRAPHICS_H_
-#define _PIPELINE_GRAPHICS_H_
+#ifndef _VK_PIPELINE_GRAPHICS_H_
+#define _VK_PIPELINE_GRAPHICS_H_
 
 #include "Base.h"
 
 namespace LostPeter
 {
-    class utilExport PipelineGraphics : public Base
+    class utilExport VKPipelineGraphics : public Base
     {
     public:
-        PipelineGraphics(const String& namePipelineGraphics);
-        virtual ~PipelineGraphics();
+        VKPipelineGraphics(const String& namePipelineGraphics);
+        virtual ~VKPipelineGraphics();
 
     public:
         String nameDescriptorSetLayout;
@@ -36,7 +36,7 @@ namespace LostPeter
         VkPipeline poPipeline2;
 
         String nameRenderPass;
-        MultiRenderPass* pRenderPass;
+        VKMultiRenderPass* pRenderPass;
 
     public:
         void Destroy();

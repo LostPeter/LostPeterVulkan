@@ -1250,7 +1250,7 @@ void Vulkan_015_MultiView::loadModel_Custom()
                     for (size_t p = 0; p < count_dsl; p++)
                     {
                         const String& nameDescriptorSetLayout = aDescriptorSetLayout[p];
-                        PipelineCompute* pPipelineCompute = new PipelineCompute("PipelineC-Object");
+                        VKPipelineCompute* pPipelineCompute = new VKPipelineCompute("PipelineC-Object");
                         pPipelineCompute->nameDescriptorSetLayout = nameDescriptorSetLayout;
                         pRend->AddPipelineCompute(pPipelineCompute);
                     }
@@ -1495,7 +1495,7 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
             pRend->pPipelineGraphics->pRenderPass = findMultiRenderPass(pRend->pPipelineGraphics->nameRenderPass);
             if (pRend->pPipelineGraphics->pRenderPass == VK_NULL_HANDLE)
             {
-                String msg = "*********************** Vulkan_015_MultiView::createGraphicsPipeline_Custom: Can not find MultiRenderPass by name: " + pRend->pPipelineGraphics->nameRenderPass;
+                String msg = "*********************** Vulkan_015_MultiView::createGraphicsPipeline_Custom: Can not find VKMultiRenderPass by name: " + pRend->pPipelineGraphics->nameRenderPass;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
@@ -1511,7 +1511,7 @@ void Vulkan_015_MultiView::createGraphicsPipeline_Custom()
                     for (size_t p = 0; p < count_render_pass; p++)
                     {
                         String nameRenderPass = aTextureFrameColor[p];
-                        MultiRenderPass* pRenderPass = this->findMultiRenderPass(nameRenderPass);
+                        VKMultiRenderPass* pRenderPass = this->findMultiRenderPass(nameRenderPass);
                         pRend->AddRenderPass(pRenderPass);
                     }
                 }
@@ -1682,7 +1682,7 @@ void Vulkan_015_MultiView::createComputePipeline_Custom()
         }
         for (size_t j = 0; j < count_pipeline; j ++)
         {
-            PipelineCompute* p = pRend->aPipelineComputes[j];
+            VKPipelineCompute* p = pRend->aPipelineComputes[j];
             VkPipelineShaderStageCreateInfo& shaderStageCreateInfo = pRend->aShaderStageCreateInfos_Computes[j];
 
             p->poDescriptorSetLayoutNames = findDescriptorSetLayoutNames(p->nameDescriptorSetLayout);
@@ -1992,7 +1992,7 @@ void Vulkan_015_MultiView::destroyMultiRenderPasses()
     size_t count_render_pass = this->m_aMultiRenderPasses.size();
     for (size_t i = 0; i < count_render_pass; i++)
     {
-        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
+        VKMultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
         F_DELETE(pRenderPass)
     }
     this->m_aMultiRenderPasses.clear();
@@ -2005,14 +2005,14 @@ void Vulkan_015_MultiView::createMultiRenderPasses()
         String nameRenderPass = g_RenderPass_Names[i];
         bool isDefault = g_RenderPass_IsDefault[i];
 
-        MultiRenderPass* pMultiRenderPass = new MultiRenderPass(nameRenderPass, isDefault, true);
+        VKMultiRenderPass* pMultiRenderPass = new VKMultiRenderPass(nameRenderPass, isDefault, true);
         pMultiRenderPass->Init(this->poSwapChainExtent.width, this->poSwapChainExtent.height);
 
         this->m_aMultiRenderPasses.push_back(pMultiRenderPass);
         this->m_mapMultiRenderPasses[nameRenderPass] = pMultiRenderPass;
     }
 }
-MultiRenderPass* Vulkan_015_MultiView::findMultiRenderPass(const String& nameRenderPass)
+VKMultiRenderPass* Vulkan_015_MultiView::findMultiRenderPass(const String& nameRenderPass)
 {
     MultiRenderPassPtrMap::iterator itFind = this->m_mapMultiRenderPasses.find(nameRenderPass);
     if (itFind == this->m_mapMultiRenderPasses.end())
@@ -2041,7 +2041,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Custom()
         size_t count_comp_rend = pRend->aPipelineComputes.size();
         for (int j = 0; j < count_comp_rend; j++)
         {       
-            PipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
             createDescriptorSets_Compute(pPipelineCompute, pRend);
         }
     }
@@ -2193,7 +2193,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Graphics(VkDescriptorSetVector& 
             }
             else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(Vulkan_DescriptorSet_TextureFrameColor)) //TextureFrameColor
             {
-                MultiRenderPass* pRenderPass = pRend->GetRenderPass(nIndexTextureFrameColor);
+                VKMultiRenderPass* pRenderPass = pRend->GetRenderPass(nIndexTextureFrameColor);
                 nIndexTextureFrameColor ++;
                 pushVkDescriptorSet_Image(descriptorWrites,
                                           pRend->pPipelineGraphics->poDescriptorSets[j],
@@ -2213,7 +2213,7 @@ void Vulkan_015_MultiView::createDescriptorSets_Graphics(VkDescriptorSetVector& 
         updateVkDescriptorSets(descriptorWrites);
     }
 }
-void Vulkan_015_MultiView::createDescriptorSets_Compute(PipelineCompute* pPipelineCompute, 
+void Vulkan_015_MultiView::createDescriptorSets_Compute(VKPipelineCompute* pPipelineCompute, 
                                                               ModelObjectRend* pRend)
 {
     StringVector* pDescriptorSetLayoutNames = pPipelineCompute->poDescriptorSetLayoutNames;
@@ -2287,7 +2287,7 @@ void Vulkan_015_MultiView::updateCompute_Custom(VkCommandBuffer& commandBuffer)
         size_t count_comp = pRend->aPipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {
-            PipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
             if (pPipelineCompute->pTextureSource != nullptr &&
                 pPipelineCompute->pTextureTarget != nullptr &&
                 pPipelineCompute->pTextureCopy != nullptr)
@@ -2440,7 +2440,7 @@ void Vulkan_015_MultiView::updateRenderPass_SyncComputeGraphics(VkCommandBuffer&
         size_t count_comp = pRend->aPipelineComputes.size();
         for (int j = 0; j < count_comp; j++)
         {
-            PipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
+            VKPipelineCompute* pPipelineCompute = pRend->aPipelineComputes[j];
             if (pPipelineCompute->pTextureSource != nullptr &&
                 pPipelineCompute->pTextureTarget != nullptr &&
                 pPipelineCompute->pTextureCopy != nullptr)
@@ -2997,14 +2997,14 @@ void Vulkan_015_MultiView::updateRenderPass_CustomBeforeDefault(VkCommandBuffer&
     size_t count_render_pass = this->m_aMultiRenderPasses.size();
     for (size_t i = 0; i < count_render_pass; i++)
     {
-        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
+        VKMultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
         if (pRenderPass->isUseDefault)
             continue;
 
         drawMeshCustom(commandBuffer, pRenderPass);
     }
 }
-    void Vulkan_015_MultiView::drawMeshCustom(VkCommandBuffer& commandBuffer, MultiRenderPass* pRenderPass)
+    void Vulkan_015_MultiView::drawMeshCustom(VkCommandBuffer& commandBuffer, VKMultiRenderPass* pRenderPass)
     {
         beginRenderPass(commandBuffer,
                         pRenderPass->poRenderPass,
@@ -3065,7 +3065,7 @@ void Vulkan_015_MultiView::updateRenderPass_Default(VkCommandBuffer& commandBuff
 }
 
 
-void Vulkan_015_MultiView::addRenderPass2ModelObjectRendMap(MultiRenderPass* pRenderPass, ModelObjectRend* pRend)
+void Vulkan_015_MultiView::addRenderPass2ModelObjectRendMap(VKMultiRenderPass* pRenderPass, ModelObjectRend* pRend)
 {   
     if (pRend->isTransparent)
     {
@@ -3076,7 +3076,7 @@ void Vulkan_015_MultiView::addRenderPass2ModelObjectRendMap(MultiRenderPass* pRe
         addRenderPass2ModelObjectRendMap(m_mapRenderPass2ObjectRends_Opaque, pRenderPass, pRend);
     }
 }
-void Vulkan_015_MultiView::addRenderPass2ModelObjectRendMap(MultiRenderPass2ObjectRendsMap& mapRP2OR, MultiRenderPass* pRenderPass, ModelObjectRend* pRend)
+void Vulkan_015_MultiView::addRenderPass2ModelObjectRendMap(MultiRenderPass2ObjectRendsMap& mapRP2OR, VKMultiRenderPass* pRenderPass, ModelObjectRend* pRend)
 {
     MultiRenderPass2ObjectRendsMap::iterator itFind = mapRP2OR.find(pRenderPass);
     if (itFind == mapRP2OR.end())
@@ -3091,7 +3091,7 @@ void Vulkan_015_MultiView::addRenderPass2ModelObjectRendMap(MultiRenderPass2Obje
     }
 }
 
-void Vulkan_015_MultiView::drawModelObjectRendByRenderPass(VkCommandBuffer& commandBuffer, MultiRenderPass* pRenderPass)
+void Vulkan_015_MultiView::drawModelObjectRendByRenderPass(VkCommandBuffer& commandBuffer, VKMultiRenderPass* pRenderPass)
 {
     MultiRenderPass2ObjectRendsMap::iterator itFind_Opaque = m_mapRenderPass2ObjectRends_Opaque.find(pRenderPass);
     MultiRenderPass2ObjectRendsMap::iterator itFind_Transparent = m_mapRenderPass2ObjectRends_Transparent.find(pRenderPass);
@@ -3329,7 +3329,7 @@ void Vulkan_015_MultiView::cleanupSwapChain_Custom()
     count = this->m_aMultiRenderPasses.size();
     for (size_t i = 0; i < count; i++)
     {
-        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
+        VKMultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
         pRenderPass->CleanupSwapChain();
     }
     
@@ -3351,7 +3351,7 @@ void Vulkan_015_MultiView::recreateSwapChain_Custom()
     count = this->m_aMultiRenderPasses.size();
     for (size_t i = 0; i < count; i++)
     {
-        MultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
+        VKMultiRenderPass* pRenderPass = this->m_aMultiRenderPasses[i];
         pRenderPass->RecreateSwapChain();
     }
 }
