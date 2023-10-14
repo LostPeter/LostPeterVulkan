@@ -30,6 +30,13 @@ namespace LostPeter
         MeshGroupPtrMap m_mapMeshGroup;
 
     public:
+        LP_FORCEINLINE MeshSerializer* GetMeshSerializer() const { return m_pMeshSerializer; }
+        LP_FORCEINLINE const MeshPtrVector& GetMeshPtrVector() const { return m_aMesh; }
+        LP_FORCEINLINE MeshPtrVector& GetMeshPtrVector() { return m_aMesh; }
+        LP_FORCEINLINE const MeshGroupPtrMap& GetMeshGroupPtrMap() const { return m_mapMeshGroup; }
+        LP_FORCEINLINE MeshGroupPtrMap& GetMeshGroupPtrMap() { return m_mapMeshGroup; }
+
+    public:
         static MeshManager&	GetSingleton();
 		static MeshManager*	GetSingletonPtr();
 

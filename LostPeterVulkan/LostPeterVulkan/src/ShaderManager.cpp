@@ -105,8 +105,19 @@ namespace LostPeter
     }
     Shader* ShaderManager::loadShader(ShaderInfo* pSI)
     {
-        
-        return nullptr;
+        Shader* pShader = new Shader(pSI->group,
+                                     pSI->nameShader,
+                                     pSI->pathShader,
+                                     pSI->typeShader);
+        pShader->LoadShader();
+        if (AddShader(pSI->group, pShader))
+        {
+            F_LogInfo("ShaderManager::loadShader: Load shader success, [%u]-[%s]-[%s] !", 
+                      pSI->group, 
+                      pSI->nameShader.c_str(), 
+                      pSI->pathShader.c_str());
+        }
+        return pShader;
     }
 
     bool ShaderManager::HasShader(uint nGroup, const String& strName)
@@ -152,6 +163,7 @@ namespace LostPeter
 
         itFind->second.insert(ShaderPtrMap::value_type(strName, pShader));
         m_aShader.push_back(pShader);
+        m_mapVkShaderModules.insert(VkShaderModuleMap::value_type(strName, pShader->vkShaderModule));
         return true;
     }
 
@@ -172,6 +184,11 @@ namespace LostPeter
             F_DELETE(itFindShader->second)
             itFind->second.erase(itFindShader);
         }
+        VkShaderModuleMap::iterator itFindSM = m_mapVkShaderModules.find(strName);
+        if (itFindSM != m_mapVkShaderModules.end())
+        {
+            m_mapVkShaderModules.erase(itFindSM);
+        }
     }
 
     void ShaderManager::DeleteShaderAll()
@@ -188,6 +205,7 @@ namespace LostPeter
         }
         m_aShader.clear();
         m_mapShaderGroup.clear();
+        m_mapVkShaderModules.clear();
     }
 
 }; //LostPeter

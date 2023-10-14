@@ -14,19 +14,20 @@
 
 namespace LostPeter
 {
-    Texture::Texture(const String& _nameTexture,
+    Texture::Texture(uint32 _group,
+                     const String& _nameTexture,
                      const StringVector& _aPathTexture,
                      FTextureType _typeTexture,
-                     VkFormat _typeFormat,
+                     FTexturePixelFormatType _typePixelFormat,
                      FTextureFilterType _typeFilter,
                      FTextureAddressingType _typeAddressing,
                      FTextureBorderColorType _typeBorderColor,
                      bool _isRenderTarget,
                      bool _isGraphicsComputeShared)
-        : Base(_nameTexture)
+        : Base(_group, _nameTexture)
         , aPathTexture(_aPathTexture)
         , typeTexture(_typeTexture)
-        , typeFormat(_typeFormat)
+        , typePixelFormat(_typePixelFormat)
         , typeFilter(_typeFilter)
         , typeAddressing(_typeAddressing)
         , typeBorderColor(_typeBorderColor)
@@ -60,6 +61,7 @@ namespace LostPeter
         , rtIsSetColor(false)
         , rtImageUsage(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT)
     {
+        this->typeFormat = Util_Transform2VkFormat(this->typePixelFormat);
         if (this->isRenderTarget)
             this->poTextureImageLayout = VK_IMAGE_LAYOUT_GENERAL;
         else

@@ -19,7 +19,8 @@ namespace LostPeter
     class utilExport Mesh : public Base
     {
     public:
-        Mesh(const String& _nameMesh,
+        Mesh(uint32 _group,
+             const String& _nameMesh,
              const String& _pathMesh,
              FMeshType _typeMesh,
              FMeshVertexType _typeVertex,

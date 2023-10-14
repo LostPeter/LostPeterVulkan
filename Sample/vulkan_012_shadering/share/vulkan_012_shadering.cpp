@@ -86,22 +86,22 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
     "texture_rt_compute_copy_texarray", "2D",            "true",                   "true",                            "", //texture_rt_compute_copy_texarray
 
 };
-static VkFormat g_TextureFormats[g_TextureCount] = 
+static FTexturePixelFormatType g_TextureFormats[g_TextureCount] = 
 {
-    VK_FORMAT_R8G8B8A8_SRGB, //default_white
-    VK_FORMAT_R8G8B8A8_SRGB, //default_blackwhite
-    VK_FORMAT_R8G8B8A8_SRGB, //bricks_diffuse
-    VK_FORMAT_R8G8B8A8_SRGB, //terrain
-    VK_FORMAT_R8G8B8A8_SRGB, //texture2d
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //default_white
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //default_blackwhite
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //bricks_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //terrain
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2d
 
-    VK_FORMAT_R8G8B8A8_SRGB, //texturecubemap
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturecubemap
 
-    VK_FORMAT_R8G8B8A8_SRGB, //texture_terrain_diffuse
-    VK_FORMAT_R8G8B8A8_UNORM, //texture_terrain_normal
-    VK_FORMAT_R8G8B8A8_UNORM, //texture_terrain_control
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_diffuse
+    F_TexturePixelFormat_R8G8B8A8_UNORM, //texture_terrain_normal
+    F_TexturePixelFormat_R8G8B8A8_UNORM, //texture_terrain_control
 
-    VK_FORMAT_R8G8B8A8_UNORM, //texture_rt_compute_copy_tex
-    VK_FORMAT_R8G8B8A8_UNORM, //texture_rt_compute_copy_texarray
+    F_TexturePixelFormat_R8G8B8A8_UNORM, //texture_rt_compute_copy_tex
+    F_TexturePixelFormat_R8G8B8A8_UNORM, //texture_rt_compute_copy_texarray
 
 };
 static FTextureFilterType g_TextureFilters[g_TextureCount] = 
@@ -1205,7 +1205,8 @@ void Vulkan_012_Shadering::createTextures()
         String pathTextures = g_TexturePaths[5 * i + 4];
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
-        Texture* pTexture = new Texture(nameTexture,
+        Texture* pTexture = new Texture(0,
+                                        nameTexture,
                                         aPathTexture,
                                         typeTexture,
                                         g_TextureFormats[i],

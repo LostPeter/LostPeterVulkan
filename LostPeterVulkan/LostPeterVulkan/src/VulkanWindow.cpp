@@ -25,7 +25,8 @@ namespace LostPeter
     /////////////////////////// VulkanWindow //////////////////////
     Mesh* VulkanWindow::CreateMesh(const MeshInfo* pMI)
     {
-        Mesh* pMesh = new Mesh(pMI->nameMesh,
+        Mesh* pMesh = new Mesh(0,
+                               pMI->nameMesh,
                                pMI->pathMesh,
                                pMI->typeMesh,
                                pMI->typeVertex,
@@ -4872,7 +4873,12 @@ namespace LostPeter
         F_LogInfo("<2-2-3-5> VulkanWindow::createCustomCB finish !");
     }
 
-    VkShaderModule VulkanWindow::createVkShaderModule(const String& info, const String& pathFile)
+    VkShaderModule VulkanWindow::createVkShaderModule(FShaderType typeShader, const String& pathFile)
+    {
+        const String& strTypeShader = F_GetShaderTypeName(typeShader);
+        return createVkShaderModule(strTypeShader, pathFile);
+    }
+    VkShaderModule VulkanWindow::createVkShaderModule(const String& strTypeShader, const String& pathFile)
     {
         if (pathFile.empty())
             return nullptr;
@@ -4896,7 +4902,7 @@ namespace LostPeter
         VkShaderModule shaderModule;
         if (vkCreateShaderModule(this->poDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) 
         {
-            String msg = "*********************** VulkanWindow::createVkShaderModule: Failed to create shader module: " + info;
+            String msg = "*********************** VulkanWindow::createVkShaderModule: Failed to create shader module: " + strTypeShader;
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }

@@ -259,9 +259,9 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
     "bricks_diffuse",                   "2D",            "false",                  "false",                           "Assets/Texture/Common/bricks_diffuse.png", //bricks_diffuse
 
 };
-static VkFormat g_TextureFormats[g_TextureCount] = 
+static FTexturePixelFormatType g_TextureFormats[g_TextureCount] = 
 {
-    VK_FORMAT_R8G8B8A8_SRGB, //bricks_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //bricks_diffuse
 };
 static FTextureFilterType g_TextureFilters[g_TextureCount] = 
 {
@@ -3742,7 +3742,8 @@ void Vulkan_017_Collision::createMeshes()
             }
         }
 
-        Mesh* pMesh = new Mesh(nameMesh,
+        Mesh* pMesh = new Mesh(0,
+                               nameMesh,
                                pathMesh,
                                typeMesh,
                                typeVertex,
@@ -3800,7 +3801,8 @@ void Vulkan_017_Collision::createTextures()
         String pathTextures = g_TexturePaths[5 * i + 4];
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
-        Texture* pTexture = new Texture(nameTexture,
+        Texture* pTexture = new Texture(0,
+                                        nameTexture,
                                         aPathTexture,
                                         typeTexture,
                                         g_TextureFormats[i],

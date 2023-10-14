@@ -14,14 +14,44 @@
 
 namespace LostPeter
 {
-    Shader::Shader(const String& nameShader)
-        : Base(nameShader)
+    Shader::Shader(uint32 _group,
+                   const String& _nameShader,
+                   const String& _pathShader,
+                   FShaderType _typeShader)
+        : Base(_group, _nameShader)
+        , pathShader(_pathShader)
+        , typeShader(_typeShader)
+        , vkShaderModule(VK_NULL_HANDLE)
     {
 
     }
     Shader::~Shader()
     {
 
+    }   
+
+    void Shader::Destroy()
+    {
+        if (this->vkShaderModule != VK_NULL_HANDLE)
+        {
+            Base::GetWindowPtr()->destroyVkShaderModule(this->vkShaderModule);
+        }
+        this->vkShaderModule = VK_NULL_HANDLE;
+    }
+
+    bool Shader::LoadShader()
+    {
+        if (this->pathShader.empty())
+        {
+            F_LogError("*********************** Shader::LoadShader: Shader path is empty !");
+                
+            return false;
+        }
+
+        Destroy();
+        this->vkShaderModule = Base::GetWindowPtr()->createVkShaderModule(this->typeShader, this->pathShader);
+        
+        return true;
     }
 
 }; //LostPeter

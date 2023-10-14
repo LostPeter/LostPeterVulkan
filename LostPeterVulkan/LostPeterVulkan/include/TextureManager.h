@@ -30,6 +30,13 @@ namespace LostPeter
         TextureGroupPtrMap m_mapTextureGroup;
 
     public:
+        LP_FORCEINLINE TextureSerializer* GetTextureSerializer() const { return m_pTextureSerializer; }
+        LP_FORCEINLINE const TexturePtrVector& GetTexturePtrVector() const { return m_aTexture; }
+        LP_FORCEINLINE TexturePtrVector& GetTexturePtrVector() { return m_aTexture; }
+        LP_FORCEINLINE const TextureGroupPtrMap& GetTextureGroupPtrMap() const { return m_mapTextureGroup; }
+        LP_FORCEINLINE TextureGroupPtrMap& GetTextureGroupPtrMap() { return m_mapTextureGroup; }
+
+    public:
         static TextureManager& GetSingleton();
 		static TextureManager* GetSingletonPtr();
 

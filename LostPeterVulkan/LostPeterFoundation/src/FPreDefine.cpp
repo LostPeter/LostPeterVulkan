@@ -223,8 +223,10 @@ namespace LostPeterFoundation
     //FTexturePixelFormatType
     static const String s_nameTexturePixelFormatTypes[] = 
     {
-        "R8G8B8A8_SRGB",            //0: R8G8B8A8_SRGB
-        "R8G8B8A8_UNORM",           //1: R8G8B8A8_UNORM
+        "R8_UNORM",                 //0: R8_UNORM
+        "R16_UNORM",                //1: R16_UNORM
+        "R8G8B8A8_SRGB",            //2: R8G8B8A8_SRGB
+        "R8G8B8A8_UNORM",           //3: R8G8B8A8_UNORM
     };
     const String& F_GetTexturePixelFormatTypeName(FTexturePixelFormatType type)
     {

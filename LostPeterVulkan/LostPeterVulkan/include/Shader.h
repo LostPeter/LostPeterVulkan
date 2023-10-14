@@ -19,14 +19,25 @@ namespace LostPeter
     class utilExport Shader : public Base
     {
     public:
-        Shader(const String& nameShader);
+        Shader(uint32 _group,
+               const String& _nameShader,
+               const String& _pathShader,
+               FShaderType _typeShader);
         virtual ~Shader();
 
     public:
+        String pathShader;
+        FShaderType typeShader;
 
+        VkShaderModule vkShaderModule;
 
     public:
+        LP_FORCEINLINE VkShaderModule GetVkShaderModule() const { return this->vkShaderModule; }
 
+    public:
+        void Destroy();
+
+        virtual bool LoadShader();
 
     };
 

@@ -142,34 +142,34 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
     "stonefloor_color_height",      "2D",           "false",                 "false",                          "Assets/Texture/Common/stonefloor_color_height.png", //stonefloor_color_height
 
 };
-static VkFormat g_TextureFormats[g_TextureCount] = 
+static FTexturePixelFormatType g_TextureFormats[g_TextureCount] = 
 {
-    VK_FORMAT_R8G8B8A8_SRGB, //default_blackwhite
-    VK_FORMAT_R8G8B8A8_SRGB, //terrain
-    VK_FORMAT_R8G8B8A8_SRGB, //default_white
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //default_blackwhite
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //terrain
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //default_white
 
 ////Basic-Level Texture Operation
-    VK_FORMAT_R8G8B8A8_SRGB, //texturesampler_wrap
-    VK_FORMAT_R8G8B8A8_SRGB, //texturesampler_mirror
-    VK_FORMAT_R8G8B8A8_SRGB, //texturesampler_clamp
-    VK_FORMAT_R8G8B8A8_SRGB, //texturesampler_border
-    VK_FORMAT_R8G8B8A8_SRGB, //texture1d
-    VK_FORMAT_R8G8B8A8_SRGB, //texture2d
-    VK_FORMAT_R8G8B8A8_SRGB, //texture2darray
-    VK_FORMAT_R8_UNORM, //texture3d
-    VK_FORMAT_R8G8B8A8_SRGB, //texturecubemap
-    VK_FORMAT_R8G8B8A8_SRGB, //textureanimation_scroll
-    VK_FORMAT_R8G8B8A8_SRGB, //textureanimation_chunk
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturesampler_wrap
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturesampler_mirror
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturesampler_clamp
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturesampler_border
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture1d
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2d
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2darray
+    F_TexturePixelFormat_R8_UNORM, //texture3d
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturecubemap
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //textureanimation_scroll
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //textureanimation_chunk
 
 ////High-Level Texture Operation
-    VK_FORMAT_R8G8B8A8_SRGB, //texturebumpmap_diffuse
-    VK_FORMAT_R8G8B8A8_SRGB, //texturebumpmap_bumpmap
-    VK_FORMAT_R8G8B8A8_UNORM, //texturenormalmap_normalmap
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturebumpmap_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturebumpmap_bumpmap
+    F_TexturePixelFormat_R8G8B8A8_UNORM, //texturenormalmap_normalmap
 
-    VK_FORMAT_R8G8B8A8_SRGB, //rocks_color
-    VK_FORMAT_R8G8B8A8_UNORM, //rocks_normal_height
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rocks_color
+    F_TexturePixelFormat_R8G8B8A8_UNORM, //rocks_normal_height
 
-    VK_FORMAT_R8G8B8A8_UNORM, //stonefloor_color_height
+    F_TexturePixelFormat_R8G8B8A8_UNORM, //stonefloor_color_height
 
 };
 static FTextureFilterType g_TextureFilters[g_TextureCount] = 
@@ -1457,7 +1457,8 @@ void Vulkan_011_Texturing::createTextures()
         String pathTextures = g_TexturePaths[5 * i + 4];
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
-        Texture* pTexture = new Texture(nameTexture,
+        Texture* pTexture = new Texture(0,
+                                        nameTexture,
                                         aPathTexture,
                                         typeTexture,
                                         g_TextureFormats[i],

@@ -138,39 +138,39 @@ static const char* g_Texture_Paths[5 * g_Texture_Count] =
     "flower_atlas",                     "2D",            "false",                  "false",                           "Assets/Texture/Model/flower/flower_atlas.png", //flower_atlas
 
 };
-static VkFormat g_Texture_Formats[g_Texture_Count] = 
+static FTexturePixelFormatType g_Texture_Formats[g_Texture_Count] = 
 {
-    VK_FORMAT_R8G8B8A8_SRGB, //default_blackwhite
-    VK_FORMAT_R8G8B8A8_SRGB, //bricks_diffuse
-    VK_FORMAT_R8G8B8A8_SRGB, //terrain
-    VK_FORMAT_R8G8B8A8_SRGB, //texture2d
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //default_blackwhite
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //bricks_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //terrain
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2d
 
-    VK_FORMAT_R8G8B8A8_SRGB, //texturecubemap
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturecubemap
 
-    VK_FORMAT_R8G8B8A8_SRGB, //texture_terrain_diffuse
-    VK_FORMAT_R8G8B8A8_UNORM, //texture_terrain_normal
-    VK_FORMAT_R8G8B8A8_UNORM, //texture_terrain_control
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_control
 
-    VK_FORMAT_R8G8B8A8_SRGB, //mountain_diffuse
-    VK_FORMAT_R8G8B8A8_UNORM, //mountain_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //mountain_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //mountain_normal
 
-    VK_FORMAT_R8G8B8A8_SRGB, //rock_diffuse
-    VK_FORMAT_R8G8B8A8_UNORM, //rock_normal
-    VK_FORMAT_R8G8B8A8_SRGB, //cliff_diffuse
-    VK_FORMAT_R8G8B8A8_UNORM, //cliff_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //rock_normal
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //cliff_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //cliff_normal
 
-    VK_FORMAT_R8G8B8A8_SRGB, //tree_diffuse
-    VK_FORMAT_R8G8B8A8_SRGB, //tree_spruce_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //tree_diffuse
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //tree_spruce_diffuse
 
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_alien
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_field
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_pixelated
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_tall
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_thick
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_thin
-    VK_FORMAT_R8G8B8A8_SRGB, //grass_wheat
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_alien
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_field
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_pixelated
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_tall
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_thick
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_thin
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //grass_wheat
 
-    VK_FORMAT_R8G8B8A8_SRGB, //flower_atlas
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //flower_atlas
 
 };
 static FTextureFilterType g_Texture_Filters[g_Texture_Count] = 
@@ -1747,7 +1747,8 @@ void Vulkan_015_MultiView::createMeshes()
             typeGeometryType = F_ParseMeshGeometryType(nameGeometryType);
         }
 
-        Mesh* pMesh = new Mesh(nameMesh,
+        Mesh* pMesh = new Mesh(0,
+                               nameMesh,
                                pathMesh,
                                typeMesh,
                                typeVertex,
@@ -1805,7 +1806,8 @@ void Vulkan_015_MultiView::createTextures()
         String pathTextures = g_Texture_Paths[5 * i + 4];
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
-        Texture* pTexture = new Texture(nameTexture,    
+        Texture* pTexture = new Texture(0,
+                                        nameTexture,    
                                         aPathTexture,
                                         typeTexture,
                                         g_Texture_Formats[i],

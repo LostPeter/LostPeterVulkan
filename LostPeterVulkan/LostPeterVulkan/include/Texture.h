@@ -19,10 +19,11 @@ namespace LostPeter
     class utilExport Texture : public Base
     {
     public:
-        Texture(const String& _nameTexture,
+        Texture(uint32 _group,
+                const String& _nameTexture,
                 const StringVector& _aPathTexture,
                 FTextureType _typeTexture,
-                VkFormat _typeFormat,
+                FTexturePixelFormatType _typePixelFormat,
                 FTextureFilterType _typeFilter,
                 FTextureAddressingType _typeAddressing,
                 FTextureBorderColorType _typeBorderColor,
@@ -33,7 +34,7 @@ namespace LostPeter
     public:
         StringVector aPathTexture;
         FTextureType typeTexture;
-        VkFormat typeFormat; 
+        FTexturePixelFormatType typePixelFormat;
         FTextureFilterType typeFilter;
         FTextureAddressingType typeAddressing;
         FTextureBorderColorType typeBorderColor;
@@ -44,6 +45,7 @@ namespace LostPeter
         int height;
         int depth;
 
+        VkFormat typeFormat; 
         uint32_t poMipMapCount;
         VkImage poTextureImage;
         VkDeviceMemory poTextureImageMemory;
@@ -68,6 +70,9 @@ namespace LostPeter
         FVector4 rtColorDefault;
         bool rtIsSetColor; 
         VkImageUsageFlags rtImageUsage;
+
+    public:
+        
 
     public:
         void Destroy();

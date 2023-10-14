@@ -24,51 +24,6 @@ static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
 };
 
 
-/////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 18;
-static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
-{
-    //name                                                     //type               //path
-    ///////////////////////////////////////// vert /////////////////////////////////////////
-    "vert_standard_mesh_opaque_tex2d_lit",                     "vert",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
-    "vert_standard_mesh_transparent_lit",                      "vert",              "Assets/Shader/standard_mesh_transparent_lit.vert.spv", //standard_mesh_transparent_lit vert
-    "vert_standard_mesh_opaque_texcubemap_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
-    "vert_standard_mesh_opaque_tex2darray_lit",                "vert",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
-    
-    "vert_standard_terrain_opaque_lit",                        "vert",              "Assets/Shader/standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
-
-    "vert_standard_mesh_opaque_normalmap_lit",                 "vert",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.vert.spv", //standard_mesh_opaque_normalmap_lit vert
-    "vert_standard_mesh_transparent_tree_lit",                 "vert",              "Assets/Shader/standard_mesh_transparent_tree_lit.vert.spv", //standard_mesh_transparent_tree_lit vert  
-    "vert_standard_mesh_opaque_tree_alphatest_lit",            "vert",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.vert.spv", //standard_mesh_opaque_tree_alphatest_lit vert
-    "vert_standard_mesh_opaque_grass_alphatest_lit",           "vert",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.vert.spv", //standard_mesh_opaque_grass_alphatest_lit vert  
-
-    ///////////////////////////////////////// tesc /////////////////////////////////////////
-   
-
-    ///////////////////////////////////////// tese /////////////////////////////////////////
-   
-
-    ///////////////////////////////////////// geom /////////////////////////////////////////
-
-    ///////////////////////////////////////// frag /////////////////////////////////////////
-    "frag_standard_mesh_opaque_tex2d_lit",                     "frag",              "Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
-    "frag_standard_mesh_transparent_lit",                      "frag",              "Assets/Shader/standard_mesh_transparent_lit.frag.spv", //standard_mesh_transparent_lit frag
-    "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
-    "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "Assets/Shader/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
-
-    "frag_standard_terrain_opaque_lit",                        "frag",              "Assets/Shader/standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
-
-    "frag_standard_mesh_opaque_normalmap_lit",                 "frag",              "Assets/Shader/standard_mesh_opaque_normalmap_lit.frag.spv", //standard_mesh_opaque_normalmap_lit frag
-    "frag_standard_mesh_transparent_tree_lit",                 "frag",              "Assets/Shader/standard_mesh_transparent_tree_lit.frag.spv", //standard_mesh_transparent_tree_lit frag
-    "frag_standard_mesh_opaque_tree_alphatest_lit",            "frag",              "Assets/Shader/standard_mesh_opaque_tree_alphatest_lit.frag.spv", //standard_mesh_opaque_tree_alphatest_lit frag
-    "frag_standard_mesh_opaque_grass_alphatest_lit",           "frag",              "Assets/Shader/standard_mesh_opaque_grass_alphatest_lit.frag.spv", //standard_mesh_opaque_grass_alphatest_lit frag
-
-    ///////////////////////////////////////// comp /////////////////////////////////////////
-    
-
-};
-
-
 /////////////////////////// Object //////////////////////////////
 static const int g_Object_Count = 8;
 static const char* g_Object_Configs[3 * g_Object_Count] = 
@@ -664,6 +619,7 @@ void Vulkan_018_Object::loadModel_Custom()
     //Shader
     m_pShaderManager = new ShaderManager();
     m_pShaderManager->Init(s_nGroup_Sample, s_strNameShader_Sample);
+    m_pShaderManager->LoadShaderAll();
     
 
     int nIndexObjectRend = 0;
@@ -1032,9 +988,6 @@ void Vulkan_018_Object::createCustomBeforePipeline()
 
     //2> PipelineLayout
     createPipelineLayouts();
-
-    //3> Shader
-    createShaderModules();
 }   
 void Vulkan_018_Object::createGraphicsPipeline_Custom()
 {
@@ -1061,7 +1014,7 @@ void Vulkan_018_Object::createGraphicsPipeline_Custom()
                                                   nameShaderTese,
                                                   nameShaderGeom,
                                                   nameShaderFrag,
-                                                  m_mapVkShaderModules,
+                                                  ShaderManager::GetSingleton().GetVkShaderModuleMap(),
                                                   pRend->aShaderStageCreateInfos_Graphics))
         {
             String msg = "*********************** Vulkan_018_Object::createGraphicsPipeline_Custom: Can not find shader used !";
@@ -1162,7 +1115,7 @@ void Vulkan_018_Object::createComputePipeline_Custom()
         //[1] Shaders
         String nameShaderComp = g_ObjectRend_NameShaderModules[6 * i + 5];
         if (!CreatePipelineShaderStageCreateInfos(nameShaderComp,
-                                                  m_mapVkShaderModules,
+                                                  ShaderManager::GetSingleton().GetVkShaderModuleMap(),
                                                   pRend->aShaderStageCreateInfos_Computes,
                                                   pRend->mapShaderStageCreateInfos_Computes))
         {
@@ -1265,43 +1218,6 @@ StringVector* Vulkan_018_Object::findDescriptorSetLayoutNames(const String& name
     }
     return &(itFind->second);
 }
-
-
-void Vulkan_018_Object::destroyShaderModules()
-{   
-    size_t count = this->m_aVkShaderModules.size();
-    for (size_t i = 0; i < count; i++)
-    {
-        VkShaderModule& vkShaderModule= this->m_aVkShaderModules[i];
-        destroyVkShaderModule(vkShaderModule);
-    }
-    this->m_aVkShaderModules.clear();
-    this->m_mapVkShaderModules.clear();
-}
-void Vulkan_018_Object::createShaderModules()
-{
-    for (int i = 0; i < g_ShaderCount; i++)
-    {
-        String shaderName = g_ShaderModulePaths[3 * i + 0];
-        String shaderType = g_ShaderModulePaths[3 * i + 1];
-        String shaderPath = g_ShaderModulePaths[3 * i + 2];
-
-        VkShaderModule shaderModule = createVkShaderModule(shaderType, shaderPath);
-        this->m_aVkShaderModules.push_back(shaderModule);
-        this->m_mapVkShaderModules[shaderName] = shaderModule;
-        F_LogInfo("Vulkan_018_Object::createShaderModules: create shader, name: [%s], type: [%s], path: [%s] success !", 
-                  shaderName.c_str(), shaderType.c_str(), shaderPath.c_str());
-    }
-}
-VkShaderModule Vulkan_018_Object::findShaderModule(const String& nameShaderModule)
-{
-    VkShaderModuleMap::iterator itFind = this->m_mapVkShaderModules.find(nameShaderModule);
-    if (itFind == this->m_mapVkShaderModules.end())
-    {
-        return nullptr;
-    }
-    return itFind->second;
-}   
 
 
 void Vulkan_018_Object::destroyPipelineLayouts()
@@ -2473,7 +2389,6 @@ void Vulkan_018_Object::cleanupSwapChain_Custom()
 
     destroyDescriptorSetLayouts();
     destroyPipelineLayouts();
-    destroyShaderModules();
 }
 
 void Vulkan_018_Object::recreateSwapChain_Custom()

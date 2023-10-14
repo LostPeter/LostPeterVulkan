@@ -20,13 +20,14 @@
 
 namespace LostPeter
 {
-    Mesh::Mesh(const String& _nameMesh,
+    Mesh::Mesh(uint32 _group,
+               const String& _nameMesh,
                const String& _pathMesh,
                FMeshType _typeMesh,
                FMeshVertexType _typeVertex,
                FMeshGeometryType _typeGeometryType,
                FMeshCreateParam* _pMeshCreateParam)
-        : Base(_nameMesh)
+        : Base(_group, _nameMesh)
         , pathMesh(_pathMesh)
         , typeMesh(_typeMesh)
         , typeVertex(_typeVertex)

@@ -104,7 +104,8 @@ namespace LostPeter
     }
     Mesh* MeshManager::loadMesh(MeshInfo* pMI)
     {
-        Mesh* pMesh = new Mesh(pMI->nameMesh,
+        Mesh* pMesh = new Mesh(pMI->group,
+                               pMI->nameMesh,
                                pMI->pathMesh,
                                pMI->typeMesh,
                                pMI->typeVertex,
@@ -119,7 +120,7 @@ namespace LostPeter
 
         if (AddMesh(pMI->group, pMesh))
         {
-            F_LogInfo("MeshManager::loadMesh: Load mesh success, [%u - %s - %s - %d] !", 
+            F_LogInfo("MeshManager::loadMesh: Load mesh success, [%u]-[%s]-[%s]-[%d] !", 
                       pMI->group, 
                       pMI->nameMesh.c_str(), 
                       pMI->pathMesh.c_str(), 

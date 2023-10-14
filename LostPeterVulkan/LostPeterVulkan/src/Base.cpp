@@ -16,11 +16,20 @@ namespace LostPeter
 {
     VulkanWindow* Base::ms_pVulkanWindow = nullptr;
     Base::Base(const String& _name)
-        : name(_name)
+        : group(0)
+        , name(_name)
         , refCount(0)
         , isInit(false)
     {
        
+    }
+    Base::Base(uint32 _group, const String& _name)
+        : group(_group)
+        , name(_name)
+        , refCount(0)
+        , isInit(false)
+    {
+
     }
     Base::~Base()
     {

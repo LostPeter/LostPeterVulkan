@@ -410,8 +410,10 @@ namespace LostPeterFoundation
 
     enum FTexturePixelFormatType
     {
-        F_TexturePixelFormat_R8G8B8A8_SRGB = 0,         //0: R8G8B8A8_SRGB
-        F_TexturePixelFormat_R8G8B8A8_UNORM,            //1: R8G8B8A8_UNORM
+        F_TexturePixelFormat_R8_UNORM = 0,              //0: R8_UNORM
+        F_TexturePixelFormat_R16_UNORM,                 //1: R16_UNORM
+        F_TexturePixelFormat_R8G8B8A8_SRGB,             //2: R8G8B8A8_SRGB
+        F_TexturePixelFormat_R8G8B8A8_UNORM,            //3: R8G8B8A8_UNORM
 
         F_TextureFormat_Count,
     };

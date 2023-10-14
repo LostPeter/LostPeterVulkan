@@ -28,6 +28,16 @@ namespace LostPeter
         ShaderSerializer* m_pShaderSerializer;
         ShaderPtrVector m_aShader;
         ShaderGroupPtrMap m_mapShaderGroup;
+        VkShaderModuleMap m_mapVkShaderModules;
+
+    public:
+        LP_FORCEINLINE ShaderSerializer* GetShaderSerializer() const { return m_pShaderSerializer; }
+        LP_FORCEINLINE const ShaderPtrVector& GetShaderPtrVector() const { return m_aShader; }
+        LP_FORCEINLINE ShaderPtrVector& GetShaderPtrVector() { return m_aShader; }
+        LP_FORCEINLINE const ShaderGroupPtrMap& GetShaderGroupPtrMap() const { return m_mapShaderGroup; }
+        LP_FORCEINLINE ShaderGroupPtrMap& GetShaderGroupPtrMap() { return m_mapShaderGroup; }
+        LP_FORCEINLINE const VkShaderModuleMap& GetVkShaderModuleMap() const { return m_mapVkShaderModules; }
+        LP_FORCEINLINE VkShaderModuleMap& GetVkShaderModuleMap() { return m_mapVkShaderModules; }
 
     public:
         static ShaderManager& GetSingleton();

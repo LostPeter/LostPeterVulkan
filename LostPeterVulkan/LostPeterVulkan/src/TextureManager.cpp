@@ -106,11 +106,11 @@ namespace LostPeter
     Texture* TextureManager::loadTexture(TextureInfo* pTI)
     {
         StringVector aPathTexture = FUtilString::Split(pTI->pathTexture, ";");
-        VkFormat typeFormat = Util_Transform2VkFormat(pTI->typeTexturePixelFormat);
-        Texture* pTexture = new Texture(pTI->nameTexture,
+        Texture* pTexture = new Texture(pTI->group,
+                                        pTI->nameTexture,
                                         aPathTexture,
                                         pTI->typeTexture,
-                                        typeFormat,
+                                        pTI->typeTexturePixelFormat,
                                         pTI->typeTextureFilter,
                                         pTI->typeTextureAddressing,
                                         pTI->typeTextureBorderColor,
@@ -130,10 +130,10 @@ namespace LostPeter
 
         if (AddTexture(pTI->group, pTexture))
         {
-            F_LogInfo("TextureManager::loadTexture: Load texture success, [%u - %s - %s] !", 
+            F_LogInfo("TextureManager::loadTexture: Load texture success, [%u]-[%s]-[%s] !",
                       pTI->group, 
                       pTI->nameTexture.c_str(), 
-                      pTI->nameTexture.c_str());
+                      pTI->pathTexture.c_str());
         }
         return pTexture;
     }

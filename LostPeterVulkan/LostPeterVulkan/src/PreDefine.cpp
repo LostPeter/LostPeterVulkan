@@ -146,6 +146,8 @@ namespace LostPeter
     {
         switch ((int32)type)
         {
+            case F_TexturePixelFormat_R8_UNORM:          return VK_FORMAT_R8_UNORM;
+            case F_TexturePixelFormat_R16_UNORM:         return VK_FORMAT_R16_UNORM;
             case F_TexturePixelFormat_R8G8B8A8_SRGB:     return VK_FORMAT_R8G8B8A8_SRGB;
             case F_TexturePixelFormat_R8G8B8A8_UNORM:    return VK_FORMAT_R8G8B8A8_UNORM;
         }

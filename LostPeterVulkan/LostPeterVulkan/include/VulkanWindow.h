@@ -943,7 +943,8 @@ namespace LostPeter
                         virtual void buildInstanceCB();
                     virtual void createCustomCB();
 
-                virtual VkShaderModule createVkShaderModule(const String& info, const String& pathFile);
+                virtual VkShaderModule createVkShaderModule(FShaderType typeShader, const String& pathFile);
+                virtual VkShaderModule createVkShaderModule(const String& strTypeShader, const String& pathFile);
                     virtual void destroyVkShaderModule(VkShaderModule vkShaderModule);
 
                 virtual bool createVkDescriptorSetLayout(const VkDescriptorSetLayoutBindingVector& aDescriptorSetLayoutBinding, VkDescriptorSetLayout& vkDescriptorSetLayout);
