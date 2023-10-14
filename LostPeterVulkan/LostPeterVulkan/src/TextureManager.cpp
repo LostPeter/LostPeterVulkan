@@ -44,13 +44,13 @@ namespace LostPeter
         F_DELETE(m_pTextureSerializer)
         DeleteTextureAll();
     }
-    bool TextureManager::Init(uint nGroup, const String& strNameCfgTexture)
+    bool TextureManager::Init(uint nGroup, const String& strNameCfg)
     {
         //1> Texture Cfg Path 
-        String strPathCfgTexture = FPathManager::GetSingleton().GetFilePath(nGroup, strNameCfgTexture);
+        String strPathCfgTexture = FPathManager::GetSingleton().GetFilePath(nGroup, strNameCfg);
         if (strPathCfgTexture.empty())
         {
-            F_LogError("*********************** TextureManager::Init: Can not get file path from group: [%u], name: [%s] !", nGroup, strNameCfgTexture.c_str());
+            F_LogError("*********************** TextureManager::Init: Can not get file path from group: [%u], name: [%s] !", nGroup, strNameCfg.c_str());
             return false;
         }
 
@@ -58,7 +58,7 @@ namespace LostPeter
         m_pTextureSerializer = new TextureSerializer();
         if (!m_pTextureSerializer->LoadFile(strPathCfgTexture))
         {
-            F_LogError("*********************** TextureManager::Init: Load file texture cfg failed, group: [%u], name: [%s] !", nGroup, strNameCfgTexture.c_str());
+            F_LogError("*********************** TextureManager::Init: Load file texture cfg failed, group: [%u], name: [%s] !", nGroup, strNameCfg.c_str());
             return false;
         }
 

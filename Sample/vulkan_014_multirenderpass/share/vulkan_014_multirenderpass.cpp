@@ -1911,7 +1911,7 @@ void Vulkan_014_MultiRenderPass::createMultiRenderPasses()
 }
 VKMultiRenderPass* Vulkan_014_MultiRenderPass::findMultiRenderPass(const String& nameRenderPass)
 {
-    MultiRenderPassPtrMap::iterator itFind = this->m_mapMultiRenderPasses.find(nameRenderPass);
+    VKMultiRenderPassPtrMap::iterator itFind = this->m_mapMultiRenderPasses.find(nameRenderPass);
     if (itFind == this->m_mapMultiRenderPasses.end())
     {
         return nullptr;

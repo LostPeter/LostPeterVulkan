@@ -44,7 +44,6 @@ namespace LostPeter
         if (this->pathShader.empty())
         {
             F_LogError("*********************** Shader::LoadShader: Shader path is empty !");
-                
             return false;
         }
 

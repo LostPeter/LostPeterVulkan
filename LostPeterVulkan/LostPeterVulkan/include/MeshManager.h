@@ -42,7 +42,7 @@ namespace LostPeter
 
     public:
         void Destroy();
-        bool Init(uint nGroupCfgMesh, const String& strNameCfgMesh);
+        bool Init(uint nGroupCfgMesh, const String& strNameCfg);
 
     public:
         bool LoadMeshAll();

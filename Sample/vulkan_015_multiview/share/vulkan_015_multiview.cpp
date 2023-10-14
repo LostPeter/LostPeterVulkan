@@ -2014,7 +2014,7 @@ void Vulkan_015_MultiView::createMultiRenderPasses()
 }
 VKMultiRenderPass* Vulkan_015_MultiView::findMultiRenderPass(const String& nameRenderPass)
 {
-    MultiRenderPassPtrMap::iterator itFind = this->m_mapMultiRenderPasses.find(nameRenderPass);
+    VKMultiRenderPassPtrMap::iterator itFind = this->m_mapMultiRenderPasses.find(nameRenderPass);
     if (itFind == this->m_mapMultiRenderPasses.end())
     {
         return nullptr;

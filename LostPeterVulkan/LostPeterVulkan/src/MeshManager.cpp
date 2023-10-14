@@ -44,13 +44,13 @@ namespace LostPeter
         F_DELETE(m_pMeshSerializer)
         DeleteMeshAll();
     }
-    bool MeshManager::Init(uint nGroup, const String& strNameCfgMesh)
+    bool MeshManager::Init(uint nGroup, const String& strNameCfg)
     {
         //1> Mesh Cfg Path 
-        String strPathCfgMesh = FPathManager::GetSingleton().GetFilePath(nGroup, strNameCfgMesh);
+        String strPathCfgMesh = FPathManager::GetSingleton().GetFilePath(nGroup, strNameCfg);
         if (strPathCfgMesh.empty())
         {
-            F_LogError("*********************** MeshManager::Init: Can not get file path from group: [%u], name: [%s] !", nGroup, strNameCfgMesh.c_str());
+            F_LogError("*********************** MeshManager::Init: Can not get file path from group: [%u], name: [%s] !", nGroup, strNameCfg.c_str());
             return false;
         }
 
@@ -58,7 +58,7 @@ namespace LostPeter
         m_pMeshSerializer = new MeshSerializer();
         if (!m_pMeshSerializer->LoadFile(strPathCfgMesh))
         {
-            F_LogError("*********************** MeshManager::Init: Load file mesh cfg failed, group: [%u], name: [%s] !", nGroup, strNameCfgMesh.c_str());
+            F_LogError("*********************** MeshManager::Init: Load file mesh cfg failed, group: [%u], name: [%s] !", nGroup, strNameCfg.c_str());
             return false;
         }
         

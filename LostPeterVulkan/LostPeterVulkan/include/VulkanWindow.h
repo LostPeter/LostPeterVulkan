@@ -56,12 +56,9 @@ namespace LostPeter
                                                           VkPipelineShaderStageCreateInfoVector& aStageCreateInfos_Compute,
                                                           VkPipelineShaderStageCreateInfoMap& mapStageCreateInfos_Compute);
 
-        //Texture
-
-        
         //DescriptorSetLayout
         virtual VkDescriptorSetLayout CreateDescriptorSetLayout(const String& nameLayout, const StringVector* pNamesDescriptorSetLayout);
-
+        virtual VkDescriptorSetLayout CreateDescriptorSetLayout(const String& nameLayout, const VKDescriptorSetLayoutPtrVector& aDescriptorSetLayouts);
 
     public: 
         static bool s_isEnableValidationLayers;

@@ -45,7 +45,7 @@ namespace LostPeter
 
     public:
         void Destroy();
-        bool Init(uint nGroup, const String& strNameCfgShader);
+        bool Init(uint nGroup, const String& strNameCfg);
 
     public:
         bool LoadShaderAll();

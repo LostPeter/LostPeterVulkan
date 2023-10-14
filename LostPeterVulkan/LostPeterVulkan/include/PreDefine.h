@@ -220,7 +220,7 @@ namespace LostPeter
     VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(FMSAASampleCountType type);
 
     VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(FShaderType type);    
-
+    VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(const Uint32Vector& aShaderTypes);    
 
     enum VulkanDescriptorSetType
     {
@@ -251,6 +251,28 @@ namespace LostPeter
     const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type);
     const String& Util_GetDescriptorSetTypeName(int type);
     VulkanDescriptorSetType Util_ParseDescriptorSetType(const String& strName);
+
+
+    enum VulkanDescriptorSetUsageType
+    {
+        Vulkan_DescriptorSetUsage_Sampler = 0,              //0:  Sampler                   VK_DESCRIPTOR_TYPE_SAMPLER
+        Vulkan_DescriptorSetUsage_CombinedImageSampler,     //1:  CombinedImageSampler      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+        Vulkan_DescriptorSetUsage_SampledImage,             //2:  SampledImage              VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE
+        Vulkan_DescriptorSetUsage_StorageImage,             //3:  StorageImage              VK_DESCRIPTOR_TYPE_STORAGE_IMAGE
+        Vulkan_DescriptorSetUsage_UniformTexelBuffer,       //4:  UniformTexelBuffer        VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER
+        Vulkan_DescriptorSetUsage_StorageTexelBuffer,       //5:  StorageTexelBuffer        VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER
+        Vulkan_DescriptorSetUsage_UniformBuffer,            //6:  UniformBuffer             VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+        Vulkan_DescriptorSetUsage_StorageBuffer,            //7:  StorageBuffer             VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+        Vulkan_DescriptorSetUsage_UniformBufferDynamic,     //8:  UniformBufferDynamic      VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC
+        Vulkan_DescriptorSetUsage_StorageBufferDynamic,     //9:  StorageBufferDynamic      VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
+        Vulkan_DescriptorSetUsage_InputAttachment,          //10: InputAttachment           VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
+
+        Vulkan_DescriptorSetUsage_Count,
+    };
+    const String& Util_GetDescriptorSetUsageTypeName(VulkanDescriptorSetUsageType type);
+    const String& Util_GetDescriptorSetUsageTypeName(int type);
+    VulkanDescriptorSetUsageType Util_ParseDescriptorSetUsageType(const String& strName);
+    VkDescriptorType Util_Transform2VkDescriptorType(VulkanDescriptorSetUsageType type);    
 
 
 ////////////////////////////// Vulkan //////////////////////////////
@@ -424,17 +446,32 @@ namespace LostPeter
     class VulkanBase;
     class VulkanWindow;
 
+    class VKDescriptorSetLayout;
+    class VKDescriptorSetLayoutManager;
+    class VKDescriptorSetLayoutSerializer;
     class VKFrameBufferAttachment;
     class VKMultiRenderPass;
     class VKPipelineGraphics;
     class VKPipelineCompute;
+    class VKPipelineLayout;
+    class VKPipelineLayoutManager;
+    class VKPipelineLayoutSerializer;
 
-    typedef std::vector<VKMultiRenderPass*> MultiRenderPassPtrVector;
-    typedef std::map<String, VKMultiRenderPass*> MultiRenderPassPtrMap;
-    typedef std::vector<VKPipelineGraphics*> PipelineGraphicsPtrVector;
-    typedef std::map<String, VKPipelineGraphics*> PipelineGraphicsPtrMap;
-    typedef std::vector<VKPipelineCompute*> PipelineComputePtrVector;
+
+    typedef std::vector<VKDescriptorSetLayout*> VKDescriptorSetLayoutPtrVector;
+    typedef std::map<String, VKDescriptorSetLayout*> VKDescriptorSetLayoutPtrMap;
+    
+    typedef std::vector<VKMultiRenderPass*> VKMultiRenderPassPtrVector;
+    typedef std::map<String, VKMultiRenderPass*> VKMultiRenderPassPtrMap;
+    
+    typedef std::vector<VKPipelineGraphics*> VKPipelineGraphicsPtrVector;
+    typedef std::map<String, VKPipelineGraphics*> VKPipelineGraphicsPtrMap;
+    
+    typedef std::vector<VKPipelineCompute*> VKPipelineComputePtrVector;
     typedef std::map<String, VKPipelineCompute*> PipelineComputePtrMap;
+
+    typedef std::vector<VKPipelineLayout*> VKPipelineLayoutPtrVector;
+    typedef std::map<String, VKPipelineLayout*> VKPipelineLayoutPtrMap;
 
 
     class Base;

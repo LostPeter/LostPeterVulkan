@@ -22,10 +22,16 @@
 #include "VulkanBase.h"
 #include "VulkanWindow.h"
 
+#include "VKDescriptorSetLayout.h"
+#include "VKDescriptorSetLayoutManager.h"
+#include "VKDescriptorSetLayoutSerializer.h"
 #include "VKFrameBufferAttachment.h"
 #include "VKMultiRenderPass.h"
 #include "VKPipelineCompute.h"
 #include "VKPipelineGraphics.h"
+#include "VKPipelineLayout.h"
+#include "VKPipelineLayoutManager.h"
+#include "VKPipelineLayoutSerializer.h"
 
 #include "Base.h"
 #include "EditorBase.h"

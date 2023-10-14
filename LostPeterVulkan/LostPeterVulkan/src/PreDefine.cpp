@@ -307,10 +307,30 @@ namespace LostPeter
         F_Assert(false && "Util_Transform2VkShaderStageFlagBits: Wrong type !")
         return VK_SHADER_STAGE_VERTEX_BIT;
     }
+    VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(const Uint32Vector& aShaderTypes)
+    {
+        int bits;
+        size_t count = aShaderTypes.size();
+        if (count > 0)
+        {
+            for (size_t i = 0; i < count; i++)
+            {
+                FShaderType typeShader = (FShaderType)aShaderTypes[i];
+                if (i ==0)
+                    bits = Util_Transform2VkShaderStageFlagBits(typeShader);
+                else
+                    bits = bits | Util_Transform2VkShaderStageFlagBits(typeShader);
+            }
+            return (VkShaderStageFlagBits)bits;
+        }
+
+        F_Assert(false && "Util_Transform2VkShaderStageFlagBits: Wrong count !")
+        return VK_SHADER_STAGE_VERTEX_BIT; 
+    }
 
 
     //VulkanDescriptorSetType
-    static String s_nameDescriptorSets[] = 
+    static String s_nameDescriptorSetTypes[] = 
     {
         "Pass",                     //0:   Pass
         "Object",                   //1:   Object
@@ -336,22 +356,77 @@ namespace LostPeter
     };
     const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type)
     {
-        return s_nameDescriptorSets[(int)type];
+        return s_nameDescriptorSetTypes[(int)type];
     }
     const String& Util_GetDescriptorSetTypeName(int type)
     {
-        return s_nameDescriptorSets[type];
+        return s_nameDescriptorSetTypes[type];
     }
     VulkanDescriptorSetType Util_ParseDescriptorSetType(const String& strName)
     {
         for (size_t i = 0; i < (int)Vulkan_DescriptorSet_Count; i++)
         {
-            if (s_nameDescriptorSets[i] == strName)
+            if (s_nameDescriptorSetTypes[i] == strName)
                 return (VulkanDescriptorSetType)(i);
         }
         F_Assert(false && "Util_ParseDescriptorSetType: Wrong type name !")
         return Vulkan_DescriptorSet_Pass;
     }
+
+
+    //VulkanDescriptorSetUsageType
+    static String s_nameDescriptorSetUsageTypes[] = 
+    {
+        "Sampler",                  //0:  Sampler                   VK_DESCRIPTOR_TYPE_SAMPLER
+        "CombinedImageSampler",     //1:  CombinedImageSampler      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+        "SampledImage",             //2:  SampledImage              VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE
+        "StorageImage",             //3:  StorageImage              VK_DESCRIPTOR_TYPE_STORAGE_IMAGE
+        "UniformTexelBuffer",       //4:  UniformTexelBuffer        VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER
+        "StorageTexelBuffer",       //5:  StorageTexelBuffer        VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER
+        "UniformBuffer",            //6:  UniformBuffer             VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+        "StorageBuffer",            //7:  StorageBuffer             VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+        "UniformBufferDynamic",     //8:  UniformBufferDynamic      VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC
+        "StorageBufferDynamic",     //9:  StorageBufferDynamic      VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
+        "InputAttachment",          //10: InputAttachment           VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
+    };
+    const String& Util_GetDescriptorSetUsageTypeName(VulkanDescriptorSetUsageType type)
+    {
+        return s_nameDescriptorSetUsageTypes[(int)type];
+    }
+    const String& Util_GetDescriptorSetUsageTypeName(int type)
+    {
+        return s_nameDescriptorSetUsageTypes[type];
+    }
+    VulkanDescriptorSetUsageType Util_ParseDescriptorSetUsageType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)Vulkan_DescriptorSetUsage_Count; i++)
+        {
+            if (s_nameDescriptorSetUsageTypes[i] == strName)
+                return (VulkanDescriptorSetUsageType)(i);
+        }
+        F_Assert(false && "Util_ParseDescriptorSetUsageType: Wrong type name !")
+        return Vulkan_DescriptorSetUsage_UniformBuffer;
+    }
+    VkDescriptorType Util_Transform2VkDescriptorType(VulkanDescriptorSetUsageType type)
+    {
+        switch((int)type)
+        {
+        case Vulkan_DescriptorSetUsage_Sampler:                     return VK_DESCRIPTOR_TYPE_SAMPLER;
+        case Vulkan_DescriptorSetUsage_CombinedImageSampler:        return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        case Vulkan_DescriptorSetUsage_SampledImage:                return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+        case Vulkan_DescriptorSetUsage_StorageImage:                return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        case Vulkan_DescriptorSetUsage_UniformTexelBuffer:          return VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+        case Vulkan_DescriptorSetUsage_StorageTexelBuffer:          return VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+        case Vulkan_DescriptorSetUsage_UniformBuffer:               return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        case Vulkan_DescriptorSetUsage_StorageBuffer:               return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        case Vulkan_DescriptorSetUsage_UniformBufferDynamic:        return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        case Vulkan_DescriptorSetUsage_StorageBufferDynamic:        return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+        case Vulkan_DescriptorSetUsage_InputAttachment:             return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+        }
+        F_Assert(false && "Util_Transform2VkDescriptorType: Wrong type !")
+        return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    }
+
 
 ////////////////////////////// Vulkan //////////////////////////////
     const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(FMeshVertexType type)

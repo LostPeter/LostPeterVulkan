@@ -44,13 +44,13 @@ namespace LostPeter
         F_DELETE(m_pShaderSerializer)
         DeleteShaderAll();
     }
-    bool ShaderManager::Init(uint nGroup, const String& strNameCfgShader)
+    bool ShaderManager::Init(uint nGroup, const String& strNameCfg)
     {
         //1> Shader Cfg Path 
-        String strPathCfgShader = FPathManager::GetSingleton().GetFilePath(nGroup, strNameCfgShader);
+        String strPathCfgShader = FPathManager::GetSingleton().GetFilePath(nGroup, strNameCfg);
         if (strPathCfgShader.empty())
         {
-            F_LogError("*********************** ShaderManager::Init: Can not get file path from group: [%u], name: [%s] !", nGroup, strNameCfgShader.c_str());
+            F_LogError("*********************** ShaderManager::Init: Can not get file path from group: [%u], name: [%s] !", nGroup, strNameCfg.c_str());
             return false;
         }
 
@@ -58,7 +58,7 @@ namespace LostPeter
         m_pShaderSerializer = new ShaderSerializer();
         if (!m_pShaderSerializer->LoadFile(strPathCfgShader))
         {
-            F_LogError("*********************** ShaderManager::Init: Load file shader cfg failed, group: [%u], name: [%s] !", nGroup, strNameCfgShader.c_str());
+            F_LogError("*********************** ShaderManager::Init: Load file shader cfg failed, group: [%u], name: [%s] !", nGroup, strNameCfg.c_str());
             return false;
         }
 

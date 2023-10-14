@@ -36,7 +36,7 @@ public:
         bool isTransparent;
 
         //RenderPass
-        MultiRenderPassPtrVector aRenderPassesRef;
+        VKMultiRenderPassPtrVector aRenderPassesRef;
 
         //Texture
         TexturePtrShaderSortMap mapModelTexturesShaderSort;
@@ -67,7 +67,7 @@ public:
         VKPipelineGraphics* pPipelineGraphics;
 
         //Pipeline Computes
-        PipelineComputePtrVector aPipelineComputes;
+        VKPipelineComputePtrVector aPipelineComputes;
         
         //State
         VkPrimitiveTopology cfg_vkPrimitiveTopology;
@@ -526,8 +526,8 @@ public:
     VkPipelineLayoutVector m_aVkPipelineLayouts;
     VkPipelineLayoutMap m_mapVkPipelineLayouts;
 
-    MultiRenderPassPtrVector m_aMultiRenderPasses;
-    MultiRenderPassPtrMap m_mapMultiRenderPasses;
+    VKMultiRenderPassPtrVector m_aMultiRenderPasses;
+    VKMultiRenderPassPtrMap m_mapMultiRenderPasses;
 
 protected:
     //Create Pipeline

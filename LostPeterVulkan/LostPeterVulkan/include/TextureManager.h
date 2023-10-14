@@ -42,7 +42,7 @@ namespace LostPeter
 
     public:
         void Destroy();
-        bool Init(uint nGroup, const String& strNameCfgTexture);
+        bool Init(uint nGroup, const String& strNameCfg);
 
     public:
         bool LoadTextureAll();

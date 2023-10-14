@@ -267,7 +267,7 @@ public:
         VKPipelineGraphics* pPipelineGraphics;
 
         //Pipeline Computes
-        PipelineComputePtrVector aPipelineComputes;
+        VKPipelineComputePtrVector aPipelineComputes;
 
         //State
         VkPrimitiveTopology cfg_vkPrimitiveTopology;
