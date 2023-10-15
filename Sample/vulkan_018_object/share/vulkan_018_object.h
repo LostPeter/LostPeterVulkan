@@ -497,10 +497,7 @@ public:
     bool m_isDrawIndirect;
     bool m_isDrawIndirectMulti;
 
-    VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
-    VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
-    std::map<String, StringVector> m_mapName2Layouts;
-
+    
     VkPipelineLayoutVector m_aVkPipelineLayouts;
     VkPipelineLayoutMap m_mapVkPipelineLayouts;
 
@@ -561,12 +558,6 @@ protected:
 
 private:
     void rebuildInstanceCBs(bool isCreateVkBuffer);
-
-////DescriptorSetLayout
-    void destroyDescriptorSetLayouts();
-    void createDescriptorSetLayouts();
-    VkDescriptorSetLayout findDescriptorSetLayout(const String& nameDescriptorSetLayout);
-    StringVector* findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout);
 
 ////PipelineLayout
     void destroyPipelineLayouts();

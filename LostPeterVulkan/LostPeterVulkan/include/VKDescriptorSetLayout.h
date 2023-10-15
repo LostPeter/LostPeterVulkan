@@ -23,10 +23,22 @@ namespace LostPeter
         virtual ~VKDescriptorSetLayout();
 
     public:
+    protected:
+        StringVector aNamesDescriptorSet;
+
+        VkDescriptorSetLayout vkDescriptorSetLayout;
+
+    public:
+        LP_FORCEINLINE const StringVector& GetNamesDescriptorSet() const { return this->aNamesDescriptorSet; }
+        LP_FORCEINLINE StringVector& GetNamesDescriptorSet() { return this->aNamesDescriptorSet; }
+        LP_FORCEINLINE VkDescriptorSetLayout GetVKDescriptorSetLayout() const { return this->vkDescriptorSetLayout; }
+
+    public:
+        void Destroy();
         
 
     public:
-        bool LoadDescriptorSetLayout(); 
+        bool LoadDescriptorSetLayout();
     };
 
 }; //LostPeter
