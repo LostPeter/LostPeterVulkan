@@ -25,12 +25,10 @@ namespace LostPeter
 
     public:
     protected:
-        VKPipelineLayoutSerializer* m_pVKPipelineLayoutSerializer;
         VKPipelineLayoutPtrVector m_aVKPipelineLayout;
         VKPipelineLayoutPtrMap m_mapVKPipelineLayout;
 
     public:
-        LP_FORCEINLINE VKPipelineLayoutSerializer* GetVKPipelineLayoutSerializer() const { return m_pVKPipelineLayoutSerializer; }
         LP_FORCEINLINE const VKPipelineLayoutPtrVector& GetVKPipelineLayoutPtrVector() const { return m_aVKPipelineLayout; }
         LP_FORCEINLINE VKPipelineLayoutPtrVector& GetVKPipelineLayoutPtrVector() { return m_aVKPipelineLayout; }
         LP_FORCEINLINE const VKPipelineLayoutPtrMap& GetVKPipelineLayoutPtrMap() const { return m_mapVKPipelineLayout; }
@@ -42,9 +40,20 @@ namespace LostPeter
 
     public:
         void Destroy();
-        bool Init(uint nGroup, const String& strNameCfg);
+        bool Init();
 
+    public:
+        bool LoadVKPipelineLayoutAll();
+        VKPipelineLayout* LoadVKPipelineLayout(const String& strName);
 
+        bool HasVKPipelineLayout(const String& strName);
+        VKPipelineLayout* GetVKPipelineLayout(const String& strName);
+        bool AddVKPipelineLayout(VKPipelineLayout* pVKPipelineLayout);
+        void DeleteVKPipelineLayout(const String& strName);
+        void DeleteVKPipelineLayoutAll();
+
+    private:
+        VKPipelineLayout* loadVKPipelineLayout(const String& strName);
     };
 
 }; //LostPeter

@@ -13,17 +13,6 @@
 #include "vulkan_018_object.h"
 
 
-/////////////////////////// DescriptorSetLayout /////////////////
-static const int g_DescriptorSetLayoutCount = 3;
-static const char* g_DescriptorSetLayoutNames[g_DescriptorSetLayoutCount] =
-{
-    "Pass-Object-Material-Instance-TextureFS",
-    "Pass-Object-Material-Instance-TextureFS-TextureFS",
-    "Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS",
-
-};
-
-
 /////////////////////////// Object //////////////////////////////
 static const int g_Object_Count = 8;
 static const char* g_Object_Configs[3 * g_Object_Count] = 
@@ -556,6 +545,7 @@ Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
     , m_pShaderManager(nullptr)
     , m_pVKDescriptorSetManager(nullptr)
     , m_pVKDescriptorSetLayoutManager(nullptr)
+    , m_pVKPipelineLayoutManager(nullptr)
     , m_pMaterialManager(nullptr)
 {
     this->cfg_isImgui = true;
@@ -627,16 +617,21 @@ void Vulkan_018_Object::loadModel_Custom()
     m_pShaderManager->Init(s_nGroup_Sample, s_strNameShader_Sample);
     m_pShaderManager->LoadShaderAll();
     
-    //4> DescriptorSetLayout
+    //4> DescriptorSet
     m_pVKDescriptorSetManager = new VKDescriptorSetManager();
     m_pVKDescriptorSetManager->Init(FPathManager::PathGroup_Config, s_strNameDescriptorSet);
     m_pVKDescriptorSetManager->LoadVKDescriptorSetAll();
 
-    //5> PipelineLayout
+    //5> DescriptorSetLayout
     m_pVKDescriptorSetLayoutManager = new VKDescriptorSetLayoutManager();
     m_pVKDescriptorSetLayoutManager->Init(FPathManager::PathGroup_Config, s_strNameDescriptorSetLayout);
     m_pVKDescriptorSetLayoutManager->LoadVKDescriptorSetLayoutAll();
-    
+
+    //6> PipelineLayout
+    m_pVKPipelineLayoutManager = new VKPipelineLayoutManager();
+    m_pVKPipelineLayoutManager->Init();
+    m_pVKPipelineLayoutManager->LoadVKPipelineLayoutAll();
+
 
     int nIndexObjectRend = 0;
     for (int i = 0; i < g_Object_Count; i++)
@@ -999,8 +994,7 @@ void Vulkan_018_Object::rebuildInstanceCBs(bool isCreateVkBuffer)
 
 void Vulkan_018_Object::createCustomBeforePipeline()
 {
-    //2> PipelineLayout
-    createPipelineLayouts();
+    
 }   
 void Vulkan_018_Object::createGraphicsPipeline_Custom()
 {
@@ -1052,13 +1046,14 @@ void Vulkan_018_Object::createGraphicsPipeline_Custom()
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            pRend->pPipelineGraphics->poPipelineLayout = findPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
-            if (pRend->pPipelineGraphics->poPipelineLayout == VK_NULL_HANDLE)
+            VKPipelineLayout* pVKPipelineLayout = VKPipelineLayoutManager::GetSingleton().GetVKPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
+            if (pVKPipelineLayout == nullptr)
             {
-                String msg = "*********************** Vulkan_018_Object::createGraphicsPipeline_Custom: Can not find PipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_018_Object::createGraphicsPipeline_Custom: Can not find VKPipelineLayout by name: " + pRend->pPipelineGraphics->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
+            pRend->pPipelineGraphics->poPipelineLayout = pVKPipelineLayout->GetVkPipelineLayout();
 
             //pPipelineGraphics->poPipeline_WireFrame
             pRend->pPipelineGraphics->poPipeline_WireFrame = createVkGraphicsPipeline(pRend->aShaderStageCreateInfos_Graphics,
@@ -1165,13 +1160,14 @@ void Vulkan_018_Object::createComputePipeline_Custom()
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
-            p->poPipelineLayout = findPipelineLayout(p->nameDescriptorSetLayout);
-            if (p->poPipelineLayout == VK_NULL_HANDLE)
+            VKPipelineLayout* pVKPipelineLayout = VKPipelineLayoutManager::GetSingleton().GetVKPipelineLayout(pRend->pPipelineGraphics->nameDescriptorSetLayout);
+            if (pVKPipelineLayout == nullptr)
             {
-                String msg = "*********************** Vulkan_018_Object::createComputePipeline_Custom: Can not find PipelineLayout by name: " + p->nameDescriptorSetLayout;
+                String msg = "*********************** Vulkan_018_Object::createComputePipeline_Custom: Can not find VKPipelineLayout by name: " + p->nameDescriptorSetLayout;
                 F_LogError(msg.c_str());
                 throw std::runtime_error(msg.c_str());
             }
+            p->poPipelineLayout = pVKPipelineLayout->GetVkPipelineLayout();
 
             p->poPipeline = createVkComputePipeline(shaderStageCreateInfo, p->poPipelineLayout, 0);
             if (p->poPipeline == VK_NULL_HANDLE)
@@ -1183,53 +1179,6 @@ void Vulkan_018_Object::createComputePipeline_Custom()
         }
     }   
 }
-
-
-
-void Vulkan_018_Object::destroyPipelineLayouts()
-{
-    size_t count = this->m_aVkPipelineLayouts.size();
-    for (size_t i = 0; i < count; i++)
-    {
-        destroyVkPipelineLayout(this->m_aVkPipelineLayouts[i]);
-    }
-    this->m_aVkPipelineLayouts.clear();
-    this->m_mapVkPipelineLayouts.clear();
-}
-void Vulkan_018_Object::createPipelineLayouts()
-{
-    for (int i = 0; i < g_DescriptorSetLayoutCount; i++)
-    {
-        String nameDescriptorSetLayout(g_DescriptorSetLayoutNames[i]);
-        VKDescriptorSetLayout* pVKDescriptorSetLayout = VKDescriptorSetLayoutManager::GetSingleton().GetVKDescriptorSetLayout(nameDescriptorSetLayout);
-        if (pVKDescriptorSetLayout == nullptr)
-        {
-            F_LogError("*********************** Vulkan_018_Object::createPipelineLayouts: Can not find DescriptorSetLayout by name: [%s]", nameDescriptorSetLayout.c_str());
-            return;
-        }
-        VkDescriptorSetLayoutVector aDescriptorSetLayout;
-        aDescriptorSetLayout.push_back(pVKDescriptorSetLayout->GetVKDescriptorSetLayout());
-        VkPipelineLayout vkPipelineLayout = createVkPipelineLayout(aDescriptorSetLayout);
-        if (vkPipelineLayout == VK_NULL_HANDLE)
-        {
-            F_LogError("*********************** Vulkan_018_Object::createPipelineLayouts: createVkPipelineLayout failed !");
-            return;
-        }
-
-        this->m_aVkPipelineLayouts.push_back(vkPipelineLayout);
-        this->m_mapVkPipelineLayouts[nameDescriptorSetLayout] = vkPipelineLayout;
-    }
-}
-VkPipelineLayout Vulkan_018_Object::findPipelineLayout(const String& namePipelineLayout)
-{
-    VkPipelineLayoutMap::iterator itFind = this->m_mapVkPipelineLayouts.find(namePipelineLayout);
-    if (itFind == this->m_mapVkPipelineLayouts.end())
-    {
-        return nullptr;
-    }
-    return itFind->second;
-}
-
 
 
 void Vulkan_018_Object::createDescriptorSets_Custom()
@@ -2324,6 +2273,7 @@ void Vulkan_018_Object::drawModelObjectRend(VkCommandBuffer& commandBuffer, Mode
 void Vulkan_018_Object::cleanupCustom()
 {   
     F_DELETE(m_pMaterialManager)
+    F_DELETE(m_pVKPipelineLayoutManager)
     F_DELETE(m_pVKDescriptorSetLayoutManager)
     F_DELETE(m_pVKDescriptorSetManager)
     F_DELETE(m_pShaderManager)
@@ -2353,9 +2303,6 @@ void Vulkan_018_Object::cleanupSwapChain_Custom()
 
         pModelObject->CleanupSwapChain();
     }
-
-    
-    destroyPipelineLayouts();
 }
 
 void Vulkan_018_Object::recreateSwapChain_Custom()

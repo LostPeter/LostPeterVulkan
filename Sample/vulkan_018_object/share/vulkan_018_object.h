@@ -486,6 +486,7 @@ public:
     ShaderManager* m_pShaderManager;
     VKDescriptorSetManager* m_pVKDescriptorSetManager;
     VKDescriptorSetLayoutManager* m_pVKDescriptorSetLayoutManager;
+    VKPipelineLayoutManager* m_pVKPipelineLayoutManager;
     MaterialManager* m_pMaterialManager;
 
     
@@ -496,10 +497,6 @@ public:
     ModelObjectRendPtrVector m_aModelObjectRends_Transparent;
     bool m_isDrawIndirect;
     bool m_isDrawIndirectMulti;
-
-    
-    VkPipelineLayoutVector m_aVkPipelineLayouts;
-    VkPipelineLayoutMap m_mapVkPipelineLayouts;
 
 protected:
     //Create Pipeline
@@ -560,8 +557,6 @@ private:
     void rebuildInstanceCBs(bool isCreateVkBuffer);
 
 ////PipelineLayout
-    void destroyPipelineLayouts();
-    void createPipelineLayouts();
     VkPipelineLayout findPipelineLayout(const String& namePipelineLayout);
 
     void drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);

@@ -34,7 +34,6 @@
 #include "VKPipelineGraphics.h"
 #include "VKPipelineLayout.h"
 #include "VKPipelineLayoutManager.h"
-#include "VKPipelineLayoutSerializer.h"
 
 #include "Base.h"
 #include "EditorBase.h"

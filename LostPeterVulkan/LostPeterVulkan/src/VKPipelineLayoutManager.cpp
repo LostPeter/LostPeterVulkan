@@ -11,8 +11,9 @@
 
 #include "../include/VKPipelineLayoutManager.h"
 #include "../include/VulkanWindow.h"
-#include "../include/VKPipelineLayoutSerializer.h"
 #include "../include/VKPipelineLayout.h"
+#include "../include/VKDescriptorSetLayoutManager.h"
+#include "../include/VKDescriptorSetLayout.h"
 
 template<> LostPeter::VKPipelineLayoutManager* LostPeterFoundation::FSingleton<LostPeter::VKPipelineLayoutManager>::ms_Singleton = nullptr;
 
@@ -30,7 +31,6 @@ namespace LostPeter
 
     VKPipelineLayoutManager::VKPipelineLayoutManager()
         : Base("VKPipelineLayoutManager")
-        , m_pVKPipelineLayoutSerializer(nullptr)
     {
 
     }
@@ -41,15 +41,110 @@ namespace LostPeter
     
     void VKPipelineLayoutManager::Destroy()
     {
-        F_DELETE(m_pVKPipelineLayoutSerializer)
-
+        DeleteVKPipelineLayoutAll();
     }
-    bool VKPipelineLayoutManager::Init(uint nGroup, const String& strNameCfg)
+    bool VKPipelineLayoutManager::Init()
     {
         
+
         return true;
     }
 
-    
+    bool VKPipelineLayoutManager::LoadVKPipelineLayoutAll()
+    {
+        DeleteVKPipelineLayoutAll();
+        VKDescriptorSetLayoutPtrVector& aDescriptorSetLayout = VKDescriptorSetLayoutManager::GetSingleton().GetVKDescriptorSetLayoutPtrVector();
+        for (VKDescriptorSetLayoutPtrVector::iterator it = aDescriptorSetLayout.begin();
+             it != aDescriptorSetLayout.end(); ++it)
+        {
+            VKDescriptorSetLayout* pVKDescriptorSetLayout = (*it);
+            if (!loadVKPipelineLayout(pVKDescriptorSetLayout->GetName()))
+                continue;
+        }
+
+        return true;
+    }
+
+    VKPipelineLayout* VKPipelineLayoutManager::LoadVKPipelineLayout(const String& strName)
+    {
+        VKPipelineLayout* pVKPipelineLayout = GetVKPipelineLayout(strName);
+        if (pVKPipelineLayout == nullptr)
+        {
+            if (!loadVKPipelineLayout(strName))
+            {
+                return nullptr;
+            }
+        }
+        return pVKPipelineLayout;
+    }
+    VKPipelineLayout* VKPipelineLayoutManager::loadVKPipelineLayout(const String& strName)
+    {
+        VKPipelineLayout* pVKPipelineLayout = new VKPipelineLayout(strName);
+        pVKPipelineLayout->LoadPipelineLayout();
+        if (AddVKPipelineLayout(pVKPipelineLayout))
+        {
+            F_LogInfo("VKPipelineLayoutManager::loadVKPipelineLayout: Load pipeline layout success, [%s] !", 
+                      strName.c_str());
+        }
+        return pVKPipelineLayout;
+    }
+
+    bool VKPipelineLayoutManager::HasVKPipelineLayout(const String& strName)
+    {
+        return GetVKPipelineLayout(strName) != nullptr;
+    }
+
+    VKPipelineLayout* VKPipelineLayoutManager::GetVKPipelineLayout(const String& strName)
+    {
+        VKPipelineLayoutPtrMap::iterator itFind = m_mapVKPipelineLayout.find(strName);
+        if (itFind == m_mapVKPipelineLayout.end())
+        {
+            F_LogError("*********************** VKPipelineLayoutManager::GetVKPipelineLayout: Can not find, name: [%s]", strName.c_str());
+            return nullptr;
+        }
+        return itFind->second;
+    }
+
+    bool VKPipelineLayoutManager::AddVKPipelineLayout(VKPipelineLayout* pVKPipelineLayout)
+    {
+        const String& strName = pVKPipelineLayout->GetName();
+        VKPipelineLayoutPtrMap::iterator itFind = m_mapVKPipelineLayout.find(strName);
+        if (itFind != m_mapVKPipelineLayout.end())
+        {
+            F_LogError("*********************** VKPipelineLayoutManager::AddVKPipelineLayout: VKPipelineLayout name already exist: [%s] !", strName.c_str());
+            F_DELETE(pVKPipelineLayout)
+            return false;
+        }
+
+        m_aVKPipelineLayout.push_back(pVKPipelineLayout);
+        m_mapVKPipelineLayout.insert(VKPipelineLayoutPtrMap::value_type(strName, pVKPipelineLayout));
+        return true;
+    }
+
+    void VKPipelineLayoutManager::DeleteVKPipelineLayout(const String& strName)
+    {
+        VKPipelineLayoutPtrMap::iterator itFind = m_mapVKPipelineLayout.find(strName);
+        if (itFind == m_mapVKPipelineLayout.end())
+        {
+            return;
+        }
+
+        VKPipelineLayoutPtrVector::iterator itFindA = std::find(m_aVKPipelineLayout.begin(), m_aVKPipelineLayout.end(), itFind->second);
+        if (itFindA != m_aVKPipelineLayout.end())
+            m_aVKPipelineLayout.erase(itFindA);
+        F_DELETE(itFind->second)
+        m_mapVKPipelineLayout.erase(itFind);
+    }
+
+    void VKPipelineLayoutManager::DeleteVKPipelineLayoutAll()
+    {
+        for (VKPipelineLayoutPtrMap::iterator it = m_mapVKPipelineLayout.begin();
+             it != m_mapVKPipelineLayout.end(); ++it)
+        {
+            F_DELETE(it->second)
+        }
+        m_aVKPipelineLayout.clear();
+        m_mapVKPipelineLayout.clear();
+    }
 
 }; //LostPeter

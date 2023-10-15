@@ -19,19 +19,21 @@ namespace LostPeter
     class utilExport VKPipelineLayout : public Base
     {
     public:
-        VKPipelineLayout(uint32 _group,
-                         const String& _namePipelineLayout);
+        VKPipelineLayout(const String& _namePipelineLayout);
         virtual ~VKPipelineLayout();
 
     public:
+    protected:
+        VkPipelineLayout vkPipelineLayout;
 
+    public:
+        LP_FORCEINLINE VkPipelineLayout GetVkPipelineLayout() const { return this->vkPipelineLayout; }
 
     public:
         void Destroy();
 
     public:
         bool LoadPipelineLayout();
-
     };
 
 }; //LostPeter

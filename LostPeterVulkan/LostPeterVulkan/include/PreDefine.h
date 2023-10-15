@@ -487,7 +487,6 @@ namespace LostPeter
     class VKPipelineCompute;
     class VKPipelineLayout;
     class VKPipelineLayoutManager;
-    class VKPipelineLayoutSerializer;
 
 
     typedef std::vector<VKDescriptorSet*> VKDescriptorSetPtrVector;
