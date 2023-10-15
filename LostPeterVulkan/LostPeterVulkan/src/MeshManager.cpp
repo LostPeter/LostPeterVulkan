@@ -71,7 +71,7 @@ namespace LostPeter
             return false;
 
         DeleteMeshAll();
-        MeshInfoPtrVector& aMeshInfos = m_pMeshSerializer->GetMeshInfos();
+        MeshInfoPtrVector& aMeshInfos = m_pMeshSerializer->GetMeshInfoPtrVector();
         for (MeshInfoPtrVector::iterator it = aMeshInfos.begin();
              it != aMeshInfos.end(); ++it)
         {

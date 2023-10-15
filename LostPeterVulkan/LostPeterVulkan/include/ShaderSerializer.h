@@ -29,10 +29,10 @@ namespace LostPeter
         ShaderInfoGroupPtrMap m_mapShaderInfoGroup;
 
     public:
-        LP_FORCEINLINE const ShaderInfoPtrVector& GetShaderInfos() const { return m_aShaderInfo; }
-        LP_FORCEINLINE ShaderInfoPtrVector& GetShaderInfos() { return m_aShaderInfo; }
-        LP_FORCEINLINE const ShaderInfoGroupPtrMap& GetShaderInfoGroups() const { return m_mapShaderInfoGroup; }
-        LP_FORCEINLINE ShaderInfoGroupPtrMap& GetShaderInfoGroups() { return m_mapShaderInfoGroup; }
+        LP_FORCEINLINE const ShaderInfoPtrVector& GetShaderInfoPtrVector() const { return m_aShaderInfo; }
+        LP_FORCEINLINE ShaderInfoPtrVector& GetShaderInfoPtrVector() { return m_aShaderInfo; }
+        LP_FORCEINLINE const ShaderInfoGroupPtrMap& GetShaderInfoGroupPtrMap() const { return m_mapShaderInfoGroup; }
+        LP_FORCEINLINE ShaderInfoGroupPtrMap& GetShaderInfoGroupPtrMap() { return m_mapShaderInfoGroup; }
 
     
     public:

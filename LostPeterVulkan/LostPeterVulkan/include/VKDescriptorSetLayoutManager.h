@@ -44,8 +44,18 @@ namespace LostPeter
         void Destroy();
         bool Init(uint nGroup, const String& strNameCfg);
 
+    public:
+        bool LoadVKDescriptorSetLayoutAll();
+        VKDescriptorSetLayout* LoadVKDescriptorSetLayout(const String& strName);
 
+        bool HasVKDescriptorSetLayout(const String& strName);
+        VKDescriptorSetLayout* GetVKDescriptorSetLayout(const String& strName);
+        bool AddVKDescriptorSetLayout(VKDescriptorSetLayout* pVKDescriptorSetLayout);
+        void DeleteVKDescriptorSetLayout(const String& strName);
+        void DeleteVKDescriptorSetLayoutAll();
 
+    private:
+        VKDescriptorSetLayout* loadVKDescriptorSetLayout(DescriptorSetLayoutInfo* pDSLI);
     };
 
 }; //LostPeter

@@ -11,7 +11,6 @@
 
 #include "../include/MeshSerializer.h"
 #include "../include/VulkanWindow.h"
-#include "../include/FUtilString.h"
 
 namespace LostPeter
 {

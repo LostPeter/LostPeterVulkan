@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<cfg_descriptor_set>
+	<!-- <descriptor_set name="" set_usage="" shader_usage="" /> -->
+
+	<descriptor_set name="Pass" set_usage="UniformBuffer" shader_usage="vert;tese;geom;frag" />
+	<descriptor_set name="Object" set_usage="UniformBuffer" shader_usage="vert;tese;geom;frag" />
+	<descriptor_set name="ObjectTerrain" set_usage="UniformBuffer" shader_usage="vert;tese;frag" />
+	<descriptor_set name="ObjectGrid" set_usage="UniformBuffer" shader_usage="vert;tese;frag" />
+	<descriptor_set name="ObjectCameraAxis" set_usage="UniformBuffer" shader_usage="vert;tese;frag" />
+	<descriptor_set name="ObjectCoordinateAxis" set_usage="UniformBuffer" shader_usage="vert;tese;frag" />
+	<descriptor_set name="ObjectLineFlat2D" set_usage="UniformBuffer" shader_usage="vert;tese;frag" />
+	<descriptor_set name="ObjectLineFlat3D" set_usage="UniformBuffer" shader_usage="vert;tese;frag" />
+	<descriptor_set name="ObjectCopyBlit" set_usage="UniformBuffer" shader_usage="vert;tese;frag" />
+	<descriptor_set name="Material" set_usage="UniformBuffer" shader_usage="vert;frag" />
+	<descriptor_set name="Instance" set_usage="UniformBuffer" shader_usage="vert;frag" />
+	<descriptor_set name="TextureCopy" set_usage="UniformBuffer" shader_usage="comp" />
+	<descriptor_set name="Tessellation" set_usage="UniformBuffer" shader_usage="tesc;tese" />
+	<descriptor_set name="Geometry" set_usage="UniformBuffer" shader_usage="geom" />
+	<descriptor_set name="TextureVS" set_usage="CombinedImageSampler" shader_usage="vert" />
+	<descriptor_set name="TextureTESC" set_usage="CombinedImageSampler" shader_usage="tesc" />
+	<descriptor_set name="TextureTESE" set_usage="CombinedImageSampler" shader_usage="tese" />
+	<descriptor_set name="TextureFS" set_usage="CombinedImageSampler" shader_usage="frag" />
+	<descriptor_set name="TextureFrameColor" set_usage="CombinedImageSampler" shader_usage="frag" />
+	<descriptor_set name="TextureCSR" set_usage="CombinedImageSampler" shader_usage="comp" />
+	<descriptor_set name="TextureCSRW" set_usage="StorageImage" shader_usage="comp" />
+</cfg_descriptor_set>

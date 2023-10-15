@@ -484,6 +484,8 @@ public:
     MeshManager* m_pMeshManager;
     TextureManager* m_pTextureManager;
     ShaderManager* m_pShaderManager;
+    VKDescriptorSetManager* m_pVKDescriptorSetManager;
+    VKDescriptorSetLayoutManager* m_pVKDescriptorSetLayoutManager;
     MaterialManager* m_pMaterialManager;
 
     

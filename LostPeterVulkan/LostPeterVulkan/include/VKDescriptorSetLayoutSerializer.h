@@ -24,10 +24,22 @@ namespace LostPeter
         virtual ~VKDescriptorSetLayoutSerializer();
 
     public:
-        
+    protected:
+        DescriptorSetLayoutInfoPtrVector m_aDescriptorSetLayoutInfo;
+        DescriptorSetLayoutInfoPtrMap m_mapDescriptorSetLayoutInfo;
 
     public:
-        void Destroy();
+        LP_FORCEINLINE const DescriptorSetLayoutInfoPtrVector& GetDescriptorSetLayoutInfoPtrVector() const { return m_aDescriptorSetLayoutInfo; }
+        LP_FORCEINLINE DescriptorSetLayoutInfoPtrVector& GetDescriptorSetLayoutInfoPtrVector() { return m_aDescriptorSetLayoutInfo; }
+        LP_FORCEINLINE const DescriptorSetLayoutInfoPtrMap& GetDescriptorSetLayoutInfoPtrMap() const { return m_mapDescriptorSetLayoutInfo; }
+        LP_FORCEINLINE DescriptorSetLayoutInfoPtrMap& GetDescriptorSetLayoutInfoPtrMap() { return m_mapDescriptorSetLayoutInfo; }  
+
+    public:
+        bool HasDescriptorSetLayoutInfo(const String& strName);
+        DescriptorSetLayoutInfo* GetDescriptorSetLayoutInfo(const String& strName);
+        bool AddDescriptorSetLayoutInfo(DescriptorSetLayoutInfo* pDescriptorSetLayoutInfo);
+        void DeleteDescriptorSetLayoutInfo(const String& strName);
+        void DeleteDescriptorSetLayoutInfoAll();
 
     protected:
         //File Content XML

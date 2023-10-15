@@ -354,14 +354,14 @@ namespace LostPeter
         F_LogInfo("VulkanWindow::CreateDescriptorSetLayout: Success to create descriptor set layout: [%s] !", nameLayout.c_str());
         return vkDescriptorSetLayout;
     }
-    VkDescriptorSetLayout VulkanWindow::CreateDescriptorSetLayout(const String& nameLayout, const VKDescriptorSetLayoutPtrVector& aDescriptorSetLayouts)
+    VkDescriptorSetLayout VulkanWindow::CreateDescriptorSetLayout(const String& nameLayout, const VKDescriptorSetPtrVector& aDescriptorSets)
     {   
         VkDescriptorSetLayout vkDescriptorSetLayout;
         VkDescriptorSetLayoutBindingVector bindings;
-        size_t count_layout = aDescriptorSetLayouts.size();
+        size_t count_layout = aDescriptorSets.size();
         for (size_t i = 0; i < count_layout; i++)
         {
-            bindings.push_back(aDescriptorSetLayouts[i]->NewDescriptorSetLayoutBinding(i, 1, nullptr));
+            bindings.push_back(aDescriptorSets[i]->NewDescriptorSetLayoutBinding(i, 1, nullptr));
         }
 
         if (!createVkDescriptorSetLayout(bindings, vkDescriptorSetLayout))

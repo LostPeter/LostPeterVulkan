@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<cfg_descriptor_set_layout>
+	<!-- <descriptor_set_layout name="" /> -->
+
+	<descriptor_set_layout name="Pass-Object-Material-Instance-TextureFS" />
+	<descriptor_set_layout name="Pass-Object-Material-Instance-TextureFS-TextureFS" />
+	<descriptor_set_layout name="Pass-Object-Material-Instance-TextureFS-TextureFS-TextureFS" />
+	
+</cfg_descriptor_set_layout>

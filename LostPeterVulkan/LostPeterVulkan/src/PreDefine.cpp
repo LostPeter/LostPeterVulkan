@@ -668,4 +668,45 @@ namespace LostPeter
     }
 
 
+    DescriptorSetInfo::DescriptorSetInfo()
+        : nameDescriptorSetInfo("")
+        , typeDescriptorSet()
+        , typeDescriptorSetUsage()
+        , nameShaderTypes("")
+    {
+
+    }
+    DescriptorSetInfo::DescriptorSetInfo(const String& _nameDescriptorSetInfo,
+                                         VulkanDescriptorSetType _typeDescriptorSet,
+                                         VulkanDescriptorSetUsageType _typeDescriptorSetUsage,
+                                         const String& _nameShaderTypes)
+        : nameDescriptorSetInfo(_nameDescriptorSetInfo)
+        , typeDescriptorSet(_typeDescriptorSet)
+        , typeDescriptorSetUsage(_typeDescriptorSetUsage)
+        , nameShaderTypes(_nameShaderTypes)
+    {
+
+    }
+    DescriptorSetInfo::~DescriptorSetInfo()
+    {
+
+    }
+
+
+    DescriptorSetLayoutInfo::DescriptorSetLayoutInfo()
+        : nameDescriptorSetLayoutInfo("")
+    {
+
+    }
+    DescriptorSetLayoutInfo::DescriptorSetLayoutInfo(const String& _nameDescriptorSetLayoutInfo)
+        : nameDescriptorSetLayoutInfo(_nameDescriptorSetLayoutInfo)
+    {
+
+    }
+    DescriptorSetLayoutInfo::~DescriptorSetLayoutInfo()
+    {
+
+    }
+
+
 }; //LostPeter

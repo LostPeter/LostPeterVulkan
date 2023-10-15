@@ -58,7 +58,7 @@ namespace LostPeter
 
         //DescriptorSetLayout
         virtual VkDescriptorSetLayout CreateDescriptorSetLayout(const String& nameLayout, const StringVector* pNamesDescriptorSetLayout);
-        virtual VkDescriptorSetLayout CreateDescriptorSetLayout(const String& nameLayout, const VKDescriptorSetLayoutPtrVector& aDescriptorSetLayouts);
+        virtual VkDescriptorSetLayout CreateDescriptorSetLayout(const String& nameLayout, const VKDescriptorSetPtrVector& aDescriptorSets);
 
     public: 
         static bool s_isEnableValidationLayers;

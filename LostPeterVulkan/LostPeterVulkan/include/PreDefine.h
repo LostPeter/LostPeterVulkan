@@ -432,7 +432,6 @@ namespace LostPeter
     typedef std::map<String, ShaderInfo*> ShaderInfoPtrMap;
     typedef std::map<uint32, ShaderInfoPtrMap> ShaderInfoGroupPtrMap;
 
-
     struct utilExport ShaderModuleInfo
     {
         String nameShader;
@@ -442,10 +441,43 @@ namespace LostPeter
     typedef std::vector<ShaderModuleInfo> ShaderModuleInfoVector;
 
 
+    struct utilExport DescriptorSetInfo
+    {
+        DescriptorSetInfo();
+        DescriptorSetInfo(const String& _nameDescriptorSetInfo,
+                          VulkanDescriptorSetType _typeDescriptorSet,
+                          VulkanDescriptorSetUsageType _typeDescriptorSetUsage,
+                          const String& _nameShaderTypes);
+        ~DescriptorSetInfo();
+
+        String nameDescriptorSetInfo;
+        VulkanDescriptorSetType typeDescriptorSet;
+        VulkanDescriptorSetUsageType typeDescriptorSetUsage;
+        String nameShaderTypes;
+    };
+    typedef std::vector<DescriptorSetInfo*> DescriptorSetInfoPtrVector;
+    typedef std::map<String, DescriptorSetInfo*> DescriptorSetInfoPtrMap;
+
+
+    struct utilExport DescriptorSetLayoutInfo
+    {
+        DescriptorSetLayoutInfo();
+        DescriptorSetLayoutInfo(const String& _nameDescriptorSetLayoutInfo);
+        ~DescriptorSetLayoutInfo();
+
+        String nameDescriptorSetLayoutInfo;
+    };
+    typedef std::vector<DescriptorSetLayoutInfo*> DescriptorSetLayoutInfoPtrVector;
+    typedef std::map<String, DescriptorSetLayoutInfo*> DescriptorSetLayoutInfoPtrMap;
+
+
     class App;
     class VulkanBase;
     class VulkanWindow;
 
+    class VKDescriptorSet;
+    class VKDescriptorSetManager;
+    class VKDescriptorSetSerializer;
     class VKDescriptorSetLayout;
     class VKDescriptorSetLayoutManager;
     class VKDescriptorSetLayoutSerializer;
@@ -458,6 +490,8 @@ namespace LostPeter
     class VKPipelineLayoutSerializer;
 
 
+    typedef std::vector<VKDescriptorSet*> VKDescriptorSetPtrVector;
+    typedef std::map<String, VKDescriptorSet*> VKDescriptorSetPtrMap;
     typedef std::vector<VKDescriptorSetLayout*> VKDescriptorSetLayoutPtrVector;
     typedef std::map<String, VKDescriptorSetLayout*> VKDescriptorSetLayoutPtrMap;
     

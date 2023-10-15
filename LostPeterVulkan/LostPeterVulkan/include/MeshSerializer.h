@@ -29,10 +29,10 @@ namespace LostPeter
         MeshInfoGroupPtrMap m_mapMeshInfoGroup;
 
     public:
-        LP_FORCEINLINE const MeshInfoPtrVector& GetMeshInfos() const { return m_aMeshInfo; }
-        LP_FORCEINLINE MeshInfoPtrVector& GetMeshInfos() { return m_aMeshInfo; }
-        LP_FORCEINLINE const MeshInfoGroupPtrMap& GetMeshInfoGroups() const { return m_mapMeshInfoGroup; }
-        LP_FORCEINLINE MeshInfoGroupPtrMap& GetMeshInfoGroups() { return m_mapMeshInfoGroup; }
+        LP_FORCEINLINE const MeshInfoPtrVector& GetMeshInfoPtrVector() const { return m_aMeshInfo; }
+        LP_FORCEINLINE MeshInfoPtrVector& GetMeshInfoPtrVector() { return m_aMeshInfo; }
+        LP_FORCEINLINE const MeshInfoGroupPtrMap& GetMeshInfoGroupPtrMap() const { return m_mapMeshInfoGroup; }
+        LP_FORCEINLINE MeshInfoGroupPtrMap& GetMeshInfoGroupPtrMap() { return m_mapMeshInfoGroup; }
         
 
     public:

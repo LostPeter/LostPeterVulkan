@@ -22,9 +22,12 @@
 #include "VulkanBase.h"
 #include "VulkanWindow.h"
 
+#include "VKDescriptorSet.h"
 #include "VKDescriptorSetLayout.h"
 #include "VKDescriptorSetLayoutManager.h"
 #include "VKDescriptorSetLayoutSerializer.h"
+#include "VKDescriptorSetManager.h"
+#include "VKDescriptorSetSerializer.h"
 #include "VKFrameBufferAttachment.h"
 #include "VKMultiRenderPass.h"
 #include "VKPipelineCompute.h"

@@ -19,25 +19,14 @@ namespace LostPeter
     class utilExport VKDescriptorSetLayout : public Base
     {
     public:
-        VKDescriptorSetLayout(uint32 _group,
-                              const String& _nameDescriptorSet,
-                              VulkanDescriptorSetType _typeDescriptorSet,
-                              VulkanDescriptorSetUsageType _typeDescriptorSetUsage,
-                              const Uint32Vector& _aShaderTypes);
+        VKDescriptorSetLayout(const String& _nameDescriptorSetLayout);
         virtual ~VKDescriptorSetLayout();
 
     public:
-        VulkanDescriptorSetType typeDescriptorSet;
-        VulkanDescriptorSetUsageType typeDescriptorSetUsage;
-        Uint32Vector aShaderTypes;
-
-        VkShaderStageFlags vkShaderStageFlags;
-        VkDescriptorSetLayoutBinding vkDescriptorSetLayoutBinding;
+        
 
     public:
-        bool LoadDescriptorSetLayout();
-
-        VkDescriptorSetLayoutBinding NewDescriptorSetLayoutBinding(uint32_t binding, uint32_t descriptorCount, VkSampler* pSampler) const;
+        bool LoadDescriptorSetLayout(); 
     };
 
 }; //LostPeter

@@ -71,7 +71,7 @@ namespace LostPeter
             return false;
 
         DeleteShaderAll();
-        ShaderInfoPtrVector& aShaderInfos = m_pShaderSerializer->GetShaderInfos();
+        ShaderInfoPtrVector& aShaderInfos = m_pShaderSerializer->GetShaderInfoPtrVector();
         for (ShaderInfoPtrVector::iterator it = aShaderInfos.begin();
              it != aShaderInfos.end(); ++it)
         {

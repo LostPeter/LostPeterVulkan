@@ -533,6 +533,9 @@ void Vulkan_018_Object::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 
 /////////////////////////// ModelObject /////////////////////////
 
+static const String s_strNameDescriptorSet = "Cfg_DescriptorSet.xml";
+static const String s_strNameDescriptorSetLayout = "Cfg_DescriptorSetLayout.xml";
+
 
 static uint32 s_nGroup_Sample = FPathManager::PathGroup_Editor + 1;
 static const String s_strGroup_Sample = "Assets/Editor/Sample/Vulkan_018_Object";
@@ -540,6 +543,7 @@ static const String s_strNameMesh_Sample = "Cfg_Mesh.xml";
 static const String s_strNameTexture_Sample = "Cfg_Texture.xml";
 static const String s_strNameShader_Sample = "Cfg_Shader.xml";
 static const String s_strNameMaterial_Sample = "Cfg_Material.xml";
+
 
 
 Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
@@ -550,6 +554,8 @@ Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
     , m_pMeshManager(nullptr)
     , m_pTextureManager(nullptr)
     , m_pShaderManager(nullptr)
+    , m_pVKDescriptorSetManager(nullptr)
+    , m_pVKDescriptorSetLayoutManager(nullptr)
     , m_pMaterialManager(nullptr)
 {
     this->cfg_isImgui = true;
@@ -983,6 +989,16 @@ void Vulkan_018_Object::rebuildInstanceCBs(bool isCreateVkBuffer)
 
 void Vulkan_018_Object::createCustomBeforePipeline()
 {
+    //1> DescriptorSetLayout
+    m_pVKDescriptorSetManager = new VKDescriptorSetManager();
+    m_pVKDescriptorSetManager->Init(FPathManager::PathGroup_Config, s_strNameDescriptorSet);
+    m_pVKDescriptorSetManager->LoadVKDescriptorSetAll();
+
+    //2> PipelineLayout
+    m_pVKDescriptorSetLayoutManager = new VKDescriptorSetLayoutManager();
+    m_pVKDescriptorSetLayoutManager->Init(FPathManager::PathGroup_Config, s_strNameDescriptorSetLayout);
+    m_pVKDescriptorSetLayoutManager->LoadVKDescriptorSetLayoutAll();
+
     //1> DescriptorSetLayout
     createDescriptorSetLayouts();
 
@@ -2359,6 +2375,8 @@ void Vulkan_018_Object::drawModelObjectRend(VkCommandBuffer& commandBuffer, Mode
 void Vulkan_018_Object::cleanupCustom()
 {   
     F_DELETE(m_pMaterialManager)
+    F_DELETE(m_pVKDescriptorSetLayoutManager)
+    F_DELETE(m_pVKDescriptorSetManager)
     F_DELETE(m_pShaderManager)
     F_DELETE(m_pTextureManager)
     F_DELETE(m_pMeshManager)

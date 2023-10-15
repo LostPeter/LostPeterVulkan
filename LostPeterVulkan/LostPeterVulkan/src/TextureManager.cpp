@@ -71,7 +71,7 @@ namespace LostPeter
             return false;
 
         DeleteTextureAll();
-        TextureInfoPtrVector& aTextureInfos = m_pTextureSerializer->GetTextureInfos();
+        TextureInfoPtrVector& aTextureInfos = m_pTextureSerializer->GetTextureInfoPtrVector();
         for (TextureInfoPtrVector::iterator it = aTextureInfos.begin();
              it != aTextureInfos.end(); ++it)
         {
