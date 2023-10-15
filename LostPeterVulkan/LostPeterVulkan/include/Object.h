@@ -12,19 +12,25 @@
 #ifndef _OBJECT_H_
 #define _OBJECT_H_
 
-#include "Base.h"
+#include "Movable.h"
 
 namespace LostPeter
 {
-    class utilExport Object : public Base
+    class utilExport Object : public Movable
     {
     public:
         Object(const String& nameObject);
         virtual ~Object();
 
     public:
+    protected:
+        VulkanObjectType typeObject;
 
     public:
+        LP_FORCEINLINE VulkanObjectType GetObjectType() const { return this->typeObject; }
+
+    public:
+
 
     };
 

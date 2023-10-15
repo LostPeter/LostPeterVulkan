@@ -31,7 +31,7 @@ Usage:
 
     VSCode:
         Config above complete, I'm only using VSCode to edit, compile and debug code in platform Windows/MacOS, maybe later also Android/iOS.
-        You can look at .vscode/launch.json file, config your vscode, there is all samples debug config, it is nice and effective to debug direct in vscode.
+        You can look at .vscode/launch.json file, config your vscode, there are all samples debug config, it is nice and effective to debug direct in vscode.
     
 
     Build Auto: 

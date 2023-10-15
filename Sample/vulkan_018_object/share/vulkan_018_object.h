@@ -556,9 +556,7 @@ protected:
 private:
     void rebuildInstanceCBs(bool isCreateVkBuffer);
 
-////PipelineLayout
-    VkPipelineLayout findPipelineLayout(const String& namePipelineLayout);
-
+    
     void drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect);
 

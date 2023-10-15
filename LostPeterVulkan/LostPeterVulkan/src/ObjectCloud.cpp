@@ -17,7 +17,7 @@ namespace LostPeter
     ObjectCloud::ObjectCloud(const String& nameCloud)
         : Object(nameCloud)
     {
-
+        this->typeObject = Vulkan_Object_Cloud;
     }
     ObjectCloud::~ObjectCloud()
     {

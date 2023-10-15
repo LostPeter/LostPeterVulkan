@@ -23,10 +23,14 @@ namespace LostPeter
         virtual ~Renderable();
 
     public:
-
+    protected:
+        VulkanRenderQueueType typeRenderQueue;
 
     public:
+        LP_FORCEINLINE VulkanRenderQueueType GetRenderQueueType() const { return this->typeRenderQueue; }
 
+    public:
+        
     };
 
 }; //LostPeter

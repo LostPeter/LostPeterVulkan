@@ -17,7 +17,7 @@ namespace LostPeter
     ObjectSkinMesh::ObjectSkinMesh(const String& nameSkinMesh)
         : Object(nameSkinMesh)
     {
-
+        this->typeObject = Vulkan_Object_SkinMesh;
     }
     ObjectSkinMesh::~ObjectSkinMesh()
     {

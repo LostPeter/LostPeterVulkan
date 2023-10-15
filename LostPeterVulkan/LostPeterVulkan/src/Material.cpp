@@ -16,12 +16,27 @@ namespace LostPeter
 {
     Material::Material(const String& nameMaterial)
         : Base(nameMaterial)
+        , pMaterialData(nullptr)
     {
         
     }
     Material::~Material()
     {
 
+    }
+
+    bool Material::LoadMaterial(bool bNew /*= false*/)
+    {
+        return true;
+    }
+	bool Material::UnloadMaterial()
+    {
+        return true;
+    }
+
+	void Material::init()
+    {
+        
     }
     
 }; //LostPeter

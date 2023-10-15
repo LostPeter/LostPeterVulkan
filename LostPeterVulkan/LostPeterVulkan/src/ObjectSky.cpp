@@ -17,7 +17,7 @@ namespace LostPeter
     ObjectSky::ObjectSky(const String& nameSky)
         : Object(nameSky)
     {
-
+        this->typeObject = Vulkan_Object_Sky;
     }
     ObjectSky::~ObjectSky()
     {

@@ -17,7 +17,7 @@ namespace LostPeter
     ObjectCamera::ObjectCamera(const String& nameCamera)
         : Object(nameCamera)
     {
-
+        this->typeObject = Vulkan_Object_Camera;
     }
     ObjectCamera::~ObjectCamera()
     {

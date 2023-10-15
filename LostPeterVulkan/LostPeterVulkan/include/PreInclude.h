@@ -66,6 +66,7 @@
 #include "ObjectSky.h"
 #include "ObjectTerrain.h"
 #include "ObjectWater.h"
+#include "ObjectManager.h"
 #include "Renderable.h"
 #include "RenderableIndirect.h"
 #include "Scene.h"

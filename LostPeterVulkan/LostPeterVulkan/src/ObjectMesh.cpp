@@ -17,7 +17,7 @@ namespace LostPeter
     ObjectMesh::ObjectMesh(const String& nameMesh)
         : Object(nameMesh)
     {
-
+        this->typeObject = Vulkan_Object_Mesh;
     }
     ObjectMesh::~ObjectMesh()
     {

@@ -17,7 +17,7 @@ namespace LostPeter
     ObjectParticle::ObjectParticle(const String& nameParticle)
         : Object(nameParticle)
     {
-
+        this->typeObject = Vulkan_Object_Particle;
     }
     ObjectParticle::~ObjectParticle()
     {

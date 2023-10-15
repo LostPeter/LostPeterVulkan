@@ -9,19 +9,19 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/ObjectLight.h"
+#include "../include/ObjectManager.h"
 #include "../include/VulkanWindow.h"
 
 namespace LostPeter
 {
-    ObjectLight::ObjectLight(const String& nameLight)
-        : Object(nameLight)
-    {
-        this->typeObject = Vulkan_Object_Light;
-    }
-    ObjectLight::~ObjectLight()
+    ObjectManager::ObjectManager(const String& nameObject)
+        : Base(nameObject)
     {
 
     }
-    
+    ObjectManager::~ObjectManager()
+    {
+
+    }
+
 }; //LostPeter

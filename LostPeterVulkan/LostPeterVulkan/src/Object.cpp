@@ -15,7 +15,7 @@
 namespace LostPeter
 {
     Object::Object(const String& nameObject)
-        : Base(nameObject)
+        : Movable(nameObject)
     {
 
     }

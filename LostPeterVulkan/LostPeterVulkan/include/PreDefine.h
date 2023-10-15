@@ -275,6 +275,42 @@ namespace LostPeter
     VkDescriptorType Util_Transform2VkDescriptorType(VulkanDescriptorSetUsageType type);    
 
 
+    enum VulkanObjectType
+    {
+        Vulkan_Object_Mesh = 0,             //0:    Mesh
+        Vulkan_Object_SkinMesh,             //1:    SkinMesh
+        Vulkan_Object_Camera,               //2:    Camera
+        Vulkan_Object_Light,                //3:    Light
+        Vulkan_Object_Terrain,              //4:    Terrain
+        Vulkan_Object_Water,                //5:    Water
+        Vulkan_Object_Sky,                  //6:    Sky
+        Vulkan_Object_Cloud,                //7:    Cloud
+        Vulkan_Object_Particle,             //8:    Particle
+
+        Vulkan_Object_Count,                
+    };
+    const String& Util_GetObjectTypeName(VulkanObjectType type);
+    const String& Util_GetObjectTypeName(int type);
+    VulkanObjectType Util_ParseObjectType(const String& strName);
+
+
+    enum VulkanRenderQueueType
+    {
+        Vulkan_RenderQueue_BackGround = 0,  //0:    BackGround
+        Vulkan_RenderQueue_Opaque,          //1:    Opaque
+        Vulkan_RenderQueue_Terrain,         //2:    Terrain
+        Vulkan_RenderQueue_Sky,             //3:    Sky
+        Vulkan_RenderQueue_Transparent,     //4:    Transparent
+        Vulkan_RenderQueue_UI,              //5:    UI
+
+        Vulkan_RenderQueue_Count,
+    };
+    const String& Util_GetRenderQueueTypeName(VulkanRenderQueueType type);
+    const String& Util_GetRenderQueueTypeName(int type);
+    VulkanRenderQueueType Util_ParseRenderQueueType(const String& strName);
+
+
+
 ////////////////////////////// Vulkan //////////////////////////////
     typedef std::vector<VkFormat> VkFormatVector;
     typedef std::map<VkFormat, VkFormatProperties> VkFormat2PropertiesMap;
@@ -538,6 +574,7 @@ namespace LostPeter
     class ObjectSky;
     class ObjectTerrain;
     class ObjectWater;
+    class ObjectManager;
     class Renderable;
     class RenderableIndirect;
     class Scene;

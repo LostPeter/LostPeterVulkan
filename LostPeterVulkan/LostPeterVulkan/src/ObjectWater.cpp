@@ -17,7 +17,7 @@ namespace LostPeter
     ObjectWater::ObjectWater(const String& nameWater)
         : Object(nameWater)
     {
-
+        this->typeObject = Vulkan_Object_Water;
     }
     ObjectWater::~ObjectWater()
     {

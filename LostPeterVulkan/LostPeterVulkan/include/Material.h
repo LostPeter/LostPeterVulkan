@@ -23,9 +23,19 @@ namespace LostPeter
         virtual ~Material();
 
     public:
+    protected:
+        MaterialData* pMaterialData;
 
     public:
+        LP_FORCEINLINE MaterialData* GetMaterialData() const { return pMaterialData; }
+		LP_FORCEINLINE void SetMaterialData(MaterialData* pMD)	{ pMaterialData = pMD; }
 
+    public:
+        bool LoadMaterial(bool bNew = false);
+		bool UnloadMaterial();
+
+	private:
+		void init();
     };
 
 }; //LostPeter

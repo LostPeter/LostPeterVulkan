@@ -17,7 +17,7 @@ namespace LostPeter
     ObjectTerrain::ObjectTerrain(const String& nameObjectTerrain)
         : Object(nameObjectTerrain)
     {
-
+        this->typeObject = Vulkan_Object_Terrain;
     }
     ObjectTerrain::~ObjectTerrain()
     {
