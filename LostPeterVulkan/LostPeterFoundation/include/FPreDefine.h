@@ -560,9 +560,151 @@ namespace LostPeterFoundation
 
         F_Camera_Count,
     };
-    const String& F_GetCameraTypeTypeName(FCameraType type);
-    const String& F_GetCameraTypeTypeName(int type);
-    FCameraType F_ParseCameraTypeType(const String& strName);
+    const String& F_GetCameraTypeName(FCameraType type);
+    const String& F_GetCameraTypF_GetCameraTypeNameeTypeName(int type);
+    FCameraType F_ParseCameraType(const String& strName);
+
+
+    enum FRenderPrimitiveType
+	{
+		F_RenderPrimitive_PointList = 0,	            //0: PointList
+		F_RenderPrimitive_LineList,			            //1: LineList
+		F_RenderPrimitive_LineStrip,			        //2: LineStrip
+		F_RenderPrimitive_TriangleList,		            //3: TriangleList
+		F_RenderPrimitive_TriangleStrip,		        //4: TriangleStrip
+		F_RenderPrimitive_TriangleFan,			        //5: TriangleFan
+
+        F_RenderPrimitive_Count,
+	};
+    const String& F_GetRenderPrimitiveTypeName(FRenderPrimitiveType type);
+    const String& F_GetRenderPrimitiveTypeName(int type);
+    FRenderPrimitiveType F_ParseRenderPrimitiveType(const String& strName);
+
+
+    enum FCullingType
+	{
+		F_Culling_None = 0,	                            //0: None
+		F_Culling_ClockWise,				            //1: ClockWise
+		F_Culling_CounterClockWise,			            //2: CounterClockWise
+
+        F_Culling_Count,
+	};
+    const String& F_GetCullingTypeName(FCullingType type);
+    const String& F_GetCullingTypeName(int type);
+    FCullingType F_ParseCullingType(const String& strName);
+
+
+    enum FPolygonType
+	{
+		F_Polygon_Point = 0,	                        //0: Point
+		F_Polygon_WireFrame,				            //1: WireFrame
+		F_Polygon_Solid,					            //2: Soild
+
+        F_Polygon_Count,
+	};
+    const String& F_GetPolygonTypeName(FPolygonType type);
+    const String& F_GetPolygonTypeName(int type);
+    FPolygonType F_ParsePolygonType(const String& strName);
+
+
+    enum FStencilOPType
+	{
+		F_StencilOP_Keep = 0,                           //0: Keep
+		F_StencilOP_Zero,                               //1: Zero
+		F_StencilOP_Replace,                            //2: Replace
+		F_StencilOP_Increment,                          //3: Increment
+		F_StencilOP_Decrement,                          //4: Decrement
+		F_StencilOP_IncrementWrap,                      //5: IncrementWrap
+		F_StencilOP_DecrementWrap,                      //6: DecrementWrap
+		F_StencilOP_Invert,                             //7: Invert
+
+        F_StencilOP_Count,
+	};
+    const String& F_GetStencilOPTypeName(FStencilOPType type);
+    const String& F_GetStencilOPTypeName(int type);
+    FStencilOPType F_ParseStencilOPType(const String& strName);
+
+
+    enum FCompareFuncType
+	{
+		F_CompareFunc_AlwaysPass = 0,	                //0: AlwaysPass
+		F_CompareFunc_AlwaysFail,				        //1: AlwaysFail
+		F_CompareFunc_Less,					            //2: Less 
+		F_CompareFunc_LessEqual,				        //3: LessEqual
+		F_CompareFunc_Equal,					        //4: Equal
+		F_CompareFunc_NotEqual,				            //5: NotEqual
+		F_CompareFunc_GreaterEqual,			            //6: GreaterEqual
+		F_CompareFunc_Greater,					        //7: Greater	
+
+        F_CompareFunc_Count,
+	};
+    const String& F_GetCompareFuncTypeName(FCompareFuncType type);
+    const String& F_GetCompareFuncTypeName(int type);
+    FCompareFuncType F_ParseCompareFuncType(const String& strName);
+
+
+    enum FSceneBlendingType
+	{
+		F_SceneBlending_Alpha = 0,		                //0: Alpha
+		F_SceneBlending_Color,				            //1: Color
+		F_SceneBlending_Add,					        //2: Add
+		F_SceneBlending_Modulate,				        //3: Modulate
+		F_SceneBlending_Replace,				        //4: Replace
+
+        F_SceneBlending_Count,
+	};
+    const String& F_GetSceneBlendingTypeName(FSceneBlendingType type);
+    const String& F_GetSceneBlendingTypeName(int type);
+    FSceneBlendingType F_ParseSceneBlendingType(const String& strName);
+
+
+    enum FSceneBlendingOPType
+	{
+		F_SceneBlendingOP_Add = 0,		                //0: Add
+		F_SceneBlendingOP_Subtract,			            //1: Subtract
+		F_SceneBlendingOP_SubtractReverse,	            //2: SubtractReverse
+		F_SceneBlendingOP_Min,				            //3: Min
+		F_SceneBlendingOP_Max,					        //4: Max
+
+        F_SceneBlendingOP_Count,
+	};
+    const String& F_GetSceneBlendingOPTypeName(FSceneBlendingOPType type);
+    const String& F_GetSceneBlendingOPTypeName(int type);
+    FSceneBlendingOPType F_ParseSceneBlendingOPType(const String& strName);
+
+
+	enum FSceneBlendingFactorType
+	{
+		F_SceneBlendingFactor_One = 0,                  //0: One
+		F_SceneBlendingFactor_Zero,                     //1: Zero
+		F_SceneBlendingFactor_SourceColor,              //2: SourceColor
+		F_SceneBlendingFactor_DestColor,                //3: DestColor
+		F_SceneBlendingFactor_OneMinusSourceColor,      //4: OneMinusSourceColor
+		F_SceneBlendingFactor_OneMinusDestColor,        //5: OneMinusDestColor
+		F_SceneBlendingFactor_SourceAlpha,              //6: SourceAlpha
+		F_SceneBlendingFactor_DestAlpha,                //7: DestAlpha
+		F_SceneBlendingFactor_OneMinusSourceAlpha,      //8: OneMinusSourceAlpha
+		F_SceneBlendingFactor_OneMinusDestAlpha,        //9: OneMinusDestAlpha 
+
+        F_SceneBlendingFactor_Count,
+	};
+    const String& F_GetSceneBlendingFactorTypeName(FSceneBlendingFactorType type);
+    const String& F_GetSceneBlendingFactorTypeName(int type);
+    FSceneBlendingFactorType F_ParseSceneBlendingFactorType(const String& strName);
+
+
+    enum FLightingType
+	{
+		F_Lighting_Flat = 0,	                        //0: Flat
+		F_Lighting_Gouraud,					            //1: Gouraud
+		F_Lighting_Phong,						        //2: Phong
+        F_Lighting_Pbr,                                 //3: Pbr
+
+        F_Lighting_Count,
+	};
+    const String& F_GetLightingTypeName(FLightingType type);
+    const String& F_GetLightingTypeName(int type);
+    FLightingType F_ParseLightingType(const String& strName);
 
 
 }; //LostPeterFoundation

@@ -222,6 +222,15 @@ namespace LostPeter
     VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(FShaderType type);    
     VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(const Uint32Vector& aShaderTypes);    
 
+    VkPrimitiveTopology Util_Transform2VkPrimitiveTopology(FRenderPrimitiveType type);
+    VkCullModeFlags Util_Transform2VkCullModeFlags(FCullingType type);
+    VkPolygonMode Util_Transform2VkPolygonMode(FPolygonType type);
+    VkStencilOp Util_Transform2VkStencilOp(FStencilOPType type);
+    VkCompareOp Util_Transform2VkCompareOp(FCompareFuncType type);
+    VkBlendOp Util_Transform2VkBlendOp(FSceneBlendingOPType type);
+    VkBlendFactor Util_Transform2VkBlendFactor(FSceneBlendingFactorType type);
+    
+
     enum VulkanDescriptorSetType
     {
         Vulkan_DescriptorSet_Pass = 0,                      //0:  Pass
@@ -577,6 +586,7 @@ namespace LostPeter
     class ObjectManager;
     class Renderable;
     class RenderableIndirect;
+    class RenderState;
     class Scene;
     class SceneManager;
     class SceneManagerEnumerator;

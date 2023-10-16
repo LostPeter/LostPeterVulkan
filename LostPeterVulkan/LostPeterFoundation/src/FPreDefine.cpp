@@ -447,31 +447,298 @@ namespace LostPeterFoundation
     }
 
 
-
     //FCameraType
     static const String s_nameCameraTypes[] = 
     {
         "Perspective",              //0: Perspective
         "Orthogonal",               //1: Orthogonal
     };
-    const String& F_GetCameraTypeTypeName(FCameraType type)
+    const String& F_GetCameraTypeName(FCameraType type)
     {
         return s_nameCameraTypes[(int)type];
     }
-    const String& F_GetCameraTypeTypeName(int type)
+    const String& F_GetCameraTypeName(int type)
     {
         return s_nameCameraTypes[(int)type];
     }
-    FCameraType F_ParseCameraTypeType(const String& strName)
+    FCameraType F_ParseCameraType(const String& strName)
     {
         for (size_t i = 0; i < (int)F_Camera_Count; i++)
         {
             if (s_nameCameraTypes[i] == strName)
                 return (FCameraType)(i);
         }
-        F_Assert(false && "F_ParseCameraTypeType: Wrong type name !")
+        F_Assert(false && "F_ParseCameraType: Wrong type name !")
         return F_Camera_Perspective;
     }
     
+
+    //FRenderPrimitiveType
+    static const String s_nameRenderPrimitiveTypes[] = 
+    {
+        "PointList",                //0: PointList
+        "LineList",                 //1: LineList
+        "LineStrip",                //2: LineStrip
+        "TriangleList",             //3: TriangleList
+        "TriangleStrip",            //4: TriangleStrip
+        "TriangleFan",              //5: TriangleFan
+    };
+    const String& F_GetRenderPrimitiveTypeName(FRenderPrimitiveType type)
+    {
+        return s_nameRenderPrimitiveTypes[(int)type];
+    }
+    const String& F_GetRenderPrimitiveTypeName(int type)
+    {
+        return s_nameRenderPrimitiveTypes[(int)type];
+    }
+    FRenderPrimitiveType F_ParseRenderPrimitiveType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_RenderPrimitive_Count; i++)
+        {
+            if (s_nameRenderPrimitiveTypes[i] == strName)
+                return (FRenderPrimitiveType)(i);
+        }
+        F_Assert(false && "F_ParseRenderPrimitiveType: Wrong type name !")
+        return F_RenderPrimitive_TriangleList;
+    }
+
+
+    //FCullingType
+    static const String s_nameCullingTypes[] = 
+    {
+        "None",                     //0: None
+        "ClockWise",                //1: ClockWise
+        "CounterClockWise",         //2: CounterClockWise
+    };
+    const String& F_GetCullingTypeName(FCullingType type)
+    {
+        return s_nameCullingTypes[(int)type];
+    }
+    const String& F_GetCullingTypeName(int type)
+    {
+        return s_nameCullingTypes[(int)type];
+    }
+    FCullingType F_ParseCullingType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_Culling_Count; i++)
+        {
+            if (s_nameCullingTypes[i] == strName)
+                return (FCullingType)(i);
+        }
+        F_Assert(false && "F_ParseCullingType: Wrong type name !")
+        return F_Culling_None;
+    }
+
+
+    //FPolygonType
+    static const String s_namePolygonTypes[] = 
+    {
+        "Point",                     //0: Point
+        "WireFrame",                 //1: WireFrame
+        "Soild",                     //2: Soild
+    };
+    const String& F_GetPolygonTypeName(FPolygonType type)
+    {
+        return s_namePolygonTypes[(int)type];
+    }
+    const String& F_GetPolygonTypeName(int type)
+    {
+        return s_namePolygonTypes[(int)type];
+    }
+    FPolygonType F_ParsePolygonType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_Polygon_Count; i++)
+        {
+            if (s_namePolygonTypes[i] == strName)
+                return (FPolygonType)(i);
+        }
+        F_Assert(false && "F_ParsePolygonType: Wrong type name !")
+        return F_Polygon_Solid;
+    }
+
+
+    //FStencilOPType
+    static const String s_nameStencilOPTypes[] = 
+    {
+        "Keep",                      //0: Keep
+        "Zero",                      //1: Zero
+        "Replace",                   //2: Replace
+        "Increment",                 //3: Increment
+        "Decrement",                 //4: Decrement
+        "IncrementWrap",             //5: IncrementWrap
+        "DecrementWrap",             //6: DecrementWrap
+        "Invert",                    //7: Invert
+    };
+    const String& F_GetStencilOPTypeName(FStencilOPType type)
+    {
+        return s_nameStencilOPTypes[(int)type];
+    }
+    const String& F_GetStencilOPTypeName(int type)
+    {
+        return s_nameStencilOPTypes[(int)type];
+    }
+    FStencilOPType F_ParseStencilOPType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_StencilOP_Count; i++)
+        {
+            if (s_nameStencilOPTypes[i] == strName)
+                return (FStencilOPType)(i);
+        }
+        F_Assert(false && "F_ParseStencilOPType: Wrong type name !")
+        return F_StencilOP_Keep;
+    }
+
+
+    //FCompareFuncType
+    static const String s_nameCompareFuncTypes[] = 
+    {
+        "AlwaysPass",                //0: AlwaysPass
+        "AlwaysFail",                //1: AlwaysFail
+        "Less",                      //2: Less
+        "LessEqual",                 //3: LessEqual
+        "Equal",                     //4: Equal
+        "NotEqual",                  //5: NotEqual
+        "GreaterEqual",              //6: GreaterEqual
+        "Greater",                   //7: Greater
+    };
+    const String& F_GetCompareFuncTypeName(FCompareFuncType type)
+    {
+        return s_nameCompareFuncTypes[(int)type];
+    }
+    const String& F_GetCompareFuncTypeName(int type)
+    {
+        return s_nameCompareFuncTypes[(int)type];
+    }
+    FCompareFuncType F_ParseCompareFuncType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_CompareFunc_Count; i++)
+        {
+            if (s_nameCompareFuncTypes[i] == strName)
+                return (FCompareFuncType)(i);
+        }
+        F_Assert(false && "F_ParseCompareFuncType: Wrong type name !")
+        return F_CompareFunc_LessEqual;
+    }
+
+
+    //FSceneBlendingType
+    static const String s_nameSceneBlendingTypes[] = 
+    {
+        "Alpha",                     //0: Alpha
+        "Color",                     //1: Color
+        "Add",                       //2: Add
+        "Modulate",                  //3: Modulate
+        "Replace",                   //4: Replace
+    };
+    const String& F_GetSceneBlendingTypeName(FSceneBlendingType type)
+    {
+        return s_nameSceneBlendingTypes[(int)type];
+    }
+    const String& F_GetSceneBlendingTypeName(int type)
+    {
+        return s_nameSceneBlendingTypes[(int)type];
+    }
+    FSceneBlendingType F_ParseSceneBlendingType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_SceneBlending_Count; i++)
+        {
+            if (s_nameSceneBlendingTypes[i] == strName)
+                return (FSceneBlendingType)(i);
+        }
+        F_Assert(false && "F_ParseSceneBlendingType: Wrong type name !")
+        return F_SceneBlending_Color;
+    }
+
+
+    //FSceneBlendingOPType
+    static const String s_nameSceneBlendingOPTypes[] = 
+    {
+        "Add",                       //0: Add
+        "Subtract",                  //1: Subtract
+        "SubtractReverse",           //2: SubtractReverse
+        "Min",                       //3: Min
+        "Max",                       //4: Max
+    };
+    const String& F_GetSceneBlendingOPTypeName(FSceneBlendingOPType type)
+    {
+        return s_nameSceneBlendingOPTypes[(int)type];
+    }
+    const String& F_GetSceneBlendingOPTypeName(int type)
+    {
+        return s_nameSceneBlendingOPTypes[(int)type];
+    }
+    FSceneBlendingOPType F_ParseSceneBlendingOPType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_SceneBlendingOP_Count; i++)
+        {
+            if (s_nameSceneBlendingOPTypes[i] == strName)
+                return (FSceneBlendingOPType)(i);
+        }
+        F_Assert(false && "F_ParseSceneBlendingOPType: Wrong type name !")
+        return F_SceneBlendingOP_Add;
+    }
+
+
+    //FSceneBlendingFactorType
+    static const String s_nameSceneBlendingFactorTypes[] = 
+    {
+        "One",                       //0: One
+        "Zero",                      //1: Zero
+        "SourceColor",               //2: SourceColor
+        "DestColor",                 //3: DestColor
+        "OneMinusSourceColor",       //4: OneMinusSourceColor
+        "OneMinusDestColor",         //5: OneMinusDestColor
+        "SourceAlpha",               //6: SourceAlpha
+        "DestAlpha",                 //7: DestAlpha
+        "OneMinusSourceAlpha",       //8: OneMinusSourceAlpha
+        "OneMinusDestAlpha",         //9: OneMinusDestAlpha
+    };
+    const String& F_GetSceneBlendingFactorTypeName(FSceneBlendingFactorType type)
+    {
+        return s_nameSceneBlendingFactorTypes[(int)type];
+    }
+    const String& F_GetSceneBlendingFactorTypeName(int type)
+    {
+        return s_nameSceneBlendingFactorTypes[(int)type];
+    }
+    FSceneBlendingFactorType F_ParseSceneBlendingFactorType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_SceneBlendingFactor_Count; i++)
+        {
+            if (s_nameSceneBlendingFactorTypes[i] == strName)
+                return (FSceneBlendingFactorType)(i);
+        }
+        F_Assert(false && "F_ParseSceneBlendingFactorType: Wrong type name !")
+        return F_SceneBlendingFactor_Zero;
+    }
+
+
+    //FLightingType
+    static const String s_nameLightingTypes[] = 
+    {
+        "Flat",                      //0: Flat
+        "Gouraud",                   //1: Gouraud
+        "Phong",                     //2: Phong
+        "Pbr",                       //3: Pbr
+    };
+    const String& F_GetLightingTypeName(FLightingType type)
+    {
+        return s_nameLightingTypes[(int)type];
+    }
+    const String& F_GetLightingTypeName(int type)
+    {
+        return s_nameLightingTypes[(int)type];
+    }
+    FLightingType F_ParseLightingType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_Lighting_Count; i++)
+        {
+            if (s_nameLightingTypes[i] == strName)
+                return (FLightingType)(i);
+        }
+        F_Assert(false && "F_ParseLightingType: Wrong type name !")
+        return F_Lighting_Gouraud;
+    }
+
 
 }; //LostPeterFoundation

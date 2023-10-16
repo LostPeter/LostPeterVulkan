@@ -328,6 +328,106 @@ namespace LostPeter
         return VK_SHADER_STAGE_VERTEX_BIT; 
     }
 
+    VkPrimitiveTopology Util_Transform2VkPrimitiveTopology(FRenderPrimitiveType type)
+    {
+        switch ((int32)type)
+        {
+        case F_RenderPrimitive_PointList:     return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+        case F_RenderPrimitive_LineList:      return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+        case F_RenderPrimitive_LineStrip:     return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+        case F_RenderPrimitive_TriangleList:  return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        case F_RenderPrimitive_TriangleStrip: return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+        case F_RenderPrimitive_TriangleFan:   return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+        }
+        F_Assert(false && "Util_Transform2VkPrimitiveTopology: Wrong type !")
+        return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST; 
+    }
+    VkCullModeFlags Util_Transform2VkCullModeFlags(FCullingType type)
+    {
+        switch ((int32)type)
+        {
+        case F_Culling_None:             return VK_CULL_MODE_NONE;
+        case F_Culling_ClockWise:        return VK_CULL_MODE_BACK_BIT;
+        case F_Culling_CounterClockWise: return VK_CULL_MODE_FRONT_BIT;
+        }
+        F_Assert(false && "Util_Transform2VkCullModeFlags: Wrong type !")
+        return VK_CULL_MODE_BACK_BIT;
+    }
+    VkPolygonMode Util_Transform2VkPolygonMode(FPolygonType type)
+    {   
+        switch ((int32)type)
+        {
+        case F_Polygon_Point:      return VK_POLYGON_MODE_POINT;
+        case F_Polygon_WireFrame:  return VK_POLYGON_MODE_LINE;
+        case F_Polygon_Solid:      return VK_POLYGON_MODE_FILL;
+        }
+        F_Assert(false && "Util_Transform2VkPolygonMode: Wrong type !")
+        return VK_POLYGON_MODE_FILL;
+    }
+    VkStencilOp Util_Transform2VkStencilOp(FStencilOPType type)
+    {
+        switch ((int32)type)
+        {
+        case F_StencilOP_Keep:              return VK_STENCIL_OP_KEEP;
+        case F_StencilOP_Zero:              return VK_STENCIL_OP_ZERO;
+        case F_StencilOP_Replace:           return VK_STENCIL_OP_REPLACE;
+        case F_StencilOP_Increment:         return VK_STENCIL_OP_INCREMENT_AND_CLAMP;
+        case F_StencilOP_Decrement:         return VK_STENCIL_OP_DECREMENT_AND_CLAMP;
+        case F_StencilOP_IncrementWrap:     return VK_STENCIL_OP_INCREMENT_AND_WRAP;
+        case F_StencilOP_DecrementWrap:     return VK_STENCIL_OP_DECREMENT_AND_WRAP;
+        case F_StencilOP_Invert:            return VK_STENCIL_OP_INVERT;
+        }
+        F_Assert(false && "Util_Transform2VkStencilOp: Wrong type !")
+        return VK_STENCIL_OP_KEEP;
+    }
+    VkCompareOp Util_Transform2VkCompareOp(FCompareFuncType type)
+    {
+        switch ((int32)type)
+        {
+        case F_CompareFunc_AlwaysPass:      return VK_COMPARE_OP_ALWAYS;
+        case F_CompareFunc_AlwaysFail:      return VK_COMPARE_OP_NEVER;
+        case F_CompareFunc_Less:            return VK_COMPARE_OP_LESS;
+        case F_CompareFunc_LessEqual:       return VK_COMPARE_OP_LESS_OR_EQUAL;
+        case F_CompareFunc_Equal:           return VK_COMPARE_OP_EQUAL;
+        case F_CompareFunc_NotEqual:        return VK_COMPARE_OP_NOT_EQUAL;
+        case F_CompareFunc_GreaterEqual:    return VK_COMPARE_OP_GREATER_OR_EQUAL;
+        case F_CompareFunc_Greater:         return VK_COMPARE_OP_GREATER;
+        }
+        F_Assert(false && "Util_Transform2VkCompareOp: Wrong type !")
+        return VK_COMPARE_OP_NEVER;
+    }
+    VkBlendOp Util_Transform2VkBlendOp(FSceneBlendingOPType type)
+    {
+        switch ((int32)type)
+        {
+        case F_SceneBlendingOP_Add:               return VK_BLEND_OP_ADD;
+        case F_SceneBlendingOP_Subtract:          return VK_BLEND_OP_SUBTRACT;
+        case F_SceneBlendingOP_SubtractReverse:   return VK_BLEND_OP_REVERSE_SUBTRACT;
+        case F_SceneBlendingOP_Min:               return VK_BLEND_OP_MIN;
+        case F_SceneBlendingOP_Max:               return VK_BLEND_OP_MAX;
+        }
+        F_Assert(false && "Util_Transform2VkBlendOp: Wrong type !")
+        return VK_BLEND_OP_ADD;
+    }
+    VkBlendFactor Util_Transform2VkBlendFactor(FSceneBlendingFactorType type)
+    {
+        switch ((int32)type)
+        {
+        case F_SceneBlendingFactor_One:                   return VK_BLEND_FACTOR_ONE;
+        case F_SceneBlendingFactor_Zero:                  return VK_BLEND_FACTOR_ZERO;
+        case F_SceneBlendingFactor_SourceColor:           return VK_BLEND_FACTOR_SRC_COLOR;
+        case F_SceneBlendingFactor_DestColor:             return VK_BLEND_FACTOR_DST_COLOR;
+        case F_SceneBlendingFactor_OneMinusSourceColor:   return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+        case F_SceneBlendingFactor_OneMinusDestColor:     return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+        case F_SceneBlendingFactor_SourceAlpha:           return VK_BLEND_FACTOR_SRC_ALPHA;
+        case F_SceneBlendingFactor_DestAlpha:             return VK_BLEND_FACTOR_DST_ALPHA;
+        case F_SceneBlendingFactor_OneMinusSourceAlpha:   return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+        case F_SceneBlendingFactor_OneMinusDestAlpha:     return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+        }
+        F_Assert(false && "Util_Transform2VkBlendFactor: Wrong type !")
+        return VK_BLEND_FACTOR_ONE;
+    }
+
 
     //VulkanDescriptorSetType
     static String s_nameDescriptorSetTypes[] = 

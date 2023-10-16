@@ -69,6 +69,7 @@
 #include "ObjectManager.h"
 #include "Renderable.h"
 #include "RenderableIndirect.h"
+#include "RenderState.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "SceneManagerEnumerator.h"
