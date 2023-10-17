@@ -157,7 +157,7 @@ namespace LostPeter
                                                      typeShader);
             if (AddShaderInfo(pShaderInfo))
             {
-                F_LogInfo("ShaderSerializer::deserializeXML: Add shader info success, [%s]-[%s]-[%s]!",
+                F_LogInfo("ShaderSerializer::deserializeXML: Add shader info success, [%s]-[%s]-[%s] !",
                           strNameShader.c_str(), 
                           strPathShader.c_str(), 
                           strType.c_str());

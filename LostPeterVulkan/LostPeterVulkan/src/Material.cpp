@@ -11,22 +11,32 @@
 
 #include "../include/Material.h"
 #include "../include/VulkanWindow.h"
+#include "../include/MaterialData.h"
 
 namespace LostPeter
 {
-    Material::Material(const String& nameMaterial)
-        : Base(nameMaterial)
+    Material::Material(uint32 _group,
+                       const String& _nameMaterial,
+                       const String& _pathMaterial)
+        : Base(_group, _nameMaterial)
+        , pathMaterial(_pathMaterial)
         , pMaterialData(nullptr)
     {
         
     }
     Material::~Material()
     {
+        Destroy();
+    }
+
+    void Material::Destroy()
+    {
 
     }
 
     bool Material::LoadMaterial(bool bNew /*= false*/)
     {
+        
         return true;
     }
 	bool Material::UnloadMaterial()

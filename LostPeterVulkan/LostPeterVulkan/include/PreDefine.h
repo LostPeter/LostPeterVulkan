@@ -516,6 +516,23 @@ namespace LostPeter
     typedef std::map<String, DescriptorSetLayoutInfo*> DescriptorSetLayoutInfoPtrMap;
 
 
+    struct utilExport MaterialInfo
+    {
+        MaterialInfo();
+        MaterialInfo(const String& _nameMaterial,
+                     const String& _pathMaterial);
+        ~MaterialInfo();
+
+        uint32 group;
+        String nameMaterial;
+        String pathMaterial;
+    };
+    typedef std::vector<MaterialInfo*> MaterialInfoPtrVector;
+    typedef std::map<String, MaterialInfo*> MaterialInfoPtrMap;
+    typedef std::map<uint32, MaterialInfoPtrMap> MaterialInfoGroupPtrMap;
+
+
+
     class App;
     class VulkanBase;
     class VulkanWindow;
@@ -619,6 +636,9 @@ namespace LostPeter
     typedef std::vector<Material*> MaterialPtrVector;
     typedef std::map<String, Material*> MaterialPtrMap;
     typedef std::map<uint32, MaterialPtrMap> MaterialGroupPtrMap;
+
+    typedef std::vector<MaterialData*> MaterialDataPtrVector;
+    typedef std::map<String, MaterialData*> MaterialDataPtrMap;
 
     typedef std::vector<Renderable*> RenderablePtrVector;
     typedef std::map<String, Renderable*> RenderablePtrMap;

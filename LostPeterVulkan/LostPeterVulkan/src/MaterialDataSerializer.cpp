@@ -14,6 +14,9 @@
 
 namespace LostPeter
 {
+
+
+    
     MaterialDataSerializer::MaterialDataSerializer()
         : Base("MaterialDataSerializer")
     {

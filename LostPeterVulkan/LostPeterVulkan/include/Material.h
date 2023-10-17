@@ -19,10 +19,14 @@ namespace LostPeter
     class utilExport Material : public Base
     {
     public:
-        Material(const String& nameMaterial);
+        Material(uint32 _group,
+                 const String& _nameMaterial,
+                 const String& _pathMaterial);
         virtual ~Material();
 
     public:
+        String pathMaterial;
+
     protected:
         MaterialData* pMaterialData;
 
@@ -31,6 +35,8 @@ namespace LostPeter
 		LP_FORCEINLINE void SetMaterialData(MaterialData* pMD)	{ pMaterialData = pMD; }
 
     public:
+        void Destroy();
+
         bool LoadMaterial(bool bNew = false);
 		bool UnloadMaterial();
 

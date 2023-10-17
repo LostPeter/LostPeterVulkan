@@ -24,11 +24,38 @@ namespace LostPeter
         virtual ~MaterialManager();
 
     public:
+    protected:
+        MaterialSerializer* m_pMaterialSerializer;
+        MaterialPtrVector m_aMaterial;
+        MaterialGroupPtrMap m_mapMaterialGroup;
+
+    public:
+        LP_FORCEINLINE MaterialSerializer* GetMaterialSerializer() const { return m_pMaterialSerializer; }
+        LP_FORCEINLINE const MaterialPtrVector& GetMaterialPtrVector() const { return m_aMaterial; }
+        LP_FORCEINLINE MaterialPtrVector& GetMaterialPtrVector() { return m_aMaterial; }
+        LP_FORCEINLINE const MaterialGroupPtrMap& GetMaterialGroupPtrMap() const { return m_mapMaterialGroup; }
+        LP_FORCEINLINE MaterialGroupPtrMap& GetMaterialGroupPtrMap() { return m_mapMaterialGroup; }
 
     public:
         static MaterialManager&	GetSingleton();
 		static MaterialManager*	GetSingletonPtr();
 
+    public:
+        void Destroy();
+        bool Init(uint nGroupCfgMesh, const String& strNameCfg);
+
+    public:
+        bool LoadMaterialAll();
+        Material* LoadMaterial(uint nGroup, const String& strName);
+
+        bool HasMaterial(uint nGroup, const String& strName);
+        Material* GetMaterial(uint nGroup, const String& strName);
+        bool AddMaterial(uint nGroup, Material* pMaterial);
+        void DeleteMaterial(uint nGroup, const String& strName);
+        void DeleteMaterialAll();
+
+    private:
+        Material* loadMaterial(MaterialInfo* pMI);
     };
 
 }; //LostPeter

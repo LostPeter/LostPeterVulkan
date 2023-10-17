@@ -24,8 +24,23 @@ namespace LostPeter
         virtual ~MaterialSerializer();
 
     public:
+    protected:
+        MaterialInfoPtrVector m_aMaterialInfo;
+        MaterialInfoGroupPtrMap m_mapMaterialInfoGroup;
 
     public:
+        LP_FORCEINLINE const MaterialInfoPtrVector& GetMaterialInfoPtrVector() const { return m_aMaterialInfo; }
+        LP_FORCEINLINE MaterialInfoPtrVector& GetMaterialInfoPtrVector() { return m_aMaterialInfo; }
+        LP_FORCEINLINE const MaterialInfoGroupPtrMap& GetMaterialInfoGroupPtrMap() const { return m_mapMaterialInfoGroup; }
+        LP_FORCEINLINE MaterialInfoGroupPtrMap& GetMaterialInfoGroupPtrMap() { return m_mapMaterialInfoGroup; }
+
+
+    public:
+        bool HasMaterialInfo(uint nGroup, const String& strName);
+        MaterialInfo* GetMaterialInfo(uint nGroup, const String& strName);
+        bool AddMaterialInfo(MaterialInfo* pMaterialInfo);
+        void DeleteMaterialInfo(uint nGroup, const String& strName);
+        void DeleteMaterialInfoAll();
 
     protected:
         //File Content XML

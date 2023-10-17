@@ -872,4 +872,25 @@ namespace LostPeter
     }
 
 
+    MaterialInfo::MaterialInfo()
+        : group(0)
+        , nameMaterial("")
+        , pathMaterial("")
+    {
+
+    }
+    MaterialInfo::MaterialInfo(const String& _nameMaterial,
+                               const String& _pathMaterial)
+        : group(0)
+        , nameMaterial(_nameMaterial)
+        , pathMaterial(_pathMaterial)
+    {
+
+    }
+    MaterialInfo::~MaterialInfo()
+    {
+
+    }
+
+
 }; //LostPeter

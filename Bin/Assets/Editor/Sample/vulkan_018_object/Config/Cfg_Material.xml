@@ -1,4 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <cfg_material>
-	<material />
+	<!-- <material name="" path="" /> -->
+
+	<!-- Material Common -->
+	<material name="Default_Opaque" path="Assets/Material/Common/Default_Opaque.material" />
+	<material name="Default_Transparent" path="Assets/Material/Common/Default_Transparent.material" />
+
+	<!-- Material Model -->
+
+	<!-- Material Character -->
+
 </cfg_material>
