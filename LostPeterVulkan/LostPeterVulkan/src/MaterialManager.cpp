@@ -13,6 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/MaterialSerializer.h"
 #include "../include/Material.h"
+#include "../include/MaterialInstance.h"
 
 template<> LostPeter::MaterialManager* LostPeterFoundation::FSingleton<LostPeter::MaterialManager>::ms_Singleton = nullptr;
 
@@ -28,24 +29,36 @@ namespace LostPeter
 		return (*ms_Singleton);     
 	}
 
+    uint32 MaterialManager::ms_nInstanceID = 0;
+	String MaterialManager::ms_strMaterialName_Default = "Assets/Material/Default.material";
+    String MaterialManager::ms_strMaterialName_DefaultOpaque = "Assets/Material/Default_Opaque.material";
+    String MaterialManager::ms_strMaterialName_DefaultTransparent = "Assets/Material/Default_Transparent.material";
     MaterialManager::MaterialManager()
         : Base("MaterialManager")
         , m_pMaterialSerializer(nullptr)
+        , m_pMaterial_Default(nullptr)
+        , m_pMaterialInstance_Default(nullptr)
+        , m_pMaterial_DefaultOpaque(nullptr)
+        , m_pMaterialInstance_DefaultOpaque(nullptr)
+        , m_pMaterial_DefaultTransparent(nullptr)
+        , m_pMaterialInstance_DefaultTransparent(nullptr)
     {
-
+        m_pMaterialSerializer = new MaterialSerializer();
     }
     MaterialManager::~MaterialManager()
     {
+        F_DELETE(m_pMaterialSerializer)
         Destroy();
     }
 
     void MaterialManager::Destroy()
     {
-        F_DELETE(m_pMaterialSerializer)
         DeleteMaterialAll();
     }
     bool MaterialManager::Init(uint nGroup, const String& strNameCfg)
     {
+        Destroy();
+
         //1> Material Cfg Path 
         String strPathCfgMaterial = FPathManager::GetSingleton().GetFilePath(nGroup, strNameCfg);
         if (strPathCfgMaterial.empty())
@@ -55,13 +68,29 @@ namespace LostPeter
         }
 
         //2> Material Serializer
-        m_pMaterialSerializer = new MaterialSerializer();
         if (!m_pMaterialSerializer->LoadFile(strPathCfgMaterial))
         {
             F_LogError("*********************** MaterialManager::Init: Load file material cfg failed, group: [%u], name: [%s] !", nGroup, strNameCfg.c_str());
             return false;
         }
         
+        //3> Material Default
+        if (!initMaterialDefault())
+        {
+            F_LogError("*********************** MaterialManager::Init: initMaterialDefault failed !");
+            return false;
+        }
+
+        return true;
+    }
+    bool MaterialManager::initMaterialDefault()
+    {
+        //1> Default
+
+        //2> Default_Opaque
+
+        //3> Default_Transparent
+
         return true;
     }
 

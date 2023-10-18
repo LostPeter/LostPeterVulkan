@@ -11,7 +11,10 @@
 
 #include "../include/Material.h"
 #include "../include/VulkanWindow.h"
+#include "../include/MaterialInstance.h"
 #include "../include/MaterialData.h"
+#include "../include/MaterialDataManager.h"
+#include "../include/RenderState.h"
 
 namespace LostPeter
 {
@@ -21,6 +24,7 @@ namespace LostPeter
         : Base(_group, _nameMaterial)
         , pathMaterial(_pathMaterial)
         , pMaterialData(nullptr)
+        , pRenderState(nullptr)
     {
         
     }

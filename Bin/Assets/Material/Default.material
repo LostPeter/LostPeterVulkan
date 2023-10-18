@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<cfg_material_data>
+	<material_datas>
+		<material_data group="7001" name="Default">
+			<state_common>
+				
+			</state_common>
+			<state_lighting>
+
+			</state_lighting>
+			<state_texture>
+
+			</state_texture>
+			<state_shader>
+				<vert />
+				<frag />
+			</state_shader>
+		</material_data>
+	</material_datas>
+</cfg_material_data>

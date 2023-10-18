@@ -24,10 +24,23 @@ namespace LostPeter
         virtual ~MaterialManager();
 
     public:
+        static uint32 ms_nInstanceID;
+		static String ms_strMaterialName_Default;
+        static String ms_strMaterialName_DefaultOpaque;
+        static String ms_strMaterialName_DefaultTransparent;
+
     protected:
         MaterialSerializer* m_pMaterialSerializer;
         MaterialPtrVector m_aMaterial;
         MaterialGroupPtrMap m_mapMaterialGroup;
+
+
+        Material* m_pMaterial_Default;
+		MaterialInstance* m_pMaterialInstance_Default;
+        Material* m_pMaterial_DefaultOpaque;
+		MaterialInstance* m_pMaterialInstance_DefaultOpaque;
+        Material* m_pMaterial_DefaultTransparent;
+		MaterialInstance* m_pMaterialInstance_DefaultTransparent;
 
     public:
         LP_FORCEINLINE MaterialSerializer* GetMaterialSerializer() const { return m_pMaterialSerializer; }
@@ -36,6 +49,13 @@ namespace LostPeter
         LP_FORCEINLINE const MaterialGroupPtrMap& GetMaterialGroupPtrMap() const { return m_mapMaterialGroup; }
         LP_FORCEINLINE MaterialGroupPtrMap& GetMaterialGroupPtrMap() { return m_mapMaterialGroup; }
 
+        LP_FORCEINLINE Material* GetMaterial_Default() const { return m_pMaterial_Default; }
+		LP_FORCEINLINE MaterialInstance* GetMaterialInstance_Default() const { return m_pMaterialInstance_Default; }
+        LP_FORCEINLINE Material* GetMaterial_DefaultOpaque() const { return m_pMaterial_DefaultOpaque; }
+		LP_FORCEINLINE MaterialInstance* GetMaterialInstance_DefaultOpaque() const { return m_pMaterialInstance_DefaultOpaque; }
+        LP_FORCEINLINE Material* GetMaterial_DefaultTransparent() const { return m_pMaterial_DefaultTransparent; }
+		LP_FORCEINLINE MaterialInstance* GetMaterialInstance_DefaultTransparent() const { return m_pMaterialInstance_DefaultTransparent; }
+
     public:
         static MaterialManager&	GetSingleton();
 		static MaterialManager*	GetSingletonPtr();
@@ -43,6 +63,9 @@ namespace LostPeter
     public:
         void Destroy();
         bool Init(uint nGroupCfgMesh, const String& strNameCfg);
+
+    protected:
+        bool initMaterialDefault();
 
     public:
         bool LoadMaterialAll();

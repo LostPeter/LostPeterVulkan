@@ -24,11 +24,31 @@ namespace LostPeter
         virtual ~MaterialDataManager();
 
     public:
-
+    protected:
+        MaterialDataSerializer* m_pMaterialDataSerializer;
+		MaterialDataPtrMap m_mapMaterialData;
 
     public:
         static MaterialDataManager&	GetSingleton();
 		static MaterialDataManager*	GetSingletonPtr();
+
+    public:
+        void Destroy();
+
+    public:
+		MaterialData* GetMaterialData(const String& strName);
+			
+		MaterialData* CreateMaterialData(uint32 nGroup, const String& strName, bool bNew = false);
+		void DestroyMaterialData(const String& strName);
+		void DestroyMaterialData(MaterialData* pMaterialData);
+		void DestroyAllMaterialData();
+
+	private:
+		MaterialData* findMaterialData(const String& strName);
+		bool addMaterialData(MaterialData* pMaterialData);
+        
+    public:
+
 
     };
 

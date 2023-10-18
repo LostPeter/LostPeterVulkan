@@ -24,8 +24,10 @@ namespace LostPeter
         virtual ~MaterialDataSerializer();
 
     public:
+    
 
     public:
+
 
     protected:
         //File Content XML

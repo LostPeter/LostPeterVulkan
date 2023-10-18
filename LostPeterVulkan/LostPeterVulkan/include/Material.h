@@ -29,10 +29,12 @@ namespace LostPeter
 
     protected:
         MaterialData* pMaterialData;
+        RenderState* pRenderState;
 
     public:
         LP_FORCEINLINE MaterialData* GetMaterialData() const { return pMaterialData; }
-		LP_FORCEINLINE void SetMaterialData(MaterialData* pMD)	{ pMaterialData = pMD; }
+		LP_FORCEINLINE void SetMaterialData(MaterialData* pMaterialData) { pMaterialData = pMaterialData; }
+        LP_FORCEINLINE RenderState*	GetRenderState() const { return pRenderState; }
 
     public:
         void Destroy();
