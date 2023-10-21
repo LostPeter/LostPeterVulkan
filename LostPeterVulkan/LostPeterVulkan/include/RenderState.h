@@ -12,7 +12,7 @@
 #ifndef _RENDER_STATE_H_
 #define _RENDER_STATE_H_
 
-#include "Base.h"
+#include "PreDefine.h"
 
 namespace LostPeter
 {
@@ -31,19 +31,8 @@ namespace LostPeter
 			~StateCommon();
 
 		public:
-            bool 						bAlphaTestEnabled;
-			FCompareFuncType 			typeAlphaRejectFunc;
-			uint8					    nAlphaRejectValue;
-			bool					    bColorRWriteEnabled;
-			bool					    bColorGWriteEnabled;
-			bool					    bColorBWriteEnabled;
-			bool					    bColorAWriteEnabled;
+			FPolygonType				typePolygon;
 			FCullingType			    typeCulling;
-			bool					    bDepthTestEnabled;
-			bool					    bDepthWriteEnabled;
-			FCompareFuncType			typeDepthFunc;
-			float					    fDepthBiasConstant;
-			float					    fDepthBiasSlopeScale;
 			float					    fPointSize;
 			bool					    bPointSpriteEnabled;
 			bool					    bPointAttenuEnabled;
@@ -52,16 +41,11 @@ namespace LostPeter
 			float					    fPointAttenuQuadratic;
 			float					    fPointMinSize;
 			float					    fPointMaxSize;
-			FPolygonType				typePolygon;
-			bool					    bSceneBlendingEnabled;
-			FSceneBlendingType		    typeSceneBlending;
-			FSceneBlendingOPType		typeSceneBlendingOP;
-			FSceneBlendingFactorType	typeSceneBlendingFactorSrc;
-			FSceneBlendingFactorType	typeSceneBlendingFactorDst;
-			bool					    bSceneBlendingSeperateEnabled;
-			FSceneBlendingOPType		typeSceneBlendingOP2;
-			FSceneBlendingFactorType	typeSceneBlendingFactorSrc2;
-			FSceneBlendingFactorType	typeSceneBlendingFactorDst2;
+			bool					    bDepthTestEnabled;
+			bool					    bDepthWriteEnabled;
+			FCompareFuncType			typeDepthFunc;
+			float					    fDepthBiasConstant;
+			float					    fDepthBiasSlopeScale;
 			bool					    bStencilEnabled;
 			FCompareFuncType			typeStencilFunc;
 			uint32					    nStencilRefValue;
@@ -75,6 +59,22 @@ namespace LostPeter
 			uint32					    nScissorTest_Top;
 			uint32					    nScissorTest_Right;
 			uint32					    nScissorTest_Bottom;
+			bool 						bAlphaTestEnabled;
+			FCompareFuncType 			typeAlphaRejectFunc;
+			uint8					    nAlphaRejectValue;
+			bool					    bSceneBlendingEnabled;
+			FSceneBlendingType		    typeSceneBlending;
+			FSceneBlendingOPType		typeSceneBlendingOP;
+			FSceneBlendingFactorType	typeSceneBlendingFactorSrc;
+			FSceneBlendingFactorType	typeSceneBlendingFactorDst;
+			bool					    bSceneBlendingSeperateEnabled;
+			FSceneBlendingOPType		typeSceneBlendingOP2;
+			FSceneBlendingFactorType	typeSceneBlendingFactorSrc2;
+			FSceneBlendingFactorType	typeSceneBlendingFactorDst2;
+			bool					    bColorRWriteEnabled;
+			bool					    bColorGWriteEnabled;
+			bool					    bColorBWriteEnabled;
+			bool					    bColorAWriteEnabled;
 
 		public:
 			void CopyFrom(const StateCommon* pStateCommon);
@@ -145,80 +145,11 @@ namespace LostPeter
 		LP_FORCEINLINE StateShader* GetStateShader() const { return m_pStateShader; }
 
 	////StateCommon
-        LP_FORCEINLINE bool	GetAlphaTestEnabled() const	{ return m_pStateCommon->bAlphaTestEnabled; }
-		LP_FORCEINLINE void	SetAlphaTestEnabled(const bool& bEnabled) { m_pStateCommon->bAlphaTestEnabled = bEnabled; }
-		LP_FORCEINLINE FCompareFuncType GetAlphaRejectFunc() const { return m_pStateCommon->typeAlphaRejectFunc; }
-		LP_FORCEINLINE void	SetAlphaRejectFunc(const FCompareFuncType& func) { m_pStateCommon->typeAlphaRejectFunc = func; }
-		LP_FORCEINLINE uint8 GetAlphaRejectValue() const { return m_pStateCommon->nAlphaRejectValue; }
-		LP_FORCEINLINE void	SetAlphaRejectValue(const uint8& c)	{ m_pStateCommon->nAlphaRejectValue = c; }
-		LP_FORCEINLINE void	GetAlphaTestSetting(bool& bEnabled, FCompareFuncType& eFunc, uint8& nValue) const
-		{
-			bEnabled = m_pStateCommon->bAlphaTestEnabled;
-			eFunc = m_pStateCommon->typeAlphaRejectFunc;
-			nValue = m_pStateCommon->nAlphaRejectValue;
-		}
-		LP_FORCEINLINE void	SetAlphaTestSetting(bool bEnabled, FCompareFuncType eFunc, uint8 nValue)
-		{
-			m_pStateCommon->bAlphaTestEnabled = bEnabled;
-			m_pStateCommon->typeAlphaRejectFunc = eFunc;
-			m_pStateCommon->nAlphaRejectValue = nValue;
-		}
-
-		LP_FORCEINLINE bool	GetColorRWriteEnabled() const { return m_pStateCommon->bColorRWriteEnabled; }
-		LP_FORCEINLINE void	SetColorRWriteEnabled(const bool& bEnabled) { m_pStateCommon->bColorRWriteEnabled = bEnabled; }
-		LP_FORCEINLINE bool	GetColorGWriteEnabled() const { return m_pStateCommon->bColorGWriteEnabled; }
-		LP_FORCEINLINE void	SetColorGWriteEnabled(const bool& bEnabled) { m_pStateCommon->bColorGWriteEnabled = bEnabled; }
-		LP_FORCEINLINE bool	GetColorBWriteEnabled() const { return m_pStateCommon->bColorBWriteEnabled; }
-		LP_FORCEINLINE void	SetColorBWriteEnabled(const bool& bEnabled) { m_pStateCommon->bColorBWriteEnabled = bEnabled; }
-		LP_FORCEINLINE bool	GetColorAWriteEnabled() const { return m_pStateCommon->bColorAWriteEnabled; }
-		LP_FORCEINLINE void	SetColorAWriteEnabled(const bool& bEnabled) { m_pStateCommon->bColorAWriteEnabled = bEnabled; }
-
-		LP_FORCEINLINE void	GetColorWriteEnabled(bool& r, bool& g, bool& b, bool& a) const					
-		{ 
-			r = m_pStateCommon->bColorRWriteEnabled;
-			g = m_pStateCommon->bColorGWriteEnabled;
-			b = m_pStateCommon->bColorBWriteEnabled;
-			a = m_pStateCommon->bColorAWriteEnabled;
-		}
-		LP_FORCEINLINE void	SetColorWriteEnabled(bool r, bool g, bool b, bool a)  	
-		{
-			m_pStateCommon->bColorRWriteEnabled = r;
-			m_pStateCommon->bColorGWriteEnabled = g;
-			m_pStateCommon->bColorBWriteEnabled = b;
-			m_pStateCommon->bColorAWriteEnabled = a;
-		}
-
+		LP_FORCEINLINE FPolygonType GetPolygonType() const { return m_pStateCommon->typePolygon; }
+		LP_FORCEINLINE void	SetPolygonType(const FPolygonType& t)	{ m_pStateCommon->typePolygon = t; }
 		LP_FORCEINLINE FCullingType GetCullingType() const { return m_pStateCommon->typeCulling; }
 		LP_FORCEINLINE void	SetCullingType(const FCullingType& t) { m_pStateCommon->typeCulling = t; }
 
-		LP_FORCEINLINE bool	GetDepthTestEnabled() const { return m_pStateCommon->bDepthTestEnabled; }
-		LP_FORCEINLINE void	SetDepthTestEnabled(const bool& bEnabled) { m_pStateCommon->bDepthTestEnabled = bEnabled; }
-		LP_FORCEINLINE bool	GetDepthWriteEnabled() const { return m_pStateCommon->bDepthWriteEnabled; }
-		LP_FORCEINLINE void	SetDepthWriteEnabled(const bool& bEnabled) { m_pStateCommon->bDepthWriteEnabled = bEnabled; }
-		LP_FORCEINLINE FCompareFuncType GetDepthFunc() const { return m_pStateCommon->typeDepthFunc; }
-		LP_FORCEINLINE void	SetDepthFunc(const FCompareFuncType& func) { m_pStateCommon->typeDepthFunc = func; }
-		LP_FORCEINLINE float GetDepthBiasConstant() const { return m_pStateCommon->fDepthBiasConstant; }
-		LP_FORCEINLINE void	SetDepthBiasConstant(const float& f) { m_pStateCommon->fDepthBiasConstant = f; }
-		LP_FORCEINLINE float GetDepthBiasSlopeScale() const	{ return m_pStateCommon->fDepthBiasSlopeScale; }
-		LP_FORCEINLINE void	SetDepthBiasSlopeScale(const float& f) { m_pStateCommon->fDepthBiasSlopeScale = f; }
-		LP_FORCEINLINE void	GetDepthSetting(bool& bDepthTestEnabled, bool& bDepthWriteEnabled, FCompareFuncType& eFunc,
-											float& fDepthBiasConstant, float& fDepthBiasSlopeScale) const
-		{
-			bDepthTestEnabled = m_pStateCommon->bDepthTestEnabled;
-			bDepthWriteEnabled = m_pStateCommon->bDepthWriteEnabled;
-			eFunc = m_pStateCommon->typeDepthFunc;
-			fDepthBiasConstant = m_pStateCommon->fDepthBiasConstant;
-			fDepthBiasSlopeScale = m_pStateCommon->fDepthBiasSlopeScale;
-		}
-		LP_FORCEINLINE void	SetDepthSetting(bool bDepthTestEnabled, bool bDepthWriteEnabled, FCompareFuncType eFunc,
-										    float fDepthBiasConstant, float fDepthBiasSlopeScale)
-		{
-			m_pStateCommon->bDepthTestEnabled = bDepthTestEnabled;
-			m_pStateCommon->bDepthWriteEnabled = bDepthWriteEnabled;
-			m_pStateCommon->typeDepthFunc = eFunc;
-			m_pStateCommon->fDepthBiasConstant = fDepthBiasConstant;
-			m_pStateCommon->fDepthBiasSlopeScale = fDepthBiasSlopeScale;
-		}
 
 		LP_FORCEINLINE float GetPointSize() const { return m_pStateCommon->fPointSize; }
 		LP_FORCEINLINE void	SetPointSize(const float& f) { m_pStateCommon->fPointSize = f; }
@@ -249,9 +180,9 @@ namespace LostPeter
 			fMinSize = m_pStateCommon->fPointMinSize;
 			fMaxSize = m_pStateCommon->fPointMaxSize;
 		}
-		LP_FORCEINLINE	void SetPointSetting(float fSize, bool bSpriteEnabled, bool bAttenuEnabled,
-											 float fAttenuConstant, float fAttenuLinear, float fAttenuQuadratic,
-											 float fMinSize, float fMaxSize)
+		LP_FORCEINLINE void SetPointSetting(float fSize, bool bSpriteEnabled, bool bAttenuEnabled,
+											float fAttenuConstant, float fAttenuLinear, float fAttenuQuadratic,
+											float fMinSize, float fMaxSize)
 		{
 
 			m_pStateCommon->fPointSize = fSize;
@@ -264,8 +195,121 @@ namespace LostPeter
 			m_pStateCommon->fPointMaxSize = fMaxSize;
 		}
 
-		LP_FORCEINLINE FPolygonType GetPolygonType() const { return m_pStateCommon->typePolygon; }
-		LP_FORCEINLINE void	SetPolygonType(const FPolygonType& t)	{ m_pStateCommon->typePolygon = t; }
+
+		LP_FORCEINLINE bool	GetDepthTestEnabled() const { return m_pStateCommon->bDepthTestEnabled; }
+		LP_FORCEINLINE void	SetDepthTestEnabled(const bool& bEnabled) { m_pStateCommon->bDepthTestEnabled = bEnabled; }
+		LP_FORCEINLINE bool	GetDepthWriteEnabled() const { return m_pStateCommon->bDepthWriteEnabled; }
+		LP_FORCEINLINE void	SetDepthWriteEnabled(const bool& bEnabled) { m_pStateCommon->bDepthWriteEnabled = bEnabled; }
+		LP_FORCEINLINE FCompareFuncType GetDepthFunc() const { return m_pStateCommon->typeDepthFunc; }
+		LP_FORCEINLINE void	SetDepthFunc(const FCompareFuncType& func) { m_pStateCommon->typeDepthFunc = func; }
+		LP_FORCEINLINE float GetDepthBiasConstant() const { return m_pStateCommon->fDepthBiasConstant; }
+		LP_FORCEINLINE void	SetDepthBiasConstant(const float& f) { m_pStateCommon->fDepthBiasConstant = f; }
+		LP_FORCEINLINE float GetDepthBiasSlopeScale() const	{ return m_pStateCommon->fDepthBiasSlopeScale; }
+		LP_FORCEINLINE void	SetDepthBiasSlopeScale(const float& f) { m_pStateCommon->fDepthBiasSlopeScale = f; }
+		LP_FORCEINLINE void	GetDepthSetting(bool& bDepthTestEnabled, bool& bDepthWriteEnabled, FCompareFuncType& eFunc,
+											float& fDepthBiasConstant, float& fDepthBiasSlopeScale) const
+		{
+			bDepthTestEnabled = m_pStateCommon->bDepthTestEnabled;
+			bDepthWriteEnabled = m_pStateCommon->bDepthWriteEnabled;
+			eFunc = m_pStateCommon->typeDepthFunc;
+			fDepthBiasConstant = m_pStateCommon->fDepthBiasConstant;
+			fDepthBiasSlopeScale = m_pStateCommon->fDepthBiasSlopeScale;
+		}
+		LP_FORCEINLINE void	SetDepthSetting(bool bDepthTestEnabled, bool bDepthWriteEnabled, FCompareFuncType eFunc,
+										    float fDepthBiasConstant, float fDepthBiasSlopeScale)
+		{
+			m_pStateCommon->bDepthTestEnabled = bDepthTestEnabled;
+			m_pStateCommon->bDepthWriteEnabled = bDepthWriteEnabled;
+			m_pStateCommon->typeDepthFunc = eFunc;
+			m_pStateCommon->fDepthBiasConstant = fDepthBiasConstant;
+			m_pStateCommon->fDepthBiasSlopeScale = fDepthBiasSlopeScale;
+		}
+
+		
+
+		LP_FORCEINLINE bool	GetAlphaTestEnabled() const	{ return m_pStateCommon->bAlphaTestEnabled; }
+		LP_FORCEINLINE void	SetAlphaTestEnabled(const bool& bEnabled) { m_pStateCommon->bAlphaTestEnabled = bEnabled; }
+		LP_FORCEINLINE FCompareFuncType GetAlphaRejectFunc() const { return m_pStateCommon->typeAlphaRejectFunc; }
+		LP_FORCEINLINE void	SetAlphaRejectFunc(const FCompareFuncType& func) { m_pStateCommon->typeAlphaRejectFunc = func; }
+		LP_FORCEINLINE uint8 GetAlphaRejectValue() const { return m_pStateCommon->nAlphaRejectValue; }
+		LP_FORCEINLINE void	SetAlphaRejectValue(const uint8& c)	{ m_pStateCommon->nAlphaRejectValue = c; }
+		LP_FORCEINLINE void	GetAlphaTestSetting(bool& bEnabled, FCompareFuncType& eFunc, uint8& nValue) const
+		{
+			bEnabled = m_pStateCommon->bAlphaTestEnabled;
+			eFunc = m_pStateCommon->typeAlphaRejectFunc;
+			nValue = m_pStateCommon->nAlphaRejectValue;
+		}
+		LP_FORCEINLINE void	SetAlphaTestSetting(bool bEnabled, FCompareFuncType eFunc, uint8 nValue)
+		{
+			m_pStateCommon->bAlphaTestEnabled = bEnabled;
+			m_pStateCommon->typeAlphaRejectFunc = eFunc;
+			m_pStateCommon->nAlphaRejectValue = nValue;
+		}
+
+
+		LP_FORCEINLINE bool	GetStencilEnabled() const { return m_pStateCommon->bStencilEnabled; }
+		LP_FORCEINLINE void	SetStencilEnabled(const bool& bEnabled) { m_pStateCommon->bStencilEnabled = bEnabled; }
+		LP_FORCEINLINE FCompareFuncType GetStencilFunc() const { return m_pStateCommon->typeStencilFunc; }
+		LP_FORCEINLINE void	SetStencilFunc(const FCompareFuncType& func) { m_pStateCommon->typeStencilFunc = func; }
+		LP_FORCEINLINE uint32 GetStencilRefValue() const { return m_pStateCommon->nStencilRefValue; }
+		LP_FORCEINLINE void	SetStencilRefValue(const uint32& n)	{ m_pStateCommon->nStencilRefValue = n; }
+		LP_FORCEINLINE uint32 GetStencilMask() const { return m_pStateCommon->nStencilMask; }
+		LP_FORCEINLINE void	SetStencilMask(const uint32& n)	{ m_pStateCommon->nStencilMask = n; }
+		LP_FORCEINLINE FStencilOPType GetStencilFailOP() const { return m_pStateCommon->typeStencilFailOP; }
+		LP_FORCEINLINE void	SetStencilFailOP(const FStencilOPType& func) { m_pStateCommon->typeStencilFailOP = func; }
+		LP_FORCEINLINE FStencilOPType GetStencilDepthFailOP() const { return m_pStateCommon->typeStencilDepthFailOP; }
+		LP_FORCEINLINE void	SetStencilDepthFailOP(const FStencilOPType& func)	{ m_pStateCommon->typeStencilDepthFailOP = func; }
+		LP_FORCEINLINE FStencilOPType GetStencilPassOP() const { return m_pStateCommon->typeStencilPassOP; }
+		LP_FORCEINLINE void	SetStencilPassOP(const FStencilOPType& func) { m_pStateCommon->typeStencilPassOP = func; }
+		LP_FORCEINLINE bool	GetStencilTwoSidedEnabled() const { return m_pStateCommon->bStencilTwoSidedEnabled; }
+		LP_FORCEINLINE void	SetStencilTwoSidedEnabled(const bool& bEnabled) { m_pStateCommon->bStencilTwoSidedEnabled = bEnabled; }
+		LP_FORCEINLINE void	GetStencilSetting(bool& bEnabled, FCompareFuncType& eType,
+											  uint32& nRefValue, uint32& nMask,
+											  FStencilOPType& eFailOP, FStencilOPType& eDepthFailOP, FStencilOPType& ePassOP,
+											  bool& bTwoSided) const
+		{
+			bEnabled = m_pStateCommon->bStencilEnabled;
+			eType = m_pStateCommon->typeStencilFunc;
+			nRefValue = m_pStateCommon->nStencilRefValue;
+			nMask = m_pStateCommon->nStencilMask;
+			eFailOP = m_pStateCommon->typeStencilFailOP;
+			eDepthFailOP = m_pStateCommon->typeStencilDepthFailOP;
+			ePassOP	= m_pStateCommon->typeStencilPassOP;
+			bTwoSided = m_pStateCommon->bStencilTwoSidedEnabled;
+		}
+		LP_FORCEINLINE void	SetStencilSetting(bool bEnabled, FCompareFuncType eType,
+											  uint32 nRefValue, uint32 nMask,
+											  FStencilOPType eFailOP, FStencilOPType eDepthFailOP, FStencilOPType ePassOP,
+											  bool bTwoSided)
+		{
+			m_pStateCommon->bStencilEnabled = bEnabled;
+			m_pStateCommon->typeStencilFunc = eType;		  
+			m_pStateCommon->nStencilRefValue = nRefValue;	  
+			m_pStateCommon->nStencilMask = nMask;		  
+			m_pStateCommon->typeStencilFailOP = eFailOP;		  
+			m_pStateCommon->typeStencilDepthFailOP = eDepthFailOP;  
+			m_pStateCommon->typeStencilPassOP = ePassOP;		  
+			m_pStateCommon->bStencilTwoSidedEnabled = bTwoSided;
+		}
+
+		LP_FORCEINLINE bool	GetScissorTestEnabled() const { return m_pStateCommon->bScissorTestEnabled; }
+		LP_FORCEINLINE void	SetScissorTestEnabled(const bool& bEnabled) { m_pStateCommon->bScissorTestEnabled = bEnabled; }
+		LP_FORCEINLINE void	GetScissorTestParam(uint32& nLeft, uint32& nTop, uint32& nRight, uint32& nBottom)
+		{
+			nLeft = m_pStateCommon->nScissorTest_Left;
+			nTop = m_pStateCommon->nScissorTest_Top;
+			nRight = m_pStateCommon->nScissorTest_Right;
+			nBottom = m_pStateCommon->nScissorTest_Bottom;
+		}
+		LP_FORCEINLINE void	SetScissorTestParam(bool bEnabled, uint32 nLeft, uint32 nTop, uint32 nRight, uint32 nBottom)
+		{
+			m_pStateCommon->bScissorTestEnabled = bEnabled;
+			m_pStateCommon->nScissorTest_Left = nLeft;
+			m_pStateCommon->nScissorTest_Top = nTop;
+			m_pStateCommon->nScissorTest_Right = nRight;
+			m_pStateCommon->nScissorTest_Bottom = nBottom;
+		}	
+
 		
 		LP_FORCEINLINE bool	GetSceneBlendingEnabled() const	{ return m_pStateCommon->bSceneBlendingEnabled; }
 		LP_FORCEINLINE void	SetSceneBlendingEnabled(const bool& bEnabled) { m_pStateCommon->bSceneBlendingEnabled = bEnabled; }
@@ -329,68 +373,30 @@ namespace LostPeter
 			m_pStateCommon->typeSceneBlendingFactorDst2 = eDst2;
 		}
 
-		LP_FORCEINLINE bool	GetStencilEnabled() const { return m_pStateCommon->bStencilEnabled; }
-		LP_FORCEINLINE void	SetStencilEnabled(const bool& bEnabled) { m_pStateCommon->bStencilEnabled = bEnabled; }
-		LP_FORCEINLINE FCompareFuncType GetStencilFunc() const { return m_pStateCommon->typeStencilFunc; }
-		LP_FORCEINLINE void	SetStencilFunc(const FCompareFuncType& func) { m_pStateCommon->typeStencilFunc = func; }
-		LP_FORCEINLINE uint32 GetStencilRefValue() const { return m_pStateCommon->nStencilRefValue; }
-		LP_FORCEINLINE void	SetStencilRefValue(const uint32& n)	{ m_pStateCommon->nStencilRefValue = n; }
-		LP_FORCEINLINE uint32 GetStencilMask() const { return m_pStateCommon->nStencilMask; }
-		LP_FORCEINLINE void	SetStencilMask(const uint32& n)	{ m_pStateCommon->nStencilMask = n; }
-		LP_FORCEINLINE FStencilOPType GetStencilFailOP() const { return m_pStateCommon->typeStencilFailOP; }
-		LP_FORCEINLINE void	SetStencilFailOP(const FStencilOPType& func) { m_pStateCommon->typeStencilFailOP = func; }
-		LP_FORCEINLINE FStencilOPType GetStencilDepthFailOP() const { return m_pStateCommon->typeStencilDepthFailOP; }
-		LP_FORCEINLINE void	SetStencilDepthFailOP(const FStencilOPType& func)	{ m_pStateCommon->typeStencilDepthFailOP = func; }
-		LP_FORCEINLINE FStencilOPType GetStencilPassOP() const { return m_pStateCommon->typeStencilPassOP; }
-		LP_FORCEINLINE void	SetStencilPassOP(const FStencilOPType& func) { m_pStateCommon->typeStencilPassOP = func; }
-		LP_FORCEINLINE bool	GetStencilTwoSidedEnabled() const { return m_pStateCommon->bStencilTwoSidedEnabled; }
-		LP_FORCEINLINE void	SetStencilTwoSidedEnabled(const bool& bEnabled) { m_pStateCommon->bStencilTwoSidedEnabled = bEnabled; }
-		LP_FORCEINLINE void	GetStencilSetting(bool& bEnabled, FCompareFuncType& eType,
-											  uint32& nRefValue, uint32& nMask,
-											  FStencilOPType& eFailOP, FStencilOPType& eDepthFailOP, FStencilOPType& ePassOP,
-											  bool& bTwoSided) const
-		{
-			bEnabled = m_pStateCommon->bStencilEnabled;
-			eType = m_pStateCommon->typeStencilFunc;
-			nRefValue = m_pStateCommon->nStencilRefValue;
-			nMask = m_pStateCommon->nStencilMask;
-			eFailOP = m_pStateCommon->typeStencilFailOP;
-			eDepthFailOP = m_pStateCommon->typeStencilDepthFailOP;
-			ePassOP	= m_pStateCommon->typeStencilPassOP;
-			bTwoSided = m_pStateCommon->bStencilTwoSidedEnabled;
-		}
-		LP_FORCEINLINE void	SetStencilSetting(bool bEnabled, FCompareFuncType eType,
-											  uint32 nRefValue, uint32 nMask,
-											  FStencilOPType eFailOP, FStencilOPType eDepthFailOP, FStencilOPType ePassOP,
-											  bool bTwoSided)
-		{
-			m_pStateCommon->bStencilEnabled = bEnabled;
-			m_pStateCommon->typeStencilFunc = eType;		  
-			m_pStateCommon->nStencilRefValue = nRefValue;	  
-			m_pStateCommon->nStencilMask = nMask;		  
-			m_pStateCommon->typeStencilFailOP = eFailOP;		  
-			m_pStateCommon->typeStencilDepthFailOP = eDepthFailOP;  
-			m_pStateCommon->typeStencilPassOP = ePassOP;		  
-			m_pStateCommon->bStencilTwoSidedEnabled = bTwoSided;
-		}
+		
+		LP_FORCEINLINE bool	GetColorRWriteEnabled() const { return m_pStateCommon->bColorRWriteEnabled; }
+		LP_FORCEINLINE void	SetColorRWriteEnabled(const bool& bEnabled) { m_pStateCommon->bColorRWriteEnabled = bEnabled; }
+		LP_FORCEINLINE bool	GetColorGWriteEnabled() const { return m_pStateCommon->bColorGWriteEnabled; }
+		LP_FORCEINLINE void	SetColorGWriteEnabled(const bool& bEnabled) { m_pStateCommon->bColorGWriteEnabled = bEnabled; }
+		LP_FORCEINLINE bool	GetColorBWriteEnabled() const { return m_pStateCommon->bColorBWriteEnabled; }
+		LP_FORCEINLINE void	SetColorBWriteEnabled(const bool& bEnabled) { m_pStateCommon->bColorBWriteEnabled = bEnabled; }
+		LP_FORCEINLINE bool	GetColorAWriteEnabled() const { return m_pStateCommon->bColorAWriteEnabled; }
+		LP_FORCEINLINE void	SetColorAWriteEnabled(const bool& bEnabled) { m_pStateCommon->bColorAWriteEnabled = bEnabled; }
 
-		LP_FORCEINLINE bool	GetScissorTestEnabled() const { return m_pStateCommon->bScissorTestEnabled; }
-		LP_FORCEINLINE void	SetScissorTestEnabled(const bool& bEnabled) { m_pStateCommon->bScissorTestEnabled = bEnabled; }
-		LP_FORCEINLINE void	GetScissorTestParam(uint32& nLeft, uint32& nTop, uint32& nRight, uint32& nBottom)
-		{
-			nLeft = m_pStateCommon->nScissorTest_Left;
-			nTop = m_pStateCommon->nScissorTest_Top;
-			nRight = m_pStateCommon->nScissorTest_Right;
-			nBottom = m_pStateCommon->nScissorTest_Bottom;
+		LP_FORCEINLINE void	GetColorWriteEnabled(bool& r, bool& g, bool& b, bool& a) const					
+		{ 
+			r = m_pStateCommon->bColorRWriteEnabled;
+			g = m_pStateCommon->bColorGWriteEnabled;
+			b = m_pStateCommon->bColorBWriteEnabled;
+			a = m_pStateCommon->bColorAWriteEnabled;
 		}
-		LP_FORCEINLINE void	SetScissorTestParam(bool bEnabled, uint32 nLeft, uint32 nTop, uint32 nRight, uint32 nBottom)
+		LP_FORCEINLINE void	SetColorWriteEnabled(bool r, bool g, bool b, bool a)  	
 		{
-			m_pStateCommon->bScissorTestEnabled = bEnabled;
-			m_pStateCommon->nScissorTest_Left = nLeft;
-			m_pStateCommon->nScissorTest_Top = nTop;
-			m_pStateCommon->nScissorTest_Right = nRight;
-			m_pStateCommon->nScissorTest_Bottom = nBottom;
-		}				
+			m_pStateCommon->bColorRWriteEnabled = r;
+			m_pStateCommon->bColorGWriteEnabled = g;
+			m_pStateCommon->bColorBWriteEnabled = b;
+			m_pStateCommon->bColorAWriteEnabled = a;
+		}
 
 	////StateLighting
 		LP_FORCEINLINE FLightingType GetLightingType() const { return m_pStateLighting->typeLighting; }

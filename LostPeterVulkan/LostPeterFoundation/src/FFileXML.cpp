@@ -217,6 +217,38 @@ namespace LostPeterFoundation
         b = FUtilString::ParserBool(pAttribute->GetValue());
         return true;
     }
+    bool FXMLElement::ParserAttribute_Int8(const String& strName, int8& i)
+    {
+        FXMLAttribute* pAttribute = FindAttribute(strName);
+        if (pAttribute == nullptr)
+            return false;
+        i = FUtilString::ParserInt8(pAttribute->GetValue());
+        return true;
+    }
+    bool FXMLElement::ParserAttribute_UInt8(const String& strName, uint8& u)
+    {
+        FXMLAttribute* pAttribute = FindAttribute(strName);
+        if (pAttribute == nullptr)
+            return false;
+        u = FUtilString::ParserUInt8(pAttribute->GetValue());
+        return true;
+    }
+    bool FXMLElement::ParserAttribute_Int16(const String& strName, int16& i)
+    {
+        FXMLAttribute* pAttribute = FindAttribute(strName);
+        if (pAttribute == nullptr)
+            return false;
+        i = FUtilString::ParserInt16(pAttribute->GetValue());
+        return true;
+    }
+    bool FXMLElement::ParserAttribute_UInt16(const String& strName, uint16& u)
+    {
+        FXMLAttribute* pAttribute = FindAttribute(strName);
+        if (pAttribute == nullptr)
+            return false;
+        u = FUtilString::ParserUInt16(pAttribute->GetValue());
+        return true;
+    }
     bool FXMLElement::ParserAttribute_Int(const String& strName, int32& i)
     {
         FXMLAttribute* pAttribute = FindAttribute(strName);
@@ -373,6 +405,22 @@ namespace LostPeterFoundation
     void FXMLElement::SaveAttribute_Bool(const String& strName, bool bValue)
     {
         AddAttribute(strName, FUtilString::SaveBool(bValue));
+    }
+    void FXMLElement::SaveAttribute_Int8(const String& strName, int8 nValue)
+    {
+        AddAttribute(strName, FUtilString::SaveInt8(nValue));
+    }
+    void FXMLElement::SaveAttribute_UInt8(const String& strName, uint8 nValue)
+    {
+        AddAttribute(strName, FUtilString::SaveUInt8(nValue));
+    }
+    void FXMLElement::SaveAttribute_Int16(const String& strName, int16 nValue)
+    {
+        AddAttribute(strName, FUtilString::SaveInt16(nValue));
+    }
+    void FXMLElement::SaveAttribute_UInt16(const String& strName, uint16 nValue)
+    {
+        AddAttribute(strName, FUtilString::SaveUInt16(nValue));
     }
     void FXMLElement::SaveAttribute_Int(const String& strName, int32 nValue)
     {

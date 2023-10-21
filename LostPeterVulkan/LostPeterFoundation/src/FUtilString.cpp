@@ -180,6 +180,38 @@ namespace LostPeterFoundation
 
         return bValue;
     }
+    int8 FUtilString::ParserInt8(const String& strValue)
+    {
+        int8 nValue = 0;
+        std::istringstream str(strValue.c_str());
+        str >> nValue;
+
+        return nValue;
+    }
+    uint8 FUtilString::ParserUInt8(const String& strValue)
+    {
+        uint8 nValue = 0;
+        std::istringstream str(strValue.c_str());
+        str >> nValue;
+
+        return nValue;
+    }
+    int16 FUtilString::ParserInt16(const String& strValue)
+    {
+        int16 nValue = 0;
+        std::istringstream str(strValue.c_str());
+        str >> nValue;
+
+        return nValue;
+    }
+    uint16 FUtilString::ParserUInt16(const String& strValue)
+    {
+        uint16 nValue = 0;
+        std::istringstream str(strValue.c_str());
+        str >> nValue;
+
+        return nValue;
+    }
     int32 FUtilString::ParserInt(const String& strValue)
     {
         int32 nValue = 0;
@@ -373,9 +405,25 @@ namespace LostPeterFoundation
     {
         strValue = SaveBool(bValue);
     }
+    void FUtilString::SaveInt8(String& strValue, int8 nValue)
+    {
+        strValue = SaveInt8(nValue);
+    }
+    void FUtilString::SaveUInt8(String& strValue, uint8 nValue)
+    {
+        strValue = SaveUInt8(nValue);
+    }
+    void FUtilString::SaveInt16(String& strValue, int16 nValue)
+    {
+        strValue = SaveInt16(nValue);
+    }
+    void FUtilString::SaveUInt16(String& strValue, uint16 nValue)
+    {
+        strValue = SaveUInt16(nValue);
+    }
     void FUtilString::SaveInt(String& strValue, int32 nValue)
     {
-    strValue = SaveInt(nValue);
+        strValue = SaveInt(nValue);
     }
     void FUtilString::SaveUInt(String& strValue, uint32 nValue)
     {
@@ -452,6 +500,30 @@ namespace LostPeterFoundation
         if (bValue)
             return "true";
         return "false";
+    }
+    String FUtilString::SaveInt8(int8 nValue)
+    {
+        std::ostringstream stream;
+        stream << nValue;
+        return stream.str();
+    }
+    String FUtilString::SaveUInt8(uint8 nValue)
+    {
+        std::ostringstream stream;
+        stream << nValue;
+        return stream.str();
+    }
+    String FUtilString::SaveInt16(int16 nValue)
+    {
+        std::ostringstream stream;
+        stream << nValue;
+        return stream.str();
+    }
+    String FUtilString::SaveUInt16(uint16 nValue)
+    {
+        std::ostringstream stream;
+        stream << nValue;
+        return stream.str();
     }
     String FUtilString::SaveInt(int32 nValue)
     {

@@ -69,7 +69,15 @@
 #include "ObjectManager.h"
 #include "Renderable.h"
 #include "RenderableIndirect.h"
+#include "RenderPass.h"
+#include "RenderPassManager.h"
+#include "RenderPipeline.h"
+#include "RenderPipelineForward.h"
+#include "RenderPipelineManager.h"
 #include "RenderState.h"
+#include "RenderTarget.h"
+#include "RenderTexture.h"
+#include "RenderTextureManager.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "SceneManagerEnumerator.h"
@@ -81,6 +89,7 @@
 #include "Texture.h"
 #include "TextureManager.h"
 #include "TextureSerializer.h"
+#include "Viewport.h"
 
 namespace LostPeter
 {	

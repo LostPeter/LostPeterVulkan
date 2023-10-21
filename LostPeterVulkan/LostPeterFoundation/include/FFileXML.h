@@ -128,6 +128,10 @@ namespace LostPeterFoundation
 
     public:
         bool ParserAttribute_Bool(const String& strName, bool& b);
+        bool ParserAttribute_Int8(const String& strName, int8& i);
+        bool ParserAttribute_UInt8(const String& strName, uint8& u);
+        bool ParserAttribute_Int16(const String& strName, int16& i);
+        bool ParserAttribute_UInt16(const String& strName, uint16& u);
         bool ParserAttribute_Int(const String& strName, int32& i);
         bool ParserAttribute_UInt(const String& strName, uint32& u);
         bool ParserAttribute_SizeT(const String& strName, size_t& s);
@@ -149,6 +153,10 @@ namespace LostPeterFoundation
         bool ParserAttribute_String(const String& strName, String& str);
 
         void SaveAttribute_Bool(const String& strName, bool bValue);
+        void SaveAttribute_Int8(const String& strName, int8 nValue);
+        void SaveAttribute_UInt8(const String& strName, uint8 nValue);
+        void SaveAttribute_Int16(const String& strName, int16 nValue);
+        void SaveAttribute_UInt16(const String& strName, uint16 nValue);
         void SaveAttribute_Int(const String& strName, int32 nValue);
         void SaveAttribute_UInt(const String& strName, uint32 nValue);
         void SaveAttribute_SizeT(const String& strName, size_t sValue);

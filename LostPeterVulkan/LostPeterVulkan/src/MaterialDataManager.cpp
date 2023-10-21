@@ -33,7 +33,7 @@ namespace LostPeter
     MaterialDataManager::MaterialDataManager()
         : Base("MaterialDataManager")
     {
-        m_pMaterialDataSerializer = new MaterialDataSerializer();
+        m_pMaterialDataSerializer = new MaterialDataSerializer(this);
     }
     MaterialDataManager::~MaterialDataManager()
     {

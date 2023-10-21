@@ -19,6 +19,8 @@ namespace LostPeter
     class utilExport MaterialDataManager : public FSingleton<MaterialDataManager>
                                          , public Base
     {
+        friend class MaterialDataSerializer;
+
     public:
         MaterialDataManager();
         virtual ~MaterialDataManager();

@@ -40,6 +40,10 @@ namespace LostPeterFoundation
 
     public:
         static bool	ParserBool(const String& strValue);
+        static int8 ParserInt8(const String& strValue);
+        static uint8 ParserUInt8(const String& strValue);
+        static int16 ParserInt16(const String& strValue);
+        static uint16 ParserUInt16(const String& strValue);
         static int32 ParserInt(const String& strValue);
         static uint32 ParserUInt(const String& strValue);
         static size_t ParserSizeT(const String& strValue);
@@ -60,6 +64,10 @@ namespace LostPeterFoundation
         static FMatrix4 ParserMatrix4(const String& strValue);
 
         static void	SaveBool(String& strValue, bool bValue);
+        static void	SaveInt8(String& strValue, int8 nValue);
+        static void	SaveUInt8(String& strValue, uint8 nValue);
+        static void	SaveInt16(String& strValue, int16 nValue);
+        static void	SaveUInt16(String& strValue, uint16 nValue);
         static void	SaveInt(String& strValue, int32 nValue);
         static void	SaveUInt(String& strValue, uint32 nValue);
         static void	SaveSizeT(String& strValue, size_t nValue);
@@ -80,6 +88,10 @@ namespace LostPeterFoundation
         static void	SaveMatrix4(String& strValue, const FMatrix4& mat4Value);
 
         static String SaveBool(bool bValue);
+        static String SaveInt8(int8 nValue);
+        static String SaveUInt8(uint8 nValue);
+        static String SaveInt16(int16 nValue);
+        static String SaveUInt16(uint16 nValue);
         static String SaveInt(int32 nValue);
         static String SaveUInt(uint32 nValue);
         static String SaveSizeT(size_t nValue);

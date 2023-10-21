@@ -603,6 +603,14 @@ namespace LostPeter
     class ObjectManager;
     class Renderable;
     class RenderableIndirect;
+    class RenderPass;
+    class RenderPassManager;
+    class RenderPipeline;
+    class RenderPipelineForward;
+    class RenderPipelineManager;
+    class RenderTarget;
+    class RenderTexture;
+    class RenderTextureManager;
     class RenderState;
     class Scene;
     class SceneManager;
@@ -615,7 +623,7 @@ namespace LostPeter
     class Texture;
     class TextureManager;
     class TextureSerializer;
-
+    class Viewport;
 
     typedef std::vector<MeshSub*> MeshSubPtrVector;
     typedef std::map<String, MeshSub*> MeshSubPtrMap;
@@ -632,6 +640,15 @@ namespace LostPeter
     typedef std::vector<Shader*> ShaderPtrVector;
     typedef std::map<String, Shader*> ShaderPtrMap;
     typedef std::map<uint32, ShaderPtrMap> ShaderGroupPtrMap;
+
+    typedef std::vector<RenderPass*> RenderPassPtrVector;
+    typedef std::map<String, RenderPass*> RenderPassPtrMap;
+
+    typedef std::vector<RenderPipeline*> RenderPipelinePtrVector;
+    typedef std::map<String, RenderPipeline*> RenderPipelinePtrMap;
+    
+    typedef std::vector<RenderTexture*> RenderTexturePtrVector;
+    typedef std::map<String, RenderTexture*> RenderTexturePtrMap;
 
     typedef std::vector<Material*> MaterialPtrVector;
     typedef std::map<String, Material*> MaterialPtrMap;
@@ -680,6 +697,10 @@ namespace LostPeter
     typedef std::map<String, Scene*> ScenePtrMap;
     typedef std::vector<SceneManager*> SceneManagerPtrVector;
     typedef std::map<String, SceneManager*> SceneManagerPtrMap;
+
+    typedef std::vector<Viewport*> ViewportPtrVector;
+    typedef std::map<String, Viewport*> ViewportPtrMap;
+    
 
 }; //LostPeter
 

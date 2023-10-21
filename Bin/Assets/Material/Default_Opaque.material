@@ -2,19 +2,22 @@
 <cfg_material_data>
 	<material_datas>
 		<material_data group="7001" name="Default_Opaque">
-			<state_common>
-				
-			</state_common>
-			<state_lighting>
+			<pass name="Pass_Opaque">
+				<state_common>
+					
+				</state_common>
+				<state_lighting>
+					<light_setting enable="false" lighting_type="Phong" />
+				</state_lighting>
+				<state_shader>
+					<vert name="" />
+					<frag name="" >
+						<state_texture>
 
-			</state_lighting>
-			<state_texture>
-				
-			</state_texture>
-			<state_shader>
-				<vert />
-				<frag />
-			</state_shader>
+						</state_texture>
+					</frag>
+				</state_shader>
+			</pass>
 		</material_data>
 	</material_datas>
 </cfg_material_data>

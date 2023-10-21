@@ -16,27 +16,36 @@
 
 namespace LostPeter
 {
-    class utilExport MaterialDataSerializer : public FSerializer
-                                            , public Base
+    class utilExport MaterialDataSerializer
     {
     public:
-        MaterialDataSerializer();
+        MaterialDataSerializer(MaterialDataManager* pMaterialDataManager);
         virtual ~MaterialDataSerializer();
 
     public:
-    
+        MaterialDataManager* m_pMaterialDataManager;
 
     public:
+        bool Parser(uint32 nGroup, const String& strName, MaterialData* pMaterialData, MaterialDataPtrVector* pRet = nullptr);
 
+		bool ParserXML(uint32 nGroup, const String& strName, MaterialDataPtrVector* pRet = nullptr);
+		bool ParserXML(const char* szFilePath, MaterialData* pMaterialData = nullptr, MaterialDataPtrVector* pRet = nullptr);
 
-    protected:
-        //File Content XML
-        virtual bool serializeXML();
-        virtual bool deserializeXML();
+		bool ParserBinary(uint32 nGroup, const String& strName, MaterialDataPtrVector* pRet = nullptr);
+		bool ParserBinary(const char* szFilePath, MaterialData* pMaterialData = nullptr, MaterialDataPtrVector* pRet = nullptr);
 
-        //File Content Binary
-        virtual bool serializeBinary();
-        virtual bool deserializeBinary();
+    public:
+        bool SaveXML(Material* pMaterial);
+		bool SaveXML(uint32 nGroup, Material* pMaterial);
+		bool SaveXML(Mesh* pMesh);
+		bool SaveXML(Object* pObject, const String& strPath);
+		bool SaveXML(const char* szFilePath, MaterialPtrVector& aMA);
+		
+		bool SaveBinary(Material* pMaterial);
+		bool SaveBinary(uint32 nGroup, Material* pMaterial);
+		bool SaveBinary(Mesh* pMesh);
+		bool SaveBinary(Object* pObject, const String& strPath);
+		bool SaveBinary(const char* szFilePath, MaterialPtrVector& aMA);
     };
 
 }; //LostPeter

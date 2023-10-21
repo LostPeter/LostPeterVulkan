@@ -598,7 +598,7 @@ namespace LostPeterFoundation
 	{
 		F_Polygon_Point = 0,	                        //0: Point
 		F_Polygon_WireFrame,				            //1: WireFrame
-		F_Polygon_Solid,					            //2: Soild
+		F_Polygon_Solid,					            //2: Solid
 
         F_Polygon_Count,
 	};
