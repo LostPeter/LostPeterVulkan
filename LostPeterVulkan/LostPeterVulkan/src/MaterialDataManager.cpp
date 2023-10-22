@@ -64,7 +64,6 @@ namespace LostPeter
 		if (bNew)
 		{
 			Material* pMaterialDefault = MaterialManager::GetSingleton().GetMaterial_Default();
-			pMaterialData->SerializerFrom(pMaterialDefault->GetRenderState());
 		}
 		else
 		{

@@ -125,13 +125,13 @@ namespace LostPeter
 
 
 
-        static bool s_parserXML_StateCommon(FXMLElement* pStateCommon, RenderState::StateCommon& sc)
+        static bool s_parserXML_StateCommon(FXMLElement* pStateCommon, RenderStateCommon* pSC)
         {
-            F_Assert(pStateCommon && "s_parserXML_StateCommon")
+            F_Assert(pStateCommon && pSC && "s_parserXML_StateCommon")
 
             FXMLAttribute* pAttr = nullptr;
-            int count_child = pStateCommon->GetElementChildrenCount();
-            for (int i = 0; i < count_child; i++)
+            int count_state_items = pStateCommon->GetElementChildrenCount();
+            for (int i = 0; i < count_state_items; i++)
             {
                 FXMLElement* pChild = pStateCommon->GetElementChild(i);
                 const String& nameTag = pChild->GetName();
@@ -142,7 +142,7 @@ namespace LostPeter
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_TYPE);
                     if (pAttr != nullptr)
                     {
-                        sc.typePolygon = F_ParsePolygonType(pAttr->GetValue());
+                        pSC->typePolygon = F_ParsePolygonType(pAttr->GetValue());
                     }
                 }
                 //2> culling_type
@@ -151,141 +151,141 @@ namespace LostPeter
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_TYPE);
                     if (pAttr != nullptr)
                     {
-                        sc.typeCulling = F_ParseCullingType(pAttr->GetValue());
+                        pSC->typeCulling = F_ParseCullingType(pAttr->GetValue());
                     }
                 }
                 //3> point_setting
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_POINT_SETTING)
                 {
-                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_SIZE, sc.fPointSize);
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_SPRITE_ENABLE, sc.bPointSpriteEnabled);
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_ATTENU_ENABLE, sc.bPointAttenuEnabled);
-                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_CONSTANT, sc.fPointAttenuConstant);
-                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_LINEAR, sc.fPointAttenuLinear);
-                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_QUADRATIC, sc.fPointAttenuQuadratic);
-                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_MIN_SIZE, sc.fPointMinSize);
-                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_MAX_SIZE, sc.fPointMaxSize);
+                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_SIZE, pSC->fPointSize);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_SPRITE_ENABLE, pSC->bPointSpriteEnabled);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_ATTENU_ENABLE, pSC->bPointAttenuEnabled);
+                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_CONSTANT, pSC->fPointAttenuConstant);
+                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_LINEAR, pSC->fPointAttenuLinear);
+                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_QUADRATIC, pSC->fPointAttenuQuadratic);
+                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_MIN_SIZE, pSC->fPointMinSize);
+                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_POINT_MAX_SIZE, pSC->fPointMaxSize);
                 }
                 //4> depth_setting
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_DEPTH_SETTING)
                 {
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_DEPTH_TEST_ENABLE, sc.bDepthTestEnabled);
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_DEPTH_WRITE_ENABLE, sc.bDepthWriteEnabled);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_DEPTH_TEST_ENABLE, pSC->bDepthTestEnabled);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_DEPTH_WRITE_ENABLE, pSC->bDepthWriteEnabled);
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_COMPARE_FUNC);
                     if (pAttr != nullptr)
                     {
-                        sc.typeDepthFunc = F_ParseCompareFuncType(pAttr->GetValue());
+                        pSC->typeDepthFunc = F_ParseCompareFuncType(pAttr->GetValue());
                     }
-                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_DEPTH_BIAS_CONSTANT, sc.fDepthBiasConstant);
-                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_DEPTH_BIAS_SLOPE_SCALE, sc.fDepthBiasSlopeScale);
+                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_DEPTH_BIAS_CONSTANT, pSC->fDepthBiasConstant);
+                    pChild->ParserAttribute_Float(MATERIAL_DATA_TAG_ATTRIBUTE_DEPTH_BIAS_SLOPE_SCALE, pSC->fDepthBiasSlopeScale);
                 }
                 //5> stencil_setting
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_STENCIL_SETTING)
                 {
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE, sc.bStencilEnabled);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE, pSC->bStencilEnabled);
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_COMPARE_FUNC);
                     if (pAttr != nullptr)
                     {
-                        sc.typeStencilFunc = F_ParseCompareFuncType(pAttr->GetValue());
+                        pSC->typeStencilFunc = F_ParseCompareFuncType(pAttr->GetValue());
                     }
-                    pChild->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_VALUE, sc.nStencilRefValue);
-                    pChild->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_MASK, sc.nStencilMask);
+                    pChild->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_VALUE, pSC->nStencilRefValue);
+                    pChild->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_MASK, pSC->nStencilMask);
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_FAIL_OP);
                     if (pAttr != nullptr)
                     {
-                        sc.typeStencilFailOP = F_ParseStencilOPType(pAttr->GetValue());
+                        pSC->typeStencilFailOP = F_ParseStencilOPType(pAttr->GetValue());
                     }
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_DEPTH_FAIL_OP);
                     if (pAttr != nullptr)
                     {
-                        sc.typeStencilDepthFailOP = F_ParseStencilOPType(pAttr->GetValue());
+                        pSC->typeStencilDepthFailOP = F_ParseStencilOPType(pAttr->GetValue());
                     }
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_PASS_OP);
                     if (pAttr != nullptr)
                     {
-                        sc.typeStencilPassOP = F_ParseStencilOPType(pAttr->GetValue());
+                        pSC->typeStencilPassOP = F_ParseStencilOPType(pAttr->GetValue());
                     }
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_TWO_SIDED_ENABLE, sc.bStencilTwoSidedEnabled);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_STENCIL_TWO_SIDED_ENABLE, pSC->bStencilTwoSidedEnabled);
                 }
                 //6> scissor_test
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_SCISSOR_TEST)
                 {
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE, sc.bScissorTestEnabled);
-                    pChild->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_LEFT, sc.nScissorTest_Left);
-                    pChild->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_TOP, sc.nScissorTest_Top);
-                    pChild->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_RIGHT, sc.nScissorTest_Right);
-                    pChild->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_BOTTOM, sc.nScissorTest_Bottom);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE, pSC->bScissorTestEnabled);
+                    pChild->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_LEFT, pSC->nScissorTest_Left);
+                    pChild->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_TOP, pSC->nScissorTest_Top);
+                    pChild->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_RIGHT, pSC->nScissorTest_Right);
+                    pChild->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_SCISSOR_TEST_BOTTOM, pSC->nScissorTest_Bottom);
                 }
                 //7> alpha_test
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_ALPHA_TEST)
                 {
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE, sc.bAlphaTestEnabled);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE, pSC->bAlphaTestEnabled);
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_COMPARE_FUNC);
                     if (pAttr != nullptr)
                     {
-                        sc.typeAlphaRejectFunc = F_ParseCompareFuncType(pAttr->GetValue());
+                        pSC->typeAlphaRejectFunc = F_ParseCompareFuncType(pAttr->GetValue());
                     }
-                    pChild->ParserAttribute_UInt8(MATERIAL_DATA_TAG_ATTRIBUTE_VALUE, sc.nAlphaRejectValue);
+                    pChild->ParserAttribute_UInt8(MATERIAL_DATA_TAG_ATTRIBUTE_VALUE, pSC->nAlphaRejectValue);
                 }
                 //8> scene_blending_setting
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_SCENE_BLENDING_SETTING)
                 {
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE, sc.bSceneBlendingEnabled);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_ENABLE, pSC->bSceneBlendingEnabled);
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_TYPE);
                     if (pAttr != nullptr)
                     {
-                        sc.typeSceneBlending = F_ParseSceneBlendingType(pAttr->GetValue());
+                        pSC->typeSceneBlending = F_ParseSceneBlendingType(pAttr->GetValue());
                     }
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_OP_TYPE);
                     if (pAttr != nullptr)
                     {
-                        sc.typeSceneBlendingOP = F_ParseSceneBlendingOPType(pAttr->GetValue());
+                        pSC->typeSceneBlendingOP = F_ParseSceneBlendingOPType(pAttr->GetValue());
                     }
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SOURCE);
                     if (pAttr != nullptr)
                     {
-                        sc.typeSceneBlendingFactorSrc = F_ParseSceneBlendingFactorType(pAttr->GetValue());
+                        pSC->typeSceneBlendingFactorSrc = F_ParseSceneBlendingFactorType(pAttr->GetValue());
                     }
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_DST);
                     if (pAttr != nullptr)
                     {
-                        sc.typeSceneBlendingFactorDst = F_ParseSceneBlendingFactorType(pAttr->GetValue());
+                        pSC->typeSceneBlendingFactorDst = F_ParseSceneBlendingFactorType(pAttr->GetValue());
                     }
 
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_SEPERATE_ENABLE, sc.bSceneBlendingSeperateEnabled);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_SEPERATE_ENABLE, pSC->bSceneBlendingSeperateEnabled);
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SCENE_BLENDING_OP2_TYPE);
                     if (pAttr != nullptr)
                     {
-                        sc.typeSceneBlendingOP2 = F_ParseSceneBlendingOPType(pAttr->GetValue());
+                        pSC->typeSceneBlendingOP2 = F_ParseSceneBlendingOPType(pAttr->GetValue());
                     }
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_SOURCE2);
                     if (pAttr != nullptr)
                     {
-                        sc.typeSceneBlendingFactorSrc2 = F_ParseSceneBlendingFactorType(pAttr->GetValue());
+                        pSC->typeSceneBlendingFactorSrc2 = F_ParseSceneBlendingFactorType(pAttr->GetValue());
                     }
                     pAttr = pChild->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_DST2);
                     if (pAttr != nullptr)
                     {
-                        sc.typeSceneBlendingFactorDst2 = F_ParseSceneBlendingFactorType(pAttr->GetValue());
+                        pSC->typeSceneBlendingFactorDst2 = F_ParseSceneBlendingFactorType(pAttr->GetValue());
                     }
                 }
                 //9> color_write
                 else if (nameTag == MATERIAL_DATA_TAG_STATE_COMMON_COLOR_WRITE)
                 {
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_COLOR_R_ENABLE, sc.bColorRWriteEnabled);
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_COLOR_G_ENABLE, sc.bColorGWriteEnabled);
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_COLOR_B_ENABLE, sc.bColorBWriteEnabled);
-                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_COLOR_A_ENABLE, sc.bColorAWriteEnabled);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_COLOR_R_ENABLE, pSC->bColorRWriteEnabled);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_COLOR_G_ENABLE, pSC->bColorGWriteEnabled);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_COLOR_B_ENABLE, pSC->bColorBWriteEnabled);
+                    pChild->ParserAttribute_Bool(MATERIAL_DATA_TAG_ATTRIBUTE_COLOR_A_ENABLE, pSC->bColorAWriteEnabled);
                 }
             }
             return true;
         }
-        static bool s_parserXML_StateLighting(FXMLElement* pStateLighting, RenderState::StateLighting& sl)
+        static bool s_parserXML_StateLighting(FXMLElement* pStateLighting, RenderStateLighting* pSL)
         {
-            F_Assert(pStateLighting && "s_parserXML_StateLighting")
+            F_Assert(pStateLighting && pSL && "s_parserXML_StateLighting")
 
-            int count_child = pStateLighting->GetElementChildrenCount();
-            for (int i = 0; i < count_child; i++)
+            int count_lighting_items = pStateLighting->GetElementChildrenCount();
+            for (int i = 0; i < count_lighting_items; i++)
             {
                 FXMLElement* pChild = pStateLighting->GetElementChild(i);
                 
@@ -293,34 +293,68 @@ namespace LostPeter
             }
             return true;
         }
-        static bool s_parserXML_StateTexture(FXMLElement* pStateTexture, RenderState::StateTexture& st)
-        {
-            F_Assert(pStateTexture && "s_parserXML_StateTexture")
-
-            int count_child = pStateTexture->GetElementChildrenCount();
-            for (int i = 0; i < count_child; i++)
+            static bool s_parserXML_StateTexture(FXMLElement* pStateTexture, RenderStateTexture* pST)
             {
-                FXMLElement* pChild = pStateTexture->GetElementChild(i);
-                
-            }
-            return true;
-        }
-        static bool s_parserXML_StateShader(FXMLElement* pStateShader, RenderState::StateShader& ss)
-        {
-            F_Assert(pStateShader && "s_parserXML_StateShader")
+                F_Assert(pStateTexture && pST && "s_parserXML_StateTexture")
 
-            int count_child = pStateShader->GetElementChildrenCount();
-            for (int i = 0; i < count_child; i++)
+                int count_texture_items = pStateTexture->GetElementChildrenCount();
+                for (int i = 0; i < count_texture_items; i++)
+                {
+                    FXMLElement* pChild = pStateTexture->GetElementChild(i);
+                    
+                }
+                return true;
+            }
+        static bool s_parserXML_StateShader(FXMLElement* pStateShader, RenderStateShader* pSS)
+        {
+            F_Assert(pStateShader && pSS && "s_parserXML_StateShader")
+
+            int count_shader_items = pStateShader->GetElementChildrenCount();
+            for (int i = 0; i < count_shader_items; i++)
             {
                 FXMLElement* pChild = pStateShader->GetElementChild(i);
                 
+
             }
             return true;
         }
 
 
-    static bool s_parserXML_Pass(FXMLElement* pElementPass, MaterialData* pMaterialData)
+    static bool s_parserXML_Pass(FXMLElement* pElementPass, RenderState* pRenderState)
     {
+        F_Assert(pElementPass && pRenderState && "s_parserXML_Pass")
+
+        int count_pass_items = pElementPass->GetElementChildrenCount();
+        for (int i = 0; i < count_pass_items; i++)
+        {
+            FXMLElement* pState = pElementPass->GetElementChild(i);
+            
+            const String& strNameState = pState->GetName();
+            if (strNameState == MATERIAL_DATA_TAG_STATE_COMMON)
+            {
+                if (!s_parserXML_StateCommon(pState, pRenderState->GetStateCommon()))
+                {
+                    F_LogError("*********************** s_parserXML_Pass: Parse material data state [RenderStateCommon] failed !");
+                    return false;
+                }
+            }
+            else if (strNameState == MATERIAL_DATA_TAG_STATE_LIGHTING)
+            {
+                if (!s_parserXML_StateLighting(pState, pRenderState->GetStateLighting()))
+                {
+                    F_LogError("*********************** s_parserXML_Pass: Parse material data state [RenderStateLighting] failed !");
+                    return false;
+                }
+            }
+            else if (strNameState == MATERIAL_DATA_TAG_STATE_SHADER)
+            {
+                if (!s_parserXML_StateShader(pState, pRenderState->GetStateShader()))
+                {
+                    F_LogError("*********************** s_parserXML_Pass: Parse material data state [RenderStateShader] failed !");
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
@@ -328,54 +362,38 @@ namespace LostPeter
     {
         F_Assert(pElementMaterialData && pMaterialData && "s_parserXML_MaterialData")
 
-        
-
-        int count_child = pElementMaterialData->GetElementChildrenCount();
-		for (int i = 0; i < count_child; i++)
+        FXMLAttribute* pAttr = nullptr;
+        int count_material_data = pElementMaterialData->GetElementChildrenCount();
+		for (int i = 0; i < count_material_data; i++)
         {
-            FXMLElement* pState = pElementMaterialData->GetElementChild(i);
+            FXMLElement* pElementPass = pElementMaterialData->GetElementChild(i);
 
-            const String& strNameState = pState->GetName();
-            if (strNameState == MATERIAL_DATA_TAG_STATE_COMMON)
+            //name
+            pAttr = pElementPass->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_NAME);
+            if (pAttr == nullptr)
             {
-                RenderState::StateCommon sc;
-                if (!s_parserXML_StateCommon(pState, sc))
-                {
-                    F_LogError("*********************** s_parserXML_MaterialData: Parse materal data state [StateCommon] failed !");
-                    return false;
-                }
-                pMaterialData->SerializerFrom(&sc);
+                F_LogError("*********************** s_parserXML_MaterialData: Can not find 'name' Attr from state: [%s] !", pMaterialData->GetName().c_str());
+                return false;
             }
-            else if (strNameState == MATERIAL_DATA_TAG_STATE_LIGHTING)
+            const String& strNamePass = pAttr->GetValue();
+            //type
+            pAttr = pElementPass->FindAttribute(MATERIAL_DATA_TAG_ATTRIBUTE_TYPE);
+            if (pAttr == nullptr)
             {
-                RenderState::StateLighting sl;
-                if (!s_parserXML_StateLighting(pState, sl))
-                {
-                    F_LogError("*********************** s_parserXML_MaterialData: Parse materal data state [StateLighting] failed !");
-                    return false;
-                }
-                pMaterialData->SerializerFrom(&sl);
+                F_LogError("*********************** s_parserXML_MaterialData: Can not find 'type' Attr from state: [%s] !", pMaterialData->GetName().c_str());
+                return false;
             }
-            else if (strNameState == MATERIAL_DATA_TAG_STATE_TEXTURE)
+            FRenderPassType typeRenderPass = F_ParseRenderPassType(pAttr->GetValue());
+
+            //State
+            RenderState* pRenderState = new RenderState(strNamePass, typeRenderPass);
+            if (!s_parserXML_Pass(pElementPass, pRenderState))
             {
-                RenderState::StateTexture st;
-                if (!s_parserXML_StateTexture(pState, st))
-                {
-                    F_LogError("*********************** s_parserXML_MaterialData: Parse materal data state [StateTexture] failed !");
-                    return false;
-                }
-                pMaterialData->SerializerFrom(&st);
+                F_DELETE(pRenderState)
+                F_LogError("*********************** s_parserXML_MaterialData: s_parserXML_Pass failed, [%s] !", pMaterialData->GetName().c_str());
+                return false;
             }
-            else if (strNameState == MATERIAL_DATA_TAG_STATE_SHADER)
-            {
-                RenderState::StateShader ss;
-                if (!s_parserXML_StateShader(pState, ss))
-                {
-                    F_LogError("*********************** s_parserXML_MaterialData: Parse materal data state [StateShader] failed !");
-                    return false;
-                }
-                pMaterialData->SerializerFrom(&ss);
-            }
+            pMaterialData->AddRenderState(pRenderState);
         }
 
         return true;
@@ -422,8 +440,8 @@ namespace LostPeter
 
         FXMLDocument* pXMLDocument = xml.GetXMLDocument();
         FXMLElement* pRoot = pXMLDocument->GetElementRoot();
-        int count_child = pRoot->GetElementChildrenCount();
-		for (int i = 0; i < count_child; i++)
+        int count_material_datas = pRoot->GetElementChildrenCount();
+		for (int i = 0; i < count_material_datas; i++)
         {
             FXMLElement* pElementMaterialData = pRoot->GetElementChild(i);
 

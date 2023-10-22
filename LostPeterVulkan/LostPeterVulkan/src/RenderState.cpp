@@ -14,8 +14,8 @@
 
 namespace LostPeter
 {
-    //////////////////////////////////// StateCommon ////////////////////////////////////
-    RenderState::StateCommon::StateCommon()
+    //////////////////////////////////// RenderStateCommon //////////////////////////////
+    RenderStateCommon::RenderStateCommon()
 		: typePolygon(F_Polygon_Solid)
 		, typeCulling(F_Culling_ClockWise)
 		, fPointSize(64.0f)
@@ -64,25 +64,26 @@ namespace LostPeter
 
 	}
 
-	RenderState::StateCommon::~StateCommon()
+	RenderStateCommon::~RenderStateCommon()
 	{
 
 	}
 
-	void RenderState::StateCommon::CopyFrom(const StateCommon* pStateCommon)
+	void RenderStateCommon::CopyFrom(const RenderStateCommon* pStateCommon)
 	{
-		memcpy(this, pStateCommon, sizeof(StateCommon));
+		memcpy(this, pStateCommon, sizeof(RenderStateCommon));
 	}
 
-	void RenderState::StateCommon::CopyTo(StateCommon* pStateCommon)
+	void RenderStateCommon::CopyTo(RenderStateCommon* pStateCommon)
 	{
-		memcpy(pStateCommon, this,sizeof(StateCommon));
+		memcpy(pStateCommon, this,sizeof(RenderStateCommon));
 	}
 	
-	//////////////////////////////////// StateLighting //////////////////////////////////
-	RenderState::StateLighting::StateLighting()
-		: typeLighting(F_Lighting_Gouraud)
-		, bLightingEnabled(true)
+
+	//////////////////////////////////// RenderStateLighting ////////////////////////////
+	RenderStateLighting::RenderStateLighting()
+		: bLightingEnabled(true)
+		, typeLighting(F_Lighting_Gouraud) 
 		, nMaxEffectLightNum(MAX_LIGHT_COUNT)
 
 	////Flat/Gouraud/Phong
@@ -98,48 +99,52 @@ namespace LostPeter
 	{
 
 	}
-	RenderState::StateLighting::~StateLighting()
+	RenderStateLighting::~RenderStateLighting()
 	{
 
 	}
 
-	void RenderState::StateLighting::CopyFrom(const StateLighting* pStateLighting)
+	void RenderStateLighting::CopyFrom(const RenderStateLighting* pStateLighting)
 	{
-		memcpy(this, pStateLighting, sizeof(StateLighting));
+		memcpy(this, pStateLighting, sizeof(RenderStateLighting));
 	}
 
-	void RenderState::StateLighting::CopyTo(StateLighting* pStateLighting)
+	void RenderStateLighting::CopyTo(RenderStateLighting* pStateLighting)
 	{
-		memcpy(pStateLighting, this,sizeof(StateLighting));
+		memcpy(pStateLighting, this,sizeof(RenderStateLighting));
 	}
     
-    //////////////////////////////////// StateTexture ///////////////////////////////////
-    RenderState::StateTexture::StateTexture()
+
+	//////////////////////////////////// RenderStateTexture /////////////////////////////
+	RenderStateTexture::RenderStateTexture()
+	{
+
+	}
+	RenderStateTexture::~RenderStateTexture()
+	{
+
+	}
+
+
+    //////////////////////////////////// RenderStateShader //////////////////////////////
+    RenderStateShader::RenderStateShader()
     {
 
     }
-	RenderState::StateTexture::~StateTexture()
+	RenderStateShader::~RenderStateShader()
     {
 
     }
-
-    //////////////////////////////////// StateShader ////////////////////////////////////
-    RenderState::StateShader::StateShader()
-    {
-
-    }
-	RenderState::StateShader::~StateShader()
-    {
-
-    }
-
+	
 
     //////////////////////////////////// RenderState ////////////////////////////////////
-    RenderState::RenderState()
-        : m_pStateCommon(new StateCommon)
-		, m_pStateLighting(new StateLighting)
-		, m_pStateTexture(new StateTexture)
-		, m_pStateShader(new StateShader)
+    RenderState::RenderState(const String& namePass,
+							 FRenderPassType typeRenderPass)
+        : Base(namePass)
+		, m_typeRenderPass(typeRenderPass)
+		, m_pStateCommon(new RenderStateCommon)
+		, m_pStateLighting(new RenderStateLighting)
+		, m_pStateShader(new RenderStateShader)
     {
 
     }
@@ -152,48 +157,40 @@ namespace LostPeter
     {
         F_DELETE(m_pStateCommon)
 		F_DELETE(m_pStateLighting)
-		F_DELETE(m_pStateTexture)
 		F_DELETE(m_pStateShader)
     }
 
-    void RenderState::SetStateCommonFrom(const StateCommon* pStateCommon)
+    void RenderState::SetStateCommonFrom(const RenderStateCommon* pStateCommon)
     {
         F_Assert(pStateCommon && "RenderState::SetStateCommonFrom")
 		m_pStateCommon->CopyFrom(pStateCommon);
     }
-    void RenderState::SetStateCommonTo(StateCommon* pStateCommon)
+    void RenderState::SetStateCommonTo(RenderStateCommon* pStateCommon)
     {
         F_Assert(pStateCommon && "RenderState::SetStateCommonTo")
 		m_pStateCommon->CopyTo(pStateCommon);
     }
 
-	void RenderState::SetStateLightingFrom(const StateLighting* pStateLighting)
+	void RenderState::SetStateLightingFrom(const RenderStateLighting* pStateLighting)
 	{
 		F_Assert(pStateLighting && "RenderState::SetStateLightingFrom")
 		m_pStateLighting->CopyFrom(pStateLighting);
 	}
-	void RenderState::SetStateLightingTo(StateLighting* pStateLighting)
+	void RenderState::SetStateLightingTo(RenderStateLighting* pStateLighting)
 	{
 		F_Assert(pStateLighting && "RenderState::SetStateLightingTo")
 		m_pStateLighting->CopyTo(pStateLighting);
 	}
 
-    void RenderState::SetStateTextureFrom(const StateTexture* pStateTexture)
-    {
-        F_Assert(pStateTexture && "RenderState::SetStateTextureFrom")
-    }
-    void RenderState::SetStateTextureTo(StateTexture* pStateTexture)
-    {
-        F_Assert(pStateTexture && "RenderState::SetStateTextureTo")
-    }
-
-    void RenderState::SetStateShaderFrom(const StateShader* pStateShader)
+    void RenderState::SetStateShaderFrom(const RenderStateShader* pStateShader)
     {
         F_Assert(pStateShader && "RenderState::SetStateShaderFrom")
+
     }
-    void RenderState::SetStateShaderTo(StateShader* pStateShader)
+    void RenderState::SetStateShaderTo(RenderStateShader* pStateShader)
     {
         F_Assert(pStateShader && "RenderState::SetStateShaderTo")
+
     }
 
 }; //LostPeter

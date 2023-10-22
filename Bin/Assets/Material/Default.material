@@ -2,7 +2,7 @@
 <cfg_material_data>
 	<material_datas>
 		<material_data group="7001" name="Default">
-			<pass name="Pass_Default" type="" >
+			<pass name="Pass_Default" type="ForwardLit">
 				<state_common>
 					<!--
 						compare_func = AlwaysPass; AlwaysFail; Less; LessEqual; Equal; NotEqual; GreaterEqual; Greater
@@ -38,7 +38,7 @@
 					<vert name="vert_default" />
 					<frag name="frag_default" >
 						<state_texture>
-							
+
 						</state_texture>
 					</frag>
 				</state_shader>

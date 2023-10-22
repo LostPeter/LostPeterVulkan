@@ -16,14 +16,7 @@ namespace LostPeter
 {
     MaterialData::MaterialData(const String& nameMaterialData)
         : Base(nameMaterialData)
-        , m_pStateCommonBuf(nullptr)
-		, m_pStateCommonBufSize(0)
-        , m_pStateLightingBuf(nullptr)
-		, m_pStateLightingBufSize(0)
-		, m_pStateTextureBuf(nullptr)
-		, m_pStateTextureBufSize(0)
-		, m_pShaderStateBuf(nullptr)
-		, m_pStateShaderBufSize(0)
+        
     {
         
     }
@@ -34,133 +27,62 @@ namespace LostPeter
 
     void MaterialData::Destroy()
 	{
-		F_DELETE_T(m_pStateCommonBuf)
-        F_DELETE_T(m_pStateLightingBuf)
-		F_DELETE_T(m_pStateTextureBuf)
-		F_DELETE_T(m_pShaderStateBuf)
+		DeleteRenderStateAll();
 	}
 
-	void MaterialData::SerializerFrom(uint8* pBuffer)
+	bool MaterialData::HasRenderState(const String& strName)
 	{
-		F_Assert(pBuffer && "MaterialData::SerializerFrom")
-		//1> StateCommon
-
-        //2> StateLighting
-
-		//3> StateTexture
-
-		//4> StateShader
-
+		return GetRenderState(strName) != nullptr;
 	}
-
-	void MaterialData::SerializerFrom(const RenderState* pRS)
+	RenderState* MaterialData::GetRenderState(const String& strName)
 	{
-		F_Assert(pRS && "MaterialData::SerializerFrom")
-		//1> StateCommon
-		SerializerFrom(pRS->GetStateCommon());
-        //2> StateLighting
-		SerializerFrom(pRS->GetStateLighting());
-		//3> StateTexture
-		SerializerFrom(pRS->GetStateTexture());
-		//4> StateShader
-		SerializerFrom(pRS->GetStateShader());
+		RenderStatePtrMap::iterator itFind = m_mapRenderState.find(strName);
+        if (itFind == m_mapRenderState.end())
+        {
+            F_LogError("*********************** MaterialData::GetRenderState: Can not find, name: [%s]", strName.c_str());
+            return nullptr;
+        }
+        return itFind->second;
 	}
-
-	void MaterialData::SerializerFrom(RenderState::StateCommon* pSC)
+	bool MaterialData::AddRenderState(RenderState* pRenderState)
 	{
-		F_Assert(pSC && "MaterialData::SerializerFrom: StateCommon")
-		uint32 nNewSize = sizeof(RenderState::StateCommon);
-		if (nNewSize != m_pStateCommonBufSize)
-		{
-			F_DELETE_T(m_pStateCommonBuf)
-			m_pStateCommonBufSize = nNewSize;
-			m_pStateCommonBuf = new uint8[nNewSize];
-		}
-		pSC->CopyTo((RenderState::StateCommon*)m_pStateCommonBuf);
-	}
+		const String& strName = pRenderState->GetName();
+        RenderStatePtrMap::iterator itFind = m_mapRenderState.find(strName);
+        if (itFind != m_mapRenderState.end())
+        {
+            F_LogError("*********************** MaterialData::AddRenderState: RenderState name already exist: [%s] !", strName.c_str());
+            F_DELETE(pRenderState)
+            return false;
+        }
 
-    void MaterialData::SerializerFrom(RenderState::StateLighting* pSL)
+        m_aRenderState.push_back(pRenderState);
+        m_mapRenderState.insert(RenderStatePtrMap::value_type(strName, pRenderState));
+        return true;
+	}
+	void MaterialData::DeleteRenderState(const String& strName)
 	{
-		if (!pSL)
-			return;
-		F_DELETE_T(m_pStateLightingBuf)
+		RenderStatePtrMap::iterator itFind = m_mapRenderState.find(strName);
+        if (itFind == m_mapRenderState.end())
+        {
+            return;
+        }
 
+        RenderStatePtrVector::iterator itFindA = std::find(m_aRenderState.begin(), m_aRenderState.end(), itFind->second);
+        if (itFindA != m_aRenderState.end())
+            m_aRenderState.erase(itFindA);
+        F_DELETE(itFind->second)
+        m_mapRenderState.erase(itFind);
 	}
-
-	void MaterialData::SerializerFrom(RenderState::StateTexture* pST)
+	void MaterialData::DeleteRenderStateAll()
 	{
-		F_Assert(pST && "MaterialData::SerializerFrom: StateTexture")
-		
+		for (RenderStatePtrMap::iterator it = m_mapRenderState.begin();
+             it != m_mapRenderState.end(); ++it)
+        {
+            F_DELETE(it->second)
+        }
+        m_aRenderState.clear();
+        m_mapRenderState.clear();
 	}
 
-	void MaterialData::SerializerFrom(uint8* pBuf, uint32 nTexUnitNum)
-	{
-		
-	}
-
-	void MaterialData::SerializerFrom(RenderState::StateShader* pSS)
-	{
-		if (!pSS)
-			return;
-        
-	}
-
-	
-
-	void MaterialData::SerializerTo(uint8* pBuffer)
-	{
-		F_Assert(pBuffer && "MaterialData::SerializerTo")
-		//1> StateCommon
-
-        //2> StateLighting
-
-		//3> StateTexture
-
-		//4> StateShader
-	}
-
-	void MaterialData::SerializerTo(RenderState* pRS)
-	{
-		F_Assert(pRS && "MaterialData::SerializerTo")
-		//1> StateCommon
-		SerializerTo(pRS->GetStateCommon());
-        //2> StateLighting
-		SerializerTo(pRS->GetStateLighting());
-		//3> StateTexture
-		SerializerTo(pRS->GetStateTexture());
-		//4> StateShader
-		SerializerTo(pRS->GetStateShader());
-	}
-
-	void MaterialData::SerializerTo(RenderState::StateCommon* pSC)
-	{
-		F_Assert(pSC && "MaterialData::SerializerTo: StateCommon")
-		if (!m_pStateCommonBuf)
-			return;
-		pSC->CopyFrom((RenderState::StateCommon*)m_pStateCommonBuf);
-	}
-
-    void MaterialData::SerializerTo(RenderState::StateLighting* pSL)
-	{
-		if (!pSL)
-			return;
-
-	}
-
-	void MaterialData::SerializerTo(RenderState::StateTexture* pST)
-	{
-		F_Assert(pST && "MaterialData::SerializerTo: StateTexture")
-		if (!m_pStateTextureBuf || m_pStateTextureBufSize <= 0)
-			return;
-		
-	}
-
-	void MaterialData::SerializerTo(RenderState::StateShader* pSS)
-	{
-		F_Assert(pSS && "MaterialData::SerializerTo: StateShader")
-		if (!m_pShaderStateBuf || m_pStateShaderBufSize<=0)
-			return;
-		
-	}
     
 }; //LostPeter

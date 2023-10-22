@@ -2,7 +2,7 @@
 <cfg_material_data>
 	<material_datas>
 		<material_data group="7001" name="Default_Transparent">
-			<pass name="Pass_Transparent">
+			<pass name="Pass_Transparent" type="ForwardLit">
 				<state_common>
 					
 				</state_common>
@@ -10,8 +10,8 @@
 					<light_setting enable="false" lighting_type="Phong" />
 				</state_lighting>
 				<state_shader>
-					<vert name="" />
-					<frag name="" >
+					<vert name="vert_default_transparent" />
+					<frag name="frag_default_transparent" >
 						<state_texture>
 
 						</state_texture>

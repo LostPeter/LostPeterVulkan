@@ -12,139 +12,149 @@
 #ifndef _RENDER_STATE_H_
 #define _RENDER_STATE_H_
 
-#include "PreDefine.h"
+#include "Base.h"
 
 namespace LostPeter
 {
-    class utilExport RenderState : public FNonCopyable
+	//////////////////////////////////// RenderStateCommon //////////////////////////////
+	class utilExport RenderStateCommon : public FNonCopyable
+	{
+	public:
+		RenderStateCommon();
+		~RenderStateCommon();
+
+	public:
+		FPolygonType				typePolygon;
+		FCullingType			    typeCulling;
+		float					    fPointSize;
+		bool					    bPointSpriteEnabled;
+		bool					    bPointAttenuEnabled;
+		float					    fPointAttenuConstant;
+		float					    fPointAttenuLinear;
+		float					    fPointAttenuQuadratic;
+		float					    fPointMinSize;
+		float					    fPointMaxSize;
+		bool					    bDepthTestEnabled;
+		bool					    bDepthWriteEnabled;
+		FCompareFuncType			typeDepthFunc;
+		float					    fDepthBiasConstant;
+		float					    fDepthBiasSlopeScale;
+		bool					    bStencilEnabled;
+		FCompareFuncType			typeStencilFunc;
+		uint32					    nStencilRefValue;
+		uint32					    nStencilMask;
+		FStencilOPType	            typeStencilFailOP;
+		FStencilOPType	            typeStencilDepthFailOP;
+		FStencilOPType	            typeStencilPassOP;
+		bool					    bStencilTwoSidedEnabled;
+		bool					    bScissorTestEnabled;
+		uint32					    nScissorTest_Left;
+		uint32					    nScissorTest_Top;
+		uint32					    nScissorTest_Right;
+		uint32					    nScissorTest_Bottom;
+		bool 						bAlphaTestEnabled;
+		FCompareFuncType 			typeAlphaRejectFunc;
+		uint8					    nAlphaRejectValue;
+		bool					    bSceneBlendingEnabled;
+		FSceneBlendingType		    typeSceneBlending;
+		FSceneBlendingOPType		typeSceneBlendingOP;
+		FSceneBlendingFactorType	typeSceneBlendingFactorSrc;
+		FSceneBlendingFactorType	typeSceneBlendingFactorDst;
+		bool					    bSceneBlendingSeperateEnabled;
+		FSceneBlendingOPType		typeSceneBlendingOP2;
+		FSceneBlendingFactorType	typeSceneBlendingFactorSrc2;
+		FSceneBlendingFactorType	typeSceneBlendingFactorDst2;
+		bool					    bColorRWriteEnabled;
+		bool					    bColorGWriteEnabled;
+		bool					    bColorBWriteEnabled;
+		bool					    bColorAWriteEnabled;
+
+	public:
+		void CopyFrom(const RenderStateCommon* pStateCommon);
+		void CopyTo(RenderStateCommon* pStateCommon);
+	};
+
+
+	//////////////////////////////////// RenderStateLighting ////////////////////////////
+	class utilExport RenderStateLighting : public FNonCopyable
+	{
+	public:
+		RenderStateLighting();
+		~RenderStateLighting();
+
+	public:
+		bool					    bLightingEnabled;
+		FLightingType 				typeLighting;
+		uint8					    nMaxEffectLightNum;
+
+	////Flat/Gouraud/Phong
+		FColor					    clAmbient;
+		FColor					    clDiffuse;
+		FColor					    clSpecular;
+		FColor					    clEmissive;
+		float					    fShininess;
+		uint32					    nColorFromVertexFlag;
+
+	////Pbr
+
+
+	public:
+		void CopyFrom(const RenderStateLighting* pStateLighting);
+		void CopyTo(RenderStateLighting* pStateLighting);
+	};
+
+
+	//////////////////////////////////// RenderStateTexture /////////////////////////////
+	class utilExport RenderStateTexture : public FNonCopyable
+	{
+	public:
+		RenderStateTexture();
+		~RenderStateTexture();
+
+	public:
+
+	};
+
+	
+	//////////////////////////////////// RenderStateShader //////////////////////////////
+	class utilExport RenderStateShader : public FNonCopyable
+	{
+	public:
+		RenderStateShader();
+		~RenderStateShader();
+
+	public:
+		RenderStateTexturePtrVector m_aRenderStateTexture;
+		RenderStateTexturePtrMap m_mapRenderStateTexture;
+
+	public:
+
+
+	};
+
+
+	//////////////////////////////////// RenderState ////////////////////////////////////
+    class utilExport RenderState : public Base
+								 , public FNonCopyable
     {
     public:
-        RenderState();
+        RenderState(const String& namePass,
+					FRenderPassType typeRenderPass);
         virtual ~RenderState();
 
     public:
-        //////////////////////////////////// StateCommon ////////////////////////////////////
-        class utilExport StateCommon : public FNonCopyable
-        {
-        public:
-            StateCommon();
-			~StateCommon();
-
-		public:
-			FPolygonType				typePolygon;
-			FCullingType			    typeCulling;
-			float					    fPointSize;
-			bool					    bPointSpriteEnabled;
-			bool					    bPointAttenuEnabled;
-			float					    fPointAttenuConstant;
-			float					    fPointAttenuLinear;
-			float					    fPointAttenuQuadratic;
-			float					    fPointMinSize;
-			float					    fPointMaxSize;
-			bool					    bDepthTestEnabled;
-			bool					    bDepthWriteEnabled;
-			FCompareFuncType			typeDepthFunc;
-			float					    fDepthBiasConstant;
-			float					    fDepthBiasSlopeScale;
-			bool					    bStencilEnabled;
-			FCompareFuncType			typeStencilFunc;
-			uint32					    nStencilRefValue;
-			uint32					    nStencilMask;
-			FStencilOPType	            typeStencilFailOP;
-			FStencilOPType	            typeStencilDepthFailOP;
-			FStencilOPType	            typeStencilPassOP;
-			bool					    bStencilTwoSidedEnabled;
-			bool					    bScissorTestEnabled;
-			uint32					    nScissorTest_Left;
-			uint32					    nScissorTest_Top;
-			uint32					    nScissorTest_Right;
-			uint32					    nScissorTest_Bottom;
-			bool 						bAlphaTestEnabled;
-			FCompareFuncType 			typeAlphaRejectFunc;
-			uint8					    nAlphaRejectValue;
-			bool					    bSceneBlendingEnabled;
-			FSceneBlendingType		    typeSceneBlending;
-			FSceneBlendingOPType		typeSceneBlendingOP;
-			FSceneBlendingFactorType	typeSceneBlendingFactorSrc;
-			FSceneBlendingFactorType	typeSceneBlendingFactorDst;
-			bool					    bSceneBlendingSeperateEnabled;
-			FSceneBlendingOPType		typeSceneBlendingOP2;
-			FSceneBlendingFactorType	typeSceneBlendingFactorSrc2;
-			FSceneBlendingFactorType	typeSceneBlendingFactorDst2;
-			bool					    bColorRWriteEnabled;
-			bool					    bColorGWriteEnabled;
-			bool					    bColorBWriteEnabled;
-			bool					    bColorAWriteEnabled;
-
-		public:
-			void CopyFrom(const StateCommon* pStateCommon);
-			void CopyTo(StateCommon* pStateCommon);
-        };
-
-		//////////////////////////////////// StateLighting //////////////////////////////////
-		class utilExport StateLighting : public FNonCopyable
-        {
-        public:
-            StateLighting();
-			~StateLighting();
-
-		public:
-			FLightingType 				typeLighting;
-			bool					    bLightingEnabled;
-			uint8					    nMaxEffectLightNum;
-
-		////Flat/Gouraud/Phong
-			FColor					    clAmbient;
-			FColor					    clDiffuse;
-			FColor					    clSpecular;
-			FColor					    clEmissive;
-			float					    fShininess;
-			uint32					    nColorFromVertexFlag;
-
-		////Pbr
-
-		public:
-			void CopyFrom(const StateLighting* pStateLighting);
-			void CopyTo(StateLighting* pStateLighting);
-
-        };
-
-        //////////////////////////////////// StateTexture ///////////////////////////////////
-        class utilExport StateTexture : public FNonCopyable
-        {
-        public:
-            StateTexture();
-			~StateTexture();
-
-		public:
-
-        };
-
-        //////////////////////////////////// StateShader ////////////////////////////////////
-        class utilExport StateShader : public FNonCopyable
-        {
-        public:
-            StateShader();
-			~StateShader();
-
-		public:
-
-
-        };
-
     protected:
-		StateCommon* m_pStateCommon;
-		StateLighting* m_pStateLighting;
-		StateTexture* m_pStateTexture;
-		StateShader* m_pStateShader;  
+		FRenderPassType m_typeRenderPass;
+		RenderStateCommon* m_pStateCommon;
+		RenderStateLighting* m_pStateLighting;
+		RenderStateShader* m_pStateShader;
 
     public:
-		LP_FORCEINLINE StateCommon* GetStateCommon() const { return m_pStateCommon; }
-		LP_FORCEINLINE StateLighting* GetStateLighting() const { return m_pStateLighting; }
-		LP_FORCEINLINE StateTexture* GetStateTexture() const { return m_pStateTexture; }
-		LP_FORCEINLINE StateShader* GetStateShader() const { return m_pStateShader; }
+		LP_FORCEINLINE RenderStateCommon* GetStateCommon() const { return m_pStateCommon; }
+		LP_FORCEINLINE RenderStateLighting* GetStateLighting() const { return m_pStateLighting; }
+		LP_FORCEINLINE RenderStateShader* GetStateShader() const { return m_pStateShader; }
 
-	////StateCommon
+	////RenderStateCommon
 		LP_FORCEINLINE FPolygonType GetPolygonType() const { return m_pStateCommon->typePolygon; }
 		LP_FORCEINLINE void	SetPolygonType(const FPolygonType& t)	{ m_pStateCommon->typePolygon = t; }
 		LP_FORCEINLINE FCullingType GetCullingType() const { return m_pStateCommon->typeCulling; }
@@ -225,7 +235,6 @@ namespace LostPeter
 			m_pStateCommon->fDepthBiasSlopeScale = fDepthBiasSlopeScale;
 		}
 
-		
 
 		LP_FORCEINLINE bool	GetAlphaTestEnabled() const	{ return m_pStateCommon->bAlphaTestEnabled; }
 		LP_FORCEINLINE void	SetAlphaTestEnabled(const bool& bEnabled) { m_pStateCommon->bAlphaTestEnabled = bEnabled; }
@@ -398,7 +407,7 @@ namespace LostPeter
 			m_pStateCommon->bColorAWriteEnabled = a;
 		}
 
-	////StateLighting
+	////RenderStateLighting
 		LP_FORCEINLINE FLightingType GetLightingType() const { return m_pStateLighting->typeLighting; }
 		LP_FORCEINLINE void	SetLightingType(const FLightingType& t) { m_pStateLighting->typeLighting = t; }
 
@@ -420,27 +429,26 @@ namespace LostPeter
 		LP_FORCEINLINE uint32 GetColorFromVertexFlag() const { return m_pStateLighting->nColorFromVertexFlag; }
 		LP_FORCEINLINE void	SetColorFromVertexFlag(uint32 n) { m_pStateLighting->nColorFromVertexFlag = n; }
 
-	////StateTexture
+	
+	////RenderStateTexture
 
 
-	////StateShader
+	////RenderStateShader
+
 
 
     public:
 		void Destroy();
 
 
-		void SetStateCommonFrom(const StateCommon* pStateCommon);
-		void SetStateCommonTo(StateCommon* pStateCommon);
+		void SetStateCommonFrom(const RenderStateCommon* pStateCommon);
+		void SetStateCommonTo(RenderStateCommon* pStateCommon);
 
-		void SetStateLightingFrom(const StateLighting* pStateLighting);
-		void SetStateLightingTo(StateLighting* pStateLighting);
+		void SetStateLightingFrom(const RenderStateLighting* pStateLighting);
+		void SetStateLightingTo(RenderStateLighting* pStateLighting);
 
-		void SetStateTextureFrom(const StateTexture* pStateTexture);
-		void SetStateTextureTo(StateTexture* pStateTexture);
-
-		void SetStateShaderFrom(const StateShader* pStateShader);
-		void SetStateShaderTo(StateShader* pStateShader);
+		void SetStateShaderFrom(const RenderStateShader* pStateShader);
+		void SetStateShaderTo(RenderStateShader* pStateShader);
     };
 
 }; //LostPeter
