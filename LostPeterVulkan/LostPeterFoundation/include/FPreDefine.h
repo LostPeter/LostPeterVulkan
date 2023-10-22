@@ -707,6 +707,51 @@ namespace LostPeterFoundation
     FLightingType F_ParseLightingType(const String& strName);
 
 
+    enum FRenderPipelineType
+    {
+        F_RenderPipeline_Forward = 0,                   //0: Forward
+        F_RenderPipeline_Deferred,                      //1: Deferred
+
+        F_RenderPipeline_Count,
+    };
+    const String& F_GetRenderPipelineTypeName(FRenderPipelineType type);
+    const String& F_GetRenderPipelineTypeName(int type);
+    FRenderPipelineType F_ParseRenderPipelineType(const String& strName);
+
+
+    enum FRenderQueueType
+    {
+        F_RenderQueue_Background = 0,                   //0: Background:   0    - 1000
+        F_RenderQueue_Opaque = 1,                       //1: Opaque:       1000 - 2000
+        F_RenderQueue_Transparent = 2,                  //2: Transparent:  2000 - 3000
+        F_RenderQueue_Overlay = 3,                      //3: Overlay:      3000 - 4000
+
+        F_RenderQueue_Count,
+    };
+    const String& F_GetRenderQueueTypeName(FRenderQueueType type);
+    const String& F_GetRenderQueueTypeName(int type);
+    FRenderQueueType F_ParseRenderQueueType(const String& strName);
+
+    int F_GetRenderQueueTypeValue(FRenderQueueType type);
+    int F_GetRenderQueueTypeValue(int type);
+    FRenderQueueType F_ParseRenderQueueTypeByValue(int value);
+    
+
+    enum FRenderPassType
+    {
+        F_RenderPass_ForwardLit = 0,                    //0:  ForwardLit
+        F_RenderPass_DeferredLit,                       //1:  DeferredLit  
+        F_RenderPass_ShadowCaster,                      //2:  ShadowCaster
+        F_RenderPass_DepthOnly,                         //3:  DepthOnly
+
+        F_RenderPass_Count,
+    };
+    const String& F_GetRenderPassTypeName(FRenderPassType type);
+    const String& F_GetRenderPassTypeName(int type);
+    FRenderPassType F_ParseRenderPassType(const String& strName);
+
+
+
 }; //LostPeterFoundation
 
 #endif

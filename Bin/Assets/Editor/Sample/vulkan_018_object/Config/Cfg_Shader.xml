@@ -3,6 +3,10 @@
 	<!-- <shader name="" path="" type="" /> -->
 
 	<!-- Shader vert -->
+	<shader name="vert_default" path="Assets/Shader/default.vert.spv" type="vert" />
+	<shader name="vert_default_opaque" path="Assets/Shader/default_opaque.vert.spv" type="vert" />
+	<shader name="vert_default_transparent" path="Assets/Shader/default_transparent.vert.spv" type="vert" />
+
 	<shader name="vert_standard_mesh_opaque_tex2d_lit" path="Assets/Shader/standard_mesh_opaque_tex2d_lit.vert.spv" type="vert" />
 	<shader name="vert_standard_mesh_transparent_lit" path="Assets/Shader/standard_mesh_transparent_lit.vert.spv" type="vert" />
 	<shader name="vert_standard_mesh_opaque_texcubemap_lit" path="Assets/Shader/standard_mesh_opaque_texcubemap_lit.vert.spv" type="vert" />
@@ -20,6 +24,10 @@
 	<!-- Shader geom -->
 	
 	<!-- Shader frag -->
+	<shader name="frag_default" path="Assets/Shader/default.frag.spv" type="frag" />
+	<shader name="frag_default_opaque" path="Assets/Shader/default_opaque.frag.spv" type="frag" />
+	<shader name="frag_default_transparent" path="Assets/Shader/default_transparent.frag.spv" type="frag" />
+
 	<shader name="frag_standard_mesh_opaque_tex2d_lit" path="Assets/Shader/standard_mesh_opaque_tex2d_lit.frag.spv" type="frag" />
 	<shader name="frag_standard_mesh_transparent_lit" path="Assets/Shader/standard_mesh_transparent_lit.frag.spv" type="frag" />
 	<shader name="frag_standard_mesh_opaque_texcubemap_lit" path="Assets/Shader/standard_mesh_opaque_texcubemap_lit.frag.spv" type="frag" />

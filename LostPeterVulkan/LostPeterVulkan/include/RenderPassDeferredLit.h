@@ -2,32 +2,28 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-10-21
+* Time:     2023-10-22
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _RENDER_PASS_H_
-#define _RENDER_PASS_H_
+#ifndef _RENDER_PASS_DEFERRED_LIT_H_
+#define _RENDER_PASS_DEFERRED_LIT_H_
 
-#include "Base.h"
+#include "RenderPass.h"
 
 namespace LostPeter
 {
-    class utilExport RenderPass : public Base
-                                , public FNonCopyable
+    class utilExport RenderPassDeferredLit : public RenderPass
     {
     public:
-        RenderPass(const String& nameRenderPass);
-        virtual ~RenderPass();
+        RenderPassDeferredLit(const String& nameRenderPass);
+        virtual ~RenderPassDeferredLit();
 
     public:
-        void Destroy();
-        virtual bool Init();
-
-    
+        
 
     };
 

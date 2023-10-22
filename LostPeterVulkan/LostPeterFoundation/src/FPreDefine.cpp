@@ -741,4 +741,113 @@ namespace LostPeterFoundation
     }
 
 
+    //FRenderPipelineType
+    static const String s_nameRenderPipelineTypes[] = 
+    {
+        "Forward",                   //0: Forward
+        "Deferred",                  //1: Deferred
+    };
+    const String& F_GetRenderPipelineTypeName(FRenderPipelineType type)
+    {
+        return s_nameRenderPipelineTypes[(int)type];
+    }
+    const String& F_GetRenderPipelineTypeName(int type)
+    {
+        return s_nameRenderPipelineTypes[(int)type];
+    }
+    FRenderPipelineType F_ParseRenderPipelineType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_RenderPipeline_Count; i++)
+        {
+            if (s_nameRenderPipelineTypes[i] == strName)
+                return (FRenderPipelineType)(i);
+        }
+        F_Assert(false && "F_ParseRenderPipelineType: Wrong type name !")
+        return F_RenderPipeline_Forward;
+    }
+
+
+    //FRenderQueueType
+    static const String s_nameRenderQueueTypes[] = 
+    {
+        "Background",               //0: Background:   0    - 1000
+        "Opaque",                   //1: Opaque:       1000 - 2000
+        "Transparent",              //2: Transparent:  2000 - 3000
+        "Overlay",                  //3: Overlay:      3000 - 4000
+    };
+    const String& F_GetRenderQueueTypeName(FRenderQueueType type)
+    {
+        return s_nameRenderQueueTypes[(int)type];
+    }
+    const String& F_GetRenderQueueTypeName(int type)
+    {
+        return s_nameRenderQueueTypes[(int)type];
+    }
+    FRenderQueueType F_ParseRenderQueueType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_RenderQueue_Count; i++)
+        {
+            if (s_nameRenderQueueTypes[i] == strName)
+                return (FRenderQueueType)(i);
+        }
+        F_Assert(false && "F_ParseRenderQueueType: Wrong type name !")
+        return F_RenderQueue_Opaque;
+    }
+    
+    static const int s_valueRenderQueueTypes[] = 
+    {
+        1000,
+        2000,
+        3000,
+        4000,
+    };
+    int F_GetRenderQueueTypeValue(FRenderQueueType type)
+    {
+        return s_valueRenderQueueTypes[(int)type];
+    }
+    int F_GetRenderQueueTypeValue(int type)
+    {
+        return s_valueRenderQueueTypes[type];
+    }
+    FRenderQueueType F_ParseRenderQueueTypeByValue(int value)
+    {
+        if (value >= s_valueRenderQueueTypes[(int)F_RenderQueue_Overlay])
+            return F_RenderQueue_Overlay;
+        else if (value >= s_valueRenderQueueTypes[(int)F_RenderQueue_Transparent] && value < s_valueRenderQueueTypes[(int)F_RenderQueue_Overlay])
+            return F_RenderQueue_Transparent;
+        else if (value >= s_valueRenderQueueTypes[(int)F_RenderQueue_Opaque] && value < s_valueRenderQueueTypes[(int)F_RenderQueue_Transparent])
+            return F_RenderQueue_Opaque;
+        
+        return F_RenderQueue_Background;
+    }
+
+
+    //FRenderPassType
+    static const String s_nameRenderPassTypes[] = 
+    {
+        "ForwardLit",               //0: ForwardLit
+        "DeferredLit",              //1: DeferredLit
+        "ShadowCaster",             //2: ShadowCaster
+        "DepthOnly",                //3: DepthOnly
+    };
+    const String& F_GetRenderPassTypeName(FRenderPassType type)
+    {
+        return s_nameRenderPassTypes[(int)type];
+    }
+    const String& F_GetRenderPassTypeName(int type)
+    {
+        return s_nameRenderPassTypes[(int)type];
+    }
+    FRenderPassType F_ParseRenderPassType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_RenderPass_Count; i++)
+        {
+            if (s_nameRenderPassTypes[i] == strName)
+                return (FRenderPassType)(i);
+        }
+        F_Assert(false && "F_ParseRenderPassType: Wrong type name !")
+        return F_RenderPass_ForwardLit;
+    }
+
+
 }; //LostPeterFoundation

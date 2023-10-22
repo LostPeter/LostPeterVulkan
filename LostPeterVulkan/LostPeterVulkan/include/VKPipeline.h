@@ -2,33 +2,38 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-10-21
+* Time:     2023-10-22
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _RENDER_PASS_H_
-#define _RENDER_PASS_H_
+#ifndef _VK_PIPELINE_H_
+#define _VK_PIPELINE_H_
 
 #include "Base.h"
 
 namespace LostPeter
 {
-    class utilExport RenderPass : public Base
-                                , public FNonCopyable
+    class utilExport VKPipeline : public Base
     {
     public:
-        RenderPass(const String& nameRenderPass);
-        virtual ~RenderPass();
+        VKPipeline(const String& namePipeline);
+        virtual ~VKPipeline();
+
+    public:
+    protected:
+        VkPipeline vkPipeline;
+
+    public:
+        LP_FORCEINLINE VkPipeline GetVkPipeline() const { return this->vkPipeline; }
 
     public:
         void Destroy();
-        virtual bool Init();
 
-    
-
+    public:
+        bool LoadPipeline();
     };
 
 }; //LostPeter

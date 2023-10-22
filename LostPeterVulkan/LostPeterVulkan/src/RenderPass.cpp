@@ -14,8 +14,8 @@
 
 namespace LostPeter
 {
-    RenderPass::RenderPass(const String& namePass)
-        : Base(namePass)
+    RenderPass::RenderPass(const String& nameRenderPass)
+        : Base(nameRenderPass)
     {
 
     }
@@ -24,6 +24,15 @@ namespace LostPeter
 
     }
 
+    void RenderPass::Destroy()
+    {
+
+    }
     
+    bool RenderPass::Init()
+    {
+
+        return true;
+    }
 
 }; //LostPeter

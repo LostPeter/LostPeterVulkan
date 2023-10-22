@@ -549,7 +549,8 @@ namespace LostPeter
     class VKPipelineCompute;
     class VKPipelineLayout;
     class VKPipelineLayoutManager;
-
+    class VKPipeline;
+    class VKPipelineManager;
 
     typedef std::vector<VKDescriptorSet*> VKDescriptorSetPtrVector;
     typedef std::map<String, VKDescriptorSet*> VKDescriptorSetPtrMap;
@@ -568,6 +569,9 @@ namespace LostPeter
     typedef std::vector<VKPipelineLayout*> VKPipelineLayoutPtrVector;
     typedef std::map<String, VKPipelineLayout*> VKPipelineLayoutPtrMap;
 
+    typedef std::vector<VKPipeline*> VKPipelinePtrVector;
+    typedef std::map<String, VKPipeline*> VKPipelinePtrMap;
+    
 
     class Base;
     class EditorBase;
@@ -604,10 +608,16 @@ namespace LostPeter
     class Renderable;
     class RenderableIndirect;
     class RenderPass;
+    class RenderPassForwardLit;
+    class RenderPassDeferredLit;
+    class RenderPassShadowCaster;
+    class RenderPassDepthOnly;
     class RenderPassManager;
     class RenderPipeline;
     class RenderPipelineForward;
     class RenderPipelineManager;
+    class RenderQueue;
+    class RenderQueueManager;
     class RenderTarget;
     class RenderTexture;
     class RenderTextureManager;
@@ -647,6 +657,9 @@ namespace LostPeter
     typedef std::vector<RenderPipeline*> RenderPipelinePtrVector;
     typedef std::map<String, RenderPipeline*> RenderPipelinePtrMap;
     
+    typedef std::vector<RenderQueue*> RenderQueuePtrVector;
+    typedef std::map<String, RenderQueue*> RenderQueuePtrMap;
+
     typedef std::vector<RenderTexture*> RenderTexturePtrVector;
     typedef std::map<String, RenderTexture*> RenderTexturePtrMap;
 

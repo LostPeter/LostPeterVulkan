@@ -38,6 +38,10 @@ namespace LostPeter
         static RenderPassManager& GetSingleton();
 		static RenderPassManager* GetSingletonPtr();
 
+    public:
+        void Destroy();
+        bool Init();
+
 
     };
 

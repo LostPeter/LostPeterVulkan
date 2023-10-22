@@ -34,10 +34,20 @@ namespace LostPeter
     }
     RenderPassManager::~RenderPassManager()
     {
+        Destroy();
+    }
+
+    void RenderPassManager::Destroy()
+    {
 
     }
 
-    
-    
+    bool RenderPassManager::Init()
+    {
+        
+
+        return true;
+    }
+
 
 }; //LostPeter

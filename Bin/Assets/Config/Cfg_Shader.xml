@@ -1,4 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <cfg_shader>
-	<shader />
+	<!-- <shader name="" path="" type="" /> -->
+
+	<!-- Shader vert -->
+	<shader name="vert_default" path="Assets/Shader/default.vert.spv" type="vert" />
+	<shader name="vert_default_opaque" path="Assets/Shader/default_opaque.vert.spv" type="vert" />
+	<shader name="vert_default_transparent" path="Assets/Shader/default_transparent.vert.spv" type="vert" />
+
+	<!-- Shader tesc -->
+	
+	<!-- Shader tese -->
+	
+	<!-- Shader geom -->
+	
+	<!-- Shader frag -->
+	<shader name="frag_default" path="Assets/Shader/default.frag.spv" type="frag" />
+	<shader name="frag_default_opaque" path="Assets/Shader/default_opaque.frag.spv" type="frag" />
+	<shader name="frag_default_transparent" path="Assets/Shader/default_transparent.frag.spv" type="frag" />
+
+	<!-- Shader comp -->
+	
 </cfg_shader>

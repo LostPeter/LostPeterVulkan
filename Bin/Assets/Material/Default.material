@@ -2,7 +2,7 @@
 <cfg_material_data>
 	<material_datas>
 		<material_data group="7001" name="Default">
-			<pass name="Pass_Default">
+			<pass name="Pass_Default" type="" >
 				<state_common>
 					<!--
 						compare_func = AlwaysPass; AlwaysFail; Less; LessEqual; Equal; NotEqual; GreaterEqual; Greater
@@ -35,10 +35,10 @@
 					<light_setting enable="false" lighting_type="Phong" />
 				</state_lighting>
 				<state_shader>
-					<vert name="" />
-					<frag name="" >
+					<vert name="vert_default" />
+					<frag name="frag_default" >
 						<state_texture>
-
+							
 						</state_texture>
 					</frag>
 				</state_shader>
