@@ -624,6 +624,7 @@ namespace LostPeter
     class RenderStateCommon;
     class RenderStateLighting;
     class RenderStateTexture;
+    class RenderStateShaderItem;
     class RenderStateShader;
     class RenderState;
     class Scene;
@@ -673,6 +674,8 @@ namespace LostPeter
     typedef std::map<String, RenderStateLighting*> RenderStateLightingPtrMap;
     typedef std::vector<RenderStateTexture*> RenderStateTexturePtrVector;
     typedef std::map<String, RenderStateTexture*> RenderStateTexturePtrMap;
+    typedef std::vector<RenderStateShaderItem*> RenderStateShaderItemPtrVector;
+    typedef std::map<String, RenderStateShaderItem*> RenderStateShaderItemPtrMap;
     typedef std::vector<RenderStateShader*> RenderStateShaderPtrVector;
     typedef std::map<String, RenderStateShader*> RenderStateShaderPtrMap;
     typedef std::vector<RenderState*> RenderStatePtrVector;

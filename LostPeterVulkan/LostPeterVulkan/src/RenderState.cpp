@@ -127,15 +127,83 @@ namespace LostPeter
 
 
     //////////////////////////////////// RenderStateShader //////////////////////////////
+	RenderStateShaderItem::RenderStateShaderItem(const String& nameShader)
+		: Base(nameShader)
+		, typeShader(F_Shader_Vertex)
+	{
+
+	}
+	RenderStateShaderItem::~RenderStateShaderItem()
+	{
+		Destroy();
+	}
+	void RenderStateShaderItem::Destroy()
+	{
+
+	}
+
+
     RenderStateShader::RenderStateShader()
     {
 
     }
 	RenderStateShader::~RenderStateShader()
     {
-
+		Destroy();
     }
-	
+	void RenderStateShader::Destroy()
+	{
+		
+	}
+
+	bool RenderStateShader::HasRenderStateShaderItem(const String& nameShader)
+	{
+		return GetRenderStateShaderItem(nameShader) != nullptr;
+	}
+	RenderStateShaderItem* RenderStateShader::GetRenderStateShaderItem(const String& nameShader)
+	{
+		RenderStateShaderItemPtrMap::iterator itFind = mapRenderStateShaderItem.find(nameShader);
+		if (itFind != mapRenderStateShaderItem.end())
+			return itFind->second;
+		return nullptr;
+	}
+	void RenderStateShader::AddRenderStateShaderItem(RenderStateShaderItem* pItem)
+	{
+		const String& nameShader = pItem->GetName();
+		RenderStateShaderItemPtrMap::iterator itFind = mapRenderStateShaderItem.find(nameShader);
+		if (itFind != mapRenderStateShaderItem.end())
+			return;
+
+		aRenderStateShaderItem.push_back(pItem);
+		mapRenderStateShaderItem[nameShader] = pItem;
+	}
+	void RenderStateShader::DeleteRenderStateShaderItem(const String& nameShader)
+	{
+		RenderStateShaderItemPtrMap::iterator itFind = mapRenderStateShaderItem.find(nameShader);
+		if (itFind == mapRenderStateShaderItem.end())
+			return;
+		
+		RenderStateShaderItemPtrVector::iterator itFindA = std::find(aRenderStateShaderItem.begin(), aRenderStateShaderItem.end(), itFind->second);
+		if (itFindA != aRenderStateShaderItem.end())
+			aRenderStateShaderItem.erase(itFindA);
+		F_DELETE(itFind->second)
+		mapRenderStateShaderItem.erase(itFind);
+	}
+	void RenderStateShader::DeleteRenderStateShaderItem(RenderStateShaderItem* pItem)
+	{
+		DeleteRenderStateShaderItem(pItem->GetName());
+	}
+	void RenderStateShader::DeleteRenderStateShaderItemAll()
+	{
+		for (RenderStateShaderItemPtrVector::iterator it = aRenderStateShaderItem.begin();
+			 it != aRenderStateShaderItem.end(); ++it)
+		{
+			F_DELETE(*it)
+		}
+		aRenderStateShaderItem.clear();
+		mapRenderStateShaderItem.clear();
+	}
+
 
     //////////////////////////////////// RenderState ////////////////////////////////////
     RenderState::RenderState(const String& namePass,

@@ -26,13 +26,15 @@
 				</state_common>
 				<state_lighting>
 					<!-- 
-						lighting = Flat; Gouraud; Phong; Pbr;  
+						lighting = Flat; Gouraud; Phong; Pbr;
 					
 						<light_setting enable="false" lighting_type="Phong" >
 							<material_setting ambient="1 1 1 1" diffuse="1 1 1 1" specular="0 0 0 1" emissive="0 0 0 1" shininess="0.0" flag="0" />
 						</light_setting>
 					-->
-					<light_setting enable="false" lighting_type="Phong" />
+					<light_setting enable="true" lighting_type="Phong" >
+						<material_setting ambient="1 1 1 1" diffuse="1 1 1 1" specular="0 0 0 1" emissive="0 0 0 1" shininess="0.0" flag="0" />
+					</light_setting>
 				</state_lighting>
 				<state_shader>
 					<vert name="vert_default" />

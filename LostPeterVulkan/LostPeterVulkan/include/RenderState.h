@@ -117,6 +117,33 @@ namespace LostPeter
 
 	
 	//////////////////////////////////// RenderStateShader //////////////////////////////
+	class utilExport RenderStateShaderItem : public Base
+										   , public FNonCopyable
+	{
+	public:
+		RenderStateShaderItem(const String& nameShader);
+		~RenderStateShaderItem();
+
+	public:
+		FShaderType typeShader;
+		RenderStateTexturePtrVector aRenderStateTexture;
+		RenderStateTexturePtrMap mapRenderStateTexture;
+
+	public:
+		LP_FORCEINLINE FShaderType GetShaderType() const { return typeShader; }
+		LP_FORCEINLINE const RenderStateTexturePtrVector& GetRenderStateTexturePtrVector() const { return aRenderStateTexture; }
+        LP_FORCEINLINE RenderStateTexturePtrVector& GetRenderStateTexturePtrVector() { return aRenderStateTexture; }
+        LP_FORCEINLINE const RenderStateTexturePtrMap& GetRenderStateTexturePtrMap() const { return mapRenderStateTexture; }
+        LP_FORCEINLINE RenderStateTexturePtrMap& GetRenderStateTexturePtrMap() { return mapRenderStateTexture; }
+
+	public:	
+		void Destroy();
+		
+	public:
+
+
+	};
+
 	class utilExport RenderStateShader : public FNonCopyable
 	{
 	public:
@@ -124,12 +151,26 @@ namespace LostPeter
 		~RenderStateShader();
 
 	public:
-		RenderStateTexturePtrVector m_aRenderStateTexture;
-		RenderStateTexturePtrMap m_mapRenderStateTexture;
+		RenderStateShaderItemPtrVector aRenderStateShaderItem;
+		RenderStateShaderItemPtrMap mapRenderStateShaderItem;
 
 	public:
+		LP_FORCEINLINE const RenderStateShaderItemPtrVector& GetRenderStateShaderItemPtrVector() const { return aRenderStateShaderItem; }
+        LP_FORCEINLINE RenderStateShaderItemPtrVector& GetRenderStateShaderItemPtrVector() { return aRenderStateShaderItem; }
+        LP_FORCEINLINE const RenderStateShaderItemPtrMap& GetRenderStateShaderItemPtrMap() const { return mapRenderStateShaderItem; }
+        LP_FORCEINLINE RenderStateShaderItemPtrMap& GetRenderStateShaderItemPtrMap() { return mapRenderStateShaderItem; }
 
+	public:
+		void Destroy();
 
+	public:
+		bool HasRenderStateShaderItem(const String& nameShader);
+		RenderStateShaderItem* GetRenderStateShaderItem(const String& nameShader);
+
+		void AddRenderStateShaderItem(RenderStateShaderItem* pItem);
+		void DeleteRenderStateShaderItem(const String& nameShader);
+		void DeleteRenderStateShaderItem(RenderStateShaderItem* pItem);
+		void DeleteRenderStateShaderItemAll();
 	};
 
 
