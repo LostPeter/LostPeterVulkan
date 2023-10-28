@@ -30,18 +30,16 @@ namespace LostPeter
 	}
 
     uint32 MaterialManager::ms_nInstanceID = 0;
-	String MaterialManager::ms_strMaterialName_Default = "Assets/Material/Default.material";
-    String MaterialManager::ms_strMaterialName_DefaultOpaque = "Assets/Material/Default_Opaque.material";
-    String MaterialManager::ms_strMaterialName_DefaultTransparent = "Assets/Material/Default_Transparent.material";
+    static const int s_nCountDefaults = 3;
+    static String s_aNameDefaults[s_nCountDefaults] = 
+    {
+        "Default",
+        "Default_Opaque",
+        "Default_Transparent",
+    };
     MaterialManager::MaterialManager()
         : Base("MaterialManager")
         , m_pMaterialSerializer(nullptr)
-        , m_pMaterial_Default(nullptr)
-        , m_pMaterialInstance_Default(nullptr)
-        , m_pMaterial_DefaultOpaque(nullptr)
-        , m_pMaterialInstance_DefaultOpaque(nullptr)
-        , m_pMaterial_DefaultTransparent(nullptr)
-        , m_pMaterialInstance_DefaultTransparent(nullptr)
     {
         m_pMaterialSerializer = new MaterialSerializer();
     }
@@ -51,9 +49,30 @@ namespace LostPeter
         Destroy();
     }
 
+    Material* MaterialManager::GetMaterialDefault(const String& strName)
+    {
+        MaterialPtrMap::iterator itFind = m_mapMaterialDefaults.find(strName);
+        if (itFind == m_mapMaterialDefaults.end())
+            return nullptr;
+        return itFind->second;
+    }
+    Material* MaterialManager::GetMaterial_Default()
+    {
+        return GetMaterialDefault(s_aNameDefaults[0]);
+    }
+    Material* MaterialManager::GetMaterial_DefaultOpaque()
+    {
+        return GetMaterialDefault(s_aNameDefaults[1]);
+    }
+    Material* MaterialManager::GetMaterial_DefaultTransparent()
+    {
+        return GetMaterialDefault(s_aNameDefaults[2]);
+    }
+
     void MaterialManager::Destroy()
     {
         DeleteMaterialAll();
+        destroyMaterialDefaults();
     }
     bool MaterialManager::Init(uint nGroup, const String& strNameCfg)
     {
@@ -75,23 +94,52 @@ namespace LostPeter
         }
         
         //3> Material Default
-        if (!initMaterialDefault())
+        if (!initMaterialDefaults())
         {
-            F_LogError("*********************** MaterialManager::Init: initMaterialDefault failed !");
+            F_LogError("*********************** MaterialManager::Init: initMaterialDefaults failed !");
             return false;
         }
 
         return true;
     }
-    bool MaterialManager::initMaterialDefault()
+    bool MaterialManager::initMaterialDefaults()
     {
-        //1> Default
-
-        //2> Default_Opaque
-
-        //3> Default_Transparent
-
+        int count = s_nCountDefaults;
+        for (int i = 0; i < count; i++)
+        {
+            String& nameMaterial = s_aNameDefaults[i];
+            Material* pMaterial = loadMaterial(FPathManager::PathGroup_Material, nameMaterial, true);
+            if (pMaterial == nullptr)
+            {
+                F_LogError("*********************** MaterialManager::initMaterialDefaults: Load default material: [%s] failed !", nameMaterial.c_str());
+                return false;
+            }
+            m_mapMaterialDefaults[nameMaterial] = pMaterial;
+            F_LogInfo("MaterialManager::initMaterialDefaults: Load default material: [%s] success !", nameMaterial.c_str());
+        }
         return true;
+    }
+    Material* MaterialManager::loadMaterial(uint nGroup, const String& strName, bool bIsFromFile /*= true*/)
+    {   
+        Material* pMaterial = new Material(nGroup,
+                                           strName);
+        if (!pMaterial->LoadMaterial(bIsFromFile))
+        {
+            F_LogError("*********************** MaterialManager::loadMaterial: Load material failed, group: [%u] name: [%s] !", nGroup, strName.c_str());
+            F_DELETE(pMaterial)
+            return nullptr;
+        }
+
+        return pMaterial;
+    }
+    void MaterialManager::destroyMaterialDefaults()
+    {
+        for (MaterialPtrMap::iterator it = m_mapMaterialDefaults.begin(); 
+            it != m_mapMaterialDefaults.end(); ++it)
+        {
+            F_DELETE(it->second)
+        }
+        m_mapMaterialDefaults.clear();
     }
 
     bool MaterialManager::LoadMaterialAll()
@@ -99,7 +147,6 @@ namespace LostPeter
         if (m_pMaterialSerializer == nullptr)
             return false;
 
-        DeleteMaterialAll();
         MaterialInfoPtrVector& aMaterialInfos = m_pMaterialSerializer->GetMaterialInfoPtrVector();
         for (MaterialInfoPtrVector::iterator it = aMaterialInfos.begin();
              it != aMaterialInfos.end(); ++it)
@@ -134,8 +181,7 @@ namespace LostPeter
     Material* MaterialManager::loadMaterial(MaterialInfo* pMI)
     {
         Material* pMaterial = new Material(pMI->group,
-                                           pMI->nameMaterial,
-                                           pMI->pathMaterial);
+                                           pMI->nameMaterial);
         if (!pMaterial->LoadMaterial(true))
         {
             F_LogError("*********************** MaterialManager::loadMaterial: Load material failed, name: [%s], path: [%s] !", pMI->nameMaterial.c_str(), pMI->pathMaterial.c_str());

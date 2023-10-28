@@ -25,6 +25,7 @@ namespace LostPeterFoundation
 #define PATH_TAG_ATTRIBUTE_MAX			"max"
 #define PATH_TAG_ATTRIBUTE_PATH			"path"
 #define PATH_TAG_ATTRIBUTE_RECURSIVE	"recursive"
+#define PATH_TAG_ATTRIBUTE_DEL_SUFFIX	"del_suffix"
 
 
 
@@ -172,35 +173,31 @@ namespace LostPeterFoundation
 		return true;
 	}
 
-	bool FPathManager::RegisterUserGroup(uint32 nBaseGroup, uint32 nGroup, const String& strPath, bool bIsRecursive)
+	bool FPathManager::RegisterUserGroup(uint32 nBaseGroup, uint32 nGroup, const String& strPath, bool bIsRecursive, bool bIsDelSuffix)
 	{
 		FPathGroupIDMap::iterator itFindID = m_mapGroupID.find(nBaseGroup);
 		if (itFindID == m_mapGroupID.end())
 		{
 			F_LogError("*********************** FPathManager::RegisterUserGroup: Path group: [%u] is not a valid base group !", nBaseGroup);
-			F_Assert(false && "FPathManager::RegisterUserGroup: Path group is not a valid base group !")
 			return false;
 		}
 		uint32 nMaxID = itFindID->second;
 		if (nGroup <= nBaseGroup || nGroup < nMaxID || nGroup >= nBaseGroup + PATH_GAP_DEFAULT)
 		{
 			F_LogError("*********************** FPathManager::RegisterUserGroup: Path group: [%u] is not a valid group value !", nGroup);
-			F_Assert(false && "FPathManager::RegisterUserGroup: Path group is not a valid group value !")
 			return false;
 		}
 		FPathGroupMap::iterator itFind = m_mapGroup.find(nGroup);
 		if (itFind != m_mapGroup.end())
 		{
 			F_LogError("*********************** FPathManager::RegisterUserGroup, Path group: [%u] already exist !", nGroup);
-			F_Assert(false && "FPathManager::RegisterUserGroup, Path group already exist !")
 			return false;
 		}
 		
 		String2StringMap mapN2P;
-		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive, ms_bIsLog))
+		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive, bIsDelSuffix, ms_bIsLog))
 		{
 			F_LogError("*********************** FPathManager::RegisterUserGroup, Enum file in path group: [%u] failed !", nGroup);
-			F_Assert(false && "FPathManager::RegisterUserGroup, Enum file in path group failed !")
 			return false;
 		}
 
@@ -208,17 +205,16 @@ namespace LostPeterFoundation
 		m_mapGroupBase[nGroup] = strPath;
 		itFindID->second = nGroup;
 
-		F_LogInfo("FPathManager::RegisterUserGroup, Register user path group: [%u], base group: [%u] path: [%s], recursive: [%s] success!", nGroup, nBaseGroup, strPath.c_str(), FUtilString::SaveBool(bIsRecursive).c_str());
+		F_LogInfo("FPathManager::RegisterUserGroup, Register user path group: [%u], base group: [%u] path: [%s], recursive: [%s], del_suffix: [%s], success!", nGroup, nBaseGroup, strPath.c_str(), FUtilString::SaveBool(bIsRecursive).c_str(), FUtilString::SaveBool(bIsDelSuffix).c_str());
 		return true;
 	}
 
-	bool FPathManager::registerGroup(uint32 nGroup, const String& strPath, bool bIsRecursive)
+	bool FPathManager::registerGroup(uint32 nGroup, const String& strPath, bool bIsRecursive, bool bIsDelSuffix)
 	{
 		FPathGroupMap::iterator itFind = m_mapGroup.find(nGroup);
 		if (itFind != m_mapGroup.end())
 		{
 			F_LogError("*********************** FPathManager::registerGroup, Path group: [%u] already exist !", nGroup);
-			F_Assert(false && "FPathManager::registerGroup, Path group already exist !")
 			return false;
 		}
 		
@@ -228,14 +224,12 @@ namespace LostPeterFoundation
 			if (!FUtil::CreateAssetDirectory(strPath))
 			{
 				F_LogError("*********************** FPathManager::registerGroup, Create directory in path: [%s] failed !", strPath.c_str());
-				F_Assert(false && "FPathManager::registerGroup, Create directory in path failed !")
 				return false;
 			}
 		}
-		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive, ms_bIsLog))
+		if (!FUtil::EnumAssetFiles(strPath, mapN2P, bIsRecursive, bIsDelSuffix, ms_bIsLog))
 		{
 			F_LogError("*********************** FPathManager::registerGroup, Enum file in path group: [%u] failed !", nGroup);
-			F_Assert(false && "FPathManager::registerGroup, Enum file in path group failed !")
 			return false;
 		}
 		
@@ -244,22 +238,20 @@ namespace LostPeterFoundation
 		return true;
 	}
 
-	bool FPathManager::ReloadGroup(uint32 nGroup, bool bIsRecursive)
+	bool FPathManager::ReloadGroup(uint32 nGroup, bool bIsRecursive, bool bIsDelSuffix)
 	{
 		FPathGroupMap::iterator itFind = m_mapGroup.find(nGroup);
 		FPathGroupBaseMap::iterator itFindBase = m_mapGroupBase.find(nGroup);
 		if (itFind == m_mapGroup.end() || itFindBase == m_mapGroupBase.end())
 		{
 			F_LogError("*********************** FPathManager::ReloadGroup, Path group: [%u] is not exist !", nGroup);
-			F_Assert(false && "FPathManager::ReloadGroup, Path group is not exist !")
 			return false;
 		}
 
 		String2StringMap mapN2P;
-		if (!FUtil::EnumAssetFiles(itFindBase->second, mapN2P, bIsRecursive, ms_bIsLog))
+		if (!FUtil::EnumAssetFiles(itFindBase->second, mapN2P, bIsRecursive, bIsDelSuffix, ms_bIsLog))
 		{
 			F_LogError("*********************** FPathManager::ReloadGroup, Enum file in path group: [%u] failed !", nGroup);
-			F_Assert(false && "FPathManager::ReloadGroup, Enum file in path group failed !")
 			return false;
 		}
 		
@@ -314,18 +306,19 @@ namespace LostPeterFoundation
 				}
 
 				bool bIsRecursive = false;
-				if (pChild->ParserAttribute_Bool(PATH_TAG_ATTRIBUTE_RECURSIVE, bIsRecursive))
-				{
-					bIsRecursive = true;
-				}
+				pChild->ParserAttribute_Bool(PATH_TAG_ATTRIBUTE_RECURSIVE, bIsRecursive);
 				m_mapGroupRecursive[nGroup] = bIsRecursive;
+
+				bool bIsDelSuffix = false;
+				pChild->ParserAttribute_Bool(PATH_TAG_ATTRIBUTE_DEL_SUFFIX, bIsDelSuffix);
+				m_mapGroupDelSuffix[nGroup] = bIsDelSuffix;
 				
-				if (!registerGroup(nGroup, strPath, bIsRecursive))
+				if (!registerGroup(nGroup, strPath, bIsRecursive, bIsDelSuffix))
 				{
 					return false;
 				}
 
-				F_LogInfo("FPathManager::LoadCfg, Register path group: [%u], path: [%s], recursive: [%s] success!", nGroup, strPath.c_str(), FUtilString::SaveBool(bIsRecursive).c_str());
+				F_LogInfo("FPathManager::LoadCfg, Register path group: [%u], path: [%s], recursive: [%s], del_suffix: [%s], success!", nGroup, strPath.c_str(), FUtilString::SaveBool(bIsRecursive).c_str(), FUtilString::SaveBool(bIsDelSuffix).c_str());
 			}
 		}
 
@@ -364,6 +357,12 @@ namespace LostPeterFoundation
 			{
 				bool isRecursive = true;
 				pChild->SaveAttribute_Bool(PATH_TAG_ATTRIBUTE_RECURSIVE, isRecursive);
+			}
+			FPathGroupRecursiveMap::iterator itFindDelSuffix = m_mapGroupDelSuffix.find(nGroup);
+			if (itFindDelSuffix != m_mapGroupDelSuffix.end() && itFindDelSuffix->second)
+			{
+				bool isDelSuffix = true;
+				pChild->SaveAttribute_Bool(PATH_TAG_ATTRIBUTE_DEL_SUFFIX, isDelSuffix);
 			}
 		}
 

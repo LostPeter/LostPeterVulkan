@@ -1,50 +1,48 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <cfg_material_data>
-	<material_datas>
-		<material_data group="7001" name="Default">
-			<pass name="Pass_Default" type="ForwardLit">
-				<state_common>
-					<!--
-						compare_func = AlwaysPass; AlwaysFail; Less; LessEqual; Equal; NotEqual; GreaterEqual; Greater
-						polygon	= Point; WireFrame; Solid
-						culling	= None; ClockWise; CounterClockWise
-						stencil_op = Keep; Zero; Replace; Increment; Decrement; IncrementWrap; DecrementWrap; Invert
-						sceneblending = Alpha; Color; Add; Modulate; Replace
-						sceneblending_op = Add; Subtract; SubtractReverse; Min; Max
-						sceneblendingFactor	= One; Zero; SourceColor; DestColor; OneMinusSourceColor; OneMinusDestColor; SourceAlpha; DestAlpha; OneMinusSourceAlpha; OneMinusDestAlpha
-						
-						<polygon_type type="Solid" />
-						<culling_type type="ClockWise" />
-						<point_setting size="64.0" sprite_enable="false" attenu_enable="false" constant="1.0" linear="0.0" quadratic= "0.0" min_size="1.0" max_size="64.0" />
-						<depth_setting test_enable="true" write_enable="true" compare_func="LessEqual" bias_constant="0.0" bias_slope_scale="0.0" />
-						<stencil_setting enable="false" compare_func="AlwaysPass" value="0" mask="-1" fail_op="Keep" depth_fail_op="Keep" pass_op="Keep" two_sided_enable="false" />
-						<scissor_test enable="false" left="0" top="0" right="0" bottom="0" /> 
-						<alpha_test enable="false" compare_func="AlwaysPass" value="0" /> 
-						<scene_blending_setting enable="false" scene_blending_type="Alpha" scene_blending_op_type="Add" src="One" dst="Zero" seperate_enable="false" scene_blending_op2_type="Add" src2="One" dst2="Zero" />
-						<color_write color_r_enable="true" color_g_enable="true" color_b_enable="true" color_a_enable="true" />
-					!-->
-				</state_common>
-				<state_lighting>
-					<!-- 
-						lighting = Flat; Gouraud; Phong; Pbr;
+	<material_data group="7001" name="Default">
+		<pass name="Pass_Default" type="ForwardLit">
+			<state_common>
+				<!--
+					compare_func = AlwaysPass; AlwaysFail; Less; LessEqual; Equal; NotEqual; GreaterEqual; Greater
+					polygon	= Point; WireFrame; Solid
+					culling	= None; ClockWise; CounterClockWise
+					stencil_op = Keep; Zero; Replace; Increment; Decrement; IncrementWrap; DecrementWrap; Invert
+					sceneblending = Alpha; Color; Add; Modulate; Replace
+					sceneblending_op = Add; Subtract; SubtractReverse; Min; Max
+					sceneblendingFactor	= One; Zero; SourceColor; DestColor; OneMinusSourceColor; OneMinusDestColor; SourceAlpha; DestAlpha; OneMinusSourceAlpha; OneMinusDestAlpha
 					
-						<light_setting enable="false" lighting_type="Phong" >
-							<material_setting ambient="1 1 1 1" diffuse="1 1 1 1" specular="0 0 0 1" emissive="0 0 0 1" shininess="0.0" flag="0" />
-						</light_setting>
-					-->
-					<light_setting enable="true" lighting_type="Phong" >
+					<polygon_type type="Solid" />
+					<culling_type type="ClockWise" />
+					<point_setting size="64.0" sprite_enable="false" attenu_enable="false" constant="1.0" linear="0.0" quadratic= "0.0" min_size="1.0" max_size="64.0" />
+					<depth_setting test_enable="true" write_enable="true" compare_func="LessEqual" bias_constant="0.0" bias_slope_scale="0.0" />
+					<stencil_setting enable="false" compare_func="AlwaysPass" value="0" mask="-1" fail_op="Keep" depth_fail_op="Keep" pass_op="Keep" two_sided_enable="false" />
+					<scissor_test enable="false" left="0" top="0" right="0" bottom="0" /> 
+					<alpha_test enable="false" compare_func="AlwaysPass" value="0" /> 
+					<scene_blending_setting enable="false" scene_blending_type="Alpha" scene_blending_op_type="Add" src="One" dst="Zero" seperate_enable="false" scene_blending_op2_type="Add" src2="One" dst2="Zero" />
+					<color_write color_r_enable="true" color_g_enable="true" color_b_enable="true" color_a_enable="true" />
+				!-->
+			</state_common>
+			<state_lighting>
+				<!-- 
+					lighting = Flat; Gouraud; Phong; Pbr;
+				
+					<light_setting enable="false" lighting_type="Phong" >
 						<material_setting ambient="1 1 1 1" diffuse="1 1 1 1" specular="0 0 0 1" emissive="0 0 0 1" shininess="0.0" flag="0" />
 					</light_setting>
-				</state_lighting>
-				<state_shader>
-					<vert name="vert_default" />
-					<frag name="frag_default" >
-						<state_texture>
+				-->
+				<light_setting enable="true" lighting_type="Phong" >
+					<material_setting ambient="1 1 1 1" diffuse="1 1 1 1" specular="0 0 0 1" emissive="0 0 0 1" shininess="0.0" flag="0" />
+				</light_setting>
+			</state_lighting>
+			<state_shader>
+				<vert name="vert_default" />
+				<frag name="frag_default" >
+					<state_texture>
 
-						</state_texture>
-					</frag>
-				</state_shader>
-			</pass>
-		</material_data>
-	</material_datas>
+					</state_texture>
+				</frag>
+			</state_shader>
+		</pass>
+	</material_data>
 </cfg_material_data>

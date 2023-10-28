@@ -20,26 +20,21 @@ namespace LostPeter
     {
     public:
         Material(uint32 _group,
-                 const String& _nameMaterial,
-                 const String& _pathMaterial);
+                 const String& _nameMaterial);
         virtual ~Material();
 
     public:
-        String pathMaterial;
-
     protected:
-        MaterialData* pMaterialData;
-        RenderState* pRenderState;
+        MaterialData* m_pMaterialData;
 
     public:
-        LP_FORCEINLINE MaterialData* GetMaterialData() const { return pMaterialData; }
-		LP_FORCEINLINE void SetMaterialData(MaterialData* pMaterialData) { pMaterialData = pMaterialData; }
-        LP_FORCEINLINE RenderState*	GetRenderState() const { return pRenderState; }
+        LP_FORCEINLINE MaterialData* GetMaterialData() const { return m_pMaterialData; }
+		LP_FORCEINLINE void SetMaterialData(MaterialData* pMaterialData) { m_pMaterialData = pMaterialData; }
 
     public:
         void Destroy();
 
-        bool LoadMaterial(bool bNew = false);
+        bool LoadMaterial(bool bIsFromFile = true);
 		bool UnloadMaterial();
 
 	private:

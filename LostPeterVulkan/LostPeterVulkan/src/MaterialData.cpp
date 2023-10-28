@@ -84,5 +84,9 @@ namespace LostPeter
         m_mapRenderState.clear();
 	}
 
-    
+    void MaterialData::SerializerFrom(const MaterialData* pMaterialData)
+    {
+
+    }
+
 }; //LostPeter

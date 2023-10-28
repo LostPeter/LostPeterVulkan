@@ -14,17 +14,13 @@
 #include "../include/MaterialInstance.h"
 #include "../include/MaterialData.h"
 #include "../include/MaterialDataManager.h"
-#include "../include/RenderState.h"
 
 namespace LostPeter
 {
     Material::Material(uint32 _group,
-                       const String& _nameMaterial,
-                       const String& _pathMaterial)
+                       const String& _nameMaterial)
         : Base(_group, _nameMaterial)
-        , pathMaterial(_pathMaterial)
-        , pMaterialData(nullptr)
-        , pRenderState(nullptr)
+        , m_pMaterialData(nullptr)
     {
         
     }
@@ -35,16 +31,37 @@ namespace LostPeter
 
     void Material::Destroy()
     {
-
+        UnloadMaterial();
     }
 
-    bool Material::LoadMaterial(bool bNew /*= false*/)
+    bool Material::LoadMaterial(bool bIsFromFile /*= true*/)
     {
+        if (!IsGroupNameValid())
+		{
+            F_LogError("*********************** Material::LoadMaterial: Group, Name is not valid: group: [%u, name: [%s] !", this->group, this->name.c_str());
+            return false;
+        }
         
+        if (!m_pMaterialData)
+		{
+			m_pMaterialData = MaterialDataManager::GetSingleton().CreateMaterialData(this->group, this->name, bIsFromFile);
+            if (m_pMaterialData == nullptr)
+            {
+                F_LogError("*********************** Material::LoadMaterial: CreateMaterialData failed, group: [%u, name: [%s] !", this->group, this->name.c_str());
+                return false;
+            }
+		}
+
         return true;
     }
 	bool Material::UnloadMaterial()
     {
+        if (m_pMaterialData)
+		{
+			MaterialDataManager::GetSingleton().DestroyMaterialData(m_pMaterialData);
+		}
+        m_pMaterialData = nullptr;
+
         return true;
     }
 

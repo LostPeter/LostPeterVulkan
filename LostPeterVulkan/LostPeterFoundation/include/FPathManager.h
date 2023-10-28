@@ -85,6 +85,7 @@ namespace LostPeterFoundation
 		FPathGroupIDMap	m_mapGroupID;
 		FPathGroupBaseMap m_mapGroupBase;
 		FPathGroupRecursiveMap m_mapGroupRecursive;
+		FPathGroupDelSuffixMap m_mapGroupDelSuffix;
 		
 		String m_strWorkFolder;
 	
@@ -109,15 +110,15 @@ namespace LostPeterFoundation
 		void Destroy();
 		bool Init();
 
-		bool RegisterUserGroup(uint32 nBaseGroup, uint32 nGroup, const String& strPath, bool bIsRecursive);
-		bool ReloadGroup(uint32 nGroup, bool bIsRecursive);
+		bool RegisterUserGroup(uint32 nBaseGroup, uint32 nGroup, const String& strPath, bool bIsRecursive, bool bIsDelSuffix);
+		bool ReloadGroup(uint32 nGroup, bool bIsRecursive, bool bIsDelSuffix);
 
 	public:
 		bool LoadCfg();
 		bool SaveCfg();
 	
 	private:
-		bool registerGroup(uint32 nGroup, const String& strPath, bool bIsRecursive);
+		bool registerGroup(uint32 nGroup, const String& strPath, bool bIsRecursive, bool bIsDelSuffix);
 		void setDefaultGroupID();
 	};
 

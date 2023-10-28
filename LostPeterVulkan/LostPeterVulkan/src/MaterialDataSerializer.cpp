@@ -21,37 +21,39 @@
 
 namespace LostPeter
 {
+#define MATERIAL_DATA_FILE_XML_EXT								".material"
+#define MATERIAL_DATA_FILE_BINARY_EXT							".bmaterial"
+
 #define MATERIAL_DATA_TAG_MATERIAL_CFG								            "cfg_material_data"
-    #define	MATERIAL_DATA_TAG_MATERIALS									            "material_datas"
-        #define	MATERIAL_DATA_TAG_MATERIAL									            "material_data"
-            #define	MATERIAL_DATA_TAG_PASS                                                  "pass"
-                #define	MATERIAL_DATA_TAG_STATE_COMMON							                "state_common"
-                    #define	MATERIAL_DATA_TAG_STATE_COMMON_POLYGON_TYPE				                "polygon_type"					//1
-                    #define	MATERIAL_DATA_TAG_STATE_COMMON_CULLING_TYPE				                "culling_type"					//2
-                    #define	MATERIAL_DATA_TAG_STATE_COMMON_POINT_SETTING				            "point_setting"					//3
-                    #define	MATERIAL_DATA_TAG_STATE_COMMON_DEPTH_SETTING				            "depth_setting"					//4
-                    #define	MATERIAL_DATA_TAG_STATE_COMMON_STENCIL_SETTING			                "stencil_setting"				//5
-                    #define	MATERIAL_DATA_TAG_STATE_COMMON_SCISSOR_TEST			                    "scissor_test"					//6
-                    #define	MATERIAL_DATA_TAG_STATE_COMMON_ALPHA_TEST			                    "alpha_test"					//7
-                    #define	MATERIAL_DATA_TAG_STATE_COMMON_SCENE_BLENDING_SETTING	                "scene_blending_setting"		//8
-                    #define	MATERIAL_DATA_TAG_STATE_COMMON_COLOR_WRITE				                "color_write"					//9
-                    
-                #define	MATERIAL_DATA_TAG_STATE_LIGHTING							            "state_lighting"
-                    #define	MATERIAL_DATA_TAG_STATE_LIGHTING_LIGHTING_SETTING			            "light_setting"					//1
-                        #define MATERIAL_DATA_TAG_STATE_LIGHTING_MATERIAL_SETTING		                "material_setting"				//1
+    #define	MATERIAL_DATA_TAG_MATERIAL									            "material_data"
+        #define	MATERIAL_DATA_TAG_PASS                                                  "pass"
+            #define	MATERIAL_DATA_TAG_STATE_COMMON							                "state_common"
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_POLYGON_TYPE				                "polygon_type"					//1
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_CULLING_TYPE				                "culling_type"					//2
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_POINT_SETTING				            "point_setting"					//3
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_DEPTH_SETTING				            "depth_setting"					//4
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_STENCIL_SETTING			                "stencil_setting"				//5
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_SCISSOR_TEST			                    "scissor_test"					//6
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_ALPHA_TEST			                    "alpha_test"					//7
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_SCENE_BLENDING_SETTING	                "scene_blending_setting"		//8
+                #define	MATERIAL_DATA_TAG_STATE_COMMON_COLOR_WRITE				                "color_write"					//9
+                
+            #define	MATERIAL_DATA_TAG_STATE_LIGHTING							            "state_lighting"
+                #define	MATERIAL_DATA_TAG_STATE_LIGHTING_LIGHTING_SETTING			            "light_setting"					//1
+                    #define MATERIAL_DATA_TAG_STATE_LIGHTING_MATERIAL_SETTING		                "material_setting"				//1
 
-                #define	MATERIAL_DATA_TAG_STATE_SHADER							                "state_shader"
-                    #define MATERIAL_DATA_TAG_STATE_SHADER_VERT							            "vert"						    //1
-                    #define MATERIAL_DATA_TAG_STATE_SHADER_TESC						                "tesc"						    //2
-                    #define MATERIAL_DATA_TAG_STATE_SHADER_TESE						                "tese"						    //3
-                    #define MATERIAL_DATA_TAG_STATE_SHADER_GROM						                "geom"						    //4
-                    #define MATERIAL_DATA_TAG_STATE_SHADER_FRAG						                "frag"						    //5
-                    #define MATERIAL_DATA_TAG_STATE_SHADER_COMP						                "comp"						    //6
+            #define	MATERIAL_DATA_TAG_STATE_SHADER							                "state_shader"
+                #define MATERIAL_DATA_TAG_STATE_SHADER_VERT							            "vert"						    //1
+                #define MATERIAL_DATA_TAG_STATE_SHADER_TESC						                "tesc"						    //2
+                #define MATERIAL_DATA_TAG_STATE_SHADER_TESE						                "tese"						    //3
+                #define MATERIAL_DATA_TAG_STATE_SHADER_GROM						                "geom"						    //4
+                #define MATERIAL_DATA_TAG_STATE_SHADER_FRAG						                "frag"						    //5
+                #define MATERIAL_DATA_TAG_STATE_SHADER_COMP						                "comp"						    //6
 
-                    #define	MATERIAL_DATA_TAG_STATE_TEXTURE							                "state_texture"					
-                        #define MATERIAL_DATA_TAG_STATE_TEXTURE_TEXTURE_UNIT						    "tex_unit"
-                            #define MATERIAL_DATA_TAG_TAT_TEXTURE_TEXTURE_SETTING						    "tex_setting"		    //1
-                            #define MATERIAL_DATA_TAG_TAT_TEXTURE_ANIMATION_SETTING					        "anim_setting"			//2
+                #define	MATERIAL_DATA_TAG_STATE_TEXTURE							                "state_texture"					
+                    #define MATERIAL_DATA_TAG_STATE_TEXTURE_TEXTURE_UNIT						    "tex_unit"
+                        #define MATERIAL_DATA_TAG_TAT_TEXTURE_TEXTURE_SETTING						    "tex_setting"		    //1
+                        #define MATERIAL_DATA_TAG_TAT_TEXTURE_ANIMATION_SETTING					        "anim_setting"			//2
 
 
 #define MATERIAL_DATA_TAG_ATTRIBUTE_GROUP			            "group"
@@ -432,7 +434,34 @@ namespace LostPeter
     
     bool MaterialDataSerializer::Parser(uint32 nGroup, const String& strName, MaterialData* pMaterialData, MaterialDataPtrVector* pRet /*= nullptr*/)
     {
-        return true;
+        String strPath = FPathManager::GetSingleton().GetFilePath(nGroup, strName);
+		if (strPath.empty())
+			return false;
+        
+		if (strPath.find(MATERIAL_DATA_FILE_BINARY_EXT) != String::npos)
+		{
+			if (!ParserBinary(strPath.c_str(), pMaterialData, pRet))
+			{
+                F_LogError("*********************** MaterialDataSerializer::Parser: Parser material binary file failed, path: [%s] !", strPath.c_str());
+				return false;
+			}
+			return true;
+		}
+		else if(strPath.find(MATERIAL_DATA_FILE_XML_EXT) != String::npos)
+		{
+			if (!ParserXML(strPath.c_str(), pMaterialData, pRet))
+			{
+                F_LogError("*********************** MaterialDataSerializer::Parser: Parser material xml file failed, path: [%s] !", strPath.c_str());
+				return false;
+			}
+			return true;
+		}
+		else
+		{	
+            F_LogError("*********************** MaterialDataSerializer::Parser: Not valid material file, path: [%s] !", strPath.c_str());
+		}
+		
+		return false;
     }
 
     bool MaterialDataSerializer::ParserXML(uint32 nGroup, const String& strName, MaterialDataPtrVector* pRet /*= nullptr*/)
@@ -452,8 +481,7 @@ namespace LostPeter
         FFileXML xml;
 		if (!xml.LoadXMLIndirect(szFilePath))
         {
-            F_LogError("*********************** MaterialDataSerializer::ParserXML: Load material file [%s] failed !", szFilePath);
-			F_Assert(false && "MaterialDataSerializer::ParserXML: Load file failed !")
+            F_LogError("*********************** MaterialDataSerializer::ParserXML: Load material file: [%s] failed !", szFilePath);
 			return false;
         }
 
@@ -489,8 +517,7 @@ namespace LostPeter
 				{
 					if (!bExtern)
 						delete pMaterialData;
-					F_LogError("*********************** MaterialDataSerializer::ParserXML: Parser material data [%s] failed !", strNameMaterial.c_str());
-					F_Assert(false && "MaterialDataSerializer::ParserXML: Parser material data failed !")
+					F_LogError("*********************** MaterialDataSerializer::ParserXML: Parser material data: [%s] failed !", strNameMaterial.c_str());
 					return false;
 				}
 
@@ -506,7 +533,8 @@ namespace LostPeter
 					{
 						delete pMaterialData;
 						pMaterialData = nullptr;
-						F_Assert(false && "MaterialDataSerializer::ParserXML")
+                        F_LogError("*********************** MaterialDataSerializer::ParserXML: addMaterialData: [%s] failed !", strNameMaterial.c_str());
+					    return false;
 					}
 				}
 				else
@@ -515,7 +543,7 @@ namespace LostPeter
 					{
 						pRet->push_back(pMaterialData);
 					}
-					F_LogInfo("DfMaterialDataSerializer::ParserXML: Parser material data [%s] success !", strNameMaterial.c_str());
+					F_LogInfo("MaterialDataSerializer::ParserXML: Parser material data [%s] success !", strNameMaterial.c_str());
 					break;
 				}
             }

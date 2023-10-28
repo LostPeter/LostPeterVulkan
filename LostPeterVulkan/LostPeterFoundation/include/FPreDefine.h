@@ -277,6 +277,7 @@ namespace LostPeterFoundation
 	typedef std::map<uint32, uint32> FPathGroupIDMap;
 	typedef std::map<uint32, String> FPathGroupBaseMap;
 	typedef std::map<uint32, bool> FPathGroupRecursiveMap;
+    typedef std::map<uint32, bool> FPathGroupDelSuffixMap;
 
 
     ////////////////////////////// Enum ////////////////////////////////

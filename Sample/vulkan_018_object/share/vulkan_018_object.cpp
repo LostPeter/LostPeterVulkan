@@ -546,8 +546,8 @@ Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
     , m_pVKDescriptorSetManager(nullptr)
     , m_pVKDescriptorSetLayoutManager(nullptr)
     , m_pVKPipelineLayoutManager(nullptr)
-    , m_pMaterialManager(nullptr)
     , m_pMaterialDataManager(nullptr)
+    , m_pMaterialManager(nullptr)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -564,7 +564,7 @@ Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
     FPathManager::ms_bIsLog = true;
     m_pPathManager = new FPathManager();
     m_pPathManager->Init();
-    m_pPathManager->RegisterUserGroup(FPathManager::PathGroup_Editor, s_nGroup_Sample, s_strGroup_Sample, true);
+    m_pPathManager->RegisterUserGroup(FPathManager::PathGroup_Editor, s_nGroup_Sample, s_strGroup_Sample, true, false);
 }
 
 void Vulkan_018_Object::setUpEnabledFeatures()
@@ -633,12 +633,11 @@ void Vulkan_018_Object::loadModel_Custom()
     m_pVKPipelineLayoutManager->Init();
     m_pVKPipelineLayoutManager->LoadVKPipelineLayoutAll();
 
-    //7> Material
+    //7> MaterialData/Material
+    m_pMaterialDataManager = new MaterialDataManager();
     m_pMaterialManager = new MaterialManager();
     m_pMaterialManager->Init(s_nGroup_Sample, s_strNameMaterial_Sample);
     
-    //8> MaterialData
-    m_pMaterialDataManager = new MaterialDataManager();
     
 
     int nIndexObjectRend = 0;
@@ -2280,8 +2279,8 @@ void Vulkan_018_Object::drawModelObjectRend(VkCommandBuffer& commandBuffer, Mode
 
 void Vulkan_018_Object::cleanupCustom()
 {   
-    F_DELETE(m_pMaterialDataManager)
     F_DELETE(m_pMaterialManager)
+    F_DELETE(m_pMaterialDataManager)
     F_DELETE(m_pVKPipelineLayoutManager)
     F_DELETE(m_pVKDescriptorSetLayoutManager)
     F_DELETE(m_pVKDescriptorSetManager)

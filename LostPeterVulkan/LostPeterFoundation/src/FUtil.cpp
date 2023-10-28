@@ -267,7 +267,7 @@ namespace LostPeterFoundation
 
 
 ////File/Folder Op
-    bool FUtil::EnumFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath)
+    bool FUtil::EnumFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath, bool bDelSuffix)
     {
     #if LP_PLATFORM == LP_PLATFORM_WIN32
         String strWild = strFolderPath + "/*.*";
@@ -285,15 +285,25 @@ namespace LostPeterFoundation
 			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 && 
 			    (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0)
 			{
+                String strName = fd.cFileName;
+                if (bDelSuffix)
+                {
+                    int index = (int)strName.find_last_of('.');
+                    if (index > 0)
+                    {
+                        strName = strName.substr(0, index);
+                    }
+                }
+
 				if (bFilePath)
 				{
 					String strPath = strFolderPath + "/";
-					strPath += fd.cFileName;
+					strPath += strName;
 					aFiles.push_back(strPath);
 				}
 				else
 				{
-					aFiles.push_back(String(fd.cFileName));
+					aFiles.push_back(strName);
 				}
 			}
 			//folder
@@ -304,7 +314,7 @@ namespace LostPeterFoundation
 				String strFolderP = strFolderPath + "/";
 				strFolderP += fd.cFileName;
 
-				EnumFiles(strFolderP, aFiles, bFilePath);
+				EnumFiles(strFolderP, aFiles, bFilePath, bDelSuffix);
 			}
 
 			if (!::FindNextFile(findFile, &fd))
@@ -328,6 +338,14 @@ namespace LostPeterFoundation
             String strName = pDir->d_name;
             if (strName == ".DS_Store")
                 continue;
+            if (bDelSuffix)
+            {
+                int index = (int)strName.find_last_of('.');
+                if (index > 0)
+                {
+                    strName = strName.substr(0, index);
+                }
+            }
 
             if (pDir->d_type == DT_REG)
             {
@@ -347,7 +365,7 @@ namespace LostPeterFoundation
                     strName != "..")
                 {
                     String strFolderPathNew = strFolderPath + "/" + strName;
-                    EnumFiles(strFolderPathNew, aFiles, bFilePath);
+                    EnumFiles(strFolderPathNew, aFiles, bFilePath, bDelSuffix);
                 }
             }
         }
@@ -362,7 +380,7 @@ namespace LostPeterFoundation
     return false;
     }
 
-    bool FUtil::EnumFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive)
+    bool FUtil::EnumFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive, bool bDelSuffix)
     {
     #if LP_PLATFORM == LP_PLATFORM_WIN32
         String strWild = strFolderPath + "/*.*";
@@ -381,6 +399,14 @@ namespace LostPeterFoundation
 				(fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0)
 			{
 				String strName(fd.cFileName);
+                if (bDelSuffix)
+                {
+                    int index = (int)strName.find_last_of('.');
+                    if (index > 0)
+                    {
+                        strName = strName.substr(0, index);
+                    }
+                }
 				String strPath = strFolderPath + "/";
 				strPath += fd.cFileName;
                 if (mapFiles.find(strName) != mapFiles.end())
@@ -398,7 +424,7 @@ namespace LostPeterFoundation
 				String strFolderP = strFolderPath + "/";
 				strFolderP += fd.cFileName;
 
-				EnumFiles(strFolderP, mapFiles, bIsRecursive);
+				EnumFiles(strFolderP, mapFiles, bIsRecursive, bDelSuffix);
 			}
 
 			if (!::FindNextFile(findFile, &fd))
@@ -422,8 +448,17 @@ namespace LostPeterFoundation
             String strName = pDir->d_name;
             if (strName == ".DS_Store")
                 continue;
+            if (bDelSuffix)
+            {
+                int index = (int)strName.find_last_of('.');
+                if (index > 0)
+                {
+                    strName = strName.substr(0, index);
+                }
+            }
 
-            String strPath = strFolderPath + "/" + strName;
+            String strPath = strFolderPath + "/";
+            strPath += pDir->d_name;
             if (pDir->d_type == DT_REG)
             {
                 if (mapFiles.find(strName) != mapFiles.end())
@@ -440,7 +475,7 @@ namespace LostPeterFoundation
                     if (strName != "." && 
                         strName != "..")
                     {
-                        EnumFiles(strPath, mapFiles, bIsRecursive);
+                        EnumFiles(strPath, mapFiles, bIsRecursive, bDelSuffix);
                     }
                 }
             }
@@ -659,18 +694,18 @@ namespace LostPeterFoundation
     }
 
 
-    bool FUtil::EnumAssetFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath, bool bLog /*= false*/)
+    bool FUtil::EnumAssetFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath, bool bDelSuffix /*= false*/, bool bLog /*= false*/)
     {
         const String& strBase = GetPathBinSaved();
         String strFolderPathReal = strBase + strFolderPath;
-        bool bRet = EnumFiles(strFolderPathReal, aFiles, bFilePath);
+        bool bRet = EnumFiles(strFolderPathReal, aFiles, bFilePath, bDelSuffix);
         if (bRet && bFilePath)
         {
             size_t count = aFiles.size();
             for (size_t i = 0; i < count; i++)
             {
                 String& strPath = aFiles[i];
-                aFiles[i] = strPath.substr(strBase.size());
+                aFiles[i]= strPath.substr(strBase.size());
 
                 if (bLog)
                 {
@@ -680,11 +715,11 @@ namespace LostPeterFoundation
         }
         return bRet;
     }
-    bool FUtil::EnumAssetFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive, bool bLog /*= false*/)
+    bool FUtil::EnumAssetFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive, bool bDelSuffix /*= false*/, bool bLog /*= false*/)
     {
         const String& strBase = GetPathBinSaved();
         String strFolderPathReal = strBase + strFolderPath;
-        bool bRet = EnumFiles(strFolderPathReal, mapFiles, bIsRecursive);
+        bool bRet = EnumFiles(strFolderPathReal, mapFiles, bIsRecursive, bDelSuffix);
         if (bRet)
         {
             for (String2StringMap::iterator it = mapFiles.begin();

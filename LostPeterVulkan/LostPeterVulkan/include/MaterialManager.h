@@ -25,22 +25,13 @@ namespace LostPeter
 
     public:
         static uint32 ms_nInstanceID;
-		static String ms_strMaterialName_Default;
-        static String ms_strMaterialName_DefaultOpaque;
-        static String ms_strMaterialName_DefaultTransparent;
 
     protected:
         MaterialSerializer* m_pMaterialSerializer;
         MaterialPtrVector m_aMaterial;
         MaterialGroupPtrMap m_mapMaterialGroup;
 
-
-        Material* m_pMaterial_Default;
-		MaterialInstance* m_pMaterialInstance_Default;
-        Material* m_pMaterial_DefaultOpaque;
-		MaterialInstance* m_pMaterialInstance_DefaultOpaque;
-        Material* m_pMaterial_DefaultTransparent;
-		MaterialInstance* m_pMaterialInstance_DefaultTransparent;
+        MaterialPtrMap m_mapMaterialDefaults;
 
     public:
         LP_FORCEINLINE MaterialSerializer* GetMaterialSerializer() const { return m_pMaterialSerializer; }
@@ -49,12 +40,13 @@ namespace LostPeter
         LP_FORCEINLINE const MaterialGroupPtrMap& GetMaterialGroupPtrMap() const { return m_mapMaterialGroup; }
         LP_FORCEINLINE MaterialGroupPtrMap& GetMaterialGroupPtrMap() { return m_mapMaterialGroup; }
 
-        LP_FORCEINLINE Material* GetMaterial_Default() const { return m_pMaterial_Default; }
-		LP_FORCEINLINE MaterialInstance* GetMaterialInstance_Default() const { return m_pMaterialInstance_Default; }
-        LP_FORCEINLINE Material* GetMaterial_DefaultOpaque() const { return m_pMaterial_DefaultOpaque; }
-		LP_FORCEINLINE MaterialInstance* GetMaterialInstance_DefaultOpaque() const { return m_pMaterialInstance_DefaultOpaque; }
-        LP_FORCEINLINE Material* GetMaterial_DefaultTransparent() const { return m_pMaterial_DefaultTransparent; }
-		LP_FORCEINLINE MaterialInstance* GetMaterialInstance_DefaultTransparent() const { return m_pMaterialInstance_DefaultTransparent; }
+        LP_FORCEINLINE MaterialPtrMap& GetMaterialDefaultMap() { return m_mapMaterialDefaults; }
+
+        Material* GetMaterialDefault(const String& strName);
+        Material* GetMaterial_Default();
+        Material* GetMaterial_DefaultOpaque();
+        Material* GetMaterial_DefaultTransparent();
+
 
     public:
         static MaterialManager&	GetSingleton();
@@ -65,7 +57,8 @@ namespace LostPeter
         bool Init(uint nGroupCfgMesh, const String& strNameCfg);
 
     protected:
-        bool initMaterialDefault();
+        void destroyMaterialDefaults();
+        bool initMaterialDefaults();
 
     public:
         bool LoadMaterialAll();
@@ -78,6 +71,7 @@ namespace LostPeter
         void DeleteMaterialAll();
 
     private:
+        Material* loadMaterial(uint nGroup, const String& strName, bool bIsFromFile = true);
         Material* loadMaterial(MaterialInfo* pMI);
     };
 

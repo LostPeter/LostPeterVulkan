@@ -36,4 +36,11 @@ namespace LostPeter
         
     }
 
+    bool Base::IsGroupNameValid() const
+    {
+        if (name.empty() || group <= 0)
+			return false;
+        return true;
+    }
+
 }; //LostPeter

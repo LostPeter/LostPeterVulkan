@@ -16,10 +16,10 @@
     <path group="6004" path="Assets/Texture/Terrain" recursive="true" />
     <path group="6005" path="Assets/Texture/Gfx" recursive="true" />
     <path group="6006" path="Assets/Texture/Sky" recursive="true" />
-    <path group="7000" max="7003" path="Assets/Material" />
-    <path group="7001" path="Assets/Material/Common" />
-    <path group="7002" path="Assets/Material/Model" recursive="true" />
-    <path group="7003" path="Assets/Material/Character" recursive="true" />
+    <path group="7000" max="7003" path="Assets/Material" del_suffix="true" />
+    <path group="7001" path="Assets/Material/Common" del_suffix="true" />
+    <path group="7002" path="Assets/Material/Model" recursive="true" del_suffix="true" />
+    <path group="7003" path="Assets/Material/Character" recursive="true" del_suffix="true" />
     <path group="8000" max="8003" path="Assets/Audio" />
     <path group="8001" path="Assets/Audio/Common" />
     <path group="8002" path="Assets/Audio/Model" recursive="true" />

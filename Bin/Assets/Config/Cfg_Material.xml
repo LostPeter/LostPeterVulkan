@@ -2,9 +2,11 @@
 <cfg_material>
 	<!-- <material name="" path="" /> -->
 
+	<material name="Default" path="Assets/Material/Default.material" />
+	<material name="Default_Opaque" path="Assets/Material/Default_Opaque.material" />
+	<material name="Default_Transparent" path="Assets/Material/Default_Transparent.material" />
+
 	<!-- Material Common -->
-	<material name="Default_Opaque" path="Assets/Material/Common/Default_Opaque.material" />
-	<material name="Default_Transparent" path="Assets/Material/Common/Default_Transparent.material" />
 
 	<!-- Material Model -->
 

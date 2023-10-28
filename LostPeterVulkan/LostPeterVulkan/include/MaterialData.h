@@ -26,15 +26,15 @@ namespace LostPeter
 
     public:
     protected:
-		RenderStatePtrVector m_aRenderState;
-		RenderStatePtrMap m_mapRenderState;
+        RenderStatePtrVector m_aRenderState;
+        RenderStatePtrMap m_mapRenderState;
 
     public:
 		LP_FORCEINLINE const RenderStatePtrVector& GetRenderStatePtrVector() const { return m_aRenderState; }
         LP_FORCEINLINE RenderStatePtrVector& GetRenderStatePtrVector() { return m_aRenderState; }
         LP_FORCEINLINE const RenderStatePtrMap& GetRenderStatePtrMap() const { return m_mapRenderState; }
         LP_FORCEINLINE RenderStatePtrMap& GetRenderStatePtrMap() { return m_mapRenderState; }
-
+        
     public:
 		void Destroy();
 
@@ -44,6 +44,9 @@ namespace LostPeter
         bool AddRenderState(RenderState* pRenderState);
         void DeleteRenderState(const String& strName);
         void DeleteRenderStateAll();
+
+    public:
+        void SerializerFrom(const MaterialData* pMaterialData);
 		
     };
 

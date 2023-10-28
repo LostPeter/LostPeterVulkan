@@ -50,6 +50,9 @@ namespace LostPeter
 
         UTIL_FORCEINLINE bool IsInit() const { return this->isInit; }
         UTIL_FORCEINLINE void SetIsInit(bool b) { this->isInit = b; }
+
+    public:
+        bool IsGroupNameValid() const;
     };
 
 }; //LostPeter

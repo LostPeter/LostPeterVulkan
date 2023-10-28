@@ -147,7 +147,8 @@ namespace LostPeter
                                                            strPathMaterial);
             if (AddMaterialInfo(pMaterialInfo))
             {
-                F_LogInfo("MaterialSerializer::deserializeXML: Add material info success, [%s]-[%s] !",
+                F_LogInfo("MaterialSerializer::deserializeXML: Add material info success, [%u]-[%s]-[%s] !",
+                          pMaterialInfo->group,
                           strNameMaterial.c_str(), 
                           strPathMaterial.c_str());
             }
