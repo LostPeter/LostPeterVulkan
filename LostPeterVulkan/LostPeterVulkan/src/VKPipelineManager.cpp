@@ -58,6 +58,7 @@ namespace LostPeter
                 return nullptr;
             }
         }
+        pVKPipeline->AddRef();
         return pVKPipeline;
     }
     VKPipeline* VKPipelineManager::loadVKPipeline(const String& strName)
@@ -70,6 +71,16 @@ namespace LostPeter
                       strName.c_str());
         }
         return pVKPipeline;
+    }
+    void VKPipelineManager::UnloadVKPipeline(VKPipeline* pVKPipeline)
+    {
+        if (pVKPipeline == nullptr)
+            return;
+        pVKPipeline->DelRef();
+        if (!HasRef())
+        {
+            DeleteVKPipeline(pVKPipeline->GetName());
+        }
     }
 
     bool VKPipelineManager::HasVKPipeline(const String& strName)

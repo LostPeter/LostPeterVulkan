@@ -7584,6 +7584,115 @@ namespace LostPeter
 
                     }
 
+                    void VulkanWindow::enumPath()
+                    {
+                        if (ImGui::CollapsingHeader("Enum Path"))
+                        {
+                            
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                    void VulkanWindow::enumMesh()
+                    {
+                        if (ImGui::CollapsingHeader("Enum Mesh"))
+                        {
+                            
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                    void VulkanWindow::enumTexture()
+                    {
+                        if (ImGui::CollapsingHeader("Enum Texture"))
+                        {
+                            
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                    void VulkanWindow::enumShader()
+                    {
+                        if (ImGui::CollapsingHeader("Enum Shader"))
+                        {
+                            
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                    void VulkanWindow::enumVKDescriptorSet()
+                    {
+                        if (ImGui::CollapsingHeader("Enum VKDescriptorSet"))
+                        {
+                            
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                    void VulkanWindow::enumVKDescriptorSetLayout()
+                    {
+                        if (ImGui::CollapsingHeader("Enum VKDescriptorSetLayout"))
+                        {
+                            
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                    void VulkanWindow::enumVKPipelineLayout()
+                    {
+                        if (ImGui::CollapsingHeader("Enum VKPipelineLayout"))
+                        {
+                            
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                    void VulkanWindow::enumVKPipeline()
+                    {
+                        if (ImGui::CollapsingHeader("Enum VKPipeline"))
+                        {
+                            
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                    void VulkanWindow::enumMaterial()
+                    {
+                        if (ImGui::CollapsingHeader("Enum Material"))
+                        {
+                            
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                    void VulkanWindow::enumObject()
+                    {
+                        if (ImGui::CollapsingHeader("Enum Object"))
+                        {
+                            
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                    void VulkanWindow::enumScene()
+                    {
+                        if (ImGui::CollapsingHeader("Enum Scene"))
+                        {
+                            
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+                    void VulkanWindow::enumSceneManager()
+                    {
+                        if (ImGui::CollapsingHeader("Enum SceneManager"))
+                        {
+                            
+                        }
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                    }
+
                 void VulkanWindow::endRenderImgui()
                 {
                     ImGui::Render();

@@ -487,6 +487,7 @@ public:
     VKDescriptorSetManager* m_pVKDescriptorSetManager;
     VKDescriptorSetLayoutManager* m_pVKDescriptorSetLayoutManager;
     VKPipelineLayoutManager* m_pVKPipelineLayoutManager;
+    
     MaterialDataManager* m_pMaterialDataManager;
     MaterialManager* m_pMaterialManager;
     

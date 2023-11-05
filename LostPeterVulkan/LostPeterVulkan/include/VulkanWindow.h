@@ -1133,6 +1133,31 @@ namespace LostPeter
                         virtual void passConstantsConfig();
                         //Model
                         virtual void modelConfig();
+                        
+                        //Path
+                        virtual void enumPath();
+                        //Mesh
+                        virtual void enumMesh();
+                        //Texture
+                        virtual void enumTexture();
+                        //Shader
+                        virtual void enumShader();
+                        //VKDescriptorSet
+                        virtual void enumVKDescriptorSet();
+                        //VKDescriptorSetLayout
+                        virtual void enumVKDescriptorSetLayout();
+                        //VKPipelineLayout
+                        virtual void enumVKPipelineLayout();
+                        //VKPipeline
+                        virtual void enumVKPipeline();
+                        //Material
+                        virtual void enumMaterial();
+                        //Object
+                        virtual void enumObject();
+                        //Scene
+                        virtual void enumScene();
+                        //SceneManager
+                        virtual void enumSceneManager();
                     virtual void endRenderImgui();
                 virtual void updateCBs_Editor();
                 virtual void updateCBs_Custom();

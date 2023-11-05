@@ -75,6 +75,7 @@ namespace LostPeter
                 return nullptr;
             }
         }
+        pVKPipelineLayout->AddRef();
         return pVKPipelineLayout;
     }
     VKPipelineLayout* VKPipelineLayoutManager::loadVKPipelineLayout(const String& strName)
@@ -87,6 +88,16 @@ namespace LostPeter
                       strName.c_str());
         }
         return pVKPipelineLayout;
+    }
+    void VKPipelineLayoutManager::UnloadVKPipelineLayout(VKPipelineLayout* pVKPipelineLayout)
+    {
+        if (pVKPipelineLayout == nullptr)
+            return;
+        pVKPipelineLayout->DelRef();
+        if (!HasRef())
+        {
+            DeleteVKPipelineLayout(pVKPipelineLayout->GetName());
+        }
     }
 
     bool VKPipelineLayoutManager::HasVKPipelineLayout(const String& strName)

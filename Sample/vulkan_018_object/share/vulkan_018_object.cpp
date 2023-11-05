@@ -1646,6 +1646,19 @@ bool Vulkan_018_Object::beginRenderImgui()
         //4> Model
         modelConfig();
 
+        //5> Enum
+        enumPath();
+        enumMesh();
+        enumTexture();
+        enumShader();
+        enumVKDescriptorSet();
+        enumVKDescriptorSetLayout();
+        enumVKPipelineLayout();
+        enumVKPipeline();
+        enumMaterial();
+        enumObject();
+        enumScene();
+        enumSceneManager();
     }
     ImGui::End();
 
@@ -2114,6 +2127,8 @@ void Vulkan_018_Object::modelConfig()
             }
         }
     }
+    ImGui::Separator();
+    ImGui::Spacing();
 }
 
 void Vulkan_018_Object::endRenderImgui()

@@ -44,6 +44,7 @@ namespace LostPeter
 
     public:
         VKPipeline* LoadVKPipeline(const String& strName);
+        void UnloadVKPipeline(VKPipeline* pVKPipeline);
 
         bool HasVKPipeline(const String& strName);
         VKPipeline* GetVKPipeline(const String& strName);

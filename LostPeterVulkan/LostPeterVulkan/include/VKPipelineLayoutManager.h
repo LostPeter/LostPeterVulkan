@@ -45,6 +45,7 @@ namespace LostPeter
     public:
         bool LoadVKPipelineLayoutAll();
         VKPipelineLayout* LoadVKPipelineLayout(const String& strName);
+        void UnloadVKPipelineLayout(VKPipelineLayout* pVKPipelineLayout);
 
         bool HasVKPipelineLayout(const String& strName);
         VKPipelineLayout* GetVKPipelineLayout(const String& strName);
