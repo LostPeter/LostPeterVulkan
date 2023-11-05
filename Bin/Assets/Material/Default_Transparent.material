@@ -6,13 +6,25 @@
 				
 			</state_common>
 			<state_lighting>
-				<light_setting enable="false" lighting_type="Phong" />
-			</state_lighting>
-			<state_shader>
-				<vert name="vert_default_transparent" />
-				<frag name="frag_default_transparent" >
-					<state_texture>
+				<light_setting enable="false" lighting_type="Phong">
 
+				</light_setting>
+			</state_lighting>
+			<state_shader layout="Pass-Object-Material-Instance-TextureFS">
+				<vert name="vert_default_transparent">
+					<state_params>
+
+					</state_params>
+				</vert>
+				<frag name="frag_default_transparent" >
+					<state_params>
+
+					</state_params>
+					<state_texture>
+						<texture_unit group="6001" name="default_blackwhite" >
+							<texture_setting />
+							<animation_setting />
+						</texture_unit>
 					</state_texture>
 				</frag>
 			</state_shader>

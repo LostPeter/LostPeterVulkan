@@ -11,6 +11,11 @@
 
 #include "../include/RenderState.h"
 #include "../include/VulkanWindow.h"
+#include "../include/TextureManager.h"
+#include "../include/Texture.h"
+#include "../include/ShaderManager.h"
+#include "../include/Shader.h"
+
 
 namespace LostPeter
 {
@@ -114,22 +119,63 @@ namespace LostPeter
 		memcpy(pStateLighting, this,sizeof(RenderStateLighting));
 	}
     
+	//////////////////////////////////// RenderStateParam ///////////////////////////////
+	RenderStateParam::RenderStateParam(const String& _nameParam)
+		: nameParam(_nameParam)
+	{
+
+	}
+	RenderStateParam::~RenderStateParam()
+	{
+
+	}
+	void RenderStateParam::Destroy()
+	{
+
+	}
+
 
 	//////////////////////////////////// RenderStateTexture /////////////////////////////
-	RenderStateTexture::RenderStateTexture()
+	RenderStateTexture::RenderStateTexture(uint32 _group, const String& _nameTexture)
+		: nGroup(_group)
+		, nameTexture(_nameTexture)
+		, pTexture(nullptr)
 	{
 
 	}
 	RenderStateTexture::~RenderStateTexture()
 	{
+		Destroy();
+	}
+	void RenderStateTexture::Destroy()
+	{
+		UnloadTexture();
+	}
+	bool RenderStateTexture::LoadTexture()
+	{
+		pTexture = TextureManager::GetSingleton().LoadTexture(nGroup, nameTexture);
+		if (pTexture == nullptr)
+		{
+			F_LogError("*********************** RenderStateTexture::LoadTexture: Load texture, group: [%u], name: [%s] failed !", nGroup, nameTexture.c_str());
+			return false;
+		}
 
+		return true;
+	}
+	void RenderStateTexture::UnloadTexture()
+	{
+		if (pTexture != nullptr)
+		{
+			TextureManager::GetSingleton().UnloadTexture(pTexture);
+		}
+		pTexture = nullptr;
 	}
 
 
     //////////////////////////////////// RenderStateShader //////////////////////////////
-	RenderStateShaderItem::RenderStateShaderItem(const String& nameShader)
+	RenderStateShaderItem::RenderStateShaderItem(const String& nameShader, FShaderType type)
 		: Base(nameShader)
-		, typeShader(F_Shader_Vertex)
+		, typeShader(type)
 	{
 
 	}
@@ -139,11 +185,137 @@ namespace LostPeter
 	}
 	void RenderStateShaderItem::Destroy()
 	{
-
+		typeShader = F_Shader_Vertex;
+		DeleteStateParamAll();
+		DeleteStateTextureAll();
 	}
 
 
+////Param
+	int RenderStateShaderItem::GetStateParamCount() const
+	{
+		return (int)aRenderStateParam.size();
+	}
+	RenderStateParam* RenderStateShaderItem::GetStateParam(int index) const
+	{
+		if (index < 0 || index >= (int)aRenderStateParam.size())
+			return nullptr;
+		return aRenderStateParam[index];
+	}
+	RenderStateParam* RenderStateShaderItem::GetStateParamByName(const String& name)
+	{
+		RenderStateParamPtrMap::iterator itFind = mapRenderStateParam.find(name);
+		if (itFind == mapRenderStateParam.end())
+			return nullptr;
+		return itFind->second;
+	}
+	void RenderStateShaderItem::AddStateParam(RenderStateParam* pStateParam)
+	{
+		const String& nameSP = pStateParam->GetName();
+		RenderStateParam* pSP = GetStateParamByName(nameSP);
+		if (pSP != nullptr)
+			return;
+
+		aRenderStateParam.push_back(pStateParam);
+		mapRenderStateParam[nameSP] = pStateParam;
+	}
+	void RenderStateShaderItem::DeleteStateParam(RenderStateParam* pStateParam)
+	{
+		if (pStateParam == nullptr)
+			return;
+
+		const String& nameSP = pStateParam->GetName();
+		RenderStateParamPtrMap::iterator itFind = mapRenderStateParam.find(nameSP);
+		if (itFind != mapRenderStateParam.end())
+		{
+			mapRenderStateParam.erase(itFind);
+		}
+		RenderStateParamPtrVector::iterator itFindA = std::find(aRenderStateParam.begin(), aRenderStateParam.end(), pStateParam);
+		if (itFindA != aRenderStateParam.end())
+			aRenderStateParam.erase(itFindA);
+		F_DELETE(pStateParam)
+	}
+	void RenderStateShaderItem::DeleteStateParam(int index)
+	{
+		RenderStateParam* pStateParam = GetStateParam(index);
+		DeleteStateParam(pStateParam);
+	}
+	void RenderStateShaderItem::DeleteStateParamAll()
+	{
+		int count = (int)aRenderStateParam.size();
+		for (int i = 0; i < count; i++)
+		{
+			F_DELETE(aRenderStateParam[i])
+		}
+		aRenderStateParam.clear();
+		mapRenderStateParam.clear();
+	}
+
+
+////Texture
+	int RenderStateShaderItem::GetStateTextureCount() const
+	{
+		return (int)aRenderStateTexture.size();
+	}
+	RenderStateTexture* RenderStateShaderItem::GetStateTexture(int index) const
+	{
+		if (index < 0 || index >= (int)aRenderStateTexture.size())
+			return nullptr;
+		return aRenderStateTexture[index];
+	}
+	RenderStateTexture* RenderStateShaderItem::GetStateTextureByName(const String& name)
+	{
+		RenderStateTexturePtrMap::iterator itFind = mapRenderStateTexture.find(name);
+		if (itFind == mapRenderStateTexture.end())
+			return nullptr;
+		return itFind->second;
+	}
+	void RenderStateShaderItem::AddStateTexture(RenderStateTexture* pStateTexture)
+	{
+		const String& nameST = pStateTexture->GetName();
+		RenderStateTexture* pST = GetStateTextureByName(nameST);
+		if (pST != nullptr)
+			return;
+
+		aRenderStateTexture.push_back(pStateTexture);
+		mapRenderStateTexture[nameST] = pStateTexture;
+	}
+	void RenderStateShaderItem::DeleteStateTexture(RenderStateTexture* pStateTexture)
+	{
+		if (pStateTexture == nullptr)
+			return;
+
+		const String& nameST = pStateTexture->GetName();
+		RenderStateTexturePtrMap::iterator itFind = mapRenderStateTexture.find(nameST);
+		if (itFind != mapRenderStateTexture.end())
+		{
+			mapRenderStateTexture.erase(itFind);
+		}
+		RenderStateTexturePtrVector::iterator itFindA = std::find(aRenderStateTexture.begin(), aRenderStateTexture.end(), pStateTexture);
+		if (itFindA != aRenderStateTexture.end())
+			aRenderStateTexture.erase(itFindA);
+		F_DELETE(pStateTexture)
+	}
+	void RenderStateShaderItem::DeleteStateTexture(int index)
+	{
+		RenderStateTexture* pStateTexture = GetStateTexture(index);
+		DeleteStateTexture(pStateTexture);
+	}
+	void RenderStateShaderItem::DeleteStateTextureAll()
+	{
+		int count = (int)aRenderStateTexture.size();
+		for (int i = 0; i < count; i++)
+		{
+			F_DELETE(aRenderStateTexture[i])
+		}
+		aRenderStateTexture.clear();
+		mapRenderStateTexture.clear();
+	}
+
+
+
     RenderStateShader::RenderStateShader()
+		: nameDescriptorSetLayout("")
     {
 
     }
@@ -153,7 +325,7 @@ namespace LostPeter
     }
 	void RenderStateShader::Destroy()
 	{
-		
+		DeleteRenderStateShaderItemAll();
 	}
 
 	bool RenderStateShader::HasRenderStateShaderItem(const String& nameShader)

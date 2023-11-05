@@ -50,10 +50,13 @@ namespace LostPeter
                 #define MATERIAL_DATA_TAG_STATE_SHADER_FRAG						                "frag"						    //5
                 #define MATERIAL_DATA_TAG_STATE_SHADER_COMP						                "comp"						    //6
 
-                #define	MATERIAL_DATA_TAG_STATE_TEXTURE							                "state_texture"					
-                    #define MATERIAL_DATA_TAG_STATE_TEXTURE_TEXTURE_UNIT						    "tex_unit"
-                        #define MATERIAL_DATA_TAG_TAT_TEXTURE_TEXTURE_SETTING						    "tex_setting"		    //1
-                        #define MATERIAL_DATA_TAG_TAT_TEXTURE_ANIMATION_SETTING					        "anim_setting"			//2
+                    #define	MATERIAL_DATA_TAG_STATE_PARAMS                                          "state_params"		                //1
+                        #define	MATERIAL_DATA_TAG_STATE_PARAM                                          "state_param"		                //1
+
+                    #define	MATERIAL_DATA_TAG_STATE_TEXTURE							                "state_texture"			
+                        #define	MATERIAL_DATA_TAG_STATE_TEXTURE_UNIT                                    "texture_unit"                  //1
+                            #define MATERIAL_DATA_TAG_TAT_TEXTURE_TEXTURE_SETTING			                "texture_setting"		        //1
+                            #define MATERIAL_DATA_TAG_TAT_TEXTURE_ANIMATION_SETTING					        "animation_setting"			    //2
 
 
 #define MATERIAL_DATA_TAG_ATTRIBUTE_GROUP			            "group"
@@ -68,6 +71,8 @@ namespace LostPeter
 #define	MATERIAL_DATA_TAG_ATTRIBUTE_VALUE			            "value"
 #define	MATERIAL_DATA_TAG_ATTRIBUTE_MASK				        "mask"
 #define MATERIAL_DATA_TAG_ATTRIBUTE_FLAG				        "flag"
+#define MATERIAL_DATA_TAG_ATTRIBUTE_LAYOUT				        "layout"
+
 
     //State Common
     #define	MATERIAL_DATA_TAG_ATTRIBUTE_POINT_SIZE				        "size"
@@ -313,29 +318,121 @@ namespace LostPeter
             return true;
         }
 
-
-            static bool s_parserXML_StateTexture(FXMLElement* pElemStateTexture, RenderStateTexture* pST)
-            {
-                F_Assert(pElemStateTexture && pST && "s_parserXML_StateTexture")
-
-                int count_texture_items = pElemStateTexture->GetElementChildrenCount();
-                for (int i = 0; i < count_texture_items; i++)
+                static bool s_parserXML_StateParams(FXMLElement* pElemStateParams, RenderStateShaderItem* pSSItem)
                 {
-                    FXMLElement* pElemTexture = pElemStateTexture->GetElementChild(i);
+                    F_Assert(pElemStateParams && pSSItem && "s_parserXML_StateParams")
                     
+                    int count_param_items = pElemStateParams->GetElementChildrenCount();
+                    for (int i = 0; i < count_param_items; i++)
+                    {
+                        FXMLElement* pElemParam = pElemStateParams->GetElementChild(i);
+                        
+                        
+                    }
+                    return true;
                 }
+
+                static bool s_parserXML_StateTextures(FXMLElement* pElemStateTextures, RenderStateShaderItem* pSSItem)
+                {
+                    F_Assert(pElemStateTextures && pSSItem && "s_parserXML_StateTextures")
+
+                    int count_texture_items = pElemStateTextures->GetElementChildrenCount();
+                    for (int i = 0; i < count_texture_items; i++)
+                    {
+                        FXMLElement* pElemTexture = pElemStateTextures->GetElementChild(i);
+                        
+                        uint32 nGroup;
+                        if (!pElemTexture->ParserAttribute_UInt(MATERIAL_DATA_TAG_ATTRIBUTE_GROUP, nGroup))
+                        {
+                            F_LogError("*********************** s_parserXML_StateTextures: Can not find attribute: 'group', from state texture !");     
+                            return false;
+                        }
+                        String nameTexture;
+                        if (!pElemTexture->ParserAttribute_String(MATERIAL_DATA_TAG_ATTRIBUTE_NAME, nameTexture))
+                        {
+                            F_LogError("*********************** s_parserXML_StateTextures: Can not find attribute: 'name', from state texture !");     
+                            return false;
+                        }
+
+                        RenderStateTexture* pStateTexture = new RenderStateTexture(nGroup, nameTexture);
+                        if (!pStateTexture->LoadTexture())
+                        {
+                            F_LogError("*********************** s_parserXML_StateTextures: Load texture failed, group: [%u], name: [%s] !", nGroup, nameTexture.c_str()); 
+                            return false;
+                        }
+                        
+                        pSSItem->AddStateTexture(pStateTexture);
+                    }
+                    return true;
+                }
+            static bool s_parserXML_StateShaderItem(FXMLElement* pElemShaderItem, RenderStateShaderItem* pSSItem)
+            {
+                F_Assert(pElemShaderItem && "s_parserXML_StateShaderItem")
+
+                int count_items = pElemShaderItem->GetElementChildrenCount();
+                for (int i = 0; i < count_items; i++)
+                {
+                    FXMLElement* pElemItem = pElemShaderItem->GetElementChild(i);
+
+                    const String& strNameItem = pElemItem->GetName();
+                    if (strNameItem == MATERIAL_DATA_TAG_STATE_PARAMS)
+                    {
+                        if (!s_parserXML_StateParams(pElemItem, pSSItem))
+                        {
+                            F_LogError("*********************** s_parserXML_StateShaderItem: Parse shader params failed !");
+                            return false;
+                        }
+                    }
+                    else if (strNameItem == MATERIAL_DATA_TAG_STATE_TEXTURE)
+                    {
+                        if (!s_parserXML_StateTextures(pElemItem, pSSItem))
+                        {
+                            F_LogError("*********************** s_parserXML_StateShaderItem: Parse shader textures failed !");
+                            return false;
+                        }
+                    }
+                }
+
                 return true;
             }
         static bool s_parserXML_StateShader(FXMLElement* pElemStateShader, RenderStateShader* pSS)
         {
             F_Assert(pElemStateShader && pSS && "s_parserXML_StateShader")
 
+            String nameLayout;
+            if (!pElemStateShader->ParserAttribute_String(MATERIAL_DATA_TAG_ATTRIBUTE_LAYOUT, nameLayout))
+            {
+                F_LogError("*********************** s_parserXML_StateShader: Can not find attribute: 'layout', from state shader !");     
+                return false;
+            }
+            pSS->SetNameDescriptorSetLayout(nameLayout);
+
+
             int count_shader_items = pElemStateShader->GetElementChildrenCount();
             for (int i = 0; i < count_shader_items; i++)
             {
-                FXMLElement* pElemShader = pElemStateShader->GetElementChild(i);
+                FXMLElement* pElemShaderItem = pElemStateShader->GetElementChild(i);
                 
-                
+                //Shader Type
+                const String& nameShaderType = pElemShaderItem->GetName();  
+                FShaderType typeShader = F_ParseShaderType(nameShaderType);
+
+                //Shader Name
+                String nameShader;
+                if (!pElemShaderItem->ParserAttribute_String(MATERIAL_DATA_TAG_ATTRIBUTE_NAME, nameShader))
+                {
+                    F_LogError("*********************** s_parserXML_StateShader: Can not find attribute: 'name', state shader index: [%d] !", i);           
+                    return false;
+                }
+
+                RenderStateShaderItem* pSSItem = new RenderStateShaderItem(nameShader, typeShader);
+                if (!s_parserXML_StateShaderItem(pElemShaderItem, pSSItem))
+                {
+                    F_LogError("*********************** s_parserXML_StateShaderItem: Parse state shader item, name: [%s], type: [%s] failed !", nameShader.c_str(), nameShaderType.c_str());           
+                    return false;
+                }
+
+                pSS->AddRenderStateShaderItem(pSSItem);
             }
             return true;
         }

@@ -47,7 +47,8 @@ namespace LostPeter
     public:
         bool LoadTextureAll();
         Texture* LoadTexture(uint nGroup, const String& strName);
-
+        void UnloadTexture(Texture* pTexture);
+        
         bool HasTexture(uint nGroup, const String& strName);
         Texture* GetTexture(uint nGroup, const String& strName);
         bool AddTexture(uint nGroup, Texture* pTexture);

@@ -22,6 +22,7 @@
 					<scene_blending_setting enable="false" scene_blending_type="Alpha" scene_blending_op_type="Add" src="One" dst="Zero" seperate_enable="false" scene_blending_op2_type="Add" src2="One" dst2="Zero" />
 					<color_write color_r_enable="true" color_g_enable="true" color_b_enable="true" color_a_enable="true" />
 				!-->
+
 			</state_common>
 			<state_lighting>
 				<!-- 
@@ -31,15 +32,45 @@
 						<material_setting ambient="1 1 1 1" diffuse="1 1 1 1" specular="0 0 0 1" emissive="0 0 0 1" shininess="0.0" flag="0" />
 					</light_setting>
 				-->
+
 				<light_setting enable="true" lighting_type="Phong" >
 					<material_setting ambient="1 1 1 1" diffuse="1 1 1 1" specular="0 0 0 1" emissive="0 0 0 1" shininess="0.0" flag="0" />
 				</light_setting>
 			</state_lighting>
-			<state_shader>
-				<vert name="vert_default" />
-				<frag name="frag_default" >
-					<state_texture>
+			<state_shader layout="Pass-Object-Material-Instance-TextureFS">
+				<!-- 
+					<frag name="frag_default" >
+						<state_params>
+							<state_param />
+							<state_param />
+						</state_params>
+						<state_texture" >
+							<texture_unit group="6001" name="default_blackwhite" >
+								<texture_setting filter="" addressing="" border_color="" />
+								<animation_setting anim_chunk="" />
+							</texture_unit>
+						</state_texture>
+					</frag>
+				-->
 
+				<vert name="vert_default">
+					<state_params>
+						<state_param name="Pass" />
+						<state_param name="Object" />
+					</state_params>
+				</vert>
+				<frag name="frag_default" >
+					<state_params>
+						<state_param name="Pass" />
+						<state_param name="Object" />
+						<state_param name="Material" />
+						<state_param name="TextureFS" />
+					</state_params>
+					<state_texture>
+						<texture_unit group="6001" name="default_blackwhite" >
+							<texture_setting />
+							<animation_setting />
+						</texture_unit>
 					</state_texture>
 				</frag>
 			</state_shader>

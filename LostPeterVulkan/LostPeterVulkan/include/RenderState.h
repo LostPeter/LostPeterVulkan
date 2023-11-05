@@ -104,15 +104,48 @@ namespace LostPeter
 	};
 
 
+	//////////////////////////////////// RenderStateParam ///////////////////////////////
+	class utilExport RenderStateParam : public FNonCopyable
+	{
+	public:
+		RenderStateParam(const String& _nameParam);
+		~RenderStateParam();
+
+	public:
+	protected:
+		String nameParam;
+
+	public:
+		LP_FORCEINLINE const String& GetName() const { return nameParam; }
+
+	public:
+		void Destroy();
+
+		
+	};
+
 	//////////////////////////////////// RenderStateTexture /////////////////////////////
 	class utilExport RenderStateTexture : public FNonCopyable
 	{
 	public:
-		RenderStateTexture();
+		RenderStateTexture(uint32 _group, const String& _nameTexture);
 		~RenderStateTexture();
 
 	public:
+	protected:
+		uint32 nGroup;
+		String nameTexture;
+		Texture* pTexture;
 
+	public:
+		LP_FORCEINLINE const String& GetName() const { return nameTexture; }
+		LP_FORCEINLINE Texture* GetTexture() const { return pTexture; }
+
+	public:
+		void Destroy();
+
+		bool LoadTexture();
+		void UnloadTexture();
 	};
 
 	
@@ -121,16 +154,27 @@ namespace LostPeter
 										   , public FNonCopyable
 	{
 	public:
-		RenderStateShaderItem(const String& nameShader);
+		RenderStateShaderItem(const String& nameShader, FShaderType type);
 		~RenderStateShaderItem();
 
 	public:
 		FShaderType typeShader;
+
+	////Param
+		RenderStateParamPtrVector aRenderStateParam;
+		RenderStateParamPtrMap mapRenderStateParam;
+	////Texture
 		RenderStateTexturePtrVector aRenderStateTexture;
 		RenderStateTexturePtrMap mapRenderStateTexture;
 
 	public:
 		LP_FORCEINLINE FShaderType GetShaderType() const { return typeShader; }
+	////Param
+		LP_FORCEINLINE const RenderStateParamPtrVector& GetRenderStateParamPtrVector() const { return aRenderStateParam; }
+        LP_FORCEINLINE RenderStateParamPtrVector& GetRenderStateParamPtrVector() { return aRenderStateParam; }
+        LP_FORCEINLINE const RenderStateParamPtrMap& GetRenderStateParamPtrMap() const { return mapRenderStateParam; }
+        LP_FORCEINLINE RenderStateParamPtrMap& GetRenderStateParamPtrMap() { return mapRenderStateParam; }
+	////Texture
 		LP_FORCEINLINE const RenderStateTexturePtrVector& GetRenderStateTexturePtrVector() const { return aRenderStateTexture; }
         LP_FORCEINLINE RenderStateTexturePtrVector& GetRenderStateTexturePtrVector() { return aRenderStateTexture; }
         LP_FORCEINLINE const RenderStateTexturePtrMap& GetRenderStateTexturePtrMap() const { return mapRenderStateTexture; }
@@ -139,8 +183,25 @@ namespace LostPeter
 	public:	
 		void Destroy();
 		
+	////Param
 	public:
+		int GetStateParamCount() const;
+		RenderStateParam* GetStateParam(int index) const;
+		RenderStateParam* GetStateParamByName(const String& name);
+		void AddStateParam(RenderStateParam* pStateParam);
+		void DeleteStateParam(RenderStateParam* pStateParam);
+		void DeleteStateParam(int index);
+		void DeleteStateParamAll();
 
+	////Texture
+	public:
+		int GetStateTextureCount() const;
+		RenderStateTexture* GetStateTexture(int index) const;
+		RenderStateTexture* GetStateTextureByName(const String& name);
+		void AddStateTexture(RenderStateTexture* pStateTexture);
+		void DeleteStateTexture(RenderStateTexture* pStateTexture);
+		void DeleteStateTexture(int index);
+		void DeleteStateTextureAll();
 
 	};
 
@@ -151,10 +212,15 @@ namespace LostPeter
 		~RenderStateShader();
 
 	public:
+	protected:
+		String nameDescriptorSetLayout;
 		RenderStateShaderItemPtrVector aRenderStateShaderItem;
 		RenderStateShaderItemPtrMap mapRenderStateShaderItem;
 
 	public:
+		LP_FORCEINLINE const String& GetNameDescriptorSetLayout() const { return nameDescriptorSetLayout; }
+		LP_FORCEINLINE void SetNameDescriptorSetLayout(const String& nameDSL) { nameDescriptorSetLayout = nameDSL; }
+
 		LP_FORCEINLINE const RenderStateShaderItemPtrVector& GetRenderStateShaderItemPtrVector() const { return aRenderStateShaderItem; }
         LP_FORCEINLINE RenderStateShaderItemPtrVector& GetRenderStateShaderItemPtrVector() { return aRenderStateShaderItem; }
         LP_FORCEINLINE const RenderStateShaderItemPtrMap& GetRenderStateShaderItemPtrMap() const { return mapRenderStateShaderItem; }
@@ -469,9 +535,6 @@ namespace LostPeter
 		LP_FORCEINLINE void	SetShininess(float f) { m_pStateLighting->fShininess = f; }
 		LP_FORCEINLINE uint32 GetColorFromVertexFlag() const { return m_pStateLighting->nColorFromVertexFlag; }
 		LP_FORCEINLINE void	SetColorFromVertexFlag(uint32 n) { m_pStateLighting->nColorFromVertexFlag = n; }
-
-	
-	////RenderStateTexture
 
 
 	////RenderStateShader

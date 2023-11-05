@@ -101,6 +101,7 @@ namespace LostPeter
                 return nullptr;
             }
         }
+        pTexture->AddRef();
         return pTexture;
     }
     Texture* TextureManager::loadTexture(TextureInfo* pTI)
@@ -123,7 +124,6 @@ namespace LostPeter
         {
             pTexture->texChunkIndex = FMath::Rand(0, pTexture->texChunkMaxX * pTexture->texChunkMaxY - 1);
         }
-        pTexture->AddRef();
         pTexture->LoadTexture(pTI->width, 
                               pTI->height,
                               pTI->depth);
@@ -136,6 +136,16 @@ namespace LostPeter
                       pTI->pathTexture.c_str());
         }
         return pTexture;
+    }
+    void TextureManager::UnloadTexture(Texture* pTexture)
+    {
+        if (pTexture == nullptr)
+            return;
+        pTexture->DelRef();
+        if (!HasRef())
+        {
+            DeleteTexture(pTexture->GetGroup(), pTexture->GetName());
+        }
     }
 
     bool TextureManager::HasTexture(uint nGroup, const String& strName)
