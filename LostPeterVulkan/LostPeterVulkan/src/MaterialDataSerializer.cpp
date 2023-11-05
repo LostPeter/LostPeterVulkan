@@ -360,8 +360,9 @@ namespace LostPeter
                             F_LogError("*********************** s_parserXML_StateTextures: Load texture failed, group: [%u], name: [%s] !", nGroup, nameTexture.c_str()); 
                             return false;
                         }
-                        
                         pSSItem->AddStateTexture(pStateTexture);
+
+                        F_LogInfo("############### s_parserXML_StateTextures: Parser texture unit, index: [%d], group: [%u], name: [%s] success !", i, nGroup, nameTexture.c_str());
                     }
                     return true;
                 }
@@ -406,7 +407,11 @@ namespace LostPeter
                 return false;
             }
             pSS->SetNameDescriptorSetLayout(nameLayout);
-
+            if (!pSS->LoadVKDescriptorSetLayout())
+            {
+                F_LogError("*********************** s_parserXML_StateShader: LoadVKDescriptorSetLayout failed, name: [%s] !", nameLayout.c_str());     
+                return false;
+            }
 
             int count_shader_items = pElemStateShader->GetElementChildrenCount();
             for (int i = 0; i < count_shader_items; i++)
@@ -426,13 +431,22 @@ namespace LostPeter
                 }
 
                 RenderStateShaderItem* pSSItem = new RenderStateShaderItem(nameShader, typeShader);
-                if (!s_parserXML_StateShaderItem(pElemShaderItem, pSSItem))
+                if (!pSSItem->LoadShader())
                 {
-                    F_LogError("*********************** s_parserXML_StateShaderItem: Parse state shader item, name: [%s], type: [%s] failed !", nameShader.c_str(), nameShaderType.c_str());           
+                    F_DELETE(pSSItem)
+                    F_LogError("*********************** s_parserXML_StateShader: Load shader failed, group: [%u], name: [%s], type: [%s] !", FPathManager::PathGroup_Shader, nameShader.c_str(), nameShaderType.c_str()); 
                     return false;
                 }
 
+                if (!s_parserXML_StateShaderItem(pElemShaderItem, pSSItem))
+                {
+                    F_DELETE(pSSItem)
+                    F_LogError("*********************** s_parserXML_StateShader: Parse state shader item, name: [%s], type: [%s] failed !", nameShader.c_str(), nameShaderType.c_str());           
+                    return false;
+                }
                 pSS->AddRenderStateShaderItem(pSSItem);
+
+                F_LogInfo("########## s_parserXML_StateShader: Parser shader item, index: [%d], name: [%s], type: [%s] success !", i, nameShader.c_str(), nameShaderType.c_str());
             }
             return true;
         }
@@ -501,7 +515,8 @@ namespace LostPeter
                 F_LogError("*********************** s_parserXML_MaterialData: Can not find 'type' Attr from state: [%s] !", pMaterialData->GetName().c_str());
                 return false;
             }
-            FRenderPassType typeRenderPass = F_ParseRenderPassType(pAttr->GetValue());
+            const String& strTypePass = pAttr->GetValue();
+            FRenderPassType typeRenderPass = F_ParseRenderPassType(strTypePass);
 
             //State
             RenderState* pRenderState = new RenderState(strNamePass, typeRenderPass);
@@ -512,6 +527,8 @@ namespace LostPeter
                 return false;
             }
             pMaterialData->AddRenderState(pRenderState);
+
+            F_LogInfo("##### s_parserXML_MaterialData: Parser pass, index: [%d], name: [%s], type: [%s] success !", i, strNamePass.c_str(), strTypePass.c_str());
         }
 
         return true;
@@ -596,6 +613,7 @@ namespace LostPeter
                 F_LogError("*********************** MaterialDataSerializer::ParserXML: Can not find attribute: 'name', material data index: [%d] !", i);           
                 continue;
             }
+            F_LogInfo("MaterialDataSerializer::ParserXML: Start to parser material data: [%s] !", strNameMaterial.c_str());
 
             MaterialData* pMD = m_pMaterialDataManager->findMaterialData(strNameMaterial);
             if (pMD != nullptr)
@@ -640,7 +658,7 @@ namespace LostPeter
 					{
 						pRet->push_back(pMaterialData);
 					}
-					F_LogInfo("MaterialDataSerializer::ParserXML: Parser material data [%s] success !", strNameMaterial.c_str());
+					F_LogInfo("MaterialDataSerializer::ParserXML: Parser material data: [%s] success !", strNameMaterial.c_str());
 					break;
 				}
             }

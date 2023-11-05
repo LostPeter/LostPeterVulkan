@@ -50,6 +50,7 @@ namespace LostPeter
     public:
         bool LoadShaderAll();
         Shader* LoadShader(uint nGroup, const String& strName);
+        void UnloadShader(Shader* pShader);
 
         bool HasShader(uint nGroup, const String& strName);
         Shader* GetShader(uint nGroup, const String& strName);

@@ -101,6 +101,7 @@ namespace LostPeter
                 return nullptr;
             }
         }
+        pVKDescriptorSetLayout->AddRef();
         return pVKDescriptorSetLayout;
     }
     VKDescriptorSetLayout* VKDescriptorSetLayoutManager::loadVKDescriptorSetLayout(DescriptorSetLayoutInfo* pDSLI)
@@ -113,6 +114,16 @@ namespace LostPeter
                       pDSLI->nameDescriptorSetLayoutInfo.c_str());
         }
         return pVKDescriptorSetLayout;
+    }
+    void VKDescriptorSetLayoutManager::UnloadVKDescriptorSetLayout(VKDescriptorSetLayout* pVKDescriptorSetLayout)
+    {
+        if (pVKDescriptorSetLayout == nullptr)
+            return;
+        pVKDescriptorSetLayout->DelRef();
+        if (!HasRef())
+        {
+            DeleteVKDescriptorSetLayout(pVKDescriptorSetLayout->GetName());
+        }
     }
 
     bool VKDescriptorSetLayoutManager::HasVKDescriptorSetLayout(const String& strName)

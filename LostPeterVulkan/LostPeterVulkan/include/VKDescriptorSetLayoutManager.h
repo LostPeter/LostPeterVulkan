@@ -47,6 +47,7 @@ namespace LostPeter
     public:
         bool LoadVKDescriptorSetLayoutAll();
         VKDescriptorSetLayout* LoadVKDescriptorSetLayout(const String& strName);
+        void UnloadVKDescriptorSetLayout(VKDescriptorSetLayout* pVKDescriptorSetLayout);
 
         bool HasVKDescriptorSetLayout(const String& strName);
         VKDescriptorSetLayout* GetVKDescriptorSetLayout(const String& strName);

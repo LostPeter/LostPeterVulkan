@@ -101,6 +101,7 @@ namespace LostPeter
                 return nullptr;
             }
         }
+        pShader->AddRef();
         return pShader;
     }
     Shader* ShaderManager::loadShader(ShaderInfo* pSI)
@@ -118,6 +119,16 @@ namespace LostPeter
                       pSI->pathShader.c_str());
         }
         return pShader;
+    }
+    void ShaderManager::UnloadShader(Shader* pShader)
+    {
+        if (pShader == nullptr)
+            return;
+        pShader->DelRef();
+        if (!HasRef())
+        {
+            DeleteShader(pShader->GetGroup(), pShader->GetName());
+        }
     }
 
     bool ShaderManager::HasShader(uint nGroup, const String& strName)

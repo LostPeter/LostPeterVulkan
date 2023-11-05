@@ -15,7 +15,8 @@
 #include "../include/Texture.h"
 #include "../include/ShaderManager.h"
 #include "../include/Shader.h"
-
+#include "../include/VKDescriptorSetLayoutManager.h"
+#include "../include/VKDescriptorSetLayout.h"
 
 namespace LostPeter
 {
@@ -121,13 +122,13 @@ namespace LostPeter
     
 	//////////////////////////////////// RenderStateParam ///////////////////////////////
 	RenderStateParam::RenderStateParam(const String& _nameParam)
-		: nameParam(_nameParam)
+		: Base(_nameParam)
 	{
 
 	}
 	RenderStateParam::~RenderStateParam()
-	{
-
+	{	
+		Destroy();
 	}
 	void RenderStateParam::Destroy()
 	{
@@ -137,8 +138,7 @@ namespace LostPeter
 
 	//////////////////////////////////// RenderStateTexture /////////////////////////////
 	RenderStateTexture::RenderStateTexture(uint32 _group, const String& _nameTexture)
-		: nGroup(_group)
-		, nameTexture(_nameTexture)
+		: Base(_group, _nameTexture)
 		, pTexture(nullptr)
 	{
 
@@ -153,10 +153,10 @@ namespace LostPeter
 	}
 	bool RenderStateTexture::LoadTexture()
 	{
-		pTexture = TextureManager::GetSingleton().LoadTexture(nGroup, nameTexture);
+		pTexture = TextureManager::GetSingleton().LoadTexture(GetGroup(), GetName());
 		if (pTexture == nullptr)
 		{
-			F_LogError("*********************** RenderStateTexture::LoadTexture: Load texture, group: [%u], name: [%s] failed !", nGroup, nameTexture.c_str());
+			F_LogError("*********************** RenderStateTexture::LoadTexture: Load texture, group: [%u], name: [%s] failed !", GetGroup(), GetName().c_str());
 			return false;
 		}
 
@@ -176,6 +176,7 @@ namespace LostPeter
 	RenderStateShaderItem::RenderStateShaderItem(const String& nameShader, FShaderType type)
 		: Base(nameShader)
 		, typeShader(type)
+		, pShader(nullptr)
 	{
 
 	}
@@ -188,8 +189,29 @@ namespace LostPeter
 		typeShader = F_Shader_Vertex;
 		DeleteStateParamAll();
 		DeleteStateTextureAll();
+		UnloadShader();
 	}
 
+	bool RenderStateShaderItem::LoadShader()
+	{
+		uint32 nGroup = FPathManager::PathGroup_Shader;
+		pShader = ShaderManager::GetSingleton().LoadShader(nGroup, GetName());
+		if (pShader == nullptr)
+		{
+			F_LogError("*********************** RenderStateShaderItem::LoadShader: Load shader, group: [%u], name: [%s] failed !", nGroup, GetName().c_str());
+			return false;
+		}
+
+		return true;
+	}
+	void RenderStateShaderItem::UnloadShader()
+	{
+		if (pShader != nullptr)
+		{
+			ShaderManager::GetSingleton().UnloadShader(pShader);
+		}
+		pShader = nullptr;
+	}
 
 ////Param
 	int RenderStateShaderItem::GetStateParamCount() const
@@ -316,6 +338,7 @@ namespace LostPeter
 
     RenderStateShader::RenderStateShader()
 		: nameDescriptorSetLayout("")
+		, pVKDescriptorSetLayout(nullptr)
     {
 
     }
@@ -326,6 +349,27 @@ namespace LostPeter
 	void RenderStateShader::Destroy()
 	{
 		DeleteRenderStateShaderItemAll();
+		UnloadVKDescriptorSetLayout();
+	}
+
+	bool RenderStateShader::LoadVKDescriptorSetLayout()
+	{
+		pVKDescriptorSetLayout = VKDescriptorSetLayoutManager::GetSingleton().LoadVKDescriptorSetLayout(nameDescriptorSetLayout);
+		if (pVKDescriptorSetLayout == nullptr)
+		{
+			F_LogError("*********************** RenderStateShader::LoadVKDescriptorSetLayout: Load VKDescriptorSetLayout, name: [%s] failed !", nameDescriptorSetLayout.c_str());
+			return false;
+		}
+
+		return true;
+	}
+	void RenderStateShader::UnloadVKDescriptorSetLayout()
+	{
+		if (pVKDescriptorSetLayout != nullptr)
+		{
+			VKDescriptorSetLayoutManager::GetSingleton().UnloadVKDescriptorSetLayout(pVKDescriptorSetLayout);
+		}
+		pVKDescriptorSetLayout = nullptr;
 	}
 
 	bool RenderStateShader::HasRenderStateShaderItem(const String& nameShader)

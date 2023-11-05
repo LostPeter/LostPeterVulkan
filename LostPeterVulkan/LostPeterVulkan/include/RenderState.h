@@ -105,7 +105,8 @@ namespace LostPeter
 
 
 	//////////////////////////////////// RenderStateParam ///////////////////////////////
-	class utilExport RenderStateParam : public FNonCopyable
+	class utilExport RenderStateParam : public Base
+									  , public FNonCopyable
 	{
 	public:
 		RenderStateParam(const String& _nameParam);
@@ -113,10 +114,8 @@ namespace LostPeter
 
 	public:
 	protected:
-		String nameParam;
 
 	public:
-		LP_FORCEINLINE const String& GetName() const { return nameParam; }
 
 	public:
 		void Destroy();
@@ -125,7 +124,8 @@ namespace LostPeter
 	};
 
 	//////////////////////////////////// RenderStateTexture /////////////////////////////
-	class utilExport RenderStateTexture : public FNonCopyable
+	class utilExport RenderStateTexture : public Base
+										, public FNonCopyable
 	{
 	public:
 		RenderStateTexture(uint32 _group, const String& _nameTexture);
@@ -133,12 +133,9 @@ namespace LostPeter
 
 	public:
 	protected:
-		uint32 nGroup;
-		String nameTexture;
 		Texture* pTexture;
 
 	public:
-		LP_FORCEINLINE const String& GetName() const { return nameTexture; }
 		LP_FORCEINLINE Texture* GetTexture() const { return pTexture; }
 
 	public:
@@ -159,6 +156,7 @@ namespace LostPeter
 
 	public:
 		FShaderType typeShader;
+		Shader* pShader;
 
 	////Param
 		RenderStateParamPtrVector aRenderStateParam;
@@ -169,6 +167,8 @@ namespace LostPeter
 
 	public:
 		LP_FORCEINLINE FShaderType GetShaderType() const { return typeShader; }
+		LP_FORCEINLINE Shader* GetShader() const { return pShader; }
+
 	////Param
 		LP_FORCEINLINE const RenderStateParamPtrVector& GetRenderStateParamPtrVector() const { return aRenderStateParam; }
         LP_FORCEINLINE RenderStateParamPtrVector& GetRenderStateParamPtrVector() { return aRenderStateParam; }
@@ -182,6 +182,9 @@ namespace LostPeter
 
 	public:	
 		void Destroy();
+
+		bool LoadShader();
+		void UnloadShader();
 		
 	////Param
 	public:
@@ -214,12 +217,15 @@ namespace LostPeter
 	public:
 	protected:
 		String nameDescriptorSetLayout;
+		VKDescriptorSetLayout* pVKDescriptorSetLayout;
+
 		RenderStateShaderItemPtrVector aRenderStateShaderItem;
 		RenderStateShaderItemPtrMap mapRenderStateShaderItem;
 
 	public:
 		LP_FORCEINLINE const String& GetNameDescriptorSetLayout() const { return nameDescriptorSetLayout; }
 		LP_FORCEINLINE void SetNameDescriptorSetLayout(const String& nameDSL) { nameDescriptorSetLayout = nameDSL; }
+		LP_FORCEINLINE VKDescriptorSetLayout* GetVKDescriptorSetLayout() const { return pVKDescriptorSetLayout; }
 
 		LP_FORCEINLINE const RenderStateShaderItemPtrVector& GetRenderStateShaderItemPtrVector() const { return aRenderStateShaderItem; }
         LP_FORCEINLINE RenderStateShaderItemPtrVector& GetRenderStateShaderItemPtrVector() { return aRenderStateShaderItem; }
@@ -228,6 +234,9 @@ namespace LostPeter
 
 	public:
 		void Destroy();
+
+		bool LoadVKDescriptorSetLayout();
+		void UnloadVKDescriptorSetLayout();
 
 	public:
 		bool HasRenderStateShaderItem(const String& nameShader);
