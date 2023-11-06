@@ -19,12 +19,22 @@ namespace LostPeter
     class utilExport MaterialInstance : public Base
     {
     public:
-        MaterialInstance(const String& nameMaterialInstance);
+        MaterialInstance(const String& nameMaterialInstance, Material* pMaterial);
         virtual ~MaterialInstance();
 
     public:
+    protected:
+        Material* m_pMaterial;
 
     public:
+        LP_FORCEINLINE Material* GetMaterial() const { return m_pMaterial; }
+
+    public:
+        void Destroy();
+
+    public:
+        bool LoadMaterialInstance();
+		void UnloadMaterialInstance();
 
     };
 

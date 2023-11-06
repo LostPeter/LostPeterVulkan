@@ -11,17 +11,40 @@
 
 #include "../include/ObjectManager.h"
 #include "../include/VulkanWindow.h"
+#include "../include/Object.h"
+
+template<> LostPeter::ObjectManager* LostPeterFoundation::FSingleton<LostPeter::ObjectManager>::ms_Singleton = nullptr;
 
 namespace LostPeter
 {
-    ObjectManager::ObjectManager(const String& nameObject)
-        : Base(nameObject)
+    ObjectManager* ObjectManager::GetSingletonPtr()
+	{
+		return ms_Singleton;
+	}
+	ObjectManager& ObjectManager::GetSingleton()
+	{  
+		F_Assert(ms_Singleton && "ObjectManager::GetSingleton")
+		return (*ms_Singleton);     
+	}
+
+    ObjectManager::ObjectManager()
+        : Base("ObjectManager")
     {
 
     }
     ObjectManager::~ObjectManager()
     {
+        Destroy();
+    }
+    void ObjectManager::Destroy()
+    {
 
+    }
+
+    bool ObjectManager::Init()
+    {
+
+        return true;
     }
 
 }; //LostPeter

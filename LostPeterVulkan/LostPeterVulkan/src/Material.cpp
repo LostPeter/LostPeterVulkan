@@ -11,7 +11,6 @@
 
 #include "../include/Material.h"
 #include "../include/VulkanWindow.h"
-#include "../include/MaterialInstance.h"
 #include "../include/MaterialData.h"
 #include "../include/MaterialDataManager.h"
 
@@ -54,15 +53,13 @@ namespace LostPeter
 
         return true;
     }
-	bool Material::UnloadMaterial()
+	void Material::UnloadMaterial()
     {
         if (m_pMaterialData)
 		{
 			MaterialDataManager::GetSingleton().DestroyMaterialData(m_pMaterialData);
 		}
         m_pMaterialData = nullptr;
-
-        return true;
     }
 
 	void Material::init()

@@ -30,6 +30,7 @@ namespace LostPeter
 	}
 
     uint32 MaterialManager::ms_nInstanceID = 0;
+
     static const int s_nCountDefaults = 3;
     static String s_aNameDefaults[s_nCountDefaults] = 
     {
@@ -49,6 +50,16 @@ namespace LostPeter
         Destroy();
     }
 
+    bool MaterialManager::IsMaterialDefault(Material* pMaterial)
+    {
+        for (MaterialPtrMap::iterator it = m_mapMaterialDefaults.begin(); 
+            it != m_mapMaterialDefaults.end(); ++it)
+        {
+            if (it->second == pMaterial)
+                return true;
+        }
+        return false;
+    }
     Material* MaterialManager::GetMaterialDefault(const String& strName)
     {
         MaterialPtrMap::iterator itFind = m_mapMaterialDefaults.find(strName);
@@ -69,9 +80,42 @@ namespace LostPeter
         return GetMaterialDefault(s_aNameDefaults[2]);
     }
 
+    bool MaterialManager::IsMaterialInstanceDefault(MaterialInstance* pMaterialInstance)
+    {
+        for (MaterialInstancePtrMap::iterator it = m_mapMaterialInstanceDefaults.begin(); 
+            it != m_mapMaterialInstanceDefaults.end(); ++it)
+        {
+            if (it->second == pMaterialInstance)
+                return true;
+        }
+        return false;
+    }
+    MaterialInstance* MaterialManager::GetMaterialInstanceDefault(const String& strName)
+    {
+        MaterialInstancePtrMap::iterator itFind = m_mapMaterialInstanceDefaults.find(strName);
+        if (itFind == m_mapMaterialInstanceDefaults.end())
+            return nullptr;
+        return itFind->second;
+    }
+    MaterialInstance* MaterialManager::GetMaterialInstance_Default()
+    {
+        return GetMaterialInstanceDefault(s_aNameDefaults[0]);
+    }
+    MaterialInstance* MaterialManager::GetMaterialInstance_DefaultOpaque()
+    {
+        return GetMaterialInstanceDefault(s_aNameDefaults[1]);
+    }
+    MaterialInstance* MaterialManager::GetMaterialInstance_DefaultTransparent()
+    {
+        return GetMaterialInstanceDefault(s_aNameDefaults[2]);
+    }
+
     void MaterialManager::Destroy()
     {
+        DestroyMaterialInstanceAll();
         DeleteMaterialAll();
+        
+        destroyMaterialInstanceDefaults();
         destroyMaterialDefaults();
     }
     bool MaterialManager::Init(uint nGroup, const String& strNameCfg)
@@ -100,6 +144,13 @@ namespace LostPeter
             return false;
         }
 
+        //4> Material Instance Default
+        if (!initMaterialInstanceDefaults())
+        {
+            F_LogError("*********************** MaterialManager::Init: initMaterialInstanceDefaults failed !");
+            return false;
+        }
+
         return true;
     }
     bool MaterialManager::initMaterialDefaults()
@@ -121,15 +172,13 @@ namespace LostPeter
     }
     Material* MaterialManager::loadMaterial(uint nGroup, const String& strName, bool bIsFromFile /*= true*/)
     {   
-        Material* pMaterial = new Material(nGroup,
-                                           strName);
+        Material* pMaterial = new Material(nGroup, strName);
         if (!pMaterial->LoadMaterial(bIsFromFile))
         {
             F_LogError("*********************** MaterialManager::loadMaterial: Load material failed, group: [%u] name: [%s] !", nGroup, strName.c_str());
             F_DELETE(pMaterial)
             return nullptr;
         }
-
         return pMaterial;
     }
     void MaterialManager::destroyMaterialDefaults()
@@ -141,6 +190,35 @@ namespace LostPeter
         }
         m_mapMaterialDefaults.clear();
     }
+
+    bool MaterialManager::initMaterialInstanceDefaults()
+    {
+        for (MaterialPtrMap::iterator it = m_mapMaterialDefaults.begin(); 
+             it != m_mapMaterialDefaults.end(); ++it)
+        {
+            const String& nameMaterial = it->first;
+            Material* pMaterial = it->second;
+            MaterialInstance* pMaterialInstance = CreateMaterialInstance(pMaterial, false);     
+            if (pMaterialInstance == nullptr)
+            {
+                F_LogError("*********************** MaterialManager::initMaterialInstanceDefaults: Create material instance from material: [%s] failed !", nameMaterial.c_str());
+                return false;
+            }
+            m_mapMaterialInstanceDefaults[nameMaterial] = pMaterialInstance;
+            F_LogInfo("MaterialManager::initMaterialInstanceDefaults: Create material instance from material: [%s] success !", nameMaterial.c_str());
+        }
+        return true;
+    }
+    void MaterialManager::destroyMaterialInstanceDefaults()
+    {
+        for (MaterialInstancePtrMap::iterator it = m_mapMaterialInstanceDefaults.begin(); 
+            it != m_mapMaterialInstanceDefaults.end(); ++it)
+        {
+            F_DELETE(it->second)
+        }
+        m_mapMaterialInstanceDefaults.clear();
+    }
+    
 
     bool MaterialManager::LoadMaterialAll()
     {
@@ -280,4 +358,78 @@ namespace LostPeter
         m_mapMaterialGroup.clear();
     }
     
+    MaterialInstance* MaterialManager::CreateMaterialInstance_Default(bool bIsUnique)
+    {
+        Material* pMaterial = GetMaterial_Default();
+        F_Assert(pMaterial && "MaterialManager::CreateMaterialInstance_Default")
+		return CreateMaterialInstance(pMaterial, bIsUnique);
+    }
+    MaterialInstance* MaterialManager::CreateMaterialInstance_DefaultOpaque(bool bIsUnique)
+    {
+        Material* pMaterial = GetMaterial_DefaultOpaque();
+        F_Assert(pMaterial && "MaterialManager::CreateMaterialInstance_DefaultOpaque")
+		return CreateMaterialInstance(pMaterial, bIsUnique);
+    }
+    MaterialInstance* MaterialManager::CreateMaterialInstance_DefaultTransparent(bool bIsUnique)
+    {
+        Material* pMaterial = GetMaterial_DefaultTransparent();
+        F_Assert(pMaterial && "MaterialManager::CreateMaterialInstance_DefaultTransparent")
+		return CreateMaterialInstance(pMaterial, bIsUnique);
+    }
+
+    MaterialInstance* MaterialManager::CreateMaterialInstance(Material* pMaterial, bool bIsUnique)
+    {
+        String strName = pMaterial->GetName();
+        if (bIsUnique)
+        {
+            strName += "_" + FUtilString::SaveUInt(GetNextInstanceID());
+        }
+		MaterialInstance* pMaterialInstance = new MaterialInstance(strName, pMaterial);
+		if (!pMaterialInstance->LoadMaterialInstance())
+        {
+            F_DELETE(pMaterialInstance)
+            F_LogError("*********************** MaterialManager::CreateMaterialInstance: Create material instance from material failed, group: [%u], name: [%s] !", pMaterial->GetGroup(), pMaterial->GetName().c_str());
+            return nullptr;
+        }
+        if (bIsUnique)
+        {
+            m_mapMaterialInstance[strName] = pMaterialInstance;
+        }
+		return pMaterialInstance;
+    }
+    MaterialInstance* MaterialManager::CreateMaterialInstance(uint32 nGroup, const String& strMaterialName, bool bIsUnique)
+    {
+        Material* pMaterial = GetMaterial(nGroup, strMaterialName);
+		if (pMaterial == nullptr)
+		{
+			pMaterial = LoadMaterial(nGroup, strMaterialName);
+			if (pMaterial == nullptr)
+			{
+				F_LogError("*********************** MaterialManager::CreateMaterialInstance: Create material failed, group: [%u], name: [%s] !", nGroup, strMaterialName.c_str());
+				return nullptr;
+			}
+		}
+        return CreateMaterialInstance(pMaterial, bIsUnique);
+    }
+    void MaterialManager::DestroyMaterialInstance(MaterialInstance* pMaterialInstance)
+    {
+        if (IsMaterialInstanceDefault(pMaterialInstance))
+			return;
+
+		MaterialInstancePtrMap::iterator itFind = m_mapMaterialInstance.find(pMaterialInstance->GetName());
+		if (itFind == m_mapMaterialInstance.end())
+			return;
+        F_DELETE(itFind->second)
+		m_mapMaterialInstance.erase(itFind);
+    }
+    void MaterialManager::DestroyMaterialInstanceAll()
+    {
+        for (MaterialInstancePtrMap::iterator it = m_mapMaterialInstance.begin();
+			 it != m_mapMaterialInstance.end(); ++it)
+		{
+            F_DELETE(it->second)
+		}
+		m_mapMaterialInstance.clear();
+    }
+
 }; //LostPeter

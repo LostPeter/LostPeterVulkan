@@ -34,8 +34,9 @@ namespace LostPeter
     public:
         void Destroy();
 
+    public:
         bool LoadMaterial(bool bIsFromFile = true);
-		bool UnloadMaterial();
+		void UnloadMaterial();
 
 	private:
 		void init();

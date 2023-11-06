@@ -11,17 +11,35 @@
 
 #include "../include/MaterialInstance.h"
 #include "../include/VulkanWindow.h"
+#include "../include/Material.h"
+#include "../include/MaterialManager.h"
 
 namespace LostPeter
 {
-    MaterialInstance::MaterialInstance(const String& nameMaterialInstance)
+    MaterialInstance::MaterialInstance(const String& nameMaterialInstance, Material* pMaterial)
         : Base(nameMaterialInstance)
+        , m_pMaterial(pMaterial)
     {
         
     }
     MaterialInstance::~MaterialInstance()
     {
+        Destroy();
+    }
+    void MaterialInstance::Destroy()
+    {
 
     }
-    
+
+    bool MaterialInstance::LoadMaterialInstance()
+    {
+
+
+        return true;
+    }
+	void MaterialInstance::UnloadMaterialInstance()
+    {
+        
+    }
+
 }; //LostPeter

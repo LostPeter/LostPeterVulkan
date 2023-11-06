@@ -1154,8 +1154,6 @@ namespace LostPeter
                         virtual void enumMaterial();
                         //Object
                         virtual void enumObject();
-                        //Scene
-                        virtual void enumScene();
                         //SceneManager
                         virtual void enumSceneManager();
                     virtual void endRenderImgui();

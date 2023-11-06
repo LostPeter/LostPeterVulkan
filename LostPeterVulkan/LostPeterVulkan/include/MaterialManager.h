@@ -25,6 +25,10 @@ namespace LostPeter
 
     public:
         static uint32 ms_nInstanceID;
+        static uint32 GetNextInstanceID() 
+        {
+            return ++ ms_nInstanceID;
+        }
 
     protected:
         MaterialSerializer* m_pMaterialSerializer;
@@ -32,6 +36,9 @@ namespace LostPeter
         MaterialGroupPtrMap m_mapMaterialGroup;
 
         MaterialPtrMap m_mapMaterialDefaults;
+        MaterialInstancePtrMap m_mapMaterialInstanceDefaults;
+
+        MaterialInstancePtrMap m_mapMaterialInstance;
 
     public:
         LP_FORCEINLINE MaterialSerializer* GetMaterialSerializer() const { return m_pMaterialSerializer; }
@@ -42,11 +49,20 @@ namespace LostPeter
 
         LP_FORCEINLINE MaterialPtrMap& GetMaterialDefaultMap() { return m_mapMaterialDefaults; }
 
+        LP_FORCEINLINE MaterialInstancePtrMap& GetMaterialInstancePtrMap() { return m_mapMaterialInstance; }
+
+
+        bool IsMaterialDefault(Material* pMaterial);
         Material* GetMaterialDefault(const String& strName);
         Material* GetMaterial_Default();
         Material* GetMaterial_DefaultOpaque();
         Material* GetMaterial_DefaultTransparent();
 
+        bool IsMaterialInstanceDefault(MaterialInstance* pMaterialInstance);
+        MaterialInstance* GetMaterialInstanceDefault(const String& strName);
+        MaterialInstance* GetMaterialInstance_Default();
+        MaterialInstance* GetMaterialInstance_DefaultOpaque();
+        MaterialInstance* GetMaterialInstance_DefaultTransparent();
 
     public:
         static MaterialManager&	GetSingleton();
@@ -59,6 +75,9 @@ namespace LostPeter
     protected:
         void destroyMaterialDefaults();
         bool initMaterialDefaults();
+
+        void destroyMaterialInstanceDefaults();
+        bool initMaterialInstanceDefaults(); 
 
     public:
         bool LoadMaterialAll();
@@ -73,6 +92,17 @@ namespace LostPeter
     private:
         Material* loadMaterial(uint nGroup, const String& strName, bool bIsFromFile = true);
         Material* loadMaterial(MaterialInfo* pMI);
+
+    public:
+        MaterialInstance* CreateMaterialInstance_Default(bool bIsUnique);
+        MaterialInstance* CreateMaterialInstance_DefaultOpaque(bool bIsUnique);
+        MaterialInstance* CreateMaterialInstance_DefaultTransparent(bool bIsUnique);
+
+        MaterialInstance* CreateMaterialInstance(Material* pMaterial, bool bIsUnique);
+		MaterialInstance* CreateMaterialInstance(uint32 nGroup, const String& strMaterialName, bool bIsUnique);
+        void DestroyMaterialInstance(MaterialInstance* pMaterialInstance);
+		void DestroyMaterialInstanceAll();
+
     };
 
 }; //LostPeter

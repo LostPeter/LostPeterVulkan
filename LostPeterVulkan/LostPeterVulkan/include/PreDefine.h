@@ -688,6 +688,9 @@ namespace LostPeter
     typedef std::map<String, Material*> MaterialPtrMap;
     typedef std::map<uint32, MaterialPtrMap> MaterialGroupPtrMap;
 
+    typedef std::vector<MaterialInstance*> MaterialInstancePtrVector;
+    typedef std::map<String, MaterialInstance*> MaterialInstancePtrMap;
+
     typedef std::vector<MaterialData*> MaterialDataPtrVector;
     typedef std::map<String, MaterialData*> MaterialDataPtrMap;
 

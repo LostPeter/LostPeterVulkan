@@ -26,10 +26,13 @@ namespace LostPeter
 
     public:
     protected:
+        String m_strPath;
         RenderStatePtrVector m_aRenderState;
         RenderStatePtrMap m_mapRenderState;
 
     public:
+        LP_FORCEINLINE const String& GetPath() const { return m_strPath; }
+        LP_FORCEINLINE void SetPath(const String& path) { m_strPath = path; }
 		LP_FORCEINLINE const RenderStatePtrVector& GetRenderStatePtrVector() const { return m_aRenderState; }
         LP_FORCEINLINE RenderStatePtrVector& GetRenderStatePtrVector() { return m_aRenderState; }
         LP_FORCEINLINE const RenderStatePtrMap& GetRenderStatePtrMap() const { return m_mapRenderState; }

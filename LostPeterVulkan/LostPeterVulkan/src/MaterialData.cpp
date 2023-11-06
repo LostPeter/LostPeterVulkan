@@ -16,7 +16,7 @@ namespace LostPeter
 {
     MaterialData::MaterialData(const String& nameMaterialData)
         : Base(nameMaterialData)
-        
+        , m_strPath("")
     {
         
     }

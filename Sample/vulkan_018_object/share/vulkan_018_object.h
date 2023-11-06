@@ -543,6 +543,7 @@ protected:
         virtual bool beginRenderImgui();
             virtual void cameraReset();
             virtual void modelConfig();
+            virtual void enumConfig();
 
         virtual void endRenderImgui();
 

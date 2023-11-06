@@ -627,6 +627,7 @@ namespace LostPeter
 				{
 					pMaterialData = new MaterialData(strNameMaterial);
 				}
+                pMaterialData->SetPath(String(szFilePath));
 
                 if (!s_parserXML_MaterialData(pElementMaterialData, pMaterialData))
 				{

@@ -1647,18 +1647,7 @@ bool Vulkan_018_Object::beginRenderImgui()
         modelConfig();
 
         //5> Enum
-        enumPath();
-        enumMesh();
-        enumTexture();
-        enumShader();
-        enumVKDescriptorSet();
-        enumVKDescriptorSetLayout();
-        enumVKPipelineLayout();
-        enumVKPipeline();
-        enumMaterial();
-        enumObject();
-        enumScene();
-        enumSceneManager();
+        enumConfig();
     }
     ImGui::End();
 
@@ -2126,6 +2115,25 @@ void Vulkan_018_Object::modelConfig()
                 
             }
         }
+    }
+    ImGui::Separator();
+    ImGui::Spacing();
+}
+void Vulkan_018_Object::enumConfig()
+{
+    if (ImGui::CollapsingHeader("Enum"))
+    {
+        enumPath();
+        enumMesh();
+        enumTexture();
+        enumShader();
+        enumVKDescriptorSet();
+        enumVKDescriptorSetLayout();
+        enumVKPipelineLayout();
+        enumVKPipeline();
+        enumMaterial();
+        enumObject();
+        enumSceneManager();
     }
     ImGui::Separator();
     ImGui::Spacing();

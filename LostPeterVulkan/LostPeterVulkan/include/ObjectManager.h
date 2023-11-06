@@ -16,15 +16,23 @@
 
 namespace LostPeter
 {
-    class utilExport ObjectManager : public Base
+    class utilExport ObjectManager : public FSingleton<ObjectManager>
+                                   , public Base
     {
     public:
-        ObjectManager(const String& nameObject);
+        ObjectManager();
         virtual ~ObjectManager();
 
     public:
 
+
     public:
+        static ObjectManager&	GetSingleton();
+		static ObjectManager*	GetSingletonPtr();
+
+    public:
+        void Destroy();
+        bool Init();
 
     };
 

@@ -95,6 +95,9 @@ namespace LostPeterFoundation
 	
 	public:
 		LP_FORCEINLINE FPathGroupMap& GetPathGroupMap() { return m_mapGroup; }
+		LP_FORCEINLINE FPathGroupIDMap& GetPathGroupIDMap() { return m_mapGroupID; }
+		LP_FORCEINLINE FPathGroupBaseMap& GetPathGroupBaseMap() { return m_mapGroupBase; }
+			
 		LP_FORCEINLINE const String& GetWorkFolder() const { return m_strWorkFolder; }
 		
 	public:
@@ -103,6 +106,7 @@ namespace LostPeterFoundation
 		bool GetGroupMaxID(uint32 nGroup, uint32& nMaxID);
 		bool GetGroup(uint32 nGroupBase, const String& strPath, uint32& nGroup);
 		bool GetGroupBasePath(uint32 nGroup, String& strBaseName);
+		String GetGroupBasePath(uint32 nGroup);
 		bool GetGroupInfo(uint32 nGroup, uint32& nMaxID, String& strBaseName);
 		
 

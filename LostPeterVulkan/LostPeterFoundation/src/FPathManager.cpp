@@ -148,7 +148,7 @@ namespace LostPeterFoundation
 		return false;
 	}
 
-	bool FPathManager::GetGroupBasePath(uint32 nGroup,String& strBaseName)
+	bool FPathManager::GetGroupBasePath(uint32 nGroup, String& strBaseName)
 	{
 		FPathGroupBaseMap::iterator itFind = m_mapGroupBase.find(nGroup);
 		if (itFind == m_mapGroupBase.end())
@@ -156,6 +156,12 @@ namespace LostPeterFoundation
 
 		strBaseName = itFind->second;
 		return true;
+	}
+	String FPathManager::GetGroupBasePath(uint32 nGroup)
+	{
+		String pathBase("");
+		GetGroupBasePath(nGroup, pathBase);
+		return pathBase;
 	}
 
 	bool FPathManager::GetGroupInfo(uint32 nGroup, uint32& nMaxID, String& strBaseName)

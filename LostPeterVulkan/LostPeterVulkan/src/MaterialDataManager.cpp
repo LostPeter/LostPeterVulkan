@@ -75,6 +75,7 @@ namespace LostPeter
 		{
 			Material* pMaterialDefault = MaterialManager::GetSingleton().GetMaterial_Default();
 			pMaterialData->SerializerFrom(pMaterialDefault->GetMaterialData());
+			pMaterialData->SetPath(pMaterialDefault->GetMaterialData()->GetPath());
 		}
 		pMaterialData->AddRef();
 

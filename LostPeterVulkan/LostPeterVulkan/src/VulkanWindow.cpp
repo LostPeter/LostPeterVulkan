@@ -7588,7 +7588,50 @@ namespace LostPeter
                     {
                         if (ImGui::CollapsingHeader("Enum Path"))
                         {
-                            
+                            FPathManager* pPathManager = FPathManager::GetSingletonPtr();
+                            if (pPathManager != nullptr)
+                            {
+                                //FPathGroupIDMap
+                                if (ImGui::CollapsingHeader("PathGroupIDMap"))
+                                {
+                                    FPathGroupIDMap& mapPathGroupID = pPathManager->GetPathGroupIDMap();
+                                    for (FPathGroupIDMap::iterator it = mapPathGroupID.begin();
+                                         it != mapPathGroupID.end(); ++it)
+                                    {
+                                        ImGui::Text("Group: [%u], Group Max: [%u]", it->first, it->second);
+                                    }
+                                }
+                                //FPathGroupBaseMap
+                                if (ImGui::CollapsingHeader("PathGroupBaseMap"))
+                                {
+                                    FPathGroupBaseMap& mapPathGroupBase = pPathManager->GetPathGroupBaseMap();
+                                    for (FPathGroupBaseMap::iterator it = mapPathGroupBase.begin();
+                                         it != mapPathGroupBase.end(); ++it)
+                                    {
+                                        ImGui::Text("Group: [%u], Name: [%s]", it->first, it->second.c_str());
+                                    }
+                                }   
+                                //FPathGroupMap
+                                if (ImGui::CollapsingHeader("PathGroupMap"))
+                                {
+                                    FPathGroupMap& mapPathGroup = pPathManager->GetPathGroupMap();
+                                    for (FPathGroupMap::iterator it = mapPathGroup.begin();
+                                         it != mapPathGroup.end(); ++it)
+                                    {
+                                        String2StringMap& mapName2Path = it->second;
+
+                                        String nameGroup = "Path Group: " + FUtilString::SaveUInt(it->first);
+                                        if (ImGui::CollapsingHeader(nameGroup.c_str()))
+                                        {
+                                            for (String2StringMap::iterator itN2P = mapName2Path.begin();
+                                                 itN2P != mapName2Path.end(); ++itN2P)
+                                            {
+                                                ImGui::Text("Name: [%s], Path: [%s]", itN2P->first.c_str(), itN2P->second.c_str());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
@@ -7597,7 +7640,28 @@ namespace LostPeter
                     {
                         if (ImGui::CollapsingHeader("Enum Mesh"))
                         {
-                            
+                            FPathManager* pPathManager = FPathManager::GetSingletonPtr();
+                            MeshManager* pMeshManager = MeshManager::GetSingletonPtr();
+                            if (pPathManager != nullptr && pMeshManager != nullptr)
+                            {
+                                MeshGroupPtrMap& mapMeshGroup = pMeshManager->GetMeshGroupPtrMap();
+                                for (MeshGroupPtrMap::iterator it = mapMeshGroup.begin();
+                                     it != mapMeshGroup.end(); ++it)
+                                {
+                                    uint32 nGroup = it->first;
+                                    MeshPtrMap& mapMesh = it->second;
+
+                                    String nameGroup = "Mesh Group: " + FUtilString::SaveUInt(nGroup) + ", Path: " + pPathManager->GetGroupBasePath(nGroup);
+                                    if (ImGui::CollapsingHeader(nameGroup.c_str()))
+                                    {
+                                        for (MeshPtrMap::iterator itM = mapMesh.begin();
+                                             itM != mapMesh.end(); ++itM)
+                                        {
+                                            ImGui::Text("Name: [%s], Path: [%s]", itM->first.c_str(), itM->second->pathMesh.c_str());
+                                        }
+                                    }
+                                }
+                            }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
@@ -7606,7 +7670,28 @@ namespace LostPeter
                     {
                         if (ImGui::CollapsingHeader("Enum Texture"))
                         {
-                            
+                            FPathManager* pPathManager = FPathManager::GetSingletonPtr();
+                            TextureManager* pTextureManager = TextureManager::GetSingletonPtr();
+                            if (pPathManager != nullptr && pTextureManager != nullptr)
+                            {
+                                TextureGroupPtrMap& mapTextureGroup = pTextureManager->GetTextureGroupPtrMap();
+                                for (TextureGroupPtrMap::iterator it = mapTextureGroup.begin();
+                                     it != mapTextureGroup.end(); ++it)
+                                {
+                                    uint32 nGroup = it->first;
+                                    TexturePtrMap& mapTexture = it->second;
+
+                                    String nameGroup = "Texture Group: " + FUtilString::SaveUInt(nGroup) + ", Path: " + pPathManager->GetGroupBasePath(nGroup);
+                                    if (ImGui::CollapsingHeader(nameGroup.c_str()))
+                                    {
+                                        for (TexturePtrMap::iterator itT = mapTexture.begin();
+                                             itT != mapTexture.end(); ++itT)
+                                        {
+                                            ImGui::Text("Name: [%s], Texture Count: [%d]", itT->first.c_str(), (int)itT->second->aPathTexture.size());
+                                        }
+                                    }
+                                }
+                            }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
@@ -7615,7 +7700,28 @@ namespace LostPeter
                     {
                         if (ImGui::CollapsingHeader("Enum Shader"))
                         {
-                            
+                            FPathManager* pPathManager = FPathManager::GetSingletonPtr();
+                            ShaderManager* pShaderManager = ShaderManager::GetSingletonPtr();
+                            if (pPathManager != nullptr && pShaderManager != nullptr)
+                            {
+                                ShaderGroupPtrMap& mapShaderGroup = pShaderManager->GetShaderGroupPtrMap();
+                                for (ShaderGroupPtrMap::iterator it = mapShaderGroup.begin();
+                                     it != mapShaderGroup.end(); ++it)
+                                {
+                                    uint32 nGroup = it->first;
+                                    ShaderPtrMap& mapShader = it->second;
+
+                                    String nameGroup = "Shader Group: " + FUtilString::SaveUInt(nGroup) + ", Path: " + pPathManager->GetGroupBasePath(nGroup);
+                                    if (ImGui::CollapsingHeader(nameGroup.c_str()))
+                                    {
+                                        for (ShaderPtrMap::iterator itS = mapShader.begin();
+                                             itS != mapShader.end(); ++itS)
+                                        {
+                                            ImGui::Text("Name: [%s], Path: [%s]", itS->first.c_str(), itS->second->pathShader.c_str());
+                                        }
+                                    }
+                                }
+                            }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
@@ -7624,7 +7730,11 @@ namespace LostPeter
                     {
                         if (ImGui::CollapsingHeader("Enum VKDescriptorSet"))
                         {
-                            
+                            VKDescriptorSetManager* pVKDescriptorSetManager = VKDescriptorSetManager::GetSingletonPtr();
+                            if (pVKDescriptorSetManager != nullptr)
+                            {
+                                
+                            }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
@@ -7633,7 +7743,11 @@ namespace LostPeter
                     {
                         if (ImGui::CollapsingHeader("Enum VKDescriptorSetLayout"))
                         {
-                            
+                            VKDescriptorSetLayoutManager* pVKDescriptorSetLayoutManager = VKDescriptorSetLayoutManager::GetSingletonPtr();
+                            if (pVKDescriptorSetLayoutManager != nullptr)
+                            {
+                                
+                            }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
@@ -7642,7 +7756,11 @@ namespace LostPeter
                     {
                         if (ImGui::CollapsingHeader("Enum VKPipelineLayout"))
                         {
-                            
+                            VKPipelineLayoutManager* pVKPipelineLayoutManager = VKPipelineLayoutManager::GetSingletonPtr();
+                            if (pVKPipelineLayoutManager != nullptr)
+                            {
+                                
+                            }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
@@ -7651,7 +7769,11 @@ namespace LostPeter
                     {
                         if (ImGui::CollapsingHeader("Enum VKPipeline"))
                         {
-                            
+                            VKPipelineManager* pVKPipelineManager = VKPipelineManager::GetSingletonPtr();
+                            if (pVKPipelineManager != nullptr)
+                            {
+                                
+                            }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
@@ -7660,7 +7782,29 @@ namespace LostPeter
                     {
                         if (ImGui::CollapsingHeader("Enum Material"))
                         {
-                            
+                            FPathManager* pPathManager = FPathManager::GetSingletonPtr();
+                            MaterialManager* pMaterialManager = MaterialManager::GetSingletonPtr();
+                            if (pPathManager != nullptr && pMaterialManager != nullptr)
+                            {
+                                MaterialGroupPtrMap& mapMeshGroup = pMaterialManager->GetMaterialGroupPtrMap();
+                                for (MaterialGroupPtrMap::iterator it = mapMeshGroup.begin();
+                                     it != mapMeshGroup.end(); ++it)
+                                {
+                                    uint32 nGroup = it->first;
+                                    MaterialPtrMap& mapMaterial = it->second;
+
+                                    String nameGroup = "Material Group: " + FUtilString::SaveUInt(nGroup) + ", Path: " + pPathManager->GetGroupBasePath(nGroup);
+                                    if (ImGui::CollapsingHeader(nameGroup.c_str()))
+                                    {
+                                        for (MaterialPtrMap::iterator itM = mapMaterial.begin();
+                                             itM != mapMaterial.end(); ++itM)
+                                        {
+                                            MaterialData* pMaterialData = itM->second->GetMaterialData();
+                                            ImGui::Text("Name: [%s], Path: [%s]", itM->first.c_str(), pMaterialData->GetPath().c_str());
+                                        }
+                                    }
+                                }
+                            }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
@@ -7669,16 +7813,11 @@ namespace LostPeter
                     {
                         if (ImGui::CollapsingHeader("Enum Object"))
                         {
-                            
-                        }
-                        ImGui::Separator();
-                        ImGui::Spacing();
-                    }
-                    void VulkanWindow::enumScene()
-                    {
-                        if (ImGui::CollapsingHeader("Enum Scene"))
-                        {
-                            
+                            ObjectManager* pObjectManager = ObjectManager::GetSingletonPtr();
+                            if (pObjectManager != nullptr)
+                            {
+                                
+                            }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
@@ -7687,7 +7826,11 @@ namespace LostPeter
                     {
                         if (ImGui::CollapsingHeader("Enum SceneManager"))
                         {
-                            
+                            SceneManagerEnumerator* pShaderManagerEnumerator = SceneManagerEnumerator::GetSingletonPtr();
+                            if (pShaderManagerEnumerator != nullptr)
+                            {
+                                
+                            }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
