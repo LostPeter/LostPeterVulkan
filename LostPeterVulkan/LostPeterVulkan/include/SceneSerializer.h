@@ -24,8 +24,23 @@ namespace LostPeter
         virtual ~SceneSerializer();
 
     public:
+    protected:
+        SceneInfoPtrVector m_aSceneInfo;
+        SceneInfoGroupPtrMap m_mapSceneInfoGroup;
 
     public:
+        LP_FORCEINLINE const SceneInfoPtrVector& GetSceneInfoPtrVector() const { return m_aSceneInfo; }
+        LP_FORCEINLINE SceneInfoPtrVector& GetSceneInfoPtrVector() { return m_aSceneInfo; }
+        LP_FORCEINLINE const SceneInfoGroupPtrMap& GetSceneInfoGroupPtrMap() const { return m_mapSceneInfoGroup; }
+        LP_FORCEINLINE SceneInfoGroupPtrMap& GetSceneInfoGroupPtrMap() { return m_mapSceneInfoGroup; }
+
+
+    public:
+        bool HasSceneInfo(uint nGroup, const String& strName);
+        SceneInfo* GetSceneInfo(uint nGroup, const String& strName);
+        bool AddSceneInfo(SceneInfo* pSceneInfo);
+        void DeleteSceneInfo(uint nGroup, const String& strName);
+        void DeleteSceneInfoAll();
 
     protected:
         //File Content XML

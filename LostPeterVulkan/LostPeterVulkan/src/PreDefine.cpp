@@ -893,4 +893,25 @@ namespace LostPeter
     }
 
 
+    SceneInfo::SceneInfo()
+        : group(0)
+        , nameScene("")
+        , pathScene("")
+    {
+
+    }
+    SceneInfo::SceneInfo(const String& _nameScene,
+                         const String& _pathScene)
+        : group(0)
+        , nameScene(_nameScene)
+        , pathScene(_pathScene)
+    {
+
+    }
+    SceneInfo::~SceneInfo()
+    {
+
+    }
+
+
 }; //LostPeter

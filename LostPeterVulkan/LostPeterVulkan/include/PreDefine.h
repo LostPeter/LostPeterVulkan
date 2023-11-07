@@ -532,6 +532,22 @@ namespace LostPeter
     typedef std::map<uint32, MaterialInfoPtrMap> MaterialInfoGroupPtrMap;
 
 
+    struct utilExport SceneInfo
+    {
+        SceneInfo();
+        SceneInfo(const String& _nameScene,
+                  const String& _pathScene);
+        ~SceneInfo();
+
+        uint32 group;
+        String nameScene;
+        String pathScene;
+    };
+    typedef std::vector<SceneInfo*> SceneInfoPtrVector;
+    typedef std::map<String, SceneInfo*> SceneInfoPtrMap;
+    typedef std::map<uint32, SceneInfoPtrMap> SceneInfoGroupPtrMap;
+
+
 
     class App;
     class VulkanBase;
@@ -629,6 +645,8 @@ namespace LostPeter
     class RenderStateShader;
     class RenderState;
     class Scene;
+    class SceneDataManager;
+    class SceneDataSerializer;
     class SceneManager;
     class SceneManagerEnumerator;
     class SceneNode;

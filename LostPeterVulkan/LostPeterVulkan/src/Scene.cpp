@@ -16,12 +16,29 @@ namespace LostPeter
 {
     Scene::Scene(const String& nameScene)
         : Base(nameScene)
+    ////Viewport
+        , m_pViewportMain(nullptr)
+    ////SceneNode
+        , m_pSceneNodeRoot(nullptr)
+    ////Object
+        
     {
 
     }
     Scene::~Scene()
     {
+        Destroy();
+    }
 
+    void Scene::Destroy()
+    {
+
+    }
+
+    bool Scene::Init()
+    {
+
+        return true;
     }
 
 }; //LostPeter

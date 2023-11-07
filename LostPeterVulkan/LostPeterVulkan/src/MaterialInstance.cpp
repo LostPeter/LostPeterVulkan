@@ -28,7 +28,7 @@ namespace LostPeter
     }
     void MaterialInstance::Destroy()
     {
-
+        UnloadMaterialInstance();
     }
 
     bool MaterialInstance::LoadMaterialInstance()

@@ -24,7 +24,39 @@ namespace LostPeter
         virtual ~Viewport();
 
     public:
-        
+    protected:
+        VkViewportVector m_aViewports;
+        VkRect2DVector m_aScissors;
+
+    public:
+        LP_FORCEINLINE const VkViewportVector& GetVkViewportVector() const { return this->m_aViewports; }
+        LP_FORCEINLINE VkViewportVector& GetVkViewportVector() { return this->m_aViewports; }
+        LP_FORCEINLINE const VkRect2DVector& GetVkRect2DVector() const { return this->m_aScissors; }
+        LP_FORCEINLINE VkRect2DVector& GetVkRect2DVector() { return this->m_aScissors; }
+
+    public:
+        void Destroy();
+        bool Init(float vpStartX, 
+                  float vpStartY, 
+                  float vpWidth, 
+                  float vpHeight,
+                  float vpMinDepth,
+                  float vpMaxDepth,
+                  VkOffset2D scOffset,
+                  VkExtent2D scExtent);
+
+        void AddViewport(float vpStartX, 
+                         float vpStartY, 
+                         float vpWidth, 
+                         float vpHeight,
+                         float vpMinDepth,
+                         float vpMaxDepth,
+                         VkOffset2D scOffset,
+                         VkExtent2D scExtent);
+
+    public:
+        void RefreshViewport(int index, const VkExtent2D& vkExtent);
+    
     };
 
 }; //LostPeter

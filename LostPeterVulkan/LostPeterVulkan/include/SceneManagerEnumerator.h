@@ -20,20 +20,36 @@ namespace LostPeter
                                             , public Base
     {
     public:
-        SceneManagerEnumerator(const String& nameSceneManagerEnumerator);
+        SceneManagerEnumerator();
         virtual ~SceneManagerEnumerator();
 
     public:
-        static SceneManagerEnumerator&	GetSingleton();
-		static SceneManagerEnumerator*	GetSingletonPtr();
+        SceneSerializer* m_pSceneSerializer;
+        ScenePtrVector m_aScene;
+        ScenePtrMap m_mapScene;
 
-    public:
         SceneManagerPtrVector m_aSceneManagers;
         SceneManagerPtrMap m_mapSceneManagers;
 
     public:
+        LP_FORCEINLINE SceneSerializer* GetSceneSerializer() const { return m_pSceneSerializer; }
+
+
+        LP_FORCEINLINE const SceneManagerPtrVector& GetSceneManagerPtrVector() const { return this->m_aSceneManagers; }
+        LP_FORCEINLINE SceneManagerPtrVector& GetSceneManagerPtrVector() { return this->m_aSceneManagers; }
+        LP_FORCEINLINE const SceneManagerPtrMap& GetSceneManagerPtrMap() const { return this->m_mapSceneManagers; }
+        LP_FORCEINLINE SceneManagerPtrMap& GetSceneManagerPtrMap() { return this->m_mapSceneManagers; }
+
+    public:
+        static SceneManagerEnumerator& GetSingleton();
+		static SceneManagerEnumerator* GetSingletonPtr();
+
+    public:
         void Destroy();
-        bool Init();
+        bool Init(uint nGroup, const String& strNameCfg);
+
+    public:
+        
 
     protected:
 

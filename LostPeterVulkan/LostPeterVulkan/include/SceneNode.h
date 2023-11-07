@@ -23,7 +23,7 @@ namespace LostPeter
         virtual ~SceneNode();
 
     public:
-
+        
 
     public:
 

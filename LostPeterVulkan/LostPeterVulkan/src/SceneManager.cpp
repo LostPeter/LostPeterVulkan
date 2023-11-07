@@ -21,7 +21,18 @@ namespace LostPeter
     }
     SceneManager::~SceneManager()
     {
+        Destroy();
+    }
 
+    void SceneManager::Destroy()
+    {
+
+    }
+
+    bool SceneManager::Init()
+    {
+        
+        return true;
     }
 
 }; //LostPeter

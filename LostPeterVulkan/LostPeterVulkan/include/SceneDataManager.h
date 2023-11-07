@@ -2,42 +2,47 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-10-04
+* Time:     2023-11-07
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _MATERIAL_INSTANCE_H_
-#define _MATERIAL_INSTANCE_H_
+#ifndef _SCENE_DATA_MANAGER_H_
+#define _SCENE_DATA_MANAGER_H_
 
 #include "Base.h"
 
 namespace LostPeter
 {
-    class utilExport MaterialInstance : public Base
+    class utilExport SceneDataManager : public FSingleton<SceneDataManager>
+                                      , public Base
     {
+        friend class SceneDataSerializer;
+
     public:
-        MaterialInstance(const String& nameMaterialInstance, Material* pMaterial);
-        virtual ~MaterialInstance();
+        SceneDataManager();
+        virtual ~SceneDataManager();
 
     public:
     protected:
-        Material* m_pMaterial;
+        SceneDataSerializer* m_pSceneDataSerializer;
+		MaterialDataPtrMap m_mapMaterialData;
 
     public:
-        LP_FORCEINLINE Material* GetMaterial() const { return m_pMaterial; }
+        static SceneDataManager& GetSingleton();
+		static SceneDataManager* GetSingletonPtr();
 
     public:
         void Destroy();
-
-    public:
-        bool LoadMaterialInstance();
-		void UnloadMaterialInstance();
+        
 
     public:
         
+
+    protected:
+
 
     };
 

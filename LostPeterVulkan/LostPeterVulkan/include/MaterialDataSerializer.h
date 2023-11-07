@@ -12,7 +12,7 @@
 #ifndef _MATERIAL_DATA_SERIALIZER_H_
 #define _MATERIAL_DATA_SERIALIZER_H_
 
-#include "Base.h"
+#include "PreDefine.h"
 
 namespace LostPeter
 {

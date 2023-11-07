@@ -524,6 +524,7 @@ void Vulkan_018_Object::ModelObjectRendIndirect::UpdateIndirectCommandBuffer()
 
 static const String s_strNameDescriptorSet = "Cfg_DescriptorSet.xml";
 static const String s_strNameDescriptorSetLayout = "Cfg_DescriptorSetLayout.xml";
+static const String s_strNameScene = "Cfg_Scene.xml";
 
 
 static uint32 s_nGroup_Sample = FPathManager::PathGroup_Editor + 1;
@@ -546,8 +547,12 @@ Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
     , m_pVKDescriptorSetManager(nullptr)
     , m_pVKDescriptorSetLayoutManager(nullptr)
     , m_pVKPipelineLayoutManager(nullptr)
+    , m_pVKPipelineManager(nullptr)
     , m_pMaterialDataManager(nullptr)
     , m_pMaterialManager(nullptr)
+    , m_pSceneManagerEnumerator(nullptr)
+    , m_pSceneManager(nullptr)
+    , m_pScene(nullptr)
 {
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
@@ -633,11 +638,20 @@ void Vulkan_018_Object::loadModel_Custom()
     m_pVKPipelineLayoutManager->Init();
     m_pVKPipelineLayoutManager->LoadVKPipelineLayoutAll();
 
-    //7> MaterialData/Material
+    //7> Pipeline
+    m_pVKPipelineManager = new VKPipelineManager();
+    m_pVKPipelineManager->Init();
+
+    //8> MaterialData/Material
     m_pMaterialDataManager = new MaterialDataManager();
     m_pMaterialManager = new MaterialManager();
     m_pMaterialManager->Init(s_nGroup_Sample, s_strNameMaterial_Sample);
     
+    //9> SceneManagerEnumerator
+    m_pSceneManagerEnumerator = new SceneManagerEnumerator();
+    m_pSceneManagerEnumerator->Init(FPathManager::PathGroup_Scene, s_strNameScene);
+    
+    //10> SceneManager/Scene
     
 
     int nIndexObjectRend = 0;
@@ -2302,8 +2316,12 @@ void Vulkan_018_Object::drawModelObjectRend(VkCommandBuffer& commandBuffer, Mode
 
 void Vulkan_018_Object::cleanupCustom()
 {   
+    F_DELETE(m_pScene)
+    F_DELETE(m_pSceneManager)
+    F_DELETE(m_pSceneManagerEnumerator)
     F_DELETE(m_pMaterialManager)
     F_DELETE(m_pMaterialDataManager)
+    F_DELETE(m_pVKPipelineManager)
     F_DELETE(m_pVKPipelineLayoutManager)
     F_DELETE(m_pVKDescriptorSetLayoutManager)
     F_DELETE(m_pVKDescriptorSetManager)

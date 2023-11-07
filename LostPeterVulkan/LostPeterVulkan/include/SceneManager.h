@@ -27,8 +27,17 @@ namespace LostPeter
         ScenePtrMap m_mapScenes;
 
     public:
+        LP_FORCEINLINE const ScenePtrVector& GetScenePtrVector() const { return this->m_aScenes; }
+        LP_FORCEINLINE ScenePtrVector& GetScenePtrVector() { return this->m_aScenes; }
+        LP_FORCEINLINE const ScenePtrMap& GetScenePtrMap() const { return this->m_mapScenes; }
+        LP_FORCEINLINE ScenePtrMap& GetScenePtrMap() { return this->m_mapScenes; }
+
+    public:
         void Destroy();
         bool Init();
+
+    public:
+        
 
     protected:
 

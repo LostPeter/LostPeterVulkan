@@ -487,9 +487,13 @@ public:
     VKDescriptorSetManager* m_pVKDescriptorSetManager;
     VKDescriptorSetLayoutManager* m_pVKDescriptorSetLayoutManager;
     VKPipelineLayoutManager* m_pVKPipelineLayoutManager;
-    
+    VKPipelineManager* m_pVKPipelineManager;
     MaterialDataManager* m_pMaterialDataManager;
     MaterialManager* m_pMaterialManager;
+
+    SceneManagerEnumerator* m_pSceneManagerEnumerator;
+    SceneManager* m_pSceneManager;
+    Scene* m_pScene;
     
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrMap m_mapModelObjects;

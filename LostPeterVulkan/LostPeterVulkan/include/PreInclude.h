@@ -87,6 +87,8 @@
 #include "RenderTexture.h"
 #include "RenderTextureManager.h"
 #include "Scene.h"
+#include "SceneDataManager.h"
+#include "SceneDataSerializer.h"
 #include "SceneManager.h"
 #include "SceneManagerEnumerator.h"
 #include "SceneNode.h"
