@@ -11,15 +11,19 @@
 
 #include "../include/Scene.h"
 #include "../include/VulkanWindow.h"
+#include "../include/SceneDataManager.h"
+#include "../include/SceneManager.h"
 
 namespace LostPeter
 {
-    Scene::Scene(const String& nameScene)
-        : Base(nameScene)
+    Scene::Scene(uint _group, 
+                 const String& nameScene)
+        : Base(_group, nameScene)
+    ////SceneManager/SceneNode
+        , m_pSceneManager(nullptr)
+        , m_pSceneNodeRoot(nullptr)
     ////Viewport
         , m_pViewportMain(nullptr)
-    ////SceneNode
-        , m_pSceneNodeRoot(nullptr)
     ////Object
         
     {
@@ -32,13 +36,29 @@ namespace LostPeter
 
     void Scene::Destroy()
     {
-
+        UnloadScene();
     }
 
-    bool Scene::Init()
+    bool Scene::LoadScene()
     {
+        if (!IsGroupNameValid())
+		{
+            F_LogError("*********************** Scene::LoadScene: Group, Name is not valid, group: [%u, name: [%s] !", this->group, this->name.c_str());
+            return false;
+        }
+
+        if (!SceneDataManager::GetSingleton().Parser(this->group, this->name, this))
+        {
+            F_LogError("*********************** Scene::LoadScene: Group, Parse scene file failed, group: [%u, name: [%s] !", this->group, this->name.c_str());
+            return false;
+        }
 
         return true;
+    }
+
+	void Scene::UnloadScene()
+    {
+
     }
 
 }; //LostPeter

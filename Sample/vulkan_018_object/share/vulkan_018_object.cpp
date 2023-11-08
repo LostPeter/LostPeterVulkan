@@ -551,6 +551,7 @@ Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
     , m_pMaterialDataManager(nullptr)
     , m_pMaterialManager(nullptr)
     , m_pSceneManagerEnumerator(nullptr)
+    , m_pSceneDataManager(nullptr)
     , m_pSceneManager(nullptr)
     , m_pScene(nullptr)
 {
@@ -647,11 +648,14 @@ void Vulkan_018_Object::loadModel_Custom()
     m_pMaterialManager = new MaterialManager();
     m_pMaterialManager->Init(s_nGroup_Sample, s_strNameMaterial_Sample);
     
-    //9> SceneManagerEnumerator
+    //9> SceneManagerEnumerator/SceneDataManager
     m_pSceneManagerEnumerator = new SceneManagerEnumerator();
-    m_pSceneManagerEnumerator->Init(FPathManager::PathGroup_Scene, s_strNameScene);
+    m_pSceneManagerEnumerator->Init();
+    m_pSceneDataManager = new SceneDataManager();
+    m_pSceneDataManager->Init(FPathManager::PathGroup_Config, s_strNameScene);
     
     //10> SceneManager/Scene
+    m_pScene = m_pSceneDataManager->LoadScene(FPathManager::PathGroup_Scene, "Default");
     
 
     int nIndexObjectRend = 0;
@@ -2318,6 +2322,7 @@ void Vulkan_018_Object::cleanupCustom()
 {   
     F_DELETE(m_pScene)
     F_DELETE(m_pSceneManager)
+    F_DELETE(m_pSceneDataManager)
     F_DELETE(m_pSceneManagerEnumerator)
     F_DELETE(m_pMaterialManager)
     F_DELETE(m_pMaterialDataManager)

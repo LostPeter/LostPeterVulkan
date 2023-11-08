@@ -492,6 +492,7 @@ public:
     MaterialManager* m_pMaterialManager;
 
     SceneManagerEnumerator* m_pSceneManagerEnumerator;
+    SceneDataManager* m_pSceneDataManager;
     SceneManager* m_pSceneManager;
     Scene* m_pScene;
     

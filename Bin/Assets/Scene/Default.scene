@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <cfg_scene_data>
-    <scene_data name="Default">
-        
+    <scene_data group="14000" name="Default" type="Common">
+        <scene_settings>
+
+        </scene_settings>
+        <scene_objects id_max="1">
+            <object type="Mesh">
+
+            </object>
+            <object type="SkinMesh">
+
+            </object>
+            <object type="Camera">
+
+            </object>
+            <object type="Light">
+
+            </object>
+            <object type="Terrain">
+
+            </object>
+            <object type="Water">
+
+            </object>
+            <object type="Sky">
+
+            </object>
+            <object type="Cloud">
+
+            </object>
+            <object type="Particle">
+
+            </object>
+        </scene_objects>
+        <scene_nodes>
+            <node name="Root" pos="0 0 0" rot="0 0 0" scale="1 1 1">
+                
+            </node>
+        </scene_nodes>
     </scene_data>
 </cfg_scene_data>

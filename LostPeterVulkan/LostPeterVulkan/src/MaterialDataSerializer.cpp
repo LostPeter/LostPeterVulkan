@@ -647,8 +647,7 @@ namespace LostPeter
 					}
 					else
 					{
-						delete pMaterialData;
-						pMaterialData = nullptr;
+                        F_DELETE(pMaterialData)
                         F_LogError("*********************** MaterialDataSerializer::ParserXML: addMaterialData: [%s] failed !", strNameMaterial.c_str());
 					    return false;
 					}

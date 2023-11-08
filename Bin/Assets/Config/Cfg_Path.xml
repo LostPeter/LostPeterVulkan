@@ -32,5 +32,5 @@
     <path group="11000" max="11000" path="Assets/UI" recursive="true" />
     <path group="12000" max="12000" path="Assets/PostEffect" recursive="true" />
     <path group="13000" max="13000" path="Assets/Script" recursive="true" />
-    <path group="14000" max="14000" path="Assets/Scene" recursive="true" />
+    <path group="14000" max="14000" path="Assets/Scene" recursive="true" del_suffix="true" />
 </cfg_path>

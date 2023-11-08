@@ -26,9 +26,22 @@ namespace LostPeter
         SceneDataManager* m_pSceneDataManager;
 
     public:
+        bool Parser(uint32 nGroup, const String& strName, Scene* pScene, ScenePtrVector* pRet = nullptr);
 
-    protected:
+		bool ParserXML(uint32 nGroup, const String& strName, ScenePtrVector* pRet = nullptr);
+		bool ParserXML(const char* szFilePath, Scene* pScene = nullptr, ScenePtrVector* pRet = nullptr);
 
+		bool ParserBinary(uint32 nGroup, const String& strName, ScenePtrVector* pRet = nullptr);
+		bool ParserBinary(const char* szFilePath, Scene* pScene = nullptr, ScenePtrVector* pRet = nullptr);
+        
+    public:
+        bool SaveXML(Scene* pScene);
+		bool SaveXML(uint32 nGroup, Scene* pScene);
+		bool SaveXML(const char* szFilePath, ScenePtrVector& aSA);
+		
+		bool SaveBinary(Scene* pScene);
+		bool SaveBinary(uint32 nGroup, Scene* pScene);
+		bool SaveBinary(const char* szFilePath, ScenePtrVector& aSA);
     };
 
 }; //LostPeter

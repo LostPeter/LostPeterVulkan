@@ -24,17 +24,10 @@ namespace LostPeter
         virtual ~SceneManagerEnumerator();
 
     public:
-        SceneSerializer* m_pSceneSerializer;
-        ScenePtrVector m_aScene;
-        ScenePtrMap m_mapScene;
-
         SceneManagerPtrVector m_aSceneManagers;
         SceneManagerPtrMap m_mapSceneManagers;
 
     public:
-        LP_FORCEINLINE SceneSerializer* GetSceneSerializer() const { return m_pSceneSerializer; }
-
-
         LP_FORCEINLINE const SceneManagerPtrVector& GetSceneManagerPtrVector() const { return this->m_aSceneManagers; }
         LP_FORCEINLINE SceneManagerPtrVector& GetSceneManagerPtrVector() { return this->m_aSceneManagers; }
         LP_FORCEINLINE const SceneManagerPtrMap& GetSceneManagerPtrMap() const { return this->m_mapSceneManagers; }
@@ -46,7 +39,7 @@ namespace LostPeter
 
     public:
         void Destroy();
-        bool Init(uint nGroup, const String& strNameCfg);
+        bool Init();
 
     public:
         

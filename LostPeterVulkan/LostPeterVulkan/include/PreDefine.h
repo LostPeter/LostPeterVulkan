@@ -750,6 +750,8 @@ namespace LostPeter
 
     typedef std::vector<Scene*> ScenePtrVector;
     typedef std::map<String, Scene*> ScenePtrMap;
+    typedef std::map<uint32, ScenePtrMap> SceneGroupPtrMap;
+
     typedef std::vector<SceneManager*> SceneManagerPtrVector;
     typedef std::map<String, SceneManager*> SceneManagerPtrMap;
 

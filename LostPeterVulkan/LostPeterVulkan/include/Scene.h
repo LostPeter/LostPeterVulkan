@@ -19,19 +19,21 @@ namespace LostPeter
     class utilExport Scene : public Base
     {
     public:
-        Scene(const String& nameScene);
+        Scene(uint _group, 
+              const String& nameScene);
         virtual ~Scene();
 
     public:
+    ////SceneManager/SceneNode
+        SceneManager* m_pSceneManager;
+        SceneNodePtrVector m_aSceneNodes;
+        SceneNodePtrMap m_mapSceneNodes;
+        SceneNode* m_pSceneNodeRoot;
+
     ////Viewport
         ViewportPtrVector m_aViewports;
         ViewportPtrMap m_mapViewports;
         Viewport* m_pViewportMain;
-
-    ////SceneNode
-        SceneNodePtrVector m_aSceneNodes;
-        SceneNodePtrMap m_mapSceneNodes;
-        SceneNode* m_pSceneNodeRoot;
 
     ////Object
         ObjectPtrVector m_aObjects;
@@ -40,8 +42,17 @@ namespace LostPeter
     public:
     public:
         void Destroy();
-        bool Init();
 
+    public:
+        bool LoadScene();
+		void UnloadScene();    
+
+    ////SceneManager/SceneNode
+    public:
+        LP_FORCEINLINE const SceneNodePtrVector& GetSceneNodePtrVector() const { return this->m_aSceneNodes; }
+        LP_FORCEINLINE SceneNodePtrVector& GetSceneNodePtrVector() { return this->m_aSceneNodes; }
+        LP_FORCEINLINE const SceneNodePtrMap& GetSceneNodePtrMap() const { return this->m_mapSceneNodes; }
+        LP_FORCEINLINE SceneNodePtrMap& GetSceneNodePtrMap() { return this->m_mapSceneNodes; }
 
     ////Viewport
     public:
@@ -49,15 +60,6 @@ namespace LostPeter
         LP_FORCEINLINE ViewportPtrVector& GetViewportPtrVector() { return this->m_aViewports; }
         LP_FORCEINLINE const ViewportPtrMap& GetViewportPtrMap() const { return this->m_mapViewports; }
         LP_FORCEINLINE ViewportPtrMap& GetViewportPtrMap() { return this->m_mapViewports; }
-        
-
-    ////SceneNode
-    public:
-        LP_FORCEINLINE const SceneNodePtrVector& GetSceneNodePtrVector() const { return this->m_aSceneNodes; }
-        LP_FORCEINLINE SceneNodePtrVector& GetSceneNodePtrVector() { return this->m_aSceneNodes; }
-        LP_FORCEINLINE const SceneNodePtrMap& GetSceneNodePtrMap() const { return this->m_mapSceneNodes; }
-        LP_FORCEINLINE SceneNodePtrMap& GetSceneNodePtrMap() { return this->m_mapSceneNodes; }
-
 
     ////Object
     public:
