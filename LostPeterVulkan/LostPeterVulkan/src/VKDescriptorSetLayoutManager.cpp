@@ -136,7 +136,6 @@ namespace LostPeter
         VKDescriptorSetLayoutPtrMap::iterator itFind = m_mapVKDescriptorSetLayout.find(strName);
         if (itFind == m_mapVKDescriptorSetLayout.end())
         {
-            F_LogError("*********************** VKDescriptorSetLayoutManager::GetVKDescriptorSetLayout: Can not find, name: [%s]", strName.c_str());
             return nullptr;
         }
         return itFind->second;

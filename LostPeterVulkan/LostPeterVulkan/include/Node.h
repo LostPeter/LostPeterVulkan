@@ -16,6 +16,37 @@
 
 namespace LostPeter
 {
+    class utilExport NodeListener
+    {
+    public:
+        NodeListener()	
+        {	
+
+        }
+        virtual ~NodeListener()	
+        {	
+
+        }
+
+    public:
+        virtual void NodeUpdated(const Node* pNode)		
+        {	
+
+        }
+        virtual void NodeDestroyed(const Node* pNode)		
+        {	
+
+        }
+        virtual void NodeAttached(const Node* pNode)		
+        {	
+
+        }
+        virtual void NodeDetached(const Node* pNode)		
+        {	
+
+        }
+    };
+
     class utilExport Node : public Base
     {
     public:
@@ -23,8 +54,13 @@ namespace LostPeter
         virtual ~Node();
 
     public:
+    protected:
+        Node* m_pParent;
+		NodePtrMap	m_mapChild;
+
 
     public:
+    
 
     };
 

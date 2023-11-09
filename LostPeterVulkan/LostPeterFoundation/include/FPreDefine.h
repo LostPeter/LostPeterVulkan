@@ -287,6 +287,15 @@ namespace LostPeterFoundation
 		F_FileXML_TinyXML,
 	};
 
+
+    enum FTransformType
+    {
+        F_Transform_Local = 0,                          //0:    Local
+        F_Transform_Parent,                             //1:    Parent
+        F_Transform_World,                              //2:    World
+    };
+
+
     enum FLogType
     {
         F_Log_Console = 0,                              //0:    Console

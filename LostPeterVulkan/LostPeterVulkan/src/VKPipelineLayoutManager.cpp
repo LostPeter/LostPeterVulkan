@@ -110,7 +110,6 @@ namespace LostPeter
         VKPipelineLayoutPtrMap::iterator itFind = m_mapVKPipelineLayout.find(strName);
         if (itFind == m_mapVKPipelineLayout.end())
         {
-            F_LogError("*********************** VKPipelineLayoutManager::GetVKPipelineLayout: Can not find, name: [%s]", strName.c_str());
             return nullptr;
         }
         return itFind->second;

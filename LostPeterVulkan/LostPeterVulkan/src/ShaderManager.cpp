@@ -141,14 +141,12 @@ namespace LostPeter
         ShaderGroupPtrMap::iterator itFindGroup = m_mapShaderGroup.find(nGroup);
         if (itFindGroup == m_mapShaderGroup.end())
         {
-            F_LogError("*********************** ShaderManager::GetShader: Can not find group: [%u], name: [%s]", nGroup, strName.c_str());
             return nullptr;
         }
 
         ShaderPtrMap::iterator itFindShader = itFindGroup->second.find(strName);
         if (itFindShader == itFindGroup->second.end())
         {
-            F_LogError("*********************** ShaderManager::GetShader: Can not find shader from group: [%u], name: [%s]", nGroup, strName.c_str());
             return nullptr;
         }
         return itFindShader->second;

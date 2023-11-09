@@ -653,6 +653,7 @@ void Vulkan_018_Object::loadModel_Custom()
     m_pSceneManagerEnumerator->Init();
     m_pSceneDataManager = new SceneDataManager();
     m_pSceneDataManager->Init(FPathManager::PathGroup_Config, s_strNameScene);
+    m_pSceneDataManager->LoadSceneAll();
     
     //10> SceneManager/Scene
     m_pScene = m_pSceneDataManager->LoadScene(FPathManager::PathGroup_Scene, "Default");

@@ -283,7 +283,7 @@ namespace LostPeter
     VulkanDescriptorSetUsageType Util_ParseDescriptorSetUsageType(const String& strName);
     VkDescriptorType Util_Transform2VkDescriptorType(VulkanDescriptorSetUsageType type);    
 
-
+    
     enum VulkanObjectType
     {
         Vulkan_Object_Mesh = 0,             //0:    Mesh

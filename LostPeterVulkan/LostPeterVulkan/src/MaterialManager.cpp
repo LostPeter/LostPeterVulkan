@@ -287,14 +287,12 @@ namespace LostPeter
         MaterialGroupPtrMap::iterator itFindGroup = m_mapMaterialGroup.find(nGroup);
         if (itFindGroup == m_mapMaterialGroup.end())
         {
-            F_LogError("*********************** MaterialManager::GetMaterial: Can not find group: [%u], name: [%s]", nGroup, strName.c_str());
             return nullptr;
         }
 
         MaterialPtrMap::iterator itFindMaterial = itFindGroup->second.find(strName);
         if (itFindMaterial == itFindGroup->second.end())
         {
-            F_LogError("*********************** MaterialManager::GetMaterial: Can not find material from group: [%u], name: [%s]", nGroup, strName.c_str());
             return nullptr;
         }
         return itFindMaterial->second;

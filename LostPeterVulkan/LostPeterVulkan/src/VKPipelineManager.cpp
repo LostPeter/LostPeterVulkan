@@ -93,7 +93,6 @@ namespace LostPeter
         VKPipelinePtrMap::iterator itFind = m_mapVKPipeline.find(strName);
         if (itFind == m_mapVKPipeline.end())
         {
-            F_LogError("*********************** VKPipelineManager::GetVKPipeline: Can not find, name: [%s]", strName.c_str());
             return nullptr;
         }
         return itFind->second;

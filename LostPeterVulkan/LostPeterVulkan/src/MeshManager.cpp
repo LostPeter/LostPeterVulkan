@@ -139,14 +139,12 @@ namespace LostPeter
         MeshGroupPtrMap::iterator itFindGroup = m_mapMeshGroup.find(nGroup);
         if (itFindGroup == m_mapMeshGroup.end())
         {
-            F_LogError("*********************** MeshManager::GetMesh: Can not find group: [%u], name: [%s]", nGroup, strName.c_str());
             return nullptr;
         }
 
         MeshPtrMap::iterator itFindMesh = itFindGroup->second.find(strName);
         if (itFindMesh == itFindGroup->second.end())
         {
-            F_LogError("*********************** MeshManager::GetMesh: Can not find mesh from group: [%u], name: [%s]", nGroup, strName.c_str());
             return nullptr;
         }
         return itFindMesh->second;

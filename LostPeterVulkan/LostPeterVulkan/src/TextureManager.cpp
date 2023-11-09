@@ -158,14 +158,12 @@ namespace LostPeter
         TextureGroupPtrMap::iterator itFindGroup = m_mapTextureGroup.find(nGroup);
         if (itFindGroup == m_mapTextureGroup.end())
         {
-            F_LogError("*********************** TextureManager::GetTexture: Can not find group: [%u], name: [%s]", nGroup, strName.c_str());
             return nullptr;
         }
 
         TexturePtrMap::iterator itFindTexture = itFindGroup->second.find(strName);
         if (itFindTexture == itFindGroup->second.end())
         {
-            F_LogError("*********************** TextureManager::GetTexture: Can not find texture from group: [%u], name: [%s]", nGroup, strName.c_str());
             return nullptr;
         }
         return itFindTexture->second;

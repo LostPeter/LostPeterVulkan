@@ -148,14 +148,12 @@ namespace LostPeter
         SceneGroupPtrMap::iterator itFindGroup = m_mapSceneGroup.find(nGroup);
         if (itFindGroup == m_mapSceneGroup.end())
         {
-            F_LogError("*********************** SceneDataManager::GetScene: Can not find group: [%u], name: [%s]", nGroup, strName.c_str());
             return nullptr;
         }
 
         ScenePtrMap::iterator itFindScene = itFindGroup->second.find(strName);
         if (itFindScene == itFindGroup->second.end())
         {
-            F_LogError("*********************** SceneDataManager::GetScene: Can not find scene from group: [%u], name: [%s]", nGroup, strName.c_str());
             return nullptr;
         }
         return itFindScene->second;
