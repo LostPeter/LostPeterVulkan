@@ -2,26 +2,37 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-10-04
+* Time:     2023-11-11
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/ObjectTerrain.h"
+#include "../include/MovableFactory.h"
 #include "../include/VulkanWindow.h"
+#include "../include/Movable.h"
 
 namespace LostPeter
 {
-    ObjectTerrain::ObjectTerrain(const String& nameObjectTerrain, Scene* pScene)
-        : Object(nameObjectTerrain, pScene)
-    {
-        this->m_typeObject = Vulkan_Object_Terrain;
-    }
-    ObjectTerrain::~ObjectTerrain()
+    MovableFactory::MovableFactory()
+        : m_nTypeFlag(0xFFFFFFFF)
+		, m_bDelExtern(false)
     {
 
     }
+
+    MovableFactory::~MovableFactory()
+    {
+
+    }
+
+    Movable* MovableFactory::CreateInstance(const String& strName, const String2StringMap* pParams /*= nullptr*/)
+	{
+		Movable* pMovable = createInstanceImpl(strName, pParams);
+		pMovable->SetMovableFactory(this);
+
+		return pMovable;
+	}
     
 }; //LostPeter

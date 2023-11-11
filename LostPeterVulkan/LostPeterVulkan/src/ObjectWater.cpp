@@ -14,10 +14,10 @@
 
 namespace LostPeter
 {
-    ObjectWater::ObjectWater(const String& nameWater)
-        : Object(nameWater)
+    ObjectWater::ObjectWater(const String& nameWater, Scene* pScene)
+        : Object(nameWater, pScene)
     {
-        this->typeObject = Vulkan_Object_Water;
+        this->m_typeObject = Vulkan_Object_Water;
     }
     ObjectWater::~ObjectWater()
     {

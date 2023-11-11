@@ -19,7 +19,7 @@ namespace LostPeter
     class utilExport ObjectWater : public Object
     {
     public:
-        ObjectWater(const String& nameWater);
+        ObjectWater(const String& nameWater, Scene* pScene);
         virtual ~ObjectWater();
 
     public:

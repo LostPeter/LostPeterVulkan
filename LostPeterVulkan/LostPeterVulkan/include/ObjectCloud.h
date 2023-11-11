@@ -19,7 +19,7 @@ namespace LostPeter
     class utilExport ObjectCloud : public Object
     {
     public:
-        ObjectCloud(const String& nameCloud);
+        ObjectCloud(const String& nameCloud, Scene* pScene);
         virtual ~ObjectCloud();
 
     public:

@@ -667,6 +667,7 @@ namespace LostPeterFoundation
         static FMatrix4 AffineInverse(const FMatrix4& mat4); 
 
         static FQuaternion InverseQuaternion(const FQuaternion& qRot);
+        static FQuaternion UnitInverseQuaternion(const FQuaternion& qRot);
         static FMatrix3 InverseMatrix3(const FMatrix3& mat3);
         static FMatrix4 InverseMatrix4(const FMatrix4& mat4);
 

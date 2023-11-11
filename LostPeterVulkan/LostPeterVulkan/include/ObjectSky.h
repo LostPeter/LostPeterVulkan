@@ -19,7 +19,7 @@ namespace LostPeter
     class utilExport ObjectSky : public Object
     {
     public:
-        ObjectSky(const String& nameSky);
+        ObjectSky(const String& nameSky, Scene* pScene);
         virtual ~ObjectSky();
 
     public:

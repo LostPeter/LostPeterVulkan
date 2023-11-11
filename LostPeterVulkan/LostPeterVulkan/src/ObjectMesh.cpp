@@ -14,10 +14,10 @@
 
 namespace LostPeter
 {
-    ObjectMesh::ObjectMesh(const String& nameMesh)
-        : Object(nameMesh)
+    ObjectMesh::ObjectMesh(const String& nameMesh, Scene* pScene)
+        : Object(nameMesh, pScene)
     {
-        this->typeObject = Vulkan_Object_Mesh;
+        this->m_typeObject = Vulkan_Object_Mesh;
     }
     ObjectMesh::~ObjectMesh()
     {

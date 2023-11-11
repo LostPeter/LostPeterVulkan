@@ -609,8 +609,14 @@ namespace LostPeter
     class MeshSerializer;
     class MeshSub;
     class Movable;
+    class MovableListener;
+    class MovableFactory;
     class Node;
+    class NodeListener;
+    class ObjectVisibleBoundsInfo;
     class Object;
+    class ObjectFrustum;
+    class ObjectCameraListener;
     class ObjectCamera;
     class ObjectCloud;
     class ObjectLight;
@@ -722,9 +728,12 @@ namespace LostPeter
     typedef std::map<String, Movable*> MovablePtrMap;
 
     typedef std::vector<Node*> NodePtrVector;
+    typedef std::list<Node*> NodePtrList;
+	typedef std::set<Node*> NodePtrSet;
     typedef std::map<String, Node*> NodePtrMap;
 
     typedef std::vector<SceneNode*> SceneNodePtrVector;
+    typedef std::set<SceneNode*> SceneNodePtrSet;
     typedef std::map<String, SceneNode*> SceneNodePtrMap;
 
     typedef std::vector<Object*> ObjectPtrVector;

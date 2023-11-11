@@ -19,7 +19,7 @@ namespace LostPeter
     class utilExport ObjectParticle : public Object
     {
     public:
-        ObjectParticle(const String& nameParticle);
+        ObjectParticle(const String& nameParticle, Scene* pScene);
         virtual ~ObjectParticle();
 
     public:

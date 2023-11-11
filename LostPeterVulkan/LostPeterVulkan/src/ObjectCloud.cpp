@@ -14,10 +14,10 @@
 
 namespace LostPeter
 {
-    ObjectCloud::ObjectCloud(const String& nameCloud)
-        : Object(nameCloud)
+    ObjectCloud::ObjectCloud(const String& nameCloud, Scene* pScene)
+        : Object(nameCloud, pScene)
     {
-        this->typeObject = Vulkan_Object_Cloud;
+        this->m_typeObject = Vulkan_Object_Cloud;
     }
     ObjectCloud::~ObjectCloud()
     {

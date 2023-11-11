@@ -14,10 +14,10 @@
 
 namespace LostPeter
 {
-    ObjectParticle::ObjectParticle(const String& nameParticle)
-        : Object(nameParticle)
+    ObjectParticle::ObjectParticle(const String& nameParticle, Scene* pScene)
+        : Object(nameParticle, pScene)
     {
-        this->typeObject = Vulkan_Object_Particle;
+        this->m_typeObject = Vulkan_Object_Particle;
     }
     ObjectParticle::~ObjectParticle()
     {

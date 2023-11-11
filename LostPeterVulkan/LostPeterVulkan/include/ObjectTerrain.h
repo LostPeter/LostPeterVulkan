@@ -19,7 +19,7 @@ namespace LostPeter
     class utilExport ObjectTerrain : public Object
     {
     public:
-        ObjectTerrain(const String& nameObjectTerrain);
+        ObjectTerrain(const String& nameObjectTerrain, Scene* pScene);
         virtual ~ObjectTerrain();
 
     public:

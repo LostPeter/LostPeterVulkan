@@ -14,14 +14,27 @@
 
 namespace LostPeter
 {
-    ObjectCamera::ObjectCamera(const String& nameCamera)
-        : Object(nameCamera)
+    const String ObjectCamera::ms_strMovableType = "Movable_Camera";
+
+    ObjectCamera::ObjectCamera(const String& nameCamera, Scene* pScene)
+        : ObjectFrustum(nameCamera, pScene)
     {
-        this->typeObject = Vulkan_Object_Camera;
+        this->m_typeObject = Vulkan_Object_Camera;
     }
+
     ObjectCamera::~ObjectCamera()
     {
 
+    }
+
+    const String& ObjectCamera::GetMovableType() const
+    {
+        return ms_strMovableType;
+    }
+
+	float ObjectCamera::GetBoundingRadius() const
+    {
+        return 0.0f;
     }
 
 }; //LostPeter

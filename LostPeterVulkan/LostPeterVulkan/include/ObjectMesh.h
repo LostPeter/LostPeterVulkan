@@ -19,7 +19,7 @@ namespace LostPeter
     class utilExport ObjectMesh : public Object
     {
     public:
-        ObjectMesh(const String& nameMesh);
+        ObjectMesh(const String& nameMesh, Scene* pScene);
         virtual ~ObjectMesh();
 
     public:

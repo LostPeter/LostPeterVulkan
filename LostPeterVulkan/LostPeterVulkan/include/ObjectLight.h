@@ -19,7 +19,7 @@ namespace LostPeter
     class utilExport ObjectLight : public Object
     {
     public:
-        ObjectLight(const String& nameLight);
+        ObjectLight(const String& nameLight, Scene* pScene);
         virtual ~ObjectLight();
 
     public:

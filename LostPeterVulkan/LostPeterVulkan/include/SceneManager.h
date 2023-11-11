@@ -37,10 +37,10 @@ namespace LostPeter
         bool Init();
 
     public:
-        
+        virtual void RenderScene(Scene* pScene);
 
     protected:
-
+        
 
     };
 

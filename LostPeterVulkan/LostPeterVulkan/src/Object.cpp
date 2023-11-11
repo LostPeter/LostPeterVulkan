@@ -14,8 +14,8 @@
 
 namespace LostPeter
 {
-    Object::Object(const String& nameObject)
-        : Movable(nameObject)
+    Object::Object(const String& nameObject, Scene* pScene)
+        : Movable(nameObject, pScene)
     {
 
     }

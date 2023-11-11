@@ -11,6 +11,8 @@
 
 #include "../include/SceneManager.h"
 #include "../include/VulkanWindow.h"
+#include "../include/Scene.h"
+#include "../include/SceneNode.h"
 
 namespace LostPeter
 {
@@ -33,6 +35,11 @@ namespace LostPeter
     {
         
         return true;
+    }
+
+    void SceneManager::RenderScene(Scene* pScene)
+    {
+
     }
 
 }; //LostPeter

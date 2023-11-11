@@ -516,6 +516,10 @@ namespace LostPeterFoundation
     {
         return glm::inverse(qRot);
     }
+    FQuaternion FMath::UnitInverseQuaternion(const FQuaternion& qRot)
+    {
+        return FQuaternion(-qRot.x, -qRot.y, -qRot.z, qRot.w);
+    }
     FMatrix3 FMath::InverseMatrix3(const FMatrix3& mat3)
     {
         return glm::inverse(mat3);

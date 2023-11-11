@@ -14,10 +14,10 @@
 
 namespace LostPeter
 {
-    ObjectSkinMesh::ObjectSkinMesh(const String& nameSkinMesh)
-        : Object(nameSkinMesh)
+    ObjectSkinMesh::ObjectSkinMesh(const String& nameSkinMesh, Scene* pScene)
+        : Object(nameSkinMesh, pScene)
     {
-        this->typeObject = Vulkan_Object_SkinMesh;
+        this->m_typeObject = Vulkan_Object_SkinMesh;
     }
     ObjectSkinMesh::~ObjectSkinMesh()
     {

@@ -14,10 +14,10 @@
 
 namespace LostPeter
 {
-    ObjectLight::ObjectLight(const String& nameLight)
-        : Object(nameLight)
+    ObjectLight::ObjectLight(const String& nameLight, Scene* pScene)
+        : Object(nameLight, pScene)
     {
-        this->typeObject = Vulkan_Object_Light;
+        this->m_typeObject = Vulkan_Object_Light;
     }
     ObjectLight::~ObjectLight()
     {

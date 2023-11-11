@@ -26,8 +26,8 @@ namespace LostPeter
     public:
     ////SceneManager/SceneNode
         SceneManager* m_pSceneManager;
-        SceneNodePtrVector m_aSceneNodes;
         SceneNodePtrMap m_mapSceneNodes;
+        SceneNodePtrSet	m_setAutoTrackingSceneNodes;
         SceneNode* m_pSceneNodeRoot;
 
     ////Viewport
@@ -49,10 +49,25 @@ namespace LostPeter
 
     ////SceneManager/SceneNode
     public:
-        LP_FORCEINLINE const SceneNodePtrVector& GetSceneNodePtrVector() const { return this->m_aSceneNodes; }
-        LP_FORCEINLINE SceneNodePtrVector& GetSceneNodePtrVector() { return this->m_aSceneNodes; }
         LP_FORCEINLINE const SceneNodePtrMap& GetSceneNodePtrMap() const { return this->m_mapSceneNodes; }
         LP_FORCEINLINE SceneNodePtrMap& GetSceneNodePtrMap() { return this->m_mapSceneNodes; }
+
+        virtual SceneNode* GetSceneNodeRoot();
+		
+		virtual SceneNode* GetSceneNode(const String& strName) const;
+		virtual bool HasSceneNode(const String& strName) const;
+
+		virtual SceneNode* CreateSceneNode();
+		virtual SceneNode* CreateSceneNode(const String& strName);
+
+		virtual void DestroySceneNode(const String& strName);
+		virtual void DestroySceneNode(SceneNode* pSceneNode);
+		
+		virtual void NotifyAutoTrackingSceneNode(SceneNode* pSceneNode, bool bAutoTrack);
+
+    protected:
+		virtual SceneNode* createSceneNodeImpl();
+		virtual SceneNode* createSceneNodeImpl(const String& strName);
 
     ////Viewport
     public:

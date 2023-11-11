@@ -19,7 +19,7 @@ namespace LostPeter
     class utilExport ObjectSkinMesh : public Object
     {
     public:
-        ObjectSkinMesh(const String& nameSkinMesh);
+        ObjectSkinMesh(const String& nameSkinMesh, Scene* pScene);
         virtual ~ObjectSkinMesh();
 
     public:

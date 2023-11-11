@@ -2,38 +2,31 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-10-04
+* Time:     2023-11-11
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _OBJECT_H_
-#define _OBJECT_H_
+#ifndef _NODE_LISTENER_H_
+#define _NODE_LISTENER_H_
 
-#include "Movable.h"
+#include "PreDefine.h"
 
 namespace LostPeter
 {
-    class utilExport Object : public Movable
+    class utilExport NodeListener
     {
     public:
-        Object(const String& nameObject, Scene* pScene);
-        virtual ~Object();
+        NodeListener();
+        virtual ~NodeListener();
 
     public:
-    protected:
-        VulkanObjectType m_typeObject;
-
-
-
-    public:
-        LP_FORCEINLINE VulkanObjectType GetObjectType() const { return this->m_typeObject; }
-
-    public:
-
-
+        virtual void NodeUpdated(const Node* pNode) { }
+        virtual void NodeDestroyed(const Node* pNode) { }
+        virtual void NodeAttached(const Node* pNode) { }
+        virtual void NodeDetached(const Node* pNode) { }
     };
 
 }; //LostPeter
