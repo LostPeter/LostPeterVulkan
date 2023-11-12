@@ -1,42 +1,60 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <cfg_scene_data>
     <scene_data group="14000" name="Default" type="Common">
-        <scene_settings>
+        <scene_setting>
 
-        </scene_settings>
-        <scene_objects id_max="1">
+        </scene_setting>    
+        <scene_object id_max="1">
             <object type="Mesh">
-
+                <obj name="Test_Mesh" id="1">
+                    <param_mesh />
+                </obj>
             </object>
             <object type="SkinMesh">
-
+                <obj name="Test_SkinMesh" id="1">
+                    <param_skin_mesh />
+                </obj>
             </object>
             <object type="Camera">
-
+                <obj name="Test_Camera" id="1">
+                    <param_camera />
+                </obj>
             </object>
             <object type="Light">
-
+                <obj name="Test_Light" id="1">
+                    <param_light />
+                </obj>
             </object>
             <object type="Terrain">
-
+                <obj name="Test_Terrain" id="1">
+                    <param_terrain />
+                </obj>
             </object>
             <object type="Water">
-
+                <obj name="Test_Water" id="1">
+                    <param_water />
+                </obj>
             </object>
             <object type="Sky">
-
+                <obj name="Test_Sky" id="1">
+                    <param_sky />
+                </obj>
             </object>
             <object type="Cloud">
-
+                <obj name="Test_Cloud" id="1">
+                    <param_cloud />
+                </obj>
             </object>
             <object type="Particle">
-
+                <obj name="Test_Particle" id="1">
+                    <param_particle />
+                </obj>
             </object>
-        </scene_objects>
-        <scene_nodes>
-            <node name="Root" pos="0 0 0" rot="0 0 0" scale="1 1 1">
-                
+        </scene_object>
+        <scene_node>
+            <node name="Root" pos="0 0 0" angle="0 0 0" scale="1 1 1">
+                <node name="Camera" pos="0 0 -10" angle="30 0 0" scale="1 1 1" />
             </node>
-        </scene_nodes>
+        </scene_node>
     </scene_data>
 </cfg_scene_data>

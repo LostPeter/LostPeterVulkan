@@ -27,7 +27,7 @@ namespace LostPeter
         , m_pScene(pScene)
         , m_pMovableListener(nullptr)
         , m_pMovableFactory(nullptr)
-		, m_pNodeParent(nullptr)
+		, m_pParentNode(nullptr)
         , m_nQueryFlags(ms_nQueryFlags_Default)
 		, m_nVisibilityFlags(ms_nVisibilityFlags_Default)
 		, m_bParentIsTagPoint(false)
@@ -48,7 +48,7 @@ namespace LostPeter
             m_pMovableListener->ObjectDestroyed(this);
         }
 
-		if (m_pNodeParent)
+		if (m_pParentNode)
 		{
 			if (m_bParentIsTagPoint)
 			{
@@ -56,7 +56,7 @@ namespace LostPeter
 			}
 			else
 			{
-				static_cast<SceneNode*>(m_pNodeParent)->DetachObject(this);
+				static_cast<SceneNode*>(m_pParentNode)->DetachObject(this);
 			}
 		}
     }
@@ -70,13 +70,13 @@ namespace LostPeter
 		return 0xFFFFFFFF;
 	}
 
-	SceneNode* Movable::GetSceneNodeParent() const
+	SceneNode* Movable::GetParentSceneNode() const
 	{	
 		if (m_bParentIsTagPoint)
 		{
 			
 		}
-		return static_cast<SceneNode*>(m_pNodeParent);
+		return static_cast<SceneNode*>(m_pParentNode);
 	}	
 
 	bool Movable::IsVisible() const
@@ -91,12 +91,12 @@ namespace LostPeter
 
 	void Movable::NotifyAttached(Node* pParent, bool bIsTagPoint /*= false*/)
 	{
-		m_pNodeParent = pParent;
+		m_pParentNode = pParent;
 		m_bParentIsTagPoint = bIsTagPoint;
 
-		if (m_pMovableListener && pParent != m_pNodeParent)
+		if (m_pMovableListener && pParent != m_pParentNode)
 		{
-			if (m_pNodeParent)
+			if (m_pParentNode)
 				m_pMovableListener->ObjectAttached(this);
 			else
 				m_pMovableListener->ObjectDetached(this);
@@ -121,7 +121,7 @@ namespace LostPeter
 			}
 			else
 			{
-				SceneNode* pSceneNode = static_cast<SceneNode*>(m_pNodeParent);
+				SceneNode* pSceneNode = static_cast<SceneNode*>(m_pParentNode);
 				pSceneNode->DetachObject(this);
 			}
 		}
@@ -129,7 +129,7 @@ namespace LostPeter
 	
 	bool Movable::IsInScene() const
 	{
-		if (m_pNodeParent)
+		if (m_pParentNode)
 		{
 			if (m_bParentIsTagPoint)
 			{
@@ -137,7 +137,7 @@ namespace LostPeter
 			}
 			else
 			{
-				SceneNode* pSceneNode = static_cast<SceneNode*>(m_pNodeParent);
+				SceneNode* pSceneNode = static_cast<SceneNode*>(m_pParentNode);
 				return pSceneNode->IsInSceneGraph();
 			}
 		}
@@ -147,12 +147,12 @@ namespace LostPeter
 
 	void Movable::NotifyCurrentCamera(ObjectCamera* pCamera)
 	{
-		if (m_pNodeParent)
+		if (m_pParentNode)
 		{
 			//if (pCamera->GetUseRenderingDistance() && m_fUpperDistance > 0)
 			//{
 				// float fRadius = GetBoundingRadius();
-				// float fSquaredDepth = m_pNodeParent->GetSquaredViewDepth(pCamera->GetLodCamera());
+				// float fSquaredDepth = m_pParentNode->GetSquaredViewDepth(pCamera->GetLodCamera());
 				// float maxDist = m_fUpperDistance + fRadius;
 				// if (fSquaredDepth > FMath::Square(maxDist))
 				// {
@@ -173,9 +173,9 @@ namespace LostPeter
 
 	const FMatrix4&	Movable::GetNodeParentFullTransform() const
 	{
-		if (m_pNodeParent)
+		if (m_pParentNode)
 		{
-            return m_pNodeParent->GetFullTransform();
+            return m_pParentNode->GetWorldTransformMatrix4();
         }
 
 		return FMath::ms_mat4Unit;
@@ -196,7 +196,7 @@ namespace LostPeter
 		if (isDerive)
 		{
 			m_sphereWorld.SetRadius(GetBoundingRadius());
-			m_sphereWorld.SetCenter(m_pNodeParent->GetDerivedPosition());
+			m_sphereWorld.SetCenter(m_pParentNode->GetPositionWorld());
 		}
 
 		return m_sphereWorld;

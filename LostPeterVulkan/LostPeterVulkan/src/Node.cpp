@@ -36,18 +36,18 @@ namespace LostPeter
 		, m_bNeedChildUpdate(false)		
 		, m_bParentNotified(false)
 		, m_bQueuedForUpdate(false)
-		, m_vPos(FMath::ms_v3Zero)
-		, m_vScale(FMath::ms_v3One)
-		, m_qRot(FMath::ms_qUnit)
-		, m_bInheritRot(true)
-		, m_bInheritScale(true)
-		, m_vDerivedPos(FMath::ms_v3Zero)
-		, m_vDerivedScale(FMath::ms_v3One)
-		, m_qDerivedRot(FMath::ms_qUnit)
-		, m_vInitialPos(FMath::ms_v3Zero)
-		, m_vInitialScale(FMath::ms_v3One)
-		, m_qInitialRot(FMath::ms_qUnit)
-		, m_bCachedTransformOutOfDate(true)
+		, m_vPosInitial(FMath::ms_v3Zero)
+		, m_qRotInitial(FMath::ms_qUnit)
+		, m_vScaleInitial(FMath::ms_v3One)
+		, m_vPosLocal(FMath::ms_v3Zero)
+		, m_qRotLocal(FMath::ms_qUnit)
+		, m_vScaleLocal(FMath::ms_v3One)
+		, m_bRotIsInherit(true)
+		, m_bScaleIsInherit(true)
+		, m_vPosWorld(FMath::ms_v3Zero)
+		, m_qRotWorld(FMath::ms_qUnit)
+		, m_vScaleWorld(FMath::ms_v3One)
+		, m_bTransformWorldOutOfDate(true)
     {
 
     }   
@@ -74,97 +74,77 @@ namespace LostPeter
 		}
     }
 
-    const FVector3&	Node::GetDerivedPosition() const
+    const FVector3&	Node::GetPositionWorld() const
 	{
 		if (m_bNeedParentUpdate)
 		{
 			updateFromParent();
 		}
-		return m_vDerivedPos;
+		return m_vPosWorld;
 	}
-
-	void Node::SetDerivedPosition(const FVector3& vPos)
+	void Node::SetPositionWorld(const FVector3& vPosWorld)
 	{
-		SetPosition(m_pParent->ConvertWorldToLocalPosition(vPos));
+		SetPositionLocal(m_pParent->ConvertPositionFromWorldToLocal(vPosWorld));
 	}	
 
-	const FQuaternion& Node::GetDerivedOrientation() const
+	const FQuaternion& Node::GetRotationWorld() const
 	{
 		if (m_bNeedParentUpdate)
 		{
 			updateFromParent();
 		}
-		return m_qDerivedRot;
+		return m_qRotWorld;
 	}
 
-	void Node::SetDerivedOrientation(const FQuaternion& qRot)
+	void Node::SetRotationWorld(const FQuaternion& qRotWorld)
 	{
-		SetOrientation(m_pParent->ConvertWorldToLocalOrientation(qRot));
+		SetRotationLocal(m_pParent->ConvertRotationFromWorldToLocal(qRotWorld));
 	}
 
-	const FVector3&	Node::GetDerivedScale() const
+	const FVector3&	Node::GetScaleWorld() const
 	{
 		if (m_bNeedParentUpdate)
 		{
 			updateFromParent();
 		}
-		return m_vDerivedScale;
+		return m_vScaleWorld;
 	}
 
-	void Node::Translate(const FVector3& vDis, FTransformType typeTransform /*= F_Transform_Parent*/)
+	void Node::Translate(const FVector3& vMove, FTransformType typeTransform /*= F_Transform_Parent*/)
 	{
 		switch (typeTransform)
 		{
 		case F_Transform_Local:
-			m_vPos += m_qRot * vDis;
+			m_vPosLocal += m_qRotLocal * vMove;
 			break;
 		case F_Transform_World:
 			if (m_pParent)
 			{
-				m_vPos += (FMath::InverseQuaternion(m_pParent->GetDerivedOrientation()) * vDis) / m_pParent->GetDerivedScale();
+				m_vPosLocal += (FMath::InverseQuaternion(m_pParent->GetRotationWorld()) * vMove) / m_pParent->GetScaleWorld();
 			}
 			else
 			{
-				m_vPos += vDis;
+				m_vPosLocal += vMove;
 			}
 			break;
 		case F_Transform_Parent:
-			m_vPos += vDis;
+			m_vPosLocal += vMove;
 			break;
 		}
-
 		NeedUpdate();
 	}
-
 	void Node::Translate(float x, float y, float z, FTransformType typeTransform /*= F_Transform_Parent*/)
 	{
 		Translate(FVector3(x, y, z), typeTransform);
 	}
-
-	void Node::Translate(const FMatrix3& mat3Axes, const FVector3& vMove, FTransformType typeTransform /*= F_Transform_Parent*/)
+	void Node::Translate(const FMatrix3& mat3, const FVector3& vMove, FTransformType typeTransform /*= F_Transform_Parent*/)
 	{
-		FVector3 derived = mat3Axes * vMove;
-		Translate(derived, typeTransform);
+		FVector3 vM = mat3 * vMove;
+		Translate(vM, typeTransform);
 	}
-
-	void Node::Translate(const FMatrix3& mat3Axes, float x, float y, float z, FTransformType typeTransform /*= F_Transform_Parent*/)
+	void Node::Translate(const FMatrix3& mat3, float x, float y, float z, FTransformType typeTransform /*= F_Transform_Parent*/)
 	{
-		Translate(mat3Axes, FVector3(x, y, z), typeTransform);
-	}
-
-	void Node::Roll(float fAngle, FTransformType typeTransform /*= F_Transform_Local*/)
-	{
-		Rotate(FMath::ms_v3UnitZ, fAngle, typeTransform);
-	}
-
-	void Node::Pitch(float fAngle, FTransformType typeTransform /*= F_Transform_Local*/)
-	{
-		Rotate(FMath::ms_v3UnitX, fAngle, typeTransform);
-	}
-
-	void Node::Yaw(float fAngle, FTransformType typeTransform /*= F_Transform_Local*/)
-	{
-		Rotate(FMath::ms_v3UnitY, fAngle, typeTransform);
+		Translate(mat3, FVector3(x, y, z), typeTransform);
 	}
 
 	void Node::Rotate(const FVector3& vAxis, float fAngle, FTransformType typeTransform /*= F_Transform_Local*/)
@@ -172,89 +152,134 @@ namespace LostPeter
 		FQuaternion qRot = FMath::ToQuaternionFromAngleAxis(fAngle, vAxis);
 		Rotate(qRot, typeTransform);
 	}
-
 	void Node::Rotate(const FQuaternion& qRot, FTransformType typeTransform /*= F_Transform_Local*/)
 	{
 		FQuaternion qRotNorm = FMath::Normalize(qRot);
-
 		switch(typeTransform)
 		{
 		case F_Transform_Parent:
-			m_qRot = qRotNorm * m_qRot;
+			m_qRotLocal = qRotNorm * m_qRotLocal;
 			break;
 		case F_Transform_World:
-			m_qRot = m_qRot * FMath::InverseQuaternion(GetDerivedOrientation()) * qRotNorm * GetDerivedOrientation();
+			m_qRotLocal = m_qRotLocal * FMath::InverseQuaternion(GetRotationWorld()) * qRotNorm * GetRotationWorld();
 			break;
 		case F_Transform_Local:
-			m_qRot = m_qRot * qRotNorm;
+			m_qRotLocal = m_qRotLocal * qRotNorm;
 			break;
 		}
 		NeedUpdate();
 	}
-
-	const FMatrix4& Node::GetFullTransform() const
+	void Node::Roll(float fAngle, FTransformType typeTransform /*= F_Transform_Local*/)
 	{
-		if (m_bCachedTransformOutOfDate)
-		{
-            m_matCachedTransform = FMath::ToMatrix4(GetDerivedPosition(), GetDerivedScale(), GetDerivedOrientation());
-			m_bCachedTransformOutOfDate = false;
-		}
-		return m_matCachedTransform;
+		Rotate(FMath::ms_v3UnitZ, fAngle, typeTransform);
+	}
+	void Node::Pitch(float fAngle, FTransformType typeTransform /*= F_Transform_Local*/)
+	{
+		Rotate(FMath::ms_v3UnitX, fAngle, typeTransform);
+	}
+	void Node::Yaw(float fAngle, FTransformType typeTransform /*= F_Transform_Local*/)
+	{
+		Rotate(FMath::ms_v3UnitY, fAngle, typeTransform);
 	}
 
-	FVector3 Node::ConvertWorldToLocalPosition(const FVector3& vPosWorld)
+	const FMatrix4& Node::GetWorldTransformMatrix4() const
+	{
+		if (m_bTransformWorldOutOfDate)
+		{
+            m_mat4TransformWorld = FMath::ToMatrix4(GetPositionWorld(), GetScaleWorld(), GetRotationWorld());
+			m_bTransformWorldOutOfDate = false;
+		}
+		return m_mat4TransformWorld;
+	}
+
+	FVector3 Node::ConvertPositionFromWorldToLocal(const FVector3& vPosWorld)
 	{
 		if (m_bNeedParentUpdate)
 		{
 			updateFromParent();
 		}
-		return FMath::InverseQuaternion(m_qDerivedRot) * (vPosWorld - m_vDerivedPos) / m_vDerivedScale;
+		return FMath::InverseQuaternion(m_qRotWorld) * (vPosWorld - m_vPosWorld) / m_vScaleWorld;
 	}
-
-	FVector3 Node::ConvertLocalToWorldPosition(const FVector3& vPosLocal)
+	FVector3 Node::ConvertPositionFromLocalToWorld(const FVector3& vPosLocal)
 	{
 		if (m_bNeedParentUpdate)
 		{
 			updateFromParent();
 		}
-		return (m_qDerivedRot * vPosLocal * m_vDerivedScale) + m_vDerivedPos;
+		return (m_qRotWorld * vPosLocal * m_vScaleWorld) + m_vPosWorld;
 	}
 
-	FQuaternion	Node::ConvertWorldToLocalOrientation(const FQuaternion& qRotWorld)
+	FQuaternion	Node::ConvertRotationFromWorldToLocal(const FQuaternion& qRotWorld)
 	{		
 		if (m_bNeedParentUpdate)
 		{
 			updateFromParent();
 		}
-		return FMath::InverseQuaternion(m_qDerivedRot) * qRotWorld;
+		return FMath::InverseQuaternion(m_qRotWorld) * qRotWorld;
 	}
-
-	FQuaternion	Node::ConvertLocalToWorldOrientation(const FQuaternion& qRotLocal)
+	FQuaternion	Node::ConvertRotationFromLocalToWorld(const FQuaternion& qRotLocal)
 	{
 		if (m_bNeedParentUpdate)
 		{
 			updateFromParent();
 		}
-		return m_qDerivedRot * qRotLocal;
+		return m_qRotWorld * qRotLocal;
 	}
 	
-	Node* Node::CreateChild(const FVector3& vTranslate /*= FMath::ms_v3Zero*/, const FQuaternion& qRotate /*= FMath::ms_qUnit*/)
+	Node* Node::CreateChild(const FVector3& vTranslate /*= FMath::ms_v3Zero*/, 
+						    const FQuaternion& qRotate /*= FMath::ms_qUnit*/, 
+							const FVector3& vScale /*= FMath::ms_v3One*/)
 	{
 		Node* pNodeNew = createChildImpl();
-		pNodeNew->Translate(vTranslate);
-		pNodeNew->Rotate(qRotate);
+		pNodeNew->SetPositionLocalOnly(vTranslate);
+		pNodeNew->SetRotationLocalOnly(qRotate);
+		pNodeNew->SetScaleLocalOnly(vScale);
+		pNodeNew->NeedUpdate();
 		this->AddChild(pNodeNew);
 
 		return pNodeNew;
 	}
 
-	Node* Node::CreateChild(const String& strName, const FVector3& vTranslate /*= FMath::ms_v3Zero*/, const FQuaternion& qRotate /*= FMath::ms_qUnit*/)
+	Node* Node::CreateChild(const String& strName, 
+							const FVector3& vTranslate /*= FMath::ms_v3Zero*/, 
+							const FQuaternion& qRotate /*= FMath::ms_qUnit*/, 
+							const FVector3& vScale /*= FMath::ms_v3One*/)
 	{
 		Node* pNodeNew = createChildImpl(strName);
-		pNodeNew->Translate(vTranslate);
-		pNodeNew->Rotate(qRotate);
+		pNodeNew->SetPositionLocalOnly(vTranslate);
+		pNodeNew->SetRotationLocalOnly(qRotate);
+		pNodeNew->SetScaleLocalOnly(vScale);
+		pNodeNew->NeedUpdate();
+		this->AddChild(pNodeNew);
+		
+		return pNodeNew;
+	}
+
+	Node* Node::CreateChildByAngle(const FVector3& vTranslate /*= FMath::ms_v3Zero*/, 
+								   const FVector3& vAngle /*= FMath::ms_v3Zero*/, 
+								   const FVector3& vScale /*= FMath::ms_v3One*/)
+	{
+		Node* pNodeNew = createChildImpl();
+		pNodeNew->SetPositionLocalOnly(vTranslate);
+		pNodeNew->SetAngleLocalOnly(vAngle);
+		pNodeNew->SetScaleLocalOnly(vScale);
+		pNodeNew->NeedUpdate();
 		this->AddChild(pNodeNew);
 
+		return pNodeNew;
+	}
+	Node* Node::CreateChildByAngle(const String& strName, 
+								   const FVector3& vTranslate /*= FMath::ms_v3Zero*/,
+								   const FVector3& vAngle /*= FMath::ms_v3Zero*/, 
+								   const FVector3& vScale /*= FMath::ms_v3One*/)
+	{
+		Node* pNodeNew = createChildImpl(strName);
+		pNodeNew->SetPositionLocalOnly(vTranslate);
+		pNodeNew->SetAngleLocalOnly(vAngle);
+		pNodeNew->SetScaleLocalOnly(vScale);
+		pNodeNew->NeedUpdate();
+		this->AddChild(pNodeNew);
+		
 		return pNodeNew;
 	}
 
@@ -262,7 +287,6 @@ namespace LostPeter
 	{
 		return static_cast<uint32>(m_mapChild.size());
 	}
-
 	Node* Node::GetChild(uint32 nIndex) const
 	{
 		if (nIndex < m_mapChild.size())
@@ -274,7 +298,6 @@ namespace LostPeter
 		}
 		return nullptr;
 	}
-
 	Node* Node::GetChild(const String& strName) const
 	{
 		NodePtrMap::const_iterator itFind = m_mapChild.find(strName);
@@ -286,7 +309,6 @@ namespace LostPeter
 
 		return itFind->second;
 	}
-
 	void Node::AddChild(Node* pChild)
 	{
 		if (pChild->m_pParent)
@@ -298,7 +320,6 @@ namespace LostPeter
 		m_mapChild.insert(NodePtrMap::value_type(pChild->GetName(), pChild));
 		pChild->setParent(this);
 	}
-
 	Node* Node::RemoveChild(uint32 nIndex)
 	{
 		Node* pNodeRet;
@@ -318,7 +339,6 @@ namespace LostPeter
 		F_LogError("Node::RemoveChild: Child index out of bounds !");
 		return nullptr;
 	}	
-
 	Node* Node::RemoveChild(Node* pChild)
 	{
 		if (pChild)
@@ -334,7 +354,6 @@ namespace LostPeter
 		}
 		return pChild;
 	}
-
 	Node* Node::RemoveChild(const String& strName)
 	{
 		NodePtrMap::iterator itFind = m_mapChild.find(strName);
@@ -350,7 +369,6 @@ namespace LostPeter
 
 		return pNodeRet;
 	}
-
 	void Node::RemoveAllChildren()
 	{
 		for (NodePtrMap::iterator it = m_mapChild.begin();
@@ -382,7 +400,7 @@ namespace LostPeter
 		if (m_bNeedChildUpdate || bParentHasChanged)
 		{
 			for (NodePtrMap::iterator it = m_mapChild.begin();
-				it != m_mapChild.end(); ++it)
+				 it != m_mapChild.end(); ++it)
 			{
 				Node* pNodeChild = it->second;
 				pNodeChild->Update(true, true);
@@ -392,7 +410,7 @@ namespace LostPeter
 		else
 		{
 			for (NodePtrSet::iterator it = m_setNeedToUpdate.begin();
-				it != m_setNeedToUpdate.end(); ++it)
+				 it != m_setNeedToUpdate.end(); ++it)
 			{
 				Node* pNodeChild = *it;
 				pNodeChild->Update(true, false);
@@ -407,14 +425,13 @@ namespace LostPeter
 	{
 		m_bNeedParentUpdate = true;
 		m_bNeedChildUpdate = true;
-		m_bCachedTransformOutOfDate = true;
+		m_bTransformWorldOutOfDate = true;
 
 		if (m_pParent && (!m_bParentNotified || bForceParentUpdate))
 		{
 			m_pParent->RequestUpdate(this, bForceParentUpdate);
 			m_bParentNotified = true ;
 		}
-
 		m_setNeedToUpdate.clear();
 	}
 
@@ -436,7 +453,6 @@ namespace LostPeter
 	void Node::CancelUpdate(Node* pChild)
 	{
 		m_setNeedToUpdate.erase(pChild);
-
 		if (m_setNeedToUpdate.empty() && m_pParent && !m_bNeedChildUpdate)
 		{
 			m_pParent->CancelUpdate(this);
@@ -456,7 +472,7 @@ namespace LostPeter
 	void Node::ProcessQueuedUpdates()
 	{
 		for (NodePtrVector::iterator it = ms_aNodeQueuedUpdates.begin();
-			it != ms_aNodeQueuedUpdates.end(); ++it)
+			 it != ms_aNodeQueuedUpdates.end(); ++it)
 		{
 			Node* pNode = *it;
 			pNode->m_bQueuedForUpdate = false;
@@ -464,8 +480,6 @@ namespace LostPeter
 		}
 		ms_aNodeQueuedUpdates.clear();
 	}
-
-	
 
 	void Node::setParent(Node* pParent)
 	{
@@ -496,37 +510,37 @@ namespace LostPeter
 	{
 		if (m_pParent)
 		{
-			const FQuaternion& parentOrientation = m_pParent->GetDerivedOrientation();
-			if (m_bInheritRot)
+			const FQuaternion& rotWorldParent= m_pParent->GetRotationWorld();
+			if (m_bRotIsInherit)
 			{
-				m_qDerivedRot = parentOrientation * m_qRot;
+				m_qRotWorld = rotWorldParent * m_qRotLocal;
 			}
 			else
 			{
-				m_qDerivedRot = m_qRot;
+				m_qRotWorld = m_qRotLocal;
 			}
 
-			const FVector3& vScaleParent = m_pParent->GetDerivedScale();
-			if (m_bInheritScale)
+			const FVector3& vScaleParent = m_pParent->GetScaleWorld();
+			if (m_bScaleIsInherit)
 			{
-				m_vDerivedScale = vScaleParent * m_vScale;
+				m_vScaleWorld = vScaleParent * m_vScaleLocal;
 			}
 			else
 			{
-				m_vDerivedScale = m_vScale;
+				m_vScaleWorld = m_vScaleLocal;
 			}
 
-			m_vDerivedPos = parentOrientation * (vScaleParent * m_vPos);
-			m_vDerivedPos += m_pParent->GetDerivedPosition();
+			m_vPosWorld = rotWorldParent * (vScaleParent * m_vPosLocal);
+			m_vPosWorld += m_pParent->GetPositionWorld();
 		}
 		else
 		{
-            m_vDerivedPos = m_vPos;
-			m_qDerivedRot = m_qRot;
-			m_vDerivedScale	= m_vScale;
+            m_vPosWorld = m_vPosLocal;
+			m_qRotWorld = m_qRotLocal;
+			m_vScaleWorld	= m_vScaleLocal;
 		}
 
-		m_bCachedTransformOutOfDate = true;
+		m_bTransformWorldOutOfDate = true;
 		m_bNeedParentUpdate	= false;
 	}	
 

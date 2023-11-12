@@ -35,7 +35,7 @@ namespace LostPeter
 	void ObjectVisibleBoundsInfo::Merge(const FAABB& aabbBounds, const FSphere& sphereBounds, const ObjectCamera* pCamera)
     {
         m_AABB.Merge(aabbBounds);
-		float fCamDistToCenter = FMath::Length(pCamera->GetDerivedPosition() - sphereBounds.GetCenter());
+		float fCamDistToCenter = FMath::Length(pCamera->GetPositionWorld() - sphereBounds.GetCenter());
 		m_fMinDisToCamera = FMath::Min(m_fMinDisToCamera, FMath::Max((float)0, fCamDistToCenter - sphereBounds.GetRadius()));
 		m_fMaxDisToCamera = FMath::Max(m_fMaxDisToCamera, fCamDistToCenter + sphereBounds.GetRadius());
     }

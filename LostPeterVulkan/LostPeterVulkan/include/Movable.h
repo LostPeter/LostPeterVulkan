@@ -37,7 +37,7 @@ namespace LostPeter
         Scene* m_pScene;	
         MovableListener* m_pMovableListener;
         MovableFactory* m_pMovableFactory;
-		Node* m_pNodeParent;		
+		Node* m_pParentNode;
 
         uint32 m_nQueryFlags;	
 		uint32 m_nVisibilityFlags;	
@@ -60,8 +60,8 @@ namespace LostPeter
 		virtual void SetMovableListener(MovableListener* pMovableListener) { m_pMovableListener = pMovableListener; }
         virtual MovableFactory* GetMovableFactory() const { return m_pMovableFactory; }
 		virtual void SetMovableFactory(MovableFactory* pMovableFactory)	{ m_pMovableFactory = pMovableFactory; }
-        virtual Node* GetNodeParent() const	{ return m_pNodeParent; }
-		virtual SceneNode* GetSceneNodeParent() const;
+        virtual Node* GetParentNode() const	{ return m_pParentNode; }
+		virtual SceneNode* GetParentSceneNode() const;
 
         virtual uint32 GetTypeFlags() const;
 
@@ -89,7 +89,7 @@ namespace LostPeter
 			m_fSquaredUpperDistance = fDist * fDist;
 		}
 
-        virtual bool IsAttached() const	{ return m_pNodeParent != nullptr; }
+        virtual bool IsAttached() const	{ return m_pParentNode != nullptr; }
 		virtual void NotifyAttached(Node* pParent, bool bIsTagPoint = false);
 		virtual void NotifyMoved();
 		virtual void DetachFromParent();

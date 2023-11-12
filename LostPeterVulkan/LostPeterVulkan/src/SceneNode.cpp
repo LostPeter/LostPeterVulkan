@@ -28,7 +28,7 @@ namespace LostPeter
 		, m_pAutoTrackTarget(nullptr)
 		, m_bIsInSceneGraph(false)
 		, m_bVisible(true)
-		, m_bInheritVisible(true)
+		, m_bVisibleIsInherit(true)
 		, m_bDerivedVisible(true)
     {
         NeedUpdate();
@@ -44,7 +44,7 @@ namespace LostPeter
 		, m_pAutoTrackTarget(nullptr)
 		, m_bIsInSceneGraph(false)
 		, m_bVisible(true)
-		, m_bInheritVisible(true)
+		, m_bVisibleIsInherit(true)
 		, m_bDerivedVisible(true)
     {
         NeedUpdate();
@@ -62,7 +62,7 @@ namespace LostPeter
 		//F_DELETE(m_pWireBoundingBox)
     }
 
-    SceneNode* SceneNode::GetSceneNodeParent() const
+    SceneNode* SceneNode::GetParentSceneNode() const
 	{
 		return static_cast<SceneNode*>(GetParent());
 	}
@@ -247,12 +247,10 @@ namespace LostPeter
 		}
 		return nullptr;
 	}
-
 	void SceneNode::DetachObject(Movable* pMovable)
 	{
 		DetachObject(pMovable->GetName());
 	}
-
 	Movable* SceneNode::DetachObject(const String& strName)
 	{
 		MovablePtrMap::iterator itFind = m_mapMovable.find(strName);
@@ -268,7 +266,6 @@ namespace LostPeter
 
 		return pMovable;
 	}
-
 	void SceneNode::DetachAllObjects()
 	{
 		for (MovablePtrMap::iterator it = m_mapMovable.begin();
@@ -281,14 +278,32 @@ namespace LostPeter
 		NeedUpdate();
 	}
 
-	SceneNode* SceneNode::CreateChildSceneNode(const FVector3& vTrans /*= FMath::ms_v3Zero*/, const FQuaternion& qRot /*= FMath::ms_qUnit*/)
+	SceneNode* SceneNode::CreateChildSceneNode(const FVector3& vTrans /*= FMath::ms_v3Zero*/, 
+											   const FQuaternion& qRot /*= FMath::ms_qUnit*/,
+											   const FVector3& vScale /*= FMath::ms_v3One*/)
 	{
-		return static_cast<SceneNode*>(this->CreateChild(vTrans, qRot));
+		return static_cast<SceneNode*>(this->CreateChild(vTrans, qRot, vScale));
+	}
+	SceneNode* SceneNode::CreateChildSceneNode(const String& strName, 
+											   const FVector3& vTrans/* = FMath::ms_v3Zero*/, 
+											   const FQuaternion& qRot /*= FMath::ms_qUnit*/,
+											   const FVector3& vScale /*= FMath::ms_v3One*/)
+	{
+		return static_cast<SceneNode*>(this->CreateChild(strName, vTrans, qRot, vScale));
 	}
 
-	SceneNode* SceneNode::CreateChildSceneNode(const String& strName, const FVector3& vTrans/* = FMath::ms_v3Zero*/, const FQuaternion& qRot /*= FMath::ms_qUnit*/)
+ 	SceneNode* SceneNode::CreateChildSceneNodeByAngle(const FVector3& vTrans /*= FMath::ms_v3Zero*/, 
+													  const FVector3& vAngle /*= FMath::ms_v3Zero*/,
+												 	  const FVector3& vScale /*= FMath::ms_v3One*/)
 	{
-		return static_cast<SceneNode*>(this->CreateChild(strName, vTrans, qRot));
+		return static_cast<SceneNode*>(this->CreateChildByAngle(vTrans, vAngle, vScale));
+	}
+	SceneNode* SceneNode::CreateChildSceneNodeByAngle(const String& strName, 
+													  const FVector3& vTrans /*= FMath::ms_v3Zero*/, 
+													  const FVector3& vAngle /*= FMath::ms_v3Zero*/,
+													  const FVector3& vScale /*= FMath::ms_v3One*/)
+	{
+		return static_cast<SceneNode*>(this->CreateChildByAngle(strName, vTrans, vAngle, vScale));
 	}
 
 	void SceneNode::RemoveAndDestroyChild(const String& strName)
@@ -298,7 +313,6 @@ namespace LostPeter
 		RemoveChild(strName);
 		pChild->GetScene()->DestroySceneNode(strName);
 	}
-
 	void SceneNode::RemoveAndDestroyChild(uint32 nIndex)
 	{
 		SceneNode* pChild = static_cast<SceneNode*>(GetChild(nIndex));
@@ -307,7 +321,6 @@ namespace LostPeter
 		RemoveChild(nIndex);
 		pChild->GetScene()->DestroySceneNode(pChild->GetName());
 	}
-
 	void SceneNode::RemoveAndDestroyAllChildren()
 	{
 		for (NodePtrMap::iterator it = m_mapChild.begin();
@@ -327,7 +340,7 @@ namespace LostPeter
 		if (m_bAABBSet)
 		{
 			m_aabbWorld = m_aabbSet;
-			m_aabbWorld.TransformAffine(GetFullTransform());
+			m_aabbWorld.TransformAffine(GetWorldTransformMatrix4());
 
 			m_spereWorld.SetCenter(m_aabbWorld.GetCenter());
 			FVector3 vBound = m_aabbWorld.GetMax() - m_aabbWorld.GetMin();
@@ -432,16 +445,16 @@ namespace LostPeter
 		switch (typeTransform)
 		{
 		case F_Transform_Parent:
-			if (m_bInheritRot)
+			if (m_bRotIsInherit)
 			{
 				if (m_pParent)
 				{
-					vTargetDir = m_pParent->GetDerivedOrientation() * vTargetDir;
+					vTargetDir = m_pParent->GetRotationWorld() * vTargetDir;
 				}
 			}
 			break;
 		case F_Transform_Local:
-			vTargetDir = GetDerivedOrientation() * vTargetDir;
+			vTargetDir = GetRotationWorld() * vTargetDir;
 			break;
 		case F_Transform_World:
 
@@ -467,7 +480,7 @@ namespace LostPeter
 		}
 		else
 		{
-			const FQuaternion& qCurrentOrient = GetDerivedOrientation();
+			const FQuaternion& qCurrentOrient = GetRotationWorld();
 			FVector3 vCurrentDir = qCurrentOrient * vLocalDir;
 			if (FMath::Length2(vCurrentDir + vTargetDir) < 0.00005f)
 			{
@@ -480,10 +493,10 @@ namespace LostPeter
 			}
 		}
 
-		if (m_pParent && m_bInheritRot)
-			SetOrientation(FMath::UnitInverseQuaternion(m_pParent->GetDerivedOrientation()) * qTargetRot);
+		if (m_pParent && m_bRotIsInherit)
+			SetRotationLocal(FMath::UnitInverseQuaternion(m_pParent->GetRotationWorld()) * qTargetRot);
 		else
-			SetOrientation(qTargetRot);
+			SetRotationLocal(qTargetRot);
 	}
 
 	void SceneNode::LookAt(const FVector3& vTarget, FTransformType typeTransform, const FVector3& vLocalDir /*= FMath::ms_v3UnitNegZ*/)
@@ -493,10 +506,10 @@ namespace LostPeter
 		{
 		default:
 		case F_Transform_World:
-			vOrigin = GetDerivedPosition();
+			vOrigin = GetPositionWorld();
 			break;
 		case F_Transform_Parent:
-			vOrigin = m_vPos;
+			vOrigin = m_vPosLocal;
 			break;
 		case F_Transform_Local:
 			vOrigin = FMath::ms_v3Zero;
@@ -528,7 +541,7 @@ namespace LostPeter
 	{
 		if (m_pAutoTrackTarget)
 		{
-			LookAt(m_pAutoTrackTarget->GetDerivedPosition() + m_vAutoTrackOffset, F_Transform_World, m_vAutoTrackLocalDirection);
+			LookAt(m_pAutoTrackTarget->GetPositionWorld() + m_vAutoTrackOffset, F_Transform_World, m_vAutoTrackLocalDirection);
 			Update(true, true);
 		}
 	}
@@ -568,7 +581,7 @@ namespace LostPeter
 
 	void SceneNode::updateFromParentImpl() const
 	{
-		if (m_pParent && m_bInheritVisible)
+		if (m_pParent && m_bVisibleIsInherit)
 		{			
 			bool bParentVisible = dynamic_cast<SceneNode*>(m_pParent)->IsVisible();
 			m_bDerivedVisible = bParentVisible && m_bVisible;						
@@ -593,7 +606,6 @@ namespace LostPeter
 		F_Assert(m_pScene && "SceneNode::createChildImpl")
 		return m_pScene->CreateSceneNode();
 	}
-
 	Node* SceneNode::createChildImpl(const String& strName)
 	{
 		F_Assert(m_pScene && "SceneNode::createChildImpl")

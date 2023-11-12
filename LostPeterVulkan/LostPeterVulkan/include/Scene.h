@@ -24,14 +24,16 @@ namespace LostPeter
         virtual ~Scene();
 
     public:
+        static String ms_nameRootSceneNode;
+
+    public:
     ////SceneManager/SceneNode
         SceneManager* m_pSceneManager;
         SceneNodePtrMap m_mapSceneNodes;
         SceneNodePtrSet	m_setAutoTrackingSceneNodes;
-        SceneNode* m_pSceneNodeRoot;
+        SceneNode* m_pRootSceneNode;
 
     ////Viewport
-        ViewportPtrVector m_aViewports;
         ViewportPtrMap m_mapViewports;
         Viewport* m_pViewportMain;
 
@@ -52,13 +54,23 @@ namespace LostPeter
         LP_FORCEINLINE const SceneNodePtrMap& GetSceneNodePtrMap() const { return this->m_mapSceneNodes; }
         LP_FORCEINLINE SceneNodePtrMap& GetSceneNodePtrMap() { return this->m_mapSceneNodes; }
 
-        virtual SceneNode* GetSceneNodeRoot();
+        virtual SceneNode* CreateRootSceneNode(const String& strName, 
+                                               const FVector3& vTrans = FMath::ms_v3Zero, 
+											   const FQuaternion& qRot = FMath::ms_qUnit,
+											   const FVector3& vScale = FMath::ms_v3One);
+        virtual SceneNode* CreateRootSceneNode(const String& strName, 
+                                               const FVector3& vTrans = FMath::ms_v3Zero, 
+											   const FVector3& vAngle = FMath::ms_v3Zero,
+											   const FVector3& vScale = FMath::ms_v3One);
+        virtual SceneNode* GetRootSceneNode();
 		
 		virtual SceneNode* GetSceneNode(const String& strName) const;
 		virtual bool HasSceneNode(const String& strName) const;
+        virtual bool AddSceneNode(SceneNode* pSceneNode);
 
 		virtual SceneNode* CreateSceneNode();
 		virtual SceneNode* CreateSceneNode(const String& strName);
+        virtual SceneNode* CreateSceneNode(const String& strName, SceneNode* pParent);
 
 		virtual void DestroySceneNode(const String& strName);
 		virtual void DestroySceneNode(SceneNode* pSceneNode);
@@ -71,10 +83,10 @@ namespace LostPeter
 
     ////Viewport
     public:
-        LP_FORCEINLINE const ViewportPtrVector& GetViewportPtrVector() const { return this->m_aViewports; }
-        LP_FORCEINLINE ViewportPtrVector& GetViewportPtrVector() { return this->m_aViewports; }
         LP_FORCEINLINE const ViewportPtrMap& GetViewportPtrMap() const { return this->m_mapViewports; }
         LP_FORCEINLINE ViewportPtrMap& GetViewportPtrMap() { return this->m_mapViewports; }
+
+
 
     ////Object
     public:
@@ -82,6 +94,8 @@ namespace LostPeter
         LP_FORCEINLINE ObjectPtrVector& GetObjectPtrVector() { return this->m_aObjects; }
         LP_FORCEINLINE const ObjectPtrMap& GetObjectPtrMap() const { return this->m_mapObjects; }
         LP_FORCEINLINE ObjectPtrMap& GetObjectPtrMap() { return this->m_mapObjects; }
+
+
 
     };
 

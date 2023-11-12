@@ -17,12 +17,14 @@
 
 namespace LostPeter
 {
+	String Scene::ms_nameRootSceneNode = "RootSceneNode";
+
     Scene::Scene(uint _group, 
                  const String& nameScene)
         : Base(_group, nameScene)
     ////SceneManager/SceneNode
         , m_pSceneManager(nullptr)
-        , m_pSceneNodeRoot(nullptr)
+        , m_pRootSceneNode(nullptr)
     ////Viewport
         , m_pViewportMain(nullptr)
     ////Object
@@ -65,14 +67,48 @@ namespace LostPeter
 
 
 ////SceneManager/SceneNode
-    SceneNode*	Scene::GetSceneNodeRoot()
+	SceneNode* Scene::CreateRootSceneNode(const String& strName,
+										  const FVector3& vTrans /*= FMath::ms_v3Zero*/, 
+										  const FQuaternion& qRot /*= FMath::ms_qUnit*/,
+									      const FVector3& vScale /*= FMath::ms_v3One*/)
 	{
-		if (!m_pSceneNodeRoot)
+		if (!m_pRootSceneNode)
 		{
-			m_pSceneNodeRoot = createSceneNodeImpl("SceneNodeRoot");
-			m_pSceneNodeRoot->NotifyRootNode();
+			m_pRootSceneNode = createSceneNodeImpl(strName);
+			m_pRootSceneNode->SetPositionLocalOnly(vTrans);
+			m_pRootSceneNode->SetRotationLocalOnly(qRot);
+			m_pRootSceneNode->SetScaleLocalOnly(vScale);
+			m_pRootSceneNode->NeedUpdate();
+			m_pRootSceneNode->NotifyRootNode();
+		}	
+		return m_pRootSceneNode;
+	}
+	SceneNode* Scene::CreateRootSceneNode(const String& strName, 
+										  const FVector3& vTrans /*= FMath::ms_v3Zero*/, 
+										  const FVector3& vAngle /*= FMath::ms_v3Zero*/,
+										  const FVector3& vScale /*= FMath::ms_v3One*/)
+	{
+		if (!m_pRootSceneNode)
+		{
+			m_pRootSceneNode = createSceneNodeImpl(strName);
+			m_pRootSceneNode->SetPositionLocalOnly(vTrans);
+			m_pRootSceneNode->SetAngleLocalOnly(vAngle);
+			m_pRootSceneNode->SetScaleLocalOnly(vScale);
+			m_pRootSceneNode->NeedUpdate();
+			m_pRootSceneNode->NotifyRootNode();
+		}	
+		return m_pRootSceneNode;
+	}
+    SceneNode* Scene::GetRootSceneNode()
+	{
+		if (!m_pRootSceneNode)
+		{
+			CreateRootSceneNode(ms_nameRootSceneNode,
+								FMath::ms_v3Zero,
+								FMath::ms_qUnit,
+								FMath::ms_v3One);
 		}
-		return m_pSceneNodeRoot;
+		return m_pRootSceneNode;
 	}
 
 	SceneNode* Scene::GetSceneNode(const String& strName) const
@@ -80,35 +116,61 @@ namespace LostPeter
 		SceneNodePtrMap::const_iterator itFind = m_mapSceneNodes.find(strName);
 		if (itFind == m_mapSceneNodes.end())
 		{
-			F_LogError("Scene::GetSceneNode: SceneNode: [%s] not found !", strName.c_str());
 			return nullptr;
 		}
 		return itFind->second;
 	}
-
 	bool Scene::HasSceneNode(const String& strName) const
 	{
 		return (m_mapSceneNodes.find(strName) != m_mapSceneNodes.end());
+	}
+	bool Scene::AddSceneNode(SceneNode* pSceneNode)
+	{
+		if (!pSceneNode)
+		{
+			return false;
+		}
+
+		const String& strName = pSceneNode->GetName();
+		SceneNodePtrMap::const_iterator itFind = m_mapSceneNodes.find(strName);
+		if (itFind != m_mapSceneNodes.end())
+		{
+			F_LogError("Scene::AddSceneNode: Scene node with the name: [%s] already exists !", strName.c_str());
+			return false;
+		}
+
+		m_mapSceneNodes[strName] = pSceneNode;
+		return true;
 	}
 
 	SceneNode* Scene::CreateSceneNode()
 	{
 		SceneNode* pSceneNode = createSceneNodeImpl();
-		F_Assert(m_mapSceneNodes.find(pSceneNode->GetName()) == m_mapSceneNodes.end() && "Scene::CreateSceneNode")
-		m_mapSceneNodes[pSceneNode->GetName()] = pSceneNode;
+		if (!AddSceneNode(pSceneNode))
+		{
+			F_LogError("Scene::CreateSceneNode: Scene node with the name: [%s] already exists !", pSceneNode->GetName().c_str());
+			return nullptr;
+		}
 		return pSceneNode;
 	}
-
 	SceneNode* Scene::CreateSceneNode(const String& strName)
+	{
+		return CreateSceneNode(strName, nullptr);
+	}
+	SceneNode* Scene::CreateSceneNode(const String& strName, SceneNode* pParent)
 	{
 		if (m_mapSceneNodes.find(strName) != m_mapSceneNodes.end())
 		{
 			F_LogError("Scene::CreateSceneNode: Scene node with the name: [%s] already exists !", strName.c_str());
 			return nullptr;
 		}
-
+		
 		SceneNode* pSceneNode = createSceneNodeImpl(strName);
-		m_mapSceneNodes[pSceneNode->GetName()] = pSceneNode;
+		if (pParent != nullptr)
+		{
+			pParent->AddChild(pSceneNode);
+		}
+		AddSceneNode(pSceneNode);
 		return pSceneNode;
 	}
 
@@ -173,11 +235,13 @@ namespace LostPeter
 		return new SceneNode(strName, this);
 	}
 
+
 ////Viewport
 
 
 
 ////Object
+
 
 
 

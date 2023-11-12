@@ -18,6 +18,12 @@ namespace LostPeter
 
     ObjectCamera::ObjectCamera(const String& nameCamera, Scene* pScene)
         : ObjectFrustum(nameCamera, pScene)
+        , m_vPosLocal(FMath::ms_v3Zero)
+		, m_qRotLocal(FMath::ms_qUnit)
+        , m_vPosWorld(FMath::ms_v3Zero)
+		, m_qRotWorld(FMath::ms_qUnit)
+        , m_vPosReal(FMath::ms_v3Zero)
+		, m_qRotReal(FMath::ms_qUnit)
     {
         this->m_typeObject = Vulkan_Object_Camera;
     }
@@ -26,6 +32,12 @@ namespace LostPeter
     {
 
     }
+
+    void ObjectCamera::SetDirectionLocal(const FVector3& vDirLocal)
+    {
+
+    }   
+
 
     const String& ObjectCamera::GetMovableType() const
     {

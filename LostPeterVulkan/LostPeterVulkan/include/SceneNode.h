@@ -46,12 +46,12 @@ namespace LostPeter
 		bool m_bIsInSceneGraph;
 
 		bool m_bVisible;
-		bool m_bInheritVisible;
+		bool m_bVisibleIsInherit;
 		mutable bool m_bDerivedVisible;
 
     public:
 		LP_FORCEINLINE Scene* GetScene() const { return m_pScene; }
-		SceneNode* GetSceneNodeParent() const;
+		SceneNode* GetParentSceneNode() const;
 		
 		LP_FORCEINLINE const FAABB&	GetWorldAABB() const { return m_aabbWorld; }
 		LP_FORCEINLINE const FSphere& GetWorldSphere() const { return m_spereWorld; }
@@ -78,8 +78,8 @@ namespace LostPeter
 		virtual void NotifyRootNode() { m_bIsInSceneGraph = true; }
 		virtual void SetInSceneGraph(bool bIsInGraph);
 		
-		virtual bool GetInheritVisible() const { return m_bInheritVisible; }
-		virtual void SetInheritVisible(bool bInherit) { m_bInheritVisible = bInherit;}
+		virtual bool GetVisibleIsInherit() const { return m_bVisibleIsInherit; }
+		virtual void SetVisibleIsInherit(bool bVisibleIsInherit) { m_bVisibleIsInherit = bVisibleIsInherit; }
 
 		virtual bool IsVisible();
 		virtual void SetVisible(bool bVisible);
@@ -98,8 +98,22 @@ namespace LostPeter
 		virtual Movable* DetachObject(const String& strName);
 		virtual void DetachAllObjects();
     
-		virtual SceneNode* CreateChildSceneNode(const FVector3& vTrans = FMath::ms_v3Zero, const FQuaternion& qRot = FMath::ms_qUnit);
-		virtual SceneNode* CreateChildSceneNode(const String& strName, const FVector3& vTrans = FMath::ms_v3Zero, const FQuaternion& qRot = FMath::ms_qUnit);
+		virtual SceneNode* CreateChildSceneNode(const FVector3& vTrans = FMath::ms_v3Zero, 
+												const FQuaternion& qRot = FMath::ms_qUnit,
+												const FVector3& vScale = FMath::ms_v3One);
+		virtual SceneNode* CreateChildSceneNode(const String& strName, 
+												const FVector3& vTrans = FMath::ms_v3Zero, 
+												const FQuaternion& qRot = FMath::ms_qUnit,
+												const FVector3& vScale = FMath::ms_v3One);
+
+		virtual SceneNode* CreateChildSceneNodeByAngle(const FVector3& vTrans = FMath::ms_v3Zero, 
+													   const FVector3& vAngle = FMath::ms_v3Zero,
+													   const FVector3& vScale = FMath::ms_v3One);
+		virtual SceneNode* CreateChildSceneNodeByAngle(const String& strName, 
+													   const FVector3& vTrans = FMath::ms_v3Zero, 
+													   const FVector3& vAngle = FMath::ms_v3Zero,
+													   const FVector3& vScale = FMath::ms_v3One);
+		
 		virtual void RemoveAndDestroyChild(const String& strName);
 		virtual void RemoveAndDestroyChild(uint32 nIndex);
 		virtual void RemoveAndDestroyAllChildren();
