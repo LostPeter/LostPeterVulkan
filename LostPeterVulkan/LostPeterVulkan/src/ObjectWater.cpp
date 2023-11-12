@@ -14,6 +14,8 @@
 
 namespace LostPeter
 {
+    const String ObjectWater::ms_strMovableType = "Movable_Water";
+
     ObjectWater::ObjectWater(const String& nameWater, Scene* pScene)
         : Object(nameWater, pScene)
     {
@@ -24,4 +26,18 @@ namespace LostPeter
 
     }
     
+
+    const String& ObjectWater::GetMovableType() const
+    {
+        return ms_strMovableType;
+    }
+    const FAABB& ObjectWater::GetBoundingAABB() const
+    {
+        return m_aabb;
+    }
+    float ObjectWater::GetBoundingRadius() const
+    {
+        return 0.0f;
+    }
+
 }; //LostPeter

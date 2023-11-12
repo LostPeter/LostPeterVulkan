@@ -736,30 +736,50 @@ namespace LostPeter
     typedef std::set<SceneNode*> SceneNodePtrSet;
     typedef std::map<String, SceneNode*> SceneNodePtrMap;
 
-    typedef std::vector<Object*> ObjectPtrVector;
+    //Object
+    typedef std::vector<Object*> ObjectPtrVector; 
     typedef std::map<String, Object*> ObjectPtrMap;
-    typedef std::vector<ObjectCamera*> ObjectCameraPtrVector;
-    typedef std::map<String, ObjectCamera*> ObjectCameraPtrMap;
-    typedef std::vector<ObjectLight*> ObjectLightPtrVector;
-    typedef std::map<String, ObjectLight*> ObjectLightPtrMap;
-    typedef std::vector<ObjectMesh*> ObjectMeshPtrVector;
+    typedef std::map<int, ObjectPtrMap> ObjectPtrGroupMap;
+    //ObjectMesh
+    typedef std::vector<ObjectMesh*> ObjectMeshPtrVector; 
     typedef std::map<String, ObjectMesh*> ObjectMeshPtrMap;
-    typedef std::vector<ObjectSkinMesh*> ObjectSkinMeshPtrVector;
+    typedef std::map<int, ObjectMeshPtrMap> ObjectMeshPtrGroupMap;
+    //ObjectSkinMesh
+    typedef std::vector<ObjectSkinMesh*> ObjectSkinMeshPtrVector; 
     typedef std::map<String, ObjectSkinMesh*> ObjectSkinMeshPtrMap;
-    typedef std::vector<ObjectParticle*> ObjectParticlePtrVector;
-    typedef std::map<String, ObjectParticle*> ObjectParticlePtrMap;
-    typedef std::vector<ObjectSky*> ObjectSkyPtrVector;
-    typedef std::map<String, ObjectSky*> ObjectSkyPtrMap;
-    typedef std::vector<ObjectCloud*> ObjectCloudPtrVector;
-    typedef std::map<String, ObjectCloud*> ObjectCloudPtrMap;
-    typedef std::vector<ObjectWater*> ObjectWaterPtrVector;
-    typedef std::map<String, ObjectWater*> ObjectWaterPtrMap;
-    typedef std::vector<ObjectTerrain*> ObjectTerrainPtrVector;
+    typedef std::map<int, ObjectSkinMeshPtrMap> ObjectSkinMeshPtrGroupMap;
+    //ObjectCamera
+    typedef std::vector<ObjectCamera*> ObjectCameraPtrVector; 
+    typedef std::map<String, ObjectCamera*> ObjectCameraPtrMap;
+    typedef std::map<int, ObjectCameraPtrMap> ObjectCameraPtrGroupMap;
+    //ObjectLight
+    typedef std::vector<ObjectLight*> ObjectLightPtrVector; 
+    typedef std::map<String, ObjectLight*> ObjectLightPtrMap;
+    typedef std::map<int, ObjectLightPtrMap> ObjectLightPtrGroupMap;
+    //ObjectTerrain
+    typedef std::vector<ObjectTerrain*> ObjectTerrainPtrVector; 
     typedef std::map<String, ObjectTerrain*> ObjectTerrainPtrMap;
+    typedef std::map<int, ObjectTerrainPtrMap> ObjectTerrainPtrGroupMap;
+    //ObjectWater
+    typedef std::vector<ObjectWater*> ObjectWaterPtrVector; 
+    typedef std::map<String, ObjectWater*> ObjectWaterPtrMap;
+    typedef std::map<int, ObjectWaterPtrMap> ObjectWaterPtrGroupMap;
+    //ObjectSky
+    typedef std::vector<ObjectSky*> ObjectSkyPtrVector; 
+    typedef std::map<String, ObjectSky*> ObjectSkyPtrMap;
+    typedef std::map<int, ObjectSkyPtrMap> ObjectSkyPtrGroupMap;
+    //ObjectCloud
+    typedef std::vector<ObjectCloud*> ObjectCloudPtrVector; 
+    typedef std::map<String, ObjectCloud*> ObjectCloudPtrMap;
+    typedef std::map<int, ObjectCloudPtrMap> ObjectCloudPtrGroupMap;
+    //ObjectParticle
+    typedef std::vector<ObjectParticle*> ObjectParticlePtrVector; 
+    typedef std::map<String, ObjectParticle*> ObjectParticlePtrMap;
+    typedef std::map<int, ObjectParticlePtrMap> ObjectParticlePtrGroupMap;
 
     typedef std::vector<Scene*> ScenePtrVector;
     typedef std::map<String, Scene*> ScenePtrMap;
-    typedef std::map<uint32, ScenePtrMap> SceneGroupPtrMap;
+    typedef std::map<int, ScenePtrMap> SceneGroupPtrMap;
 
     typedef std::vector<SceneManager*> SceneManagerPtrVector;
     typedef std::map<String, SceneManager*> SceneManagerPtrMap;

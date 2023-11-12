@@ -23,9 +23,21 @@ namespace LostPeter
         virtual ~ObjectMesh();
 
     public:
+    protected:
+        static const String	ms_strMovableType;	
+
+    public:
+    protected:
+        mutable FAABB m_aabb;
 
     public:
 
+
+    ////Movable
+    public:
+        virtual const String& GetMovableType() const;
+        virtual const FAABB& GetBoundingAABB() const;
+		virtual float GetBoundingRadius() const;
     };
 
 }; //LostPeter

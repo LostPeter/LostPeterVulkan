@@ -14,6 +14,8 @@
 
 namespace LostPeter
 {
+    const String ObjectTerrain::ms_strMovableType = "Movable_Terrain";
+
     ObjectTerrain::ObjectTerrain(const String& nameObjectTerrain, Scene* pScene)
         : Object(nameObjectTerrain, pScene)
     {
@@ -22,6 +24,22 @@ namespace LostPeter
     ObjectTerrain::~ObjectTerrain()
     {
 
+    }
+
+
+
+
+    const String& ObjectTerrain::GetMovableType() const
+    {
+        return ms_strMovableType;
+    }
+    const FAABB& ObjectTerrain::GetBoundingAABB() const
+    {
+        return m_aabb;
+    }
+    float ObjectTerrain::GetBoundingRadius() const
+    {
+        return 0.0f;
     }
     
 }; //LostPeter

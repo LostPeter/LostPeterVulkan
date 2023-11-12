@@ -14,6 +14,8 @@
 
 namespace LostPeter
 {
+    const String ObjectMesh::ms_strMovableType = "Movable_Mesh";
+
     ObjectMesh::ObjectMesh(const String& nameMesh, Scene* pScene)
         : Object(nameMesh, pScene)
     {
@@ -22,6 +24,21 @@ namespace LostPeter
     ObjectMesh::~ObjectMesh()
     {
 
+    }
+
+
+
+    const String& ObjectMesh::GetMovableType() const
+    {
+        return ms_strMovableType;
+    }
+    const FAABB& ObjectMesh::GetBoundingAABB() const
+    {
+        return m_aabb;
+    }
+    float ObjectMesh::GetBoundingRadius() const
+    {
+        return 0.0f;
     }
     
 }; //LostPeter

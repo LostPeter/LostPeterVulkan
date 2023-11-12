@@ -14,6 +14,8 @@
 
 namespace LostPeter
 {
+    const String ObjectCloud::ms_strMovableType = "Movable_Cloud";
+
     ObjectCloud::ObjectCloud(const String& nameCloud, Scene* pScene)
         : Object(nameCloud, pScene)
     {
@@ -22,6 +24,21 @@ namespace LostPeter
     ObjectCloud::~ObjectCloud()
     {
 
+    }
+
+
+
+    const String& ObjectCloud::GetMovableType() const
+    {
+        return ms_strMovableType;
+    }
+    const FAABB& ObjectCloud::GetBoundingAABB() const
+    {
+        return m_aabb;
+    }
+    float ObjectCloud::GetBoundingRadius() const
+    {
+        return 0.0f;
     }
     
 }; //LostPeter

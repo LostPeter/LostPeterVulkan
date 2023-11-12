@@ -7809,19 +7809,89 @@ namespace LostPeter
                         ImGui::Separator();
                         ImGui::Spacing();
                     }
-                    void VulkanWindow::enumObject()
+                    void VulkanWindow::enumScene()
                     {
-                        if (ImGui::CollapsingHeader("Enum Object"))
+                        if (ImGui::CollapsingHeader("Enum Scene"))
                         {
-                            ObjectManager* pObjectManager = ObjectManager::GetSingletonPtr();
-                            if (pObjectManager != nullptr)
+                            SceneDataManager* pSceneDataManager = SceneDataManager::GetSingletonPtr();
+                            if (pSceneDataManager != nullptr)
                             {
-                                
+                                ScenePtrVector& aScene = pSceneDataManager->GetScenePtrVector();
+                                int count = (int)aScene.size();
+                                for (int i = 0; i < count; i++)
+                                {
+                                    Scene* pScene = aScene[i];
+                                    enumSceneObject(pScene);
+                                }
                             }
                         }
                         ImGui::Separator();
                         ImGui::Spacing();
                     }
+                        void VulkanWindow::enumSceneObject(Scene* pScene)
+                        {
+                            const String& strName = pScene->GetName();
+                            String nameScene = "Enum Scene: [" + strName + "]";
+                            if (ImGui::CollapsingHeader(nameScene.c_str()))
+                            {
+                                //Object
+                                if (ImGui::CollapsingHeader("Enum Object"))
+                                {
+                                    for (uint32 i = 0; i < (uint32)Vulkan_Object_Count; i++)
+                                    {
+                                        ObjectPtrMap* pObjectPtrMap = pScene->GetObjectPtrMapByType(i);
+                                        enumObject((VulkanObjectType)i, pObjectPtrMap);
+                                    }   
+                                }
+                                
+                                //SceneNode
+                                if (ImGui::CollapsingHeader("Enum SceneNode"))
+                                {
+                                    enumSceneNode(pScene->GetRootSceneNode());
+                                }
+                            }
+                        }
+                            void VulkanWindow::enumObject(VulkanObjectType type, ObjectPtrMap* pObjectPtrMap)
+                            {
+                                const String& strType = Util_GetObjectTypeName(type);
+                                if (ImGui::CollapsingHeader(strType.c_str()))
+                                {
+                                    if (pObjectPtrMap != nullptr)
+                                    {
+                                        for (ObjectPtrMap::iterator it = pObjectPtrMap->begin();
+                                             it != pObjectPtrMap->end(); ++it)
+                                        {
+                                            Object* pObject = it->second;
+                                            ImGui::Text("Name: [%s]", pObject->GetName().c_str());
+                                        }
+                                    }
+                                }
+                            }
+                            void VulkanWindow::enumSceneNode(SceneNode* pSceneNode)
+                            {
+                                if (pSceneNode == nullptr)
+                                    return;
+
+                                const String& nameSceneNode = pSceneNode->GetName();
+                                NodePtrMap& mapChild = pSceneNode->GetNodeMapChild();
+                                if (mapChild.size() > 0)
+                                {
+                                    if (ImGui::CollapsingHeader(nameSceneNode.c_str()))
+                                    {
+                                        for (NodePtrMap::iterator it = mapChild.begin();
+                                             it != mapChild.end(); ++it)
+                                        {
+                                            SceneNode* pChild = (SceneNode*)it->second;
+                                            enumSceneNode(pChild);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    ImGui::Text("Name: [%s]", nameSceneNode.c_str());
+                                }
+                            }
+
                     void VulkanWindow::enumSceneManager()
                     {
                         if (ImGui::CollapsingHeader("Enum SceneManager"))
@@ -7832,8 +7902,6 @@ namespace LostPeter
                                 
                             }
                         }
-                        ImGui::Separator();
-                        ImGui::Spacing();
                     }
 
                 void VulkanWindow::endRenderImgui()

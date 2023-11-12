@@ -14,6 +14,8 @@
 
 namespace LostPeter
 {
+    const String ObjectSky::ms_strMovableType = "Movable_Sky";
+
     ObjectSky::ObjectSky(const String& nameSky, Scene* pScene)
         : Object(nameSky, pScene)
     {
@@ -22,6 +24,21 @@ namespace LostPeter
     ObjectSky::~ObjectSky()
     {
 
+    }
+
+    
+
+    const String& ObjectSky::GetMovableType() const
+    {
+        return ms_strMovableType;
+    }
+    const FAABB& ObjectSky::GetBoundingAABB() const
+    {
+        return m_aabb;
+    }
+    float ObjectSky::GetBoundingRadius() const
+    {
+        return 0.0f;
     }
     
 }; //LostPeter

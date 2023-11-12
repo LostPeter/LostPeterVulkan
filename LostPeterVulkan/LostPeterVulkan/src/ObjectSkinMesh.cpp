@@ -14,6 +14,8 @@
 
 namespace LostPeter
 {
+    const String ObjectSkinMesh::ms_strMovableType = "Movable_SkinMesh";
+
     ObjectSkinMesh::ObjectSkinMesh(const String& nameSkinMesh, Scene* pScene)
         : Object(nameSkinMesh, pScene)
     {
@@ -22,6 +24,21 @@ namespace LostPeter
     ObjectSkinMesh::~ObjectSkinMesh()
     {
 
+    }
+
+
+
+    const String& ObjectSkinMesh::GetMovableType() const
+    {
+        return ms_strMovableType;
+    }
+    const FAABB& ObjectSkinMesh::GetBoundingAABB() const
+    {
+        return m_aabb;
+    }
+    float ObjectSkinMesh::GetBoundingRadius() const
+    {
+        return 0.0f;
     }
 
 }; //LostPeter

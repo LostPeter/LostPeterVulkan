@@ -1152,8 +1152,11 @@ namespace LostPeter
                         virtual void enumVKPipeline();
                         //Material
                         virtual void enumMaterial();
-                        //Object
-                        virtual void enumObject();
+                        //Scene
+                        virtual void enumScene();
+                            virtual void enumSceneObject(Scene* pScene);
+                                virtual void enumObject(VulkanObjectType type, ObjectPtrMap* pObjectPtrMap);
+                                virtual void enumSceneNode(SceneNode* pSceneNode);
                         //SceneManager
                         virtual void enumSceneManager();
                     virtual void endRenderImgui();

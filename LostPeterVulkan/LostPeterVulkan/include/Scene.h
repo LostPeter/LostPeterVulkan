@@ -38,8 +38,9 @@ namespace LostPeter
         Viewport* m_pViewportMain;
 
     ////Object
-        ObjectPtrVector m_aObjects;
-        ObjectPtrMap m_mapObjects;
+        ObjectPtrGroupMap m_mapObjectGroups;
+        ObjectCamera* m_pMainObjectCamera;
+        ObjectLight* m_pMainObjectLight;
 
     public:
     public:
@@ -90,12 +91,118 @@ namespace LostPeter
 
     ////Object
     public:
-        LP_FORCEINLINE const ObjectPtrVector& GetObjectPtrVector() const { return this->m_aObjects; }
-        LP_FORCEINLINE ObjectPtrVector& GetObjectPtrVector() { return this->m_aObjects; }
-        LP_FORCEINLINE const ObjectPtrMap& GetObjectPtrMap() const { return this->m_mapObjects; }
-        LP_FORCEINLINE ObjectPtrMap& GetObjectPtrMap() { return this->m_mapObjects; }
+        LP_FORCEINLINE const ObjectPtrGroupMap& GetObjectPtrGroupMap() const { return this->m_mapObjectGroups; }
+        LP_FORCEINLINE ObjectPtrGroupMap& GetObjectPtrGroupMap() { return this->m_mapObjectGroups; }
+        ObjectPtrMap* GetObjectPtrMapByType(VulkanObjectType type);
+        ObjectPtrMap* GetObjectPtrMapByType(int type);
+
+        virtual Object* GetObject(VulkanObjectType type, const String& strName);
+        virtual bool HasObject(VulkanObjectType type, const String& strName); 
+        virtual Object* DestroyObject(VulkanObjectType type, const String& strName);
+        virtual void DestroyObjectAll(VulkanObjectType type);
 
 
+        //ObjectMesh
+        virtual ObjectMesh* GetObjectMesh(const String& strName);
+		virtual bool HasObjectMesh(const String& strName);
+
+		virtual ObjectMesh* CreateObjectMesh(const String& strName);
+
+		virtual void DestroyObjectMesh(ObjectMesh* pObjectMesh);
+		virtual void DestroyObjectMesh(const String& strName);
+		virtual void DestroyObjectMeshAll();
+
+
+        //ObjectSkinMesh
+        virtual ObjectSkinMesh* GetObjectSkinMesh(const String& strName);
+		virtual bool HasObjectSkinMesh(const String& strName);
+
+		virtual ObjectSkinMesh* CreateObjectSkinMesh(const String& strName);
+
+		virtual void DestroyObjectSkinMesh(ObjectSkinMesh* pObjectSkinMesh);
+		virtual void DestroyObjectSkinMesh(const String& strName);
+		virtual void DestroyObjectSkinMeshAll();
+
+
+        //ObjectCamera
+        LP_FORCEINLINE ObjectCamera* GetMainObjectCamera() const { return m_pMainObjectCamera; }
+
+        virtual ObjectCamera* GetObjectCamera(const String& strName);
+		virtual bool HasObjectCamera(const String& strName);
+
+		virtual ObjectCamera* CreateObjectCamera(const String& strName, bool bMainCamera = false);
+
+		virtual void DestroyObjectCamera(ObjectCamera* pObjectCamera);
+		virtual void DestroyObjectCamera(const String& strName);
+		virtual void DestroyObjectCameraAll();
+
+
+        //ObjectLight
+        LP_FORCEINLINE ObjectLight* GetMainObjectLight() const { return m_pMainObjectLight; }
+
+        virtual ObjectLight* GetObjectLight(const String& strName);
+		virtual bool HasObjectLight(const String& strName);
+
+		virtual ObjectLight* CreateObjectLight(const String& strName, bool bMainLight = false);
+
+		virtual void DestroyObjectLight(ObjectLight* pObjectLight);
+		virtual void DestroyObjectLight(const String& strName);
+		virtual void DestroyObjectLightAll();
+
+
+        //ObjectTerrain
+        virtual ObjectTerrain* GetObjectTerrain(const String& strName);
+		virtual bool HasObjectTerrain(const String& strName);
+
+		virtual ObjectTerrain* CreateObjectTerrain(const String& strName);
+
+		virtual void DestroyObjectTerrain(ObjectTerrain* pObjectTerrain);
+		virtual void DestroyObjectTerrain(const String& strName);
+		virtual void DestroyObjectTerrainAll();
+
+
+        //ObjectWater
+        virtual ObjectWater* GetObjectWater(const String& strName);
+		virtual bool HasObjectWater(const String& strName);
+
+		virtual ObjectWater* CreateObjectWater(const String& strName);
+
+		virtual void DestroyObjectWater(ObjectWater* pObjectWater);
+		virtual void DestroyObjectWater(const String& strName);
+		virtual void DestroyObjectWaterAll();
+
+
+        //ObjectSky
+        virtual ObjectSky* GetObjectSky(const String& strName);
+		virtual bool HasObjectSky(const String& strName);
+
+		virtual ObjectSky* CreateObjectSky(const String& strName);
+
+		virtual void DestroyObjectSky(ObjectSky* pObjectSky);
+		virtual void DestroyObjectSky(const String& strName);
+		virtual void DestroyObjectSkyAll();
+
+
+        //ObjectCloud
+        virtual ObjectCloud* GetObjectCloud(const String& strName);
+		virtual bool HasObjectCloud(const String& strName);
+
+		virtual ObjectCloud* CreateObjectCloud(const String& strName);
+
+		virtual void DestroyObjectCloud(ObjectCloud* pObjectCloud);
+		virtual void DestroyObjectCloud(const String& strName);
+		virtual void DestroyObjectCloudAll();
+
+
+        //ObjectParticle
+        virtual ObjectParticle* GetObjectParticle(const String& strName);
+		virtual bool HasObjectParticle(const String& strName);
+
+		virtual ObjectParticle* CreateObjectParticle(const String& strName);
+
+		virtual void DestroyObjectParticle(ObjectParticle* pObjectParticle);
+		virtual void DestroyObjectParticle(const String& strName);
+		virtual void DestroyObjectParticleAll();
 
     };
 

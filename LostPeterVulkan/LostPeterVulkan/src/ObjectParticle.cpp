@@ -14,6 +14,8 @@
 
 namespace LostPeter
 {
+    const String ObjectParticle::ms_strMovableType = "Movable_Particle";
+
     ObjectParticle::ObjectParticle(const String& nameParticle, Scene* pScene)
         : Object(nameParticle, pScene)
     {
@@ -24,4 +26,18 @@ namespace LostPeter
 
     }
     
+
+    const String& ObjectParticle::GetMovableType() const
+    {
+        return ms_strMovableType;
+    }
+    const FAABB& ObjectParticle::GetBoundingAABB() const
+    {
+        return m_aabb;
+    }
+    float ObjectParticle::GetBoundingRadius() const
+    {
+        return 0.0f;
+    }
+
 }; //LostPeter

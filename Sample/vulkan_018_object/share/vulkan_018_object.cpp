@@ -2151,7 +2151,7 @@ void Vulkan_018_Object::enumConfig()
         enumVKPipelineLayout();
         enumVKPipeline();
         enumMaterial();
-        enumObject();
+        enumScene();
         enumSceneManager();
     }
     ImGui::Separator();

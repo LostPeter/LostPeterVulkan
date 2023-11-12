@@ -155,7 +155,6 @@ namespace LostPeter
     public:
         virtual const String& GetMovableType() const;
 		virtual float GetBoundingRadius() const;
-
     };
 
 }; //LostPeter
