@@ -50,7 +50,7 @@ namespace LostPeter
 
     void Scene::Destroy()
     {
-        UnloadScene();
+        ClearScene();
     }
 
     bool Scene::LoadScene()
@@ -70,9 +70,23 @@ namespace LostPeter
         return true;
     }
 
-	void Scene::UnloadScene()
+	void Scene::ClearScene()
     {
+		if (!m_pRootSceneNode)
+			return;
 
+		m_pRootSceneNode->RemoveAllChildren();
+		m_pRootSceneNode->DetachAllObjects();
+		for (SceneNodePtrMap::iterator it = m_mapSceneNodes.begin();
+			 it != m_mapSceneNodes.end();++it)
+		{
+			F_DELETE(it->second)
+		}
+		m_mapSceneNodes.clear();
+		m_setAutoTrackingSceneNodes.clear();
+		m_pRootSceneNode = nullptr;
+
+		DestroyObjectAll();
     }
 
 
@@ -304,6 +318,23 @@ namespace LostPeter
 			F_DELETE(it->second)
 		}
 		pObjectMap->clear();
+	}
+	void Scene::DestroyObjectAll()
+	{
+		for (ObjectPtrGroupMap::iterator it = m_mapObjectGroups.begin();
+			 it != m_mapObjectGroups.end(); ++it)
+		{
+			ObjectPtrMap& mapObject = it->second;
+			for (ObjectPtrMap::iterator itO = mapObject.begin();
+				itO != mapObject.end(); ++itO)
+			{
+				F_DELETE(itO->second)
+			}
+			mapObject.clear();
+		}
+		m_mapObjectGroups.clear();
+		m_pMainObjectCamera = nullptr;
+		m_pMainObjectLight = nullptr;
 	}
 
 

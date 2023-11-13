@@ -640,6 +640,7 @@ namespace LostPeter
     class RenderPipelineManager;
     class RenderQueue;
     class RenderQueueManager;
+    class RenderTargetListener;
     class RenderTarget;
     class RenderTexture;
     class RenderTextureManager;
@@ -689,6 +690,11 @@ namespace LostPeter
     
     typedef std::vector<RenderQueue*> RenderQueuePtrVector;
     typedef std::map<String, RenderQueue*> RenderQueuePtrMap;
+
+    typedef std::vector<RenderTargetListener*> RenderTargetListenerPtrVector;
+    typedef std::map<String, RenderTargetListener*> RenderTargetListenerPtrMap;
+    typedef std::vector<RenderTarget*> RenderTargetPtrVector;
+    typedef std::map<String, RenderTarget*> RenderTargetPtrMap;
 
     typedef std::vector<RenderTexture*> RenderTexturePtrVector;
     typedef std::map<String, RenderTexture*> RenderTexturePtrMap;
@@ -786,7 +792,18 @@ namespace LostPeter
 
     typedef std::vector<Viewport*> ViewportPtrVector;
     typedef std::map<String, Viewport*> ViewportPtrMap;
-    
+    typedef std::map<int, Viewport*> ViewportPtrOrderMap;
+
+    struct utilExport RenderTargetEvent
+	{
+		RenderTarget* pRenderTargetSrc;
+	};
+
+	struct utilExport RenderTargetViewportEvent
+	{
+		Viewport* pViewportSrc;
+	};
+
 
 }; //LostPeter
 

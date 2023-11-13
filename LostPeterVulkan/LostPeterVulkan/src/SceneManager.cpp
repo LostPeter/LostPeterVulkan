@@ -13,11 +13,15 @@
 #include "../include/VulkanWindow.h"
 #include "../include/Scene.h"
 #include "../include/SceneNode.h"
+#include "../include/Viewport.h"
+#include "../include/ObjectCamera.h"
+
 
 namespace LostPeter
 {
-    SceneManager::SceneManager(const String& nameSceneManager)
+    SceneManager::SceneManager(const String& nameSceneManager, Scene* pScene)
         : Base(nameSceneManager)
+        , m_pScene(pScene)
     {
 
     }
@@ -35,6 +39,11 @@ namespace LostPeter
     {
         
         return true;
+    }
+
+    void SceneManager::UpdateScene(Viewport* pViewport)
+    {
+        
     }
 
     void SceneManager::RenderScene(Scene* pScene)

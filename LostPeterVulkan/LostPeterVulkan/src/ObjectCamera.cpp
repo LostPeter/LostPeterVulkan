@@ -11,6 +11,7 @@
 
 #include "../include/ObjectCamera.h"
 #include "../include/VulkanWindow.h"
+#include "../include/Viewport.h"
 
 namespace LostPeter
 {
@@ -24,6 +25,7 @@ namespace LostPeter
 		, m_qRotWorld(FMath::ms_qUnit)
         , m_vPosReal(FMath::ms_v3Zero)
 		, m_qRotReal(FMath::ms_qUnit)
+        , m_pViewport(nullptr)
     {
         this->m_typeObject = Vulkan_Object_Camera;
     }

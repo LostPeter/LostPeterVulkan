@@ -47,8 +47,9 @@ namespace LostPeter
         void Destroy();
 
     public:
-        bool LoadScene();
-		void UnloadScene();    
+        virtual bool LoadScene();
+
+        virtual void ClearScene();
 
     ////SceneManager/SceneNode
     public:
@@ -100,6 +101,7 @@ namespace LostPeter
         virtual bool HasObject(VulkanObjectType type, const String& strName); 
         virtual Object* DestroyObject(VulkanObjectType type, const String& strName);
         virtual void DestroyObjectAll(VulkanObjectType type);
+        virtual void DestroyObjectAll();
 
 
         //ObjectMesh

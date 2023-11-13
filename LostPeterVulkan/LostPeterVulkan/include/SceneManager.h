@@ -19,24 +19,22 @@ namespace LostPeter
     class utilExport SceneManager : public Base
     {
     public:
-        SceneManager(const String& nameSceneManager);
+        SceneManager(const String& nameSceneManager, Scene* pScene);
         virtual ~SceneManager();
 
     public:
-        ScenePtrVector m_aScenes;
-        ScenePtrMap m_mapScenes;
+        Scene* m_pScene;
 
     public:
-        LP_FORCEINLINE const ScenePtrVector& GetScenePtrVector() const { return this->m_aScenes; }
-        LP_FORCEINLINE ScenePtrVector& GetScenePtrVector() { return this->m_aScenes; }
-        LP_FORCEINLINE const ScenePtrMap& GetScenePtrMap() const { return this->m_mapScenes; }
-        LP_FORCEINLINE ScenePtrMap& GetScenePtrMap() { return this->m_mapScenes; }
+        LP_FORCEINLINE const Scene* GetScene() const { return this->m_pScene; }
 
     public:
         void Destroy();
         bool Init();
 
     public:
+        virtual void UpdateScene(Viewport* pViewport);
+        
         virtual void RenderScene(Scene* pScene);
 
     protected:

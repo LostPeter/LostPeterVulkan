@@ -88,6 +88,7 @@
 #include "RenderQueue.h"
 #include "RenderQueueManager.h"
 #include "RenderState.h"
+#include "RenderTargetListener.h"
 #include "RenderTarget.h"
 #include "RenderTexture.h"
 #include "RenderTextureManager.h"

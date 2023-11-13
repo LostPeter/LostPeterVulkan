@@ -761,6 +761,13 @@ namespace LostPeterFoundation
     FRenderPassType F_ParseRenderPassType(const String& strName);
 
 
+    enum FFrameBufferType 
+	{
+		F_FrameBuffer_Color		= 0x1,	                //Color
+		F_FrameBuffer_Depth		= 0x2,	                //Depth
+		F_FrameBuffer_Stencil	= 0x4,	                //Stencil
+	};
+    
 
 }; //LostPeterFoundation
 

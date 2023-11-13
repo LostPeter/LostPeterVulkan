@@ -44,6 +44,9 @@ namespace LostPeter
 		mutable FVector3 m_vPosReal;
 		mutable FQuaternion	m_qRotReal;		
 
+
+		Viewport* m_pViewport;	
+
     public:
         LP_FORCEINLINE ObjectVisibleBoundsInfo* GetObjectVisibleBoundsInfo() { return m_pObjectVisibleBoundsInfo; }
 
@@ -149,6 +152,10 @@ namespace LostPeter
 			//updateView();
 			return m_qRotReal * FMath::ms_v3UnitX;
 		}
+
+
+		LP_FORCEINLINE Viewport* GetViewport() const { return m_pViewport; }
+		LP_FORCEINLINE void	NotifyViewport(Viewport* pViewport)	{ m_pViewport = pViewport; }
 
 
     ////Movable
