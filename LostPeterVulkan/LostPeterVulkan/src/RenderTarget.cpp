@@ -33,7 +33,7 @@ namespace LostPeter
     {
 
     }
-
+	
     RenderTarget::~RenderTarget()
     {
         for (ViewportPtrOrderMap::iterator it = m_mapViewport.begin();

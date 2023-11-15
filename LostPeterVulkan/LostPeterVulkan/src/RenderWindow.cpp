@@ -2,25 +2,25 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-10-22
+* Time:     2023-11-15
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RenderTexture.h"
+#include "../include/RenderWindow.h"
 #include "../include/VulkanWindow.h"
 
 namespace LostPeter
 {
-    RenderTexture::RenderTexture(const String& nameRenderTexture)
-        : RenderTarget(nameRenderTexture)
+    RenderWindow::RenderWindow(const String& nameRenderWindow)
+        : RenderTarget(nameRenderWindow)
     {
 
     }
-
-    RenderTexture::~RenderTexture()
+    
+    RenderWindow::~RenderWindow()
     {
 
     }

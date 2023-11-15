@@ -567,6 +567,8 @@ namespace LostPeter
     class VKPipelineLayoutManager;
     class VKPipeline;
     class VKPipelineManager;
+    class VKRenderTexture;
+    class VKRenderWindow;
 
     typedef std::vector<VKDescriptorSet*> VKDescriptorSetPtrVector;
     typedef std::map<String, VKDescriptorSet*> VKDescriptorSetPtrMap;
@@ -587,7 +589,12 @@ namespace LostPeter
 
     typedef std::vector<VKPipeline*> VKPipelinePtrVector;
     typedef std::map<String, VKPipeline*> VKPipelinePtrMap;
-    
+
+    typedef std::vector<VKRenderTexture*> VKRenderTexturePtrVector;
+    typedef std::map<String, VKRenderTexture*> VKRenderTexturePtrMap;
+    typedef std::vector<VKRenderWindow*> VKRenderWindowPtrVector;
+    typedef std::map<String, VKRenderWindow*> VKRenderWindowPtrMap;
+
 
     class Base;
     class EditorBase;
@@ -644,6 +651,8 @@ namespace LostPeter
     class RenderTarget;
     class RenderTexture;
     class RenderTextureManager;
+    class RenderWindow;
+    class RenderWindowManager;
     class RenderStateCommon;
     class RenderStateLighting;
     class RenderStateParam;
@@ -698,6 +707,9 @@ namespace LostPeter
 
     typedef std::vector<RenderTexture*> RenderTexturePtrVector;
     typedef std::map<String, RenderTexture*> RenderTexturePtrMap;
+
+    typedef std::vector<RenderWindow*> RenderWindowPtrVector;
+    typedef std::map<String, RenderWindow*> RenderWindowPtrMap;
 
     typedef std::vector<RenderStateCommon*> RenderStateCommonPtrVector;
     typedef std::map<String, RenderStateCommon*> RenderStateCommonPtrMap;

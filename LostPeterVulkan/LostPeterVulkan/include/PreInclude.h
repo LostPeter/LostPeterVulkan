@@ -36,6 +36,8 @@
 #include "VKPipelineLayoutManager.h"
 #include "VKPipeline.h"
 #include "VKPipelineManager.h"
+#include "VKRenderTexture.h"
+#include "VKRenderWindow.h"
 
 #include "Base.h"
 #include "EditorBase.h"
@@ -92,6 +94,8 @@
 #include "RenderTarget.h"
 #include "RenderTexture.h"
 #include "RenderTextureManager.h"
+#include "RenderWindow.h"
+#include "RenderWindowManager.h"
 #include "Scene.h"
 #include "SceneDataManager.h"
 #include "SceneDataSerializer.h"
