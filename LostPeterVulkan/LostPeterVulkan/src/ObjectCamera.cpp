@@ -12,13 +12,15 @@
 #include "../include/ObjectCamera.h"
 #include "../include/VulkanWindow.h"
 #include "../include/Viewport.h"
+#include "../include/SceneManager.h"
+#include "../include/RenderEngine.h"
 
 namespace LostPeter
 {
     const String ObjectCamera::ms_strMovableType = "Movable_Camera";
 
-    ObjectCamera::ObjectCamera(const String& nameCamera, Scene* pScene)
-        : ObjectFrustum(nameCamera, pScene)
+    ObjectCamera::ObjectCamera(const String& nameCamera, SceneManager* pSceneManager)
+        : ObjectFrustum(nameCamera, pSceneManager)
         , m_vPosLocal(FMath::ms_v3Zero)
 		, m_qRotLocal(FMath::ms_qUnit)
         , m_vPosWorld(FMath::ms_v3Zero)
@@ -39,6 +41,12 @@ namespace LostPeter
     {
 
     }   
+
+
+    void ObjectCamera::RenderScene(Viewport* pViewport, bool bIncludeOverlays)
+    {
+
+    }
 
 
     const String& ObjectCamera::GetMovableType() const

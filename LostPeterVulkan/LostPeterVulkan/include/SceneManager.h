@@ -26,7 +26,7 @@ namespace LostPeter
         Scene* m_pScene;
 
     public:
-        LP_FORCEINLINE const Scene* GetScene() const { return this->m_pScene; }
+        LP_FORCEINLINE Scene* GetScene() const { return this->m_pScene; }
 
     public:
         void Destroy();

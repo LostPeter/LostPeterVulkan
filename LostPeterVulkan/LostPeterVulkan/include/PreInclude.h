@@ -78,6 +78,8 @@
 #include "ObjectManager.h"
 #include "Renderable.h"
 #include "RenderableIndirect.h"
+#include "RenderEngineListener.h"
+#include "RenderEngine.h"
 #include "RenderPass.h"
 #include "RenderPassForwardLit.h"
 #include "RenderPassDeferredLit.h"

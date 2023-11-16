@@ -28,8 +28,7 @@ namespace LostPeter
 {
 	String Scene::ms_nameRootSceneNode = "RootSceneNode";
 
-    Scene::Scene(uint _group, 
-                 const String& nameScene)
+    Scene::Scene(uint _group, const String& nameScene)
         : Base(_group, nameScene)
     ////SceneManager/SceneNode
         , m_pSceneManager(nullptr)
@@ -435,7 +434,7 @@ namespace LostPeter
 		return HasObject(Vulkan_Object_Camera, strName);
 	}
 
-	ObjectCamera* Scene::CreateObjectCamera(const String& strName, bool bMainCamera /*= false*/)
+	ObjectCamera* Scene::CreateObjectCamera(const String& strName, SceneManager* pSceneManager, bool bMainCamera /*= false*/)
 	{
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(Vulkan_Object_Camera);
 		if (pObjectMap->find(strName) != pObjectMap->end())
@@ -446,7 +445,7 @@ namespace LostPeter
 
 		ObjectCamera* pObjectCamera = nullptr;
 
-		pObjectCamera = new ObjectCamera(strName, this);
+		pObjectCamera = new ObjectCamera(strName, pSceneManager);
 		pObjectMap->insert(ObjectPtrMap::value_type(strName, pObjectCamera));
 		if (bMainCamera && !m_pMainObjectCamera)
 		{

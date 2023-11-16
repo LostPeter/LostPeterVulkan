@@ -20,7 +20,7 @@ namespace LostPeter
     class utilExport ObjectCamera : public ObjectFrustum
     {
     public:
-        ObjectCamera(const String& nameCamera, Scene* pScene);
+        ObjectCamera(const String& nameCamera, SceneManager* pSceneManager);
         virtual ~ObjectCamera();
 
     public:
@@ -156,6 +156,10 @@ namespace LostPeter
 
 		LP_FORCEINLINE Viewport* GetViewport() const { return m_pViewport; }
 		LP_FORCEINLINE void	NotifyViewport(Viewport* pViewport)	{ m_pViewport = pViewport; }
+
+	
+	public:
+		virtual void RenderScene(Viewport* pViewport, bool bIncludeOverlays);
 
 
     ////Movable

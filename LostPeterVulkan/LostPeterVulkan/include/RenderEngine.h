@@ -2,37 +2,38 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-11-11
+* Time:     2023-11-16
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _OBJECT_FRUSTUM_H_
-#define _OBJECT_FRUSTUM_H_
+#ifndef _RENDER_ENGINE_H_
+#define _RENDER_ENGINE_H_
 
-#include "Object.h"
+#include "Base.h"
 
 namespace LostPeter
 {
-    class utilExport ObjectFrustum : public Object
+    class utilExport RenderEngine : public FSingleton<RenderEngine>
+                                  , public Base
     {
     public:
-        ObjectFrustum(const String& nameObject, SceneManager* pSceneManager);
-        virtual ~ObjectFrustum();
+        RenderEngine();
+        virtual ~RenderEngine();
 
     public:
-    protected:
-        mutable FAABB m_aabb;
+        static RenderEngine& GetSingleton();
+		static RenderEngine* GetSingletonPtr();
+
+    public:
+        void Destroy();
+        virtual bool Init();
+
         
-
     public:
-
-
-    ////Movable
-    public:
-        virtual const FAABB& GetBoundingAABB() const;
+        void RenderScene(SceneManager* pSceneManager, Viewport* pViewport);
 
     };
 

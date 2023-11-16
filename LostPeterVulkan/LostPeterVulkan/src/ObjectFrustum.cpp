@@ -11,11 +11,13 @@
 
 #include "../include/ObjectFrustum.h"
 #include "../include/VulkanWindow.h"
+#include "../include/SceneManager.h"
+#include "../include/Scene.h"
 
 namespace LostPeter
 {
-    ObjectFrustum::ObjectFrustum(const String& nameObject, Scene* pScene)
-        : Object(nameObject, pScene)
+    ObjectFrustum::ObjectFrustum(const String& nameObject, SceneManager* pSceneManager)
+        : Object(nameObject, pSceneManager->GetScene())
     {
         
     }

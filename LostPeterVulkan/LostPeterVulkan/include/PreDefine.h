@@ -636,6 +636,8 @@ namespace LostPeter
     class ObjectManager;
     class Renderable;
     class RenderableIndirect;
+    class RenderEngineListener;
+    class RenderEngine;
     class RenderPass;
     class RenderPassForwardLit;
     class RenderPassDeferredLit;

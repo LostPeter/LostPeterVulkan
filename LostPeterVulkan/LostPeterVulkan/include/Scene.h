@@ -19,8 +19,7 @@ namespace LostPeter
     class utilExport Scene : public Base
     {
     public:
-        Scene(uint _group, 
-              const String& nameScene);
+        Scene(uint _group, const String& nameScene);
         virtual ~Scene();
 
     public:
@@ -132,7 +131,7 @@ namespace LostPeter
         virtual ObjectCamera* GetObjectCamera(const String& strName);
 		virtual bool HasObjectCamera(const String& strName);
 
-		virtual ObjectCamera* CreateObjectCamera(const String& strName, bool bMainCamera = false);
+		virtual ObjectCamera* CreateObjectCamera(const String& strName, SceneManager* pSceneManager, bool bMainCamera = false);
 
 		virtual void DestroyObjectCamera(ObjectCamera* pObjectCamera);
 		virtual void DestroyObjectCamera(const String& strName);

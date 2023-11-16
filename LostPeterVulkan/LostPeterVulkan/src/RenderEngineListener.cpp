@@ -2,40 +2,28 @@
 * LostPeterVulkan - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-11-11
+* Time:     2023-11-16
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _OBJECT_FRUSTUM_H_
-#define _OBJECT_FRUSTUM_H_
-
-#include "Object.h"
+#include "../include/RenderEngineListener.h"
+#include "../include/VulkanWindow.h"
 
 namespace LostPeter
 {
-    class utilExport ObjectFrustum : public Object
+    RenderEngineListener::RenderEngineListener()
+        : m_nOrder(0)
     {
-    public:
-        ObjectFrustum(const String& nameObject, SceneManager* pSceneManager);
-        virtual ~ObjectFrustum();
 
-    public:
-    protected:
-        mutable FAABB m_aabb;
-        
+    }
 
-    public:
+    RenderEngineListener::~RenderEngineListener()
+    {
 
+    }
 
-    ////Movable
-    public:
-        virtual const FAABB& GetBoundingAABB() const;
-
-    };
 
 }; //LostPeter
-
-#endif
