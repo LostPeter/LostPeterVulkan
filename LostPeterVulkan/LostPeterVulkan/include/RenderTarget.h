@@ -85,9 +85,8 @@ namespace LostPeter
 		virtual void RemoveAllViewport();
 
         virtual void Update();
-		
-
-		virtual void NotifyCameraRemoved(const ObjectCamera* pCamera);
+			
+		virtual void NotifyObjectCameraRemoved(const ObjectCamera* pCamera);
 
 		virtual bool RequiresTextureFlipping() const = 0;
 

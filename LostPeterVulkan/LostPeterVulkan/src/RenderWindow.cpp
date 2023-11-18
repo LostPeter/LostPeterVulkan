@@ -11,11 +11,23 @@
 
 #include "../include/RenderWindow.h"
 #include "../include/VulkanWindow.h"
+#include "../include/Renderer.h"
 
 namespace LostPeter
 {
     RenderWindow::RenderWindow(const String& nameRenderWindow)
         : RenderTarget(nameRenderWindow)
+        , m_bIsFullScreen(false)
+		, m_bFakeFullScreen(false)
+		, m_bIsPrimary(false)
+		, m_bAutoDeactivatedOnFocusChange(true)
+		, m_bFocused(false)
+		, m_nLeft(0)
+		, m_nTop(0)
+		, m_nWindowWidth(0)
+		, m_nWindowHeight(0)
+		, m_nClientWidth(0)
+		, m_nClientHeight(0)
     {
 
     }
@@ -25,6 +37,33 @@ namespace LostPeter
 
     }
 
-    
+    void RenderWindow::GetMetrics(uint32& nWidth, uint32& nHeight, uint32& nColorDepth, int32& nLeft, int32& nTop)
+	{
+		nWidth = m_nWidth;
+		nHeight = m_nHeight;
+		nColorDepth = m_nColorDepth;
+		nLeft = m_nLeft;
+		nTop = m_nTop;
+	}
+
+	void RenderWindow::Update()
+	{
+		Update(true);
+	}
+
+	void RenderWindow::Update(bool bSwapBuffers /*= true*/)
+	{
+		RenderTarget::Update();
+	}
+
+	void RenderWindow::Present(Renderer* pRenderer)
+	{
+		if(pRenderer->IsEmptyGpuBuffer())
+		{
+			EmptyGPUCommandBuffer();
+		}
+        
+		SwapBuffers(pRenderer->IsVSync());
+	}
 
 }; //LostPeter

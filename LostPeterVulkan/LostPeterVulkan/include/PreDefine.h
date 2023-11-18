@@ -325,7 +325,7 @@ namespace LostPeter
 		Vulkan_EngineConfig_Common_MultiThread = 0,	       //0: MultiThread
 
     ////Render
-        
+
 
     ////Audio
 
@@ -586,6 +586,7 @@ namespace LostPeter
     class VKPipelineLayoutManager;
     class VKPipeline;
     class VKPipelineManager;
+    class VKRenderer;
     class VKRenderTexture;
     class VKRenderWindow;
 
@@ -660,6 +661,7 @@ namespace LostPeter
     class RenderableIndirect;
     class RenderEngineListener;
     class RenderEngine;
+    class RendererListener;
     class Renderer;
     class RenderPass;
     class RenderPassForwardLit;
@@ -674,10 +676,9 @@ namespace LostPeter
     class RenderQueueManager;
     class RenderTargetListener;
     class RenderTarget;
+    class RenderTargetManager;
     class RenderTexture;
-    class RenderTextureManager;
     class RenderWindow;
-    class RenderWindowManager;
     class RenderStateCommon;
     class RenderStateLighting;
     class RenderStateParam;
@@ -717,6 +718,10 @@ namespace LostPeter
     typedef std::map<String, Shader*> ShaderPtrMap;
     typedef std::map<uint32, ShaderPtrMap> ShaderGroupPtrMap;
 
+    typedef std::vector<RendererListener*> RendererListenerPtrVector;
+    typedef std::list<RendererListener*> RendererListenerPtrList;
+    typedef std::map<String, RendererListener*> RendererListenerPtrMap;
+
     typedef std::vector<RenderPass*> RenderPassPtrVector;
     typedef std::map<String, RenderPass*> RenderPassPtrMap;
 
@@ -730,6 +735,7 @@ namespace LostPeter
     typedef std::map<String, RenderTargetListener*> RenderTargetListenerPtrMap;
     typedef std::vector<RenderTarget*> RenderTargetPtrVector;
     typedef std::map<String, RenderTarget*> RenderTargetPtrMap;
+    typedef std::multimap<uint8, RenderTarget*> RenderTargetPtrPriorityMap;
 
     typedef std::vector<RenderTexture*> RenderTexturePtrVector;
     typedef std::map<String, RenderTexture*> RenderTexturePtrMap;

@@ -137,7 +137,7 @@ namespace LostPeter
 		updateImpl();
 	}
 
-	void RenderTarget::NotifyCameraRemoved(const ObjectCamera* pObjectCamera)
+	void RenderTarget::NotifyObjectCameraRemoved(const ObjectCamera* pObjectCamera)
 	{
 		for (ViewportPtrOrderMap::iterator it = m_mapViewport.begin(); 
 			 it != m_mapViewport.end(); ++it)
