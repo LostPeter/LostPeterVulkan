@@ -569,7 +569,7 @@ Vulkan_018_Object::Vulkan_018_Object(int width, int height, String name)
 
     FPathManager::ms_bIsLog = true;
     m_pPathManager = new FPathManager();
-    m_pPathManager->Init();
+    m_pPathManager->Init(FUtilString::BLANK);
     m_pPathManager->RegisterUserGroup(FPathManager::PathGroup_Editor, s_nGroup_Sample, s_strGroup_Sample, true, false);
 }
 

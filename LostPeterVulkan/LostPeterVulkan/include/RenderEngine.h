@@ -24,12 +24,33 @@ namespace LostPeter
         virtual ~RenderEngine();
 
     public:
+    
+    //Core
+    protected:
+        
+
+        MeshManager* m_pMeshManager;
+        TextureManager* m_pTextureManager;
+        ShaderManager* m_pShaderManager;
+        
+        MaterialDataManager* m_pMaterialDataManager;
+        MaterialManager* m_pMaterialManager;
+
+
+    //Object
+    protected:
+        SceneManagerEnumerator* m_pSceneManagerEnumerator;
+
+
+    public:
         static RenderEngine& GetSingleton();
 		static RenderEngine* GetSingletonPtr();
 
     public:
         void Destroy();
         virtual bool Init();
+
+
 
         
     public:

@@ -14,6 +14,25 @@
 namespace LostPeterFoundation
 {
     ////////////////////////////// Enum ////////////////////////////////
+    //FPlatformType
+    static const String s_namePlatformTypes[] = 
+    {
+        "Windows",                  //0:    Windows
+        "MacOS",                    //1:    MacOS
+        "Linux",                    //2:    Linux
+        "Android",                  //3:    Android
+        "iOS"                       //4:    iOS
+    };
+    const String& F_GetPlatformTypeName(FPlatformType type)
+    {
+        return s_namePlatformTypes[(int32)type];
+    }
+    const String& F_GetPlatformTypeName(int type)
+    {
+        return s_namePlatformTypes[type];
+    }
+
+
     //FMeshType
     static const String s_nameMeshTypes[] = 
     {

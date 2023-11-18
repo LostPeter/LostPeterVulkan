@@ -112,7 +112,7 @@ namespace LostPeterFoundation
 
 	public:
 		void Destroy();
-		bool Init();
+		bool Init(const String& strWorkFolder);
 
 		bool RegisterUserGroup(uint32 nBaseGroup, uint32 nGroup, const String& strPath, bool bIsRecursive, bool bIsDelSuffix);
 		bool ReloadGroup(uint32 nGroup, bool bIsRecursive, bool bIsDelSuffix);

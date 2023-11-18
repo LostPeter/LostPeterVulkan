@@ -102,9 +102,9 @@ namespace LostPeter
 
         Vulkan_Window_Count,
     };
-    const String& Util_GetWindowTypeName(VulkanWindowType type);
-    const String& Util_GetWindowTypeName(int type);
-    VulkanWindowType Util_ParseWindowType(const String& strName);
+    utilExport const String& Util_GetWindowTypeName(VulkanWindowType type);
+    utilExport const String& Util_GetWindowTypeName(int type);
+    utilExport VulkanWindowType Util_ParseWindowType(const String& strName);
 
 
     enum VulkanFenceStateType
@@ -178,8 +178,8 @@ namespace LostPeter
 		Vulkan_PixelFormatComponent_Float32,                //9: Float 32
         Vulkan_PixelFormatComponent_Double,                 //10: Double
 	};
-    const String& Util_GetPixelFormatComponentTypeName(VulkanPixelFormatComponentType type);
-    const String& Util_GetPixelFormatComponentTypeName(int type);
+    utilExport const String& Util_GetPixelFormatComponentTypeName(VulkanPixelFormatComponentType type);
+    utilExport const String& Util_GetPixelFormatComponentTypeName(int type);
 
 
     enum VulkanLightType
@@ -207,28 +207,28 @@ namespace LostPeter
     };
 
 
-    VkImageType Util_Transform2VkImageType(FTextureType type);
-    VkImageViewType Util_Transform2VkImageViewType(FTextureType type);
-    VkFormat Util_Transform2VkFormat(FTexturePixelFormatType type);
-    VkComponentMapping Util_Transform2VkComponentMapping(FTexturePixelFormatType type);
-    VkFilter Util_Transform2VkFilter(FTextureFilterPixelType type);
-    VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterPixelType type);
-    VkFilter Util_Transform2VkFilter(FTextureFilterType typeFilter, FTextureFilterSizeType typeFilterSize);
-    VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterType typeFilter);
-    VkSamplerAddressMode Util_Transform2VkSamplerAddressMode(FTextureAddressingType type);
-    VkBorderColor Util_Transform2VkBorderColor(FTextureBorderColorType type);
-    VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(FMSAASampleCountType type);
+    utilExport VkImageType Util_Transform2VkImageType(FTextureType type);
+    utilExport VkImageViewType Util_Transform2VkImageViewType(FTextureType type);
+    utilExport VkFormat Util_Transform2VkFormat(FTexturePixelFormatType type);
+    utilExport VkComponentMapping Util_Transform2VkComponentMapping(FTexturePixelFormatType type);
+    utilExport VkFilter Util_Transform2VkFilter(FTextureFilterPixelType type);
+    utilExport VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterPixelType type);
+    utilExport VkFilter Util_Transform2VkFilter(FTextureFilterType typeFilter, FTextureFilterSizeType typeFilterSize);
+    utilExport VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterType typeFilter);
+    utilExport VkSamplerAddressMode Util_Transform2VkSamplerAddressMode(FTextureAddressingType type);
+    utilExport VkBorderColor Util_Transform2VkBorderColor(FTextureBorderColorType type);
+    utilExport VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(FMSAASampleCountType type);
 
-    VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(FShaderType type);    
-    VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(const Uint32Vector& aShaderTypes);    
+    utilExport VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(FShaderType type);    
+    utilExport VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(const Uint32Vector& aShaderTypes);    
 
-    VkPrimitiveTopology Util_Transform2VkPrimitiveTopology(FRenderPrimitiveType type);
-    VkCullModeFlags Util_Transform2VkCullModeFlags(FCullingType type);
-    VkPolygonMode Util_Transform2VkPolygonMode(FPolygonType type);
-    VkStencilOp Util_Transform2VkStencilOp(FStencilOPType type);
-    VkCompareOp Util_Transform2VkCompareOp(FCompareFuncType type);
-    VkBlendOp Util_Transform2VkBlendOp(FSceneBlendingOPType type);
-    VkBlendFactor Util_Transform2VkBlendFactor(FSceneBlendingFactorType type);
+    utilExport VkPrimitiveTopology Util_Transform2VkPrimitiveTopology(FRenderPrimitiveType type);
+    utilExport VkCullModeFlags Util_Transform2VkCullModeFlags(FCullingType type);
+    utilExport VkPolygonMode Util_Transform2VkPolygonMode(FPolygonType type);
+    utilExport VkStencilOp Util_Transform2VkStencilOp(FStencilOPType type);
+    utilExport VkCompareOp Util_Transform2VkCompareOp(FCompareFuncType type);
+    utilExport VkBlendOp Util_Transform2VkBlendOp(FSceneBlendingOPType type);
+    utilExport VkBlendFactor Util_Transform2VkBlendFactor(FSceneBlendingFactorType type);
     
 
     enum VulkanDescriptorSetType
@@ -257,9 +257,9 @@ namespace LostPeter
 
         Vulkan_DescriptorSet_Count,
     };
-    const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type);
-    const String& Util_GetDescriptorSetTypeName(int type);
-    VulkanDescriptorSetType Util_ParseDescriptorSetType(const String& strName);
+    utilExport const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type);
+    utilExport const String& Util_GetDescriptorSetTypeName(int type);
+    utilExport VulkanDescriptorSetType Util_ParseDescriptorSetType(const String& strName);
 
 
     enum VulkanDescriptorSetUsageType
@@ -278,10 +278,10 @@ namespace LostPeter
 
         Vulkan_DescriptorSetUsage_Count,
     };
-    const String& Util_GetDescriptorSetUsageTypeName(VulkanDescriptorSetUsageType type);
-    const String& Util_GetDescriptorSetUsageTypeName(int type);
-    VulkanDescriptorSetUsageType Util_ParseDescriptorSetUsageType(const String& strName);
-    VkDescriptorType Util_Transform2VkDescriptorType(VulkanDescriptorSetUsageType type);    
+    utilExport const String& Util_GetDescriptorSetUsageTypeName(VulkanDescriptorSetUsageType type);
+    utilExport const String& Util_GetDescriptorSetUsageTypeName(int type);
+    utilExport VulkanDescriptorSetUsageType Util_ParseDescriptorSetUsageType(const String& strName);
+    utilExport VkDescriptorType Util_Transform2VkDescriptorType(VulkanDescriptorSetUsageType type);    
 
     
     enum VulkanObjectType
@@ -298,9 +298,9 @@ namespace LostPeter
 
         Vulkan_Object_Count,                
     };
-    const String& Util_GetObjectTypeName(VulkanObjectType type);
-    const String& Util_GetObjectTypeName(int type);
-    VulkanObjectType Util_ParseObjectType(const String& strName);
+    utilExport const String& Util_GetObjectTypeName(VulkanObjectType type);
+    utilExport const String& Util_GetObjectTypeName(int type);
+    utilExport VulkanObjectType Util_ParseObjectType(const String& strName);
 
 
     enum VulkanRenderQueueType
@@ -314,10 +314,29 @@ namespace LostPeter
 
         Vulkan_RenderQueue_Count,
     };
-    const String& Util_GetRenderQueueTypeName(VulkanRenderQueueType type);
-    const String& Util_GetRenderQueueTypeName(int type);
-    VulkanRenderQueueType Util_ParseRenderQueueType(const String& strName);
+    utilExport const String& Util_GetRenderQueueTypeName(VulkanRenderQueueType type);
+    utilExport const String& Util_GetRenderQueueTypeName(int type);
+    utilExport VulkanRenderQueueType Util_ParseRenderQueueType(const String& strName);
 
+
+    enum VulkanEngineConfigType
+	{
+    ////Common
+		Vulkan_EngineConfig_Common_MultiThread = 0,	       //0: MultiThread
+
+    ////Render
+        
+
+    ////Audio
+
+
+    ////Physics
+
+		
+		Vulkan_EngineConfig_Count
+	};
+    utilExport const String& Util_GetEngineConfigTypeName(VulkanEngineConfigType type);
+    utilExport const String& Util_GetEngineConfigTypeName(int type);
 
 
 ////////////////////////////// Vulkan //////////////////////////////
@@ -603,6 +622,9 @@ namespace LostPeter
     class EditorGrid;
     class EditorLineFlat2DCollector;
     class EditorLineFlat3DCollector;
+    class Engine;
+    class EngineConfig;
+    class EngineListener;
     class Material;
     class MaterialData;
     class MaterialDataManager;
@@ -638,6 +660,7 @@ namespace LostPeter
     class RenderableIndirect;
     class RenderEngineListener;
     class RenderEngine;
+    class Renderer;
     class RenderPass;
     class RenderPassForwardLit;
     class RenderPassDeferredLit;
@@ -676,6 +699,7 @@ namespace LostPeter
     class TextureManager;
     class TextureSerializer;
     class Viewport;
+
 
     typedef std::vector<MeshSub*> MeshSubPtrVector;
     typedef std::map<String, MeshSub*> MeshSubPtrMap;
@@ -808,6 +832,15 @@ namespace LostPeter
     typedef std::map<String, Viewport*> ViewportPtrMap;
     typedef std::map<int, Viewport*> ViewportPtrOrderMap;
 
+    struct utilExport ConfigItem
+	{
+		String strName;
+		String strCurValue;
+		StringVector aPossibleValues;
+		bool bImmutable;
+	};
+	typedef std::map<String, ConfigItem> ConfigItemMap;
+
     struct utilExport RenderTargetEvent
 	{
 		RenderTarget* pRenderTargetSrc;
@@ -818,6 +851,12 @@ namespace LostPeter
 		Viewport* pViewportSrc;
 	};
 
+    struct utilExport RenderFrameEvent
+	{
+		float fTimeSinceLastEvent;		
+		float fTimeSinceLastFrame;
+		float fTimeSystemCurrent;
+	};
 
 }; //LostPeter
 

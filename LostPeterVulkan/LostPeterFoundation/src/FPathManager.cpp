@@ -59,10 +59,12 @@ namespace LostPeterFoundation
 		m_mapGroup.clear();
 	}
 
-	bool FPathManager::Init()
+	bool FPathManager::Init(const String& strWorkFolder)
 	{
 		//1> Get working folder 
-		m_strWorkFolder = FUtil::GetPathBin();
+		m_strWorkFolder = strWorkFolder;
+		if (m_strWorkFolder.size() <= 0)
+			m_strWorkFolder = FUtil::GetPathBin();
 		if (m_strWorkFolder.size() <= 0)
 		{
 			F_LogError("*********************** FPathManager::Init: Get working folder failed !");

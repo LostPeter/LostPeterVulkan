@@ -11,8 +11,15 @@
 
 #include "../include/RenderEngine.h"
 #include "../include/VulkanWindow.h"
+#include "../include/MeshManager.h"
+#include "../include/TextureManager.h"
+#include "../include/ShaderManager.h"
+#include "../include/MaterialDataManager.h"
+#include "../include/MaterialManager.h"
+#include "../include/SceneManagerEnumerator.h"
 #include "../include/SceneManager.h"
 #include "../include/Viewport.h"
+#include "../include/Renderer.h"
 #include "../include/RenderTarget.h"
 #include "../include/RenderPipelineManager.h"
 #include "../include/RenderPipeline.h"
@@ -34,6 +41,14 @@ namespace LostPeter
 
     RenderEngine::RenderEngine()
         : Base("RenderEngine")
+    //Core
+        , m_pMeshManager(nullptr)
+        , m_pTextureManager(nullptr)
+        , m_pShaderManager(nullptr)
+        , m_pMaterialDataManager(nullptr)
+        , m_pMaterialManager(nullptr)
+    //Object
+        , m_pSceneManagerEnumerator(nullptr)
     {
 
     }

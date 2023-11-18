@@ -591,6 +591,31 @@ namespace LostPeter
     }
 
 
+    //VulkanEngineConfigType
+    static const String s_nameEngineConfigTypes[] = 
+	{
+    ////Common
+		"MultiThread",					    //0: MultiThread
+
+    ////Render
+
+
+    ////Audio
+
+
+    ////Physics
+        
+
+	};
+    const String& Util_GetEngineConfigTypeName(VulkanEngineConfigType type)
+    {
+        return s_nameEngineConfigTypes[(int32)type];
+    }
+    const String& Util_GetEngineConfigTypeName(int32 type)
+    {
+        return s_nameEngineConfigTypes[type];
+    }
+
 ////////////////////////////// Vulkan //////////////////////////////
     const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(FMeshVertexType type)
     {

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<cfg_engine>
+	<cfg_common>
+		<multithread val="1" />
+	</cfg_common>
+	<cfg_render>
+		<renderer_name val="PluginRendererVulkan" />
+		<pipeline val="Forward"	/>
+	</cfg_render>
+	<cfg_audio>
+	</cfg_audio>
+	<cfg_physics>
+	</cfg_physics>
+</cfg_engine>
