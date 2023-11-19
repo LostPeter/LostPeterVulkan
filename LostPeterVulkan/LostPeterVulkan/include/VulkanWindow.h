@@ -58,7 +58,6 @@ namespace LostPeter
 
         //DescriptorSetLayout
         virtual VkDescriptorSetLayout CreateDescriptorSetLayout(const String& nameLayout, const StringVector* pNamesDescriptorSetLayout);
-        virtual VkDescriptorSetLayout CreateDescriptorSetLayout(const String& nameLayout, const VKDescriptorSetPtrVector& aDescriptorSets);
 
     public: 
         static bool s_isEnableValidationLayers;
@@ -332,11 +331,6 @@ namespace LostPeter
         bool mouseButtonDownLeft;
         bool mouseButtonDownRight;
         bool mouseButtonDownMiddle;
-
-       
-        //SceneManagerEnumerator
-        SceneManagerEnumerator* pSceneManagerEnumerator;
-
 
         //Editor
         bool cfg_isEditorCreate;
@@ -1134,31 +1128,6 @@ namespace LostPeter
                         //Model
                         virtual void modelConfig();
                         
-                        //Path
-                        virtual void enumPath();
-                        //Mesh
-                        virtual void enumMesh();
-                        //Texture
-                        virtual void enumTexture();
-                        //Shader
-                        virtual void enumShader();
-                        //VKDescriptorSet
-                        virtual void enumVKDescriptorSet();
-                        //VKDescriptorSetLayout
-                        virtual void enumVKDescriptorSetLayout();
-                        //VKPipelineLayout
-                        virtual void enumVKPipelineLayout();
-                        //VKPipeline
-                        virtual void enumVKPipeline();
-                        //Material
-                        virtual void enumMaterial();
-                        //Scene
-                        virtual void enumScene();
-                            virtual void enumSceneObject(Scene* pScene);
-                                virtual void enumObject(VulkanObjectType type, ObjectPtrMap* pObjectPtrMap);
-                                virtual void enumSceneNode(SceneNode* pSceneNode);
-                        //SceneManager
-                        virtual void enumSceneManager();
                     virtual void endRenderImgui();
                 virtual void updateCBs_Editor();
                 virtual void updateCBs_Custom();

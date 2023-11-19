@@ -46,6 +46,7 @@ Bin/Android
 Bin/iOS
 Plugins
 LostPeterVulkan/Build
+LostPeterVulkan/LostPeterEngine
 Sample/Build
 Sample/Lib
 Sample/*/android/app/build

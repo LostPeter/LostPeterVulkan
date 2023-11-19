@@ -480,22 +480,12 @@ public:
     typedef std::map<String, ModelObject*> ModelObjectPtrMap;
 
 public:
-    FPathManager* m_pPathManager;
-    MeshManager* m_pMeshManager;
-    TextureManager* m_pTextureManager;
-    ShaderManager* m_pShaderManager;
-    VKDescriptorSetManager* m_pVKDescriptorSetManager;
-    VKDescriptorSetLayoutManager* m_pVKDescriptorSetLayoutManager;
-    VKPipelineLayoutManager* m_pVKPipelineLayoutManager;
-    VKPipelineManager* m_pVKPipelineManager;
-    MaterialDataManager* m_pMaterialDataManager;
-    MaterialManager* m_pMaterialManager;
+    MeshPtrVector m_aModelMesh;
+    MeshPtrMap m_mapModelMesh;    
 
-    SceneManagerEnumerator* m_pSceneManagerEnumerator;
-    SceneDataManager* m_pSceneDataManager;
-    SceneManager* m_pSceneManager;
-    Scene* m_pScene;
-    
+    TexturePtrVector m_aModelTexture;
+    TexturePtrMap m_mapModelTexture;
+
     ModelObjectPtrVector m_aModelObjects;
     ModelObjectPtrMap m_mapModelObjects;
     ModelObjectRendPtrVector m_aModelObjectRends_All;
@@ -503,6 +493,16 @@ public:
     ModelObjectRendPtrVector m_aModelObjectRends_Transparent;
     bool m_isDrawIndirect;
     bool m_isDrawIndirectMulti;
+
+    VkDescriptorSetLayoutVector m_aVkDescriptorSetLayouts;
+    VkDescriptorSetLayoutMap m_mapVkDescriptorSetLayout;
+    std::map<String, StringVector> m_mapName2Layouts;
+    
+    VkShaderModuleVector m_aVkShaderModules;
+    VkShaderModuleMap m_mapVkShaderModules;
+
+    VkPipelineLayoutVector m_aVkPipelineLayouts;
+    VkPipelineLayoutMap m_mapVkPipelineLayouts;
 
 protected:
     //Create Pipeline
@@ -518,8 +518,6 @@ protected:
         //Geometry/Texture
         virtual void loadModel_Custom();
             void createIndirectCommands();
-
-        virtual void loadTexture_Custom();
 
         //ConstBuffers
         virtual void createCustomCB();
@@ -548,7 +546,6 @@ protected:
         virtual bool beginRenderImgui();
             virtual void cameraReset();
             virtual void modelConfig();
-            virtual void enumConfig();
 
         virtual void endRenderImgui();
 
@@ -563,7 +560,32 @@ protected:
 private:
     void rebuildInstanceCBs(bool isCreateVkBuffer);
 
-    
+////Mesh
+    void destroyMeshes();
+    void createMeshes();
+    Mesh* findMesh(const String& nameMesh);
+
+////Texture
+    void destroyTextures();
+    void createTextures();
+    Texture* findTexture(const String& nameTexture);
+
+////DescriptorSetLayout
+    void destroyDescriptorSetLayouts();
+    void createDescriptorSetLayouts();
+    VkDescriptorSetLayout findDescriptorSetLayout(const String& nameDescriptorSetLayout);
+    StringVector* findDescriptorSetLayoutNames(const String& nameDescriptorSetLayout);
+
+////ShaderModule
+    void destroyShaderModules();
+    void createShaderModules();
+    VkShaderModule findShaderModule(const String& nameShaderModule);
+
+////PipelineLayout
+    void destroyPipelineLayouts();
+    void createPipelineLayouts();
+    VkPipelineLayout findPipelineLayout(const String& namePipelineLayout);
+
     void drawModelObjectRendIndirects(VkCommandBuffer& commandBuffer, ModelObjectRendPtrVector& aRends);
     void drawModelObjectRendIndirect(VkCommandBuffer& commandBuffer, ModelObjectRendIndirect* pRendIndirect);
 

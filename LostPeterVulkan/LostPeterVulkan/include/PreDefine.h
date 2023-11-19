@@ -434,67 +434,7 @@ namespace LostPeter
     };
     typedef std::vector<MeshInfo*> MeshInfoPtrVector;
     typedef std::map<String, MeshInfo*> MeshInfoPtrMap;
-    typedef std::map<uint32, MeshInfoPtrMap> MeshInfoGroupPtrMap;
 
-
-    struct utilExport TextureInfo
-    {
-        TextureInfo();
-        TextureInfo(const String& _nameTexture,
-                    const String& _pathTexture,
-                    FTextureType _typeTexture,
-                    FTexturePixelFormatType _typeTexturePixelFormat,
-                    FTextureFilterType _typeTextureFilter,
-                    FTextureAddressingType _typeTextureAddressing,
-                    FTextureBorderColorType _typeTextureBorderColor,
-                    int _width,
-                    int _height,
-                    int _depth,
-                    int _animChunkX,
-                    int _animChunkY,
-                    bool _isRT,
-                    bool _isGCS);
-        ~TextureInfo();
-
-        uint32 group;
-        String nameTexture;
-        String pathTexture;
-        
-        FTextureType typeTexture;
-        FTexturePixelFormatType typeTexturePixelFormat;
-        FTextureFilterType typeTextureFilter;
-        FTextureAddressingType typeTextureAddressing;
-        FTextureBorderColorType typeTextureBorderColor;
-        int width;
-        int height;
-        int depth;
-        int animChunkX;
-        int animChunkY;
-        bool isRT;
-        bool isGCS;
-    };
-    typedef std::vector<TextureInfo*> TextureInfoPtrVector;
-    typedef std::map<String, TextureInfo*> TextureInfoPtrMap;
-    typedef std::map<uint32, TextureInfoPtrMap> TextureInfoGroupPtrMap;
-
-
-    struct utilExport ShaderInfo
-    {
-        ShaderInfo();
-        ShaderInfo(const String& _nameShader,
-                   const String& _pathShader,
-                   FShaderType _typeShader);
-        ~ShaderInfo();
-
-        uint32 group;
-        String nameShader;
-        String pathShader;
-        FShaderType typeShader;
-
-    };
-    typedef std::vector<ShaderInfo*> ShaderInfoPtrVector;
-    typedef std::map<String, ShaderInfo*> ShaderInfoPtrMap;
-    typedef std::map<uint32, ShaderInfoPtrMap> ShaderInfoGroupPtrMap;
 
     struct utilExport ShaderModuleInfo
     {
@@ -505,115 +445,24 @@ namespace LostPeter
     typedef std::vector<ShaderModuleInfo> ShaderModuleInfoVector;
 
 
-    struct utilExport DescriptorSetInfo
-    {
-        DescriptorSetInfo();
-        DescriptorSetInfo(const String& _nameDescriptorSetInfo,
-                          VulkanDescriptorSetType _typeDescriptorSet,
-                          VulkanDescriptorSetUsageType _typeDescriptorSetUsage,
-                          const String& _nameShaderTypes);
-        ~DescriptorSetInfo();
-
-        String nameDescriptorSetInfo;
-        VulkanDescriptorSetType typeDescriptorSet;
-        VulkanDescriptorSetUsageType typeDescriptorSetUsage;
-        String nameShaderTypes;
-    };
-    typedef std::vector<DescriptorSetInfo*> DescriptorSetInfoPtrVector;
-    typedef std::map<String, DescriptorSetInfo*> DescriptorSetInfoPtrMap;
-
-
-    struct utilExport DescriptorSetLayoutInfo
-    {
-        DescriptorSetLayoutInfo();
-        DescriptorSetLayoutInfo(const String& _nameDescriptorSetLayoutInfo);
-        ~DescriptorSetLayoutInfo();
-
-        String nameDescriptorSetLayoutInfo;
-    };
-    typedef std::vector<DescriptorSetLayoutInfo*> DescriptorSetLayoutInfoPtrVector;
-    typedef std::map<String, DescriptorSetLayoutInfo*> DescriptorSetLayoutInfoPtrMap;
-
-
-    struct utilExport MaterialInfo
-    {
-        MaterialInfo();
-        MaterialInfo(const String& _nameMaterial,
-                     const String& _pathMaterial);
-        ~MaterialInfo();
-
-        uint32 group;
-        String nameMaterial;
-        String pathMaterial;
-    };
-    typedef std::vector<MaterialInfo*> MaterialInfoPtrVector;
-    typedef std::map<String, MaterialInfo*> MaterialInfoPtrMap;
-    typedef std::map<uint32, MaterialInfoPtrMap> MaterialInfoGroupPtrMap;
-
-
-    struct utilExport SceneInfo
-    {
-        SceneInfo();
-        SceneInfo(const String& _nameScene,
-                  const String& _pathScene);
-        ~SceneInfo();
-
-        uint32 group;
-        String nameScene;
-        String pathScene;
-    };
-    typedef std::vector<SceneInfo*> SceneInfoPtrVector;
-    typedef std::map<String, SceneInfo*> SceneInfoPtrMap;
-    typedef std::map<uint32, SceneInfoPtrMap> SceneInfoGroupPtrMap;
-
-
 
     class App;
     class VulkanBase;
     class VulkanWindow;
 
-    class VKDescriptorSet;
-    class VKDescriptorSetManager;
-    class VKDescriptorSetSerializer;
-    class VKDescriptorSetLayout;
-    class VKDescriptorSetLayoutManager;
-    class VKDescriptorSetLayoutSerializer;
     class VKFrameBufferAttachment;
     class VKMultiRenderPass;
     class VKPipelineGraphics;
     class VKPipelineCompute;
-    class VKPipelineLayout;
-    class VKPipelineLayoutManager;
-    class VKPipeline;
-    class VKPipelineManager;
-    class VKRenderer;
-    class VKRenderTexture;
-    class VKRenderWindow;
 
-    typedef std::vector<VKDescriptorSet*> VKDescriptorSetPtrVector;
-    typedef std::map<String, VKDescriptorSet*> VKDescriptorSetPtrMap;
-    typedef std::vector<VKDescriptorSetLayout*> VKDescriptorSetLayoutPtrVector;
-    typedef std::map<String, VKDescriptorSetLayout*> VKDescriptorSetLayoutPtrMap;
-    
     typedef std::vector<VKMultiRenderPass*> VKMultiRenderPassPtrVector;
     typedef std::map<String, VKMultiRenderPass*> VKMultiRenderPassPtrMap;
-    
+
     typedef std::vector<VKPipelineGraphics*> VKPipelineGraphicsPtrVector;
     typedef std::map<String, VKPipelineGraphics*> VKPipelineGraphicsPtrMap;
     
     typedef std::vector<VKPipelineCompute*> VKPipelineComputePtrVector;
     typedef std::map<String, VKPipelineCompute*> PipelineComputePtrMap;
-
-    typedef std::vector<VKPipelineLayout*> VKPipelineLayoutPtrVector;
-    typedef std::map<String, VKPipelineLayout*> VKPipelineLayoutPtrMap;
-
-    typedef std::vector<VKPipeline*> VKPipelinePtrVector;
-    typedef std::map<String, VKPipeline*> VKPipelinePtrMap;
-
-    typedef std::vector<VKRenderTexture*> VKRenderTexturePtrVector;
-    typedef std::map<String, VKRenderTexture*> VKRenderTexturePtrMap;
-    typedef std::vector<VKRenderWindow*> VKRenderWindowPtrVector;
-    typedef std::map<String, VKRenderWindow*> VKRenderWindowPtrMap;
 
 
     class Base;
@@ -623,83 +472,9 @@ namespace LostPeter
     class EditorGrid;
     class EditorLineFlat2DCollector;
     class EditorLineFlat3DCollector;
-    class Engine;
-    class EngineConfig;
-    class EngineListener;
-    class Material;
-    class MaterialData;
-    class MaterialDataManager;
-    class MaterialDataSerializer;
-    class MaterialInstance;
-    class MaterialManager;
-    class MaterialSerializer;
     class Mesh;
-    class MeshDataSerializer;
-    class MeshManager;
-    class MeshSerializer;
     class MeshSub;
-    class Movable;
-    class MovableListener;
-    class MovableFactory;
-    class Node;
-    class NodeListener;
-    class ObjectVisibleBoundsInfo;
-    class Object;
-    class ObjectFrustum;
-    class ObjectCameraListener;
-    class ObjectCamera;
-    class ObjectCloud;
-    class ObjectLight;
-    class ObjectMesh;
-    class ObjectParticle;
-    class ObjectSkinMesh;
-    class ObjectSky;
-    class ObjectTerrain;
-    class ObjectWater;
-    class ObjectManager;
-    class Renderable;
-    class RenderableIndirect;
-    class RenderEngineListener;
-    class RenderEngine;
-    class RendererListener;
-    class Renderer;
-    class RenderPass;
-    class RenderPassForwardLit;
-    class RenderPassDeferredLit;
-    class RenderPassShadowCaster;
-    class RenderPassDepthOnly;
-    class RenderPassManager;
-    class RenderPipeline;
-    class RenderPipelineForward;
-    class RenderPipelineManager;
-    class RenderQueue;
-    class RenderQueueManager;
-    class RenderTargetListener;
-    class RenderTarget;
-    class RenderTargetManager;
-    class RenderTexture;
-    class RenderWindow;
-    class RenderStateCommon;
-    class RenderStateLighting;
-    class RenderStateParam;
-    class RenderStateTexture;
-    class RenderStateShaderItem;
-    class RenderStateShader;
-    class RenderState;
-    class Scene;
-    class SceneDataManager;
-    class SceneDataSerializer;
-    class SceneManager;
-    class SceneManagerEnumerator;
-    class SceneNode;
-    class SceneSerializer;
-    class Shader;
-    class ShaderManager;
-    class ShaderSerializer;
     class Texture;
-    class TextureManager;
-    class TextureSerializer;
-    class Viewport;
 
 
     typedef std::vector<MeshSub*> MeshSubPtrVector;
@@ -707,162 +482,10 @@ namespace LostPeter
     
     typedef std::vector<Mesh*> MeshPtrVector;
     typedef std::map<String, Mesh*> MeshPtrMap;
-    typedef std::map<uint32, MeshPtrMap> MeshGroupPtrMap;
 
     typedef std::vector<Texture*> TexturePtrVector;
     typedef std::map<String, Texture*> TexturePtrMap;
-    typedef std::map<uint32, TexturePtrMap> TextureGroupPtrMap;
     typedef std::map<String, TexturePtrVector> TexturePtrShaderSortMap;
-
-    typedef std::vector<Shader*> ShaderPtrVector;
-    typedef std::map<String, Shader*> ShaderPtrMap;
-    typedef std::map<uint32, ShaderPtrMap> ShaderGroupPtrMap;
-
-    typedef std::vector<RendererListener*> RendererListenerPtrVector;
-    typedef std::list<RendererListener*> RendererListenerPtrList;
-    typedef std::map<String, RendererListener*> RendererListenerPtrMap;
-
-    typedef std::vector<RenderPass*> RenderPassPtrVector;
-    typedef std::map<String, RenderPass*> RenderPassPtrMap;
-
-    typedef std::vector<RenderPipeline*> RenderPipelinePtrVector;
-    typedef std::map<String, RenderPipeline*> RenderPipelinePtrMap;
-    
-    typedef std::vector<RenderQueue*> RenderQueuePtrVector;
-    typedef std::map<String, RenderQueue*> RenderQueuePtrMap;
-
-    typedef std::vector<RenderTargetListener*> RenderTargetListenerPtrVector;
-    typedef std::map<String, RenderTargetListener*> RenderTargetListenerPtrMap;
-    typedef std::vector<RenderTarget*> RenderTargetPtrVector;
-    typedef std::map<String, RenderTarget*> RenderTargetPtrMap;
-    typedef std::multimap<uint8, RenderTarget*> RenderTargetPtrPriorityMap;
-
-    typedef std::vector<RenderTexture*> RenderTexturePtrVector;
-    typedef std::map<String, RenderTexture*> RenderTexturePtrMap;
-
-    typedef std::vector<RenderWindow*> RenderWindowPtrVector;
-    typedef std::map<String, RenderWindow*> RenderWindowPtrMap;
-
-    typedef std::vector<RenderStateCommon*> RenderStateCommonPtrVector;
-    typedef std::map<String, RenderStateCommon*> RenderStateCommonPtrMap;
-    typedef std::vector<RenderStateLighting*> RenderStateLightingPtrVector;
-    typedef std::map<String, RenderStateLighting*> RenderStateLightingPtrMap;
-    typedef std::vector<RenderStateParam*> RenderStateParamPtrVector;
-    typedef std::map<String, RenderStateParam*> RenderStateParamPtrMap;
-    typedef std::vector<RenderStateTexture*> RenderStateTexturePtrVector;
-    typedef std::map<String, RenderStateTexture*> RenderStateTexturePtrMap;
-    typedef std::vector<RenderStateShaderItem*> RenderStateShaderItemPtrVector;
-    typedef std::map<String, RenderStateShaderItem*> RenderStateShaderItemPtrMap;
-    typedef std::vector<RenderStateShader*> RenderStateShaderPtrVector;
-    typedef std::map<String, RenderStateShader*> RenderStateShaderPtrMap;
-    typedef std::vector<RenderState*> RenderStatePtrVector;
-    typedef std::map<String, RenderState*> RenderStatePtrMap;
-
-    typedef std::vector<Material*> MaterialPtrVector;
-    typedef std::map<String, Material*> MaterialPtrMap;
-    typedef std::map<uint32, MaterialPtrMap> MaterialGroupPtrMap;
-
-    typedef std::vector<MaterialInstance*> MaterialInstancePtrVector;
-    typedef std::map<String, MaterialInstance*> MaterialInstancePtrMap;
-
-    typedef std::vector<MaterialData*> MaterialDataPtrVector;
-    typedef std::map<String, MaterialData*> MaterialDataPtrMap;
-
-    typedef std::vector<Renderable*> RenderablePtrVector;
-    typedef std::map<String, Renderable*> RenderablePtrMap;
-
-    typedef std::vector<RenderableIndirect*> RenderableIndirectPtrVector;
-    typedef std::map<String, RenderableIndirect*> RenderableIndirectPtrMap;
-
-    typedef std::vector<Movable*> MovablePtrVector;
-    typedef std::map<String, Movable*> MovablePtrMap;
-
-    typedef std::vector<Node*> NodePtrVector;
-    typedef std::list<Node*> NodePtrList;
-	typedef std::set<Node*> NodePtrSet;
-    typedef std::map<String, Node*> NodePtrMap;
-
-    typedef std::vector<SceneNode*> SceneNodePtrVector;
-    typedef std::set<SceneNode*> SceneNodePtrSet;
-    typedef std::map<String, SceneNode*> SceneNodePtrMap;
-
-    //Object
-    typedef std::vector<Object*> ObjectPtrVector; 
-    typedef std::map<String, Object*> ObjectPtrMap;
-    typedef std::map<int, ObjectPtrMap> ObjectPtrGroupMap;
-    //ObjectMesh
-    typedef std::vector<ObjectMesh*> ObjectMeshPtrVector; 
-    typedef std::map<String, ObjectMesh*> ObjectMeshPtrMap;
-    typedef std::map<int, ObjectMeshPtrMap> ObjectMeshPtrGroupMap;
-    //ObjectSkinMesh
-    typedef std::vector<ObjectSkinMesh*> ObjectSkinMeshPtrVector; 
-    typedef std::map<String, ObjectSkinMesh*> ObjectSkinMeshPtrMap;
-    typedef std::map<int, ObjectSkinMeshPtrMap> ObjectSkinMeshPtrGroupMap;
-    //ObjectCamera
-    typedef std::vector<ObjectCamera*> ObjectCameraPtrVector; 
-    typedef std::map<String, ObjectCamera*> ObjectCameraPtrMap;
-    typedef std::map<int, ObjectCameraPtrMap> ObjectCameraPtrGroupMap;
-    //ObjectLight
-    typedef std::vector<ObjectLight*> ObjectLightPtrVector; 
-    typedef std::map<String, ObjectLight*> ObjectLightPtrMap;
-    typedef std::map<int, ObjectLightPtrMap> ObjectLightPtrGroupMap;
-    //ObjectTerrain
-    typedef std::vector<ObjectTerrain*> ObjectTerrainPtrVector; 
-    typedef std::map<String, ObjectTerrain*> ObjectTerrainPtrMap;
-    typedef std::map<int, ObjectTerrainPtrMap> ObjectTerrainPtrGroupMap;
-    //ObjectWater
-    typedef std::vector<ObjectWater*> ObjectWaterPtrVector; 
-    typedef std::map<String, ObjectWater*> ObjectWaterPtrMap;
-    typedef std::map<int, ObjectWaterPtrMap> ObjectWaterPtrGroupMap;
-    //ObjectSky
-    typedef std::vector<ObjectSky*> ObjectSkyPtrVector; 
-    typedef std::map<String, ObjectSky*> ObjectSkyPtrMap;
-    typedef std::map<int, ObjectSkyPtrMap> ObjectSkyPtrGroupMap;
-    //ObjectCloud
-    typedef std::vector<ObjectCloud*> ObjectCloudPtrVector; 
-    typedef std::map<String, ObjectCloud*> ObjectCloudPtrMap;
-    typedef std::map<int, ObjectCloudPtrMap> ObjectCloudPtrGroupMap;
-    //ObjectParticle
-    typedef std::vector<ObjectParticle*> ObjectParticlePtrVector; 
-    typedef std::map<String, ObjectParticle*> ObjectParticlePtrMap;
-    typedef std::map<int, ObjectParticlePtrMap> ObjectParticlePtrGroupMap;
-
-    typedef std::vector<Scene*> ScenePtrVector;
-    typedef std::map<String, Scene*> ScenePtrMap;
-    typedef std::map<int, ScenePtrMap> SceneGroupPtrMap;
-
-    typedef std::vector<SceneManager*> SceneManagerPtrVector;
-    typedef std::map<String, SceneManager*> SceneManagerPtrMap;
-
-    typedef std::vector<Viewport*> ViewportPtrVector;
-    typedef std::map<String, Viewport*> ViewportPtrMap;
-    typedef std::map<int, Viewport*> ViewportPtrOrderMap;
-
-    struct utilExport ConfigItem
-	{
-		String strName;
-		String strCurValue;
-		StringVector aPossibleValues;
-		bool bImmutable;
-	};
-	typedef std::map<String, ConfigItem> ConfigItemMap;
-
-    struct utilExport RenderTargetEvent
-	{
-		RenderTarget* pRenderTargetSrc;
-	};
-
-	struct utilExport RenderTargetViewportEvent
-	{
-		Viewport* pViewportSrc;
-	};
-
-    struct utilExport RenderFrameEvent
-	{
-		float fTimeSinceLastEvent;		
-		float fTimeSinceLastFrame;
-		float fTimeSystemCurrent;
-	};
 
 }; //LostPeter
 
