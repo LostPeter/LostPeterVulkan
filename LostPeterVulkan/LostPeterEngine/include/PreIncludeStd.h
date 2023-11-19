@@ -1,28 +1,26 @@
 /****************************************************************************
-* LostPeterVulkan - Copyright (C) 2022 by LostPeter
+* LostPeterEngine - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-08-13
+* Time:     2022-10-30
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _VULKAN_018_OBJECT_H_
-#define _VULKAN_018_OBJECT_H_
+#ifndef _PRE_INCLUDE_STD_H_
+#define _PRE_INCLUDE_STD_H_
 
-#include "Sample.h"
-using namespace LostPeter; 
+#include "FPreIncludeStd.h"
+#include "PreMacro.h"
 
-class Vulkan_018_Object : public Sample
+namespace LostPeter
 {
-public:
-    Vulkan_018_Object(const String& nameSample, int width, int height);
 
-public: 
-   
-};
+
+}; //LostPeter
+
 
 
 #endif

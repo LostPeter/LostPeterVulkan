@@ -66,7 +66,7 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterFoundation/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterUI/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterVulkan/include")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterEngine/include")
 
 elseif (ANDROID)     
 
@@ -85,7 +85,7 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterFoundation/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterUI/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterVulkan/include")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterEngine/include")
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
     SET(COCOA_LIBS ${SYS_FRAMEWORKS_DIR}/Cocoa.framework)
@@ -155,7 +155,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterUI_d.lib
-                       ${LIB_PLUGINS_DIR}/LostPeterVulkan_d.lib)
+                       ${LIB_PLUGINS_DIR}/LostPeterEngine_d.lib)
     else ()
         LINK_LIBRARIES(shlwapi.lib 
                        ${LIB_VULKAN_DIR}/vulkan-1.lib
@@ -168,7 +168,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib
                        ${LIB_PLUGINS_DIR}/LostPeterUI.lib
-                       ${LIB_PLUGINS_DIR}/LostPeterVulkan.lib)
+                       ${LIB_PLUGINS_DIR}/LostPeterEngine.lib)
     endif ()
     MY_ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
 
@@ -184,12 +184,12 @@ elseif (APPLE)
         TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
                               ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
                               ${LIB_PLUGINS_DIR}/libLostPeterUI_d.dylib
-                              ${LIB_PLUGINS_DIR}/libLostPeterVulkan_d.dylib)
+                              ${LIB_PLUGINS_DIR}/libLostPeterEngine_d.dylib)
     else ()
         TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
                               ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
                               ${LIB_PLUGINS_DIR}/libLostPeterUI.dylib
-                              ${LIB_PLUGINS_DIR}/libLostPeterVulkan.dylib)
+                              ${LIB_PLUGINS_DIR}/libLostPeterEngine.dylib)
     endif ()
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)

@@ -57,7 +57,7 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterFoundation/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterUI/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterVulkan/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterEngine/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../share")
 
 elseif (ANDROID)        
@@ -77,7 +77,7 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterFoundation/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterUI/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterVulkan/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterEngine/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../share")
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
@@ -131,7 +131,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterUI_d.lib
-                       ${LIB_PLUGINS_DIR}/LostPeterVulkan_d.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterEngine_d.lib
                        ${LIB_SHARE_DIR}/share_${NAME_PROJECT}_d.lib)
     else ()
         LINK_LIBRARIES(shlwapi.lib 
@@ -145,7 +145,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib
                        ${LIB_PLUGINS_DIR}/LostPeterUI.lib
-                       ${LIB_PLUGINS_DIR}/LostPeterVulkan.lib
+                       ${LIB_PLUGINS_DIR}/LostPeterEngine.lib
                        ${LIB_SHARE_DIR}/share_${NAME_PROJECT}.lib)
     endif()
     ADD_EXECUTABLE(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES_CPP})
@@ -168,7 +168,7 @@ elseif (APPLE)
                               ${SYS_VULKAN_LIBS}
                               ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
                               ${LIB_PLUGINS_DIR}/libLostPeterUI_d.dylib
-                              ${LIB_PLUGINS_DIR}/libLostPeterVulkan_d.dylib
+                              ${LIB_PLUGINS_DIR}/libLostPeterEngine_d.dylib
                               ${LIB_SHARE_DIR}/libshare_${NAME_PROJECT}_d.dylib)
     else ()
         TARGET_LINK_LIBRARIES(${PROJECT_NAME}
@@ -180,7 +180,7 @@ elseif (APPLE)
                               ${SYS_VULKAN_LIBS}
                               ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
                               ${LIB_PLUGINS_DIR}/libLostPeterUI.dylib
-                              ${LIB_PLUGINS_DIR}/libLostPeterVulkan.dylib
+                              ${LIB_PLUGINS_DIR}/libLostPeterEngine.dylib
                               ${LIB_SHARE_DIR}/libshare_${NAME_PROJECT}.dylib)
     endif()
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup \
