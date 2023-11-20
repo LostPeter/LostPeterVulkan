@@ -11,7 +11,7 @@
 
 #include "../include/PreIncludeStd.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
 	
-}; //LostPeter
+}; //LostPeterVulkan

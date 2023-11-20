@@ -12,7 +12,7 @@
 #include "../include/PreDefine.h"
 #include "../include/VulkanDefine.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {   
 ////////////////////////////// Typedef /////////////////////////////
     String Utile_VkResult2String(VkResult result)
@@ -778,4 +778,4 @@ namespace LostPeter
   
 
 
-}; //LostPeter
+}; //LostPeterVulkan

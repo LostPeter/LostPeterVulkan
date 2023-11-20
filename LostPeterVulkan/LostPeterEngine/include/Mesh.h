@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport Mesh : public Base
     {
@@ -48,6 +48,6 @@ namespace LostPeter
                               bool isUpdateIndexBuffer = false);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

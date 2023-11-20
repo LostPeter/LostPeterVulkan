@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport RenderEngine : public FSingleton<RenderEngine>
                                   , public Base
@@ -58,6 +58,6 @@ namespace LostPeter
 
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

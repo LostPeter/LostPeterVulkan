@@ -12,7 +12,7 @@
 #include "../include/PreInclude.h"
 #include "../include/VulkanBase.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     FLogManager* VulkanBase::ms_pLogManager = FLogManager::GetInstance();
     VulkanBase::VulkanBase(int width, int height, String name)
@@ -77,4 +77,4 @@ namespace LostPeter
         return this->pathBin + assetName;
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

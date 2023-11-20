@@ -14,7 +14,7 @@
 
 #include "Object.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport ObjectFrustum : public Object
     {
@@ -36,6 +36,6 @@ namespace LostPeter
 
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

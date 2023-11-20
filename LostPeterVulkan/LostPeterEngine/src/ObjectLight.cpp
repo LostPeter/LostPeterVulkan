@@ -11,7 +11,7 @@
 
 #include "../include/ObjectLight.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     const String ObjectLight::ms_strMovableType = "Movable_Light";
 
@@ -41,4 +41,4 @@ namespace LostPeter
         return 0.0f;
     }
     
-}; //LostPeter
+}; //LostPeterEngine

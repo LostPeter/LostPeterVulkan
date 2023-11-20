@@ -15,7 +15,7 @@
 #include "../include/MeshSub.h"
 #include "../include/VKPipelineGraphics.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     EditorBase::EditorBase(const String& nameEditor)
         : Base(nameEditor)
@@ -182,4 +182,4 @@ namespace LostPeter
         initPipelineGraphics();
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

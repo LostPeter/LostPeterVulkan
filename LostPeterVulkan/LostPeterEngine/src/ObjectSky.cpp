@@ -11,7 +11,7 @@
 
 #include "../include/ObjectSky.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     const String ObjectSky::ms_strMovableType = "Movable_Sky";
 
@@ -40,4 +40,4 @@ namespace LostPeter
         return 0.0f;
     }
     
-}; //LostPeter
+}; //LostPeterEngine

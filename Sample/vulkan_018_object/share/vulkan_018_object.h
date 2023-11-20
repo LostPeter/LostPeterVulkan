@@ -13,7 +13,7 @@
 #define _VULKAN_018_OBJECT_H_
 
 #include "Sample.h"
-using namespace LostPeter; 
+using namespace LostPeterEngine;
 
 class Vulkan_018_Object : public Sample
 {

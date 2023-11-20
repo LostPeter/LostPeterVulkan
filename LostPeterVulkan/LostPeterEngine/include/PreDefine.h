@@ -21,7 +21,7 @@ using namespace LostPeterFoundation;
 #include "UIPreDefine.h"
 using namespace LostPeterUI;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
 ////////////////////////////// Define //////////////////////////////
     #define MAX_LIGHT_COUNT 16
@@ -817,7 +817,7 @@ namespace LostPeter
 		float fTimeSystemCurrent;
 	};
 
-}; //LostPeter
+}; //LostPeterEngine
 
 
 #endif

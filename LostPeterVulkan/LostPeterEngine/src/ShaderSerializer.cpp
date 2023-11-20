@@ -11,7 +11,7 @@
 
 #include "../include/ShaderSerializer.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     #define SHADER_TAG_SHADER_CFG								"cfg_shader"
     #define	SHADER_TAG_SHADER									"shader"
@@ -176,4 +176,4 @@ namespace LostPeter
         return false;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

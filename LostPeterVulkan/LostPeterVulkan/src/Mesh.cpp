@@ -18,7 +18,7 @@
 #include <assimp/matrix4x4.h>
 #include <assimp/postprocess.h>
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     Mesh::Mesh(uint32 _group,
                const String& _nameMesh,
@@ -159,4 +159,4 @@ namespace LostPeter
         return true;
     }
     
-}; //LostPeter
+}; //LostPeterVulkan

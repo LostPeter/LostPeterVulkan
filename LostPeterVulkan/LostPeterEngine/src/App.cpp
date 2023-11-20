@@ -12,7 +12,7 @@
 #include "../include/App.h"
 #include "../include/Sample.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     Sample* App::s_pSample = nullptr;
 
@@ -93,4 +93,4 @@ namespace LostPeter
         F_LogError("App::error_callback: [%s]", description);
     }
 
-}; //LostPeter
+}; //LostPeterEngine

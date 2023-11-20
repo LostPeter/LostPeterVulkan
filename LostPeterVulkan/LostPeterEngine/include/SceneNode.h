@@ -14,7 +14,7 @@
 
 #include "Node.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport SceneNode : public Node
     {
@@ -147,6 +147,6 @@ namespace LostPeter
 		virtual Node* createChildImpl(const String& strName);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

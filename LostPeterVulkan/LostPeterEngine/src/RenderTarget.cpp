@@ -14,7 +14,7 @@
 #include "../include/Viewport.h"
 #include "../include/ObjectCamera.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderTarget::RenderTarget(const String& nameRenderTarget)
         : Base(nameRenderTarget)
@@ -244,4 +244,4 @@ namespace LostPeter
 		firePostUpdate();
 	}
 
-}; //LostPeter
+}; //LostPeterEngine

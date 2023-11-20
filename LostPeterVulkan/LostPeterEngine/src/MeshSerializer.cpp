@@ -11,7 +11,7 @@
 
 #include "../include/MeshSerializer.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     #define MESH_TAG_MESH_CFG								"cfg_mesh"
     #define	MESH_TAG_MESH									"mesh"
@@ -235,4 +235,4 @@ namespace LostPeter
         return false;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

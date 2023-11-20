@@ -12,7 +12,7 @@
 #include "../include/Texture.h"
 #include "../include/VulkanWindow.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     Texture::Texture(uint32 _group,
                      const String& _nameTexture,
@@ -378,4 +378,4 @@ namespace LostPeter
         Base::GetWindowPtr()->endSingleTimeCommands(cmdBuffer);
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

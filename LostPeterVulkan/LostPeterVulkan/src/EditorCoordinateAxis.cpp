@@ -15,7 +15,7 @@
 #include "../include/MeshSub.h"
 #include "../include/VKPipelineGraphics.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     size_t EditorCoordinateAxis::s_nMeshQuadIndex = 0;
     size_t EditorCoordinateAxis::s_nMeshQuadLineIndex = 1;
@@ -1719,4 +1719,4 @@ namespace LostPeter
         this->vViewport = Base::GetWindowPtr()->GetViewportVector4();
     }    
 
-}; //LostPeter
+}; //LostPeterVulkan

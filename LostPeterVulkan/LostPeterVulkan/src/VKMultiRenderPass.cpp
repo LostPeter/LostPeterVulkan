@@ -12,7 +12,7 @@
 #include "../include/VKMultiRenderPass.h"
 #include "../include/VulkanWindow.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     VKMultiRenderPass::VKMultiRenderPass(const String& _nameRenderPass,
                                          bool _isUseDefault,
@@ -203,4 +203,4 @@ namespace LostPeter
 
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

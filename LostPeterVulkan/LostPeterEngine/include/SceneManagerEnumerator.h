@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport SceneManagerEnumerator : public FSingleton<SceneManagerEnumerator>
                                             , public Base
@@ -48,6 +48,6 @@ namespace LostPeter
 
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

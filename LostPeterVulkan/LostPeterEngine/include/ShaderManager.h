@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport ShaderManager : public FSingleton<ShaderManager>
                                    , public Base
@@ -59,6 +59,6 @@ namespace LostPeter
         Shader* loadShader(ShaderInfo* pSI);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

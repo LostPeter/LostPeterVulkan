@@ -13,7 +13,7 @@
 #define _VULKAN_007_STENCIL_H_
 
 #include "VulkanWindow.h"
-using namespace LostPeter; 
+using namespace LostPeterVulkan; 
 
 class Vulkan_007_Stencil : public VulkanWindow
 {

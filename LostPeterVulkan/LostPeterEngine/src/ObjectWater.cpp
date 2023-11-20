@@ -11,7 +11,7 @@
 
 #include "../include/ObjectWater.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     const String ObjectWater::ms_strMovableType = "Movable_Water";
 
@@ -39,4 +39,4 @@ namespace LostPeter
         return 0.0f;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

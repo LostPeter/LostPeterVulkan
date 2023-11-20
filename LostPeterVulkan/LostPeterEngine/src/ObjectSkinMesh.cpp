@@ -11,7 +11,7 @@
 
 #include "../include/ObjectSkinMesh.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     const String ObjectSkinMesh::ms_strMovableType = "Movable_SkinMesh";
 
@@ -40,4 +40,4 @@ namespace LostPeter
         return 0.0f;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

@@ -11,7 +11,7 @@
 
 #include "../include/Object.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     Object::Object(const String& nameObject, Scene* pScene)
         : Movable(nameObject, pScene)
@@ -23,4 +23,4 @@ namespace LostPeter
 
     }
 
-}; //LostPeter
+}; //LostPeterEngine

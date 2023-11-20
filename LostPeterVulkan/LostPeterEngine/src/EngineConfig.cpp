@@ -13,7 +13,7 @@
 #include "../include/Engine.h"
 #include "../include/RenderEngine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
 #define ENGINE_CFG_TAG_ENGINE								            "cfg_engine"
     #define	ENGINE_CFG_TAG_COMMON									        "cfg_common"
@@ -219,4 +219,4 @@ namespace LostPeter
 		return true;
 	}
     
-}; //LostPeter
+}; //LostPeterEngine

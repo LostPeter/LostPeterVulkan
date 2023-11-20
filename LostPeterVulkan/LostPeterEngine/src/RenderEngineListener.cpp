@@ -11,7 +11,7 @@
 
 #include "../include/RenderEngineListener.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderEngineListener::RenderEngineListener()
         : m_nOrder(0)
@@ -25,4 +25,4 @@ namespace LostPeter
     }
 
 
-}; //LostPeter
+}; //LostPeterEngine

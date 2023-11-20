@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport ObjectCameraListener
     {
@@ -26,6 +26,6 @@ namespace LostPeter
         virtual void CameraDestroyed(ObjectCamera* pCamera) { }
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

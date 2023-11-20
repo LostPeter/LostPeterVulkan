@@ -12,7 +12,7 @@
 #include "../include/EditorLineFlat2DCollector.h"
 #include "../include/VulkanWindow.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     const String EditorLineFlat2DCollector::s_strNameShader_LineFlat2D_Vert = "vert_editor_line_2d";
     const String EditorLineFlat2DCollector::s_strNameShader_LineFlat2D_Frag = "frag_editor_line_2d";
@@ -57,4 +57,4 @@ namespace LostPeter
 
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport Renderer : public Base
                               , public FNonCopyable
@@ -103,6 +103,6 @@ namespace LostPeter
 
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

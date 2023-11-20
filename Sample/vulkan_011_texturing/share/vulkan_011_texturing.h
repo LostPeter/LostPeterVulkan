@@ -14,7 +14,7 @@
 
 #include "VulkanWindow.h"
 #include "FMath.h"
-using namespace LostPeter; 
+using namespace LostPeterVulkan; 
 
 class Vulkan_011_Texturing : public VulkanWindow
 {

@@ -14,7 +14,7 @@
 
 #include "Renderable.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport RenderableIndirect : public Renderable
     {
@@ -28,6 +28,6 @@ namespace LostPeter
 
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

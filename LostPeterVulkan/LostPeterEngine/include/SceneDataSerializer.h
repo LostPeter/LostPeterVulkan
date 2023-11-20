@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport SceneDataSerializer
     {
@@ -44,6 +44,6 @@ namespace LostPeter
 		bool SaveBinary(const char* szFilePath, ScenePtrVector& aSA);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

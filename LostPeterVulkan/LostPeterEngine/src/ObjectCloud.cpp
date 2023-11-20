@@ -11,7 +11,7 @@
 
 #include "../include/ObjectCloud.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     const String ObjectCloud::ms_strMovableType = "Movable_Cloud";
 
@@ -40,4 +40,4 @@ namespace LostPeter
         return 0.0f;
     }
     
-}; //LostPeter
+}; //LostPeterEngine

@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport Material : public Base
     {
@@ -42,6 +42,6 @@ namespace LostPeter
 		void init();
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

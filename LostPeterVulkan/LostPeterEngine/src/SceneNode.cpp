@@ -15,7 +15,7 @@
 #include "../include/ObjectCamera.h"
 #include "../include/RenderQueue.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     SceneNode::SceneNode(Scene* pScene)
         : Node()
@@ -611,4 +611,4 @@ namespace LostPeter
 		return m_pScene->CreateSceneNode(strName);
 	}
 
-}; //LostPeter
+}; //LostPeterEngine

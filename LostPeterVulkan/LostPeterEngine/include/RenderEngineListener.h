@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport RenderEngineListener
     {
@@ -46,6 +46,6 @@ namespace LostPeter
     typedef std::vector<RenderEngineListener*> RenderEngineListenerPtrVector;
 	typedef std::set<RenderEngineListener*, RenderEngineListener::LessCompare> RenderEngineListenerPtrSet;
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

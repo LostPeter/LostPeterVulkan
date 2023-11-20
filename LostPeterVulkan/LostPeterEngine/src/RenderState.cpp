@@ -15,7 +15,7 @@
 #include "../include/ShaderManager.h"
 #include "../include/Shader.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     //////////////////////////////////// RenderStateCommon //////////////////////////////
     RenderStateCommon::RenderStateCommon()
@@ -452,4 +452,4 @@ namespace LostPeter
 
     }
 
-}; //LostPeter
+}; //LostPeterEngine

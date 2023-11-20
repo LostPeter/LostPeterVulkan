@@ -15,7 +15,7 @@
 #include "PreDefine.h"
 #include "VulkanDefine.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport Base
     {
@@ -55,6 +55,6 @@ namespace LostPeter
         bool IsGroupNameValid() const;
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

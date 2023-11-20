@@ -13,7 +13,7 @@
 #define _VULKAN_006_DEPTH_H_
 
 #include "VulkanWindow.h"
-using namespace LostPeter; 
+using namespace LostPeterVulkan; 
 
 class Vulkan_006_Depth : public VulkanWindow
 {

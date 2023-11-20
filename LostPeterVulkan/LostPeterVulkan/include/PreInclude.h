@@ -39,9 +39,9 @@
 #include "MeshSub.h"
 #include "Texture.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {	
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

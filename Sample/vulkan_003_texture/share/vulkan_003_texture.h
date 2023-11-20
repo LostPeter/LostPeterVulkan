@@ -13,7 +13,7 @@
 #define _VULKAN_003_TEXTURE_H_
 
 #include "VulkanWindow.h"
-using namespace LostPeter; 
+using namespace LostPeterVulkan; 
 
 class Vulkan_003_Texture : public VulkanWindow
 {

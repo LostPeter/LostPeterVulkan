@@ -14,7 +14,7 @@
 
 #include "EditorBase.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport EditorGrid : public EditorBase
     {
@@ -64,6 +64,6 @@ namespace LostPeter
         virtual void destroyPipelineGraphics();
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

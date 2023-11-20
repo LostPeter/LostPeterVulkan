@@ -16,7 +16,7 @@
 #include "../include/SceneNode.h"
 #include "../include/ObjectCamera.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     uint32 Movable::ms_nQueryFlags_Default = 0xFFFFFFFF;
 	uint32 Movable::ms_nVisibilityFlags_Default	= 0xFFFFFFFF;
@@ -201,4 +201,4 @@ namespace LostPeter
 		return m_sphereWorld;
 	}
     
-}; //LostPeter
+}; //LostPeterEngine

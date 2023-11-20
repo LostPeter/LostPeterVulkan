@@ -17,7 +17,7 @@
 #include "../include/Viewport.h"
 #include "../include/ObjectCamera.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     Renderer::Renderer(const String& nameRenderer)
         : Base(nameRenderer)
@@ -126,4 +126,4 @@ namespace LostPeter
 		return true;
 	}
 
-}; //LostPeter
+}; //LostPeterEngine

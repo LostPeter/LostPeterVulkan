@@ -11,7 +11,7 @@
 
 #include "../include/RenderPassForwardLit.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderPassForwardLit::RenderPassForwardLit(const String& nameRenderPass)
         : RenderPass(nameRenderPass)
@@ -25,4 +25,4 @@ namespace LostPeter
 
     
 
-}; //LostPeter
+}; //LostPeterEngine

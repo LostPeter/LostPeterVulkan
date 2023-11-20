@@ -13,7 +13,7 @@
 #define _VULKAN_001_TRIANGLE_H_
 
 #include "VulkanWindow.h"
-using namespace LostPeter;
+using namespace LostPeterVulkan;
 
 class Vulkan_001_Triangle : public VulkanWindow
 {

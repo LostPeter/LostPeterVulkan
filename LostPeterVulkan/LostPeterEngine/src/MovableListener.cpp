@@ -11,7 +11,7 @@
 
 #include "../include/MovableListener.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     MovableListener::MovableListener()
     { 
@@ -23,4 +23,4 @@ namespace LostPeter
         
     }
     
-}; //LostPeter
+}; //LostPeterEngine

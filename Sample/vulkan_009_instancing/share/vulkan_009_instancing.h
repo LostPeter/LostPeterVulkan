@@ -13,7 +13,7 @@
 #define _VULKAN_009_INSTANCING_H_
 
 #include "VulkanWindow.h"
-using namespace LostPeter; 
+using namespace LostPeterVulkan; 
 
 class Vulkan_009_Instancing : public VulkanWindow
 {

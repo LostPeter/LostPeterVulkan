@@ -11,7 +11,7 @@
 
 #include "../include/RenderPipeline.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderPipeline::RenderPipeline(const String& namePipeline)
         : Base(namePipeline)
@@ -25,4 +25,4 @@ namespace LostPeter
 
     
 
-}; //LostPeter
+}; //LostPeterEngine

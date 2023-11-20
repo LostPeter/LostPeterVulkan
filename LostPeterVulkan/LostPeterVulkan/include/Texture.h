@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport Texture : public Base
     {
@@ -87,6 +87,6 @@ namespace LostPeter
         virtual void updateNoiseTexture();
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

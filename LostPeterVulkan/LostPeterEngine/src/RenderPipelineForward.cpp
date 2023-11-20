@@ -11,7 +11,7 @@
 
 #include "../include/RenderPipelineForward.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderPipelineForward::RenderPipelineForward()
         : RenderPipeline("RenderPipelineForward")
@@ -25,4 +25,4 @@ namespace LostPeter
 
     
 
-}; //LostPeter
+}; //LostPeterEngine

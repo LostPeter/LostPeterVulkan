@@ -14,7 +14,7 @@
 
 #include "Movable.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport Object : public Movable
     {
@@ -36,6 +36,6 @@ namespace LostPeter
 
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

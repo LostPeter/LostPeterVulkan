@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport RenderTarget : public Base
                                   , public FNonCopyable
@@ -108,6 +108,6 @@ namespace LostPeter
 		virtual void updateImpl();
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

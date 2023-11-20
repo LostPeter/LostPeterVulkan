@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport EngineConfig
     {
@@ -31,6 +31,6 @@ namespace LostPeter
 		bool Save(const String& strCfgPath, Engine* pEngine);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

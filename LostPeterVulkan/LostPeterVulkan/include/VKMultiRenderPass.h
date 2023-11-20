@@ -15,7 +15,7 @@
 #include "Base.h"
 #include "VKFrameBufferAttachment.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport VKMultiRenderPass : public Base
     {
@@ -52,6 +52,6 @@ namespace LostPeter
         void RecreateSwapChain();
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

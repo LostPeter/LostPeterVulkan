@@ -13,7 +13,7 @@
 #define _VULKAN_002_IMGUI_H_
 
 #include "VulkanWindow.h"
-using namespace LostPeter; 
+using namespace LostPeterVulkan; 
 
 class Vulkan_002_Imgui : public VulkanWindow
 {

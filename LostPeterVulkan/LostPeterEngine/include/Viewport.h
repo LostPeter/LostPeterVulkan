@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport Viewport : public Base
 							  , public FNonCopyable
@@ -128,6 +128,6 @@ namespace LostPeter
 		void UpdateDimensions();
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

@@ -15,9 +15,9 @@
 #include "../include/RenderWindow.h"
 #include "../include/Renderer.h"
 
-template<> LostPeter::RenderTargetManager* LostPeterFoundation::FSingleton<LostPeter::RenderTargetManager>::ms_Singleton = nullptr;
+template<> LostPeterEngine::RenderTargetManager* LostPeterFoundation::FSingleton<LostPeterEngine::RenderTargetManager>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderTargetManager* RenderTargetManager::GetSingletonPtr()
 	{
@@ -122,4 +122,4 @@ namespace LostPeter
         DestroyRenderTarget(strName);
     }
 
-}; //LostPeter
+}; //LostPeterEngine

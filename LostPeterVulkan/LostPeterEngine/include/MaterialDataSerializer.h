@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport MaterialDataSerializer
     {
@@ -48,6 +48,6 @@ namespace LostPeter
 		bool SaveBinary(const char* szFilePath, MaterialPtrVector& aMA);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

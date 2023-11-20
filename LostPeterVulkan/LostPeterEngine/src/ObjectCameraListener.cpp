@@ -11,7 +11,7 @@
 
 #include "../include/ObjectCameraListener.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     ObjectCameraListener::ObjectCameraListener()
     {
@@ -23,4 +23,4 @@ namespace LostPeter
 
     }
 
-}; //LostPeter
+}; //LostPeterEngine

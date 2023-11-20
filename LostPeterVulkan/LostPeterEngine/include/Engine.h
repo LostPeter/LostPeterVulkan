@@ -15,7 +15,7 @@
 #include "Base.h"
 #include "EngineListener.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport Engine : public FSingleton<Engine>
                             , public Base
@@ -105,6 +105,6 @@ namespace LostPeter
 		bool fireFrameEnded(RenderFrameEvent& event);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

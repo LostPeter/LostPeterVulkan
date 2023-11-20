@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport MeshDataSerializer : public FSerializer
                                         , public Base
@@ -37,6 +37,6 @@ namespace LostPeter
         virtual bool deserializeBinary();
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

@@ -11,7 +11,7 @@
 
 #include "../include/RenderPassDeferredLit.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderPassDeferredLit::RenderPassDeferredLit(const String& nameRenderPass)
         : RenderPass(nameRenderPass)
@@ -25,4 +25,4 @@ namespace LostPeter
 
     
 
-}; //LostPeter
+}; //LostPeterEngine

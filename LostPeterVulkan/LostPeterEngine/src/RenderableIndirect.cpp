@@ -11,7 +11,7 @@
 
 #include "../include/RenderableIndirect.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderableIndirect::RenderableIndirect(const String& nameRenderableIndirect)
         : Renderable(nameRenderableIndirect)
@@ -23,4 +23,4 @@ namespace LostPeter
 
     }
     
-}; //LostPeter
+}; //LostPeterEngine

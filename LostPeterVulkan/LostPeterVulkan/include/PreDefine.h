@@ -21,7 +21,7 @@ using namespace LostPeterFoundation;
 #include "UIPreDefine.h"
 using namespace LostPeterUI;
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
 ////////////////////////////// Define //////////////////////////////
     #define MAX_LIGHT_COUNT 16
@@ -487,7 +487,7 @@ namespace LostPeter
     typedef std::map<String, Texture*> TexturePtrMap;
     typedef std::map<String, TexturePtrVector> TexturePtrShaderSortMap;
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 
 #endif

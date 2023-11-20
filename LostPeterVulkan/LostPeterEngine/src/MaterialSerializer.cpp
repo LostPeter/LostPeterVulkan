@@ -11,7 +11,7 @@
 
 #include "../include/MaterialSerializer.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     #define MATERIAL_TAG_MATERIAL_CFG								"cfg_material"
     #define	MATERIAL_TAG_MATERIAL									"material"
@@ -166,4 +166,4 @@ namespace LostPeter
         return false;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

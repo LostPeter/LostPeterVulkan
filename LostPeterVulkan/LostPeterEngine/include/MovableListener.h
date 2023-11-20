@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport MovableListener
     {
@@ -31,6 +31,6 @@ namespace LostPeter
         virtual const ObjectLightPtrVector* ObjectQueryLights(const Movable* pMovable) { return nullptr; }
     }; 
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

@@ -14,9 +14,9 @@
 #include "../include/RenderEngine.h"
 
 
-template<> LostPeter::Engine* LostPeterFoundation::FSingleton<LostPeter::Engine>::ms_Singleton = nullptr;
+template<> LostPeterEngine::Engine* LostPeterFoundation::FSingleton<LostPeterEngine::Engine>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     Engine* Engine::GetSingletonPtr()
 	{
@@ -271,4 +271,4 @@ namespace LostPeter
 		m_setRemovedEngineListeners.clear();
     }
 
-}; //LostPeter
+}; //LostPeterEngine

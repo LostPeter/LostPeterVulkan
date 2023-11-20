@@ -12,7 +12,7 @@
 #include "../include/EditorLineFlat3DCollector.h"
 #include "../include/VulkanWindow.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     const String EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Vert = "vert_editor_line_3d";
     const String EditorLineFlat3DCollector::s_strNameShader_LineFlat3D_Frag = "frag_editor_line_3d";
@@ -54,4 +54,4 @@ namespace LostPeter
 
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

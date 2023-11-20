@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport EditorBase : public Base
     {
@@ -74,6 +74,6 @@ namespace LostPeter
         virtual void destroyDescriptorSetLayout();
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

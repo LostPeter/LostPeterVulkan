@@ -13,7 +13,7 @@
 #define _VULKAN_005_CAMERA_H_
 
 #include "VulkanWindow.h"
-using namespace LostPeter; 
+using namespace LostPeterVulkan; 
 
 class Vulkan_005_Camera : public VulkanWindow
 {

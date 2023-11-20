@@ -12,7 +12,7 @@
 #include "../include/MeshSub.h"
 #include "../include/Mesh.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     MeshSub::MeshSub(Mesh* _pMesh, 
                      const String& _nameOriginal,
@@ -156,4 +156,4 @@ namespace LostPeter
         
     }
 
-}; //LostPeter
+}; //LostPeterEngine

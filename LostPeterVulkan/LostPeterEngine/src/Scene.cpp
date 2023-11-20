@@ -23,7 +23,7 @@
 #include "../include/ObjectCloud.h"
 #include "../include/ObjectParticle.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
 	String Scene::ms_nameRootSceneNode = "RootSceneNode";
 
@@ -749,4 +749,4 @@ namespace LostPeter
 	}
 
 
-}; //LostPeter
+}; //LostPeterEngine

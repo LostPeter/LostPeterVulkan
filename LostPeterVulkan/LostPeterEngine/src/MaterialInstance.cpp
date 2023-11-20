@@ -13,7 +13,7 @@
 #include "../include/Material.h"
 #include "../include/MaterialManager.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     MaterialInstance::MaterialInstance(const String& nameMaterialInstance, Material* pMaterial)
         : Base(nameMaterialInstance)
@@ -41,4 +41,4 @@ namespace LostPeter
         
     }
 
-}; //LostPeter
+}; //LostPeterEngine

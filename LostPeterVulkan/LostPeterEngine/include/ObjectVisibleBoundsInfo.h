@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport ObjectVisibleBoundsInfo
     {
@@ -32,6 +32,6 @@ namespace LostPeter
 		void Merge(const FAABB& aabbBounds, const FSphere& sphereBounds, const ObjectCamera* pCamera);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

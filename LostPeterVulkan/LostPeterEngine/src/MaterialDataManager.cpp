@@ -17,9 +17,9 @@
 #include "../include/Mesh.h"
 #include "../include/Object.h"
 
-template<> LostPeter::MaterialDataManager* LostPeterFoundation::FSingleton<LostPeter::MaterialDataManager>::ms_Singleton = nullptr;
+template<> LostPeterEngine::MaterialDataManager* LostPeterFoundation::FSingleton<LostPeterEngine::MaterialDataManager>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
 	MaterialDataManager* MaterialDataManager::GetSingletonPtr()
 	{
@@ -209,4 +209,4 @@ namespace LostPeter
 		return m_pMaterialDataSerializer->SaveBinary(szFilePath, aMA);
 	}
 
-}; //LostPeter
+}; //LostPeterEngine

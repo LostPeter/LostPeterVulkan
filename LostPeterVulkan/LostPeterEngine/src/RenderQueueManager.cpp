@@ -12,9 +12,9 @@
 #include "../include/RenderQueueManager.h"
 #include "../include/RenderQueue.h"
 
-template<> LostPeter::RenderQueueManager* LostPeterFoundation::FSingleton<LostPeter::RenderQueueManager>::ms_Singleton = nullptr;
+template<> LostPeterEngine::RenderQueueManager* LostPeterFoundation::FSingleton<LostPeterEngine::RenderQueueManager>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderQueueManager* RenderQueueManager::GetSingletonPtr()
 	{
@@ -38,4 +38,4 @@ namespace LostPeter
     
     
 
-}; //LostPeter
+}; //LostPeterEngine

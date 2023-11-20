@@ -13,9 +13,9 @@
 #include "../include/TextureSerializer.h"
 #include "../include/Texture.h"
 
-template<> LostPeter::TextureManager* LostPeterFoundation::FSingleton<LostPeter::TextureManager>::ms_Singleton = nullptr;
+template<> LostPeterEngine::TextureManager* LostPeterFoundation::FSingleton<LostPeterEngine::TextureManager>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     TextureManager* TextureManager::GetSingletonPtr()
 	{
@@ -226,4 +226,4 @@ namespace LostPeter
         m_mapTextureGroup.clear();
     }
 
-}; //LostPeter
+}; //LostPeterEngine

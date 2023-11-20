@@ -11,7 +11,7 @@
 
 #include "../include/ObjectParticle.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     const String ObjectParticle::ms_strMovableType = "Movable_Particle";
 
@@ -39,4 +39,4 @@ namespace LostPeter
         return 0.0f;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

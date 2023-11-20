@@ -12,7 +12,7 @@
 #include "../include/VKFrameBufferAttachment.h"
 #include "../include/VulkanWindow.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     VKFrameBufferAttachment::VKFrameBufferAttachment()
         : isDepth(false)
@@ -100,4 +100,4 @@ namespace LostPeter
                                                 this->view);
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

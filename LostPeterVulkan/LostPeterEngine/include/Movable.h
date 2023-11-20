@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport Movable : public Base
     {
@@ -107,6 +107,6 @@ namespace LostPeter
 		virtual float GetBoundingRadius() const = 0;
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

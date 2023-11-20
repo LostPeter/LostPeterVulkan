@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport VKPipelineGraphics : public Base
     {
@@ -44,6 +44,6 @@ namespace LostPeter
         virtual void CleanupSwapChain();
     };  
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

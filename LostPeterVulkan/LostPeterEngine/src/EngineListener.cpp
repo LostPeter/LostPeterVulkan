@@ -12,7 +12,7 @@
 #include "../include/EngineListener.h"
 #include "../include/Engine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     EngineListener::EngineListener()
         : m_nOrder(0)
@@ -25,4 +25,4 @@ namespace LostPeter
 
     }
     
-}; //LostPeter
+}; //LostPeterEngine

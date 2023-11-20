@@ -13,7 +13,7 @@
 #include "../include/MaterialData.h"
 #include "../include/MaterialDataManager.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     Material::Material(uint32 _group,
                        const String& _nameMaterial)
@@ -66,4 +66,4 @@ namespace LostPeter
         
     }
     
-}; //LostPeter
+}; //LostPeterEngine

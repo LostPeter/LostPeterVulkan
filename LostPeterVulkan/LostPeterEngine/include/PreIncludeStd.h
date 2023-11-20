@@ -15,11 +15,11 @@
 #include "FPreIncludeStd.h"
 #include "PreMacro.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
 
 
-}; //LostPeter
+}; //LostPeterEngine
 
 
 

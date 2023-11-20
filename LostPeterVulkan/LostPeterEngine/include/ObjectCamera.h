@@ -15,7 +15,7 @@
 #include "ObjectFrustum.h"
 
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport ObjectCamera : public ObjectFrustum
     {
@@ -168,6 +168,6 @@ namespace LostPeter
 		virtual float GetBoundingRadius() const;
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

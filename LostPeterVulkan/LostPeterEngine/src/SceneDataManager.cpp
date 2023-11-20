@@ -15,9 +15,9 @@
 #include "../include/SceneManager.h"
 #include "../include/Scene.h"
 
-template<> LostPeter::SceneDataManager* LostPeterFoundation::FSingleton<LostPeter::SceneDataManager>::ms_Singleton = nullptr;
+template<> LostPeterEngine::SceneDataManager* LostPeterFoundation::FSingleton<LostPeterEngine::SceneDataManager>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     SceneDataManager* SceneDataManager::GetSingletonPtr()
 	{
@@ -271,4 +271,4 @@ namespace LostPeter
     }
 
 
-}; //LostPeter
+}; //LostPeterEngine

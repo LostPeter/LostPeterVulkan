@@ -14,9 +14,9 @@
 #include "../include/Material.h"
 #include "../include/MaterialInstance.h"
 
-template<> LostPeter::MaterialManager* LostPeterFoundation::FSingleton<LostPeter::MaterialManager>::ms_Singleton = nullptr;
+template<> LostPeterEngine::MaterialManager* LostPeterFoundation::FSingleton<LostPeterEngine::MaterialManager>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     MaterialManager* MaterialManager::GetSingletonPtr()
 	{
@@ -429,4 +429,4 @@ namespace LostPeter
 		m_mapMaterialInstance.clear();
     }
 
-}; //LostPeter
+}; //LostPeterEngine

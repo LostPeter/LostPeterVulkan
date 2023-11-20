@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport TextureManager : public FSingleton<TextureManager>
                                     , public Base
@@ -59,6 +59,6 @@ namespace LostPeter
         Texture* loadTexture(TextureInfo* pTI);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

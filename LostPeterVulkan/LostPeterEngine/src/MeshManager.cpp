@@ -13,9 +13,9 @@
 #include "../include/MeshSerializer.h"
 #include "../include/Mesh.h"
 
-template<> LostPeter::MeshManager* LostPeterFoundation::FSingleton<LostPeter::MeshManager>::ms_Singleton = nullptr;
+template<> LostPeterEngine::MeshManager* LostPeterFoundation::FSingleton<LostPeterEngine::MeshManager>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     MeshManager* MeshManager::GetSingletonPtr()
 	{
@@ -207,4 +207,4 @@ namespace LostPeter
         m_mapMeshGroup.clear();
     }
 
-}; //LostPeter
+}; //LostPeterEngine

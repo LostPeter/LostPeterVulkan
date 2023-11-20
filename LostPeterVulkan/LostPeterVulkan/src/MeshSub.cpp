@@ -13,7 +13,7 @@
 #include "../include/VulkanWindow.h"
 #include "../include/Mesh.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     MeshSub::MeshSub(Mesh* _pMesh, 
                      const String& _nameOriginal,
@@ -536,4 +536,4 @@ namespace LostPeter
         Base::GetWindowPtr()->copyVkBuffer(this->poIndexBuffer_Staging, this->poIndexBuffer, this->poIndexBuffer_Size);
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

@@ -12,7 +12,7 @@
 #include "../include/App.h"
 #include "../include/VulkanBase.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     GLFWwindow* App::s_pWindow = nullptr;
     VulkanBase* App::s_pBase = nullptr;
@@ -146,4 +146,4 @@ namespace LostPeter
         s_pBase->OnMouseWheel(x, y);
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

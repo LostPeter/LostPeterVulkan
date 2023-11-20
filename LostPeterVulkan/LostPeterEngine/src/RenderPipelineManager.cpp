@@ -12,9 +12,9 @@
 #include "../include/RenderPipelineManager.h"
 #include "../include/RenderPipeline.h"
 
-template<> LostPeter::RenderPipelineManager* LostPeterFoundation::FSingleton<LostPeter::RenderPipelineManager>::ms_Singleton = nullptr;
+template<> LostPeterEngine::RenderPipelineManager* LostPeterFoundation::FSingleton<LostPeterEngine::RenderPipelineManager>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderPipelineManager* RenderPipelineManager::GetSingletonPtr()
 	{
@@ -39,4 +39,4 @@ namespace LostPeter
     
     
 
-}; //LostPeter
+}; //LostPeterEngine

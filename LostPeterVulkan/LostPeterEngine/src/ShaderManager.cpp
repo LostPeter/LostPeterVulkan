@@ -13,9 +13,9 @@
 #include "../include/ShaderSerializer.h"
 #include "../include/Shader.h"
 
-template<> LostPeter::ShaderManager* LostPeterFoundation::FSingleton<LostPeter::ShaderManager>::ms_Singleton = nullptr;
+template<> LostPeterEngine::ShaderManager* LostPeterFoundation::FSingleton<LostPeterEngine::ShaderManager>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     ShaderManager* ShaderManager::GetSingletonPtr()
 	{
@@ -209,4 +209,4 @@ namespace LostPeter
         m_mapShaderGroup.clear();
     }
 
-}; //LostPeter
+}; //LostPeterEngine

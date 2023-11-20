@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport NodeListener
     {
@@ -29,6 +29,6 @@ namespace LostPeter
         virtual void NodeDetached(const Node* pNode) { }
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

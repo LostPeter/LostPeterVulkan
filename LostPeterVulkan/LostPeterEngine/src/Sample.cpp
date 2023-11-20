@@ -13,7 +13,7 @@
 #include "../include/Sample.h"
 #include "../include/Window.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     FLogManager* Sample::ms_pLogManager = FLogManager::GetInstance();
     Sample::Sample(const String& nameSample, int nWidth, int nHeight)
@@ -183,4 +183,4 @@ namespace LostPeter
         return true;
     }   
 
-}; //LostPeter
+}; //LostPeterEngine

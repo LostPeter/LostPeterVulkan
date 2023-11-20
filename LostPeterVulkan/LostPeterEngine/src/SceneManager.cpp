@@ -16,7 +16,7 @@
 #include "../include/ObjectCamera.h"
 
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     SceneManager::SceneManager(const String& nameSceneManager, Scene* pScene)
         : Base(nameSceneManager)
@@ -50,4 +50,4 @@ namespace LostPeter
 
     }
 
-}; //LostPeter
+}; //LostPeterEngine

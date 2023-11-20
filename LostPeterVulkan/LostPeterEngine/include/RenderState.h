@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
 	//////////////////////////////////// RenderStateCommon //////////////////////////////
 	class utilExport RenderStateCommon : public FNonCopyable
@@ -559,6 +559,6 @@ namespace LostPeter
 		void SetStateShaderTo(RenderStateShader* pStateShader);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

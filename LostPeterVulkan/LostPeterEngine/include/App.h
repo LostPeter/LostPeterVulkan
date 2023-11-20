@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport App
     {
@@ -28,6 +28,6 @@ namespace LostPeter
         static void error_callback(int error, const char* description);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

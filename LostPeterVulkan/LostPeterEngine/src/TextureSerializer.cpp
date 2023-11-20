@@ -11,7 +11,7 @@
 
 #include "../include/TextureSerializer.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     #define TEXTURE_TAG_TEXTURE_CFG								"cfg_texture"
     #define	TEXTURE_TAG_TEXTURE									"texture"
@@ -258,4 +258,4 @@ namespace LostPeter
         return false;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

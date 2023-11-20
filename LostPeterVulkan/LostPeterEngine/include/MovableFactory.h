@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport MovableFactory
     {
@@ -45,6 +45,6 @@ namespace LostPeter
 		virtual Movable* createInstanceImpl(const String& strName, const String2StringMap* pParams = nullptr) = 0;
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

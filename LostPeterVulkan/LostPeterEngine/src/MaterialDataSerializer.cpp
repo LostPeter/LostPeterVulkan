@@ -18,7 +18,7 @@
 #include "../include/Mesh.h"
 #include "../include/Object.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
 #define MATERIAL_DATA_FILE_XML_EXT								".material"
 #define MATERIAL_DATA_FILE_BINARY_EXT							".bmaterial"
@@ -736,4 +736,4 @@ namespace LostPeter
         return true;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

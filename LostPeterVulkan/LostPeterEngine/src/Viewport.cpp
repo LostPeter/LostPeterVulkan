@@ -13,7 +13,7 @@
 #include "../include/ObjectCamera.h"
 #include "../include/RenderTarget.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     Viewport::Viewport(const String& nameViewport,
                        ObjectCamera* pObjectCamera,
@@ -187,4 +187,4 @@ namespace LostPeter
     //     m_aScissors[index].extent = vkExtent;
     // }
 
-}; //LostPeter
+}; //LostPeterEngine

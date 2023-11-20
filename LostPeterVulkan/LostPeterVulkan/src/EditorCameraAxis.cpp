@@ -16,7 +16,7 @@
 #include "../include/VKPipelineGraphics.h"
 #include "../include/VKMultiRenderPass.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     size_t EditorCameraAxis::s_nMeshConeIndex = 0;
     size_t EditorCameraAxis::s_nMeshAABBIndex = 1;
@@ -706,4 +706,4 @@ namespace LostPeter
 
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

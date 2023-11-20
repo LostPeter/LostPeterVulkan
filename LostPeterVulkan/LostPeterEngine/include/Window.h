@@ -12,7 +12,7 @@
 #ifndef _WINDOW_H_
 #define _WINDOW_H_
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport Window
     {
@@ -69,6 +69,6 @@ namespace LostPeter
         static void callback_scroll(GLFWwindow* window, double x, double y);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

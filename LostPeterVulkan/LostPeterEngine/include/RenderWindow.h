@@ -14,7 +14,7 @@
 
 #include "RenderTarget.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport RenderWindow : public RenderTarget
     {
@@ -88,6 +88,6 @@ namespace LostPeter
 		virtual void Present(Renderer* pRenderer);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

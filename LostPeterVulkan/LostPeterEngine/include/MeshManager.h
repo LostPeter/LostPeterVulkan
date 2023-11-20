@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
    class utilExport MeshManager : public FSingleton<MeshManager>
                                 , public Base
@@ -58,6 +58,6 @@ namespace LostPeter
         Mesh* loadMesh(MeshInfo* pMI);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

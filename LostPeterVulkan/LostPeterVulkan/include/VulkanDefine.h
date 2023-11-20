@@ -16,7 +16,7 @@
 #include "FMath.h"
 #include "FMeshVertex.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
 /////Struct
     //////////////////////////////// Vertex_Pos2Color4 //////////////////////////////
@@ -1370,6 +1370,6 @@ namespace LostPeter
         }
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

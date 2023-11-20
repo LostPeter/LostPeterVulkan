@@ -15,7 +15,7 @@
 #include "../include/Scene.h"
 #include "../include/SceneNode.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
 #define SCENE_DATA_FILE_XML_EXT								".scene"
 #define SCENE_DATA_FILE_BINARY_EXT							".bscene"
@@ -452,4 +452,4 @@ namespace LostPeter
         return true;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

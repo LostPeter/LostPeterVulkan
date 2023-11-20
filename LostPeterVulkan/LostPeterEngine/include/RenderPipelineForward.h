@@ -14,7 +14,7 @@
 
 #include "RenderPipeline.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport RenderPipelineForward : public RenderPipeline
     {
@@ -27,6 +27,6 @@ namespace LostPeter
 
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

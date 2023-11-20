@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport Sample
     {
@@ -83,6 +83,6 @@ namespace LostPeter
             virtual void destroyWindows();
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport EngineListener
     {
@@ -46,6 +46,6 @@ namespace LostPeter
     typedef std::vector<EngineListener*> EngineListenerPtrVector;
 	typedef std::multiset<EngineListener*, EngineListener::LessCompare> EngineListenerPtrMultiSet;
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

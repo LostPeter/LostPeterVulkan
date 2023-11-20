@@ -14,7 +14,7 @@
 
 #include "EditorBase.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport EditorCameraAxis : public EditorBase
     {
@@ -117,6 +117,6 @@ namespace LostPeter
         virtual void destroyDescriptorSetLayout();
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

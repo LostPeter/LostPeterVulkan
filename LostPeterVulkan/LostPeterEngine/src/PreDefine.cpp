@@ -12,7 +12,7 @@
 #include "../include/PreDefine.h"
 #include "../include/EngineDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {   
 ////////////////////////////// Typedef /////////////////////////////
     String Utile_VkResult2String(VkResult result)
@@ -939,4 +939,4 @@ namespace LostPeter
     }
 
 
-}; //LostPeter
+}; //LostPeterEngine

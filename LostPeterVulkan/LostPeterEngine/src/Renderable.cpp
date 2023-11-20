@@ -11,7 +11,7 @@
 
 #include "../include/Renderable.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     Renderable::Renderable(const String& nameRenderable)
         : Base(nameRenderable)
@@ -23,4 +23,4 @@ namespace LostPeter
 
     }
     
-}; //LostPeter
+}; //LostPeterEngine

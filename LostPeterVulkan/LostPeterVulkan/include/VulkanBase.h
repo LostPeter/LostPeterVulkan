@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport VulkanBase
     {
@@ -113,6 +113,6 @@ namespace LostPeter
 
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

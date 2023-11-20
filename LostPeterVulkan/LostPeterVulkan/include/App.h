@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport App
     {
@@ -35,6 +35,6 @@ namespace LostPeter
         static void scroll_callback(GLFWwindow* window, double x, double y);
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

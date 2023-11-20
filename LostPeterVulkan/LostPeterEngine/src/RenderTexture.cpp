@@ -11,7 +11,7 @@
 
 #include "../include/RenderTexture.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderTexture::RenderTexture(const String& nameRenderTexture)
         : RenderTarget(nameRenderTexture)
@@ -26,4 +26,4 @@ namespace LostPeter
 
     
 
-}; //LostPeter
+}; //LostPeterEngine

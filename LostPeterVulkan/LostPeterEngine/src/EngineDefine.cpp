@@ -11,7 +11,7 @@
 
 #include "../include/EngineDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
 ////Struct
     //////////////////////////////// Vertex_Pos2Color4 //////////////////////////////
@@ -74,4 +74,4 @@ namespace LostPeter
     VkVertexInputBindingDescriptionVector Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2::s_aBindingDescriptions;
     VkVertexInputAttributeDescriptionVector Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2::s_aAttributeDescriptions;
 
-}; //LostPeter
+}; //LostPeterEngine

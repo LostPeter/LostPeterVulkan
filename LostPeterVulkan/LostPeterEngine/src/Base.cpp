@@ -11,7 +11,7 @@
 
 #include "../include/Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     Base::Base(const String& _name)
         : group(0)
@@ -41,4 +41,4 @@ namespace LostPeter
         return true;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

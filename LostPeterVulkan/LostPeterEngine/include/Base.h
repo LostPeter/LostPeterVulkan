@@ -15,7 +15,7 @@
 #include "PreDefine.h"
 #include "EngineDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport Base
     {
@@ -53,6 +53,6 @@ namespace LostPeter
         bool IsGroupNameValid() const;
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

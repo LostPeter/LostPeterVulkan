@@ -14,7 +14,7 @@
 
 #include "EditorBase.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport EditorLineFlat2DCollector : public EditorBase
     {
@@ -49,6 +49,6 @@ namespace LostPeter
         virtual void destroyBufferUniforms();
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

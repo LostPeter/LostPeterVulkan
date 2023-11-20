@@ -11,7 +11,7 @@
 
 #include "../include/Shader.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     Shader::Shader(uint32 _group,
                    const String& _nameShader,
@@ -40,4 +40,4 @@ namespace LostPeter
         return true;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

@@ -12,7 +12,7 @@
 #include "../include/VKPipelineGraphics.h"
 #include "../include/VulkanWindow.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     VKPipelineGraphics::VKPipelineGraphics(const String& namePipelineGraphics)
         : Base(namePipelineGraphics)
@@ -71,4 +71,4 @@ namespace LostPeter
         this->pRenderPass = nullptr;
     }  
 
-}; //LostPeter
+}; //LostPeterVulkan

@@ -12,7 +12,7 @@
 #include "../include/Base.h"
 #include "../include/VulkanWindow.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     VulkanWindow* Base::ms_pVulkanWindow = nullptr;
     Base::Base(const String& _name)
@@ -43,4 +43,4 @@ namespace LostPeter
         return true;
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

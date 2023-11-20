@@ -11,7 +11,7 @@
 
 #include "../include/ObjectTerrain.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     const String ObjectTerrain::ms_strMovableType = "Movable_Terrain";
 
@@ -41,4 +41,4 @@ namespace LostPeter
         return 0.0f;
     }
     
-}; //LostPeter
+}; //LostPeterEngine

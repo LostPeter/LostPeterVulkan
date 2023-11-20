@@ -12,7 +12,7 @@
 #include "../include/RenderWindow.h"
 #include "../include/Renderer.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderWindow::RenderWindow(const String& nameRenderWindow)
         : RenderTarget(nameRenderWindow)
@@ -65,4 +65,4 @@ namespace LostPeter
 		SwapBuffers(pRenderer->IsVSync());
 	}
 
-}; //LostPeter
+}; //LostPeterEngine

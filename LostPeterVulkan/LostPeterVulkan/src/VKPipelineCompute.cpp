@@ -12,7 +12,7 @@
 #include "../include/VKPipelineCompute.h"
 #include "../include/VulkanWindow.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     VKPipelineCompute::VKPipelineCompute(const String& namePipelineCompute)
         : Base(namePipelineCompute)
@@ -71,4 +71,4 @@ namespace LostPeter
         this->poBufferMemory_TextureCopy = VK_NULL_HANDLE;
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

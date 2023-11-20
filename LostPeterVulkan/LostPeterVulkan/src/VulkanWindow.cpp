@@ -12,7 +12,7 @@
 #include "../include/PreInclude.h"
 #include "../include/VulkanWindow.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
 #if UTIL_DEBUG == 1
     bool VulkanWindow::s_isEnableValidationLayers = true;
@@ -8275,4 +8275,4 @@ namespace LostPeter
         }
     } 
 
-}; //LostPeter
+}; //LostPeterVulkan

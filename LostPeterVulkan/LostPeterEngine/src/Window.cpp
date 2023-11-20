@@ -11,7 +11,7 @@
 
 #include "../include/PreInclude.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     Window::Window()
         : m_strNameTitle("")
@@ -137,4 +137,4 @@ namespace LostPeter
         pWindow->OnMouseWheel(x, y);
     }
 
-}; //LostPeter
+}; //LostPeterEngine

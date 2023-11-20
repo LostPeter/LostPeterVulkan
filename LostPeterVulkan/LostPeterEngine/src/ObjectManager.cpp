@@ -12,9 +12,9 @@
 #include "../include/ObjectManager.h"
 #include "../include/Object.h"
 
-template<> LostPeter::ObjectManager* LostPeterFoundation::FSingleton<LostPeter::ObjectManager>::ms_Singleton = nullptr;
+template<> LostPeterEngine::ObjectManager* LostPeterFoundation::FSingleton<LostPeterEngine::ObjectManager>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     ObjectManager* ObjectManager::GetSingletonPtr()
 	{
@@ -46,4 +46,4 @@ namespace LostPeter
         return true;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

@@ -14,7 +14,7 @@
 
 #include "RenderTarget.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport RenderTexture : public RenderTarget
     {
@@ -27,6 +27,6 @@ namespace LostPeter
 
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

@@ -15,7 +15,7 @@
 #include "../include/MeshSub.h"
 #include "../include/VKPipelineGraphics.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     const String EditorGrid::s_strNameShader_Grid_Vert = "vert_editor_grid";
     const String EditorGrid::s_strNameShader_Grid_Frag = "frag_editor_grid";
@@ -251,4 +251,4 @@ namespace LostPeter
 
     }
 
-}; //LostPeter
+}; //LostPeterVulkan

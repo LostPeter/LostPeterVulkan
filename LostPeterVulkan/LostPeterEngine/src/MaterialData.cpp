@@ -11,7 +11,7 @@
 
 #include "../include/MaterialData.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     MaterialData::MaterialData(const String& nameMaterialData)
         : Base(nameMaterialData)
@@ -88,4 +88,4 @@ namespace LostPeter
 
     }
 
-}; //LostPeter
+}; //LostPeterEngine

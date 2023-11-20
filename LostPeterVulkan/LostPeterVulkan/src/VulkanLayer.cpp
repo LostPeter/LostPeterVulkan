@@ -13,7 +13,7 @@
 #include "../include/VulkanDefine.h"
 #include "../include/VulkanWindow.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     struct VulkanLayerExtension
     {
@@ -487,4 +487,4 @@ namespace LostPeter
         F_LogInfo("VulkanWindow::getDeviceLayersAndExtensions ***********************");
     } 
 
-}; //LostPeter
+}; //LostPeterVulkan

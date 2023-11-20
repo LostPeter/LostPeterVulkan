@@ -13,7 +13,7 @@
 #include "../include/SceneManager.h"
 #include "../include/Scene.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     ObjectFrustum::ObjectFrustum(const String& nameObject, SceneManager* pSceneManager)
         : Object(nameObject, pSceneManager->GetScene())
@@ -31,4 +31,4 @@ namespace LostPeter
         return m_aabb;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

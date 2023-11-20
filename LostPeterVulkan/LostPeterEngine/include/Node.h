@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport Node : public Base
     {
@@ -280,6 +280,6 @@ namespace LostPeter
 		virtual Node* createChildImpl(const String& strName) = 0;
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

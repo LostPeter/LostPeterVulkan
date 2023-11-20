@@ -12,9 +12,9 @@
 #include "../include/RenderPassManager.h"
 #include "../include/RenderPass.h"
 
-template<> LostPeter::RenderPassManager* LostPeterFoundation::FSingleton<LostPeter::RenderPassManager>::ms_Singleton = nullptr;
+template<> LostPeterEngine::RenderPassManager* LostPeterFoundation::FSingleton<LostPeterEngine::RenderPassManager>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderPassManager* RenderPassManager::GetSingletonPtr()
 	{
@@ -49,4 +49,4 @@ namespace LostPeter
     }
 
 
-}; //LostPeter
+}; //LostPeterEngine

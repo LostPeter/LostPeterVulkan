@@ -12,9 +12,9 @@
 #include "../include/SceneManagerEnumerator.h"
 #include "../include/SceneManager.h"
 
-template<> LostPeter::SceneManagerEnumerator* LostPeterFoundation::FSingleton<LostPeter::SceneManagerEnumerator>::ms_Singleton = nullptr;
+template<> LostPeterEngine::SceneManagerEnumerator* LostPeterFoundation::FSingleton<LostPeterEngine::SceneManagerEnumerator>::ms_Singleton = nullptr;
 
-namespace LostPeter
+namespace LostPeterEngine
 {
 	SceneManagerEnumerator* SceneManagerEnumerator::GetSingletonPtr()
 	{
@@ -50,4 +50,4 @@ namespace LostPeter
 
 
 
-}; //LostPeter
+}; //LostPeterEngine

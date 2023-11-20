@@ -11,7 +11,7 @@
 
 #include "../include/Texture.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     Texture::Texture(uint32 _group,
                      const String& _nameTexture,
@@ -122,4 +122,4 @@ namespace LostPeter
         
     }
 
-}; //LostPeter
+}; //LostPeterEngine

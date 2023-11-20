@@ -14,7 +14,7 @@
 
 #include "PreDefine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport RenderTargetListener : public FNonCopyable
     {
@@ -33,6 +33,6 @@ namespace LostPeter
 		virtual void ViewportRemoved(const RenderTargetViewportEvent& evt) { }
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

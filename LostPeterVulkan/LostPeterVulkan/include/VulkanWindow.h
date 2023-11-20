@@ -15,7 +15,7 @@
 #include "VulkanBase.h"
 #include "VulkanDefine.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport VulkanWindow : public VulkanBase
     {
@@ -1208,6 +1208,6 @@ namespace LostPeter
                                           ConstCharPtrVector& outDeviceExtensions);
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

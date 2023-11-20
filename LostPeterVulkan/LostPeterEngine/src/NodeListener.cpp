@@ -11,7 +11,7 @@
 
 #include "../include/NodeListener.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
 	NodeListener::NodeListener()	
 	{	
@@ -23,4 +23,4 @@ namespace LostPeter
 
 	}
 
-}; //LostPeter
+}; //LostPeterEngine

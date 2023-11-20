@@ -11,7 +11,7 @@
 
 #include "../include/RendererListener.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RendererListener::RendererListener()
     {
@@ -23,4 +23,4 @@ namespace LostPeter
 
     }
     
-}; //LostPeter
+}; //LostPeterEngine

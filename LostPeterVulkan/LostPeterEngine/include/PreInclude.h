@@ -94,9 +94,9 @@
 #include "TextureSerializer.h"
 #include "Viewport.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {	
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

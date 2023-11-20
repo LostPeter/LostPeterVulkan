@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport SceneDataManager : public FSingleton<SceneDataManager>
                                       , public Base
@@ -86,6 +86,6 @@ namespace LostPeter
 		bool SaveBinary(const char* szFilePath, ScenePtrVector& aSA);
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

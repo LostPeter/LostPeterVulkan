@@ -11,7 +11,7 @@
 
 #include "../include/RenderQueue.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderQueue::RenderQueue(const String& nameRenderQueue)
         : Base(nameRenderQueue)
@@ -25,4 +25,4 @@ namespace LostPeter
 
     
 
-}; //LostPeter
+}; //LostPeterEngine

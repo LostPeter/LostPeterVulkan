@@ -11,7 +11,7 @@
 
 #include "../include/MeshDataSerializer.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     MeshDataSerializer::MeshDataSerializer()
         : Base("MeshDataSerializer")
@@ -43,4 +43,4 @@ namespace LostPeter
         return false;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

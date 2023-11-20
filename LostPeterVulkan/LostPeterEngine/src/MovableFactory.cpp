@@ -12,7 +12,7 @@
 #include "../include/MovableFactory.h"
 #include "../include/Movable.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     MovableFactory::MovableFactory()
         : m_nTypeFlag(0xFFFFFFFF)
@@ -34,4 +34,4 @@ namespace LostPeter
 		return pMovable;
 	}
     
-}; //LostPeter
+}; //LostPeterEngine

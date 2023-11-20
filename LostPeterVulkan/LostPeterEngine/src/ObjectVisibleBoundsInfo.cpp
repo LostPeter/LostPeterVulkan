@@ -12,7 +12,7 @@
 #include "../include/ObjectVisibleBoundsInfo.h"
 #include "../include/ObjectCamera.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     ObjectVisibleBoundsInfo::ObjectVisibleBoundsInfo()
     {
@@ -39,4 +39,4 @@ namespace LostPeter
 		m_fMaxDisToCamera = FMath::Max(m_fMaxDisToCamera, fCamDistToCenter + sphereBounds.GetRadius());
     }
 
-}; //LostPeter
+}; //LostPeterEngine

@@ -14,7 +14,7 @@
 #include "../include/SceneManager.h"
 #include "../include/RenderEngine.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     const String ObjectCamera::ms_strMovableType = "Movable_Camera";
 
@@ -58,4 +58,4 @@ namespace LostPeter
         return 0.0f;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

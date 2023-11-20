@@ -14,7 +14,7 @@
 
 #include "Object.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport ObjectSkinMesh : public Object
     {
@@ -40,6 +40,6 @@ namespace LostPeter
 		virtual float GetBoundingRadius() const;
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

@@ -12,7 +12,7 @@
 #include "../include/Node.h"
 #include "../include/NodeListener.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     uint32 Node::ms_nNextID = 0;
     String Node::GetNameAuto()
@@ -543,4 +543,4 @@ namespace LostPeter
 		m_bNeedParentUpdate	= false;
 	}	
 
-}; //LostPeter
+}; //LostPeterEngine

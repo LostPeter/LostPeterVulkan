@@ -11,7 +11,7 @@
 
 #include "../include/SceneSerializer.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     #define SCENE_TAG_SCENE_CFG								"cfg_scene"
     #define	SCENE_TAG_SCENE									"scene"
@@ -166,4 +166,4 @@ namespace LostPeter
         return false;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

@@ -11,7 +11,7 @@
 
 #include "../include/ObjectMesh.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     const String ObjectMesh::ms_strMovableType = "Movable_Mesh";
 
@@ -40,4 +40,4 @@ namespace LostPeter
         return 0.0f;
     }
     
-}; //LostPeter
+}; //LostPeterEngine

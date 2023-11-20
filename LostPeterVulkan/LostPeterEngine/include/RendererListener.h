@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport RendererListener
     {
@@ -34,6 +34,6 @@ namespace LostPeter
         
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

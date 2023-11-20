@@ -11,7 +11,7 @@
 
 #include "../include/RenderPassDepthOnly.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderPassDepthOnly::RenderPassDepthOnly(const String& nameRenderPass)
         : RenderPass(nameRenderPass)
@@ -25,4 +25,4 @@ namespace LostPeter
 
     
 
-}; //LostPeter
+}; //LostPeterEngine

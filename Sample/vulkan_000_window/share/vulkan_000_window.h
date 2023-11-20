@@ -13,7 +13,7 @@
 #define _VULKAN_000_WINDOW_H_
 
 #include "VulkanWindow.h"
-using namespace LostPeter; 
+using namespace LostPeterVulkan; 
 
 class Vulkan_000_Window : public VulkanWindow
 {

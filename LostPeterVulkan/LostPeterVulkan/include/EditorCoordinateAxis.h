@@ -14,7 +14,7 @@
 
 #include "EditorBase.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport EditorCoordinateAxis : public EditorBase
     {
@@ -200,6 +200,6 @@ namespace LostPeter
         virtual void destroyPipelineGraphics();
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

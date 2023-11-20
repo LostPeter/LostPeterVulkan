@@ -14,7 +14,7 @@
 
 #include "RenderPass.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     class utilExport RenderPassForwardLit : public RenderPass
     {
@@ -27,6 +27,6 @@ namespace LostPeter
 
     };
 
-}; //LostPeter
+}; //LostPeterEngine
 
 #endif

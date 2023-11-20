@@ -11,7 +11,7 @@
 
 #include "../include/PreInclude.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {   
     
-}; //LostPeter
+}; //LostPeterEngine

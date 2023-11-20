@@ -11,7 +11,7 @@
 
 #include "../include/RenderTargetListener.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderTargetListener::RenderTargetListener()
     {
@@ -24,4 +24,4 @@ namespace LostPeter
     }
     
 
-}; //LostPeter
+}; //LostPeterEngine

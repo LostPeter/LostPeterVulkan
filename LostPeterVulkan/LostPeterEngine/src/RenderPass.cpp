@@ -11,7 +11,7 @@
 
 #include "../include/RenderPass.h"
 
-namespace LostPeter
+namespace LostPeterEngine
 {
     RenderPass::RenderPass(const String& nameRenderPass)
         : Base(nameRenderPass)
@@ -34,4 +34,4 @@ namespace LostPeter
         return true;
     }
 
-}; //LostPeter
+}; //LostPeterEngine

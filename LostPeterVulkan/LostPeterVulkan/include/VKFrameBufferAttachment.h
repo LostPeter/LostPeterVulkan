@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport VKFrameBufferAttachment
     {
@@ -38,6 +38,6 @@ namespace LostPeter
                           bool _isImageArray);
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

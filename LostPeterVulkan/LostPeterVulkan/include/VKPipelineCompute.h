@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport VKPipelineCompute : public Base
     {
@@ -47,6 +47,6 @@ namespace LostPeter
         void DestroyTextureCopy();
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif

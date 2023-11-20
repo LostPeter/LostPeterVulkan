@@ -14,7 +14,7 @@
 
 #include "Base.h"
 
-namespace LostPeter
+namespace LostPeterVulkan
 {
     class utilExport MeshSub : public Base
     {
@@ -81,6 +81,6 @@ namespace LostPeter
         virtual void UpdateIndexBuffer();
     };
 
-}; //LostPeter
+}; //LostPeterVulkan
 
 #endif
