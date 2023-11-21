@@ -241,6 +241,8 @@ namespace LostPeterFoundation
     class FLogFile;
     class FLogManager;
     class FPathManager;
+    class FPixelBox;
+    class FPixelFormat;
     class FPlane;
     class FPlaneBoundedVolume;
     class FPlugin;
@@ -780,6 +782,296 @@ namespace LostPeterFoundation
 		F_FrameBuffer_Stencil	= 0x4,	                //Stencil
 	};
     
+
+    enum FPixelFormatType                                       // RGBA -> [R->4][G->3][B->2][A->1]  High -> Low
+    {
+        F_PixelFormat_Unknown = 0,                              //0:   Unknown
+
+        // BYTE CHANNEL    
+        F_PixelFormat_BYTE_R4G4_UNORM_PACK8,		            //1:   BYTE_R4G4_UNORM_PACK8	        8bits packed, 4bits Red, 4bits Green (packed unsigned normalized format)                                       
+        F_PixelFormat_BYTE_L8_UNORM,                            //2:   BYTE_L8_UNORM                    8bits, 8bits Red, Luminance (unsigned normalized format)
+        F_PixelFormat_BYTE_A8_UNORM,                            //3:   BYTE_A8_UNORM		            8bits, 8bits Alpha (unsigned normalized format)
+        F_PixelFormat_BYTE_R8_UNORM,                            //4:   BYTE_R8_UNORM                    8bits, 8bits Red (unsigned normalized format)
+        F_PixelFormat_BYTE_R8_SNORM,                            //5:   BYTE_R8_SNORM                    8bits, 8bits Red (signed normalized format)
+        F_PixelFormat_BYTE_R8_USCALED,                          //6:   BYTE_R8_USCALED                  8bits, 8bits Red (unsigned scaled integer format)
+        F_PixelFormat_BYTE_R8_SSCALED,                          //7:   BYTE_R8_SSCALED                  8bits, 8bits Red (signed scaled integer format)
+        F_PixelFormat_BYTE_R8_UINT,                             //8:   BYTE_R8_UINT                     8bits, 8bits Red (unsigned integer format)
+        F_PixelFormat_BYTE_R8_SINT,                             //9:   BYTE_R8_SINT                     8bits, 8bits Red (signed integer format)
+        F_PixelFormat_BYTE_R8_SRGB,                             //10:  BYTE_R8_SRGB                     8bits, 8bits Red (unsigned normalized format with sRGB nonlinear encoding)
+        
+        F_PixelFormat_BYTE_R4G4B4A4_UNORM_PACK16,	            //11:  BYTE_R4G4B4A4_UNORM_PACK16       16bits packed, 4bits Red, 4bits Green, 4bits Blue, 4bits Alpha (packed unsigned normalized format)
+		F_PixelFormat_BYTE_B4G4R4A4_UNORM_PACK16,	            //12:  BYTE_B4G4R4A4_UNORM_PACK16       16bits packed, 4bits Blue, 4bits Green, 4bits Red, 4bits Alpha (packed unsigned normalized format)
+        F_PixelFormat_BYTE_R5G6B5_UNORM_PACK16,	                //13:  BYTE_R5G6B5_UNORM_PACK16	        16bits packed, 5bits Red, 6bits Green, 5bits Blue (packed unsigned normalized format)
+		F_PixelFormat_BYTE_B5G6R5_UNORM_PACK16,		            //14:  BYTE_B5G6R5_UNORM_PACK16	        16bits packed, 5bits Blue, 6bits Green, 5bits Red (packed unsigned normalized format)
+		F_PixelFormat_BYTE_R5G5B5A1_UNORM_PACK16,	            //15:  BYTE_R5G5B5A1_UNORM_PACK16       16bits packed, 5bits Red, 5bits Green, 5bits Blue, 1bit Alpha (packed unsigned normalized format)
+		F_PixelFormat_BYTE_B5G5R5A1_UNORM_PACK16,		        //16:  BYTE_B5G5R5A1_UNORM_PACK16	    16bits packed, 5bits Blue, 5bits Green, 5bits Red, 1bit Alpha (packed unsigned normalized format)
+		F_PixelFormat_BYTE_A1R5G5B5_UNORM_PACK16,	            //17:  BYTE_A1R5G5B5_UNORM_PACK16       16bits packed, 1bit Alpha, 5bits Red, 5bits Green, 5bits Blue (packed unsigned normalized format)
+        F_PixelFormat_BYTE_AL_UNORM,			                //18:  BYTE_AL_UNORM	                16bits, 8bits Alpha in Green, 8bits luminance in Red (unsigned normalized format)
+        F_PixelFormat_BYTE_G8R8_UNORM,                          //19:  BYTE_G8R8_UNORM	                16bits, 8bits Green, 8bits Red (unsigned normalized format)
+        F_PixelFormat_BYTE_G8R8_SNORM,                          //20:  BYTE_G8R8_SNORM	                16bits, 8bits Green, 8bits Red (signed normalized format)
+        F_PixelFormat_BYTE_G8R8_USCALED,                        //21:  BYTE_G8R8_USCALED	            16bits, 8bits Green, 8bits Red (unsigned scaled integer format)
+        F_PixelFormat_BYTE_G8R8_SSCALED,                        //22:  BYTE_G8R8_SSCALED	            16bits, 8bits Green, 8bits Red (signed scaled integer format)
+        F_PixelFormat_BYTE_G8R8_UINT,                           //23:  BYTE_G8R8_UINT	                16bits, 8bits Green, 8bits Red (unsigned integer format)
+        F_PixelFormat_BYTE_G8R8_SINT,                           //24:  BYTE_G8R8_SINT	                16bits, 8bits Green, 8bits Red (signed integer format)
+        F_PixelFormat_BYTE_G8R8_SRGB,                           //25:  BYTE_G8R8_SRGB	                16bits, 8bits Green, 8bits Red (unsigned normalized format with sRGB nonlinear encoding) 
+        
+        F_PixelFormat_BYTE_R8G8B8_UNORM,                        //26:  BYTE_R8G8B8_UNORM	            24bits, 8bits Red, 8bits Green, 8bits Blue (unsigned normalized format)
+        F_PixelFormat_BYTE_R8G8B8_SNORM,                        //27:  BYTE_R8G8B8_SNORM	            24bits, 8bits Red, 8bits Green, 8bits Blue (signed normalized format)
+        F_PixelFormat_BYTE_R8G8B8_USCALED,                      //28:  BYTE_R8G8B8_USCALED	            24bits, 8bits Red, 8bits Green, 8bits Blue (unsigned scaled integer format)
+        F_PixelFormat_BYTE_R8G8B8_SSCALED,                      //29:  BYTE_R8G8B8_SSCALED	            24bits, 8bits Red, 8bits Green, 8bits Blue (signed scaled integer format)
+        F_PixelFormat_BYTE_R8G8B8_UINT,                         //30:  BYTE_R8G8B8_UINT	                24bits, 8bits Red, 8bits Green, 8bits Blue (unsigned integer format)
+        F_PixelFormat_BYTE_R8G8B8_SINT,                         //31:  BYTE_R8G8B8_SINT	                24bits, 8bits Red, 8bits Green, 8bits Blue (signed integer format)
+        F_PixelFormat_BYTE_R8G8B8_SRGB,                         //32:  BYTE_R8G8B8_SRGB	                24bits, 8bits Red, 8bits Green, 8bits Blue (unsigned normalized format with sRGB nonlinear encoding)
+        F_PixelFormat_BYTE_B8G8R8_UNORM,                        //33:  BYTE_B8G8R8_UNORM	            24bits, 8bits Blue, 8bits Green, 8bits Red (unsigned normalized format)
+        F_PixelFormat_BYTE_B8G8R8_SNORM,                        //34:  BYTE_B8G8R8_SNORM	            24bits, 8bits Blue, 8bits Green, 8bits Red (signed normalized format)
+        F_PixelFormat_BYTE_B8G8R8_USCALED,                      //35:  BYTE_B8G8R8_USCALED	            24bits, 8bits Blue, 8bits Green, 8bits Red (unsigned scaled integer format)
+        F_PixelFormat_BYTE_B8G8R8_SSCALED,                      //36:  BYTE_B8G8R8_SSCALED	            24bits, 8bits Blue, 8bits Green, 8bits Red (signed scaled integer format)
+        F_PixelFormat_BYTE_B8G8R8_UINT,                         //37:  BYTE_B8G8R8_UINT	                24bits, 8bits Blue, 8bits Green, 8bits Red (unsigned integer format)
+        F_PixelFormat_BYTE_B8G8R8_SINT,                         //38:  BYTE_B8G8R8_SINT	                24bits, 8bits Blue, 8bits Green, 8bits Red (signed integer format)
+        F_PixelFormat_BYTE_B8G8R8_SRGB,                         //39:  BYTE_B8G8R8_SRGB	                24bits, 8bits Blue, 8bits Green, 8bits Red (unsigned normalized format with sRGB nonlinear encoding)
+
+        F_PixelFormat_BYTE_A8B8G8R8_UNORM_PACK32,               //40:  BYTE_A8B8G8R8_UNORM_PACK32       32bits packed, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (packed unsigned normalized format)
+        F_PixelFormat_BYTE_A8B8G8R8_SNORM_PACK32,               //41:  BYTE_A8B8G8R8_SNORM_PACK32       32bits packed, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (packed signed normalized format)
+        F_PixelFormat_BYTE_A8B8G8R8_USCALED_PACK32,             //42:  BYTE_A8B8G8R8_USCALED_PACK32     32bits packed, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (packed unsigned scaled integer format)
+        F_PixelFormat_BYTE_A8B8G8R8_SSCALED_PACK32,             //43:  BYTE_A8B8G8R8_SSCALED_PACK32     32bits packed, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (packed signed scaled integer format)
+        F_PixelFormat_BYTE_A8B8G8R8_UINT_PACK32,                //44:  BYTE_A8B8G8R8_UINT_PACK32        32bits packed, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (packed unsigned integer format)
+        F_PixelFormat_BYTE_A8B8G8R8_SINT_PACK32,                //45:  BYTE_A8B8G8R8_SINT_PACK32        32bits packed, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (packed signed integer format)
+        F_PixelFormat_BYTE_A8B8G8R8_SRGB_PACK32,                //46:  BYTE_A8B8G8R8_SRGB_PACK32        32bits packed, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (packed unsigned normalized format with sRGB nonlinear encoding)
+        F_PixelFormat_BYTE_A2R10G10B10_UNORM_PACK32,            //47:  BYTE_A2R10G10B10_UNORM_PACK32    32bits packed, 2bits Alpha, 10bits Red, 10bits Green, 10bits Blue (packed unsigned normalized format)
+        F_PixelFormat_BYTE_A2R10G10B10_SNORM_PACK32,            //48:  BYTE_A2R10G10B10_SNORM_PACK32    32bits packed, 2bits Alpha, 10bits Red, 10bits Green, 10bits Blue (packed signed normalized format)
+        F_PixelFormat_BYTE_A2R10G10B10_USCALED_PACK32,          //49:  BYTE_A2R10G10B10_USCALED_PACK32  32bits packed, 2bits Alpha, 10bits Red, 10bits Green, 10bits Blue (packed unsigned scaled integer format)
+        F_PixelFormat_BYTE_A2R10G10B10_SSCALED_PACK32,          //50:  BYTE_A2R10G10B10_SSCALED_PACK32  32bits packed, 2bits Alpha, 10bits Red, 10bits Green, 10bits Blue (packed signed scaled integer format)
+        F_PixelFormat_BYTE_A2R10G10B10_UINT_PACK32,             //51:  BYTE_A2R10G10B10_UINT_PACK32     32bits packed, 2bits Alpha, 10bits Red, 10bits Green, 10bits Blue (packed unsigned integer format)
+        F_PixelFormat_BYTE_A2R10G10B10_SINT_PACK32,             //52:  BYTE_A2R10G10B10_SINT_PACK32     32bits packed, 2bits Alpha, 10bits Red, 10bits Green, 10bits Blue (packed signed integer format)
+        F_PixelFormat_BYTE_A2B10G10R10_UNORM_PACK32,            //53:  BYTE_A2B10G10R10_UNORM_PACK32    32bits packed, 2bits Alpha, 10bits Blue, 10bits Green, 10bits Red (packed unsigned normalized format)
+        F_PixelFormat_BYTE_A2B10G10R10_SNORM_PACK32,            //54:  BYTE_A2B10G10R10_SNORM_PACK32    32bits packed, 2bits Alpha, 10bits Blue, 10bits Green, 10bits Red (packed signed normalized format)
+        F_PixelFormat_BYTE_A2B10G10R10_USCALED_PACK32,          //55:  BYTE_A2B10G10R10_USCALED_PACK32  32bits packed, 2bits Alpha, 10bits Blue, 10bits Green, 10bits Red (packed unsigned scaled integer format)
+        F_PixelFormat_BYTE_A2B10G10R10_SSCALED_PACK32,          //56:  BYTE_A2B10G10R10_SSCALED_PACK32  32bits packed, 2bits Alpha, 10bits Blue, 10bits Green, 10bits Red (packed signed scaled integer format)
+        F_PixelFormat_BYTE_A2B10G10R10_UINT_PACK32,             //57:  BYTE_A2B10G10R10_UINT_PACK32     32bits packed, 2bits Alpha, 10bits Blue, 10bits Green, 10bits Red (packed unsigned integer format)
+        F_PixelFormat_BYTE_A2B10G10R10_SINT_PACK32,             //58:  BYTE_A2B10G10R10_SINT_PACK32     32bits packed, 2bits Alpha, 10bits Blue, 10bits Green, 10bits Red (packed signed integer format)
+        F_PixelFormat_BYTE_A8R8G8B8_UNORM,                      //59:  BYTE_A8R8G8B8_UNORM    		    32bits, 8bits Alpha, 8bits Red, 8bits Green, 8bits Blue (unsigned normalized format)
+        F_PixelFormat_BYTE_A8R8G8B8_SNORM,                      //60:  BYTE_A8R8G8B8_SNORM    		    32bits, 8bits Alpha, 8bits Red, 8bits Green, 8bits Blue (signed normalized format)
+        F_PixelFormat_BYTE_A8R8G8B8_USCALED,                    //61:  BYTE_A8R8G8B8_USCALED    		32bits, 8bits Alpha, 8bits Red, 8bits Green, 8bits Blue (unsigned scaled integer format)
+        F_PixelFormat_BYTE_A8R8G8B8_SSCALED,                    //62:  BYTE_A8R8G8B8_SSCALED    		32bits, 8bits Alpha, 8bits Red, 8bits Green, 8bits Blue (signed scaled integer format)
+        F_PixelFormat_BYTE_A8R8G8B8_UINT,                       //63:  BYTE_A8R8G8B8_UINT    		    32bits, 8bits Alpha, 8bits Red, 8bits Green, 8bits Blue (unsigned integer format)
+        F_PixelFormat_BYTE_A8R8G8B8_SINT,                       //64:  BYTE_A8R8G8B8_SINT    		    32bits, 8bits Alpha, 8bits Red, 8bits Green, 8bits Blue (signed integer format)
+        F_PixelFormat_BYTE_A8R8G8B8_SRGB,                       //65:  BYTE_A8R8G8B8_SRGB    		    32bits, 8bits Alpha, 8bits Red, 8bits Green, 8bits Blue (unsigned normalized format with sRGB nonlinear encoding)
+        F_PixelFormat_BYTE_A8B8G8R8_UNORM,                      //66:  BYTE_A8B8G8R8_UNORM    		    32bits, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (unsigned normalized format)
+        F_PixelFormat_BYTE_A8B8G8R8_SNORM,                      //67:  BYTE_A8B8G8R8_SNORM    		    32bits, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (signed normalized format)
+        F_PixelFormat_BYTE_A8B8G8R8_USCALED,                    //68:  BYTE_A8B8G8R8_USCALED    		32bits, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (unsigned scaled integer format)
+        F_PixelFormat_BYTE_A8B8G8R8_SSCALED,                    //69:  BYTE_A8B8G8R8_SSCALED    		32bits, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (signed scaled integer format)
+        F_PixelFormat_BYTE_A8B8G8R8_UINT,                       //70:  BYTE_A8B8G8R8_UINT    		    32bits, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (unsigned integer format)
+        F_PixelFormat_BYTE_A8B8G8R8_SINT,                       //71:  BYTE_A8B8G8R8_SINT    		    32bits, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (signed integer format)
+        F_PixelFormat_BYTE_A8B8G8R8_SRGB,                       //72:  BYTE_A8B8G8R8_SRGB    		    32bits, 8bits Alpha, 8bits Blue, 8bits Green, 8bits Red (unsigned normalized format with sRGB nonlinear encoding)
+
+        // SHORT CHANNEL
+        F_PixelFormat_SHORT_L16_UNORM,                          //73:  SHORT_L16_UNORM                  16bits, 16bits Red, Luminance (unsigned normalized format)
+        F_PixelFormat_SHORT_R16_UNORM,				            //74:  SHORT_R16_UNORM			        16bits, 16bits Red (unsigned normalized format)
+        F_PixelFormat_SHORT_R16_SNORM,				            //75:  SHORT_R16_SNORM			        16bits, 16bits Red (signed normalized format)
+        F_PixelFormat_SHORT_R16_USCALED,				        //76:  SHORT_R16_USCALED			    16bits, 16bits Red (unsigned scaled integer format)
+        F_PixelFormat_SHORT_R16_SSCALED,				        //77:  SHORT_R16_SSCALED			    16bits, 16bits Red (signed scaled integer format)
+        F_PixelFormat_SHORT_R16_UINT,				            //78:  SHORT_R16_UINT			        16bits, 16bits Red (unsigned integer format)
+        F_PixelFormat_SHORT_R16_SINT,				            //79:  SHORT_R16_SINT			        16bits, 16bits Red (signed integer format)
+        F_PixelFormat_SHORT_R16_SFLOAT,				            //80:  SHORT_R16_SFLOAT			        16bits, 16bits Red (signed floating-point format)
+
+        F_PixelFormat_SHORT_G16R16_UNORM,                       //81:  SHORT_G16R16_UNORM               32bits, 16bits Green, 16bits Red (unsigned normalized format)
+        F_PixelFormat_SHORT_G16R16_SNORM,				        //82:  SHORT_G16R16_SNORM			    32bits, 16bits Green, 16bits Red (signed normalized format)
+        F_PixelFormat_SHORT_G16R16_USCALED,		                //83:  SHORT_G16R16_USCALED			    32bits, 16bits Green, 16bits Red (unsigned scaled integer format)
+        F_PixelFormat_SHORT_G16R16_SSCALED,		                //84:  SHORT_G16R16_SSCALED			    32bits, 16bits Green, 16bits Red (signed scaled integer format)
+        F_PixelFormat_SHORT_G16R16_UINT,				        //85:  SHORT_G16R16_UINT			    32bits, 16bits Green, 16bits Red (unsigned integer format)
+        F_PixelFormat_SHORT_G16R16_SINT,				        //86:  SHORT_G16R16_SINT			    32bits, 16bits Green, 16bits Red (signed integer format)
+        F_PixelFormat_SHORT_G16R16_SFLOAT,				        //87:  SHORT_G16R16_SFLOAT			    32bits, 16bits Green, 16bits Red (signed floating-point format)
+        
+        F_PixelFormat_SHORT_B16G16R16_UNORM,                    //88:  SHORT_B16G16R16_UNORM            48bits, 16bits Blue, 16bits Green, 16bits Red (unsigned normalized format)
+        F_PixelFormat_SHORT_B16G16R16_SNORM,	                //89:  SHORT_B16G16R16_SNORM			48bits, 16bits Blue, 16bits Green, 16bits Red (signed normalized format)
+        F_PixelFormat_SHORT_B16G16R16_USCALED,		            //90:  SHORT_B16G16R16_USCALED			48bits, 16bits Blue, 16bits Green, 16bits Red (unsigned scaled integer format)
+        F_PixelFormat_SHORT_B16G16R16_SSCALED,		            //91:  SHORT_B16G16R16_SSCALED			48bits, 16bits Blue, 16bits Green, 16bits Red (signed scaled integer format)
+        F_PixelFormat_SHORT_B16G16R16_UINT,		                //92:  SHORT_B16G16R16_UINT			    48bits, 16bits Blue, 16bits Green, 16bits Red (unsigned integer format)
+        F_PixelFormat_SHORT_B16G16R16_SINT,			            //93:  SHORT_B16G16R16_SINT			    48bits, 16bits Blue, 16bits Green, 16bits Red (signed integer format)
+        F_PixelFormat_SHORT_B16G16R16_SFLOAT,			        //94:  SHORT_B16G16R16_SFLOAT			48bits, 16bits Blue, 16bits Green, 16bits Red (signed floating-point format)
+        
+        F_PixelFormat_SHORT_A16B16G16R16_UNORM,                 //95:  SHORT_A16B16G16R16_UNORM         64bits, 16bits Alpha, 16bits Blue, 16bits Green, 16bits Red (unsigned normalized format)
+        F_PixelFormat_SHORT_A16B16G16R16_SNORM,	                //96:  SHORT_A16B16G16R16_SNORM			64bits, 16bits Alpha, 16bits Blue, 16bits Green, 16bits Red (signed normalized format)
+        F_PixelFormat_SHORT_A16B16G16R16_USCALED,		        //97:  SHORT_A16B16G16R16_USCALED	    64bits, 16bits Alpha, 16bits Blue, 16bits Green, 16bits Red (unsigned scaled integer format)
+        F_PixelFormat_SHORT_A16B16G16R16_SSCALED,		        //98:  SHORT_A16B16G16R16_SSCALED		64bits, 16bits Alpha, 16bits Blue, 16bits Green, 16bits Red (signed scaled integer format)
+        F_PixelFormat_SHORT_A16B16G16R16_UINT,		            //99:  SHORT_A16B16G16R16_UINT		    64bits, 16bits Alpha, 16bits Blue, 16bits Green, 16bits Red (unsigned integer format)
+        F_PixelFormat_SHORT_A16B16G16R16_SINT,			        //100: SHORT_A16B16G16R16_SINT			64bits, 16bits Alpha, 16bits Blue, 16bits Green, 16bits Red (signed integer format)
+        F_PixelFormat_SHORT_A16B16G16R16_SFLOAT,	            //101: SHORT_A16B16G16R16_SFLOAT	    64bits, 16bits Alpha, 16bits Blue, 16bits Green, 16bits Red (signed floating-point format)
+
+        // INT CHANNEL
+        F_PixelFormat_INT_R32_UINT,                             //102: INT_R32_UINT			            32bits, 32bits Red (unsigned integer format)
+        F_PixelFormat_INT_R32_SINT,                             //103: INT_R32_SINT			            32bits, 32bits Red (signed integer format)
+        F_PixelFormat_INT_R32_SFLOAT,                           //104: INT_R32_SFLOAT			        32bits, 32bits Red (signed floating-point format)
+
+        F_PixelFormat_INT_G32R32_UINT,                          //105: INT_G32R32_UINT		            64bits, 32bits Green, 32bits Red (unsigned integer format)
+        F_PixelFormat_INT_G32R32_SINT,                          //106: INT_G32R32_SINT			        64bits, 32bits Green, 32bits Red (signed integer format)
+        F_PixelFormat_INT_G32R32_SFLOAT,                        //107: INT_G32R32_SFLOAT			    64bits, 32bits Green, 32bits Red (signed floating-point format)
+
+        F_PixelFormat_INT_B32G32R32_UINT,                       //108: INT_B32G32R32_UINT		        96bits, 32bits Blue, 32bits Green, 32bits Red (unsigned integer format)
+        F_PixelFormat_INT_B32G32R32_SINT,                       //109: INT_B32G32R32_SINT			    96bits, 32bits Blue, 32bits Green, 32bits Red (signed integer format)
+        F_PixelFormat_INT_B32G32R32_SFLOAT,                     //110: INT_B32G32R32_SFLOAT			    96bits, 32bits Blue, 32bits Green, 32bits Red (signed floating-point format)
+
+        F_PixelFormat_INT_A32B32G32R32_UINT,                    //111: INT_A32B32G32R32_UINT		    128bits, 32bits Alpha, 32bits Blue, 32bits Green, 32bits Red (unsigned integer format)
+        F_PixelFormat_INT_A32B32G32R32_SINT,                    //112: INT_A32B32G32R32_SINT			128bits, 32bits Alpha, 32bits Blue, 32bits Green, 32bits Red (signed integer format)
+        F_PixelFormat_INT_A32B32G32R32_SFLOAT,                  //113: INT_A32B32G32R32_SFLOAT			128bits, 32bits Alpha, 32bits Blue, 32bits Green, 32bits Red (signed floating-point format)
+
+        // LONG CHANNEL
+        F_PixelFormat_LONG_R64_UINT,                            //114: LONG_R64_UINT			        64bits, 64bits Red (unsigned integer format)
+        F_PixelFormat_LONG_R64_SINT,                            //115: LONG_R64_SINT			        64bits, 64bits Red (signed integer format)
+        F_PixelFormat_LONG_R64_SFLOAT,                          //116: LONG_R64_SFLOAT			        64bits, 64bits Red (signed floating-point format)
+
+        F_PixelFormat_LONG_G64R64_UINT,                         //117: LONG_G64R64_UINT		            128bits, 64bits Green, 64bits Red (unsigned integer format)
+        F_PixelFormat_LONG_G64R64_SINT,                         //118: LONG_G64R64_SINT			        128bits, 64bits Green, 64bits Red (signed integer format)
+        F_PixelFormat_LONG_G64R64_SFLOAT,                       //119: LONG_G64R64_SFLOAT			    128bits, 64bits Green, 64bits Red (signed floating-point format)
+
+        F_PixelFormat_LONG_B64G64R64_UINT,                      //120: LONG_B64G64R64_UINT		        192bits, 64bits Blue, 64bits Green, 64bits Red (unsigned integer format)
+        F_PixelFormat_LONG_B64G64R64_SINT,                      //121: LONG_B64G64R64_SINT			    192bits, 64bits Blue, 64bits Green, 64bits Red (signed integer format)
+        F_PixelFormat_LONG_B64G64R64_SFLOAT,                    //122: LONG_B64G64R64_SFLOAT			192bits, 64bits Blue, 64bits Green, 64bits Red (signed floating-point format)
+
+        F_PixelFormat_LONG_A64B64G32R64_UINT,                   //123: LONG_A64B64G32R64_UINT		    256bits, 64bits Alpha, 64bits Blue, 64bits Green, 64bits Red (unsigned integer format)
+        F_PixelFormat_LONG_A64B64G32R64_SINT,                   //124: LONG_A64B64G32R64_SINT			256bits, 64bits Alpha, 64bits Blue, 64bits Green, 64bits Red (signed integer format)
+        F_PixelFormat_LONG_A64B64G32R64_SFLOAT,                 //125: LONG_A64B64G32R64_SFLOAT			256bits, 64bits Alpha, 64bits Blue, 64bits Green, 64bits Red (signed floating-point format)
+
+        // FLOAT
+        F_PixelFormat_FLOAT_B10G11R11_UFLOAT_PACK32,            //126: FLOAT_B10G11R11_UFLOAT_PACK32    32bits packed, 10bits Blue, 11bits Green, 11bits Red (packed unsigned floating-point format)
+        F_PixelFormat_FLOAT_E5B9G9R9_UFLOAT_PACK32,             //127: FLOAT_E5B9G9R9_UFLOAT_PACK32     32bits packed, 5bits exponent, 9bits Blue, 9bits Green, 9bits Red (packed unsigned floating-point format)
+
+        // STENCIL
+        F_PixelFormat_STENCIL_S8_UINT,                          //128: STENCIL_S8_UINT                  8bits, 8bits stencil (unsigned integer format)
+
+        // DEPTH
+        F_PixelFormat_DEPTH_D16_UNORM,                          //129: DEPTH_D16_UNORM                  16bits, 16bits depth (unsigned normalized format)
+        F_PixelFormat_DEPTH_D24_UNORM,                          //130: DEPTH_D24_UNORM                  32bits, 24bits depth (unsigned normalized format), 8bits unused
+        F_PixelFormat_DEPTH_D32_SFLOAT,                         //131: DEPTH_D32_SFLOAT                 32bits, 32bits depth (signed floating-point format)
+
+        // DEPTHSTENCIL
+		F_PixelFormat_DEPTHSTENCIL_D16_UNORM_S8_UINT,           //132: EPTHSTENCIL_D16_UNORM_S8_UINT    24bits, 16bits unsigned normalized depth, 8bits unsigned integer stencil
+		F_PixelFormat_DEPTHSTENCIL_D24_UNORM_S8_UINT,           //133: DEPTHSTENCIL_D24_UNORM_S8_UINT   32bits, 24bits unsigned normalized depth, 8bits unsigned integer stencil
+		F_PixelFormat_DEPTHSTENCIL_D32_SFLOAT_S8_UINT,	        //134: DEPTHSTENCIL_D32_SFLOAT_S8_UINT  64bits, 32bits signed float depth, 8bits unsigned integer stencil, 24bits unused
+        
+        // DXT
+        F_PixelFormat_DXT1,                                     //135: DXT1   DDS DXT1
+        F_PixelFormat_DXT2,                                     //136: DXT2   DDS DXT2
+        F_PixelFormat_DXT3,                                     //137: DXT3   DDS DXT3
+        F_PixelFormat_DXT4,                                     //138: DXT4   DDS DXT4
+        F_PixelFormat_DXT5,                                     //139: DXT5   DDS DXT5
+
+        // BC
+        F_PixelFormat_BC4_UNORM,                                //140: DDS BC4 format (unsigned normalized)
+        F_PixelFormat_BC4_SNORM,                                //141: DDS BC4 format (signed normalized)
+        F_PixelFormat_BC5_UNORM,                                //142: DDS BC5 format (unsigned normalized)
+        F_PixelFormat_BC5_SNORM,                                //143: DDS BC5 format (signed normalized)
+        F_PixelFormat_BC6H_UF16,                                //144: DDS BC6H format (unsigned 16bits normalized)
+        F_PixelFormat_BC6H_SF16,                                //145: DDS BC6H format (signed 16bits normalized)
+        F_PixelFormat_BC7_UNORM,                                //146: DDS BC7 format (unsigned normalized)
+
+        // PVRTC (PowerVR)
+        F_PixelFormat_PVRTC_RGB2,				                //147: PVRTC RGB 2 bpp
+        F_PixelFormat_PVRTC_RGBA2,			                    //148: PVRTC RGBA 2 bpp
+        F_PixelFormat_PVRTC_RGB4,				                //149: PVRTC RGB 4 bpp
+        F_PixelFormat_PVRTC_RGBA4,			                    //150: PVRTC RGBA 4 bpp
+        F_PixelFormat_PVRTC2_2BPP,			                    //151: PVRTC Version 2, 2 bpp
+        F_PixelFormat_PVRTC2_4BPP,			                    //152: PVRTC Version 2, 4 bpp
+
+		// ETC
+        F_PixelFormat_ETC1_RGB8,				                //153: ETC1, RGB8
+        F_PixelFormat_ETC2_RGB8,				                //154: ETC2, RGB8
+        F_PixelFormat_ETC2_RGBA8,				                //155: ETC2, RGBA8
+        F_PixelFormat_ETC2_RGB8A1,			                    //156: ETC2, RGBA1
+
+		// ATC
+        F_PixelFormat_ATC_RGB,				                    //157: ATC, RGB
+        F_PixelFormat_ATC_RGBA_EXPLICIT_ALPHA,                  //158: ATC, RGBA
+        F_PixelFormat_ATC_RGBA_INTERPOLATED_ALPHA,              //159: ATC, RGBA
+
+        // ASTC
+        F_PixelFormat_ASTC_RGBA_4X4_LDR,		                //160: ASTC, RGBA,block size  4X4
+        F_PixelFormat_ASTC_RGBA_5X4_LDR,		                //161: ASTC, RGBA,block size  5X4
+        F_PixelFormat_ASTC_RGBA_5X5_LDR,		                //162: ASTC, RGBA,block size  5X5
+        F_PixelFormat_ASTC_RGBA_6X5_LDR,		                //163: ASTC, RGBA,block size  6X5
+        F_PixelFormat_ASTC_RGBA_6X6_LDR,		                //164: ASTC, RGBA,block size  6X6
+        F_PixelFormat_ASTC_RGBA_8X5_LDR,		                //165: ASTC, RGBA,block size  8X5
+        F_PixelFormat_ASTC_RGBA_8X6_LDR,		                //166: ASTC, RGBA,block size  8X6
+        F_PixelFormat_ASTC_RGBA_8X8_LDR,		                //167: ASTC, RGBA,block size  8X8
+        F_PixelFormat_ASTC_RGBA_10X5_LDR,		                //168: ASTC, RGBA,block size  10X5
+        F_PixelFormat_ASTC_RGBA_10X6_LDR,		                //169: ASTC, RGBA,block size  10X6
+        F_PixelFormat_ASTC_RGBA_10X8_LDR,		                //170: ASTC, RGBA,block size  10X8
+        F_PixelFormat_ASTC_RGBA_10X10_LDR,	                    //171: ASTC, RGBA,block size  10X10
+        F_PixelFormat_ASTC_RGBA_12X10_LDR,	                    //172: ASTC, RGBA,block size  12X10
+        F_PixelFormat_ASTC_RGBA_12X12_LDR,	                    //173: ASTC, RGBA,block size  12X12
+
+		F_PixelFormat_Count,                                    //174: Count
+
+    #if VULKAN_ENDIAN == VULKAN_ENDIAN_BIG
+		F_PixelFormat_BYTE_RGB_UNORM  = F_PixelFormat_BYTE_R8G8B8_UNORM,
+		F_PixelFormat_BYTE_BGR_UNORM  = F_PixelFormat_BYTE_B8G8R8_UNORM,
+		F_PixelFormat_BYTE_BGRA_UNORM = F_PixelFormat_BYTE_A8B8G8R8_UNORM,
+		F_PixelFormat_BYTE_RGBA_UNORM = F_PixelFormat_BYTE_A8R8G8B8_UNORM,
+	#else
+		F_PixelFormat_BYTE_RGB_UNORM  = F_PixelFormat_BYTE_B8G8R8_UNORM,
+		F_PixelFormat_BYTE_BGR_UNORM  = F_PixelFormat_BYTE_R8G8B8_UNORM,
+		F_PixelFormat_BYTE_BGRA_UNORM = F_PixelFormat_BYTE_A8R8G8B8_UNORM,
+		F_PixelFormat_BYTE_RGBA_UNORM = F_PixelFormat_BYTE_A8B8G8R8_UNORM,
+	#endif
+    };
+
+    struct FPixelFormatDes
+	{
+		String name;
+		uint8 nElemBytes;
+		uint32 eFlags;
+		uint32 eComponentType;
+		uint32 nComponentCount;
+        bool isSupported;
+		
+		uint8 nRbits;
+		uint8 nGbits;
+		uint8 nBbits;
+		uint8 nAbits;
+		
+		uint64 nRmask;
+		uint64 nGmask;
+		uint64 nBmask;
+		uint64 nAmask;
+	
+		uint8 nRshift;
+		uint8 nGshift;
+		uint8 nBshift;
+		uint8 nAshift;
+	};
+
+
+    enum FPixelFormatFlagType
+	{
+        F_PixelFormatFlag_IsNative		    = 0x00000001,   //0: IsNative
+        F_PixelFormatFlag_IsCompressed	    = 0x00000002,   //1: IsCompressed
+        F_PixelFormatFlag_IsInteger	        = 0x00000004,   //2: IsInteger
+        F_PixelFormatFlag_IsFloat	        = 0x00000008,   //3: IsFloat
+		F_PixelFormatFlag_IsLuminance	    = 0x00000010,   //4: IsLuminance
+        F_PixelFormatFlag_IsStencil         = 0x00000020,   //5: IsStencil
+		F_PixelFormatFlag_IsDepth		    = 0x00000040,   //6: IsDepth
+        F_PixelFormatFlag_IsDepthStencil    = 0x00000080,   //7: IsDepthStencil
+		F_PixelFormatFlag_HasAlpha		    = 0x00000100,   //8: HasAlpha
+	};
+
+
+    enum FPixelFormatComponentType
+	{
+		F_PixelFormatComponent_ByteU = 0,              //0: Byte unsigned
+        F_PixelFormatComponent_ByteS,                  //1: Byte signed
+		F_PixelFormatComponent_ShortU,                 //2: Short unsigned
+        F_PixelFormatComponent_ShortS,                 //3: Short signed
+        F_PixelFormatComponent_IntU,					//4: Int unsigned
+		F_PixelFormatComponent_IntS,					//5: Int signed
+        F_PixelFormatComponent_LongU,					//6: Long unsigned
+		F_PixelFormatComponent_LongS,					//7: Long signed
+		F_PixelFormatComponent_Float16,                //8: Float 16
+		F_PixelFormatComponent_Float32,                //9: Float 32
+        F_PixelFormatComponent_Double,                 //10: Double
+	};
+    const String& F_GetPixelFormatComponentTypeName(FPixelFormatComponentType type);
+    const String& F_GetPixelFormatComponentTypeName(int type);
+
 
 }; //LostPeterFoundation
 

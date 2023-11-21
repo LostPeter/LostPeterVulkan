@@ -869,4 +869,29 @@ namespace LostPeterFoundation
     }
 
 
+    //FPixelFormatComponentType
+    static String s_namePixelFormatComponentTypes[] = 
+    {
+        "ByteU",
+        "ByteS",
+        "ShortU",
+        "ShortS",
+        "IntU",
+        "IntS",
+        "LongU",
+        "LongS",
+        "Float16",
+        "Float32",
+        "Double"
+    };
+    const String& F_GetPixelFormatComponentTypeName(FPixelFormatComponentType type)
+    {   
+        return s_namePixelFormatComponentTypes[(int)type];
+    }
+    const String& F_GetPixelFormatComponentTypeName(int type)
+    {
+        return s_namePixelFormatComponentTypes[type];
+    }
+    
+
 }; //LostPeterFoundation

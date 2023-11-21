@@ -47,6 +47,8 @@
 #include "FMeshVertex.h"
 #include "FNonCopyable.h"
 #include "FPathManager.h"
+#include "FPixelBox.h"
+#include "FPixelFormat.h"
 #include "FPlane.h"
 #include "FPlaneBoundedVolume.h"
 #include "FPlatform.h"
