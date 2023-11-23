@@ -11,6 +11,10 @@
 
 #include "../include/VulkanDevice.h"
 #include "../include/VulkanInstance.h"
+#include "../include/VulkanQueue.h"
+#include "../include/VulkanFenceManager.h"
+#include "../include/VulkanDeviceMemoryManager.h"
+#include "../include/VulkanConverter.h"
 
 namespace LostPeter
 {
@@ -143,9 +147,9 @@ namespace LostPeter
                 prop.linearTilingFeatures != 0 ||
                 prop.optimalTilingFeatures != 0);
     }
-    bool VulkanDevice::IsPixelFormatSupported(VulkanPixelFormatType format)
+    bool VulkanDevice::IsPixelFormatSupported(FPixelFormatType format)
     {
-        return VulkanPixelFormat::GetPixelFormatDes(format).isSupported;
+        return FPixelFormat::GetPixelFormatDes(format).isSupported;
     }
 
     VkSampleCountFlagBits VulkanDevice::GetMaxUsableSampleCount()
@@ -350,13 +354,13 @@ namespace LostPeter
     }
     bool VulkanDevice::checkPixelFormats()
     {
-        int count = (int)Vulkan_PixelFormat_Count;
+        int count = (int)F_PixelFormat_Count;
         for (int i = 1; i < count; i++)
         {
-            VulkanPixelFormatType format = (VulkanPixelFormatType)i;
-            VulkanPixelFormatDes& des = VulkanPixelFormat::GetPixelFormatDesRef(format);
-            des.isSupported = IsPixelFormatSupported(Util_Transform2VkFormat(format));
-            F_LogInfo("VulkanDevice::createDevice: [%d]: [%s] is supported [%s]", i, des.name.c_str(), des.isSupported ? "true" : "false");
+            FPixelFormatType format = (FPixelFormatType)i;
+            FPixelFormatDes& des = FPixelFormat::GetPixelFormatDesRef(format);
+            des.isSupported = IsPixelFormatSupported(VulkanConverter::Transform2VkFormat(format));
+            F_LogInfo("VulkanDevice::createDevice: [%d]: [%s] is supported [%s] !", i, des.name.c_str(), des.isSupported ? "true" : "false");
         }
 
         return true;

@@ -56,7 +56,7 @@ namespace LostPeter
         , m_pVkPhysicalDeviceFeatures2(nullptr)
         , m_nDesiredNumSwapChainImages(3)
         , m_pDevice(nullptr)
-        , m_eSwapChainImagePixelFormat(Vulkan_PixelFormat_BYTE_A8R8G8B8_UNORM)
+        , m_eSwapChainImagePixelFormat(F_PixelFormat_BYTE_A8R8G8B8_UNORM)
     {
     #if UTIL_DEBUG == 1
         m_bIsEnableValidationLayers = false;

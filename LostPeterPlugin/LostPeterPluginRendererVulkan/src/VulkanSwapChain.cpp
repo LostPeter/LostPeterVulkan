@@ -9,12 +9,11 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/PreInclude.h"
 #include "../include/VulkanSwapChain.h"
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanDevice.h"
 #include "../include/VulkanQueue.h"
-#include "../include/VulkanPixelFormat.h"
+#include "../include/VulkanConverter.h"
 
 namespace LostPeter
 {
@@ -70,7 +69,7 @@ namespace LostPeter
         m_nPresentID = 0;
     }
 
-    bool VulkanSwapChain::Init(VulkanPixelFormatType& eOutPixelFormat,
+    bool VulkanSwapChain::Init(FPixelFormatType& eOutPixelFormat,
                                uint32 width, 
                                uint32 height, 
                                uint32* pOutDesiredNumSwapChainImages, 
@@ -211,7 +210,7 @@ namespace LostPeter
         return m_nSwapChainImageIndex;
     }
 
-    bool VulkanSwapChain::chooseSwapSurfacePixelFormat(VulkanPixelFormatType& eOutPixelFormat)
+    bool VulkanSwapChain::chooseSwapSurfacePixelFormat(FPixelFormatType& eOutPixelFormat)
     {
         //1> chooseSwapSurfacePixelFormat
         uint32 numFormats;
@@ -229,13 +228,13 @@ namespace LostPeter
         size_t countFormats = availableFormats.size();
 
         VkSurfaceFormatKHR currFormat = {};
-        if (eOutPixelFormat != Vulkan_PixelFormat_Unknown)
+        if (eOutPixelFormat != F_PixelFormat_Unknown)
         {
             bool bFound = false;
-            const VulkanPixelFormatDes& des = VulkanPixelFormat::GetPixelFormatDes(eOutPixelFormat);
+            const FPixelFormatDes& des = FPixelFormat::GetPixelFormatDes(eOutPixelFormat);
             if (des.isSupported)
             {
-                VkFormat requested = Util_Transform2VkFormat(eOutPixelFormat);
+                VkFormat requested = VulkanConverter::Transform2VkFormat(eOutPixelFormat);
                 for (size_t i = 0; i < countFormats; ++i)
                 {
                     F_LogInfo("VulkanSwapChain::chooseSwapSurfacePixelFormat: Requested PixelFormat: [%s], To Search vkGetPhysicalDeviceSurfaceFormatsKHR: [%d], PixelFormat: [%d], total count: [%d]", des.name.c_str(), (int32)i, (int32)availableFormats[i].format, (int32)countFormats);
@@ -251,28 +250,28 @@ namespace LostPeter
                 if (!bFound)
                 {
                     F_LogInfo("VulkanSwapChain::chooseSwapSurfacePixelFormat: Requested PixelFormat: [%s] not supported by this SwapChain !", des.name.c_str());
-                    eOutPixelFormat = Vulkan_PixelFormat_Unknown;
+                    eOutPixelFormat = F_PixelFormat_Unknown;
                 }
             }
             else
             {
                 F_LogInfo("VulkanSwapChain::chooseSwapSurfacePixelFormat: Requested PixelFormat: [%s] not supported by this Vulkan implementation !", des.name.c_str());
-                eOutPixelFormat = Vulkan_PixelFormat_Unknown;
+                eOutPixelFormat = F_PixelFormat_Unknown;
             }
         }
 
-        if (eOutPixelFormat == Vulkan_PixelFormat_Unknown)
+        if (eOutPixelFormat == F_PixelFormat_Unknown)
         {
             bool bFound = false;
             for (size_t i = 0; i < countFormats; ++i)
             {
-                for (int32 j = 1; j < (int32)Vulkan_PixelFormat_Count; ++j)
+                for (int32 j = 1; j < (int32)F_PixelFormat_Count; ++j)
                 {
-                    VulkanPixelFormatType eType = (VulkanPixelFormatType)j;
-                    const VulkanPixelFormatDes& des = VulkanPixelFormat::GetPixelFormatDes(eType);
+                    FPixelFormatType eType = (FPixelFormatType)j;
+                    const FPixelFormatDes& des = FPixelFormat::GetPixelFormatDes(eType);
                     if (des.isSupported)
                     {
-                        VkFormat requested = Util_Transform2VkFormat(eType);
+                        VkFormat requested = VulkanConverter::Transform2VkFormat(eType);
                         F_LogInfo("VulkanSwapChain::chooseSwapSurfacePixelFormat: To check vulkan support PixelFormat: [%s], VkFormat: [%d], search index: [%d], vkGetPhysicalDeviceSurfaceFormatsKHR : [%d], count: [%d] !", des.name.c_str(), (int32)requested, j, (int32)i, (int)countFormats);
                         if (requested == availableFormats[i].format)
                         {
@@ -286,13 +285,13 @@ namespace LostPeter
                 
                 if (bFound)
                 {
-                    F_LogInfo("VulkanSwapChain::chooseSwapSurfacePixelFormat: Found vkGetPhysicalDeviceSurfaceFormatsKHR supported PixelFormat: [%s], Search vkGetPhysicalDeviceSurfaceFormatsKHR: [%d], PixelFormat: [%d] found, total count: [%d]", VulkanPixelFormat::GetPixelFormatDes(eOutPixelFormat).name.c_str(), (int32)i, availableFormats[i].format, (int32)countFormats);
+                    F_LogInfo("VulkanSwapChain::chooseSwapSurfacePixelFormat: Found vkGetPhysicalDeviceSurfaceFormatsKHR supported PixelFormat: [%s], Search vkGetPhysicalDeviceSurfaceFormatsKHR: [%d], PixelFormat: [%d] found, total count: [%d]", FPixelFormat::GetPixelFormatDes(eOutPixelFormat).name.c_str(), (int32)i, availableFormats[i].format, (int32)countFormats);
                     break;
                 }
             }
         }
         
-        if (eOutPixelFormat == Vulkan_PixelFormat_Unknown)
+        if (eOutPixelFormat == F_PixelFormat_Unknown)
         {
             F_LogInfo("VulkanSwapChain::chooseSwapSurfacePixelFormat: Can not find a proper PixelFormat for the SwapChain !");
             return false;

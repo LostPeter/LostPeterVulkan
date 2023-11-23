@@ -99,12 +99,12 @@ namespace LostPeter
         {
             if (bIsUpdateData)
             {
-                if (!Vulkanm_pDevice->CreateVkBufferVertex(pData, 
-                                                           sizeDataByte, 
-                                                           m_vkBuffer, 
-                                                           m_vkBufferMemory, 
-                                                           m_vkBuffer_Transfer, 
-                                                           m_vkBufferMemory_Transfer))
+                if (!m_pDevice->CreateVkBufferVertex(pData, 
+                                                     sizeDataByte, 
+                                                     m_vkBuffer, 
+                                                     m_vkBufferMemory, 
+                                                     m_vkBuffer_Transfer, 
+                                                     m_vkBufferMemory_Transfer))
                 {
                     F_LogError("*********************** VulkanBufferVertex::UpdateData: 1 CreateVkBufferVertex failed !");
                     return false;
@@ -129,8 +129,8 @@ namespace LostPeter
 
     VulkanBufferVertex* VulkanBufferVertex::Clone()
     {
-        String strName =  FUtilString::FormatString("%s_Copy_%d", m_strName.c_str(), GetNextID());
-        VulkanBufferVertex* pBufferVertex = new VulkanBufferVertex(strName);
+        String strName = FUtilString::FormatString("%s_Copy_%d", GetName().c_str(), GetNextID());
+        VulkanBufferVertex* pBufferVertex = new VulkanBufferVertex(strName, m_pDevice);
         void* pData = CloneData();
         if (!pBufferVertex->Init(pData, m_nDataSize, m_nVertexCount, true, m_bIsUpdateData))
         {

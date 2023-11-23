@@ -75,7 +75,7 @@ namespace LostPeter
         bool CreateQueuePresent(VkSurfaceKHR surface);
 
         bool IsPixelFormatSupported(VkFormat format);
-        bool IsPixelFormatSupported(VulkanPixelFormatType format);
+        bool IsPixelFormatSupported(FPixelFormatType format);
 
         VkSampleCountFlagBits GetMaxUsableSampleCount();
         VkFormat FindSupportedFormat(const VkFormatVector& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);

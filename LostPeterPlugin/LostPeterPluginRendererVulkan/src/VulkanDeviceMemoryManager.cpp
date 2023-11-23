@@ -9,7 +9,6 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/PreInclude.h"
 #include "../include/VulkanDeviceMemoryManager.h"
 #include "../include/VulkanDevice.h"
 

@@ -146,8 +146,8 @@ namespace LostPeter
 
     VulkanBufferIndex* VulkanBufferIndex::Clone()
     {
-        String strName =  FUtilString::FormatString("%s_Copy_%d", m_strName.c_str(), GetNextID());
-        VulkanBufferIndex* pBufferIndex = new VulkanBufferIndex(strName);
+        String strName = FUtilString::FormatString("%s_Copy_%d", GetName().c_str(), GetNextID());
+        VulkanBufferIndex* pBufferIndex = new VulkanBufferIndex(strName, m_pDevice);
         void* pData = CloneData();
         if (!pBufferIndex->Init(pData, m_nDataSize, m_nIndexCount, true, m_bIsUpdateData))
         {

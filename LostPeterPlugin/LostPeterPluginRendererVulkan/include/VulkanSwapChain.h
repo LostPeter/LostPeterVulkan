@@ -63,7 +63,7 @@ namespace LostPeter
 
     public:
         void Destroy();
-        bool Init(VulkanPixelFormatType& eOutPixelFormat,
+        bool Init(FPixelFormatType& eOutPixelFormat,
                   uint32 width, 
                   uint32 height, 
                   uint32* pOutDesiredNumSwapChainImages, 
@@ -78,7 +78,7 @@ namespace LostPeter
 	    int32 AcquireImageIndex(VkSemaphore* pOutSemaphore);
 
     private:
-        bool chooseSwapSurfacePixelFormat(VulkanPixelFormatType& eOutPixelFormat);
+        bool chooseSwapSurfacePixelFormat(FPixelFormatType& eOutPixelFormat);
         bool chooseSwapPresentMode(VkPresentModeKHR& presentMode);
         bool createSwapChain(uint32 width, 
                              uint32 height, 

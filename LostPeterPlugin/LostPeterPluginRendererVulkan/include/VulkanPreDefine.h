@@ -39,6 +39,20 @@ namespace LostPeter
 
 
     /////////////////////////////////////// Vulkan Define ////////////////////////////////
+	enum VulkanSwapStatusType
+    {
+        Vulkan_SwapStatus_Normal = 0,
+        Vulkan_SwapStatus_OutOfDate = -1,
+        Vulkan_SwapStatus_Lost = -2,
+        Vulkan_SwapStatus_Error = -3,
+    };
+
+
+    enum VulkanFenceStateType
+    {
+        Vulkan_FenceState_NotReady = 0,
+        Vulkan_FenceState_Signaled,
+    };
 
 
     /////////////////////////////////////// Class Define /////////////////////////////////
@@ -52,9 +66,18 @@ namespace LostPeter
 	class VulkanFence;
 	class VulkanFenceManager;
 	class VulkanInstance;
+	class VulkanPlugin;
 	class VulkanQueue;
+	class VulkanRenderer;
 	class VulkanSemaphore;
 	class VulkanSwapChain;
+
+	typedef std::vector<VulkanDeviceMemoryAllocation*> VulkanDeviceMemoryAllocationPtrVector;
+
+	typedef std::vector<VulkanFence*> VulkanFencePtrVector;
+    typedef std::vector<VulkanSemaphore*> VulkanSemaphorePtrVector;
+    typedef std::vector<VulkanQueue*> VulkanQueuePtrVector;
+    typedef std::map<String, VulkanQueue*> VulkanQueuePtrMap;
 
 }; //LostPeter
 

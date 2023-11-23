@@ -12,7 +12,7 @@
 #ifndef _VULKAN_BUFFER_UNIFORM_H_
 #define _VULKAN_BUFFER_UNIFORM_H_
 
-#include "Base.h"
+#include "VulkanPreDefine.h"
 
 namespace LostPeter
 {

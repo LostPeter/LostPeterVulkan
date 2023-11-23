@@ -37,7 +37,7 @@ namespace LostPeter
         bool m_bIsEnableValidationLayers;
         VulkanDevice* m_pDevice;
 
-        VulkanPixelFormatType m_eSwapChainImagePixelFormat;
+        FPixelFormatType m_eSwapChainImagePixelFormat;
 
     public:
         UTIL_FORCEINLINE const VkInstance& GetVkInstance() const { return m_vkInstance; }
@@ -58,7 +58,7 @@ namespace LostPeter
         UTIL_FORCEINLINE bool IsEnableValidationLayers() const { return m_bIsEnableValidationLayers; }
         UTIL_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
 
-        UTIL_FORCEINLINE VulkanPixelFormatType GetVkSwapChainImagePixelFormatType() const { return m_eSwapChainImagePixelFormat; }
+        UTIL_FORCEINLINE FPixelFormatType GetVkSwapChainImagePixelFormatType() const { return m_eSwapChainImagePixelFormat; }
 
     public:
         void Destroy();

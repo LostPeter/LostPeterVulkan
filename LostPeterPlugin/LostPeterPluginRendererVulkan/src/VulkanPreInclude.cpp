@@ -9,7 +9,7 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/VulkanDefine.h"
+#include "../include/VulkanPreDefine.h"
 
 namespace LostPeter
 {
