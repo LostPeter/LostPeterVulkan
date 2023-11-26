@@ -67,168 +67,43 @@ namespace LostPeterEngine
     #define C_CONFIG_MAX_GLYPHS_COUNT				        (9030 - 32)
     #define C_CONFIG_GLYPH_INDEX(c)					        c - 33
 
-    #define UTIL_CPU_ALLOCATOR              nullptr
 
 ////////////////////////////// Typedef /////////////////////////////
-    String Utile_VkResult2String(VkResult result);
-
-    #define UTIL_VK_CHECK(vkcall) \
-    { \
-        VkResult result = vkcall; \
-        if (result != VK_SUCCESS) \
-        { \
-            String vkfunc = #vkcall; \
-            vkfunc = vkfunc.substr(0, vkfunc.find('(')); \
-            F_LogError("*********************** UTIL_VK_CHECK: [%s] failed with: %s", vkfunc.c_str(), Utile_VkResult2String(result).c_str()); \
-        } \
-    }
-
-    bool Util_CheckVkResult(VkResult result, const String& nameFunc);
-
-    template<class T>
-    static UTIL_FORCEINLINE void Util_ZeroStruct(T& vkStruct, VkStructureType vkType)
-    {
-        vkStruct.sType = vkType;
-        memset(((uint8*)&vkStruct) + sizeof(VkStructureType), 0, sizeof(T) - sizeof(VkStructureType));
-    }
+    
 
 
 ////////////////////////////// Enum ////////////////////////////////
-    enum VulkanWindowType
+    enum EWindowType
     {
-        Vulkan_Window_Main = 0,                         //0:    Main
-        Vulkan_Window_Game,                             //1:    Game
-        Vulkan_Window_Scene,                            //2:    Scene
+        E_Window_Main = 0,                         //0:    Main
+        E_Window_Game,                             //1:    Game
+        E_Window_Scene,                            //2:    Scene
 
-        Vulkan_Window_Count,
+        E_Window_Count,
     };
-    utilExport const String& Util_GetWindowTypeName(VulkanWindowType type);
-    utilExport const String& Util_GetWindowTypeName(int type);
-    utilExport VulkanWindowType Util_ParseWindowType(const String& strName);
+    utilExport const String& E_GetWindowTypeName(EWindowType type);
+    utilExport const String& E_GetWindowTypeName(int type);
+    utilExport EWindowType E_ParseWindowType(const String& strName);
 
 
-    enum VulkanFenceStateType
+    enum ELightType
     {
-        Vulkan_FenceState_NotReady = 0,
-        Vulkan_FenceState_Signaled,
-    };
-
-
-    enum VulkanSwapStatusType
-    {
-        Vulkan_SwapStatus_Normal = 0,
-        Vulkan_SwapStatus_OutOfDate = -1,
-        Vulkan_SwapStatus_Lost = -2,
-        Vulkan_SwapStatus_Error = -3,
+        E_Light_Directional = 0,
+        E_Light_Point,
+        E_Light_Spot,
     };
 
 
-
-    struct utilExport VulkanPixelFormatDes
+    enum ERenderPipelineType
 	{
-		String name;
-		uint8 nElemBytes;
-		uint32 eFlags;
-		uint32 eComponentType;
-		uint32 nComponentCount;
-        bool isSupported;
-		
-		uint8 nRbits;
-		uint8 nGbits;
-		uint8 nBbits;
-		uint8 nAbits;
-		
-		uint64 nRmask;
-		uint64 nGmask;
-		uint64 nBmask;
-		uint64 nAmask;
-	
-		uint8 nRshift;
-		uint8 nGshift;
-		uint8 nBshift;
-		uint8 nAshift;
+		E_RenderPipeline_Forward = 0,                       //0: Forward
+		E_RenderPipeline_Deferred,                          //1: Deferred
+
+		E_RenderPipeline_Count
 	};
-
-
-    enum VulkanPixelFormatFlagType
-	{
-        Vulkan_PixelFormatFlag_IsNative		    = 0x00000001,   //0: IsNative
-        Vulkan_PixelFormatFlag_IsCompressed	    = 0x00000002,   //1: IsCompressed
-        Vulkan_PixelFormatFlag_IsInteger	    = 0x00000004,   //2: IsInteger
-        Vulkan_PixelFormatFlag_IsFloat	        = 0x00000008,   //3: IsFloat
-		Vulkan_PixelFormatFlag_IsLuminance	    = 0x00000010,   //4: IsLuminance
-        Vulkan_PixelFormatFlag_IsStencil        = 0x00000020,   //5: IsStencil
-		Vulkan_PixelFormatFlag_IsDepth		    = 0x00000040,   //6: IsDepth
-        Vulkan_PixelFormatFlag_IsDepthStencil   = 0x00000080,   //7: IsDepthStencil
-		Vulkan_PixelFormatFlag_HasAlpha		    = 0x00000100,   //8: HasAlpha
-	};
-
-
-    enum VulkanPixelFormatComponentType
-	{
-		Vulkan_PixelFormatComponent_ByteU = 0,              //0: Byte unsigned
-        Vulkan_PixelFormatComponent_ByteS,                  //1: Byte signed
-		Vulkan_PixelFormatComponent_ShortU,                 //2: Short unsigned
-        Vulkan_PixelFormatComponent_ShortS,                 //3: Short signed
-        Vulkan_PixelFormatComponent_IntU,					//4: Int unsigned
-		Vulkan_PixelFormatComponent_IntS,					//5: Int signed
-        Vulkan_PixelFormatComponent_LongU,					//6: Long unsigned
-		Vulkan_PixelFormatComponent_LongS,					//7: Long signed
-		Vulkan_PixelFormatComponent_Float16,                //8: Float 16
-		Vulkan_PixelFormatComponent_Float32,                //9: Float 32
-        Vulkan_PixelFormatComponent_Double,                 //10: Double
-	};
-    utilExport const String& Util_GetPixelFormatComponentTypeName(VulkanPixelFormatComponentType type);
-    utilExport const String& Util_GetPixelFormatComponentTypeName(int type);
-
-
-    enum VulkanLightType
-    {
-        Vulkan_Light_Directional = 0,
-        Vulkan_Light_Point,
-        Vulkan_Light_Spot,
-    };
-
-
-    enum VulkanLightingType
-    {
-        Vulkan_Lighting_Node = 0,                                //0:    None
-        Vulkan_Lighting_Ambient,                                 //1:    Ambient
-        Vulkan_Lighting_DiffuseLambert,                          //2:    DiffuseLambert
-        Vulkan_Lighting_SpecularPhong,                           //3:    SpecularPhong
-        Vulkan_Lighting_SpecularBlinnPhong,                      //4:    SpecularBlinnPhong
-        Vulkan_Lighting_AmbientDiffuseLambert,                   //5:    Ambient + DiffuseLambert
-        Vulkan_Lighting_AmbientSpecularPhong,                    //6:    Ambient + SpecularPhong
-        Vulkan_Lighting_AmbientSpecularBlinnPhong,               //7:    Ambient + SpecularBlinnPhong
-        Vulkan_Lighting_DiffuseLambertSpecularPhong,             //8:    DiffuseLambert + SpecularPhong
-        Vulkan_Lighting_DiffuseLambertSpecularBlinnPhong,        //9:    DiffuseLambert + SpecularBlinnPhong
-        Vulkan_Lighting_AmbientDiffuseLambertSpecularPhong,      //10:   Ambient + DiffuseLambert + SpecularPhong
-        Vulkan_Lighting_AmbientDiffuseLambertSpecularBlinnPhong, //11:   Ambient + DiffuseLambert + SpecularBlinnPhong
-    };
-
-
-    utilExport VkImageType Util_Transform2VkImageType(FTextureType type);
-    utilExport VkImageViewType Util_Transform2VkImageViewType(FTextureType type);
-    utilExport VkFormat Util_Transform2VkFormat(FTexturePixelFormatType type);
-    utilExport VkComponentMapping Util_Transform2VkComponentMapping(FTexturePixelFormatType type);
-    utilExport VkFilter Util_Transform2VkFilter(FTextureFilterPixelType type);
-    utilExport VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterPixelType type);
-    utilExport VkFilter Util_Transform2VkFilter(FTextureFilterType typeFilter, FTextureFilterSizeType typeFilterSize);
-    utilExport VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterType typeFilter);
-    utilExport VkSamplerAddressMode Util_Transform2VkSamplerAddressMode(FTextureAddressingType type);
-    utilExport VkBorderColor Util_Transform2VkBorderColor(FTextureBorderColorType type);
-    utilExport VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(FMSAASampleCountType type);
-
-    utilExport VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(FShaderType type);    
-    utilExport VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(const Uint32Vector& aShaderTypes);    
-
-    utilExport VkPrimitiveTopology Util_Transform2VkPrimitiveTopology(FRenderPrimitiveType type);
-    utilExport VkCullModeFlags Util_Transform2VkCullModeFlags(FCullingType type);
-    utilExport VkPolygonMode Util_Transform2VkPolygonMode(FPolygonType type);
-    utilExport VkStencilOp Util_Transform2VkStencilOp(FStencilOPType type);
-    utilExport VkCompareOp Util_Transform2VkCompareOp(FCompareFuncType type);
-    utilExport VkBlendOp Util_Transform2VkBlendOp(FSceneBlendingOPType type);
-    utilExport VkBlendFactor Util_Transform2VkBlendFactor(FSceneBlendingFactorType type);
+    utilExport const String& E_GetRenderPipelineTypeName(ERenderPipelineType type);
+    utilExport const String& E_GetRenderPipelineTypeName(int32 type);
+    
     
 
     enum VulkanDescriptorSetType
@@ -675,6 +550,9 @@ namespace LostPeterEngine
     typedef std::list<RendererListener*> RendererListenerPtrList;
     typedef std::map<String, RendererListener*> RendererListenerPtrMap;
 
+    typedef std::list<Renderer*> RendererPtrList;
+    typedef std::map<String, Renderer*> RendererPtrMap;
+
     typedef std::vector<RenderPass*> RenderPassPtrVector;
     typedef std::map<String, RenderPass*> RenderPassPtrMap;
 
@@ -729,6 +607,9 @@ namespace LostPeterEngine
 
     typedef std::vector<Movable*> MovablePtrVector;
     typedef std::map<String, Movable*> MovablePtrMap;
+    typedef std::vector<Movable*> MovablePtrVector;
+    typedef std::list<Movable*> MovablePtrList;
+    typedef std::map<String, MovableFactory*> MovableFactoryPtrMap;
 
     typedef std::vector<Node*> NodePtrVector;
     typedef std::list<Node*> NodePtrList;

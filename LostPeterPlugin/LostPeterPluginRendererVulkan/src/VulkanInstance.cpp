@@ -150,7 +150,7 @@ namespace LostPeter
     #endif
 
         VkInstanceCreateInfo instanceCreateInfo;
-        Util_ZeroStruct(instanceCreateInfo, VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO);
+        E_ZeroStruct(instanceCreateInfo, VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO);
         instanceCreateInfo.pApplicationInfo = &appInfo;
         instanceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(m_aInstanceExtensions.size());
         instanceCreateInfo.ppEnabledExtensionNames = m_aInstanceExtensions.size() > 0 ? m_aInstanceExtensions.data() : nullptr;
@@ -209,7 +209,7 @@ namespace LostPeter
             return true;
 
         VkDebugReportCallbackCreateInfoEXT createInfo = createReportCallbackInfo();
-        if (!Util_CheckVkResult(g_CreateDebugReportCallback(m_vkInstance, &createInfo, nullptr, &m_vkDebugReport), "g_CreateDebugReportCallback"))
+        if (!E_CheckVkResult(g_CreateDebugReportCallback(m_vkInstance, &createInfo, nullptr, &m_vkDebugReport), "g_CreateDebugReportCallback"))
         {
             F_LogError("*********************** VulkanInstance::createDebugReport: g_CreateDebugReportCallback failed !");
             return false;

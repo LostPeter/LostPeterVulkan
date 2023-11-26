@@ -19,11 +19,11 @@ namespace LostPeterEngine
     class utilExport RenderPipelineForward : public RenderPipeline
     {
     public:
-        RenderPipelineForward();
+        RenderPipelineForward(RenderPipelineManager* pRenderPipelineManager);
         virtual ~RenderPipelineForward();
 
     public:
-        
+        virtual bool Init();
 
     };
 

@@ -60,7 +60,7 @@ namespace LostPeterEngine
         , rtIsSetColor(false)
         , rtImageUsage(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT)
     {
-        this->typeFormat = Util_Transform2VkFormat(this->typePixelFormat);
+        //this->typeFormat = Util_Transform2VkFormat(this->typePixelFormat);
         if (this->isRenderTarget)
             this->poTextureImageLayout = VK_IMAGE_LAYOUT_GENERAL;
         else

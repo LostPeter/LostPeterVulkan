@@ -25,20 +25,26 @@ namespace LostPeterEngine
 
     public:
     protected:
-        RenderPipelinePtrVector m_aRenderPipeline;
-        RenderPipelinePtrMap m_mapRenderPipeline;
+        RenderPassManager* m_pRenderPassManager;
+		RenderPipeline* m_pPipeLineCurrent;
 
-    public:
-        LP_FORCEINLINE const RenderPipelinePtrVector& GetRenderPipelinePtrVector() const { return m_aRenderPipeline; }
-        LP_FORCEINLINE RenderPipelinePtrVector& GetRenderPipelinePtrVector() { return m_aRenderPipeline; }
-        LP_FORCEINLINE const RenderPipelinePtrMap& GetRenderPipelinePtrMap() const { return m_mapRenderPipeline; }
-        LP_FORCEINLINE RenderPipelinePtrMap& GetRenderPipelinePtrMap() { return m_mapRenderPipeline; }
+		RenderPipelinePtrMap m_mapRenderPipeLine;
 
     public:
         static RenderPipelineManager& GetSingleton();
 		static RenderPipelineManager* GetSingletonPtr();
 
+    public:
+		LP_FORCEINLINE RenderPipeline* GetPipeLineCurrent() const { return m_pPipeLineCurrent; }
 
+	public:
+        void Destroy();
+		bool Init(const String& strPipeLineName);
+		
+		
+		bool RenderOneFrame(RenderFrameEvent& event);
+
+		bool ChangePipeLineTo(ERenderPipelineType eRenderPipeline);
     };
 
 }; //LostPeterEngine

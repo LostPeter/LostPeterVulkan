@@ -36,9 +36,33 @@ using namespace LostPeterEngine;
 
 namespace LostPeter
 {
+	/////////////////////////////////////// Typedef //////////////////////////////////////
+	String E_VkResult2String(VkResult result);
+
+    #define E_VK_CHECK(vkcall) \
+    { \
+        VkResult result = vkcall; \
+        if (result != VK_SUCCESS) \
+        { \
+            String vkfunc = #vkcall; \
+            vkfunc = vkfunc.substr(0, vkfunc.find('(')); \
+            F_LogError("*********************** E_VK_CHECK: [%s] failed with: %s", vkfunc.c_str(), E_VkResult2String(result).c_str()); \
+        } \
+    }
+
+    bool E_CheckVkResult(VkResult result, const String& nameFunc);
+
+    template<class T>
+    static lpVulkanExport void E_ZeroStruct(T& vkStruct, VkStructureType vkType)
+    {
+        vkStruct.sType = vkType;
+        memset(((uint8*)&vkStruct) + sizeof(VkStructureType), 0, sizeof(T) - sizeof(VkStructureType));
+    }
 
 
     /////////////////////////////////////// Vulkan Define ////////////////////////////////
+	#define E_CPU_ALLOCATOR              nullptr
+
 	enum VulkanSwapStatusType
     {
         Vulkan_SwapStatus_Normal = 0,

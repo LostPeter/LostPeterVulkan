@@ -74,7 +74,7 @@ namespace LostPeterEngine
         {
             //0> Window Main
             {
-                String nameMain = m_strNameSample + " - " + Util_GetWindowTypeName(Vulkan_Window_Main);
+                String nameMain = m_strNameSample + " - " + E_GetWindowTypeName(E_Window_Main);
                 m_pWindow_Main = createWindow(nameMain);
                 if (m_pWindow_Main == nullptr)
                 {
@@ -86,7 +86,7 @@ namespace LostPeterEngine
             //1> Window Game
             if (m_bIsWindowGameUsed)
             {
-                String nameGame = m_strNameSample + " - " + Util_GetWindowTypeName(Vulkan_Window_Game);
+                String nameGame = m_strNameSample + " - " + E_GetWindowTypeName(E_Window_Game);
                 m_pWindow_Game = createWindow(nameGame);
                 if (m_pWindow_Game == nullptr)
                 {
@@ -98,7 +98,7 @@ namespace LostPeterEngine
             //2> Window Scene
             if (m_bIsWindowSceneUsed)
             {
-                String nameScene = m_strNameSample + " - " + Util_GetWindowTypeName(Vulkan_Window_Scene);
+                String nameScene = m_strNameSample + " - " + E_GetWindowTypeName(E_Window_Scene);
                 m_pWindow_Scene = createWindow(nameScene);
                 if (m_pWindow_Scene == nullptr)
                 {

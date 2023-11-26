@@ -94,7 +94,7 @@ namespace LostPeter
         UTIL_FORCEINLINE VulkanDeviceMemoryAllocation* Alloc(bool canFail, VkDeviceSize allocationSize, uint32 memoryTypeBits, VkMemoryPropertyFlags memoryPropertyFlags, void* dedicatedAllocateInfo, const char* file, uint32 line)
         {
             uint32 memoryTypeIndex = ~0;
-            UTIL_VK_CHECK(this->GetMemoryTypeFromProperties(memoryTypeBits, memoryPropertyFlags, &memoryTypeIndex))
+            E_VK_CHECK(this->GetMemoryTypeFromProperties(memoryTypeBits, memoryPropertyFlags, &memoryTypeIndex))
             return Alloc(canFail, allocationSize, memoryTypeIndex, dedicatedAllocateInfo, file, line);
         }
 

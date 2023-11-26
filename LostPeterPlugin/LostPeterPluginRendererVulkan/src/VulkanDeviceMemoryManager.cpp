@@ -93,7 +93,7 @@ namespace LostPeter
                                                                    uint32 line)
     {
         VkMemoryAllocateInfo allocInfo;
-        Util_ZeroStruct(allocInfo, VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO);
+        E_ZeroStruct(allocInfo, VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO);
         allocInfo.allocationSize  = allocationSize;
         allocInfo.memoryTypeIndex = memoryTypeIndex;
         allocInfo.pNext           = dedicatedAllocateInfo;
@@ -131,7 +131,7 @@ namespace LostPeter
         }
         else
         {
-            Util_CheckVkResult(result, "vkAllocateMemory");
+            E_CheckVkResult(result, "vkAllocateMemory");
         }
         
         m_nNumAllocations     += 1;

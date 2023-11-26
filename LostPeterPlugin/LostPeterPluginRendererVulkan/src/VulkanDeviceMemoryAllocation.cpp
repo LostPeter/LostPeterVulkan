@@ -63,7 +63,7 @@ namespace LostPeter
         if (!IsCoherent())
         {
             VkMappedMemoryRange range;
-            Util_ZeroStruct(range, VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE);
+            E_ZeroStruct(range, VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE);
             range.memory = m_vkDeviceMemory;
             range.offset = offset;
             range.size   = size;
@@ -76,7 +76,7 @@ namespace LostPeter
         if (!IsCoherent())
         {
             VkMappedMemoryRange range;
-            Util_ZeroStruct(range, VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE);
+            E_ZeroStruct(range, VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE);
             range.memory = m_vkDeviceMemory;
             range.offset = offset;
             range.size   = size;

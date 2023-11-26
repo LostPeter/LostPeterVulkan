@@ -25,13 +25,13 @@ namespace LostPeterEngine
     public:
     protected:
 		uint32 m_nTypeFlag;
-		bool m_bDelExtern;
+		bool m_bDelExternal;
 
 	public:
 		LP_FORCEINLINE uint32 GetTypeFlags() const { return m_nTypeFlag;  }
 		LP_FORCEINLINE void	SetTypeFlags(uint32 nTypeFlag) { m_nTypeFlag = nTypeFlag; }
-		LP_FORCEINLINE bool GetIsDelExtern() const { return m_bDelExtern; }
-		LP_FORCEINLINE void SetIsDelExtern(bool b) { m_bDelExtern = b; }
+		LP_FORCEINLINE bool GetIsDelExternal() const { return m_bDelExternal; }
+		LP_FORCEINLINE void SetIsDelExternal(bool b) { m_bDelExternal = b; }
 
 	public:			
 		virtual const String& GetMovableType() const = 0;

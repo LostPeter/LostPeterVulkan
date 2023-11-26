@@ -49,7 +49,30 @@ namespace LostPeterEngine
         F_DELETE(m_pRenderTargetManager)
     }
 
-   
+	RenderTarget* Renderer::GetRenderTarget(const String& strName)
+	{
+		return m_pRenderTargetManager->GetRenderTarget(strName);
+	}
+	void Renderer::AttachRenderTarget(RenderTarget* pRenderTarget)
+	{
+		m_pRenderTargetManager->AttachRenderTarget(pRenderTarget);
+	}
+	RenderTarget* Renderer::DetachRenderTarget(const String& strName)
+	{
+		return m_pRenderTargetManager->DetachRenderTarget(strName);
+	}
+	void Renderer::DestroyRenderTarget(const String& strName)
+	{
+		m_pRenderTargetManager->DestroyRenderTarget(strName);
+	}
+	void Renderer::DestroyRenderWindow(const String& strName)
+	{
+		m_pRenderTargetManager->DestroyRenderWindow(strName);
+	}
+	void Renderer::DestroyRenderTexture(const String& strName)
+	{
+		m_pRenderTargetManager->DestroyRenderTexture(strName);
+	}
 
     void Renderer::UpdateRenderTargetPriority(uint8 nPriority, RenderTarget* pRenderTarget)
     {

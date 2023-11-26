@@ -151,7 +151,7 @@ namespace LostPeter
         m_nPresentID += 1;
 
         VkPresentInfoKHR createInfo;
-        Util_ZeroStruct(createInfo, VK_STRUCTURE_TYPE_PRESENT_INFO_KHR);
+        E_ZeroStruct(createInfo, VK_STRUCTURE_TYPE_PRESENT_INFO_KHR);
         createInfo.waitSemaphoreCount = pComplete == nullptr ? 0 : 1;
         createInfo.pWaitSemaphores = pComplete;
         createInfo.swapchainCount = 1;
@@ -169,7 +169,7 @@ namespace LostPeter
         }
         else if (presentResult != VK_SUCCESS && presentResult != VK_SUBOPTIMAL_KHR) 
         {
-            F_LogError("*********************** VulkanSwapChain::Present: vkQueuePresentKHR: %s", Utile_VkResult2String(presentResult).c_str());
+            F_LogError("*********************** VulkanSwapChain::Present: vkQueuePresentKHR: %s", E_VkResult2String(presentResult).c_str());
             
             throw std::runtime_error("*********************** VulkanSwapChain::Present: Failed to present swap chain image !");
             return Vulkan_SwapStatus_Error;
@@ -198,7 +198,7 @@ namespace LostPeter
         else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
         {
             m_nSemaphoreIndex = prev;
-            F_LogError("*********************** VulkanSwapChain::AcquireImageIndex: vkAcquireNextImageKHR: %s", Utile_VkResult2String(result).c_str());
+            F_LogError("*********************** VulkanSwapChain::AcquireImageIndex: vkAcquireNextImageKHR: %s", E_VkResult2String(result).c_str());
             
             throw std::runtime_error("*********************** VulkanSwapChain::AcquireImageIndex: Failed to acquire swap chain image index !");
             return (int32)Vulkan_SwapStatus_Error;
@@ -214,13 +214,13 @@ namespace LostPeter
     {
         //1> chooseSwapSurfacePixelFormat
         uint32 numFormats;
-        if (!Util_CheckVkResult(vkGetPhysicalDeviceSurfaceFormatsKHR(m_pDevice->GetVkPhysicalDevice(), m_vkSurfaceKHR, &numFormats, nullptr), "vkGetPhysicalDeviceSurfaceFormatsKHR"))
+        if (!E_CheckVkResult(vkGetPhysicalDeviceSurfaceFormatsKHR(m_pDevice->GetVkPhysicalDevice(), m_vkSurfaceKHR, &numFormats, nullptr), "vkGetPhysicalDeviceSurfaceFormatsKHR"))
         {
             F_LogError("*********************** VulkanSwapChain::chooseSwapSurfacePixelFormat: vkGetPhysicalDeviceSurfaceFormatsKHR 1 failed !");
             return false;
         }
         std::vector<VkSurfaceFormatKHR> availableFormats(numFormats);
-        if (!Util_CheckVkResult(vkGetPhysicalDeviceSurfaceFormatsKHR(m_pDevice->GetVkPhysicalDevice(), m_vkSurfaceKHR, &numFormats, availableFormats.data()), "vkGetPhysicalDeviceSurfaceFormatsKHR"))
+        if (!E_CheckVkResult(vkGetPhysicalDeviceSurfaceFormatsKHR(m_pDevice->GetVkPhysicalDevice(), m_vkSurfaceKHR, &numFormats, availableFormats.data()), "vkGetPhysicalDeviceSurfaceFormatsKHR"))
         {
             F_LogError("*********************** VulkanSwapChain::chooseSwapSurfacePixelFormat: vkGetPhysicalDeviceSurfaceFormatsKHR 2 failed !");
             return false;
@@ -306,13 +306,13 @@ namespace LostPeter
     bool VulkanSwapChain::chooseSwapPresentMode(VkPresentModeKHR& presentMode)
     {
         uint32 numFoundPresentModes = 0;
-        if (!Util_CheckVkResult(vkGetPhysicalDeviceSurfacePresentModesKHR(m_pDevice->GetVkPhysicalDevice(), m_vkSurfaceKHR, &numFoundPresentModes, nullptr), "vkGetPhysicalDeviceSurfacePresentModesKHR"))
+        if (!E_CheckVkResult(vkGetPhysicalDeviceSurfacePresentModesKHR(m_pDevice->GetVkPhysicalDevice(), m_vkSurfaceKHR, &numFoundPresentModes, nullptr), "vkGetPhysicalDeviceSurfacePresentModesKHR"))
         {
             F_LogError("*********************** VulkanSwapChain::chooseSwapPresentMode: vkGetPhysicalDeviceSurfacePresentModesKHR 1 failed !");
             return false;
         }
         std::vector<VkPresentModeKHR> foundPresentModes(numFoundPresentModes);
-        if (!Util_CheckVkResult(vkGetPhysicalDeviceSurfacePresentModesKHR(m_pDevice->GetVkPhysicalDevice(), m_vkSurfaceKHR, &numFoundPresentModes, foundPresentModes.data()), "vkGetPhysicalDeviceSurfacePresentModesKHR"))
+        if (!E_CheckVkResult(vkGetPhysicalDeviceSurfacePresentModesKHR(m_pDevice->GetVkPhysicalDevice(), m_vkSurfaceKHR, &numFoundPresentModes, foundPresentModes.data()), "vkGetPhysicalDeviceSurfacePresentModesKHR"))
         {
             F_LogError("*********************** VulkanSwapChain::chooseSwapPresentMode: vkGetPhysicalDeviceSurfacePresentModesKHR 2 failed !");
             return false;
@@ -373,7 +373,7 @@ namespace LostPeter
                                           VkImageVector& aOutImages)
     {
         VkSurfaceCapabilitiesKHR surfProperties;
-        if (!Util_CheckVkResult(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_pDevice->GetVkPhysicalDevice(), m_vkSurfaceKHR, &surfProperties), "vkGetPhysicalDeviceSurfaceCapabilitiesKHR"))
+        if (!E_CheckVkResult(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_pDevice->GetVkPhysicalDevice(), m_vkSurfaceKHR, &surfProperties), "vkGetPhysicalDeviceSurfaceCapabilitiesKHR"))
         {
             F_LogError("*********************** VulkanSwapChain::createSwapChain: vkGetPhysicalDeviceSurfaceCapabilitiesKHR failed !");
             return false;
@@ -404,7 +404,7 @@ namespace LostPeter
         ext.width = FMath::Clamp(width, surfProperties.minImageExtent.width, surfProperties.maxImageExtent.width);
         ext.height = FMath::Clamp(height, surfProperties.minImageExtent.height, surfProperties.maxImageExtent.height);
         
-        Util_ZeroStruct(m_vkSwapChainCreateInfoKHR, VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR);
+        E_ZeroStruct(m_vkSwapChainCreateInfoKHR, VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR);
         m_vkSwapChainCreateInfoKHR.surface				= m_vkSurfaceKHR;
         m_vkSwapChainCreateInfoKHR.minImageCount		= desiredNumBuffers;
         m_vkSwapChainCreateInfoKHR.imageFormat			= m_vkSwapChainImageColorFormat;
@@ -429,7 +429,7 @@ namespace LostPeter
         }
 
         VkBool32 supportsPresent;
-        if (!Util_CheckVkResult(vkGetPhysicalDeviceSurfaceSupportKHR(m_pDevice->GetVkPhysicalDevice(), m_pDevice->GetQueuePresent()->GetFamilyIndex(), m_vkSurfaceKHR, &supportsPresent), "vkGetPhysicalDeviceSurfaceSupportKHR"))
+        if (!E_CheckVkResult(vkGetPhysicalDeviceSurfaceSupportKHR(m_pDevice->GetVkPhysicalDevice(), m_pDevice->GetQueuePresent()->GetFamilyIndex(), m_vkSurfaceKHR, &supportsPresent), "vkGetPhysicalDeviceSurfaceSupportKHR"))
         {
             F_LogError("*********************** VulkanSwapChain::createSwapChain: vkGetPhysicalDeviceSurfaceSupportKHR failed !");
             return false;
@@ -439,20 +439,20 @@ namespace LostPeter
             F_LogError("*********************** VulkanSwapChain::createSwapChain: Present queue not support !");
         }
 
-        if (!Util_CheckVkResult(vkCreateSwapchainKHR(m_pDevice->GetVkDevice(), &m_vkSwapChainCreateInfoKHR, nullptr, &m_vkSwapChainKHR), "vkCreateSwapchainKHR"))
+        if (!E_CheckVkResult(vkCreateSwapchainKHR(m_pDevice->GetVkDevice(), &m_vkSwapChainCreateInfoKHR, nullptr, &m_vkSwapChainKHR), "vkCreateSwapchainKHR"))
         {
             F_LogError("*********************** VulkanSwapChain::createSwapChain: vkCreateSwapchainKHR failed !");
             return false;
         }
 
         uint32 numSwapChainImages;
-        if (!Util_CheckVkResult(vkGetSwapchainImagesKHR(m_pDevice->GetVkDevice(), m_vkSwapChainKHR, &numSwapChainImages, nullptr), "vkGetSwapchainImagesKHR"))
+        if (!E_CheckVkResult(vkGetSwapchainImagesKHR(m_pDevice->GetVkDevice(), m_vkSwapChainKHR, &numSwapChainImages, nullptr), "vkGetSwapchainImagesKHR"))
         {
             F_LogError("*********************** VulkanSwapChain::createSwapChain: vkGetSwapchainImagesKHR failed !");
             return false;
         }
         aOutImages.resize(numSwapChainImages);
-        if (!Util_CheckVkResult(vkGetSwapchainImagesKHR(m_pDevice->GetVkDevice(), m_vkSwapChainKHR, &numSwapChainImages, aOutImages.data()), "vkGetSwapchainImagesKHR"))
+        if (!E_CheckVkResult(vkGetSwapchainImagesKHR(m_pDevice->GetVkDevice(), m_vkSwapChainKHR, &numSwapChainImages, aOutImages.data()), "vkGetSwapchainImagesKHR"))
         {
             F_LogError("*********************** VulkanSwapChain::createSwapChain: vkGetSwapchainImagesKHR failed !");
             return false;
@@ -471,8 +471,8 @@ namespace LostPeter
         for (int32 i = 0; i < m_nSwapChainImageCount; ++i)
         {
             VkSemaphoreCreateInfo createInfo;
-            Util_ZeroStruct(createInfo, VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
-            if (!Util_CheckVkResult(vkCreateSemaphore(m_pDevice->GetVkDevice(), &createInfo, nullptr, &m_aVkImageAcquiredSemaphore[i]), "vkCreateSemaphore"))
+            E_ZeroStruct(createInfo, VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
+            if (!E_CheckVkResult(vkCreateSemaphore(m_pDevice->GetVkDevice(), &createInfo, nullptr, &m_aVkImageAcquiredSemaphore[i]), "vkCreateSemaphore"))
             {
                 F_LogError("*********************** VulkanSwapChain::createFence: vkCreateSemaphore failed !");
                 return false;

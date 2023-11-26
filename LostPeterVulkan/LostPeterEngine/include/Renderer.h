@@ -26,9 +26,7 @@ namespace LostPeterEngine
     public:
     protected:
         RendererListenerPtrList m_listRendererListeners;
-
         RenderTargetManager* m_pRenderTargetManager;
-
         RenderWindow* m_pRenderWindow;
 		RenderTarget* m_pActiveRenderTarget;
 		Viewport* m_pActiveViewport;
@@ -67,7 +65,13 @@ namespace LostPeterEngine
     public:
         virtual void Destroy();
         virtual RenderWindow* Init(bool bAutoCreateWindow, const String& strWndTitle = "Render Window") = 0;
-    
+
+		virtual RenderTarget* GetRenderTarget(const String& strName);
+		virtual void AttachRenderTarget(RenderTarget* pRenderTarget);
+		virtual RenderTarget* DetachRenderTarget(const String& strName);
+		virtual void DestroyRenderTarget(const String& strName);
+		virtual void DestroyRenderWindow(const String& strName);
+		virtual void DestroyRenderTexture(const String& strName);
 		virtual void UpdateRenderTargetPriority(uint8 nPriority, RenderTarget* pRenderTarget);
 		virtual void UpdateRenderTargetAll();
 		virtual void NotifyObjectCameraRemoved(const ObjectCamera* pObjectCamera);
@@ -76,6 +80,11 @@ namespace LostPeterEngine
 		virtual void RemoveRendererListener(RendererListener* pRendererListener);
         
     public:
+		virtual RenderWindow* CreateRenderWindow(const String& strName, uint32 nWidth, uint32 nHeight, bool bFullScreen,
+												 const String2StringMap* pParams = nullptr, bool bShowWindow = true) = 0;
+
+		virtual bool IsDeviceLost() = 0;
+
         virtual void RenderEvent_Begin(const char* szEventName)	{ }
 		virtual void RenderEvent_End() { }
 
@@ -99,8 +108,7 @@ namespace LostPeterEngine
 		virtual bool SetViewMatrix(const FMatrix4& matView) = 0;
 		virtual bool SetProjectionMatrix(const FMatrix4& matProj) = 0;
 		virtual bool SetViewProjectionMatrix(ObjectCamera* pObjectCamera);
-
-
+		
     };
 
 }; //LostPeterEngine

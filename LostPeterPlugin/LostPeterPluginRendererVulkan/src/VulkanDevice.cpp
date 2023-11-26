@@ -234,7 +234,7 @@ namespace LostPeter
         }
 
         VkDeviceCreateInfo deviceCreateInfo;
-        Util_ZeroStruct(deviceCreateInfo, VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO);
+        E_ZeroStruct(deviceCreateInfo, VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO);
         deviceCreateInfo.enabledExtensionCount = uint32_t(deviceExtensions.size());
         deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
         deviceCreateInfo.enabledLayerCount = uint32_t(validationLayers.size());
@@ -299,7 +299,7 @@ namespace LostPeter
             }
 
             VkDeviceQueueCreateInfo queueCreateInfo;
-            Util_ZeroStruct(queueCreateInfo, VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO);
+            E_ZeroStruct(queueCreateInfo, VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO);
             queueCreateInfo.queueFamilyIndex = i;
             queueCreateInfo.queueCount = currProps.queueCount;
             numPriorities += currProps.queueCount;
@@ -421,7 +421,7 @@ namespace LostPeter
     {
         const uint32 familyIndex = pQueue->GetFamilyIndex();
         VkBool32 supportsPresent = VK_FALSE;
-        if (!Util_CheckVkResult(vkGetPhysicalDeviceSurfaceSupportKHR(m_vkPhysicalDevice, familyIndex, surface, &supportsPresent), "vkGetPhysicalDeviceSurfaceSupportKHR"))
+        if (!E_CheckVkResult(vkGetPhysicalDeviceSurfaceSupportKHR(m_vkPhysicalDevice, familyIndex, surface, &supportsPresent), "vkGetPhysicalDeviceSurfaceSupportKHR"))
         {
             F_LogError("*********************** VulkanDevice::isSupportPresent: vkGetPhysicalDeviceSurfaceSupportKHR failed !");
             return false;
@@ -462,8 +462,8 @@ namespace LostPeter
     void VulkanDevice::CreateVkSemaphore(VkSemaphore& vkSemaphore)
     {
         VkSemaphoreCreateInfo semaphoreCreateInfo;
-        Util_ZeroStruct(semaphoreCreateInfo, VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
-        if (!Util_CheckVkResult(vkCreateSemaphore(m_vkDevice, &semaphoreCreateInfo, UTIL_CPU_ALLOCATOR, &vkSemaphore), "vkCreateSemaphore")) 
+        E_ZeroStruct(semaphoreCreateInfo, VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
+        if (!E_CheckVkResult(vkCreateSemaphore(m_vkDevice, &semaphoreCreateInfo, E_CPU_ALLOCATOR, &vkSemaphore), "vkCreateSemaphore")) 
         {
             String msg = "*********************** VulkanDevice::CreateVkSemaphore: Failed to create VkSemaphore !";
             F_LogError(msg.c_str());
@@ -474,7 +474,7 @@ namespace LostPeter
     {
         if (vkSemaphore != VK_NULL_HANDLE)
         {
-            vkDestroySemaphore(m_vkDevice, vkSemaphore, UTIL_CPU_ALLOCATOR);
+            vkDestroySemaphore(m_vkDevice, vkSemaphore, E_CPU_ALLOCATOR);
         }
     }
 
@@ -489,9 +489,9 @@ namespace LostPeter
     void VulkanDevice::CreateVkFence(bool isCreateSignaled, VkFence& vkFence)
     {
         VkFenceCreateInfo fenceCreateInfo;
-        Util_ZeroStruct(fenceCreateInfo, VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
+        E_ZeroStruct(fenceCreateInfo, VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
         fenceCreateInfo.flags = isCreateSignaled ? VK_FENCE_CREATE_SIGNALED_BIT : 0;
-        if (!Util_CheckVkResult(vkCreateFence(m_vkDevice, &fenceCreateInfo, UTIL_CPU_ALLOCATOR, &vkFence), "vkCreateFence")) 
+        if (!E_CheckVkResult(vkCreateFence(m_vkDevice, &fenceCreateInfo, E_CPU_ALLOCATOR, &vkFence), "vkCreateFence")) 
         {
             String msg = "*********************** VulkanDevice::CreateVkFence: Failed to create VkFence !";
             F_LogError(msg.c_str());
@@ -502,7 +502,7 @@ namespace LostPeter
     {
         if (vkFence != VK_NULL_HANDLE)
         {
-            vkDestroyFence(m_vkDevice, vkFence, UTIL_CPU_ALLOCATOR);
+            vkDestroyFence(m_vkDevice, vkFence, E_CPU_ALLOCATOR);
         }
     }
 
@@ -525,7 +525,7 @@ namespace LostPeter
         commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         commandPoolInfo.flags = flags;
         commandPoolInfo.queueFamilyIndex = queueFamilyIndex;
-        if (!Util_CheckVkResult(vkCreateCommandPool(m_vkDevice, &commandPoolInfo, UTIL_CPU_ALLOCATOR, &vkCommandPool), "vkCreateCommandPool")) 
+        if (!E_CheckVkResult(vkCreateCommandPool(m_vkDevice, &commandPoolInfo, E_CPU_ALLOCATOR, &vkCommandPool), "vkCreateCommandPool")) 
         {
             String msg = "*********************** VulkanWindow::CreateVkCommandPool: Failed to create command pool !";
             F_LogError(msg.c_str());
@@ -536,7 +536,7 @@ namespace LostPeter
     {   
         if (vkCommandPool != VK_NULL_HANDLE)
         {
-            vkDestroyCommandPool(m_vkDevice, vkCommandPool, UTIL_CPU_ALLOCATOR);
+            vkDestroyCommandPool(m_vkDevice, vkCommandPool, E_CPU_ALLOCATOR);
         }
     }
 
@@ -562,7 +562,7 @@ namespace LostPeter
         allocInfo.level = level;
         allocInfo.commandPool = vkCommandPool;
         allocInfo.commandBufferCount = commandBufferCount;
-        if (!Util_CheckVkResult(vkAllocateCommandBuffers(m_vkDevice, &allocInfo, pCommandBuffers), "vkAllocateCommandBuffers")) 
+        if (!E_CheckVkResult(vkAllocateCommandBuffers(m_vkDevice, &allocInfo, pCommandBuffers), "vkAllocateCommandBuffers")) 
         {
             String msg = "*********************** VulkanDevice::AllocateVkCommandBuffers: Failed to allocate VkCommandBuffers !";
             F_LogError(msg.c_str());
@@ -585,7 +585,7 @@ namespace LostPeter
         VkCommandBufferBeginInfo beginInfo = {};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags = flags;
-        if (!Util_CheckVkResult(vkBeginCommandBuffer(vkCommandBuffer, &beginInfo), "vkBeginCommandBuffer")) 
+        if (!E_CheckVkResult(vkBeginCommandBuffer(vkCommandBuffer, &beginInfo), "vkBeginCommandBuffer")) 
         {
             String msg = "*********************** VulkanDevice::BeginVkCommandBuffer: Failed to call vkBeginCommandBuffer !";
             F_LogError(msg.c_str());
@@ -594,7 +594,7 @@ namespace LostPeter
     }
     void VulkanDevice::EndVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer)
     {
-        if (!Util_CheckVkResult(vkEndCommandBuffer(vkCommandBuffer), "vkEndCommandBuffer")) 
+        if (!E_CheckVkResult(vkEndCommandBuffer(vkCommandBuffer), "vkEndCommandBuffer")) 
         {
             String msg = "*********************** VulkanDevice::EndVkCommandBuffer: Failed to call vkEndCommandBuffer !";
             F_LogError(msg.c_str());
@@ -619,7 +619,7 @@ namespace LostPeter
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = commandBufferCount;
         submitInfo.pCommandBuffers = pCommandBuffer;
-        if (!Util_CheckVkResult(vkQueueSubmit(vkQueue, commandBufferCount, &submitInfo, vkFence), "vkQueueSubmit")) 
+        if (!E_CheckVkResult(vkQueueSubmit(vkQueue, commandBufferCount, &submitInfo, vkFence), "vkQueueSubmit")) 
         {
             String msg = "*********************** VulkanDevice::QueueSubmitVkCommandBuffers: Failed to call vkQueueSubmit !";
             F_LogError(msg.c_str());
@@ -628,7 +628,7 @@ namespace LostPeter
     }
     void VulkanDevice::QueueWaitIdle(const VkQueue& vkQueue)
     {
-        if (!Util_CheckVkResult(vkQueueWaitIdle(vkQueue), "vkQueueWaitIdle")) 
+        if (!E_CheckVkResult(vkQueueWaitIdle(vkQueue), "vkQueueWaitIdle")) 
         {
             String msg = "*********************** VulkanDevice::QueueWaitIdle: Failed to call vkQueueWaitIdle !";
             F_LogError(msg.c_str());
@@ -649,7 +649,7 @@ namespace LostPeter
         bufferInfo.size = size;
         bufferInfo.usage = usage;
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        if (!Util_CheckVkResult(vkCreateBuffer(m_vkDevice, &bufferInfo, UTIL_CPU_ALLOCATOR, &vkBuffer), "vkCreateBuffer")) 
+        if (!E_CheckVkResult(vkCreateBuffer(m_vkDevice, &bufferInfo, E_CPU_ALLOCATOR, &vkBuffer), "vkCreateBuffer")) 
         {
             F_LogError("*********************** VulkanDevice::CreateVkBuffer: Failed to create VkBuffer !");
             return false;
@@ -661,7 +661,7 @@ namespace LostPeter
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
         allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
-        if (vkAllocateMemory(m_vkDevice, &allocInfo, UTIL_CPU_ALLOCATOR, &vkBufferMemory) != VK_SUCCESS) 
+        if (vkAllocateMemory(m_vkDevice, &allocInfo, E_CPU_ALLOCATOR, &vkBufferMemory) != VK_SUCCESS) 
         {
             F_LogError("*********************** VulkanDevice::CreateVkBuffer: Failed to allocate VkDeviceMemory !");
             return false;
@@ -848,8 +848,8 @@ namespace LostPeter
     {
         if (vkBuffer != VK_NULL_HANDLE)
         {
-            vkDestroyBuffer(m_vkDevice, vkBuffer, UTIL_CPU_ALLOCATOR);
-            vkFreeMemory(m_vkDevice, vkBufferMemory, UTIL_CPU_ALLOCATOR);
+            vkDestroyBuffer(m_vkDevice, vkBuffer, E_CPU_ALLOCATOR);
+            vkFreeMemory(m_vkDevice, vkBufferMemory, E_CPU_ALLOCATOR);
         }
     }
     void VulkanDevice::DestroyVkBuffers(VkBufferVector& aBuffer, VkDeviceMemoryVector& aBufferMemory)
@@ -885,7 +885,7 @@ namespace LostPeter
                                          VkMemoryMapFlags flags,
                                          void** ppData)
     {
-        if (!Util_CheckVkResult(vkMapMemory(m_vkDevice, vkBufferMemory, nDataOffset, nDataSize, flags, ppData), "vkMapMemory")) 
+        if (!E_CheckVkResult(vkMapMemory(m_vkDevice, vkBufferMemory, nDataOffset, nDataSize, flags, ppData), "vkMapMemory")) 
         {
             F_LogError("*********************** VulkanDevice::MapVkDeviceMemory: Failed to call vkMapMemory !");
             return false;

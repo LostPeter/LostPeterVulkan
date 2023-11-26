@@ -16,7 +16,7 @@ namespace LostPeterEngine
 {
     MovableFactory::MovableFactory()
         : m_nTypeFlag(0xFFFFFFFF)
-		, m_bDelExtern(false)
+		, m_bDelExternal(false)
     {
 
     }

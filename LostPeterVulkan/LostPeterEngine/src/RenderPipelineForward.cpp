@@ -13,16 +13,20 @@
 
 namespace LostPeterEngine
 {
-    RenderPipelineForward::RenderPipelineForward()
-        : RenderPipeline("RenderPipelineForward")
+    RenderPipelineForward::RenderPipelineForward(RenderPipelineManager* pRenderPipelineManager)
+        : RenderPipeline("RenderPipelineForward", pRenderPipelineManager, E_RenderPipeline_Forward)
     {
 
     }
+    
     RenderPipelineForward::~RenderPipelineForward()
     {
 
     }
 
-    
+    bool RenderPipelineForward::Init()
+    {
+        return true;
+    }
 
 }; //LostPeterEngine
