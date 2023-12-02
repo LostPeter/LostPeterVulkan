@@ -81,6 +81,7 @@ namespace LostPeterEngine
 
         //9> OnDestroy
         s_pSample->OnDestroy();
+        F_LogInfo("********** 9> App::Run: Sample::OnDestroy success *******************");
 
         //10> Cleanup
         glfwTerminate();

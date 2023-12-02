@@ -95,6 +95,7 @@ namespace LostPeterEngine
 		F_DELETE(m_pPathManager)
         F_DELETE(m_pSystemCapabilities)
 		m_bEngineIsInit = false;
+        F_LogInfo("Engine::Destroy: Engine destroy success !");
     }
 
     bool Engine::Init(const String& strWorkFolder, bool bAutoCreateWindow)

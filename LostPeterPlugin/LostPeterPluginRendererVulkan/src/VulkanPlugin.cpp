@@ -46,13 +46,21 @@ namespace LostPeter
 
 	void VulkanPlugin::Install()
 	{
-        //m_pRendererVulkan = new VulkanRenderer();
-        //RenderEngine::GetSingleton().AddRenderer(m_pRendererVulkan);
+        m_pRendererVulkan = new VulkanRenderer();
+        if (RenderEngine::GetSingleton().AddRenderer(m_pRendererVulkan))
+        {
+            F_LogInfo("VulkanPlugin::Install: Add renderer vulkan to RenderEngine success !");
+        }
+        else
+        {
+            F_LogError("*********************** VulkanPlugin::Install: Add renderer vulkan to RenderEngine failed !");
+        }
     }
 
     void VulkanPlugin::Uninstall()
 	{
-        //RenderEngine::GetSingleton().RemoveRenderer(m_pRendererVulkan);
+        RenderEngine::GetSingleton().RemoveRenderer(m_pRendererVulkan);
+        F_LogInfo("VulkanPlugin::Uninstall: Remove renderer vulkan from RenderEngine success !");
         F_DELETE(m_pRendererVulkan)
     }
 

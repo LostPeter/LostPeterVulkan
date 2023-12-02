@@ -46,15 +46,19 @@ namespace LostPeterEngine
         : Base("RenderEngine")
         , m_pRendererCurrent(nullptr)
 		, m_pRenderWindowAuto(nullptr)
-		, m_nNextMovableTypeFlag(1)
-		, m_bIsInit(false)
-		, m_bFirstInitAfterWndCreated(false)
+		, m_pRenderPipeLineManager(nullptr)
+		, m_pSceneManagerEnumerator(nullptr)
+		, m_pSceneManagerCurrent(nullptr)
+		, m_pRenderQueueManager(nullptr)
         , m_pMeshManager(nullptr)
         , m_pTextureManager(nullptr)
         , m_pShaderManager(nullptr)
         , m_pMaterialDataManager(nullptr)
         , m_pMaterialManager(nullptr)
-        , m_pSceneManagerEnumerator(nullptr)
+        
+		, m_nNextMovableTypeFlag(1)
+		, m_bIsInit(false)
+		, m_bFirstInitAfterWndCreated(false)
     {
 
     }
