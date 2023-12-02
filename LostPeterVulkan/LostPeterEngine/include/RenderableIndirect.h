@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderableIndirect : public Renderable
+    class engineExport RenderableIndirect : public Renderable
     {
     public:
         RenderableIndirect(const String& nameRenderableIndirect);

@@ -18,7 +18,7 @@ namespace LostPeterEngine
     ObjectParticle::ObjectParticle(const String& nameParticle, Scene* pScene)
         : Object(nameParticle, pScene)
     {
-        this->m_typeObject = Vulkan_Object_Particle;
+        this->m_typeObject = E_Object_Particle;
     }
     ObjectParticle::~ObjectParticle()
     {

@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanQueue
+    class VulkanQueue
     {
     public:
         VulkanQueue();
@@ -29,8 +29,8 @@ namespace LostPeter
         VulkanDevice* m_pDevice;
 
     public:
-        UTIL_FORCEINLINE const VkQueue& GetVkQueue() const { return m_vkQueue; }
-        UTIL_FORCEINLINE uint32 GetFamilyIndex() const { return m_nFamilyIndex; }
+        E_FORCEINLINE const VkQueue& GetVkQueue() const { return m_vkQueue; }
+        E_FORCEINLINE uint32 GetFamilyIndex() const { return m_nFamilyIndex; }
             
     public:
         void Destroy();

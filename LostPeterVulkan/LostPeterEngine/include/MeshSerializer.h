@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport MeshSerializer : public FSerializer
-                                    , public Base
+    class engineExport MeshSerializer : public FSerializer
+                                      , public Base
     {
     public:
         MeshSerializer();
@@ -29,10 +29,10 @@ namespace LostPeterEngine
         MeshInfoGroupPtrMap m_mapMeshInfoGroup;
 
     public:
-        LP_FORCEINLINE const MeshInfoPtrVector& GetMeshInfoPtrVector() const { return m_aMeshInfo; }
-        LP_FORCEINLINE MeshInfoPtrVector& GetMeshInfoPtrVector() { return m_aMeshInfo; }
-        LP_FORCEINLINE const MeshInfoGroupPtrMap& GetMeshInfoGroupPtrMap() const { return m_mapMeshInfoGroup; }
-        LP_FORCEINLINE MeshInfoGroupPtrMap& GetMeshInfoGroupPtrMap() { return m_mapMeshInfoGroup; }
+        E_FORCEINLINE const MeshInfoPtrVector& GetMeshInfoPtrVector() const { return m_aMeshInfo; }
+        E_FORCEINLINE MeshInfoPtrVector& GetMeshInfoPtrVector() { return m_aMeshInfo; }
+        E_FORCEINLINE const MeshInfoGroupPtrMap& GetMeshInfoGroupPtrMap() const { return m_mapMeshInfoGroup; }
+        E_FORCEINLINE MeshInfoGroupPtrMap& GetMeshInfoGroupPtrMap() { return m_mapMeshInfoGroup; }
         
 
     public:

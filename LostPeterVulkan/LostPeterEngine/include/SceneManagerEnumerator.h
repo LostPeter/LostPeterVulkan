@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport SceneManagerEnumerator : public FSingleton<SceneManagerEnumerator>
-                                            , public Base
+    class engineExport SceneManagerEnumerator : public FSingleton<SceneManagerEnumerator>
+                                              , public Base
     {
     public:
         SceneManagerEnumerator();
@@ -28,10 +28,10 @@ namespace LostPeterEngine
         SceneManagerPtrMap m_mapSceneManagers;
 
     public:
-        LP_FORCEINLINE const SceneManagerPtrVector& GetSceneManagerPtrVector() const { return this->m_aSceneManagers; }
-        LP_FORCEINLINE SceneManagerPtrVector& GetSceneManagerPtrVector() { return this->m_aSceneManagers; }
-        LP_FORCEINLINE const SceneManagerPtrMap& GetSceneManagerPtrMap() const { return this->m_mapSceneManagers; }
-        LP_FORCEINLINE SceneManagerPtrMap& GetSceneManagerPtrMap() { return this->m_mapSceneManagers; }
+        E_FORCEINLINE const SceneManagerPtrVector& GetSceneManagerPtrVector() const { return this->m_aSceneManagers; }
+        E_FORCEINLINE SceneManagerPtrVector& GetSceneManagerPtrVector() { return this->m_aSceneManagers; }
+        E_FORCEINLINE const SceneManagerPtrMap& GetSceneManagerPtrMap() const { return this->m_mapSceneManagers; }
+        E_FORCEINLINE SceneManagerPtrMap& GetSceneManagerPtrMap() { return this->m_mapSceneManagers; }
 
     public:
         static SceneManagerEnumerator& GetSingleton();

@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderTexture : public RenderTarget
+    class engineExport RenderTexture : public RenderTarget
     {
     public:
         RenderTexture(const String& nameRenderTexture);

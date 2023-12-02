@@ -38,13 +38,13 @@ namespace LostPeter
         bool m_bIsFreedBySystem;
 
     public:
-        UTIL_FORCEINLINE VkDeviceSize GetSize() const { return m_nSize; }
-        UTIL_FORCEINLINE VkDeviceMemory GetVkDeviceMemory() const { return m_vkDeviceMemory; }
-        UTIL_FORCEINLINE void* GetMappedPointer() { return m_pMappedPointer; }
-        UTIL_FORCEINLINE bool IsMapped() const { return m_pMappedPointer != nullptr; }
-        UTIL_FORCEINLINE uint32 GetMemoryTypeIndex() const { return m_nMemoryTypeIndex; }
-        UTIL_FORCEINLINE bool CanBeMapped() const { return m_bCanBeMapped; }
-        UTIL_FORCEINLINE bool IsCoherent() const { return m_bIsCoherent; }
+        E_FORCEINLINE VkDeviceSize GetSize() const { return m_nSize; }
+        E_FORCEINLINE VkDeviceMemory GetVkDeviceMemory() const { return m_vkDeviceMemory; }
+        E_FORCEINLINE void* GetMappedPointer() { return m_pMappedPointer; }
+        E_FORCEINLINE bool IsMapped() const { return m_pMappedPointer != nullptr; }
+        E_FORCEINLINE uint32 GetMemoryTypeIndex() const { return m_nMemoryTypeIndex; }
+        E_FORCEINLINE bool CanBeMapped() const { return m_bCanBeMapped; }
+        E_FORCEINLINE bool IsCoherent() const { return m_bIsCoherent; }
         
     public:
         void Destroy();

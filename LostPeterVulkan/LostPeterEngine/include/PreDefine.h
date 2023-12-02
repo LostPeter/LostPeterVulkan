@@ -81,9 +81,9 @@ namespace LostPeterEngine
 
         E_Window_Count,
     };
-    utilExport const String& E_GetWindowTypeName(EWindowType type);
-    utilExport const String& E_GetWindowTypeName(int type);
-    utilExport EWindowType E_ParseWindowType(const String& strName);
+    engineExport const String& E_GetWindowTypeName(EWindowType type);
+    engineExport const String& E_GetWindowTypeName(int type);
+    engineExport EWindowType E_ParseWindowType(const String& strName);
 
 
     enum ELightType
@@ -101,8 +101,8 @@ namespace LostPeterEngine
 
 		E_RenderPipeline_Count
 	};
-    utilExport const String& E_GetRenderPipelineTypeName(ERenderPipelineType type);
-    utilExport const String& E_GetRenderPipelineTypeName(int32 type);
+    engineExport const String& E_GetRenderPipelineTypeName(ERenderPipelineType type);
+    engineExport const String& E_GetRenderPipelineTypeName(int32 type);
     
     
 
@@ -132,9 +132,9 @@ namespace LostPeterEngine
 
         Vulkan_DescriptorSet_Count,
     };
-    utilExport const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type);
-    utilExport const String& Util_GetDescriptorSetTypeName(int type);
-    utilExport VulkanDescriptorSetType Util_ParseDescriptorSetType(const String& strName);
+    engineExport const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type);
+    engineExport const String& Util_GetDescriptorSetTypeName(int type);
+    engineExport VulkanDescriptorSetType Util_ParseDescriptorSetType(const String& strName);
 
 
     enum VulkanDescriptorSetUsageType
@@ -153,51 +153,51 @@ namespace LostPeterEngine
 
         Vulkan_DescriptorSetUsage_Count,
     };
-    utilExport const String& Util_GetDescriptorSetUsageTypeName(VulkanDescriptorSetUsageType type);
-    utilExport const String& Util_GetDescriptorSetUsageTypeName(int type);
-    utilExport VulkanDescriptorSetUsageType Util_ParseDescriptorSetUsageType(const String& strName);
-    utilExport VkDescriptorType Util_Transform2VkDescriptorType(VulkanDescriptorSetUsageType type);    
+    engineExport const String& Util_GetDescriptorSetUsageTypeName(VulkanDescriptorSetUsageType type);
+    engineExport const String& Util_GetDescriptorSetUsageTypeName(int type);
+    engineExport VulkanDescriptorSetUsageType Util_ParseDescriptorSetUsageType(const String& strName);
+    engineExport VkDescriptorType Util_Transform2VkDescriptorType(VulkanDescriptorSetUsageType type);    
 
     
-    enum VulkanObjectType
+    enum EObjectType
     {
-        Vulkan_Object_Mesh = 0,             //0:    Mesh
-        Vulkan_Object_SkinMesh,             //1:    SkinMesh
-        Vulkan_Object_Camera,               //2:    Camera
-        Vulkan_Object_Light,                //3:    Light
-        Vulkan_Object_Terrain,              //4:    Terrain
-        Vulkan_Object_Water,                //5:    Water
-        Vulkan_Object_Sky,                  //6:    Sky
-        Vulkan_Object_Cloud,                //7:    Cloud
-        Vulkan_Object_Particle,             //8:    Particle
+        E_Object_Mesh = 0,                  //0:    Mesh
+        E_Object_SkinMesh,                  //1:    SkinMesh
+        E_Object_Camera,                    //2:    Camera
+        E_Object_Light,                     //3:    Light
+        E_Object_Terrain,                   //4:    Terrain
+        E_Object_Water,                     //5:    Water
+        E_Object_Sky,                       //6:    Sky
+        E_Object_Cloud,                     //7:    Cloud
+        E_Object_Particle,                  //8:    Particle
 
-        Vulkan_Object_Count,                
+        E_Object_Count,                
     };
-    utilExport const String& Util_GetObjectTypeName(VulkanObjectType type);
-    utilExport const String& Util_GetObjectTypeName(int type);
-    utilExport VulkanObjectType Util_ParseObjectType(const String& strName);
+    engineExport const String& E_GetObjectTypeName(EObjectType type);
+    engineExport const String& E_GetObjectTypeName(int type);
+    engineExport EObjectType E_ParseObjectType(const String& strName);
 
 
-    enum VulkanRenderQueueType
+    enum ERenderQueueType
     {
-        Vulkan_RenderQueue_BackGround = 0,  //0:    BackGround
-        Vulkan_RenderQueue_Opaque,          //1:    Opaque
-        Vulkan_RenderQueue_Terrain,         //2:    Terrain
-        Vulkan_RenderQueue_Sky,             //3:    Sky
-        Vulkan_RenderQueue_Transparent,     //4:    Transparent
-        Vulkan_RenderQueue_UI,              //5:    UI
+        E_RenderQueue_BackGround = 0,           //0:    BackGround
+        E_RenderQueue_Opaque,                   //1:    Opaque
+        E_RenderQueue_Terrain,                  //2:    Terrain
+        E_RenderQueue_Sky,                      //3:    Sky
+        E_RenderQueue_Transparent,              //4:    Transparent
+        E_RenderQueue_UI,                       //5:    UI
 
-        Vulkan_RenderQueue_Count,
+        E_RenderQueue_Count,
     };
-    utilExport const String& Util_GetRenderQueueTypeName(VulkanRenderQueueType type);
-    utilExport const String& Util_GetRenderQueueTypeName(int type);
-    utilExport VulkanRenderQueueType Util_ParseRenderQueueType(const String& strName);
+    engineExport const String& E_GetRenderQueueTypeName(ERenderQueueType type);
+    engineExport const String& E_GetRenderQueueTypeName(int type);
+    engineExport ERenderQueueType E_ParseRenderQueueType(const String& strName);
 
 
-    enum VulkanEngineConfigType
+    enum EEngineConfigType
 	{
     ////Common
-		Vulkan_EngineConfig_Common_MultiThread = 0,	       //0: MultiThread
+		E_EngineConfig_Common_MultiThread = 0,	       //0: MultiThread
 
     ////Render
 
@@ -208,10 +208,23 @@ namespace LostPeterEngine
     ////Physics
 
 		
-		Vulkan_EngineConfig_Count
+		E_EngineConfig_Count
 	};
-    utilExport const String& Util_GetEngineConfigTypeName(VulkanEngineConfigType type);
-    utilExport const String& Util_GetEngineConfigTypeName(int type);
+    engineExport const String& E_GetEngineConfigTypeName(EEngineConfigType type);
+    engineExport const String& E_GetEngineConfigTypeName(int type);
+
+
+    enum EFrameProfilerType
+    {
+        E_FrameProfiler_Audio = 0,                //0: Audio
+        E_FrameProfiler_Memory,                   //1: Memory
+        E_FrameProfiler_Physics,                  //2: Physics
+        E_FrameProfiler_Render,                   //3: Render
+        
+        E_FrameProfiler_Count
+    };
+    engineExport const String& E_GetFrameProfilerTypeName(EFrameProfilerType type);
+    engineExport const String& E_GetFrameProfilerTypeName(int type);
 
 
 ////////////////////////////// Vulkan //////////////////////////////
@@ -280,7 +293,7 @@ namespace LostPeterEngine
     struct MaterialConstants;
     struct InstanceConstants;
 
-    struct utilExport MeshInfo
+    struct engineExport MeshInfo
     {
         MeshInfo();
         MeshInfo(const String& _nameMesh,
@@ -312,7 +325,7 @@ namespace LostPeterEngine
     typedef std::map<uint32, MeshInfoPtrMap> MeshInfoGroupPtrMap;
 
 
-    struct utilExport TextureInfo
+    struct engineExport TextureInfo
     {
         TextureInfo();
         TextureInfo(const String& _nameTexture,
@@ -353,7 +366,7 @@ namespace LostPeterEngine
     typedef std::map<uint32, TextureInfoPtrMap> TextureInfoGroupPtrMap;
 
 
-    struct utilExport ShaderInfo
+    struct engineExport ShaderInfo
     {
         ShaderInfo();
         ShaderInfo(const String& _nameShader,
@@ -371,7 +384,7 @@ namespace LostPeterEngine
     typedef std::map<String, ShaderInfo*> ShaderInfoPtrMap;
     typedef std::map<uint32, ShaderInfoPtrMap> ShaderInfoGroupPtrMap;
 
-    struct utilExport ShaderModuleInfo
+    struct engineExport ShaderModuleInfo
     {
         String nameShader;
         String nameShaderType;
@@ -380,7 +393,7 @@ namespace LostPeterEngine
     typedef std::vector<ShaderModuleInfo> ShaderModuleInfoVector;
 
 
-    struct utilExport DescriptorSetInfo
+    struct engineExport DescriptorSetInfo
     {
         DescriptorSetInfo();
         DescriptorSetInfo(const String& _nameDescriptorSetInfo,
@@ -398,7 +411,7 @@ namespace LostPeterEngine
     typedef std::map<String, DescriptorSetInfo*> DescriptorSetInfoPtrMap;
 
 
-    struct utilExport DescriptorSetLayoutInfo
+    struct engineExport DescriptorSetLayoutInfo
     {
         DescriptorSetLayoutInfo();
         DescriptorSetLayoutInfo(const String& _nameDescriptorSetLayoutInfo);
@@ -410,7 +423,7 @@ namespace LostPeterEngine
     typedef std::map<String, DescriptorSetLayoutInfo*> DescriptorSetLayoutInfoPtrMap;
 
 
-    struct utilExport MaterialInfo
+    struct engineExport MaterialInfo
     {
         MaterialInfo();
         MaterialInfo(const String& _nameMaterial,
@@ -426,7 +439,7 @@ namespace LostPeterEngine
     typedef std::map<uint32, MaterialInfoPtrMap> MaterialInfoGroupPtrMap;
 
 
-    struct utilExport SceneInfo
+    struct engineExport SceneInfo
     {
         SceneInfo();
         SceneInfo(const String& _nameScene,
@@ -454,6 +467,12 @@ namespace LostPeterEngine
     class Engine;
     class EngineConfig;
     class EngineListener;
+    class EngineFrameProfiler;
+    class EngineFrameState;
+    class EngineFrameStateAudio;
+    class EngineFrameStateMemory;
+    class EngineFrameStatePhysics;
+    class EngineFrameStateRender;
     class Material;
     class MaterialData;
     class MaterialDataManager;
@@ -524,6 +543,7 @@ namespace LostPeterEngine
     class Shader;
     class ShaderManager;
     class ShaderSerializer;
+    class SystemCapabilities;
     class Texture;
     class TextureManager;
     class TextureSerializer;
@@ -672,7 +692,7 @@ namespace LostPeterEngine
     typedef std::map<String, Viewport*> ViewportPtrMap;
     typedef std::map<int, Viewport*> ViewportPtrOrderMap;
 
-    struct utilExport ConfigItem
+    struct engineExport ConfigItem
 	{
 		String strName;
 		String strCurValue;
@@ -681,17 +701,17 @@ namespace LostPeterEngine
 	};
 	typedef std::map<String, ConfigItem> ConfigItemMap;
 
-    struct utilExport RenderTargetEvent
+    struct engineExport RenderTargetEvent
 	{
 		RenderTarget* pRenderTargetSrc;
 	};
 
-	struct utilExport RenderTargetViewportEvent
+	struct engineExport RenderTargetViewportEvent
 	{
 		Viewport* pViewportSrc;
 	};
 
-    struct utilExport RenderFrameEvent
+    struct engineExport RenderFrameEvent
 	{
 		float fTimeSinceLastEvent;		
 		float fTimeSinceLastFrame;

@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport Shader : public Base
+    class engineExport Shader : public Base
     {
     public:
         Shader(uint32 _group,

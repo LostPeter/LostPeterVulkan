@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderPipeline : public Base
-                                    , public FNonCopyable
+    class engineExport RenderPipeline : public Base
+                                      , public FNonCopyable
     {
     public:
         RenderPipeline(const String& nameRenderPipeline, RenderPipelineManager* pRenderPipelineManager, ERenderPipelineType eRenderPipelineType);
@@ -29,7 +29,7 @@ namespace LostPeterEngine
 		ERenderPipelineType m_eRenderPipelineType;
 
     public:
-		LP_FORCEINLINE ERenderPipelineType GetRenderPipePipeLineType() const { return m_eRenderPipelineType; }
+		E_FORCEINLINE ERenderPipelineType GetRenderPipePipeLineType() const { return m_eRenderPipelineType; }
 
     public:
         virtual bool Init() = 0;

@@ -15,12 +15,12 @@
 namespace LostPeter
 {
     VulkanPlugin* g_pPlugin_RendererVulkan = nullptr;
-	extern "C" void lpVulkanExport dllStartPlugin() throw()
+	extern "C" void vulkanExport dllStartPlugin() throw()
 	{
 		g_pPlugin_RendererVulkan = new VulkanPlugin();
 		FPluginManager::GetSingleton().InstallPlugin(g_pPlugin_RendererVulkan);
 	}
-	extern "C" void lpVulkanExport dllStopPlugin()
+	extern "C" void vulkanExport dllStopPlugin()
 	{
 		FPluginManager::GetSingleton().UninstallPlugin(g_pPlugin_RendererVulkan);
 		F_DELETE(g_pPlugin_RendererVulkan)

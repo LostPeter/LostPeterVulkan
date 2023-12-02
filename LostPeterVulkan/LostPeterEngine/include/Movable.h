@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport Movable : public Base
+    class engineExport Movable : public Base
     {
     public:
         Movable(const String& nameMovable, Scene* pScene);

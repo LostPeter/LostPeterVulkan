@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ObjectWater : public Object
+    class engineExport ObjectWater : public Object
     {
     public:
         ObjectWater(const String& nameWater, Scene* pScene);

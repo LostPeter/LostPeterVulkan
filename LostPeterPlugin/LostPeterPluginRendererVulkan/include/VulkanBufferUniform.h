@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanBufferUniform : public Base
+    class VulkanBufferUniform : public Base
     {
     public:
         VulkanBufferUniform(const String& strName, VulkanDevice* pDevice);
@@ -33,10 +33,10 @@ namespace LostPeter
         VkDeviceMemoryVector m_aVkUniformBuffersMemory;
         
     public:
-        UTIL_FORCEINLINE const VkBufferVector& GetVkBufferVector() const { return m_aVkUniformBuffer; }
-        UTIL_FORCEINLINE VkBufferVector& GetVkBufferVector() { return m_aVkUniformBuffer; }
-        UTIL_FORCEINLINE const VkDeviceMemoryVector& GetVkDeviceMemoryVector() const { return m_aVkUniformBuffersMemory; }
-        UTIL_FORCEINLINE VkDeviceMemoryVector& GetVkDeviceMemoryVector() { return m_aVkUniformBuffersMemory; }
+        E_FORCEINLINE const VkBufferVector& GetVkBufferVector() const { return m_aVkUniformBuffer; }
+        E_FORCEINLINE VkBufferVector& GetVkBufferVector() { return m_aVkUniformBuffer; }
+        E_FORCEINLINE const VkDeviceMemoryVector& GetVkDeviceMemoryVector() const { return m_aVkUniformBuffersMemory; }
+        E_FORCEINLINE VkDeviceMemoryVector& GetVkDeviceMemoryVector() { return m_aVkUniformBuffersMemory; }
 
     public:
         void Destroy();

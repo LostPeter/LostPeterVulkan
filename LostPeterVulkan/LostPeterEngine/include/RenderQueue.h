@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderQueue : public Base
-                                  , public FNonCopyable
+    class engineExport RenderQueue : public Base
+                                   , public FNonCopyable
     {
     public:
         RenderQueue(const String& nameRenderQueue);

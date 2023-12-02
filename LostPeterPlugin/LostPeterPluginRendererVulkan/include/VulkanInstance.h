@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanInstance
+    class VulkanInstance
     {
     public:
         VulkanInstance();
@@ -40,25 +40,25 @@ namespace LostPeter
         FPixelFormatType m_eSwapChainImagePixelFormat;
 
     public:
-        UTIL_FORCEINLINE const VkInstance& GetVkInstance() const { return m_vkInstance; }
-        UTIL_FORCEINLINE const VkDebugReportCallbackEXT& GetVkDebugReportCallbackEXT() const { return m_vkDebugReport; }
-        UTIL_FORCEINLINE const ConstCharPtrVector& GetInstanceLayers() const { return m_aInstanceLayers; }
-        UTIL_FORCEINLINE const ConstCharPtrVector& GetInstanceExtensions() const { return m_aInstanceExtensions; }
-        UTIL_FORCEINLINE const ConstCharPtrVector& GetAppInstanceExtensions() const { return m_aAppInstanceExtensions; }
-        UTIL_FORCEINLINE const ConstCharPtrVector& GetAppDeviceExtensions() const { return m_aAppDeviceExtensions; }
-        UTIL_FORCEINLINE void AddAppInstanceExtensions(const char* szName) { m_aAppInstanceExtensions.push_back(szName); }
-        UTIL_FORCEINLINE void AddAppDeviceExtensions(const char* szName) { m_aAppDeviceExtensions.push_back(szName); }
-        UTIL_FORCEINLINE int32 GetPreferredVendorID() const { return m_nPreferredVendorID; }
-        UTIL_FORCEINLINE void SetPreferredVendorID(int32 vendorID) { m_nPreferredVendorID = vendorID; }
-        UTIL_FORCEINLINE VkPhysicalDeviceFeatures2* GetVkPhysicalDeviceFeatures2() const { return m_pVkPhysicalDeviceFeatures2; }
-        UTIL_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
-        UTIL_FORCEINLINE uint32 GetDesiredNumSwapChainImages() const { return m_nDesiredNumSwapChainImages; }
-        UTIL_FORCEINLINE void SetDesiredNumSwapChainImages(uint32 num) { m_nDesiredNumSwapChainImages = num; }
+        E_FORCEINLINE const VkInstance& GetVkInstance() const { return m_vkInstance; }
+        E_FORCEINLINE const VkDebugReportCallbackEXT& GetVkDebugReportCallbackEXT() const { return m_vkDebugReport; }
+        E_FORCEINLINE const ConstCharPtrVector& GetInstanceLayers() const { return m_aInstanceLayers; }
+        E_FORCEINLINE const ConstCharPtrVector& GetInstanceExtensions() const { return m_aInstanceExtensions; }
+        E_FORCEINLINE const ConstCharPtrVector& GetAppInstanceExtensions() const { return m_aAppInstanceExtensions; }
+        E_FORCEINLINE const ConstCharPtrVector& GetAppDeviceExtensions() const { return m_aAppDeviceExtensions; }
+        E_FORCEINLINE void AddAppInstanceExtensions(const char* szName) { m_aAppInstanceExtensions.push_back(szName); }
+        E_FORCEINLINE void AddAppDeviceExtensions(const char* szName) { m_aAppDeviceExtensions.push_back(szName); }
+        E_FORCEINLINE int32 GetPreferredVendorID() const { return m_nPreferredVendorID; }
+        E_FORCEINLINE void SetPreferredVendorID(int32 vendorID) { m_nPreferredVendorID = vendorID; }
+        E_FORCEINLINE VkPhysicalDeviceFeatures2* GetVkPhysicalDeviceFeatures2() const { return m_pVkPhysicalDeviceFeatures2; }
+        E_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
+        E_FORCEINLINE uint32 GetDesiredNumSwapChainImages() const { return m_nDesiredNumSwapChainImages; }
+        E_FORCEINLINE void SetDesiredNumSwapChainImages(uint32 num) { m_nDesiredNumSwapChainImages = num; }
         
-        UTIL_FORCEINLINE bool IsEnableValidationLayers() const { return m_bIsEnableValidationLayers; }
-        UTIL_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
+        E_FORCEINLINE bool IsEnableValidationLayers() const { return m_bIsEnableValidationLayers; }
+        E_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
 
-        UTIL_FORCEINLINE FPixelFormatType GetVkSwapChainImagePixelFormatType() const { return m_eSwapChainImagePixelFormat; }
+        E_FORCEINLINE FPixelFormatType GetVkSwapChainImagePixelFormatType() const { return m_eSwapChainImagePixelFormat; }
 
     public:
         void Destroy();

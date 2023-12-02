@@ -161,7 +161,7 @@ namespace LostPeterEngine
     }
 
 
-    //VulkanObjectType
+    //EObjectType
     static String s_nameObjectTypes[] = 
     {
         "Mesh",                 //0:    Mesh            
@@ -174,27 +174,27 @@ namespace LostPeterEngine
         "Cloud",                //7:    Cloud
         "Particle",             //8:    Particle
     };
-    const String& Util_GetObjectTypeName(VulkanObjectType type)
+    const String& E_GetObjectTypeName(EObjectType type)
     {
         return s_nameObjectTypes[(int)type];
     }
-    const String& Util_GetObjectTypeName(int type)
+    const String& E_GetObjectTypeName(int type)
     {
         return s_nameObjectTypes[type];
     }
-    VulkanObjectType Util_ParseObjectType(const String& strName)
+    EObjectType E_ParseObjectType(const String& strName)
     {
-        for (size_t i = 0; i < (int)Vulkan_Object_Count; i++)
+        for (size_t i = 0; i < (int)E_Object_Count; i++)
         {
             if (s_nameObjectTypes[i] == strName)
-                return (VulkanObjectType)(i);
+                return (EObjectType)(i);
         }
-        F_Assert(false && "Util_ParseObjectType: Wrong type name !")
-        return Vulkan_Object_Mesh;
+        F_Assert(false && "E_ParseObjectType: Wrong type name !")
+        return E_Object_Mesh;
     }
 
 
-    //VulkanRenderQueueType
+    //ERenderQueueType
     static String s_nameRenderQueueTypes[] = 
     {
         "BackGround",               //0:    BackGround            
@@ -204,27 +204,27 @@ namespace LostPeterEngine
         "Transparent",              //4:    Transparent
         "UI",                       //5:    UI
     };
-    const String& Util_GetRenderQueueTypeName(VulkanRenderQueueType type)
+    const String& E_GetRenderQueueTypeName(ERenderQueueType type)
     {
         return s_nameRenderQueueTypes[(int)type];
     }
-    const String& Util_GetRenderQueueTypeName(int type)
+    const String& E_GetRenderQueueTypeName(int type)
     {
         return s_nameRenderQueueTypes[type];
     }
-    VulkanRenderQueueType Util_ParseRenderQueueType(const String& strName)
+    ERenderQueueType E_ParseRenderQueueType(const String& strName)
     {
-        for (size_t i = 0; i < (int)Vulkan_RenderQueue_Count; i++)
+        for (size_t i = 0; i < (int)E_RenderQueue_Count; i++)
         {
             if (s_nameRenderQueueTypes[i] == strName)
-                return (VulkanRenderQueueType)(i);
+                return (ERenderQueueType)(i);
         }
-        F_Assert(false && "Util_ParseRenderQueueType: Wrong type name !")
-        return Vulkan_RenderQueue_Opaque;
+        F_Assert(false && "E_ParseRenderQueueType: Wrong type name !")
+        return E_RenderQueue_Opaque;
     }
 
 
-    //VulkanEngineConfigType
+    //EEngineConfigType
     static const String s_nameEngineConfigTypes[] = 
 	{
     ////Common
@@ -240,14 +240,34 @@ namespace LostPeterEngine
         
 
 	};
-    const String& Util_GetEngineConfigTypeName(VulkanEngineConfigType type)
+    const String& E_GetEngineConfigTypeName(EEngineConfigType type)
     {
         return s_nameEngineConfigTypes[(int32)type];
     }
-    const String& Util_GetEngineConfigTypeName(int32 type)
+    const String& E_GetEngineConfigTypeName(int32 type)
     {
         return s_nameEngineConfigTypes[type];
     }
+
+
+    //EFrameProfilerType
+    static const String s_nameFrameProfilerTypes[] = 
+    { 
+        "Audio", 
+        "Memory", 
+        "Physics",
+        "Render",
+
+    };
+    const String& E_GetFrameProfilerTypeName(EFrameProfilerType type)
+    {
+        return s_nameFrameProfilerTypes[(int32)type];
+    }
+    const String& E_GetFrameProfilerTypeName(int type)
+    {
+        return s_nameFrameProfilerTypes[type];
+    }
+
 
 ////////////////////////////// Vulkan //////////////////////////////
     const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(FMeshVertexType type)

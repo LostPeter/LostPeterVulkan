@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport MaterialInstance : public Base
+    class engineExport MaterialInstance : public Base
     {
     public:
         MaterialInstance(const String& nameMaterialInstance, Material* pMaterial);
@@ -27,7 +27,7 @@ namespace LostPeterEngine
         Material* m_pMaterial;
 
     public:
-        LP_FORCEINLINE Material* GetMaterial() const { return m_pMaterial; }
+        E_FORCEINLINE Material* GetMaterial() const { return m_pMaterial; }
 
     public:
         void Destroy();

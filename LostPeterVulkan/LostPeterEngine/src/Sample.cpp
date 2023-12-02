@@ -12,6 +12,7 @@
 #include "../include/PreInclude.h"
 #include "../include/Sample.h"
 #include "../include/Window.h"
+#include "../include/Engine.h"
 
 namespace LostPeterEngine
 {
@@ -22,7 +23,8 @@ namespace LostPeterEngine
         , m_nHeight(nHeight)
         , m_fAspectRatio(1.0f)
         
-        , m_pTimer(new FTimer())
+        , m_pEngine(nullptr)
+        , m_pTimer(nullptr)
         , m_fFPS(0.0f)
         , m_nFrameFPS(0)
         , m_nFrameTotal(0)
@@ -38,7 +40,6 @@ namespace LostPeterEngine
         F_LogInfo("Path Bin: [%s] !", m_strPathBin.c_str());
 
         RefreshAspectRatio();
-        m_fTimeLastFPS = m_pTimer->GetTimeSinceStart();
     }
 
     Sample::~Sample()
@@ -54,6 +55,8 @@ namespace LostPeterEngine
 
     void Sample::UpdateTimer()
     {
+        if (m_pTimer == nullptr)
+            return;
         m_pTimer->Tick();
         float timeSinceStart = m_pTimer->GetTimeSinceStart();
         ++ m_nFrameFPS;
@@ -130,8 +133,27 @@ namespace LostPeterEngine
     }
         bool Sample::init()
         {
+            //1> initEngine
+            if (!initEngine())
+            {
+                return false;
+            }
+
             return true;
         }
+            bool Sample::initEngine()
+            {
+                m_pEngine = new Engine();
+                if (!m_pEngine->Init(m_strPathBin, false))
+                {
+                    F_LogError("*********************** Sample::initEngine: init engine failed, path bin: [%s] !", m_strPathBin.c_str());
+                    return false;
+                }
+                m_pTimer = m_pEngine->GetTimer();
+                m_fTimeLastFPS = m_pTimer->GetTimeSinceStart();
+
+                return true;
+            }
 
     void Sample::OnDestroy()
     {
@@ -140,6 +162,7 @@ namespace LostPeterEngine
         void Sample::destroy()
         {
             destroyWindows();
+            destroyEngine();
         }
             void Sample::destroyWindows()
             {
@@ -151,6 +174,10 @@ namespace LostPeterEngine
                 }
                 m_aWindows.clear();
                 m_mapWindows.clear();
+            }
+            void Sample::destroyEngine()
+            {
+                F_DELETE(m_pEngine)
             }
 
     void Sample::OnLoad()

@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport SceneDataManager : public FSingleton<SceneDataManager>
-                                      , public Base
+    class engineExport SceneDataManager : public FSingleton<SceneDataManager>
+                                        , public Base
     {
         friend class SceneDataSerializer;
 
@@ -34,13 +34,13 @@ namespace LostPeterEngine
         SceneGroupPtrMap m_mapSceneGroup;
 
     public:
-        LP_FORCEINLINE SceneSerializer* GetSceneSerializer() const { return m_pSceneSerializer; }
-        LP_FORCEINLINE SceneDataSerializer* GetSceneDataSerializer() const { return m_pSceneDataSerializer; }
+        E_FORCEINLINE SceneSerializer* GetSceneSerializer() const { return m_pSceneSerializer; }
+        E_FORCEINLINE SceneDataSerializer* GetSceneDataSerializer() const { return m_pSceneDataSerializer; }
 
-        LP_FORCEINLINE const ScenePtrVector& GetScenePtrVector() const { return this->m_aScene; }
-        LP_FORCEINLINE ScenePtrVector& GetScenePtrVector() { return this->m_aScene; }
-        LP_FORCEINLINE const SceneGroupPtrMap& GetSceneGroupPtrMap() const { return this->m_mapSceneGroup; }
-        LP_FORCEINLINE SceneGroupPtrMap& GetSceneGroupPtrMap() { return this->m_mapSceneGroup; }
+        E_FORCEINLINE const ScenePtrVector& GetScenePtrVector() const { return this->m_aScene; }
+        E_FORCEINLINE ScenePtrVector& GetScenePtrVector() { return this->m_aScene; }
+        E_FORCEINLINE const SceneGroupPtrMap& GetSceneGroupPtrMap() const { return this->m_mapSceneGroup; }
+        E_FORCEINLINE SceneGroupPtrMap& GetSceneGroupPtrMap() { return this->m_mapSceneGroup; }
 
     public:
         static SceneDataManager& GetSingleton();

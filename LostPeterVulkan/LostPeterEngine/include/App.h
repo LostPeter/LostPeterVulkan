@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport App
+    class engineExport App
     {
     public:
         static Sample* s_pSample;

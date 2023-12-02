@@ -14,7 +14,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport Window
+    class engineExport Window
     {
     public:
         Window();

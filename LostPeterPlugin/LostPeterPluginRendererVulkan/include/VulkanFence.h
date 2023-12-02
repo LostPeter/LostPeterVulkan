@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanFence
+    class VulkanFence
     {
         friend class VulkanFenceManager;
 
@@ -31,12 +31,12 @@ namespace LostPeter
         VulkanFenceStateType m_eFenceState;
 
     public:
-        UTIL_FORCEINLINE VulkanFenceManager* GetFenceManager() { return m_pFenceManager; }
-        UTIL_FORCEINLINE const VkFence& GetVkFence() const { return m_vkFence; }
-        UTIL_FORCEINLINE VkFence GetVkFence() { return m_vkFence; }
-        UTIL_FORCEINLINE bool IsSignaled() const { return m_eFenceState == Vulkan_FenceState_Signaled; }
-        UTIL_FORCEINLINE VulkanFenceStateType GetFenceStateType() const { return m_eFenceState; }
-        UTIL_FORCEINLINE void SetFenceStateType(VulkanFenceStateType eFenceState) { m_eFenceState = eFenceState; }
+        E_FORCEINLINE VulkanFenceManager* GetFenceManager() { return m_pFenceManager; }
+        E_FORCEINLINE const VkFence& GetVkFence() const { return m_vkFence; }
+        E_FORCEINLINE VkFence GetVkFence() { return m_vkFence; }
+        E_FORCEINLINE bool IsSignaled() const { return m_eFenceState == Vulkan_FenceState_Signaled; }
+        E_FORCEINLINE VulkanFenceStateType GetFenceStateType() const { return m_eFenceState; }
+        E_FORCEINLINE void SetFenceStateType(VulkanFenceStateType eFenceState) { m_eFenceState = eFenceState; }
 
     public:
         void Destroy();

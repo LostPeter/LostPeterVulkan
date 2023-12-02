@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport MeshDataSerializer : public FSerializer
-                                        , public Base
+    class engineExport MeshDataSerializer : public FSerializer
+                                          , public Base
     {
     public:
         MeshDataSerializer();

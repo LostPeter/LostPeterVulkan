@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderPipelineForward : public RenderPipeline
+    class engineExport RenderPipelineForward : public RenderPipeline
     {
     public:
         RenderPipelineForward(RenderPipelineManager* pRenderPipelineManager);

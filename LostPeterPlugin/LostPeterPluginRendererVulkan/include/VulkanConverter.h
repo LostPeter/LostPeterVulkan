@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanConverter 
+    class VulkanConverter 
     {
     public:
         static VkPrimitiveTopology Transform2VkPrimitiveTopology(FRenderPrimitiveType eRenderPrimitive);

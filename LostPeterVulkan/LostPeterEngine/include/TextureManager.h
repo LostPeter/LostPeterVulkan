@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport TextureManager : public FSingleton<TextureManager>
-                                    , public Base
+    class engineExport TextureManager : public FSingleton<TextureManager>
+                                      , public Base
     {
     public:
         TextureManager();
@@ -30,11 +30,11 @@ namespace LostPeterEngine
         TextureGroupPtrMap m_mapTextureGroup;
 
     public:
-        LP_FORCEINLINE TextureSerializer* GetTextureSerializer() const { return m_pTextureSerializer; }
-        LP_FORCEINLINE const TexturePtrVector& GetTexturePtrVector() const { return m_aTexture; }
-        LP_FORCEINLINE TexturePtrVector& GetTexturePtrVector() { return m_aTexture; }
-        LP_FORCEINLINE const TextureGroupPtrMap& GetTextureGroupPtrMap() const { return m_mapTextureGroup; }
-        LP_FORCEINLINE TextureGroupPtrMap& GetTextureGroupPtrMap() { return m_mapTextureGroup; }
+        E_FORCEINLINE TextureSerializer* GetTextureSerializer() const { return m_pTextureSerializer; }
+        E_FORCEINLINE const TexturePtrVector& GetTexturePtrVector() const { return m_aTexture; }
+        E_FORCEINLINE TexturePtrVector& GetTexturePtrVector() { return m_aTexture; }
+        E_FORCEINLINE const TextureGroupPtrMap& GetTextureGroupPtrMap() const { return m_mapTextureGroup; }
+        E_FORCEINLINE TextureGroupPtrMap& GetTextureGroupPtrMap() { return m_mapTextureGroup; }
 
     public:
         static TextureManager& GetSingleton();

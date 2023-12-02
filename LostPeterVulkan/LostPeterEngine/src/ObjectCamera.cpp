@@ -28,7 +28,7 @@ namespace LostPeterEngine
 		, m_qRotReal(FMath::ms_qUnit)
         , m_pViewport(nullptr)
     {
-        this->m_typeObject = Vulkan_Object_Camera;
+        this->m_typeObject = E_Object_Camera;
     }
 
     ObjectCamera::~ObjectCamera()

@@ -18,7 +18,7 @@ namespace LostPeterEngine
     ObjectSky::ObjectSky(const String& nameSky, Scene* pScene)
         : Object(nameSky, pScene)
     {
-        this->m_typeObject = Vulkan_Object_Sky;
+        this->m_typeObject = E_Object_Sky;
     }
     ObjectSky::~ObjectSky()
     {

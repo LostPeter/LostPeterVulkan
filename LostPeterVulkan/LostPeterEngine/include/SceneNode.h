@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport SceneNode : public Node
+    class engineExport SceneNode : public Node
     {
     public:
         SceneNode(Scene* pScene);
@@ -50,17 +50,17 @@ namespace LostPeterEngine
 		mutable bool m_bDerivedVisible;
 
     public:
-		LP_FORCEINLINE Scene* GetScene() const { return m_pScene; }
+		E_FORCEINLINE Scene* GetScene() const { return m_pScene; }
 		SceneNode* GetParentSceneNode() const;
 		
-		LP_FORCEINLINE const FAABB&	GetWorldAABB() const { return m_aabbWorld; }
-		LP_FORCEINLINE const FSphere& GetWorldSphere() const { return m_spereWorld; }
-		LP_FORCEINLINE bool	IsAABBSet()	{ return m_bAABBSet; }
+		E_FORCEINLINE const FAABB&	GetWorldAABB() const { return m_aabbWorld; }
+		E_FORCEINLINE const FSphere& GetWorldSphere() const { return m_spereWorld; }
+		E_FORCEINLINE bool	IsAABBSet()	{ return m_bAABBSet; }
 		const FAABB& GetAABB();
 		void SetAABB(bool bSetAABB, const FAABB& aabb);
 		
-		LP_FORCEINLINE bool	GetShowBoundingBox() const { return m_bShowBoundingBox; }
-		LP_FORCEINLINE void	SetShowBoundingBox(bool bShow) { m_bShowBoundingBox = bShow; }
+		E_FORCEINLINE bool	GetShowBoundingBox() const { return m_bShowBoundingBox; }
+		E_FORCEINLINE void	SetShowBoundingBox(bool bShow) { m_bShowBoundingBox = bShow; }
 
 		//virtual void AddBoundingBoxToQueue(RenderQueue* pQueue);
 

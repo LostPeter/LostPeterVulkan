@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport Material : public Base
+    class engineExport Material : public Base
     {
     public:
         Material(uint32 _group,
@@ -28,8 +28,8 @@ namespace LostPeterEngine
         MaterialData* m_pMaterialData;
 
     public:
-        LP_FORCEINLINE MaterialData* GetMaterialData() const { return m_pMaterialData; }
-		LP_FORCEINLINE void SetMaterialData(MaterialData* pMaterialData) { m_pMaterialData = pMaterialData; }
+        E_FORCEINLINE MaterialData* GetMaterialData() const { return m_pMaterialData; }
+		E_FORCEINLINE void SetMaterialData(MaterialData* pMaterialData) { m_pMaterialData = pMaterialData; }
 
     public:
         void Destroy();

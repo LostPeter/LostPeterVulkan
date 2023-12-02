@@ -17,7 +17,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ObjectCamera : public ObjectFrustum
+    class engineExport ObjectCamera : public ObjectFrustum
     {
     public:
         ObjectCamera(const String& nameCamera, SceneManager* pSceneManager);
@@ -48,30 +48,30 @@ namespace LostPeterEngine
 		Viewport* m_pViewport;	
 
     public:
-        LP_FORCEINLINE ObjectVisibleBoundsInfo* GetObjectVisibleBoundsInfo() { return m_pObjectVisibleBoundsInfo; }
+        E_FORCEINLINE ObjectVisibleBoundsInfo* GetObjectVisibleBoundsInfo() { return m_pObjectVisibleBoundsInfo; }
 
 
 	////Local
-        LP_FORCEINLINE const FVector3& GetPositionLocal() const { return m_vPosLocal; }
-		LP_FORCEINLINE void	SetPositionLocal(float x, float y, float z)
+        E_FORCEINLINE const FVector3& GetPositionLocal() const { return m_vPosLocal; }
+		E_FORCEINLINE void	SetPositionLocal(float x, float y, float z)
 		{
 			m_vPosLocal.x = x;
 			m_vPosLocal.y = y;
 			m_vPosLocal.z = z;
 			//invalidateView();
 		}
-		LP_FORCEINLINE void	SetPositionLocal(const FVector3& vPosLocal)
+		E_FORCEINLINE void	SetPositionLocal(const FVector3& vPosLocal)
 		{
 			m_vPosLocal = vPosLocal;
 			//invalidateView();
 		}
 
-		LP_FORCEINLINE void	Move(const FVector3& vDelta)
+		E_FORCEINLINE void	Move(const FVector3& vDelta)
 		{
 			m_vPosLocal = m_vPosLocal + vDelta;
 			//invalidateView();
 		}
-		LP_FORCEINLINE void	MoveRelative(const FVector3& vMove)
+		E_FORCEINLINE void	MoveRelative(const FVector3& vMove)
 		{
 			FVector3 vTrans = m_qRotLocal * vMove;
 			m_vPosLocal = m_vPosLocal + vTrans;
@@ -79,46 +79,46 @@ namespace LostPeterEngine
 		}
 		
 
-		LP_FORCEINLINE const FQuaternion& GetRotationLocal() const { return m_qRotLocal; }
-		LP_FORCEINLINE void	SetRotationLocal(const FQuaternion& qRotLocal)
+		E_FORCEINLINE const FQuaternion& GetRotationLocal() const { return m_qRotLocal; }
+		E_FORCEINLINE void	SetRotationLocal(const FQuaternion& qRotLocal)
 		{
 			m_qRotLocal = FMath::Normalize(qRotLocal);
 			//invalidateView();
 		}
 
-		LP_FORCEINLINE FVector3	GetDirectionLocal() const { return m_qRotLocal * FMath::ms_v3UnitNegZ; }
+		E_FORCEINLINE FVector3	GetDirectionLocal() const { return m_qRotLocal * FMath::ms_v3UnitNegZ; }
 		void SetDirectionLocal(const FVector3& vDirLocal);
-		LP_FORCEINLINE void	SetDirectionLocal(float x, float y, float z)
+		E_FORCEINLINE void	SetDirectionLocal(float x, float y, float z)
 		{
 			SetDirectionLocal(FVector3(x, y, z));
 		}
-		LP_FORCEINLINE FVector3	GetUpLocal() const { return m_qRotLocal * FMath::ms_v3UnitY; }
-		LP_FORCEINLINE FVector3	GetRightLocal() const { return m_qRotLocal * FMath::ms_v3UnitX; }
+		E_FORCEINLINE FVector3	GetUpLocal() const { return m_qRotLocal * FMath::ms_v3UnitY; }
+		E_FORCEINLINE FVector3	GetRightLocal() const { return m_qRotLocal * FMath::ms_v3UnitX; }
 
 		
 	////World
-		LP_FORCEINLINE const FVector3& GetPositionWorld() const
+		E_FORCEINLINE const FVector3& GetPositionWorld() const
 		{
 			//updateView();
 			return m_vPosWorld;
 		}
-		LP_FORCEINLINE const FQuaternion& GetRotationWorld() const
+		E_FORCEINLINE const FQuaternion& GetRotationWorld() const
 		{
 			//updateView();
 			return m_qRotWorld;
 		}
 
-		LP_FORCEINLINE FVector3	GetDirectionWorld() const
+		E_FORCEINLINE FVector3	GetDirectionWorld() const
 		{
 			//updateView();
 			return m_qRotWorld * FMath::ms_v3UnitNegZ;
 		}
-		LP_FORCEINLINE FVector3	GetUpWorld() const
+		E_FORCEINLINE FVector3	GetUpWorld() const
 		{
 			//updateView();
 			return m_qRotWorld * FMath::ms_v3UnitY;
 		}
-		LP_FORCEINLINE FVector3	GetRightWorld() const
+		E_FORCEINLINE FVector3	GetRightWorld() const
 		{
 			//updateView();
 			return m_qRotWorld * FMath::ms_v3UnitX;
@@ -126,36 +126,36 @@ namespace LostPeterEngine
 
 
 	////Real
-		LP_FORCEINLINE const FVector3& GetPositionReal() const
+		E_FORCEINLINE const FVector3& GetPositionReal() const
 		{
 			//updateView();
 			return m_vPosReal;
 		}
-		LP_FORCEINLINE const FQuaternion& GetRotationReal() const
+		E_FORCEINLINE const FQuaternion& GetRotationReal() const
 		{
 			//updateView();
 			return m_qRotReal;
 		}
 
-		LP_FORCEINLINE FVector3	GetDirectionReal() const
+		E_FORCEINLINE FVector3	GetDirectionReal() const
 		{
 			//updateView();
 			return m_qRotReal * FMath::ms_v3UnitNegZ;
 		}
-		LP_FORCEINLINE FVector3	GetUpReal() const
+		E_FORCEINLINE FVector3	GetUpReal() const
 		{
 			//updateView();
 			return m_qRotReal * FMath::ms_v3UnitY;
 		}
-		LP_FORCEINLINE FVector3	GetRightReal() const
+		E_FORCEINLINE FVector3	GetRightReal() const
 		{
 			//updateView();
 			return m_qRotReal * FMath::ms_v3UnitX;
 		}
 
 
-		LP_FORCEINLINE Viewport* GetViewport() const { return m_pViewport; }
-		LP_FORCEINLINE void	NotifyViewport(Viewport* pViewport)	{ m_pViewport = pViewport; }
+		E_FORCEINLINE Viewport* GetViewport() const { return m_pViewport; }
+		E_FORCEINLINE void	NotifyViewport(Viewport* pViewport)	{ m_pViewport = pViewport; }
 
 	
 	public:

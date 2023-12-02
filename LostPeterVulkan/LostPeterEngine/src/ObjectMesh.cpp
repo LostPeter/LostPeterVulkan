@@ -18,7 +18,7 @@ namespace LostPeterEngine
     ObjectMesh::ObjectMesh(const String& nameMesh, Scene* pScene)
         : Object(nameMesh, pScene)
     {
-        this->m_typeObject = Vulkan_Object_Mesh;
+        this->m_typeObject = E_Object_Mesh;
     }
     ObjectMesh::~ObjectMesh()
     {

@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ObjectMesh : public Object
+    class engineExport ObjectMesh : public Object
     {
     public:
         ObjectMesh(const String& nameMesh, Scene* pScene);

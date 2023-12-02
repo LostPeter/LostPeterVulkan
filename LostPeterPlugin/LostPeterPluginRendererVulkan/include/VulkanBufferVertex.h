@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanBufferVertex : public VulkanBuffer
+    class VulkanBufferVertex : public VulkanBuffer
     {
     public:
         VulkanBufferVertex(const String& strName, VulkanDevice* pDevice);
@@ -31,7 +31,7 @@ namespace LostPeter
         uint32_t m_nVertexCount;
 
     public:
-        UTIL_FORCEINLINE uint32_t GetVertexCount() const { return m_nVertexCount; }
+        E_FORCEINLINE uint32_t GetVertexCount() const { return m_nVertexCount; }
 
     public:
         virtual void Destroy();

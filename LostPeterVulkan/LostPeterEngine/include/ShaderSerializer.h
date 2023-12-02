@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ShaderSerializer : public FSerializer
-                                      , public Base
+    class engineExport ShaderSerializer : public FSerializer
+                                        , public Base
     {
     public:
         ShaderSerializer();
@@ -29,10 +29,10 @@ namespace LostPeterEngine
         ShaderInfoGroupPtrMap m_mapShaderInfoGroup;
 
     public:
-        LP_FORCEINLINE const ShaderInfoPtrVector& GetShaderInfoPtrVector() const { return m_aShaderInfo; }
-        LP_FORCEINLINE ShaderInfoPtrVector& GetShaderInfoPtrVector() { return m_aShaderInfo; }
-        LP_FORCEINLINE const ShaderInfoGroupPtrMap& GetShaderInfoGroupPtrMap() const { return m_mapShaderInfoGroup; }
-        LP_FORCEINLINE ShaderInfoGroupPtrMap& GetShaderInfoGroupPtrMap() { return m_mapShaderInfoGroup; }
+        E_FORCEINLINE const ShaderInfoPtrVector& GetShaderInfoPtrVector() const { return m_aShaderInfo; }
+        E_FORCEINLINE ShaderInfoPtrVector& GetShaderInfoPtrVector() { return m_aShaderInfo; }
+        E_FORCEINLINE const ShaderInfoGroupPtrMap& GetShaderInfoGroupPtrMap() const { return m_mapShaderInfoGroup; }
+        E_FORCEINLINE ShaderInfoGroupPtrMap& GetShaderInfoGroupPtrMap() { return m_mapShaderInfoGroup; }
 
     
     public:

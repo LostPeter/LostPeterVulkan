@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanBuffer : public Base
+    class VulkanBuffer : public Base
     {
     public:
         VulkanBuffer(const String& strName, VulkanDevice* pDevice);
@@ -38,15 +38,15 @@ namespace LostPeter
         bool m_bIsUpdateData;
 
     public:
-        UTIL_FORCEINLINE const VkBuffer& GetVkBuffer() const { return m_vkBuffer; }
-        UTIL_FORCEINLINE VkBuffer& GetVkBuffer() { return m_vkBuffer; }
-        UTIL_FORCEINLINE const VkDeviceMemory& GetVkBufferMemory() const { return m_vkBufferMemory; }
-        UTIL_FORCEINLINE VkDeviceMemory& GetVkBufferMemory() { return m_vkBufferMemory; }
+        E_FORCEINLINE const VkBuffer& GetVkBuffer() const { return m_vkBuffer; }
+        E_FORCEINLINE VkBuffer& GetVkBuffer() { return m_vkBuffer; }
+        E_FORCEINLINE const VkDeviceMemory& GetVkBufferMemory() const { return m_vkBufferMemory; }
+        E_FORCEINLINE VkDeviceMemory& GetVkBufferMemory() { return m_vkBufferMemory; }
 
-        UTIL_FORCEINLINE void* GetData() const { return m_pData; }
-        UTIL_FORCEINLINE uint32_t GetDataSize() const { return m_nDataSize; }
-        UTIL_FORCEINLINE bool IsDeleteData() const { return m_bIsDeleteData; }
-        UTIL_FORCEINLINE bool IsUpdateData() const { return m_bIsUpdateData; }
+        E_FORCEINLINE void* GetData() const { return m_pData; }
+        E_FORCEINLINE uint32_t GetDataSize() const { return m_nDataSize; }
+        E_FORCEINLINE bool IsDeleteData() const { return m_bIsDeleteData; }
+        E_FORCEINLINE bool IsUpdateData() const { return m_bIsUpdateData; }
 
     public:
         virtual void Destroy();

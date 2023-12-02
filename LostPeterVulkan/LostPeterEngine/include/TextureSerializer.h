@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport TextureSerializer : public FSerializer
-                                       , public Base
+    class engineExport TextureSerializer : public FSerializer
+                                         , public Base
     {
     public:
         TextureSerializer();
@@ -29,10 +29,10 @@ namespace LostPeterEngine
         TextureInfoGroupPtrMap m_mapTextureInfoGroup;
 
     public:
-        LP_FORCEINLINE const TextureInfoPtrVector& GetTextureInfoPtrVector() const { return m_aTextureInfo; }
-        LP_FORCEINLINE TextureInfoPtrVector& GetTextureInfoPtrVector() { return m_aTextureInfo; }
-        LP_FORCEINLINE const TextureInfoGroupPtrMap& GetTextureInfoGroupPtrMap() const { return m_mapTextureInfoGroup; }
-        LP_FORCEINLINE TextureInfoGroupPtrMap& GetTextureInfoGroupPtrMap() { return m_mapTextureInfoGroup; }
+        E_FORCEINLINE const TextureInfoPtrVector& GetTextureInfoPtrVector() const { return m_aTextureInfo; }
+        E_FORCEINLINE TextureInfoPtrVector& GetTextureInfoPtrVector() { return m_aTextureInfo; }
+        E_FORCEINLINE const TextureInfoGroupPtrMap& GetTextureInfoGroupPtrMap() const { return m_mapTextureInfoGroup; }
+        E_FORCEINLINE TextureInfoGroupPtrMap& GetTextureInfoGroupPtrMap() { return m_mapTextureInfoGroup; }
 
 
     public:

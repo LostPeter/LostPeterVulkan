@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderPassManager : public FSingleton<RenderPassManager>
-                                       , public Base
+    class engineExport RenderPassManager : public FSingleton<RenderPassManager>
+                                         , public Base
     {
     public:
         RenderPassManager();
@@ -29,10 +29,10 @@ namespace LostPeterEngine
         RenderPassPtrMap m_mapRenderPass;
 
     public:
-        LP_FORCEINLINE const RenderPassPtrVector& GetRenderPassPtrVector() const { return m_aRenderPass; }
-        LP_FORCEINLINE RenderPassPtrVector& GetRenderPassPtrVector() { return m_aRenderPass; }
-        LP_FORCEINLINE const RenderPassPtrMap& GetRenderPassPtrMap() const { return m_mapRenderPass; }
-        LP_FORCEINLINE RenderPassPtrMap& GetRenderPassPtrMap() { return m_mapRenderPass; }
+        E_FORCEINLINE const RenderPassPtrVector& GetRenderPassPtrVector() const { return m_aRenderPass; }
+        E_FORCEINLINE RenderPassPtrVector& GetRenderPassPtrVector() { return m_aRenderPass; }
+        E_FORCEINLINE const RenderPassPtrMap& GetRenderPassPtrMap() const { return m_mapRenderPass; }
+        E_FORCEINLINE RenderPassPtrMap& GetRenderPassPtrMap() { return m_mapRenderPass; }
 
     public:
         static RenderPassManager& GetSingleton();

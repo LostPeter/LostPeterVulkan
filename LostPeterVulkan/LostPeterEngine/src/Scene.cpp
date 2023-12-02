@@ -263,7 +263,7 @@ namespace LostPeterEngine
 
 
 ////Object
-    ObjectPtrMap* Scene::GetObjectPtrMapByType(VulkanObjectType type)
+    ObjectPtrMap* Scene::GetObjectPtrMapByType(EObjectType type)
 	{
 		return GetObjectPtrMapByType((int)type);
 	}
@@ -279,23 +279,23 @@ namespace LostPeterEngine
 		return &itFind->second;
 	}
 
-	Object* Scene::GetObject(VulkanObjectType type, const String& strName)
+	Object* Scene::GetObject(EObjectType type, const String& strName)
 	{
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(type);
 		ObjectPtrMap::iterator itFind = pObjectMap->find(strName);
 		if (itFind == pObjectMap->end())
 		{
-			F_LogError("Scene::GetObject: Can not find object named: [%s], type: [%s] !", strName.c_str(), Util_GetObjectTypeName(type).c_str());
+			F_LogError("Scene::GetObject: Can not find object named: [%s], type: [%s] !", strName.c_str(), E_GetObjectTypeName(type).c_str());
 			return nullptr;
 		}
 		return itFind->second;
 	}
-	bool Scene::HasObject(VulkanObjectType type, const String& strName)
+	bool Scene::HasObject(EObjectType type, const String& strName)
 	{
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(type);
 		return pObjectMap->find(strName) != pObjectMap->end();
 	}
-	Object* Scene::DestroyObject(VulkanObjectType type, const String& strName)
+	Object* Scene::DestroyObject(EObjectType type, const String& strName)
 	{
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(type);
 		ObjectPtrMap::iterator itFind = pObjectMap->find(strName);
@@ -307,7 +307,7 @@ namespace LostPeterEngine
 		}
 		return nullptr;
 	}
-	void Scene::DestroyObjectAll(VulkanObjectType type)
+	void Scene::DestroyObjectAll(EObjectType type)
 	{
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(type);
 		for (ObjectPtrMap::iterator it = pObjectMap->begin();
@@ -339,19 +339,19 @@ namespace LostPeterEngine
 	//ObjectMesh
 	ObjectMesh* Scene::GetObjectMesh(const String& strName)
 	{
-		Object* pObject = GetObject(Vulkan_Object_Mesh, strName);
+		Object* pObject = GetObject(E_Object_Mesh, strName);
 		if (!pObject)
 			return nullptr;
 		return (ObjectMesh*)pObject;
 	}
 	bool Scene::HasObjectMesh(const String& strName)
 	{
-		return HasObject(Vulkan_Object_Mesh, strName);
+		return HasObject(E_Object_Mesh, strName);
 	}
 
 	ObjectMesh* Scene::CreateObjectMesh(const String& strName)
 	{
-		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(Vulkan_Object_Mesh);
+		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Mesh);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
 			F_LogError("Scene::CreateObjectMesh: Object mesh named: [%s] already exists !", strName.c_str());
@@ -369,31 +369,31 @@ namespace LostPeterEngine
 	}
 	void Scene::DestroyObjectMesh(const String& strName)
 	{
-		Object* pObject = DestroyObject(Vulkan_Object_Mesh, strName);
+		Object* pObject = DestroyObject(E_Object_Mesh, strName);
 		F_DELETE(pObject)
 	}
 	void Scene::DestroyObjectMeshAll()
 	{
-		DestroyObjectAll(Vulkan_Object_Mesh);
+		DestroyObjectAll(E_Object_Mesh);
 	}
 
 
 	//ObjectSkinMesh
 	ObjectSkinMesh* Scene::GetObjectSkinMesh(const String& strName)
 	{
-		Object* pObject = GetObject(Vulkan_Object_SkinMesh, strName);
+		Object* pObject = GetObject(E_Object_SkinMesh, strName);
 		if (!pObject)
 			return nullptr;
 		return (ObjectSkinMesh*)pObject;
 	}
 	bool Scene::HasObjectSkinMesh(const String& strName)
 	{
-		return HasObject(Vulkan_Object_SkinMesh, strName);
+		return HasObject(E_Object_SkinMesh, strName);
 	}
 
 	ObjectSkinMesh* Scene::CreateObjectSkinMesh(const String& strName)
 	{
-		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(Vulkan_Object_SkinMesh);
+		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_SkinMesh);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
 			F_LogError("Scene::CreateObjectSkinMesh: Object skin mesh named: [%s] already exists !", strName.c_str());
@@ -411,31 +411,31 @@ namespace LostPeterEngine
 	}
 	void Scene::DestroyObjectSkinMesh(const String& strName)
 	{
-		Object* pObject = DestroyObject(Vulkan_Object_SkinMesh, strName);
+		Object* pObject = DestroyObject(E_Object_SkinMesh, strName);
 		F_DELETE(pObject)
 	}
 	void Scene::DestroyObjectSkinMeshAll()
 	{
-		DestroyObjectAll(Vulkan_Object_SkinMesh);
+		DestroyObjectAll(E_Object_SkinMesh);
 	}
 
 
 	//ObjectCamera
 	ObjectCamera* Scene::GetObjectCamera(const String& strName)
 	{
-		Object* pObject = GetObject(Vulkan_Object_Camera, strName);
+		Object* pObject = GetObject(E_Object_Camera, strName);
 		if (!pObject)
 			return nullptr;
 		return (ObjectCamera*)pObject;
 	}
 	bool Scene::HasObjectCamera(const String& strName)
 	{
-		return HasObject(Vulkan_Object_Camera, strName);
+		return HasObject(E_Object_Camera, strName);
 	}
 
 	ObjectCamera* Scene::CreateObjectCamera(const String& strName, SceneManager* pSceneManager, bool bMainCamera /*= false*/)
 	{
-		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(Vulkan_Object_Camera);
+		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Camera);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
 			F_LogError("Scene::CreateObjectCamera: Object camera named: [%s] already exists !", strName.c_str());
@@ -459,7 +459,7 @@ namespace LostPeterEngine
 	}
 	void Scene::DestroyObjectCamera(const String& strName)
 	{
-		Object* pObject = DestroyObject(Vulkan_Object_Camera, strName);
+		Object* pObject = DestroyObject(E_Object_Camera, strName);
 		if (pObject != nullptr)
 		{
 			if (pObject == m_pMainObjectCamera)
@@ -471,7 +471,7 @@ namespace LostPeterEngine
 	}
 	void Scene::DestroyObjectCameraAll()
 	{
-		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(Vulkan_Object_Camera);
+		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Camera);
 		for (ObjectPtrMap::iterator it = pObjectMap->begin();
 			 it != pObjectMap->end(); ++it)
 		{
@@ -486,19 +486,19 @@ namespace LostPeterEngine
 	//ObjectLight
 	ObjectLight* Scene::GetObjectLight(const String& strName)
 	{
-		Object* pObject = GetObject(Vulkan_Object_Light, strName);
+		Object* pObject = GetObject(E_Object_Light, strName);
 		if (!pObject)
 			return nullptr;
 		return (ObjectLight*)pObject;
 	}
 	bool Scene::HasObjectLight(const String& strName)
 	{
-		return HasObject(Vulkan_Object_Light, strName);
+		return HasObject(E_Object_Light, strName);
 	}
 
 	ObjectLight* Scene::CreateObjectLight(const String& strName, bool bMainLight /*= false*/)
 	{
-		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(Vulkan_Object_Light);
+		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Light);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
 			F_LogError("Scene::CreateObjectLight: Object light named: [%s] already exists !", strName.c_str());
@@ -522,7 +522,7 @@ namespace LostPeterEngine
 	}
 	void Scene::DestroyObjectLight(const String& strName)
 	{
-		Object* pObject = DestroyObject(Vulkan_Object_Light, strName);
+		Object* pObject = DestroyObject(E_Object_Light, strName);
 		if (pObject != nullptr)
 		{
 			if (pObject == m_pMainObjectLight)
@@ -534,7 +534,7 @@ namespace LostPeterEngine
 	}
 	void Scene::DestroyObjectLightAll()
 	{
-		DestroyObjectAll(Vulkan_Object_Light);
+		DestroyObjectAll(E_Object_Light);
 		m_pMainObjectLight = nullptr;
 	}
 
@@ -542,19 +542,19 @@ namespace LostPeterEngine
 	//ObjectTerrain
 	ObjectTerrain* Scene::GetObjectTerrain(const String& strName)
 	{
-		Object* pObject = GetObject(Vulkan_Object_Terrain, strName);
+		Object* pObject = GetObject(E_Object_Terrain, strName);
 		if (!pObject)
 			return nullptr;
 		return (ObjectTerrain*)pObject;
 	}
 	bool Scene::HasObjectTerrain(const String& strName)
 	{
-		return HasObject(Vulkan_Object_Terrain, strName);
+		return HasObject(E_Object_Terrain, strName);
 	}
 
 	ObjectTerrain* Scene::CreateObjectTerrain(const String& strName)
 	{
-		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(Vulkan_Object_Terrain);
+		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Terrain);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
 			F_LogError("Scene::CreateObjectTerrain: Object terrain named: [%s] already exists !", strName.c_str());
@@ -572,31 +572,31 @@ namespace LostPeterEngine
 	}
 	void Scene::DestroyObjectTerrain(const String& strName)
 	{
-		Object* pObject = DestroyObject(Vulkan_Object_Terrain, strName);
+		Object* pObject = DestroyObject(E_Object_Terrain, strName);
 		F_DELETE(pObject)
 	}
 	void Scene::DestroyObjectTerrainAll()
 	{
-		DestroyObjectAll(Vulkan_Object_Terrain);
+		DestroyObjectAll(E_Object_Terrain);
 	}
 
 
 	//ObjectWater
 	ObjectWater* Scene::GetObjectWater(const String& strName)
 	{
-		Object* pObject = GetObject(Vulkan_Object_Water, strName);
+		Object* pObject = GetObject(E_Object_Water, strName);
 		if (!pObject)
 			return nullptr;
 		return (ObjectWater*)pObject;
 	}
 	bool Scene::HasObjectWater(const String& strName)
 	{
-		return HasObject(Vulkan_Object_Water, strName);
+		return HasObject(E_Object_Water, strName);
 	}
 
 	ObjectWater* Scene::CreateObjectWater(const String& strName)
 	{
-		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(Vulkan_Object_Water);
+		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Water);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
 			F_LogError("Scene::CreateObjectWater: Object water named: [%s] already exists !", strName.c_str());
@@ -614,31 +614,31 @@ namespace LostPeterEngine
 	}
 	void Scene::DestroyObjectWater(const String& strName)
 	{
-		Object* pObject = DestroyObject(Vulkan_Object_Water, strName);
+		Object* pObject = DestroyObject(E_Object_Water, strName);
 		F_DELETE(pObject)
 	}
 	void Scene::DestroyObjectWaterAll()
 	{
-		DestroyObjectAll(Vulkan_Object_Water);
+		DestroyObjectAll(E_Object_Water);
 	}
 
 
 	//ObjectSky
 	ObjectSky* Scene::GetObjectSky(const String& strName)
 	{
-		Object* pObject = GetObject(Vulkan_Object_Sky, strName);
+		Object* pObject = GetObject(E_Object_Sky, strName);
 		if (!pObject)
 			return nullptr;
 		return (ObjectSky*)pObject;
 	}
 	bool Scene::HasObjectSky(const String& strName)
 	{
-		return HasObject(Vulkan_Object_Sky, strName);
+		return HasObject(E_Object_Sky, strName);
 	}
 
 	ObjectSky* Scene::CreateObjectSky(const String& strName)
 	{
-		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(Vulkan_Object_Sky);
+		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Sky);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
 			F_LogError("Scene::CreateObjectSky: Object sky named: [%s] already exists !", strName.c_str());
@@ -656,31 +656,31 @@ namespace LostPeterEngine
 	}
 	void Scene::DestroyObjectSky(const String& strName)
 	{
-		Object* pObject = DestroyObject(Vulkan_Object_Sky, strName);
+		Object* pObject = DestroyObject(E_Object_Sky, strName);
 		F_DELETE(pObject)
 	}
 	void Scene::DestroyObjectSkyAll()
 	{
-		DestroyObjectAll(Vulkan_Object_Sky);
+		DestroyObjectAll(E_Object_Sky);
 	}
 
 
 	//ObjectCloud
 	ObjectCloud* Scene::GetObjectCloud(const String& strName)
 	{
-		Object* pObject = GetObject(Vulkan_Object_Cloud, strName);
+		Object* pObject = GetObject(E_Object_Cloud, strName);
 		if (!pObject)
 			return nullptr;
 		return (ObjectCloud*)pObject;
 	}
 	bool Scene::HasObjectCloud(const String& strName)
 	{
-		return HasObject(Vulkan_Object_Cloud, strName);
+		return HasObject(E_Object_Cloud, strName);
 	}
 
 	ObjectCloud* Scene::CreateObjectCloud(const String& strName)
 	{
-		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(Vulkan_Object_Cloud);
+		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Cloud);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
 			F_LogError("Scene::CreateObjectCloud: Object cloud named: [%s] already exists !", strName.c_str());
@@ -698,31 +698,31 @@ namespace LostPeterEngine
 	}
 	void Scene::DestroyObjectCloud(const String& strName)
 	{
-		Object* pObject = DestroyObject(Vulkan_Object_Cloud, strName);
+		Object* pObject = DestroyObject(E_Object_Cloud, strName);
 		F_DELETE(pObject)
 	}
 	void Scene::DestroyObjectCloudAll()
 	{
-		DestroyObjectAll(Vulkan_Object_Cloud);
+		DestroyObjectAll(E_Object_Cloud);
 	}
 
 
 	//ObjectParticle
 	ObjectParticle* Scene::GetObjectParticle(const String& strName)
 	{
-		Object* pObject = GetObject(Vulkan_Object_Particle, strName);
+		Object* pObject = GetObject(E_Object_Particle, strName);
 		if (!pObject)
 			return nullptr;
 		return (ObjectParticle*)pObject;
 	}
 	bool Scene::HasObjectParticle(const String& strName)
 	{
-		return HasObject(Vulkan_Object_Particle, strName);
+		return HasObject(E_Object_Particle, strName);
 	}
 
 	ObjectParticle* Scene::CreateObjectParticle(const String& strName)
 	{
-		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(Vulkan_Object_Particle);
+		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Particle);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
 			F_LogError("Scene::CreateObjectParticle: Object particle named: [%s] already exists !", strName.c_str());
@@ -740,12 +740,12 @@ namespace LostPeterEngine
 	}
 	void Scene::DestroyObjectParticle(const String& strName)
 	{
-		Object* pObject = DestroyObject(Vulkan_Object_Particle, strName);
+		Object* pObject = DestroyObject(E_Object_Particle, strName);
 		F_DELETE(pObject)
 	}
 	void Scene::DestroyObjectParticleAll()
 	{
-		DestroyObjectAll(Vulkan_Object_Particle);
+		DestroyObjectAll(E_Object_Particle);
 	}
 
 

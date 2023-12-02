@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ObjectManager : public FSingleton<ObjectManager>
-                                   , public Base
+    class engineExport ObjectManager : public FSingleton<ObjectManager>
+                                     , public Base
     {
     public:
         ObjectManager();

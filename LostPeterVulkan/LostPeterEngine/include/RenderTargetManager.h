@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderTargetManager : public FSingleton<RenderTargetManager>
-                                         , public Base
+    class engineExport RenderTargetManager : public FSingleton<RenderTargetManager>
+                                           , public Base
     {
     public:
         RenderTargetManager(Renderer* pRenderer);
@@ -30,10 +30,10 @@ namespace LostPeterEngine
 		RenderTargetPtrPriorityMap m_mapPriorityRenderTarget;
 
     public:
-        LP_FORCEINLINE const RenderTargetPtrMap& GetRenderTargetPtrMap() const { return m_mapRenderTarget; }
-        LP_FORCEINLINE RenderTargetPtrMap& GetRenderTargetPtrMap() { return m_mapRenderTarget; }
-        LP_FORCEINLINE const RenderTargetPtrPriorityMap& GetRenderTargetPtrPriorityMap() const { return m_mapPriorityRenderTarget; }
-        LP_FORCEINLINE RenderTargetPtrPriorityMap& GetRenderTargetPtrPriorityMap() { return m_mapPriorityRenderTarget; }
+        E_FORCEINLINE const RenderTargetPtrMap& GetRenderTargetPtrMap() const { return m_mapRenderTarget; }
+        E_FORCEINLINE RenderTargetPtrMap& GetRenderTargetPtrMap() { return m_mapRenderTarget; }
+        E_FORCEINLINE const RenderTargetPtrPriorityMap& GetRenderTargetPtrPriorityMap() const { return m_mapPriorityRenderTarget; }
+        E_FORCEINLINE RenderTargetPtrPriorityMap& GetRenderTargetPtrPriorityMap() { return m_mapPriorityRenderTarget; }
 
     public:
         static RenderTargetManager& GetSingleton();

@@ -32,6 +32,8 @@ namespace LostPeterFoundation
         LP_FORCEINLINE const TimePoint& GetTimePointLast() const { return m_tpLast; }
 
     public:
+        void Reset();
+        
         TimePoint Now();
         float SecondsBetween(TimePoint& a, TimePoint& b);
 

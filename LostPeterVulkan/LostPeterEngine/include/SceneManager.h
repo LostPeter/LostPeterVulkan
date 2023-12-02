@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport SceneManager : public Base
+    class engineExport SceneManager : public Base
     {
     public:
         SceneManager(const String& nameSceneManager, Scene* pScene);
@@ -26,7 +26,7 @@ namespace LostPeterEngine
         Scene* m_pScene;
 
     public:
-        LP_FORCEINLINE Scene* GetScene() const { return this->m_pScene; }
+        E_FORCEINLINE Scene* GetScene() const { return this->m_pScene; }
 
     public:
         void Destroy();

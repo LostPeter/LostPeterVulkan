@@ -15,12 +15,17 @@ namespace LostPeterFoundation
 {
     FTimer::FTimer()
     {
-        m_tpStart = m_tpLast = Now();
+        Reset();
     }
 
     FTimer::~FTimer()
     {
         
+    }
+
+    void FTimer::Reset()
+    {   
+        m_tpStart = m_tpLast = Now();
     }
 
     TimePoint FTimer::Now()

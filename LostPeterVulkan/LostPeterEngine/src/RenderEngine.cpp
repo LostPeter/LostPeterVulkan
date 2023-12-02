@@ -92,7 +92,7 @@ namespace LostPeterEngine
         m_bIsInit = false;
     }
     
-    bool RenderEngine::Init()
+    bool RenderEngine::Init(bool bAutoCreateWindow)
     {
 
         return true;
@@ -113,7 +113,7 @@ namespace LostPeterEngine
 		RendererPtrMap::iterator itFind = m_mapRenderer.find(strName);
 		if (itFind == m_mapRenderer.end())
 		{
-			F_LogError("RenderEngine::GetRendererByName: Can not find renderer by name: [%s] !", strName.c_str());
+			F_LogError("*********************** RenderEngine::GetRendererByName: Can not find renderer by name: [%s] !", strName.c_str());
 			return nullptr;
 		}
 
@@ -150,7 +150,7 @@ namespace LostPeterEngine
 		if (itFind != m_mapMovableFactory.end())
 			return itFind->second;
 	
-		F_LogError("RenderEngine::GetMovableFactory: Movable type: [%s] does not exist !", strTypeName.c_str());
+		F_LogError("*********************** RenderEngine::GetMovableFactory: Movable type: [%s] does not exist !", strTypeName.c_str());
 		return nullptr;
 	}
 
@@ -165,7 +165,7 @@ namespace LostPeterEngine
 		MovableFactoryPtrMap::iterator itFind = m_mapMovableFactory.find(strTypeName);
 		if (!bOverrideExisting && itFind != m_mapMovableFactory.end())
 		{
-			F_LogError("RenderEngine::AddMovableFactory: Movable type: [%s] already exist !", strTypeName.c_str());
+			F_LogError("*********************** RenderEngine::AddMovableFactory: Movable type: [%s] already exist !", strTypeName.c_str());
 			return;
 		}
 
@@ -232,7 +232,7 @@ namespace LostPeterEngine
 	{
 		if (!m_pRendererCurrent)
 		{
-			F_LogError("RenderEngine::CreateRenderWindow: No renderer !");
+			F_LogError("*********************** RenderEngine::CreateRenderWindow: No renderer !");
 			return nullptr;
 		}
 		RenderWindow* pRet = m_pRendererCurrent->CreateRenderWindow(strName, nWidth, nHeight, bFullScreen, pParams);
@@ -282,7 +282,7 @@ namespace LostPeterEngine
             //2> RenderOneFrame
             if (!m_pRenderPipeLineManager->RenderOneFrame(event))
             {
-                F_LogError("RenderEngine::RenderOneFrame: Pipeline render one frame failed !");
+                F_LogError("*********************** RenderEngine::RenderOneFrame: Pipeline render one frame failed !");
                 return false;
             }
         }
@@ -323,7 +323,7 @@ namespace LostPeterEngine
 	{
 		// if (m_nNextMovableTypeFlag == SceneManager::ms_nUserTypeMask)
 		// {
-		// 	F_LogError("RenderEngine::allocateNextMovableTypeFlag: All the user flag have been used !");
+		// 	F_LogError("*********************** RenderEngine::allocateNextMovableTypeFlag: All the user flag have been used !");
 		// 	return 0;
 		// }
 		uint32 nRet = m_nNextMovableTypeFlag;

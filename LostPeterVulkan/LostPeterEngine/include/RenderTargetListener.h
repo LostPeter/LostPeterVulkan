@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderTargetListener : public FNonCopyable
+    class engineExport RenderTargetListener : public FNonCopyable
     {
     public:
         RenderTargetListener();

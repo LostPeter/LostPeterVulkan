@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport Object : public Movable
+    class engineExport Object : public Movable
     {
     public:
         Object(const String& nameObject, Scene* pScene);
@@ -24,12 +24,12 @@ namespace LostPeterEngine
 
     public:
     protected:
-        VulkanObjectType m_typeObject;
+        EObjectType m_typeObject;
 
 
 
     public:
-        LP_FORCEINLINE VulkanObjectType GetObjectType() const { return this->m_typeObject; }
+        E_FORCEINLINE EObjectType GetObjectType() const { return this->m_typeObject; }
 
     public:
 

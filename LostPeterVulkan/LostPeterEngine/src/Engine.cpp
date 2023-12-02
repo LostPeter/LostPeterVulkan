@@ -12,7 +12,8 @@
 #include "../include/Engine.h"
 #include "../include/EngineConfig.h"
 #include "../include/RenderEngine.h"
-
+#include "../include/SystemCapabilities.h"
+#include "../include/EngineFrameProfiler.h"
 
 template<> LostPeterEngine::Engine* LostPeterFoundation::FSingleton<LostPeterEngine::Engine>::ms_Singleton = nullptr;
 
@@ -28,19 +29,19 @@ namespace LostPeterEngine
 		return (*ms_Singleton);     
 	}
 
-#if LP_PLATFORM == LP_PLATFORM_WIN32      
+#if E_PLATFORM == E_PLATFORM_WIN32      
 	FPlatformType Engine::ms_typePlatform = F_Platform_Windows;
     String Engine::ms_strNamePlatform = F_GetPlatformTypeName(F_Platform_Windows);
-#elif LP_PLATFORM == LP_PLATFORM_MAC
+#elif E_PLATFORM == E_PLATFORM_MAC
     FPlatformType Engine::ms_typePlatform = F_Platform_MacOS;
 	String Engine::ms_strNamePlatform = F_GetPlatformTypeName(F_Platform_MacOS);
-#elif LP_PLATFORM == LP_PLATFORM_LINUX
+#elif E_PLATFORM == E_PLATFORM_LINUX
     FPlatformType Engine::ms_typePlatform = F_Platform_Linux;
 	String Engine::ms_strNamePlatform = F_GetPlatformTypeName(F_Platform_Linux);                       
-#elif LP_PLATFORM == LP_PLATFORM_ANDROID
+#elif E_PLATFORM == E_PLATFORM_ANDROID
     FPlatformType Engine::ms_typePlatform = F_Platform_Android;
 	String Engine::ms_strNamePlatform = F_GetPlatformTypeName(F_Platform_Android);                     
-#elif LP_PLATFORM == LP_PLATFORM_IOS
+#elif E_PLATFORM == E_PLATFORM_IOS
     FPlatformType Engine::ms_typePlatform = F_Platform_iOS;
 	String Engine::ms_strNamePlatform = F_GetPlatformTypeName(F_Platform_iOS);
 #else 
@@ -48,23 +49,25 @@ namespace LostPeterEngine
 #endif
 
     bool Engine::ms_bUseBinaryResource = false;
-    String Engine::ms_strPathCfgEngine = "Assets/config/cfg_engine.xml";
-	String Engine::ms_strPathCfgPlugin = "Assets/config/cfg_plugin.xml";
+    String Engine::ms_strPathCfgEngine = "Assets/Config/Cfg_Engine.xml";
+	String Engine::ms_strPathCfgPlugin = "Assets/Config/Cfg_Plugin.xml";
 
     Engine::Engine()
         : Base("Engine")
+        , m_pSystemCapabilities(nullptr)
         , m_pPathManager(nullptr)
         , m_pFileManager(nullptr)
         , m_pPluginManager(nullptr)
         , m_pRenderEngine(nullptr)
 
+        , m_pTimer(nullptr)
+        , m_pEngineFrameProfiler(nullptr)
         , m_nFrameCurrent(0)
         , m_nFrameCount(0)
         , m_nTimeLast(0)
         , m_bRenderAutoStop(false)
 
-        , m_pathCfg_Engine("")
-        , m_pathCfg_Plugin("")
+        , m_pathWorkFolder("")
         , m_folder_Plugin("")
         , m_bEngineIsInit(false)
     {
@@ -87,44 +90,94 @@ namespace LostPeterEngine
 
         F_DELETE(m_pRenderEngine)
 
+        F_DELETE(m_pTimer)
         F_DELETE(m_pFileManager)
 		F_DELETE(m_pPathManager)
+        F_DELETE(m_pSystemCapabilities)
 		m_bEngineIsInit = false;
     }
 
-    bool Engine::Init(const String& workFolder, bool bAutoCreateWindow)
+    bool Engine::Init(const String& strWorkFolder, bool bAutoCreateWindow)
     {
-		m_pathCfg_Engine = workFolder + ms_strPathCfgEngine;
-		m_pathCfg_Plugin = workFolder + ms_strPathCfgPlugin;
-		m_folder_Plugin = workFolder + "Assets/Plugins/" + ms_strNamePlatform + "/";
+        m_pathWorkFolder = strWorkFolder;
+		m_folder_Plugin = strWorkFolder + "Assets/Plugins/" + ms_strNamePlatform + "/";
 		initCommonCfgItems();
 
         //1, PreCommon 
         {
+            //<1> SystemCapabilities
+			m_pSystemCapabilities = new SystemCapabilities;
+			m_pSystemCapabilities->Init();
 
+            //<2> PathManager
+			m_pPathManager = new FPathManager;
+			if (!m_pPathManager->Init(strWorkFolder))
+			{
+                F_LogError("*********************** Engine::Init: PathManager init failed, path: [%s] !", strWorkFolder.c_str());
+				return false;
+			}
+            F_LogInfo("Engine::Init: [1] FPathManager init success !");
+
+            //<3> FileManager
+			m_pFileManager  = new FFileManager;
+
+            //<4> CodecManager
+
+            //<5> ControllerManager
         }
 
         //2, All Engines
         {
+            //<1> RenderEngine
+            m_pRenderEngine = new RenderEngine;
 
+            //<2> AudioEngine
+
+            //<3> PhysicsEngine
+
+            //<4> InputEngine
+
+            //<5> Load Engine Config
+            if (!loadEngineConfig(ms_strPathCfgEngine))
+			{
+				F_LogError("*********************** Engine::Init: Load engine config file: [%s] failed !", ms_strPathCfgEngine.c_str());
+				return false;
+			}
+            F_LogInfo("Engine::Init: [2] loadEngineConfig success !");
         }
 
         //3, Plugin
         {
-
+            m_pPluginManager = new FPluginManager;
+			if (!m_pPluginManager->LoadPlugins(ms_strPathCfgPlugin, m_folder_Plugin))
+			{
+                F_LogError("*********************** Engine::Init: Load plugins failed, path config: [%s], path plugins: [%s] !", ms_strPathCfgPlugin.c_str(), m_folder_Plugin.c_str());
+				return false;
+			}
+            F_LogInfo("Engine::Init: [3] LoadPlugins success !");
         }
 
         //4, Initialize 
         {
-
+            //<1> render engine init
+			if (!m_pRenderEngine->Init(bAutoCreateWindow))
+			{
+                F_LogError("*********************** Engine::Init: RenderEngine init failed !");
+				return false;
+			}
+            F_LogInfo("Engine::Init: [4] RenderEngine init success !");
         }
 
         //5, PostCommon
         {
-
+            m_pTimer = new FTimer();
         }
 
+        m_pTimer->Reset();
+		resetStatistics();
         m_bEngineIsInit = true;
+
+        F_LogInfo("Engine::Init: Engine init success !");
 		return true;
     }   
     void Engine::initCommonCfgItems()
@@ -133,7 +186,7 @@ namespace LostPeterEngine
 
 		//<1> multi thread
 		ConfigItem cfgItem;
-		cfgItem.strName	= Util_GetEngineConfigTypeName(Vulkan_EngineConfig_Common_MultiThread);
+		cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Common_MultiThread);
 		String strDefault("1");
 		cfgItem.aPossibleValues.push_back(strDefault);
 		cfgItem.strCurValue = strDefault;
@@ -142,7 +195,7 @@ namespace LostPeterEngine
 
 
 	}
-    bool Engine::loadConfigEngine(const String& strPath)
+    bool Engine::loadEngineConfig(const String& strPath)
 	{
 		if (strPath.empty())
 			return false;
@@ -269,6 +322,16 @@ namespace LostPeterEngine
     {
         m_setEngineListeners.clear();
 		m_setRemovedEngineListeners.clear();
+    }
+
+    void Engine::updateStats()
+    {
+
+    }
+
+    void Engine::resetStatistics()
+    {
+
     }
 
 }; //LostPeterEngine

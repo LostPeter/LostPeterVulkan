@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ObjectVisibleBoundsInfo
+    class engineExport ObjectVisibleBoundsInfo
     {
     public:
         ObjectVisibleBoundsInfo();

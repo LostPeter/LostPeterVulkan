@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanRenderer : public Renderer
+    class VulkanRenderer : public Renderer
     {
     public:
         VulkanRenderer();

@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderQueueManager : public FSingleton<RenderQueueManager>
-                                        , public Base
+    class engineExport RenderQueueManager : public FSingleton<RenderQueueManager>
+                                          , public Base
     {
     public:
         RenderQueueManager();
@@ -29,10 +29,10 @@ namespace LostPeterEngine
         RenderQueuePtrMap m_mapRenderQueue;
 
     public:
-        LP_FORCEINLINE const RenderQueuePtrVector& GetRenderQueuePtrVector() const { return m_aRenderQueue; }
-        LP_FORCEINLINE RenderQueuePtrVector& GetRenderQueuePtrVector() { return m_aRenderQueue; }
-        LP_FORCEINLINE const RenderQueuePtrMap& GetRenderQueuePtrMap() const { return m_mapRenderQueue; }
-        LP_FORCEINLINE RenderQueuePtrMap& GetRenderQueuePtrMap() { return m_mapRenderQueue; }
+        E_FORCEINLINE const RenderQueuePtrVector& GetRenderQueuePtrVector() const { return m_aRenderQueue; }
+        E_FORCEINLINE RenderQueuePtrVector& GetRenderQueuePtrVector() { return m_aRenderQueue; }
+        E_FORCEINLINE const RenderQueuePtrMap& GetRenderQueuePtrMap() const { return m_mapRenderQueue; }
+        E_FORCEINLINE RenderQueuePtrMap& GetRenderQueuePtrMap() { return m_mapRenderQueue; }
 
     public:
         static RenderQueueManager& GetSingleton();

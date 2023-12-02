@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport Renderable : public Base
+    class engineExport Renderable : public Base
     {
     public:
         Renderable(const String& nameRenderable);
@@ -24,10 +24,10 @@ namespace LostPeterEngine
 
     public:
     protected:
-        VulkanRenderQueueType typeRenderQueue;
+        ERenderQueueType typeRenderQueue;
 
     public:
-        LP_FORCEINLINE VulkanRenderQueueType GetRenderQueueType() const { return this->typeRenderQueue; }
+        E_FORCEINLINE ERenderQueueType GetRenderQueueType() const { return this->typeRenderQueue; }
 
     public:
         

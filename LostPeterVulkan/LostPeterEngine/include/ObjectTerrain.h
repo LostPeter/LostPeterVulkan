@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ObjectTerrain : public Object
+    class engineExport ObjectTerrain : public Object
     {
     public:
         ObjectTerrain(const String& nameObjectTerrain, Scene* pScene);

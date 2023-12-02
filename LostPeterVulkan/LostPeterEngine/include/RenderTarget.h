@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderTarget : public Base
-                                  , public FNonCopyable
+    class engineExport RenderTarget : public Base
+                                    , public FNonCopyable
     {
     public:
         RenderTarget(const String& nameRenderTarget);

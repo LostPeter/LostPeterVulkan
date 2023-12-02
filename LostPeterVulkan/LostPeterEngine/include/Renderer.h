@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport Renderer : public Base
-                              , public FNonCopyable
+    class engineExport Renderer : public Base
+                                , public FNonCopyable
     {
     public:
         Renderer(const String& nameRenderer);
@@ -45,22 +45,22 @@ namespace LostPeterEngine
 		uint32 m_nCurHeight;
 
     public:
-        LP_FORCEINLINE RenderWindow* GetRenderWindow() const { return m_pRenderWindow; }
-        LP_FORCEINLINE void SetRenderWindow(RenderWindow* pRenderWindow) { m_pRenderWindow = pRenderWindow; }
-        LP_FORCEINLINE RenderTarget* GetActiveRenderTarget() const { return m_pActiveRenderTarget; }
-        LP_FORCEINLINE void SetActiveRenderTarget(RenderTarget* pRenderTarget) { m_pActiveRenderTarget = pRenderTarget; }
-		LP_FORCEINLINE Viewport* GetActiveViewport() const { return m_pActiveViewport; }
-		LP_FORCEINLINE ObjectCamera* GetActiveCamera() const { return m_pActiveObjectCamera; }
+        E_FORCEINLINE RenderWindow* GetRenderWindow() const { return m_pRenderWindow; }
+        E_FORCEINLINE void SetRenderWindow(RenderWindow* pRenderWindow) { m_pRenderWindow = pRenderWindow; }
+        E_FORCEINLINE RenderTarget* GetActiveRenderTarget() const { return m_pActiveRenderTarget; }
+        E_FORCEINLINE void SetActiveRenderTarget(RenderTarget* pRenderTarget) { m_pActiveRenderTarget = pRenderTarget; }
+		E_FORCEINLINE Viewport* GetActiveViewport() const { return m_pActiveViewport; }
+		E_FORCEINLINE ObjectCamera* GetActiveCamera() const { return m_pActiveObjectCamera; }
 		
-		LP_FORCEINLINE bool	IsRendererInit() const { return m_bRendererIsInit; }
+		E_FORCEINLINE bool	IsRendererInit() const { return m_bRendererIsInit; }
 
-        LP_FORCEINLINE bool	IsFullScreen() const { return m_bFullScreen; }
-		LP_FORCEINLINE bool	IsFakeFullScreen() const { return m_bFakeFullScreen; }
-		LP_FORCEINLINE bool	IsUseNvPerfHud() const { return m_bUseNvPerfHud; }
-		LP_FORCEINLINE bool	IsVSync() const { return m_bVSync; }
-		LP_FORCEINLINE bool	GetWBufferEnable() const { return m_bWBuffer; }
-		LP_FORCEINLINE void	SetWBufferEnable(bool b) { m_bWBuffer = b;}
-		LP_FORCEINLINE bool	IsEmptyGpuBuffer() const { return m_bEmptyGpuBuffer; }
+        E_FORCEINLINE bool	IsFullScreen() const { return m_bFullScreen; }
+		E_FORCEINLINE bool	IsFakeFullScreen() const { return m_bFakeFullScreen; }
+		E_FORCEINLINE bool	IsUseNvPerfHud() const { return m_bUseNvPerfHud; }
+		E_FORCEINLINE bool	IsVSync() const { return m_bVSync; }
+		E_FORCEINLINE bool	GetWBufferEnable() const { return m_bWBuffer; }
+		E_FORCEINLINE void	SetWBufferEnable(bool b) { m_bWBuffer = b;}
+		E_FORCEINLINE bool	IsEmptyGpuBuffer() const { return m_bEmptyGpuBuffer; }
 
     public:
         virtual void Destroy();

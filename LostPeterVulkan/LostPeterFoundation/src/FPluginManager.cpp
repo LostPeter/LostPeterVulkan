@@ -11,10 +11,7 @@
 
 #include "../include/FPluginManager.h"
 #include "../include/FDynamicLibManager.h"
-#include "../include/FFileXMLTinyConfig.h"
-
-#include "tinyxml.h"
-#include "tinystr.h"
+#include "../include/FFileXML.h"
 
 namespace LostPeterFoundation
 {
@@ -50,22 +47,40 @@ namespace LostPeterFoundation
 	
 	bool FPluginManager::LoadPlugins(const String& strPluginsCfgPath, const String& strPluginsFolder)
 	{
-		FFileXMLTinyConfig xmlCfg;
-		if (!xmlCfg.Load(strPluginsCfgPath.c_str()))
+		if(strPluginsCfgPath.empty())
 		{
-			F_LogError("*********************** FPluginManager::LoadPlugins: Load plugin cfg file: [%s] failed !", strPluginsCfgPath.c_str());
+			F_LogError("*********************** FPluginManager::LoadPlugins: Plugins cfg file: [%s] is empty !", strPluginsCfgPath.c_str());
 			return false;
 		}
+		if(strPluginsFolder.empty())
+		{
+			F_LogError("*********************** FPluginManager::LoadPlugins: Plugins folder: [%s] is empty !", strPluginsFolder.c_str());
+			return false;
+		}
+		
+		FFileXML xml;
+		if (!xml.LoadXMLIndirect(strPluginsCfgPath.c_str()))
+        {
+            F_LogError("*********************** FPluginManager::LoadPlugins: Load plugin cfg file: [%s] failed !", strPluginsCfgPath.c_str());
+			return false;
+        }
 		m_strFolderPlugin = strPluginsFolder;
 
-		//1>, get all plugin names
+		//1> get all plugin names
 		StringVector aPluginNames;
-		TiXmlElement* pRoot = xmlCfg.GetRoot();
-		TiXmlElement *pElement = pRoot->FirstChildElement();
-		while (pElement)
+		FXMLDocument* pXMLDocument = xml.GetXMLDocument();
+        FXMLElement* pRoot = pXMLDocument->GetElementRoot();
+        int count_item = pRoot->GetElementChildrenCount();
+		for (int i = 0; i < count_item; i++)
 		{
+			FXMLElement* pElementItem = pRoot->GetElementChild(i);
+
 			String strPluginName;
-			xmlCfg.GetString(pElement, "name", strPluginName);
+			if (!pElementItem->ParserAttribute_String("name", strPluginName))
+			{
+				F_LogError("*********************** FPluginManager::LoadPlugins: Can not find attribute: 'name', from plugin item !");
+				return false;
+			}
 
 #if LP_PLATFORM == LP_PLATFORM_WIN32
 		#if LP_DEBUG == 1
@@ -92,8 +107,6 @@ namespace LostPeterFoundation
 	#pragma error "UnKnown platform, FPluginManager.cpp Abort! Abort!"
 #endif
 			aPluginNames.push_back(strPluginName);
-		
-			pElement = pElement->NextSiblingElement();
 		}
 		
 		//2, load all plugins
@@ -104,7 +117,9 @@ namespace LostPeterFoundation
 			String strPluginPath = strPluginsFolder + strPluginName;
 			F_LogInfo("State: [%d], plugin name: [%s], plugin path: [%s]", LP_DEBUG, strPluginName.c_str(), strPluginPath.c_str());
 			if (!LoadPlugin(strPluginName, strPluginPath))
+			{
 				return false;
+			}
 		}
 
 		return true;

@@ -18,7 +18,7 @@ namespace LostPeterEngine
     ObjectTerrain::ObjectTerrain(const String& nameObjectTerrain, Scene* pScene)
         : Object(nameObjectTerrain, pScene)
     {
-        this->m_typeObject = Vulkan_Object_Terrain;
+        this->m_typeObject = E_Object_Terrain;
     }
     ObjectTerrain::~ObjectTerrain()
     {

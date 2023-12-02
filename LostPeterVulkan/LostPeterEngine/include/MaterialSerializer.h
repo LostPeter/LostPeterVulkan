@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport MaterialSerializer : public FSerializer
-                                        , public Base
+    class engineExport MaterialSerializer : public FSerializer
+                                          , public Base
     {
     public:
         MaterialSerializer();
@@ -29,10 +29,10 @@ namespace LostPeterEngine
         MaterialInfoGroupPtrMap m_mapMaterialInfoGroup;
 
     public:
-        LP_FORCEINLINE const MaterialInfoPtrVector& GetMaterialInfoPtrVector() const { return m_aMaterialInfo; }
-        LP_FORCEINLINE MaterialInfoPtrVector& GetMaterialInfoPtrVector() { return m_aMaterialInfo; }
-        LP_FORCEINLINE const MaterialInfoGroupPtrMap& GetMaterialInfoGroupPtrMap() const { return m_mapMaterialInfoGroup; }
-        LP_FORCEINLINE MaterialInfoGroupPtrMap& GetMaterialInfoGroupPtrMap() { return m_mapMaterialInfoGroup; }
+        E_FORCEINLINE const MaterialInfoPtrVector& GetMaterialInfoPtrVector() const { return m_aMaterialInfo; }
+        E_FORCEINLINE MaterialInfoPtrVector& GetMaterialInfoPtrVector() { return m_aMaterialInfo; }
+        E_FORCEINLINE const MaterialInfoGroupPtrMap& GetMaterialInfoGroupPtrMap() const { return m_mapMaterialInfoGroup; }
+        E_FORCEINLINE MaterialInfoGroupPtrMap& GetMaterialInfoGroupPtrMap() { return m_mapMaterialInfoGroup; }
 
 
     public:

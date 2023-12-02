@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport Mesh : public Base
+    class engineExport Mesh : public Base
     {
     public:
         Mesh(uint32 _group,

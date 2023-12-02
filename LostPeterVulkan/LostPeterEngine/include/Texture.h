@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport Texture : public Base
+    class engineExport Texture : public Base
     {
     public:
         Texture(uint32 _group,

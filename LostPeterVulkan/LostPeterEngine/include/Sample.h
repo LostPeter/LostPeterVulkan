@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport Sample
+    class engineExport Sample
     {
     public:
         Sample(const String& nameSample, int nWidth, int nHeight);
@@ -32,6 +32,7 @@ namespace LostPeterEngine
         int m_nHeight;
         float m_fAspectRatio;
 
+        Engine* m_pEngine;
         FTimer* m_pTimer;
         float m_fTimeLastFPS;
         float m_fFPS;
@@ -49,15 +50,15 @@ namespace LostPeterEngine
         Window* m_pWindow_Scene;
 
     public:
-        UTIL_FORCEINLINE const String& GetNameSample() const { return m_strNameSample; }
-        UTIL_FORCEINLINE const String& GetPathBin() const { return m_strPathBin; }
-        UTIL_FORCEINLINE int GetWidth() const { return m_nWidth; }
-        UTIL_FORCEINLINE int GetHeight() const { return m_nHeight; }
-        UTIL_FORCEINLINE String GetAssetFullPath(const String& strAssetName) { return m_strPathBin + strAssetName; }
+        E_FORCEINLINE const String& GetNameSample() const { return m_strNameSample; }
+        E_FORCEINLINE const String& GetPathBin() const { return m_strPathBin; }
+        E_FORCEINLINE int GetWidth() const { return m_nWidth; }
+        E_FORCEINLINE int GetHeight() const { return m_nHeight; }
+        E_FORCEINLINE String GetAssetFullPath(const String& strAssetName) { return m_strPathBin + strAssetName; }
 
-        UTIL_FORCEINLINE Window* GetWindowMain() const { return m_pWindow_Main; }
-        UTIL_FORCEINLINE Window* GetWindowGame() const { return m_pWindow_Game; }
-        UTIL_FORCEINLINE Window* GetWindowScene() const { return m_pWindow_Scene; }
+        E_FORCEINLINE Window* GetWindowMain() const { return m_pWindow_Main; }
+        E_FORCEINLINE Window* GetWindowGame() const { return m_pWindow_Game; }
+        E_FORCEINLINE Window* GetWindowScene() const { return m_pWindow_Scene; }
 
     public:
         float RefreshAspectRatio();
@@ -78,9 +79,11 @@ namespace LostPeterEngine
             virtual Window* createWindow(const String& nameTitle);
 
         virtual bool init();
+            virtual bool initEngine();
 
         virtual void destroy();
             virtual void destroyWindows();
+            virtual void destroyEngine();
     };
 
 }; //LostPeterEngine

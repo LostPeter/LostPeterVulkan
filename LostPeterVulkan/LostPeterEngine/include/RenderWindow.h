@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderWindow : public RenderTarget
+    class engineExport RenderWindow : public RenderTarget
     {
     public:
         RenderWindow(const String& nameRenderWindow);

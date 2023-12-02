@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanPlugin : public FPlugin
+    class VulkanPlugin : public FPlugin
     {
     public:
         VulkanPlugin();

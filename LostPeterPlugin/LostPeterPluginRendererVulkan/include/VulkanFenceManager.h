@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanFenceManager
+    class VulkanFenceManager
     {
     public:
         VulkanFenceManager();
@@ -29,9 +29,9 @@ namespace LostPeter
         VulkanFencePtrVector m_aFences_Used;
 
     public:
-        UTIL_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
+        E_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
 
-        UTIL_FORCEINLINE bool IsFenceSignaled(VulkanFence* pFence)
+        E_FORCEINLINE bool IsFenceSignaled(VulkanFence* pFence)
         {
             if (pFence->IsSignaled()) {
                 return true;

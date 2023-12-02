@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanSemaphore
+    class VulkanSemaphore
     {
     public:
         VulkanSemaphore(VulkanDevice* pDevice);
@@ -28,7 +28,7 @@ namespace LostPeter
         VkSemaphore m_vkSemaphore;
 
     public:
-        UTIL_FORCEINLINE VkSemaphore GetVkSemaphore() const { return m_vkSemaphore; }
+        E_FORCEINLINE VkSemaphore GetVkSemaphore() const { return m_vkSemaphore; }
 
     public:
         void Destroy();

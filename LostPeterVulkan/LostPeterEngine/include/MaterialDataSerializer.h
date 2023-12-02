@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport MaterialDataSerializer
+    class engineExport MaterialDataSerializer
     {
     public:
         MaterialDataSerializer(MaterialDataManager* pMaterialDataManager);

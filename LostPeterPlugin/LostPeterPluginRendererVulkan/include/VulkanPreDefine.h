@@ -21,16 +21,16 @@ using namespace LostPeterFoundation;
 using namespace LostPeterEngine;
 
 
-#if LP_PLATFORM == LP_PLATFORM_WIN32
-	#if defined (LP_VULKAN_EXPORTS)
-		#define lpVulkanExport          __declspec(dllexport)
+#if E_PLATFORM == E_PLATFORM_WIN32
+	#if defined (VULKAN_EXPORTS)
+		#define vulkanExport            __declspec(dllexport)
 	#else
-		#define lpVulkanExport          __declspec(dllimport)
+		#define vulkanExport            __declspec(dllimport)
 	#endif
-#elif LP_PLATFORM == LP_PLATFORM_ANDROID
-	#define lpVulkanExport				__attribute__ ((visibility("default")))
+#elif E_PLATFORM == E_PLATFORM_ANDROID
+	#define vulkanExport				__attribute__ ((visibility("default")))
 #else
-	#define lpVulkanExport
+	#define vulkanExport
 #endif
 
 
@@ -53,7 +53,7 @@ namespace LostPeter
     bool E_CheckVkResult(VkResult result, const String& nameFunc);
 
     template<class T>
-    static lpVulkanExport void E_ZeroStruct(T& vkStruct, VkStructureType vkType)
+    void E_ZeroStruct(T& vkStruct, VkStructureType vkType)
     {
         vkStruct.sType = vkType;
         memset(((uint8*)&vkStruct) + sizeof(VkStructureType), 0, sizeof(T) - sizeof(VkStructureType));

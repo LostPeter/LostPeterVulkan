@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderPass : public Base
-                                , public FNonCopyable
+    class engineExport RenderPass : public Base
+                                  , public FNonCopyable
     {
     public:
         RenderPass(const String& nameRenderPass);

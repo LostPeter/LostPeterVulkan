@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport MaterialDataManager : public FSingleton<MaterialDataManager>
-                                         , public Base
+    class engineExport MaterialDataManager : public FSingleton<MaterialDataManager>
+                                           , public Base
     {
         friend class MaterialDataSerializer;
 

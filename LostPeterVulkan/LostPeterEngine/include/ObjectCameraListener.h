@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ObjectCameraListener
+    class engineExport ObjectCameraListener
     {
     public:
         ObjectCameraListener();

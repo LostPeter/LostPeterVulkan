@@ -17,8 +17,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport MaterialData : public Base
-                                  , public FNonCopyable
+    class engineExport MaterialData : public Base
+                                    , public FNonCopyable
     {
     public:
         MaterialData(const String& nameMaterialData);
@@ -31,12 +31,12 @@ namespace LostPeterEngine
         RenderStatePtrMap m_mapRenderState;
 
     public:
-        LP_FORCEINLINE const String& GetPath() const { return m_strPath; }
-        LP_FORCEINLINE void SetPath(const String& path) { m_strPath = path; }
-		LP_FORCEINLINE const RenderStatePtrVector& GetRenderStatePtrVector() const { return m_aRenderState; }
-        LP_FORCEINLINE RenderStatePtrVector& GetRenderStatePtrVector() { return m_aRenderState; }
-        LP_FORCEINLINE const RenderStatePtrMap& GetRenderStatePtrMap() const { return m_mapRenderState; }
-        LP_FORCEINLINE RenderStatePtrMap& GetRenderStatePtrMap() { return m_mapRenderState; }
+        E_FORCEINLINE const String& GetPath() const { return m_strPath; }
+        E_FORCEINLINE void SetPath(const String& path) { m_strPath = path; }
+		E_FORCEINLINE const RenderStatePtrVector& GetRenderStatePtrVector() const { return m_aRenderState; }
+        E_FORCEINLINE RenderStatePtrVector& GetRenderStatePtrVector() { return m_aRenderState; }
+        E_FORCEINLINE const RenderStatePtrMap& GetRenderStatePtrMap() const { return m_mapRenderState; }
+        E_FORCEINLINE RenderStatePtrMap& GetRenderStatePtrMap() { return m_mapRenderState; }
         
     public:
 		void Destroy();

@@ -89,6 +89,7 @@
 #include "Shader.h"
 #include "ShaderManager.h"
 #include "ShaderSerializer.h"
+#include "SystemCapabilities.h"
 #include "Texture.h"
 #include "TextureManager.h"
 #include "TextureSerializer.h"

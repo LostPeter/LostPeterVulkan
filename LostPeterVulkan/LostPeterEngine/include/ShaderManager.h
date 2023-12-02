@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ShaderManager : public FSingleton<ShaderManager>
-                                   , public Base
+    class engineExport ShaderManager : public FSingleton<ShaderManager>
+                                     , public Base
     {
     public:
         ShaderManager();
@@ -30,11 +30,11 @@ namespace LostPeterEngine
         ShaderGroupPtrMap m_mapShaderGroup;
 
     public:
-        LP_FORCEINLINE ShaderSerializer* GetShaderSerializer() const { return m_pShaderSerializer; }
-        LP_FORCEINLINE const ShaderPtrVector& GetShaderPtrVector() const { return m_aShader; }
-        LP_FORCEINLINE ShaderPtrVector& GetShaderPtrVector() { return m_aShader; }
-        LP_FORCEINLINE const ShaderGroupPtrMap& GetShaderGroupPtrMap() const { return m_mapShaderGroup; }
-        LP_FORCEINLINE ShaderGroupPtrMap& GetShaderGroupPtrMap() { return m_mapShaderGroup; }
+        E_FORCEINLINE ShaderSerializer* GetShaderSerializer() const { return m_pShaderSerializer; }
+        E_FORCEINLINE const ShaderPtrVector& GetShaderPtrVector() const { return m_aShader; }
+        E_FORCEINLINE ShaderPtrVector& GetShaderPtrVector() { return m_aShader; }
+        E_FORCEINLINE const ShaderGroupPtrMap& GetShaderGroupPtrMap() const { return m_mapShaderGroup; }
+        E_FORCEINLINE ShaderGroupPtrMap& GetShaderGroupPtrMap() { return m_mapShaderGroup; }
 
     public:
         static ShaderManager& GetSingleton();

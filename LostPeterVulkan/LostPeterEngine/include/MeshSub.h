@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport MeshSub : public Base
+    class engineExport MeshSub : public Base
     {
     public:
         MeshSub(Mesh* _pMesh, 

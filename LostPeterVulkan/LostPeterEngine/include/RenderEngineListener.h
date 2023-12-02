@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderEngineListener
+    class engineExport RenderEngineListener
     {
     public:
         RenderEngineListener();
@@ -36,8 +36,8 @@ namespace LostPeterEngine
 		int32 m_nOrder;
 
     public:
-		LP_FORCEINLINE int32 GetOrder() const { return m_nOrder; }
-		LP_FORCEINLINE void SetOrder(int32 nOrder) { m_nOrder = nOrder; }
+		E_FORCEINLINE int32 GetOrder() const { return m_nOrder; }
+		E_FORCEINLINE void SetOrder(int32 nOrder) { m_nOrder = nOrder; }
 
 	public:
 		virtual	bool PreRenderOneFrame() { return true; }

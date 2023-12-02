@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderPipelineManager : public FSingleton<RenderPipelineManager>
+    class engineExport RenderPipelineManager : public FSingleton<RenderPipelineManager>
                                            , public Base
     {
     public:
@@ -35,7 +35,7 @@ namespace LostPeterEngine
 		static RenderPipelineManager* GetSingletonPtr();
 
     public:
-		LP_FORCEINLINE RenderPipeline* GetPipeLineCurrent() const { return m_pPipeLineCurrent; }
+		E_FORCEINLINE RenderPipeline* GetPipeLineCurrent() const { return m_pPipeLineCurrent; }
 
 	public:
         void Destroy();

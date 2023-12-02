@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ObjectLight : public Object
+    class engineExport ObjectLight : public Object
     {
     public:
         ObjectLight(const String& nameLight, Scene* pScene);

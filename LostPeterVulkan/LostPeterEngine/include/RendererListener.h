@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RendererListener
+    class engineExport RendererListener
     {
     public:
         RendererListener();

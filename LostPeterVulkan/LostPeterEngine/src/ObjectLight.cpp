@@ -18,7 +18,7 @@ namespace LostPeterEngine
     ObjectLight::ObjectLight(const String& nameLight, Scene* pScene)
         : Object(nameLight, pScene)
     {
-        this->m_typeObject = Vulkan_Object_Light;
+        this->m_typeObject = E_Object_Light;
     }
 
     ObjectLight::~ObjectLight()

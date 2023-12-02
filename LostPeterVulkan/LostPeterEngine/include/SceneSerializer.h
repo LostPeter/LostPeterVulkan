@@ -16,8 +16,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport SceneSerializer : public FSerializer
-                                     , public Base
+    class engineExport SceneSerializer : public FSerializer
+                                       , public Base
     {
     public:
         SceneSerializer();
@@ -29,10 +29,10 @@ namespace LostPeterEngine
         SceneInfoGroupPtrMap m_mapSceneInfoGroup;
 
     public:
-        LP_FORCEINLINE const SceneInfoPtrVector& GetSceneInfoPtrVector() const { return m_aSceneInfo; }
-        LP_FORCEINLINE SceneInfoPtrVector& GetSceneInfoPtrVector() { return m_aSceneInfo; }
-        LP_FORCEINLINE const SceneInfoGroupPtrMap& GetSceneInfoGroupPtrMap() const { return m_mapSceneInfoGroup; }
-        LP_FORCEINLINE SceneInfoGroupPtrMap& GetSceneInfoGroupPtrMap() { return m_mapSceneInfoGroup; }
+        E_FORCEINLINE const SceneInfoPtrVector& GetSceneInfoPtrVector() const { return m_aSceneInfo; }
+        E_FORCEINLINE SceneInfoPtrVector& GetSceneInfoPtrVector() { return m_aSceneInfo; }
+        E_FORCEINLINE const SceneInfoGroupPtrMap& GetSceneInfoGroupPtrMap() const { return m_mapSceneInfoGroup; }
+        E_FORCEINLINE SceneInfoGroupPtrMap& GetSceneInfoGroupPtrMap() { return m_mapSceneInfoGroup; }
 
 
     public:

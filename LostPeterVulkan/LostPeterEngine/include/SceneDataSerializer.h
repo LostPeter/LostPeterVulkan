@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport SceneDataSerializer
+    class engineExport SceneDataSerializer
     {
     public:
         SceneDataSerializer(SceneDataManager* pSceneDataManager);

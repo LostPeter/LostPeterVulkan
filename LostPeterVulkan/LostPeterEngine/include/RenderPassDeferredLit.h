@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport RenderPassDeferredLit : public RenderPass
+    class engineExport RenderPassDeferredLit : public RenderPass
     {
     public:
         RenderPassDeferredLit(const String& nameRenderPass);

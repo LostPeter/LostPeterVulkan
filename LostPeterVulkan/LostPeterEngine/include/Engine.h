@@ -17,8 +17,8 @@
 
 namespace LostPeterEngine
 {
-    class utilExport Engine : public FSingleton<Engine>
-                            , public Base
+    class engineExport Engine : public FSingleton<Engine>
+                              , public Base
     {
     public:
         Engine();
@@ -37,6 +37,7 @@ namespace LostPeterEngine
 
     public:
     protected:
+        SystemCapabilities* m_pSystemCapabilities;
         FPathManager* m_pPathManager;
         FFileManager* m_pFileManager;
         FPluginManager* m_pPluginManager;
@@ -45,6 +46,9 @@ namespace LostPeterEngine
 
 
     private:
+        FTimer* m_pTimer;
+        EngineFrameProfiler* m_pEngineFrameProfiler;
+
         uint64 m_nFrameCurrent;
         uint64 m_nFrameCount;
         uint64 m_nTimeLast;
@@ -53,8 +57,7 @@ namespace LostPeterEngine
 
     private:
     ////config file path
-		String m_pathCfg_Engine;
-		String m_pathCfg_Plugin;
+        String m_pathWorkFolder;
         String m_folder_Plugin;
 		bool m_bEngineIsInit;
 
@@ -73,14 +76,17 @@ namespace LostPeterEngine
 
 
     public:
-        LP_FORCEINLINE uint64 GetFrameCurrentNumber() const { return m_nFrameCurrent; }
-        LP_FORCEINLINE uint64 GetTimeLast() const { return m_nTimeLast; }
+        E_FORCEINLINE FTimer* GetTimer() const { return m_pTimer; }
+        E_FORCEINLINE EngineFrameProfiler* GetEngineFrameProfiler() { return m_pEngineFrameProfiler; }
 
-        LP_FORCEINLINE ConfigItemMap* GetEngineCommonCfgItems() { return &m_mapEngineCommonCfgItem; }
+        E_FORCEINLINE uint64 GetFrameCurrentNumber() const { return m_nFrameCurrent; }
+        E_FORCEINLINE uint64 GetTimeLast() const { return m_nTimeLast; }
+
+        E_FORCEINLINE ConfigItemMap* GetEngineCommonCfgItems() { return &m_mapEngineCommonCfgItem; }
 
     public:
         void Destroy();
-		bool Init(const String& workFolder, bool bAutoCreateWindow);
+		bool Init(const String& strWorkFolder, bool bAutoCreateWindow);
 
         void RenderAuto();
 		void RenderStop();
@@ -96,13 +102,16 @@ namespace LostPeterEngine
 
     private:
         void initCommonCfgItems();
-		bool loadConfigEngine(const String& strPath);
+		bool loadEngineConfig(const String& strPath);
         
         void clearEventTimes();
 
         bool fireFrameStarted(RenderFrameEvent& event);
 		bool fireFrameRenderingQueued(RenderFrameEvent& event);
 		bool fireFrameEnded(RenderFrameEvent& event);
+
+        void updateStats();
+		void resetStatistics();
     };
 
 }; //LostPeterEngine

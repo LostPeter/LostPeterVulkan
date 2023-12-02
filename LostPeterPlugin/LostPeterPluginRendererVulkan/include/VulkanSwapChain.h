@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanSwapChain
+    class VulkanSwapChain
     {
     public:
         VulkanSwapChain(VulkanDevice* pDevice);
@@ -47,19 +47,19 @@ namespace LostPeter
         uint32 m_nPresentID;
 
     public:
-        UTIL_FORCEINLINE const VkSwapchainKHR& GetVkSwapChainKHR() const { return m_vkSwapChainKHR; }
-        UTIL_FORCEINLINE const VkSurfaceKHR& GetVkSurfaceKHR() const { return m_vkSurfaceKHR; }
-        UTIL_FORCEINLINE const VkSwapchainCreateInfoKHR& GetVkSwapChainCreateInfoKHR() const { return m_vkSwapChainCreateInfoKHR; }
-        UTIL_FORCEINLINE int32 GetVkSwapChainImageWidth() const { return m_vkSwapChainCreateInfoKHR.imageExtent.width; }
-        UTIL_FORCEINLINE int32 GetVkSwapChainImageHeight() const { return m_vkSwapChainCreateInfoKHR.imageExtent.height; }
-        UTIL_FORCEINLINE const VkExtent2D& GetVkSwapChainImageExtent() const { return m_vkSwapChainImageExtent; }
-        UTIL_FORCEINLINE const VkFormat& GetVkSwapChainImageColorFormat() const { return m_vkSwapChainImageColorFormat; }
-        UTIL_FORCEINLINE const VkColorSpaceKHR GetVkSwapChainImageColorSpaceKHR() const { return m_vkSwapChainImageColorSpaceKHR; }
-        UTIL_FORCEINLINE int32 GetVkSwapChainImageCount() const { return m_nSwapChainImageCount; } 
+        E_FORCEINLINE const VkSwapchainKHR& GetVkSwapChainKHR() const { return m_vkSwapChainKHR; }
+        E_FORCEINLINE const VkSurfaceKHR& GetVkSurfaceKHR() const { return m_vkSurfaceKHR; }
+        E_FORCEINLINE const VkSwapchainCreateInfoKHR& GetVkSwapChainCreateInfoKHR() const { return m_vkSwapChainCreateInfoKHR; }
+        E_FORCEINLINE int32 GetVkSwapChainImageWidth() const { return m_vkSwapChainCreateInfoKHR.imageExtent.width; }
+        E_FORCEINLINE int32 GetVkSwapChainImageHeight() const { return m_vkSwapChainCreateInfoKHR.imageExtent.height; }
+        E_FORCEINLINE const VkExtent2D& GetVkSwapChainImageExtent() const { return m_vkSwapChainImageExtent; }
+        E_FORCEINLINE const VkFormat& GetVkSwapChainImageColorFormat() const { return m_vkSwapChainImageColorFormat; }
+        E_FORCEINLINE const VkColorSpaceKHR GetVkSwapChainImageColorSpaceKHR() const { return m_vkSwapChainImageColorSpaceKHR; }
+        E_FORCEINLINE int32 GetVkSwapChainImageCount() const { return m_nSwapChainImageCount; } 
     
-        UTIL_FORCEINLINE int32 GetSwapChainImageIndex() const { return m_nSwapChainImageIndex; }
-        UTIL_FORCEINLINE int32 GetSemaphoreIndex() const { return m_nSemaphoreIndex; }
-        UTIL_FORCEINLINE int32 DoesLockToVSync() { return m_nLockToVSync; }
+        E_FORCEINLINE int32 GetSwapChainImageIndex() const { return m_nSwapChainImageIndex; }
+        E_FORCEINLINE int32 GetSemaphoreIndex() const { return m_nSemaphoreIndex; }
+        E_FORCEINLINE int32 DoesLockToVSync() { return m_nLockToVSync; }
 
     public:
         void Destroy();
@@ -67,7 +67,7 @@ namespace LostPeter
                   uint32 width, 
                   uint32 height, 
                   uint32* pOutDesiredNumSwapChainImages, 
-                  std::vector<VkImage>& aOutImages, 
+                  VkImageVector& aOutImages, 
                   int32 nLockToVSync);
 
     public:
@@ -84,7 +84,7 @@ namespace LostPeter
                              uint32 height, 
                              VkPresentModeKHR presentMode,
                              uint32* pOutDesiredNumSwapChainImages, 
-                             std::vector<VkImage>& aOutImages);
+                             VkImageVector& aOutImages);
         bool createFence();
     };
 

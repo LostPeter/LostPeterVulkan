@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ObjectCloud : public Object
+    class engineExport ObjectCloud : public Object
     {
     public:
         ObjectCloud(const String& nameCloud, Scene* pScene);

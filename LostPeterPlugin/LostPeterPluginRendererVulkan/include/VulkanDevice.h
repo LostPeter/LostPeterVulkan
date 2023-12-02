@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanDevice
+    class VulkanDevice
     {
     public:
         VulkanDevice(VulkanInstance* pInstance, VkPhysicalDevice vkPhysicalDevice);
@@ -46,25 +46,25 @@ namespace LostPeter
         ConstCharPtrVector m_aAppDeviceExtensions;    
 
     public:
-        UTIL_FORCEINLINE const VkDevice& GetVkDevice() const { return m_vkDevice; }
-        UTIL_FORCEINLINE const VkPhysicalDevice& GetVkPhysicalDevice() const { return m_vkPhysicalDevice; }
-        UTIL_FORCEINLINE const VkPhysicalDeviceProperties& GetVkPhysicalDeviceProperties() const { return m_vkPhysicalDeviceProperties; }
-        UTIL_FORCEINLINE const VkPhysicalDeviceLimits& GetVkPhysicalDeviceLimits() const { return m_vkPhysicalDeviceProperties.limits; }
-        UTIL_FORCEINLINE const VkPhysicalDeviceFeatures& GetVkPhysicalDeviceFeatures() const { return m_vkPhysicalDeviceFeatures; }
-        UTIL_FORCEINLINE VkPhysicalDeviceFeatures2* GetVkPhysicalDeviceFeatures2() const { return m_pVkPhysicalDeviceFeatures2; }
-        UTIL_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
-        UTIL_FORCEINLINE VkSampleCountFlagBits GetVkMaxMSAASamples() const { return m_vkMaxMSAASamples; }
+        E_FORCEINLINE const VkDevice& GetVkDevice() const { return m_vkDevice; }
+        E_FORCEINLINE const VkPhysicalDevice& GetVkPhysicalDevice() const { return m_vkPhysicalDevice; }
+        E_FORCEINLINE const VkPhysicalDeviceProperties& GetVkPhysicalDeviceProperties() const { return m_vkPhysicalDeviceProperties; }
+        E_FORCEINLINE const VkPhysicalDeviceLimits& GetVkPhysicalDeviceLimits() const { return m_vkPhysicalDeviceProperties.limits; }
+        E_FORCEINLINE const VkPhysicalDeviceFeatures& GetVkPhysicalDeviceFeatures() const { return m_vkPhysicalDeviceFeatures; }
+        E_FORCEINLINE VkPhysicalDeviceFeatures2* GetVkPhysicalDeviceFeatures2() const { return m_pVkPhysicalDeviceFeatures2; }
+        E_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
+        E_FORCEINLINE VkSampleCountFlagBits GetVkMaxMSAASamples() const { return m_vkMaxMSAASamples; }
 
-        UTIL_FORCEINLINE VulkanInstance* GetInstance() const { return m_pInstance; }
-        UTIL_FORCEINLINE VulkanQueue* GetQueueGraphics() const { return m_pQueueGraphics; }
-        UTIL_FORCEINLINE VulkanQueue* GetQueueCompute() const { return m_pQueueCompute; }
-        UTIL_FORCEINLINE VulkanQueue* GetQueueTransfer() const { return m_pQueueTransfer; }
-        UTIL_FORCEINLINE VulkanQueue* GetQueuePresent() const { return m_pQueuePresent; }
+        E_FORCEINLINE VulkanInstance* GetInstance() const { return m_pInstance; }
+        E_FORCEINLINE VulkanQueue* GetQueueGraphics() const { return m_pQueueGraphics; }
+        E_FORCEINLINE VulkanQueue* GetQueueCompute() const { return m_pQueueCompute; }
+        E_FORCEINLINE VulkanQueue* GetQueueTransfer() const { return m_pQueueTransfer; }
+        E_FORCEINLINE VulkanQueue* GetQueuePresent() const { return m_pQueuePresent; }
 
-        UTIL_FORCEINLINE VulkanFenceManager* GetFenceManager() const { return m_pFenceManager; }
-        UTIL_FORCEINLINE VulkanDeviceMemoryManager* GetDeviceMemoryManager() const { return m_pDeviceMemoryManager; }
+        E_FORCEINLINE VulkanFenceManager* GetFenceManager() const { return m_pFenceManager; }
+        E_FORCEINLINE VulkanDeviceMemoryManager* GetDeviceMemoryManager() const { return m_pDeviceMemoryManager; }
 
-        UTIL_FORCEINLINE void AddAppDeviceExtensions(const char* szNameExtension) { m_aAppDeviceExtensions.push_back(szNameExtension); }
+        E_FORCEINLINE void AddAppDeviceExtensions(const char* szNameExtension) { m_aAppDeviceExtensions.push_back(szNameExtension); }
 
     public:
         void Destroy();

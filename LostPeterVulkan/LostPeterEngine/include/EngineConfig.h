@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport EngineConfig
+    class engineExport EngineConfig
     {
     public:
         EngineConfig();

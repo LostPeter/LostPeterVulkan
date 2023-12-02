@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport Scene : public Base
+    class engineExport Scene : public Base
     {
     public:
         Scene(uint _group, const String& nameScene);
@@ -52,8 +52,8 @@ namespace LostPeterEngine
 
     ////SceneManager/SceneNode
     public:
-        LP_FORCEINLINE const SceneNodePtrMap& GetSceneNodePtrMap() const { return this->m_mapSceneNodes; }
-        LP_FORCEINLINE SceneNodePtrMap& GetSceneNodePtrMap() { return this->m_mapSceneNodes; }
+        E_FORCEINLINE const SceneNodePtrMap& GetSceneNodePtrMap() const { return this->m_mapSceneNodes; }
+        E_FORCEINLINE SceneNodePtrMap& GetSceneNodePtrMap() { return this->m_mapSceneNodes; }
 
         virtual SceneNode* CreateRootSceneNode(const String& strName, 
                                                const FVector3& vTrans = FMath::ms_v3Zero, 
@@ -84,22 +84,22 @@ namespace LostPeterEngine
 
     ////Viewport
     public:
-        LP_FORCEINLINE const ViewportPtrMap& GetViewportPtrMap() const { return this->m_mapViewports; }
-        LP_FORCEINLINE ViewportPtrMap& GetViewportPtrMap() { return this->m_mapViewports; }
+        E_FORCEINLINE const ViewportPtrMap& GetViewportPtrMap() const { return this->m_mapViewports; }
+        E_FORCEINLINE ViewportPtrMap& GetViewportPtrMap() { return this->m_mapViewports; }
 
 
 
     ////Object
     public:
-        LP_FORCEINLINE const ObjectPtrGroupMap& GetObjectPtrGroupMap() const { return this->m_mapObjectGroups; }
-        LP_FORCEINLINE ObjectPtrGroupMap& GetObjectPtrGroupMap() { return this->m_mapObjectGroups; }
-        ObjectPtrMap* GetObjectPtrMapByType(VulkanObjectType type);
+        E_FORCEINLINE const ObjectPtrGroupMap& GetObjectPtrGroupMap() const { return this->m_mapObjectGroups; }
+        E_FORCEINLINE ObjectPtrGroupMap& GetObjectPtrGroupMap() { return this->m_mapObjectGroups; }
+        ObjectPtrMap* GetObjectPtrMapByType(EObjectType type);
         ObjectPtrMap* GetObjectPtrMapByType(int type);
 
-        virtual Object* GetObject(VulkanObjectType type, const String& strName);
-        virtual bool HasObject(VulkanObjectType type, const String& strName); 
-        virtual Object* DestroyObject(VulkanObjectType type, const String& strName);
-        virtual void DestroyObjectAll(VulkanObjectType type);
+        virtual Object* GetObject(EObjectType type, const String& strName);
+        virtual bool HasObject(EObjectType type, const String& strName); 
+        virtual Object* DestroyObject(EObjectType type, const String& strName);
+        virtual void DestroyObjectAll(EObjectType type);
         virtual void DestroyObjectAll();
 
 
@@ -126,7 +126,7 @@ namespace LostPeterEngine
 
 
         //ObjectCamera
-        LP_FORCEINLINE ObjectCamera* GetMainObjectCamera() const { return m_pMainObjectCamera; }
+        E_FORCEINLINE ObjectCamera* GetMainObjectCamera() const { return m_pMainObjectCamera; }
 
         virtual ObjectCamera* GetObjectCamera(const String& strName);
 		virtual bool HasObjectCamera(const String& strName);
@@ -139,7 +139,7 @@ namespace LostPeterEngine
 
 
         //ObjectLight
-        LP_FORCEINLINE ObjectLight* GetMainObjectLight() const { return m_pMainObjectLight; }
+        E_FORCEINLINE ObjectLight* GetMainObjectLight() const { return m_pMainObjectLight; }
 
         virtual ObjectLight* GetObjectLight(const String& strName);
 		virtual bool HasObjectLight(const String& strName);

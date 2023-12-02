@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ObjectSky : public Object
+    class engineExport ObjectSky : public Object
     {
     public:
         ObjectSky(const String& nameSky, Scene* pScene);

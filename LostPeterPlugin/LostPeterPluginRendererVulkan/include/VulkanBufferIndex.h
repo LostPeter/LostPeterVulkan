@@ -16,7 +16,7 @@
 
 namespace LostPeter
 {
-    class lpVulkanExport VulkanBufferIndex : public VulkanBuffer
+    class VulkanBufferIndex : public VulkanBuffer
     {
     public:
         VulkanBufferIndex(const String& strName, VulkanDevice* pDevice);
@@ -34,9 +34,9 @@ namespace LostPeter
         uint32_t m_nTriangleCount;
 
     public:   
-        UTIL_FORCEINLINE VkIndexType GetVkIndexType() const { return m_vkIndexType; }
-        UTIL_FORCEINLINE uint32_t GetIndexCount() const { return m_nIndexCount; }
-        UTIL_FORCEINLINE uint32_t GetTriangleCount() const { return m_nTriangleCount; }
+        E_FORCEINLINE VkIndexType GetVkIndexType() const { return m_vkIndexType; }
+        E_FORCEINLINE uint32_t GetIndexCount() const { return m_nIndexCount; }
+        E_FORCEINLINE uint32_t GetTriangleCount() const { return m_nTriangleCount; }
 
     public:
         virtual void Destroy();

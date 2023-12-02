@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport ObjectFrustum : public Object
+    class engineExport ObjectFrustum : public Object
     {
     public:
         ObjectFrustum(const String& nameObject, SceneManager* pSceneManager);

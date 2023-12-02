@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class utilExport MovableListener
+    class engineExport MovableListener
     {
     public:
         MovableListener();
