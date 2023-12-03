@@ -95,20 +95,249 @@ namespace LostPeterFoundation
                                                  0.0f, 0.0f, 1.0f, 0.0f,
                                                  0.0f, 0.0f, 0.0f, 1.0f);
 
-    const FVector4 FMath::ms_clBlack = FVector4(0.0f, 0.0f, 0.0f, 1.0f);
-    const FVector4 FMath::ms_clWhite = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-    const FVector4 FMath::ms_clRed = FVector4(1.0f, 0.0f, 0.0f, 1.0f);
-    const FVector4 FMath::ms_clGreen = FVector4(0.0f, 1.0f, 0.0f, 1.0f);
-    const FVector4 FMath::ms_clBlue = FVector4(0.0f, 0.0f, 1.0f, 1.0f);
-    const FVector4 FMath::ms_clGray = FVector4(0.5f, 0.5f, 0.5f, 1.0f);
-    const FVector4 FMath::ms_clDarkRed = FVector4(0.5f, 0.0f, 0.0f, 1.0f);
-    const FVector4 FMath::ms_clDarkGreen = FVector4(0.0f, 0.5f, 0.0f, 1.0f);
-    const FVector4 FMath::ms_clDarkBlue = FVector4(0.0f, 0.0f, 0.5f, 1.0f);
-    const FVector4 FMath::ms_clDarkGray = FVector4(0.25f, 0.25f, 0.25f, 1.0f);
-    const FVector4 FMath::ms_clYellow = FVector4(1.0f, 1.0f, 0.0f, 1.0f);
-    const FVector4 FMath::ms_clCyan = FVector4(0.0f, 1.0f, 1.0f, 1.0f);
-    const FVector4 FMath::ms_clMagenta = FVector4(1.0f, 0.0f, 1.0f, 1.0f);
-    const FVector4 FMath::ms_clTransparent = FVector4(1.0f, 1.0f, 1.0f, 0.0f);
+    const FColor FMath::ms_clBlack = FColor(0.0f, 0.0f, 0.0f, 1.0f);
+    const FColor FMath::ms_clWhite = FColor(1.0f, 1.0f, 1.0f, 1.0f);
+    const FColor FMath::ms_clRed = FColor(1.0f, 0.0f, 0.0f, 1.0f);
+    const FColor FMath::ms_clGreen = FColor(0.0f, 1.0f, 0.0f, 1.0f);
+    const FColor FMath::ms_clBlue = FColor(0.0f, 0.0f, 1.0f, 1.0f);
+    const FColor FMath::ms_clGray = FColor(0.5f, 0.5f, 0.5f, 1.0f);
+    const FColor FMath::ms_clDarkRed = FColor(0.5f, 0.0f, 0.0f, 1.0f);
+    const FColor FMath::ms_clDarkGreen = FColor(0.0f, 0.5f, 0.0f, 1.0f);
+    const FColor FMath::ms_clDarkBlue = FColor(0.0f, 0.0f, 0.5f, 1.0f);
+    const FColor FMath::ms_clDarkGray = FColor(0.25f, 0.25f, 0.25f, 1.0f);
+    const FColor FMath::ms_clYellow = FColor(1.0f, 1.0f, 0.0f, 1.0f);
+    const FColor FMath::ms_clCyan = FColor(0.0f, 1.0f, 1.0f, 1.0f);
+    const FColor FMath::ms_clMagenta = FColor(1.0f, 0.0f, 1.0f, 1.0f);
+    const FColor FMath::ms_clTransparent = FColor(1.0f, 1.0f, 1.0f, 0.0f);
+
+
+    //Color
+#if LP_ENDIAN == LP_ENDIAN_BIG
+	ABGR FMath::GetAsABGR(const FColor& color)
+#else
+	RGBA FMath::GetAsRGBA(const FColor& color)
+#endif	
+    {
+        uint8 val8;
+		uint32 val32 = 0;
+
+		// Convert to 32bit pattern
+		// (RGBA = 8888)
+
+		// Red
+		val8 = static_cast<uint8>(color.x * 255);
+		val32 = val8 << 24;
+
+		// Green
+		val8 = static_cast<uint8>(color.y * 255);
+		val32 += val8 << 16;
+
+		// Blue
+		val8 = static_cast<uint8>(color.z * 255);
+		val32 += val8 << 8;
+
+		// Alpha
+		val8 = static_cast<uint8>(color.w * 255);
+		val32 += val8;
+
+		return val32;
+    }				
+#if LP_ENDIAN == LP_ENDIAN_BIG
+	BGRA FMath::GetAsBGRA(const FColor& color)
+#else
+	ARGB FMath::GetAsARGB(const FColor& color)
+#endif	
+    {
+        uint8 val8;
+		uint32 val32 = 0;
+
+		// Convert to 32bit pattern
+		// (ARGB = 8888)
+
+		// Alpha
+		val8 = static_cast<uint8>(color.w * 255);
+		val32 = val8 << 24;
+
+		// Red
+		val8 = static_cast<uint8>(color.x * 255);
+		val32 += val8 << 16;
+
+		// Green
+		val8 = static_cast<uint8>(color.y * 255);
+		val32 += val8 << 8;
+
+		// Blue
+		val8 = static_cast<uint8>(color.z * 255);
+		val32 += val8;
+
+		return val32;
+    }					
+#if LP_ENDIAN == LP_ENDIAN_BIG
+	ARGB FMath::GetAsARGB(const FColor& color)
+#else
+	BGRA FMath::GetAsBGRA(const FColor& color)
+#endif		
+    {
+        uint8 val8;
+		uint32 val32 = 0;
+
+		// Convert to 32bit pattern
+		// (ARGB = 8888)
+
+		// Blue
+		val8 = static_cast<uint8>(color.z * 255);
+		val32 = val8 << 24;
+
+		// Green
+		val8 = static_cast<uint8>(color.y * 255);
+		val32 += val8 << 16;
+
+		// Red
+		val8 = static_cast<uint8>(color.x * 255);
+		val32 += val8 << 8;
+
+		// Alpha
+		val8 = static_cast<uint8>(color.w * 255);
+		val32 += val8;
+
+		return val32;
+    }	
+#if LP_ENDIAN == LP_ENDIAN_BIG
+	RGBA FMath::GetAsRGBA(const FColor& color)
+#else
+	ABGR FMath::GetAsABGR(const FColor& color)
+#endif
+    {
+        uint8 val8;
+		uint32 val32 = 0;
+
+		// Convert to 32bit pattern
+		// (ABRG = 8888)
+
+		// Alpha
+		val8 = static_cast<uint8>(color.w * 255);
+		val32 = val8 << 24;
+
+		// Blue
+		val8 = static_cast<uint8>(color.z * 255);
+		val32 += val8 << 16;
+
+		// Green
+		val8 = static_cast<uint8>(color.y * 255);
+		val32 += val8 << 8;
+
+		// Red
+		val8 = static_cast<uint8>(color.x * 255);
+		val32 += val8;
+
+		return val32;
+    }
+
+
+#if LP_ENDIAN == LP_ENDIAN_BIG
+	FColor FMath::GetAsABGR(const ABGR val)
+#else
+	FColor FMath::GetAsRGBA(const RGBA val)
+#endif
+	{
+		uint32 val32 = val;
+
+		// Convert from 32bit pattern
+		// (RGBA = 8888)
+
+		// Red
+		float r = ((val32 >> 24) & 0xFF) / 255.0f;
+
+		// Green
+		float g = ((val32 >> 16) & 0xFF) / 255.0f;
+
+		// Blue
+		float b = ((val32 >> 8) & 0xFF) / 255.0f;
+
+		// Alpha
+		float a = (val32 & 0xFF) / 255.0f;
+
+        return FColor(r, g, b, a);
+	}
+
+#if LP_ENDIAN == LP_ENDIAN_BIG
+	FColor FMath::GetAsBGRA(const BGRA val)
+#else
+	FColor FMath::GetAsARGB(const ARGB val)
+#endif
+	{
+		uint32 val32 = val;
+
+		// Convert from 32bit pattern
+		// (ARGB = 8888)
+
+		// Alpha
+		float a = ((val32 >> 24) & 0xFF) / 255.0f;
+
+		// Red
+		float r = ((val32 >> 16) & 0xFF) / 255.0f;
+
+		// Green
+		float g = ((val32 >> 8) & 0xFF) / 255.0f;
+
+		// Blue
+		float b = (val32 & 0xFF) / 255.0f;
+
+        return FColor(r, g, b, a);
+	}
+
+#if LP_ENDIAN == LP_ENDIAN_BIG
+	FColor FMath::GetAsARGB(const ARGB val)
+#else
+	FColor FMath::GetAsBGRA(const BGRA val)
+#endif
+	{
+		uint32 val32 = val;
+
+		// Convert from 32bit pattern
+		// (ARGB = 8888)
+
+		// Blue
+		float b = ((val32 >> 24) & 0xFF) / 255.0f;
+
+		// Green
+		float g = ((val32 >> 16) & 0xFF) / 255.0f;
+
+		// Red
+		float r = ((val32 >> 8) & 0xFF) / 255.0f;
+
+		// Alpha
+		float a = (val32 & 0xFF) / 255.0f;
+
+        return FColor(r, g, b, a);
+	}
+
+#if LP_ENDIAN == LP_ENDIAN_BIG
+	FColor FMath::GetAsRGBA(const RGBA val)
+#else
+	FColor FMath::GetAsABGR(const ABGR val)
+#endif
+	{
+		uint32 val32 = val;
+
+		// Convert from 32bit pattern
+		// (ABGR = 8888)
+
+		// Alpha
+		float a = ((val32 >> 24) & 0xFF) / 255.0f;
+
+		// Blue
+		float b = ((val32 >> 16) & 0xFF) / 255.0f;
+
+		// Green
+		float g = ((val32 >> 8) & 0xFF) / 255.0f;
+
+		// Red
+		float r = (val32 & 0xFF) / 255.0f;
+
+        return FColor(r, g, b, a);
+	}	
+
 
     static bool float_equal(float& f1, float&f2)
     {

@@ -34,6 +34,11 @@ namespace LostPeter
         return nullptr;
     }
 
+    EVertexElementDataType VulkanRenderer::GetColorVertexElementType() const
+    {
+        return E_VertexElementData_Float1;
+    }
+
     RenderWindow* VulkanRenderer::CreateRenderWindow(const String& strName, uint32 nWidth, uint32 nHeight, bool bFullScreen,
 												     const String2StringMap* pParams /*= nullptr*/, bool bShowWindow /*= true*/)
     {

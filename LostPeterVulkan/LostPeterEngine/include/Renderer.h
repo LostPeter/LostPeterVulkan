@@ -80,6 +80,9 @@ namespace LostPeterEngine
 		virtual void RemoveRendererListener(RendererListener* pRendererListener);
         
     public:
+		virtual void ConvertColorValue(const FColor& color, uint32* pDest);
+		virtual EVertexElementDataType GetColorVertexElementType() const = 0;
+
 		virtual RenderWindow* CreateRenderWindow(const String& strName, uint32 nWidth, uint32 nHeight, bool bFullScreen,
 												 const String2StringMap* pParams = nullptr, bool bShowWindow = true) = 0;
 

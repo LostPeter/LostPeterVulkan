@@ -74,20 +74,20 @@ namespace LostPeterFoundation
         static const FMatrix4 ms_mat4Zero;
         static const FMatrix4 ms_mat4Unit;
 
-        static const FVector4 ms_clBlack;
-        static const FVector4 ms_clWhite;
-        static const FVector4 ms_clRed;
-        static const FVector4 ms_clGreen;
-        static const FVector4 ms_clBlue;
-        static const FVector4 ms_clGray;
-        static const FVector4 ms_clDarkRed;
-        static const FVector4 ms_clDarkGreen;
-        static const FVector4 ms_clDarkBlue;
-        static const FVector4 ms_clDarkGray;
-        static const FVector4 ms_clYellow;
-        static const FVector4 ms_clCyan;
-        static const FVector4 ms_clMagenta;
-        static const FVector4 ms_clTransparent;
+        static const FColor ms_clBlack;
+        static const FColor ms_clWhite;
+        static const FColor ms_clRed;
+        static const FColor ms_clGreen;
+        static const FColor ms_clBlue;
+        static const FColor ms_clGray;
+        static const FColor ms_clDarkRed;
+        static const FColor ms_clDarkGreen;
+        static const FColor ms_clDarkBlue;
+        static const FColor ms_clDarkGray;
+        static const FColor ms_clYellow;
+        static const FColor ms_clCyan;
+        static const FColor ms_clMagenta;
+        static const FColor ms_clTransparent;
 
 	public:
         //Rand
@@ -428,6 +428,17 @@ namespace LostPeterFoundation
             float fLen = (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
 			return (fLen < (ms_fEpsilon * ms_fEpsilon));
         }
+
+        //Color
+        static RGBA GetAsRGBA(const FColor& color);						
+		static ARGB GetAsARGB(const FColor& color);						
+		static BGRA GetAsBGRA(const FColor& color);						
+		static ABGR GetAsABGR(const FColor& color);		
+
+        static FColor GetAsRGBA(const RGBA val);					
+		static FColor GetAsARGB(const ARGB val);					
+		static FColor GetAsBGRA(const BGRA val);					
+		static FColor GetAsABGR(const ABGR val);		
 
 	public:
         //Zero

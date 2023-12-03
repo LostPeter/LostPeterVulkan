@@ -16,6 +16,7 @@
 #include "../include/RenderWindow.h"
 #include "../include/Viewport.h"
 #include "../include/ObjectCamera.h"
+#include "../include/VertexElement.h"
 
 namespace LostPeterEngine
 {
@@ -129,6 +130,11 @@ namespace LostPeterEngine
     { 
         m_listRendererListeners.remove(pRendererListener); 
     }
+
+	void Renderer::ConvertColorValue(const FColor& color, uint32* pDest)
+	{
+		*pDest = VertexElement::ConvertColorValue(color, GetColorVertexElementType());
+	}
 
     void Renderer::Present()
 	{

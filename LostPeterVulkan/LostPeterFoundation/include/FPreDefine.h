@@ -92,6 +92,11 @@ namespace LostPeterFoundation
 
 
     ////////////////////////////// Typedef /////////////////////////////
+    typedef uint32 RGBA;
+	typedef uint32 ARGB;
+	typedef uint32 ABGR;
+	typedef uint32 BGRA;
+
     typedef std::chrono::steady_clock::time_point TimePoint;
     typedef std::string String;
     typedef std::vector<String> StringVector;

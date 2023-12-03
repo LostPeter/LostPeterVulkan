@@ -60,6 +60,15 @@ namespace LostPeter
     }
 
 
+    typedef std::vector<VkFormat> VkFormatVector;
+    typedef std::map<VkFormat, VkFormatProperties> VkFormat2PropertiesMap;
+    typedef std::vector<VkClearValue> VkClearValueVector;
+    
+    typedef std::vector<VkQueueFamilyProperties> VkQueueFamilyPropertiesVector;
+
+    typedef std::vector<VkBuffer> VkBufferVector;
+    typedef std::vector<VkDeviceMemory> VkDeviceMemoryVector;
+
     /////////////////////////////////////// Vulkan Define ////////////////////////////////
 	#define E_CPU_ALLOCATOR              nullptr
 

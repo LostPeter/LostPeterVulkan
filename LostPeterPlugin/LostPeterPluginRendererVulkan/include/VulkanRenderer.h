@@ -32,6 +32,8 @@ namespace LostPeter
 
     
     public:
+        virtual EVertexElementDataType GetColorVertexElementType() const;
+        
         virtual RenderWindow* CreateRenderWindow(const String& strName, uint32 nWidth, uint32 nHeight, bool bFullScreen,
 												 const String2StringMap* pParams = nullptr, bool bShowWindow = true);
 

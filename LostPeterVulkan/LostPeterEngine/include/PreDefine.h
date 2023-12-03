@@ -67,7 +67,6 @@ namespace LostPeterEngine
     #define C_CONFIG_MAX_GLYPHS_COUNT				        (9030 - 32)
     #define C_CONFIG_GLYPH_INDEX(c)					        c - 33
 
-
 ////////////////////////////// Typedef /////////////////////////////
     
 
@@ -104,7 +103,72 @@ namespace LostPeterEngine
     engineExport const String& E_GetRenderPipelineTypeName(ERenderPipelineType type);
     engineExport const String& E_GetRenderPipelineTypeName(int32 type);
     
+
+    enum EVertexElementSemanticType
+	{
+		E_VertexElementSemantic_Position = 0,		        //0: Position
+		E_VertexElementSemantic_BlendWeights,			    //1: BlendWeights
+		E_VertexElementSemantic_BlendIndices,			    //2: BlendIndices
+		E_VertexElementSemantic_Normal,				        //3: Normal
+		E_VertexElementSemantic_Diffuse,				    //4: Diffuse
+		E_VertexElementSemantic_Specular,				    //5: Specular
+		E_VertexElementSemantic_TextureCoordinates,	        //6: TextureCoordinates
+		E_VertexElementSemantic_BiNormal,				    //7: BiNormal
+		E_VertexElementSemantic_Tangent,				    //8: Tangent
+	};			
+
+
+	enum EVertexElementDataType
+	{
+		E_VertexElementData_Float1 = 0,				        //0:  Float1
+		E_VertexElementData_Float2,					        //1:  Float2
+		E_VertexElementData_Float3,					        //2:  Float3
+		E_VertexElementData_Float4,					        //3:  Float4
+		E_VertexElementData_Color,					        //4:  Color
+		E_VertexElementData_Short1,					        //5:  Short1
+		E_VertexElementData_Short2,					        //6:  Short2
+		E_VertexElementData_Short3,					        //7:  Short3
+		E_VertexElementData_Short4,					        //8:  Short4
+		E_VertexElementData_UByte4,					        //9:  UByte4
+		E_VertexElementData_ColorARGB,			            //10: ColorARGB, D3D
+		E_VertexElementData_ColorABGR		                //11: ColorABGR, OpenGL
+	};
     
+
+    enum EStreamReleaseType
+	{
+		E_StreamRelease_Manual = 0,                         //0: Manual
+		E_StreamRelease_Auto                                //1: Auto
+	};
+
+
+	enum EStreamUsageType
+	{
+		E_StreamUsage_Static = 0x00000001,                  //1: Static, GPU to CPU
+		E_StreamUsage_Dynamic = 0x00000002,                 //2: Dynamic, CPU only
+		E_StreamUsage_WriteOnly	= 0x00000004,               //4: WriteOnly
+		E_StreamUsage_Discardable = 0x00000008,             //8: Discardable
+		E_StreamUsage_StaticWriteOnly = E_StreamUsage_Static | E_StreamUsage_WriteOnly, //GPU only
+		E_StreamUsage_DynamicWriteOnly = E_StreamUsage_Dynamic | E_StreamUsage_WriteOnly, //CPU to GPU
+		E_StreamUsage_DynamicWriteOnlyDiscardable = E_StreamUsage_Dynamic | E_StreamUsage_WriteOnly | E_StreamUsage_Discardable, //CPU to GPU
+	};
+
+
+	enum EStreamLockType
+	{
+		E_StreamLock_Normal = 0,                            //0: Normal
+		E_StreamLock_Discard,                               //1: Discard
+		E_StreamLock_ReadOnly,                              //2: ReadOnly
+		E_StreamLock_NoOverWrite,                           //3: NoOverWrite
+	};
+
+
+	enum EStreamIndexType 
+	{
+		E_StreamIndex_16Bit = 0,                            //0: 16Bit
+		E_StreamIndex_32Bit                                 //1: 32Bit 
+	};
+
 
     enum VulkanDescriptorSetType
     {
@@ -227,16 +291,7 @@ namespace LostPeterEngine
     engineExport const String& E_GetFrameProfilerTypeName(int type);
 
 
-////////////////////////////// Vulkan //////////////////////////////
-    typedef std::vector<VkFormat> VkFormatVector;
-    typedef std::map<VkFormat, VkFormatProperties> VkFormat2PropertiesMap;
-    typedef std::vector<VkClearValue> VkClearValueVector;
-    
-    typedef std::vector<VkQueueFamilyProperties> VkQueueFamilyPropertiesVector;
-
-    typedef std::vector<VkBuffer> VkBufferVector;
-    typedef std::vector<VkDeviceMemory> VkDeviceMemoryVector;
-
+////////////////////////////// Vulkan //////////////////////////////    
     typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;
     typedef std::vector<VkVertexInputAttributeDescription> VkVertexInputAttributeDescriptionVector;
 
@@ -464,6 +519,9 @@ namespace LostPeterEngine
 
 
     class Base;
+    class DataIndex;
+	class DataVertex;
+	class DataVertexIndex;
     class Engine;
     class EngineConfig;
     class EngineListener;
@@ -543,12 +601,32 @@ namespace LostPeterEngine
     class Shader;
     class ShaderManager;
     class ShaderSerializer;
+    class Stream;
+	class StreamIndex;
+	class StreamIndexSystem;
+	class StreamLock;
+	class StreamManager;
+	class StreamTemp;
+	class StreamTempBlended;
+	class StreamTexture;
+	class StreamVertex;
+	class StreamVertexBinding;
+	class StreamVertexBindingManager;
+	class StreamVertexSystem;
     class SystemCapabilities;
     class Texture;
     class TextureManager;
     class TextureSerializer;
+    class VertexDeclaration;
+	class VertexDeclarationManager;
+	class VertexElement;
     class Viewport;
 
+
+    typedef std::vector<DataVertex*> DataVertexPtrVector;
+	typedef std::list<DataVertex*> DataVertexPtrList;
+	typedef std::vector<DataIndex*> DataIndexPtrVector;
+	typedef std::list<DataIndex*> DataIndexPtrList;
 
     typedef std::vector<MeshSub*> MeshSubPtrVector;
     typedef std::map<String, MeshSub*> MeshSubPtrMap;
@@ -687,6 +765,34 @@ namespace LostPeterEngine
 
     typedef std::vector<SceneManager*> SceneManagerPtrVector;
     typedef std::map<String, SceneManager*> SceneManagerPtrMap;
+
+    typedef std::vector<StreamVertex*> StreamVertexPtrVector;
+	typedef std::list<StreamVertex*> StreamVertexPtrList;
+	typedef std::set<StreamVertex*> StreamVertexPtrSet;
+	typedef std::map<uint16, StreamVertex*> StreamVertexPtrMap;
+
+	typedef std::vector<StreamIndex*> StreamIndexPtrVector;
+	typedef std::list<StreamIndex*> StreamIndexPtrList;
+	typedef std::set<StreamIndex*> StreamIndexPtrSet;
+	typedef std::map<StreamIndex*, int32> StreamIndexPtrMap;
+
+	typedef std::vector<StreamTexture*> StreamTexturePtrVector;
+	typedef std::list<StreamTexture*> StreamTexturePtrList;
+	typedef std::set<StreamTexture*> StreamTexturePtrSet;
+	
+	typedef std::map<StreamTemp*, int32> StreamTempPtrMap;
+
+	typedef std::vector<StreamVertexBinding*> StreamVertexBindingPtrVector;
+	typedef std::list<StreamVertexBinding*> StreamVertexBindingPtrList;
+	typedef std::set<StreamVertexBinding*> StreamVertexBindingPtrSet;
+
+    typedef std::vector<size_t> VertexSizeVector;
+    typedef std::vector<VertexElement> VertexElementVector;
+	typedef std::list<VertexElement> VertexElementList;
+    typedef std::vector<VertexDeclaration*> VertexDeclarationPtrVector;
+	typedef std::list<VertexDeclaration*> VertexDeclarationPtrList;
+	typedef std::set<VertexDeclaration*> VertexDeclarationPtrSet;
+	typedef std::map<String, VertexDeclaration*> VertexDeclarationPtrMap;
 
     typedef std::vector<Viewport*> ViewportPtrVector;
     typedef std::map<String, Viewport*> ViewportPtrMap;
