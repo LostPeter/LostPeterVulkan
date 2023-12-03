@@ -12,11 +12,28 @@
 #ifndef _STREAM_INDEX_H_
 #define _STREAM_INDEX_H_
 
-#include "Base.h"
+#include "Stream.h"
 
 namespace LostPeterEngine
 {
-    
+    class engineExport StreamIndex : public Stream
+    {
+    public:
+        StreamIndex(EStreamIndexType eStreamIndex, size_t nIndexNum, 
+                    EStreamUsageType eStreamUsage, bool bUseSystemMemory, bool bUseShadowStream);
+		virtual ~StreamIndex();
+	
+	public:
+	protected:
+		EStreamIndexType m_eStreamIndex;
+		size_t m_eStreamIndexTypeSize;
+		size_t m_eStreamIndexNum;			
+		
+	public:
+		EStreamIndexType GetStreamIndexType() const { return m_eStreamIndex; }
+		size_t GetStreamIndexSize() const { return m_eStreamIndexTypeSize; }
+		size_t GetStreamIndexNum() const { return m_eStreamIndexNum; }
+    };
 
 }; //LostPeterEngine
 

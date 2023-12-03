@@ -14,6 +14,7 @@
 
 #include "FPreIncludeStd.h"
 #include "FPreIncludeThird.h"
+#include "FPtrListNode.h"
 #include "FTPoint.h"
 #include "FTSize.h"
 #include "FTRect.h"

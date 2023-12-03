@@ -12,11 +12,30 @@
 #ifndef _STREAM_INDEX_SYSTEM_H_
 #define _STREAM_INDEX_SYSTEM_H_
 
-#include "Base.h"
+#include "StreamIndex.h"
 
 namespace LostPeterEngine
 {
-    
+    class engineExport StreamIndexSystem : public StreamIndex
+    {
+    public:
+		StreamIndexSystem(EStreamIndexType eStreamIndex, size_t nIndexNum, EStreamUsageType eStreamUsage);
+		virtual ~StreamIndexSystem();
+
+	protected:
+		uint8* m_pData;
+
+	public:
+		virtual void* Lock(size_t nOffset, size_t nLength, EStreamLockType eStreamLock);
+		virtual void Unlock();
+
+		virtual void ReadData(size_t nOffset, size_t nLength, void* pDest);
+		virtual void WriteData(size_t nOffset, size_t nLength, const void* pSource, bool bDiscardWholeStream = false);
+
+	protected:
+		virtual void* lockImpl(size_t nOffset, size_t nLength, EStreamLockType eStreamLock);
+		virtual void unlockImpl();
+    };
 
 }; //LostPeterEngine
 

@@ -12,11 +12,26 @@
 #ifndef _DATA_VERTEX_INDEX_H_
 #define _DATA_VERTEX_INDEX_H_
 
-#include "Base.h"
+#include "PreDefine.h"
 
 namespace LostPeterEngine
 {
-    
+    class engineExport DataVertexIndex
+	{
+	public:
+		DataVertexIndex();
+        virtual ~DataVertexIndex();
+		
+	public:
+	    FRenderPrimitiveType m_eRenderPrimitive;
+		DataVertex* m_pVertexData;
+		DataIndex* m_pIndexData;
+		bool m_bUseIndices;
+		const Renderable* m_pRenderable;
+
+		//ERenderInstanceType m_eRenderInstance;
+		uint32 m_nInstanceCount;
+	};
 
 }; //LostPeterEngine
 

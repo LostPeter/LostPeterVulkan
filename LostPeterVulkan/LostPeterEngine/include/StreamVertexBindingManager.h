@@ -16,7 +16,35 @@
 
 namespace LostPeterEngine
 {
-    
+    class engineExport StreamVertexBindingManager : public FSingleton<StreamVertexBindingManager>
+                                                  , public Base
+    {
+    public:
+        StreamVertexBindingManager();
+        ~StreamVertexBindingManager();
+
+    public:
+	protected:
+		uint32 m_nCount;
+		VertexStreamBindingPtrListNode m_vsbActiveHeadNode;
+		VertexStreamBindingPtrListNode m_vsbActiveTailNode;
+		VertexStreamBindingPtrListNode m_vsbFreeHeadNode;
+		VertexStreamBindingPtrListNode m_vsbFreeTailNode;
+		//ENGINE_MUTEX(m_mutexVertexBindings)
+
+    public:
+        static StreamVertexBindingManager& GetSingleton();
+        static StreamVertexBindingManager* GetSingletonPtr();
+
+    public:
+		virtual StreamVertexBinding* CreateVertexStreamBinding();
+		virtual void DestroyVertexStreamBinding(StreamVertexBinding* pVSBinding);
+		virtual void DestroyVertexStreamBindingAll();
+
+	protected:
+		virtual StreamVertexBinding* createVertexStreamBindingImpl();
+		virtual void destroyVertexStreamBindingImpl(StreamVertexBinding* pVSBinding);
+    };
 
 }; //LostPeterEngine
 

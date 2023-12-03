@@ -789,6 +789,10 @@ namespace LostPeterEngine
     typedef std::vector<size_t> VertexSizeVector;
     typedef std::vector<VertexElement> VertexElementVector;
 	typedef std::list<VertexElement> VertexElementList;
+
+    typedef FPtrListNode<VertexDeclaration> VertexDeclarationPtrListNode;
+	typedef FPtrListNode<StreamVertexBinding> VertexStreamBindingPtrListNode;
+
     typedef std::vector<VertexDeclaration*> VertexDeclarationPtrVector;
 	typedef std::list<VertexDeclaration*> VertexDeclarationPtrList;
 	typedef std::set<VertexDeclaration*> VertexDeclarationPtrSet;

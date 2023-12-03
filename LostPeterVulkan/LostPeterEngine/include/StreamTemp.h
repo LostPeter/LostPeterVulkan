@@ -12,11 +12,23 @@
 #ifndef _STREAM_TEMP_H_
 #define _STREAM_TEMP_H_
 
-#include "Base.h"
+#include "PreDefine.h"
 
 namespace LostPeterEngine
 {
-    
+    class engineExport StreamTemp
+    {
+    public:
+        StreamTemp();
+        virtual ~StreamTemp();
+
+    public:
+	protected:
+		StreamManager* m_pStreamManager;
+	
+	public:
+		virtual	void DeleteStream(Stream* pStream) = 0;
+    };
 
 }; //LostPeterEngine
 

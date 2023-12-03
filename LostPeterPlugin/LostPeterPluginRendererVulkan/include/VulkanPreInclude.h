@@ -28,6 +28,10 @@
 #include "../include/VulkanQueue.h"
 #include "../include/VulkanRenderer.h"
 #include "../include/VulkanSemaphore.h"
+#include "../include/VulkanStreamIndex.h"
+#include "../include/VulkanStreamManager.h"
+#include "../include/VulkanStreamTexture.h"
+#include "../include/VulkanStreamVertex.h"
 #include "../include/VulkanSwapChain.h"
 
 

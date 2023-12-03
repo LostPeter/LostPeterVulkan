@@ -10,9 +10,49 @@
 ****************************************************************************/
 
 #include "../include/StreamVertex.h"
+#include "../include/StreamVertexSystem.h"
 
 namespace LostPeterEngine
 {
-    
+    StreamVertex::StreamVertex(size_t nVertexSize, size_t nVertexNum, EStreamUsageType eStreamUsage,
+		                       bool bSystemMemory, bool bUseShadowStream)
+		: Stream(eStreamUsage, bSystemMemory, bUseShadowStream)
+		, m_nStreamVertexSize(nVertexSize)
+		, m_nStreamVertexNum(nVertexNum)
+		, m_bSingleFormat(false)
+	{
+		m_nStreamSizeInBytes = m_nStreamVertexSize * m_nStreamVertexNum;
+		if (m_bUseShadowStream)
+		{
+			m_pStreamShadow = new StreamVertexSystem(m_nStreamVertexSize, m_nStreamVertexNum, E_StreamUsage_Dynamic);
+		}
+	}	
+
+	StreamVertex::StreamVertex(size_t nSizeInBytes, EStreamUsageType eStreamUsage,
+		                       bool bSystemMemory, bool bUseShadowStream)
+		: Stream(eStreamUsage, bSystemMemory, bUseShadowStream)
+		, m_nStreamVertexSize(0)
+		, m_nStreamVertexNum(1)
+		, m_bSingleFormat(true)
+	{
+		m_nStreamSizeInBytes = nSizeInBytes;
+		if (m_bUseShadowStream)
+		{
+			m_pStreamShadow = new StreamVertexSystem(m_nStreamVertexSize, m_nStreamVertexNum, E_StreamUsage_Dynamic);
+		}
+	}
+
+	StreamVertex::~StreamVertex()
+	{
+		F_DELETE(m_pStreamShadow)
+	}
+
+	void StreamVertex::SetStreamVertexSize(size_t nVertexSize)
+	{
+		if (!m_bSingleFormat)
+		{
+			m_nStreamVertexSize = nVertexSize;
+		}
+	}
 
 }; //LostPeterEngine

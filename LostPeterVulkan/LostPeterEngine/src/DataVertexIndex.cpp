@@ -10,9 +10,26 @@
 ****************************************************************************/
 
 #include "../include/DataVertexIndex.h"
+#include "../include/DataVertex.h"
+#include "../include/DataIndex.h"
 
 namespace LostPeterEngine
 {
-    
+    DataVertexIndex::DataVertexIndex()
+		: m_eRenderPrimitive(F_RenderPrimitive_TriangleList)
+		, m_pVertexData(nullptr)
+		, m_pIndexData(nullptr)
+		, m_bUseIndices(true)
+		, m_pRenderable(nullptr)
+		//, m_eRenderInstance(E_RenderInstance_None)
+		, m_nInstanceCount(0)
+	{
+		
+	}
+
+    DataVertexIndex::~DataVertexIndex()
+    {
+        
+    }
 
 }; //LostPeterEngine
