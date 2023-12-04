@@ -817,8 +817,18 @@ namespace LostPeter
                                     const VkBuffer& vkBufferDst, 
                                     VkDeviceSize size)
     {
-        VkBufferCopy copyRegion = {};
+        VkBufferCopy copyRegion = { };
         copyRegion.size = size;
+        vkCmdCopyBuffer(vkCommandBuffer, vkBufferSrc, vkBufferDst, 1, &copyRegion);
+    }
+    void VulkanDevice::CopyVkBuffer(const VkCommandBuffer& vkCommandBuffer, 
+                                    const VkBuffer& vkBufferSrc, 
+                                    const VkBuffer& vkBufferDst, 
+                                    size_t nSrcOffset, 
+                                    size_t nDstOffset, 
+                                    VkDeviceSize size)
+    {
+        VkBufferCopy copyRegion = { nSrcOffset, nDstOffset, size };
         vkCmdCopyBuffer(vkCommandBuffer, vkBufferSrc, vkBufferDst, 1, &copyRegion);
     }
     void VulkanDevice::CopyVkBuffer(const VkBuffer& vkBufferSrc, 
@@ -828,6 +838,18 @@ namespace LostPeter
         VkCommandBuffer vkCommandBuffer = BeginSingleTimeCommands();
         {
             CopyVkBuffer(vkCommandBuffer, vkBufferSrc, vkBufferDst, size);
+        }
+        EndSingleTimeCommands(vkCommandBuffer);
+    }
+    void VulkanDevice::CopyVkBuffer(const VkBuffer& vkBufferSrc, 
+                                    const VkBuffer& vkBufferDst, 
+                                    size_t nSrcOffset, 
+                                    size_t nDstOffset, 
+                                    VkDeviceSize size)
+    {
+        VkCommandBuffer vkCommandBuffer = BeginSingleTimeCommands();
+        {
+            CopyVkBuffer(vkCommandBuffer, vkBufferSrc, vkBufferDst, nSrcOffset, nDstOffset, size);
         }
         EndSingleTimeCommands(vkCommandBuffer);
     }

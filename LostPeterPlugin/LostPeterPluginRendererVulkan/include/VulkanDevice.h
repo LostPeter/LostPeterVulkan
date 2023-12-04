@@ -178,8 +178,19 @@ namespace LostPeter
                           const VkBuffer& vkBufferSrc, 
                           const VkBuffer& vkBufferDst, 
                           VkDeviceSize size);
+        void CopyVkBuffer(const VkCommandBuffer& vkCommandBuffer, 
+                          const VkBuffer& vkBufferSrc, 
+                          const VkBuffer& vkBufferDst, 
+                          size_t nSrcOffset, 
+                          size_t nDstOffset, 
+                          VkDeviceSize size);
         void CopyVkBuffer(const VkBuffer& vkBufferSrc, 
                           const VkBuffer& vkBufferDst, 
+                          VkDeviceSize size);
+        void CopyVkBuffer(const VkBuffer& vkBufferSrc, 
+                          const VkBuffer& vkBufferDst, 
+                          size_t nSrcOffset, 
+                          size_t nDstOffset, 
                           VkDeviceSize size);
         void WriteVkBuffer(VkDeviceMemory& vkBufferMemory, 
                            void* pData, 
