@@ -21,7 +21,7 @@ using namespace LostPeterFoundation;
 using namespace LostPeterEngine;
 
 
-#if E_PLATFORM == E_PLATFORM_WIN32
+#if E_PLATFORM == E_PLATFORM_WINDOW
 	#if defined (VULKAN_EXPORTS)
 		#define vulkanExport            __declspec(dllexport)
 	#else

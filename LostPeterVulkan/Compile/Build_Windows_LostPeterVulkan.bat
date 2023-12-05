@@ -25,11 +25,11 @@ call ./Build_Windows_LostPeterUI.bat %debug% %rebuild%
 if "%debug%" == "debug" (
     set name_project="LostPeterVulkan_d"
     set name_lib="LostPeterVulkan_d.lib"
-    @REM set name_dll=%name%"_"%mode%"_d.dll"
+    set name_dll="LostPeterVulkan_d.dll"
 ) else (
     set name_project="LostPeterVulkan"
     set name_lib="LostPeterVulkan.lib"
-    @REM set name_dll=%name%"_"%mode%".dll"
+    set name_dll="LostPeterVulkan.dll"
 )
 
 @rem build folder
@@ -62,12 +62,12 @@ if "%debug%" == "debug" (
     cmake -DDEBUG=1 "../../../LostPeterVulkan/"
     msbuild "%name_project%".sln /p:configuration=debug
     copy /Y ".\Debug\"%name_lib% "..\..\..\..\Plugins\Windows\"%name_lib%
-    @REM copy /Y ".\Debug\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
+    copy /Y ".\Debug\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
 ) else (
     cmake "../../../LostPeterVulkan/"
     msbuild "%name_project%".sln /p:configuration=release
     copy /Y ".\Release\"%name_lib% "..\..\..\..\Plugins\Windows\"%name_lib%
-    @REM copy /Y ".\Release\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
+    copy /Y ".\Release\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
 )
 
 

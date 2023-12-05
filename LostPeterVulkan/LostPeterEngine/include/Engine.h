@@ -25,8 +25,8 @@ namespace LostPeterEngine
         virtual ~Engine();
 
     public:
-        static FPlatformType ms_typePlatform;
-        static String ms_strNamePlatform;
+        static FPlatformType ms_ePlatform;
+        static FPlatformType GetPlatformType() { return ms_ePlatform; }
 
         static bool	ms_bUseBinaryResource;
         static bool GetUseBinaryResource() { return ms_bUseBinaryResource; }
@@ -57,6 +57,7 @@ namespace LostPeterEngine
 
     private:
     ////config file path
+        String m_strNamePlatform;
         String m_pathWorkFolder;
         String m_folder_Plugin;
 		bool m_bEngineIsInit;
@@ -67,21 +68,25 @@ namespace LostPeterEngine
 		EngineListenerPtrMultiSet m_setRemovedEngineListeners;
 
     public:
-
-
-
-    public:
         static Engine& GetSingleton();
 		static Engine* GetSingletonPtr();
 
-
     public:
+        E_FORCEINLINE SystemCapabilities* GetSystemCapabilities() { return m_pSystemCapabilities; }
+        E_FORCEINLINE FPathManager* GetPathManager() { return m_pPathManager; }
+        E_FORCEINLINE FFileManager* GetFileManager() { return m_pFileManager; }
+        E_FORCEINLINE FPluginManager* GetPluginManager() { return m_pPluginManager; }
+        E_FORCEINLINE RenderEngine* GetRenderEngine() { return m_pRenderEngine; }
+
         E_FORCEINLINE FTimer* GetTimer() const { return m_pTimer; }
         E_FORCEINLINE EngineFrameProfiler* GetEngineFrameProfiler() { return m_pEngineFrameProfiler; }
 
         E_FORCEINLINE uint64 GetFrameCurrentNumber() const { return m_nFrameCurrent; }
         E_FORCEINLINE uint64 GetTimeLast() const { return m_nTimeLast; }
 
+        E_FORCEINLINE const String& GetNamePlatform() const { return m_strNamePlatform; }
+        E_FORCEINLINE const String& GetPathWorkFolder() const { return m_pathWorkFolder; }
+        E_FORCEINLINE bool IsEngineInit() const { return m_bEngineIsInit; }
         E_FORCEINLINE ConfigItemMap* GetEngineCommonCfgItems() { return &m_mapEngineCommonCfgItem; }
 
     public:

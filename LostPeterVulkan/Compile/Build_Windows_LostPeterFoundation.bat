@@ -19,11 +19,11 @@ echo %rebuild%
 if "%debug%" == "debug" (
     set name_project="LostPeterFoundation_d"
     set name_lib="LostPeterFoundation_d.lib"
-    @REM set name_dll=%name%"_"%mode%"_d.dll"
+    set name_dll="LostPeterFoundation_d.dll"
 ) else (
     set name_project="LostPeterFoundation"
     set name_lib="LostPeterFoundation.lib"
-    @REM set name_dll=%name%"_"%mode%".dll"
+    set name_dll="LostPeterFoundation.dll"
 )
 
 @rem build folder
@@ -56,12 +56,12 @@ if "%debug%" == "debug" (
     cmake -DDEBUG=1 "../../../LostPeterFoundation/"
     msbuild "%name_project%".sln /p:configuration=debug
     copy /Y ".\Debug\"%name_lib% "..\..\..\..\Plugins\Windows\"%name_lib%
-    @REM copy /Y ".\Debug\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
+    copy /Y ".\Debug\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
 ) else (
     cmake "../../../LostPeterFoundation/"
     msbuild "%name_project%".sln /p:configuration=release
     copy /Y ".\Release\"%name_lib% "..\..\..\..\Plugins\Windows\"%name_lib%
-    @REM copy /Y ".\Release\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
+    copy /Y ".\Release\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
 )
 
 

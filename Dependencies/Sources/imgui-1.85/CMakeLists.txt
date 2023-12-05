@@ -252,7 +252,7 @@ elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_VULKAN})
     #Build
     if (WIN32)
         MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Win32 !")
-        # ADD_DEFINITIONS(-DIMGUI_EXPORTS)
+        ADD_DEFINITIONS(-DIMGUI_EXPORTS)
         if(MSVC)
             ADD_DEFINITIONS(/wd4251 /wd4275)
         endif()
@@ -267,7 +267,7 @@ elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLFW_VULKAN})
                            ${LIB_VULKAN_DIR}/vulkan-1.lib)
         endif ()
         
-        MY_ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
+        MY_ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
 
     elseif (ANDROID)
         MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Android !")  

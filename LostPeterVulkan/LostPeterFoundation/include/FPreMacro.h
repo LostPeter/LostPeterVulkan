@@ -98,11 +98,7 @@
 	#if defined(LPF_EXPORTS)
 		#define LPF_Export        		__declspec(dllexport) 
 	#else
-		#if defined(LPF_IMPORTS)
-			#define LPF_Export      	__declspec(dllimport) 
-		#else
-			#define LPF_Export
-		#endif
+		#define LPF_Export      		__declspec(dllimport) 
 	#endif
 #elif LP_PLATFORM == LP_PLATFORM_ANDROID
 	#define LPF_Export					__attribute__ ((visibility("default")))

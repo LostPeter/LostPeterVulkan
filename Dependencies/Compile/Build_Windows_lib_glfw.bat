@@ -20,9 +20,11 @@ set name="glfw-3.3.6"
 if "%debug%" == "debug" (
     set name_project=%name%"_d"
     set name_lib=%name%"_d.lib"
+    set name_dll="glfw3.dll"
 ) else (
     set name_project=%name%
     set name_lib=%name%".lib"
+    set name_dll="glfw3.dll"
 )
 
 @rem build folder
@@ -54,11 +56,13 @@ cd %name_project%
 if "%debug%" == "debug" (
     cmake -DDEBUG=1 "../../../Sources/%name%/"
     msbuild GLFW.sln /p:configuration=debug
-    copy /Y ".\src\Debug\glfw3.lib" "..\..\..\Lib\Windows\"%name_lib%
+    copy /Y ".\src\Debug\glfw3dll.lib" "..\..\..\Lib\Windows\"%name_lib%
+    copy /Y ".\src\Debug\glfw3.dll" "..\..\..\..\Bin\Windows\"%name_dll%
 ) else (
     cmake "../../../Sources/%name%/"
     msbuild GLFW.sln /p:configuration=release
-    copy /Y ".\src\Release\glfw3.lib" "..\..\..\Lib\Windows\"%name_lib%
+    copy /Y ".\src\Release\glfw3dll.lib" "..\..\..\Lib\Windows\"%name_lib%
+    copy /Y ".\src\Release\glfw3.dll" "..\..\..\..\Bin\Windows\"%name_dll%
 )
 
 

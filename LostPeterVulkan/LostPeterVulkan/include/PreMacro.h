@@ -98,11 +98,7 @@
 	#if defined(UTIL_EXPORTS)
 		#define utilExport        		__declspec(dllexport) 
 	#else
-		#if defined(UTIL_IMPORTS)
-			#define utilExport      	__declspec(dllimport) 
-		#else
-			#define utilExport
-		#endif
+		#define utilExport      		__declspec(dllimport)
 	#endif
 #elif UTIL_PLATFORM == UTIL_PLATFORM_ANDROID
 	#define utilExport					__attribute__ ((visibility("default")))

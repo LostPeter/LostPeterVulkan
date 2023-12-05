@@ -125,6 +125,7 @@ endfunction(MY_ADD_LIBRARY)
 if (WIN32)
     MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Win32 !")
     
+    ADD_DEFINITIONS(-DLPF_EXPORTS)
     ADD_DEFINITIONS(-DNOISE_STATIC)
     if(MSVC)
         ADD_DEFINITIONS(/wd4251 /wd4275)
@@ -146,8 +147,8 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib)
         
     endif()
-    MY_ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
-
+    MY_ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
+    
 elseif (ANDROID)
     MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Android !")  
 

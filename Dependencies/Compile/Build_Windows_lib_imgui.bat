@@ -42,9 +42,11 @@ set name=%name_base%-1.85
 if "%debug%" == "debug" (
     set name_project=%name%"_"%mode%"_d"
     set name_lib=%name%"_"%mode%"_d.lib"
+    set name_dll=%name%"_"%mode%"_d.dll"
 ) else (
     set name_project=%name%"_"%mode%
     set name_lib=%name%"_"%mode%".lib"
+    set name_dll=%name%"_"%mode%".dll"
 )
 
 @rem build folder
@@ -76,10 +78,12 @@ if "%debug%" == "debug" (
     cmake -DDEBUG=1 -DPLATFORM_MODE=%mode% ../../../Sources/%name%/
     msbuild "%name_project%".sln /p:configuration=debug
     copy /Y ".\Debug\"%name_lib% "..\..\..\Lib\Windows\"%name_lib%
+    copy /Y ".\Debug\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
 ) else (
     cmake -DPLATFORM_MODE=%mode% ../../../Sources/%name%/
     msbuild "%name_project%".sln /p:configuration=release
     copy /Y ".\Release\"%name_lib% "..\..\..\Lib\Windows\"%name_lib%
+    copy /Y ".\Release\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
 )
 
 

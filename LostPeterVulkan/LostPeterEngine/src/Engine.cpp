@@ -29,21 +29,16 @@ namespace LostPeterEngine
 		return (*ms_Singleton);     
 	}
 
-#if E_PLATFORM == E_PLATFORM_WIN32      
-	FPlatformType Engine::ms_typePlatform = F_Platform_Windows;
-    String Engine::ms_strNamePlatform = F_GetPlatformTypeName(F_Platform_Windows);
+#if E_PLATFORM == E_PLATFORM_WINDOW      
+	FPlatformType Engine::ms_ePlatform = F_Platform_Windows;
 #elif E_PLATFORM == E_PLATFORM_MAC
-    FPlatformType Engine::ms_typePlatform = F_Platform_MacOS;
-	String Engine::ms_strNamePlatform = F_GetPlatformTypeName(F_Platform_MacOS);
+    FPlatformType Engine::ms_ePlatform = F_Platform_MacOS;
 #elif E_PLATFORM == E_PLATFORM_LINUX
-    FPlatformType Engine::ms_typePlatform = F_Platform_Linux;
-	String Engine::ms_strNamePlatform = F_GetPlatformTypeName(F_Platform_Linux);                       
+    FPlatformType Engine::ms_ePlatform = F_Platform_Linux;                    
 #elif E_PLATFORM == E_PLATFORM_ANDROID
-    FPlatformType Engine::ms_typePlatform = F_Platform_Android;
-	String Engine::ms_strNamePlatform = F_GetPlatformTypeName(F_Platform_Android);                     
+    FPlatformType Engine::ms_ePlatform = F_Platform_Android;                  
 #elif E_PLATFORM == E_PLATFORM_IOS
-    FPlatformType Engine::ms_typePlatform = F_Platform_iOS;
-	String Engine::ms_strNamePlatform = F_GetPlatformTypeName(F_Platform_iOS);
+    FPlatformType Engine::ms_ePlatform = F_Platform_iOS;
 #else 
     #pragma error "UnKnown platform, Engine.cpp Abort! Abort!"
 #endif
@@ -100,8 +95,9 @@ namespace LostPeterEngine
 
     bool Engine::Init(const String& strWorkFolder, bool bAutoCreateWindow)
     {
+        m_strNamePlatform = F_GetPlatformTypeName(ms_ePlatform);
         m_pathWorkFolder = strWorkFolder;
-		m_folder_Plugin = strWorkFolder + "Assets/Plugins/" + ms_strNamePlatform + "/";
+		m_folder_Plugin = strWorkFolder + "Assets/Plugins/" + m_strNamePlatform + "/";
 		initCommonCfgItems();
 
         //1, PreCommon 

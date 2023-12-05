@@ -98,11 +98,7 @@
 	#if defined(ENGINE_EXPORTS)
 		#define engineExport        	__declspec(dllexport) 
 	#else
-		#if defined(ENGINE_IMPORTS)
-			#define engineExport      	__declspec(dllimport) 
-		#else
-			#define engineExport
-		#endif
+		#define engineExport      		__declspec(dllimport)
 	#endif
 #elif E_PLATFORM == E_PLATFORM_ANDROID
 	#define engineExport				__attribute__ ((visibility("default")))

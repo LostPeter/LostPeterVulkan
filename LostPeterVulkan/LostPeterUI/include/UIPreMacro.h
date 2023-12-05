@@ -18,11 +18,7 @@
 	#if defined(LPUI_EXPORTS)
 		#define LPUI_Export        		__declspec(dllexport) 
 	#else
-		#if defined(LPUI_IMPORTS)
-			#define LPUI_Export      	__declspec(dllimport) 
-		#else
-			#define LPUI_Export
-		#endif
+		#define LPUI_Export      		__declspec(dllimport) 
 	#endif
 #elif LP_PLATFORM == LP_PLATFORM_ANDROID
 	#define LPUI_Export					__attribute__ ((visibility("default")))
