@@ -531,6 +531,8 @@ namespace LostPeterEngine
     class EngineFrameStateMemory;
     class EngineFrameStatePhysics;
     class EngineFrameStateRender;
+    class Image;
+    class ImageCodec;
     class Material;
     class MaterialData;
     class MaterialDataManager;

@@ -40,6 +40,7 @@ namespace LostPeterEngine
         SystemCapabilities* m_pSystemCapabilities;
         FPathManager* m_pPathManager;
         FFileManager* m_pFileManager;
+        FCodecManager* m_pCodecManager;
         FPluginManager* m_pPluginManager;
 
         RenderEngine* m_pRenderEngine;
@@ -61,6 +62,7 @@ namespace LostPeterEngine
         String m_pathWorkFolder;
         String m_folder_Plugin;
 		bool m_bEngineIsInit;
+        bool m_bCodecIsInit;
 
         ConfigItemMap m_mapEngineCommonCfgItem;
 
@@ -75,6 +77,7 @@ namespace LostPeterEngine
         E_FORCEINLINE SystemCapabilities* GetSystemCapabilities() { return m_pSystemCapabilities; }
         E_FORCEINLINE FPathManager* GetPathManager() { return m_pPathManager; }
         E_FORCEINLINE FFileManager* GetFileManager() { return m_pFileManager; }
+        E_FORCEINLINE FCodecManager* GetCodecManager() { return m_pCodecManager; }
         E_FORCEINLINE FPluginManager* GetPluginManager() { return m_pPluginManager; }
         E_FORCEINLINE RenderEngine* GetRenderEngine() { return m_pRenderEngine; }
 

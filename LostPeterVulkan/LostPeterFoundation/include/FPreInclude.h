@@ -20,6 +20,8 @@
 #include "FCamera.h"
 #include "FCapsule.h"
 #include "FCircle.h"
+#include "FCodec.h"
+#include "FCodecManager.h"
 #include "FComplex.h"
 #include "FCone.h"
 #include "FCylinder.h"

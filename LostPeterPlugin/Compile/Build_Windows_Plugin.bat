@@ -10,20 +10,22 @@
 @REM #****************************************************************************/
 
 @echo off
-set debug=%1
-set rebuild=%2
+set name_plugin=%1
+set debug=%2
+set rebuild=%3
 
+echo %name_plugin%
 echo %debug%
 echo %rebuild%
 
 
 @REM # Build LostPeterPluginRendererVulkan
 if "%debug%" == "debug" (
-    set name_project="LostPeterPluginRendererVulkan_d"
-    set name_dll="LostPeterPluginRendererVulkan_d.dll"
+    set name_project=%name_plugin%"_d"
+    set name_dll=%name_plugin%"_d.dll"
 ) else (
-    set name_project="LostPeterPluginRendererVulkan"
-    set name_dll="LostPeterPluginRendererVulkan.dll"
+    set name_project=%name_plugin%
+    set name_dll=%name_plugin%".dll"
 )
 
 @rem build folder
@@ -53,11 +55,11 @@ cd Windows
 cd %name_project%
 
 if "%debug%" == "debug" (
-    cmake -DDEBUG=1 "../../../LostPeterPluginRendererVulkan/"
+    cmake -DDEBUG=1 "../../../%name_plugin%/"
     msbuild "%name_project%".sln /p:configuration=debug
     copy /Y ".\Debug\"%name_dll% "..\..\..\..\Bin\Assets\Plugins\Windows\"%name_dll%
 ) else (
-    cmake "../../../LostPeterPluginRendererVulkan/"
+    cmake "../../../%name_plugin%/"
     msbuild "%name_project%".sln /p:configuration=release
     copy /Y ".\Release\"%name_dll% "..\..\..\..\Bin\Assets\Plugins\Windows\"%name_dll%
 )

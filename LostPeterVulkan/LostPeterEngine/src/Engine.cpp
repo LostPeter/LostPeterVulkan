@@ -52,6 +52,7 @@ namespace LostPeterEngine
         , m_pSystemCapabilities(nullptr)
         , m_pPathManager(nullptr)
         , m_pFileManager(nullptr)
+        , m_pCodecManager(nullptr)
         , m_pPluginManager(nullptr)
         , m_pRenderEngine(nullptr)
 
@@ -65,6 +66,7 @@ namespace LostPeterEngine
         , m_pathWorkFolder("")
         , m_folder_Plugin("")
         , m_bEngineIsInit(false)
+        , m_bCodecIsInit(false)
     {
 
     }
@@ -86,6 +88,12 @@ namespace LostPeterEngine
         F_DELETE(m_pRenderEngine)
 
         F_DELETE(m_pTimer)
+        if (m_bCodecIsInit)
+		{
+
+			m_bCodecIsInit = false;
+		}
+        F_DELETE(m_pCodecManager)
         F_DELETE(m_pFileManager)
 		F_DELETE(m_pPathManager)
         F_DELETE(m_pSystemCapabilities)
@@ -119,6 +127,8 @@ namespace LostPeterEngine
 			m_pFileManager  = new FFileManager;
 
             //<4> CodecManager
+            m_pCodecManager = new FCodecManager;
+            m_bCodecIsInit = true;
 
             //<5> ControllerManager
         }

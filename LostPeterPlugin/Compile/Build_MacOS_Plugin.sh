@@ -9,19 +9,20 @@
 # This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 #****************************************************************************/
 
-debug=${1}
-rebuild=${2}
+name_plugin=${1}
+debug=${2}
+rebuild=${3}
 
 if [ "$debug" == "debug" ]; then
-    name_project="LostPeterPluginRendererVulkan_d"
-    name_dylib="libLostPeterPluginRendererVulkan_d.dylib"
+    name_project=$name_plugin"_d"
+    name_dylib="lib"$name_plugin"_d.dylib"
 else
-    name_project="LostPeterPluginRendererVulkan"
-    name_dylib="libLostPeterPluginRendererVulkan.dylib"
+    name_project=$name_plugin
+    name_dylib="lib"$name_plugin".dylib"
 fi
 
 
-# Build LostPeterPluginRendererVulkan
+# Build Plugin
 if [ "$rebuild" == "rebuild" ]; then
     rm -rf "../Build/MacOS/"$name_project
 fi
@@ -37,9 +38,9 @@ cd $name_project
 
 #dylib
 if [ "$debug" == "debug" ]; then
-    cmake -DDEBUG=1 -DCMAKE_BUILD_TYPE=Debug ../../../LostPeterPluginRendererVulkan/
+    cmake -DDEBUG=1 -DCMAKE_BUILD_TYPE=Debug ../../../$name_plugin/
 else
-    cmake ../../../LostPeterPluginRendererVulkan/
+    cmake ../../../$name_plugin/
 fi
 make
 

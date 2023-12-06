@@ -179,6 +179,8 @@ namespace LostPeterFoundation
     class FCamera;
     class FCapsule;
     class FCircle;
+    class FCodec;
+    class FCodecManager;
     class FComplex;
     class FCone;
     class FCylinder;
