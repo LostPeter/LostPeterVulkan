@@ -102,12 +102,16 @@ namespace LostPeter
 	class VulkanPlugin;
 	class VulkanQueue;
 	class VulkanRenderer;
+    class VulkanRenderTexture;
+    class VulkanRenderWindow;
 	class VulkanSemaphore;
     class VulkanStreamIndex;
     class VulkanStreamManager;
     class VulkanStreamTexture;
     class VulkanStreamVertex;
 	class VulkanSwapChain;
+    class VulkanTexture;
+    class VulkanTextureManager;
 
 	typedef std::vector<VulkanDeviceMemoryAllocation*> VulkanDeviceMemoryAllocationPtrVector;
 

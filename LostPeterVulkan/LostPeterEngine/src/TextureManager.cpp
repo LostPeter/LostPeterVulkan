@@ -106,34 +106,15 @@ namespace LostPeterEngine
     Texture* TextureManager::loadTexture(TextureInfo* pTI)
     {
         StringVector aPathTexture = FUtilString::Split(pTI->pathTexture, ";");
-        Texture* pTexture = new Texture(pTI->group,
-                                        pTI->nameTexture,
-                                        aPathTexture,
-                                        pTI->typeTexture,
-                                        pTI->typeTexturePixelFormat,
-                                        pTI->typeTextureFilter,
-                                        pTI->typeTextureAddressing,
-                                        pTI->typeTextureBorderColor,
-                                        pTI->isRT,
-                                        pTI->isGCS);
-        pTexture->texChunkMaxX = pTI->animChunkX;
-        pTexture->texChunkMaxY = pTI->animChunkY;
-        if (pTexture->texChunkMaxX > 0 && 
-            pTexture->texChunkMaxY > 0)
-        {
-            pTexture->texChunkIndex = FMath::Rand(0, pTexture->texChunkMaxX * pTexture->texChunkMaxY - 1);
-        }
-        pTexture->LoadTexture(pTI->width, 
-                              pTI->height,
-                              pTI->depth);
+        Texture* pTexture = nullptr;
 
-        if (AddTexture(pTI->group, pTexture))
-        {
-            F_LogInfo("TextureManager::loadTexture: Load texture success, [%u]-[%s]-[%s] !",
-                      pTI->group, 
-                      pTI->nameTexture.c_str(), 
-                      pTI->pathTexture.c_str());
-        }
+        // if (AddTexture(pTI->group, pTexture))
+        // {
+        //     F_LogInfo("TextureManager::loadTexture: Load texture success, [%u]-[%s]-[%s] !",
+        //               pTI->group, 
+        //               pTI->nameTexture.c_str(), 
+        //               pTI->pathTexture.c_str());
+        // }
         return pTexture;
     }
     void TextureManager::UnloadTexture(Texture* pTexture)

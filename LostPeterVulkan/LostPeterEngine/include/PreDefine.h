@@ -170,6 +170,50 @@ namespace LostPeterEngine
 	};
 
 
+    enum ETextureMipmapType
+	{
+        E_TextureMipMap_Default	= -1,			            //-1, use DfTextureManager default
+		E_TextureMipMap_UnLimited = 0x7FFFFFFF,	            //0x7FFFFFFF, generate mipmaps up to 1x1
+		E_TextureMipMap_FromFile  = 0x8FFFFFFF,	            //0x8FFFFFFF, generate mipmaps up to 1x1
+	};
+
+
+	enum ETextureUsageType
+	{
+		E_TextureUsage_Static						= E_StreamUsage_Static,
+		E_TextureUsage_Dynamic					    = E_StreamUsage_Dynamic,
+		E_TextureUsage_WriteOnly					= E_StreamUsage_WriteOnly,
+		E_TextureUsage_StaticWriteOnly			    = E_StreamUsage_StaticWriteOnly, 
+		E_TextureUsage_DynamicWriteOnly			    = E_StreamUsage_DynamicWriteOnly,
+		E_TextureUsage_DynamicWriteOnlyDiscardable  = E_StreamUsage_DynamicWriteOnlyDiscardable,
+		E_TextureUsage_AutoMipMap					= 0x10,
+		E_TextureUsage_RenderTarget				    = 0x20,
+		E_TextureUsage_NotSRV						= 0x40,
+		E_TextureUsage_UnorderedAccessView 	        = 0x80,
+        E_TextureUsage_UnorderedAccessViewNotSRV    = E_TextureUsage_UnorderedAccessView | E_TextureUsage_NotSRV,
+		E_TextureUsage_Default		                = E_TextureUsage_AutoMipMap | E_TextureUsage_StaticWriteOnly
+	};
+
+
+    enum EImageFlagType
+	{
+		E_ImageFlag_IsCompressed	= 0x00000001,           //1: IsCompressed
+		E_ImageFlag_IsCubeMap		= 0x00000002,           //2: IsCubeMap
+		E_ImageFlag_Is3DTexture	    = 0x00000004            //4: Is3DTexture
+	};
+
+	
+	enum EImageFilterType		
+	{
+		E_ImageFilter_Nearest = 0,                          //0: Nearest
+		E_ImageFilter_Linear,                               //1: Linear
+		E_ImageFilter_Bilinear,                             //2: Bilinear
+		E_ImageFilter_Box,                                  //3: Box
+		E_ImageFilter_Triangle,                             //4: Triangle
+		E_ImageFilter_Bicubic                               //5: Bicubic
+	};
+
+
     enum VulkanDescriptorSetType
     {
         Vulkan_DescriptorSet_Pass = 0,                      //0:  Pass
@@ -688,6 +732,9 @@ namespace LostPeterEngine
     typedef std::map<String, RenderStateShader*> RenderStateShaderPtrMap;
     typedef std::vector<RenderState*> RenderStatePtrVector;
     typedef std::map<String, RenderState*> RenderStatePtrMap;
+
+    typedef std::vector<Image*> ImagePtrVector;
+    typedef std::map<String, Image*> ImagePtrMap;
 
     typedef std::vector<Material*> MaterialPtrVector;
     typedef std::map<String, Material*> MaterialPtrMap;

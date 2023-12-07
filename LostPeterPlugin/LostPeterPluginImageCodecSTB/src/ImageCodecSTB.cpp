@@ -189,7 +189,7 @@ namespace LostPeter
         }
         
         size_t dstPitch = pImageData->nWidth * FPixelFormat::GetPixelFormatElemBytes(pImageData->ePixelFormat);
-        pImageData->nSize = dstPitch * pImageData->nHeight;
+        pImageData->nSize = (int32)(dstPitch * pImageData->nHeight);
         FFileMemory* pFM = FFileManager::GetSingleton().CreateFileMemory(pixelData, pImageData->nSize);
         
         FDecodeResult ret;

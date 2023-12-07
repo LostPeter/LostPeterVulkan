@@ -27,12 +27,16 @@
 #include "../include/VulkanPlugin.h"
 #include "../include/VulkanQueue.h"
 #include "../include/VulkanRenderer.h"
+#include "../include/VulkanRenderTexture.h"
+#include "../include/VulkanRenderWindow.h"
 #include "../include/VulkanSemaphore.h"
 #include "../include/VulkanStreamIndex.h"
 #include "../include/VulkanStreamManager.h"
 #include "../include/VulkanStreamTexture.h"
 #include "../include/VulkanStreamVertex.h"
 #include "../include/VulkanSwapChain.h"
+#include "../include/VulkanTexture.h"
+#include "../include/VulkanTextureManager.h"
 
 
 namespace LostPeter
