@@ -240,7 +240,7 @@ namespace LostPeterEngine
 		}
 		if (!pCodec)
 		{
-			F_LogError("Image::Load: Load image from memory failed !");
+			F_LogError("*********************** Image::Load: Load image from memory failed !");
 			F_Assert(false && "Image::Load")
 			return false;
 		}
@@ -268,7 +268,7 @@ namespace LostPeterEngine
 	{
 		if(!m_pBuffer)
 		{
-			F_LogError("Image::Save: No image data loaded !");
+			F_LogError("*********************** Image::Save: No image data loaded !");
 			F_Assert(false && "Image::Save")
 			return false;
 		}
@@ -277,7 +277,7 @@ namespace LostPeterEngine
 		size_t pos = strFilePath.find_last_of(".");
 		if (pos == String::npos)
 		{
-			F_LogError("Image::Save: Unable to save image file: [%s] - invalid extension !", strFilePath.c_str());
+			F_LogError("*********************** Image::Save: Unable to save image file: [%s] - invalid extension !", strFilePath.c_str());
 			F_Assert(false && "Image::Save")
 			return false;
 		}
@@ -289,7 +289,7 @@ namespace LostPeterEngine
 		FCodec* pCodec = FCodecManager::GetCodec(strExt);
 		if (!pCodec)
 		{
-			F_LogError("Image::Save: Unable to save image file: [%s] - invalid extension !", strFilePath.c_str());
+			F_LogError("*********************** Image::Save: Unable to save image file: [%s] - invalid extension !", strFilePath.c_str());
 			F_Assert(false && "Image::Save")
 			return false;
 		}
@@ -306,7 +306,7 @@ namespace LostPeterEngine
 		bool bRet = pCodec->CodeToFile(pFM, strFilePath, pImageData);
 		if (!bRet)
 		{
-			F_LogError("Image::Save: Unable to code image file: [%s] !", strFilePath.c_str());
+			F_LogError("*********************** Image::Save: Unable to code image file: [%s] !", strFilePath.c_str());
 			F_Assert(false && "Image::Save")
 			return false;
 		}
@@ -320,7 +320,7 @@ namespace LostPeterEngine
 	{
 		if (!m_pBuffer)
 		{
-			F_LogError("Image::Encode: No image data loaded !");
+			F_LogError("*********************** Image::Encode: No image data loaded !");
 			F_Assert(false && "Image::Encode")
 			return nullptr;
 		}
@@ -328,7 +328,7 @@ namespace LostPeterEngine
 		FCodec* pCodec = FCodecManager::GetCodec(strExt);
 		if (!pCodec)
 		{
-			F_LogError("Image::Encode: Unable to encode image data as: [%s] - invalid extension !", strExt.c_str());
+			F_LogError("*********************** Image::Encode: Unable to encode image data as: [%s] - invalid extension !", strExt.c_str());
 			F_Assert(false && "Image::Encode")
 			return nullptr;
 		}
@@ -367,14 +367,14 @@ namespace LostPeterEngine
 		// etc
 		if (mipmap > GetNumMipMaps())
 		{
-			F_LogError("Image::GetPixelBox: Mipmap index out of range !");
+			F_LogError("*********************** Image::GetPixelBox: Mipmap index out of range !");
 			F_Assert(false && "Image::GetPixelBox")
 			return false;
 		}
 
 		if (face >= GetNumFaces())
 		{
-			F_LogError("Image::GetPixelBox: Face index out of range !");
+			F_LogError("*********************** Image::GetPixelBox: Face index out of range !");
 			F_Assert(false && "Image::GetPixelBox")
 			return false;
 		}
@@ -420,7 +420,7 @@ namespace LostPeterEngine
 	{
 		if (!m_pBuffer)
 		{
-			F_LogError("Image::FlipAroundY: Can not flip an unintialized texture !");
+			F_LogError("*********************** Image::FlipAroundY: Can not flip an unintialized texture !");
 			F_Assert(false && "Image::FlipAroundY")
 			return false;
 		}
@@ -507,7 +507,7 @@ namespace LostPeterEngine
 
 		default:
 			{
-				F_LogError("Image::FlipAroundY: Unknown pixel depth !");
+				F_LogError("*********************** Image::FlipAroundY: Unknown pixel depth !");
 				F_Assert(false && "Image::FlipAroundY")
 				return false;
 			}
@@ -521,7 +521,7 @@ namespace LostPeterEngine
 	{
 		if (!m_pBuffer)
 		{
-			F_LogError("Image::FlipAroundX: Can not flip an unitialized texture !");
+			F_LogError("*********************** Image::FlipAroundX: Can not flip an unitialized texture !");
 			F_Assert(false && "Image::FlipAroundX")
 			return false;
 		}

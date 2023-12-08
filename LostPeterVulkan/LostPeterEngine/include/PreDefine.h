@@ -339,40 +339,6 @@ namespace LostPeterEngine
     typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;
     typedef std::vector<VkVertexInputAttributeDescription> VkVertexInputAttributeDescriptionVector;
 
-    typedef std::vector<VkAttachmentDescription> VkAttachmentDescriptionVector;
-    typedef std::vector<VkSubpassDescription> VkSubpassDescriptionVector;
-    typedef std::vector<VkSubpassDependency> VkSubpassDependencyVector;
-
-    typedef std::vector<VkImage> VkImageVector;
-    typedef std::vector<VkImageView> VkImageViewVector;
-    typedef std::vector<VkFramebuffer> VkFramebufferVector;
-
-    typedef std::vector<VkViewport> VkViewportVector;
-    typedef std::vector<VkRect2D> VkRect2DVector;
-
-    typedef std::vector<VkSemaphore> VkSemaphoreVector;
-    typedef std::vector<VkFence> VkFenceVector;
-        
-    typedef std::vector<VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoVector;
-    typedef std::map<String, VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoMap;
-
-    typedef std::vector<VkDescriptorSetLayoutBinding> VkDescriptorSetLayoutBindingVector;
-
-    typedef std::vector<VkDescriptorSetLayout> VkDescriptorSetLayoutVector;
-    typedef std::map<String, VkDescriptorSetLayout> VkDescriptorSetLayoutMap;
-
-    typedef std::vector<VkShaderModule> VkShaderModuleVector;
-    typedef std::map<String, VkShaderModule> VkShaderModuleMap;
-
-    typedef std::vector<VkPipelineLayout> VkPipelineLayoutVector;
-    typedef std::map<String, VkPipelineLayout> VkPipelineLayoutMap;
-
-    typedef std::vector<VkPipeline> VkPipelineVector;
-    typedef std::map<String, VkPipeline> VkPipelineMap;
-    
-    typedef std::vector<VkDescriptorSet> VkDescriptorSetVector;
-    typedef std::vector<VkWriteDescriptorSet> VkWriteDescriptorSetVector;
-
     const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(FMeshVertexType type);
     const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(FMeshVertexType type);
     VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(FMeshVertexType type);

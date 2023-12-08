@@ -19,8 +19,7 @@ namespace LostPeterEngine
     class engineExport Material : public Base
     {
     public:
-        Material(uint32 _group,
-                 const String& _nameMaterial);
+        Material(uint32 nGroup, const String& strName);
         virtual ~Material();
 
     public:

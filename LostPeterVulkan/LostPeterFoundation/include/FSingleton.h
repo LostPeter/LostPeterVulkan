@@ -20,6 +20,7 @@ namespace LostPeterFoundation
     #if LP_PLATFORM == LP_PLATFORM_WIN32
         #pragma warning (disable : 4311)
         #pragma warning (disable : 4312)
+        #pragma warning (disable : 4661)
     #endif
 
     template<typename T>

@@ -24,8 +24,6 @@ namespace LostPeterEngine
 
     public:
 	protected:
-		String m_strName;
-		uint32 m_nGroup;
 		FTextureType m_eTexture;
 		uint32 m_nUsage;
 		bool m_bIsLoaded;
@@ -57,8 +55,6 @@ namespace LostPeterEngine
 		bool m_bInternalResourcesCreated;
 
 	public:
-		E_FORCEINLINE const String& GetName() const { return m_strName; }
-		E_FORCEINLINE uint32 GetGroup() const { return m_nGroup; }
 		E_FORCEINLINE FTextureType GetTextureType() const { return m_eTexture; }
 		E_FORCEINLINE void SetTextureType(FTextureType eTexture) { m_eTexture = eTexture; }
 		E_FORCEINLINE uint32 GetUsage() const { return m_nUsage; }

@@ -15,9 +15,8 @@
 
 namespace LostPeterEngine
 {
-    Material::Material(uint32 _group,
-                       const String& _nameMaterial)
-        : Base(_group, _nameMaterial)
+    Material::Material(uint32 nGroup, const String& strName)
+        : Base(nGroup, strName)
         , m_pMaterialData(nullptr)
     {
         

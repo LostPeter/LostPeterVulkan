@@ -52,7 +52,7 @@ namespace LostPeterEngine
 		if (itFind == m_mapVD.end())
 		{
 			m_mapVD[strKey] = pVertexDeclaration;
-			m_nCount = m_mapVD.size();
+			m_nCount = (uint32)m_mapVD.size();
 			pVertexDeclaration->SetPoolIndex(m_nCount);
 		}
 		else

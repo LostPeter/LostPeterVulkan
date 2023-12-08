@@ -11,6 +11,10 @@
 
 #include "../include/Renderer.h"
 #include "../include/RendererListener.h"
+#include "../include/VertexDeclarationManager.h"
+#include "../include/StreamVertexBindingManager.h"
+#include "../include/StreamManager.h"
+#include "../include/TextureManager.h"
 #include "../include/RenderTargetManager.h"
 #include "../include/RenderTarget.h"
 #include "../include/RenderWindow.h"
@@ -22,6 +26,9 @@ namespace LostPeterEngine
 {
     Renderer::Renderer(const String& nameRenderer)
         : Base(nameRenderer)
+		, m_pVertexDeclarationManager(nullptr)
+		, m_pStreamManager(nullptr)
+		, m_pTextureManager(nullptr)
         , m_pRenderWindow(nullptr)
         , m_pActiveRenderTarget(nullptr)
         , m_pActiveViewport(nullptr)
@@ -36,6 +43,7 @@ namespace LostPeterEngine
 		, m_nCurWidth(0)
 		, m_nCurHeight(0)
     {
+		m_pVertexStreamBindingManager = new StreamVertexBindingManager();
         m_pRenderTargetManager = new RenderTargetManager(this);
     }
     
@@ -46,7 +54,10 @@ namespace LostPeterEngine
 
     void Renderer::Destroy()
     {
-
+		F_DELETE(m_pVertexDeclarationManager)
+		F_DELETE(m_pVertexStreamBindingManager)
+		F_DELETE(m_pStreamManager)
+		F_DELETE(m_pTextureManager)
         F_DELETE(m_pRenderTargetManager)
     }
 

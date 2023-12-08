@@ -69,7 +69,7 @@ namespace LostPeterEngine
 		Image img;
 		if (!img.LoadRawData(pInput, nWidth, nHeight, ePixelFormat))
 		{
-			F_LogError("Texture::LoadFromRawData: Create image form raw data failed !");
+			F_LogError("*********************** Texture::LoadFromRawData: Create image form raw data failed !");
 			F_Assert(false && "Texture::LoadFromRawData: Create image form raw data failed !")
 			return false;
 		}
@@ -134,7 +134,7 @@ namespace LostPeterEngine
 			faces = GetNumFaces();
 
 		std::ostringstream str;
-		str << "Texture: '" << m_strName << "': Loading " << faces << " faces"
+		str << "Texture: '" << GetName() << "': Loading " << faces << " faces"
 			<< "(" << FPixelFormat::GetPixelFormatName(aImages[0]->GetPixelFormat()) << "," <<
 			aImages[0]->GetWidth() << "x" << aImages[0]->GetHeight() << "x" << aImages[0]->GetDepth() <<
 			") with ";
@@ -188,8 +188,11 @@ namespace LostPeterEngine
 				src.m_ePixelFormat = m_ePixelFormatSrc;
 				if (m_fGamma != 1.0f) 
 				{
-					FFileMemory* pFM = FFileManager::GetSingleton().CreateFileMemory(FPixelFormat::GetPixelFormatMemorySize(
-						src.GetWidth(), src.GetHeight(), src.GetDepth(), src.m_ePixelFormat));
+					FFileMemory* pFM = FFileManager::GetSingleton().CreateFileMemory((uint32)FPixelFormat::GetPixelFormatMemorySize(
+																					 src.GetWidth(), 
+																					 src.GetHeight(), 
+																					 src.GetDepth(), 
+																					 src.m_ePixelFormat));
 
 					FPixelBox corrected = FPixelBox(src.GetWidth(), src.GetHeight(), src.GetDepth(), src.m_ePixelFormat, pFM->GetBuffer());
 					FPixelFormat::BulkPixelConversion(src,corrected);

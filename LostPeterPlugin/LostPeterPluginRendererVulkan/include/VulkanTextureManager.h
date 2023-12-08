@@ -16,7 +16,29 @@
 
 namespace LostPeter
 {
-    
+    class VulkanTextureManager : public TextureManager
+    {
+    public:
+        VulkanTextureManager(VulkanDevice* pDevice, bool bCanRestrictImageViewUsage);
+        virtual ~VulkanTextureManager();
+
+    public:
+    protected:
+        VulkanDevice* m_pDevice;
+        bool m_bCanRestrictImageViewUsage;
+
+    public:
+        E_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
+        E_FORCEINLINE bool CanRestrictImageViewUsage() const { return m_bCanRestrictImageViewUsage; }
+
+    public:
+        virtual FPixelFormatType GetNativeFormat(FTextureType eTexture, FPixelFormatType ePixelFormat, int32 nUsage);
+
+        virtual bool CheckSupport(FPixelFormatType ePixelFormat, uint32 nTextureFlags) const;
+
+    protected:
+		virtual Texture* createImpl(uint32 nGroup, const String& strName, const String2StringMap* pParams = nullptr);
+    };
 
 }; //LostPeter
 

@@ -51,7 +51,6 @@ namespace LostPeterEngine
 		, m_pSceneManagerCurrent(nullptr)
 		, m_pRenderQueueManager(nullptr)
         , m_pMeshManager(nullptr)
-        , m_pTextureManager(nullptr)
         , m_pShaderManager(nullptr)
         , m_pMaterialDataManager(nullptr)
         , m_pMaterialManager(nullptr)

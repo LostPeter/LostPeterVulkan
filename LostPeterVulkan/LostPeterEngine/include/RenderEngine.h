@@ -35,7 +35,6 @@ namespace LostPeterEngine
         SceneManager* m_pSceneManagerCurrent;
         RenderQueueManager* m_pRenderQueueManager;
         MeshManager* m_pMeshManager;
-        TextureManager* m_pTextureManager;
         ShaderManager* m_pShaderManager;
         MaterialDataManager* m_pMaterialDataManager;
         MaterialManager* m_pMaterialManager;

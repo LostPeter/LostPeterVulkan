@@ -69,22 +69,66 @@ namespace LostPeter
     typedef std::vector<VkBuffer> VkBufferVector;
     typedef std::vector<VkDeviceMemory> VkDeviceMemoryVector;
 
+    typedef std::vector<VkAttachmentDescription> VkAttachmentDescriptionVector;
+    typedef std::vector<VkSubpassDescription> VkSubpassDescriptionVector;
+    typedef std::vector<VkSubpassDependency> VkSubpassDependencyVector;
+
+    typedef std::vector<VkImage> VkImageVector;
+    typedef std::vector<VkImageView> VkImageViewVector;
+    typedef std::vector<VkFramebuffer> VkFramebufferVector;
+
+    typedef std::vector<VkViewport> VkViewportVector;
+    typedef std::vector<VkRect2D> VkRect2DVector;
+
+    typedef std::vector<VkSemaphore> VkSemaphoreVector;
+    typedef std::vector<VkFence> VkFenceVector;
+        
+    typedef std::vector<VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoVector;
+    typedef std::map<String, VkPipelineShaderStageCreateInfo> VkPipelineShaderStageCreateInfoMap;
+
+    typedef std::vector<VkDescriptorSetLayoutBinding> VkDescriptorSetLayoutBindingVector;
+
+    typedef std::vector<VkDescriptorSetLayout> VkDescriptorSetLayoutVector;
+    typedef std::map<String, VkDescriptorSetLayout> VkDescriptorSetLayoutMap;
+
+    typedef std::vector<VkShaderModule> VkShaderModuleVector;
+    typedef std::map<String, VkShaderModule> VkShaderModuleMap;
+
+    typedef std::vector<VkPipelineLayout> VkPipelineLayoutVector;
+    typedef std::map<String, VkPipelineLayout> VkPipelineLayoutMap;
+
+    typedef std::vector<VkPipeline> VkPipelineVector;
+    typedef std::map<String, VkPipeline> VkPipelineMap;
+    
+    typedef std::vector<VkDescriptorSet> VkDescriptorSetVector;
+    typedef std::vector<VkWriteDescriptorSet> VkWriteDescriptorSetVector;
+
+
     /////////////////////////////////////// Vulkan Define ////////////////////////////////
 	#define E_CPU_ALLOCATOR              nullptr
 
 	enum VulkanSwapStatusType
     {
-        Vulkan_SwapStatus_Normal = 0,
-        Vulkan_SwapStatus_OutOfDate = -1,
-        Vulkan_SwapStatus_Lost = -2,
-        Vulkan_SwapStatus_Error = -3,
+        Vulkan_SwapStatus_Normal = 0,               //0:    Normal
+        Vulkan_SwapStatus_OutOfDate = -1,           //-1:   OutOfDate
+        Vulkan_SwapStatus_Lost = -2,                //-2:   Lost
+        Vulkan_SwapStatus_Error = -3,               //-3:   Error
     };
 
 
     enum VulkanFenceStateType
     {
-        Vulkan_FenceState_NotReady = 0,
-        Vulkan_FenceState_Signaled,
+        Vulkan_FenceState_NotReady = 0,             //0:    NotReady
+        Vulkan_FenceState_Signaled,                 //1:    Signaled
+    };
+
+
+    enum VulkanResourceAccessType
+    {
+        Vulkan_ResourceAccess_Undefined = 0x00,	    //0: Undefined
+        Vulkan_ResourceAccess_Read = 0x01,			//1: Read
+        Vulkan_ResourceAccess_Write = 0x02,		    //2: Write
+        Vulkan_ResourceAccess_ReadWrite = Vulkan_ResourceAccess_Read | Vulkan_ResourceAccess_Write //3: ReadWrite
     };
 
 

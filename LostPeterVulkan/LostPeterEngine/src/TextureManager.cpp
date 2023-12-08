@@ -12,6 +12,7 @@
 #include "../include/TextureManager.h"
 #include "../include/TextureSerializer.h"
 #include "../include/Texture.h"
+#include "../include/Image.h"
 
 template<> LostPeterEngine::TextureManager* LostPeterFoundation::FSingleton<LostPeterEngine::TextureManager>::ms_Singleton = nullptr;
 
@@ -30,12 +31,16 @@ namespace LostPeterEngine
     TextureManager::TextureManager()
         : Base("TextureManager")
         , m_pTextureSerializer(nullptr)
+        , m_nPreferredIntegerBitDepth(0)
+		, m_nPreferredFloatBitDepth(0)
+		, m_nDefaultNumMipmaps(E_TextureMipMap_UnLimited)
+		, m_fDefaultMipmapLODBias(0.0f)
     {
 
     }
     TextureManager::~TextureManager()
     {
-        Destroy();
+        
     }
 
     void TextureManager::Destroy()
@@ -206,5 +211,286 @@ namespace LostPeterEngine
         m_aTexture.clear();
         m_mapTextureGroup.clear();
     }
+
+    void TextureManager::SetPreferredIntegerBitDepth(uint16 nBits, bool bReloadTextures /*= true*/)
+	{
+		m_nPreferredIntegerBitDepth = nBits;
+
+		if (bReloadTextures)
+		{		
+			for (TexturePtrVector::iterator it = m_aTexture.begin(); 
+				 it != m_aTexture.end(); ++it)
+			{
+				Texture* pTexture = (*it);
+				if (pTexture->IsLoaded() && !pTexture->IsManual())
+				{
+					pTexture->Unload();
+					pTexture->SetDesiredIntegerBitDepth(nBits);
+                    if (!pTexture->Load())
+                    {
+                        F_LogError("*********************** TextureManager::SetPreferredIntegerBitDepth: Load texture failed, group: [%d], name: [%s]", pTexture->GetGroup(), pTexture->GetName().c_str());
+                        continue;
+                    }
+				}
+				else
+				{
+					pTexture->SetDesiredIntegerBitDepth(nBits);
+				}
+			}	
+		}
+	}
+
+	void TextureManager::SetPreferredFloatBitDepth(uint16 nBits, bool bReloadTextures /*= true*/)
+	{
+		m_nPreferredFloatBitDepth = nBits;
+
+		if (bReloadTextures)
+		{		
+			for (TexturePtrVector::iterator it = m_aTexture.begin(); 
+				 it != m_aTexture.end(); ++it)
+			{
+				Texture* pTexture = (*it);
+				if (pTexture->IsLoaded() && !pTexture->IsManual())
+				{
+					pTexture->Unload();
+					pTexture->SetDesiredFloatBitDepth(nBits);
+                    if (!pTexture->Load())
+                    {
+                        F_LogError("*********************** TextureManager::SetPreferredFloatBitDepth: Load texture failed, group: [%d], name: [%s]", pTexture->GetGroup(), pTexture->GetName().c_str());
+                        continue;
+                    }
+				}
+				else
+				{
+					pTexture->SetDesiredFloatBitDepth(nBits);
+				}
+			}           
+		}
+	}
+
+	void TextureManager::SetPreferredBitDepths(uint16 nIntegerBits, uint16 nFloatBits, bool bReloadTextures /*= true*/)
+	{
+		m_nPreferredIntegerBitDepth = nIntegerBits;
+		m_nPreferredFloatBitDepth = nFloatBits;
+
+		if (bReloadTextures)
+		{
+			for (TexturePtrVector::iterator it = m_aTexture.begin(); 
+				 it != m_aTexture.end(); ++it)
+			{
+				Texture* pTexture = (*it);
+				if (pTexture->IsLoaded() && !pTexture->IsManual())
+				{
+					pTexture->Unload();
+					pTexture->SetDesiredBitDepths(nIntegerBits, nFloatBits);
+                    if (!pTexture->Load())
+                    {
+                        F_LogError("*********************** TextureManager::SetPreferredBitDepths: Load texture failed, group: [%d], name: [%s]", pTexture->GetGroup(), pTexture->GetName().c_str());
+                        continue;
+                    }
+				}
+				else
+				{
+					pTexture->SetDesiredBitDepths(nIntegerBits, nFloatBits);
+				}
+			}			
+		}
+	}
+
+	bool TextureManager::IsFormatSupported(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage)
+	{
+		return GetNativeFormat(eTexture, ePixelFormat, nUsage) == ePixelFormat;
+	}
+
+	bool TextureManager::IsEquivalentFormatSupported(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage)
+	{	
+		FPixelFormatType eSupportedPF = GetNativeFormat(eTexture, ePixelFormat, nUsage);
+		return FPixelFormat::GetPixelFormatElemBits(eSupportedPF) >= FPixelFormat::GetPixelFormatElemBits(ePixelFormat);
+	}
+
+    Texture* TextureManager::CreateTexture(uint32 nGroup, 
+                                           const String& strName, 
+                                           FTextureType eTexture /*= F_Texture_2D*/, 
+                                           int nNumMipMaps /*= E_TextureMipMap_Default*/, 
+				                           float fGamma /*= 1.0f*/, 
+                                           bool bIsAlpha /*= false*/, 
+                                           FPixelFormatType ePixelFormatDesired /*= F_PixelFormat_Unknown*/, 
+                                           bool bUseMemoryImage /*= false*/,
+				                           bool bBackground /*= true*/, 
+                                           uint16 nRecoveryGroupID /*= 0*/)
+	{
+		String2StringMap mapParams;
+		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
+		Texture* pTexture = GetTexture(nGroup, strName);
+		if (pTexture)
+		{
+			pTexture->AddRef();
+			return pTexture;
+		}
+		pTexture = createImpl(nGroup, strName, &mapParams);
+		pTexture->AddRef();
+		
+        pTexture->SetTextureType(eTexture);
+        pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nDefaultNumMipmaps : static_cast<size_t>(nNumMipMaps));
+        pTexture->SetGamma(fGamma);
+        pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
+        pTexture->SetPixelFormat(ePixelFormatDesired);
+        if (!pTexture->Load())
+        {
+            F_LogError("*********************** TextureManager::CreateTexture: Load texture failed, group: [%d], name: [%s]", nGroup, strName.c_str());
+            F_DELETE(pTexture)
+            return nullptr;
+        }
+
+        AddTexture(nGroup, pTexture);
+        return pTexture;
+	}
+
+	Texture* TextureManager::CreateTextureManual(uint32 nGroup, 
+                                                 const String& strName, 
+                                                 FTextureType eTexture, 
+                                                 uint32 nWidth, 
+                                                 uint32 nHeight, 
+                                                 uint32 nDepth, 
+		                                         int nNumMipMaps, 
+                                                 FPixelFormatType ePixelFormat, 
+                                                 uint32 nUsage /*= E_TextureUsage_Default*/, 
+                                                 bool bUseMemoryImage /*= false*/, 
+                                                 uint32 nFSAA /*= 0*/)
+	{
+		String2StringMap mapParams;
+		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
+		Texture* pTexture = GetTexture(nGroup, strName);
+		if (pTexture)
+		{
+			pTexture->AddRef();
+			return pTexture;
+		}
+		pTexture = createImpl(nGroup, strName, &mapParams);
+		pTexture->AddRef();
+
+		pTexture->SetTextureType(eTexture);
+		pTexture->SetWidth(nWidth);
+		pTexture->SetHeight(nHeight);
+		pTexture->SetDepth(nDepth);
+		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nDefaultNumMipmaps : static_cast<size_t>(nNumMipMaps));
+		pTexture->SetPixelFormat(ePixelFormat);
+		pTexture->SetUsage(nUsage);
+		pTexture->SetFSAA(nFSAA);
+		pTexture->CreateInternalResources();
+
+        AddTexture(nGroup, pTexture);
+		return pTexture;
+	}
+
+	Texture* TextureManager::CreateTextureFromImage(uint32 nGroup, 
+                                                    const String& strName, 
+                                                    Image* pImage, 
+                                                    FTextureType eTexture /*= F_Texture_2D*/,
+				                                    int nNumMipMaps /*= E_TextureMipMap_Default*/, 
+                                                    float fGamma /*= 1.0f*/, 
+                                                    bool bIsAlpha /*= false*/,
+				                                    FPixelFormatType ePixelFormatDesired /*= F_PixelFormat_Unknown*/, 
+                                                    bool bUseMemoryImage /*= false*/)
+	{
+		String2StringMap mapParams;
+		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
+		Texture* pTexture = GetTexture(nGroup, strName);
+		if (pTexture)
+		{
+			pTexture->AddRef();
+			return pTexture;
+		}
+		pTexture = createImpl(nGroup, strName, &mapParams);
+		pTexture->AddRef();
+		
+		pTexture->SetTextureType(eTexture);
+		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nDefaultNumMipmaps : static_cast<size_t>(nNumMipMaps));
+		pTexture->SetGamma(fGamma);
+		pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
+		pTexture->SetPixelFormat(ePixelFormatDesired);
+		if (!pTexture->LoadFromImage(pImage))
+        {
+            F_LogError("*********************** TextureManager::CreateTextureFromImage: Load texture from image failed, group: [%d], name: [%s]", nGroup, strName.c_str());
+            F_DELETE(pTexture)
+            return nullptr;
+        }
+
+        AddTexture(nGroup, pTexture);
+		return pTexture;
+	}
+
+	Texture* TextureManager::CreateTextureFromDDSImage(uint32 nGroup, 
+                                                       const String& strName, 
+                                                       FFileMemory* pInput, 
+                                                       FTextureType eTexture /*= F_Texture_2D*/,
+                                                       int nNumMipMaps /*= E_TextureMipMap_Default*/, 
+                                                       float fGamma /*= 1.0f*/, 
+                                                       bool bIsAlpha /*= false*/,
+                                                       FPixelFormatType ePixelFormatDesired /*= F_PixelFormat_Unknown*/, 
+                                                       bool bUseMemoryImage /*= false*/)
+	{
+		String2StringMap mapParams;
+		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
+		Texture* pTexture = GetTexture(nGroup, strName);
+		if (pTexture)
+		{
+			pTexture->AddRef();
+			return pTexture;
+		}
+		pTexture = createImpl(nGroup, strName, &mapParams);
+		pTexture->AddRef();
+
+		pTexture->SetTextureType(eTexture);
+		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nDefaultNumMipmaps : static_cast<size_t>(nNumMipMaps));
+		pTexture->SetGamma(fGamma);
+		pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
+		pTexture->SetPixelFormat(ePixelFormatDesired);
+		if (!pTexture->LoadFromDDSImage(pInput))
+        {
+            F_LogError("*********************** TextureManager::CreateTextureFromDDSImage: Load texture from dds image failed, group: [%d], name: [%s]", nGroup, strName.c_str());
+            F_DELETE(pTexture)
+            return nullptr;
+        }
+
+        AddTexture(nGroup, pTexture);
+		return pTexture;
+	}
+
+	Texture* TextureManager::CreateTextureFromRawData(uint32 nGroup, 
+                                                      const String& strName, 
+                                                      FFileMemory* pInput, 
+                                                      size_t nWidth, 
+                                                      size_t nHeight, 
+				                                      FPixelFormatType ePixelFormat, 
+                                                      FTextureType eTexture /*= F_Texture_2D*/, 
+                                                      int nNumMipMaps /*= E_TextureMipMap_Default*/, 
+                                                      float fGamma /*= 1.0f*/, 
+                                                      bool bUseMemoryImage /*= false*/)
+	{
+		String2StringMap mapParams;
+		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
+		Texture* pTexture = GetTexture(nGroup, strName);
+		if (pTexture)
+		{
+			pTexture->AddRef();
+			return pTexture;
+		}
+		pTexture = createImpl(nGroup, strName, &mapParams);
+		pTexture->AddRef();
+
+		pTexture->SetTextureType(eTexture);
+		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nDefaultNumMipmaps : static_cast<size_t>(nNumMipMaps));
+		pTexture->SetGamma(fGamma);
+		if (!pTexture->LoadFromRawData(pInput, nWidth, nHeight, ePixelFormat))
+        {
+            F_LogError("*********************** TextureManager::CreateTextureFromRawData: Load texture from raw data failed, group: [%d], name: [%s]", nGroup, strName.c_str());
+            F_DELETE(pTexture)
+            return nullptr;
+        }
+
+        AddTexture(nGroup, pTexture);
+		return pTexture;
+	}
 
 }; //LostPeterEngine

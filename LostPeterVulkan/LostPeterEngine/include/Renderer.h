@@ -25,6 +25,11 @@ namespace LostPeterEngine
 
     public:
     protected:
+		VertexDeclarationManager* m_pVertexDeclarationManager;
+		StreamVertexBindingManager* m_pVertexStreamBindingManager;
+		StreamManager* m_pStreamManager;
+		TextureManager* m_pTextureManager;
+
         RendererListenerPtrList m_listRendererListeners;
         RenderTargetManager* m_pRenderTargetManager;
         RenderWindow* m_pRenderWindow;

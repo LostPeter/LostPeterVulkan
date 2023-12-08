@@ -59,15 +59,6 @@ namespace LostPeterEngine
 		float m_fRangeMinZ;
 		float m_fRangeMaxZ;
 
-        VkViewportVector m_aViewports;
-        VkRect2DVector m_aScissors;
-
-    public:
-        E_FORCEINLINE const VkViewportVector& GetVkViewportVector() const { return this->m_aViewports; }
-        E_FORCEINLINE VkViewportVector& GetVkViewportVector() { return this->m_aViewports; }
-        E_FORCEINLINE const VkRect2DVector& GetVkRect2DVector() const { return this->m_aScissors; }
-        E_FORCEINLINE VkRect2DVector& GetVkRect2DVector() { return this->m_aScissors; }
-
     public:
         void Destroy();
 
