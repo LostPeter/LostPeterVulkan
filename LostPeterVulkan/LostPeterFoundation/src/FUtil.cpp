@@ -17,7 +17,7 @@
 
 namespace LostPeterFoundation
 {
-#if LP_PLATFORM == LP_PLATFORM_WIN32
+#if F_PLATFORM == F_PLATFORM_WINDOW
     char* Unicode2Utf8(wchar_t* unicodeStr) {
         int cStrLen = WideCharToMultiByte(CP_UTF8, 0, unicodeStr, -1, NULL, 0, NULL, NULL);
         char* cStr = (char*)malloc(sizeof(char) * (cStrLen + 1));
@@ -44,7 +44,7 @@ namespace LostPeterFoundation
     {
         String path;
 
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         wchar_t szBuf[512];
         ::GetModuleFileNameW(NULL, szBuf, 512);
         ::PathRemoveFileSpecW(szBuf);
@@ -55,7 +55,7 @@ namespace LostPeterFoundation
 
         std::replace(path.begin(), path.end(), '\\', '/');
 
-    #elif LP_PLATFORM == LP_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
         path = F_OCGetPathExecute();
         
     #endif
@@ -80,7 +80,7 @@ namespace LostPeterFoundation
     String FUtil::GetPathAssets()
     {
         const String& pathBin = GetPathBin();
-    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
+    #if F_PLATFORM == F_PLATFORM_WINDOW || F_PLATFORM == F_PLATFORM_MAC
         String pathAssets = pathBin + "/Assets/";
     #else
         String pathAssets = pathBin + "/";
@@ -100,7 +100,7 @@ namespace LostPeterFoundation
 ////File
     bool FUtil::IsExistFile(const String& strPath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
+    #if F_PLATFORM == F_PLATFORM_WINDOW || F_PLATFORM == F_PLATFORM_MAC
         String pathReal = GetPathReal(strPath);
         std::ifstream file(pathReal.c_str(), std::ios::ate | std::ios::binary);
         if (!file.is_open())
@@ -119,10 +119,10 @@ namespace LostPeterFoundation
 
     bool FUtil::DeleteFile(const String& strPath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
 		return ::DeleteFile(strPath.c_str()) ? true : false;
 
-    #elif LP_PLATFORM == LP_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
         return remove(strPath.c_str());
 
     #else 
@@ -135,7 +135,7 @@ namespace LostPeterFoundation
 
     bool FUtil::ClearFile(const String& strPath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32 || LP_PLATFORM == LP_PLATFORM_MAC
+    #if F_PLATFORM == F_PLATFORM_WINDOW || F_PLATFORM == F_PLATFORM_MAC
         FILE* pFile = fopen(strPath.c_str(), "wb");
 		if (pFile)
 		{
@@ -152,10 +152,10 @@ namespace LostPeterFoundation
 
     bool FUtil::CopyFile(const String& strSrcPath, const String& strDstPath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return ::CopyFile(strSrcPath.c_str(), strDstPath.c_str(), FALSE) ? true : false;
 
-    #elif LP_PLATFORM == LP_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
         return std::__fs::filesystem::copy_file(strSrcPath.c_str(), strDstPath.c_str());
 
     #else
@@ -193,10 +193,10 @@ namespace LostPeterFoundation
 ////Directory
     bool FUtil::IsDirectory(const String& strPath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return ::PathIsDirectory(strPath.c_str()) ? true : false;
 
-    #elif LP_PLATFORM == LP_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
         DIR* dir = opendir(strPath.c_str());
         if (dir != nullptr)
         {
@@ -215,13 +215,13 @@ namespace LostPeterFoundation
 
     bool FUtil::CreateDirectory(const String& strPath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         if (IsDirectory(strPath))
 			return true;
 
 		return ::CreateDirectory(strPath.c_str(), 0) ? true : false;
 
-    #elif LP_PLATFORM == LP_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
         return mkdir(strPath.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) == 0 ? true : false;
 
     #else
@@ -234,10 +234,10 @@ namespace LostPeterFoundation
 
     bool FUtil::DeleteDirectory(const String& strPath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return ::RemoveDirectory(strPath.c_str()) ? true : false;
 
-    #elif LP_PLATFORM == LP_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
         return rmdir(strPath.c_str()) == 0 ? true : false;
 
     #else
@@ -269,7 +269,7 @@ namespace LostPeterFoundation
 ////File/Folder Op
     bool FUtil::EnumFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath, bool bDelSuffix)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         String strWild = strFolderPath + "/*.*";
 		WIN32_FIND_DATA fd;
 		HANDLE findFile = ::FindFirstFile(strWild.c_str(), &fd);
@@ -326,7 +326,7 @@ namespace LostPeterFoundation
 		::FindClose(findFile);
 		return true;
 
-    #elif LP_PLATFORM == LP_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
         struct dirent* pDir;
         DIR* dir = opendir(strFolderPath.c_str());
         if (dir == nullptr)
@@ -382,7 +382,7 @@ namespace LostPeterFoundation
 
     bool FUtil::EnumFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive, bool bDelSuffix)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         String strWild = strFolderPath + "/*.*";
 		WIN32_FIND_DATA fd;
 		HANDLE findFile = ::FindFirstFile(strWild.c_str(), &fd);
@@ -436,7 +436,7 @@ namespace LostPeterFoundation
 		::FindClose(findFile);
 		return true;
 
-    #elif LP_PLATFORM == LP_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
         struct dirent* pDir;
         DIR* dir = opendir(strFolderPath.c_str());
         if (dir == nullptr)
@@ -493,7 +493,7 @@ namespace LostPeterFoundation
 
     bool FUtil::EnumFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         String strWild = strFolderPath + "/*.*";
 		WIN32_FIND_DATA fd;
 		HANDLE findFile = ::FindFirstFile(strWild.c_str(), &fd);
@@ -538,7 +538,7 @@ namespace LostPeterFoundation
 		::FindClose(findFile);
 		return true;
 
-    #elif LP_PLATFORM == LP_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
         struct dirent* pDir;
         DIR* dir = opendir(strFolderPath.c_str());
         if (dir == nullptr)
@@ -611,7 +611,7 @@ namespace LostPeterFoundation
 
     bool FUtil::DeleteFolders(const String& strFolderPath)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         String strWild = strFolderPath + "/*.*";
 		WIN32_FIND_DATA fd;
 		HANDLE findFile = ::FindFirstFile(strWild.c_str(), &fd);
@@ -653,7 +653,7 @@ namespace LostPeterFoundation
         ::RemoveDirectory(strFolderPath.c_str());
 		return true;
 
-    #elif LP_PLATFORM == LP_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
         struct dirent* pDir;
         DIR* dir = opendir(strFolderPath.c_str());
         if (dir == nullptr)
@@ -1130,7 +1130,7 @@ namespace LostPeterFoundation
     //int8/16/32/64 [+-] 1
     int8 FUtil::InterlockedIncrement(volatile int8* pValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int8)_InterlockedExchangeAdd8((char*)pValue, 1) + 1;
     #else
         return __sync_fetch_and_add(pValue, 1) + 1;
@@ -1138,7 +1138,7 @@ namespace LostPeterFoundation
     }
     int8 FUtil::InterlockedDecrement(volatile int8* pValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int8)::_InterlockedExchangeAdd8((char*)pValue, -1) - 1;
     #else
         return __sync_fetch_and_sub(pValue, 1) - 1;
@@ -1146,7 +1146,7 @@ namespace LostPeterFoundation
     }
     int16 FUtil::InterlockedIncrement(volatile int16* pValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int16)::_InterlockedIncrement16((short*)pValue);
     #else
         return __sync_fetch_and_add(pValue, 1) + 1;
@@ -1154,7 +1154,7 @@ namespace LostPeterFoundation
     }
     int16 FUtil::InterlockedDecrement(volatile int16* pValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int16)::_InterlockedDecrement16((short*)pValue);
     #else
         return __sync_fetch_and_sub(pValue, 1) - 1;
@@ -1162,7 +1162,7 @@ namespace LostPeterFoundation
     }
     int32 FUtil::InterlockedIncrement(volatile int32* pValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int32)::_InterlockedIncrement((long*)pValue);
     #else
         return __sync_fetch_and_add(pValue, 1) + 1;
@@ -1170,7 +1170,7 @@ namespace LostPeterFoundation
     }
     int32 FUtil::InterlockedDecrement(volatile int32* pValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int32)::_InterlockedDecrement((long*)pValue);
     #else
         return __sync_fetch_and_sub(pValue, 1) - 1;
@@ -1178,8 +1178,8 @@ namespace LostPeterFoundation
     }
     int64 FUtil::InterlockedIncrement(volatile int64* pValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
-        #if LP_ARCHITECTURE == LP_ARCHITECTURE_64
+    #if F_PLATFORM == F_PLATFORM_WINDOW
+        #if F_ARCHITECTURE == F_ARCHITECTURE_64
             return (int64)::_InterlockedIncrement64((long long*)pValue);
         #else
             while (true)
@@ -1197,8 +1197,8 @@ namespace LostPeterFoundation
     }
     int64 FUtil::InterlockedDecrement(volatile int64* pValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
-        #if LP_ARCHITECTURE == LP_ARCHITECTURE_64
+    #if F_PLATFORM == F_PLATFORM_WINDOW
+        #if F_ARCHITECTURE == F_ARCHITECTURE_64
             return (int64)::_InterlockedDecrement64((long long*)pValue);
         #else
             while (true)
@@ -1218,7 +1218,7 @@ namespace LostPeterFoundation
     //int8/16/32/64 [+-] nAmount
     int8 FUtil::InterlockedAdd(volatile int8* pValue, int8 nAmount)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int8)::_InterlockedExchangeAdd8((char*)pValue, (char)nAmount) + nAmount;
     #else
         return __sync_fetch_and_add(pValue, nAmount) + nAmount;
@@ -1226,7 +1226,7 @@ namespace LostPeterFoundation
     }
     int8 FUtil::InterlockedSub(volatile int8* pValue, int8 nAmount)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int8)::_InterlockedExchangeAdd8((char*)pValue, (char)-nAmount) - nAmount;
     #else
         return __sync_fetch_and_sub(pValue, nAmount) - nAmount;
@@ -1234,7 +1234,7 @@ namespace LostPeterFoundation
     }
     int16 FUtil::InterlockedAdd(volatile int16* pValue, int16 nAmount)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int16)::_InterlockedExchangeAdd16((short*)pValue, (short)nAmount) + nAmount;
     #else
         return __sync_fetch_and_add(pValue, nAmount) + nAmount;
@@ -1242,7 +1242,7 @@ namespace LostPeterFoundation
     }
     int16 FUtil::InterlockedSub(volatile int16* pValue, int16 nAmount)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int16)::_InterlockedExchangeAdd16((short*)pValue, (short)-nAmount) - nAmount;
     #else
         return __sync_fetch_and_sub(pValue, nAmount) - nAmount;
@@ -1250,7 +1250,7 @@ namespace LostPeterFoundation
     }
     int32 FUtil::InterlockedAdd(volatile int32* pValue, int32 nAmount)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int32)::_InterlockedExchangeAdd((long*)pValue, (long)nAmount) + nAmount;
     #else
         return __sync_fetch_and_add(pValue, nAmount) + nAmount;
@@ -1258,7 +1258,7 @@ namespace LostPeterFoundation
     }
     int32 FUtil::InterlockedSub(volatile int32* pValue, int32 nAmount)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int32)::_InterlockedExchangeAdd((long*)pValue, (long)-nAmount) - nAmount;
     #else
         return __sync_fetch_and_sub(pValue, nAmount) - nAmount;
@@ -1266,8 +1266,8 @@ namespace LostPeterFoundation
     }
     int64 FUtil::InterlockedAdd(volatile int64* pValue, int64 nAmount)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
-        #if LP_ARCHITECTURE == LP_ARCHITECTURE_64
+    #if F_PLATFORM == F_PLATFORM_WINDOW
+        #if F_ARCHITECTURE == F_ARCHITECTURE_64
             return (int64)::_InterlockedExchangeAdd64((int64*)pValue, (int64)nAmount) + nAmount;
         #else
             while (true)
@@ -1285,8 +1285,8 @@ namespace LostPeterFoundation
     }
     int64 FUtil::InterlockedSub(volatile int64* pValue, int64 nAmount)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
-        #if LP_ARCHITECTURE == LP_ARCHITECTURE_64
+    #if F_PLATFORM == F_PLATFORM_WINDOW
+        #if F_ARCHITECTURE == F_ARCHITECTURE_64
             return (int64)::_InterlockedExchangeAdd64((int64*)pValue, (int64)-nAmount) - nAmount;
         #else
             while (true)
@@ -1306,7 +1306,7 @@ namespace LostPeterFoundation
     //int8/16/32/64 exchange nExchange
     int8 FUtil::InterlockedExchange(volatile int8* pValue, int8 nExchange)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int8)::_InterlockedExchange8((char*)pValue, (char)nExchange);
     #else
         return __sync_lock_test_and_set(pValue, nExchange);
@@ -1314,7 +1314,7 @@ namespace LostPeterFoundation
     }
     int16 FUtil::InterlockedExchange(volatile int16* pValue, int16 nExchange)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int16)::_InterlockedExchange16((short*)pValue, (short)nExchange);
     #else
         return __sync_lock_test_and_set(pValue, nExchange);
@@ -1322,7 +1322,7 @@ namespace LostPeterFoundation
     }
     int32 FUtil::InterlockedExchange(volatile int32* pValue, int32 nExchange)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int32)::_InterlockedExchange((long*)pValue, (long)nExchange);
     #else
         return __sync_lock_test_and_set(pValue, nExchange);
@@ -1330,8 +1330,8 @@ namespace LostPeterFoundation
     }
     int64 FUtil::InterlockedExchange(volatile int64* pValue, int64 nExchange)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
-        #if LP_ARCHITECTURE == LP_ARCHITECTURE_64
+    #if F_PLATFORM == F_PLATFORM_WINDOW
+        #if F_ARCHITECTURE == F_ARCHITECTURE_64
             return (int64)::_InterlockedExchange64((long long*)pValue, (long long)nExchange);
         #else
                 while (true)
@@ -1351,7 +1351,7 @@ namespace LostPeterFoundation
     //int8/16/32/64 compare nComperand and exchange nExchange
     int8 FUtil::InterlockedCompareExchange(volatile int8* pDest, int8 nExchange, int8 nComperand)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int8)::_InterlockedCompareExchange8((char*)pDest, (char)nExchange, (char)nComperand);
     #else
         return __sync_val_compare_and_swap(pDest, nComperand, nExchange);
@@ -1359,7 +1359,7 @@ namespace LostPeterFoundation
     }
     int16 FUtil::InterlockedCompareExchange(volatile int16* pDest, int16 nExchange, int16 nComperand)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int16)::_InterlockedCompareExchange16((short*)pDest, (short)nExchange, (short)nComperand);
     #else
         return __sync_val_compare_and_swap(pDest, nComperand, nExchange);
@@ -1367,7 +1367,7 @@ namespace LostPeterFoundation
     }
     int32 FUtil::InterlockedCompareExchange(volatile int32* pDest, int32 nExchange, int32 nComperand)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int32)::_InterlockedCompareExchange((long*)pDest, (long)nExchange, (long)nComperand);
     #else
         return __sync_val_compare_and_swap(pDest, nComperand, nExchange);
@@ -1375,7 +1375,7 @@ namespace LostPeterFoundation
     }
     int64 FUtil::InterlockedCompareExchange(volatile int64* pDest, int64 nExchange, int64 nComperand)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (int64)::_InterlockedCompareExchange64(pDest, nExchange, nComperand);
     #else
         return __sync_val_compare_and_swap(pDest, nComperand, nExchange);
@@ -1385,8 +1385,8 @@ namespace LostPeterFoundation
     //exchange Ptr
     void* FUtil::InterlockedExchangePtr(void** ppDest, void* pExchange)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
-        #if LP_ARCHITECTURE == LP_ARCHITECTURE_64
+    #if F_PLATFORM == F_PLATFORM_WINDOW
+        #if F_ARCHITECTURE == F_ARCHITECTURE_64
             return (void*)::_InterlockedExchange64((int64*)(ppDest), (int64)(pExchange));
         #else
             return (void*)::_InterlockedExchange((long*)(ppDest), (long)(pExchange));
@@ -1397,7 +1397,7 @@ namespace LostPeterFoundation
     }
     void* FUtil::InterlockedCompareExchangePtr(void** ppDest, void* pExchange, void* pComperand)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return (void*)::_InterlockedCompareExchange64((int64*)ppDest, (int64)pExchange, (int64)pComperand);
     #else
         return __sync_val_compare_and_swap(ppDest, pComperand, pExchange);
@@ -1407,7 +1407,7 @@ namespace LostPeterFoundation
     //int8/16/32/64 read pSrc
     int8 FUtil::AtomicRead(volatile const int8* pSrc)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return InterlockedCompareExchange((int8*)pSrc, 0, 0);
     #else
         int8 nResult;
@@ -1417,7 +1417,7 @@ namespace LostPeterFoundation
     }
     int16 FUtil::AtomicRead(volatile const int16* pSrc)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return InterlockedCompareExchange((int16*)pSrc, 0, 0);
     #else
         int16 nResult;
@@ -1427,7 +1427,7 @@ namespace LostPeterFoundation
     }
     int32 FUtil::AtomicRead(volatile const int32* pSrc)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return InterlockedCompareExchange((int32*)pSrc, 0, 0);
     #else
         int32 nResult;
@@ -1437,7 +1437,7 @@ namespace LostPeterFoundation
     }
     int64 FUtil::AtomicRead(volatile const int64* pSrc)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return InterlockedCompareExchange((int64*)pSrc, 0, 0);
     #else
         int64 nResult;
@@ -1449,7 +1449,7 @@ namespace LostPeterFoundation
     //int8/16/32/64 read relaxed pSrc
     int8 FUtil::AtomicRead_Relaxed(volatile const int8* pSrc)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return *pSrc;
     #else
         int8 nResult;
@@ -1459,7 +1459,7 @@ namespace LostPeterFoundation
     }
     int16 FUtil::AtomicRead_Relaxed(volatile const int16* pSrc)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return *pSrc;
     #else
         int16 nResult;
@@ -1469,7 +1469,7 @@ namespace LostPeterFoundation
     }
     int32 FUtil::AtomicRead_Relaxed(volatile const int32* pSrc)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         return *pSrc;
     #else
         int32 nResult;
@@ -1479,8 +1479,8 @@ namespace LostPeterFoundation
     }
     int64 FUtil::AtomicRead_Relaxed(volatile const int64* pSrc)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
-        #if LP_ARCHITECTURE == LP_ARCHITECTURE_64
+    #if F_PLATFORM == F_PLATFORM_WINDOW
+        #if F_ARCHITECTURE == F_ARCHITECTURE_64
             return *pSrc;
         #else
             return InterlockedCompareExchange((volatile int64*)pSrc, 0, 0);
@@ -1495,7 +1495,7 @@ namespace LostPeterFoundation
     //int8/16/32/64 store nValue to pSrc
     void FUtil::AtomicStore(volatile int8* pSrc, int8 nValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         InterlockedExchange(pSrc, nValue);
     #else
         __atomic_store((volatile int8*)pSrc, &nValue, __ATOMIC_SEQ_CST);
@@ -1503,7 +1503,7 @@ namespace LostPeterFoundation
     }
     void FUtil::AtomicStore(volatile int16* pSrc, int16 nValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         InterlockedExchange(pSrc, nValue);
     #else
         __atomic_store((volatile int16*)pSrc, &nValue, __ATOMIC_SEQ_CST);
@@ -1511,7 +1511,7 @@ namespace LostPeterFoundation
     }
     void FUtil::AtomicStore(volatile int32* pSrc, int32 nValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         InterlockedExchange(pSrc, nValue);
     #else
         __atomic_store((volatile int32*)pSrc, &nValue, __ATOMIC_SEQ_CST);
@@ -1519,7 +1519,7 @@ namespace LostPeterFoundation
     }
     void FUtil::AtomicStore(volatile int64* pSrc, int64 nValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         InterlockedExchange(pSrc, nValue);
     #else
         __atomic_store((volatile int64*)pSrc, &nValue, __ATOMIC_SEQ_CST);
@@ -1529,7 +1529,7 @@ namespace LostPeterFoundation
     //int8/16/32/64 store relaxed nValue to pSrc
     void FUtil::AtomicStore_Relaxed(volatile int8* pSrc, int8 nValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         *pSrc = nValue;
     #else
         __atomic_store((volatile int8*)pSrc, &nValue, __ATOMIC_RELAXED);
@@ -1537,7 +1537,7 @@ namespace LostPeterFoundation
     }
     void FUtil::AtomicStore_Relaxed(volatile int16* pSrc, int16 nValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         *pSrc = nValue;
     #else
         __atomic_store((volatile int16*)pSrc, &nValue, __ATOMIC_RELAXED);
@@ -1545,7 +1545,7 @@ namespace LostPeterFoundation
     }
     void FUtil::AtomicStore_Relaxed(volatile int32* pSrc, int32 nValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         *pSrc = nValue;
     #else
         __atomic_store((volatile int32*)pSrc, &nValue, __ATOMIC_RELAXED);
@@ -1553,8 +1553,8 @@ namespace LostPeterFoundation
     }
     void FUtil::AtomicStore_Relaxed(volatile int64* pSrc, int64 nValue)
     {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
-        #if LP_ARCHITECTURE == LP_ARCHITECTURE_64
+    #if F_PLATFORM == F_PLATFORM_WINDOW
+        #if F_ARCHITECTURE == F_ARCHITECTURE_64
             *pSrc = nValue;
         #else
             InterlockedExchange(pSrc, nValue);

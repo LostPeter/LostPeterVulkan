@@ -29,10 +29,10 @@ namespace LostPeterEngine
         SceneInfoGroupPtrMap m_mapSceneInfoGroup;
 
     public:
-        E_FORCEINLINE const SceneInfoPtrVector& GetSceneInfoPtrVector() const { return m_aSceneInfo; }
-        E_FORCEINLINE SceneInfoPtrVector& GetSceneInfoPtrVector() { return m_aSceneInfo; }
-        E_FORCEINLINE const SceneInfoGroupPtrMap& GetSceneInfoGroupPtrMap() const { return m_mapSceneInfoGroup; }
-        E_FORCEINLINE SceneInfoGroupPtrMap& GetSceneInfoGroupPtrMap() { return m_mapSceneInfoGroup; }
+        F_FORCEINLINE const SceneInfoPtrVector& GetSceneInfoPtrVector() const { return m_aSceneInfo; }
+        F_FORCEINLINE SceneInfoPtrVector& GetSceneInfoPtrVector() { return m_aSceneInfo; }
+        F_FORCEINLINE const SceneInfoGroupPtrMap& GetSceneInfoGroupPtrMap() const { return m_mapSceneInfoGroup; }
+        F_FORCEINLINE SceneInfoGroupPtrMap& GetSceneInfoGroupPtrMap() { return m_mapSceneInfoGroup; }
 
 
     public:

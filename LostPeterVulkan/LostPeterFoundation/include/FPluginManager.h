@@ -18,7 +18,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FPluginManager : public FSingleton<FPluginManager>
+    class foundationExport FPluginManager : public FSingleton<FPluginManager>
 	{
 	public:
 		FPluginManager();

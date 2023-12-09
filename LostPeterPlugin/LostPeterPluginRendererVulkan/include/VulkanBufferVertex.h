@@ -14,7 +14,7 @@
 
 #include "VulkanBuffer.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanBufferVertex : public VulkanBuffer
     {
@@ -31,7 +31,7 @@ namespace LostPeter
         uint32_t m_nVertexCount;
 
     public:
-        E_FORCEINLINE uint32_t GetVertexCount() const { return m_nVertexCount; }
+        F_FORCEINLINE uint32_t GetVertexCount() const { return m_nVertexCount; }
 
     public:
         virtual void Destroy();
@@ -51,6 +51,6 @@ namespace LostPeter
         virtual VulkanBufferVertex* Clone();
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

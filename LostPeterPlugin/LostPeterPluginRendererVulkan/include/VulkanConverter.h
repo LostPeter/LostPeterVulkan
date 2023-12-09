@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanConverter 
     {
@@ -38,6 +38,6 @@ namespace LostPeter
         static VkImageAspectFlags Transform2VkImageAspectFlags(FPixelFormatType ePixelFormat, const bool bPreferDepthOverStencil = false);
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

@@ -29,10 +29,10 @@ namespace LostPeterEngine
         MaterialInfoGroupPtrMap m_mapMaterialInfoGroup;
 
     public:
-        E_FORCEINLINE const MaterialInfoPtrVector& GetMaterialInfoPtrVector() const { return m_aMaterialInfo; }
-        E_FORCEINLINE MaterialInfoPtrVector& GetMaterialInfoPtrVector() { return m_aMaterialInfo; }
-        E_FORCEINLINE const MaterialInfoGroupPtrMap& GetMaterialInfoGroupPtrMap() const { return m_mapMaterialInfoGroup; }
-        E_FORCEINLINE MaterialInfoGroupPtrMap& GetMaterialInfoGroupPtrMap() { return m_mapMaterialInfoGroup; }
+        F_FORCEINLINE const MaterialInfoPtrVector& GetMaterialInfoPtrVector() const { return m_aMaterialInfo; }
+        F_FORCEINLINE MaterialInfoPtrVector& GetMaterialInfoPtrVector() { return m_aMaterialInfo; }
+        F_FORCEINLINE const MaterialInfoGroupPtrMap& GetMaterialInfoGroupPtrMap() const { return m_mapMaterialInfoGroup; }
+        F_FORCEINLINE MaterialInfoGroupPtrMap& GetMaterialInfoGroupPtrMap() { return m_mapMaterialInfoGroup; }
 
 
     public:

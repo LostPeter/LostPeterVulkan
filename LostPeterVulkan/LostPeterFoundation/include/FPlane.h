@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FPlane
+    class foundationExport FPlane
     {
     public:
         FPlane()
@@ -61,10 +61,10 @@ namespace LostPeterFoundation
         float m_fDistance;		
         
     public:
-        LP_FORCEINLINE const FVector3& GetNormal() const { return m_vNormal; }
-        LP_FORCEINLINE FVector3& GetNormal() { return m_vNormal; }
-        LP_FORCEINLINE float GetDistance() const { return m_fDistance; }
-        LP_FORCEINLINE FVector3 GetPlanePoint() const { return m_vNormal * m_fDistance; }
+        F_FORCEINLINE const FVector3& GetNormal() const { return m_vNormal; }
+        F_FORCEINLINE FVector3& GetNormal() { return m_vNormal; }
+        F_FORCEINLINE float GetDistance() const { return m_fDistance; }
+        F_FORCEINLINE FVector3 GetPlanePoint() const { return m_vNormal * m_fDistance; }
 
     public:
         FPlaneSideType GetSide(const FVector3& vPoint) const;								

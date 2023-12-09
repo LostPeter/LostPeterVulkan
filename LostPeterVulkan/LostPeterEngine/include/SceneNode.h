@@ -50,17 +50,17 @@ namespace LostPeterEngine
 		mutable bool m_bDerivedVisible;
 
     public:
-		E_FORCEINLINE Scene* GetScene() const { return m_pScene; }
+		F_FORCEINLINE Scene* GetScene() const { return m_pScene; }
 		SceneNode* GetParentSceneNode() const;
 		
-		E_FORCEINLINE const FAABB&	GetWorldAABB() const { return m_aabbWorld; }
-		E_FORCEINLINE const FSphere& GetWorldSphere() const { return m_spereWorld; }
-		E_FORCEINLINE bool	IsAABBSet()	{ return m_bAABBSet; }
+		F_FORCEINLINE const FAABB&	GetWorldAABB() const { return m_aabbWorld; }
+		F_FORCEINLINE const FSphere& GetWorldSphere() const { return m_spereWorld; }
+		F_FORCEINLINE bool	IsAABBSet()	{ return m_bAABBSet; }
 		const FAABB& GetAABB();
 		void SetAABB(bool bSetAABB, const FAABB& aabb);
 		
-		E_FORCEINLINE bool	GetShowBoundingBox() const { return m_bShowBoundingBox; }
-		E_FORCEINLINE void	SetShowBoundingBox(bool bShow) { m_bShowBoundingBox = bShow; }
+		F_FORCEINLINE bool	GetShowBoundingBox() const { return m_bShowBoundingBox; }
+		F_FORCEINLINE void	SetShowBoundingBox(bool bShow) { m_bShowBoundingBox = bShow; }
 
 		//virtual void AddBoundingBoxToQueue(RenderQueue* pQueue);
 

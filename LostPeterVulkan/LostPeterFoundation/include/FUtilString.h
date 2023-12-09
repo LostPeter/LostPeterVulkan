@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FUtilString
+    class foundationExport FUtilString
     {
     public:
         static const String BLANK;

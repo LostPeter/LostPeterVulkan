@@ -28,10 +28,10 @@ namespace LostPeterEngine
         SceneManagerPtrMap m_mapSceneManagers;
 
     public:
-        E_FORCEINLINE const SceneManagerPtrVector& GetSceneManagerPtrVector() const { return this->m_aSceneManagers; }
-        E_FORCEINLINE SceneManagerPtrVector& GetSceneManagerPtrVector() { return this->m_aSceneManagers; }
-        E_FORCEINLINE const SceneManagerPtrMap& GetSceneManagerPtrMap() const { return this->m_mapSceneManagers; }
-        E_FORCEINLINE SceneManagerPtrMap& GetSceneManagerPtrMap() { return this->m_mapSceneManagers; }
+        F_FORCEINLINE const SceneManagerPtrVector& GetSceneManagerPtrVector() const { return this->m_aSceneManagers; }
+        F_FORCEINLINE SceneManagerPtrVector& GetSceneManagerPtrVector() { return this->m_aSceneManagers; }
+        F_FORCEINLINE const SceneManagerPtrMap& GetSceneManagerPtrMap() const { return this->m_mapSceneManagers; }
+        F_FORCEINLINE SceneManagerPtrMap& GetSceneManagerPtrMap() { return this->m_mapSceneManagers; }
 
     public:
         static SceneManagerEnumerator& GetSingleton();

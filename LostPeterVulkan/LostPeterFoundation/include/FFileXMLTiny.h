@@ -19,7 +19,7 @@ class TiXmlElement;
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FFileXMLTiny
+    class foundationExport FFileXMLTiny
 	{
 	public:
 		FFileXMLTiny();

@@ -16,7 +16,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport VKFrameBufferAttachment
+    class vulkanExport VKFrameBufferAttachment
     {
     public:
         VKFrameBufferAttachment();

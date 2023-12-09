@@ -29,7 +29,7 @@ namespace LostPeterEngine
 		ERenderPipelineType m_eRenderPipelineType;
 
     public:
-		E_FORCEINLINE ERenderPipelineType GetRenderPipePipeLineType() const { return m_eRenderPipelineType; }
+		F_FORCEINLINE ERenderPipelineType GetRenderPipePipeLineType() const { return m_eRenderPipelineType; }
 
     public:
         virtual bool Init() = 0;

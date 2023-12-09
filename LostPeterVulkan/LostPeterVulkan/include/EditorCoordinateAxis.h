@@ -16,7 +16,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport EditorCoordinateAxis : public EditorBase
+    class vulkanExport EditorCoordinateAxis : public EditorBase
     {
     public:
         EditorCoordinateAxis();
@@ -110,19 +110,19 @@ namespace LostPeterVulkan
         FMeshCreateParam_EntityCone* pEntityCone;
         
     public:
-        LP_FORCEINLINE float GetScaleCoordinate() const { return this->scaleCoordinate; }
-        LP_FORCEINLINE void SetScaleCoordinate(float f) { this->scaleCoordinate = f; }
-        LP_FORCEINLINE const FVector3& GetPos() const { return this->vPos; }
+        F_FORCEINLINE float GetScaleCoordinate() const { return this->scaleCoordinate; }
+        F_FORCEINLINE void SetScaleCoordinate(float f) { this->scaleCoordinate = f; }
+        F_FORCEINLINE const FVector3& GetPos() const { return this->vPos; }
         void SetPos(const FVector3& vP);
 
-        LP_FORCEINLINE bool IsButtonLeftDown() const { return this->isButtonLeftDown; }
+        F_FORCEINLINE bool IsButtonLeftDown() const { return this->isButtonLeftDown; }
 
-        LP_FORCEINLINE bool IsStateNone() const { return this->typeState == CoordinateState_None; }
-        LP_FORCEINLINE bool IsStateSelect() const  { return this->typeState == CoordinateState_Select; }
-        LP_FORCEINLINE bool IsStateMove() const { return this->typeState == CoordinateState_Move; }
-        LP_FORCEINLINE bool IsStateRotate() const { return this->typeState == CoordinateState_Rotate; }
-        LP_FORCEINLINE bool IsStateScale() const { return this->typeState == CoordinateState_Scale; }
-        LP_FORCEINLINE void SetStateType(CoordinateStateType type) { this->typeState = type; }
+        F_FORCEINLINE bool IsStateNone() const { return this->typeState == CoordinateState_None; }
+        F_FORCEINLINE bool IsStateSelect() const  { return this->typeState == CoordinateState_Select; }
+        F_FORCEINLINE bool IsStateMove() const { return this->typeState == CoordinateState_Move; }
+        F_FORCEINLINE bool IsStateRotate() const { return this->typeState == CoordinateState_Rotate; }
+        F_FORCEINLINE bool IsStateScale() const { return this->typeState == CoordinateState_Scale; }
+        F_FORCEINLINE void SetStateType(CoordinateStateType type) { this->typeState = type; }
 
         bool IsAxisSelected() const;
         bool IsAxisSelectedByIndex(int index) const; //0:X; 1:Y; 2:Z

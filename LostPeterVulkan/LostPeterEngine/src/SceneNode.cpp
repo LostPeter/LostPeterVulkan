@@ -212,7 +212,7 @@ namespace LostPeterEngine
 		MovablePtrMap::iterator itFind = m_mapMovable.find(strName);
 		if (itFind == m_mapMovable.end())
 		{
-			F_LogError("SceneNode::GetAttachedObject: Attached object: [%s] not found !", strName.c_str());
+			F_LogError("*********************** SceneNode::GetAttachedObject: Attached object: [%s] not found !", strName.c_str());
 			return nullptr;
 		}
 		return itFind->second;
@@ -222,7 +222,7 @@ namespace LostPeterEngine
 	{
 		if (pMovable->IsAttached())
 		{
-			F_LogError("SceneNode::AttachObject: Object: [%s] already attached to a SceneNode or a Bone !", pMovable->GetName().c_str());
+			F_LogError("*********************** SceneNode::AttachObject: Object: [%s] already attached to a SceneNode or a Bone !", pMovable->GetName().c_str());
 			return;
 		}
 		pMovable->NotifyAttached(this);
@@ -255,7 +255,7 @@ namespace LostPeterEngine
 		MovablePtrMap::iterator itFind = m_mapMovable.find(strName);
 		if (itFind == m_mapMovable.end())
 		{
-			F_LogError("SceneNode::DetachObject: Object: [%s] is not attached to this node !", strName.c_str());
+			F_LogError("*********************** SceneNode::DetachObject: Object: [%s] is not attached to this node !", strName.c_str());
 			return nullptr;
 		}
 		Movable* pMovable = itFind->second;

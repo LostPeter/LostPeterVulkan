@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FUtil
+    class foundationExport FUtil
     {
     //////////////////////// Common ////////////////////////
     public:

@@ -12,7 +12,7 @@
 #include "../include/VulkanSemaphore.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanSemaphore::VulkanSemaphore(VulkanDevice* pDevice)
         : m_pDevice(pDevice)
@@ -34,4 +34,4 @@ namespace LostPeter
         m_vkSemaphore = VK_NULL_HANDLE;
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

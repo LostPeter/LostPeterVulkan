@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanPlugin : public FPlugin
     {
@@ -36,6 +36,6 @@ namespace LostPeter
 		virtual void Shutdown();
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

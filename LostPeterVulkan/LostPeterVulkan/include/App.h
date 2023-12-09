@@ -16,7 +16,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport App
+    class vulkanExport App
     {
     public:
         static GLFWwindow* s_pWindow;

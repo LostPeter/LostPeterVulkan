@@ -11,7 +11,7 @@
 
 #include "../include/VulkanRenderer.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanRenderer::VulkanRenderer()
         : Renderer("VulkanRenderer")
@@ -99,4 +99,4 @@ namespace LostPeter
         return true;
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

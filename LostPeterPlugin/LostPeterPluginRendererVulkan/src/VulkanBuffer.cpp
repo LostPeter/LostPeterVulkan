@@ -12,7 +12,7 @@
 #include "../include/VulkanBuffer.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanBuffer::VulkanBuffer(const String& strName, VulkanDevice* pDevice)
         : Base(strName)
@@ -72,4 +72,4 @@ namespace LostPeter
         return pData;
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

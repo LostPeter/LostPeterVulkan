@@ -27,8 +27,8 @@ namespace LostPeterEngine
         MaterialData* m_pMaterialData;
 
     public:
-        E_FORCEINLINE MaterialData* GetMaterialData() const { return m_pMaterialData; }
-		E_FORCEINLINE void SetMaterialData(MaterialData* pMaterialData) { m_pMaterialData = pMaterialData; }
+        F_FORCEINLINE MaterialData* GetMaterialData() const { return m_pMaterialData; }
+		F_FORCEINLINE void SetMaterialData(MaterialData* pMaterialData) { m_pMaterialData = pMaterialData; }
 
     public:
         void Destroy();

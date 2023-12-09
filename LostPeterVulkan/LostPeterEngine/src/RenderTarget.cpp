@@ -99,7 +99,7 @@ namespace LostPeterEngine
 		ViewportPtrOrderMap::iterator itFind = m_mapViewport.find(nZOrder);
 		if (itFind != m_mapViewport.end())
 		{
-			F_LogError("RenderTarget::AddViewport: Can't create another viewport for [%s], because a viewport exists with this Z-Order already !", GetName().c_str());
+			F_LogError("*********************** RenderTarget::AddViewport: Can't create another viewport for [%s], because a viewport exists with this Z-Order already !", GetName().c_str());
 			return nullptr;
 		}
 		Viewport* pViewport = new Viewport(nameViewport, pObjectCamera, this, fLeft, fTop, fWidth, fHeight, nZOrder);

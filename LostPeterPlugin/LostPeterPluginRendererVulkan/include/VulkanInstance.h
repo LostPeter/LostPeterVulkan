@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanInstance
     {
@@ -40,25 +40,25 @@ namespace LostPeter
         FPixelFormatType m_eSwapChainImagePixelFormat;
 
     public:
-        E_FORCEINLINE const VkInstance& GetVkInstance() const { return m_vkInstance; }
-        E_FORCEINLINE const VkDebugReportCallbackEXT& GetVkDebugReportCallbackEXT() const { return m_vkDebugReport; }
-        E_FORCEINLINE const ConstCharPtrVector& GetInstanceLayers() const { return m_aInstanceLayers; }
-        E_FORCEINLINE const ConstCharPtrVector& GetInstanceExtensions() const { return m_aInstanceExtensions; }
-        E_FORCEINLINE const ConstCharPtrVector& GetAppInstanceExtensions() const { return m_aAppInstanceExtensions; }
-        E_FORCEINLINE const ConstCharPtrVector& GetAppDeviceExtensions() const { return m_aAppDeviceExtensions; }
-        E_FORCEINLINE void AddAppInstanceExtensions(const char* szName) { m_aAppInstanceExtensions.push_back(szName); }
-        E_FORCEINLINE void AddAppDeviceExtensions(const char* szName) { m_aAppDeviceExtensions.push_back(szName); }
-        E_FORCEINLINE int32 GetPreferredVendorID() const { return m_nPreferredVendorID; }
-        E_FORCEINLINE void SetPreferredVendorID(int32 vendorID) { m_nPreferredVendorID = vendorID; }
-        E_FORCEINLINE VkPhysicalDeviceFeatures2* GetVkPhysicalDeviceFeatures2() const { return m_pVkPhysicalDeviceFeatures2; }
-        E_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
-        E_FORCEINLINE uint32 GetDesiredNumSwapChainImages() const { return m_nDesiredNumSwapChainImages; }
-        E_FORCEINLINE void SetDesiredNumSwapChainImages(uint32 num) { m_nDesiredNumSwapChainImages = num; }
+        F_FORCEINLINE const VkInstance& GetVkInstance() const { return m_vkInstance; }
+        F_FORCEINLINE const VkDebugReportCallbackEXT& GetVkDebugReportCallbackEXT() const { return m_vkDebugReport; }
+        F_FORCEINLINE const ConstCharPtrVector& GetInstanceLayers() const { return m_aInstanceLayers; }
+        F_FORCEINLINE const ConstCharPtrVector& GetInstanceExtensions() const { return m_aInstanceExtensions; }
+        F_FORCEINLINE const ConstCharPtrVector& GetAppInstanceExtensions() const { return m_aAppInstanceExtensions; }
+        F_FORCEINLINE const ConstCharPtrVector& GetAppDeviceExtensions() const { return m_aAppDeviceExtensions; }
+        F_FORCEINLINE void AddAppInstanceExtensions(const char* szName) { m_aAppInstanceExtensions.push_back(szName); }
+        F_FORCEINLINE void AddAppDeviceExtensions(const char* szName) { m_aAppDeviceExtensions.push_back(szName); }
+        F_FORCEINLINE int32 GetPreferredVendorID() const { return m_nPreferredVendorID; }
+        F_FORCEINLINE void SetPreferredVendorID(int32 vendorID) { m_nPreferredVendorID = vendorID; }
+        F_FORCEINLINE VkPhysicalDeviceFeatures2* GetVkPhysicalDeviceFeatures2() const { return m_pVkPhysicalDeviceFeatures2; }
+        F_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
+        F_FORCEINLINE uint32 GetDesiredNumSwapChainImages() const { return m_nDesiredNumSwapChainImages; }
+        F_FORCEINLINE void SetDesiredNumSwapChainImages(uint32 num) { m_nDesiredNumSwapChainImages = num; }
         
-        E_FORCEINLINE bool IsEnableValidationLayers() const { return m_bIsEnableValidationLayers; }
-        E_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
+        F_FORCEINLINE bool IsEnableValidationLayers() const { return m_bIsEnableValidationLayers; }
+        F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
 
-        E_FORCEINLINE FPixelFormatType GetVkSwapChainImagePixelFormatType() const { return m_eSwapChainImagePixelFormat; }
+        F_FORCEINLINE FPixelFormatType GetVkSwapChainImagePixelFormatType() const { return m_eSwapChainImagePixelFormat; }
 
     public:
         void Destroy();
@@ -79,6 +79,6 @@ namespace LostPeter
         void destroyReportCallbackInfo();
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

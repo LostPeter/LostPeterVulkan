@@ -12,7 +12,7 @@
 #include "../include/VulkanPlugin.h"
 #include "../include/VulkanRenderer.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanPlugin* g_pPlugin_RendererVulkan = nullptr;
 	extern "C" void vulkanExport dllStartPlugin() throw()
@@ -74,4 +74,4 @@ namespace LostPeter
 
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

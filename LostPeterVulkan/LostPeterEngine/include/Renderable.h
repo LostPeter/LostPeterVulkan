@@ -27,7 +27,7 @@ namespace LostPeterEngine
         ERenderQueueType typeRenderQueue;
 
     public:
-        E_FORCEINLINE ERenderQueueType GetRenderQueueType() const { return this->typeRenderQueue; }
+        F_FORCEINLINE ERenderQueueType GetRenderQueueType() const { return this->typeRenderQueue; }
 
     public:
         

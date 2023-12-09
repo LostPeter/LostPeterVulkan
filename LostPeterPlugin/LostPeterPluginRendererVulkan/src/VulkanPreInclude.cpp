@@ -11,7 +11,7 @@
 
 #include "../include/VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

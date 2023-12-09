@@ -12,7 +12,7 @@
 #include "../include/VulkanBufferIndex.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     uint32_t VulkanBufferIndex::ms_nMaxID = 0;
     VulkanBufferIndex::VulkanBufferIndex(const String& strName, VulkanDevice* pDevice)
@@ -157,4 +157,4 @@ namespace LostPeter
         return pBufferIndex;
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

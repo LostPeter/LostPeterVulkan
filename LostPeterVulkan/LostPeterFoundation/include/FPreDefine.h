@@ -299,8 +299,8 @@ namespace LostPeterFoundation
 		F_Platform_Android,                             //3:    Android
 		F_Platform_iOS,                                 //4:    iOS
 	};
-	LPF_Export const String& F_GetPlatformTypeName(FPlatformType type);
-    LPF_Export const String& F_GetPlatformTypeName(int type);
+	foundationExport const String& F_GetPlatformTypeName(FPlatformType type);
+    foundationExport const String& F_GetPlatformTypeName(int type);
 
 
     enum FFileXMLType
@@ -332,9 +332,9 @@ namespace LostPeterFoundation
 
         F_Mesh_Count
     };
-    LPF_Export const String& F_GetMeshTypeName(FMeshType type);
-    LPF_Export const String& F_GetMeshTypeName(int type);
-    LPF_Export FMeshType F_ParseMeshType(const String& strName);
+    foundationExport const String& F_GetMeshTypeName(FMeshType type);
+    foundationExport const String& F_GetMeshTypeName(int type);
+    foundationExport FMeshType F_ParseMeshType(const String& strName);
 
 
     enum FMeshGeometryType
@@ -393,14 +393,14 @@ namespace LostPeterFoundation
 
         F_MeshGeometry_Count,
     };
-    LPF_Export const String& F_GetMeshGeometryTypeName(FMeshGeometryType type);
-    LPF_Export const String& F_GetMeshGeometryTypeName(int type);
-    LPF_Export FMeshGeometryType F_ParseMeshGeometryType(const String& strName);
-    LPF_Export bool F_IsMeshGeometryType_Line2D(FMeshGeometryType type);
-    LPF_Export bool F_IsMeshGeometryType_Flat2D(FMeshGeometryType type);
-    LPF_Export bool F_IsMeshGeometryType_Line3D(FMeshGeometryType type);
-    LPF_Export bool F_IsMeshGeometryType_Flat3D(FMeshGeometryType type);
-    LPF_Export bool F_IsMeshGeometryType_Entity(FMeshGeometryType type);
+    foundationExport const String& F_GetMeshGeometryTypeName(FMeshGeometryType type);
+    foundationExport const String& F_GetMeshGeometryTypeName(int type);
+    foundationExport FMeshGeometryType F_ParseMeshGeometryType(const String& strName);
+    foundationExport bool F_IsMeshGeometryType_Line2D(FMeshGeometryType type);
+    foundationExport bool F_IsMeshGeometryType_Flat2D(FMeshGeometryType type);
+    foundationExport bool F_IsMeshGeometryType_Line3D(FMeshGeometryType type);
+    foundationExport bool F_IsMeshGeometryType_Flat3D(FMeshGeometryType type);
+    foundationExport bool F_IsMeshGeometryType_Entity(FMeshGeometryType type);
 
 
     enum FMeshVertexType
@@ -420,9 +420,9 @@ namespace LostPeterFoundation
 
         F_MeshVertex_Count
     };
-    LPF_Export const String& F_GetMeshVertexTypeName(FMeshVertexType type);
-    LPF_Export const String& F_GetMeshVertexTypeName(int type);
-    LPF_Export FMeshVertexType F_ParseMeshVertexType(const String& strName);
+    foundationExport const String& F_GetMeshVertexTypeName(FMeshVertexType type);
+    foundationExport const String& F_GetMeshVertexTypeName(int type);
+    foundationExport FMeshVertexType F_ParseMeshVertexType(const String& strName);
 
 
     enum FTextureType
@@ -435,9 +435,9 @@ namespace LostPeterFoundation
 
         F_Texture_Count,
     };
-    LPF_Export const String& F_GetTextureTypeName(FTextureType type);
-    LPF_Export const String& F_GetTextureTypeName(int type);
-    LPF_Export FTextureType F_ParseTextureType(const String& strName);
+    foundationExport const String& F_GetTextureTypeName(FTextureType type);
+    foundationExport const String& F_GetTextureTypeName(int type);
+    foundationExport FTextureType F_ParseTextureType(const String& strName);
 
 
     enum FTexturePixelFormatType
@@ -449,9 +449,9 @@ namespace LostPeterFoundation
 
         F_TextureFormat_Count,
     };
-    LPF_Export const String& F_GetTexturePixelFormatTypeName(FTexturePixelFormatType type);
-    LPF_Export const String& F_GetTexturePixelFormatTypeName(int type);
-    LPF_Export FTexturePixelFormatType F_ParseTexturePixelFormatType(const String& strName);
+    foundationExport const String& F_GetTexturePixelFormatTypeName(FTexturePixelFormatType type);
+    foundationExport const String& F_GetTexturePixelFormatTypeName(int type);
+    foundationExport FTexturePixelFormatType F_ParseTexturePixelFormatType(const String& strName);
 
 
     enum FTextureFilterSizeType
@@ -462,9 +462,9 @@ namespace LostPeterFoundation
 
         F_TextureFilterSize_Count,
     };
-    LPF_Export const String& F_GetTextureFilterSizeTypeName(FTextureFilterSizeType type);
-    LPF_Export const String& F_GetTextureFilterSizeTypeName(int type);
-    LPF_Export FTextureFilterSizeType F_ParseTextureFilterSizeType(const String& strName);
+    foundationExport const String& F_GetTextureFilterSizeTypeName(FTextureFilterSizeType type);
+    foundationExport const String& F_GetTextureFilterSizeTypeName(int type);
+    foundationExport FTextureFilterSizeType F_ParseTextureFilterSizeType(const String& strName);
 
 
     enum FTextureFilterPixelType
@@ -476,9 +476,9 @@ namespace LostPeterFoundation
 
         F_TextureFilterPixel_Count,
     };
-    LPF_Export const String& F_GetTextureFilterPixelTypeName(FTextureFilterPixelType type);
-    LPF_Export const String& F_GetTextureFilterPixelTypeName(int type);
-    LPF_Export FTextureFilterPixelType F_ParseTextureFilterPixelType(const String& strName);
+    foundationExport const String& F_GetTextureFilterPixelTypeName(FTextureFilterPixelType type);
+    foundationExport const String& F_GetTextureFilterPixelTypeName(int type);
+    foundationExport FTextureFilterPixelType F_ParseTextureFilterPixelType(const String& strName);
 
 
      enum FTextureFilterType
@@ -490,9 +490,9 @@ namespace LostPeterFoundation
 
         F_TextureFilter_Count,
     };
-    LPF_Export const String& F_GetTextureFilterTypeName(FTextureFilterType type);
-    LPF_Export const String& F_GetTextureFilterTypeName(int type);
-    LPF_Export FTextureFilterType F_ParseTextureFilterType(const String& strName);
+    foundationExport const String& F_GetTextureFilterTypeName(FTextureFilterType type);
+    foundationExport const String& F_GetTextureFilterTypeName(int type);
+    foundationExport FTextureFilterType F_ParseTextureFilterType(const String& strName);
 
 
     enum FTextureAddressingType
@@ -504,9 +504,9 @@ namespace LostPeterFoundation
 
         F_TextureAddressing_Count,
     };
-    LPF_Export const String& F_GetTextureAddressingTypeName(FTextureAddressingType type);
-    LPF_Export const String& F_GetTextureAddressingTypeName(int type);
-    LPF_Export FTextureAddressingType F_ParseTextureAddressingType(const String& strName);
+    foundationExport const String& F_GetTextureAddressingTypeName(FTextureAddressingType type);
+    foundationExport const String& F_GetTextureAddressingTypeName(int type);
+    foundationExport FTextureAddressingType F_ParseTextureAddressingType(const String& strName);
 
 
     enum FTextureBorderColorType
@@ -517,9 +517,9 @@ namespace LostPeterFoundation
 
         F_TextureBorderColor_Count,
     };
-    LPF_Export const String& F_GetTextureBorderColorTypeName(FTextureBorderColorType type);
-    LPF_Export const String& F_GetTextureBorderColorTypeName(int type);
-    LPF_Export FTextureBorderColorType F_ParseTextureBorderColorType(const String& strName);
+    foundationExport const String& F_GetTextureBorderColorTypeName(FTextureBorderColorType type);
+    foundationExport const String& F_GetTextureBorderColorTypeName(int type);
+    foundationExport FTextureBorderColorType F_ParseTextureBorderColorType(const String& strName);
 
 
     enum FMSAASampleCountType
@@ -534,9 +534,9 @@ namespace LostPeterFoundation
 
         F_MSAASampleCount_Count,
     };
-    LPF_Export const String& F_GetMSAASampleCountTypeName(FMSAASampleCountType type);
-    LPF_Export const String& F_GetMSAASampleCountTypeName(int type);
-    LPF_Export FMSAASampleCountType F_ParseMSAASampleCountType(const String& strName);
+    foundationExport const String& F_GetMSAASampleCountTypeName(FMSAASampleCountType type);
+    foundationExport const String& F_GetMSAASampleCountTypeName(int type);
+    foundationExport FMSAASampleCountType F_ParseMSAASampleCountType(const String& strName);
 
 
     enum FShaderType
@@ -550,9 +550,9 @@ namespace LostPeterFoundation
 
         F_Shader_Count,
     };
-    LPF_Export const String& F_GetShaderTypeName(FShaderType type);
-    LPF_Export const String& F_GetShaderTypeName(int type);
-    LPF_Export FShaderType F_ParseShaderType(const String& strName);
+    foundationExport const String& F_GetShaderTypeName(FShaderType type);
+    foundationExport const String& F_GetShaderTypeName(int type);
+    foundationExport FShaderType F_ParseShaderType(const String& strName);
 
 
     enum FPlaneSideType
@@ -592,9 +592,9 @@ namespace LostPeterFoundation
 
         F_Camera_Count,
     };
-    LPF_Export const String& F_GetCameraTypeName(FCameraType type);
-    LPF_Export const String& F_GetCameraTypF_GetCameraTypeNameeTypeName(int type);
-    LPF_Export FCameraType F_ParseCameraType(const String& strName);
+    foundationExport const String& F_GetCameraTypeName(FCameraType type);
+    foundationExport const String& F_GetCameraTypF_GetCameraTypeNameeTypeName(int type);
+    foundationExport FCameraType F_ParseCameraType(const String& strName);
 
 
     enum FRenderPrimitiveType
@@ -608,9 +608,9 @@ namespace LostPeterFoundation
 
         F_RenderPrimitive_Count,
 	};
-    LPF_Export const String& F_GetRenderPrimitiveTypeName(FRenderPrimitiveType type);
-    LPF_Export const String& F_GetRenderPrimitiveTypeName(int type);
-    LPF_Export FRenderPrimitiveType F_ParseRenderPrimitiveType(const String& strName);
+    foundationExport const String& F_GetRenderPrimitiveTypeName(FRenderPrimitiveType type);
+    foundationExport const String& F_GetRenderPrimitiveTypeName(int type);
+    foundationExport FRenderPrimitiveType F_ParseRenderPrimitiveType(const String& strName);
 
 
     enum FCullingType
@@ -621,9 +621,9 @@ namespace LostPeterFoundation
 
         F_Culling_Count,
 	};
-    LPF_Export const String& F_GetCullingTypeName(FCullingType type);
-    LPF_Export const String& F_GetCullingTypeName(int type);
-    LPF_Export FCullingType F_ParseCullingType(const String& strName);
+    foundationExport const String& F_GetCullingTypeName(FCullingType type);
+    foundationExport const String& F_GetCullingTypeName(int type);
+    foundationExport FCullingType F_ParseCullingType(const String& strName);
 
 
     enum FPolygonType
@@ -634,9 +634,9 @@ namespace LostPeterFoundation
 
         F_Polygon_Count,
 	};
-    LPF_Export const String& F_GetPolygonTypeName(FPolygonType type);
-    LPF_Export const String& F_GetPolygonTypeName(int type);
-    LPF_Export FPolygonType F_ParsePolygonType(const String& strName);
+    foundationExport const String& F_GetPolygonTypeName(FPolygonType type);
+    foundationExport const String& F_GetPolygonTypeName(int type);
+    foundationExport FPolygonType F_ParsePolygonType(const String& strName);
 
 
     enum FStencilOPType
@@ -652,9 +652,9 @@ namespace LostPeterFoundation
 
         F_StencilOP_Count,
 	};
-    LPF_Export const String& F_GetStencilOPTypeName(FStencilOPType type);
-    LPF_Export const String& F_GetStencilOPTypeName(int type);
-    LPF_Export FStencilOPType F_ParseStencilOPType(const String& strName);
+    foundationExport const String& F_GetStencilOPTypeName(FStencilOPType type);
+    foundationExport const String& F_GetStencilOPTypeName(int type);
+    foundationExport FStencilOPType F_ParseStencilOPType(const String& strName);
 
 
     enum FCompareFuncType
@@ -670,9 +670,9 @@ namespace LostPeterFoundation
 
         F_CompareFunc_Count,
 	};
-    LPF_Export const String& F_GetCompareFuncTypeName(FCompareFuncType type);
-    LPF_Export const String& F_GetCompareFuncTypeName(int type);
-    LPF_Export FCompareFuncType F_ParseCompareFuncType(const String& strName);
+    foundationExport const String& F_GetCompareFuncTypeName(FCompareFuncType type);
+    foundationExport const String& F_GetCompareFuncTypeName(int type);
+    foundationExport FCompareFuncType F_ParseCompareFuncType(const String& strName);
 
 
     enum FSceneBlendingType
@@ -685,9 +685,9 @@ namespace LostPeterFoundation
 
         F_SceneBlending_Count,
 	};
-    LPF_Export const String& F_GetSceneBlendingTypeName(FSceneBlendingType type);
-    LPF_Export const String& F_GetSceneBlendingTypeName(int type);
-    LPF_Export FSceneBlendingType F_ParseSceneBlendingType(const String& strName);
+    foundationExport const String& F_GetSceneBlendingTypeName(FSceneBlendingType type);
+    foundationExport const String& F_GetSceneBlendingTypeName(int type);
+    foundationExport FSceneBlendingType F_ParseSceneBlendingType(const String& strName);
 
 
     enum FSceneBlendingOPType
@@ -700,9 +700,9 @@ namespace LostPeterFoundation
 
         F_SceneBlendingOP_Count,
 	};
-    LPF_Export const String& F_GetSceneBlendingOPTypeName(FSceneBlendingOPType type);
-    LPF_Export const String& F_GetSceneBlendingOPTypeName(int type);
-    LPF_Export FSceneBlendingOPType F_ParseSceneBlendingOPType(const String& strName);
+    foundationExport const String& F_GetSceneBlendingOPTypeName(FSceneBlendingOPType type);
+    foundationExport const String& F_GetSceneBlendingOPTypeName(int type);
+    foundationExport FSceneBlendingOPType F_ParseSceneBlendingOPType(const String& strName);
 
 
 	enum FSceneBlendingFactorType
@@ -720,9 +720,9 @@ namespace LostPeterFoundation
 
         F_SceneBlendingFactor_Count,
 	};
-    LPF_Export const String& F_GetSceneBlendingFactorTypeName(FSceneBlendingFactorType type);
-    LPF_Export const String& F_GetSceneBlendingFactorTypeName(int type);
-    LPF_Export FSceneBlendingFactorType F_ParseSceneBlendingFactorType(const String& strName);
+    foundationExport const String& F_GetSceneBlendingFactorTypeName(FSceneBlendingFactorType type);
+    foundationExport const String& F_GetSceneBlendingFactorTypeName(int type);
+    foundationExport FSceneBlendingFactorType F_ParseSceneBlendingFactorType(const String& strName);
 
 
     enum FLightingType
@@ -734,9 +734,9 @@ namespace LostPeterFoundation
 
         F_Lighting_Count,
 	};
-    LPF_Export const String& F_GetLightingTypeName(FLightingType type);
-    LPF_Export const String& F_GetLightingTypeName(int type);
-    LPF_Export FLightingType F_ParseLightingType(const String& strName);
+    foundationExport const String& F_GetLightingTypeName(FLightingType type);
+    foundationExport const String& F_GetLightingTypeName(int type);
+    foundationExport FLightingType F_ParseLightingType(const String& strName);
 
 
     enum FRenderPipelineType
@@ -746,9 +746,9 @@ namespace LostPeterFoundation
 
         F_RenderPipeline_Count,
     };
-    LPF_Export const String& F_GetRenderPipelineTypeName(FRenderPipelineType type);
-    LPF_Export const String& F_GetRenderPipelineTypeName(int type);
-    LPF_Export FRenderPipelineType F_ParseRenderPipelineType(const String& strName);
+    foundationExport const String& F_GetRenderPipelineTypeName(FRenderPipelineType type);
+    foundationExport const String& F_GetRenderPipelineTypeName(int type);
+    foundationExport FRenderPipelineType F_ParseRenderPipelineType(const String& strName);
 
 
     enum FRenderQueueType
@@ -760,13 +760,13 @@ namespace LostPeterFoundation
 
         F_RenderQueue_Count,
     };
-    LPF_Export const String& F_GetRenderQueueTypeName(FRenderQueueType type);
-    LPF_Export const String& F_GetRenderQueueTypeName(int type);
-    LPF_Export FRenderQueueType F_ParseRenderQueueType(const String& strName);
+    foundationExport const String& F_GetRenderQueueTypeName(FRenderQueueType type);
+    foundationExport const String& F_GetRenderQueueTypeName(int type);
+    foundationExport FRenderQueueType F_ParseRenderQueueType(const String& strName);
 
-    LPF_Export int F_GetRenderQueueTypeValue(FRenderQueueType type);
-    LPF_Export int F_GetRenderQueueTypeValue(int type);
-    LPF_Export FRenderQueueType F_ParseRenderQueueTypeByValue(int value);
+    foundationExport int F_GetRenderQueueTypeValue(FRenderQueueType type);
+    foundationExport int F_GetRenderQueueTypeValue(int type);
+    foundationExport FRenderQueueType F_ParseRenderQueueTypeByValue(int value);
     
 
     enum FRenderPassType
@@ -778,9 +778,9 @@ namespace LostPeterFoundation
 
         F_RenderPass_Count,
     };
-    LPF_Export const String& F_GetRenderPassTypeName(FRenderPassType type);
-    LPF_Export const String& F_GetRenderPassTypeName(int type);
-    LPF_Export FRenderPassType F_ParseRenderPassType(const String& strName);
+    foundationExport const String& F_GetRenderPassTypeName(FRenderPassType type);
+    foundationExport const String& F_GetRenderPassTypeName(int type);
+    foundationExport FRenderPassType F_ParseRenderPassType(const String& strName);
 
 
     enum FFrameBufferType 

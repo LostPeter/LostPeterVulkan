@@ -29,10 +29,10 @@ namespace LostPeterEngine
         RenderQueuePtrMap m_mapRenderQueue;
 
     public:
-        E_FORCEINLINE const RenderQueuePtrVector& GetRenderQueuePtrVector() const { return m_aRenderQueue; }
-        E_FORCEINLINE RenderQueuePtrVector& GetRenderQueuePtrVector() { return m_aRenderQueue; }
-        E_FORCEINLINE const RenderQueuePtrMap& GetRenderQueuePtrMap() const { return m_mapRenderQueue; }
-        E_FORCEINLINE RenderQueuePtrMap& GetRenderQueuePtrMap() { return m_mapRenderQueue; }
+        F_FORCEINLINE const RenderQueuePtrVector& GetRenderQueuePtrVector() const { return m_aRenderQueue; }
+        F_FORCEINLINE RenderQueuePtrVector& GetRenderQueuePtrVector() { return m_aRenderQueue; }
+        F_FORCEINLINE const RenderQueuePtrMap& GetRenderQueuePtrMap() const { return m_mapRenderQueue; }
+        F_FORCEINLINE RenderQueuePtrMap& GetRenderQueuePtrMap() { return m_mapRenderQueue; }
 
     public:
         static RenderQueueManager& GetSingleton();

@@ -12,7 +12,7 @@
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VkResult g_CreateDebugReportCallback(VkInstance instance,
                                          const VkDebugReportCallbackCreateInfoEXT* pCreateInfo,
@@ -336,4 +336,4 @@ namespace LostPeter
         m_vkDebugReport = VK_NULL_HANDLE;
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

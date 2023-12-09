@@ -16,7 +16,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport EditorBase : public Base
+    class vulkanExport EditorBase : public Base
     {
     public:
         EditorBase(const String& nameEditor);

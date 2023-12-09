@@ -14,7 +14,7 @@
 
 namespace LostPeterVulkan
 {
-#if UTIL_DEBUG == 1
+#if F_DEBUG == 1
     bool VulkanWindow::s_isEnableValidationLayers = true;
 #else
     bool VulkanWindow::s_isEnableValidationLayers = false;

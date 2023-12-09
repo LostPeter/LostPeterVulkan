@@ -38,23 +38,23 @@ namespace LostPeterEngine
 		// size_t m_nAnimDataItemsUsed;
 	
 	public:
-		E_FORCEINLINE const VertexDeclaration* GetVertexDeclaration() const { return m_pVertexDeclaration; }
-		E_FORCEINLINE VertexDeclaration* GetVertexDeclaration() { return m_pVertexDeclaration; }
-		E_FORCEINLINE void SetVertexDeclaration(VertexDeclaration* pDecl) { m_pVertexDeclaration = pDecl; }
-		E_FORCEINLINE StreamVertexBinding*	GetVertexStreamBinding() { return m_pVertexStreamBinding; }
-		E_FORCEINLINE size_t GetVertexStart() const { return m_nVertexStart; }
-		E_FORCEINLINE void SetVertexStart(size_t n) { m_nVertexStart = n; }
-		E_FORCEINLINE size_t GetVertexCount() const { return m_nVertexCount; }
-		E_FORCEINLINE void SetVertexCount(size_t n) { m_nVertexCount = n; }
-		E_FORCEINLINE size_t IncreaseVertexCount() { return ++m_nVertexCount; }
-		E_FORCEINLINE void IncreaseVertexCount(size_t n) { m_nVertexCount += n; }
-		E_FORCEINLINE void DecreaseVertexCount(size_t n) { m_nVertexCount -= n; }
+		F_FORCEINLINE const VertexDeclaration* GetVertexDeclaration() const { return m_pVertexDeclaration; }
+		F_FORCEINLINE VertexDeclaration* GetVertexDeclaration() { return m_pVertexDeclaration; }
+		F_FORCEINLINE void SetVertexDeclaration(VertexDeclaration* pDecl) { m_pVertexDeclaration = pDecl; }
+		F_FORCEINLINE StreamVertexBinding*	GetVertexStreamBinding() { return m_pVertexStreamBinding; }
+		F_FORCEINLINE size_t GetVertexStart() const { return m_nVertexStart; }
+		F_FORCEINLINE void SetVertexStart(size_t n) { m_nVertexStart = n; }
+		F_FORCEINLINE size_t GetVertexCount() const { return m_nVertexCount; }
+		F_FORCEINLINE void SetVertexCount(size_t n) { m_nVertexCount = n; }
+		F_FORCEINLINE size_t IncreaseVertexCount() { return ++m_nVertexCount; }
+		F_FORCEINLINE void IncreaseVertexCount(size_t n) { m_nVertexCount += n; }
+		F_FORCEINLINE void DecreaseVertexCount(size_t n) { m_nVertexCount -= n; }
 
-		// E_FORCEINLINE AnimationDataVector& GetAnimationData() { return m_aAnimationData; }
-		// E_FORCEINLINE size_t GetAnimDataUsed() const { return m_nAnimDataItemsUsed; }
-		// E_FORCEINLINE void	SetAnimDataUsed(size_t n) { m_nAnimDataItemsUsed = n; }
-		// E_FORCEINLINE size_t IncreaseAnimDataUsed() { return ++m_nAnimDataItemsUsed; }
-		// E_FORCEINLINE void	IncreaseAnimDataUsed(size_t n) { m_nAnimDataItemsUsed += n; }
+		// F_FORCEINLINE AnimationDataVector& GetAnimationData() { return m_aAnimationData; }
+		// F_FORCEINLINE size_t GetAnimDataUsed() const { return m_nAnimDataItemsUsed; }
+		// F_FORCEINLINE void	SetAnimDataUsed(size_t n) { m_nAnimDataItemsUsed = n; }
+		// F_FORCEINLINE size_t IncreaseAnimDataUsed() { return ++m_nAnimDataItemsUsed; }
+		// F_FORCEINLINE void	IncreaseAnimDataUsed(size_t n) { m_nAnimDataItemsUsed += n; }
 		
 	public:
 		void Destroy();

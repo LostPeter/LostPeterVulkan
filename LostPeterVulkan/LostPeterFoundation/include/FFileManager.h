@@ -17,7 +17,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FFileMemoryPtr
+    class foundationExport FFileMemoryPtr
 	{
 	public:
 		FFileMemoryPtr();
@@ -28,15 +28,15 @@ namespace LostPeterFoundation
 		FFileMemory* m_pFileMemory;
 		
 	public:
-		LP_FORCEINLINE FFileMemory* GetFileMemory() const { return m_pFileMemory; }
-		LP_FORCEINLINE void SetFileMemory(FFileMemory* p) { m_pFileMemory = p; }
+		F_FORCEINLINE FFileMemory* GetFileMemory() const { return m_pFileMemory; }
+		F_FORCEINLINE void SetFileMemory(FFileMemory* p) { m_pFileMemory = p; }
 		
 	public:
 		uint8* GetBuffer();
 		uint32 GetSize();
 	};
 
-    class LPF_Export FFileManager : public FSingleton<FFileManager>
+    class foundationExport FFileManager : public FSingleton<FFileManager>
     {
     public:
         FFileManager();

@@ -82,22 +82,22 @@ namespace LostPeterFoundation
 				return false;
 			}
 
-#if LP_PLATFORM == LP_PLATFORM_WIN32
-		#if LP_DEBUG == 1
+#if F_PLATFORM == F_PLATFORM_WINDOW
+		#if F_DEBUG == 1
 			strPluginName += "_d.dll";
 		#else
 			strPluginName += ".dll";
 		#endif 
 
-#elif LP_PLATFORM == LP_PLATFORM_LINUX || LP_PLATFORM == LP_PLATFORM_ANDROID
-		#if LP_DEBUG == 1
+#elif F_PLATFORM == F_PLATFORM_LINUX || F_PLATFORM == F_PLATFORM_ANDROID
+		#if F_DEBUG == 1
 			strPluginName += "_d.so";
 		#else
 			strPluginName += ".so";
 		#endif
 			strPluginName = "lib" + strPluginName;
-#elif LP_PLATFORM == LP_PLATFORM_MAC || LP_PLATFORM == LP_PLATFORM_IOS
-		#if LP_DEBUG == 1
+#elif F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_iOS
+		#if F_DEBUG == 1
 			strPluginName += "_d.dylib";
 		#else
 			strPluginName += ".dylib";
@@ -115,7 +115,7 @@ namespace LostPeterFoundation
 		{
 			String& strPluginName = (*it);
 			String strPluginPath = strPluginsFolder + strPluginName;
-			F_LogInfo("State: [%d], plugin name: [%s], plugin path: [%s]", LP_DEBUG, strPluginName.c_str(), strPluginPath.c_str());
+			F_LogInfo("State: [%d], plugin name: [%s], plugin path: [%s]", F_DEBUG, strPluginName.c_str(), strPluginPath.c_str());
 			if (!LoadPlugin(strPluginName, strPluginPath))
 			{
 				return false;
@@ -172,21 +172,21 @@ namespace LostPeterFoundation
 			return true;
 		
 		String strDynLibName(strPluginName);
-#if LP_PLATFORM == LP_PLATFORM_WIN32
-	#if LP_DEBUG == 1
+#if F_PLATFORM == F_PLATFORM_WINDOW
+	#if F_DEBUG == 1
 		strDynLibName += "_d.dll";
 	#else
 		strDynLibName += ".dll";
 	#endif 
-#elif LP_PLATFORM == LP_PLATFORM_LINUX || LP_PLATFORM == LP_PLATFORM_ANDROID
-	#if LP_DEBUG == 1
+#elif F_PLATFORM == F_PLATFORM_LINUX || F_PLATFORM == F_PLATFORM_ANDROID
+	#if F_DEBUG == 1
 		strDynLibName += "_d.so";
 	#else
 		strDynLibName += ".so";
 	#endif 
 	strDynLibName = "lib" + strDynLibName;
-#elif LP_PLATFORM == LP_PLATFORM_MAC || LP_PLATFORM == LP_PLATFORM_IOS
-	#if LP_DEBUG == 1
+#elif F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_iOS
+	#if F_DEBUG == 1
 		strDynLibName += "_d.dylib";
 	#else
 		strDynLibName += ".dylib";

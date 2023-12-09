@@ -17,7 +17,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport VulkanWindow : public VulkanBase
+    class vulkanExport VulkanWindow : public VulkanBase
     {
     public:
         VulkanWindow(int width, int height, String name);

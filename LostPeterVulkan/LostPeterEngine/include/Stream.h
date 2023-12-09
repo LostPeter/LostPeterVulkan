@@ -38,11 +38,11 @@ namespace LostPeterEngine
 		uint8* m_pResourceBuf;
 	
 	public:
-		E_FORCEINLINE size_t GetStreamSizeInBytes() const { return m_nStreamSizeInBytes; }
-		E_FORCEINLINE EStreamUsageType GetStreamUsageType() const { return m_eStreamUsage; }
-		E_FORCEINLINE bool IsSystemMemory() const { return m_bSystemMemory; }
-		E_FORCEINLINE bool HasShadowStream() const { return m_bUseShadowStream; }
-		E_FORCEINLINE bool IsLocked() const 
+		F_FORCEINLINE size_t GetStreamSizeInBytes() const { return m_nStreamSizeInBytes; }
+		F_FORCEINLINE EStreamUsageType GetStreamUsageType() const { return m_eStreamUsage; }
+		F_FORCEINLINE bool IsSystemMemory() const { return m_bSystemMemory; }
+		F_FORCEINLINE bool HasShadowStream() const { return m_bUseShadowStream; }
+		F_FORCEINLINE bool IsLocked() const 
 		{ 
 			return m_bIsLocked || (m_bUseShadowStream && m_pStreamShadow->IsLocked()); 
 		}

@@ -21,23 +21,23 @@ using namespace LostPeterFoundation;
 using namespace LostPeterEngine;
 
 
-#if E_PLATFORM == E_PLATFORM_WINDOW
+#if F_PLATFORM == F_PLATFORM_WINDOW
 	#if defined (IMAGE_CODEC_STB_EXPORTS)
 		#define imageCodecSTBExport            	__declspec(dllexport)
 	#else
 		#define imageCodecSTBExport            	__declspec(dllimport)
 	#endif
-#elif E_PLATFORM == E_PLATFORM_ANDROID
+#elif F_PLATFORM == F_PLATFORM_ANDROID
 	#define imageCodecSTBExport			    	__attribute__ ((visibility("default")))
 #else
 	#define imageCodecSTBExport
 #endif
 
 
-namespace LostPeter
+namespace LostPeterPluginImageCodecSTB
 {
     
 
-}; //LostPeter
+}; //LostPeterPluginImageCodecSTB
 
 #endif

@@ -9,7 +9,7 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#if LP_PLATFORM == LP_PLATFORM_MAC
+#if F_PLATFORM == F_PLATFORM_MAC
 
 #ifndef _F_UTIL_OC_H_
 #define _F_UTIL_OC_H_

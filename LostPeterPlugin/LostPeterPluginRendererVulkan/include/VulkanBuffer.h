@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanBuffer : public Base
     {
@@ -38,15 +38,15 @@ namespace LostPeter
         bool m_bIsUpdateData;
 
     public:
-        E_FORCEINLINE const VkBuffer& GetVkBuffer() const { return m_vkBuffer; }
-        E_FORCEINLINE VkBuffer& GetVkBuffer() { return m_vkBuffer; }
-        E_FORCEINLINE const VkDeviceMemory& GetVkBufferMemory() const { return m_vkBufferMemory; }
-        E_FORCEINLINE VkDeviceMemory& GetVkBufferMemory() { return m_vkBufferMemory; }
+        F_FORCEINLINE const VkBuffer& GetVkBuffer() const { return m_vkBuffer; }
+        F_FORCEINLINE VkBuffer& GetVkBuffer() { return m_vkBuffer; }
+        F_FORCEINLINE const VkDeviceMemory& GetVkBufferMemory() const { return m_vkBufferMemory; }
+        F_FORCEINLINE VkDeviceMemory& GetVkBufferMemory() { return m_vkBufferMemory; }
 
-        E_FORCEINLINE void* GetData() const { return m_pData; }
-        E_FORCEINLINE uint32_t GetDataSize() const { return m_nDataSize; }
-        E_FORCEINLINE bool IsDeleteData() const { return m_bIsDeleteData; }
-        E_FORCEINLINE bool IsUpdateData() const { return m_bIsUpdateData; }
+        F_FORCEINLINE void* GetData() const { return m_pData; }
+        F_FORCEINLINE uint32_t GetDataSize() const { return m_nDataSize; }
+        F_FORCEINLINE bool IsDeleteData() const { return m_bIsDeleteData; }
+        F_FORCEINLINE bool IsUpdateData() const { return m_bIsUpdateData; }
 
     public:
         virtual void Destroy();
@@ -89,6 +89,6 @@ namespace LostPeter
         virtual void SetIsShowAABB(bool bIsShowAABB) { }
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

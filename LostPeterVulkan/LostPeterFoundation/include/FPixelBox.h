@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FPixelBox : public FBox
+    class foundationExport FPixelBox : public FBox
     {
     public:
         FPixelBox();
@@ -31,21 +31,21 @@ namespace LostPeterFoundation
 		size_t m_nSlicePitch;
         
     public:
-        LP_FORCEINLINE size_t GetRowSkip() const
+        F_FORCEINLINE size_t GetRowSkip() const
 		{ 
 			return m_nRowPitch - GetWidth();
 		}
 
-		LP_FORCEINLINE size_t GetSliceSkip() const 
+		F_FORCEINLINE size_t GetSliceSkip() const 
 		{ 
 			return m_nSlicePitch - (GetHeight() * m_nRowPitch); 
 		}
 
-        LP_FORCEINLINE bool IsConsecutive() const 
+        F_FORCEINLINE bool IsConsecutive() const 
 		{ 
 			return m_nRowPitch == GetWidth() && m_nSlicePitch == GetWidth() * GetHeight(); 
 		}
-        LP_FORCEINLINE void SetConsecutive()
+        F_FORCEINLINE void SetConsecutive()
 		{
 			m_nRowPitch = GetWidth();
 			m_nSlicePitch = GetWidth() * GetHeight();

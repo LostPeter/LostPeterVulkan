@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FFileXMLTinyConfig
+    class foundationExport FFileXMLTinyConfig
 	{
 	public:
 		FFileXMLTinyConfig();

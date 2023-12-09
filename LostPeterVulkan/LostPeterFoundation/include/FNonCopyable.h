@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FNonCopyable
+    class foundationExport FNonCopyable
 	{
 	public:
 		FNonCopyable();

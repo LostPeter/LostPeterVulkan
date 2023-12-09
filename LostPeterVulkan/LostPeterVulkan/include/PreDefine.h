@@ -86,7 +86,7 @@ namespace LostPeterVulkan
     bool Util_CheckVkResult(VkResult result, const String& nameFunc);
 
     template<class T>
-    static UTIL_FORCEINLINE void Util_ZeroStruct(T& vkStruct, VkStructureType vkType)
+    static F_FORCEINLINE void Util_ZeroStruct(T& vkStruct, VkStructureType vkType)
     {
         vkStruct.sType = vkType;
         memset(((uint8*)&vkStruct) + sizeof(VkStructureType), 0, sizeof(T) - sizeof(VkStructureType));
@@ -102,9 +102,9 @@ namespace LostPeterVulkan
 
         Vulkan_Window_Count,
     };
-    utilExport const String& Util_GetWindowTypeName(VulkanWindowType type);
-    utilExport const String& Util_GetWindowTypeName(int type);
-    utilExport VulkanWindowType Util_ParseWindowType(const String& strName);
+    vulkanExport const String& Util_GetWindowTypeName(VulkanWindowType type);
+    vulkanExport const String& Util_GetWindowTypeName(int type);
+    vulkanExport VulkanWindowType Util_ParseWindowType(const String& strName);
 
 
     enum VulkanFenceStateType
@@ -124,7 +124,7 @@ namespace LostPeterVulkan
 
 
 
-    struct utilExport VulkanPixelFormatDes
+    struct vulkanExport VulkanPixelFormatDes
 	{
 		String name;
 		uint8 nElemBytes;
@@ -178,8 +178,8 @@ namespace LostPeterVulkan
 		Vulkan_PixelFormatComponent_Float32,                //9: Float 32
         Vulkan_PixelFormatComponent_Double,                 //10: Double
 	};
-    utilExport const String& Util_GetPixelFormatComponentTypeName(VulkanPixelFormatComponentType type);
-    utilExport const String& Util_GetPixelFormatComponentTypeName(int type);
+    vulkanExport const String& Util_GetPixelFormatComponentTypeName(VulkanPixelFormatComponentType type);
+    vulkanExport const String& Util_GetPixelFormatComponentTypeName(int type);
 
 
     enum VulkanLightType
@@ -207,28 +207,28 @@ namespace LostPeterVulkan
     };
 
 
-    utilExport VkImageType Util_Transform2VkImageType(FTextureType type);
-    utilExport VkImageViewType Util_Transform2VkImageViewType(FTextureType type);
-    utilExport VkFormat Util_Transform2VkFormat(FTexturePixelFormatType type);
-    utilExport VkComponentMapping Util_Transform2VkComponentMapping(FTexturePixelFormatType type);
-    utilExport VkFilter Util_Transform2VkFilter(FTextureFilterPixelType type);
-    utilExport VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterPixelType type);
-    utilExport VkFilter Util_Transform2VkFilter(FTextureFilterType typeFilter, FTextureFilterSizeType typeFilterSize);
-    utilExport VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterType typeFilter);
-    utilExport VkSamplerAddressMode Util_Transform2VkSamplerAddressMode(FTextureAddressingType type);
-    utilExport VkBorderColor Util_Transform2VkBorderColor(FTextureBorderColorType type);
-    utilExport VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(FMSAASampleCountType type);
+    vulkanExport VkImageType Util_Transform2VkImageType(FTextureType type);
+    vulkanExport VkImageViewType Util_Transform2VkImageViewType(FTextureType type);
+    vulkanExport VkFormat Util_Transform2VkFormat(FTexturePixelFormatType type);
+    vulkanExport VkComponentMapping Util_Transform2VkComponentMapping(FTexturePixelFormatType type);
+    vulkanExport VkFilter Util_Transform2VkFilter(FTextureFilterPixelType type);
+    vulkanExport VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterPixelType type);
+    vulkanExport VkFilter Util_Transform2VkFilter(FTextureFilterType typeFilter, FTextureFilterSizeType typeFilterSize);
+    vulkanExport VkSamplerMipmapMode Util_Transform2VkSamplerMipmapMode(FTextureFilterType typeFilter);
+    vulkanExport VkSamplerAddressMode Util_Transform2VkSamplerAddressMode(FTextureAddressingType type);
+    vulkanExport VkBorderColor Util_Transform2VkBorderColor(FTextureBorderColorType type);
+    vulkanExport VkSampleCountFlagBits Util_Transform2VkSampleCountFlagBits(FMSAASampleCountType type);
 
-    utilExport VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(FShaderType type);    
-    utilExport VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(const Uint32Vector& aShaderTypes);    
+    vulkanExport VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(FShaderType type);    
+    vulkanExport VkShaderStageFlagBits Util_Transform2VkShaderStageFlagBits(const Uint32Vector& aShaderTypes);    
 
-    utilExport VkPrimitiveTopology Util_Transform2VkPrimitiveTopology(FRenderPrimitiveType type);
-    utilExport VkCullModeFlags Util_Transform2VkCullModeFlags(FCullingType type);
-    utilExport VkPolygonMode Util_Transform2VkPolygonMode(FPolygonType type);
-    utilExport VkStencilOp Util_Transform2VkStencilOp(FStencilOPType type);
-    utilExport VkCompareOp Util_Transform2VkCompareOp(FCompareFuncType type);
-    utilExport VkBlendOp Util_Transform2VkBlendOp(FSceneBlendingOPType type);
-    utilExport VkBlendFactor Util_Transform2VkBlendFactor(FSceneBlendingFactorType type);
+    vulkanExport VkPrimitiveTopology Util_Transform2VkPrimitiveTopology(FRenderPrimitiveType type);
+    vulkanExport VkCullModeFlags Util_Transform2VkCullModeFlags(FCullingType type);
+    vulkanExport VkPolygonMode Util_Transform2VkPolygonMode(FPolygonType type);
+    vulkanExport VkStencilOp Util_Transform2VkStencilOp(FStencilOPType type);
+    vulkanExport VkCompareOp Util_Transform2VkCompareOp(FCompareFuncType type);
+    vulkanExport VkBlendOp Util_Transform2VkBlendOp(FSceneBlendingOPType type);
+    vulkanExport VkBlendFactor Util_Transform2VkBlendFactor(FSceneBlendingFactorType type);
     
 
     enum VulkanDescriptorSetType
@@ -257,9 +257,9 @@ namespace LostPeterVulkan
 
         Vulkan_DescriptorSet_Count,
     };
-    utilExport const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type);
-    utilExport const String& Util_GetDescriptorSetTypeName(int type);
-    utilExport VulkanDescriptorSetType Util_ParseDescriptorSetType(const String& strName);
+    vulkanExport const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type);
+    vulkanExport const String& Util_GetDescriptorSetTypeName(int type);
+    vulkanExport VulkanDescriptorSetType Util_ParseDescriptorSetType(const String& strName);
 
 
     enum VulkanDescriptorSetUsageType
@@ -278,10 +278,10 @@ namespace LostPeterVulkan
 
         Vulkan_DescriptorSetUsage_Count,
     };
-    utilExport const String& Util_GetDescriptorSetUsageTypeName(VulkanDescriptorSetUsageType type);
-    utilExport const String& Util_GetDescriptorSetUsageTypeName(int type);
-    utilExport VulkanDescriptorSetUsageType Util_ParseDescriptorSetUsageType(const String& strName);
-    utilExport VkDescriptorType Util_Transform2VkDescriptorType(VulkanDescriptorSetUsageType type);    
+    vulkanExport const String& Util_GetDescriptorSetUsageTypeName(VulkanDescriptorSetUsageType type);
+    vulkanExport const String& Util_GetDescriptorSetUsageTypeName(int type);
+    vulkanExport VulkanDescriptorSetUsageType Util_ParseDescriptorSetUsageType(const String& strName);
+    vulkanExport VkDescriptorType Util_Transform2VkDescriptorType(VulkanDescriptorSetUsageType type);    
 
     
     enum VulkanObjectType
@@ -298,9 +298,9 @@ namespace LostPeterVulkan
 
         Vulkan_Object_Count,                
     };
-    utilExport const String& Util_GetObjectTypeName(VulkanObjectType type);
-    utilExport const String& Util_GetObjectTypeName(int type);
-    utilExport VulkanObjectType Util_ParseObjectType(const String& strName);
+    vulkanExport const String& Util_GetObjectTypeName(VulkanObjectType type);
+    vulkanExport const String& Util_GetObjectTypeName(int type);
+    vulkanExport VulkanObjectType Util_ParseObjectType(const String& strName);
 
 
     enum VulkanRenderQueueType
@@ -314,9 +314,9 @@ namespace LostPeterVulkan
 
         Vulkan_RenderQueue_Count,
     };
-    utilExport const String& Util_GetRenderQueueTypeName(VulkanRenderQueueType type);
-    utilExport const String& Util_GetRenderQueueTypeName(int type);
-    utilExport VulkanRenderQueueType Util_ParseRenderQueueType(const String& strName);
+    vulkanExport const String& Util_GetRenderQueueTypeName(VulkanRenderQueueType type);
+    vulkanExport const String& Util_GetRenderQueueTypeName(int type);
+    vulkanExport VulkanRenderQueueType Util_ParseRenderQueueType(const String& strName);
 
 
     enum VulkanEngineConfigType
@@ -335,8 +335,8 @@ namespace LostPeterVulkan
 		
 		Vulkan_EngineConfig_Count
 	};
-    utilExport const String& Util_GetEngineConfigTypeName(VulkanEngineConfigType type);
-    utilExport const String& Util_GetEngineConfigTypeName(int type);
+    vulkanExport const String& Util_GetEngineConfigTypeName(VulkanEngineConfigType type);
+    vulkanExport const String& Util_GetEngineConfigTypeName(int type);
 
 
 ////////////////////////////// Vulkan //////////////////////////////
@@ -386,10 +386,10 @@ namespace LostPeterVulkan
     typedef std::vector<VkDescriptorSet> VkDescriptorSetVector;
     typedef std::vector<VkWriteDescriptorSet> VkWriteDescriptorSetVector;
 
-    utilExport const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(FMeshVertexType type);
-    utilExport const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(FMeshVertexType type);
-    utilExport VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(FMeshVertexType type);
-    utilExport VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(FMeshVertexType type);
+    vulkanExport const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(FMeshVertexType type);
+    vulkanExport const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(FMeshVertexType type);
+    vulkanExport VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(FMeshVertexType type);
+    vulkanExport VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(FMeshVertexType type);
 
 
 ////////////////////////////// Class ///////////////////////////////
@@ -405,7 +405,7 @@ namespace LostPeterVulkan
     struct MaterialConstants;
     struct InstanceConstants;
 
-    struct utilExport MeshInfo
+    struct vulkanExport MeshInfo
     {
         MeshInfo();
         MeshInfo(const String& _nameMesh,
@@ -436,7 +436,7 @@ namespace LostPeterVulkan
     typedef std::map<String, MeshInfo*> MeshInfoPtrMap;
 
 
-    struct utilExport ShaderModuleInfo
+    struct vulkanExport ShaderModuleInfo
     {
         String nameShader;
         String nameShaderType;

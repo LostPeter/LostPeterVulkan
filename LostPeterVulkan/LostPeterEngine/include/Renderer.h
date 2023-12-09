@@ -50,22 +50,22 @@ namespace LostPeterEngine
 		uint32 m_nCurHeight;
 
     public:
-        E_FORCEINLINE RenderWindow* GetRenderWindow() const { return m_pRenderWindow; }
-        E_FORCEINLINE void SetRenderWindow(RenderWindow* pRenderWindow) { m_pRenderWindow = pRenderWindow; }
-        E_FORCEINLINE RenderTarget* GetActiveRenderTarget() const { return m_pActiveRenderTarget; }
-        E_FORCEINLINE void SetActiveRenderTarget(RenderTarget* pRenderTarget) { m_pActiveRenderTarget = pRenderTarget; }
-		E_FORCEINLINE Viewport* GetActiveViewport() const { return m_pActiveViewport; }
-		E_FORCEINLINE ObjectCamera* GetActiveCamera() const { return m_pActiveObjectCamera; }
+        F_FORCEINLINE RenderWindow* GetRenderWindow() const { return m_pRenderWindow; }
+        F_FORCEINLINE void SetRenderWindow(RenderWindow* pRenderWindow) { m_pRenderWindow = pRenderWindow; }
+        F_FORCEINLINE RenderTarget* GetActiveRenderTarget() const { return m_pActiveRenderTarget; }
+        F_FORCEINLINE void SetActiveRenderTarget(RenderTarget* pRenderTarget) { m_pActiveRenderTarget = pRenderTarget; }
+		F_FORCEINLINE Viewport* GetActiveViewport() const { return m_pActiveViewport; }
+		F_FORCEINLINE ObjectCamera* GetActiveCamera() const { return m_pActiveObjectCamera; }
 		
-		E_FORCEINLINE bool	IsRendererInit() const { return m_bRendererIsInit; }
+		F_FORCEINLINE bool	IsRendererInit() const { return m_bRendererIsInit; }
 
-        E_FORCEINLINE bool	IsFullScreen() const { return m_bFullScreen; }
-		E_FORCEINLINE bool	IsFakeFullScreen() const { return m_bFakeFullScreen; }
-		E_FORCEINLINE bool	IsUseNvPerfHud() const { return m_bUseNvPerfHud; }
-		E_FORCEINLINE bool	IsVSync() const { return m_bVSync; }
-		E_FORCEINLINE bool	GetWBufferEnable() const { return m_bWBuffer; }
-		E_FORCEINLINE void	SetWBufferEnable(bool b) { m_bWBuffer = b;}
-		E_FORCEINLINE bool	IsEmptyGpuBuffer() const { return m_bEmptyGpuBuffer; }
+        F_FORCEINLINE bool	IsFullScreen() const { return m_bFullScreen; }
+		F_FORCEINLINE bool	IsFakeFullScreen() const { return m_bFakeFullScreen; }
+		F_FORCEINLINE bool	IsUseNvPerfHud() const { return m_bUseNvPerfHud; }
+		F_FORCEINLINE bool	IsVSync() const { return m_bVSync; }
+		F_FORCEINLINE bool	GetWBufferEnable() const { return m_bWBuffer; }
+		F_FORCEINLINE void	SetWBufferEnable(bool b) { m_bWBuffer = b;}
+		F_FORCEINLINE bool	IsEmptyGpuBuffer() const { return m_bEmptyGpuBuffer; }
 
     public:
         virtual void Destroy();

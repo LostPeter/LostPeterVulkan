@@ -17,7 +17,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport VKMultiRenderPass : public Base
+    class vulkanExport VKMultiRenderPass : public Base
     {
     public:
         VKMultiRenderPass(const String& _nameRenderPass,

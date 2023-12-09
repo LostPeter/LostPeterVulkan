@@ -12,7 +12,7 @@
 #include "../include/VulkanDeviceMemoryManager.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanDeviceMemoryManager::VulkanDeviceMemoryManager()
         : m_pDevice(nullptr)
@@ -248,4 +248,4 @@ namespace LostPeter
         }
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

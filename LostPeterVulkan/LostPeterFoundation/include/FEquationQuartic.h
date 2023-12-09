@@ -17,7 +17,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FEquationQuartic
+    class foundationExport FEquationQuartic
     {
     public:
         FEquationQuartic(FComplex& a, FComplex& b, FComplex& c, FComplex& d, FComplex& e, double epsilon = 1e-6);

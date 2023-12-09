@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanTexture : public Texture
     {
@@ -37,19 +37,19 @@ namespace LostPeter
         VkDeviceMemory m_vkDeviceMemoryMSAA;
 
     public:
-        E_FORCEINLINE uint32 GetNumLayers() const { return m_eTexture == F_Texture_2DArray ? m_nDepth : GetNumFaces(); }
-        E_FORCEINLINE bool HasMSAAExplicitResolves() const { return false; }
-        E_FORCEINLINE bool IsUAV() const { return false; }
-        E_FORCEINLINE bool IsMultisample() const { return m_nFSAA > 1; }
+        F_FORCEINLINE uint32 GetNumLayers() const { return m_eTexture == F_Texture_2DArray ? m_nDepth : GetNumFaces(); }
+        F_FORCEINLINE bool HasMSAAExplicitResolves() const { return false; }
+        F_FORCEINLINE bool IsUAV() const { return false; }
+        F_FORCEINLINE bool IsMultisample() const { return m_nFSAA > 1; }
 
-        E_FORCEINLINE VkImageLayout GetLayoutCurrent() const { return m_vkLayoutCurrent; }
-        E_FORCEINLINE VkImageLayout GetLayoutNext() const { return m_vkLayoutNext; }
-        E_FORCEINLINE VkImage GetImageDefault() const { return m_vkImageDefault; }
-        E_FORCEINLINE VkImageView GetImageViewDefaultSrv( void ) const { return m_vkImageViewDefaultSrv; }
-        E_FORCEINLINE VkImage GetImageFinal() const { return m_vkImageFinal; }
-        E_FORCEINLINE VkDeviceMemory GetDeviceMemoryFinal() const { return m_vkDeviceMemoryFinal; }
-        E_FORCEINLINE VkImage GetImageMSAA() const { return m_vkImageMSAA; }
-        E_FORCEINLINE VkDeviceMemory GetDeviceMemoryMSAA() const { return m_vkDeviceMemoryMSAA; }
+        F_FORCEINLINE VkImageLayout GetLayoutCurrent() const { return m_vkLayoutCurrent; }
+        F_FORCEINLINE VkImageLayout GetLayoutNext() const { return m_vkLayoutNext; }
+        F_FORCEINLINE VkImage GetImageDefault() const { return m_vkImageDefault; }
+        F_FORCEINLINE VkImageView GetImageViewDefaultSrv( void ) const { return m_vkImageViewDefaultSrv; }
+        F_FORCEINLINE VkImage GetImageFinal() const { return m_vkImageFinal; }
+        F_FORCEINLINE VkDeviceMemory GetDeviceMemoryFinal() const { return m_vkDeviceMemoryFinal; }
+        F_FORCEINLINE VkImage GetImageMSAA() const { return m_vkImageMSAA; }
+        F_FORCEINLINE VkDeviceMemory GetDeviceMemoryMSAA() const { return m_vkDeviceMemoryMSAA; }
 
     public:
         virtual bool IsRenderWindowSpecific() const { return false; }
@@ -93,6 +93,6 @@ namespace LostPeter
 		virtual void freeInternalResourcesImpl();
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

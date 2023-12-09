@@ -35,11 +35,11 @@ namespace LostPeterEngine
 		uint16 m_nIndex;	
 
 	public:
-		E_FORCEINLINE uint16 GetSourceIndex() const { return m_nSourceIndex; }
-		E_FORCEINLINE size_t GetOffset() const { return m_nOffset; }
-		E_FORCEINLINE EVertexElementSemanticType GetVertexElementSemanticType() const { return m_eVertexElementSemantic; }
-		E_FORCEINLINE EVertexElementDataType GetVertexElementDataType() const { return m_eVertexElementData; }
-		E_FORCEINLINE uint16 GetIndex() const { return m_nIndex; }
+		F_FORCEINLINE uint16 GetSourceIndex() const { return m_nSourceIndex; }
+		F_FORCEINLINE size_t GetOffset() const { return m_nOffset; }
+		F_FORCEINLINE EVertexElementSemanticType GetVertexElementSemanticType() const { return m_eVertexElementSemantic; }
+		F_FORCEINLINE EVertexElementDataType GetVertexElementDataType() const { return m_eVertexElementData; }
+		F_FORCEINLINE uint16 GetIndex() const { return m_nIndex; }
 	
 	public:
 		void GetElementKey(String& strKey);
@@ -54,27 +54,27 @@ namespace LostPeterEngine
 		static uint32 ConvertColorValue(const FColor& srcColor, EVertexElementDataType typeData);
 		static EVertexElementDataType GetBestColorVertexElementType();
 
-		E_FORCEINLINE void BaseVertexPointerToElement(void* pBase, void** pElem) const
+		F_FORCEINLINE void BaseVertexPointerToElement(void* pBase, void** pElem) const
 		{
 			*pElem = static_cast<void*>(static_cast<uint8*>(pBase) + m_nOffset);
 		}
 
-		E_FORCEINLINE void BaseVertexPointerToElement(void* pBase, float** pElem) const
+		F_FORCEINLINE void BaseVertexPointerToElement(void* pBase, float** pElem) const
 		{
 			*pElem = static_cast<float*>(static_cast<void*>(static_cast<uint8*>(pBase) + m_nOffset));
 		}
 
-		E_FORCEINLINE void BaseVertexPointerToElement(void* pBase, RGBA** pElem) const
+		F_FORCEINLINE void BaseVertexPointerToElement(void* pBase, RGBA** pElem) const
 		{
 			*pElem = static_cast<RGBA*>(static_cast<void*>(static_cast<uint8*>(pBase) + m_nOffset));
 		}
 
-		E_FORCEINLINE void BaseVertexPointerToElement(void* pBase, uint8** pElem) const
+		F_FORCEINLINE void BaseVertexPointerToElement(void* pBase, uint8** pElem) const
 		{
 			*pElem = static_cast<uint8*>(pBase) + m_nOffset;
 		}
 
-		E_FORCEINLINE void BaseVertexPointerToElement(void* pBase, uint16** pElem) const
+		F_FORCEINLINE void BaseVertexPointerToElement(void* pBase, uint16** pElem) const
 		{
 			*pElem = static_cast<uint16*>(pBase) + m_nOffset;
 		}

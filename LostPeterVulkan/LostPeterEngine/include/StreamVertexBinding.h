@@ -31,11 +31,11 @@ namespace LostPeterEngine
 		void* m_pCreator;
 
 	public:
-		E_FORCEINLINE size_t GetStreamCount() const { return m_mapBinding.size(); }
-		E_FORCEINLINE const StreamVertexPtrMap& GetBindings() const { return m_mapBinding; }
-		E_FORCEINLINE uint16 GetNextIndex() const { return m_nMaxIndex++; }
-		E_FORCEINLINE void* GetCreator() { return m_pCreator; }
-		E_FORCEINLINE void SetCreator(void* pCreator) { m_pCreator = pCreator; }
+		F_FORCEINLINE size_t GetStreamCount() const { return m_mapBinding.size(); }
+		F_FORCEINLINE const StreamVertexPtrMap& GetBindings() const { return m_mapBinding; }
+		F_FORCEINLINE uint16 GetNextIndex() const { return m_nMaxIndex++; }
+		F_FORCEINLINE void* GetCreator() { return m_pCreator; }
+		F_FORCEINLINE void SetCreator(void* pCreator) { m_pCreator = pCreator; }
 		
 	public:
 		void Destroy();

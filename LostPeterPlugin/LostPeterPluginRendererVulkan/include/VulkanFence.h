@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanFence
     {
@@ -31,17 +31,17 @@ namespace LostPeter
         VulkanFenceStateType m_eFenceState;
 
     public:
-        E_FORCEINLINE VulkanFenceManager* GetFenceManager() { return m_pFenceManager; }
-        E_FORCEINLINE const VkFence& GetVkFence() const { return m_vkFence; }
-        E_FORCEINLINE VkFence GetVkFence() { return m_vkFence; }
-        E_FORCEINLINE bool IsSignaled() const { return m_eFenceState == Vulkan_FenceState_Signaled; }
-        E_FORCEINLINE VulkanFenceStateType GetFenceStateType() const { return m_eFenceState; }
-        E_FORCEINLINE void SetFenceStateType(VulkanFenceStateType eFenceState) { m_eFenceState = eFenceState; }
+        F_FORCEINLINE VulkanFenceManager* GetFenceManager() { return m_pFenceManager; }
+        F_FORCEINLINE const VkFence& GetVkFence() const { return m_vkFence; }
+        F_FORCEINLINE VkFence GetVkFence() { return m_vkFence; }
+        F_FORCEINLINE bool IsSignaled() const { return m_eFenceState == Vulkan_FenceState_Signaled; }
+        F_FORCEINLINE VulkanFenceStateType GetFenceStateType() const { return m_eFenceState; }
+        F_FORCEINLINE void SetFenceStateType(VulkanFenceStateType eFenceState) { m_eFenceState = eFenceState; }
 
     public:
         void Destroy();
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

@@ -14,7 +14,7 @@
 
 #include "VulkanFence.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanFenceManager
     {
@@ -29,9 +29,9 @@ namespace LostPeter
         VulkanFencePtrVector m_aFences_Used;
 
     public:
-        E_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
+        F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
 
-        E_FORCEINLINE bool IsFenceSignaled(VulkanFence* pFence)
+        F_FORCEINLINE bool IsFenceSignaled(VulkanFence* pFence)
         {
             if (pFence->IsSignaled()) {
                 return true;
@@ -57,6 +57,6 @@ namespace LostPeter
         bool checkFenceState(VulkanFence* pFence);
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

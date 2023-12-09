@@ -14,16 +14,16 @@
 
 #include "FPreMacro.h"
 
-#if LP_PLATFORM == LP_PLATFORM_WIN32
-	#if defined(LPUI_EXPORTS)
-		#define LPUI_Export        		__declspec(dllexport) 
+#if F_PLATFORM == F_PLATFORM_WINDOW
+	#if defined(UI_EXPORTS)
+		#define uiExport        		__declspec(dllexport) 
 	#else
-		#define LPUI_Export      		__declspec(dllimport) 
+		#define uiExport      			__declspec(dllimport) 
 	#endif
-#elif LP_PLATFORM == LP_PLATFORM_ANDROID
-	#define LPUI_Export					__attribute__ ((visibility("default")))
+#elif F_PLATFORM == F_PLATFORM_ANDROID
+	#define uiExport					__attribute__ ((visibility("default")))
 #else
-	#define LPUI_Export
+	#define uiExport
 #endif
 
 

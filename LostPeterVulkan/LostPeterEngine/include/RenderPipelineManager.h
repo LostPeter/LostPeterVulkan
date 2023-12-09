@@ -35,7 +35,7 @@ namespace LostPeterEngine
 		static RenderPipelineManager* GetSingletonPtr();
 
     public:
-		E_FORCEINLINE RenderPipeline* GetPipeLineCurrent() const { return m_pPipeLineCurrent; }
+		F_FORCEINLINE RenderPipeline* GetPipeLineCurrent() const { return m_pPipeLineCurrent; }
 
 	public:
         void Destroy();

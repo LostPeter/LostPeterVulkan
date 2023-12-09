@@ -84,7 +84,7 @@ namespace LostPeterFoundation
 			((uint16*)dest)[0] = (uint16)value;
 			break;
 		case 3:
-#if LP_ENDIAN == LP_ENDIAN_BIG
+#if F_ENDIAN == F_ENDIAN_BIG
 			((uint8*)dest)[0] = (uint8)((value >> 16) & 0xFF);
 			((uint8*)dest)[1] = (uint8)((value >> 8) & 0xFF);
 			((uint8*)dest)[2] = (uint8)(value & 0xFF);
@@ -109,7 +109,7 @@ namespace LostPeterFoundation
 		case 2:
 			return ((uint16*)src)[0];
 		case 3:
-#if LP_ENDIAN == LP_ENDIAN_BIG      
+#if F_ENDIAN == F_ENDIAN_BIG      
 			return ((uint32)((uint8*)src)[0]<<16) |
 				((uint32)((uint8*)src)[1]<<8) |
 				((uint32)((uint8*)src)[2]);

@@ -16,17 +16,17 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FTriangle
+    class foundationExport FTriangle
 	{
 	public:
-		LP_FORCEINLINE FTriangle()
+		F_FORCEINLINE FTriangle()
 			: m_pt0(-1, 0, 0)
 			, m_pt1( 0, 1, 0)
 			, m_pt2( 1, 0, 0)
 		{
 
 		}
-		LP_FORCEINLINE FTriangle(const FVector3& pt0, const FVector3& pt1, const FVector3& pt2)
+		F_FORCEINLINE FTriangle(const FVector3& pt0, const FVector3& pt1, const FVector3& pt2)
 			: m_pt0(pt0)
 			, m_pt1(pt1)
 			, m_pt2(pt2)

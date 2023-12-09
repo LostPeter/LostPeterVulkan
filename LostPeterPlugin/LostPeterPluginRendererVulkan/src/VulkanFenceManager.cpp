@@ -12,7 +12,7 @@
 #include "../include/VulkanFenceManager.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanFenceManager::VulkanFenceManager()
         : m_pDevice(nullptr)
@@ -138,4 +138,4 @@ namespace LostPeter
         return false;
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

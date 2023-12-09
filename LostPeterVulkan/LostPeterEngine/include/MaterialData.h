@@ -31,12 +31,12 @@ namespace LostPeterEngine
         RenderStatePtrMap m_mapRenderState;
 
     public:
-        E_FORCEINLINE const String& GetPath() const { return m_strPath; }
-        E_FORCEINLINE void SetPath(const String& path) { m_strPath = path; }
-		E_FORCEINLINE const RenderStatePtrVector& GetRenderStatePtrVector() const { return m_aRenderState; }
-        E_FORCEINLINE RenderStatePtrVector& GetRenderStatePtrVector() { return m_aRenderState; }
-        E_FORCEINLINE const RenderStatePtrMap& GetRenderStatePtrMap() const { return m_mapRenderState; }
-        E_FORCEINLINE RenderStatePtrMap& GetRenderStatePtrMap() { return m_mapRenderState; }
+        F_FORCEINLINE const String& GetPath() const { return m_strPath; }
+        F_FORCEINLINE void SetPath(const String& path) { m_strPath = path; }
+		F_FORCEINLINE const RenderStatePtrVector& GetRenderStatePtrVector() const { return m_aRenderState; }
+        F_FORCEINLINE RenderStatePtrVector& GetRenderStatePtrVector() { return m_aRenderState; }
+        F_FORCEINLINE const RenderStatePtrMap& GetRenderStatePtrMap() const { return m_mapRenderState; }
+        F_FORCEINLINE RenderStatePtrMap& GetRenderStatePtrMap() { return m_mapRenderState; }
         
     public:
 		void Destroy();

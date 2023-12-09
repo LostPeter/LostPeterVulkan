@@ -28,10 +28,10 @@ namespace LostPeterEngine
 		bool m_bDelExternal;
 
 	public:
-		E_FORCEINLINE uint32 GetTypeFlags() const { return m_nTypeFlag;  }
-		E_FORCEINLINE void	SetTypeFlags(uint32 nTypeFlag) { m_nTypeFlag = nTypeFlag; }
-		E_FORCEINLINE bool GetIsDelExternal() const { return m_bDelExternal; }
-		E_FORCEINLINE void SetIsDelExternal(bool b) { m_bDelExternal = b; }
+		F_FORCEINLINE uint32 GetTypeFlags() const { return m_nTypeFlag;  }
+		F_FORCEINLINE void	SetTypeFlags(uint32 nTypeFlag) { m_nTypeFlag = nTypeFlag; }
+		F_FORCEINLINE bool GetIsDelExternal() const { return m_bDelExternal; }
+		F_FORCEINLINE void SetIsDelExternal(bool b) { m_bDelExternal = b; }
 
 	public:			
 		virtual const String& GetMovableType() const = 0;

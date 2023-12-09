@@ -16,14 +16,14 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FTorus
+    class foundationExport FTorus
 	{
 	public:
-		LP_FORCEINLINE FTorus()
+		F_FORCEINLINE FTorus()
 		{
 
 		}
-		LP_FORCEINLINE FTorus(const FVector3& vCenter, const FVector3& vDirection, float fRadius, float fSectionRadius)
+		F_FORCEINLINE FTorus(const FVector3& vCenter, const FVector3& vDirection, float fRadius, float fSectionRadius)
 			: m_vCenter(vCenter)
 			, m_vDirection(vDirection)
 			, m_fRadius(fRadius)
@@ -31,7 +31,7 @@ namespace LostPeterFoundation
 		{
 
 		}
-		LP_FORCEINLINE FTorus(const FTorus& torus) 
+		F_FORCEINLINE FTorus(const FTorus& torus) 
 			: m_vCenter(torus.m_vCenter)
 			, m_vDirection(torus.m_vDirection)
 			, m_fRadius(torus.m_fRadius)
@@ -47,10 +47,10 @@ namespace LostPeterFoundation
 		float m_fSectionRadius;
 		
 	public:
-		LP_FORCEINLINE const FVector3& GetCenter() const { return m_vCenter; }
-		LP_FORCEINLINE const FVector3& GetDirection() const { return m_vDirection; }
-        LP_FORCEINLINE float GetRadius() const { return m_fRadius; }
-		LP_FORCEINLINE float GetSectionRadius() const { return m_fSectionRadius; }
+		F_FORCEINLINE const FVector3& GetCenter() const { return m_vCenter; }
+		F_FORCEINLINE const FVector3& GetDirection() const { return m_vDirection; }
+        F_FORCEINLINE float GetRadius() const { return m_fRadius; }
+		F_FORCEINLINE float GetSectionRadius() const { return m_fSectionRadius; }
 
 	public:
 		bool Intersects_Point(const FVector3& point) const;

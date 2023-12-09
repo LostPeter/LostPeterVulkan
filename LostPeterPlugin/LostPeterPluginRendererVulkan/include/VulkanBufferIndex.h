@@ -14,7 +14,7 @@
 
 #include "VulkanBuffer.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanBufferIndex : public VulkanBuffer
     {
@@ -34,9 +34,9 @@ namespace LostPeter
         uint32_t m_nTriangleCount;
 
     public:   
-        E_FORCEINLINE VkIndexType GetVkIndexType() const { return m_vkIndexType; }
-        E_FORCEINLINE uint32_t GetIndexCount() const { return m_nIndexCount; }
-        E_FORCEINLINE uint32_t GetTriangleCount() const { return m_nTriangleCount; }
+        F_FORCEINLINE VkIndexType GetVkIndexType() const { return m_vkIndexType; }
+        F_FORCEINLINE uint32_t GetIndexCount() const { return m_nIndexCount; }
+        F_FORCEINLINE uint32_t GetTriangleCount() const { return m_nTriangleCount; }
 
     public:
         virtual void Destroy();
@@ -56,6 +56,6 @@ namespace LostPeter
         virtual VulkanBufferIndex* Clone();
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

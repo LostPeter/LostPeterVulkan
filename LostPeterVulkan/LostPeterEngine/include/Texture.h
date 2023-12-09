@@ -55,56 +55,56 @@ namespace LostPeterEngine
 		bool m_bInternalResourcesCreated;
 
 	public:
-		E_FORCEINLINE FTextureType GetTextureType() const { return m_eTexture; }
-		E_FORCEINLINE void SetTextureType(FTextureType eTexture) { m_eTexture = eTexture; }
-		E_FORCEINLINE uint32 GetUsage() const { return m_nUsage; }
-		E_FORCEINLINE void SetUsage(uint32 nUsage) { m_nUsage = nUsage; }
-		E_FORCEINLINE bool	IsLoaded() const { return m_bIsLoaded; }
-		E_FORCEINLINE bool	IsManual() const { return m_bIsManual; }
+		F_FORCEINLINE FTextureType GetTextureType() const { return m_eTexture; }
+		F_FORCEINLINE void SetTextureType(FTextureType eTexture) { m_eTexture = eTexture; }
+		F_FORCEINLINE uint32 GetUsage() const { return m_nUsage; }
+		F_FORCEINLINE void SetUsage(uint32 nUsage) { m_nUsage = nUsage; }
+		F_FORCEINLINE bool	IsLoaded() const { return m_bIsLoaded; }
+		F_FORCEINLINE bool	IsManual() const { return m_bIsManual; }
 
-		E_FORCEINLINE FPixelFormatType GetPixelFormat() const { return m_ePixelFormat; }
-		E_FORCEINLINE void SetPixelFormat(FPixelFormatType ePixelFormat)	
+		F_FORCEINLINE FPixelFormatType GetPixelFormat() const { return m_ePixelFormat; }
+		F_FORCEINLINE void SetPixelFormat(FPixelFormatType ePixelFormat)	
 		{ 
 			m_ePixelFormat = ePixelFormat; 
 			m_ePixelFormatSrc = ePixelFormat;	
 			m_ePixelFormatDesired = ePixelFormat;
 		}
-		E_FORCEINLINE size_t GetWidth() const { return m_nWidth; }
-		E_FORCEINLINE void SetWidth(size_t nW) { m_nWidth = m_nSrcWidth = nW; }
-		E_FORCEINLINE size_t GetHeight() const { return m_nHeight; }
-		E_FORCEINLINE void SetHeight(size_t nH) { m_nHeight = m_nSrcHeight = nH; }
-		E_FORCEINLINE size_t GetDepth() const { return m_nDepth; }
-		E_FORCEINLINE void SetDepth(size_t nD) { m_nDepth = m_nSrcDepth=nD; }
-		E_FORCEINLINE size_t GetSize() const { return m_nSize; }
+		F_FORCEINLINE size_t GetWidth() const { return m_nWidth; }
+		F_FORCEINLINE void SetWidth(size_t nW) { m_nWidth = m_nSrcWidth = nW; }
+		F_FORCEINLINE size_t GetHeight() const { return m_nHeight; }
+		F_FORCEINLINE void SetHeight(size_t nH) { m_nHeight = m_nSrcHeight = nH; }
+		F_FORCEINLINE size_t GetDepth() const { return m_nDepth; }
+		F_FORCEINLINE void SetDepth(size_t nD) { m_nDepth = m_nSrcDepth=nD; }
+		F_FORCEINLINE size_t GetSize() const { return m_nSize; }
 
-		E_FORCEINLINE FPixelFormatType GetSrcPixelFormat() const { return m_ePixelFormatSrc; }
-		E_FORCEINLINE size_t GetSrcWidth() const { return m_nSrcWidth; }
-		E_FORCEINLINE size_t GetSrcHeight() const { return m_nSrcHeight; }
-		E_FORCEINLINE size_t GetSrcDepth() const { return m_nSrcDepth; }
+		F_FORCEINLINE FPixelFormatType GetSrcPixelFormat() const { return m_ePixelFormatSrc; }
+		F_FORCEINLINE size_t GetSrcWidth() const { return m_nSrcWidth; }
+		F_FORCEINLINE size_t GetSrcHeight() const { return m_nSrcHeight; }
+		F_FORCEINLINE size_t GetSrcDepth() const { return m_nSrcDepth; }
 		
-		E_FORCEINLINE FPixelFormatType GetDesiredPixelFormat() const { return m_ePixelFormatDesired; }
-		E_FORCEINLINE uint16 GetDesiredIntegerBitDepth() const { return m_nDesiredIntegerBitDepth; }
-		E_FORCEINLINE void SetDesiredIntegerBitDepth(uint16 n) { m_nDesiredIntegerBitDepth = n; }
-		E_FORCEINLINE uint16 GetDesiredFloatBitDepth() const { return m_nDesiredFloatBitDepth; }
-		E_FORCEINLINE void SetDesiredFloatBitDepth(uint16 n) { m_nDesiredFloatBitDepth = n; }
-		E_FORCEINLINE void SetDesiredBitDepths(uint16 nI, uint16 nF) 
+		F_FORCEINLINE FPixelFormatType GetDesiredPixelFormat() const { return m_ePixelFormatDesired; }
+		F_FORCEINLINE uint16 GetDesiredIntegerBitDepth() const { return m_nDesiredIntegerBitDepth; }
+		F_FORCEINLINE void SetDesiredIntegerBitDepth(uint16 n) { m_nDesiredIntegerBitDepth = n; }
+		F_FORCEINLINE uint16 GetDesiredFloatBitDepth() const { return m_nDesiredFloatBitDepth; }
+		F_FORCEINLINE void SetDesiredFloatBitDepth(uint16 n) { m_nDesiredFloatBitDepth = n; }
+		F_FORCEINLINE void SetDesiredBitDepths(uint16 nI, uint16 nF) 
 		{
 			m_nDesiredIntegerBitDepth = nI;
 			m_nDesiredFloatBitDepth = nF;
 		}
-		E_FORCEINLINE bool GetTreatLuminanceAsAlpha() const { return m_bTreatLuminanceAsAlpha; }
-		E_FORCEINLINE void SetTreatLuminanceAsAlpha(bool b) { m_bTreatLuminanceAsAlpha = b; }
+		F_FORCEINLINE bool GetTreatLuminanceAsAlpha() const { return m_bTreatLuminanceAsAlpha; }
+		F_FORCEINLINE void SetTreatLuminanceAsAlpha(bool b) { m_bTreatLuminanceAsAlpha = b; }
 		
-		E_FORCEINLINE size_t GetNumRequestedMipMaps() const { return m_nNumRequestedMipMaps; }
-		E_FORCEINLINE void SetNumRequestedMipMaps(size_t nMipMaps) { m_nNumRequestedMipMaps = nMipMaps; }
-		E_FORCEINLINE size_t GetNumMipMaps() const	{ return m_nNumMipMaps; }
-		E_FORCEINLINE void SetNumMipMaps(size_t nMipMaps) { m_nNumMipMaps = nMipMaps; }
-		E_FORCEINLINE bool IsMipMapsHardwareGenerated() const { return m_bMipMapsHardwareGenerated; }
+		F_FORCEINLINE size_t GetNumRequestedMipMaps() const { return m_nNumRequestedMipMaps; }
+		F_FORCEINLINE void SetNumRequestedMipMaps(size_t nMipMaps) { m_nNumRequestedMipMaps = nMipMaps; }
+		F_FORCEINLINE size_t GetNumMipMaps() const	{ return m_nNumMipMaps; }
+		F_FORCEINLINE void SetNumMipMaps(size_t nMipMaps) { m_nNumMipMaps = nMipMaps; }
+		F_FORCEINLINE bool IsMipMapsHardwareGenerated() const { return m_bMipMapsHardwareGenerated; }
 			
-		E_FORCEINLINE float GetGamma() const { return m_fGamma; }
-		E_FORCEINLINE void SetGamma(float fGamma) { m_fGamma = fGamma; }
-		E_FORCEINLINE uint32 GetFSAA() const { return m_nFSAA; }
-		E_FORCEINLINE void SetFSAA(uint32 n) { m_nFSAA = n; }
+		F_FORCEINLINE float GetGamma() const { return m_fGamma; }
+		F_FORCEINLINE void SetGamma(float fGamma) { m_fGamma = fGamma; }
+		F_FORCEINLINE uint32 GetFSAA() const { return m_nFSAA; }
+		F_FORCEINLINE void SetFSAA(uint32 n) { m_nFSAA = n; }
 		
 	public:
 		virtual size_t GetNumFaces() const;

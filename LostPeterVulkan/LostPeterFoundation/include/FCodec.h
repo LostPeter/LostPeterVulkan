@@ -16,14 +16,14 @@
 
 namespace LostPeterFoundation
 {
-	class LPF_Export FCodec
+	class foundationExport FCodec
 	{
 	public:
         FCodec();
 		virtual ~FCodec();
 
 	public:
-		class LPF_Export FCodecData 
+		class foundationExport FCodecData 
 		{
 		public:
 			FCodecData();

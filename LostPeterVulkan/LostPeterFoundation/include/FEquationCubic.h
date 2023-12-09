@@ -17,7 +17,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FEquationCubic
+    class foundationExport FEquationCubic
     {
     public:
         FEquationCubic(const FComplex& a, const FComplex& b, const FComplex& c, const FComplex& d, double epsilon = 1e-6);

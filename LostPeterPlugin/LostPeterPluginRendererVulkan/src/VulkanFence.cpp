@@ -13,7 +13,7 @@
 #include "../include/VulkanFenceManager.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanFence::VulkanFence(VulkanFenceManager* pFenceManager, bool bCreateSignaled)
         : m_pFenceManager(pFenceManager)
@@ -36,4 +36,4 @@ namespace LostPeter
         m_vkFence = VK_NULL_HANDLE;
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

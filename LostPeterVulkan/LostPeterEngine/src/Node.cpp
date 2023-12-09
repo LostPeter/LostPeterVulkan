@@ -302,7 +302,7 @@ namespace LostPeterEngine
 		NodePtrMap::const_iterator itFind = m_mapChild.find(strName);
 		if (itFind == m_mapChild.end())
 		{
-			F_LogError("Node::GetChild: Child node named: [%s] does not exist !", strName.c_str());
+			F_LogError("*********************** Node::GetChild: Child node named: [%s] does not exist !", strName.c_str());
 			return nullptr;
 		}
 
@@ -312,7 +312,7 @@ namespace LostPeterEngine
 	{
 		if (pChild->m_pParent)
 		{
-			F_LogError("Node::AddChild: Node: [%s] already was a child of: [%s] !", pChild->GetName().c_str(), pChild->m_pParent->GetName().c_str());
+			F_LogError("*********************** Node::AddChild: Node: [%s] already was a child of: [%s] !", pChild->GetName().c_str(), pChild->m_pParent->GetName().c_str());
 			return;
 		}
 
@@ -335,7 +335,7 @@ namespace LostPeterEngine
 			return pNodeRet;
 		}
 
-		F_LogError("Node::RemoveChild: Child index out of bounds !");
+		F_LogError("*********************** Node::RemoveChild: Child index out of bounds !");
 		return nullptr;
 	}	
 	Node* Node::RemoveChild(Node* pChild)
@@ -358,7 +358,7 @@ namespace LostPeterEngine
 		NodePtrMap::iterator itFind = m_mapChild.find(strName);
 		if (itFind == m_mapChild.end())
 		{
-			F_LogError("Node::RemoveChild: Child node named: [%s] does not exist !", strName.c_str());
+			F_LogError("*********************** Node::RemoveChild: Child node named: [%s] does not exist !", strName.c_str());
 			return nullptr;
 		}
 		Node* pNodeRet = itFind->second;

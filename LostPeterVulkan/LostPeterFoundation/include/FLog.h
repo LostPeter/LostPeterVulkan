@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FLog
+    class foundationExport FLog
     {
     public:
         FLog(const String& strName);
@@ -47,7 +47,7 @@ namespace LostPeterFoundation
         virtual bool InitLogFile(const String& path, bool isTruncate) = 0;  
     };
 
-    class LPF_Export FLogConsole : public FLog
+    class foundationExport FLogConsole : public FLog
     {
     public:
         FLogConsole(const String& strName);
@@ -62,7 +62,7 @@ namespace LostPeterFoundation
         virtual bool InitLogFile(const String& path, bool isTruncate);  
     };
 
-    class LPF_Export FLogFile : public FLog
+    class foundationExport FLogFile : public FLog
     {
     public:
         FLogFile(const String& strName);

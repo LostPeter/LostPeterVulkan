@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FTimer
+    class foundationExport FTimer
     {
     public:
         FTimer();
@@ -28,8 +28,8 @@ namespace LostPeterFoundation
         TimePoint m_tpLast;
 
     public:
-        LP_FORCEINLINE const TimePoint& GetTimePointStart() const { return m_tpStart; }
-        LP_FORCEINLINE const TimePoint& GetTimePointLast() const { return m_tpLast; }
+        F_FORCEINLINE const TimePoint& GetTimePointStart() const { return m_tpStart; }
+        F_FORCEINLINE const TimePoint& GetTimePointLast() const { return m_tpLast; }
 
     public:
         void Reset();

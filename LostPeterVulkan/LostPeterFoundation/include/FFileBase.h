@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FFileBase
+    class foundationExport FFileBase
 	{
 	public:
 		FFileBase()

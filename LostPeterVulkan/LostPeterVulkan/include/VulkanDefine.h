@@ -21,7 +21,7 @@ namespace LostPeterVulkan
 /////Struct
     //////////////////////////////// Vertex_Pos2Color4 //////////////////////////////
     //0: F_MeshVertex_Pos2Color4
-    struct utilExport Vertex_Pos2Color4
+    struct vulkanExport Vertex_Pos2Color4
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
@@ -92,7 +92,7 @@ namespace LostPeterVulkan
 
     //////////////////////////////// Vertex_Pos3Color4 //////////////////////////////
     //1: F_MeshVertex_Pos3Color4
-    struct utilExport Vertex_Pos3Color4
+    struct vulkanExport Vertex_Pos3Color4
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
@@ -163,7 +163,7 @@ namespace LostPeterVulkan
 
     //////////////////////////////// Vertex_Pos3Normal3 /////////////////////////////
     //2: F_MeshVertex_Pos3Normal3
-    struct utilExport Vertex_Pos3Normal3
+    struct vulkanExport Vertex_Pos3Normal3
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
@@ -234,7 +234,7 @@ namespace LostPeterVulkan
 
     //////////////////////////////// Vertex_Pos3Normal3Tex2 /////////////////////////
     //3: F_MeshVertex_Pos3Normal3Tex2
-    struct utilExport Vertex_Pos3Normal3Tex2
+    struct vulkanExport Vertex_Pos3Normal3Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
@@ -312,7 +312,7 @@ namespace LostPeterVulkan
 
     //////////////////////////////// Vertex_Pos2Color4Tex2 //////////////////////////
     //4: F_MeshVertex_Pos2Color4Tex2
-    struct utilExport Vertex_Pos2Color4Tex2
+    struct vulkanExport Vertex_Pos2Color4Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
@@ -390,7 +390,7 @@ namespace LostPeterVulkan
 
     //////////////////////////////// Vertex_Pos3Color4Tex2 //////////////////////////
     //5: F_MeshVertex_Pos3Color4Tex2
-    struct utilExport Vertex_Pos3Color4Tex2
+    struct vulkanExport Vertex_Pos3Color4Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
@@ -468,7 +468,7 @@ namespace LostPeterVulkan
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tex2 ///////////////////
     //6: F_MeshVertex_Pos3Color4Normal3Tex2 
-    struct utilExport Vertex_Pos3Color4Normal3Tex2
+    struct vulkanExport Vertex_Pos3Color4Normal3Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
@@ -553,7 +553,7 @@ namespace LostPeterVulkan
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tex4 ///////////////////
     //7: F_MeshVertex_Pos3Color4Normal3Tex4
-    struct utilExport Vertex_Pos3Color4Normal3Tex4
+    struct vulkanExport Vertex_Pos3Color4Normal3Tex4
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
@@ -638,7 +638,7 @@ namespace LostPeterVulkan
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex2 ///////////////
     //8: F_MeshVertex_Pos3Color4Normal3Tangent3Tex2
-    struct utilExport Vertex_Pos3Color4Normal3Tangent3Tex2
+    struct vulkanExport Vertex_Pos3Color4Normal3Tangent3Tex2
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
@@ -730,7 +730,7 @@ namespace LostPeterVulkan
 
     //////////////////////////////// Vertex_Pos3Color4Normal3Tangent3Tex4 ///////////////
     //9: F_MeshVertex_Pos3Color4Normal3Tangent3Tex4
-    struct utilExport Vertex_Pos3Color4Normal3Tangent3Tex4
+    struct vulkanExport Vertex_Pos3Color4Normal3Tangent3Tex4
     {
         static VkVertexInputBindingDescriptionVector s_aBindingDescriptions;
         static VkVertexInputAttributeDescriptionVector s_aAttributeDescriptions;
@@ -1026,7 +1026,7 @@ namespace LostPeterVulkan
 
 
     //////////////////////////////// TransformConstants /////////////////////////////
-    struct utilExport TransformConstants
+    struct vulkanExport TransformConstants
     {
         FMatrix4 mat4View;
         FMatrix4 mat4View_Inv;
@@ -1048,7 +1048,7 @@ namespace LostPeterVulkan
     };
 
     //////////////////////////////// CameraConstants ////////////////////////////////
-    struct utilExport CameraConstants
+    struct vulkanExport CameraConstants
     {
         FVector3 posEyeWorld;    
         float fNearZ;
@@ -1070,7 +1070,7 @@ namespace LostPeterVulkan
     }; 
 
     //////////////////////////////// LightConstants /////////////////////////////////
-    struct utilExport LightConstants
+    struct vulkanExport LightConstants
     {
         FVector4 common;    // x: type; y: enable(1 or 0); z: 0-11; w: spotPower
         FVector3 position;  // directional/point/spot
@@ -1096,7 +1096,7 @@ namespace LostPeterVulkan
     };
 
     //////////////////////////////// PassConstants //////////////////////////////////
-    struct utilExport PassConstants
+    struct vulkanExport PassConstants
     {
         //TransformConstants
         TransformConstants g_Transforms[2]; //0: Eye Left(Main); 1: Eye Right
@@ -1134,7 +1134,7 @@ namespace LostPeterVulkan
     };
 
     //////////////////////////////// ObjectConstants ////////////////////////////////
-    struct utilExport ObjectConstants
+    struct vulkanExport ObjectConstants
     {
         FMatrix4 g_MatWorld;
         
@@ -1144,7 +1144,7 @@ namespace LostPeterVulkan
 
         }
     };
-    struct utilExport TerrainObjectConstants
+    struct vulkanExport TerrainObjectConstants
     {
         FMatrix4 g_MatWorld;
     
@@ -1155,7 +1155,7 @@ namespace LostPeterVulkan
 
         }
     };
-    struct utilExport GridObjectConstants
+    struct vulkanExport GridObjectConstants
     {
         FMatrix4 g_MatWorld;
         FColor color;
@@ -1167,7 +1167,7 @@ namespace LostPeterVulkan
             
         }
     };
-    struct utilExport CameraAxisObjectConstants
+    struct vulkanExport CameraAxisObjectConstants
     {
         FMatrix4 g_MatWorld;
         FColor color;
@@ -1179,7 +1179,7 @@ namespace LostPeterVulkan
             
         }
     };
-    struct utilExport CoordinateAxisObjectConstants
+    struct vulkanExport CoordinateAxisObjectConstants
     {
         FMatrix4 g_MatWorld;
         FColor color;
@@ -1191,7 +1191,7 @@ namespace LostPeterVulkan
             
         }
     };
-    struct utilExport LineFlat2DObjectConstants
+    struct vulkanExport LineFlat2DObjectConstants
     {
         FColor color;
         
@@ -1201,7 +1201,7 @@ namespace LostPeterVulkan
 
         }
     };
-    struct utilExport LineFlat3DObjectConstants
+    struct vulkanExport LineFlat3DObjectConstants
     {
         FMatrix4 g_MatWorld;
         FColor color;
@@ -1213,7 +1213,7 @@ namespace LostPeterVulkan
 
         }
     };
-    struct utilExport CopyBlitObjectConstants
+    struct vulkanExport CopyBlitObjectConstants
     {
         float offsetX;
         float offsetY;
@@ -1231,7 +1231,7 @@ namespace LostPeterVulkan
     };
 
     //////////////////////////////// TextureConstants ///////////////////////////////
-    struct utilExport TextureConstants
+    struct vulkanExport TextureConstants
     {
         float texWidth;
         float texHeight;
@@ -1269,7 +1269,7 @@ namespace LostPeterVulkan
     };
     
     //////////////////////////////// MaterialConstants //////////////////////////////
-    struct utilExport MaterialConstants
+    struct vulkanExport MaterialConstants
     {
         FVector4 factorAmbient;
         FVector4 factorDiffuse;
@@ -1296,7 +1296,7 @@ namespace LostPeterVulkan
     };
 
     //////////////////////////////// InstanceConstants //////////////////////////////
-    struct utilExport InstanceConstants
+    struct vulkanExport InstanceConstants
     {
         int offsetObject;
         int indexObject;
@@ -1314,7 +1314,7 @@ namespace LostPeterVulkan
     };
 
     //////////////////////////////// TextureCopyConstants ///////////////////////////
-    struct utilExport TextureCopyConstants
+    struct vulkanExport TextureCopyConstants
     {
         FVector4 texInfo;
         FVector4 texOffset;
@@ -1332,7 +1332,7 @@ namespace LostPeterVulkan
     };
 
     //////////////////////////////// TessellationConstants //////////////////////////
-    struct utilExport TessellationConstants
+    struct vulkanExport TessellationConstants
     {
     ////tesc
         float tessLevelOuter;
@@ -1353,7 +1353,7 @@ namespace LostPeterVulkan
     };
 
     //////////////////////////////// GeometryConstants //////////////////////////////
-    struct utilExport GeometryConstants
+    struct vulkanExport GeometryConstants
     {
         float width;
         float height;

@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-     class LPF_Export FFileMemory : public FFileBase
+     class foundationExport FFileMemory : public FFileBase
 	{
 	public:
 		FFileMemory(uint8* pBuffer = 0, uint32 nSize = 0);
@@ -32,7 +32,7 @@ namespace LostPeterFoundation
 		bool m_bFreeOnClose;
 
 	public:
-		LP_FORCEINLINE void SetFreeOnClose(bool b) { m_bFreeOnClose = b; }
+		F_FORCEINLINE void SetFreeOnClose(bool b) { m_bFreeOnClose = b; }
 
 	public:
 		bool			Open();

@@ -14,7 +14,7 @@
 #include "../include/VulkanDevice.h"
 #include "../include/VulkanConverter.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanTexture::VulkanTexture(uint32 nGroup, const String& strName)
         : Texture(nGroup, strName)
@@ -580,4 +580,4 @@ namespace LostPeter
         m_vkLayoutNext = VK_IMAGE_LAYOUT_UNDEFINED;
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

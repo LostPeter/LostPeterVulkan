@@ -91,7 +91,7 @@ namespace LostPeterEngine
 
     void App::error_callback(int error, const char* description)
     {
-        F_LogError("App::error_callback: [%s]", description);
+        F_LogError("*********************** App::error_callback: [%s]", description);
     }
 
 }; //LostPeterEngine

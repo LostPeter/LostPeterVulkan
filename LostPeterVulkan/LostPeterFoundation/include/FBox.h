@@ -16,10 +16,10 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FBox
+    class foundationExport FBox
     {
     public:
-        LP_FORCEINLINE FBox()
+        F_FORCEINLINE FBox()
 			: m_nLeft(0)
 			, m_nTop(0)
 			, m_nRight(1)
@@ -29,7 +29,7 @@ namespace LostPeterFoundation
 		{
 
 		}
-		LP_FORCEINLINE FBox(size_t l, size_t t, size_t r, size_t b)
+		F_FORCEINLINE FBox(size_t l, size_t t, size_t r, size_t b)
 			: m_nLeft(l)
 			, m_nTop(t)
 			, m_nRight(r)
@@ -39,7 +39,7 @@ namespace LostPeterFoundation
 		{
 			F_Assert(m_nRight >= m_nLeft && m_nBottom >= m_nTop && m_nBack >= m_nFront && "FBox::FBox")
 		}
-		LP_FORCEINLINE FBox(size_t l, size_t t, size_t ff, size_t r, size_t b, size_t bb)
+		F_FORCEINLINE FBox(size_t l, size_t t, size_t ff, size_t r, size_t b, size_t bb)
 			: m_nLeft(l)
 			, m_nTop(t)
 			, m_nRight(r)
@@ -63,9 +63,9 @@ namespace LostPeterFoundation
 		size_t m_nBack;
 
     public:
-		LP_FORCEINLINE size_t GetWidth() const { return m_nRight - m_nLeft; }
-		LP_FORCEINLINE size_t GetHeight() const { return m_nBottom - m_nTop; }
-		LP_FORCEINLINE size_t GetDepth() const { return m_nBack - m_nFront; }
+		F_FORCEINLINE size_t GetWidth() const { return m_nRight - m_nLeft; }
+		F_FORCEINLINE size_t GetHeight() const { return m_nBottom - m_nTop; }
+		F_FORCEINLINE size_t GetDepth() const { return m_nBack - m_nFront; }
 
     public:
         bool Contains(const FBox& box) const;

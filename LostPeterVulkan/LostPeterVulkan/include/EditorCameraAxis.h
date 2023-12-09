@@ -16,7 +16,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport EditorCameraAxis : public EditorBase
+    class vulkanExport EditorCameraAxis : public EditorBase
     {
     public:
         EditorCameraAxis();
@@ -85,8 +85,8 @@ namespace LostPeterVulkan
     protected:
         bool isNeedUpdate;
     public:
-        LP_FORCEINLINE bool IsNeedUpdate() const { return this->isNeedUpdate; }
-        LP_FORCEINLINE void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
+        F_FORCEINLINE bool IsNeedUpdate() const { return this->isNeedUpdate; }
+        F_FORCEINLINE void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
 
     public:
         virtual void Destroy();

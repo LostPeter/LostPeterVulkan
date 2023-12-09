@@ -29,10 +29,10 @@ namespace LostPeterEngine
         RenderPassPtrMap m_mapRenderPass;
 
     public:
-        E_FORCEINLINE const RenderPassPtrVector& GetRenderPassPtrVector() const { return m_aRenderPass; }
-        E_FORCEINLINE RenderPassPtrVector& GetRenderPassPtrVector() { return m_aRenderPass; }
-        E_FORCEINLINE const RenderPassPtrMap& GetRenderPassPtrMap() const { return m_mapRenderPass; }
-        E_FORCEINLINE RenderPassPtrMap& GetRenderPassPtrMap() { return m_mapRenderPass; }
+        F_FORCEINLINE const RenderPassPtrVector& GetRenderPassPtrVector() const { return m_aRenderPass; }
+        F_FORCEINLINE RenderPassPtrVector& GetRenderPassPtrVector() { return m_aRenderPass; }
+        F_FORCEINLINE const RenderPassPtrMap& GetRenderPassPtrMap() const { return m_mapRenderPass; }
+        F_FORCEINLINE RenderPassPtrMap& GetRenderPassPtrMap() { return m_mapRenderPass; }
 
     public:
         static RenderPassManager& GetSingleton();

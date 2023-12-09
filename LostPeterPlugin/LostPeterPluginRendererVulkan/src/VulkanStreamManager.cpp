@@ -14,7 +14,7 @@
 #include "../include/VulkanStreamVertex.h"
 #include "../include/VulkanStreamIndex.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanStreamManager::VulkanStreamManager(VulkanDevice* pDevice)
         : m_pDevice(pDevice)
@@ -45,4 +45,4 @@ namespace LostPeter
         return pStreamIndex;
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

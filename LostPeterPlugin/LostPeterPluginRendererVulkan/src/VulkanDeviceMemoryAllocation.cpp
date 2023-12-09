@@ -12,7 +12,7 @@
 #include "../include/VulkanDeviceMemoryAllocation.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanDeviceMemoryAllocation::VulkanDeviceMemoryAllocation()
         : m_pDevice(nullptr)
@@ -84,4 +84,4 @@ namespace LostPeter
         }
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

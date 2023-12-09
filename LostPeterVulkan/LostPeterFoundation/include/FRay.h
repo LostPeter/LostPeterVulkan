@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FRay
+    class foundationExport FRay
     {
     public:
         FRay()
@@ -43,12 +43,12 @@ namespace LostPeterFoundation
         FVector3 m_vDirection;	
         
     public:
-        LP_FORCEINLINE const FVector3& GetOrigin() const { return m_vOrigin; }
-        LP_FORCEINLINE void SetOrigin(const FVector3& vOrigin) { m_vOrigin = vOrigin; }
-        LP_FORCEINLINE const FVector3& GetDirection() const { return m_vDirection; }
-        LP_FORCEINLINE void SetDirection(const FVector3& vDir) { m_vDirection	= vDir; }	
+        F_FORCEINLINE const FVector3& GetOrigin() const { return m_vOrigin; }
+        F_FORCEINLINE void SetOrigin(const FVector3& vOrigin) { m_vOrigin = vOrigin; }
+        F_FORCEINLINE const FVector3& GetDirection() const { return m_vDirection; }
+        F_FORCEINLINE void SetDirection(const FVector3& vDir) { m_vDirection	= vDir; }	
 
-        LP_FORCEINLINE FVector3 GetPoint(float t) const { return m_vOrigin + (m_vDirection * t); }
+        F_FORCEINLINE FVector3 GetPoint(float t) const { return m_vOrigin + (m_vDirection * t); }
         float GetDistance(const FVector3& vRayPt) const;
 
         std::pair<bool, float> Intersects_Plane(const FPlane& plane) const;		

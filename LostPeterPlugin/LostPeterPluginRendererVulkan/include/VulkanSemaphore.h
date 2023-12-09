@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanSemaphore
     {
@@ -28,12 +28,12 @@ namespace LostPeter
         VkSemaphore m_vkSemaphore;
 
     public:
-        E_FORCEINLINE VkSemaphore GetVkSemaphore() const { return m_vkSemaphore; }
+        F_FORCEINLINE VkSemaphore GetVkSemaphore() const { return m_vkSemaphore; }
 
     public:
         void Destroy();
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanSwapChain
     {
@@ -47,19 +47,19 @@ namespace LostPeter
         uint32 m_nPresentID;
 
     public:
-        E_FORCEINLINE const VkSwapchainKHR& GetVkSwapChainKHR() const { return m_vkSwapChainKHR; }
-        E_FORCEINLINE const VkSurfaceKHR& GetVkSurfaceKHR() const { return m_vkSurfaceKHR; }
-        E_FORCEINLINE const VkSwapchainCreateInfoKHR& GetVkSwapChainCreateInfoKHR() const { return m_vkSwapChainCreateInfoKHR; }
-        E_FORCEINLINE int32 GetVkSwapChainImageWidth() const { return m_vkSwapChainCreateInfoKHR.imageExtent.width; }
-        E_FORCEINLINE int32 GetVkSwapChainImageHeight() const { return m_vkSwapChainCreateInfoKHR.imageExtent.height; }
-        E_FORCEINLINE const VkExtent2D& GetVkSwapChainImageExtent() const { return m_vkSwapChainImageExtent; }
-        E_FORCEINLINE const VkFormat& GetVkSwapChainImageColorFormat() const { return m_vkSwapChainImageColorFormat; }
-        E_FORCEINLINE const VkColorSpaceKHR GetVkSwapChainImageColorSpaceKHR() const { return m_vkSwapChainImageColorSpaceKHR; }
-        E_FORCEINLINE int32 GetVkSwapChainImageCount() const { return m_nSwapChainImageCount; } 
+        F_FORCEINLINE const VkSwapchainKHR& GetVkSwapChainKHR() const { return m_vkSwapChainKHR; }
+        F_FORCEINLINE const VkSurfaceKHR& GetVkSurfaceKHR() const { return m_vkSurfaceKHR; }
+        F_FORCEINLINE const VkSwapchainCreateInfoKHR& GetVkSwapChainCreateInfoKHR() const { return m_vkSwapChainCreateInfoKHR; }
+        F_FORCEINLINE int32 GetVkSwapChainImageWidth() const { return m_vkSwapChainCreateInfoKHR.imageExtent.width; }
+        F_FORCEINLINE int32 GetVkSwapChainImageHeight() const { return m_vkSwapChainCreateInfoKHR.imageExtent.height; }
+        F_FORCEINLINE const VkExtent2D& GetVkSwapChainImageExtent() const { return m_vkSwapChainImageExtent; }
+        F_FORCEINLINE const VkFormat& GetVkSwapChainImageColorFormat() const { return m_vkSwapChainImageColorFormat; }
+        F_FORCEINLINE const VkColorSpaceKHR GetVkSwapChainImageColorSpaceKHR() const { return m_vkSwapChainImageColorSpaceKHR; }
+        F_FORCEINLINE int32 GetVkSwapChainImageCount() const { return m_nSwapChainImageCount; } 
     
-        E_FORCEINLINE int32 GetSwapChainImageIndex() const { return m_nSwapChainImageIndex; }
-        E_FORCEINLINE int32 GetSemaphoreIndex() const { return m_nSemaphoreIndex; }
-        E_FORCEINLINE int32 DoesLockToVSync() { return m_nLockToVSync; }
+        F_FORCEINLINE int32 GetSwapChainImageIndex() const { return m_nSwapChainImageIndex; }
+        F_FORCEINLINE int32 GetSemaphoreIndex() const { return m_nSemaphoreIndex; }
+        F_FORCEINLINE int32 DoesLockToVSync() { return m_nLockToVSync; }
 
     public:
         void Destroy();
@@ -88,6 +88,6 @@ namespace LostPeter
         bool createFence();
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

@@ -33,11 +33,11 @@ namespace LostPeterEngine
        EngineFrameState* m_aEngineFrameStates[(int)E_FrameProfiler_Count];
 
     public:
-        E_FORCEINLINE EngineFrameStateAudio* GetEngineFrameStateAudio() { return m_pFrameState_Audio; }
-        E_FORCEINLINE EngineFrameStateMemory* GetEngineFrameStateMemory() { return m_pFrameState_Memory; }
-        E_FORCEINLINE EngineFrameStatePhysics* GetEngineFrameStatePhysics() { return m_pFrameState_Physics; }
-        E_FORCEINLINE EngineFrameStateRender* GetEngineFrameStateRender() { return m_pFrameState_Render; }
-        E_FORCEINLINE EngineFrameState* GetEngineFrameState(EFrameProfilerType eType) { return m_aEngineFrameStates[(int32)eType]; }
+        F_FORCEINLINE EngineFrameStateAudio* GetEngineFrameStateAudio() { return m_pFrameState_Audio; }
+        F_FORCEINLINE EngineFrameStateMemory* GetEngineFrameStateMemory() { return m_pFrameState_Memory; }
+        F_FORCEINLINE EngineFrameStatePhysics* GetEngineFrameStatePhysics() { return m_pFrameState_Physics; }
+        F_FORCEINLINE EngineFrameStateRender* GetEngineFrameStateRender() { return m_pFrameState_Render; }
+        F_FORCEINLINE EngineFrameState* GetEngineFrameState(EFrameProfilerType eType) { return m_aEngineFrameStates[(int32)eType]; }
 
     public:
         virtual void Destroy();

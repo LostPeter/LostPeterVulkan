@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FMath
+    class foundationExport FMath
     {
     public:
 		static const float ms_fPI_Half;

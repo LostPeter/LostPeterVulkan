@@ -11,7 +11,7 @@
 
 #include "../include/VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     /////////////////////////////////////// Typedef //////////////////////////////////////
     String E_VkResult2String(VkResult result)
@@ -63,4 +63,4 @@ namespace LostPeter
 
     /////////////////////////////////////// Vulkan Define ////////////////////////////////
     
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

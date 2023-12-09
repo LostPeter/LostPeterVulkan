@@ -15,7 +15,7 @@
 
 namespace LostPeterFoundation
 {
-#if LP_PLATFORM == LP_PLATFORM_ANDROID
+#if F_PLATFORM == F_PLATFORM_ANDROID
 
 #else
 	#define buffer_len 2048

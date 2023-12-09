@@ -20,7 +20,7 @@
 namespace LostPeterFoundation
 {
     //////////////////////////////// FMeshDataPC /////////////////////////////////////
-    struct LPF_Export FMeshDataPC
+    struct foundationExport FMeshDataPC
     {
         const size_t c_nMaxUint16 = std::numeric_limits<uint16>::max();
 
@@ -194,7 +194,7 @@ namespace LostPeterFoundation
 
 
     //////////////////////////////// FMeshDataPCT ////////////////////////////////////
-    struct LPF_Export FMeshDataPCT
+    struct foundationExport FMeshDataPCT
     {
         const size_t c_nMaxUint16 = std::numeric_limits<uint16>::max();
 
@@ -366,7 +366,7 @@ namespace LostPeterFoundation
 
 
 	//////////////////////////////// FMeshData ///////////////////////////////////////
-    struct LPF_Export FMeshData
+    struct foundationExport FMeshData
     {
         const size_t c_nMaxUint16 = std::numeric_limits<uint16>::max();
 

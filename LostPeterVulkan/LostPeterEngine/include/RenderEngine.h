@@ -54,21 +54,21 @@ namespace LostPeterEngine
 		static RenderEngine* GetSingletonPtr();
 
     public:
-		E_FORCEINLINE ConfigItemMap* GetRendererCfgItems() { return &m_mapRendererCfgItem; }
+		F_FORCEINLINE ConfigItemMap* GetRendererCfgItems() { return &m_mapRendererCfgItem; }
 
-		E_FORCEINLINE RendererPtrMap&	GetRendererPtrMap() { return m_mapRenderer; }
-		E_FORCEINLINE Renderer* GetRendererCurrent() const { return m_pRendererCurrent; }
+		F_FORCEINLINE RendererPtrMap&	GetRendererPtrMap() { return m_mapRenderer; }
+		F_FORCEINLINE Renderer* GetRendererCurrent() const { return m_pRendererCurrent; }
 		bool SetRendererCurrent(Renderer* pRenderer);
-		E_FORCEINLINE RenderWindow* GetRenderWindowAuto() const { return m_pRenderWindowAuto; }
-		E_FORCEINLINE RenderPipelineManager* GetRenderPipeLineManager() const { return m_pRenderPipeLineManager; }
-		E_FORCEINLINE SceneManager* GetSceneManagerCurrent() const { return m_pSceneManagerCurrent; }
-		E_FORCEINLINE bool	IsInit() const { return m_bIsInit; }
+		F_FORCEINLINE RenderWindow* GetRenderWindowAuto() const { return m_pRenderWindowAuto; }
+		F_FORCEINLINE RenderPipelineManager* GetRenderPipeLineManager() const { return m_pRenderPipeLineManager; }
+		F_FORCEINLINE SceneManager* GetSceneManagerCurrent() const { return m_pSceneManagerCurrent; }
+		F_FORCEINLINE bool	IsInit() const { return m_bIsInit; }
 
 		Renderer* GetRendererByName(const String& strName);
 		bool AddRenderer(Renderer* pRenderer);
 		void RemoveRenderer(Renderer* pRenderer);
 		
-		E_FORCEINLINE const MovableFactoryPtrMap& GetMovableFactoryPtrMap() const { return m_mapMovableFactory; }
+		F_FORCEINLINE const MovableFactoryPtrMap& GetMovableFactoryPtrMap() const { return m_mapMovableFactory; }
 		MovableFactory* GetMovableFactory(const String& strTypeName);
 		bool HasMovableFactory(const String& strTypeName) const;
 		void AddMovableFactory(MovableFactory* pFactory, bool bOverrideExisting = false);

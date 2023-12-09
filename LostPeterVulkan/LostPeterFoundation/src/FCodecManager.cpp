@@ -76,7 +76,7 @@ namespace LostPeterFoundation
 		CodecMap::iterator itFind = ms_mapCodec.find(lowercase);
 		if (itFind == ms_mapCodec.end())
 		{
-			F_LogError("FCodecManager::GetCodec: Can not find codec for extension: [%s] !", strExt.c_str());
+			F_LogError("*********************** FCodecManager::GetCodec: Can not find codec for extension: [%s] !", strExt.c_str());
 			return nullptr;
 		}
 		return itFind->second;

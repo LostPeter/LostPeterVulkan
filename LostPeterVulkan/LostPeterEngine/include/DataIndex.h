@@ -35,18 +35,18 @@ namespace LostPeterEngine
 		//BatchInstance* m_pBatchInstance;
 
 	public:
-		E_FORCEINLINE StreamIndex* GetStreamIndex() { return m_pStreamIndex; }
-		E_FORCEINLINE void SetStreamIndex(StreamIndex* pStreamIndex) { m_pStreamIndex = pStreamIndex; }
-		E_FORCEINLINE size_t GetIndexStart() const	{ return m_nIndexStart; }
-		E_FORCEINLINE void	SetIndexStart(size_t n)	{ m_nIndexStart = n; }
-		E_FORCEINLINE size_t GetIndexCount() const	{ return m_nIndexCount; }
-		E_FORCEINLINE void	SetIndexCount(size_t n)	{ m_nIndexCount = n; }
-		E_FORCEINLINE size_t IncreaseIndexCount() { return ++m_nIndexCount; }
-		E_FORCEINLINE void	IncreaseIndexCount(size_t n) { m_nIndexCount += n; }
-		E_FORCEINLINE uint32 GetBatchCount() const { return m_nBatchCount; }
-		E_FORCEINLINE void	SetBatchCount(uint32 n)	{ m_nBatchCount = n; }
-		// E_FORCEINLINE BatchInstance* GetBatchInstance() const { return m_pBatchInstance; }
-		// E_FORCEINLINE void	SetBatchInstance(BatchInstance* p) { m_pBatchInstance = p; }
+		F_FORCEINLINE StreamIndex* GetStreamIndex() { return m_pStreamIndex; }
+		F_FORCEINLINE void SetStreamIndex(StreamIndex* pStreamIndex) { m_pStreamIndex = pStreamIndex; }
+		F_FORCEINLINE size_t GetIndexStart() const	{ return m_nIndexStart; }
+		F_FORCEINLINE void	SetIndexStart(size_t n)	{ m_nIndexStart = n; }
+		F_FORCEINLINE size_t GetIndexCount() const	{ return m_nIndexCount; }
+		F_FORCEINLINE void	SetIndexCount(size_t n)	{ m_nIndexCount = n; }
+		F_FORCEINLINE size_t IncreaseIndexCount() { return ++m_nIndexCount; }
+		F_FORCEINLINE void	IncreaseIndexCount(size_t n) { m_nIndexCount += n; }
+		F_FORCEINLINE uint32 GetBatchCount() const { return m_nBatchCount; }
+		F_FORCEINLINE void	SetBatchCount(uint32 n)	{ m_nBatchCount = n; }
+		// F_FORCEINLINE BatchInstance* GetBatchInstance() const { return m_pBatchInstance; }
+		// F_FORCEINLINE void	SetBatchInstance(BatchInstance* p) { m_pBatchInstance = p; }
 
 	public:
 		void Destroy();

@@ -50,15 +50,15 @@ namespace LostPeterEngine
         Window* m_pWindow_Scene;
 
     public:
-        E_FORCEINLINE const String& GetNameSample() const { return m_strNameSample; }
-        E_FORCEINLINE const String& GetPathBin() const { return m_strPathBin; }
-        E_FORCEINLINE int GetWidth() const { return m_nWidth; }
-        E_FORCEINLINE int GetHeight() const { return m_nHeight; }
-        E_FORCEINLINE String GetAssetFullPath(const String& strAssetName) { return m_strPathBin + strAssetName; }
+        F_FORCEINLINE const String& GetNameSample() const { return m_strNameSample; }
+        F_FORCEINLINE const String& GetPathBin() const { return m_strPathBin; }
+        F_FORCEINLINE int GetWidth() const { return m_nWidth; }
+        F_FORCEINLINE int GetHeight() const { return m_nHeight; }
+        F_FORCEINLINE String GetAssetFullPath(const String& strAssetName) { return m_strPathBin + strAssetName; }
 
-        E_FORCEINLINE Window* GetWindowMain() const { return m_pWindow_Main; }
-        E_FORCEINLINE Window* GetWindowGame() const { return m_pWindow_Game; }
-        E_FORCEINLINE Window* GetWindowScene() const { return m_pWindow_Scene; }
+        F_FORCEINLINE Window* GetWindowMain() const { return m_pWindow_Main; }
+        F_FORCEINLINE Window* GetWindowGame() const { return m_pWindow_Game; }
+        F_FORCEINLINE Window* GetWindowScene() const { return m_pWindow_Scene; }
 
     public:
         float RefreshAspectRatio();

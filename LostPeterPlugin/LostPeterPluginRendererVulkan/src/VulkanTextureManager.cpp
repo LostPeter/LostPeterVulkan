@@ -14,7 +14,7 @@
 #include "../include/VulkanTexture.h"
 #include "../include/VulkanConverter.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanTextureManager::VulkanTextureManager(VulkanDevice* pDevice, bool bCanRestrictImageViewUsage)
         : m_pDevice(pDevice)
@@ -91,4 +91,4 @@ namespace LostPeter
         return new VulkanTexture(nGroup, strName);
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

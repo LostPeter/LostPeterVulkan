@@ -33,9 +33,9 @@ namespace LostPeterEngine
 		bool m_bSingleFormat;
 
 	public:
-		E_FORCEINLINE size_t GetStreamVertexSize() const { return m_nStreamVertexSize; }
+		F_FORCEINLINE size_t GetStreamVertexSize() const { return m_nStreamVertexSize; }
 		void SetStreamVertexSize(size_t nVertexSize);
-		E_FORCEINLINE size_t GetStreamVertexNum() const { return m_nStreamVertexNum; }
+		F_FORCEINLINE size_t GetStreamVertexNum() const { return m_nStreamVertexNum; }
     };
 
 }; //LostPeterEngine

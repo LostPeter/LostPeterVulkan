@@ -39,13 +39,13 @@ namespace LostPeterFoundation
 		F_LogInfo("FDynamicLib::Load: Loading library [%s] ...", this->m_strName.c_str());
 
 		String path = this->m_strPath;
-#if LP_PLATFORM == LP_PLATFORM_WIN32
+#if F_PLATFORM == F_PLATFORM_WINDOW
         if (path.substr(path.find_last_of(".") + 1) != "dll")
             path += ".dll";
-#elif LP_PLATFORM == LP_PLATFORM_MAC || LP_PLATFORM == LP_PLATFORM_IOS 
+#elif F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_iOS 
 		if (path.substr(path.find_last_of(".") + 1) != String("dylib"))
             path += ".dylib";
-#elif LP_PLATFORM == LP_PLATFORM_LINUX || LP_PLATFORM == LP_PLATFORM_ANDROID 
+#elif F_PLATFORM == F_PLATFORM_LINUX || F_PLATFORM == F_PLATFORM_ANDROID 
 		if (path.find(".so") == String::npos)
 		{
 			path += ".so";
@@ -55,7 +55,7 @@ namespace LostPeterFoundation
 #endif
 		this->m_hInst = (DYNLIB_HANDLE)DYNLIB_LOAD(path.c_str());
 
-#if LP_PLATFORM == LP_PLATFORM_MAC || LP_PLATFORM == LP_PLATFORM_IOS 
+#if F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_iOS 
         if (!this->m_hInst)
         {
             // Try again as a framework
@@ -97,7 +97,7 @@ namespace LostPeterFoundation
 
 	String FDynamicLib::_dynlibError() 
 	{
-#if LP_PLATFORM == LP_PLATFORM_WIN32
+#if F_PLATFORM == F_PLATFORM_WINDOW
 		LPVOID lpMsgBuf; 
 		FormatMessage( 
 			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
@@ -113,7 +113,7 @@ namespace LostPeterFoundation
 		String ret = (char*)lpMsgBuf;
 		LocalFree(lpMsgBuf);
 		return ret;
-#elif LP_PLATFORM == LP_PLATFORM_MAC || LP_PLATFORM == LP_PLATFORM_IOS || LP_PLATFORM == LP_PLATFORM_LINUX || LP_PLATFORM == LP_PLATFORM_ANDROID
+#elif F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_iOS || F_PLATFORM == F_PLATFORM_LINUX || F_PLATFORM == F_PLATFORM_ANDROID
 	 	const char* errorStr = dlerror();
         if (errorStr)
             return String(errorStr);

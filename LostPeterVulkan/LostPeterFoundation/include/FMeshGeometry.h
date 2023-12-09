@@ -19,7 +19,7 @@
 namespace LostPeterFoundation
 {
     ///////////////////////////////////////// FMeshCreateParam ///////////////////////////////////////////
-    class LPF_Export FMeshCreateParam
+    class foundationExport FMeshCreateParam
     {
     public:
         FMeshCreateParam(bool _flipV, bool _rightHand)
@@ -45,7 +45,7 @@ namespace LostPeterFoundation
 
     ////////////////////////////////// Line2D ////////////////////////////////
     //LineLine2D
-    class LPF_Export FMeshCreateParam_LineLine2D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineLine2D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineLine2D()
@@ -103,7 +103,7 @@ namespace LostPeterFoundation
     };
 
     //LineTriangle2D
-    class LPF_Export FMeshCreateParam_LineTriangle2D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineTriangle2D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineTriangle2D()
@@ -169,7 +169,7 @@ namespace LostPeterFoundation
     };
 
     //LineQuad2D
-    class LPF_Export FMeshCreateParam_LineQuad2D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineQuad2D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineQuad2D()
@@ -243,7 +243,7 @@ namespace LostPeterFoundation
     };
 
     //LineGrid2D
-    class LPF_Export FMeshCreateParam_LineGrid2D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineGrid2D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineGrid2D()
@@ -331,7 +331,7 @@ namespace LostPeterFoundation
     };
 
     //LineCircle2D
-    class LPF_Export FMeshCreateParam_LineCircle2D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineCircle2D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineCircle2D()
@@ -427,7 +427,7 @@ namespace LostPeterFoundation
 
     ////////////////////////////////// Flat2D ////////////////////////////////
     //FlatTriangle2D
-    class LPF_Export FMeshCreateParam_FlatTriangle2D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_FlatTriangle2D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_FlatTriangle2D()
@@ -493,7 +493,7 @@ namespace LostPeterFoundation
     };
 
     //FlatQuad2D
-    class LPF_Export FMeshCreateParam_FlatQuad2D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_FlatQuad2D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_FlatQuad2D()
@@ -567,7 +567,7 @@ namespace LostPeterFoundation
     };
 
     //FlatCircle2D
-    class LPF_Export FMeshCreateParam_FlatCircle2D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_FlatCircle2D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_FlatCircle2D()
@@ -657,7 +657,7 @@ namespace LostPeterFoundation
 
     ////////////////////////////////// Line3D ////////////////////////////////
     //LineLine3D
-    class LPF_Export FMeshCreateParam_LineLine3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineLine3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineLine3D()
@@ -717,7 +717,7 @@ namespace LostPeterFoundation
     };
 
     //LineTriangle3D
-    class LPF_Export FMeshCreateParam_LineTriangle3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineTriangle3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineTriangle3D()
@@ -786,7 +786,7 @@ namespace LostPeterFoundation
     };
 
     //LineQuad3D
-    class LPF_Export FMeshCreateParam_LineQuad3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineQuad3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineQuad3D()
@@ -864,7 +864,7 @@ namespace LostPeterFoundation
     };
 
     //LineGrid3D
-    class LPF_Export FMeshCreateParam_LineGrid3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineGrid3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineGrid3D()
@@ -956,7 +956,7 @@ namespace LostPeterFoundation
     };
 
     //LineCircle3D
-    class LPF_Export FMeshCreateParam_LineCircle3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineCircle3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineCircle3D()
@@ -1045,7 +1045,7 @@ namespace LostPeterFoundation
     };
 
     //LineAABB3D
-    class LPF_Export FMeshCreateParam_LineAABB3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineAABB3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineAABB3D()
@@ -1105,7 +1105,7 @@ namespace LostPeterFoundation
     };
 
     //LineSphere3D
-    class LPF_Export FMeshCreateParam_LineSphere3D: public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineSphere3D: public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineSphere3D()
@@ -1186,7 +1186,7 @@ namespace LostPeterFoundation
     };
 
     //LineCylinder3D
-    class LPF_Export FMeshCreateParam_LineCylinder3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineCylinder3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineCylinder3D()
@@ -1295,7 +1295,7 @@ namespace LostPeterFoundation
 
 
     //LineCapsule3D
-    class LPF_Export FMeshCreateParam_LineCapsule3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineCapsule3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineCapsule3D()
@@ -1397,7 +1397,7 @@ namespace LostPeterFoundation
     };
 
     //LineCone3D
-    class LPF_Export FMeshCreateParam_LineCone3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineCone3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineCone3D()
@@ -1500,7 +1500,7 @@ namespace LostPeterFoundation
     };
 
     //LineTorus3D
-    class LPF_Export FMeshCreateParam_LineTorus3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_LineTorus3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_LineTorus3D()
@@ -1608,7 +1608,7 @@ namespace LostPeterFoundation
 
     ////////////////////////////////// Flat3D ////////////////////////////////
     //FlatTriangle3D
-    class LPF_Export FMeshCreateParam_FlatTriangle3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_FlatTriangle3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_FlatTriangle3D()
@@ -1677,7 +1677,7 @@ namespace LostPeterFoundation
     };
 
     //FlatQuad3D
-    class LPF_Export FMeshCreateParam_FlatQuad3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_FlatQuad3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_FlatQuad3D()
@@ -1755,7 +1755,7 @@ namespace LostPeterFoundation
     };
 
     //FlatCircle3D
-    class LPF_Export FMeshCreateParam_FlatCircle3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_FlatCircle3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_FlatCircle3D()
@@ -1838,7 +1838,7 @@ namespace LostPeterFoundation
     };
 
     //FlatAABB3D
-    class LPF_Export FMeshCreateParam_FlatAABB3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_FlatAABB3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_FlatAABB3D()
@@ -1898,7 +1898,7 @@ namespace LostPeterFoundation
     };
 
     //FlatSphere3D
-    class LPF_Export FMeshCreateParam_FlatSphere3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_FlatSphere3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_FlatSphere3D()
@@ -1979,7 +1979,7 @@ namespace LostPeterFoundation
     };
 
     //FlatCylinder3D
-    class LPF_Export FMeshCreateParam_FlatCylinder3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_FlatCylinder3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_FlatCylinder3D()
@@ -2088,7 +2088,7 @@ namespace LostPeterFoundation
     };
 
     //FlatCapsule3D
-    class LPF_Export FMeshCreateParam_FlatCapsule3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_FlatCapsule3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_FlatCapsule3D()
@@ -2197,7 +2197,7 @@ namespace LostPeterFoundation
     };
 
     //FlatCone3D
-    class LPF_Export FMeshCreateParam_FlatCone3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_FlatCone3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_FlatCone3D()
@@ -2307,7 +2307,7 @@ namespace LostPeterFoundation
     };
 
     //FlatTorus3D
-    class LPF_Export FMeshCreateParam_FlatTorus3D : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_FlatTorus3D : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_FlatTorus3D()
@@ -2415,7 +2415,7 @@ namespace LostPeterFoundation
 
     ////////////////////////////////// Entity ////////////////////////////////
     //EntityTriangle
-    class LPF_Export FMeshCreateParam_EntityTriangle : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntityTriangle : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntityTriangle()
@@ -2469,7 +2469,7 @@ namespace LostPeterFoundation
     };
 
     //EntityQuad
-    class LPF_Export FMeshCreateParam_EntityQuad : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntityQuad : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntityQuad()
@@ -2550,7 +2550,7 @@ namespace LostPeterFoundation
     };
 
     //EntityGrid
-    class LPF_Export FMeshCreateParam_EntityGrid : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntityGrid : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntityGrid()
@@ -2626,7 +2626,7 @@ namespace LostPeterFoundation
     };
 
     //EntityCircle
-    class LPF_Export FMeshCreateParam_EntityCircle : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntityCircle : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntityCircle()
@@ -2692,7 +2692,7 @@ namespace LostPeterFoundation
     };
 
     //EntityAABB
-    class LPF_Export FMeshCreateParam_EntityAABB : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntityAABB : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntityAABB()
@@ -2764,7 +2764,7 @@ namespace LostPeterFoundation
     };
 
     //EntitySphere
-    class LPF_Export FMeshCreateParam_EntitySphere : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntitySphere : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntitySphere()
@@ -2823,7 +2823,7 @@ namespace LostPeterFoundation
     };
 
     //EntityGeoSphere
-    class LPF_Export FMeshCreateParam_EntityGeoSphere : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntityGeoSphere : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntityGeoSphere()
@@ -2877,7 +2877,7 @@ namespace LostPeterFoundation
     };
 
     //EntityCylinder
-    class LPF_Export FMeshCreateParam_EntityCylinder : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntityCylinder : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntityCylinder()
@@ -2965,7 +2965,7 @@ namespace LostPeterFoundation
     };
 
     //EntityCapsule
-    class LPF_Export FMeshCreateParam_EntityCapsule : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntityCapsule : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntityCapsule()
@@ -3053,7 +3053,7 @@ namespace LostPeterFoundation
     };
 
     //EntityCone
-    class LPF_Export FMeshCreateParam_EntityCone : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntityCone : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntityCone()
@@ -3144,7 +3144,7 @@ namespace LostPeterFoundation
     };
 
     //EntityTorus
-    class LPF_Export FMeshCreateParam_EntityTorus : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntityTorus : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntityTorus()
@@ -3222,7 +3222,7 @@ namespace LostPeterFoundation
     };
 
     //EntitySkyBox
-    class LPF_Export FMeshCreateParam_EntitySkyBox : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntitySkyBox : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntitySkyBox()
@@ -3254,7 +3254,7 @@ namespace LostPeterFoundation
     };
 
     //EntitySkyDome
-    class LPF_Export FMeshCreateParam_EntitySkyDome : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntitySkyDome : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntitySkyDome()
@@ -3286,7 +3286,7 @@ namespace LostPeterFoundation
     };
 
     //EntityTerrain
-    class LPF_Export FMeshCreateParam_EntityTerrain : public FMeshCreateParam
+    class foundationExport FMeshCreateParam_EntityTerrain : public FMeshCreateParam
     {
     public:
         FMeshCreateParam_EntityTerrain()
@@ -3361,7 +3361,7 @@ namespace LostPeterFoundation
     };
 
     ///////////////////////////////////////// FMeshGeometry //////////////////////////////////////////////
-    class LPF_Export FMeshGeometry
+    class foundationExport FMeshGeometry
 	{
     public:
         static FMeshCreateParam* CreateParam(FMeshGeometryType typeMeshGeometry);

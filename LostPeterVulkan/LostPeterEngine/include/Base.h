@@ -36,18 +36,18 @@ namespace LostPeterEngine
         bool isInit;
 
     public:
-        E_FORCEINLINE uint32 GetGroup() const { return this->group; }
-        E_FORCEINLINE void SetGroup(uint32 _group) { this->group = _group; }
-        E_FORCEINLINE const String& GetName() const { return this->name; }
-        E_FORCEINLINE void SetName(const String& _name) { this->name = _name; }
+        F_FORCEINLINE uint32 GetGroup() const { return this->group; }
+        F_FORCEINLINE void SetGroup(uint32 _group) { this->group = _group; }
+        F_FORCEINLINE const String& GetName() const { return this->name; }
+        F_FORCEINLINE void SetName(const String& _name) { this->name = _name; }
 
-        E_FORCEINLINE int GetRef() const { return this->refCount; }
-        E_FORCEINLINE bool HasRef() const { return this->refCount <= 0 ? false : true; }
-        E_FORCEINLINE int AddRef() { return ++this->refCount; }
-        E_FORCEINLINE int DelRef() { return --this->refCount; }
+        F_FORCEINLINE int GetRef() const { return this->refCount; }
+        F_FORCEINLINE bool HasRef() const { return this->refCount <= 0 ? false : true; }
+        F_FORCEINLINE int AddRef() { return ++this->refCount; }
+        F_FORCEINLINE int DelRef() { return --this->refCount; }
 
-        E_FORCEINLINE bool IsInit() const { return this->isInit; }
-        E_FORCEINLINE void SetIsInit(bool b) { this->isInit = b; }
+        F_FORCEINLINE bool IsInit() const { return this->isInit; }
+        F_FORCEINLINE void SetIsInit(bool b) { this->isInit = b; }
 
     public:
         bool IsGroupNameValid() const;

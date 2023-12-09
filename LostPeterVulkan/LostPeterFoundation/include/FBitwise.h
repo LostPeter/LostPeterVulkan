@@ -21,36 +21,36 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FBitwise
+    class foundationExport FBitwise
     {
     public:
-        static LP_FORCEINLINE uint16 Swap16(uint16 arg)
+        static F_FORCEINLINE uint16 Swap16(uint16 arg)
         {
-#if LP_COMPILER == LP_COMPILER_MSVC && LP_COMPILER_VERSION >= 1310
+#if F_COMPILER == F_COMPILER_MSVC && F_COMPILER_VERSION >= 1310
             return _byteswap_ushort(arg);
-#elif (LP_COMPILER == LP_COMPILER_CLANG && __has_builtin(__builtin_bswap16)) || (LP_COMPILER == LP_COMPILER_GNUC && LP_COMPILER_VERSION >= 480)
+#elif (F_COMPILER == F_COMPILER_CLANG && __has_builtin(__builtin_bswap16)) || (F_COMPILER == F_COMPILER_GNUC && F_COMPILER_VERSION >= 480)
             return __builtin_bswap16(arg);
 #else
             return ((arg << 8) & 0xFF00) | ((arg >> 8) & 0x00FF);
 #endif
         }
       
-        static LP_FORCEINLINE uint32 Swap32(uint32 arg)
+        static F_FORCEINLINE uint32 Swap32(uint32 arg)
         {
-#if LP_COMPILER == LP_COMPILER_MSVC && LP_COMPILER_VERSION >= 1310
+#if F_COMPILER == F_COMPILER_MSVC && F_COMPILER_VERSION >= 1310
             return _byteswap_ulong(arg);
-#elif (LP_COMPILER == LP_COMPILER_CLANG && __has_builtin(__builtin_bswap32)) || (LP_COMPILER == LP_COMPILER_GNUC && LP_COMPILER_VERSION >= 430)
+#elif (F_COMPILER == F_COMPILER_CLANG && __has_builtin(__builtin_bswap32)) || (F_COMPILER == F_COMPILER_GNUC && F_COMPILER_VERSION >= 430)
             return __builtin_bswap32(arg);
 #else
             return ((arg & 0x000000FF) << 24) | ((arg & 0x0000FF00) << 8) | ((arg >> 8) & 0x0000FF00) | ((arg >> 24) & 0x000000FF);
 #endif
         }
       
-        static LP_FORCEINLINE uint64 Swap64(uint64 arg)
+        static F_FORCEINLINE uint64 Swap64(uint64 arg)
         {
-#if LP_COMPILER == LP_COMPILER_MSVC && LP_COMPILER_VERSION >= 1310
+#if F_COMPILER == F_COMPILER_MSVC && F_COMPILER_VERSION >= 1310
             return _byteswap_uint64(arg);
-#elif (LP_COMPILER == LP_COMPILER_CLANG && __has_builtin(__builtin_bswap64)) || (LP_COMPILER == LP_COMPILER_GNUC && LP_COMPILER_VERSION >= 430)
+#elif (F_COMPILER == F_COMPILER_CLANG && __has_builtin(__builtin_bswap64)) || (F_COMPILER == F_COMPILER_GNUC && F_COMPILER_VERSION >= 430)
             return __builtin_bswap64(arg);
 #else
             union { 
@@ -64,7 +64,7 @@ namespace LostPeterFoundation
 #endif
         }
 
-        static LP_FORCEINLINE void SwapBuffer(void * pData, size_t size)
+        static F_FORCEINLINE void SwapBuffer(void * pData, size_t size)
         {
             char swapByte;
             for (char *p0 = (char*)pData, *p1 = p0 + size - 1; p0 < p1; ++p0, --p1)
@@ -75,7 +75,7 @@ namespace LostPeterFoundation
             }
         }
 
-        static LP_FORCEINLINE void SwapChunks(void* pData, size_t size, size_t count)
+        static F_FORCEINLINE void SwapChunks(void* pData, size_t size, size_t count)
         {
             for (size_t c = 0; c < count; ++c)
             {
@@ -93,13 +93,13 @@ namespace LostPeterFoundation
 		static uint32 FirstPow2From(uint32 n);					
 
 		template<typename T>																											
-		static LP_FORCEINLINE bool IsPow2(T n)		
+		static F_FORCEINLINE bool IsPow2(T n)		
 		{
 			return (n & (n-1)) == 0;
 		}
 							
 		template<typename T>													
-		static LP_FORCEINLINE uint32 GetBitShift(T mask)								
+		static F_FORCEINLINE uint32 GetBitShift(T mask)								
 		{
 			if (mask == 0)
 				return 0;
@@ -114,7 +114,7 @@ namespace LostPeterFoundation
 		}
 
 		template<typename SrcT,typename DestT>																						//			
-		static LP_FORCEINLINE DestT	ConvertBitPattern(SrcT srcValue, SrcT srcBitMask, DestT destBitMask)
+		static F_FORCEINLINE DestT	ConvertBitPattern(SrcT srcValue, SrcT srcBitMask, DestT destBitMask)
 		{
 			// Mask off irrelevant source value bits (if any)
 			srcValue = srcValue & srcBitMask;

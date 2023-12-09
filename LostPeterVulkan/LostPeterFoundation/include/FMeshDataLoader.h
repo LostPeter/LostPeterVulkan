@@ -17,7 +17,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FMeshDataLoader
+    class foundationExport FMeshDataLoader
     {
     public:
     ////FMeshData 

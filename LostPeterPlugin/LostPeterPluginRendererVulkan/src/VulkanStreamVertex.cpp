@@ -12,7 +12,7 @@
 #include "../include/VulkanStreamVertex.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanStreamVertex::VulkanStreamVertex(VulkanDevice* pDevice, uint32 nTarget, 
                                            size_t nSizeInBytes, EStreamUsageType eStreamUsage,
@@ -129,4 +129,4 @@ namespace LostPeter
         vkUnmapMemory(m_pDevice->GetVkDevice(), m_vkDeviceMemory);
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

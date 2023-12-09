@@ -15,7 +15,7 @@
 #include "VulkanPreDefine.h"
 #include "VulkanDeviceMemoryAllocation.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanDeviceMemoryManager
     {
@@ -51,11 +51,11 @@ namespace LostPeter
         HeapInfoVector m_aHeapInfos;
 
     public: 
-        E_FORCEINLINE const VkPhysicalDeviceMemoryProperties& GetMemoryProperties() const { return m_vkPhysicalDeviceMemoryProperties; }
-        E_FORCEINLINE bool HasUnifiedMemory() const { return m_bHasUnifiedMemory; }
-        E_FORCEINLINE uint32 GetNumMemoryTypes() const { return m_vkPhysicalDeviceMemoryProperties.memoryTypeCount; }
+        F_FORCEINLINE const VkPhysicalDeviceMemoryProperties& GetMemoryProperties() const { return m_vkPhysicalDeviceMemoryProperties; }
+        F_FORCEINLINE bool HasUnifiedMemory() const { return m_bHasUnifiedMemory; }
+        F_FORCEINLINE uint32 GetNumMemoryTypes() const { return m_vkPhysicalDeviceMemoryProperties.memoryTypeCount; }
         
-        E_FORCEINLINE VkResult GetMemoryTypeFromProperties(uint32 typeBits, VkMemoryPropertyFlags properties, uint32* outTypeIndex)
+        F_FORCEINLINE VkResult GetMemoryTypeFromProperties(uint32 typeBits, VkMemoryPropertyFlags properties, uint32* outTypeIndex)
         {
             for (uint32 i = 0; i < m_vkPhysicalDeviceMemoryProperties.memoryTypeCount && typeBits; ++i)
             {
@@ -73,7 +73,7 @@ namespace LostPeter
             return VK_ERROR_FEATURE_NOT_PRESENT;
         }
         
-        E_FORCEINLINE VkResult GetMemoryTypeFromPropertiesExcluding(uint32 typeBits, VkMemoryPropertyFlags properties, uint32 excludeTypeIndex, uint32* outTypeIndex)
+        F_FORCEINLINE VkResult GetMemoryTypeFromPropertiesExcluding(uint32 typeBits, VkMemoryPropertyFlags properties, uint32 excludeTypeIndex, uint32* outTypeIndex)
         {
             for (uint32 i = 0; i < m_vkPhysicalDeviceMemoryProperties.memoryTypeCount && typeBits; ++i)
             {
@@ -91,7 +91,7 @@ namespace LostPeter
             return VK_ERROR_FEATURE_NOT_PRESENT;
         }
         
-        E_FORCEINLINE VulkanDeviceMemoryAllocation* Alloc(bool canFail, VkDeviceSize allocationSize, uint32 memoryTypeBits, VkMemoryPropertyFlags memoryPropertyFlags, void* dedicatedAllocateInfo, const char* file, uint32 line)
+        F_FORCEINLINE VulkanDeviceMemoryAllocation* Alloc(bool canFail, VkDeviceSize allocationSize, uint32 memoryTypeBits, VkMemoryPropertyFlags memoryPropertyFlags, void* dedicatedAllocateInfo, const char* file, uint32 line)
         {
             uint32 memoryTypeIndex = ~0;
             E_VK_CHECK(this->GetMemoryTypeFromProperties(memoryTypeBits, memoryPropertyFlags, &memoryTypeIndex))
@@ -120,6 +120,6 @@ namespace LostPeter
         void setupAndPrintMemInfo();
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

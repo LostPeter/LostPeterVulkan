@@ -16,7 +16,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport VKPipelineCompute : public Base
+    class vulkanExport VKPipelineCompute : public Base
     {
     public:
         VKPipelineCompute(const String& namePipelineCompute);

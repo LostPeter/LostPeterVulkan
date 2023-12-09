@@ -14,7 +14,7 @@
 
 #include "ImageCodecSTBDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginImageCodecSTB
 {
     class ImageCodecSTB : public ImageCodec
     {
@@ -44,6 +44,6 @@ namespace LostPeter
         virtual FDecodeResult Decode(FFileMemory* pInput) const;
     };
 
-}; //LostPeter
+}; //LostPeterPluginImageCodecSTB
 
 #endif

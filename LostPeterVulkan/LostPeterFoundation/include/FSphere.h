@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FSphere
+    class foundationExport FSphere
     {
     public:
         FSphere()
@@ -48,12 +48,12 @@ namespace LostPeterFoundation
         float m_fRadius;
 
     public:
-        LP_FORCEINLINE const FVector3& GetCenter() const { return m_vCenter; }
-        LP_FORCEINLINE void SetCenter(const FVector3& center) { m_vCenter = center; }
-        LP_FORCEINLINE float GetRadius() const { return m_fRadius; }
-        LP_FORCEINLINE void SetRadius(float radius) { m_fRadius = radius; }
+        F_FORCEINLINE const FVector3& GetCenter() const { return m_vCenter; }
+        F_FORCEINLINE void SetCenter(const FVector3& center) { m_vCenter = center; }
+        F_FORCEINLINE float GetRadius() const { return m_fRadius; }
+        F_FORCEINLINE void SetRadius(float radius) { m_fRadius = radius; }
 
-        LP_FORCEINLINE void Set(const FVector3& center, float radius)
+        F_FORCEINLINE void Set(const FVector3& center, float radius)
         {
             m_vCenter = center;
             m_fRadius = radius;

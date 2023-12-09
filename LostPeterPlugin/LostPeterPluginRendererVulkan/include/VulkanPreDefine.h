@@ -21,20 +21,20 @@ using namespace LostPeterFoundation;
 using namespace LostPeterEngine;
 
 
-#if E_PLATFORM == E_PLATFORM_WINDOW
+#if F_PLATFORM == F_PLATFORM_WINDOW
 	#if defined (VULKAN_EXPORTS)
 		#define vulkanExport            __declspec(dllexport)
 	#else
 		#define vulkanExport            __declspec(dllimport)
 	#endif
-#elif E_PLATFORM == E_PLATFORM_ANDROID
+#elif F_PLATFORM == F_PLATFORM_ANDROID
 	#define vulkanExport				__attribute__ ((visibility("default")))
 #else
 	#define vulkanExport
 #endif
 
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
 	/////////////////////////////////////// Typedef //////////////////////////////////////
 	String E_VkResult2String(VkResult result);
@@ -164,6 +164,6 @@ namespace LostPeter
     typedef std::vector<VulkanQueue*> VulkanQueuePtrVector;
     typedef std::map<String, VulkanQueue*> VulkanQueuePtrMap;
 
-}; //LostPeter
+}; //LostPetLostPeterPluginRendererVulkaner
 
 #endif

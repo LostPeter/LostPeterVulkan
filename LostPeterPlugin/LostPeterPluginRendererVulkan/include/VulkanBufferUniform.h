@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanBufferUniform : public Base
     {
@@ -33,10 +33,10 @@ namespace LostPeter
         VkDeviceMemoryVector m_aVkUniformBuffersMemory;
         
     public:
-        E_FORCEINLINE const VkBufferVector& GetVkBufferVector() const { return m_aVkUniformBuffer; }
-        E_FORCEINLINE VkBufferVector& GetVkBufferVector() { return m_aVkUniformBuffer; }
-        E_FORCEINLINE const VkDeviceMemoryVector& GetVkDeviceMemoryVector() const { return m_aVkUniformBuffersMemory; }
-        E_FORCEINLINE VkDeviceMemoryVector& GetVkDeviceMemoryVector() { return m_aVkUniformBuffersMemory; }
+        F_FORCEINLINE const VkBufferVector& GetVkBufferVector() const { return m_aVkUniformBuffer; }
+        F_FORCEINLINE VkBufferVector& GetVkBufferVector() { return m_aVkUniformBuffer; }
+        F_FORCEINLINE const VkDeviceMemoryVector& GetVkDeviceMemoryVector() const { return m_aVkUniformBuffersMemory; }
+        F_FORCEINLINE VkDeviceMemoryVector& GetVkDeviceMemoryVector() { return m_aVkUniformBuffersMemory; }
 
     public:
         void Destroy();
@@ -46,6 +46,6 @@ namespace LostPeter
         bool UnmapMemory(int index);
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

@@ -29,10 +29,10 @@ namespace LostPeterEngine
         TextureInfoGroupPtrMap m_mapTextureInfoGroup;
 
     public:
-        E_FORCEINLINE const TextureInfoPtrVector& GetTextureInfoPtrVector() const { return m_aTextureInfo; }
-        E_FORCEINLINE TextureInfoPtrVector& GetTextureInfoPtrVector() { return m_aTextureInfo; }
-        E_FORCEINLINE const TextureInfoGroupPtrMap& GetTextureInfoGroupPtrMap() const { return m_mapTextureInfoGroup; }
-        E_FORCEINLINE TextureInfoGroupPtrMap& GetTextureInfoGroupPtrMap() { return m_mapTextureInfoGroup; }
+        F_FORCEINLINE const TextureInfoPtrVector& GetTextureInfoPtrVector() const { return m_aTextureInfo; }
+        F_FORCEINLINE TextureInfoPtrVector& GetTextureInfoPtrVector() { return m_aTextureInfo; }
+        F_FORCEINLINE const TextureInfoGroupPtrMap& GetTextureInfoGroupPtrMap() const { return m_mapTextureInfoGroup; }
+        F_FORCEINLINE TextureInfoGroupPtrMap& GetTextureInfoGroupPtrMap() { return m_mapTextureInfoGroup; }
 
 
     public:

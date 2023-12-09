@@ -66,7 +66,7 @@
 
 
 //Platform
-#if LP_PLATFORM == LP_PLATFORM_WIN32
+#if F_PLATFORM == F_PLATFORM_WINDOW
 	#undef min
 	#undef max
 	#if defined(__MINGW32__)
@@ -77,7 +77,7 @@
     #include <Windows.h>
     #include <shlwapi.h>
 
-#elif LP_PLATFORM == LP_PLATFORM_MAC
+#elif F_PLATFORM == F_PLATFORM_MAC
     extern "C" 
 	{
 		#include <unistd.h>
@@ -88,11 +88,11 @@
     #include <dlfcn.h>
     #include <filesystem>
     
-#elif LP_PLATFORM == LP_PLATFORM_LINUX
+#elif F_PLATFORM == F_PLATFORM_LINUX
 
-#elif LP_PLATFORM == LP_PLATFORM_ANDROID
+#elif F_PLATFORM == F_PLATFORM_ANDROID
 
-#elif LP_PLATFORM == LP_PLATFORM_IOS
+#elif F_PLATFORM == F_PLATFORM_iOS
     
 
 #endif
@@ -100,7 +100,7 @@
 namespace LostPeterFoundation
 {
    //Log
-#if LP_PLATFORM == LP_PLATFORM_ANDROID
+#if F_PLATFORM == F_PLATFORM_ANDROID
     #include <jni.h>
     #include <android/log.h>
     #include <android/native_window.h>
@@ -119,9 +119,9 @@ namespace LostPeterFoundation
     #define F_LogInfo(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
     #define F_LogWarning(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
 #else
-	LPF_Export void F_LogError(const char* fmt, ...);
-	LPF_Export void F_LogWarning(const char* fmt, ...);
-	LPF_Export void F_LogInfo(const char* fmt, ...);
+	foundationExport void F_LogError(const char* fmt, ...);
+	foundationExport void F_LogWarning(const char* fmt, ...);
+	foundationExport void F_LogInfo(const char* fmt, ...);
 
 #endif
 }; //LostPeterFoundation

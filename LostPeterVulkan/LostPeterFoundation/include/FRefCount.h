@@ -17,7 +17,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FRefCount
+    class foundationExport FRefCount
     {
     public:
         FRefCount();
@@ -28,10 +28,10 @@ namespace LostPeterFoundation
         FAtomicCount m_refCounter;
         
     public:
-        LP_FORCEINLINE int32 GetRef() { return m_refCounter.GetRefCount(); }
+        F_FORCEINLINE int32 GetRef() { return m_refCounter.GetRefCount(); }
 
-        LP_FORCEINLINE int32 AddRef() { return m_refCounter.AddRefCount(); }
-        LP_FORCEINLINE int32 DelRef() { return m_refCounter.DelRefCount(); }
+        F_FORCEINLINE int32 AddRef() { return m_refCounter.AddRefCount(); }
+        F_FORCEINLINE int32 DelRef() { return m_refCounter.DelRefCount(); }
     };
 
 }; //LostPeterFoundation

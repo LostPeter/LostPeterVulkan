@@ -106,7 +106,7 @@ namespace LostPeterEngine
 			m_nFlags |= E_ImageFlag_IsCubeMap;
 		if (numFaces != 6 && numFaces != 1)
 		{
-			F_LogError("Image::LoadDynamicImage: Number of faces currently must be 6 or 1 !");
+			F_LogError("*********************** Image::LoadDynamicImage: Number of faces currently must be 6 or 1 !");
 			F_Assert(false && "Image::LoadDynamicImage")
 			return false;
 		}
@@ -128,7 +128,7 @@ namespace LostPeterEngine
 		size_t size = CalculateSize(numMipMaps, numFaces, uWidth, uHeight, uDepth, typePixelFormat);
 		if (size != (size_t)pInput->Size())
 		{
-			F_LogError("Image::LoadRawData: Stream size does not match calculated image size !");
+			F_LogError("*********************** Image::LoadRawData: Stream size does not match calculated image size !");
 			F_Assert(false && "Image::LoadRawData")
 			return false;
 		}
@@ -144,7 +144,7 @@ namespace LostPeterEngine
 		String strPath = FPathManager::GetSingleton().GetFilePath(nGroup, strName);
 		if (strPath.empty())
 		{
-			F_LogError("Image::Load: Image file: [%s] is not exist !", strName.c_str());
+			F_LogError("*********************** Image::Load: Image file: [%s] is not exist !", strName.c_str());
 			F_Assert(false && "Image::Load: Image file is not exist!")
 			return false;
 		}
@@ -163,7 +163,7 @@ namespace LostPeterEngine
 		FFileIO* pFIO = FFileManager::GetSingleton().CreateFileIO();
 		if (!pFIO->Open(strFilePath.c_str(), "rb"))
 		{
-			F_LogError("Image::Load: Open file: [%s] failed !", strFilePath.c_str());
+			F_LogError("*********************** Image::Load: Open file: [%s] failed !", strFilePath.c_str());
 			F_Assert(false && "Image::Load")
 			return false;
 		}
@@ -190,7 +190,7 @@ namespace LostPeterEngine
 		}
 		if (!pCodec)
 		{
-			F_LogError("Image::Load: Load image: [%s] failed !", pFIO->GetFilePath().c_str());
+			F_LogError("*********************** Image::Load: Load image: [%s] failed !", pFIO->GetFilePath().c_str());
 			F_Assert(false && "Image::Load")
 			return false;
 		}

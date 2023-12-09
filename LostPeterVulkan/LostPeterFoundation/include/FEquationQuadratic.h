@@ -17,7 +17,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FEquationQuadratic
+    class foundationExport FEquationQuadratic
     {
     public:
         FEquationQuadratic(FComplex& a, FComplex& b, FComplex& c);

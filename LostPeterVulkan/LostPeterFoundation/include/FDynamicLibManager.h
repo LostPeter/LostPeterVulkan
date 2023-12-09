@@ -18,7 +18,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FDynamicLibManager : public FSingleton<FDynamicLibManager>
+    class foundationExport FDynamicLibManager : public FSingleton<FDynamicLibManager>
 	{
 	public:
 		FDynamicLibManager();

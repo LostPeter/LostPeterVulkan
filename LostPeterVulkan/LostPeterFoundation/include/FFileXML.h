@@ -24,7 +24,7 @@ namespace LostPeterFoundation
     typedef std::vector<FXMLElement*> FXMLElementPtrVector;
 
     ////////////////////////// FXMLAttribute /////////////////////
-    class LPF_Export FXMLAttribute
+    class foundationExport FXMLAttribute
     {
         friend class FXMLElement;
 
@@ -52,14 +52,14 @@ namespace LostPeterFoundation
         String m_strValue;
 
     public:
-        LP_FORCEINLINE const String& GetName() const { return m_strName; }
-        LP_FORCEINLINE void SetName(const String& strName) { m_strName = strName; }
-        LP_FORCEINLINE const String& GetValue() const { return m_strValue; }
-        LP_FORCEINLINE void SetValue(const String& strValue) { m_strValue = strValue; }
+        F_FORCEINLINE const String& GetName() const { return m_strName; }
+        F_FORCEINLINE void SetName(const String& strName) { m_strName = strName; }
+        F_FORCEINLINE const String& GetValue() const { return m_strValue; }
+        F_FORCEINLINE void SetValue(const String& strValue) { m_strValue = strValue; }
     };
 
     ////////////////////////// FXMLElement ///////////////////////
-    class LPF_Export FXMLElement
+    class foundationExport FXMLElement
     {
         friend class FXMLDocument;
 
@@ -85,13 +85,13 @@ namespace LostPeterFoundation
         FXMLElementPtrVector m_aElementChildren;
 
     public:
-        LP_FORCEINLINE const String& GetName() const { return m_strName; }
-        LP_FORCEINLINE void SetName(const String& strName) { m_strName = strName; }
-        LP_FORCEINLINE const FXMLAttributeVector& GetAttributes() const { return m_aAttributes; }
-        LP_FORCEINLINE FXMLAttributeVector& GetAttributes() { return m_aAttributes; }
-        LP_FORCEINLINE FXMLElement* GetElementParent() const { return m_pElementParent; }
-        LP_FORCEINLINE const FXMLElementPtrVector& GetElementChildren() const { return m_aElementChildren; }
-        LP_FORCEINLINE FXMLElementPtrVector& GetElementChildren() { return m_aElementChildren; }
+        F_FORCEINLINE const String& GetName() const { return m_strName; }
+        F_FORCEINLINE void SetName(const String& strName) { m_strName = strName; }
+        F_FORCEINLINE const FXMLAttributeVector& GetAttributes() const { return m_aAttributes; }
+        F_FORCEINLINE FXMLAttributeVector& GetAttributes() { return m_aAttributes; }
+        F_FORCEINLINE FXMLElement* GetElementParent() const { return m_pElementParent; }
+        F_FORCEINLINE const FXMLElementPtrVector& GetElementChildren() const { return m_aElementChildren; }
+        F_FORCEINLINE FXMLElementPtrVector& GetElementChildren() { return m_aElementChildren; }
 
     public:
         void Destroy();
@@ -179,7 +179,7 @@ namespace LostPeterFoundation
     };
 
     ////////////////////////// FXMLDocument //////////////////////
-    class LPF_Export FXMLDocument
+    class foundationExport FXMLDocument
     {
     public:
         FXMLDocument();
@@ -191,8 +191,8 @@ namespace LostPeterFoundation
         FXMLElement* m_pElementRoot;
 
     public:
-        LP_FORCEINLINE FXMLElement* GetElementDeclaration() const { return m_pElementDeclaration; }
-        LP_FORCEINLINE FXMLElement* GetElementRoot() const { return m_pElementRoot; }
+        F_FORCEINLINE FXMLElement* GetElementDeclaration() const { return m_pElementDeclaration; }
+        F_FORCEINLINE FXMLElement* GetElementRoot() const { return m_pElementRoot; }
 
     public:
         void Destroy();
@@ -205,7 +205,7 @@ namespace LostPeterFoundation
     };
 
     ////////////////////////// FFileXML //////////////////////////
-    class LPF_Export FFileXMLImplement
+    class foundationExport FFileXMLImplement
     {
     public:
         FFileXMLImplement()
@@ -224,7 +224,7 @@ namespace LostPeterFoundation
         virtual bool SaveXML(const String& strPath, FXMLDocument* pDocument) = 0;
     };
 
-    class LPF_Export FFileXML
+    class foundationExport FFileXML
     {
     public:
         FFileXML();
@@ -240,7 +240,7 @@ namespace LostPeterFoundation
 
     public:
         FFileXMLType GetFileXMLType() const { return m_eFileXML; }
-        LP_FORCEINLINE FXMLDocument* GetXMLDocument() const { return m_pXMLDocument; }
+        F_FORCEINLINE FXMLDocument* GetXMLDocument() const { return m_pXMLDocument; }
 
     public:
         void Destroy();

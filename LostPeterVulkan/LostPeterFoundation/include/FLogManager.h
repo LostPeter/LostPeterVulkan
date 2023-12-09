@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FLogManager
+    class foundationExport FLogManager
     {
     private:
         FLogManager();
@@ -49,10 +49,10 @@ namespace LostPeterFoundation
     
     public:
     ////FLog
-        LP_FORCEINLINE const FLogPtrVector& GetLogPtrVector() const { return m_aLogs; }
-        LP_FORCEINLINE FLogPtrVector& GetLogPtrVector() { return m_aLogs; }
-        LP_FORCEINLINE const FLogPtrMap& GetLogPtrMap() const { return m_mapLogs; }
-        LP_FORCEINLINE FLogPtrMap& GetLogPtrMap() { return m_mapLogs; }
+        F_FORCEINLINE const FLogPtrVector& GetLogPtrVector() const { return m_aLogs; }
+        F_FORCEINLINE FLogPtrVector& GetLogPtrVector() { return m_aLogs; }
+        F_FORCEINLINE const FLogPtrMap& GetLogPtrMap() const { return m_mapLogs; }
+        F_FORCEINLINE FLogPtrMap& GetLogPtrMap() { return m_mapLogs; }
 
         FLog* GetLogPtr(const String& strName);
         FLog* CreateLogPtr(const String& strName, FLogType eLog);

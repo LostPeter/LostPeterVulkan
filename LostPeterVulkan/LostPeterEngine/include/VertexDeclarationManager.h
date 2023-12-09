@@ -38,7 +38,7 @@ namespace LostPeterEngine
         static VertexDeclarationManager* GetSingletonPtr();
 
     public:
-		E_FORCEINLINE uint32 GetVertexDeclarationCount() { return m_nCount; }
+		F_FORCEINLINE uint32 GetVertexDeclarationCount() { return m_nCount; }
 		VertexDeclaration* GetSameVertexDeclaration(VertexDeclaration* pVertexDeclaration);
 
 	public:

@@ -15,7 +15,7 @@
 #include "../include/VulkanQueue.h"
 #include "../include/VulkanConverter.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     int32 VulkanSwapChain::ms_nDefaultBackBufferCount = 3;
     VulkanSwapChain::VulkanSwapChain(VulkanDevice* pDevice)
@@ -482,4 +482,4 @@ namespace LostPeter
         return true;
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

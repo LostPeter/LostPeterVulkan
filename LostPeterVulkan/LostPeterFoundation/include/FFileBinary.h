@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FFileBinary
+    class foundationExport FFileBinary
 	{
 	public:
 		FFileBinary();
@@ -44,18 +44,18 @@ namespace LostPeterFoundation
 		uint8* m_pBufTemp;
 
 	public:
-		LP_FORCEINLINE const String& GetFileType() const { return m_strFileType; }
-		LP_FORCEINLINE void SetFileType(const String& str) { m_strFileType=str; }
-		LP_FORCEINLINE uint32 GetVersion() const { return m_nVersion; }
-		LP_FORCEINLINE void SetVersion(uint32 n) { m_nVersion=n; }
-		LP_FORCEINLINE void SetEndianType_Current(EndianType e) { m_eEndianType_Current=e; }
-		LP_FORCEINLINE EndianType GetEndianType_Export() const { return m_eEndianType_Export; }
-		LP_FORCEINLINE void SetEndianType_Export(EndianType e)
+		F_FORCEINLINE const String& GetFileType() const { return m_strFileType; }
+		F_FORCEINLINE void SetFileType(const String& str) { m_strFileType=str; }
+		F_FORCEINLINE uint32 GetVersion() const { return m_nVersion; }
+		F_FORCEINLINE void SetVersion(uint32 n) { m_nVersion=n; }
+		F_FORCEINLINE void SetEndianType_Current(EndianType e) { m_eEndianType_Current=e; }
+		F_FORCEINLINE EndianType GetEndianType_Export() const { return m_eEndianType_Export; }
+		F_FORCEINLINE void SetEndianType_Export(EndianType e)
 		{
 			m_eEndianType_Export=e;
 			m_bFlipEndian = (m_eEndianType_Current==m_eEndianType_Export)?false:true;
 		}
-		LP_FORCEINLINE bool GetFlipEndian() const { return m_bFlipEndian; }
+		F_FORCEINLINE bool GetFlipEndian() const { return m_bFlipEndian; }
 
 	public:
 		void Destroy();

@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FPlugin
+    class foundationExport FPlugin
 	{
 	public:
 		FPlugin();

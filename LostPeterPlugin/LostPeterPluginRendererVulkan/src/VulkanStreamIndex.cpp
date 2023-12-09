@@ -12,7 +12,7 @@
 #include "../include/VulkanStreamIndex.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanStreamIndex::VulkanStreamIndex(VulkanDevice* pDevice, uint32 nTarget, 
                                          EStreamIndexType eStreamIndex, size_t nIndexNum, 
@@ -129,4 +129,4 @@ namespace LostPeter
         vkUnmapMemory(m_pDevice->GetVkDevice(), m_vkDeviceMemory);
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

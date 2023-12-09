@@ -16,7 +16,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport MeshSub : public Base
+    class vulkanExport MeshSub : public Base
     {
     public:
         MeshSub(Mesh* _pMesh, 

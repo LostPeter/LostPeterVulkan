@@ -29,7 +29,7 @@ namespace LostPeterEngine
 
 
     public:
-        E_FORCEINLINE EObjectType GetObjectType() const { return this->m_typeObject; }
+        F_FORCEINLINE EObjectType GetObjectType() const { return this->m_typeObject; }
 
     public:
 

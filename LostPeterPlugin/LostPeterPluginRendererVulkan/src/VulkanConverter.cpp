@@ -11,7 +11,7 @@
 
 #include "../include/VulkanConverter.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VkPrimitiveTopology VulkanConverter::Transform2VkPrimitiveTopology(FRenderPrimitiveType eRenderPrimitive)
     {
@@ -720,4 +720,4 @@ namespace LostPeter
         return retVal;
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

@@ -23,7 +23,7 @@
 #include "stb_image_write.h"
 
 
-namespace LostPeter
+namespace LostPeterPluginImageCodecSTB
 {
     ImageCodecSTB::RegisteredImageCodecList ImageCodecSTB::ms_listImageCodec;
 
@@ -198,4 +198,4 @@ namespace LostPeter
         return ret;
     }
 
-}; //LostPeter
+}; //LostPeterPluginImageCodecSTB

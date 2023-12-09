@@ -14,7 +14,7 @@
 #include "../include/ImageCodecSTB.h"
 
 
-namespace LostPeter
+namespace LostPeterPluginImageCodecSTB
 {
     ImageCodecSTBPlugin* g_pPlugin_ImageCodecSTB = nullptr;
 	extern "C" void imageCodecSTBExport dllStartPlugin() throw()
@@ -67,4 +67,4 @@ namespace LostPeter
         
     }
 
-}; //LostPeter
+}; //LostPeterPluginImageCodecSTB

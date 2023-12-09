@@ -37,11 +37,11 @@ namespace LostPeterEngine
 		FPixelBox m_CurrentLock;
 
 	public:
-		E_FORCEINLINE size_t GetWidth() const { return m_nWidth; }
-		E_FORCEINLINE size_t GetHeight() const { return m_nHeight; }
-		E_FORCEINLINE size_t GetDepth() const { return m_nDepth; }
+		F_FORCEINLINE size_t GetWidth() const { return m_nWidth; }
+		F_FORCEINLINE size_t GetHeight() const { return m_nHeight; }
+		F_FORCEINLINE size_t GetDepth() const { return m_nDepth; }
 
-		E_FORCEINLINE FPixelFormatType GetPixelFormat() const { return m_ePixelFormat; }
+		F_FORCEINLINE FPixelFormatType GetPixelFormat() const { return m_ePixelFormat; }
 		
 		const FPixelBox& GetCurrentLock();
 

@@ -16,7 +16,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport Mesh : public Base
+    class vulkanExport Mesh : public Base
     {
     public:
         Mesh(uint32 _group,

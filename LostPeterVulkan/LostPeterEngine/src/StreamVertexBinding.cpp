@@ -50,7 +50,7 @@ namespace LostPeterEngine
 		StreamVertexPtrMap::iterator itFind = m_mapBinding.find(nIndex);
 		if (itFind == m_mapBinding.end())
 		{
-			F_LogError("StreamVertexBinding::UnsetBinding: Can not find buffer binding from index: [%d] !", nIndex);
+			F_LogError("*********************** StreamVertexBinding::UnsetBinding: Can not find buffer binding from index: [%d] !", nIndex);
 			return nullptr;
 		}
 		StreamVertex* pRet = itFind->second;
@@ -76,7 +76,7 @@ namespace LostPeterEngine
 		StreamVertexPtrMap::const_iterator itFind = m_mapBinding.find(nIndex);
 		if (itFind == m_mapBinding.end())
 		{
-			F_LogError("StreamVertexBinding::GetVertexStream: Can not find buffer binding from index: [%d] !", nIndex);
+			F_LogError("*********************** StreamVertexBinding::GetVertexStream: Can not find buffer binding from index: [%d] !", nIndex);
 			return nullptr;
 		}
 		return itFind->second;

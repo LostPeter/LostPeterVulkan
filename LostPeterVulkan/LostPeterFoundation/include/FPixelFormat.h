@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FPixelFormat
+    class foundationExport FPixelFormat
     {
     private:
 		static FPixelFormatDes ms_PixelFormats[F_PixelFormat_Count];

@@ -45,7 +45,7 @@ namespace LostPeterEngine
 
         m_pWindow = glfwCreateWindow(m_nWidth, m_nHeight, m_strNameTitle.c_str(), NULL, NULL);
         if (!m_pWindow) {
-            F_LogError("Window::Init: glfwCreateWindow failed, [%s]", m_strNameTitle.c_str());
+            F_LogError("*********************** Window::Init: glfwCreateWindow failed, [%s]", m_strNameTitle.c_str());
             return false;
         }
 

@@ -217,12 +217,12 @@ namespace LostPeterEngine
 	{
 		switch ((int32)typeData)
 		{
-		#if E_PLATFORM == E_PLATFORM_WINDOW
+		#if F_PLATFORM == F_PLATFORM_WINDOW
 			default:
 		#endif
 		case E_VertexElementData_ColorARGB:
 			return FMath::GetAsARGB(srcColor);
-		#if E_PLATFORM != E_PLATFORM_WINDOW
+		#if F_PLATFORM != F_PLATFORM_WINDOW
 			default:
 		#endif
 		case E_VertexElementData_ColorABGR: 
@@ -239,7 +239,7 @@ namespace LostPeterEngine
 		}
 		else
 		{
-		#if E_PLATFORM == E_PLATFORM_WINDOW
+		#if F_PLATFORM == F_PLATFORM_WINDOW
 			return E_VertexElementData_ColorARGB; // prefer D3D format on windows
 		#else
 			return E_VertexElementData_ColorABGR; // prefer GL format on everything else

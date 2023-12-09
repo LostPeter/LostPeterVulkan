@@ -16,7 +16,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport VKPipelineGraphics : public Base
+    class vulkanExport VKPipelineGraphics : public Base
     {
     public:
         VKPipelineGraphics(const String& namePipelineGraphics);

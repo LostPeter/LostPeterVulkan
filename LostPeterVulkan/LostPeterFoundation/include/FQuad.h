@@ -16,10 +16,10 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FQuad
+    class foundationExport FQuad
 	{
 	public:
-		LP_FORCEINLINE FQuad()
+		F_FORCEINLINE FQuad()
 			: m_pt0(-1, -1, 0)
 			, m_pt1(-1,  1, 0)
 			, m_pt2( 1,  1, 0)
@@ -27,7 +27,7 @@ namespace LostPeterFoundation
 		{
 
 		}
-		LP_FORCEINLINE FQuad(const FVector3& pt0, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
+		F_FORCEINLINE FQuad(const FVector3& pt0, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3)
 			: m_pt0(pt0)
 			, m_pt1(pt1)
 			, m_pt2(pt2)

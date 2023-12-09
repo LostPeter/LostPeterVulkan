@@ -17,7 +17,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FPlaneBoundedVolume
+    class foundationExport FPlaneBoundedVolume
     {
     public:
         FPlaneBoundedVolume()  

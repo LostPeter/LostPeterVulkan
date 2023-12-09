@@ -16,7 +16,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport EditorLineFlat2DCollector : public EditorBase
+    class vulkanExport EditorLineFlat2DCollector : public EditorBase
     {
     public:
         EditorLineFlat2DCollector();

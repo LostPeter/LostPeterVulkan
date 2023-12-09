@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanDevice
     {
@@ -46,25 +46,25 @@ namespace LostPeter
         ConstCharPtrVector m_aAppDeviceExtensions;    
 
     public:
-        E_FORCEINLINE const VkDevice& GetVkDevice() const { return m_vkDevice; }
-        E_FORCEINLINE const VkPhysicalDevice& GetVkPhysicalDevice() const { return m_vkPhysicalDevice; }
-        E_FORCEINLINE const VkPhysicalDeviceProperties& GetVkPhysicalDeviceProperties() const { return m_vkPhysicalDeviceProperties; }
-        E_FORCEINLINE const VkPhysicalDeviceLimits& GetVkPhysicalDeviceLimits() const { return m_vkPhysicalDeviceProperties.limits; }
-        E_FORCEINLINE const VkPhysicalDeviceFeatures& GetVkPhysicalDeviceFeatures() const { return m_vkPhysicalDeviceFeatures; }
-        E_FORCEINLINE VkPhysicalDeviceFeatures2* GetVkPhysicalDeviceFeatures2() const { return m_pVkPhysicalDeviceFeatures2; }
-        E_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
-        E_FORCEINLINE VkSampleCountFlagBits GetVkMaxMSAASamples() const { return m_vkMaxMSAASamples; }
+        F_FORCEINLINE const VkDevice& GetVkDevice() const { return m_vkDevice; }
+        F_FORCEINLINE const VkPhysicalDevice& GetVkPhysicalDevice() const { return m_vkPhysicalDevice; }
+        F_FORCEINLINE const VkPhysicalDeviceProperties& GetVkPhysicalDeviceProperties() const { return m_vkPhysicalDeviceProperties; }
+        F_FORCEINLINE const VkPhysicalDeviceLimits& GetVkPhysicalDeviceLimits() const { return m_vkPhysicalDeviceProperties.limits; }
+        F_FORCEINLINE const VkPhysicalDeviceFeatures& GetVkPhysicalDeviceFeatures() const { return m_vkPhysicalDeviceFeatures; }
+        F_FORCEINLINE VkPhysicalDeviceFeatures2* GetVkPhysicalDeviceFeatures2() const { return m_pVkPhysicalDeviceFeatures2; }
+        F_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
+        F_FORCEINLINE VkSampleCountFlagBits GetVkMaxMSAASamples() const { return m_vkMaxMSAASamples; }
 
-        E_FORCEINLINE VulkanInstance* GetInstance() const { return m_pInstance; }
-        E_FORCEINLINE VulkanQueue* GetQueueGraphics() const { return m_pQueueGraphics; }
-        E_FORCEINLINE VulkanQueue* GetQueueCompute() const { return m_pQueueCompute; }
-        E_FORCEINLINE VulkanQueue* GetQueueTransfer() const { return m_pQueueTransfer; }
-        E_FORCEINLINE VulkanQueue* GetQueuePresent() const { return m_pQueuePresent; }
+        F_FORCEINLINE VulkanInstance* GetInstance() const { return m_pInstance; }
+        F_FORCEINLINE VulkanQueue* GetQueueGraphics() const { return m_pQueueGraphics; }
+        F_FORCEINLINE VulkanQueue* GetQueueCompute() const { return m_pQueueCompute; }
+        F_FORCEINLINE VulkanQueue* GetQueueTransfer() const { return m_pQueueTransfer; }
+        F_FORCEINLINE VulkanQueue* GetQueuePresent() const { return m_pQueuePresent; }
 
-        E_FORCEINLINE VulkanFenceManager* GetFenceManager() const { return m_pFenceManager; }
-        E_FORCEINLINE VulkanDeviceMemoryManager* GetDeviceMemoryManager() const { return m_pDeviceMemoryManager; }
+        F_FORCEINLINE VulkanFenceManager* GetFenceManager() const { return m_pFenceManager; }
+        F_FORCEINLINE VulkanDeviceMemoryManager* GetDeviceMemoryManager() const { return m_pDeviceMemoryManager; }
 
-        E_FORCEINLINE void AddAppDeviceExtensions(const char* szNameExtension) { m_aAppDeviceExtensions.push_back(szNameExtension); }
+        F_FORCEINLINE void AddAppDeviceExtensions(const char* szNameExtension) { m_aAppDeviceExtensions.push_back(szNameExtension); }
 
     public:
         void Destroy();
@@ -99,12 +99,12 @@ namespace LostPeter
 
     /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
     public:
-        //VkSemaphore
+        ////////// VkSemaphore //////////
         VkSemaphore CreateVkSemaphore();
         void CreateVkSemaphore(VkSemaphore& vkSemaphore);
         void DestroyVkSemaphore(const VkSemaphore& vkSemaphore);
         
-        //VkFence
+        ////////// VkFence //////////////
         VkFence CreateVkFence(bool isCreateSignaled);
         void CreateVkFence(bool isCreateSignaled, VkFence& vkFence);
         void DestroyVkFence(const VkFence& vkFence);
@@ -223,6 +223,6 @@ namespace LostPeter
 
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

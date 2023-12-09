@@ -25,13 +25,13 @@ namespace LostPeterEngine
 	protected:
 		static void FlipEndian(void* pData, size_t size, size_t count)
         {
-#if E_ENDIAN == E_ENDIAN_BIG
+#if F_ENDIAN == F_ENDIAN_BIG
             FBitwise::SwapChunks(pData, size, count);
 #endif
         }
         static void FlipEndian(void* pData, size_t size)
         {
-#if E_ENDIAN == E_ENDIAN_BIG
+#if F_ENDIAN == F_ENDIAN_BIG
             FBitwise::SwapBuffer(pData, size);
 #endif
         }

@@ -12,8 +12,8 @@
 #include "../include/VulkanRenderWindow.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

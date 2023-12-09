@@ -112,7 +112,7 @@ namespace LostPeterFoundation
 
 
     //Color
-#if LP_ENDIAN == LP_ENDIAN_BIG
+#if F_ENDIAN == F_ENDIAN_BIG
 	ABGR FMath::GetAsABGR(const FColor& color)
 #else
 	RGBA FMath::GetAsRGBA(const FColor& color)
@@ -142,7 +142,7 @@ namespace LostPeterFoundation
 
 		return val32;
     }				
-#if LP_ENDIAN == LP_ENDIAN_BIG
+#if F_ENDIAN == F_ENDIAN_BIG
 	BGRA FMath::GetAsBGRA(const FColor& color)
 #else
 	ARGB FMath::GetAsARGB(const FColor& color)
@@ -172,7 +172,7 @@ namespace LostPeterFoundation
 
 		return val32;
     }					
-#if LP_ENDIAN == LP_ENDIAN_BIG
+#if F_ENDIAN == F_ENDIAN_BIG
 	ARGB FMath::GetAsARGB(const FColor& color)
 #else
 	BGRA FMath::GetAsBGRA(const FColor& color)
@@ -202,7 +202,7 @@ namespace LostPeterFoundation
 
 		return val32;
     }	
-#if LP_ENDIAN == LP_ENDIAN_BIG
+#if F_ENDIAN == F_ENDIAN_BIG
 	RGBA FMath::GetAsRGBA(const FColor& color)
 #else
 	ABGR FMath::GetAsABGR(const FColor& color)
@@ -234,7 +234,7 @@ namespace LostPeterFoundation
     }
 
 
-#if LP_ENDIAN == LP_ENDIAN_BIG
+#if F_ENDIAN == F_ENDIAN_BIG
 	FColor FMath::GetAsABGR(const ABGR val)
 #else
 	FColor FMath::GetAsRGBA(const RGBA val)
@@ -260,7 +260,7 @@ namespace LostPeterFoundation
         return FColor(r, g, b, a);
 	}
 
-#if LP_ENDIAN == LP_ENDIAN_BIG
+#if F_ENDIAN == F_ENDIAN_BIG
 	FColor FMath::GetAsBGRA(const BGRA val)
 #else
 	FColor FMath::GetAsARGB(const ARGB val)
@@ -286,7 +286,7 @@ namespace LostPeterFoundation
         return FColor(r, g, b, a);
 	}
 
-#if LP_ENDIAN == LP_ENDIAN_BIG
+#if F_ENDIAN == F_ENDIAN_BIG
 	FColor FMath::GetAsARGB(const ARGB val)
 #else
 	FColor FMath::GetAsBGRA(const BGRA val)
@@ -312,7 +312,7 @@ namespace LostPeterFoundation
         return FColor(r, g, b, a);
 	}
 
-#if LP_ENDIAN == LP_ENDIAN_BIG
+#if F_ENDIAN == F_ENDIAN_BIG
 	FColor FMath::GetAsRGBA(const RGBA val)
 #else
 	FColor FMath::GetAsABGR(const ABGR val)

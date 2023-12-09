@@ -36,8 +36,8 @@ namespace LostPeterEngine
 		int32 m_nOrder;
 
     public:
-		E_FORCEINLINE int32 GetOrder() const { return m_nOrder; }
-		E_FORCEINLINE void SetOrder(int32 nOrder) { m_nOrder = nOrder; }
+		F_FORCEINLINE int32 GetOrder() const { return m_nOrder; }
+		F_FORCEINLINE void SetOrder(int32 nOrder) { m_nOrder = nOrder; }
 
 	public:
 		virtual	bool PreRenderOneFrame() { return true; }

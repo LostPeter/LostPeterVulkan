@@ -29,15 +29,15 @@ namespace LostPeterEngine
 		return (*ms_Singleton);     
 	}
 
-#if E_PLATFORM == E_PLATFORM_WINDOW      
+#if F_PLATFORM == F_PLATFORM_WINDOW      
 	FPlatformType Engine::ms_ePlatform = F_Platform_Windows;
-#elif E_PLATFORM == E_PLATFORM_MAC
+#elif F_PLATFORM == F_PLATFORM_MAC
     FPlatformType Engine::ms_ePlatform = F_Platform_MacOS;
-#elif E_PLATFORM == E_PLATFORM_LINUX
+#elif F_PLATFORM == F_PLATFORM_LINUX
     FPlatformType Engine::ms_ePlatform = F_Platform_Linux;                    
-#elif E_PLATFORM == E_PLATFORM_ANDROID
+#elif F_PLATFORM == F_PLATFORM_ANDROID
     FPlatformType Engine::ms_ePlatform = F_Platform_Android;                  
-#elif E_PLATFORM == E_PLATFORM_IOS
+#elif F_PLATFORM == F_PLATFORM_IOS
     FPlatformType Engine::ms_ePlatform = F_Platform_iOS;
 #else 
     #pragma error "UnKnown platform, Engine.cpp Abort! Abort!"

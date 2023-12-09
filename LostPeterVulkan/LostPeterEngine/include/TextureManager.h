@@ -35,11 +35,11 @@ namespace LostPeterEngine
 		float m_fDefaultMipmapLODBias;
 
     public:
-        E_FORCEINLINE TextureSerializer* GetTextureSerializer() const { return m_pTextureSerializer; }
-        E_FORCEINLINE const TexturePtrVector& GetTexturePtrVector() const { return m_aTexture; }
-        E_FORCEINLINE TexturePtrVector& GetTexturePtrVector() { return m_aTexture; }
-        E_FORCEINLINE const TextureGroupPtrMap& GetTextureGroupPtrMap() const { return m_mapTextureGroup; }
-        E_FORCEINLINE TextureGroupPtrMap& GetTextureGroupPtrMap() { return m_mapTextureGroup; }
+        F_FORCEINLINE TextureSerializer* GetTextureSerializer() const { return m_pTextureSerializer; }
+        F_FORCEINLINE const TexturePtrVector& GetTexturePtrVector() const { return m_aTexture; }
+        F_FORCEINLINE TexturePtrVector& GetTexturePtrVector() { return m_aTexture; }
+        F_FORCEINLINE const TextureGroupPtrMap& GetTextureGroupPtrMap() const { return m_mapTextureGroup; }
+        F_FORCEINLINE TextureGroupPtrMap& GetTextureGroupPtrMap() { return m_mapTextureGroup; }
 
     public:
         static TextureManager& GetSingleton();

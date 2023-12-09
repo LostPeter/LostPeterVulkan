@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanDeviceMemoryAllocation
     {
@@ -38,13 +38,13 @@ namespace LostPeter
         bool m_bIsFreedBySystem;
 
     public:
-        E_FORCEINLINE VkDeviceSize GetSize() const { return m_nSize; }
-        E_FORCEINLINE VkDeviceMemory GetVkDeviceMemory() const { return m_vkDeviceMemory; }
-        E_FORCEINLINE void* GetMappedPointer() { return m_pMappedPointer; }
-        E_FORCEINLINE bool IsMapped() const { return m_pMappedPointer != nullptr; }
-        E_FORCEINLINE uint32 GetMemoryTypeIndex() const { return m_nMemoryTypeIndex; }
-        E_FORCEINLINE bool CanBeMapped() const { return m_bCanBeMapped; }
-        E_FORCEINLINE bool IsCoherent() const { return m_bIsCoherent; }
+        F_FORCEINLINE VkDeviceSize GetSize() const { return m_nSize; }
+        F_FORCEINLINE VkDeviceMemory GetVkDeviceMemory() const { return m_vkDeviceMemory; }
+        F_FORCEINLINE void* GetMappedPointer() { return m_pMappedPointer; }
+        F_FORCEINLINE bool IsMapped() const { return m_pMappedPointer != nullptr; }
+        F_FORCEINLINE uint32 GetMemoryTypeIndex() const { return m_nMemoryTypeIndex; }
+        F_FORCEINLINE bool CanBeMapped() const { return m_bCanBeMapped; }
+        F_FORCEINLINE bool IsCoherent() const { return m_bIsCoherent; }
         
     public:
         void Destroy();
@@ -57,6 +57,6 @@ namespace LostPeter
 	    void InvalidateMappedMemory(VkDeviceSize offset, VkDeviceSize size);
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

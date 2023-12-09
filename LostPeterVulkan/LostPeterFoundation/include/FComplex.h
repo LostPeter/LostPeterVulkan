@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FComplex
+    class foundationExport FComplex
     {
     public:
         FComplex();
@@ -44,8 +44,8 @@ namespace LostPeterFoundation
         bool IsInfinite;    //is infinite
 
     public:
-        LP_FORCEINLINE double GetImaginary() const { return imaginary; }
-        LP_FORCEINLINE double GetReal() const { return real; }
+        F_FORCEINLINE double GetImaginary() const { return imaginary; }
+        F_FORCEINLINE double GetReal() const { return real; }
 
     public:
         String ToString();

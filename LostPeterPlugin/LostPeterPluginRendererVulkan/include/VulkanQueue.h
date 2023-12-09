@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanQueue
     {
@@ -29,14 +29,14 @@ namespace LostPeter
         VulkanDevice* m_pDevice;
 
     public:
-        E_FORCEINLINE const VkQueue& GetVkQueue() const { return m_vkQueue; }
-        E_FORCEINLINE uint32 GetFamilyIndex() const { return m_nFamilyIndex; }
+        F_FORCEINLINE const VkQueue& GetVkQueue() const { return m_vkQueue; }
+        F_FORCEINLINE uint32 GetFamilyIndex() const { return m_nFamilyIndex; }
             
     public:
         void Destroy();
         bool Init(VulkanDevice* pDevice, uint32 nFamilyIndex);
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

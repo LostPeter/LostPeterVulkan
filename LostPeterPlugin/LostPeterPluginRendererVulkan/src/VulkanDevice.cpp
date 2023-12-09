@@ -16,7 +16,7 @@
 #include "../include/VulkanDeviceMemoryManager.h"
 #include "../include/VulkanConverter.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanDevice::VulkanDevice(VulkanInstance* pInstance, VkPhysicalDevice vkPhysicalDevice)
         : m_vkDevice(VK_NULL_HANDLE)
@@ -452,7 +452,7 @@ namespace LostPeter
     }
 
     /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
-    //VkSemaphore
+    ////////// VkSemaphore //////////
     VkSemaphore VulkanDevice::CreateVkSemaphore()
     {
         VkSemaphore vkSemaphore;
@@ -479,7 +479,7 @@ namespace LostPeter
     }
 
 
-    //VkFence
+    ////////// VkFence //////////////
     VkFence VulkanDevice::CreateVkFence(bool isCreateSignaled)
     {
         VkFence vkFence;
@@ -935,4 +935,4 @@ namespace LostPeter
         FreeVkCommandBuffers(m_vkCommandPoolTransfer, 1, &vkCommandBuffer);
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

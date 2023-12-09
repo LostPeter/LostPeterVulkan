@@ -16,10 +16,10 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FCircle
+    class foundationExport FCircle
 	{
 	public:
-		LP_FORCEINLINE FCircle()
+		F_FORCEINLINE FCircle()
 			: m_vNormal(0, 1, 0)
 			, m_fDistance(0)
 			, m_vCenter(0, 0, 0)
@@ -27,7 +27,7 @@ namespace LostPeterFoundation
 		{
 
 		}
-		LP_FORCEINLINE FCircle(const FVector3& vNormal, float fDistance, const FVector3& vCenter, float fRadius)
+		F_FORCEINLINE FCircle(const FVector3& vNormal, float fDistance, const FVector3& vCenter, float fRadius)
 			: m_vNormal(vNormal)
 			, m_fDistance(fDistance)
 			, m_vCenter(vCenter)
@@ -43,12 +43,12 @@ namespace LostPeterFoundation
 		float m_fRadius;
 
 	public:
-		LP_FORCEINLINE const FVector3& GetNormal() const { return m_vNormal; }
-        LP_FORCEINLINE FVector3& GetNormal() { return m_vNormal; }
-        LP_FORCEINLINE float GetDistance() const { return m_fDistance; }
-		LP_FORCEINLINE const FVector3& GetCenter() const { return m_vCenter; }
-        LP_FORCEINLINE FVector3& GetCenter() { return m_vCenter; }
-		LP_FORCEINLINE float GetRadius() const { return m_fRadius; }
+		F_FORCEINLINE const FVector3& GetNormal() const { return m_vNormal; }
+        F_FORCEINLINE FVector3& GetNormal() { return m_vNormal; }
+        F_FORCEINLINE float GetDistance() const { return m_fDistance; }
+		F_FORCEINLINE const FVector3& GetCenter() const { return m_vCenter; }
+        F_FORCEINLINE FVector3& GetCenter() { return m_vCenter; }
+		F_FORCEINLINE float GetRadius() const { return m_fRadius; }
 
 	public:
 		bool Intersects_Point(const FVector3& point) const;

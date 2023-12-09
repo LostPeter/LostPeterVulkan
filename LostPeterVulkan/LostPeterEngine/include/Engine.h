@@ -74,23 +74,23 @@ namespace LostPeterEngine
 		static Engine* GetSingletonPtr();
 
     public:
-        E_FORCEINLINE SystemCapabilities* GetSystemCapabilities() { return m_pSystemCapabilities; }
-        E_FORCEINLINE FPathManager* GetPathManager() { return m_pPathManager; }
-        E_FORCEINLINE FFileManager* GetFileManager() { return m_pFileManager; }
-        E_FORCEINLINE FCodecManager* GetCodecManager() { return m_pCodecManager; }
-        E_FORCEINLINE FPluginManager* GetPluginManager() { return m_pPluginManager; }
-        E_FORCEINLINE RenderEngine* GetRenderEngine() { return m_pRenderEngine; }
+        F_FORCEINLINE SystemCapabilities* GetSystemCapabilities() { return m_pSystemCapabilities; }
+        F_FORCEINLINE FPathManager* GetPathManager() { return m_pPathManager; }
+        F_FORCEINLINE FFileManager* GetFileManager() { return m_pFileManager; }
+        F_FORCEINLINE FCodecManager* GetCodecManager() { return m_pCodecManager; }
+        F_FORCEINLINE FPluginManager* GetPluginManager() { return m_pPluginManager; }
+        F_FORCEINLINE RenderEngine* GetRenderEngine() { return m_pRenderEngine; }
 
-        E_FORCEINLINE FTimer* GetTimer() const { return m_pTimer; }
-        E_FORCEINLINE EngineFrameProfiler* GetEngineFrameProfiler() { return m_pEngineFrameProfiler; }
+        F_FORCEINLINE FTimer* GetTimer() const { return m_pTimer; }
+        F_FORCEINLINE EngineFrameProfiler* GetEngineFrameProfiler() { return m_pEngineFrameProfiler; }
 
-        E_FORCEINLINE uint64 GetFrameCurrentNumber() const { return m_nFrameCurrent; }
-        E_FORCEINLINE uint64 GetTimeLast() const { return m_nTimeLast; }
+        F_FORCEINLINE uint64 GetFrameCurrentNumber() const { return m_nFrameCurrent; }
+        F_FORCEINLINE uint64 GetTimeLast() const { return m_nTimeLast; }
 
-        E_FORCEINLINE const String& GetNamePlatform() const { return m_strNamePlatform; }
-        E_FORCEINLINE const String& GetPathWorkFolder() const { return m_pathWorkFolder; }
-        E_FORCEINLINE bool IsEngineInit() const { return m_bEngineIsInit; }
-        E_FORCEINLINE ConfigItemMap* GetEngineCommonCfgItems() { return &m_mapEngineCommonCfgItem; }
+        F_FORCEINLINE const String& GetNamePlatform() const { return m_strNamePlatform; }
+        F_FORCEINLINE const String& GetPathWorkFolder() const { return m_pathWorkFolder; }
+        F_FORCEINLINE bool IsEngineInit() const { return m_bEngineIsInit; }
+        F_FORCEINLINE ConfigItemMap* GetEngineCommonCfgItems() { return &m_mapEngineCommonCfgItem; }
 
     public:
         void Destroy();

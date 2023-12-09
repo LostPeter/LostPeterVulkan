@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanStreamIndex : public StreamIndex
     {
@@ -34,8 +34,8 @@ namespace LostPeter
         VkDeviceMemory m_vkDeviceMemory;
         
     public:
-        E_FORCEINLINE VkBuffer GetVkBuffer() const { return m_vkBuffer; }
-        E_FORCEINLINE VkDeviceMemory GetVkDeviceMemory() const { return m_vkDeviceMemory; }
+        F_FORCEINLINE VkBuffer GetVkBuffer() const { return m_vkBuffer; }
+        F_FORCEINLINE VkDeviceMemory GetVkDeviceMemory() const { return m_vkDeviceMemory; }
 
     public:
         virtual void ReadData(size_t nOffset, size_t nLength, void* pDest);
@@ -54,6 +54,6 @@ namespace LostPeter
         void createVkBuffer();
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

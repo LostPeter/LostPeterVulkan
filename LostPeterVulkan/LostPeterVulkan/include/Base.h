@@ -17,7 +17,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport Base
+    class vulkanExport Base
     {
     public:
         Base(const String& _name);
@@ -38,18 +38,18 @@ namespace LostPeterVulkan
         bool isInit;
 
     public:
-        UTIL_FORCEINLINE uint32 GetGroup() const { return this->group; }
-        UTIL_FORCEINLINE void SetGroup(uint32 _group) { this->group = _group; }
-        UTIL_FORCEINLINE const String& GetName() const { return this->name; }
-        UTIL_FORCEINLINE void SetName(const String& _name) { this->name = _name; }
+        F_FORCEINLINE uint32 GetGroup() const { return this->group; }
+        F_FORCEINLINE void SetGroup(uint32 _group) { this->group = _group; }
+        F_FORCEINLINE const String& GetName() const { return this->name; }
+        F_FORCEINLINE void SetName(const String& _name) { this->name = _name; }
 
-        UTIL_FORCEINLINE int GetRef() const { return this->refCount; }
-        UTIL_FORCEINLINE bool HasRef() const { return this->refCount <= 0 ? false : true; }
-        UTIL_FORCEINLINE int AddRef() { return ++this->refCount; }
-        UTIL_FORCEINLINE int DelRef() { return --this->refCount; }
+        F_FORCEINLINE int GetRef() const { return this->refCount; }
+        F_FORCEINLINE bool HasRef() const { return this->refCount <= 0 ? false : true; }
+        F_FORCEINLINE int AddRef() { return ++this->refCount; }
+        F_FORCEINLINE int DelRef() { return --this->refCount; }
 
-        UTIL_FORCEINLINE bool IsInit() const { return this->isInit; }
-        UTIL_FORCEINLINE void SetIsInit(bool b) { this->isInit = b; }
+        F_FORCEINLINE bool IsInit() const { return this->isInit; }
+        F_FORCEINLINE void SetIsInit(bool b) { this->isInit = b; }
 
     public:
         bool IsGroupNameValid() const;

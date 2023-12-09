@@ -17,7 +17,7 @@
 
 namespace LostPeterFoundation
 {
-    #if LP_PLATFORM == LP_PLATFORM_WIN32
+    #if F_PLATFORM == F_PLATFORM_WINDOW
         #pragma warning (disable : 4311)
         #pragma warning (disable : 4312)
         #pragma warning (disable : 4661)

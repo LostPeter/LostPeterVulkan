@@ -34,13 +34,13 @@ namespace LostPeterEngine
         SceneGroupPtrMap m_mapSceneGroup;
 
     public:
-        E_FORCEINLINE SceneSerializer* GetSceneSerializer() const { return m_pSceneSerializer; }
-        E_FORCEINLINE SceneDataSerializer* GetSceneDataSerializer() const { return m_pSceneDataSerializer; }
+        F_FORCEINLINE SceneSerializer* GetSceneSerializer() const { return m_pSceneSerializer; }
+        F_FORCEINLINE SceneDataSerializer* GetSceneDataSerializer() const { return m_pSceneDataSerializer; }
 
-        E_FORCEINLINE const ScenePtrVector& GetScenePtrVector() const { return this->m_aScene; }
-        E_FORCEINLINE ScenePtrVector& GetScenePtrVector() { return this->m_aScene; }
-        E_FORCEINLINE const SceneGroupPtrMap& GetSceneGroupPtrMap() const { return this->m_mapSceneGroup; }
-        E_FORCEINLINE SceneGroupPtrMap& GetSceneGroupPtrMap() { return this->m_mapSceneGroup; }
+        F_FORCEINLINE const ScenePtrVector& GetScenePtrVector() const { return this->m_aScene; }
+        F_FORCEINLINE ScenePtrVector& GetScenePtrVector() { return this->m_aScene; }
+        F_FORCEINLINE const SceneGroupPtrMap& GetSceneGroupPtrMap() const { return this->m_mapSceneGroup; }
+        F_FORCEINLINE SceneGroupPtrMap& GetSceneGroupPtrMap() { return this->m_mapSceneGroup; }
 
     public:
         static SceneDataManager& GetSingleton();

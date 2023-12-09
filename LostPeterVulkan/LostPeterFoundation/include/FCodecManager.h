@@ -17,7 +17,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FCodecManager : public FSingleton<FCodecManager>
+    class foundationExport FCodecManager : public FSingleton<FCodecManager>
     {
     public:
         FCodecManager();

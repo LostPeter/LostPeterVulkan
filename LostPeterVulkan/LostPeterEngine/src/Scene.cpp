@@ -157,7 +157,7 @@ namespace LostPeterEngine
 		SceneNodePtrMap::const_iterator itFind = m_mapSceneNodes.find(strName);
 		if (itFind != m_mapSceneNodes.end())
 		{
-			F_LogError("Scene::AddSceneNode: Scene node with the name: [%s] already exists !", strName.c_str());
+			F_LogError("*********************** Scene::AddSceneNode: Scene node with the name: [%s] already exists !", strName.c_str());
 			return false;
 		}
 
@@ -170,7 +170,7 @@ namespace LostPeterEngine
 		SceneNode* pSceneNode = createSceneNodeImpl();
 		if (!AddSceneNode(pSceneNode))
 		{
-			F_LogError("Scene::CreateSceneNode: Scene node with the name: [%s] already exists !", pSceneNode->GetName().c_str());
+			F_LogError("*********************** Scene::CreateSceneNode: Scene node with the name: [%s] already exists !", pSceneNode->GetName().c_str());
 			return nullptr;
 		}
 		return pSceneNode;
@@ -183,7 +183,7 @@ namespace LostPeterEngine
 	{
 		if (m_mapSceneNodes.find(strName) != m_mapSceneNodes.end())
 		{
-			F_LogError("Scene::CreateSceneNode: Scene node with the name: [%s] already exists !", strName.c_str());
+			F_LogError("*********************** Scene::CreateSceneNode: Scene node with the name: [%s] already exists !", strName.c_str());
 			return nullptr;
 		}
 		
@@ -201,7 +201,7 @@ namespace LostPeterEngine
 		SceneNodePtrMap::iterator itFind = m_mapSceneNodes.find(strName);
 		if (itFind == m_mapSceneNodes.end())
 		{
-			F_LogError("SceneManager::DestroySceneNode: SceneNode: [%s] not found !", strName.c_str());
+			F_LogError("*********************** SceneManager::DestroySceneNode: SceneNode: [%s] not found !", strName.c_str());
 			return;
 		}
 
@@ -285,7 +285,7 @@ namespace LostPeterEngine
 		ObjectPtrMap::iterator itFind = pObjectMap->find(strName);
 		if (itFind == pObjectMap->end())
 		{
-			F_LogError("Scene::GetObject: Can not find object named: [%s], type: [%s] !", strName.c_str(), E_GetObjectTypeName(type).c_str());
+			F_LogError("*********************** Scene::GetObject: Can not find object named: [%s], type: [%s] !", strName.c_str(), E_GetObjectTypeName(type).c_str());
 			return nullptr;
 		}
 		return itFind->second;
@@ -354,7 +354,7 @@ namespace LostPeterEngine
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Mesh);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
-			F_LogError("Scene::CreateObjectMesh: Object mesh named: [%s] already exists !", strName.c_str());
+			F_LogError("*********************** Scene::CreateObjectMesh: Object mesh named: [%s] already exists !", strName.c_str());
 			return nullptr;
 		}
 
@@ -396,7 +396,7 @@ namespace LostPeterEngine
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_SkinMesh);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
-			F_LogError("Scene::CreateObjectSkinMesh: Object skin mesh named: [%s] already exists !", strName.c_str());
+			F_LogError("*********************** Scene::CreateObjectSkinMesh: Object skin mesh named: [%s] already exists !", strName.c_str());
 			return nullptr;
 		}
 
@@ -438,7 +438,7 @@ namespace LostPeterEngine
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Camera);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
-			F_LogError("Scene::CreateObjectCamera: Object camera named: [%s] already exists !", strName.c_str());
+			F_LogError("*********************** Scene::CreateObjectCamera: Object camera named: [%s] already exists !", strName.c_str());
 			return nullptr;
 		}
 
@@ -501,7 +501,7 @@ namespace LostPeterEngine
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Light);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
-			F_LogError("Scene::CreateObjectLight: Object light named: [%s] already exists !", strName.c_str());
+			F_LogError("*********************** Scene::CreateObjectLight: Object light named: [%s] already exists !", strName.c_str());
 			return nullptr;
 		}
 
@@ -557,7 +557,7 @@ namespace LostPeterEngine
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Terrain);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
-			F_LogError("Scene::CreateObjectTerrain: Object terrain named: [%s] already exists !", strName.c_str());
+			F_LogError("*********************** Scene::CreateObjectTerrain: Object terrain named: [%s] already exists !", strName.c_str());
 			return nullptr;
 		}
 
@@ -599,7 +599,7 @@ namespace LostPeterEngine
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Water);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
-			F_LogError("Scene::CreateObjectWater: Object water named: [%s] already exists !", strName.c_str());
+			F_LogError("*********************** Scene::CreateObjectWater: Object water named: [%s] already exists !", strName.c_str());
 			return nullptr;
 		}
 
@@ -641,7 +641,7 @@ namespace LostPeterEngine
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Sky);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
-			F_LogError("Scene::CreateObjectSky: Object sky named: [%s] already exists !", strName.c_str());
+			F_LogError("*********************** Scene::CreateObjectSky: Object sky named: [%s] already exists !", strName.c_str());
 			return nullptr;
 		}
 
@@ -683,7 +683,7 @@ namespace LostPeterEngine
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Cloud);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
-			F_LogError("Scene::CreateObjectCloud: Object cloud named: [%s] already exists !", strName.c_str());
+			F_LogError("*********************** Scene::CreateObjectCloud: Object cloud named: [%s] already exists !", strName.c_str());
 			return nullptr;
 		}
 
@@ -725,7 +725,7 @@ namespace LostPeterEngine
 		ObjectPtrMap* pObjectMap = GetObjectPtrMapByType(E_Object_Particle);
 		if (pObjectMap->find(strName) != pObjectMap->end())
 		{
-			F_LogError("Scene::CreateObjectParticle: Object particle named: [%s] already exists !", strName.c_str());
+			F_LogError("*********************** Scene::CreateObjectParticle: Object particle named: [%s] already exists !", strName.c_str());
 			return nullptr;
 		}
 

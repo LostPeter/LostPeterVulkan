@@ -69,20 +69,20 @@ namespace LostPeterEngine
 		mutable bool m_bTransformWorldOutOfDate;
 
     public:
-		E_FORCEINLINE Node* GetParent() const	{ return m_pParent; }
+		F_FORCEINLINE Node* GetParent() const	{ return m_pParent; }
 
-		E_FORCEINLINE NodeListener* GetNodeListener() const { return m_pNodeListener; }
-		E_FORCEINLINE void SetNodeListener(NodeListener* pNodeListener) { m_pNodeListener = pNodeListener; }
+		F_FORCEINLINE NodeListener* GetNodeListener() const { return m_pNodeListener; }
+		F_FORCEINLINE void SetNodeListener(NodeListener* pNodeListener) { m_pNodeListener = pNodeListener; }
 
-        E_FORCEINLINE NodePtrMap& GetNodeMapChild() { return m_mapChild; }
-		E_FORCEINLINE const NodePtrMap& GetNodeMapChild() const { return m_mapChild; }
+        F_FORCEINLINE NodePtrMap& GetNodeMapChild() { return m_mapChild; }
+		F_FORCEINLINE const NodePtrMap& GetNodeMapChild() const { return m_mapChild; }
 
 	public:
 	////Initial
-		E_FORCEINLINE const FVector3& GetPositionInitial() const { return m_vPosInitial; }
-		E_FORCEINLINE const FQuaternion& GetRotationInitial() const { return m_qRotInitial; }
-		E_FORCEINLINE const FVector3&	GetScaleInitial() const	{ return m_vScaleInitial; }
-		E_FORCEINLINE void SetInitialState()
+		F_FORCEINLINE const FVector3& GetPositionInitial() const { return m_vPosInitial; }
+		F_FORCEINLINE const FQuaternion& GetRotationInitial() const { return m_qRotInitial; }
+		F_FORCEINLINE const FVector3&	GetScaleInitial() const	{ return m_vScaleInitial; }
+		F_FORCEINLINE void SetInitialState()
 		{
 			m_vPosInitial = m_vPosLocal;
 			m_qRotInitial = m_qRotLocal;
@@ -98,80 +98,80 @@ namespace LostPeterEngine
 		}
 
 	////Local
-        E_FORCEINLINE const FVector3& GetPositionLocal() const { return m_vPosLocal; }
-		E_FORCEINLINE void SetPositionLocalOnly(const FVector3& vPosLocal)
+        F_FORCEINLINE const FVector3& GetPositionLocal() const { return m_vPosLocal; }
+		F_FORCEINLINE void SetPositionLocalOnly(const FVector3& vPosLocal)
 		{
 			m_vPosLocal = vPosLocal;
 		}
-		E_FORCEINLINE void SetPositionLocal(const FVector3& vPosLocal)
+		F_FORCEINLINE void SetPositionLocal(const FVector3& vPosLocal)
 		{
 			SetPositionLocalOnly(vPosLocal);
 			NeedUpdate();
 		}
-		E_FORCEINLINE void SetPositionLocal(float x, float y, float z)
+		F_FORCEINLINE void SetPositionLocal(float x, float y, float z)
 		{
 			SetPositionLocal(FVector3(x, y, z));
 		}
 
-		E_FORCEINLINE const FQuaternion& GetRotationLocal() const { return m_qRotLocal; }
-		E_FORCEINLINE void SetRotationLocalOnly(const FQuaternion& qRotLocal)
+		F_FORCEINLINE const FQuaternion& GetRotationLocal() const { return m_qRotLocal; }
+		F_FORCEINLINE void SetRotationLocalOnly(const FQuaternion& qRotLocal)
 		{
 			m_qRotLocal = FMath::Normalize(qRotLocal);
 		}
-		E_FORCEINLINE void SetRotationLocal(const FQuaternion& qRotLocal)
+		F_FORCEINLINE void SetRotationLocal(const FQuaternion& qRotLocal)
 		{
 			SetRotationLocalOnly(qRotLocal);
 			NeedUpdate();
 		}
-		E_FORCEINLINE void SetRotationLocal(float x, float y, float z, float w)
+		F_FORCEINLINE void SetRotationLocal(float x, float y, float z, float w)
 		{
 			SetRotationLocal(FQuaternion(x, y, z, w));
 		}
-		E_FORCEINLINE void ResetRotationLocal()
+		F_FORCEINLINE void ResetRotationLocal()
 		{
 			m_qRotLocal = FMath::ms_qUnit;
 			NeedUpdate();
 		}
 
-		E_FORCEINLINE void SetAngleLocalOnly(const FVector3& vAngleLocal)
+		F_FORCEINLINE void SetAngleLocalOnly(const FVector3& vAngleLocal)
 		{
 			m_qRotLocal = FMath::ToQuaternion(vAngleLocal);
 		}
-		E_FORCEINLINE void SetAngleLocal(const FVector3& vAngleLocal)
+		F_FORCEINLINE void SetAngleLocal(const FVector3& vAngleLocal)
 		{
 			SetAngleLocalOnly(vAngleLocal);
 			NeedUpdate();
 		}
-		E_FORCEINLINE void SetAngleLocal(float x, float y, float z)
+		F_FORCEINLINE void SetAngleLocal(float x, float y, float z)
 		{
 			SetAngleLocal(FVector3(x, y, z));
 		}
 
 
-		E_FORCEINLINE const FVector3& GetScaleLocal() const { return m_vScaleLocal; }
-		E_FORCEINLINE void SetScaleLocalOnly(const FVector3& vScaleLocal)
+		F_FORCEINLINE const FVector3& GetScaleLocal() const { return m_vScaleLocal; }
+		F_FORCEINLINE void SetScaleLocalOnly(const FVector3& vScaleLocal)
 		{
 			m_vScaleLocal = vScaleLocal;
 		}
-		E_FORCEINLINE void SetScaleLocal(const FVector3& vScaleLocal)
+		F_FORCEINLINE void SetScaleLocal(const FVector3& vScaleLocal)
 		{
 			SetScaleLocalOnly(vScaleLocal);
 			NeedUpdate();
 		}
-		E_FORCEINLINE void SetScaleLocal(float x, float y, float z)
+		F_FORCEINLINE void SetScaleLocal(float x, float y, float z)
 		{
 			SetScaleLocal(FVector3(x, y, z));
 		}	
 
 
-		E_FORCEINLINE bool GetRotationIsInherit() const { return m_bRotIsInherit; }
-		E_FORCEINLINE void SetRotationIsInherit(bool bRotIsInherit)
+		F_FORCEINLINE bool GetRotationIsInherit() const { return m_bRotIsInherit; }
+		F_FORCEINLINE void SetRotationIsInherit(bool bRotIsInherit)
 		{
 			m_bRotIsInherit = bRotIsInherit;
 			NeedUpdate();
 		}
-		E_FORCEINLINE bool GetScaleIsInherit() const { return m_bScaleIsInherit; }
-		E_FORCEINLINE void SetScaleIsInherit(bool bScaleIsInherit)
+		F_FORCEINLINE bool GetScaleIsInherit() const { return m_bScaleIsInherit; }
+		F_FORCEINLINE void SetScaleIsInherit(bool bScaleIsInherit)
 		{
 			m_bScaleIsInherit = bScaleIsInherit;
 			NeedUpdate();

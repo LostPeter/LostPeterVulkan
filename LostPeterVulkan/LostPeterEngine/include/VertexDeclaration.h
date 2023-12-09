@@ -33,12 +33,12 @@ namespace LostPeterEngine
 		void GetVertexDeclKey(String& strKey);
 
 	public:
-		E_FORCEINLINE size_t GetVertexElementCount() { return m_listElement.size(); }
-		E_FORCEINLINE const VertexElementList& GetVertexElementList() const { return m_listElement; }
-		E_FORCEINLINE int32 GetPoolIndex() { return m_nPoolIndex; }
-		E_FORCEINLINE void SetPoolIndex(int32 nIndex) { m_nPoolIndex = nIndex; }
-		E_FORCEINLINE bool GetSharedVD() const { return m_bSharedVD; }
-		E_FORCEINLINE void SetSharedVD(bool b) { m_bSharedVD = b; }
+		F_FORCEINLINE size_t GetVertexElementCount() { return m_listElement.size(); }
+		F_FORCEINLINE const VertexElementList& GetVertexElementList() const { return m_listElement; }
+		F_FORCEINLINE int32 GetPoolIndex() { return m_nPoolIndex; }
+		F_FORCEINLINE void SetPoolIndex(int32 nIndex) { m_nPoolIndex = nIndex; }
+		F_FORCEINLINE bool GetSharedVD() const { return m_bSharedVD; }
+		F_FORCEINLINE void SetSharedVD(bool b) { m_bSharedVD = b; }
 		
 		const VertexElement* GetVertexElement(uint16 nIndex);
 

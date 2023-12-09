@@ -16,7 +16,7 @@
 
 namespace LostPeterVulkan
 {
-    class utilExport Texture : public Base
+    class vulkanExport Texture : public Base
     {
     public:
         Texture(uint32 _group,

@@ -17,7 +17,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FFrustum
+    class foundationExport FFrustum
     {
     public:
         FFrustum()
@@ -33,8 +33,8 @@ namespace LostPeterFoundation
         FPlane m_aPlanes[6];
 
     public:
-        LP_FORCEINLINE const FPlane& GetPlane(FFrustumPlaneType eType) const { return (m_aPlanes[(int32)eType]); }
-        LP_FORCEINLINE const FPlane& GetPlane(int32 index) const { return (m_aPlanes[index]); }
+        F_FORCEINLINE const FPlane& GetPlane(FFrustumPlaneType eType) const { return (m_aPlanes[(int32)eType]); }
+        F_FORCEINLINE const FPlane& GetPlane(int32 index) const { return (m_aPlanes[index]); }
 
     public:
         bool CheckPoint(const FVector3& point);	

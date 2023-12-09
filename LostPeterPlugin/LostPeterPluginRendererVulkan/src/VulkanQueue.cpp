@@ -12,7 +12,7 @@
 #include "../include/VulkanQueue.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     VulkanQueue::VulkanQueue()
         : m_vkQueue(VK_NULL_HANDLE)
@@ -50,4 +50,4 @@ namespace LostPeter
         return true;
     }
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

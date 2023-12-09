@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     class VulkanTextureManager : public TextureManager
     {
@@ -28,8 +28,8 @@ namespace LostPeter
         bool m_bCanRestrictImageViewUsage;
 
     public:
-        E_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
-        E_FORCEINLINE bool CanRestrictImageViewUsage() const { return m_bCanRestrictImageViewUsage; }
+        F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
+        F_FORCEINLINE bool CanRestrictImageViewUsage() const { return m_bCanRestrictImageViewUsage; }
 
     public:
         virtual FPixelFormatType GetNativeFormat(FTextureType eTexture, FPixelFormatType ePixelFormat, int32 nUsage);
@@ -40,6 +40,6 @@ namespace LostPeter
 		virtual Texture* createImpl(uint32 nGroup, const String& strName, const String2StringMap* pParams = nullptr);
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

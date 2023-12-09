@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FAtomicCount
+    class foundationExport FAtomicCount
     {
     public:
         FAtomicCount();

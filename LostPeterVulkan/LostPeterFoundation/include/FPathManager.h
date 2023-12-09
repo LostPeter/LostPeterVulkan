@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FPathManager : public FSingleton<FPathManager>
+    class foundationExport FPathManager : public FSingleton<FPathManager>
 	{
 	public:
 		FPathManager();
@@ -94,11 +94,11 @@ namespace LostPeterFoundation
 		static FPathManager* GetSingletonPtr();
 	
 	public:
-		LP_FORCEINLINE FPathGroupMap& GetPathGroupMap() { return m_mapGroup; }
-		LP_FORCEINLINE FPathGroupIDMap& GetPathGroupIDMap() { return m_mapGroupID; }
-		LP_FORCEINLINE FPathGroupBaseMap& GetPathGroupBaseMap() { return m_mapGroupBase; }
+		F_FORCEINLINE FPathGroupMap& GetPathGroupMap() { return m_mapGroup; }
+		F_FORCEINLINE FPathGroupIDMap& GetPathGroupIDMap() { return m_mapGroupID; }
+		F_FORCEINLINE FPathGroupBaseMap& GetPathGroupBaseMap() { return m_mapGroupBase; }
 			
-		LP_FORCEINLINE const String& GetWorkFolder() const { return m_strWorkFolder; }
+		F_FORCEINLINE const String& GetWorkFolder() const { return m_strWorkFolder; }
 		
 	public:
 		String GetFilePath(uint32 nGroup, const String& strName);

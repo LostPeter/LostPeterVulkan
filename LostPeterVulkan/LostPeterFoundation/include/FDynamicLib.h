@@ -14,7 +14,7 @@
 
 #include "FPreDefine.h"
 
-#if LP_PLATFORM == LP_PLATFORM_WIN32
+#if F_PLATFORM == F_PLATFORM_WINDOW
 	#define DYNLIB_HANDLE			hInstance
 	#define DYNLIB_LOAD(a)			LoadLibraryEx(a, 0, LOAD_WITH_ALTERED_SEARCH_PATH)
 	#define DYNLIB_GETSYM(a, b)		GetProcAddress(a, b)
@@ -23,7 +23,7 @@
 	struct HINSTANCE__;
 	typedef struct HINSTANCE__* hInstance;
 
-#elif LP_PLATFORM == LP_PLATFORM_MAC || LP_PLATFORM == LP_PLATFORM_IOS 
+#elif F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_iOS 
     #include "FUtilOC.h"
 	#define DYNLIB_HANDLE			void*
 	#define DYNLIB_LOAD(a)			F_OCMac_LoadExeBundle(a)
@@ -31,7 +31,7 @@
 	#define DYNLIB_GETSYM(a,b)		dlsym(a,b)
 	#define DYNLIB_UNLOAD(a)		dlclose(a)
 
-#elif LP_PLATFORM == LP_PLATFORM_LINUX || LP_PLATFORM == LP_PLATFORM_ANDROID 
+#elif F_PLATFORM == F_PLATFORM_LINUX || F_PLATFORM == F_PLATFORM_ANDROID 
 	#define DYNLIB_HANDLE			void*
 	#define DYNLIB_LOAD(a)			dlopen(a,RTLD_LAZY | RTLD_GLOBAL)
 	#define DYNLIB_GETSYM(a,b)		dlsym(a,b)
@@ -43,7 +43,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FDynamicLib
+    class foundationExport FDynamicLib
 	{
 	public:
 		FDynamicLib();
@@ -56,16 +56,16 @@ namespace LostPeterFoundation
 		DYNLIB_HANDLE m_hInst;
 
 	public:
-		LP_FORCEINLINE const String& GetName() const 
+		F_FORCEINLINE const String& GetName() const 
         { 
             return this->m_strName; 
         }
-		LP_FORCEINLINE const String& GetPath() const 
+		F_FORCEINLINE const String& GetPath() const 
         { 
             return this->m_strPath; 
         }
 
-		LP_FORCEINLINE bool IsLoaded() const
+		F_FORCEINLINE bool IsLoaded() const
 		{
 			return this->m_hInst != nullptr;
 		}

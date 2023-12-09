@@ -13,8 +13,8 @@
 #include "../include/ImageCodecSTBDefine.h"
 
 
-namespace LostPeter
+namespace LostPeterPluginImageCodecSTB
 {
     
 
-}; //LostPeter
+}; //LostPeterPluginImageCodecSTB

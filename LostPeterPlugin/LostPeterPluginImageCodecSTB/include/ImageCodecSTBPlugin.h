@@ -14,7 +14,7 @@
 
 #include "ImageCodecSTBDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginImageCodecSTB
 {
     class ImageCodecSTBPlugin : public FPlugin
     {
@@ -30,6 +30,6 @@ namespace LostPeter
         virtual void Shutdown();
     };
 
-}; //LostPeter
+}; //LostPeterPluginImageCodecSTB
 
 #endif

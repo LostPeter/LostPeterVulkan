@@ -12,8 +12,8 @@
 #include "../include/VulkanStreamTexture.h"
 #include "../include/VulkanDevice.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
     
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan

@@ -27,7 +27,7 @@ namespace LostPeterEngine
         Material* m_pMaterial;
 
     public:
-        E_FORCEINLINE Material* GetMaterial() const { return m_pMaterial; }
+        F_FORCEINLINE Material* GetMaterial() const { return m_pMaterial; }
 
     public:
         void Destroy();

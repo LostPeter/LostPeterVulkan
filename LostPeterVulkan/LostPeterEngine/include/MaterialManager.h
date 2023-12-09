@@ -41,15 +41,15 @@ namespace LostPeterEngine
         MaterialInstancePtrMap m_mapMaterialInstance;
 
     public:
-        E_FORCEINLINE MaterialSerializer* GetMaterialSerializer() const { return m_pMaterialSerializer; }
-        E_FORCEINLINE const MaterialPtrVector& GetMaterialPtrVector() const { return m_aMaterial; }
-        E_FORCEINLINE MaterialPtrVector& GetMaterialPtrVector() { return m_aMaterial; }
-        E_FORCEINLINE const MaterialGroupPtrMap& GetMaterialGroupPtrMap() const { return m_mapMaterialGroup; }
-        E_FORCEINLINE MaterialGroupPtrMap& GetMaterialGroupPtrMap() { return m_mapMaterialGroup; }
+        F_FORCEINLINE MaterialSerializer* GetMaterialSerializer() const { return m_pMaterialSerializer; }
+        F_FORCEINLINE const MaterialPtrVector& GetMaterialPtrVector() const { return m_aMaterial; }
+        F_FORCEINLINE MaterialPtrVector& GetMaterialPtrVector() { return m_aMaterial; }
+        F_FORCEINLINE const MaterialGroupPtrMap& GetMaterialGroupPtrMap() const { return m_mapMaterialGroup; }
+        F_FORCEINLINE MaterialGroupPtrMap& GetMaterialGroupPtrMap() { return m_mapMaterialGroup; }
 
-        E_FORCEINLINE MaterialPtrMap& GetMaterialDefaultMap() { return m_mapMaterialDefaults; }
+        F_FORCEINLINE MaterialPtrMap& GetMaterialDefaultMap() { return m_mapMaterialDefaults; }
 
-        E_FORCEINLINE MaterialInstancePtrMap& GetMaterialInstancePtrMap() { return m_mapMaterialInstance; }
+        F_FORCEINLINE MaterialInstancePtrMap& GetMaterialInstancePtrMap() { return m_mapMaterialInstance; }
 
 
         bool IsMaterialDefault(Material* pMaterial);

@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FFileIO : public FFileBase
+    class foundationExport FFileIO : public FFileBase
 	{
 	public:
 		FFileIO(FILE* fp = 0);
@@ -29,8 +29,8 @@ namespace LostPeterFoundation
 		bool	m_bCloseFile;
 
 	public:
-		LP_FORCEINLINE FILE* GetHandle() { return m_fp; }
-		LP_FORCEINLINE const String& GetFilePath() const { return m_strFilePath; }
+		F_FORCEINLINE FILE* GetHandle() { return m_fp; }
+		F_FORCEINLINE const String& GetFilePath() const { return m_strFilePath; }
 
 	public:
 		bool			Open(const char* filename, const char* mode);

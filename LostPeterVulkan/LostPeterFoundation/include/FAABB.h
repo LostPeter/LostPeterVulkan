@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FAABB
+    class foundationExport FAABB
     {
     public:
         FAABB()
@@ -73,61 +73,61 @@ namespace LostPeterFoundation
 
     public:
         //Min
-        LP_FORCEINLINE const FVector3& GetMin() const { return m_vMin; }
-        LP_FORCEINLINE FVector3& GetMin() { return m_vMin; }
-        LP_FORCEINLINE void GetMin(FVector3& vMin) const { vMin = m_vMin; }
-        LP_FORCEINLINE float GetMin(uint32 axis) const	{ return m_vMin[axis]; }
-        LP_FORCEINLINE void SetMin(const FVector3& vMin) 
+        F_FORCEINLINE const FVector3& GetMin() const { return m_vMin; }
+        F_FORCEINLINE FVector3& GetMin() { return m_vMin; }
+        F_FORCEINLINE void GetMin(FVector3& vMin) const { vMin = m_vMin; }
+        F_FORCEINLINE float GetMin(uint32 axis) const	{ return m_vMin[axis]; }
+        F_FORCEINLINE void SetMin(const FVector3& vMin) 
         { 
             m_vMin = vMin; 
             m_eAABBExtent = F_AABBExtent_Finite;
         }
-        LP_FORCEINLINE void SetMin(float x, float y, float z)
+        F_FORCEINLINE void SetMin(float x, float y, float z)
         {
             m_vMin.x = x;
             m_vMin.y = y;
             m_vMin.z = z;
             m_eAABBExtent = F_AABBExtent_Finite;
         }
-        LP_FORCEINLINE void SetMinX(float x) { m_vMin.x = x; m_eAABBExtent = F_AABBExtent_Finite; }
-        LP_FORCEINLINE void SetMinY(float y) { m_vMin.y = y; m_eAABBExtent = F_AABBExtent_Finite; }
-        LP_FORCEINLINE void SetMinZ(float z) { m_vMin.z = z; m_eAABBExtent = F_AABBExtent_Finite; }
+        F_FORCEINLINE void SetMinX(float x) { m_vMin.x = x; m_eAABBExtent = F_AABBExtent_Finite; }
+        F_FORCEINLINE void SetMinY(float y) { m_vMin.y = y; m_eAABBExtent = F_AABBExtent_Finite; }
+        F_FORCEINLINE void SetMinZ(float z) { m_vMin.z = z; m_eAABBExtent = F_AABBExtent_Finite; }
 
         //Max
-        LP_FORCEINLINE const FVector3& GetMax() const	{ return m_vMax; }
-        LP_FORCEINLINE FVector3& GetMax() { return m_vMax; }
-        LP_FORCEINLINE void GetMax(FVector3& vMax) const { vMax = m_vMax; }
-        LP_FORCEINLINE float GetMax(uint32 axis) const	{ return m_vMax[axis]; }
-        LP_FORCEINLINE void SetMax(const FVector3& vMax) 
+        F_FORCEINLINE const FVector3& GetMax() const	{ return m_vMax; }
+        F_FORCEINLINE FVector3& GetMax() { return m_vMax; }
+        F_FORCEINLINE void GetMax(FVector3& vMax) const { vMax = m_vMax; }
+        F_FORCEINLINE float GetMax(uint32 axis) const	{ return m_vMax[axis]; }
+        F_FORCEINLINE void SetMax(const FVector3& vMax) 
         { 
             m_vMax = vMax; 
             m_eAABBExtent = F_AABBExtent_Finite;
         }
-        LP_FORCEINLINE void SetMax(float x,float y,float z)
+        F_FORCEINLINE void SetMax(float x,float y,float z)
         {
             m_vMax.x = x;
             m_vMax.y = y;
             m_vMax.z = z;
             m_eAABBExtent = F_AABBExtent_Finite;
         }
-        LP_FORCEINLINE void SetMaxX(float x) { m_vMax.x = x; m_eAABBExtent = F_AABBExtent_Finite; }
-        LP_FORCEINLINE void SetMaxY(float y) { m_vMax.y = y; m_eAABBExtent = F_AABBExtent_Finite; }
-        LP_FORCEINLINE void SetMaxZ(float z) { m_vMax.z = z; m_eAABBExtent = F_AABBExtent_Finite; }
+        F_FORCEINLINE void SetMaxX(float x) { m_vMax.x = x; m_eAABBExtent = F_AABBExtent_Finite; }
+        F_FORCEINLINE void SetMaxY(float y) { m_vMax.y = y; m_eAABBExtent = F_AABBExtent_Finite; }
+        F_FORCEINLINE void SetMaxZ(float z) { m_vMax.z = z; m_eAABBExtent = F_AABBExtent_Finite; }
 
         //Min-Max
-        LP_FORCEINLINE void SetMinMax(const FVector3& min, const FVector3& max)
+        F_FORCEINLINE void SetMinMax(const FVector3& min, const FVector3& max)
         {
             m_vMin = min;		
             m_vMax = max;
             m_eAABBExtent = F_AABBExtent_Finite;
         }
-        LP_FORCEINLINE void SetCenterExtents(const FVector3& center, const FVector3& extent)
+        F_FORCEINLINE void SetCenterExtents(const FVector3& center, const FVector3& extent)
         {
             m_vMin = center - extent;		
             m_vMax = center + extent;
             m_eAABBExtent = F_AABBExtent_Finite;
         }
-        LP_FORCEINLINE void SetPoint(const FVector3& pt) 
+        F_FORCEINLINE void SetPoint(const FVector3& pt) 
         { 
             m_vMin = m_vMax = pt; 
             m_eAABBExtent = F_AABBExtent_Finite;
@@ -135,21 +135,21 @@ namespace LostPeterFoundation
 
         
         //Center
-        LP_FORCEINLINE FVector3 GetCenter() const
+        F_FORCEINLINE FVector3 GetCenter() const
         {
             return (m_vMax + m_vMin) * 0.5f;
         }
-        LP_FORCEINLINE void GetCenter(FVector3& center) const
+        F_FORCEINLINE void GetCenter(FVector3& center) const
         {
             center = (m_vMax + m_vMin) * 0.5f;
         }
-        LP_FORCEINLINE float GetCenter(uint32 axis) const
+        F_FORCEINLINE float GetCenter(uint32 axis) const
         {
             return (m_vMax[axis] + m_vMin[axis]) * 0.5f;
         }
 
         //Size/Extents
-        LP_FORCEINLINE FVector3 GetSize() const 
+        F_FORCEINLINE FVector3 GetSize() const 
         { 
             switch ((int32)m_eAABBExtent)
             {
@@ -162,7 +162,7 @@ namespace LostPeterFoundation
             }
             return FVector3(0, 0, 0);
         }
-        LP_FORCEINLINE FVector3 GetHalfSize() const 
+        F_FORCEINLINE FVector3 GetHalfSize() const 
         { 
             switch ((int32)m_eAABBExtent)
             {
@@ -175,17 +175,17 @@ namespace LostPeterFoundation
             }
             return FVector3(0, 0, 0);
         }
-        LP_FORCEINLINE FVector3 GetExtents() const { return (m_vMax - m_vMin) * 0.5f; }
-        LP_FORCEINLINE void GetExtents(FVector3& extents) const { extents = (m_vMax - m_vMin) * 0.5f; }
-        LP_FORCEINLINE float GetExtents(uint32 axis) const { return (m_vMax[axis] - m_vMin[axis]) * 0.5f; }
-        LP_FORCEINLINE void SetExtents(const FVector3& min, const FVector3& max)
+        F_FORCEINLINE FVector3 GetExtents() const { return (m_vMax - m_vMin) * 0.5f; }
+        F_FORCEINLINE void GetExtents(FVector3& extents) const { extents = (m_vMax - m_vMin) * 0.5f; }
+        F_FORCEINLINE float GetExtents(uint32 axis) const { return (m_vMax[axis] - m_vMin[axis]) * 0.5f; }
+        F_FORCEINLINE void SetExtents(const FVector3& min, const FVector3& max)
         {
             F_Assert((min.x <= max.x && min.y <= max.y && min.z <= max.z) && "FAABB::SetExtents")
             m_vMin = min;
             m_vMax = max;
             m_eAABBExtent = F_AABBExtent_Finite;
         }
-        LP_FORCEINLINE void SetExtents(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
+        F_FORCEINLINE void SetExtents(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
         {
             F_Assert((minX <= maxX && minY <= maxY && minZ <= maxZ) && "FAABB::SetExtents")
             m_vMin.x = minX;
@@ -197,14 +197,14 @@ namespace LostPeterFoundation
             m_eAABBExtent = F_AABBExtent_Finite;
         }
         
-        LP_FORCEINLINE void GetDiagonal(FVector3& diagonal) const { diagonal = m_vMax - m_vMin; }
-        LP_FORCEINLINE float GetWidth() const { return m_vMax.x - m_vMin.x; }
-        LP_FORCEINLINE float GetHeight() const { return m_vMax.y - m_vMin.y; }
-        LP_FORCEINLINE  float GetDepth() const { return m_vMax.z - m_vMin.z;	}
-        LP_FORCEINLINE float GetVolume() const { return GetWidth() * GetHeight() * GetDepth(); }
+        F_FORCEINLINE void GetDiagonal(FVector3& diagonal) const { diagonal = m_vMax - m_vMin; }
+        F_FORCEINLINE float GetWidth() const { return m_vMax.x - m_vMin.x; }
+        F_FORCEINLINE float GetHeight() const { return m_vMax.y - m_vMin.y; }
+        F_FORCEINLINE  float GetDepth() const { return m_vMax.z - m_vMin.z;	}
+        F_FORCEINLINE float GetVolume() const { return GetWidth() * GetHeight() * GetDepth(); }
 
 
-        LP_FORCEINLINE void Extend(const FVector3& p)
+        F_FORCEINLINE void Extend(const FVector3& p)
         {
             if(p.x > m_vMax.x)	
                 m_vMax.x = p.x;
@@ -223,7 +223,7 @@ namespace LostPeterFoundation
         }
 
     public:
-        LP_FORCEINLINE bool IsValid() const
+        F_FORCEINLINE bool IsValid() const
         {
             if(m_vMin.x > m_vMax.x)	
                 return false;
@@ -234,24 +234,24 @@ namespace LostPeterFoundation
             return true;
         }
 
-        LP_FORCEINLINE bool IsNull() const
+        F_FORCEINLINE bool IsNull() const
         {
             return m_eAABBExtent == F_AABBExtent_Null;
         }
-        LP_FORCEINLINE bool IsInfinite() const
+        F_FORCEINLINE bool IsInfinite() const
         {
             return m_eAABBExtent == F_AABBExtent_Infinite;
         }
-        LP_FORCEINLINE bool IsFinite() const
+        F_FORCEINLINE bool IsFinite() const
         {
             return m_eAABBExtent == F_AABBExtent_Finite;
         }
 
-        LP_FORCEINLINE void SetNull()
+        F_FORCEINLINE void SetNull()
         {
             m_eAABBExtent = F_AABBExtent_Null;
         }
-        LP_FORCEINLINE void SetInfinite()
+        F_FORCEINLINE void SetInfinite()
         {
             m_eAABBExtent = F_AABBExtent_Finite;
         }

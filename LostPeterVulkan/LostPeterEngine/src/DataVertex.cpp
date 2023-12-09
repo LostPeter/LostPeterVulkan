@@ -137,7 +137,7 @@ namespace LostPeterEngine
 			const VertexElement& elem = *it;
 			if (!m_pVertexStreamBinding->IsStreamBound(elem.GetSourceIndex()))
 			{
-				F_LogError("DataVertex::CloseGapsInBindings: No stream is bound to that element source !");
+				F_LogError("*********************** DataVertex::CloseGapsInBindings: No stream is bound to that element source !");
 				return;
 			}
 		}

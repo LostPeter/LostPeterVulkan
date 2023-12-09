@@ -14,7 +14,7 @@
 
 #include "VulkanPreDefine.h"
 
-namespace LostPeter
+namespace LostPeterPluginRendererVulkan
 {
    class VulkanStreamManager : public StreamManager
     {
@@ -36,6 +36,6 @@ namespace LostPeter
     
     };
 
-}; //LostPeter
+}; //LostPeterPluginRendererVulkan
 
 #endif

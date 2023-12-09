@@ -16,7 +16,7 @@
 
 namespace LostPeterFoundation
 {
-    class LPF_Export FSerializer
+    class foundationExport FSerializer
     {
     public:
         FSerializer();
@@ -30,10 +30,10 @@ namespace LostPeterFoundation
         FFileMemory* m_pFileMemory;
 
     public:
-        LP_FORCEINLINE bool IsUseFileXML() const { return m_bIsUseFileXML; }
-        LP_FORCEINLINE bool IsUseFileBinary() const { return !m_bIsUseFileXML; }
-        LP_FORCEINLINE void SetIsUseFileXML() { m_bIsUseFileXML = true; }
-        LP_FORCEINLINE void SetIsUseFileBinary() { m_bIsUseFileXML = false; }
+        F_FORCEINLINE bool IsUseFileXML() const { return m_bIsUseFileXML; }
+        F_FORCEINLINE bool IsUseFileBinary() const { return !m_bIsUseFileXML; }
+        F_FORCEINLINE void SetIsUseFileXML() { m_bIsUseFileXML = true; }
+        F_FORCEINLINE void SetIsUseFileBinary() { m_bIsUseFileXML = false; }
 
     public:
         void Destroy();

@@ -30,11 +30,11 @@ namespace LostPeterEngine
         MeshGroupPtrMap m_mapMeshGroup;
 
     public:
-        E_FORCEINLINE MeshSerializer* GetMeshSerializer() const { return m_pMeshSerializer; }
-        E_FORCEINLINE const MeshPtrVector& GetMeshPtrVector() const { return m_aMesh; }
-        E_FORCEINLINE MeshPtrVector& GetMeshPtrVector() { return m_aMesh; }
-        E_FORCEINLINE const MeshGroupPtrMap& GetMeshGroupPtrMap() const { return m_mapMeshGroup; }
-        E_FORCEINLINE MeshGroupPtrMap& GetMeshGroupPtrMap() { return m_mapMeshGroup; }
+        F_FORCEINLINE MeshSerializer* GetMeshSerializer() const { return m_pMeshSerializer; }
+        F_FORCEINLINE const MeshPtrVector& GetMeshPtrVector() const { return m_aMesh; }
+        F_FORCEINLINE MeshPtrVector& GetMeshPtrVector() { return m_aMesh; }
+        F_FORCEINLINE const MeshGroupPtrMap& GetMeshGroupPtrMap() const { return m_mapMeshGroup; }
+        F_FORCEINLINE MeshGroupPtrMap& GetMeshGroupPtrMap() { return m_mapMeshGroup; }
 
     public:
         static MeshManager&	GetSingleton();

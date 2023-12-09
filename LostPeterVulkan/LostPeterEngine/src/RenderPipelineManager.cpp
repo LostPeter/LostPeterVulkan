@@ -66,7 +66,7 @@ namespace LostPeterEngine
 
 		if (!m_pPipeLineCurrent->Init())
 		{
-			F_LogError("RenderPipelineManager::Init: Init pipe line failed, name: [%s] !", strPipeLineName.c_str());
+			F_LogError("*********************** RenderPipelineManager::Init: Init pipe line failed, name: [%s] !", strPipeLineName.c_str());
 			F_Assert(false && "RenderPipelineManager::Init: Init pipe line failed !")
 			return false;
 		}
