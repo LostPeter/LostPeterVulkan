@@ -32,7 +32,7 @@ namespace LostPeterPluginRendererVulkan
         F_FORCEINLINE bool CanRestrictImageViewUsage() const { return m_bCanRestrictImageViewUsage; }
 
     public:
-        virtual FPixelFormatType GetNativeFormat(FTextureType eTexture, FPixelFormatType ePixelFormat, int32 nUsage);
+        virtual FPixelFormatType GetPixelFormatNative(FTextureType eTexture, FPixelFormatType ePixelFormat, int32 nUsage);
 
         virtual bool CheckSupport(FPixelFormatType ePixelFormat, uint32 nTextureFlags) const;
 

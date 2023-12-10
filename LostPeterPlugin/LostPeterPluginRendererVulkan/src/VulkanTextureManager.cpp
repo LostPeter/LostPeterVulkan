@@ -28,7 +28,7 @@ namespace LostPeterPluginRendererVulkan
         Destroy();
     }
 
-    FPixelFormatType VulkanTextureManager::GetNativeFormat(FTextureType eTexture, FPixelFormatType ePixelFormat, int32 nUsage)
+    FPixelFormatType VulkanTextureManager::GetPixelFormatNative(FTextureType eTexture, FPixelFormatType ePixelFormat, int32 nUsage)
     {
         if (ePixelFormat == F_PixelFormat_BYTE_R8G8B8_SRGB)
             return F_PixelFormat_BYTE_A8R8G8B8_SRGB;

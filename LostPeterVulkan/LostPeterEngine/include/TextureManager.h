@@ -29,10 +29,10 @@ namespace LostPeterEngine
         TexturePtrVector m_aTexture;
         TextureGroupPtrMap m_mapTextureGroup;
 
-        uint16 m_nPreferredIntegerBitDepth;
-		uint16 m_nPreferredFloatBitDepth;
-		size_t m_nDefaultNumMipmaps;
-		float m_fDefaultMipmapLODBias;
+        uint16 m_nBitDepthIntegerPreferred;
+		uint16 m_nBitDepthFloatPreferred;
+		size_t m_nNumMipMapsDefault;
+		float m_fMipMapLODBiasDefault;
 
     public:
         F_FORCEINLINE TextureSerializer* GetTextureSerializer() const { return m_pTextureSerializer; }
@@ -64,23 +64,21 @@ namespace LostPeterEngine
         Texture* loadTexture(TextureInfo* pTI);
 
     public:
-        virtual uint16 GetPreferredIntegerBitDepth() const { return m_nPreferredIntegerBitDepth; }
-		virtual void SetPreferredIntegerBitDepth(uint16 nBits, bool bReloadTextures = true);
-		
-		virtual uint16 GetPreferredFloatBitDepth() const { return m_nPreferredFloatBitDepth; }
-		virtual void SetPreferredFloatBitDepth(uint16 nBits, bool bReloadTextures = true);
-
-		virtual void SetPreferredBitDepths(uint16 nIntegerBits, uint16 nFloatBits, bool bReloadTextures = true);
+        virtual uint16 GetBitDepthIntegerPreferred() const { return m_nBitDepthIntegerPreferred; }
+		virtual void SetBitDepthIntegerPreferred(uint16 nBitDepthIntegerPreferred, bool bReloadTextures = true);
+		virtual uint16 GetBitDepthFloatPreferred() const { return m_nBitDepthFloatPreferred; }
+		virtual void SetBitDepthFloatPreferred(uint16 nBitDepthFloatPreferred, bool bReloadTextures = true);
+		virtual void SetBitDepthsPreferred(uint16 nBitDepthIntegerPreferred, uint16 nBitDepthFloatPreferred, bool bReloadTextures = true);
       
-        virtual size_t GetDefaultNumMipmaps() { return m_nDefaultNumMipmaps; }
-		virtual void SetDefaultNumMipmaps(size_t nNum) { m_nDefaultNumMipmaps = nNum; }
-		virtual float GetDefaultMipmapLODBias() { return m_fDefaultMipmapLODBias; }
-		virtual void SetDefaultMipmapLODBias(float fBias){ m_fDefaultMipmapLODBias = fBias; }
+        virtual size_t GetNumMipMapsDefault() { return m_nNumMipMapsDefault; }
+		virtual void SetNumMipMapsDefault(size_t nNumMipMapsDefault) { m_nNumMipMapsDefault = nNumMipMapsDefault; }
+		virtual float GetMipMapLODBiasDefault() { return m_fMipMapLODBiasDefault; }
+		virtual void SetMipMapLODBiasDefault(float fMipMapLODBiasDefault) { m_fMipMapLODBiasDefault = fMipMapLODBiasDefault; }
        
-		virtual bool IsFormatSupported(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage);
-		virtual bool IsEquivalentFormatSupported(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage);
+		virtual bool IsPixelFormatSupported(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage);
+		virtual bool IsPixelFormatSupportedEquivalent(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage);
 
-		virtual FPixelFormatType GetNativeFormat(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage) = 0;
+		virtual FPixelFormatType GetPixelFormatNative(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage) = 0;
 		virtual bool IsHardwareFilteringSupported(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage, bool bPreciseFormatOnly = false) = 0;	
 
     public:

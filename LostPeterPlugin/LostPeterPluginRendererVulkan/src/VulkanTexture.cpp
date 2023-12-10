@@ -452,7 +452,7 @@ namespace LostPeterPluginRendererVulkan
         if (m_ePixelFormat == F_PixelFormat_Unknown)
             return;
 
-        m_ePixelFormat = TextureManager::GetSingleton().GetNativeFormat(m_eTexture, m_ePixelFormat, m_nUsage);
+        m_ePixelFormat = TextureManager::GetSingleton().GetPixelFormatNative(m_eTexture, m_ePixelFormat, m_nUsage);
         size_t bitSet = FBitwise::MostSignificantBitSet(FMath::Max(FMath::Max(m_nWidth, m_nHeight), m_nDepth));                                                
         m_nNumMipMaps = FMath::Min(m_nNumMipMaps, bitSet);
 

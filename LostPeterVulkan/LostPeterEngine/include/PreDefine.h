@@ -170,7 +170,7 @@ namespace LostPeterEngine
 	};
 
 
-    enum ETextureMipmapType
+    enum ETextureMipMapType
 	{
         E_TextureMipMap_Default	= -1,			            //-1, use DfTextureManager default
 		E_TextureMipMap_UnLimited = 0x7FFFFFFF,	            //0x7FFFFFFF, generate mipmaps up to 1x1

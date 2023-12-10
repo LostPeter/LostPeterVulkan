@@ -31,10 +31,10 @@ namespace LostPeterEngine
     TextureManager::TextureManager()
         : Base("TextureManager")
         , m_pTextureSerializer(nullptr)
-        , m_nPreferredIntegerBitDepth(0)
-		, m_nPreferredFloatBitDepth(0)
-		, m_nDefaultNumMipmaps(E_TextureMipMap_UnLimited)
-		, m_fDefaultMipmapLODBias(0.0f)
+        , m_nBitDepthIntegerPreferred(0)
+		, m_nBitDepthFloatPreferred(0)
+		, m_nNumMipMapsDefault(E_TextureMipMap_UnLimited)
+		, m_fMipMapLODBiasDefault(0.0f)
     {
 
     }
@@ -212,9 +212,9 @@ namespace LostPeterEngine
         m_mapTextureGroup.clear();
     }
 
-    void TextureManager::SetPreferredIntegerBitDepth(uint16 nBits, bool bReloadTextures /*= true*/)
+    void TextureManager::SetBitDepthIntegerPreferred(uint16 nBitDepthIntegerPreferred, bool bReloadTextures /*= true*/)
 	{
-		m_nPreferredIntegerBitDepth = nBits;
+		m_nBitDepthIntegerPreferred = nBitDepthIntegerPreferred;
 
 		if (bReloadTextures)
 		{		
@@ -225,24 +225,24 @@ namespace LostPeterEngine
 				if (pTexture->IsLoaded() && !pTexture->IsManual())
 				{
 					pTexture->Unload();
-					pTexture->SetDesiredIntegerBitDepth(nBits);
+					pTexture->SetBitDepthIntegerDesired(nBitDepthIntegerPreferred);
                     if (!pTexture->Load())
                     {
-                        F_LogError("*********************** TextureManager::SetPreferredIntegerBitDepth: Load texture failed, group: [%d], name: [%s]", pTexture->GetGroup(), pTexture->GetName().c_str());
+                        F_LogError("*********************** TextureManager::SetBitDepthIntegerPreferred: Load texture failed, group: [%d], name: [%s]", pTexture->GetGroup(), pTexture->GetName().c_str());
                         continue;
                     }
 				}
 				else
 				{
-					pTexture->SetDesiredIntegerBitDepth(nBits);
+					pTexture->SetBitDepthIntegerDesired(nBitDepthIntegerPreferred);
 				}
 			}	
 		}
 	}
 
-	void TextureManager::SetPreferredFloatBitDepth(uint16 nBits, bool bReloadTextures /*= true*/)
+	void TextureManager::SetBitDepthFloatPreferred(uint16 nBitDepthFloatPreferred, bool bReloadTextures /*= true*/)
 	{
-		m_nPreferredFloatBitDepth = nBits;
+		m_nBitDepthFloatPreferred = nBitDepthFloatPreferred;
 
 		if (bReloadTextures)
 		{		
@@ -253,25 +253,25 @@ namespace LostPeterEngine
 				if (pTexture->IsLoaded() && !pTexture->IsManual())
 				{
 					pTexture->Unload();
-					pTexture->SetDesiredFloatBitDepth(nBits);
+					pTexture->SetBitDepthFloatDesired(nBitDepthFloatPreferred);
                     if (!pTexture->Load())
                     {
-                        F_LogError("*********************** TextureManager::SetPreferredFloatBitDepth: Load texture failed, group: [%d], name: [%s]", pTexture->GetGroup(), pTexture->GetName().c_str());
+                        F_LogError("*********************** TextureManager::SetBitDepthFloatPreferred: Load texture failed, group: [%d], name: [%s]", pTexture->GetGroup(), pTexture->GetName().c_str());
                         continue;
                     }
 				}
 				else
 				{
-					pTexture->SetDesiredFloatBitDepth(nBits);
+					pTexture->SetBitDepthFloatDesired(nBitDepthFloatPreferred);
 				}
 			}           
 		}
 	}
 
-	void TextureManager::SetPreferredBitDepths(uint16 nIntegerBits, uint16 nFloatBits, bool bReloadTextures /*= true*/)
+	void TextureManager::SetBitDepthsPreferred(uint16 nBitDepthIntegerPreferred, uint16 nBitDepthFloatPreferred, bool bReloadTextures /*= true*/)
 	{
-		m_nPreferredIntegerBitDepth = nIntegerBits;
-		m_nPreferredFloatBitDepth = nFloatBits;
+		m_nBitDepthIntegerPreferred = nBitDepthIntegerPreferred;
+		m_nBitDepthFloatPreferred = nBitDepthFloatPreferred;
 
 		if (bReloadTextures)
 		{
@@ -282,29 +282,29 @@ namespace LostPeterEngine
 				if (pTexture->IsLoaded() && !pTexture->IsManual())
 				{
 					pTexture->Unload();
-					pTexture->SetDesiredBitDepths(nIntegerBits, nFloatBits);
+					pTexture->SetBitDepthsDesired(nBitDepthIntegerPreferred, nBitDepthFloatPreferred);
                     if (!pTexture->Load())
                     {
-                        F_LogError("*********************** TextureManager::SetPreferredBitDepths: Load texture failed, group: [%d], name: [%s]", pTexture->GetGroup(), pTexture->GetName().c_str());
+                        F_LogError("*********************** TextureManager::SetBitDepthsPreferred: Load texture failed, group: [%d], name: [%s]", pTexture->GetGroup(), pTexture->GetName().c_str());
                         continue;
                     }
 				}
 				else
 				{
-					pTexture->SetDesiredBitDepths(nIntegerBits, nFloatBits);
+					pTexture->SetBitDepthsDesired(nBitDepthIntegerPreferred, nBitDepthFloatPreferred);
 				}
 			}			
 		}
 	}
 
-	bool TextureManager::IsFormatSupported(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage)
+	bool TextureManager::IsPixelFormatSupported(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage)
 	{
-		return GetNativeFormat(eTexture, ePixelFormat, nUsage) == ePixelFormat;
+		return GetPixelFormatNative(eTexture, ePixelFormat, nUsage) == ePixelFormat;
 	}
 
-	bool TextureManager::IsEquivalentFormatSupported(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage)
+	bool TextureManager::IsPixelFormatSupportedEquivalent(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage)
 	{	
-		FPixelFormatType eSupportedPF = GetNativeFormat(eTexture, ePixelFormat, nUsage);
+		FPixelFormatType eSupportedPF = GetPixelFormatNative(eTexture, ePixelFormat, nUsage);
 		return FPixelFormat::GetPixelFormatElemBits(eSupportedPF) >= FPixelFormat::GetPixelFormatElemBits(ePixelFormat);
 	}
 
@@ -331,7 +331,7 @@ namespace LostPeterEngine
 		pTexture->AddRef();
 		
         pTexture->SetTextureType(eTexture);
-        pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nDefaultNumMipmaps : static_cast<size_t>(nNumMipMaps));
+        pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nNumMipMapsDefault : static_cast<size_t>(nNumMipMaps));
         pTexture->SetGamma(fGamma);
         pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
         pTexture->SetPixelFormat(ePixelFormatDesired);
@@ -373,7 +373,7 @@ namespace LostPeterEngine
 		pTexture->SetWidth(nWidth);
 		pTexture->SetHeight(nHeight);
 		pTexture->SetDepth(nDepth);
-		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nDefaultNumMipmaps : static_cast<size_t>(nNumMipMaps));
+		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nNumMipMapsDefault : static_cast<size_t>(nNumMipMaps));
 		pTexture->SetPixelFormat(ePixelFormat);
 		pTexture->SetUsage(nUsage);
 		pTexture->SetFSAA(nFSAA);
@@ -405,7 +405,7 @@ namespace LostPeterEngine
 		pTexture->AddRef();
 		
 		pTexture->SetTextureType(eTexture);
-		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nDefaultNumMipmaps : static_cast<size_t>(nNumMipMaps));
+		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nNumMipMapsDefault : static_cast<size_t>(nNumMipMaps));
 		pTexture->SetGamma(fGamma);
 		pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
 		pTexture->SetPixelFormat(ePixelFormatDesired);
@@ -442,7 +442,7 @@ namespace LostPeterEngine
 		pTexture->AddRef();
 
 		pTexture->SetTextureType(eTexture);
-		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nDefaultNumMipmaps : static_cast<size_t>(nNumMipMaps));
+		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nNumMipMapsDefault : static_cast<size_t>(nNumMipMaps));
 		pTexture->SetGamma(fGamma);
 		pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
 		pTexture->SetPixelFormat(ePixelFormatDesired);
@@ -480,7 +480,7 @@ namespace LostPeterEngine
 		pTexture->AddRef();
 
 		pTexture->SetTextureType(eTexture);
-		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nDefaultNumMipmaps : static_cast<size_t>(nNumMipMaps));
+		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nNumMipMapsDefault : static_cast<size_t>(nNumMipMaps));
 		pTexture->SetGamma(fGamma);
 		if (!pTexture->LoadFromRawData(pInput, nWidth, nHeight, ePixelFormat))
         {

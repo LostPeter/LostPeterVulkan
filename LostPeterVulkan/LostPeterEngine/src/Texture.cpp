@@ -21,20 +21,20 @@ namespace LostPeterEngine
 		, m_nUsage(E_TextureUsage_Default)
 		, m_bIsLoaded(false)
 		, m_bIsManual(false)
+		, m_ePixelFormatDesired(F_PixelFormat_Unknown)
 		, m_ePixelFormat(F_PixelFormat_Unknown)
 		, m_nWidth(512)
 		, m_nHeight(512)
 		, m_nDepth(1)
 		, m_nSize(0)
 		, m_ePixelFormatSrc(F_PixelFormat_Unknown)
-		, m_nSrcWidth(0)
-		, m_nSrcHeight(0)
-		, m_nSrcDepth(0)
-		, m_ePixelFormatDesired(F_PixelFormat_Unknown)
-		, m_nDesiredIntegerBitDepth(0)
-		, m_nDesiredFloatBitDepth(0)
+		, m_nWidthSrc(0)
+		, m_nHeightSrc(0)
+		, m_nDepthSrc(0)
+		, m_nBitDepthIntegerDesired(0)
+		, m_nBitDepthFloatDesired(0)
 		, m_bTreatLuminanceAsAlpha(false)
-		, m_nNumRequestedMipMaps(0)
+		, m_nNumMipMapsRequested(0)
 		, m_nNumMipMaps(0)
 		, m_bMipMapsHardwareGenerated(false)
 		, m_fGamma(1.0f)
@@ -90,9 +90,9 @@ namespace LostPeterEngine
 		if (aImages.empty())
 			return false;
 
-		m_nSrcWidth	 = m_nWidth  = aImages[0]->GetWidth();
-		m_nSrcHeight = m_nHeight = aImages[0]->GetHeight();
-		m_nSrcDepth	 = m_nDepth  = aImages[0]->GetDepth();
+		m_nWidthSrc = m_nWidth  = aImages[0]->GetWidth();
+		m_nHeightSrc = m_nHeight = aImages[0]->GetHeight();
+		m_nDepthSrc = m_nDepth  = aImages[0]->GetDepth();
 		m_ePixelFormatSrc = aImages[0]->GetPixelFormat();
 		if (m_bTreatLuminanceAsAlpha && m_ePixelFormatSrc == F_PixelFormat_BYTE_L8_UNORM)
 		{
@@ -105,13 +105,13 @@ namespace LostPeterEngine
 		}
 		else
 		{
-			m_ePixelFormat = FPixelFormat::ParsePixelFormatForBitDepths(m_ePixelFormatSrc, m_nDesiredIntegerBitDepth, m_nDesiredFloatBitDepth);
+			m_ePixelFormat = FPixelFormat::ParsePixelFormatForBitDepths(m_ePixelFormatSrc, m_nBitDepthIntegerDesired, m_nBitDepthFloatDesired);
 		}
 
 		size_t imageMips = aImages[0]->GetNumMipMaps();
 		if (imageMips > 0) 
 		{
-			m_nNumMipMaps = m_nNumRequestedMipMaps = imageMips;
+			m_nNumMipMaps = m_nNumMipMapsRequested = imageMips;
 			m_nUsage &= ~E_TextureUsage_AutoMipMap;
 		}
 
