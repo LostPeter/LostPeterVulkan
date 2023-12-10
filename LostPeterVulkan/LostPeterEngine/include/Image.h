@@ -39,19 +39,19 @@ namespace LostPeterEngine
 		bool m_bAutoDelete;
 
 	public:
-		F_FORCEINLINE uint8* GetData() { return m_pBuffer; }
-		F_FORCEINLINE const uint8* GetData() const { return m_pBuffer; }
-
-		F_FORCEINLINE size_t GetSize() const { return m_nSize; }
-		F_FORCEINLINE size_t GetNumMipMaps() const { return m_nNumMipMaps; }
-		F_FORCEINLINE bool	HasFlag(const EImageFlagType imgFlag) const { return m_nFlags & imgFlag ? true : false; }
 		F_FORCEINLINE size_t GetWidth() const { return m_nWidth; }
 		F_FORCEINLINE size_t GetHeight() const { return m_nHeight; }
 		F_FORCEINLINE size_t GetDepth() const { return m_nDepth; }
+		F_FORCEINLINE size_t GetSize() const { return m_nSize; }
+		F_FORCEINLINE size_t GetNumMipMaps() const { return m_nNumMipMaps; }
+		F_FORCEINLINE bool	HasFlag(const EImageFlagType imgFlag) const { return m_nFlags & imgFlag ? true : false; }
 		F_FORCEINLINE size_t GetNumFaces() const { return HasFlag(E_ImageFlag_IsCubeMap) ? 6 : 1;}
 		F_FORCEINLINE size_t GetRowSpan() const { return m_nWidth * m_nPixelSize; }
 		F_FORCEINLINE FPixelFormatType GetPixelFormat() const { return m_ePixelFormat; }
+		F_FORCEINLINE size_t GetPixelSize() const { return m_nPixelSize; }
 		F_FORCEINLINE uint8 GetBPP() const { return m_nPixelSize * 8; }
+		F_FORCEINLINE uint8* GetData() { return m_pBuffer; }
+		F_FORCEINLINE const uint8* GetData() const { return m_pBuffer; }
 		bool GetHasAlpha() const;
 		void DestroyData();
 

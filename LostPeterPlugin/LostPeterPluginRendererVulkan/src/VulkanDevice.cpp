@@ -507,7 +507,7 @@ namespace LostPeterPluginRendererVulkan
     }
 
 
-    //VkCommandPool
+    ////////// VkCommandPool ////////
     VkCommandPool VulkanDevice::CreateVkCommandPool(VkCommandPoolCreateFlags flags,
                                                     uint32_t queueFamilyIndex)
     {
@@ -527,7 +527,7 @@ namespace LostPeterPluginRendererVulkan
         commandPoolInfo.queueFamilyIndex = queueFamilyIndex;
         if (!E_CheckVkResult(vkCreateCommandPool(m_vkDevice, &commandPoolInfo, E_CPU_ALLOCATOR, &vkCommandPool), "vkCreateCommandPool")) 
         {
-            String msg = "*********************** VulkanWindow::CreateVkCommandPool: Failed to create command pool !";
+            String msg = "*********************** VulkanDevice::CreateVkCommandPool: Failed to create command pool !";
             F_LogError(msg.c_str());
             throw std::runtime_error(msg);
         }
@@ -541,7 +541,7 @@ namespace LostPeterPluginRendererVulkan
     }
 
 
-    //VkCommandBuffer
+    ////////// VkCommandBuffer //////
     VkCommandBuffer VulkanDevice::AllocateVkCommandBuffer(const VkCommandPool& vkCommandPool,
                                                           VkCommandBufferLevel level)
     {
@@ -603,7 +603,7 @@ namespace LostPeterPluginRendererVulkan
     }
 
 
-    //VkQueue
+    ////////// VkQueue //////////////
     VkQueue VulkanDevice::GetVkQueue(uint32 queueFamilyIndex, uint32_t queueIndex)
     {
         VkQueue vkQueue;
@@ -637,7 +637,7 @@ namespace LostPeterPluginRendererVulkan
     }
 
 
-    //VkBuffer
+    ////////// VkBuffer /////////////
     bool VulkanDevice::CreateVkBuffer(VkDeviceSize size, 
                                       VkBufferUsageFlags usage, 
                                       VkMemoryPropertyFlags properties, 
@@ -707,7 +707,10 @@ namespace LostPeterPluginRendererVulkan
             F_LogError("*********************** VulkanDevice::CreateVkBufferVertex: 1 CreateVkBuffer failed !");
             return false;
         }
-        WriteVkBuffer(vkBufferMemoryTransfer, pData, bufSize, 0);
+        WriteVkBuffer(vkBufferMemoryTransfer, 
+                      pData, 
+                      bufSize, 
+                      0);
 
         if (!CreateVkBuffer(bufSize, 
                             VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
@@ -759,7 +762,10 @@ namespace LostPeterPluginRendererVulkan
             F_LogError("*********************** VulkanDevice::CreateVkBufferIndex: 1 CreateVkBuffer failed !");
             return false;
         }
-        WriteVkBuffer(vkBufferMemoryTransfer, pData, bufSize, 0);
+        WriteVkBuffer(vkBufferMemoryTransfer, 
+                      pData, 
+                      bufSize, 
+                      0);
         
         if (!CreateVkBuffer(bufSize, 
                             VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
@@ -865,7 +871,7 @@ namespace LostPeterPluginRendererVulkan
             memcpy(pDataDst, pData, nDataSize);
             UnmapVkDeviceMemory(vkBufferMemory);
         }
-    }                      
+    }            
     void VulkanDevice::DestroyVkBuffer(const VkBuffer& vkBuffer, const VkDeviceMemory& vkBufferMemory)
     {
         if (vkBuffer != VK_NULL_HANDLE)
@@ -921,6 +927,1699 @@ namespace LostPeterPluginRendererVulkan
     }
 
 
+    ////////// VkImage //////////////
+    bool VulkanDevice::CreateVkImage(uint32_t width, 
+                                     uint32_t height, 
+                                     uint32_t depth, 
+                                     uint32_t numArray,
+                                     uint32_t mipMapCount, 
+                                     VkImageType type, 
+                                     bool isCubeMap,
+                                     VkSampleCountFlagBits numSamples, 
+                                     VkFormat format, 
+                                     VkImageTiling tiling, 
+                                     VkImageUsageFlags usage, 
+                                     VkSharingMode sharingMode,
+                                     bool isGraphicsComputeShared,
+                                     VkMemoryPropertyFlags properties, 
+                                     VkImage& vkImage, 
+                                     VkDeviceMemory& vkImageMemory) 
+    {
+        VkImageCreateInfo imageCreateInfo = {};
+        imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+        if (isCubeMap)
+            imageCreateInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+        imageCreateInfo.imageType = type;
+        imageCreateInfo.format = format;
+        imageCreateInfo.extent.width = width;
+        imageCreateInfo.extent.height = height;
+        imageCreateInfo.extent.depth = depth;
+        imageCreateInfo.mipLevels = mipMapCount <= 0 ? 1 : mipMapCount;
+        imageCreateInfo.arrayLayers = numArray;
+        imageCreateInfo.samples = numSamples;
+        imageCreateInfo.tiling = tiling;
+        imageCreateInfo.usage = usage;
+        imageCreateInfo.sharingMode = sharingMode;
+        if (isGraphicsComputeShared)
+        {
+            if (this->m_pQueueGraphics->GetFamilyIndex() != this->m_pQueueCompute->GetFamilyIndex()) 
+            {
+                std::vector<uint32_t> queueFamilyIndices;
+                queueFamilyIndices.push_back(this->m_pQueueGraphics->GetFamilyIndex());
+                queueFamilyIndices.push_back(this->m_pQueueCompute->GetFamilyIndex());
+                imageCreateInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
+                imageCreateInfo.queueFamilyIndexCount = static_cast<uint32_t>(queueFamilyIndices.size());
+                imageCreateInfo.pQueueFamilyIndices = queueFamilyIndices.data();
+            }
+        }
+        imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+        if (vkCreateImage(this->m_vkDevice, &imageCreateInfo, nullptr, &vkImage) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkImage: Failed to create image !");
+            return false;
+        }
+
+        VkMemoryRequirements memRequirements;
+        vkGetImageMemoryRequirements(this->m_vkDevice, vkImage, &memRequirements);
+
+        VkMemoryAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+        if (vkAllocateMemory(this->m_vkDevice, &allocInfo, nullptr, &vkImageMemory) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkImage: Failed to allocate image memory !");
+            return false;
+        }
+        vkBindImageMemory(this->m_vkDevice, vkImage, vkImageMemory, 0);
+        return true;
+    }
+    bool VulkanDevice::CreateVkImageView(VkImage vkImage, 
+                                         VkImageViewType type, 
+                                         VkFormat format, 
+                                         VkImageAspectFlags aspectFlags, 
+                                         uint32_t mipMapCount,
+                                         uint32_t numArray,
+                                         VkImageView& vkImageView) 
+    {
+        VkImageViewCreateInfo viewInfo = {};
+        viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        viewInfo.image = vkImage;
+        viewInfo.viewType = type;
+        viewInfo.format = format;
+        viewInfo.components = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
+        viewInfo.subresourceRange.aspectMask = aspectFlags;
+        viewInfo.subresourceRange.baseMipLevel = 0;
+        viewInfo.subresourceRange.levelCount = mipMapCount;
+        viewInfo.subresourceRange.baseArrayLayer = 0;
+        viewInfo.subresourceRange.layerCount = numArray;
+
+        if (vkCreateImageView(this->m_vkDevice, &viewInfo, nullptr, &vkImageView) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkImageView: Failed to create texture image view !");
+            return false;
+        }
+        return true;
+    }
+    bool VulkanDevice::CreateVkSampler(uint32_t mipMapCount, 
+                                       VkSampler& vkSampler)
+    {
+        return CreateVkSampler(F_TextureFilter_Bilinear,
+                               F_TextureAddressing_Clamp,
+                               F_TextureBorderColor_OpaqueBlack,
+                               true,
+                               this->m_vkPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
+                               0.0f,
+                               static_cast<float>(mipMapCount),
+                               0.0f,
+                               vkSampler);
+    }
+    bool VulkanDevice::CreateVkSampler(FTextureFilterType eTextureFilter,
+                                       FTextureAddressingType eTextureAddressing,
+                                       FTextureBorderColorType eTextureBorderColor,
+                                       bool enableAnisotropy,
+                                       float maxAnisotropy,
+                                       float minLod, 
+                                       float maxLod, 
+                                       float mipLodBias,
+                                       VkSampler& vkSampler)
+    {
+        VkSamplerCreateInfo samplerInfo = {};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.minFilter = VulkanConverter::Transform2VkFilter(eTextureFilter, F_TextureFilterSize_Min);
+        samplerInfo.magFilter = VulkanConverter::Transform2VkFilter(eTextureFilter, F_TextureFilterSize_Mag);
+        samplerInfo.addressModeU = VulkanConverter::Transform2VkSamplerAddressMode(eTextureAddressing);
+        samplerInfo.addressModeV = VulkanConverter::Transform2VkSamplerAddressMode(eTextureAddressing);
+        samplerInfo.addressModeW = VulkanConverter::Transform2VkSamplerAddressMode(eTextureAddressing);
+        samplerInfo.anisotropyEnable = enableAnisotropy ? VK_TRUE : VK_FALSE;
+        samplerInfo.maxAnisotropy = maxAnisotropy > this->m_vkPhysicalDeviceProperties.limits.maxSamplerAnisotropy ? this->m_vkPhysicalDeviceProperties.limits.maxSamplerAnisotropy : maxAnisotropy;
+        samplerInfo.borderColor = VulkanConverter::Transform2VkBorderColor(eTextureBorderColor);
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = VulkanConverter::Transform2VkSamplerMipmapMode(eTextureFilter);
+        samplerInfo.minLod = minLod;
+        samplerInfo.maxLod = maxLod;
+        samplerInfo.mipLodBias = mipLodBias;
+
+        if (vkCreateSampler(this->m_vkDevice, &samplerInfo, nullptr, &vkSampler) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkSampler: Failed to create texture sampler !");
+            return false;
+        }
+        return true;
+    }
+    void VulkanDevice::DestroyVkImage(VkImage vkImage, VkDeviceMemory vkImageMemory, VkImageView vkImageView)
+    {
+        if (vkImage != VK_NULL_HANDLE)
+        {
+            vkDestroyImage(this->m_vkDevice, vkImage, nullptr);
+            vkFreeMemory(this->m_vkDevice, vkImageMemory, nullptr);
+        }
+        DestroyVkImageView(vkImageView);
+    }
+    void VulkanDevice::DestroyVkImageView(VkImageView vkImageView)
+    {   
+        if (vkImageView != VK_NULL_HANDLE)
+        {
+            vkDestroyImageView(this->m_vkDevice, vkImageView, nullptr);
+        }
+    }
+    void VulkanDevice::DestroyVkImageSampler(VkSampler vkSampler)
+    {
+        if (vkSampler != VK_NULL_HANDLE)
+        {
+            vkDestroySampler(this->m_vkDevice, vkSampler, nullptr);
+        }
+    }
+
+    void VulkanDevice::TransitionVkImageLayout(VkCommandBuffer cmdBuffer,
+                                               VkImage vkImage, 
+                                               VkImageLayout oldLayout, 
+                                               VkImageLayout newLayout,
+                                               uint32_t mipBase,
+                                               uint32_t mipCount,
+                                               uint32_t numBase,
+                                               uint32_t numArray,
+                                               VkImageAspectFlags aspectFlags /*= VK_IMAGE_ASPECT_COLOR_BIT*/) 
+    {
+        bool isCreate = false;
+        if (cmdBuffer == VK_NULL_HANDLE)
+        {
+            isCreate = true;
+            cmdBuffer = BeginSingleTimeCommands();
+        }
+        {
+            VkImageMemoryBarrier barrier = {};
+            barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+            barrier.oldLayout = oldLayout;
+            barrier.newLayout = newLayout;
+            barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.image = vkImage;
+
+            barrier.subresourceRange.aspectMask = aspectFlags;
+            barrier.subresourceRange.baseMipLevel = mipBase;
+            barrier.subresourceRange.levelCount = mipCount;
+            barrier.subresourceRange.baseArrayLayer = numBase;
+            barrier.subresourceRange.layerCount = numArray;
+
+            VkPipelineStageFlags sourceStage;
+            VkPipelineStageFlags destinationStage;
+
+            if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) 
+            {
+                // VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+                barrier.srcAccessMask = 0;
+                barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+                sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+                destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            } 
+            else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_GENERAL)
+            {
+                // VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_GENERAL
+                barrier.srcAccessMask = 0;
+                barrier.dstAccessMask = 0;
+
+                sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+                destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+            }
+            else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+            {
+                // VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL -> VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+                barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+                barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+                sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            }
+            else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) 
+            {
+                // VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL -> VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+                barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+                barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+                sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+            } 
+            else 
+            {
+                F_LogError("*********************** VulkanDevice::TransitionVkImageLayout: Unsupported layout transition !");
+                throw std::invalid_argument("*********************** VulkanDevice::TransitionVkImageLayout: Unsupported layout transition !");
+            }
+
+            vkCmdPipelineBarrier(cmdBuffer,
+                                 sourceStage, 
+                                 destinationStage,
+                                 0,
+                                 0, 
+                                 nullptr,
+                                 0, 
+                                 nullptr,
+                                 1, 
+                                 &barrier);
+        }
+        if (isCreate)
+        {
+            EndSingleTimeCommands(cmdBuffer);
+        }
+    }
+    void VulkanDevice::CopyVkBufferToVkImage(VkCommandBuffer cmdBuffer,
+                                             VkBuffer vkBuffer, 
+                                             VkImage vkImage, 
+                                             uint32_t width, 
+                                             uint32_t height,
+                                             uint32_t depth,
+                                             uint32_t numArray) 
+    {
+        bool isCreate = false;
+        if (cmdBuffer == VK_NULL_HANDLE)
+        {
+            isCreate = true;
+            cmdBuffer = BeginSingleTimeCommands();
+        }
+        {
+            std::vector<VkBufferImageCopy> bufferCopyRegions;
+            for (uint32_t i = 0; i < numArray; i++)
+            {
+                VkBufferImageCopy region = {};
+                region.bufferOffset = width * height * 4 * i;
+                region.imageExtent.width = width;
+                region.imageExtent.height = height;
+                region.imageExtent.depth = depth;
+                region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                region.imageSubresource.mipLevel = 0;
+                region.imageSubresource.baseArrayLayer = i;
+                region.imageSubresource.layerCount = 1;
+                bufferCopyRegions.push_back(region);
+            }
+            vkCmdCopyBufferToImage(cmdBuffer, 
+                                   vkBuffer, 
+                                   vkImage, 
+                                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                   (uint32_t)bufferCopyRegions.size(), 
+                                   bufferCopyRegions.data());
+        }
+        if (isCreate)
+        {
+            EndSingleTimeCommands(cmdBuffer);
+        }
+    }
+    void VulkanDevice::GenerateVkImageMipMaps(VkCommandBuffer cmdBuffer,
+                                              VkImage vkImage, 
+                                              VkFormat imageFormat, 
+                                              int32_t width, 
+                                              int32_t height, 
+                                              uint32_t mipMapCount,
+                                              uint32_t numArray,
+                                              bool autoMipMap)
+    {
+        bool isCreate = false;
+        if (cmdBuffer == VK_NULL_HANDLE)
+        {
+            isCreate = true;
+            cmdBuffer = BeginSingleTimeCommands();
+        }
+        {
+            if (autoMipMap)
+            {
+                int32_t mipWidth = width;
+                int32_t mipHeight = height;
+                for (uint32_t i = 1; i < mipMapCount; i++) 
+                {
+                    TransitionVkImageLayout(cmdBuffer,
+                                            vkImage, 
+                                            VK_IMAGE_LAYOUT_UNDEFINED, 
+                                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                            i,
+                                            1,
+                                            0,
+                                            numArray);
+                    {
+                        VkImageBlit blit = {};
+                        blit.srcOffsets[0] = {0, 0, 0};
+                        blit.srcOffsets[1] = {mipWidth, mipHeight, 1};
+                        blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                        blit.srcSubresource.mipLevel = i - 1;
+                        blit.srcSubresource.baseArrayLayer = 0;
+                        blit.srcSubresource.layerCount = numArray;
+
+                        blit.dstOffsets[0] = {0, 0, 0};
+                        blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 };
+                        blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                        blit.dstSubresource.mipLevel = i;
+                        blit.dstSubresource.baseArrayLayer = 0;
+                        blit.dstSubresource.layerCount = numArray;
+
+                        vkCmdBlitImage(cmdBuffer,
+                                       vkImage, 
+                                       VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                       vkImage, 
+                                       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                       1, 
+                                       &blit,
+                                       VK_FILTER_LINEAR);
+
+                        if (mipWidth > 1) 
+                            mipWidth /= 2;
+                        if (mipHeight > 1) 
+                            mipHeight /= 2;
+                    }   
+                    TransitionVkImageLayout(cmdBuffer,
+                                            vkImage,
+                                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                            i,
+                                            1,
+                                            0,
+                                            numArray);
+                }
+            }
+
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage,
+                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                    0,
+                                    mipMapCount,
+                                    0,
+                                    numArray);
+        }
+        if (isCreate)
+        {
+            EndSingleTimeCommands(cmdBuffer);
+        }
+    }
+
+    bool VulkanDevice::CreateTexture1D(const String& pathAsset, 
+                                       uint32_t& mipMapCount,
+                                       VkImage& vkImage, 
+                                       VkDeviceMemory& vkImageMemory)
+    {
+        return CreateTexture2D(pathAsset,
+                               VK_IMAGE_TYPE_1D,
+                               VK_SAMPLE_COUNT_1_BIT,
+                               VK_FORMAT_R8G8B8A8_SRGB,
+                               true,
+                               mipMapCount,
+                               vkImage,
+                               vkImageMemory);
+    }
+    
+    bool VulkanDevice::CreateTexture2D(const String& pathAsset, 
+                                       VkImageType type,
+                                       VkSampleCountFlagBits numSamples,
+                                       VkFormat format,
+                                       bool autoMipMap, 
+                                       uint32_t& mipMapCount, 
+                                       VkImage& vkImage, 
+                                       VkDeviceMemory& vkImageMemory,
+                                       VkBuffer& vkBuffer, 
+                                       VkDeviceMemory& vkBufferMemory)
+    {
+        //1> Load Texture From File
+        String pathTexture = FPathManager::GetSingleton().GetFilePath(pathAsset);
+        Image image;
+        if (!image.Load(pathTexture))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTexture2D: Failed to load texture image: [%s] !", pathAsset.c_str());
+            return false;
+        }
+        int width = (int)image.GetWidth();
+        int height = (int)image.GetHeight();
+        int pixelSize = (int)image.GetPixelSize();
+        VkDeviceSize imageSize = width * height * pixelSize;
+        mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
+        uint8* pData = image.GetData();
+
+        //2> Create Buffer and copy Texture data to buffer
+        if (!CreateVkBuffer(imageSize, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTexture2D: Failed to create vk buffer: [%s] !", pathTexture.c_str());
+            return false;
+        }
+
+        WriteVkBuffer(vkBufferMemory, 
+                      (void*)pData,
+                      imageSize, 
+                      0);
+
+        uint32_t depth = 1;
+        uint32_t numArray = 1;
+
+        //3> CreateImage
+        if (!CreateVkImage(width, 
+                           height, 
+                           depth,
+                           numArray,
+                           mipMapCount, 
+                           type,
+                           false,
+                           numSamples, 
+                           format, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           false,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTexture2D: Failed to create vk image: [%s] !", pathTexture.c_str());
+            return false;
+        }
+
+        //4> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = BeginSingleTimeCommands();
+        {
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_UNDEFINED, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    numArray);
+            {
+                CopyVkBufferToVkImage(cmdBuffer,
+                                      vkBuffer, 
+                                      vkImage, 
+                                      static_cast<uint32_t>(width), 
+                                      static_cast<uint32_t>(height),
+                                      static_cast<uint32_t>(depth), 
+                                      numArray);
+            }
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    numArray);
+
+            GenerateVkImageMipMaps(cmdBuffer,
+                                   vkImage, 
+                                   format, 
+                                   width, 
+                                   height, 
+                                   mipMapCount,
+                                   numArray,
+                                   autoMipMap);
+        }
+        EndSingleTimeCommands(cmdBuffer);
+        return true;
+    }
+    bool VulkanDevice::CreateTexture2D(const String& pathAsset, 
+                                       VkImageType type,
+                                       VkSampleCountFlagBits numSamples,
+                                       VkFormat format,
+                                       bool autoMipMap, 
+                                       uint32_t& mipMapCount, 
+                                       VkImage& vkImage, 
+                                       VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTexture2D(pathAsset, 
+                                    type, 
+                                    numSamples,
+                                    format,
+                                    autoMipMap,
+                                    mipMapCount,
+                                    vkImage, 
+                                    vkImageMemory, 
+                                    vkStagingBuffer, 
+                                    vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+    bool VulkanDevice::CreateTexture2D(const String& pathAsset, 
+                                       uint32_t& mipMapCount,
+                                       VkImage& vkImage, 
+                                       VkDeviceMemory& vkImageMemory)
+    {
+        return CreateTexture2D(pathAsset,
+                               VK_IMAGE_TYPE_2D,
+                               VK_SAMPLE_COUNT_1_BIT,
+                               VK_FORMAT_R8G8B8A8_SRGB,
+                               true,
+                               mipMapCount,
+                               vkImage,
+                               vkImageMemory);
+    }
+    
+    static void s_DeleteImages(const ImagePtrVector& aImages)
+    {
+        int count = (int)aImages.size();
+        for (int i = 0; i < count; i++)
+        {
+            Image* pImage = aImages[i];
+            F_DELETE(pImage)
+        }
+    }
+    bool VulkanDevice::CreateTexture2DArray(const StringVector& aPathAsset, 
+                                            VkImageType type,
+                                            VkSampleCountFlagBits numSamples,
+                                            VkFormat format,
+                                            bool autoMipMap, 
+                                            uint32_t& mipMapCount, 
+                                            VkImage& vkImage, 
+                                            VkDeviceMemory& vkImageMemory,
+                                            VkBuffer& vkBuffer, 
+                                            VkDeviceMemory& vkBufferMemory)
+    {
+        //1> Load Texture From File
+        std::vector<int> aWidth;
+        std::vector<int> aHeight;
+        std::vector<int> aPixelSize;
+        ImagePtrVector aImages;
+
+        size_t count_tex = aPathAsset.size();
+        if (count_tex <= 0)
+        {
+            F_LogError("*********************** VulkanDevice::CreateTexture2DArray: Texture path count <= 0 !");
+            return false;
+        }
+        for (size_t i = 0; i < count_tex; i++)
+        {
+            const String& pathAsset = aPathAsset[i];
+            String pathTexture = FPathManager::GetSingleton().GetFilePath(pathAsset);
+            Image* pImage = new Image;
+            aImages.push_back(pImage);
+            if (!pImage->Load(pathTexture))
+            {
+                F_LogError("*********************** VulkanDevice::CreateTexture2DArray: Failed to load texture image: [%s] !", pathAsset.c_str());
+                s_DeleteImages(aImages);
+                return false;
+            }
+            int width = (int)pImage->GetWidth();
+            int height = (int)pImage->GetHeight();
+            int pixelSize = (int)pImage->GetPixelSize();
+            aWidth.push_back(width);
+            aHeight.push_back(height);
+            aPixelSize.push_back(pixelSize);
+        }
+
+        int width = aWidth[0];
+        int height = aHeight[0];
+        int pixelSize = aPixelSize[0];
+        for (size_t i = 1; i < count_tex; i++)
+        {
+            if (aWidth[i] != width)
+            {
+                F_LogError("*********************** VulkanDevice::CreateTexture2DArray: Texture image's all width must the same !");
+                s_DeleteImages(aImages);
+                return false;
+            }
+            if (aHeight[i] != height)
+            {
+                F_LogError("*********************** VulkanDevice::CreateTexture2DArray: Texture image's all height must the same !");
+                s_DeleteImages(aImages);
+                return false;
+            }
+            if (aPixelSize[i] != pixelSize)
+            {
+                F_LogError("*********************** VulkanDevice::CreateTexture2DArray: Texture image's all pixel size must the same !");
+                s_DeleteImages(aImages);
+                return false;
+            }
+        }
+
+        uint32_t depth = 1;
+        uint32_t numArray = count_tex;
+        if (type == VK_IMAGE_TYPE_1D)
+        {
+            depth = 0;
+        }
+
+        //2> Create Buffer and copy Texture data to buffer
+        mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
+        VkDeviceSize imageSize = width * height * pixelSize;
+        VkDeviceSize imageSizeAll = imageSize * count_tex;
+        if (!CreateVkBuffer(imageSizeAll, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTexture2DArray: Failed to create vk buffer !");
+            s_DeleteImages(aImages);
+            return false;
+        }
+
+        for (size_t i = 0; i < count_tex; i++)
+        {
+            Image* pImage = aImages[i];
+            WriteVkBuffer(vkBufferMemory,
+                          (void*)pImage->GetData(),
+                          imageSizeAll,
+                          width * height * pixelSize * i);
+        }
+        s_DeleteImages(aImages);
+
+        //3> CreateImage, TransitionImageLayout and CopyBufferToImage
+        if (!CreateVkImage(width, 
+                           height, 
+                           depth,
+                           numArray,
+                           mipMapCount, 
+                           type,
+                           false,
+                           numSamples, 
+                           format, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           false,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTexture2DArray: Failed to create vk image 2d array !");
+            return false;
+        }
+
+        //4> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = BeginSingleTimeCommands();
+        {
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_UNDEFINED, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    numArray);
+            {   
+                CopyVkBufferToVkImage(cmdBuffer,
+                                      vkBuffer, 
+                                      vkImage, 
+                                      static_cast<uint32_t>(width), 
+                                      static_cast<uint32_t>(height),
+                                      static_cast<uint32_t>(depth), 
+                                      numArray);
+            }
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    numArray);
+
+            GenerateVkImageMipMaps(cmdBuffer,
+                                   vkImage, 
+                                   format, 
+                                   width, 
+                                   height,
+                                   mipMapCount,
+                                   numArray,
+                                   autoMipMap);
+        }
+        EndSingleTimeCommands(cmdBuffer);
+        return true;
+    }
+    bool VulkanDevice::CreateTexture2DArray(const StringVector& aPathAsset, 
+                                            VkImageType type,
+                                            VkSampleCountFlagBits numSamples,
+                                            VkFormat format,
+                                            bool autoMipMap, 
+                                            uint32_t& mipMapCount, 
+                                            VkImage& vkImage, 
+                                            VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTexture2DArray(aPathAsset, 
+                                         type, 
+                                         numSamples,
+                                         format,
+                                         autoMipMap,
+                                         mipMapCount,
+                                         vkImage, 
+                                         vkImageMemory, 
+                                         vkStagingBuffer, 
+                                         vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+    bool VulkanDevice::CreateTexture2DArray(const StringVector& aPathAsset, 
+                                            uint32_t& mipMapCount,
+                                            VkImage& vkImage, 
+                                            VkDeviceMemory& vkImageMemory)
+    {
+        return CreateTexture2DArray(aPathAsset,
+                                    VK_IMAGE_TYPE_2D,
+                                    VK_SAMPLE_COUNT_1_BIT,
+                                    VK_FORMAT_R8G8B8A8_SRGB,
+                                    true,
+                                    mipMapCount,
+                                    vkImage,
+                                    vkImageMemory);
+    }
+    
+    bool VulkanDevice::CreateTexture3D(VkFormat format,
+                                       const uint8* pDataRGBA,
+                                       uint32_t size,
+                                       uint32_t width,
+                                       uint32_t height,
+                                       uint32_t depth,
+                                       VkImage& vkImage, 
+                                       VkDeviceMemory& vkImageMemory,
+                                       VkBuffer& vkBuffer, 
+                                       VkDeviceMemory& vkBufferMemory)
+    {
+        VkFormatProperties formatProperties;
+		vkGetPhysicalDeviceFormatProperties(this->m_vkPhysicalDevice, format, &formatProperties);
+		if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_TRANSFER_DST_BIT))
+		{
+            F_LogError("*********************** VulkanDevice::CreateTexture3D: Physical device does not support flag 'VK_FORMAT_FEATURE_TRANSFER_DST_BIT' for selected texture format !");
+            return false;
+		}
+		uint32_t maxImageDimension3D(this->m_vkPhysicalDeviceProperties.limits.maxImageDimension3D);
+		if (width > maxImageDimension3D || height > maxImageDimension3D || depth > maxImageDimension3D)
+		{
+            F_LogError("*********************** VulkanDevice::CreateTexture3D: Requested texture dimensions is greater than supported 3D texture dimension !");
+			return false;
+		}
+
+        //1> Create Buffer and copy Texture data to buffer
+        VkDeviceSize imageSize = size;
+        if (!CreateVkBuffer(imageSize, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTexture3D: Failed to create vk buffer !");
+            return false;
+        }
+
+        WriteVkBuffer(vkBufferMemory, 
+                      (void*)pDataRGBA, 
+                      imageSize, 
+                      0);
+
+        //2> CreateImage
+        if (!CreateVkImage(width, 
+                           height, 
+                           depth,
+                           1,
+                           1, 
+                           VK_IMAGE_TYPE_3D,
+                           false,
+                           VK_SAMPLE_COUNT_1_BIT, 
+                           format, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           false,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTexture3D: Failed to create vk image 3d !");
+            return false;
+        }
+
+        //3> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = BeginSingleTimeCommands();
+        {
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_UNDEFINED, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    1);
+            {   
+                CopyVkBufferToVkImage(cmdBuffer,
+                                      vkBuffer, 
+                                      vkImage, 
+                                      static_cast<uint32_t>(width), 
+                                      static_cast<uint32_t>(height),
+                                      static_cast<uint32_t>(depth), 
+                                      1);
+            }
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    1);
+
+            GenerateVkImageMipMaps(cmdBuffer,
+                                   vkImage, 
+                                   format, 
+                                   width, 
+                                   height,
+                                   1,
+                                   1,
+                                   false);
+        }
+        EndSingleTimeCommands(cmdBuffer);
+        return true;
+    }
+    bool VulkanDevice::CreateTexture3D(VkFormat format,
+                                       const uint8* pDataRGBA,
+                                       uint32_t size,
+                                       uint32_t width,
+                                       uint32_t height,
+                                       uint32_t depth,
+                                       VkImage& vkImage, 
+                                       VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTexture3D(format, 
+                                    pDataRGBA, 
+                                    size,
+                                    width,
+                                    height,
+                                    depth,
+                                    vkImage, 
+                                    vkImageMemory, 
+                                    vkStagingBuffer, 
+                                    vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+
+    bool VulkanDevice::CreateTextureCubeMap(const StringVector& aPathAsset, 
+                                            VkSampleCountFlagBits numSamples,
+                                            VkFormat format,
+                                            bool autoMipMap, 
+                                            uint32_t& mipMapCount, 
+                                            VkImage& vkImage, 
+                                            VkDeviceMemory& vkImageMemory,
+                                            VkBuffer& vkBuffer, 
+                                            VkDeviceMemory& vkBufferMemory)
+    {
+        //1> Load Texture From File
+        std::vector<int> aWidth;
+        std::vector<int> aHeight;
+        std::vector<int> aPixelSize;
+        ImagePtrVector aImages;
+
+        size_t count_tex = aPathAsset.size();
+        if (count_tex <= 0)
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureCubeMap: Texture path count <= 0 !");
+            return false;
+        }
+        if (count_tex != 6)
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureCubeMap: Texture path count != 6 !");
+            return false;
+        }
+
+        for (size_t i = 0; i < count_tex; i++)
+        {
+            const String& pathAsset = aPathAsset[i];
+            String pathTexture = FPathManager::GetSingleton().GetFilePath(pathAsset);
+            Image* pImage = new Image;
+            aImages.push_back(pImage);
+            if (!pImage->Load(pathTexture))
+            {
+                F_LogError("*********************** VulkanDevice::CreateTextureCubeMap: Failed to load texture image: [%s] !", pathAsset.c_str());
+                s_DeleteImages(aImages);
+                return false;
+            }
+            int width = (int)pImage->GetWidth();
+            int height = (int)pImage->GetHeight();
+            int pixelSize = (int)pImage->GetPixelSize();
+            aWidth.push_back(width);
+            aHeight.push_back(height);
+            aPixelSize.push_back(pixelSize);
+        }
+
+        int width = aWidth[0];
+        int height = aHeight[0];
+        int pixelSize = aPixelSize[0];
+        for (size_t i = 1; i < count_tex; i++)
+        {
+            if (aWidth[i] != width)
+            {
+                F_LogError("*********************** VulkanDevice::CreateTextureCubeMap: Texture image's all width must the same !");
+                s_DeleteImages(aImages);
+                return false;
+            }
+            if (aHeight[i] != height)
+            {
+                F_LogError("*********************** VulkanDevice::CreateTextureCubeMap: Texture image's all height must the same !");
+                s_DeleteImages(aImages);
+                return false;
+            }
+            if (aPixelSize[i] != pixelSize)
+            {
+                F_LogError("*********************** VulkanDevice::CreateTextureCubeMap: Texture image's all pixel size must the same !");
+                s_DeleteImages(aImages);
+                return false;
+            }
+        }
+
+        uint32_t depth = 1;
+        uint32_t numArray = count_tex;
+
+        //2> Create Buffer and copy Texture data to buffer
+        mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
+        VkDeviceSize imageSize = width * height * pixelSize;
+        VkDeviceSize imageSizeAll = imageSize * count_tex;
+        if (!CreateVkBuffer(imageSizeAll, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureCubeMap: Failed to create vk buffer !");
+            s_DeleteImages(aImages);
+            return false;
+        }
+
+        for (size_t i = 0; i < count_tex; i++)
+        {
+            Image* pImage = aImages[i];
+            WriteVkBuffer(vkBufferMemory,
+                          (void*)pImage->GetData(),
+                          imageSizeAll,
+                          width * height * pixelSize * i);
+        }
+        s_DeleteImages(aImages);
+
+        //3> CreateImage, TransitionImageLayout and CopyBufferToImage
+        if (!CreateVkImage(width, 
+                           height, 
+                           depth,
+                           numArray,
+                           mipMapCount, 
+                           VK_IMAGE_TYPE_2D,
+                           true,
+                           numSamples, 
+                           format, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           false,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureCubeMap: Failed to create vk image cubemap !");
+            return false;
+        }
+
+        //4> TransitionImageLayout, CopyBufferToImage, GenerateMipMaps
+        VkCommandBuffer cmdBuffer = BeginSingleTimeCommands();
+        {
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_UNDEFINED, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    numArray);
+            {   
+                CopyVkBufferToVkImage(cmdBuffer,
+                                      vkBuffer, 
+                                      vkImage, 
+                                      static_cast<uint32_t>(width), 
+                                      static_cast<uint32_t>(height),
+                                      static_cast<uint32_t>(depth), 
+                                      numArray);
+            }
+            TransitionVkImageLayout(cmdBuffer,
+                                    vkImage, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                    0,
+                                    1,
+                                    0,
+                                    numArray);
+
+            GenerateVkImageMipMaps(cmdBuffer,
+                                   vkImage, 
+                                   format, 
+                                   width, 
+                                   height,
+                                   mipMapCount,
+                                   numArray,
+                                   autoMipMap);
+        }
+        EndSingleTimeCommands(cmdBuffer);
+        return true;
+    }
+    bool VulkanDevice::CreateTextureCubeMap(const StringVector& aPathAsset, 
+                                            VkSampleCountFlagBits numSamples,
+                                            VkFormat format,
+                                            bool autoMipMap, 
+                                            uint32_t& mipMapCount, 
+                                            VkImage& vkImage, 
+                                            VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureCubeMap(aPathAsset, 
+                                         numSamples, 
+                                         format,
+                                         autoMipMap,
+                                         mipMapCount,
+                                         vkImage, 
+                                         vkImageMemory, 
+                                         vkStagingBuffer, 
+                                         vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+    bool VulkanDevice::CreateTextureCubeMap(const StringVector& aPathAsset,
+                                            uint32_t& mipMapCount, 
+                                            VkImage& vkImage, 
+                                            VkDeviceMemory& vkImageMemory)
+    {
+        return CreateTextureCubeMap(aPathAsset, 
+                                    VK_SAMPLE_COUNT_1_BIT, 
+                                    VK_FORMAT_R8G8B8A8_SRGB,
+                                    true,
+                                    mipMapCount,
+                                    vkImage, 
+                                    vkImageMemory);
+    }
+
+    bool VulkanDevice::CreateTextureRenderTarget1D(const FVector4& clDefault,
+                                                   bool isSetColor,
+                                                   uint32_t width, 
+                                                   uint32_t mipMapCount,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& vkImage, 
+                                                   VkDeviceMemory& vkImageMemory,
+                                                   VkBuffer& vkBuffer, 
+                                                   VkDeviceMemory& vkBufferMemory)
+    {
+        return CreateTextureRenderTarget2D(clDefault,
+                                           isSetColor,
+                                           width,
+                                           1,
+                                           mipMapCount,
+                                           VK_IMAGE_TYPE_1D,
+                                           numSamples,
+                                           format,
+                                           usage,
+                                           isGraphicsComputeShared,
+                                           vkImage,
+                                           vkImageMemory,
+                                           vkBuffer,
+                                           vkBufferMemory);
+    }
+    bool VulkanDevice::CreateTextureRenderTarget1D(const FVector4& clDefault,
+                                                   bool isSetColor,
+                                                   uint32_t width, 
+                                                   uint32_t mipMapCount,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& vkImage, 
+                                                   VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureRenderTarget1D(clDefault, 
+                                                isSetColor,
+                                                width, 
+                                                mipMapCount,
+                                                numSamples,
+                                                format,
+                                                usage,
+                                                isGraphicsComputeShared,
+                                                vkImage, 
+                                                vkImageMemory, 
+                                                vkStagingBuffer, 
+                                                vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+
+    bool VulkanDevice::CreateTextureRenderTarget2D(const FVector4& clDefault,
+                                                   bool isSetColor,
+                                                   uint32_t width, 
+                                                   uint32_t height,
+                                                   uint32_t mipMapCount,
+                                                   VkImageType type,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& vkImage, 
+                                                   VkDeviceMemory& vkImageMemory,
+                                                   VkBuffer& vkBuffer, 
+                                                   VkDeviceMemory& vkBufferMemory)
+    {
+        //1> CreateBuffer
+        VkDeviceSize imageSize = width * height * 4;
+        if (!CreateVkBuffer(imageSize, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureRenderTarget2D: Failed to create vk buffer !");
+            return false;
+        }
+        if (isSetColor)
+        {
+            uint8 r = (uint8)(clDefault.x * 255);
+            uint8 g = (uint8)(clDefault.y * 255);
+            uint8 b = (uint8)(clDefault.z * 255);
+            uint8 a = (uint8)(clDefault.w * 255);
+
+            void* data;
+            vkMapMemory(this->m_vkDevice, vkBufferMemory, 0, imageSize, 0, &data);
+            {
+                uint8* pColor = (uint8*)data;
+                for (int i = 0; i < width * height; i++)
+                {
+                    pColor[4 * i + 0] = r;
+                    pColor[4 * i + 1] = g;
+                    pColor[4 * i + 2] = b;
+                    pColor[4 * i + 3] = a;
+                }
+            }
+            vkUnmapMemory(this->m_vkDevice, vkBufferMemory);
+        }
+        
+        //2> CreateImage
+        uint32_t depth = 1;
+        uint32_t numArray = 1;
+        if (!CreateVkImage(width, 
+                           height, 
+                           depth,
+                           numArray,
+                           mipMapCount, 
+                           type,
+                           false,
+                           numSamples, 
+                           format, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           usage, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           isGraphicsComputeShared,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureRenderTarget2D: Failed to create vk image 2d !");
+            return false;
+        }
+
+        //3> TransitionImageLayout
+        TransitionVkImageLayout(VK_NULL_HANDLE,
+                                vkImage, 
+                                VK_IMAGE_LAYOUT_UNDEFINED, 
+                                VK_IMAGE_LAYOUT_GENERAL,
+                                0,
+                                mipMapCount,
+                                0,
+                                numArray);
+        return true;
+    }
+    bool VulkanDevice::CreateTextureRenderTarget2D(const FVector4& clDefault,
+                                                   bool isSetColor,
+                                                   uint32_t width, 
+                                                   uint32_t height,
+                                                   uint32_t mipMapCount,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& vkImage, 
+                                                   VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureRenderTarget2D(clDefault, 
+                                                isSetColor,
+                                                width, 
+                                                height,
+                                                mipMapCount,
+                                                VK_IMAGE_TYPE_2D,
+                                                numSamples,
+                                                format,
+                                                usage,
+                                                isGraphicsComputeShared,
+                                                vkImage, 
+                                                vkImageMemory, 
+                                                vkStagingBuffer, 
+                                                vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+
+    bool VulkanDevice::CreateTextureRenderTarget2D(uint8* pData,
+                                                   uint32_t width, 
+                                                   uint32_t height,
+                                                   uint32_t mipMapCount,
+                                                   VkImageType type,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& vkImage, 
+                                                   VkDeviceMemory& vkImageMemory,
+                                                   VkBuffer& vkBuffer, 
+                                                   VkDeviceMemory& vkBufferMemory)
+    {
+        uint32_t sizeFormat = 4;
+        if (format == VK_FORMAT_R8_UNORM)
+        {
+            sizeFormat = 1;
+        }
+        else if (format == VK_FORMAT_R16_UNORM)
+        {
+            sizeFormat = 2;
+        }
+        //1> CreateBuffer
+        VkDeviceSize imageSize = width * height * sizeFormat;
+        if (!CreateVkBuffer(imageSize, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureRenderTarget2D: Failed to create vk buffer !");
+            return false;
+        }
+        if (pData != nullptr)
+        {
+            WriteVkBuffer(vkBufferMemory,   
+                          (void*)pData,
+                          imageSize, 
+                          0);
+        }
+        
+        //2> CreateImage
+        uint32_t depth = 1;
+        uint32_t numArray = 1;
+        if (!CreateVkImage(width, 
+                           height, 
+                           depth,
+                           numArray,
+                           mipMapCount, 
+                           type,
+                           false,
+                           numSamples, 
+                           format, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           usage, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           isGraphicsComputeShared,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureRenderTarget2D: Failed to create vk image 2d !");
+            return false;
+        }
+
+        //3> TransitionImageLayout
+        TransitionVkImageLayout(VK_NULL_HANDLE,
+                                vkImage, 
+                                VK_IMAGE_LAYOUT_UNDEFINED, 
+                                VK_IMAGE_LAYOUT_GENERAL,
+                                0,
+                                mipMapCount,
+                                0,
+                                numArray);
+        return true;
+    }
+    bool VulkanDevice::CreateTextureRenderTarget2D(uint8* pData,
+                                                   uint32_t width, 
+                                                   uint32_t height,
+                                                   uint32_t mipMapCount,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& vkImage, 
+                                                   VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureRenderTarget2D(pData,
+                                                width, 
+                                                height,
+                                                mipMapCount,
+                                                VK_IMAGE_TYPE_2D,
+                                                numSamples,
+                                                format,
+                                                usage,
+                                                isGraphicsComputeShared,
+                                                vkImage, 
+                                                vkImageMemory, 
+                                                vkStagingBuffer, 
+                                                vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+
+    bool VulkanDevice::CreateTextureRenderTarget2DArray(const FVector4& clDefault,
+                                                        bool isSetColor,
+                                                        uint32_t width, 
+                                                        uint32_t height,
+                                                        uint32_t numArray,
+                                                        uint32_t mipMapCount,
+                                                        VkImageType type,
+                                                        VkSampleCountFlagBits numSamples,
+                                                        VkFormat format,
+                                                        VkImageUsageFlags usage, 
+                                                        bool isGraphicsComputeShared,
+                                                        VkImage& vkImage, 
+                                                        VkDeviceMemory& vkImageMemory,
+                                                        VkBuffer& vkBuffer, 
+                                                        VkDeviceMemory& vkBufferMemory)
+    {
+        //1> CreateBuffer
+        VkDeviceSize imageSize = width * height * 4;
+        VkDeviceSize imageSizeAll = imageSize * numArray;
+        if (!CreateVkBuffer(imageSizeAll, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureRenderTarget2DArray: Failed to create vk buffer !");
+            return false;
+        }
+        if (isSetColor)
+        {
+            uint8 r = (uint8)(clDefault.x * 255);
+            uint8 g = (uint8)(clDefault.y * 255);
+            uint8 b = (uint8)(clDefault.z * 255);
+            uint8 a = (uint8)(clDefault.w * 255);
+
+            void* data;
+            vkMapMemory(this->m_vkDevice, vkBufferMemory, 0, imageSizeAll, 0, &data);
+            {
+                uint8* pColor = (uint8*)data;
+                for (int i = 0; i < width * height * numArray; i++)
+                {
+                    pColor[4 * i + 0] = r;
+                    pColor[4 * i + 1] = g;
+                    pColor[4 * i + 2] = b;
+                    pColor[4 * i + 3] = a;
+                }
+            }
+            vkUnmapMemory(this->m_vkDevice, vkBufferMemory);
+        }
+
+        //2> CreateImage
+        uint32_t depth = 1;
+        if (type == VK_IMAGE_TYPE_1D)
+        {
+            depth = 0;
+        }
+        if (!CreateVkImage(width, 
+                           height, 
+                           depth,
+                           numArray,
+                           mipMapCount, 
+                           type,
+                           false,
+                           numSamples, 
+                           format, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           usage, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           isGraphicsComputeShared,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureRenderTarget2DArray: Failed to create vk image 2d array !");
+            return false;
+        }
+
+        //3> TransitionImageLayout
+        TransitionVkImageLayout(VK_NULL_HANDLE,
+                                vkImage, 
+                                VK_IMAGE_LAYOUT_UNDEFINED, 
+                                VK_IMAGE_LAYOUT_GENERAL,
+                                0,
+                                mipMapCount,
+                                0,
+                                numArray);
+        return true;
+    }
+    bool VulkanDevice::CreateTextureRenderTarget2DArray(const FVector4& clDefault,
+                                                        bool isSetColor,
+                                                        uint32_t width, 
+                                                        uint32_t height,
+                                                        uint32_t numArray,
+                                                        uint32_t mipMapCount,
+                                                        VkSampleCountFlagBits numSamples,
+                                                        VkFormat format,
+                                                        VkImageUsageFlags usage, 
+                                                        bool isGraphicsComputeShared,
+                                                        VkImage& vkImage, 
+                                                        VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureRenderTarget2DArray(clDefault, 
+                                                     isSetColor,
+                                                     width, 
+                                                     height,
+                                                     numArray,
+                                                     mipMapCount,
+                                                     VK_IMAGE_TYPE_2D,
+                                                     numSamples,
+                                                     format,
+                                                     usage,
+                                                     isGraphicsComputeShared,
+                                                     vkImage, 
+                                                     vkImageMemory, 
+                                                     vkStagingBuffer, 
+                                                     vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+
+    bool VulkanDevice::CreateTextureRenderTarget3D(const FVector4& clDefault,
+                                                   bool isSetColor,
+                                                   uint32_t width, 
+                                                   uint32_t height,
+                                                   uint32_t depth,
+                                                   uint32_t mipMapCount,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& vkImage, 
+                                                   VkDeviceMemory& vkImageMemory,
+                                                   VkBuffer& vkBuffer, 
+                                                   VkDeviceMemory& vkBufferMemory)
+    {
+        //1> CreateBuffer
+        VkDeviceSize imageSize = width * height * depth * 4;
+        if (!CreateVkBuffer(imageSize, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureRenderTarget3D: Failed to create vk buffer !");
+            return false;
+        }
+        if (isSetColor)
+        {
+            uint8 r = (uint8)(clDefault.x * 255);
+            uint8 g = (uint8)(clDefault.y * 255);
+            uint8 b = (uint8)(clDefault.z * 255);
+            uint8 a = (uint8)(clDefault.w * 255);
+
+            void* data;
+            vkMapMemory(this->m_vkDevice, vkBufferMemory, 0, imageSize, 0, &data);
+            {
+                uint8* pColor = (uint8*)data;
+                for (int i = 0; i < width * height * depth; i++)
+                {
+                    pColor[4 * i + 0] = r;
+                    pColor[4 * i + 1] = g;
+                    pColor[4 * i + 2] = b;
+                    pColor[4 * i + 3] = a;
+                }
+            }
+            vkUnmapMemory(this->m_vkDevice, vkBufferMemory);
+        }
+
+        //2> CreateImage
+        if (!CreateVkImage(width, 
+                           height, 
+                           depth,
+                           1,
+                           mipMapCount, 
+                           VK_IMAGE_TYPE_3D,
+                           false,
+                           numSamples, 
+                           format, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           usage, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           isGraphicsComputeShared,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureRenderTarget3D: Failed to create vk image 3d !");
+            return false;
+        }
+
+        //3> TransitionImageLayout
+        TransitionVkImageLayout(VK_NULL_HANDLE,
+                                vkImage, 
+                                VK_IMAGE_LAYOUT_UNDEFINED, 
+                                VK_IMAGE_LAYOUT_GENERAL,
+                                0,
+                                mipMapCount,
+                                0,
+                                1);
+        return true;
+    }
+    bool VulkanDevice::CreateTextureRenderTarget3D(const FVector4& clDefault,
+                                                   bool isSetColor,
+                                                   uint32_t width, 
+                                                   uint32_t height,
+                                                   uint32_t depth,
+                                                   uint32_t mipMapCount,
+                                                   VkSampleCountFlagBits numSamples,
+                                                   VkFormat format,
+                                                   VkImageUsageFlags usage, 
+                                                   bool isGraphicsComputeShared,
+                                                   VkImage& vkImage, 
+                                                   VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureRenderTarget3D(clDefault, 
+                                                isSetColor,
+                                                width, 
+                                                height,
+                                                depth,
+                                                mipMapCount,
+                                                numSamples,
+                                                format,
+                                                usage,
+                                                isGraphicsComputeShared,
+                                                vkImage, 
+                                                vkImageMemory, 
+                                                vkStagingBuffer, 
+                                                vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }
+
+    bool VulkanDevice::CreateTextureRenderTargetCubeMap(uint32_t width, 
+                                                        uint32_t height,
+                                                        uint32_t mipMapCount,
+                                                        VkSampleCountFlagBits numSamples,
+                                                        VkFormat format,
+                                                        VkImageUsageFlags usage, 
+                                                        bool isGraphicsComputeShared,
+                                                        VkImage& vkImage, 
+                                                        VkDeviceMemory& vkImageMemory,
+                                                        VkBuffer& vkBuffer, 
+                                                        VkDeviceMemory& vkBufferMemory)
+    {
+        uint32_t numArray = 6;
+        //1> CreateBuffer
+        VkDeviceSize imageSize = width * height * 4;
+        VkDeviceSize imageSizeAll = imageSize * numArray;
+        if (!CreateVkBuffer(imageSizeAll, 
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                            vkBuffer, 
+                            vkBufferMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureRenderTargetCubeMap: Failed to create vk buffer !");
+            return false;
+        }
+
+        //2> CreateImage
+        uint32_t depth = 1;
+        if (!CreateVkImage(width, 
+                           height, 
+                           depth,
+                           numArray,
+                           mipMapCount, 
+                           VK_IMAGE_TYPE_2D,
+                           true,
+                           numSamples, 
+                           format, 
+                           VK_IMAGE_TILING_OPTIMAL, 
+                           usage, 
+                           VK_SHARING_MODE_EXCLUSIVE,
+                           isGraphicsComputeShared,
+                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                           vkImage, 
+                           vkImageMemory))
+        {
+            F_LogError("*********************** VulkanDevice::CreateTextureRenderTargetCubeMap: Failed to create vk image cubemap !");
+            return false;
+        }
+
+        //3> TransitionImageLayout
+        TransitionVkImageLayout(VK_NULL_HANDLE,
+                                vkImage, 
+                                VK_IMAGE_LAYOUT_UNDEFINED, 
+                                VK_IMAGE_LAYOUT_GENERAL,
+                                0,
+                                mipMapCount,
+                                0,
+                                numArray);
+        return true;
+    }
+    bool VulkanDevice::CreateTextureRenderTargetCubeMap(uint32_t width, 
+                                                        uint32_t height,
+                                                        uint32_t mipMapCount,
+                                                        VkSampleCountFlagBits numSamples,
+                                                        VkFormat format,
+                                                        VkImageUsageFlags usage, 
+                                                        bool isGraphicsComputeShared,
+                                                        VkImage& vkImage, 
+                                                        VkDeviceMemory& vkImageMemory)
+    {
+        VkBuffer vkStagingBuffer;
+        VkDeviceMemory vkStagingBufferMemory;
+        bool bRet = CreateTextureRenderTargetCubeMap(width, 
+                                                     height,
+                                                     mipMapCount,
+                                                     numSamples,
+                                                     format,
+                                                     usage,
+                                                     isGraphicsComputeShared,
+                                                     vkImage, 
+                                                     vkImageMemory, 
+                                                     vkStagingBuffer, 
+                                                     vkStagingBufferMemory);
+        DestroyVkBuffer(vkStagingBuffer, vkStagingBufferMemory);
+        return bRet;
+    }     
+
+    ////////// Command //////////////
     VkCommandBuffer VulkanDevice::BeginSingleTimeCommands()
     {
         VkCommandBuffer vkCommandBuffer = AllocateVkCommandBuffer(m_vkCommandPoolTransfer, VK_COMMAND_BUFFER_LEVEL_PRIMARY);

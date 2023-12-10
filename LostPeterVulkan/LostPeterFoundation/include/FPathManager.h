@@ -101,6 +101,7 @@ namespace LostPeterFoundation
 		F_FORCEINLINE const String& GetWorkFolder() const { return m_strWorkFolder; }
 		
 	public:
+		String GetFilePath(const String& strPathAsset);
 		String GetFilePath(uint32 nGroup, const String& strName);
 		bool HasGroup(uint32 nGroup);
 		bool GetGroupMaxID(uint32 nGroup, uint32& nMaxID);

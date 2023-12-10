@@ -23,9 +23,9 @@ namespace LostPeterPluginRendererVulkan
         case F_RenderPrimitive_TriangleList:  return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         case F_RenderPrimitive_TriangleStrip: return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
         case F_RenderPrimitive_TriangleFan:   return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-        default:
-            return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
         }
+        F_Assert(false && "VulkanConverter::Transform2VkPrimitiveTopology: Wrong FRenderPrimitiveType type !")
+        return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST; 
     }
 
     VkCullModeFlags VulkanConverter::Transform2VkCullModeFlags(FCullingType eCulling)
@@ -36,6 +36,7 @@ namespace LostPeterPluginRendererVulkan
         case F_Culling_ClockWise:        return VK_CULL_MODE_BACK_BIT;
         case F_Culling_CounterClockWise: return VK_CULL_MODE_FRONT_BIT;
         }
+        F_Assert(false && "VulkanConverter::Transform2VkCullModeFlags: Wrong FCullingType type !")
         return VK_CULL_MODE_BACK_BIT;
     }
 
@@ -52,6 +53,7 @@ namespace LostPeterPluginRendererVulkan
         case F_CompareFunc_GreaterEqual:    return VK_COMPARE_OP_GREATER_OR_EQUAL;
         case F_CompareFunc_Greater:         return VK_COMPARE_OP_GREATER;
         }
+        F_Assert(false && "VulkanConverter::Transform2VkCompareOp: Wrong FCompareFuncType type !")
         return VK_COMPARE_OP_NEVER;
     }
 
@@ -63,6 +65,7 @@ namespace LostPeterPluginRendererVulkan
         case F_Polygon_WireFrame:  return VK_POLYGON_MODE_LINE;
         case F_Polygon_Solid:      return VK_POLYGON_MODE_FILL;
         }
+        F_Assert(false && "VulkanConverter::Transform2VkPolygonMode: Wrong FPolygonType type !")
         return VK_POLYGON_MODE_FILL;
     }
 
@@ -76,6 +79,7 @@ namespace LostPeterPluginRendererVulkan
         case F_SceneBlendingOP_Min:               return VK_BLEND_OP_MIN;
         case F_SceneBlendingOP_Max:               return VK_BLEND_OP_MAX;
         }
+        F_Assert(false && "VulkanConverter::Transform2VkBlendOp: Wrong FSceneBlendingOPType type !")
         return VK_BLEND_OP_ADD;
     }
 
@@ -94,6 +98,8 @@ namespace LostPeterPluginRendererVulkan
         case F_SceneBlendingFactor_OneMinusSourceAlpha:   return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         case F_SceneBlendingFactor_OneMinusDestAlpha:     return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
         }
+
+        F_Assert(false && "VulkanConverter::Transform2VkBlendFactor: Wrong FSceneBlendingFactorType type !")
         return VK_BLEND_FACTOR_ONE;
     }
 
@@ -110,9 +116,23 @@ namespace LostPeterPluginRendererVulkan
         case F_StencilOP_DecrementWrap:     return VK_STENCIL_OP_DECREMENT_AND_WRAP;
         case F_StencilOP_Invert:            return VK_STENCIL_OP_INVERT;
         }
+        F_Assert(false && "VulkanConverter::Transform2VkStencilOp: Wrong FStencilOPType type !")
         return VK_STENCIL_OP_KEEP;
     }
 
+    VkImageType VulkanConverter::Util_Transform2VkImageType(FTextureType eTexture)
+    {
+        switch ((int)eTexture)
+        {
+        case F_Texture_1D:          return VK_IMAGE_TYPE_1D;
+        case F_Texture_2D:          return VK_IMAGE_TYPE_2D;
+        case F_Texture_2DArray:     return VK_IMAGE_TYPE_2D;
+        case F_Texture_3D:          return VK_IMAGE_TYPE_3D;
+        case F_Texture_CubeMap:     return VK_IMAGE_TYPE_2D;
+        }
+        F_Assert(false && "VulkanConverter::Util_Transform2VkImageType: Wrong FTextureType type !")
+        return VK_IMAGE_TYPE_2D;
+    }
     VkImageViewType VulkanConverter::Transform2VkImageViewType(FTextureType eTexture)
     {
         switch ((int32)eTexture)
@@ -123,6 +143,7 @@ namespace LostPeterPluginRendererVulkan
         case F_Texture_3D:          return VK_IMAGE_VIEW_TYPE_3D;
         case F_Texture_CubeMap:     return VK_IMAGE_VIEW_TYPE_CUBE;
         }
+        F_Assert(false && "VulkanConverter::Transform2VkImageViewType: Wrong FTextureType type !")
         return VK_IMAGE_VIEW_TYPE_2D;
     }
 
@@ -135,6 +156,55 @@ namespace LostPeterPluginRendererVulkan
         case F_TextureFilterPixel_Linear:           return VK_FILTER_LINEAR;
         case F_TextureFilterPixel_Anisotropic:      return VK_FILTER_LINEAR;
         }
+        F_Assert(false && "VulkanConverter::Transform2VkFilter: Wrong FTextureFilterPixelType type !")
+        return VK_FILTER_NEAREST;
+    }
+    VkFilter VulkanConverter::Transform2VkFilter(FTextureFilterType eTextureFilter, FTextureFilterSizeType eTextureFilterSize)
+    {
+        switch ((int)eTextureFilter)
+        {
+        case F_TextureFilter_None:
+            {
+                switch ((int)eTextureFilterSize)
+                {
+                    case F_TextureFilterSize_Min:        return VK_FILTER_NEAREST;
+                    case F_TextureFilterSize_Mag:        return VK_FILTER_NEAREST;
+                    F_Assert(false && "VulkanConverter::Transform2VkFilter: Wrong FTextureFilterSizeType type !")
+                }   
+            }   
+            break;
+        case F_TextureFilter_Bilinear:
+            {
+                switch ((int)eTextureFilterSize)
+                {
+                    case F_TextureFilterSize_Min:        return VK_FILTER_LINEAR;
+                    case F_TextureFilterSize_Mag:        return VK_FILTER_LINEAR;
+                    F_Assert(false && "VulkanConverter::Transform2VkFilter: Wrong FTextureFilterSizeType type !")
+                }
+            }
+            break;
+        case F_TextureFilter_Trilinear:
+            {
+                switch ((int)eTextureFilterSize)
+                {
+                    case F_TextureFilterSize_Min:        return VK_FILTER_LINEAR;
+                    case F_TextureFilterSize_Mag:        return VK_FILTER_LINEAR;
+                    F_Assert(false && "VulkanConverter::Transform2VkFilter: Wrong FTextureFilterSizeType type !")
+                }
+            }
+            break;
+        case F_TextureFilter_Anisotropic:
+            {
+                switch ((int)eTextureFilterSize)
+                {
+                    case F_TextureFilterSize_Min:        return VK_FILTER_LINEAR;
+                    case F_TextureFilterSize_Mag:        return VK_FILTER_LINEAR;
+                    F_Assert(false && "VulkanConverter::Transform2VkFilter: Wrong FTextureFilterSizeType type !")
+                }
+            }
+            break;
+        } 
+        F_Assert(false && "VulkanConverter::Transform2VkFilter: Wrong FTextureFilterType type !")
         return VK_FILTER_NEAREST;
     }
 
@@ -147,8 +217,21 @@ namespace LostPeterPluginRendererVulkan
         case F_TextureFilterPixel_Linear:           return VK_SAMPLER_MIPMAP_MODE_LINEAR;
         case F_TextureFilterPixel_Anisotropic:      return VK_SAMPLER_MIPMAP_MODE_LINEAR;
         }
+        F_Assert(false && "VulkanConverter::Transform2VkSamplerMipmapMode: Wrong FTextureFilterPixelType type !")
         return VK_SAMPLER_MIPMAP_MODE_NEAREST;
     }   
+    VkSamplerMipmapMode VulkanConverter::Transform2VkSamplerMipmapMode(FTextureFilterType eTextureFilter)
+    {
+        switch ((int)eTextureFilter)
+        {
+        case F_TextureFilter_None:         return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+        case F_TextureFilter_Bilinear:     return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        case F_TextureFilter_Trilinear:    return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        case F_TextureFilter_Anisotropic:  return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        } 
+        F_Assert(false && "VulkanConverter::Transform2VkSamplerMipmapMode: Wrong FTextureFilterType type !")
+        return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+    }
 
     VkSamplerAddressMode VulkanConverter::Transform2VkSamplerAddressMode(FTextureAddressingType eTextureAddressing)
     {
@@ -159,7 +242,69 @@ namespace LostPeterPluginRendererVulkan
         case F_TextureAddressing_Clamp:             return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
         case F_TextureAddressing_Border:            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
         }
+        F_Assert(false && "VulkanConverter::Transform2VkSamplerAddressMode: Wrong FTextureAddressingType type !")
         return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    }
+    VkBorderColor VulkanConverter::Transform2VkBorderColor(FTextureBorderColorType eTextureBorderColor)
+    {
+        switch((int)eTextureBorderColor)
+        {
+        case F_TextureBorderColor_OpaqueBlack:         return VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        case F_TextureBorderColor_OpaqueWhite:         return VK_BORDER_COLOR_INT_OPAQUE_WHITE;
+        case F_TextureBorderColor_TransparentBlack:    return VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
+        }
+        F_Assert(false && "VulkanConverter::Transform2VkBorderColor: Wrong FTextureBorderColorType type !")
+        return VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    }
+    VkSampleCountFlagBits VulkanConverter::Transform2VkSampleCountFlagBits(FMSAASampleCountType eMSAASampleCount)
+    {
+        switch((int)eMSAASampleCount)
+        {
+        case F_MSAASampleCount_1_Bit:      return VK_SAMPLE_COUNT_1_BIT;
+        case F_MSAASampleCount_2_Bit:      return VK_SAMPLE_COUNT_2_BIT;
+        case F_MSAASampleCount_4_Bit:      return VK_SAMPLE_COUNT_4_BIT;
+        case F_MSAASampleCount_8_Bit:      return VK_SAMPLE_COUNT_8_BIT;
+        case F_MSAASampleCount_16_Bit:     return VK_SAMPLE_COUNT_16_BIT;
+        case F_MSAASampleCount_32_Bit:     return VK_SAMPLE_COUNT_32_BIT;
+        case F_MSAASampleCount_64_Bit:     return VK_SAMPLE_COUNT_64_BIT;
+        }
+        F_Assert(false && "VulkanConverter::Transform2VkSampleCountFlagBits: Wrong FMSAASampleCountType type !")
+        return VK_SAMPLE_COUNT_1_BIT;
+    }
+
+    VkShaderStageFlagBits VulkanConverter::Transform2VkShaderStageFlagBits(FShaderType eShader)
+    {
+        switch((int)eShader)
+        {
+        case F_Shader_Vertex:                  return VK_SHADER_STAGE_VERTEX_BIT;
+        case F_Shader_TessellationControl:     return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+        case F_Shader_TessellationEvaluation:  return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+        case F_Shader_Geometry:                return VK_SHADER_STAGE_GEOMETRY_BIT;
+        case F_Shader_Fragment:                return VK_SHADER_STAGE_FRAGMENT_BIT;
+        case F_Shader_Compute:                 return VK_SHADER_STAGE_COMPUTE_BIT;
+        }
+        F_Assert(false && "VulkanConverter::Transform2VkShaderStageFlagBits: Wrong FShaderType type !")
+        return VK_SHADER_STAGE_VERTEX_BIT;
+    }
+    VkShaderStageFlagBits VulkanConverter::Transform2VkShaderStageFlagBits(const Uint32Vector& aShaderTypes)
+    {
+        int bits;
+        size_t count = aShaderTypes.size();
+        if (count > 0)
+        {
+            for (size_t i = 0; i < count; i++)
+            {
+                FShaderType typeShader = (FShaderType)aShaderTypes[i];
+                if (i ==0)
+                    bits = Transform2VkShaderStageFlagBits(typeShader);
+                else
+                    bits = bits | Transform2VkShaderStageFlagBits(typeShader);
+            }
+            return (VkShaderStageFlagBits)bits;
+        }
+
+        F_Assert(false && "VulkanConverter::Transform2VkShaderStageFlagBits: Wrong aShaderTypes count !")
+        return VK_SHADER_STAGE_VERTEX_BIT; 
     }
 
     VkFormat VulkanConverter::Transform2VkFormat(FPixelFormatType ePixelFormat)

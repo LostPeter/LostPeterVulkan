@@ -167,7 +167,7 @@ namespace LostPeterEngine
 			F_Assert(false && "Image::Load")
 			return false;
 		}
-		bool bRet = Load(pFIO,strExt);
+		bool bRet = Load(pFIO, strExt);
 		FFileManager::GetSingleton().DeleteFileIO(pFIO);
 		return bRet;
 	}
@@ -202,22 +202,22 @@ namespace LostPeterEngine
 		
 		//2> form original file data to decode image data
 		FFileMemory* pInput = FFileManager::GetSingleton().CreateFileMemory(pBuf, nSize);
-		FCodec::FDecodeResult res = pCodec->Decode(pInput);
+		FCodec::FDecodeResult decodeResult = pCodec->Decode(pInput);
 		FFileManager::GetSingleton().DeleteFileMemory(pInput);
 		
-		ImageCodec::ImageData* pData = static_cast<ImageCodec::ImageData*>(res.second);
-		m_nWidth = pData->nWidth;
-		m_nHeight = pData->nHeight;
-		m_nDepth = pData->nDepth;
-		m_nSize	= pData->nSize;
-		m_nNumMipMaps = pData->nNumMipmaps;
-		m_nFlags = pData->nFlags;
-		m_ePixelFormat = pData->ePixelFormat;
+		ImageCodec::ImageData* pImageData = static_cast<ImageCodec::ImageData*>(decodeResult.second);
+		m_nWidth = pImageData->nWidth;
+		m_nHeight = pImageData->nHeight;
+		m_nDepth = pImageData->nDepth;
+		m_nSize	= pImageData->nSize;
+		m_nNumMipMaps = pImageData->nNumMipmaps;
+		m_nFlags = pImageData->nFlags;
+		m_ePixelFormat = pImageData->ePixelFormat;
 		m_nPixelSize = static_cast<uint8>(FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat));
-		m_pBuffer = res.first->GetBuffer(true);
+		m_pBuffer = decodeResult.first->GetBuffer(true);
 		
-		FFileManager::GetSingleton().DeleteFileMemory(res.first);
-		F_DELETE(pData);
+		FFileManager::GetSingleton().DeleteFileMemory(decodeResult.first);
+		F_DELETE(pImageData);
 
 		return true;
 	}
@@ -246,8 +246,8 @@ namespace LostPeterEngine
 		}
 
 		//1> form original memory data to decode image data
-		FCodec::FDecodeResult res = pCodec->Decode(pInput);
-		ImageCodec::ImageData* pImageData = static_cast<ImageCodec::ImageData*>(res.second);
+		FCodec::FDecodeResult decodeResult = pCodec->Decode(pInput);
+		ImageCodec::ImageData* pImageData = static_cast<ImageCodec::ImageData*>(decodeResult.second);
 		m_nWidth = pImageData->nWidth;
 		m_nHeight = pImageData->nHeight;
 		m_nDepth = pImageData->nDepth;
@@ -256,9 +256,9 @@ namespace LostPeterEngine
 		m_nFlags = pImageData->nFlags;
 		m_ePixelFormat = pImageData->ePixelFormat;
 		m_nPixelSize = static_cast<uint8>(FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat));
-		m_pBuffer = res.first->GetBuffer(true);
+		m_pBuffer = decodeResult.first->GetBuffer(true);
 
-		FFileManager::GetSingleton().DeleteFileMemory(res.first);
+		FFileManager::GetSingleton().DeleteFileMemory(decodeResult.first);
 		F_DELETE(pImageData);
 
 		return true;

@@ -90,6 +90,10 @@ namespace LostPeterFoundation
 		return true;
 	}
 
+	String FPathManager::GetFilePath(const String& strPathAsset)
+	{
+		return m_strWorkFolder + strPathAsset;
+	}
 	String FPathManager::GetFilePath(uint32 nGroup, const String& strName)
 	{
 		FPathGroupMap::iterator itFind = m_mapGroup.find(nGroup);
