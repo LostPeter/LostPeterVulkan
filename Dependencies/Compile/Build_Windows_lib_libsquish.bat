@@ -2,7 +2,7 @@
 @REM # LostPeterVulkan - Copyright (C) 2022 by LostPeter
 @REM # 
 @REM # Author:   LostPeter
-@REM # Time:     2023-01-07
+@REM # Time:     2023-12-11
 @REM # Github:   https://github.com/LostPeter/LostPeterVulkan
 @REM # Document: https://www.zhihu.com/people/lostpeter/posts
 @REM #
@@ -16,15 +16,13 @@ set rebuild=%2
 echo %debug%
 echo %rebuild%
 
-set name="libnoise-1.0.0"
+set name="libsquish-1.15"
 if "%debug%" == "debug" (
     set name_project=%name%"_d"
-    set name_lib=%name%"_d.lib"
-    set nameutil_lib="libnoiseutils-1.0.0_d.lib"
+    set name_lib="squish-1.15_d.lib"
 ) else (
     set name_project=%name%
-    set name_lib=%name%".lib"
-    set nameutil_lib="libnoiseutils-1.0.0.lib"
+    set name_lib="squish-1.15.lib"
 )
 
 @rem build folder
@@ -55,14 +53,12 @@ cd %name_project%
 
 if "%debug%" == "debug" (
     cmake -DDEBUG=1 "../../../Sources/%name%/"
-    msbuild Project.sln /p:configuration=debug
-    copy /Y ".\src\Debug\noise.lib" "..\..\..\Lib\Windows\"%name_lib%
-    copy /Y ".\noiseutils\Debug\noiseutils-static.lib" "..\..\..\Lib\Windows\"%nameutil_lib%
+    msbuild squish.sln /p:configuration=debug
+    copy /Y ".\Debug\squishd.lib" "..\..\..\Lib\Windows\"%name_lib%
 ) else (
     cmake "../../../Sources/%name%/"
-    msbuild Project.sln /p:configuration=release
-    copy /Y ".\src\Release\noise.lib" "..\..\..\Lib\Windows\"%name_lib%
-    copy /Y ".\noiseutils\Release\noiseutils-static.lib" "..\..\..\Lib\Windows\"%nameutil_lib%
+    msbuild squish.sln /p:configuration=release
+    copy /Y ".\Release\squish.lib" "..\..\..\Lib\Windows\"%name_lib%
 )
 
 
@@ -76,8 +72,5 @@ if exist %include_folder% (
     rmdir /S/Q %include_folder%
 )
 mkdir %include_folder%
-mkdir %include_folder%"\noise"
-mkdir %include_folder%"\noiseutils"
 
-xcopy /E /S /Y /F "..\Sources\%name%\src\noise" %include_folder%"\noise\"
-xcopy /E /S /Y /F "..\Sources\%name%\noiseutils\*.h" %include_folder%"\noiseutils\"
+xcopy /S /E /Y /F "..\Sources\%name%\*.h" %include_folder%"\"

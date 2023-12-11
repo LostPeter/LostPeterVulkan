@@ -37,6 +37,7 @@
 #include "EngineListener.h"
 #include "Image.h"
 #include "ImageCodec.h"
+#include "ImageCodecDXT.h"
 #include "ImageResampler.h"
 #include "Material.h"
 #include "MaterialData.h"

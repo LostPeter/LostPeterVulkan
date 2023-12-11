@@ -92,6 +92,229 @@ namespace LostPeterFoundation
     #define F_DELETE_T(p)                       { if(p) { delete[] p; p=nullptr; }}
 
 
+    ////////////////////////////// Macro ///////////////////////////////
+    #define	F_M_MIN(a,b)       		    ((a) < (b) ? (a) : (b))				
+	#define	F_M_MIN3(a,b,c)    		    ((a) < (b) ? F_M_MIN(a,c) : F_M_MIN(b,c))
+	#define	F_M_MAX(a,b)       		    ((a) > (b) ? (a) : (b))				
+	#define	F_M_MAX3(a,b,c)			    ((a) > (b) ? DF_M_MAX(a,c) : DF_M_MAX(b,c))
+
+	#define	F_M_GetR(clr)				(clr & 0xff)
+	#define	F_M_GetG(clr)				((clr >> 8) & 0xff)
+	#define	F_M_GetB(clr)				((clr >> 16) & 0xff)
+
+	#define	F_M_SQUAR(x)				((x)*(x))							
+	#define	F_M_CUBE(x)				    ((x)*(x)*(x))				
+
+	#define F_M_IR(x)					((uint32&)(x))				
+	#define F_M_SIR(x)					((int32&)(x))				
+	#define F_M_AIR(x)					(F_M_IR(x)&0x7fffffff)		
+	#define F_M_FR(x)					((float&)(x))				
+	#define	F_M_IS_NEGATIVE_FLOAT(x)	(F_M_IR(x)&0x80000000)
+
+	#define	F_M_BigLittleSwap16(A)      ((((uint16)(A) & 0xff00) >> 8) | (((uint16)(A) & 0x00ff) << 8))
+	#define	F_M_BigLittleSwap32(A)      ((((uint32)(A) & 0xff000000) >> 24) | (((uint32)(A) & 0x00ff0000) >> 8) | \
+									    (((uint32)(A) & 0x0000ff00) << 8) | (((uint32)(A) & 0x000000ff) << 24))
+		
+	#define F_M_FloatToFixed(x)		    ((int)((x) * (float)(1 << 16) + 0.5f))
+	#define F_M_FixedToFloat(x)		    ((float)(x) / (float)(1 << 16))	
+
+	#define F_M_FOURCC(c0, c1, c2, c3)  (c0 | (c1 << 8) | (c2 << 16) | (c3 << 24))
+	
+	#if F_COMPILER == F_COMPILER_MSVC
+		#define F_M_Rotl32(x,y) 		_rotl(x, y)
+		#define F_M_Rotl64(x,y) 		_rotl64(x, y)
+		#define F_M_BigConstant(x) 	    (x)
+	#else
+		F_FORCEINLINE uint32 F_F_Rotl32(uint32 x, int8 r)
+		{
+			return (x << r) | (x >> (32 - r));
+		}
+		F_FORCEINLINE uint64 F_F_Rotl64(uint64 x, int8 r)
+		{
+			return (x << r) | (x >> (64 - r));
+		}
+
+		#define F_M_Rotl32(x,y) 		F_F_Rotl32(x, y)
+		#define F_M_Rotl64(x,y) 		F_F_Rotl64(x, y)
+		#define F_M_BigConstant(x) 	    (x##LLU)
+	#endif
+
+    /////////////////////////////////////// Function /////////////////////////////////////
+    template<class T>	F_FORCEINLINE const T&	F_F_Min	        (const T& a, const T& b)			{ return b < a ? b : a;	}
+	template<class T>	F_FORCEINLINE const T&	F_F_Max	        (const T& a, const T& b)			{ return a < b ? b : a;	}
+	template<class T>	F_FORCEINLINE void		F_F_SetMin		(T& a, const T& b)					{ if(a>b)	a = b;		}
+	template<class T>	F_FORCEINLINE void		F_F_SetMax		(T& a, const T& b)					{ if(a<b)	a = b;		}
+	template<class T>   F_FORCEINLINE void		F_F_Swap		(T& lhs, T& rhs)					{ T tmp;tmp = lhs;lhs = rhs;rhs = tmp; }
+	template<class T>   F_FORCEINLINE void		F_F_ClampRoof	(T& x, const T& max)				{ if (x > max) x = max; }
+	template<class T>	F_FORCEINLINE void		F_F_ClampFloor	(T& x, const T& min)				{ if (x < min) x = min; }
+	template<class T>	F_FORCEINLINE void		F_F_Clamp		(T& x, const T& min, const T& max)	{ if (x < min) x = min;if (x > max) x = max; }
+	template<class T>	F_FORCEINLINE T		    F_F_ClampT		(T x, T min,T max)					{ T tmp=x; if (x < min) tmp = min;if(x > max) tmp = max; return tmp; }
+	
+	template <class T>
+	static T* F_F_RawOffsetPointer(T* ptr, ptrdiff_t offset)
+	{
+		return (T*)((char*)(ptr) + offset);
+	}
+
+	template <class T>
+	static void F_F_AdvanceRawPointer(T*& ptr, ptrdiff_t offset)
+	{
+		ptr = F_F_RawOffsetPointer(ptr,offset);
+	}
+
+	// block read
+	F_FORCEINLINE uint32 F_F_Getblock32(const uint32* p, int i)
+	{
+		return p[i];
+	}
+	F_FORCEINLINE uint64 DF_F_Getblock64(const uint64* p, int i)
+	{
+		return p[i];
+	}
+
+	// mix
+	F_FORCEINLINE uint32 F_F_Mix32(uint32 h)
+	{
+		h ^= h >> 16;
+		h *= 0x85ebca6b;
+		h ^= h >> 13;
+		h *= 0xc2b2ae35;
+		h ^= h >> 16;
+
+		return h;
+	}
+	F_FORCEINLINE uint64 F_F_Mix64(uint64 k)
+	{
+		k ^= k >> 33;
+		k *= F_M_BigConstant(0xff51afd7ed558ccd);
+		k ^= k >> 33;
+		k *= F_M_BigConstant(0xc4ceb9fe1a85ec53);
+		k ^= k >> 33;
+
+		return k;
+	}
+
+	// linear interp
+	F_FORCEINLINE double F_F_LinearInterp(double n0,double n1,double a)	
+	{
+		return ((1.0 - a) * n0) + (a * n1); 
+	}
+
+	//cubic interp
+	F_FORCEINLINE double F_F_CubicInterp(double n0, double n1, double n2, double n3, double a)
+	{
+		double p = (n3 - n2) - (n0 - n1);
+		double q = (n0 - n1) - p;
+		double r = n2 - n0;
+		double s = n1;
+
+		return p * a * a * a + q * a * a + r * a + s;
+	}
+
+	//maps a value onto a cubic S-curve. a = [0.0,1.0]
+	F_FORCEINLINE double F_F_SCurve3(double a)
+	{
+		return (a * a * (3.0 - 2.0 * a));
+	}
+
+	//maps a value onto a quintic S-curve. a = [0.0,1.0]
+	F_FORCEINLINE double F_F_SCurve5(double a)
+	{
+		double a3 = a * a * a;
+		double a4 = a3 * a;
+		double a5 = a4 * a;
+		return (6.0 * a5) - (15.0 * a4) + (10.0 * a3);
+	}
+
+	//blend two 8bit channel
+	F_FORCEINLINE unsigned char F_F_BlendChannel(const unsigned char channel0, const unsigned char channel1, float alpha)
+	{
+		float c0 = (float)channel0 / 255.0f;
+		float c1 = (float)channel1 / 255.0f;
+		return (unsigned char)(((c1 * alpha) + (c0 * (1.0f - alpha))) * 255.0f);
+	}
+
+	// word -> byte binary stream
+	F_FORCEINLINE unsigned char* F_F_UnpackWord(unsigned char* bytes, unsigned short integer)
+	{
+	#if F_ENDIAN == F_ENDIAN_LITTLE
+		bytes[0] = (unsigned char)((integer & 0x00ff)     );
+		bytes[1] = (unsigned char)((integer & 0xff00) >> 8);
+	#else	
+		bytes[1] = (unsigned char)((integer & 0x00ff)     );
+		bytes[0] = (unsigned char)((integer & 0xff00) >> 8);
+	#endif
+		return bytes;
+	}
+	
+	// dword -> byte binary stream
+	F_FORCEINLINE unsigned char* F_F_UnpackUint(unsigned char* bytes, unsigned int integer)
+	{
+	#if F_ENDIAN == F_ENDIAN_LITTLE	
+		bytes[0] = (unsigned char)((integer & 0x000000ff)      );
+		bytes[1] = (unsigned char)((integer & 0x0000ff00) >> 8 );
+		bytes[2] = (unsigned char)((integer & 0x00ff0000) >> 16);
+		bytes[3] = (unsigned char)((integer & 0xff000000) >> 24);
+	#else
+		bytes[3] = (unsigned char)((integer & 0x000000ff)      );
+		bytes[2] = (unsigned char)((integer & 0x0000ff00) >> 8 );
+		bytes[1] = (unsigned char)((integer & 0x00ff0000) >> 16);
+		bytes[0] = (unsigned char)((integer & 0xff000000) >> 24);
+	#endif
+		return bytes;
+	}
+
+	// float -> byte binary stream
+	F_FORCEINLINE unsigned char* F_F_UnpackFloat(unsigned char* bytes, float value)
+	{
+		unsigned char* pBytes = (unsigned char*)(&value);
+	#if F_ENDIAN == F_ENDIAN_LITTLE	
+		bytes[0] = *pBytes++;
+		bytes[1] = *pBytes++;
+		bytes[2] = *pBytes++;
+		bytes[3] = *pBytes++;
+	#else		
+		bytes[3] = *pBytes++;
+		bytes[2] = *pBytes++;
+		bytes[1] = *pBytes++;
+		bytes[0] = *pBytes++;
+	#endif
+		return bytes;
+	}
+	
+	//=1,big;=0,little
+	F_FORCEINLINE int F_F_CheckCPUendian()
+	{
+		union
+		{
+			unsigned long int i;
+			unsigned char s[4];
+		}c;
+		c.i = 0x12345678;
+
+		return (0x12 == c.s[0]);
+	}
+
+	// local byte -> net byte (similar to htonl func)
+	F_FORCEINLINE unsigned short int F_F_htons(unsigned short int h)
+	{
+		return F_F_CheckCPUendian() ? h : F_M_BigLittleSwap16(h);
+	}
+	F_FORCEINLINE unsigned long int F_F_htonl(unsigned long int h)
+	{
+		return F_F_CheckCPUendian() ? h : F_M_BigLittleSwap32(h);
+	}
+
+	// net byte -> local byte (similar to ntohl func)
+	F_FORCEINLINE unsigned short int F_F_ntohs(unsigned short int n)
+	{
+		return F_F_CheckCPUendian() ? n : F_M_BigLittleSwap16(n);
+	}
+	F_FORCEINLINE unsigned long int F_F_ntohl(unsigned long int n)
+	{
+		return F_F_CheckCPUendian() ? n : F_M_BigLittleSwap32(n);
+	}
+
     ////////////////////////////// Typedef /////////////////////////////
     typedef uint32 RGBA;
 	typedef uint32 ARGB;
@@ -1069,10 +1292,10 @@ namespace LostPeterFoundation
         F_PixelFormatComponent_ByteS,                  //1: Byte signed
 		F_PixelFormatComponent_ShortU,                 //2: Short unsigned
         F_PixelFormatComponent_ShortS,                 //3: Short signed
-        F_PixelFormatComponent_IntU,					//4: Int unsigned
-		F_PixelFormatComponent_IntS,					//5: Int signed
-        F_PixelFormatComponent_LongU,					//6: Long unsigned
-		F_PixelFormatComponent_LongS,					//7: Long signed
+        F_PixelFormatComponent_IntU,				   //4: Int unsigned
+		F_PixelFormatComponent_IntS,				   //5: Int signed
+        F_PixelFormatComponent_LongU,				   //6: Long unsigned
+		F_PixelFormatComponent_LongS,				   //7: Long signed
 		F_PixelFormatComponent_Float16,                //8: Float 16
 		F_PixelFormatComponent_Float32,                //9: Float 32
         F_PixelFormatComponent_Double,                 //10: Double

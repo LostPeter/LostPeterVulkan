@@ -543,6 +543,7 @@ namespace LostPeterEngine
     class EngineFrameStateRender;
     class Image;
     class ImageCodec;
+    class ImageCodecDXT;
     class Material;
     class MaterialData;
     class MaterialDataManager;

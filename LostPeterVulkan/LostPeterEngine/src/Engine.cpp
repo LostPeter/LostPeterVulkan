@@ -14,6 +14,7 @@
 #include "../include/RenderEngine.h"
 #include "../include/SystemCapabilities.h"
 #include "../include/EngineFrameProfiler.h"
+#include "../include/ImageCodecDXT.h"
 
 template<> LostPeterEngine::Engine* LostPeterFoundation::FSingleton<LostPeterEngine::Engine>::ms_Singleton = nullptr;
 
@@ -90,7 +91,7 @@ namespace LostPeterEngine
         F_DELETE(m_pTimer)
         if (m_bCodecIsInit)
 		{
-
+            ImageCodecDXT::Shutdown();
 			m_bCodecIsInit = false;
 		}
         F_DELETE(m_pCodecManager)
@@ -128,6 +129,7 @@ namespace LostPeterEngine
 
             //<4> CodecManager
             m_pCodecManager = new FCodecManager;
+            ImageCodecDXT::Startup();
             m_bCodecIsInit = true;
 
             //<5> ControllerManager

@@ -12,12 +12,11 @@
 #ifndef _F_CODEC_MANAGER_H_
 #define _F_CODEC_MANAGER_H_
 
-#include "FPreDefine.h"
 #include "FSingleton.h"
 
 namespace LostPeterFoundation
 {
-    class foundationExport FCodecManager : public FSingleton<FCodecManager>
+	class foundationExport FCodecManager : public FSingleton<FCodecManager>
     {
     public:
         FCodecManager();
@@ -38,12 +37,12 @@ namespace LostPeterFoundation
 
 	public:
 		static void	RegisterCodec(FCodec* pCodec);
-	    static void	UnRegisterCodec(FCodec* pCodec);
+	  	static void	UnRegisterCodec(FCodec* pCodec);
 		static StringVector GetExtensions();
 
 		static FCodec* GetCodec(const String& strExt);
 		static FCodec* GetCodec(char* szMagicNum, size_t nMaxbytes);
-    };
+  	};
 
 }; //LostPeterFoundation
 
