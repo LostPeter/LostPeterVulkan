@@ -37,7 +37,7 @@ namespace LostPeterPluginRendererVulkan
         VkDeviceMemory m_vkDeviceMemoryMSAA;
 
     public:
-        F_FORCEINLINE uint32 GetNumLayers() const { return m_eTexture == F_Texture_2DArray ? m_nDepth : GetNumFaces(); }
+        F_FORCEINLINE uint32 GetNumLayers() const { return m_eTexture == F_Texture_2DArray ? (uint32)m_nDepth : (uint32)GetNumFaces(); }
         F_FORCEINLINE bool HasMSAAExplicitResolves() const { return false; }
         F_FORCEINLINE bool IsUAV() const { return false; }
         F_FORCEINLINE bool IsMultisample() const { return m_nFSAA > 1; }

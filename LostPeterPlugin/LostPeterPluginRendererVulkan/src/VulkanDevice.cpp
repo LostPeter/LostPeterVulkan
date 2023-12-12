@@ -50,11 +50,8 @@ namespace LostPeterPluginRendererVulkan
         F_DELETE(m_pFenceManager)
         F_DELETE(m_pDeviceMemoryManager)
 
-        if (m_vkDevice != VK_NULL_HANDLE)
-        {
-            vkDestroyDevice(m_vkDevice, nullptr);
-        }
-        m_vkDevice = VK_NULL_HANDLE;
+        DestroyVkDevice(this->m_vkDevice);
+        this->m_vkDevice = VK_NULL_HANDLE;
     }
 
     bool VulkanDevice::Init(int32 deviceIndex, bool bIsEnableValidationLayers)
@@ -184,7 +181,9 @@ namespace LostPeterPluginRendererVulkan
             }
         }
 
-        throw std::runtime_error("VulkanDevice::FindSupportedFormat: Failed to find supported format !");
+        String msg = "*********************** VulkanDevice::FindSupportedFormat: Failed to find supported format !";
+        F_LogError(msg.c_str());
+        throw std::runtime_error(msg);
     }
 
     VkFormat VulkanDevice::FindDepthFormat()
@@ -211,7 +210,9 @@ namespace LostPeterPluginRendererVulkan
             }
         }
 
-        throw std::runtime_error("VulkanDevice::FindMemoryType: Failed to find suitable memory type !");
+        String msg = "*********************** VulkanDevice::FindMemoryType: Failed to find suitable memory type !";
+        F_LogError(msg.c_str());
+        throw std::runtime_error(msg);
     }
 
     bool VulkanDevice::createDevice(bool bIsEnableValidationLayers)
@@ -452,72 +453,27 @@ namespace LostPeterPluginRendererVulkan
     }
 
     /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
-    ////////// VkSemaphore //////////
-    VkSemaphore VulkanDevice::CreateVkSemaphore()
+    //////////////////// VkDevice ///////////////////////
+    void VulkanDevice::DestroyVkDevice(const VkDevice& vkDevice)
     {
-        VkSemaphore vkSemaphore;
-        CreateVkSemaphore(vkSemaphore);
-        return vkSemaphore;
-    }
-    void VulkanDevice::CreateVkSemaphore(VkSemaphore& vkSemaphore)
-    {
-        VkSemaphoreCreateInfo semaphoreCreateInfo;
-        E_ZeroStruct(semaphoreCreateInfo, VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
-        if (!E_CheckVkResult(vkCreateSemaphore(m_vkDevice, &semaphoreCreateInfo, E_CPU_ALLOCATOR, &vkSemaphore), "vkCreateSemaphore")) 
+        if (vkDevice != VK_NULL_HANDLE)
         {
-            String msg = "*********************** VulkanDevice::CreateVkSemaphore: Failed to create VkSemaphore !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
-    }
-    void VulkanDevice::DestroyVkSemaphore(const VkSemaphore& vkSemaphore)
-    {
-        if (vkSemaphore != VK_NULL_HANDLE)
-        {
-            vkDestroySemaphore(m_vkDevice, vkSemaphore, E_CPU_ALLOCATOR);
+            vkDestroyDevice(vkDevice, nullptr);
         }
     }
 
 
-    ////////// VkFence //////////////
-    VkFence VulkanDevice::CreateVkFence(bool isCreateSignaled)
-    {
-        VkFence vkFence;
-        CreateVkFence(isCreateSignaled, vkFence);
-        return vkFence;
-    }
-    void VulkanDevice::CreateVkFence(bool isCreateSignaled, VkFence& vkFence)
-    {
-        VkFenceCreateInfo fenceCreateInfo;
-        E_ZeroStruct(fenceCreateInfo, VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
-        fenceCreateInfo.flags = isCreateSignaled ? VK_FENCE_CREATE_SIGNALED_BIT : 0;
-        if (!E_CheckVkResult(vkCreateFence(m_vkDevice, &fenceCreateInfo, E_CPU_ALLOCATOR, &vkFence), "vkCreateFence")) 
-        {
-            String msg = "*********************** VulkanDevice::CreateVkFence: Failed to create VkFence !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
-        }
-    }
-    void VulkanDevice::DestroyVkFence(const VkFence& vkFence)
-    {
-        if (vkFence != VK_NULL_HANDLE)
-        {
-            vkDestroyFence(m_vkDevice, vkFence, E_CPU_ALLOCATOR);
-        }
-    }
-
-
-    ////////// VkCommandPool ////////
+    //////////////////// VkCommandPool //////////////////
     VkCommandPool VulkanDevice::CreateVkCommandPool(VkCommandPoolCreateFlags flags,
                                                     uint32_t queueFamilyIndex)
     {
-        VkCommandPool vkCommandPool;
+        VkCommandPool vkCommandPool = VK_NULL_HANDLE;
         CreateVkCommandPool(flags, 
                             queueFamilyIndex,
                             vkCommandPool);
         return vkCommandPool;
     }                                   
-    void VulkanDevice::CreateVkCommandPool(VkCommandPoolCreateFlags flags,
+    bool VulkanDevice::CreateVkCommandPool(VkCommandPoolCreateFlags flags,
                                            uint32_t queueFamilyIndex, 
                                            VkCommandPool& vkCommandPool)
     {
@@ -525,34 +481,34 @@ namespace LostPeterPluginRendererVulkan
         commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         commandPoolInfo.flags = flags;
         commandPoolInfo.queueFamilyIndex = queueFamilyIndex;
-        if (!E_CheckVkResult(vkCreateCommandPool(m_vkDevice, &commandPoolInfo, E_CPU_ALLOCATOR, &vkCommandPool), "vkCreateCommandPool")) 
+        if (!E_CheckVkResult(vkCreateCommandPool(this->m_vkDevice, &commandPoolInfo, E_CPU_ALLOCATOR, &vkCommandPool), "vkCreateCommandPool")) 
         {
-            String msg = "*********************** VulkanDevice::CreateVkCommandPool: Failed to create command pool !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
+            F_LogError("*********************** VulkanDevice::CreateVkCommandPool: Failed to create command pool !");
+            return false;
         }
+        return true;
     }
     void VulkanDevice::DestroyVkCommandPool(const VkCommandPool& vkCommandPool)
     {   
         if (vkCommandPool != VK_NULL_HANDLE)
         {
-            vkDestroyCommandPool(m_vkDevice, vkCommandPool, E_CPU_ALLOCATOR);
+            vkDestroyCommandPool(this->m_vkDevice, vkCommandPool, E_CPU_ALLOCATOR);
         }
     }
 
 
-    ////////// VkCommandBuffer //////
+    //////////////////// VkCommandBuffer ////////////////
     VkCommandBuffer VulkanDevice::AllocateVkCommandBuffer(const VkCommandPool& vkCommandPool,
                                                           VkCommandBufferLevel level)
     {
-        VkCommandBuffer vkCommandBuffer;
+        VkCommandBuffer vkCommandBuffer = VK_NULL_HANDLE;
         AllocateVkCommandBuffers(vkCommandPool,
                                  level,
                                  1,
                                  &vkCommandBuffer);
         return vkCommandBuffer;
     }
-    void VulkanDevice::AllocateVkCommandBuffers(const VkCommandPool& vkCommandPool,
+    bool VulkanDevice::AllocateVkCommandBuffers(const VkCommandPool& vkCommandPool,
                                                 VkCommandBufferLevel level,
                                                 uint32_t commandBufferCount,
                                                 VkCommandBuffer* pCommandBuffers)
@@ -562,12 +518,12 @@ namespace LostPeterPluginRendererVulkan
         allocInfo.level = level;
         allocInfo.commandPool = vkCommandPool;
         allocInfo.commandBufferCount = commandBufferCount;
-        if (!E_CheckVkResult(vkAllocateCommandBuffers(m_vkDevice, &allocInfo, pCommandBuffers), "vkAllocateCommandBuffers")) 
+        if (!E_CheckVkResult(vkAllocateCommandBuffers(this->m_vkDevice, &allocInfo, pCommandBuffers), "vkAllocateCommandBuffers")) 
         {
-            String msg = "*********************** VulkanDevice::AllocateVkCommandBuffers: Failed to allocate VkCommandBuffers !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
+            F_LogError("*********************** VulkanDevice::AllocateVkCommandBuffers: Failed to allocate VkCommandBuffers !");
+            return false;
         }
+        return true;
     }
     void VulkanDevice::FreeVkCommandBuffers(const VkCommandPool& vkCommandPool, 
                                             uint32_t commandBufferCount, 
@@ -575,11 +531,11 @@ namespace LostPeterPluginRendererVulkan
     {
         if (pCommandBuffer != nullptr)
         {
-            vkFreeCommandBuffers(m_vkDevice, vkCommandPool, commandBufferCount, pCommandBuffer);
+            vkFreeCommandBuffers(this->m_vkDevice, vkCommandPool, commandBufferCount, pCommandBuffer);
         }
     }
     
-    void VulkanDevice::BeginVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer,
+    bool VulkanDevice::BeginVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer,
                                             VkCommandBufferUsageFlags flags)
     {
         VkCommandBufferBeginInfo beginInfo = {};
@@ -587,30 +543,30 @@ namespace LostPeterPluginRendererVulkan
         beginInfo.flags = flags;
         if (!E_CheckVkResult(vkBeginCommandBuffer(vkCommandBuffer, &beginInfo), "vkBeginCommandBuffer")) 
         {
-            String msg = "*********************** VulkanDevice::BeginVkCommandBuffer: Failed to call vkBeginCommandBuffer !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
+            F_LogError("*********************** VulkanDevice::BeginVkCommandBuffer: Failed to call vkBeginCommandBuffer !");
+            return false;
         }
+        return true;
     }
-    void VulkanDevice::EndVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer)
+    bool VulkanDevice::EndVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer)
     {
         if (!E_CheckVkResult(vkEndCommandBuffer(vkCommandBuffer), "vkEndCommandBuffer")) 
         {
-            String msg = "*********************** VulkanDevice::EndVkCommandBuffer: Failed to call vkEndCommandBuffer !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
+            F_LogError("*********************** VulkanDevice::EndVkCommandBuffer: Failed to call vkEndCommandBuffer !");
+            return false;
         }
+        return true;
     }
 
 
-    ////////// VkQueue //////////////
+    //////////////////// VkQueue ////////////////////////
     VkQueue VulkanDevice::GetVkQueue(uint32 queueFamilyIndex, uint32_t queueIndex)
     {
         VkQueue vkQueue;
-        vkGetDeviceQueue(m_vkDevice, queueFamilyIndex, queueIndex, &vkQueue);
+        vkGetDeviceQueue(this->m_vkDevice, queueFamilyIndex, queueIndex, &vkQueue);
         return vkQueue;
     }
-    void VulkanDevice::QueueSubmitVkCommandBuffers(const VkQueue& vkQueue,
+    bool VulkanDevice::QueueSubmitVkCommandBuffers(const VkQueue& vkQueue,
                                                    uint32_t commandBufferCount, 
                                                    VkCommandBuffer* pCommandBuffer,
                                                    VkFence vkFence)
@@ -621,23 +577,698 @@ namespace LostPeterPluginRendererVulkan
         submitInfo.pCommandBuffers = pCommandBuffer;
         if (!E_CheckVkResult(vkQueueSubmit(vkQueue, commandBufferCount, &submitInfo, vkFence), "vkQueueSubmit")) 
         {
-            String msg = "*********************** VulkanDevice::QueueSubmitVkCommandBuffers: Failed to call vkQueueSubmit !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
+            F_LogError("*********************** VulkanDevice::QueueSubmitVkCommandBuffers: Failed to call vkQueueSubmit !");
+            return false;
         }
+        return true;
     }
-    void VulkanDevice::QueueWaitIdle(const VkQueue& vkQueue)
+    bool VulkanDevice::QueueWaitIdle(const VkQueue& vkQueue)
     {
         if (!E_CheckVkResult(vkQueueWaitIdle(vkQueue), "vkQueueWaitIdle")) 
         {
-            String msg = "*********************** VulkanDevice::QueueWaitIdle: Failed to call vkQueueWaitIdle !";
-            F_LogError(msg.c_str());
-            throw std::runtime_error(msg);
+            F_LogError("*********************** VulkanDevice::QueueWaitIdle: Failed to call vkQueueWaitIdle !");
+            return false;
+        }
+        return true;
+    }
+
+
+    //////////////////// VkSemaphore ////////////////////
+    VkSemaphore VulkanDevice::CreateVkSemaphore()
+    {
+        VkSemaphore vkSemaphore;
+        CreateVkSemaphore(vkSemaphore);
+        return vkSemaphore;
+    }
+    bool VulkanDevice::CreateVkSemaphore(VkSemaphore& vkSemaphore)
+    {
+        VkSemaphoreCreateInfo semaphoreCreateInfo;
+        E_ZeroStruct(semaphoreCreateInfo, VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
+        if (!E_CheckVkResult(vkCreateSemaphore(this->m_vkDevice, &semaphoreCreateInfo, E_CPU_ALLOCATOR, &vkSemaphore), "vkCreateSemaphore")) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkSemaphore: Failed to create VkSemaphore !");
+            return false;
+        }
+        return true;
+    }
+    void VulkanDevice::DestroyVkSemaphore(const VkSemaphore& vkSemaphore)
+    {
+        if (vkSemaphore != VK_NULL_HANDLE)
+        {
+            vkDestroySemaphore(this->m_vkDevice, vkSemaphore, E_CPU_ALLOCATOR);
         }
     }
 
 
-    ////////// VkBuffer /////////////
+    //////////////////// VkFence ////////////////////////
+    VkFence VulkanDevice::CreateVkFence(bool isCreateSignaled)
+    {
+        VkFence vkFence;
+        CreateVkFence(isCreateSignaled, vkFence);
+        return vkFence;
+    }
+    bool VulkanDevice::CreateVkFence(bool isCreateSignaled, VkFence& vkFence)
+    {
+        VkFenceCreateInfo fenceCreateInfo;
+        E_ZeroStruct(fenceCreateInfo, VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
+        fenceCreateInfo.flags = isCreateSignaled ? VK_FENCE_CREATE_SIGNALED_BIT : 0;
+        if (!E_CheckVkResult(vkCreateFence(this->m_vkDevice, &fenceCreateInfo, E_CPU_ALLOCATOR, &vkFence), "vkCreateFence")) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkFence: Failed to create VkFence !");
+            return false;
+        }
+        return true;
+    }
+    void VulkanDevice::DestroyVkFence(const VkFence& vkFence)
+    {
+        if (vkFence != VK_NULL_HANDLE)
+        {
+            vkDestroyFence(this->m_vkDevice, vkFence, E_CPU_ALLOCATOR);
+        }
+    }
+
+
+    //////////////////// VkDescriptorPool ///////////////
+    bool VulkanDevice::CreateVkDescriptorPool(uint32_t descriptorCount,    
+                                              VkDescriptorPool& vkDescriptorPool)
+    {
+        VkDescriptorPoolSize pool_sizes[] =
+        {
+            { VK_DESCRIPTOR_TYPE_SAMPLER, descriptorCount },
+            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, descriptorCount },
+            { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, descriptorCount },
+            { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, descriptorCount },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, descriptorCount },
+            { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, descriptorCount },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, descriptorCount },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, descriptorCount },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, descriptorCount },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, descriptorCount },
+            { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, descriptorCount }
+        };
+
+        VkDescriptorPoolCreateInfo poolInfo = {};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        poolInfo.maxSets = descriptorCount * F_ARRAYSIZE(pool_sizes);
+        poolInfo.poolSizeCount = (uint32_t)F_ARRAYSIZE(pool_sizes);
+        poolInfo.pPoolSizes = pool_sizes;
+
+        if (vkCreateDescriptorPool(this->m_vkDevice, &poolInfo, nullptr, &vkDescriptorPool) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkDescriptorPool: Failed to create descriptor pool, count pool: [%u] !", descriptorCount);
+            return false;
+        }
+
+        F_LogInfo("VulkanDevice::CreateVkDescriptorPool: Success to create descriptor pool, count pool: [%u] !", descriptorCount);
+        return true;
+    }
+    void VulkanDevice::DestroyVkDescriptorPool(const VkDescriptorPool& vkDescriptorPool)
+    {
+        if (vkDescriptorPool != VK_NULL_HANDLE)
+        {
+            vkDestroyDescriptorPool(this->m_vkDevice, vkDescriptorPool, nullptr);
+        }
+    }
+
+
+    //////////////////// VkViewport /////////////////////
+    void VulkanDevice::CreateVkViewport(float width,
+                                        float height,
+                                        float offsetX,
+                                        float offsetY,
+                                        float minDepth,
+                                        float maxDepth,
+                                        VkViewport& vkViewport, 
+                                        VkRect2D& vkScissor)
+    {
+        vkViewport  = {};
+        vkViewport.x = offsetX;
+        vkViewport.y = offsetY;
+        vkViewport.width = width;
+        vkViewport.height = height;
+        vkViewport.minDepth = minDepth;
+        vkViewport.maxDepth = maxDepth;
+
+        vkScissor = {};
+        VkOffset2D offset;
+        offset.x = (int32_t)offsetX;
+        offset.y = (int32_t)offsetY;
+        VkExtent2D extent;
+        extent.width = (uint32_t)width;
+        extent.height = (uint32_t)height;
+        vkScissor.offset = offset;
+        vkScissor.extent = extent;
+    }
+
+
+    //////////////////// VkAttachmentDescription ////////
+    void VulkanDevice::CreateVkAttachmentDescription(VkAttachmentDescriptionFlags flags,
+                                                     VkFormat format,
+                                                     VkSampleCountFlagBits samples,
+                                                     VkAttachmentLoadOp loadOp,
+                                                     VkAttachmentStoreOp storeOp,
+                                                     VkAttachmentLoadOp stencilLoadOp,
+                                                     VkAttachmentStoreOp stencilStoreOp,
+                                                     VkImageLayout initialLayout,
+                                                     VkImageLayout finalLayout,
+                                                     VkAttachmentDescription& vkAttachmentDescription)
+    {
+        vkAttachmentDescription.flags = flags;
+        vkAttachmentDescription.format = format;
+        vkAttachmentDescription.samples = samples;
+        vkAttachmentDescription.loadOp = loadOp;
+        vkAttachmentDescription.storeOp = storeOp;
+        vkAttachmentDescription.stencilLoadOp = stencilLoadOp;
+        vkAttachmentDescription.stencilStoreOp = stencilStoreOp;
+        vkAttachmentDescription.initialLayout = initialLayout;
+        vkAttachmentDescription.finalLayout = finalLayout;
+    }
+
+
+    //////////////////// VkRenderPass ///////////////////
+    bool VulkanDevice::CreateVkRenderPass(const String& nameRenderPass,
+                                          const VkAttachmentDescriptionVector& aAttachmentDescription,
+                                          const VkSubpassDescriptionVector& aSubpassDescription,
+                                          const VkSubpassDependencyVector& aSubpassDependency,
+                                          VkRenderPassMultiviewCreateInfo* pMultiviewCI,
+                                          VkRenderPass& vkRenderPass)
+    {
+        VkRenderPassCreateInfo renderPassInfo = {};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        renderPassInfo.attachmentCount = static_cast<uint32_t>(aAttachmentDescription.size());
+        renderPassInfo.pAttachments = &aAttachmentDescription[0];
+        renderPassInfo.subpassCount = static_cast<uint32_t>(aSubpassDescription.size());
+        renderPassInfo.pSubpasses = &aSubpassDescription[0];
+        renderPassInfo.dependencyCount = static_cast<uint32_t>(aSubpassDependency.size());
+        renderPassInfo.pDependencies = &aSubpassDependency[0];
+        if (pMultiviewCI != nullptr)
+        {
+            renderPassInfo.pNext = pMultiviewCI;
+        }
+
+        if (vkCreateRenderPass(this->m_vkDevice, &renderPassInfo, nullptr, &vkRenderPass) != VK_SUCCESS)
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkRenderPass: vkCreateRenderPass failed: [%s] !", nameRenderPass.c_str());
+            return false;
+        }
+
+        F_LogInfo("VulkanDevice::CreateVkRenderPass: vkCreateRenderPass success: [%s] !", nameRenderPass.c_str());
+        return true;
+    }
+    void VulkanDevice::DestroyVkRenderPass(const VkRenderPass& vkRenderPass)
+    {
+        if (vkRenderPass != VK_NULL_HANDLE)
+        {
+            vkDestroyRenderPass(this->m_vkDevice, vkRenderPass, nullptr);   
+        }
+    }
+
+    bool VulkanDevice::CreateRenderPass_KhrDepth(const String& nameRenderPass,
+                                                 VkFormat formatSwapChain, 
+                                                 VkFormat formatDepth, 
+                                                 VkRenderPass& vkRenderPass)
+    {
+        std::vector<VkAttachmentDescription> aAttachmentDescription;
+        std::vector<VkSubpassDescription> aSubpassDescription;
+        std::vector<VkSubpassDependency> aSubpassDependency;
+
+        //1> Attachment SceneRender Color
+        VkAttachmentDescription attachmentSR_Color = {};
+        CreateVkAttachmentDescription(0,
+                                      formatSwapChain,
+                                      VK_SAMPLE_COUNT_1_BIT,
+                                      VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                      VK_IMAGE_LAYOUT_UNDEFINED,
+                                      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                                      attachmentSR_Color);
+        aAttachmentDescription.push_back(attachmentSR_Color);
+        
+        //2> Attachment SceneRender Depth
+        VkAttachmentDescription attachmentSR_Depth = {};
+        CreateVkAttachmentDescription(0,
+                                      formatDepth,
+                                      VK_SAMPLE_COUNT_1_BIT,
+                                      VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                      VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                      VK_IMAGE_LAYOUT_UNDEFINED,
+                                      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                                      attachmentSR_Depth);
+        aAttachmentDescription.push_back(attachmentSR_Depth);
+            
+        //3> Subpass SceneRender
+        VkAttachmentReference attachRef_Color = {};
+        attachRef_Color.attachment = 0;
+        attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentReference attachRef_Depth = {};
+        attachRef_Depth.attachment = 1;
+        attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+        VkSubpassDescription subpass_SceneRender = {};
+        subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass_SceneRender.colorAttachmentCount = 1;
+        subpass_SceneRender.pColorAttachments = &attachRef_Color;
+        subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+        aSubpassDescription.push_back(subpass_SceneRender);
+        
+        //4> Subpass Dependency SceneRender
+        VkSubpassDependency subpassDependency_SceneRender = {};
+        subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
+        subpassDependency_SceneRender.dstSubpass = 0;
+        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+        aSubpassDependency.push_back(subpassDependency_SceneRender);
+
+        //5> CreateVkRenderPass
+        if (!CreateVkRenderPass(nameRenderPass,
+                                aAttachmentDescription,
+                                aSubpassDescription,
+                                aSubpassDependency,
+                                nullptr,
+                                vkRenderPass))
+        {
+            F_LogError("*********************** VulkanDevice::CreateRenderPass_KhrDepth: Failed to create VkRenderPass: [%s] !", nameRenderPass.c_str());
+            return false;
+        }
+
+        F_LogInfo("VulkanDevice::CreateRenderPass_KhrDepth: Success to create VkRenderPass: [%s] !", nameRenderPass.c_str());
+        return true;
+    }
+    bool VulkanDevice::CreateRenderPass_KhrDepthImgui(const String& nameRenderPass,
+                                                      VkFormat formatColor, 
+                                                      VkFormat formatDepth, 
+                                                      VkFormat formatSwapChain, 
+                                                      VkRenderPass& vkRenderPass)
+    {
+        std::vector<VkAttachmentDescription> aAttachmentDescription;
+        std::vector<VkSubpassDescription> aSubpassDescription;
+        std::vector<VkSubpassDependency> aSubpassDependency;
+
+        //1> Attachment SceneRender Color
+        VkAttachmentDescription attachmentSR_Color = {};
+        CreateVkAttachmentDescription(0,
+                                      formatColor,
+                                      VK_SAMPLE_COUNT_1_BIT,
+                                      VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                      VK_IMAGE_LAYOUT_UNDEFINED,
+                                      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                      attachmentSR_Color);
+        aAttachmentDescription.push_back(attachmentSR_Color);
+        
+        //2> Attachment SceneRender Depth
+        VkAttachmentDescription attachmentSR_Depth = {};
+        CreateVkAttachmentDescription(0,
+                                      formatDepth,
+                                      VK_SAMPLE_COUNT_1_BIT,
+                                      VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                      VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                      VK_IMAGE_LAYOUT_UNDEFINED,
+                                      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                                      attachmentSR_Depth);
+        aAttachmentDescription.push_back(attachmentSR_Depth);
+            
+        //3> Attachment Imgui Color
+        VkAttachmentDescription attachmentImgui_Color = {};
+        CreateVkAttachmentDescription(0,
+                                      formatSwapChain,
+                                      VK_SAMPLE_COUNT_1_BIT,
+                                      VK_ATTACHMENT_LOAD_OP_LOAD,
+                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                      VK_IMAGE_LAYOUT_UNDEFINED,
+                                      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                                      attachmentImgui_Color);
+        aAttachmentDescription.push_back(attachmentImgui_Color);
+        
+        //4> Subpass SceneRender
+        VkAttachmentReference attachRef_Color = {};
+        attachRef_Color.attachment = 0;
+        attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentReference attachRef_Depth = {};
+        attachRef_Depth.attachment = 1;
+        attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+        VkSubpassDescription subpass_SceneRender = {};
+        subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass_SceneRender.colorAttachmentCount = 1;
+        subpass_SceneRender.pColorAttachments = &attachRef_Color;
+        subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+        aSubpassDescription.push_back(subpass_SceneRender);
+
+        //5> Subpass Imgui
+        VkAttachmentReference attachRef_ImguiColor = {};
+        attachRef_ImguiColor.attachment = 0;
+        attachRef_ImguiColor.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentReference attachRef_ImguiDepth = {};
+        attachRef_ImguiDepth.attachment = 1;
+        attachRef_ImguiDepth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+        VkSubpassDescription subpass_Imgui = {};
+        subpass_Imgui.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass_Imgui.colorAttachmentCount = 1;
+        subpass_Imgui.pColorAttachments = &attachRef_ImguiColor;
+        subpass_Imgui.pDepthStencilAttachment = &attachRef_ImguiDepth;
+        aSubpassDescription.push_back(subpass_Imgui);
+        
+        //6> Subpass Dependency SceneRender
+        VkSubpassDependency subpassDependency_SceneRender = {};
+        subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
+        subpassDependency_SceneRender.dstSubpass = 0;
+        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+        aSubpassDependency.push_back(subpassDependency_SceneRender);
+
+        //7> Subpass Dependency Imgui
+        VkSubpassDependency subpassDependency_Imgui = {};
+        subpassDependency_Imgui.srcSubpass = 0;
+        subpassDependency_Imgui.dstSubpass = 1;
+        subpassDependency_Imgui.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_Imgui.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_Imgui.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_Imgui.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+        aSubpassDependency.push_back(subpassDependency_Imgui);
+
+        //8> CreateVkRenderPass
+        if (!CreateVkRenderPass(nameRenderPass,
+                                aAttachmentDescription,
+                                aSubpassDescription,
+                                aSubpassDependency,
+                                nullptr,
+                                vkRenderPass))
+        {
+            F_LogError("*********************** VulkanDevice::CreateRenderPass_KhrDepthImgui: Failed to create VkRenderPass: [%s] !", nameRenderPass.c_str());
+            return false;
+        }
+
+        F_LogInfo("VulkanDevice::CreateRenderPass_KhrDepthImgui: Success to create VkRenderPass: [%s] !", nameRenderPass.c_str());
+        return true;
+    }
+    bool VulkanDevice::CreateRenderPass_ColorDepthMSAA(const String& nameRenderPass,
+                                                       VkFormat formatColor, 
+                                                       VkFormat formatDepth, 
+                                                       VkFormat formatSwapChain, 
+                                                       VkSampleCountFlagBits samples, 
+                                                       VkRenderPass& vkRenderPass)
+    {
+        std::vector<VkAttachmentDescription> aAttachmentDescription;
+        std::vector<VkSubpassDescription> aSubpassDescription;
+        std::vector<VkSubpassDependency> aSubpassDependency;
+
+        //1> Attachment SceneRender Color
+        VkAttachmentDescription attachmentSR_Color = {};
+        CreateVkAttachmentDescription(0,
+                                      formatColor,
+                                      samples,
+                                      VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                      VK_IMAGE_LAYOUT_UNDEFINED,
+                                      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                      attachmentSR_Color);
+        aAttachmentDescription.push_back(attachmentSR_Color);
+        
+        //2> Attachment SceneRender Depth
+        VkAttachmentDescription attachmentSR_Depth = {};
+        CreateVkAttachmentDescription(0,
+                                      formatDepth,
+                                      samples,
+                                      VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                      VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                      VK_IMAGE_LAYOUT_UNDEFINED,
+                                      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                                      attachmentSR_Depth);
+        aAttachmentDescription.push_back(attachmentSR_Depth);
+        
+        //3> Attachment SceneRender Color Resolve
+        VkAttachmentDescription attachmentSR_ColorResolve = {};
+        CreateVkAttachmentDescription(0,
+                                      formatSwapChain,
+                                      VK_SAMPLE_COUNT_1_BIT,
+                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                      VK_IMAGE_LAYOUT_UNDEFINED,
+                                      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                                      attachmentSR_ColorResolve);
+        aAttachmentDescription.push_back(attachmentSR_ColorResolve);
+        
+        //4> Subpass SceneRender
+        VkAttachmentReference attachRef_Color = {};
+        attachRef_Color.attachment = 0;
+        attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentReference attachRef_Depth = {};
+        attachRef_Depth.attachment = 1;
+        attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentReference attachRef_ColorResolve = {};
+        attachRef_ColorResolve.attachment = 2;
+        attachRef_ColorResolve.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkSubpassDescription subpass_SceneRender = {};
+        subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass_SceneRender.colorAttachmentCount = 1;
+        subpass_SceneRender.pColorAttachments = &attachRef_Color;
+        subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+        subpass_SceneRender.pResolveAttachments = &attachRef_ColorResolve;
+        aSubpassDescription.push_back(subpass_SceneRender);
+        
+        //5> Subpass Dependency SceneRender
+        VkSubpassDependency subpassDependency_SceneRender = {};
+        subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
+        subpassDependency_SceneRender.dstSubpass = 0;
+        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+        aSubpassDependency.push_back(subpassDependency_SceneRender);
+
+        //6> CreateVkRenderPass
+        if (!CreateVkRenderPass(nameRenderPass,
+                                aAttachmentDescription,
+                                aSubpassDescription,
+                                aSubpassDependency,
+                                nullptr,
+                                vkRenderPass))
+        {
+            F_LogError("*********************** VulkanDevice::CreateRenderPass_ColorDepthMSAA: Failed to create VkRenderPass: [%s] !", nameRenderPass.c_str());
+            return false;
+        }
+
+        F_LogInfo("VulkanDevice::CreateRenderPass_ColorDepthMSAA: Success to create VkRenderPass: [%s] !", nameRenderPass.c_str());
+        return true;
+    }
+    bool VulkanDevice::CreateRenderPass_ColorDepthImguiMSAA(const String& nameRenderPass,
+                                                            VkFormat formatColor, 
+                                                            VkFormat formatDepth, 
+                                                            VkFormat formatSwapChain, 
+                                                            VkSampleCountFlagBits samples, 
+                                                            VkRenderPass& vkRenderPass)
+    {
+        std::vector<VkAttachmentDescription> aAttachmentDescription;
+        std::vector<VkSubpassDescription> aSubpassDescription;
+        std::vector<VkSubpassDependency> aSubpassDependency;
+
+        //1> Attachment SceneRender Color
+        VkAttachmentDescription attachmentSR_Color = {};
+        CreateVkAttachmentDescription(0,
+                                      formatColor,
+                                      samples,
+                                      VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                      VK_IMAGE_LAYOUT_UNDEFINED,
+                                      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                      attachmentSR_Color);
+        aAttachmentDescription.push_back(attachmentSR_Color);
+        
+        //2> Attachment SceneRender Depth
+        VkAttachmentDescription attachmentSR_Depth = {};
+        CreateVkAttachmentDescription(0,
+                                      formatDepth,
+                                      samples,
+                                      VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                      VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                      VK_IMAGE_LAYOUT_UNDEFINED,
+                                      VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                                      attachmentSR_Depth);
+        aAttachmentDescription.push_back(attachmentSR_Depth);
+        
+        //3> Attachment SceneRender Color Resolve
+        VkAttachmentDescription attachmentSR_ColorResolve = {};
+        CreateVkAttachmentDescription(0,
+                                      formatSwapChain,
+                                      VK_SAMPLE_COUNT_1_BIT,
+                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                      VK_IMAGE_LAYOUT_UNDEFINED,
+                                      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                      attachmentSR_ColorResolve);
+        aAttachmentDescription.push_back(attachmentSR_ColorResolve);
+        
+        //4> Attachment Imgui Color
+        VkAttachmentDescription attachmentImgui_Color = {};
+        CreateVkAttachmentDescription(0,
+                                      formatSwapChain,
+                                      VK_SAMPLE_COUNT_1_BIT,
+                                      VK_ATTACHMENT_LOAD_OP_LOAD,
+                                      VK_ATTACHMENT_STORE_OP_STORE,
+                                      VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                                      VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                                      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                                      attachmentImgui_Color);
+        aAttachmentDescription.push_back(attachmentImgui_Color);
+        
+        //5> Subpass SceneRender
+        VkAttachmentReference attachRef_Color = {};
+        attachRef_Color.attachment = 0;
+        attachRef_Color.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentReference attachRef_Depth = {};
+        attachRef_Depth.attachment = 1;
+        attachRef_Depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentReference attachRef_ColorResolve = {};
+        attachRef_ColorResolve.attachment = 2;
+        attachRef_ColorResolve.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkSubpassDescription subpass_SceneRender = {};
+        subpass_SceneRender.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass_SceneRender.colorAttachmentCount = 1;
+        subpass_SceneRender.pColorAttachments = &attachRef_Color;
+        subpass_SceneRender.pDepthStencilAttachment = &attachRef_Depth;
+        subpass_SceneRender.pResolveAttachments = &attachRef_ColorResolve;
+        aSubpassDescription.push_back(subpass_SceneRender);
+
+        //6> Subpass Imgui
+        VkAttachmentReference attachRef_ImguiColor = {};
+        attachRef_ImguiColor.attachment = 0;
+        attachRef_ImguiColor.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentReference attachRef_ImguiDepth = {};
+        attachRef_ImguiDepth.attachment = 1;
+        attachRef_ImguiDepth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentReference attachRef_ImguiColorResolve = {};
+        attachRef_ImguiColorResolve.attachment = 2;
+        attachRef_ImguiColorResolve.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkSubpassDescription subpass_Imgui = {};
+        subpass_Imgui.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass_Imgui.colorAttachmentCount = 1;
+        subpass_Imgui.pColorAttachments = &attachRef_ImguiColor;
+        subpass_Imgui.pDepthStencilAttachment = &attachRef_ImguiDepth;
+        subpass_Imgui.pResolveAttachments = &attachRef_ImguiColorResolve;
+        aSubpassDescription.push_back(subpass_Imgui);
+        
+        //7> Subpass Dependency SceneRender
+        VkSubpassDependency subpassDependency_SceneRender = {};
+        subpassDependency_SceneRender.srcSubpass = VK_SUBPASS_EXTERNAL;
+        subpassDependency_SceneRender.dstSubpass = 0;
+        subpassDependency_SceneRender.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        subpassDependency_SceneRender.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_SceneRender.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        subpassDependency_SceneRender.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_SceneRender.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+        aSubpassDependency.push_back(subpassDependency_SceneRender);
+
+        //8> Subpass Dependency Imgui
+        VkSubpassDependency subpassDependency_Imgui = {};
+        subpassDependency_Imgui.srcSubpass = 0;
+        subpassDependency_Imgui.dstSubpass = 1;
+        subpassDependency_Imgui.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_Imgui.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency_Imgui.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpassDependency_Imgui.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        aSubpassDependency.push_back(subpassDependency_Imgui);
+
+        //9> CreateVkRenderPass
+        if (!CreateVkRenderPass(nameRenderPass,
+                                aAttachmentDescription,
+                                aSubpassDescription,
+                                aSubpassDependency,
+                                nullptr,
+                                vkRenderPass))
+        {
+            F_LogError("*********************** VulkanDevice::CreateRenderPass_ColorDepthImguiMSAA: Failed to create VkRenderPass: [%s] !", nameRenderPass.c_str());
+            return false;
+        }
+
+        F_LogInfo("VulkanDevice::CreateRenderPass_ColorDepthImguiMSAA: Success to create VkRenderPass: [%s] !", nameRenderPass.c_str());
+        return true;
+    }
+
+
+    //////////////////// VkFramebuffer //////////////////
+    bool VulkanDevice::CreateVkFramebuffer(const String& nameFramebuffer,
+                                           const VkImageViewVector& aImageView, 
+                                           VkRenderPass& vkRenderPass,
+                                           VkFramebufferCreateFlags flags,
+                                           uint32_t width,
+                                           uint32_t height,
+                                           uint32_t layers,
+                                           VkFramebuffer& vkFramebuffer)
+    {
+        VkFramebufferCreateInfo framebufferInfo = {};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = vkRenderPass;
+        framebufferInfo.attachmentCount = static_cast<uint32_t>(aImageView.size());
+        framebufferInfo.pAttachments = &aImageView[0];
+        framebufferInfo.width = width;
+        framebufferInfo.height = height;
+        framebufferInfo.layers = layers;
+
+        if (vkCreateFramebuffer(this->m_vkDevice, &framebufferInfo, nullptr, &vkFramebuffer) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkFramebuffer: Failed to create VkFramebuffer: [%s] !", nameFramebuffer.c_str());
+            return false;
+        }
+
+        F_LogInfo("VulkanDevice::CreateVkFramebuffer: Success to create VkFramebuffer: [%s] !", nameFramebuffer.c_str());
+        return true;
+    }
+    void VulkanDevice::DestroyVkFramebuffer(const VkFramebuffer& vkFramebuffer)
+    {
+        if (vkFramebuffer != VK_NULL_HANDLE)
+        {
+            vkDestroyFramebuffer(this->m_vkDevice, vkFramebuffer, nullptr);
+        }
+    }
+
+
+    //////////////////// VkBuffer ///////////////////////
     bool VulkanDevice::CreateVkBuffer(VkDeviceSize size, 
                                       VkBufferUsageFlags usage, 
                                       VkMemoryPropertyFlags properties, 
@@ -649,24 +1280,24 @@ namespace LostPeterPluginRendererVulkan
         bufferInfo.size = size;
         bufferInfo.usage = usage;
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        if (!E_CheckVkResult(vkCreateBuffer(m_vkDevice, &bufferInfo, E_CPU_ALLOCATOR, &vkBuffer), "vkCreateBuffer")) 
+        if (!E_CheckVkResult(vkCreateBuffer(this->m_vkDevice, &bufferInfo, E_CPU_ALLOCATOR, &vkBuffer), "vkCreateBuffer")) 
         {
             F_LogError("*********************** VulkanDevice::CreateVkBuffer: Failed to create VkBuffer !");
             return false;
         }
 
         VkMemoryRequirements memRequirements = { };
-        vkGetBufferMemoryRequirements(m_vkDevice, vkBuffer, &memRequirements);
+        vkGetBufferMemoryRequirements(this->m_vkDevice, vkBuffer, &memRequirements);
         VkMemoryAllocateInfo allocInfo = {};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
         allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
-        if (vkAllocateMemory(m_vkDevice, &allocInfo, E_CPU_ALLOCATOR, &vkBufferMemory) != VK_SUCCESS) 
+        if (vkAllocateMemory(this->m_vkDevice, &allocInfo, E_CPU_ALLOCATOR, &vkBufferMemory) != VK_SUCCESS) 
         {
             F_LogError("*********************** VulkanDevice::CreateVkBuffer: Failed to allocate VkDeviceMemory !");
             return false;
         }
-        vkBindBufferMemory(m_vkDevice, vkBuffer, vkBufferMemory, 0);
+        vkBindBufferMemory(this->m_vkDevice, vkBuffer, vkBufferMemory, 0);
 
         return true;
     }
@@ -876,8 +1507,8 @@ namespace LostPeterPluginRendererVulkan
     {
         if (vkBuffer != VK_NULL_HANDLE)
         {
-            vkDestroyBuffer(m_vkDevice, vkBuffer, E_CPU_ALLOCATOR);
-            vkFreeMemory(m_vkDevice, vkBufferMemory, E_CPU_ALLOCATOR);
+            vkDestroyBuffer(this->m_vkDevice, vkBuffer, E_CPU_ALLOCATOR);
+            vkFreeMemory(this->m_vkDevice, vkBufferMemory, E_CPU_ALLOCATOR);
         }
     }
     void VulkanDevice::DestroyVkBuffers(VkBufferVector& aBuffer, VkDeviceMemoryVector& aBufferMemory)
@@ -913,7 +1544,7 @@ namespace LostPeterPluginRendererVulkan
                                          VkMemoryMapFlags flags,
                                          void** ppData)
     {
-        if (!E_CheckVkResult(vkMapMemory(m_vkDevice, vkBufferMemory, nDataOffset, nDataSize, flags, ppData), "vkMapMemory")) 
+        if (!E_CheckVkResult(vkMapMemory(this->m_vkDevice, vkBufferMemory, nDataOffset, nDataSize, flags, ppData), "vkMapMemory")) 
         {
             F_LogError("*********************** VulkanDevice::MapVkDeviceMemory: Failed to call vkMapMemory !");
             return false;
@@ -923,11 +1554,11 @@ namespace LostPeterPluginRendererVulkan
     }
     void VulkanDevice::UnmapVkDeviceMemory(const VkDeviceMemory& vkBufferMemory)
     {
-        vkUnmapMemory(m_vkDevice, vkBufferMemory);
+        vkUnmapMemory(this->m_vkDevice, vkBufferMemory);
     }
 
 
-    ////////// VkImage //////////////
+    //////////////////// VkImage ////////////////////////
     bool VulkanDevice::CreateVkImage(uint32_t width, 
                                      uint32_t height, 
                                      uint32_t depth, 
@@ -1071,7 +1702,7 @@ namespace LostPeterPluginRendererVulkan
         }
         return true;
     }
-    void VulkanDevice::DestroyVkImage(VkImage vkImage, VkDeviceMemory vkImageMemory, VkImageView vkImageView)
+    void VulkanDevice::DestroyVkImage(const VkImage& vkImage, const VkDeviceMemory& vkImageMemory, const VkImageView& vkImageView)
     {
         if (vkImage != VK_NULL_HANDLE)
         {
@@ -1080,14 +1711,14 @@ namespace LostPeterPluginRendererVulkan
         }
         DestroyVkImageView(vkImageView);
     }
-    void VulkanDevice::DestroyVkImageView(VkImageView vkImageView)
+    void VulkanDevice::DestroyVkImageView(const VkImageView& vkImageView)
     {   
         if (vkImageView != VK_NULL_HANDLE)
         {
             vkDestroyImageView(this->m_vkDevice, vkImageView, nullptr);
         }
     }
-    void VulkanDevice::DestroyVkImageSampler(VkSampler vkSampler)
+    void VulkanDevice::DestroyVkSampler(const VkSampler& vkSampler)
     {
         if (vkSampler != VK_NULL_HANDLE)
         {
@@ -1368,7 +1999,7 @@ namespace LostPeterPluginRendererVulkan
 
         WriteVkBuffer(vkBufferMemory, 
                       (void*)pData,
-                      imageSize, 
+                      (uint32_t)imageSize, 
                       0);
 
         uint32_t depth = 1;
@@ -1554,7 +2185,7 @@ namespace LostPeterPluginRendererVulkan
         }
 
         uint32_t depth = 1;
-        uint32_t numArray = count_tex;
+        uint32_t numArray = (uint32_t)count_tex;
         if (type == VK_IMAGE_TYPE_1D)
         {
             depth = 0;
@@ -1580,8 +2211,8 @@ namespace LostPeterPluginRendererVulkan
             Image* pImage = aImages[i];
             WriteVkBuffer(vkBufferMemory,
                           (void*)pImage->GetData(),
-                          imageSizeAll,
-                          width * height * pixelSize * i);
+                          (uint32_t)imageSizeAll,
+                          (uint32_t)(width * height * pixelSize * i));
         }
         s_DeleteImages(aImages);
 
@@ -1726,7 +2357,7 @@ namespace LostPeterPluginRendererVulkan
 
         WriteVkBuffer(vkBufferMemory, 
                       (void*)pDataRGBA, 
-                      imageSize, 
+                      (uint32_t)imageSize, 
                       0);
 
         //2> CreateImage
@@ -1891,7 +2522,7 @@ namespace LostPeterPluginRendererVulkan
         }
 
         uint32_t depth = 1;
-        uint32_t numArray = count_tex;
+        uint32_t numArray = (uint32_t)count_tex;
 
         //2> Create Buffer and copy Texture data to buffer
         mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
@@ -1913,8 +2544,8 @@ namespace LostPeterPluginRendererVulkan
             Image* pImage = aImages[i];
             WriteVkBuffer(vkBufferMemory,
                           (void*)pImage->GetData(),
-                          imageSizeAll,
-                          width * height * pixelSize * i);
+                          (uint32_t)imageSizeAll,
+                          (uint32_t)(width * height * pixelSize * i));
         }
         s_DeleteImages(aImages);
 
@@ -2111,7 +2742,7 @@ namespace LostPeterPluginRendererVulkan
             vkMapMemory(this->m_vkDevice, vkBufferMemory, 0, imageSize, 0, &data);
             {
                 uint8* pColor = (uint8*)data;
-                for (int i = 0; i < width * height; i++)
+                for (uint32_t i = 0; i < width * height; i++)
                 {
                     pColor[4 * i + 0] = r;
                     pColor[4 * i + 1] = g;
@@ -2227,7 +2858,7 @@ namespace LostPeterPluginRendererVulkan
         {
             WriteVkBuffer(vkBufferMemory,   
                           (void*)pData,
-                          imageSize, 
+                          (uint32_t)imageSize, 
                           0);
         }
         
@@ -2335,7 +2966,7 @@ namespace LostPeterPluginRendererVulkan
             vkMapMemory(this->m_vkDevice, vkBufferMemory, 0, imageSizeAll, 0, &data);
             {
                 uint8* pColor = (uint8*)data;
-                for (int i = 0; i < width * height * numArray; i++)
+                for (uint32_t i = 0; i < width * height * numArray; i++)
                 {
                     pColor[4 * i + 0] = r;
                     pColor[4 * i + 1] = g;
@@ -2455,7 +3086,7 @@ namespace LostPeterPluginRendererVulkan
             vkMapMemory(this->m_vkDevice, vkBufferMemory, 0, imageSize, 0, &data);
             {
                 uint8* pColor = (uint8*)data;
-                for (int i = 0; i < width * height * depth; i++)
+                for (uint32_t i = 0; i < width * height * depth; i++)
                 {
                     pColor[4 * i + 0] = r;
                     pColor[4 * i + 1] = g;
@@ -2619,7 +3250,589 @@ namespace LostPeterPluginRendererVulkan
         return bRet;
     }     
 
-    ////////// Command //////////////
+
+    //////////////////// VkShaderModule /////////////////
+    bool VulkanDevice::CreateVkShaderModule(FShaderType typeShader, 
+                                            const String& pathFile,
+                                            VkShaderModule& vkShaderModule)
+    {
+        const String& strTypeShader = F_GetShaderTypeName(typeShader);
+        return CreateVkShaderModule(strTypeShader, 
+                                    pathFile,
+                                    vkShaderModule);
+    }
+    bool VulkanDevice::CreateVkShaderModule(const String& strTypeShader, 
+                                            const String& pathFile,
+                                            VkShaderModule& vkShaderModule)
+    {
+        if (pathFile.empty())
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkShaderModule: Failed to create VkShaderModule, path file is empty !");
+            return false;
+        }
+
+        CharVector code;
+        if (!FUtil::LoadAssetFileContent(pathFile.c_str(), code))
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkShaderModule: Failed to create VkShaderModule, path file: [%s] !", pathFile.c_str());
+            return false;
+        }
+        if (code.size() <= 0)
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkShaderModule: Failed to create VkShaderModule, code size <= 0, path file: [%s] !", pathFile.c_str());
+            return nullptr;
+        }
+
+        VkShaderModuleCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = code.size();
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+        if (vkCreateShaderModule(this->m_vkDevice, &createInfo, nullptr, &vkShaderModule) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkShaderModule: Failed to create VkShaderModule: shader type: [%s], path file: [%s] !", strTypeShader.c_str(), pathFile.c_str());
+            return false;
+        }
+
+        return true;
+    }
+    void VulkanDevice::DestroyVkShaderModule(const VkShaderModule& vkShaderModule)
+    {
+        if (vkShaderModule != VK_NULL_HANDLE)
+        {
+            vkDestroyShaderModule(this->m_vkDevice, vkShaderModule, nullptr);
+        }
+    }
+
+
+    //////////////////// VkDescriptorSetLayout //////////
+    bool VulkanDevice::CreateVkDescriptorSetLayout(const VkDescriptorSetLayoutBindingVector& aDescriptorSetLayoutBinding, 
+                                                   VkDescriptorSetLayout& vkDescriptorSetLayout)
+    {
+        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.bindingCount = static_cast<uint32_t>(aDescriptorSetLayoutBinding.size());
+        layoutInfo.pBindings = aDescriptorSetLayoutBinding.data();
+        if (vkCreateDescriptorSetLayout(this->m_vkDevice, &layoutInfo, nullptr, &vkDescriptorSetLayout) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkDescriptorSetLayout: Failed to create VkDescriptorSetLayout !");
+            return false;
+        }
+        return true;
+    }
+    void VulkanDevice::DestroyVkDescriptorSetLayout(const VkDescriptorSetLayout& vkDescriptorSetLayout)
+    {
+        if (vkDescriptorSetLayout != VK_NULL_HANDLE)
+        {
+            vkDestroyDescriptorSetLayout(this->m_vkDevice, vkDescriptorSetLayout, nullptr);
+        }
+    }
+
+
+    //////////////////// VkPipelineLayout ///////////////
+    bool VulkanDevice::CreateVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout,
+                                              VkPipelineLayout& vkPipelineLayout)
+    {
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.pushConstantRangeCount = 0;
+        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(aDescriptorSetLayout.size());
+        pipelineLayoutInfo.pSetLayouts = aDescriptorSetLayout.data();
+
+        if (vkCreatePipelineLayout(this->m_vkDevice, &pipelineLayoutInfo, nullptr, &vkPipelineLayout) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkPipelineLayout: Failed to create VkPipelineLayout !");
+            return false;
+        }
+        return true;
+    }
+    void VulkanDevice::DestroyVkPipelineLayout(const VkPipelineLayout& vkPipelineLayout)
+    {
+        if (vkPipelineLayout != VK_NULL_HANDLE)
+        {
+            vkDestroyPipelineLayout(this->m_vkDevice, vkPipelineLayout, nullptr);
+        }
+    }
+
+
+    //////////////////// VkPipelineCache ////////////////
+    bool VulkanDevice::CreateVkPipelineCache(VkPipelineCache& vkPipelineCache)
+    {
+        VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
+        pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+        if (vkCreatePipelineCache(this->m_vkDevice, &pipelineCacheCreateInfo, nullptr, &vkPipelineCache) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkPipelineCache: Failed to create VkPipelineCache !");
+            return false;
+        }
+        return true;
+    }
+    void VulkanDevice::DestroyVkPipelineCache(const VkPipelineCache& vkPipelineCache)
+    {
+        if (vkPipelineCache != VK_NULL_HANDLE)
+        {
+            vkDestroyPipelineCache(this->m_vkDevice, vkPipelineCache, nullptr);
+        }
+    }
+
+
+    //////////////////// VkPipeline /////////////////////
+    bool VulkanDevice::CreateVkPipeline_Graphics(VkShaderModule vertShaderModule, const String& vertMain,
+                                                 VkShaderModule fragShaderModule, const String& fragMain,
+                                                 VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                 VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                 VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                 VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                                 VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                 VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                 VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                 VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                 VkColorComponentFlags colorWriteMask,
+                                                 VkSampleCountFlagBits msaaSamples,
+                                                 VkPipelineCache vkPipelineCache,
+                                                 VkPipeline& vkPipeline)
+    {
+        VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
+        //1> Pipeline Shader Stage
+        //vert
+        VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        vertShaderStageInfo.module = vertShaderModule;
+        vertShaderStageInfo.pName = vertMain.c_str();
+        aShaderStageCreateInfos.push_back(vertShaderStageInfo);
+
+        //frag
+        VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragShaderStageInfo.module = fragShaderModule;
+        fragShaderStageInfo.pName = fragMain.c_str();
+        aShaderStageCreateInfos.push_back(fragShaderStageInfo);
+
+        return CreateVkPipeline_Graphics(aShaderStageCreateInfos,
+                                         false, 0, 0,
+                                         pBindingDescriptions,
+                                         pAttributeDescriptions,
+                                         renderPass, pipelineLayout, aViewports, aScissors,
+                                         primitiveTopology, frontFace, polygonMode, cullMode, lineWidth,
+                                         bDepthTest, bDepthWrite, depthCompareOp,
+                                         bStencilTest, stencilOpFront, stencilOpBack,
+                                         bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
+                                         blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
+                                         colorWriteMask,
+                                         msaaSamples,
+                                         vkPipelineCache,
+                                         vkPipeline);
+    }
+    bool VulkanDevice::CreateVkPipeline_Graphics(VkShaderModule vertShaderModule, const String& vertMain,
+                                                 VkShaderModule tescShaderModule, const String& tescMain,
+                                                 VkShaderModule teseShaderModule, const String& teseMain,
+                                                 VkShaderModule fragShaderModule, const String& fragMain,
+                                                 VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+                                                 VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                 VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                 VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                 VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                                 VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                 VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                 VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                 VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                 VkColorComponentFlags colorWriteMask,
+                                                 VkSampleCountFlagBits msaaSamples,
+                                                 VkPipelineCache vkPipelineCache,
+                                                 VkPipeline& vkPipeline)
+    {
+        VkPipelineShaderStageCreateInfoVector aShaderStageCreateInfos;
+        //1> Pipeline Shader Stage
+        //vert
+        VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        vertShaderStageInfo.module = vertShaderModule;
+        vertShaderStageInfo.pName = vertMain.c_str();
+        aShaderStageCreateInfos.push_back(vertShaderStageInfo);
+
+        //tesc
+        VkPipelineShaderStageCreateInfo tescShaderStageInfo = {};
+        tescShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        tescShaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+        tescShaderStageInfo.module = tescShaderModule;
+        tescShaderStageInfo.pName = tescMain.c_str();
+        aShaderStageCreateInfos.push_back(tescShaderStageInfo);
+
+        //tese
+        VkPipelineShaderStageCreateInfo teseShaderStageInfo = {};
+        teseShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        teseShaderStageInfo.stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+        teseShaderStageInfo.module = teseShaderModule;
+        teseShaderStageInfo.pName = teseMain.c_str();
+        aShaderStageCreateInfos.push_back(teseShaderStageInfo);
+
+        //frag
+        VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragShaderStageInfo.module = fragShaderModule;
+        fragShaderStageInfo.pName = fragMain.c_str();
+        aShaderStageCreateInfos.push_back(fragShaderStageInfo);
+
+        return CreateVkPipeline_Graphics(aShaderStageCreateInfos,
+                                         true, tessellationFlags, tessellationPatchControlPoints,
+                                         pBindingDescriptions,
+                                         pAttributeDescriptions,
+                                         renderPass, pipelineLayout, aViewports, aScissors,
+                                         primitiveTopology, frontFace, polygonMode, cullMode, lineWidth,
+                                         bDepthTest, bDepthWrite, depthCompareOp,
+                                         bStencilTest, stencilOpFront, stencilOpBack,
+                                         bBlend, blendColorFactorSrc, blendColorFactorDst, blendColorOp,
+                                         blendAlphaFactorSrc, blendAlphaFactorDst, blendAlphaOp,
+                                         colorWriteMask,
+                                         msaaSamples,
+                                         vkPipelineCache,
+                                         vkPipeline);
+    }
+    bool VulkanDevice::CreateVkPipeline_Graphics(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                                                 bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+                                                 VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                                 VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                                 VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                                 VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                                 VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                                 VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                                 VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                                 VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                                 VkColorComponentFlags colorWriteMask,
+                                                 VkSampleCountFlagBits msaaSamples,
+                                                 VkPipelineCache vkPipelineCache,
+                                                 VkPipeline& vkPipeline)
+    {
+        //1> Pipeline VertexInput State
+        VkPipelineVertexInputStateCreateInfo vertexInputStateInfo = {};
+        vertexInputStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+        if (pBindingDescriptions != nullptr)
+        {   
+            vertexInputStateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(pBindingDescriptions->size());
+            vertexInputStateInfo.pVertexBindingDescriptions = pBindingDescriptions->data();
+        }
+        if (pAttributeDescriptions != nullptr)
+        {
+            vertexInputStateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(pAttributeDescriptions->size());
+            vertexInputStateInfo.pVertexAttributeDescriptions = pAttributeDescriptions->data();
+        }
+
+        //2> Pipeline InputAssembly
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateInfo = {};
+        inputAssemblyStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+        inputAssemblyStateInfo.topology = primitiveTopology;
+        inputAssemblyStateInfo.primitiveRestartEnable = VK_FALSE;
+
+        //3> Pipeline Viewport State
+        VkPipelineViewportStateCreateInfo viewportStateInfo = {};
+        viewportStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewportStateInfo.viewportCount = static_cast<uint32_t>(aViewports.size());
+        viewportStateInfo.pViewports = aViewports.data();
+        viewportStateInfo.scissorCount = static_cast<uint32_t>(aScissors.size());
+        viewportStateInfo.pScissors = aScissors.data();
+
+        //4> Pipeline Rasterization State
+        VkPipelineRasterizationStateCreateInfo rasterizationStateInfo = {};
+        rasterizationStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        rasterizationStateInfo.depthClampEnable = VK_FALSE;
+        rasterizationStateInfo.rasterizerDiscardEnable = VK_FALSE;
+        rasterizationStateInfo.polygonMode = polygonMode;
+        rasterizationStateInfo.cullMode = cullMode;
+        rasterizationStateInfo.frontFace = frontFace;
+        rasterizationStateInfo.depthBiasEnable = VK_FALSE;
+        rasterizationStateInfo.depthBiasConstantFactor = 0.0f; // Optional
+        rasterizationStateInfo.depthBiasClamp = 0.0f; // Optional
+        rasterizationStateInfo.depthBiasSlopeFactor = 0.0f; // Optional
+        rasterizationStateInfo.lineWidth = lineWidth;
+
+        //5> Pipeline Multisample State
+        VkPipelineMultisampleStateCreateInfo multisamplingStateInfo = {};
+        multisamplingStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+        multisamplingStateInfo.sampleShadingEnable = VK_FALSE;
+        multisamplingStateInfo.rasterizationSamples = msaaSamples;
+        multisamplingStateInfo.minSampleShading = 1.0f; // Optional
+        multisamplingStateInfo.pSampleMask = nullptr; // Optional
+        multisamplingStateInfo.alphaToCoverageEnable = VK_FALSE; // Optional
+        multisamplingStateInfo.alphaToOneEnable = VK_FALSE; // Optional
+
+        //6> Pipeline DepthStencil State
+        VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
+        depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        depthStencilStateInfo.depthTestEnable = bDepthTest;
+        depthStencilStateInfo.depthWriteEnable = bDepthWrite;
+        depthStencilStateInfo.depthCompareOp = depthCompareOp;
+        depthStencilStateInfo.depthBoundsTestEnable = VK_FALSE;
+        depthStencilStateInfo.stencilTestEnable = bStencilTest;
+        if (bStencilTest)
+        {
+            depthStencilStateInfo.front = stencilOpFront;
+            depthStencilStateInfo.back = stencilOpBack;
+        }
+
+        //7> Pipeline ColorBlend State 
+        VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+        colorBlendAttachment.blendEnable = bBlend;
+        colorBlendAttachment.colorWriteMask = colorWriteMask;
+        if (bBlend)
+        {
+            colorBlendAttachment.srcColorBlendFactor = blendColorFactorSrc;
+            colorBlendAttachment.dstColorBlendFactor = blendColorFactorDst;
+            colorBlendAttachment.colorBlendOp = blendColorOp;
+            colorBlendAttachment.srcAlphaBlendFactor = blendAlphaFactorSrc;
+            colorBlendAttachment.dstAlphaBlendFactor = blendAlphaFactorDst;
+            colorBlendAttachment.alphaBlendOp = blendAlphaOp;
+        }
+        
+        VkPipelineColorBlendStateCreateInfo colorBlendingStateInfo = {};
+        colorBlendingStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        colorBlendingStateInfo.logicOpEnable = VK_FALSE;
+        colorBlendingStateInfo.logicOp = VK_LOGIC_OP_COPY;
+        colorBlendingStateInfo.attachmentCount = 1;
+        colorBlendingStateInfo.pAttachments = &colorBlendAttachment;
+        colorBlendingStateInfo.blendConstants[0] = 0.0f;
+        colorBlendingStateInfo.blendConstants[1] = 0.0f;
+        colorBlendingStateInfo.blendConstants[2] = 0.0f;
+        colorBlendingStateInfo.blendConstants[3] = 0.0f;
+
+        //8> Pipeline Dynamic State
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
+        const std::vector<VkDynamicState> dynamicStateEnables = 
+        { 
+            VK_DYNAMIC_STATE_VIEWPORT, 
+            VK_DYNAMIC_STATE_SCISSOR 
+        };
+        dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicStateInfo.pDynamicStates = dynamicStateEnables.data();
+        dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
+        dynamicStateInfo.flags = 0;
+
+        //9> Tessellation State
+        VkPipelineTessellationStateCreateInfo tessellationState = {};
+        tessellationState.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+        tessellationState.flags = tessellationFlags;
+        tessellationState.patchControlPoints = tessellationPatchControlPoints;
+
+        //10> Graphics Pipeline
+        VkGraphicsPipelineCreateInfo pipelineInfo = {};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        pipelineInfo.pNext = nullptr;
+        pipelineInfo.stageCount = static_cast<uint32_t>(aShaderStageCreateInfos.size());
+        pipelineInfo.pStages = aShaderStageCreateInfos.data();
+        pipelineInfo.pVertexInputState = &vertexInputStateInfo;
+        pipelineInfo.pInputAssemblyState = &inputAssemblyStateInfo;
+        pipelineInfo.pTessellationState = tessellationIsUsed ? &tessellationState : nullptr;
+        pipelineInfo.pViewportState = &viewportStateInfo;
+        pipelineInfo.pRasterizationState = &rasterizationStateInfo;
+        pipelineInfo.pMultisampleState = &multisamplingStateInfo;
+        pipelineInfo.pDepthStencilState = &depthStencilStateInfo;
+        pipelineInfo.pColorBlendState = &colorBlendingStateInfo;
+        pipelineInfo.pDynamicState = &dynamicStateInfo;
+        pipelineInfo.layout = pipelineLayout;
+        pipelineInfo.renderPass = renderPass;
+        pipelineInfo.subpass = 0;
+        pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+        pipelineInfo.basePipelineIndex = 0;
+
+        if (!E_CheckVkResult(vkCreateGraphicsPipelines(this->m_vkDevice, vkPipelineCache, 1, &pipelineInfo, nullptr, &vkPipeline), "vkCreateGraphicsPipelines"))
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkPipeline_Graphics: Failed to create VkPipeline !");
+            return false;
+        }
+        return true;
+    }
+    bool VulkanDevice::CreateVkPipeline_Compute(VkShaderModule compShaderModule,
+                                                const String& compMain,
+                                                VkPipelineLayout pipelineLayout, 
+                                                VkPipelineCreateFlags flags,
+                                                VkPipelineCache vkPipelineCache,
+                                                VkPipeline& vkPipeline)
+    {
+        VkPipelineShaderStageCreateInfo compShaderStageInfo = {};
+        compShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        compShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+        compShaderStageInfo.module = compShaderModule;
+        compShaderStageInfo.pName = compMain.c_str();
+
+        return CreateVkPipeline_Compute(compShaderStageInfo,
+                                        pipelineLayout,
+                                        flags,
+                                        vkPipelineCache,
+                                        vkPipeline);
+    }
+    bool VulkanDevice::CreateVkPipeline_Compute(const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
+                                                VkPipelineLayout pipelineLayout, 
+                                                VkPipelineCreateFlags flags,
+                                                VkPipelineCache vkPipelineCache,
+                                                VkPipeline& vkPipeline)
+    {
+        VkComputePipelineCreateInfo pipelineInfo = {};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+        pipelineInfo.pNext = nullptr;
+        pipelineInfo.flags = flags; 
+        pipelineInfo.stage = shaderStageCreateInfo;
+        pipelineInfo.layout = pipelineLayout;
+        
+        if (!E_CheckVkResult(vkCreateComputePipelines(this->m_vkDevice, vkPipelineCache, 1, &pipelineInfo, nullptr, &vkPipeline), "vkCreateComputePipelines"))
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkPipeline_Compute: Failed to create VkPipeline !");
+            return false;
+        }
+        return true;
+    }
+    void VulkanDevice::DestroyVkPipeline(const VkPipeline& vkPipeline)
+    {
+        if (vkPipeline != VK_NULL_HANDLE)
+        {
+            vkDestroyPipeline(this->m_vkDevice, vkPipeline, nullptr);   
+        }
+    }
+
+
+    //////////////////// VkDescriptorSet ////////////////
+    bool VulkanDevice::CreateVkDescriptorSet(uint32_t descriptorSetCount,
+                                             VkDescriptorSetLayout vkDescriptorSetLayout, 
+                                             VkDescriptorPool vkDescriptorPool,
+                                             VkDescriptorSet& vkDescriptorSet)
+    {
+        VkDescriptorSetAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.descriptorPool = vkDescriptorPool;
+        allocInfo.descriptorSetCount = descriptorSetCount;
+        allocInfo.pSetLayouts = &vkDescriptorSetLayout;
+
+        if (vkAllocateDescriptorSets(this->m_vkDevice, &allocInfo, &vkDescriptorSet) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkDescriptorSet: Failed to allocate VkDescriptorSet !");
+            return false;
+        }
+        return true;
+    }
+    bool VulkanDevice::CreateVkDescriptorSets(uint32_t countSwapChain, 
+                                              VkDescriptorSetLayout vkDescriptorSetLayout,
+                                              VkDescriptorPool vkDescriptorPool,
+                                              VkDescriptorSetVector& aDescriptorSets)
+    {
+        VkDescriptorSetLayoutVector layouts(countSwapChain, vkDescriptorSetLayout);
+        VkDescriptorSetAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.descriptorPool = vkDescriptorPool;
+        allocInfo.descriptorSetCount = static_cast<uint32_t>(countSwapChain);
+        allocInfo.pSetLayouts = layouts.data();
+
+        aDescriptorSets.resize(countSwapChain);
+        if (vkAllocateDescriptorSets(this->m_vkDevice, &allocInfo, aDescriptorSets.data()) != VK_SUCCESS) 
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkDescriptorSets: Failed to allocate VkDescriptorSets !");
+            return false;
+        }
+        return true;
+    }
+
+    VkDescriptorSetLayoutBinding VulkanDevice::CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
+                                                                                          VkDescriptorType descriptorType,
+                                                                                          uint32_t descriptorCount,
+                                                                                          VkShaderStageFlags stageFlags)
+    {
+        VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+        CreateVkDescriptorSetLayoutBinding_Uniform(binding,
+                                                   descriptorType,
+                                                   descriptorCount,
+                                                   stageFlags,
+                                                   descriptorSetLayoutBinding);
+        return descriptorSetLayoutBinding;
+    }
+    void VulkanDevice::CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
+                                                                  VkDescriptorType descriptorType,
+                                                                  uint32_t descriptorCount,
+                                                                  VkShaderStageFlags stageFlags,
+                                                                  VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding)
+    {
+        descriptorSetLayoutBinding.binding = binding;
+        descriptorSetLayoutBinding.descriptorType = descriptorType;
+        descriptorSetLayoutBinding.descriptorCount = descriptorCount;
+        descriptorSetLayoutBinding.stageFlags = stageFlags;
+        descriptorSetLayoutBinding.pImmutableSamplers = nullptr;
+    }
+    VkDescriptorSetLayoutBinding VulkanDevice::CreateVkDescriptorSetLayoutBinding_Image(uint32_t binding,
+                                                                                        VkDescriptorType descriptorType,
+                                                                                        uint32_t descriptorCount,
+                                                                                        VkShaderStageFlags stageFlags,
+                                                                                        VkSampler* pImmutableSamplers)
+    {
+        VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = {};
+        CreateVkDescriptorSetLayoutBinding_Image(binding,
+                                                 descriptorType,
+                                                 descriptorCount,
+                                                 stageFlags,
+                                                 pImmutableSamplers,
+                                                 descriptorSetLayoutBinding);
+        return descriptorSetLayoutBinding;
+    }
+    void VulkanDevice::CreateVkDescriptorSetLayoutBinding_Image(uint32_t binding,
+                                                                VkDescriptorType descriptorType,
+                                                                uint32_t descriptorCount,
+                                                                VkShaderStageFlags stageFlags,
+                                                                VkSampler* pImmutableSamplers,
+                                                                VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding)
+    {
+        descriptorSetLayoutBinding.binding = binding;
+        descriptorSetLayoutBinding.descriptorType = descriptorType;
+        descriptorSetLayoutBinding.descriptorCount = descriptorCount;
+        descriptorSetLayoutBinding.stageFlags = stageFlags;
+        descriptorSetLayoutBinding.pImmutableSamplers = pImmutableSamplers;
+    }
+
+    void VulkanDevice::PushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                   VkDescriptorSet dstSet,
+                                                   uint32_t dstBinding,
+                                                   uint32_t dstArrayElement,
+                                                   uint32_t descriptorCount,
+                                                   VkDescriptorBufferInfo& bufferInfo)
+    {
+        VkWriteDescriptorSet ds = {};
+        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        ds.dstSet = dstSet;
+        ds.dstBinding = dstBinding;
+        ds.dstArrayElement = dstArrayElement;
+        ds.descriptorCount = descriptorCount;
+        ds.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        ds.pBufferInfo = &bufferInfo;
+
+        aWriteDescriptorSets.push_back(ds);
+    }
+    void VulkanDevice::PushVkDescriptorSet_Image(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                                 VkDescriptorSet dstSet,
+                                                 uint32_t dstBinding,
+                                                 uint32_t dstArrayElement,
+                                                 uint32_t descriptorCount,
+                                                 VkDescriptorType descriptorType,
+                                                 VkDescriptorImageInfo& imageInfo)
+    {
+        VkWriteDescriptorSet ds = {};
+        ds.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        ds.dstSet = dstSet;
+        ds.dstBinding = dstBinding;
+        ds.dstArrayElement = dstArrayElement;
+        ds.descriptorCount = descriptorCount;
+        ds.descriptorType = descriptorType;
+        ds.pImageInfo = &imageInfo;
+
+        aWriteDescriptorSets.push_back(ds);
+    }
+    void VulkanDevice::UpdateVkDescriptorSets(VkWriteDescriptorSetVector& aWriteDescriptorSets)
+    {
+        if (aWriteDescriptorSets.size() > 0)
+        {
+            vkUpdateDescriptorSets(this->m_vkDevice, static_cast<uint32_t>(aWriteDescriptorSets.size()), aWriteDescriptorSets.data(), 0, nullptr);
+        }
+    }
+
+
+    //////////////////// VkCommandBuffer ////////////////
     VkCommandBuffer VulkanDevice::BeginSingleTimeCommands()
     {
         VkCommandBuffer vkCommandBuffer = AllocateVkCommandBuffer(m_vkCommandPoolTransfer, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
@@ -2632,6 +3845,92 @@ namespace LostPeterPluginRendererVulkan
         QueueSubmitVkCommandBuffers(m_pQueueTransfer->GetVkQueue(), 1, &vkCommandBuffer, nullptr);
         QueueWaitIdle(m_pQueueTransfer->GetVkQueue());
         FreeVkCommandBuffers(m_vkCommandPoolTransfer, 1, &vkCommandBuffer);
+    }
+
+
+    void VulkanDevice::BeginRenderPass(VkCommandBuffer& commandBuffer, 
+                                       const VkRenderPass& renderPass, 
+                                       const VkFramebuffer& frameBuffer,
+                                       const VkOffset2D& offset,
+                                       const VkExtent2D& extent,
+                                       const FVector4& clBg,
+                                       float depth,
+                                       uint32_t stencil)
+    {
+        VkRenderPassBeginInfo renderPassInfo = {};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = renderPass;
+        renderPassInfo.framebuffer = frameBuffer;
+        renderPassInfo.renderArea.offset = offset;
+        renderPassInfo.renderArea.extent = extent;
+
+        std::array<VkClearValue, 2> clearValues = {};
+        VkClearColorValue colorValue = { clBg.x, clBg.y, clBg.z, clBg.w };
+        clearValues[0].color = colorValue;
+        VkClearDepthStencilValue depthStencilValue;
+        depthStencilValue.depth = depth;
+        depthStencilValue.stencil = stencil;
+        clearValues[1].depthStencil = depthStencilValue;
+        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+        renderPassInfo.pClearValues = clearValues.data();
+
+        vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    }
+        void VulkanDevice::BindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport, const VkRect2D& scissor, bool isNegativeViewport /*= true*/)
+        {
+            VkViewport viewport = vkViewport;
+            if (isNegativeViewport)
+            {
+                viewport.y = viewport.height - viewport.y;
+                viewport.height = -viewport.height;
+            }   
+            vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+            vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+        }
+        void VulkanDevice::BindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline)
+        {
+            vkCmdBindPipeline(commandBuffer, pipelineBindPoint, vkPipeline);
+        }
+        void VulkanDevice::BindVertexBuffer(VkCommandBuffer& commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets)
+        {
+            vkCmdBindVertexBuffers(commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets);
+        }
+        void VulkanDevice::BindIndexBuffer(VkCommandBuffer& commandBuffer, const VkBuffer& vkIndexBuffer, VkDeviceSize offset, VkIndexType indexType)
+        {
+            vkCmdBindIndexBuffer(commandBuffer, vkIndexBuffer, offset, indexType);
+        }
+        void VulkanDevice::BindDescriptorSets(VkCommandBuffer& commandBuffer, const VkPipelineBindPoint& pipelineBindPoint, const VkPipelineLayout& layout, uint32_t firstSet, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets)
+        {
+            vkCmdBindDescriptorSets(commandBuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);
+        }
+        void VulkanDevice::Draw(VkCommandBuffer& commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance)
+        {
+            vkCmdDraw(commandBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
+        }
+        void VulkanDevice::DrawIndexed(VkCommandBuffer& commandBuffer, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance)
+        {
+            vkCmdDrawIndexed(commandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+        }
+        void VulkanDevice::DrawIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride)
+        {
+            vkCmdDrawIndirect(commandBuffer, buffer, offset, drawCount, stride);
+        }
+        void VulkanDevice::DrawIndexedIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride)
+        {
+            vkCmdDrawIndexedIndirect(commandBuffer, buffer, offset, drawCount, stride);
+        }
+    void VulkanDevice::EndRenderPass(VkCommandBuffer& commandBuffer)
+    {
+        vkCmdEndRenderPass(commandBuffer);
+    }
+
+    void VulkanDevice::Dispatch(VkCommandBuffer& commandBuffer, uint32_t groupCountX,  uint32_t groupCountY,  uint32_t groupCountZ)
+    {
+        vkCmdDispatch(commandBuffer, groupCountX, groupCountY, groupCountZ);
+    }
+    void VulkanDevice::DispatchIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer,  VkDeviceSize offset)
+    {
+        vkCmdDispatchIndirect(commandBuffer, buffer, offset);
     }
 
 }; //LostPeterPluginRendererVulkan

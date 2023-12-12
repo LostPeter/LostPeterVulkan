@@ -142,10 +142,12 @@ namespace LostPeterPluginRendererVulkan
 	class VulkanDeviceMemoryManager;
 	class VulkanFence;
 	class VulkanFenceManager;
+    class VulkanFrameBufferAttachment;
 	class VulkanInstance;
 	class VulkanPlugin;
 	class VulkanQueue;
 	class VulkanRenderer;
+    class VulkanRenderPass;
     class VulkanRenderTexture;
     class VulkanRenderWindow;
 	class VulkanSemaphore;
@@ -163,7 +165,9 @@ namespace LostPeterPluginRendererVulkan
     typedef std::vector<VulkanSemaphore*> VulkanSemaphorePtrVector;
     typedef std::vector<VulkanQueue*> VulkanQueuePtrVector;
     typedef std::map<String, VulkanQueue*> VulkanQueuePtrMap;
-
+    typedef std::vector<VulkanRenderPass*> VulkanRenderPassPtrVector;
+    typedef std::map<String, VulkanRenderPass*> VulkanRenderPassPtrMap;
+    
 }; //LostPetLostPeterPluginRendererVulkaner
 
 #endif

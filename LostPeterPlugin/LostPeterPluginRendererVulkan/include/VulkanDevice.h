@@ -99,29 +99,22 @@ namespace LostPeterPluginRendererVulkan
 
     /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
     public:
-        ////////// VkSemaphore //////////
-        VkSemaphore CreateVkSemaphore();
-        void CreateVkSemaphore(VkSemaphore& vkSemaphore);
-        void DestroyVkSemaphore(const VkSemaphore& vkSemaphore);
-        
-        ////////// VkFence //////////////
-        VkFence CreateVkFence(bool isCreateSignaled);
-        void CreateVkFence(bool isCreateSignaled, VkFence& vkFence);
-        void DestroyVkFence(const VkFence& vkFence);
+        //////////////////// VkDevice ///////////////////////
+        void DestroyVkDevice(const VkDevice& vkDevice);
 
-        ////////// VkCommandPool ////////
+        //////////////////// VkCommandPool //////////////////
         VkCommandPool CreateVkCommandPool(VkCommandPoolCreateFlags flags,
                                           uint32_t queueFamilyIndex);
-        void CreateVkCommandPool(VkCommandPoolCreateFlags flags,
+        bool CreateVkCommandPool(VkCommandPoolCreateFlags flags,
                                  uint32_t queueFamilyIndex, 
                                  VkCommandPool& vkCommandPool);
         
         void DestroyVkCommandPool(const VkCommandPool& vkCommandPool);
 
-        ////////// VkCommandBuffer //////
+        //////////////////// VkCommandBuffer ////////////////
         VkCommandBuffer AllocateVkCommandBuffer(const VkCommandPool& vkCommandPool,
                                                 VkCommandBufferLevel level);
-        void AllocateVkCommandBuffers(const VkCommandPool& vkCommandPool,
+        bool AllocateVkCommandBuffers(const VkCommandPool& vkCommandPool,
                                       VkCommandBufferLevel level,
                                       uint32_t commandBufferCount,
                                       VkCommandBuffer* pCommandBuffers);
@@ -129,19 +122,98 @@ namespace LostPeterPluginRendererVulkan
                                   uint32_t commandBufferCount, 
                                   VkCommandBuffer* pCommandBuffer);
         
-        void BeginVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer,
+        bool BeginVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer,
                                   VkCommandBufferUsageFlags flags);
-        void EndVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer);
+        bool EndVkCommandBuffer(const VkCommandBuffer& vkCommandBuffer);
         
-        ////////// VkQueue //////////////
+        //////////////////// VkQueue ////////////////////////
         VkQueue GetVkQueue(uint32 queueFamilyIndex, uint32_t queueIndex);
-        void QueueSubmitVkCommandBuffers(const VkQueue& vkQueue,
+        bool QueueSubmitVkCommandBuffers(const VkQueue& vkQueue,
                                          uint32_t commandBufferCount, 
                                          VkCommandBuffer* pCommandBuffer,
                                          VkFence vkFence);
-        void QueueWaitIdle(const VkQueue& vkQueue);
+        bool QueueWaitIdle(const VkQueue& vkQueue);
 
-        ////////// VkBuffer /////////////
+        //////////////////// VkSemaphore ////////////////////
+        VkSemaphore CreateVkSemaphore();
+        bool CreateVkSemaphore(VkSemaphore& vkSemaphore);
+        void DestroyVkSemaphore(const VkSemaphore& vkSemaphore);
+        
+        //////////////////// VkFence ////////////////////////
+        VkFence CreateVkFence(bool isCreateSignaled);
+        bool CreateVkFence(bool isCreateSignaled, VkFence& vkFence);
+        void DestroyVkFence(const VkFence& vkFence);
+
+        //////////////////// VkDescriptorPool ///////////////
+        bool CreateVkDescriptorPool(uint32_t descriptorCount,    
+                                    VkDescriptorPool& vkDescriptorPool);
+        void DestroyVkDescriptorPool(const VkDescriptorPool& vkDescriptorPool);
+
+        //////////////////// VkViewport /////////////////////
+        void CreateVkViewport(float width,
+                              float height,
+                              float offsetX,
+                              float offsetY,
+                              float minDepth,
+                              float maxDepth,
+                              VkViewport& vkViewport, 
+                              VkRect2D& vkScissor);
+
+        //////////////////// VkAttachmentDescription ////////
+        void CreateVkAttachmentDescription(VkAttachmentDescriptionFlags flags,
+                                           VkFormat format,
+                                           VkSampleCountFlagBits samples,
+                                           VkAttachmentLoadOp loadOp,
+                                           VkAttachmentStoreOp storeOp,
+                                           VkAttachmentLoadOp stencilLoadOp,
+                                           VkAttachmentStoreOp stencilStoreOp,
+                                           VkImageLayout initialLayout,
+                                           VkImageLayout finalLayout,
+                                           VkAttachmentDescription& vkAttachmentDescription);
+
+        //////////////////// VkRenderPass ///////////////////
+        bool CreateVkRenderPass(const String& nameRenderPass,
+                                const VkAttachmentDescriptionVector& aAttachmentDescription,
+                                const VkSubpassDescriptionVector& aSubpassDescription,
+                                const VkSubpassDependencyVector& aSubpassDependency,
+                                VkRenderPassMultiviewCreateInfo* pMultiviewCI,
+                                VkRenderPass& vkRenderPass);
+        void DestroyVkRenderPass(const VkRenderPass& vkRenderPass);
+
+        bool CreateRenderPass_KhrDepth(const String& nameRenderPass,
+                                       VkFormat formatSwapChain, 
+                                       VkFormat formatDepth, 
+                                       VkRenderPass& vkRenderPass);
+        bool CreateRenderPass_KhrDepthImgui(const String& nameRenderPass,
+                                            VkFormat formatColor, 
+                                            VkFormat formatDepth, 
+                                            VkFormat formatSwapChain, 
+                                            VkRenderPass& vkRenderPass);
+        bool CreateRenderPass_ColorDepthMSAA(const String& nameRenderPass,
+                                             VkFormat formatColor, 
+                                             VkFormat formatDepth, 
+                                             VkFormat formatSwapChain, 
+                                             VkSampleCountFlagBits samples, 
+                                             VkRenderPass& vkRenderPass);
+        bool CreateRenderPass_ColorDepthImguiMSAA(const String& nameRenderPass,
+                                                  VkFormat formatColor,     
+                                                  VkFormat formatDepth, 
+                                                  VkFormat formatSwapChain, 
+                                                  VkSampleCountFlagBits samples, 
+                                                  VkRenderPass& vkRenderPass);
+
+        //////////////////// VkFramebuffer //////////////////
+        bool CreateVkFramebuffer(const String& nameFramebuffer,
+                                 const VkImageViewVector& aImageView, 
+                                 VkRenderPass& vkRenderPass,
+                                 VkFramebufferCreateFlags flags,
+                                 uint32_t width,
+                                 uint32_t height,
+                                 uint32_t layers,
+                                 VkFramebuffer& vkFramebuffer);
+        void DestroyVkFramebuffer(const VkFramebuffer& vkFramebuffer);
+
+        //////////////////// VkBuffer ///////////////////////
         bool CreateVkBuffer(VkDeviceSize size, 
                             VkBufferUsageFlags usage, 
                             VkMemoryPropertyFlags properties, 
@@ -211,7 +283,7 @@ namespace LostPeterPluginRendererVulkan
                                void** ppData);
         void UnmapVkDeviceMemory(const VkDeviceMemory& vkBufferMemory);
 
-        ////////// VkImage //////////////
+        //////////////////// VkImage ////////////////////////
         bool CreateVkImage(uint32_t width, 
                            uint32_t height, 
                            uint32_t depth, 
@@ -246,9 +318,9 @@ namespace LostPeterPluginRendererVulkan
                              float maxLod, 
                              float mipLodBias,
                              VkSampler& vkSampler);
-        void DestroyVkImage(VkImage vkImage, VkDeviceMemory vkImageMemory, VkImageView vkImageView);
-        void DestroyVkImageView(VkImageView vkImageView);
-        void DestroyVkImageSampler(VkSampler vkSampler);
+        void DestroyVkImage(const VkImage& vkImage, const VkDeviceMemory& vkImageMemory, const VkImageView& vkImageView);
+        void DestroyVkImageView(const VkImageView& vkImageView);
+        void DestroyVkSampler(const VkSampler& vkSampler);
                         
         void TransitionVkImageLayout(VkCommandBuffer cmdBuffer,
                                      VkImage vkImage, 
@@ -516,11 +588,163 @@ namespace LostPeterPluginRendererVulkan
                                               VkImage& vkImage, 
                                               VkDeviceMemory& vkImageMemory);
 
+        //////////////////// VkShaderModule /////////////////
+        bool CreateVkShaderModule(FShaderType typeShader, 
+                                  const String& pathFile,
+                                  VkShaderModule& vkShaderModule);
+        bool CreateVkShaderModule(const String& strTypeShader, 
+                                  const String& pathFile,
+                                  VkShaderModule& vkShaderModule);
+        void DestroyVkShaderModule(const VkShaderModule& vkShaderModule);
+
+        //////////////////// VkDescriptorSetLayout //////////
+        bool CreateVkDescriptorSetLayout(const VkDescriptorSetLayoutBindingVector& aDescriptorSetLayoutBinding, 
+                                         VkDescriptorSetLayout& vkDescriptorSetLayout);
+        void DestroyVkDescriptorSetLayout(const VkDescriptorSetLayout& vkDescriptorSetLayout);
+
+        //////////////////// VkPipelineLayout ///////////////
+        bool CreateVkPipelineLayout(const VkDescriptorSetLayoutVector& aDescriptorSetLayout,
+                                    VkPipelineLayout& vkPipelineLayout);
+        void DestroyVkPipelineLayout(const VkPipelineLayout& vkPipelineLayout);
+
+        //////////////////// VkPipelineCache ////////////////
+        bool CreateVkPipelineCache(VkPipelineCache& vkPipelineCache);
+        void DestroyVkPipelineCache(const VkPipelineCache& vkPipelineCache);
+
+        //////////////////// VkPipeline /////////////////////
+        bool CreateVkPipeline_Graphics(VkShaderModule vertShaderModule, const String& vertMain,
+                                       VkShaderModule fragShaderModule, const String& fragMain,
+                                       VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                       VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                       VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                       VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                       VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                       VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                       VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                       VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                       VkColorComponentFlags colorWriteMask,
+                                       VkSampleCountFlagBits msaaSamples,
+                                       VkPipelineCache vkPipelineCache,
+                                       VkPipeline& vkPipeline);
+        bool CreateVkPipeline_Graphics(VkShaderModule vertShaderModule, const String& vertMain,
+                                       VkShaderModule tescShaderModule, const String& tescMain,
+                                       VkShaderModule teseShaderModule, const String& teseMain,
+                                       VkShaderModule fragShaderModule, const String& fragMain,
+                                       VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+                                       VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                       VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                       VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                       VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                       VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                       VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                       VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                       VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                       VkColorComponentFlags colorWriteMask,
+                                       VkSampleCountFlagBits msaaSamples,
+                                       VkPipelineCache vkPipelineCache,
+                                       VkPipeline& vkPipeline);
+        bool CreateVkPipeline_Graphics(const VkPipelineShaderStageCreateInfoVector& aShaderStageCreateInfos,
+                                       bool tessellationIsUsed, VkPipelineTessellationStateCreateFlags tessellationFlags, uint32_t tessellationPatchControlPoints,
+                                       VkVertexInputBindingDescriptionVector* pBindingDescriptions,
+                                       VkVertexInputAttributeDescriptionVector* pAttributeDescriptions,
+                                       VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const VkViewportVector& aViewports, const VkRect2DVector& aScissors,
+                                       VkPrimitiveTopology primitiveTopology, VkFrontFace frontFace, VkPolygonMode polygonMode, VkCullModeFlagBits cullMode, float lineWidth,
+                                       VkBool32 bDepthTest, VkBool32 bDepthWrite, VkCompareOp depthCompareOp, 
+                                       VkBool32 bStencilTest, const VkStencilOpState& stencilOpFront, const VkStencilOpState& stencilOpBack, 
+                                       VkBool32 bBlend, VkBlendFactor blendColorFactorSrc, VkBlendFactor blendColorFactorDst, VkBlendOp blendColorOp,
+                                       VkBlendFactor blendAlphaFactorSrc, VkBlendFactor blendAlphaFactorDst, VkBlendOp blendAlphaOp,
+                                       VkColorComponentFlags colorWriteMask,
+                                       VkSampleCountFlagBits msaaSamples,
+                                       VkPipelineCache vkPipelineCache,
+                                       VkPipeline& vkPipeline);
+        bool CreateVkPipeline_Compute(VkShaderModule compShaderModule,
+                                      const String& compMain,
+                                      VkPipelineLayout pipelineLayout, 
+                                      VkPipelineCreateFlags flags,
+                                      VkPipelineCache vkPipelineCache,
+                                      VkPipeline& vkPipeline);
+        bool CreateVkPipeline_Compute(const VkPipelineShaderStageCreateInfo& shaderStageCreateInfo,
+                                      VkPipelineLayout pipelineLayout, 
+                                      VkPipelineCreateFlags flags,
+                                      VkPipelineCache vkPipelineCache,
+                                      VkPipeline& vkPipeline);
+        void DestroyVkPipeline(const VkPipeline& vkPipeline);
+
+        //////////////////// VkDescriptorSet ////////////////
+        bool CreateVkDescriptorSet(uint32_t descriptorSetCount,
+                                   VkDescriptorSetLayout vkDescriptorSetLayout, 
+                                   VkDescriptorPool vkDescriptorPool,
+                                   VkDescriptorSet& vkDescriptorSet);
+        bool CreateVkDescriptorSets(uint32_t countSwapChain, 
+                                    VkDescriptorSetLayout vkDescriptorSetLayout,
+                                    VkDescriptorPool vkDescriptorPool,
+                                    VkDescriptorSetVector& aDescriptorSets);
+
+        VkDescriptorSetLayoutBinding CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
+                                                                                VkDescriptorType descriptorType,
+                                                                                uint32_t descriptorCount,
+                                                                                VkShaderStageFlags stageFlags);
+        void CreateVkDescriptorSetLayoutBinding_Uniform(uint32_t binding,
+                                                        VkDescriptorType descriptorType,
+                                                        uint32_t descriptorCount,
+                                                        VkShaderStageFlags stageFlags,
+                                                        VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding);
+        VkDescriptorSetLayoutBinding CreateVkDescriptorSetLayoutBinding_Image(uint32_t binding,
+                                                                              VkDescriptorType descriptorType,
+                                                                              uint32_t descriptorCount,
+                                                                              VkShaderStageFlags stageFlags,
+                                                                              VkSampler* pImmutableSamplers);
+        void CreateVkDescriptorSetLayoutBinding_Image(uint32_t binding,
+                                                      VkDescriptorType descriptorType,
+                                                      uint32_t descriptorCount,
+                                                      VkShaderStageFlags stageFlags,
+                                                      VkSampler* pImmutableSamplers,
+                                                      VkDescriptorSetLayoutBinding& descriptorSetLayoutBinding);
+        
+        void PushVkDescriptorSet_Uniform(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                         VkDescriptorSet dstSet,
+                                         uint32_t dstBinding,
+                                         uint32_t dstArrayElement,
+                                         uint32_t descriptorCount,
+                                         VkDescriptorBufferInfo& bufferInfo);
+        void PushVkDescriptorSet_Image(VkWriteDescriptorSetVector& aWriteDescriptorSets,
+                                       VkDescriptorSet dstSet,
+                                       uint32_t dstBinding,
+                                       uint32_t dstArrayElement,
+                                       uint32_t descriptorCount,
+                                       VkDescriptorType descriptorType,
+                                       VkDescriptorImageInfo& imageInfo);
+        void UpdateVkDescriptorSets(VkWriteDescriptorSetVector& aWriteDescriptorSets);
     
+
     public:
-        ////////// Command //////////////
+        //////////////////// VkCommandBuffer ////////////////
         VkCommandBuffer BeginSingleTimeCommands();
         void EndSingleTimeCommands(VkCommandBuffer& vkCommandBuffer);
+
+
+        void BeginRenderPass(VkCommandBuffer& commandBuffer, 
+                             const VkRenderPass& renderPass, 
+                             const VkFramebuffer& frameBuffer,
+                             const VkOffset2D& offset,
+                             const VkExtent2D& extent,
+                             const FVector4& clBg,
+                             float depth,
+                             uint32_t stencil);
+            void BindViewport(VkCommandBuffer& commandBuffer, const VkViewport& vkViewport, const VkRect2D& scissor, bool isNegativeViewport = true);
+            void BindPipeline(VkCommandBuffer& commandBuffer, VkPipelineBindPoint pipelineBindPoint, const VkPipeline& vkPipeline);
+            void BindVertexBuffer(VkCommandBuffer& commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets);
+            void BindIndexBuffer(VkCommandBuffer& commandBuffer, const VkBuffer& vkIndexBuffer, VkDeviceSize offset, VkIndexType indexType);
+            void BindDescriptorSets(VkCommandBuffer& commandBuffer, const VkPipelineBindPoint& pipelineBindPoint, const VkPipelineLayout& layout, uint32_t firstSet, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets);
+            void Draw(VkCommandBuffer& commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance);
+            void DrawIndexed(VkCommandBuffer& commandBuffer, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance);
+            void DrawIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride);
+            void DrawIndexedIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer, VkDeviceSize offset, uint32_t drawCount, uint32_t stride);
+        void EndRenderPass(VkCommandBuffer& commandBuffer);
+
+        void Dispatch(VkCommandBuffer& commandBuffer, uint32_t groupCountX,  uint32_t groupCountY,  uint32_t groupCountZ);
+        void DispatchIndirect(VkCommandBuffer& commandBuffer, const VkBuffer& buffer,  VkDeviceSize offset);
+
 
     /////////////////////////////////////// Vulkan Utility Wrapper ////////////////////////////////////////
 
