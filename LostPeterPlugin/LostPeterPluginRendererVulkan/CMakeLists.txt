@@ -89,7 +89,6 @@ elseif (APPLE)
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
     SET(COCOA_LIBS ${SYS_FRAMEWORKS_DIR}/Cocoa.framework)
-    SET(COREVIDEO_LIBS ${SYS_FRAMEWORKS_DIR}/CoreVideo.framework)
     SET(IOKIT_LIBS ${SYS_FRAMEWORKS_DIR}/IOKit.framework)
     SET(SYS_VULKAN_LIBS "$ENV{VULKAN_HOME}/macOS/Frameworks/vulkan.framework")
 
@@ -189,32 +188,27 @@ elseif (ANDROID)
 elseif (APPLE)
     MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom MacOS !")
 
-    if (DEBUG)
-        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4_d.a
-                       ${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6_d.a
-                       "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan_d.a -Wl,-noall_load"
-                       ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
-                       ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
-                       ${LIB_DEPENDENCIES_DIR}/libtinyxml-2.6.2_d.a
-                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a
-                       ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
-                       ${LIB_PLUGINS_DIR}/libLostPeterEngine_d.dylib)
-    else ()
-        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4.a
-                       ${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6.a
-                       "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan.a -Wl,-noall_load"
-                       ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
-                       ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
-                       ${LIB_DEPENDENCIES_DIR}/libtinyxml-2.6.2.a
-                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a
-                       ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
-                       ${LIB_PLUGINS_DIR}/libLostPeterEngine.dylib)
-    endif()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
-                          ${LIB_VULKAN_DIR}/libvulkan.1.dylib 
-                          ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib 
-                          ${SYS_VULKAN_LIBS})
+    if (DEBUG)
+        TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+                              ${COCOA_LIBS}
+                              ${IOKIT_LIBS}
+                              ${LIB_VULKAN_DIR}/libvulkan.1.dylib 
+                              ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib 
+                              ${SYS_VULKAN_LIBS}
+                              ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
+                              ${LIB_PLUGINS_DIR}/libLostPeterEngine_d.dylib)
+    else ()
+        TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+                              ${COCOA_LIBS}
+                              ${IOKIT_LIBS}
+                              ${LIB_VULKAN_DIR}/libvulkan.1.dylib 
+                              ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib 
+                              ${SYS_VULKAN_LIBS}
+                              ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
+                              ${LIB_PLUGINS_DIR}/libLostPeterEngine.dylib)
+    endif()
+    
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES CMAKE_ENABLE_EXPORTS TRUE)   

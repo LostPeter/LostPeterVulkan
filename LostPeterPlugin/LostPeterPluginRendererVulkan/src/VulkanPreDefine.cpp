@@ -61,6 +61,20 @@ namespace LostPeterPluginRendererVulkan
         return true;
     }
 
+    void E_SetObjectName(VkDevice device, uint64_t object, VkDebugReportObjectTypeEXT objectType, const char* szName)
+    {
+        // Check for a valid function pointer
+        // if (vkDebugMarkerSetObjectNameEXT)
+        // {
+        //     VkDebugMarkerObjectNameInfoEXT nameInfo = { };
+        //     nameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT;
+        //     nameInfo.objectType = objectType;
+        //     nameInfo.object = object;
+        //     nameInfo.pObjectName = szName;
+        //     vkDebugMarkerSetObjectNameEXT(device, &nameInfo);
+        // }
+    }
+
     /////////////////////////////////////// Vulkan Define ////////////////////////////////
     
 }; //LostPeterPluginRendererVulkan

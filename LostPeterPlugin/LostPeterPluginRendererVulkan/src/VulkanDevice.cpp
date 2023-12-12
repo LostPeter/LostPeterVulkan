@@ -3280,7 +3280,7 @@ namespace LostPeterPluginRendererVulkan
         if (code.size() <= 0)
         {
             F_LogError("*********************** VulkanDevice::CreateVkShaderModule: Failed to create VkShaderModule, code size <= 0, path file: [%s] !", pathFile.c_str());
-            return nullptr;
+            return false;
         }
 
         VkShaderModuleCreateInfo createInfo = {};

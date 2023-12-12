@@ -51,6 +51,7 @@ namespace LostPeterPluginRendererVulkan
     }
 
     bool E_CheckVkResult(VkResult result, const String& nameFunc);
+    void E_SetObjectName(VkDevice device, uint64_t object, VkDebugReportObjectTypeEXT objectType, const char* szName);
 
     template<class T>
     void E_ZeroStruct(T& vkStruct, VkStructureType vkType)

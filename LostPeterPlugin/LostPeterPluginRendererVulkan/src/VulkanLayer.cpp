@@ -51,11 +51,11 @@ namespace LostPeterPluginRendererVulkan
     {
         "VK_KHR_surface",
 
-    #if UTIL_PLATFORM == UTIL_PLATFORM_IOS
+    #if F_PLATFORM == F_PLATFORM_iOS
         "VK_MVK_ios_surface",
 
         "MoltenVK",
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_ANDROID
+    #elif F_PLATFORM == F_PLATFORM_ANDROID
         "VK_KHR_android_surface",
 
         "VK_LAYER_GOOGLE_threading",
@@ -64,11 +64,11 @@ namespace LostPeterPluginRendererVulkan
         "VK_LAYER_LUNARG_core_validation",
         "VK_LAYER_LUNARG_swapchain",
         "VK_LAYER_GOOGLE_unique_objects",
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_WIN32
+    #elif F_PLATFORM == F_PLATFORM_WINDOW
         "VK_KHR_win32_surface",
 
         "VK_LAYER_KHRONOS_validation",
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
         "VK_MVK_macos_surface",
 
         "VK_LAYER_LUNARG_standard_validation",
@@ -77,7 +77,7 @@ namespace LostPeterPluginRendererVulkan
         "VK_LAYER_LUNARG_core_validation",
         "VK_LAYER_LUNARG_parameter_validation",
         "VK_LAYER_LUNARG_object_tracker",
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_LINUX
+    #elif F_PLATFORM == F_PLATFORM_LINUX
         
         "VK_LAYER_KHRONOS_validation",
     #else
@@ -88,24 +88,24 @@ namespace LostPeterPluginRendererVulkan
 
     static const char* g_szValidationLayersDevice[] = 
     {
-    #if UTIL_PLATFORM == UTIL_PLATFORM_IOS
+    #if F_PLATFORM == F_PLATFORM_iOS
         "MoltenVK",
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_ANDROID
+    #elif F_PLATFORM == F_PLATFORM_ANDROID
         "VK_LAYER_GOOGLE_threading",
         "VK_LAYER_LUNARG_parameter_validation",
         "VK_LAYER_LUNARG_object_tracker",
         "VK_LAYER_LUNARG_core_validation",
         "VK_LAYER_GOOGLE_unique_objects",
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_WIN32
+    #elif F_PLATFORM == F_PLATFORM_WINDOW
         "VK_LAYER_KHRONOS_validation",
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
         "VK_LAYER_LUNARG_standard_validation",
         "VK_LAYER_GOOGLE_unique_objects",
         "VK_LAYER_GOOGLE_threading",
         "VK_LAYER_LUNARG_core_validation",
         "VK_LAYER_LUNARG_parameter_validation",
         "VK_LAYER_LUNARG_object_tracker",
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_LINUX
+    #elif F_PLATFORM == F_PLATFORM_LINUX
         "VK_LAYER_KHRONOS_validation",
     #else
         #pragma error "UnKnown platform! Abort! Abort!"
@@ -115,15 +115,15 @@ namespace LostPeterPluginRendererVulkan
 
     static const char* g_szInstanceExtensions[] =
     {
-    #if UTIL_PLATFORM == UTIL_PLATFORM_IOS
+    #if F_PLATFORM == F_PLATFORM_iOS
         
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_ANDROID
+    #elif F_PLATFORM == F_PLATFORM_ANDROID
 
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_WIN32
+    #elif F_PLATFORM == F_PLATFORM_WINDOW
         
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
 
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_LINUX
+    #elif F_PLATFORM == F_PLATFORM_LINUX
         
     #else
         #pragma error "UnKnown platform! Abort! Abort!"
@@ -137,15 +137,15 @@ namespace LostPeterPluginRendererVulkan
         VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME,
         VK_KHR_MAINTENANCE1_EXTENSION_NAME,
 
-    #if UTIL_PLATFORM == UTIL_PLATFORM_IOS
+    #if F_PLATFORM == F_PLATFORM_iOS
         
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_ANDROID
+    #elif F_PLATFORM == F_PLATFORM_ANDROID
 
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_WIN32
+    #elif F_PLATFORM == F_PLATFORM_WINDOW
         
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_MAC
+    #elif F_PLATFORM == F_PLATFORM_MAC
 
-    #elif UTIL_PLATFORM == UTIL_PLATFORM_LINUX
+    #elif F_PLATFORM == F_PLATFORM_LINUX
         
     #else
         #pragma error "UnKnown platform! Abort! Abort!"

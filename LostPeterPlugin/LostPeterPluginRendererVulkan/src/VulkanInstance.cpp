@@ -58,7 +58,7 @@ namespace LostPeterPluginRendererVulkan
         , m_pDevice(nullptr)
         , m_eSwapChainImagePixelFormat(F_PixelFormat_BYTE_A8R8G8B8_UNORM)
     {
-    #if UTIL_DEBUG == 1
+    #if F_DEBUG == 1
         m_bIsEnableValidationLayers = false;
     #else
         m_bIsEnableValidationLayers = true;
@@ -143,7 +143,7 @@ namespace LostPeterPluginRendererVulkan
         appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         appInfo.pEngineName = "LostPeter Engine";
         appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    #if UTIL_PLATFORM == UTIL_PLATFORM_IOS || UTIL_PLATFORM == UTIL_PLATFORM_ANDROID
+    #if F_PLATFORM == F_PLATFORM_iOS || F_PLATFORM == F_PLATFORM_ANDROID
         appInfo.apiVersion         = VK_API_VERSION_1_0;
     #else
         appInfo.apiVersion         = VK_API_VERSION_1_1;
