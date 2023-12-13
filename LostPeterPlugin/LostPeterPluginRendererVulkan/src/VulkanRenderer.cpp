@@ -10,11 +10,15 @@
 ****************************************************************************/
 
 #include "../include/VulkanRenderer.h"
+#include "../include/VulkanInstance.h"
+#include "../include/VulkanDevice.h"
+#include "../include/VulkanPlugin.h"
 
 namespace LostPeterPluginRendererVulkan
 {
     VulkanRenderer::VulkanRenderer()
-        : Renderer("VulkanRenderer")
+        : Renderer(VulkanPlugin::GetPluginName())
+        , m_pVulkanInstance(nullptr)
     {
         
     }
@@ -26,11 +30,24 @@ namespace LostPeterPluginRendererVulkan
 
     void VulkanRenderer::Destroy()
     {
-
+        Renderer::Destroy();
+        F_DELETE(m_pVulkanInstance)
     }
 
     RenderWindow* VulkanRenderer::Init(bool bAutoCreateWindow, const String& strWndTitle /*= "Render Window"*/)
     {
+        F_Assert(!m_bRendererIsInit && "VulkanRenderer::Init")
+
+        //1> VulkanInstance
+        m_pVulkanInstance = new VulkanInstance();
+        if (!m_pVulkanInstance->Init())
+        {
+            F_LogError("*********************** VulkanRenderer::Init: Failed to init VulkanInstance !");
+            return nullptr;
+        }
+
+        //2> 
+
         return nullptr;
     }
 
@@ -39,8 +56,12 @@ namespace LostPeterPluginRendererVulkan
         return E_VertexElementData_Float1;
     }
 
-    RenderWindow* VulkanRenderer::CreateRenderWindow(const String& strName, uint32 nWidth, uint32 nHeight, bool bFullScreen,
-												     const String2StringMap* pParams /*= nullptr*/, bool bShowWindow /*= true*/)
+    RenderWindow* VulkanRenderer::CreateRenderWindow(const String& strName, 
+                                                     uint32 nWidth, 
+                                                     uint32 nHeight, 
+                                                     bool bFullScreen,
+												     const String2StringMap* pParams /*= nullptr*/, 
+                                                     bool bShowWindow /*= true*/)
     {
         return nullptr;
     }
@@ -73,11 +94,18 @@ namespace LostPeterPluginRendererVulkan
         return true;
     }
 
-    bool VulkanRenderer::ClearFrameBuffer(uint32 nBuffers, const FColor& color /*= FMath::ms_clBlack*/, float fDepth /*= 1.0f*/, uint16 nStencil /*= 0*/)
+    bool VulkanRenderer::ClearFrameBuffer(uint32 nBuffers, 
+                                          const FColor& color /*= FMath::ms_clBlack*/, 
+                                          float fDepth /*= 1.0f*/, 
+                                          uint16 nStencil /*= 0*/)
     {
         return true;
     }
-    bool VulkanRenderer::ClearFrameBuffer(const FRectI& rect, uint32 nBuffers, const FColor& color /*= FMath::ms_clBlack*/, float fDepth /*= 1.0f*/, uint16 nStencil /*= 0*/)
+    bool VulkanRenderer::ClearFrameBuffer(const FRectI& rect, 
+                                          uint32 nBuffers, 
+                                          const FColor& color /*= FMath::ms_clBlack*/, 
+                                          float fDepth /*= 1.0f*/, 
+                                          uint16 nStencil /*= 0*/)
     {
         return true;
     }

@@ -56,7 +56,7 @@ namespace LostPeterEngine
     public:
 		F_FORCEINLINE ConfigItemMap* GetRendererCfgItems() { return &m_mapRendererCfgItem; }
 
-		F_FORCEINLINE RendererPtrMap&	GetRendererPtrMap() { return m_mapRenderer; }
+		F_FORCEINLINE RendererPtrMap& GetRendererPtrMap() { return m_mapRenderer; }
 		F_FORCEINLINE Renderer* GetRendererCurrent() const { return m_pRendererCurrent; }
 		bool SetRendererCurrent(Renderer* pRenderer);
 		F_FORCEINLINE RenderWindow* GetRenderWindowAuto() const { return m_pRenderWindowAuto; }

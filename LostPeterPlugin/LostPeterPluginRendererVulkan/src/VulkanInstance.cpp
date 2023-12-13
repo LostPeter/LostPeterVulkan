@@ -59,9 +59,9 @@ namespace LostPeterPluginRendererVulkan
         , m_eSwapChainImagePixelFormat(F_PixelFormat_BYTE_A8R8G8B8_UNORM)
     {
     #if F_DEBUG == 1
-        m_bIsEnableValidationLayers = false;
-    #else
         m_bIsEnableValidationLayers = true;
+    #else
+        m_bIsEnableValidationLayers = false;
     #endif
     }
 

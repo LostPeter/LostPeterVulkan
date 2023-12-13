@@ -24,18 +24,26 @@ namespace LostPeterPluginRendererVulkan
 
     public:
     protected:
-       
+        VulkanInstance* m_pVulkanInstance;
+
 
     public:
         virtual void Destroy();
         virtual RenderWindow* Init(bool bAutoCreateWindow, const String& strWndTitle = "Render Window");
 
+    public:
+        F_FORCEINLINE VulkanInstance* GetVulkanInstance() const { return m_pVulkanInstance; }
+
     
     public:
         virtual EVertexElementDataType GetColorVertexElementType() const;
         
-        virtual RenderWindow* CreateRenderWindow(const String& strName, uint32 nWidth, uint32 nHeight, bool bFullScreen,
-												 const String2StringMap* pParams = nullptr, bool bShowWindow = true);
+        virtual RenderWindow* CreateRenderWindow(const String& strName, 
+                                                 uint32 nWidth, 
+                                                 uint32 nHeight, 
+                                                 bool bFullScreen,
+												 const String2StringMap* pParams = nullptr, 
+                                                 bool bShowWindow = true);
 
         virtual bool IsDeviceLost();
 
@@ -47,8 +55,15 @@ namespace LostPeterPluginRendererVulkan
 		virtual bool SetRenderTarget(RenderTarget* pRenderTarget);
 		virtual bool SetDepthStencil(void* pDepth);
 
-		virtual bool ClearFrameBuffer(uint32 nBuffers, const FColor& color = FMath::ms_clBlack, float fDepth = 1.0f, uint16 nStencil = 0);
-		virtual bool ClearFrameBuffer(const FRectI& rect, uint32 nBuffers, const FColor& color = FMath::ms_clBlack, float fDepth = 1.0f, uint16 nStencil = 0);
+		virtual bool ClearFrameBuffer(uint32 nBuffers, 
+                                      const FColor& color = FMath::ms_clBlack, 
+                                      float fDepth = 1.0f, 
+                                      uint16 nStencil = 0);
+		virtual bool ClearFrameBuffer(const FRectI& rect, 
+                                      uint32 nBuffers, 
+                                      const FColor& color = FMath::ms_clBlack, 
+                                      float fDepth = 1.0f, 
+                                      uint16 nStencil = 0);
 		
         
 		virtual bool SetWorldMatrix(const FMatrix4& matWorld);

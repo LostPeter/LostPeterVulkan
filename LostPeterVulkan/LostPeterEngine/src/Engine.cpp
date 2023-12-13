@@ -80,12 +80,15 @@ namespace LostPeterEngine
     void Engine::Destroy()
     {
         RemoveEngineListenerAll();
+        if (m_pRenderEngine)
+        {
+            m_pRenderEngine->Destroy();
+        }
         if (m_pPluginManager != nullptr)
         {
             m_pPluginManager->UnloadPlugins();
         }
         F_DELETE(m_pPluginManager)
-
         F_DELETE(m_pRenderEngine)
 
         F_DELETE(m_pTimer)
@@ -194,13 +197,16 @@ namespace LostPeterEngine
 		m_mapEngineCommonCfgItem.clear();
 
 		//<1> multi thread
-		ConfigItem cfgItem;
-		cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Common_MultiThread);
-		String strDefault("1");
-		cfgItem.aPossibleValues.push_back(strDefault);
-		cfgItem.strCurValue = strDefault;
-		cfgItem.bImmutable	= false;
-		m_mapEngineCommonCfgItem[cfgItem.strName] = cfgItem;
+        {
+            ConfigItem cfgItem;
+            cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Common_MultiThread);
+            String strDefault("1");
+            cfgItem.aPossibleValues.push_back(strDefault);
+            cfgItem.strCurValue = strDefault;
+            cfgItem.bImmutable	= false;
+            m_mapEngineCommonCfgItem[cfgItem.strName] = cfgItem;
+        }
+		
 
 
 	}

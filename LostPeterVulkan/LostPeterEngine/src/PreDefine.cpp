@@ -228,11 +228,11 @@ namespace LostPeterEngine
     static const String s_nameEngineConfigTypes[] = 
 	{
     ////Common
-		"MultiThread",					    //0: MultiThread
+		"MultiThread",					    //0:    MultiThread
 
     ////Render
-
-
+        "RendererName",                     //1:    RendererName  
+        
     ////Audio
 
 

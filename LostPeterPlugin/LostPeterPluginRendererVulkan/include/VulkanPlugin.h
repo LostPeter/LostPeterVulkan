@@ -23,8 +23,13 @@ namespace LostPeterPluginRendererVulkan
         virtual ~VulkanPlugin();
 
     public:
+	protected:
 		static const String ms_strPluginName;
 
+	public:
+		static const String& GetPluginName() { return ms_strPluginName; }
+
+	public:
 	protected:
 		VulkanRenderer* m_pRendererVulkan;
 

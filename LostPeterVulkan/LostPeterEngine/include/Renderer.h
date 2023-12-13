@@ -88,8 +88,12 @@ namespace LostPeterEngine
 		virtual void ConvertColorValue(const FColor& color, uint32* pDest);
 		virtual EVertexElementDataType GetColorVertexElementType() const = 0;
 
-		virtual RenderWindow* CreateRenderWindow(const String& strName, uint32 nWidth, uint32 nHeight, bool bFullScreen,
-												 const String2StringMap* pParams = nullptr, bool bShowWindow = true) = 0;
+		virtual RenderWindow* CreateRenderWindow(const String& strName, 
+												 uint32 nWidth, 
+												 uint32 nHeight, 
+												 bool bFullScreen,
+												 const String2StringMap* pParams = nullptr, 
+												 bool bShowWindow = true) = 0;
 
 		virtual bool IsDeviceLost() = 0;
 
@@ -107,8 +111,15 @@ namespace LostPeterEngine
 		virtual bool SetRenderTarget(RenderTarget* pRenderTarget) = 0;
 		virtual bool SetDepthStencil(void* pDepth) = 0;
 
-		virtual bool ClearFrameBuffer(uint32 nBuffers, const FColor& color = FMath::ms_clBlack, float fDepth = 1.0f, uint16 nStencil = 0) = 0;
-		virtual bool ClearFrameBuffer(const FRectI& rect, uint32 nBuffers, const FColor& color = FMath::ms_clBlack, float fDepth = 1.0f, uint16 nStencil = 0) = 0;
+		virtual bool ClearFrameBuffer(uint32 nBuffers, 
+									  const FColor& color = FMath::ms_clBlack, 
+									  float fDepth = 1.0f, 
+									  uint16 nStencil = 0) = 0;
+		virtual bool ClearFrameBuffer(const FRectI& rect, 
+									  uint32 nBuffers, 
+									  const FColor& color = FMath::ms_clBlack, 
+									  float fDepth = 1.0f, 
+									  uint16 nStencil = 0) = 0;
 		
         
 		virtual bool SetWorldMatrix(const FMatrix4& matWorld) = 0;

@@ -4,7 +4,7 @@
 		<MultiThread val="1" />
 	</cfg_common>
 	<cfg_render>
-		<renderer_name val="PluginRendererVulkan" />
+		<RendererName val="LostPeterPluginRendererVulkan" />
 		<pipeline val="Forward"	/>
 	</cfg_render>
 	<cfg_audio>

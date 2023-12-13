@@ -305,11 +305,11 @@ namespace LostPeterEngine
     enum EEngineConfigType
 	{
     ////Common
-		E_EngineConfig_Common_MultiThread = 0,	       //0: MultiThread
+		E_EngineConfig_Common_MultiThread = 0,	        //0:  MultiThread
 
     ////Render
-
-
+        E_EngineConfig_Render_RendererName,             //1:  RendererName
+        
     ////Audio
 
 

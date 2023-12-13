@@ -59,17 +59,35 @@ namespace LostPeterEngine
 		, m_bIsInit(false)
 		, m_bFirstInitAfterWndCreated(false)
     {
+		initRendererCfgItems();
 
     }
 
     RenderEngine::~RenderEngine()
     {
-         Destroy();
+        Destroy();
     }
 
     void RenderEngine::initRendererCfgItems()
     {
-       
+		m_mapRendererCfgItem.clear();
+
+		//0> Renderer
+		{
+			ConfigItem cfgItem;
+			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_RendererName);
+			cfgItem.aPossibleValues.push_back(String("LostPeterPluginRendererNull"));	//0
+			cfgItem.aPossibleValues.push_back(String("LostPeterPluginRendererVulkan"));	//1
+			cfgItem.aPossibleValues.push_back(String("LostPeterPluginRendererD3D12"));	//2
+			cfgItem.aPossibleValues.push_back(String("LostPeterPluginRendererMetal"));	//3
+			cfgItem.aPossibleValues.push_back(String("LostPeterPluginRendererGL33"));	//4
+			cfgItem.aPossibleValues.push_back(String("LostPeterPluginRendererGLES3"));	//5
+			cfgItem.strCurValue = cfgItem.aPossibleValues[1];
+			cfgItem.bImmutable = false;
+			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
+		}
+
+		//1> 
     }
 
     void RenderEngine::Destroy()
@@ -97,6 +115,34 @@ namespace LostPeterEngine
     
     bool RenderEngine::Init(bool bAutoCreateWindow)
     {
+		//1> Find current renderer
+		{
+			const String& nameItem = E_GetEngineConfigTypeName(E_EngineConfig_Render_RendererName);
+			ConfigItemMap::iterator itFind = m_mapRendererCfgItem.find(nameItem);
+			if (itFind == m_mapRendererCfgItem.end())
+			{
+				F_LogError("RenderEngine::Init: 1> Can not find renderer config item: [%s] !", nameItem.c_str());
+				return false;
+			}
+			String strRendererName(itFind->second.strCurValue);
+			m_pRendererCurrent = GetRendererByName(strRendererName);
+			if (!m_pRendererCurrent)
+			{
+				F_LogError("RenderEngine::Init: 1> Can not find renderer: [%s] !", strRendererName.c_str());
+				return false;
+			}
+			F_LogInfo("RenderEngine::Init: 1> Get renderer: [%s] success !", strRendererName.c_str());
+		}
+
+		//2> Set renderer config items
+		{
+
+		}
+
+		//3> Init renderer and create main window
+		{
+			m_pRenderWindowAuto = m_pRendererCurrent->Init(bAutoCreateWindow);
+		}
 
         return true;
     }
