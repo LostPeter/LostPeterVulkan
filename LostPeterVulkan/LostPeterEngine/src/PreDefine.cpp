@@ -54,9 +54,9 @@ namespace LostPeterEngine
 	};
     const String& E_GetRenderPipelineTypeName(ERenderPipelineType type)
     {
-        return s_nameRenderPipeLineTypes[(int32)type];
+        return s_nameRenderPipeLineTypes[(int)type];
     }
-    const String& E_GetRenderPipelineTypeName(int32 type)
+    const String& E_GetRenderPipelineTypeName(int type)
     {
         return s_nameRenderPipeLineTypes[type];
     }
@@ -224,6 +224,83 @@ namespace LostPeterEngine
     }
 
 
+    //ECpuInfoType
+    const String s_nameCPUInfoTypes[] = 
+	{
+		"CPU_Vender",					//0:  Vender
+		"CPU_Brand",					//1:  Brand
+		"CPU_Code",						//2:  Code
+		"CPU_VenderType",				//3:  VenderType
+		"CPU_NumCore",					//4:  NumCore
+		"CPU_LogicalCpus",				//5:  LogicalCPUs
+		"CPU_TotalLogicalCpus",			//6:  TotalLogicalCPUs
+		"CPU_L1DataCache",				//7:  L1DataCache
+		"CPU_L1InstCache",				//8:  L1InstCache
+		"CPU_L2Cache",					//9:  L2Cache
+		"CPU_L3Cache",					//10: L3Cache
+		"CPU_L1Cache_DataAsso",			//11: L1Cache_DataAsso
+		"CPU_L2Cache_Asso",				//12: L2Cache_Asso
+		"CPU_L3Cache_Asso",				//13: L3Cache_Asso
+		"CPU_L1Cache_DataLine",			//14: L1Cache_DataLine
+		"CPU_L2Cache_Line",				//15: L2Cache_Line
+		"CPU_L3Cache_Line",				//16: L3Cache_Line
+		"CPU_SSESize",					//17: SSESize
+		"CPU_SSE",						//18: SSE
+		"CPU_SSE2",						//19: SSE2
+		"CPU_SSE3",						//20: SSE3
+        "CPU_SSE41",					//21: SSE41
+        "CPU_SSE42",					//22: SSE42
+		"CPU_MMX",						//23: MMX		
+		"CPU_MMXEXT",					//24: MMXEXT
+		"CPU_3DNOW",					//25: 3DNOW
+		"CPU_3DNOWEXT",					//26: 3DNOWEXT
+		"CPU_CMOV",						//27: CMOV
+		"CPU_TSC",						//28: TSC
+        "CPU_INVARIANT_TSC",            //29: INVARIANT_TSC
+		"CPU_FPU",						//30: FPU
+		"CPU_PRO",						//31: PRO	
+        "CPU_HTT",						//32: HTT
+        "CPU_VFP",						//33: VFP
+        "CPU_NEON",						//34: NEON
+        "CPU_MSA",						//35: MSA
+	};
+    const String& E_GetCpuInfoTypeName(ECpuInfoType type)
+    {
+        return s_nameCPUInfoTypes[(int)type];
+    }
+    const String& E_GetCpuInfoTypeName(int type)
+    {
+        return s_nameCPUInfoTypes[type];
+    }
+
+
+    //EGpuVendorType
+    const String s_nameGPUVendorTypes[] = 
+	{
+		"Unknown",
+		"Nvidia",
+		"AMD",
+		"Intel",
+		"Imagination",
+		"Apple",
+		"Nokia",
+		"MS Software",
+        "MS Warp",
+        "Arm Mali",
+        "Qualcomm",
+        "Mozilla",
+        "Webkit",
+	};
+    const String& E_GetGpuVendorTypeName(EGpuVendorType type)
+    {
+        return s_nameGPUVendorTypes[(int)type];
+    }
+    const String& E_GetGpuVendorTypeName(int type)
+    {
+        return s_nameGPUVendorTypes[type];
+    }
+
+
     //EEngineConfigType
     static const String s_nameEngineConfigTypes[] = 
 	{
@@ -242,9 +319,9 @@ namespace LostPeterEngine
 	};
     const String& E_GetEngineConfigTypeName(EEngineConfigType type)
     {
-        return s_nameEngineConfigTypes[(int32)type];
+        return s_nameEngineConfigTypes[(int)type];
     }
-    const String& E_GetEngineConfigTypeName(int32 type)
+    const String& E_GetEngineConfigTypeName(int type)
     {
         return s_nameEngineConfigTypes[type];
     }
@@ -261,7 +338,7 @@ namespace LostPeterEngine
     };
     const String& E_GetFrameProfilerTypeName(EFrameProfilerType type)
     {
-        return s_nameFrameProfilerTypes[(int32)type];
+        return s_nameFrameProfilerTypes[(int)type];
     }
     const String& E_GetFrameProfilerTypeName(int type)
     {

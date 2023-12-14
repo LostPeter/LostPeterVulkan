@@ -21,11 +21,13 @@
 #include "../include/Viewport.h"
 #include "../include/ObjectCamera.h"
 #include "../include/VertexElement.h"
+#include "../include/RenderCapabilities.h"
 
 namespace LostPeterEngine
 {
     Renderer::Renderer(const String& nameRenderer)
         : Base(nameRenderer)
+		, m_pRenderCapabilities(nullptr)
 		, m_pVertexDeclarationManager(nullptr)
 		, m_pStreamManager(nullptr)
 		, m_pTextureManager(nullptr)
@@ -54,6 +56,7 @@ namespace LostPeterEngine
 
     void Renderer::Destroy()
     {
+		F_DELETE(m_pRenderCapabilities)
 		F_DELETE(m_pVertexDeclarationManager)
 		F_DELETE(m_pVertexStreamBindingManager)
 		F_DELETE(m_pStreamManager)

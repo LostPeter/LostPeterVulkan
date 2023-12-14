@@ -325,6 +325,7 @@ namespace LostPeterFoundation
     typedef std::string String;
     typedef std::vector<String> StringVector;
     typedef std::list<String> StringList;
+    typedef std::set<String> StringSet;
     typedef std::map<String, String> String2StringMap;
     typedef std::vector<const char*> ConstCharPtrVector;
     typedef std::vector<char> CharVector;
@@ -341,6 +342,8 @@ namespace LostPeterFoundation
 	typedef std::vector<float> FloatVector;
 	typedef std::vector<double>	DoubleVector;
     typedef std::deque<TimePoint> FrameTimePointQueue;
+    typedef std::map<int32, bool> Int2boolMap;
+	typedef std::map<int32, int32> Int2IntMap;
 
     typedef FTPoint<int32> FPointI;
 	typedef FTPoint<float> FPointF;

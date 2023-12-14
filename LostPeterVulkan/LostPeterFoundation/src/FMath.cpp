@@ -1753,7 +1753,7 @@ namespace LostPeterFoundation
     }
     bool FMath::LinePlane_NotPerpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FVector3& pt1, const FVector3& pt2, const FVector3& pt3, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {
-        return !LinePlane_NotPerpendicular(ptLine1, ptLine2, pt1, pt2, pt3, fEpsilon);
+        return !LinePlane_Perpendicular(ptLine1, ptLine2, pt1, pt2, pt3, fEpsilon);
     }
     bool FMath::LinePlane_NotPerpendicular(const FVector3& ptLine1, const FVector3& ptLine2, const FPlane& plane, float fEpsilon /*= FMath::ms_fEpsilon*/)
     {

@@ -61,7 +61,7 @@ namespace LostPeterVulkan
     #define	C_CONFIG_MAX_TEXTURE_UV_SCROLL_ANIM_COUNT	    4
     #define C_CONFIG_MAX_BONE_BLEND_WEIGHTS_COUNT	        4
     #define C_CONFIG_MAX_BONE_COUNT					        256
-    #define C_CONFIG_MAX_BUFFER_SOURCE_COUNT				16
+    #define C_CONFIG_MAX_STREAM_SOURCE_COUNT				16
     #define C_CONFIG_MAX_LIGHT_COUNT						8
     #define C_CONFIG_MAX_SHADER_PARAM_COUNT				    32
     #define C_CONFIG_MAX_GLYPHS_COUNT				        (9030 - 32)

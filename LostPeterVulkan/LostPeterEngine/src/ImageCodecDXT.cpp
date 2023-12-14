@@ -15,6 +15,10 @@
 
 namespace LostPeterEngine
 {
+#if F_PLATFORM == F_PLATFORM_WINDOW
+	#pragma warning (disable : 4996)
+#endif
+
 #if F_COMPILER == F_COMPILER_MSVC
 	#pragma pack (push, 1)
 #else
@@ -474,7 +478,7 @@ namespace LostPeterEngine
 					ImageCodec::FlipEndian(&(block.color_0),sizeof(uint16),1);
 					ImageCodec::FlipEndian(&(block.color_1),sizeof(uint16),1);
 					// skip back since we'll need to read this again
-					pInput->Seek(0 - sizeof(DXTColorBlock), SEEK_CUR);
+					pInput->Seek(long(0 - sizeof(DXTColorBlock)), SEEK_CUR);
 					pImageData->ePixelFormat = F_PixelFormat_BYTE_R8G8B8_SRGB;
 					//}
 					break;
@@ -505,12 +509,12 @@ namespace LostPeterEngine
 		}
 
 		// Calculate total size from number of mipmaps, faces and size
-		pImageData->nSize = Image::CalculateSize((size_t)pImageData->nNumMipmaps, 
-                                                 numFaces, 
-                                                 (size_t)pImageData->nWidth, 
-                                                 (size_t)pImageData->nHeight, 
-                                                 (size_t)pImageData->nDepth, 
-                                                 pImageData->ePixelFormat);
+		pImageData->nSize = (int32)Image::CalculateSize((size_t)pImageData->nNumMipmaps, 
+                                                        numFaces, 
+														(size_t)pImageData->nWidth, 
+														(size_t)pImageData->nHeight, 
+														(size_t)pImageData->nDepth, 
+														pImageData->ePixelFormat);
 
 		FFileMemory* pOut = FFileManager::GetSingleton().CreateFileMemory((uint32)pImageData->nSize);
 		// Now deal with the data

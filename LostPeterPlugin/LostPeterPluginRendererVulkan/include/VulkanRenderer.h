@@ -26,14 +26,16 @@ namespace LostPeterPluginRendererVulkan
     protected:
         VulkanInstance* m_pVulkanInstance;
 
-
     public:
         virtual void Destroy();
         virtual RenderWindow* Init(bool bAutoCreateWindow, const String& strWndTitle = "Render Window");
+    protected:
+		virtual bool initRenderCapabilities();
+		virtual void initFromRenderCapabilities(RenderTarget* pPrimary);
 
     public:
         F_FORCEINLINE VulkanInstance* GetVulkanInstance() const { return m_pVulkanInstance; }
-
+        VulkanDevice* GetDevice();
     
     public:
         virtual EVertexElementDataType GetColorVertexElementType() const;

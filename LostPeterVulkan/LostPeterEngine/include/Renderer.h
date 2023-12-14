@@ -25,6 +25,7 @@ namespace LostPeterEngine
 
     public:
     protected:
+		RenderCapabilities* m_pRenderCapabilities;
 		VertexDeclarationManager* m_pVertexDeclarationManager;
 		StreamVertexBindingManager* m_pVertexStreamBindingManager;
 		StreamManager* m_pStreamManager;
@@ -83,6 +84,10 @@ namespace LostPeterEngine
 
         virtual void AddRendererListener(RendererListener* pRendererListener);
 		virtual void RemoveRendererListener(RendererListener* pRendererListener);
+
+	protected:
+		virtual bool initRenderCapabilities() = 0;
+		virtual void initFromRenderCapabilities(RenderTarget* pPrimary) = 0;
         
     public:
 		virtual void ConvertColorValue(const FColor& color, uint32* pDest);

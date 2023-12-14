@@ -71,6 +71,7 @@
 #include "ObjectManager.h"
 #include "Renderable.h"
 #include "RenderableIndirect.h"
+#include "RenderCapabilities.h"
 #include "RenderEngineListener.h"
 #include "RenderEngine.h"
 #include "RendererListener.h"

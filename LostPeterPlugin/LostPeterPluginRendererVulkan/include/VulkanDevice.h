@@ -46,10 +46,15 @@ namespace LostPeterPluginRendererVulkan
         ConstCharPtrVector m_aAppDeviceExtensions;    
 
     public:
+        F_FORCEINLINE VkDevice& GetVkDevice() { return m_vkDevice; }
         F_FORCEINLINE const VkDevice& GetVkDevice() const { return m_vkDevice; }
+        F_FORCEINLINE VkPhysicalDevice& GetVkPhysicalDevice() { return m_vkPhysicalDevice; }
         F_FORCEINLINE const VkPhysicalDevice& GetVkPhysicalDevice() const { return m_vkPhysicalDevice; }
+        F_FORCEINLINE VkPhysicalDeviceProperties* GetVkPhysicalDevicePropertiesPtr() { return &m_vkPhysicalDeviceProperties; }
+        F_FORCEINLINE VkPhysicalDeviceProperties& GetVkPhysicalDeviceProperties() { return m_vkPhysicalDeviceProperties; }
         F_FORCEINLINE const VkPhysicalDeviceProperties& GetVkPhysicalDeviceProperties() const { return m_vkPhysicalDeviceProperties; }
         F_FORCEINLINE const VkPhysicalDeviceLimits& GetVkPhysicalDeviceLimits() const { return m_vkPhysicalDeviceProperties.limits; }
+        F_FORCEINLINE VkPhysicalDeviceFeatures& GetVkPhysicalDeviceFeatures() { return m_vkPhysicalDeviceFeatures; }
         F_FORCEINLINE const VkPhysicalDeviceFeatures& GetVkPhysicalDeviceFeatures() const { return m_vkPhysicalDeviceFeatures; }
         F_FORCEINLINE VkPhysicalDeviceFeatures2* GetVkPhysicalDeviceFeatures2() const { return m_pVkPhysicalDeviceFeatures2; }
         F_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
