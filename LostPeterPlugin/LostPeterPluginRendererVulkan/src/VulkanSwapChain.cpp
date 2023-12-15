@@ -13,6 +13,7 @@
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanDevice.h"
 #include "../include/VulkanQueue.h"
+#include "../include/VulkanSemaphore.h"
 #include "../include/VulkanConverter.h"
 
 namespace LostPeterPluginRendererVulkan
@@ -42,12 +43,7 @@ namespace LostPeterPluginRendererVulkan
 
     void VulkanSwapChain::Destroy()
     {
-        size_t count = m_aVkImageAcquiredSemaphore.size();
-        for (size_t i = 0; i < count; ++i)
-        {
-            vkDestroySemaphore(m_pDevice->GetVkDevice(), m_aVkImageAcquiredSemaphore[i], nullptr);
-        }
-        m_aVkImageAcquiredSemaphore.clear();
+        destroySemaphore();
         
         if (m_vkSwapChainKHR != VK_NULL_HANDLE)
         {
@@ -67,6 +63,16 @@ namespace LostPeterPluginRendererVulkan
         m_nNumAcquireCalls = 0;
         m_nLockToVSync = 0;
         m_nPresentID = 0;
+    }
+    void VulkanSwapChain::destroySemaphore()
+    {
+        size_t count = m_aVkImageAcquiredSemaphore.size();
+        for (size_t i = 0; i < count; ++i)
+        {
+            VulkanSemaphore* pSemaphore = m_aVkImageAcquiredSemaphore[i];
+            F_DELETE(pSemaphore)
+        }
+        m_aVkImageAcquiredSemaphore.clear();
     }
 
     bool VulkanSwapChain::Init(FPixelFormatType& eOutPixelFormat,
@@ -121,13 +127,13 @@ namespace LostPeterPluginRendererVulkan
         }
         F_LogInfo("VulkanSwapChain::Init: 5> createSwapChain success !");
 
-        //6> createFence
-        if (!createFence())
+        //6> createSemaphore
+        if (!createSemaphore())
         {
-            F_LogError("*********************** VulkanSwapChain::Init: 6> createFence failed !");
+            F_LogError("*********************** VulkanSwapChain::Init: 6> createSemaphore failed !");
             return false;
         }
-        F_LogInfo("VulkanSwapChain::Init: 6> createFence success !");
+        F_LogInfo("VulkanSwapChain::Init: 6> createSemaphore success !");
 
 
         F_LogInfo("VulkanSwapChain::Init: SwapChain: SwapChain count: [%d], Format: [%d], ColorSpace: [%d], Size: [%dx%d], Present: [%d]", 
@@ -139,77 +145,6 @@ namespace LostPeterPluginRendererVulkan
             m_vkSwapChainCreateInfoKHR.presentMode);
         return true;
     }
-
-    VulkanSwapStatusType VulkanSwapChain::Present(VulkanQueue* pQueueGraphics, 
-                                                  VulkanQueue* pQueuePresent, 
-                                                  VkSemaphore* pComplete)
-    {
-        if (m_nSwapChainImageIndex == -1) 
-        {
-		    return Vulkan_SwapStatus_Normal;
-        }
-        m_nPresentID += 1;
-
-        VkPresentInfoKHR createInfo;
-        E_ZeroStruct(createInfo, VK_STRUCTURE_TYPE_PRESENT_INFO_KHR);
-        createInfo.waitSemaphoreCount = pComplete == nullptr ? 0 : 1;
-        createInfo.pWaitSemaphores = pComplete;
-        createInfo.swapchainCount = 1;
-        createInfo.pSwapchains = &m_vkSwapChainKHR;
-        createInfo.pImageIndices = (uint32*)&m_nSwapChainImageIndex;
-        
-        VkResult presentResult = vkQueuePresentKHR(pQueuePresent->GetVkQueue(), &createInfo);
-        if (presentResult == VK_ERROR_OUT_OF_DATE_KHR) 
-        {
-            return Vulkan_SwapStatus_OutOfDate;
-        }
-        else if (presentResult == VK_ERROR_SURFACE_LOST_KHR) 
-        {
-            return Vulkan_SwapStatus_Lost;
-        }
-        else if (presentResult != VK_SUCCESS && presentResult != VK_SUBOPTIMAL_KHR) 
-        {
-            F_LogError("*********************** VulkanSwapChain::Present: vkQueuePresentKHR: %s", E_VkResult2String(presentResult).c_str());
-            
-            throw std::runtime_error("*********************** VulkanSwapChain::Present: Failed to present swap chain image !");
-            return Vulkan_SwapStatus_Error;
-        }
-
-        m_nNumPresentCalls += 1;
-        return Vulkan_SwapStatus_Normal;
-    }
-
-	int32 VulkanSwapChain::AcquireImageIndex(VkSemaphore* pOutSemaphore)
-    {
-        uint32 imageIndex = 0;
-        const int32 prev = m_nSemaphoreIndex;
-        m_nSemaphoreIndex = (m_nSemaphoreIndex + 1) % m_aVkImageAcquiredSemaphore.size();
-        VkResult result = vkAcquireNextImageKHR(m_pDevice->GetVkDevice(), m_vkSwapChainKHR, F_C_MAX_UINT64, m_aVkImageAcquiredSemaphore[m_nSemaphoreIndex], VK_NULL_HANDLE, &imageIndex);
-        if (result == VK_ERROR_OUT_OF_DATE_KHR) 
-        {
-            m_nSemaphoreIndex = prev;
-            return (int32)Vulkan_SwapStatus_OutOfDate;
-        }
-        else if (result == VK_ERROR_SURFACE_LOST_KHR) 
-        {
-            m_nSemaphoreIndex = prev;
-            return (int32)Vulkan_SwapStatus_Lost;
-        }
-        else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-        {
-            m_nSemaphoreIndex = prev;
-            F_LogError("*********************** VulkanSwapChain::AcquireImageIndex: vkAcquireNextImageKHR: %s", E_VkResult2String(result).c_str());
-            
-            throw std::runtime_error("*********************** VulkanSwapChain::AcquireImageIndex: Failed to acquire swap chain image index !");
-            return (int32)Vulkan_SwapStatus_Error;
-        }
-        m_nNumAcquireCalls += 1;
-        *pOutSemaphore = m_aVkImageAcquiredSemaphore[m_nSemaphoreIndex];
-        m_nSwapChainImageIndex = (int32)imageIndex;
-
-        return m_nSwapChainImageIndex;
-    }
-
     bool VulkanSwapChain::chooseSwapSurfacePixelFormat(FPixelFormatType& eOutPixelFormat)
     {
         //1> chooseSwapSurfacePixelFormat
@@ -365,7 +300,6 @@ namespace LostPeterPluginRendererVulkan
 
         return true;
     }
-
     bool VulkanSwapChain::createSwapChain(uint32 width, 
                                           uint32 height, 
                                           VkPresentModeKHR presentMode,
@@ -464,22 +398,92 @@ namespace LostPeterPluginRendererVulkan
 
         return true;
     }
-
-    bool VulkanSwapChain::createFence()
+    bool VulkanSwapChain::createSemaphore()
     {
-        m_aVkImageAcquiredSemaphore.resize(m_nSwapChainImageCount);
+        destroySemaphore();
         for (int32 i = 0; i < m_nSwapChainImageCount; ++i)
         {
-            VkSemaphoreCreateInfo createInfo;
-            E_ZeroStruct(createInfo, VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
-            if (!E_CheckVkResult(vkCreateSemaphore(m_pDevice->GetVkDevice(), &createInfo, nullptr, &m_aVkImageAcquiredSemaphore[i]), "vkCreateSemaphore"))
+            VulkanSemaphore* pSemaphore = new VulkanSemaphore(m_pDevice);
+            if (!pSemaphore->Init())
             {
-                F_LogError("*********************** VulkanSwapChain::createFence: vkCreateSemaphore failed !");
+                F_LogError("*********************** VulkanSwapChain::createSemaphore: vkCreateSemaphore failed !");
                 return false;
             }
+            m_aVkImageAcquiredSemaphore.push_back(pSemaphore);
         }
 
         return true;
+    }
+
+
+    VulkanSwapStatusType VulkanSwapChain::Present(VulkanQueue* pQueueGraphics, 
+                                                  VulkanQueue* pQueuePresent, 
+                                                  VkSemaphore* pComplete)
+    {
+        if (m_nSwapChainImageIndex == -1) 
+        {
+		    return Vulkan_SwapStatus_Normal;
+        }
+        m_nPresentID += 1;
+
+        VkPresentInfoKHR createInfo;
+        E_ZeroStruct(createInfo, VK_STRUCTURE_TYPE_PRESENT_INFO_KHR);
+        createInfo.waitSemaphoreCount = pComplete == nullptr ? 0 : 1;
+        createInfo.pWaitSemaphores = pComplete;
+        createInfo.swapchainCount = 1;
+        createInfo.pSwapchains = &m_vkSwapChainKHR;
+        createInfo.pImageIndices = (uint32*)&m_nSwapChainImageIndex;
+        
+        VkResult presentResult = vkQueuePresentKHR(pQueuePresent->GetVkQueue(), &createInfo);
+        if (presentResult == VK_ERROR_OUT_OF_DATE_KHR) 
+        {
+            return Vulkan_SwapStatus_OutOfDate;
+        }
+        else if (presentResult == VK_ERROR_SURFACE_LOST_KHR) 
+        {
+            return Vulkan_SwapStatus_Lost;
+        }
+        else if (presentResult != VK_SUCCESS && presentResult != VK_SUBOPTIMAL_KHR) 
+        {
+            F_LogError("*********************** VulkanSwapChain::Present: vkQueuePresentKHR: %s", E_VkResult2String(presentResult).c_str());
+            
+            throw std::runtime_error("*********************** VulkanSwapChain::Present: Failed to present swap chain image !");
+            return Vulkan_SwapStatus_Error;
+        }
+
+        m_nNumPresentCalls += 1;
+        return Vulkan_SwapStatus_Normal;
+    }
+
+	int32 VulkanSwapChain::AcquireImageIndex(VkSemaphore* pOutSemaphore)
+    {
+        uint32 imageIndex = 0;
+        const int32 prev = m_nSemaphoreIndex;
+        m_nSemaphoreIndex = (m_nSemaphoreIndex + 1) % m_aVkImageAcquiredSemaphore.size();
+        VkResult result = vkAcquireNextImageKHR(m_pDevice->GetVkDevice(), m_vkSwapChainKHR, F_C_MAX_UINT64, m_aVkImageAcquiredSemaphore[m_nSemaphoreIndex]->GetVkSemaphore(), VK_NULL_HANDLE, &imageIndex);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR) 
+        {
+            m_nSemaphoreIndex = prev;
+            return (int32)Vulkan_SwapStatus_OutOfDate;
+        }
+        else if (result == VK_ERROR_SURFACE_LOST_KHR) 
+        {
+            m_nSemaphoreIndex = prev;
+            return (int32)Vulkan_SwapStatus_Lost;
+        }
+        else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+        {
+            m_nSemaphoreIndex = prev;
+            F_LogError("*********************** VulkanSwapChain::AcquireImageIndex: vkAcquireNextImageKHR: %s", E_VkResult2String(result).c_str());
+            
+            throw std::runtime_error("*********************** VulkanSwapChain::AcquireImageIndex: Failed to acquire swap chain image index !");
+            return (int32)Vulkan_SwapStatus_Error;
+        }
+        m_nNumAcquireCalls += 1;
+        *pOutSemaphore = m_aVkImageAcquiredSemaphore[m_nSemaphoreIndex]->GetVkSemaphore();
+        m_nSwapChainImageIndex = (int32)imageIndex;
+
+        return m_nSwapChainImageIndex;
     }
 
 }; //LostPeterPluginRendererVulkan

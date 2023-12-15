@@ -19,8 +19,6 @@ namespace LostPeterPluginRendererVulkan
         , m_vkSemaphore(VK_NULL_HANDLE)
     {
         F_Assert(m_pDevice && "VulkanSemaphore::VulkanSemaphore")
-        m_vkSemaphore = m_pDevice->CreateVkSemaphore();
-        F_Assert(m_vkSemaphore != VK_NULL_HANDLE && "VulkanSemaphore::VulkanSemaphore")
     }
 
 	VulkanSemaphore::~VulkanSemaphore()
@@ -32,6 +30,17 @@ namespace LostPeterPluginRendererVulkan
     {
         m_pDevice->DestroyVkSemaphore(m_vkSemaphore);
         m_vkSemaphore = VK_NULL_HANDLE;
+    }
+
+    bool VulkanSemaphore::Init()
+    {
+        m_vkSemaphore = m_pDevice->CreateVkSemaphore();
+        if (m_vkSemaphore == VK_NULL_HANDLE)
+        {
+            F_LogError("*********************** VulkanSemaphore::Init: Failed to create VkSemaphore !");
+            return false;
+        }
+        return true;
     }
 
 }; //LostPeterPluginRendererVulkan

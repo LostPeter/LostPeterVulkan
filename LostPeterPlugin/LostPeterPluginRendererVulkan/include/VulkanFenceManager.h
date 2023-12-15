@@ -16,7 +16,7 @@
 
 namespace LostPeterPluginRendererVulkan
 {
-    class VulkanFenceManager
+    class VulkanFenceManager : public FSingleton<VulkanFenceManager>
     {
     public:
         VulkanFenceManager();
@@ -27,6 +27,10 @@ namespace LostPeterPluginRendererVulkan
         VulkanDevice* m_pDevice;
         VulkanFencePtrVector m_aFences_Free;
         VulkanFencePtrVector m_aFences_Used;
+
+    public:
+        static VulkanFenceManager& GetSingleton();
+		static VulkanFenceManager* GetSingletonPtr();
 
     public:
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }

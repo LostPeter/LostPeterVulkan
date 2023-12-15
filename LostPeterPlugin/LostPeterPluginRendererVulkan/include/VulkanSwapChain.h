@@ -37,7 +37,7 @@ namespace LostPeterPluginRendererVulkan
         VkColorSpaceKHR m_vkSwapChainImageColorSpaceKHR;
         int32 m_nSwapChainImageCount;
 
-        VkSemaphoreVector m_aVkImageAcquiredSemaphore;
+        VulkanSemaphorePtrVector m_aVkImageAcquiredSemaphore;
 
         int32 m_nSwapChainImageIndex;
         int32 m_nSemaphoreIndex;
@@ -78,6 +78,8 @@ namespace LostPeterPluginRendererVulkan
 	    int32 AcquireImageIndex(VkSemaphore* pOutSemaphore);
 
     private:
+        void destroySemaphore();
+
         bool chooseSwapSurfacePixelFormat(FPixelFormatType& eOutPixelFormat);
         bool chooseSwapPresentMode(VkPresentModeKHR& presentMode);
         bool createSwapChain(uint32 width, 
@@ -85,7 +87,7 @@ namespace LostPeterPluginRendererVulkan
                              VkPresentModeKHR presentMode,
                              uint32* pOutDesiredNumSwapChainImages, 
                              VkImageVector& aOutImages);
-        bool createFence();
+        bool createSemaphore();
     };
 
 }; //LostPeterPluginRendererVulkan

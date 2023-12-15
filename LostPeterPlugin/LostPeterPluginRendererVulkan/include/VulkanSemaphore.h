@@ -32,6 +32,7 @@ namespace LostPeterPluginRendererVulkan
 
     public:
         void Destroy();
+        bool Init();
     };
 
 }; //LostPeterPluginRendererVulkan

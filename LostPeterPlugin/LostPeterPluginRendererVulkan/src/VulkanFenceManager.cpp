@@ -12,8 +12,21 @@
 #include "../include/VulkanFenceManager.h"
 #include "../include/VulkanDevice.h"
 
+template<> LostPeterPluginRendererVulkan::VulkanFenceManager* LostPeterFoundation::FSingleton<LostPeterPluginRendererVulkan::VulkanFenceManager>::ms_Singleton = nullptr;
+
 namespace LostPeterPluginRendererVulkan
 {
+    VulkanFenceManager* VulkanFenceManager::GetSingletonPtr()
+	{
+		return ms_Singleton;
+	}
+	VulkanFenceManager& VulkanFenceManager::GetSingleton()
+	{  
+		F_Assert(ms_Singleton && "VulkanFenceManager::GetSingleton")
+		return (*ms_Singleton);     
+	}
+
+
     VulkanFenceManager::VulkanFenceManager()
         : m_pDevice(nullptr)
     {

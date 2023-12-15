@@ -23,7 +23,7 @@
 
 #if F_COMPILER == F_COMPILER_MSVC
 	#include <excpt.h>
-	#include <instrin.h>
+	#include <intrin.h>
 #elif F_COMPILER == F_COMPILER_GNUC || F_COMPILER == F_COMPILER_CLANG
 	#include <signal.h>
 	#include <setjmp.h>
