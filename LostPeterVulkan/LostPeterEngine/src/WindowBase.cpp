@@ -14,7 +14,8 @@
 namespace LostPeterEngine
 {
     WindowBase::WindowBase()
-        : m_strNameTitle("")
+        : m_strNameWindow("")
+        , m_strNameTitle("")
         , m_nWindowWidth(0)
         , m_nWindowHeight(0)
         , m_pWindow(nullptr)
@@ -45,14 +46,15 @@ namespace LostPeterEngine
         m_pWindow = nullptr;
     }
 
-    bool WindowBase::Init(const String& nameTitle, int nWindowWidth, int nWindowHeight)
+    bool WindowBase::Init(const String& nameWindow, int32 nWindowWidth, int32 nWindowHeight)
     {
         //1> createWindowGLFW
-        if (!createWindowGLFW(nameTitle, nWindowWidth, nWindowHeight))
+        if (!createWindowGLFW(nameWindow, nWindowWidth, nWindowHeight))
         {
-            F_LogError("*********************** WindowBase::Init: createWindowGLFW failed, nameTitle: [%s], w-h: [%d]-[%d] !", m_strNameTitle.c_str(), nWindowWidth, nWindowHeight);
+            F_LogError("*********************** WindowBase::Init: createWindowGLFW failed, nameWindow: [%s], w-h: [%d]-[%d] !", m_strNameWindow.c_str(), nWindowWidth, nWindowHeight);
             return false;
         }
+        RefreshWindowSize(m_nWindowWidth, m_nWindowHeight);
         RefreshFramebufferSize();
         RefreshWindowContentScale();
 
@@ -61,16 +63,17 @@ namespace LostPeterEngine
 
         return true;
     }
-    bool WindowBase::createWindowGLFW(const String& nameTitle, int nWindowWidth, int nWindowHeight)
+    bool WindowBase::createWindowGLFW(const String& nameWindow, int32 nWindowWidth, int32 nWindowHeight)
     {
-        m_strNameTitle = nameTitle;
+        m_strNameWindow = nameWindow;
+        m_strNameTitle = nameWindow;
         m_nWindowWidth = nWindowWidth;
         m_nWindowHeight = nWindowHeight;
 
-        m_pWindow = glfwCreateWindow(m_nWindowWidth, m_nWindowHeight, m_strNameTitle.c_str(), NULL, NULL);
+        m_pWindow = glfwCreateWindow(m_nWindowWidth, m_nWindowHeight, m_strNameWindow.c_str(), NULL, NULL);
         if (!m_pWindow) 
         {
-            F_LogError("*********************** WindowBase::createWindowGLFW: glfwCreateWindow failed, nameTitle: [%s], w-h: [%d]-[%d] !", m_strNameTitle.c_str(), nWindowWidth, nWindowHeight);
+            F_LogError("*********************** WindowBase::createWindowGLFW: glfwCreateWindow failed, nameWindow: [%s], w-h: [%d]-[%d] !", m_strNameWindow.c_str(), nWindowWidth, nWindowHeight);
             return false;
         }
         glfwSetWindowUserPointer(m_pWindow, this);
@@ -125,6 +128,22 @@ namespace LostPeterEngine
         pWindow->OnMouseWheel(x, y);
     }
 
+    void WindowBase::SetWindowTitle(const String& nameTitle)
+    {
+        this->m_strNameTitle = nameTitle;
+        glfwSetWindowTitle(this->m_pWindow, nameTitle.c_str());
+    }   
+    void WindowBase::SetIsWindowShow(bool bIsWindowShow)
+    {
+        m_bIsWindowShow = bIsWindowShow;
+    }
+
+    void WindowBase::RefreshWindowSize(int32& nWindowWidth, int32& nWindowHeight)
+    {
+        glfwGetWindowSize(this->m_pWindow, &nWindowWidth, &nWindowHeight);
+        this->m_nWindowWidth = nWindowWidth;
+        this->m_nWindowHeight = nWindowHeight;
+    }
     void WindowBase::RefreshFramebufferSize()
     {
         int width, height;

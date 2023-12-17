@@ -96,9 +96,7 @@ namespace LostPeterEngine
 		virtual RenderWindow* CreateRenderWindow(const String& strName, 
 												 uint32 nWidth, 
 												 uint32 nHeight, 
-												 bool bFullScreen,
-												 const String2StringMap* pParams = nullptr, 
-												 bool bShowWindow = true) = 0;
+												 const String2StringMap* pParams = nullptr) = 0;
 
 		virtual bool IsDeviceLost() = 0;
 

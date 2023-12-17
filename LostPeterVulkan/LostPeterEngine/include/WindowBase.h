@@ -16,7 +16,7 @@
 
 namespace LostPeterEngine
 {
-    class engineExport WindowBase
+    class engineExport WindowBase 
     {
     public:
         WindowBase();
@@ -24,9 +24,10 @@ namespace LostPeterEngine
 
     public:
     protected:
+        String m_strNameWindow;
         String m_strNameTitle;
-        int m_nWindowWidth;
-        int m_nWindowHeight;
+        int32 m_nWindowWidth;
+        int32 m_nWindowHeight;
 
         GLFWwindow* m_pWindow;
         bool m_bIsWindowShow;
@@ -41,9 +42,10 @@ namespace LostPeterEngine
         bool m_bIsMouseButtonDownMiddle;
 
     public:
+        F_FORCEINLINE const String& GetNameWindow() const { return m_strNameWindow; }
         F_FORCEINLINE const String& GetNameTitle() const { return m_strNameTitle; }
-        F_FORCEINLINE int GetWindowWidth() const { return m_nWindowWidth; }
-        F_FORCEINLINE int GetWindowHeight() const { return m_nWindowHeight; }
+        F_FORCEINLINE int32 GetWindowWidth() const { return m_nWindowWidth; }
+        F_FORCEINLINE int32 GetWindowHeight() const { return m_nWindowHeight; }
         F_FORCEINLINE GLFWwindow* GetGLFWwindow() { return m_pWindow; }
         F_FORCEINLINE bool IsWindowShow() const { return m_bIsWindowShow; }
 
@@ -53,19 +55,20 @@ namespace LostPeterEngine
 
     public:
         virtual void Destroy();
-        virtual bool Init(const String& nameTitle, int nWindowWidth, int nWindowHeight);
+        virtual bool Init(const String& nameWindow, int32 nWindowWidth, int32 nWindowHeight);
 
+        virtual void SetWindowTitle(const String& nameTitle);
+        virtual void SetIsWindowShow(bool bIsWindowShow);
+
+        virtual void RefreshWindowSize(int32& nWindowWidth, int32& nWindowHeight);
         virtual void RefreshFramebufferSize();
         virtual void RefreshWindowContentScale();
 
     protected:
         virtual void destroyWindowGLFW();
 
-        virtual bool createWindowGLFW(const String& nameTitle, int nWindowWidth, int nWindowHeight);
+        virtual bool createWindowGLFW(const String& nameWindow, int32 nWindowWidth, int32 nWindowHeight);
         virtual void registerCallbacks();
-
-    public:
-        virtual void SetIsWindowShow(bool bIsWindowShow) { m_bIsWindowShow = bIsWindowShow; }
 
     public:
         //Window

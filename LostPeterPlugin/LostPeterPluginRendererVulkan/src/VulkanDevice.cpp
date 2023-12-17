@@ -111,17 +111,18 @@ namespace LostPeterPluginRendererVulkan
         return isDiscrete;
     }
 
-    bool VulkanDevice::CreateQueuePresent(VkSurfaceKHR surface)
+    bool VulkanDevice::CreateQueuePresent(VkSurfaceKHR vkSurfaceKHR)
     {
         if (m_pQueuePresent != nullptr)
             return true;
 
-        bool compute = isSupportPresent(m_pQueueCompute, surface);
+        bool compute = isSupportPresent(m_pQueueCompute, vkSurfaceKHR);
         if (m_pQueueTransfer->GetFamilyIndex() != m_pQueueGraphics->GetFamilyIndex() && 
             m_pQueueTransfer->GetFamilyIndex() != m_pQueueCompute->GetFamilyIndex()) 
         {
-            isSupportPresent(m_pQueueTransfer, surface);
+            isSupportPresent(m_pQueueTransfer, vkSurfaceKHR);
         }
+
         if (m_pQueueCompute->GetFamilyIndex() != m_pQueueGraphics->GetFamilyIndex() && compute) 
         {
             m_pQueuePresent = m_pQueueCompute;
@@ -418,11 +419,11 @@ namespace LostPeterPluginRendererVulkan
         return info;
     }
 
-    bool VulkanDevice::isSupportPresent(VulkanQueue* pQueue, VkSurfaceKHR surface)
+    bool VulkanDevice::isSupportPresent(VulkanQueue* pQueue, VkSurfaceKHR vkSurfaceKHR)
     {
         const uint32 familyIndex = pQueue->GetFamilyIndex();
         VkBool32 supportsPresent = VK_FALSE;
-        if (!E_CheckVkResult(vkGetPhysicalDeviceSurfaceSupportKHR(m_vkPhysicalDevice, familyIndex, surface, &supportsPresent), "vkGetPhysicalDeviceSurfaceSupportKHR"))
+        if (!E_CheckVkResult(vkGetPhysicalDeviceSurfaceSupportKHR(m_vkPhysicalDevice, familyIndex, vkSurfaceKHR, &supportsPresent), "vkGetPhysicalDeviceSurfaceSupportKHR"))
         {
             F_LogError("*********************** VulkanDevice::isSupportPresent: vkGetPhysicalDeviceSurfaceSupportKHR failed !");
             return false;
@@ -1661,6 +1662,7 @@ namespace LostPeterPluginRendererVulkan
     bool VulkanDevice::CreateVkImageView(VkImage vkImage, 
                                          VkImageViewType type, 
                                          VkFormat format, 
+                                         VkComponentMapping components,
                                          VkImageAspectFlags aspectFlags, 
                                          uint32_t mipMapCount,
                                          uint32_t numArray,
@@ -1671,7 +1673,7 @@ namespace LostPeterPluginRendererVulkan
         viewInfo.image = vkImage;
         viewInfo.viewType = type;
         viewInfo.format = format;
-        viewInfo.components = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
+        viewInfo.components = components;
         viewInfo.subresourceRange.aspectMask = aspectFlags;
         viewInfo.subresourceRange.baseMipLevel = 0;
         viewInfo.subresourceRange.levelCount = mipMapCount;

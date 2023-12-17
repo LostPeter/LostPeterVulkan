@@ -16,7 +16,55 @@
 
 namespace LostPeterPluginRendererVulkan
 {
+    class VulkanRenderWindow : public RenderWindow
+    {
+    public:
+        VulkanRenderWindow(const String& nameRenderWindow, VulkanDevice* pDevice);
+        virtual ~VulkanRenderWindow();
+
+    public:
+    protected:
+        VulkanDevice* m_pDevice;
+
+        FPixelFormatType m_eSwapChainImagePixelFormat;
+        uint32 m_nDesiredNumSwapChainImages;
+        VkImageVector m_aSwapChainVkImages;
+	    VkImageViewVector m_aSwapChainVkImageViews;
+        VulkanSwapChain* m_pSwapChain;
+
+    public:
+        F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
+        F_FORCEINLINE FPixelFormatType GetSwapChainImagePixelFormat() const { return m_eSwapChainImagePixelFormat; }
+        F_FORCEINLINE uint32 GetDesiredNumSwapChainImages() const { return m_nDesiredNumSwapChainImages; }
+        F_FORCEINLINE void SetDesiredNumSwapChainImages(uint32 nDesiredNumSwapChainImages) { m_nDesiredNumSwapChainImages = nDesiredNumSwapChainImages; }
+        F_FORCEINLINE const VkImageVector& GetSwapChainVkImages() const { return m_aSwapChainVkImages; }
+	    F_FORCEINLINE const VkImageViewVector& GetSwapChainVkImageViews() const { return m_aSwapChainVkImageViews; }
+        F_FORCEINLINE VulkanSwapChain* GetSwapChain() const { return m_pSwapChain; }
+
+    public:
+        virtual void Destroy();
+		virtual bool Init(int32 nWidth, 
+                          int32 nHeight, 
+                          const String2StringMap* pParams);
+
+        virtual void Resize(int32 nWidth, int32 nHeight);
+		virtual void Reposition(int32 nLeft, int32 nTop);
+		virtual bool IsClosed() const;
+		virtual void WindowMovedOrResized();
+		virtual bool CanChangeToWindowMode(int32 srcWidth, int32 srcHeight, int32& destWidth, int32& destHeight);
+		
+		virtual void EmptyGPUCommandBuffer();
+
+        virtual bool RequiresTextureFlipping() const;
+
+    public:
+        void DestroySwapChain();
+        bool RecreateSwapChain();
+
+    public:
+    protected:
     
+    };
 
 }; //LostPeterPluginRendererVulkan
 

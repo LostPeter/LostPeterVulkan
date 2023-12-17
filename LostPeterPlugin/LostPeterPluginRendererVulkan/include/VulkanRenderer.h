@@ -43,9 +43,7 @@ namespace LostPeterPluginRendererVulkan
         virtual RenderWindow* CreateRenderWindow(const String& strName, 
                                                  uint32 nWidth, 
                                                  uint32 nHeight, 
-                                                 bool bFullScreen,
-												 const String2StringMap* pParams = nullptr, 
-                                                 bool bShowWindow = true);
+												 const String2StringMap* pParams = nullptr);
 
         virtual bool IsDeviceLost();
 

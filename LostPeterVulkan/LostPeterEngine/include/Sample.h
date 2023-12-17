@@ -84,12 +84,12 @@ namespace LostPeterEngine
 
     protected:
         virtual bool createWindows();
-            virtual Window* createWindow(const String& nameTitle);
+            virtual Window* createWindow(const String& nameWindow);
 
         virtual bool init();
             virtual bool createEngine();
             virtual bool createRenderWindows();
-                virtual RenderWindow* createRenderWindow(const String& nameTitle, int nWidth, int nHeight);
+                virtual RenderWindow* createRenderWindow(const String& nameWindow, int nWidth, int nHeight);
 
         virtual void destroy();
             virtual void destroyRenderWindows();

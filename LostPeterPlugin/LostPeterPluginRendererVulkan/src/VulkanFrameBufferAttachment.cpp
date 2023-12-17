@@ -11,6 +11,7 @@
 
 #include "../include/VulkanFrameBufferAttachment.h"
 #include "../include/VulkanDevice.h"
+#include "../include/VulkanConverter.h"
 
 namespace LostPeterPluginRendererVulkan
 {
@@ -60,6 +61,11 @@ namespace LostPeterPluginRendererVulkan
         uint32_t mipMapCount = 1;
         VkImageType imageType = VK_IMAGE_TYPE_2D;
         VkFormat format = formatSwapChain;
+        VkComponentMapping componentMapping;
+        componentMapping.r = VK_COMPONENT_SWIZZLE_R;
+		componentMapping.g = VK_COMPONENT_SWIZZLE_G;
+		componentMapping.b = VK_COMPONENT_SWIZZLE_B;
+		componentMapping.a = VK_COMPONENT_SWIZZLE_A;
         VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
         VkImageUsageFlags usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
         VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -71,6 +77,9 @@ namespace LostPeterPluginRendererVulkan
         if (bIsDepth)
         {
             format = formatDepth;
+            componentMapping.g = VK_COMPONENT_SWIZZLE_ZERO;
+            componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
+            componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
             usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
             aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
         }
@@ -105,6 +114,7 @@ namespace LostPeterPluginRendererVulkan
         if (!m_pDevice->CreateVkImageView(this->m_vkImage, 
                                           imageViewType,
                                           format, 
+                                          componentMapping,
                                           aspectFlags, 
                                           mipMapCount,
                                           numArray,

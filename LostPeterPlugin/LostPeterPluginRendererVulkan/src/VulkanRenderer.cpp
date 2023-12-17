@@ -12,6 +12,7 @@
 #include "../include/VulkanRenderer.h"
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanDevice.h"
+#include "../include/VulkanRenderWindow.h"
 #include "../include/VulkanPlugin.h"
 #include "../include/VulkanConverter.h"
 
@@ -68,11 +69,19 @@ namespace LostPeterPluginRendererVulkan
     RenderWindow* VulkanRenderer::CreateRenderWindow(const String& strName, 
                                                      uint32 nWidth, 
                                                      uint32 nHeight, 
-                                                     bool bFullScreen,
-												     const String2StringMap* pParams /*= nullptr*/, 
-                                                     bool bShowWindow /*= true*/)
+												     const String2StringMap* pParams /*= nullptr*/)
     {
-        return nullptr;
+        VulkanRenderWindow* pRenderWindow = new VulkanRenderWindow(strName, m_pVulkanInstance->GetDevice());
+        if (!pRenderWindow->Init(nWidth,
+                                 nHeight,
+                                 pParams))
+        {
+            F_LogError("*********************** VulkanRenderer::CreateRenderWindow: Failed to init render window, name: [%s] !", strName.c_str());
+            F_DELETE(pRenderWindow)
+            return nullptr;
+        }
+
+        return pRenderWindow;
     }
 
     bool VulkanRenderer::IsDeviceLost()

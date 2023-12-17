@@ -92,17 +92,17 @@ namespace LostPeterEngine
 
             return true;
         }
-            Window* Sample::createWindow(const String& nameTitle)
+            Window* Sample::createWindow(const String& nameWindow)
             {
                 Window* pWindow = new Window();
-                if (!pWindow->Init(nameTitle, m_nWidth, m_nHeight))
+                if (!pWindow->Init(nameWindow, m_nWidth, m_nHeight))
                 {
                     F_LogError("*********************** Sample::createWindow: pWindow->Init failed !");
                     F_DELETE(pWindow)
                     return nullptr;
                 }
                 m_aWindows.push_back(pWindow);
-                m_mapWindows[nameTitle] = pWindow;
+                m_mapWindows[nameWindow] = pWindow;
                 return pWindow;
             }
             
@@ -169,17 +169,17 @@ namespace LostPeterEngine
 
                 return true;
             }
-                RenderWindow* Sample::createRenderWindow(const String& nameTitle, int nWidth, int nHeight)
+                RenderWindow* Sample::createRenderWindow(const String& nameWindow, int nWidth, int nHeight)
                 {
-                    RenderWindow* pRenderWindow = RenderEngine::GetSingleton().CreateRenderWindow(nameTitle, nWidth, nHeight, false);
+                    RenderWindow* pRenderWindow = RenderEngine::GetSingleton().CreateRenderWindow(nameWindow, nWidth, nHeight);
                     if (pRenderWindow == nullptr)
                     {
-                        F_LogError("*********************** Sample::createRenderWindow: Create render window failed, name: [%s], w-h: [%d]-[%d] ", nameTitle.c_str(), nWidth, nHeight);
+                        F_LogError("*********************** Sample::createRenderWindow: Create render window failed, name: [%s], w-h: [%d]-[%d] ", nameWindow.c_str(), nWidth, nHeight);
                         return nullptr;
                     }
 
                     m_aWindows.push_back(pRenderWindow);
-                    m_mapWindows[nameTitle] = pRenderWindow;
+                    m_mapWindows[nameWindow] = pRenderWindow;
                     return pRenderWindow;
                 }
 

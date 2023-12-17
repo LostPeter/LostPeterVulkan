@@ -42,8 +42,8 @@ namespace LostPeterEngine
 
 	public:
 		virtual bool IsFullScreen() const { return m_bIsFullScreen; }
-		virtual void SetFullScreen(bool bFullScreen, uint32 nWidth, uint32 nHeight) { }
-		virtual void SetFullScreen(bool bFullscreen, uint32 nWidth, uint32 nHeight, uint32 nWinWidth, uint32 nWinHeight) { }
+		virtual void SetFullScreen(bool bFullScreen, int32 nWidth, int32 nHeight) { }
+		virtual void SetFullScreen(bool bFullscreen, int32 nWidth, int32 nHeight, int32 nWinWidth, int32 nWinHeight) { }
 
 		virtual bool IsFakeFullScreen() const { return m_bFakeFullScreen; }
 		virtual void SetFakeFullScreen(bool bVal) { m_bFakeFullScreen = bVal; }
@@ -58,7 +58,7 @@ namespace LostPeterEngine
 		virtual void SetFocused(bool bFocused) { m_bFocused = bFocused; }
 
 
-		virtual void GetMetrics(uint32& nWidth,uint32& nHeight,uint32& nColorDepth,int32& nLeft,int32& nTop);
+		virtual void GetMetrics(int32& nWidth, int32& nHeight, uint32& nColorDepth, int32& nLeft, int32& nTop);
 		inline int32 GetWindowLeft() const { return m_nLeft; }
 		inline int32 GetWindowTop() const { return m_nTop; }
 		inline int32 GetClientWidth() const	{ return m_nClientWidth; }
@@ -73,14 +73,15 @@ namespace LostPeterEngine
 		
 	public:
         virtual void Destroy();
-		virtual bool Create(const String& strName, uint32 nWidth, uint32 nHeight, bool bFullScreen, const String2StringMap* pParams, bool bShowWindow = true) = 0;
+		virtual bool Init(int32 nWidth, 
+						  int32 nHeight, 
+						  const String2StringMap* pParams) = 0;
     
-		virtual void Resize(uint32 nWidth,uint32 nHeight) = 0;
-		virtual void Reposition(int32 nLeft,int32 nTop) = 0;
+		virtual void Resize(int32 nWidth, int32 nHeight) = 0;
+		virtual void Reposition(int32 nLeft, int32 nTop) = 0;
 		virtual bool IsClosed() const = 0;
 		virtual void WindowMovedOrResized() = 0;
-		virtual void SetWindowTitle(const String& strName) = 0;
-		virtual bool CanChangeToWindowMode(int32 srcWidth, int32 srcHeight, int32 &destWidth, int32 &destHeight) = 0;
+		virtual bool CanChangeToWindowMode(int32 srcWidth, int32 srcHeight, int32& destWidth, int32& destHeight) = 0;
 		
 		virtual void EmptyGPUCommandBuffer() = 0;
 		

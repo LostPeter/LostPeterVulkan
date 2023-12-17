@@ -277,21 +277,30 @@ namespace LostPeterEngine
 		m_aRenderEngineListener.clear();
 	}
 
-	RenderWindow* RenderEngine::CreateRenderWindow(const String& strName, uint32 nWidth, uint32 nHeight, bool bFullScreen, const String2StringMap* pParams /*= 0*/)
+	RenderWindow* RenderEngine::CreateRenderWindow(const String& strName, 
+												   int32 nWidth, 
+												   int32 nHeight, 
+												   const String2StringMap* pParams /*= 0*/)
 	{
 		if (!m_pRendererCurrent)
 		{
 			F_LogError("*********************** RenderEngine::CreateRenderWindow: No renderer !");
 			return nullptr;
 		}
-		RenderWindow* pRet = m_pRendererCurrent->CreateRenderWindow(strName, nWidth, nHeight, bFullScreen, pParams);
-		if (pRet && !m_bFirstInitAfterWndCreated)
+		RenderWindow* pRenderWindow = m_pRendererCurrent->CreateRenderWindow(strName, 
+																			 nWidth, 
+																			 nHeight, 
+																			 pParams);
+		if (!pRenderWindow)
 		{
-			//firstInitAfterWndCreated();
-			//pRet->SetPrimary();
+			F_LogError("*********************** RenderEngine::CreateRenderWindow: Create render window failed !");
+			return nullptr;
 		}
+		
+		//firstInitAfterWndCreated();
+		//pRet->SetPrimary();
 
-		return pRet;
+		return pRenderWindow;
 	}
 
 	void RenderEngine::DestroyRenderWindow(RenderWindow* pRenderWindow)

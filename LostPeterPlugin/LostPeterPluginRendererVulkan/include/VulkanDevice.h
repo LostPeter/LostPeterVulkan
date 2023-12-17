@@ -77,7 +77,7 @@ namespace LostPeterPluginRendererVulkan
 
     public:
         bool QueryGPU(int32 deviceIndex);
-        bool CreateQueuePresent(VkSurfaceKHR surface);
+        bool CreateQueuePresent(VkSurfaceKHR vkSurfaceKHR);
 
         bool IsPixelFormatSupported(VkFormat format);
         bool IsPixelFormatSupported(FPixelFormatType format);
@@ -98,7 +98,7 @@ namespace LostPeterPluginRendererVulkan
                                           ConstCharPtrVector& outDeviceLayers, 
                                           ConstCharPtrVector& outDeviceExtensions);
 
-        bool isSupportPresent(VulkanQueue* pQueue, VkSurfaceKHR surface);
+        bool isSupportPresent(VulkanQueue* pQueue, VkSurfaceKHR vkSurfaceKHR);
 
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
@@ -316,6 +316,7 @@ namespace LostPeterPluginRendererVulkan
         bool CreateVkImageView(VkImage vkImage, 
                                VkImageViewType type, 
                                VkFormat format, 
+                               VkComponentMapping components,
                                VkImageAspectFlags aspectFlags, 
                                uint32_t mipMapCount,
                                uint32_t numArray,

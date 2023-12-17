@@ -20,6 +20,7 @@
 
 #include "App.h"
 #include "Sample.h"
+#include "WindowBase.h"
 #include "WindowListener.h"
 #include "Window.h"
 

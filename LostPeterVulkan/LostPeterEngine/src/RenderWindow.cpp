@@ -37,12 +37,12 @@ namespace LostPeterEngine
 
 	void RenderWindow::Destroy()
 	{
-		WindowBase::Destroy();
+        RemoveRenderWindowListenerAll();
 
-		RemoveRenderWindowListenerAll();
+		WindowBase::Destroy();
 	}
 
-    void RenderWindow::GetMetrics(uint32& nWidth, uint32& nHeight, uint32& nColorDepth, int32& nLeft, int32& nTop)
+    void RenderWindow::GetMetrics(int32& nWidth, int32& nHeight, uint32& nColorDepth, int32& nLeft, int32& nTop)
 	{
 		nWidth = m_nWidth;
 		nHeight = m_nHeight;

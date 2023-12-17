@@ -83,7 +83,10 @@ namespace LostPeterEngine
         void Destroy();
         virtual bool Init(bool bAutoCreateWindow);
 
-		RenderWindow* CreateRenderWindow(const String& strName, uint32 nWidth, uint32 nHeight, bool bFullScreen, const String2StringMap* pParams = nullptr);
+		RenderWindow* CreateRenderWindow(const String& strName, 
+										 int32 nWidth, 
+										 int32 nHeight, 
+										 const String2StringMap* pParams = nullptr);
 		void DestroyRenderWindow(RenderWindow* pRenderWindow);
 		void DestroyRenderWindow(const String& strName);
 
