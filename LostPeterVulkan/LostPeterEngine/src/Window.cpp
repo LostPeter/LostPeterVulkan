@@ -9,16 +9,12 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/PreInclude.h"
+#include "../include/Window.h"
+#include "../include/WindowListener.h"
 
 namespace LostPeterEngine
 {
     Window::Window()
-        : m_strNameTitle("")
-        , m_nWidth(0)
-        , m_nHeight(0)
-        , m_pWindow(nullptr)
-        , m_bIsWindowShow(true)
     {
 
     }   
@@ -30,111 +26,174 @@ namespace LostPeterEngine
 
     void Window::Destroy()
     {
-        if (m_pWindow != nullptr)
-        {
-            glfwDestroyWindow(m_pWindow);
-        }
-        m_pWindow = nullptr;
+        WindowBase::Destroy();
+
+        RemoveWindowListenerAll();
     }
 
-    bool Window::Init(const String& nameTitle, int nWidth, int nHeight)
+    void Window::AddWindowListener(WindowListener* pWindowListener)
     {
-        m_strNameTitle = nameTitle;
-        m_nWidth = nWidth;
-        m_nHeight = nHeight;
-
-        m_pWindow = glfwCreateWindow(m_nWidth, m_nHeight, m_strNameTitle.c_str(), NULL, NULL);
-        if (!m_pWindow) {
-            F_LogError("*********************** Window::Init: glfwCreateWindow failed, [%s]", m_strNameTitle.c_str());
-            return false;
-        }
-
-        glfwSetWindowUserPointer(m_pWindow, this);
-        glfwSetKeyCallback(m_pWindow, callback_key);
-        glfwSetFramebufferSizeCallback(m_pWindow, callback_framebuffer_size);
-        glfwSetMouseButtonCallback(m_pWindow, callback_mouse_button);
-        glfwSetCursorPosCallback(m_pWindow, callback_cursor_position);
-        glfwSetScrollCallback(m_pWindow, callback_scroll);
-
-        return true;
+        WindowListenerPtrMap::iterator itFind = m_mapWindowListener.find(pWindowListener->GetName());
+        if (itFind != m_mapWindowListener.end())
+            return;
+        m_mapWindowListener[pWindowListener->GetName()] = pWindowListener;
+    }
+    void Window::RemoveWindowListener(WindowListener* pWindowListener)
+    {
+        WindowListenerPtrMap::iterator itFind = m_mapWindowListener.find(pWindowListener->GetName());
+        if (itFind == m_mapWindowListener.end())
+            return;
+        m_mapWindowListener.erase(itFind);
+    }
+    void Window::RemoveWindowListenerAll()
+    {
+        m_mapWindowListener.clear();
     }
 
     void Window::OnResize(int w, int h, bool force)
     {
-        
+        if (m_mapWindowListener.size() <= 0)
+            return;
+
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
+        {
+            it->second->OnResize(w, h, force);
+        }
     }   
 
-    void Window::OnMouseInput()
-    {
-
-    }
     void Window::OnMouseLeftDown(double x, double y)
     {
+        if (m_mapWindowListener.size() <= 0)
+            return;
 
-    }
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
+        {
+            it->second->OnMouseLeftDown(x, y);
+        }
+    }   
     void Window::OnMouseLeftUp(double x, double y)
     {
-
+        if (m_mapWindowListener.size() <= 0)
+            return;
+        
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
+        {
+            it->second->OnMouseLeftUp(x, y);
+        }
     }
     void Window::OnMouseRightDown(double x, double y)
     {
+        if (m_mapWindowListener.size() <= 0)
+            return;
 
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
+        {
+            it->second->OnMouseRightDown(x, y);
+        }
     }
     void Window::OnMouseRightUp(double x, double y)
     {
+        if (m_mapWindowListener.size() <= 0)
+            return;
 
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
+        {
+            it->second->OnMouseRightUp(x, y);
+        }
+    }
+    void Window::OnMouseMiddleDown(double x, double y)
+    {
+        if (m_mapWindowListener.size() <= 0)
+            return;
+
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
+        {
+            it->second->OnMouseMiddleDown(x, y);
+        }
+    }
+    void Window::OnMouseMiddleUp(double x, double y)
+    {
+        if (m_mapWindowListener.size() <= 0)
+            return;
+
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
+        {
+            it->second->OnMouseMiddleUp(x, y);
+        }
     }
     void Window::OnMouseMove(int button, double x, double y)
     {
+        if (m_mapWindowListener.size() <= 0)
+            return;
 
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
+        {
+            it->second->OnMouseMove(button, x, y);
+        }
+    }
+    void Window::OnMouseHover(double x, double y)
+    {
+        if (m_mapWindowListener.size() <= 0)
+            return;
+
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
+        {
+            it->second->OnMouseHover(x, y);
+        }
     }
     void Window::OnMouseWheel(double x, double y)
     {
+        if (m_mapWindowListener.size() <= 0)
+            return;
 
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
+        {
+            it->second->OnMouseWheel(x, y);
+        }
     }
 
     void Window::OnKeyboardInput()
     {
+        if (m_mapWindowListener.size() <= 0)
+            return;
 
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
+        {
+            it->second->OnKeyboardInput();
+        }
     }
     void Window::OnKeyDown(int key)
     {
+        if (m_mapWindowListener.size() <= 0)
+            return;
 
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
+        {
+            it->second->OnKeyDown(key);
+        }
     }
     void Window::OnKeyUp(int key)
     {
+        if (m_mapWindowListener.size() <= 0)
+            return;
 
-    }
-
-    void Window::callback_key(GLFWwindow* window, int key, int scancode, int action, int mods)
-    {
-        Window* pWindow = (Window*)glfwGetWindowUserPointer(window);
-        if (action == GLFW_PRESS)
+        for (WindowListenerPtrMap::iterator it = m_mapWindowListener.begin();
+             it != m_mapWindowListener.end(); ++it)
         {
-            pWindow->OnKeyDown(key);
+            it->second->OnKeyUp(key);
         }
-        else if (action == GLFW_RELEASE)
-        {
-            pWindow->OnKeyUp(key);
-        }
-    }
-    void Window::callback_framebuffer_size(GLFWwindow* window, int width, int height)
-    {
-        Window* pWindow = (Window*)glfwGetWindowUserPointer(window);
-        pWindow->OnResize(width, height, true);
-    }
-    void Window::callback_mouse_button(GLFWwindow* window, int button, int action, int mods)
-    {
-
-    }
-    void Window::callback_cursor_position(GLFWwindow* window, double x, double y)
-    {
-
-    }
-    void Window::callback_scroll(GLFWwindow* window, double x, double y)
-    {
-        Window* pWindow = (Window*)glfwGetWindowUserPointer(window);
-        pWindow->OnMouseWheel(x, y);
     }
 
 }; //LostPeterEngine

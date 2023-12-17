@@ -13,6 +13,8 @@
 #include "../include/Sample.h"
 #include "../include/Window.h"
 #include "../include/Engine.h"
+#include "../include/RenderEngine.h"
+#include "../include/RenderWindow.h"
 
 namespace LostPeterEngine
 {
@@ -29,12 +31,13 @@ namespace LostPeterEngine
         , m_nFrameFPS(0)
         , m_nFrameTotal(0)
 
-        , m_bIsWindowGameUsed(true)
-        , m_bIsWindowSceneUsed(false)
+        , m_cfg_bIsWindowSceneUsed(true)
+        , m_cfg_bIsWindowGameUsed(false)
+        
 
         , m_pWindow_Main(nullptr)
-        , m_pWindow_Game(nullptr)
-        , m_pWindow_Scene(nullptr)
+        , m_pRenderWindow_Scene(nullptr)
+        , m_pRenderWindow_Game(nullptr)
     {
         m_strPathBin = FUtil::GetPathBin() + "/";
         F_LogInfo("Path Bin: [%s] !", m_strPathBin.c_str());
@@ -86,30 +89,6 @@ namespace LostPeterEngine
                 }
                 F_LogInfo("Sample::createWindows: Create window main success !");
             }
-            //1> Window Game
-            if (m_bIsWindowGameUsed)
-            {
-                String nameGame = m_strNameSample + " - " + E_GetWindowTypeName(E_Window_Game);
-                m_pWindow_Game = createWindow(nameGame);
-                if (m_pWindow_Game == nullptr)
-                {
-                    F_LogError("*********************** Sample::createWindows: Create window game failed !");
-                    return false;
-                }
-                F_LogInfo("Sample::createWindows: Create window game success !");
-            }
-            //2> Window Scene
-            if (m_bIsWindowSceneUsed)
-            {
-                String nameScene = m_strNameSample + " - " + E_GetWindowTypeName(E_Window_Scene);
-                m_pWindow_Scene = createWindow(nameScene);
-                if (m_pWindow_Scene == nullptr)
-                {
-                    F_LogError("*********************** Sample::createWindows: Create window scene failed !");
-                    return false;
-                }
-                F_LogInfo("Sample::createWindows: Create window scene success !");
-            }
 
             return true;
         }
@@ -133,20 +112,26 @@ namespace LostPeterEngine
     }
         bool Sample::init()
         {
-            //1> initEngine
-            if (!initEngine())
+            //1> createEngine
+            if (!createEngine())
+            {
+                return false;
+            }
+
+            //2> createRenderWindows
+            if (!createRenderWindows())
             {
                 return false;
             }
 
             return true;
         }
-            bool Sample::initEngine()
+            bool Sample::createEngine()
             {
                 m_pEngine = new Engine();
                 if (!m_pEngine->Init(m_strPathBin, false))
                 {
-                    F_LogError("*********************** Sample::initEngine: init engine failed, path bin: [%s] !", m_strPathBin.c_str());
+                    F_LogError("*********************** Sample::createEngine: init engine failed, path bin: [%s] !", m_strPathBin.c_str());
                     return false;
                 }
                 m_pTimer = m_pEngine->GetTimer();
@@ -154,6 +139,69 @@ namespace LostPeterEngine
 
                 return true;
             }
+            bool Sample::createRenderWindows()
+            {
+                //Scene
+                if (m_cfg_bIsWindowSceneUsed)
+                {
+                    String nameScene = m_strNameSample + " - " + E_GetWindowTypeName(E_Window_Scene);
+                    m_pRenderWindow_Scene = createRenderWindow(nameScene, 1080, 720);
+                    if (m_pRenderWindow_Scene == nullptr)
+                    {
+                        F_LogError("*********************** Sample::createRenderWindows: Create render window scene failed !");
+                        return false;
+                    }
+                    F_LogInfo("Sample::createRenderWindows: Create render window scene success !");
+                }
+
+                //Game
+                if (m_cfg_bIsWindowGameUsed)
+                {
+                    String nameGame = m_strNameSample + " - " + E_GetWindowTypeName(E_Window_Game);
+                    m_pRenderWindow_Game = createRenderWindow(nameGame, 1080, 720);
+                    if (m_pRenderWindow_Game == nullptr)
+                    {
+                        F_LogError("*********************** Sample::createRenderWindows: Create render window game failed !");
+                        return false;
+                    }
+                    F_LogInfo("Sample::createRenderWindows: Create render window game success !");
+                }
+
+                return true;
+            }
+                RenderWindow* Sample::createRenderWindow(const String& nameTitle, int nWidth, int nHeight)
+                {
+                    RenderWindow* pRenderWindow = RenderEngine::GetSingleton().CreateRenderWindow(nameTitle, nWidth, nHeight, false);
+                    if (pRenderWindow == nullptr)
+                    {
+                        F_LogError("*********************** Sample::createRenderWindow: Create render window failed, name: [%s], w-h: [%d]-[%d] ", nameTitle.c_str(), nWidth, nHeight);
+                        return nullptr;
+                    }
+
+                    m_aWindows.push_back(pRenderWindow);
+                    m_mapWindows[nameTitle] = pRenderWindow;
+                    return pRenderWindow;
+                }
+
+    bool Sample::OnRunning()
+    {
+        if (OnIsWindowMainClosed())
+            return false;
+        
+        UpdateTimer();
+        int count = (int)m_aWindows.size();
+        for (int i = 0; i < count; i++)
+        {
+            WindowBase* pWindowBase = m_aWindows[i];
+            if (pWindowBase && pWindowBase->IsWindowShow())
+            {
+                pWindowBase->OnMouseInput();
+                pWindowBase->OnKeyboardInput();
+            }
+        }
+
+        return true;
+    }
 
     void Sample::OnDestroy()
     {
@@ -161,24 +209,37 @@ namespace LostPeterEngine
     }
         void Sample::destroy()
         {
-            destroyWindows();
+            destroyRenderWindows();
             destroyEngine();
+
+            destroyWindows();
         }
-            void Sample::destroyWindows()
+            void Sample::destroyRenderWindows()
             {
-                size_t count = m_aWindows.size();
-                for (size_t i = 0; i < count; i++)
-                {
-                    Window* pWindow = m_aWindows[i];
-                    F_DELETE(pWindow)
-                }
-                m_aWindows.clear();
-                m_mapWindows.clear();
+                destroyRenderWindow(m_pRenderWindow_Scene);
+                m_pRenderWindow_Scene = nullptr;
+                destroyRenderWindow(m_pRenderWindow_Game);
+                m_pRenderWindow_Game = nullptr;
             }
+                void Sample::destroyRenderWindow(RenderWindow* pRenderWindow)
+                {
+                    if (pRenderWindow != nullptr)
+                    {
+                        RenderEngine::GetSingleton().DestroyRenderWindow(pRenderWindow);
+                    }   
+                }
             void Sample::destroyEngine()
             {
                 F_DELETE(m_pEngine)
             }
+
+            void Sample::destroyWindows()
+            {
+                F_DELETE(m_pWindow_Main)
+                m_aWindows.clear();
+                m_mapWindows.clear();
+            }
+            
 
     void Sample::OnLoad()
     {
@@ -196,18 +257,13 @@ namespace LostPeterEngine
         return false;
     }
 
-    bool Sample::OnIsWindowsClosed()
+    bool Sample::OnIsWindowMainClosed()
     {
-        size_t count = m_aWindows.size();
-        for (size_t i = 0; i < count; i++)
+        if (glfwWindowShouldClose(m_pWindow_Main->GetGLFWwindow()))
         {
-            Window* pWindow = m_aWindows[i];
-            if (!glfwWindowShouldClose(pWindow->GetGLFWwindow()))
-            {
-                return false;
-            }
+            return true;
         }
-        return true;
-    }   
+        return false;
+    }
 
 }; //LostPeterEngine

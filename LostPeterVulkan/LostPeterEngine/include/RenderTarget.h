@@ -74,6 +74,7 @@ namespace LostPeterEngine
     public:
 		virtual int GetViewportCount() const;
 		virtual Viewport* GetViewport(int nIndex);
+		virtual Viewport* GetViewportByZOrder(int nZOrder);
 		virtual Viewport* AddViewport(const String& nameViewport,
                                       ObjectCamera* pObjectCamera,
                                       int nZOrder = 0, 
@@ -84,14 +85,15 @@ namespace LostPeterEngine
 		virtual void RemoveViewport(int nZOrder);
 		virtual void RemoveAllViewport();
 
-        virtual void Update();
+        virtual void Update(bool bSwapBuffers = true);
+		virtual void SwapBuffers(bool bSwapBuffers = true);
 			
 		virtual void NotifyObjectCameraRemoved(const ObjectCamera* pCamera);
 
 		virtual bool RequiresTextureFlipping() const = 0;
 
+		virtual bool DestroyDepthStencil() { return false; }
 		virtual bool CreateDepthStencil() { return false; }
-		virtual bool ReleaseDepthStencil() { return false; }
 		virtual bool SetDepthStencil(void* pData) { return false; }
 		virtual void ShareDepthStencil(RenderTarget* pRT) { m_pShareDepthStencilRT = pRT; }
 

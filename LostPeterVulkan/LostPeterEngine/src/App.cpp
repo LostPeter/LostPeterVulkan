@@ -62,23 +62,14 @@ namespace LostPeterEngine
         bool isInit = s_pSample->OnIsInit();
 
         //8> Main loop
-        while (!s_pSample->OnIsWindowsClosed()) 
+        while (true)
         {
-            //0) timer
-            s_pSample->UpdateTimer();
-            
-            //1) input
-            //pBase->OnMouseInput();
-            //pBase->OnKeyboardInput();
+            if (!s_pSample->OnRunning())
+                break;
 
-            //2) poll IO events (keys pressed/released, mouse moved etc)
             glfwPollEvents();
-
-            //3) 
-
-
         }
-
+        
         //9> OnDestroy
         s_pSample->OnDestroy();
         F_LogInfo("********** 9> App::Run: Sample::OnDestroy success *******************");

@@ -154,6 +154,14 @@ namespace LostPeterPluginRendererVulkan
                                     VkDescriptorPool& vkDescriptorPool);
         void DestroyVkDescriptorPool(const VkDescriptorPool& vkDescriptorPool);
 
+        //////////////////// VkSwapchainKHR /////////////////
+        bool CreateVkSwapchainKHR(VkSwapchainCreateInfoKHR& vkSwapChainCreateInfoKHR,
+                                  VkSwapchainKHR& vkSwapChainKHR);
+        bool GetVkSwapchainImagesKHR(const VkSwapchainKHR& vkSwapChainKHR,
+                                     uint32& numSwapChainImages,
+                                     VkImageVector* pVkImages);
+        void DestroyVkSwapchainKHR(const VkSwapchainKHR& vkSwapChainKHR);
+
         //////////////////// VkViewport /////////////////////
         void CreateVkViewport(float width,
                               float height,

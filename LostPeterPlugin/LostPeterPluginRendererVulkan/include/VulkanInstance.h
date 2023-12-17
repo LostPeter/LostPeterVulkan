@@ -77,6 +77,18 @@ namespace LostPeterPluginRendererVulkan
 
         VkDebugReportCallbackCreateInfoEXT createReportCallbackInfo();
         void destroyReportCallbackInfo();
+
+    /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
+    public:
+        //////////////////// VkInstance /////////////////////
+        void DestroyVkInstance(const VkInstance& vkInstance);
+
+        //////////////////// VkSurfaceKHR ///////////////////
+        bool CreateVkSurfaceKHR(GLFWwindow* pWindow,
+                                VkSurfaceKHR& vkSurfaceKHR);
+        void DestroyVkSurfaceKHR(const VkSurfaceKHR& vkSurfaceKHR);
+
+    /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
     };
 
 }; //LostPeterPluginRendererVulkan

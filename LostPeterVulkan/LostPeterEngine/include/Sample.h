@@ -38,16 +38,17 @@ namespace LostPeterEngine
         float m_fFPS;
         int m_nFrameFPS;
         uint64 m_nFrameTotal;
-
-        bool m_bIsWindowGameUsed;
-        bool m_bIsWindowSceneUsed;
         
     protected:
-        WindowPtrVector m_aWindows;
-        WindowPtrMap m_mapWindows;
+        WindowBasePtrVector m_aWindows;
+        WindowBasePtrMap m_mapWindows;
         Window* m_pWindow_Main;
-        Window* m_pWindow_Game;
-        Window* m_pWindow_Scene;
+        RenderWindow* m_pRenderWindow_Scene;
+        RenderWindow* m_pRenderWindow_Game;
+
+    protected:
+        bool m_cfg_bIsWindowSceneUsed;
+        bool m_cfg_bIsWindowGameUsed;
 
     public:
         F_FORCEINLINE const String& GetNameSample() const { return m_strNameSample; }
@@ -57,8 +58,14 @@ namespace LostPeterEngine
         F_FORCEINLINE String GetAssetFullPath(const String& strAssetName) { return m_strPathBin + strAssetName; }
 
         F_FORCEINLINE Window* GetWindowMain() const { return m_pWindow_Main; }
-        F_FORCEINLINE Window* GetWindowGame() const { return m_pWindow_Game; }
-        F_FORCEINLINE Window* GetWindowScene() const { return m_pWindow_Scene; }
+        F_FORCEINLINE RenderWindow* GetRenderWindowScene() const { return m_pRenderWindow_Scene; }
+        F_FORCEINLINE RenderWindow* GetRenderWindowGame() const { return m_pRenderWindow_Game; }
+
+    public:
+        F_FORCEINLINE bool GetCfg_IsWindowSceneUsed() const { return m_cfg_bIsWindowSceneUsed; }
+        F_FORCEINLINE void SetCfg_IsWindowSceneUsed(bool bIsWindowSceneUsed) { m_cfg_bIsWindowSceneUsed = bIsWindowSceneUsed; }
+        F_FORCEINLINE bool GetCfg_IsWindowGameUsed() const { return m_cfg_bIsWindowGameUsed; }
+        F_FORCEINLINE void SetCfg_IsWindowGameUsed(bool bIsWindowGameUsed) { m_cfg_bIsWindowGameUsed = bIsWindowGameUsed; }
 
     public:
         float RefreshAspectRatio();
@@ -67,23 +74,30 @@ namespace LostPeterEngine
     public:
         virtual bool OnCreateWindow();
         virtual bool OnInit();
+        virtual bool OnRunning();
         virtual void OnDestroy();
 
         virtual void OnLoad();
         virtual void OnResize(int w, int h, bool force);
         virtual bool OnIsInit();
-        virtual bool OnIsWindowsClosed();
-        
+        virtual bool OnIsWindowMainClosed();
+
     protected:
         virtual bool createWindows();
             virtual Window* createWindow(const String& nameTitle);
 
         virtual bool init();
-            virtual bool initEngine();
+            virtual bool createEngine();
+            virtual bool createRenderWindows();
+                virtual RenderWindow* createRenderWindow(const String& nameTitle, int nWidth, int nHeight);
 
         virtual void destroy();
-            virtual void destroyWindows();
+            virtual void destroyRenderWindows();
+                virtual void destroyRenderWindow(RenderWindow* pRenderWindow);
             virtual void destroyEngine();
+                
+            virtual void destroyWindows();
+            
     };
 
 }; //LostPeterEngine

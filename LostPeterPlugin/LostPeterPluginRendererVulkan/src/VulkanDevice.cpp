@@ -692,6 +692,37 @@ namespace LostPeterPluginRendererVulkan
     }
 
 
+    //////////////////// VkSwapchainKHR /////////////////
+    bool VulkanDevice::CreateVkSwapchainKHR(VkSwapchainCreateInfoKHR& vkSwapChainCreateInfoKHR,
+                                            VkSwapchainKHR& vkSwapChainKHR)
+    {
+        if (!E_CheckVkResult(vkCreateSwapchainKHR(this->m_vkDevice, &vkSwapChainCreateInfoKHR, nullptr, &vkSwapChainKHR), "vkCreateSwapchainKHR"))
+        {
+            F_LogError("*********************** VulkanDevice::CreateVkSwapchainKHR: Failed to create VkSwapchainKHR !");
+            return false;
+        }
+        return true;
+    }
+    bool VulkanDevice::GetVkSwapchainImagesKHR(const VkSwapchainKHR& vkSwapChainKHR,
+                                               uint32& numSwapChainImages,
+                                               VkImageVector* pVkImages)
+    {
+        if (!E_CheckVkResult(vkGetSwapchainImagesKHR(this->m_vkDevice, vkSwapChainKHR, &numSwapChainImages, (pVkImages != nullptr ? pVkImages->data() : nullptr)), "vkGetSwapchainImagesKHR"))
+        {
+            F_LogError("*********************** VulkanSwapChain::GetVkSwapchainImagesKHR: vkGetSwapchainImagesKHR failed !");
+            return false;
+        }
+        return true;
+    }
+    void VulkanDevice::DestroyVkSwapchainKHR(const VkSwapchainKHR& vkSwapChainKHR)
+    {
+        if (vkSwapChainKHR != VK_NULL_HANDLE)
+        {
+            vkDestroySwapchainKHR(this->m_vkDevice, vkSwapChainKHR, nullptr);
+        }
+    }
+
+
     //////////////////// VkViewport /////////////////////
     void VulkanDevice::CreateVkViewport(float width,
                                         float height,

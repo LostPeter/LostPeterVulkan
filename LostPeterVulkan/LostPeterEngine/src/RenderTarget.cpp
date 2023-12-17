@@ -78,7 +78,6 @@ namespace LostPeterEngine
 	{		
 		return (int)m_mapViewport.size();
 	}
-
 	Viewport* RenderTarget::GetViewport(int nIndex)
 	{
 		F_Assert(nIndex < m_mapViewport.size() && "RenderTarget::GetViewport: Index out of bounds !");
@@ -87,7 +86,16 @@ namespace LostPeterEngine
 			++itFind;
 		return itFind->second;
 	}
-
+	Viewport* RenderTarget::GetViewportByZOrder(int nZOrder)
+	{
+		ViewportPtrOrderMap::iterator itFind = m_mapViewport.find(nZOrder);
+        if (itFind == m_mapViewport.end())
+        {
+			F_LogError("*********************** RenderTarget::GetViewportByZOrder: No viewport with given Z-Order: [%d] !", nZOrder);
+			return nullptr;
+        }
+        return itFind->second;
+	}
 	Viewport* RenderTarget::AddViewport(const String& nameViewport,
                                         ObjectCamera* pObjectCamera,
                                         int nZOrder /*= 0*/, 
@@ -108,7 +116,6 @@ namespace LostPeterEngine
 		fireViewportAdded(pViewport);
 		return pViewport;
 	}
-
 	void RenderTarget::RemoveViewport(int nZOrder)
 	{
 		ViewportPtrOrderMap::iterator itFind = m_mapViewport.find(nZOrder);
@@ -119,7 +126,6 @@ namespace LostPeterEngine
 			m_mapViewport.erase(itFind);
 		}
 	}
-
 	void RenderTarget::RemoveAllViewport()
 	{
 		for (ViewportPtrOrderMap::iterator it = m_mapViewport.begin();
@@ -131,9 +137,18 @@ namespace LostPeterEngine
 		m_mapViewport.clear();
 	}
 
-	void RenderTarget::Update()
+	void RenderTarget::Update(bool bSwapBuffers /*= true*/)
 	{
 		updateImpl();
+
+		if (bSwapBuffers)
+        {
+            SwapBuffers();
+        }
+	}
+	void RenderTarget::SwapBuffers(bool bSwapBuffers /*= true*/)
+	{
+		
 	}
 
 	void RenderTarget::NotifyObjectCameraRemoved(const ObjectCamera* pObjectCamera)

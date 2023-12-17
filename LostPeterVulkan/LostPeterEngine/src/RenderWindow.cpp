@@ -10,6 +10,7 @@
 ****************************************************************************/
 
 #include "../include/RenderWindow.h"
+#include "../include/RenderWindowListener.h"
 #include "../include/Renderer.h"
 
 namespace LostPeterEngine
@@ -23,8 +24,6 @@ namespace LostPeterEngine
 		, m_bFocused(false)
 		, m_nLeft(0)
 		, m_nTop(0)
-		, m_nWindowWidth(0)
-		, m_nWindowHeight(0)
 		, m_nClientWidth(0)
 		, m_nClientHeight(0)
     {
@@ -35,6 +34,13 @@ namespace LostPeterEngine
     {
 
     }
+
+	void RenderWindow::Destroy()
+	{
+		WindowBase::Destroy();
+
+		RemoveRenderWindowListenerAll();
+	}
 
     void RenderWindow::GetMetrics(uint32& nWidth, uint32& nHeight, uint32& nColorDepth, int32& nLeft, int32& nTop)
 	{
@@ -64,5 +70,170 @@ namespace LostPeterEngine
         
 		SwapBuffers(pRenderer->IsVSync());
 	}
+
+	void RenderWindow::AddRenderWindowListener(RenderWindowListener* pRenderWindowListener)
+    {
+        RenderWindowListenerPtrMap::iterator itFind = m_mapRenderWindowListener.find(pRenderWindowListener->GetName());
+        if (itFind != m_mapRenderWindowListener.end())
+            return;
+        m_mapRenderWindowListener[pRenderWindowListener->GetName()] = pRenderWindowListener;
+    }
+    void RenderWindow::RemoveRenderWindowListener(RenderWindowListener* pRenderWindowListener)
+    {
+        RenderWindowListenerPtrMap::iterator itFind = m_mapRenderWindowListener.find(pRenderWindowListener->GetName());
+        if (itFind == m_mapRenderWindowListener.end())
+            return;
+        m_mapRenderWindowListener.erase(itFind);
+    }
+    void RenderWindow::RemoveRenderWindowListenerAll()
+    {
+        m_mapRenderWindowListener.clear();
+    }
+
+    void RenderWindow::OnResize(int w, int h, bool force)
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnResize(w, h, force);
+        }
+    }   
+
+    void RenderWindow::OnMouseLeftDown(double x, double y)
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnMouseLeftDown(x, y);
+        }
+    }   
+    void RenderWindow::OnMouseLeftUp(double x, double y)
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+        
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnMouseLeftUp(x, y);
+        }
+    }
+    void RenderWindow::OnMouseRightDown(double x, double y)
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnMouseRightDown(x, y);
+        }
+    }
+    void RenderWindow::OnMouseRightUp(double x, double y)
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnMouseRightUp(x, y);
+        }
+    }
+    void RenderWindow::OnMouseMiddleDown(double x, double y)
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnMouseMiddleDown(x, y);
+        }
+    }
+    void RenderWindow::OnMouseMiddleUp(double x, double y)
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnMouseMiddleUp(x, y);
+        }
+    }
+    void RenderWindow::OnMouseMove(int button, double x, double y)
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnMouseMove(button, x, y);
+        }
+    }
+    void RenderWindow::OnMouseHover(double x, double y)
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnMouseHover(x, y);
+        }
+    }
+    void RenderWindow::OnMouseWheel(double x, double y)
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnMouseWheel(x, y);
+        }
+    }
+
+    void RenderWindow::OnKeyboardInput()
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnKeyboardInput();
+        }
+    }
+    void RenderWindow::OnKeyDown(int key)
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnKeyDown(key);
+        }
+    }
+    void RenderWindow::OnKeyUp(int key)
+    {
+        if (m_mapRenderWindowListener.size() <= 0)
+            return;
+
+        for (RenderWindowListenerPtrMap::iterator it = m_mapRenderWindowListener.begin();
+             it != m_mapRenderWindowListener.end(); ++it)
+        {
+            it->second->OnKeyUp(key);
+        }
+    }
 
 }; //LostPeterEngine

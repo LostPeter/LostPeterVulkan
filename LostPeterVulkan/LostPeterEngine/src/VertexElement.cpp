@@ -68,7 +68,7 @@ namespace LostPeterEngine
 		strKey = FUtilString::SaveUInt(nKey);
 	}
 
-	size_t VertexElement::GetSize(void) const
+	size_t VertexElement::GetSize() const
 	{
 		return GetTypeSize(m_eVertexElementData);
 	}
@@ -230,7 +230,7 @@ namespace LostPeterEngine
 		};
 	}
 
-	EVertexElementDataType VertexElement::GetBestColorVertexElementType(void)
+	EVertexElementDataType VertexElement::GetBestColorVertexElementType()
 	{
 		RenderEngine* pRenderEngine = RenderEngine::GetSingletonPtr();
 		if (pRenderEngine && pRenderEngine->GetRendererCurrent())

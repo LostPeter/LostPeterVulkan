@@ -20,6 +20,7 @@
 
 #include "App.h"
 #include "Sample.h"
+#include "WindowListener.h"
 #include "Window.h"
 
 #include "Base.h"
@@ -92,6 +93,7 @@
 #include "RenderTarget.h"
 #include "RenderTexture.h"
 #include "RenderTargetManager.h"
+#include "RenderWindowListener.h"
 #include "RenderWindow.h"
 #include "Scene.h"
 #include "SceneDataManager.h"
@@ -123,6 +125,7 @@
 #include "VertexDeclarationManager.h"
 #include "VertexElement.h"
 #include "Viewport.h"
+
 
 namespace LostPeterEngine
 {	

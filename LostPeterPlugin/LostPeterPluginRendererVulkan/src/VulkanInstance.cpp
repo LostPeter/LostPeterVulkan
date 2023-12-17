@@ -74,10 +74,7 @@ namespace LostPeterPluginRendererVulkan
     {
         destroyReportCallbackInfo();
         F_DELETE(m_pDevice)
-        if (m_vkInstance != VK_NULL_HANDLE)
-        {
-            vkDestroyInstance(m_vkInstance, nullptr);
-        }
+        DestroyVkInstance(m_vkInstance);
         m_vkInstance = VK_NULL_HANDLE;
         
         F_LogInfo("VulkanInstance::Destroy: Destroy success !");
@@ -335,5 +332,38 @@ namespace LostPeterPluginRendererVulkan
         }
         m_vkDebugReport = VK_NULL_HANDLE;
     }
+
+
+    /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
+    //////////////////// VkInstance /////////////////////
+    void VulkanInstance::DestroyVkInstance(const VkInstance& vkInstance)
+    {
+        if (vkInstance != VK_NULL_HANDLE)
+        {
+            vkDestroyInstance(vkInstance, nullptr);
+        }
+    }
+
+    
+    //////////////////// VkSurfaceKHR ///////////////////
+    bool VulkanInstance::CreateVkSurfaceKHR(GLFWwindow* pWindow,
+                                            VkSurfaceKHR& vkSurfaceKHR)
+    {
+        VkResult result = glfwCreateWindowSurface(this->m_vkInstance, pWindow, nullptr, &vkSurfaceKHR);
+        if (result != VK_SUCCESS)
+        {
+            F_LogError("*********************** VulkanInstance::CreateVkSurfaceKHR: Failed to create VkSurfaceKHR !");
+            return false;
+        }
+        return true;
+    }
+    void VulkanInstance::DestroyVkSurfaceKHR(const VkSurfaceKHR& vkSurfaceKHR)
+    {
+        if (vkSurfaceKHR != VK_NULL_HANDLE)
+        {
+            vkDestroySurfaceKHR(this->m_vkInstance, vkSurfaceKHR, nullptr);
+        }
+    }
+
 
 }; //LostPeterPluginRendererVulkan

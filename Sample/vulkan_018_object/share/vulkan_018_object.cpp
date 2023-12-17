@@ -16,6 +16,6 @@
 Vulkan_018_Object::Vulkan_018_Object(const String& nameSample, int width, int height)
     : Sample(nameSample, width, height)
 {
-    m_bIsWindowGameUsed = false;
-    m_bIsWindowSceneUsed = false;
+    m_cfg_bIsWindowSceneUsed = false;
+    m_cfg_bIsWindowGameUsed = false;
 }

@@ -21,6 +21,7 @@ namespace LostPeterPluginRendererVulkan
     int32 VulkanSwapChain::ms_nDefaultBackBufferCount = 3;
     VulkanSwapChain::VulkanSwapChain(VulkanDevice* pDevice)
         : m_pDevice(pDevice)
+        , m_pWindow(nullptr)
         , m_vkSwapChainKHR(VK_NULL_HANDLE)
         , m_vkSurfaceKHR(VK_NULL_HANDLE)
         , m_vkSwapChainImageColorFormat(VK_FORMAT_B8G8R8A8_SRGB)
@@ -45,16 +46,10 @@ namespace LostPeterPluginRendererVulkan
     {
         destroySemaphore();
         
-        if (m_vkSwapChainKHR != VK_NULL_HANDLE)
-        {
-            vkDestroySwapchainKHR(m_pDevice->GetVkDevice(), m_vkSwapChainKHR, nullptr);
-        }
+        m_pDevice->DestroyVkSwapchainKHR(this->m_vkSwapChainKHR);
         m_vkSwapChainKHR = VK_NULL_HANDLE;
 
-        if (m_vkSurfaceKHR != VK_NULL_HANDLE)
-        {
-            vkDestroySurfaceKHR(m_pDevice->GetInstance()->GetVkInstance(), m_vkSurfaceKHR, nullptr);
-        }
+        m_pDevice->GetInstance()->DestroyVkSurfaceKHR(this->m_vkSurfaceKHR);
         m_vkSurfaceKHR = VK_NULL_HANDLE;
 
         m_nSwapChainImageIndex = -1;
@@ -75,32 +70,34 @@ namespace LostPeterPluginRendererVulkan
         m_aVkImageAcquiredSemaphore.clear();
     }
 
-    bool VulkanSwapChain::Init(FPixelFormatType& eOutPixelFormat,
+    bool VulkanSwapChain::Init(GLFWwindow* pWindow,
+                               FPixelFormatType& eOutPixelFormat,
                                uint32 width, 
                                uint32 height, 
                                uint32* pOutDesiredNumSwapChainImages, 
                                VkImageVector& aOutImages, 
                                int32 nLockToVSync)
     {
+        F_Assert(pWindow && "VulkanSwapChain::Init")
+        m_pWindow = pWindow;
         m_nLockToVSync = nLockToVSync;
         m_nPresentID = 0;
 
         //1> CreateSurface
-        //VulkanLauncher::GetPlatform()->CreateSurface(m_pDevice->GetInstance()->GetVkInstance(), &m_vkSurfaceKHR);
-        if (m_vkSurfaceKHR == VK_NULL_HANDLE)
+        if (!m_pDevice->GetInstance()->CreateVkSurfaceKHR(pWindow, m_vkSurfaceKHR))
         {
-            F_LogError("*********************** VulkanSwapChain::Init: 1> VulkanLauncher::GetPlatform()->CreateSurface failed !");
+            F_LogError("*********************** VulkanSwapChain::Init: 1> CreateVkSurfaceKHR failed !");
             return false;
         }
-        F_LogInfo("VulkanSwapChain::Init: 1> VulkanLauncher::GetPlatform()->CreateSurface success !");
+        F_LogInfo("VulkanSwapChain::Init: 1> CreateVkSurfaceKHR success !");
 
         //2> CreateQueuePresent
         if (!m_pDevice->CreateQueuePresent(m_vkSurfaceKHR))
         {
-            F_LogError("*********************** VulkanSwapChain::Init: 2> m_pDevice->CreateQueuePresent failed !");
+            F_LogError("*********************** VulkanSwapChain::Init: 2> CreateQueuePresent failed !");
             return false;
         }
-        F_LogInfo("VulkanSwapChain::Init: 2> m_pDevice->CreateQueuePresent success !");
+        F_LogInfo("VulkanSwapChain::Init: 2> CreateQueuePresent success !");
 
         //3> chooseSwapSurfacePixelFormat
         if (!chooseSwapSurfacePixelFormat(eOutPixelFormat))
@@ -373,22 +370,22 @@ namespace LostPeterPluginRendererVulkan
             F_LogError("*********************** VulkanSwapChain::createSwapChain: Present queue not support !");
         }
 
-        if (!E_CheckVkResult(vkCreateSwapchainKHR(m_pDevice->GetVkDevice(), &m_vkSwapChainCreateInfoKHR, nullptr, &m_vkSwapChainKHR), "vkCreateSwapchainKHR"))
+        if (!m_pDevice->CreateVkSwapchainKHR(m_vkSwapChainCreateInfoKHR, m_vkSwapChainKHR))
         {
-            F_LogError("*********************** VulkanSwapChain::createSwapChain: vkCreateSwapchainKHR failed !");
+            F_LogError("*********************** VulkanSwapChain::createSwapChain: CreateVkSwapchainKHR failed !");
             return false;
         }
 
         uint32 numSwapChainImages;
-        if (!E_CheckVkResult(vkGetSwapchainImagesKHR(m_pDevice->GetVkDevice(), m_vkSwapChainKHR, &numSwapChainImages, nullptr), "vkGetSwapchainImagesKHR"))
+        if (!m_pDevice->GetVkSwapchainImagesKHR(m_vkSwapChainKHR, numSwapChainImages, nullptr))
         {
-            F_LogError("*********************** VulkanSwapChain::createSwapChain: vkGetSwapchainImagesKHR failed !");
+            F_LogError("*********************** VulkanSwapChain::createSwapChain: GetVkSwapchainImagesKHR failed to get swap chain image count !");
             return false;
         }
         aOutImages.resize(numSwapChainImages);
-        if (!E_CheckVkResult(vkGetSwapchainImagesKHR(m_pDevice->GetVkDevice(), m_vkSwapChainKHR, &numSwapChainImages, aOutImages.data()), "vkGetSwapchainImagesKHR"))
+        if (!m_pDevice->GetVkSwapchainImagesKHR(m_vkSwapChainKHR, numSwapChainImages, &aOutImages))
         {
-            F_LogError("*********************** VulkanSwapChain::createSwapChain: vkGetSwapchainImagesKHR failed !");
+            F_LogError("*********************** VulkanSwapChain::createSwapChain: GetVkSwapchainImagesKHR failed to get swap chain images !");
             return false;
         }
         
@@ -406,7 +403,7 @@ namespace LostPeterPluginRendererVulkan
             VulkanSemaphore* pSemaphore = new VulkanSemaphore(m_pDevice);
             if (!pSemaphore->Init())
             {
-                F_LogError("*********************** VulkanSwapChain::createSemaphore: vkCreateSemaphore failed !");
+                F_LogError("*********************** VulkanSwapChain::createSemaphore: pSemaphore->Init() failed !");
                 return false;
             }
             m_aVkImageAcquiredSemaphore.push_back(pSemaphore);

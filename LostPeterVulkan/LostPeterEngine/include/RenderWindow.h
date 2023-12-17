@@ -13,10 +13,12 @@
 #define _RENDER_WINDOW_H_
 
 #include "RenderTarget.h"
+#include "WindowBase.h"
 
 namespace LostPeterEngine
 {
     class engineExport RenderWindow : public RenderTarget
+									, public WindowBase
     {
     public:
         RenderWindow(const String& nameRenderWindow);
@@ -32,11 +34,12 @@ namespace LostPeterEngine
 
 		int32 m_nLeft;
 		int32 m_nTop;
-		int32 m_nWindowWidth;
-		int32 m_nWindowHeight;
 		int32 m_nClientWidth;
 		int32 m_nClientHeight;
-		
+
+	protected:
+		RenderWindowListenerPtrMap m_mapRenderWindowListener;
+
 	public:
 		virtual bool IsFullScreen() const { return m_bIsFullScreen; }
 		virtual void SetFullScreen(bool bFullScreen, uint32 nWidth, uint32 nHeight) { }
@@ -58,8 +61,6 @@ namespace LostPeterEngine
 		virtual void GetMetrics(uint32& nWidth,uint32& nHeight,uint32& nColorDepth,int32& nLeft,int32& nTop);
 		inline int32 GetWindowLeft() const { return m_nLeft; }
 		inline int32 GetWindowTop() const { return m_nTop; }
-		inline int32 GetWindowWidth() const	{ return m_nWindowWidth; }
-		inline int32 GetWindowHeight() const { return m_nWindowHeight; }
 		inline int32 GetClientWidth() const	{ return m_nClientWidth; }
 		inline int32 GetClientHeight() const { return m_nClientHeight; }
 
@@ -69,10 +70,9 @@ namespace LostPeterEngine
 		virtual bool IsActive() const { return m_bActive && IsVisible(); }
 		virtual void Update();
 		virtual void Update(bool bSwapBuffers);
-		virtual void SwapBuffers(bool bVSync = true) = 0;
 		
 	public:
-        virtual bool Destroy() = 0;
+        virtual void Destroy();
 		virtual bool Create(const String& strName, uint32 nWidth, uint32 nHeight, bool bFullScreen, const String2StringMap* pParams, bool bShowWindow = true) = 0;
     
 		virtual void Resize(uint32 nWidth,uint32 nHeight) = 0;
@@ -80,12 +80,37 @@ namespace LostPeterEngine
 		virtual bool IsClosed() const = 0;
 		virtual void WindowMovedOrResized() = 0;
 		virtual void SetWindowTitle(const String& strName) = 0;
-		virtual bool CanChangeToWindowMode(int32 srcWidth,int32 srcHeight,int32 &destWidth,int32 &destHeight) = 0;
+		virtual bool CanChangeToWindowMode(int32 srcWidth, int32 srcHeight, int32 &destWidth, int32 &destHeight) = 0;
 		
 		virtual void EmptyGPUCommandBuffer() = 0;
 		
 		virtual bool IsDeviceLost() { return false; }
 		virtual void Present(Renderer* pRenderer);
+
+	public:
+		void AddRenderWindowListener(RenderWindowListener* pRenderWindowListener);
+        void RemoveRenderWindowListener(RenderWindowListener* pRenderWindowListener);
+        void RemoveRenderWindowListenerAll();
+
+	public:
+        //Window
+        virtual void OnResize(int w, int h, bool force);
+
+        //Mouse Input
+        virtual void OnMouseLeftDown(double x, double y);
+        virtual void OnMouseLeftUp(double x, double y);
+        virtual void OnMouseRightDown(double x, double y);
+        virtual void OnMouseRightUp(double x, double y);
+        virtual void OnMouseMiddleDown(double x, double y);
+        virtual void OnMouseMiddleUp(double x, double y);
+        virtual void OnMouseMove(int button, double x, double y);
+        virtual void OnMouseHover(double x, double y);
+        virtual void OnMouseWheel(double x, double y);
+
+        //Keyboard Input
+        virtual void OnKeyboardInput();
+        virtual void OnKeyDown(int key);
+        virtual void OnKeyUp(int key);
     };
 
 }; //LostPeterEngine

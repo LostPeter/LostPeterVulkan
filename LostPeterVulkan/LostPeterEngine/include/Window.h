@@ -12,9 +12,11 @@
 #ifndef _WINDOW_H_
 #define _WINDOW_H_
 
+#include "WindowBase.h"
+
 namespace LostPeterEngine
 {
-    class engineExport Window
+    class engineExport Window : public WindowBase
     {
     public:
         Window();
@@ -22,51 +24,35 @@ namespace LostPeterEngine
 
     public:
     protected:
-        String m_strNameTitle;
-        int m_nWidth;
-        int m_nHeight;
-
-        GLFWwindow* m_pWindow;
-        bool m_bIsWindowShow;
+        WindowListenerPtrMap m_mapWindowListener;
 
     public:
-        const String& GetNameTitle() const { return m_strNameTitle; }
-        int GetWidth() const { return m_nWidth; }
-        int GetHeight() const { return m_nHeight; }
-        GLFWwindow* GetGLFWwindow() { return m_pWindow; }
-        bool IsWindowShow() const { return m_bIsWindowShow; }
+        virtual void Destroy();
 
     public:
-        void Destroy();
-        bool Init(const String& nameTitle, int nWidth, int nHeight);
+        void AddWindowListener(WindowListener* pWindowListener);
+        void RemoveWindowListener(WindowListener* pWindowListener);
+        void RemoveWindowListenerAll();
 
     public:
-
-
-    public:
-        // Window
+        //Window
         virtual void OnResize(int w, int h, bool force);
 
-        // Mouse Input
-        virtual void OnMouseInput();
+        //Mouse Input
         virtual void OnMouseLeftDown(double x, double y);
         virtual void OnMouseLeftUp(double x, double y);
         virtual void OnMouseRightDown(double x, double y);
         virtual void OnMouseRightUp(double x, double y);
+        virtual void OnMouseMiddleDown(double x, double y);
+        virtual void OnMouseMiddleUp(double x, double y);
         virtual void OnMouseMove(int button, double x, double y);
+        virtual void OnMouseHover(double x, double y);
         virtual void OnMouseWheel(double x, double y);
 
-        // Keyboard Input
+        //Keyboard Input
         virtual void OnKeyboardInput();
         virtual void OnKeyDown(int key);
         virtual void OnKeyUp(int key);
-
-    private:
-        static void callback_key(GLFWwindow* window, int key, int scancode, int action, int mods);
-        static void callback_framebuffer_size(GLFWwindow* window, int width, int height);
-        static void callback_mouse_button(GLFWwindow* window, int button, int action, int mods);
-        static void callback_cursor_position(GLFWwindow* window, double x, double y);
-        static void callback_scroll(GLFWwindow* window, double x, double y);
     };
 
 }; //LostPeterEngine

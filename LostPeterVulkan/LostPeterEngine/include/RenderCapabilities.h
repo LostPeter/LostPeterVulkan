@@ -96,7 +96,7 @@ namespace LostPeterEngine
 
 		F_FORCEINLINE const String& GetNameDevice() const { return m_strNameDevice; }
 		F_FORCEINLINE void SetNameDevice(const String& nameDevice) { m_strNameDevice = nameDevice; }
-		F_FORCEINLINE const String& GetNameRenderer(void) const { return m_strNameRenderer; }
+		F_FORCEINLINE const String& GetNameRenderer() const { return m_strNameRenderer; }
         F_FORCEINLINE void SetNameRenderer(const String& nameRenderer) { m_strNameRenderer = nameRenderer; }
 
 	public:

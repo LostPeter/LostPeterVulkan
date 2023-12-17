@@ -722,11 +722,18 @@ namespace LostPeterEngine
 
     class App;
     class Sample;
+    class WindowBase;
+    class WindowListener;
     class Window;
 
+    typedef std::vector<WindowBase*> WindowBasePtrVector;
+    typedef std::map<String, WindowBase*> WindowBasePtrMap;
+
+    typedef std::vector<WindowListener*> WindowListenerPtrVector;
+    typedef std::map<String, WindowListener*> WindowListenerPtrMap;
     typedef std::vector<Window*> WindowPtrVector;
     typedef std::map<String, Window*> WindowPtrMap;
-
+    
 
     class Base;
     class DataIndex;
@@ -798,6 +805,7 @@ namespace LostPeterEngine
     class RenderTarget;
     class RenderTargetManager;
     class RenderTexture;
+    class RenderWindowListener;
     class RenderWindow;
     class RenderStateCommon;
     class RenderStateLighting;
@@ -884,6 +892,8 @@ namespace LostPeterEngine
     typedef std::vector<RenderTexture*> RenderTexturePtrVector;
     typedef std::map<String, RenderTexture*> RenderTexturePtrMap;
 
+    typedef std::vector<RenderWindowListener*> RenderWindowListenerPtrVector;
+    typedef std::map<String, RenderWindowListener*> RenderWindowListenerPtrMap;
     typedef std::vector<RenderWindow*> RenderWindowPtrVector;
     typedef std::map<String, RenderWindow*> RenderWindowPtrMap;
 

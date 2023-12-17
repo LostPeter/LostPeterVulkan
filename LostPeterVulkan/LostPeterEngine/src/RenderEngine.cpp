@@ -287,8 +287,8 @@ namespace LostPeterEngine
 		RenderWindow* pRet = m_pRendererCurrent->CreateRenderWindow(strName, nWidth, nHeight, bFullScreen, pParams);
 		if (pRet && !m_bFirstInitAfterWndCreated)
 		{
-			firstInitAfterWndCreated();
-			pRet->SetPrimary();
+			//firstInitAfterWndCreated();
+			//pRet->SetPrimary();
 		}
 
 		return pRet;
