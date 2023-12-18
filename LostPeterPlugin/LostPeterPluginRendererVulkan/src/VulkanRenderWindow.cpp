@@ -43,7 +43,7 @@ namespace LostPeterPluginRendererVulkan
                                   int32 nHeight, 
                                   const String2StringMap* pParams)
     {
-        const String& nameWindow = GetNameWindow();
+        const String& nameWindow = GetName();
         //0> Params
         {
             //PixelFormat
@@ -66,6 +66,7 @@ namespace LostPeterPluginRendererVulkan
             return false;
         }
 
+        F_LogInfo("VulkanRenderWindow::Init: Create render window success, name: [%s] !", nameWindow.c_str());
         return true;
     }
 
@@ -122,7 +123,7 @@ namespace LostPeterPluginRendererVulkan
     }
     bool VulkanRenderWindow::RecreateSwapChain()
     {
-        const String& nameWindow = GetNameWindow();
+        const String& nameWindow = GetName();
 
         //1> Window Width/Height
         int nWindowWidth = 0;

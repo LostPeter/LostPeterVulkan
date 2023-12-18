@@ -19,9 +19,11 @@ namespace LostPeterEngine
     int App::Run(Sample* pSample)
     {
         s_pSample = pSample;
+        String nameSample = pSample->GetNameSample();
+        //0> 
+        F_LogInfo("********** 0> App::Run: Start Sample: [%s] ************", nameSample.c_str());
 
         //1> Parse the command line parameters
-
         F_LogInfo("********** 1> App::Run: Parse command success ************");
 
         //2> glfw initialize and configure 
@@ -74,9 +76,12 @@ namespace LostPeterEngine
         s_pSample->OnDestroy();
         F_LogInfo("********** 9> App::Run: Sample::OnDestroy success *******************");
 
-        //10> Cleanup
-        glfwTerminate();
+        //10> 
+        F_LogInfo("********** 10> App::Run: End Sample: [%s] ************", nameSample.c_str());
 
+        //11> Cleanup
+        glfwTerminate();
+        
         return 0;
     }
 

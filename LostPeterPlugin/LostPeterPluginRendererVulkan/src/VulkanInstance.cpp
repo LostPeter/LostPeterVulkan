@@ -63,6 +63,20 @@ namespace LostPeterPluginRendererVulkan
     #else
         m_bIsEnableValidationLayers = false;
     #endif
+
+        //glfw Extensions
+        uint32_t glfwExtensionCount = 0;
+        const char** glfwExtensions = nullptr;
+        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+        if (glfwExtensions != nullptr)
+        {
+            ConstCharPtrVector extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+            size_t count_glfw = extensions.size();
+            for (size_t i = 0; i < count_glfw; i++)
+            {
+                AddAppInstanceExtensions(extensions[i]);
+            }
+        }
     }
 
     VulkanInstance::~VulkanInstance()

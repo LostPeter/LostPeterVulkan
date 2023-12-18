@@ -50,6 +50,8 @@ namespace LostPeterPluginRendererVulkan
         F_DELETE(m_pFenceManager)
         F_DELETE(m_pDeviceMemoryManager)
 
+        DestroyVkCommandPool(this->m_vkCommandPoolTransfer);
+        this->m_vkCommandPoolTransfer = VK_NULL_HANDLE;
         DestroyVkDevice(this->m_vkDevice);
         this->m_vkDevice = VK_NULL_HANDLE;
     }
@@ -296,7 +298,7 @@ namespace LostPeterPluginRendererVulkan
             
             if (!isValidQueue)
             {
-                F_LogInfo("VulkanDevice::createDevice: Skipping unnecessary Queue Family: [%d : %d], Queues: [%s]", i, currProps.queueCount, getQueueType(currProps).c_str());
+                F_LogInfo("VulkanDevice::createDevice: Skipping unnecessary Queue Family: [%d : %d], Queues: [%s ]", i, currProps.queueCount, getQueueType(currProps).c_str());
                 continue;
             }
 
@@ -307,7 +309,7 @@ namespace LostPeterPluginRendererVulkan
             numPriorities += currProps.queueCount;
             queueFamilyInfos.push_back(queueCreateInfo);
             
-            F_LogInfo("VulkanDevice::createDevice: Initializing Queue Family: [%d: %d], Queues: [%s]", i,  currProps.queueCount, getQueueType(currProps).c_str());
+            F_LogInfo("VulkanDevice::createDevice: Initializing Queue Family: [%d: %d], Queues: [%s ]", i,  currProps.queueCount, getQueueType(currProps).c_str());
         }
         
         FloatVector queuePriorities(numPriorities);

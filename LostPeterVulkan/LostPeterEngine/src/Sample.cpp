@@ -87,7 +87,7 @@ namespace LostPeterEngine
                     F_LogError("*********************** Sample::createWindows: Create window main failed !");
                     return false;
                 }
-                F_LogInfo("Sample::createWindows: Create window main success !");
+                F_LogInfo("Sample::createWindows: Create window main success, name: [%s] !", nameMain.c_str());
             }
 
             return true;
@@ -151,7 +151,7 @@ namespace LostPeterEngine
                         F_LogError("*********************** Sample::createRenderWindows: Create render window scene failed !");
                         return false;
                     }
-                    F_LogInfo("Sample::createRenderWindows: Create render window scene success !");
+                    F_LogInfo("Sample::createRenderWindows: Create render window scene success, name: [%s] !", nameScene.c_str());
                 }
 
                 //Game
@@ -164,7 +164,7 @@ namespace LostPeterEngine
                         F_LogError("*********************** Sample::createRenderWindows: Create render window game failed !");
                         return false;
                     }
-                    F_LogInfo("Sample::createRenderWindows: Create render window game success !");
+                    F_LogInfo("Sample::createRenderWindows: Create render window game success, name: [%s] !", nameGame.c_str());
                 }
 
                 return true;
