@@ -43,7 +43,7 @@ namespace LostPeterEngine
 
     void RenderTargetManager::Destroy()
     {
-
+        DestroyRenderTargetAll();
     }
 
     bool RenderTargetManager::Init()
@@ -84,7 +84,7 @@ namespace LostPeterEngine
 			m_mapRenderTarget.erase(itFind);
 		}
 
-		if(pRenderTarget == m_pRenderer->GetActiveRenderTarget())
+		if (pRenderTarget == m_pRenderer->GetActiveRenderTarget())
 		{
             m_pRenderer->SetActiveRenderTarget(nullptr);
         }

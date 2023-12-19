@@ -887,7 +887,7 @@ namespace LostPeterEngine
     typedef std::map<String, RenderTargetListener*> RenderTargetListenerPtrMap;
     typedef std::vector<RenderTarget*> RenderTargetPtrVector;
     typedef std::map<String, RenderTarget*> RenderTargetPtrMap;
-    typedef std::multimap<uint8, RenderTarget*> RenderTargetPtrPriorityMap;
+    typedef std::multimap<uint32, RenderTarget*> RenderTargetPtrPriorityMap;
 
     typedef std::vector<RenderTexture*> RenderTexturePtrVector;
     typedef std::map<String, RenderTexture*> RenderTexturePtrMap;

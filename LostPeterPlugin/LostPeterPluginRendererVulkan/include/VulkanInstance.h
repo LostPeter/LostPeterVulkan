@@ -25,7 +25,6 @@ namespace LostPeterPluginRendererVulkan
     public:
     protected:
         VkInstance m_vkInstance;
-        VkDebugReportCallbackEXT m_vkDebugReport;
         ConstCharPtrVector m_aInstanceLayers;
         ConstCharPtrVector m_aInstanceExtensions;
         ConstCharPtrVector m_aAppInstanceExtensions;
@@ -35,13 +34,13 @@ namespace LostPeterPluginRendererVulkan
         uint32 m_nDesiredNumSwapChainImages;
 
         bool m_bIsEnableValidationLayers;
+        VulkanDebug* m_pDebug;
         VulkanDevice* m_pDevice;
 
         FPixelFormatType m_eSwapChainImagePixelFormat;
 
     public:
         F_FORCEINLINE const VkInstance& GetVkInstance() const { return m_vkInstance; }
-        F_FORCEINLINE const VkDebugReportCallbackEXT& GetVkDebugReportCallbackEXT() const { return m_vkDebugReport; }
         F_FORCEINLINE const ConstCharPtrVector& GetInstanceLayers() const { return m_aInstanceLayers; }
         F_FORCEINLINE const ConstCharPtrVector& GetInstanceExtensions() const { return m_aInstanceExtensions; }
         F_FORCEINLINE const ConstCharPtrVector& GetAppInstanceExtensions() const { return m_aAppInstanceExtensions; }
@@ -56,6 +55,7 @@ namespace LostPeterPluginRendererVulkan
         F_FORCEINLINE void SetDesiredNumSwapChainImages(uint32 num) { m_nDesiredNumSwapChainImages = num; }
         
         F_FORCEINLINE bool IsEnableValidationLayers() const { return m_bIsEnableValidationLayers; }
+        F_FORCEINLINE VulkanDebug* GetDebug() const { return m_pDebug; }
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
 
         F_FORCEINLINE FPixelFormatType GetVkSwapChainImagePixelFormatType() const { return m_eSwapChainImagePixelFormat; }
@@ -66,17 +66,16 @@ namespace LostPeterPluginRendererVulkan
 
     public:
     protected:
+        void destroyDebug();
+
         bool createInstance();
-        bool createDebugReport();
+        bool createDebug();
         bool createDevice();
 
     private:
         void getInstanceLayersAndExtensions(bool bIsEnableValidationLayers,
                                             ConstCharPtrVector& outInstanceLayers, 
                                             ConstCharPtrVector& outInstanceExtensions);
-
-        VkDebugReportCallbackCreateInfoEXT createReportCallbackInfo();
-        void destroyReportCallbackInfo();
 
     /////////////////////////////////////// Vulkan Function Wrapper ///////////////////////////////////////
     public:

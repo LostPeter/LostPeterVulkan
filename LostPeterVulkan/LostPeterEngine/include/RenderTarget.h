@@ -25,7 +25,7 @@ namespace LostPeterEngine
 
     public:
     protected:
-        uint8 m_nPriority;				
+        uint32 m_nPriority;				
 
 		uint32 m_nWidth;					
 		uint32 m_nHeight;					
@@ -45,8 +45,8 @@ namespace LostPeterEngine
 		RenderTarget* m_pShareDepthStencilRT;
 
     public:
-		virtual uint8 GetPriority() const { return m_nPriority; }
-		virtual void SetPriority(uint8 nPriority) { m_nPriority = nPriority; }
+		virtual uint32 GetPriority() const { return m_nPriority; }
+		virtual void SetPriority(uint32 nPriority) { m_nPriority = nPriority; }
 
 		virtual uint32 GetWidth() const	{ return m_nWidth; }
 		virtual uint32 GetHeight() const { return m_nHeight; }

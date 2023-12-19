@@ -80,7 +80,8 @@ namespace LostPeterPluginRendererVulkan
             F_DELETE(pRenderWindow)
             return nullptr;
         }
-
+        
+        AttachRenderTarget(pRenderWindow);
         return pRenderWindow;
     }
 

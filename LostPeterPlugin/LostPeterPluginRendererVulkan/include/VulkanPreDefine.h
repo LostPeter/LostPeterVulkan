@@ -138,6 +138,8 @@ namespace LostPeterPluginRendererVulkan
 	class VulkanBufferIndex;
 	class VulkanBufferUniform;
 	class VulkanBufferVertex;
+    class VulkanConverter;
+    class VulkanDebug;
 	class VulkanDevice;
 	class VulkanDeviceMemoryAllocation;
 	class VulkanDeviceMemoryManager;

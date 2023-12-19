@@ -18,6 +18,7 @@
 #include "../include/VulkanBufferUniform.h"
 #include "../include/VulkanBufferVertex.h"
 #include "../include/VulkanConverter.h"
+#include "../include/VulkanDebug.h"
 #include "../include/VulkanDevice.h"
 #include "../include/VulkanDeviceMemoryAllocation.h"
 #include "../include/VulkanDeviceMemoryManager.h"

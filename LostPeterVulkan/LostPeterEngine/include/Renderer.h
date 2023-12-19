@@ -78,7 +78,7 @@ namespace LostPeterEngine
 		virtual void DestroyRenderTarget(const String& strName);
 		virtual void DestroyRenderWindow(const String& strName);
 		virtual void DestroyRenderTexture(const String& strName);
-		virtual void UpdateRenderTargetPriority(uint8 nPriority, RenderTarget* pRenderTarget);
+		virtual void UpdateRenderTargetPriority(uint32 nPriority, RenderTarget* pRenderTarget);
 		virtual void UpdateRenderTargetAll();
 		virtual void NotifyObjectCameraRemoved(const ObjectCamera* pObjectCamera);
 

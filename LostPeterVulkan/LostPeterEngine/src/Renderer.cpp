@@ -89,7 +89,7 @@ namespace LostPeterEngine
 		m_pRenderTargetManager->DestroyRenderTexture(strName);
 	}
 
-    void Renderer::UpdateRenderTargetPriority(uint8 nPriority, RenderTarget* pRenderTarget)
+    void Renderer::UpdateRenderTargetPriority(uint32 nPriority, RenderTarget* pRenderTarget)
     {
         RenderTargetPtrPriorityMap& mapRenderTargetPtrPriority = m_pRenderTargetManager->GetRenderTargetPtrPriorityMap();
         for(RenderTargetPtrPriorityMap::iterator it = mapRenderTargetPtrPriority.begin(); 
