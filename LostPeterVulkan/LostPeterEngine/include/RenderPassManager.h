@@ -42,6 +42,8 @@ namespace LostPeterEngine
         void Destroy();
         bool Init();
 
+    public:
+        
 
     };
 

@@ -24,10 +24,18 @@ namespace LostPeterEngine
         virtual ~RenderPass();
 
     public:
-        void Destroy();
+    protected:
+
+
+
+    public:
+        virtual void Destroy();
         virtual bool Init();
 
     
+    public:
+
+
 
     };
 

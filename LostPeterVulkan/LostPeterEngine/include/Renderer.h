@@ -91,7 +91,7 @@ namespace LostPeterEngine
         
     public:
 		virtual void ConvertColorValue(const FColor& color, uint32* pDest);
-		virtual EVertexElementDataType GetColorVertexElementType() const = 0;
+		virtual FVertexElementDataType GetColorVertexElementType() const = 0;
 
 		virtual RenderWindow* CreateRenderWindow(const String& strName, 
 												 uint32 nWidth, 

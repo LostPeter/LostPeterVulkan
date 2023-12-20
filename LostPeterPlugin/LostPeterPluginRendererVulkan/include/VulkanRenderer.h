@@ -38,7 +38,7 @@ namespace LostPeterPluginRendererVulkan
         VulkanDevice* GetDevice();
     
     public:
-        virtual EVertexElementDataType GetColorVertexElementType() const;
+        virtual FVertexElementDataType GetColorVertexElementType() const;
         
         virtual RenderWindow* CreateRenderWindow(const String& strName, 
                                                  uint32 nWidth, 

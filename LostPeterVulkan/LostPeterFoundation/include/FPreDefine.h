@@ -819,8 +819,21 @@ namespace LostPeterFoundation
         F_Camera_Count,
     };
     foundationExport const String& F_GetCameraTypeName(FCameraType type);
-    foundationExport const String& F_GetCameraTypF_GetCameraTypeNameeTypeName(int type);
+    foundationExport const String& F_GetCameraTypeName(int type);
     foundationExport FCameraType F_ParseCameraType(const String& strName);
+
+
+    enum FLightType
+    {
+        F_Light_Directional = 0,                        //0: Directional
+        F_Light_Point,                                  //1: Point
+        F_Light_Spot,                                   //2: Spot
+
+        F_Light_Count,
+    };
+    foundationExport const String& F_GetLightTypeName(FLightType type);
+    foundationExport const String& F_GetLightTypeName(int type);
+    foundationExport FLightType F_ParseLightType(const String& strName);
 
 
     enum FRenderPrimitiveType
@@ -837,6 +850,37 @@ namespace LostPeterFoundation
     foundationExport const String& F_GetRenderPrimitiveTypeName(FRenderPrimitiveType type);
     foundationExport const String& F_GetRenderPrimitiveTypeName(int type);
     foundationExport FRenderPrimitiveType F_ParseRenderPrimitiveType(const String& strName);
+
+
+    enum FVertexElementSemanticType
+	{
+		F_VertexElementSemantic_Position = 0,		        //0: Position
+		F_VertexElementSemantic_BlendWeights,			    //1: BlendWeights
+		F_VertexElementSemantic_BlendIndices,			    //2: BlendIndices
+		F_VertexElementSemantic_Normal,				        //3: Normal
+		F_VertexElementSemantic_Diffuse,				    //4: Diffuse
+		F_VertexElementSemantic_Specular,				    //5: Specular
+		F_VertexElementSemantic_TextureCoordinates,	        //6: TextureCoordinates
+		F_VertexElementSemantic_BiNormal,				    //7: BiNormal
+		F_VertexElementSemantic_Tangent,				    //8: Tangent
+	};			
+
+
+	enum FVertexElementDataType
+	{
+		F_VertexElementData_Float1 = 0,				        //0:  Float1
+		F_VertexElementData_Float2,					        //1:  Float2
+		F_VertexElementData_Float3,					        //2:  Float3
+		F_VertexElementData_Float4,					        //3:  Float4
+		F_VertexElementData_Color,					        //4:  Color
+		F_VertexElementData_Short1,					        //5:  Short1
+		F_VertexElementData_Short2,					        //6:  Short2
+		F_VertexElementData_Short3,					        //7:  Short3
+		F_VertexElementData_Short4,					        //8:  Short4
+		F_VertexElementData_UByte4,					        //9:  UByte4
+		F_VertexElementData_ColorARGB,			            //10: ColorARGB, D3D
+		F_VertexElementData_ColorABGR		                //11: ColorABGR, OpenGL
+	};
 
 
     enum FCullingType
@@ -979,10 +1023,12 @@ namespace LostPeterFoundation
 
     enum FRenderQueueType
     {
-        F_RenderQueue_Background = 0,                   //0: Background:   0    - 1000
-        F_RenderQueue_Opaque = 1,                       //1: Opaque:       1000 - 2000
-        F_RenderQueue_Transparent = 2,                  //2: Transparent:  2000 - 3000
-        F_RenderQueue_Overlay = 3,                      //3: Overlay:      3000 - 4000
+        F_RenderQueue_BackGround = 0,                   //0: BackGround:   0    - 1000
+        F_RenderQueue_Opaque,                           //1: Opaque:       1000 - 2600
+        F_RenderQueue_Terrain,                          //2: Terrain:      2600 - 2800
+        F_RenderQueue_Sky,                              //3: Sky:          2800 - 3000
+        F_RenderQueue_Transparent,                      //4: Transparent:  3000 - 4000
+        F_RenderQueue_UI,                               //5: UI:           4000 - 5000
 
         F_RenderQueue_Count,
     };

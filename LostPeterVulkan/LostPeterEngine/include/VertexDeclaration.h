@@ -52,16 +52,16 @@ namespace LostPeterEngine
 		uint16 GetMaxSource() const;
 
 	public:	
-		virtual const VertexElement& AddVertexElement(uint16 nSourceIndex, size_t nOffset, EVertexElementSemanticType typeSemantic, EVertexElementDataType typeData, uint16 nIndex = 0);
-		virtual const VertexElement& InsertVertexElement(uint16 atPosition, uint16 nSourceIndex, size_t nOffset, EVertexElementSemanticType typeSemantic, EVertexElementDataType typeData, uint16 nIndex = 0);
+		virtual const VertexElement& AddVertexElement(uint16 nSourceIndex, size_t nOffset, FVertexElementSemanticType typeSemantic, FVertexElementDataType typeData, uint16 nIndex = 0);
+		virtual const VertexElement& InsertVertexElement(uint16 atPosition, uint16 nSourceIndex, size_t nOffset, FVertexElementSemanticType typeSemantic, FVertexElementDataType typeData, uint16 nIndex = 0);
 
 		virtual void RemoveVertexElement(uint16 nIndex);
-		virtual void RemoveVertexElement(EVertexElementSemanticType typeSemantic, uint16 nIndex = 0);
+		virtual void RemoveVertexElement(FVertexElementSemanticType typeSemantic, uint16 nIndex = 0);
 		virtual void RemoveVertexElementAll();
 
-		virtual void ModifyVertexElement(uint16 nElementIndex, uint16 nSourceIndex, size_t nOffset, EVertexElementSemanticType typeSemantic, EVertexElementDataType typeData, uint16 nIndex = 0);
+		virtual void ModifyVertexElement(uint16 nElementIndex, uint16 nSourceIndex, size_t nOffset, FVertexElementSemanticType typeSemantic, FVertexElementDataType typeData, uint16 nIndex = 0);
 
-		virtual const VertexElement* FindVertexElementBySemantic(EVertexElementSemanticType typeSemantic, uint16 nIndex = 0);
+		virtual const VertexElement* FindVertexElementBySemantic(FVertexElementSemanticType typeSemantic, uint16 nIndex = 0);
 		virtual VertexElementList FindVertexElementsBySource(uint16 nSourceIndex);
 
 		virtual size_t GetVertexSize(uint16 nSourceIndex);

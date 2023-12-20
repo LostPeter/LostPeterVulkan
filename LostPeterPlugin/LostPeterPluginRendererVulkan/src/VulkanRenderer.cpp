@@ -61,9 +61,9 @@ namespace LostPeterPluginRendererVulkan
         return nullptr;
     }
 
-    EVertexElementDataType VulkanRenderer::GetColorVertexElementType() const
+    FVertexElementDataType VulkanRenderer::GetColorVertexElementType() const
     {
-        return E_VertexElementData_Float1;
+        return F_VertexElementData_Float1;
     }
 
     RenderWindow* VulkanRenderer::CreateRenderWindow(const String& strName, 

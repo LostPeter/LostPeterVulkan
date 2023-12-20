@@ -64,8 +64,8 @@ namespace LostPeterPluginRendererVulkan
                           VkRenderPass vkRenderPass);
     
     public:
-        void CleanupSwapChain();
-        void RecreateSwapChain();
+        virtual void CleanupSwapChain();
+        virtual void RecreateSwapChain();
     };
 
 }; //LostPeterPluginRendererVulkan

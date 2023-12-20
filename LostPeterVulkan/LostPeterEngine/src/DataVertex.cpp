@@ -175,7 +175,7 @@ namespace LostPeterEngine
 	// 	for (it = listElements.begin(); it != itEnd; ++it) 
 	// 	{
 	// 		const VertexElement& ele = *it;
-	// 		if (ele.GetVertexElementSemanticType() == E_VertexElementSemantic_TextureCoordinates)
+	// 		if (ele.GetVertexElementSemanticType() == F_VertexElementSemantic_TextureCoordinates)
 	// 		{
 	// 			++nTexCoord;
 	// 		}
@@ -185,7 +185,7 @@ namespace LostPeterEngine
 	// 	// for (size_t i = m_aAnimationData.size(); i < nCount; ++i)
 	// 	// {
 	// 	// 	AnimationData data;
-	// 	// 	data.pTargetVertexElement = &(m_pVertexDeclaration->AddVertexElement(m_pVertexStreamBinding->GetNextIndex(), 0, E_VertexElementSemantic_TextureCoordinates, E_VertexElementData_Float3, nTexCoord++));
+	// 	// 	data.pTargetVertexElement = &(m_pVertexDeclaration->AddVertexElement(m_pVertexStreamBinding->GetNextIndex(), 0, F_VertexElementSemantic_TextureCoordinates, F_VertexElementData_Float3, nTexCoord++));
 	// 	// 	m_aAnimationData.push_back(data);
 	// 	// }
 	// }

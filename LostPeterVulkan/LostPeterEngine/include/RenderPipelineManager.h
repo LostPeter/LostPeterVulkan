@@ -44,7 +44,7 @@ namespace LostPeterEngine
 		
 		bool RenderOneFrame(RenderFrameEvent& event);
 
-		bool ChangePipeLineTo(ERenderPipelineType eRenderPipeline);
+		bool ChangePipeLineTo(FRenderPipelineType eRenderPipeline);
     };
 
 }; //LostPeterEngine

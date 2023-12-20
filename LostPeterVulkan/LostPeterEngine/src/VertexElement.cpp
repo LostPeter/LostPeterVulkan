@@ -18,8 +18,8 @@ namespace LostPeterEngine
     VertexElement::VertexElement()
 		: m_nSourceIndex(0)
 		, m_nOffset(0)
-		, m_eVertexElementSemantic(E_VertexElementSemantic_Position)
-		, m_eVertexElementData(E_VertexElementData_Float3)
+		, m_eVertexElementSemantic(F_VertexElementSemantic_Position)
+		, m_eVertexElementData(F_VertexElementData_Float3)
 		, m_nIndex(0)
 	{
 
@@ -27,8 +27,8 @@ namespace LostPeterEngine
 
 	VertexElement::VertexElement(uint16 nSourceIndex,
                                  size_t nOffset,
-                                 EVertexElementSemanticType typeSemantic,
-		                         EVertexElementDataType typeData,
+                                 FVertexElementSemanticType typeSemantic,
+		                         FVertexElementDataType typeData,
                                  uint16 nIndex /*= 0*/)
 		: m_nSourceIndex(nSourceIndex)
 		, m_nOffset(nOffset)
@@ -73,31 +73,31 @@ namespace LostPeterEngine
 		return GetTypeSize(m_eVertexElementData);
 	}
 
-	size_t VertexElement::GetTypeSize(EVertexElementDataType typeData)
+	size_t VertexElement::GetTypeSize(FVertexElementDataType typeData)
 	{
 		switch ((int32)typeData)
 		{
-		case E_VertexElementData_Color:
-		case E_VertexElementData_ColorARGB:
-		case E_VertexElementData_ColorABGR:
+		case F_VertexElementData_Color:
+		case F_VertexElementData_ColorARGB:
+		case F_VertexElementData_ColorABGR:
 			return sizeof(RGBA);
-		case E_VertexElementData_Float1:
+		case F_VertexElementData_Float1:
 			return sizeof(float);
-		case E_VertexElementData_Float2:
+		case F_VertexElementData_Float2:
 			return sizeof(float) * 2;
-		case E_VertexElementData_Float3:
+		case F_VertexElementData_Float3:
 			return sizeof(float) * 3;
-		case E_VertexElementData_Float4:
+		case F_VertexElementData_Float4:
 			return sizeof(float) * 4;
-		case E_VertexElementData_Short1:
+		case F_VertexElementData_Short1:
 			return sizeof(short);
-		case E_VertexElementData_Short2:
+		case F_VertexElementData_Short2:
 			return sizeof(short) * 2;
-		case E_VertexElementData_Short3:
+		case F_VertexElementData_Short3:
 			return sizeof(short) * 3;
-		case E_VertexElementData_Short4:
+		case F_VertexElementData_Short4:
 			return sizeof(short) * 4;
-		case E_VertexElementData_UByte4:
+		case F_VertexElementData_UByte4:
 			return sizeof(uint8) * 4;
 		default:
 			F_Assert(false && "VertexElement::GetTypeSize: Invalid type !")
@@ -105,31 +105,31 @@ namespace LostPeterEngine
 		return 0;
 	}
 
-	uint16 VertexElement::GetTypeCount(EVertexElementDataType typeData)
+	uint16 VertexElement::GetTypeCount(FVertexElementDataType typeData)
 	{
 		switch ((int32)typeData)
 		{
-		case E_VertexElementData_Color:
-		case E_VertexElementData_ColorARGB:
-		case E_VertexElementData_ColorABGR:
+		case F_VertexElementData_Color:
+		case F_VertexElementData_ColorARGB:
+		case F_VertexElementData_ColorABGR:
 			return 1;
-		case E_VertexElementData_Float1:
+		case F_VertexElementData_Float1:
 			return 1;
-		case E_VertexElementData_Float2:
+		case F_VertexElementData_Float2:
 			return 2;
-		case E_VertexElementData_Float3:
+		case F_VertexElementData_Float3:
 			return 3;
-		case E_VertexElementData_Float4:
+		case F_VertexElementData_Float4:
 			return 4;
-		case E_VertexElementData_Short1:
+		case F_VertexElementData_Short1:
 			return 1;
-		case E_VertexElementData_Short2:
+		case F_VertexElementData_Short2:
 			return 2;
-		case E_VertexElementData_Short3:
+		case F_VertexElementData_Short3:
 			return 3;
-		case E_VertexElementData_Short4:
+		case F_VertexElementData_Short4:
 			return 4;
-		case E_VertexElementData_UByte4:
+		case F_VertexElementData_UByte4:
 			return 4;
 		default:
 			F_Assert(false && "VertexElement::GetTypeCount: Invalid type !")
@@ -137,36 +137,36 @@ namespace LostPeterEngine
 		return 0;
 	}
 
-	EVertexElementDataType VertexElement::MultiplyTypeCount(EVertexElementDataType typeData, uint16 nCount)
+	FVertexElementDataType VertexElement::MultiplyTypeCount(FVertexElementDataType typeData, uint16 nCount)
 	{
 		switch (typeData)
 		{
-		case E_VertexElementData_Float1:
+		case F_VertexElementData_Float1:
 			switch (nCount)
 			{
 			case 1:
-				return E_VertexElementData_Float1;
+				return F_VertexElementData_Float1;
 			case 2:
-				return E_VertexElementData_Float2;
+				return F_VertexElementData_Float2;
 			case 3:
-				return E_VertexElementData_Float3;
+				return F_VertexElementData_Float3;
 			case 4:
-				return E_VertexElementData_Float4;
+				return F_VertexElementData_Float4;
 			default:
 				break;
 			}
 			break;
-		case E_VertexElementData_Short1:
+		case F_VertexElementData_Short1:
 			switch (nCount)
 			{
 			case 1:
-				return E_VertexElementData_Short1;
+				return F_VertexElementData_Short1;
 			case 2:
-				return E_VertexElementData_Short2;
+				return F_VertexElementData_Short2;
 			case 3:
-				return E_VertexElementData_Short3;
+				return F_VertexElementData_Short3;
 			case 4:
-				return E_VertexElementData_Short4;
+				return F_VertexElementData_Short4;
 			default:
 				break;
 			}
@@ -175,36 +175,36 @@ namespace LostPeterEngine
 			F_Assert(false && "VertexElement::MultiplyTypeCount: Invalid base type !")
 		}
 
-		return E_VertexElementData_Float1;
+		return F_VertexElementData_Float1;
 	}
 
-	EVertexElementDataType VertexElement::GetBaseType(EVertexElementDataType typeData)
+	FVertexElementDataType VertexElement::GetBaseType(FVertexElementDataType typeData)
 	{
 		switch ((int32)typeData)
 		{
-		case E_VertexElementData_Float1:
-		case E_VertexElementData_Float2:
-		case E_VertexElementData_Float3:
-		case E_VertexElementData_Float4:
-			return E_VertexElementData_Float1;
-		case E_VertexElementData_Color:
-			return E_VertexElementData_Color;
-		case E_VertexElementData_ColorARGB:
-			return E_VertexElementData_ColorARGB;
-		case E_VertexElementData_ColorABGR:
-			return E_VertexElementData_ColorABGR;
-		case E_VertexElementData_Short1:
-		case E_VertexElementData_Short2:
-		case E_VertexElementData_Short3:
-		case E_VertexElementData_Short4:
-			return E_VertexElementData_Short1;
-		case E_VertexElementData_UByte4:
-			return E_VertexElementData_UByte4;
+		case F_VertexElementData_Float1:
+		case F_VertexElementData_Float2:
+		case F_VertexElementData_Float3:
+		case F_VertexElementData_Float4:
+			return F_VertexElementData_Float1;
+		case F_VertexElementData_Color:
+			return F_VertexElementData_Color;
+		case F_VertexElementData_ColorARGB:
+			return F_VertexElementData_ColorARGB;
+		case F_VertexElementData_ColorABGR:
+			return F_VertexElementData_ColorABGR;
+		case F_VertexElementData_Short1:
+		case F_VertexElementData_Short2:
+		case F_VertexElementData_Short3:
+		case F_VertexElementData_Short4:
+			return F_VertexElementData_Short1;
+		case F_VertexElementData_UByte4:
+			return F_VertexElementData_UByte4;
 		};
-		return E_VertexElementData_Float1;
+		return F_VertexElementData_Float1;
 	}
 
-	void VertexElement::ConvertColorValue(EVertexElementDataType typeDataSrc, EVertexElementDataType typeDataDst, uint32* ptr)
+	void VertexElement::ConvertColorValue(FVertexElementDataType typeDataSrc, FVertexElementDataType typeDataDst, uint32* ptr)
 	{
 		if (typeDataSrc == typeDataDst)
 			return;
@@ -213,24 +213,24 @@ namespace LostPeterEngine
 		*ptr = ((*ptr & 0x00FF0000) >> 16) | ((*ptr & 0x000000FF) << 16) | (*ptr & 0xFF00FF00);	
 	}
 
-	uint32 VertexElement::ConvertColorValue(const FColor& srcColor, EVertexElementDataType typeData)
+	uint32 VertexElement::ConvertColorValue(const FColor& srcColor, FVertexElementDataType typeData)
 	{
 		switch ((int32)typeData)
 		{
 		#if F_PLATFORM == F_PLATFORM_WINDOW
 			default:
 		#endif
-		case E_VertexElementData_ColorARGB:
+		case F_VertexElementData_ColorARGB:
 			return FMath::GetAsARGB(srcColor);
 		#if F_PLATFORM != F_PLATFORM_WINDOW
 			default:
 		#endif
-		case E_VertexElementData_ColorABGR: 
+		case F_VertexElementData_ColorABGR: 
 			return FMath::GetAsABGR(srcColor);
 		};
 	}
 
-	EVertexElementDataType VertexElement::GetBestColorVertexElementType()
+	FVertexElementDataType VertexElement::GetBestColorVertexElementType()
 	{
 		RenderEngine* pRenderEngine = RenderEngine::GetSingletonPtr();
 		if (pRenderEngine && pRenderEngine->GetRendererCurrent())
@@ -240,9 +240,9 @@ namespace LostPeterEngine
 		else
 		{
 		#if F_PLATFORM == F_PLATFORM_WINDOW
-			return E_VertexElementData_ColorARGB; // prefer D3D format on windows
+			return F_VertexElementData_ColorARGB; // prefer D3D format on windows
 		#else
-			return E_VertexElementData_ColorABGR; // prefer GL format on everything else
+			return F_VertexElementData_ColorABGR; // prefer GL format on everything else
 		#endif
 		}
 	}

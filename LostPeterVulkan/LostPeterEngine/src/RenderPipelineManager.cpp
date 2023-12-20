@@ -33,8 +33,8 @@ namespace LostPeterEngine
         , m_pPipeLineCurrent(nullptr)
     {
         m_pRenderPassManager = new RenderPassManager;
-		m_mapRenderPipeLine[E_GetRenderPipelineTypeName(E_RenderPipeline_Forward)] = new RenderPipelineForward(this);
-		//m_mapRenderPipeLine[E_GetRenderPipelineTypeName(E_RenderPipeline_Deferred)] = new RenderPipelineDeferred(this);
+		m_mapRenderPipeLine[F_GetRenderPipelineTypeName(F_RenderPipeline_Forward)] = new RenderPipelineForward(this);
+		//m_mapRenderPipeLine[F_GetRenderPipelineTypeName(F_RenderPipeline_Deferred)] = new RenderPipelineDeferred(this);
     }
 
     RenderPipelineManager::~RenderPipelineManager()
@@ -79,7 +79,7 @@ namespace LostPeterEngine
 		return m_pPipeLineCurrent->RenderOneFrame(event);
 	}
 
-	bool RenderPipelineManager::ChangePipeLineTo(ERenderPipelineType eRenderPipeline)
+	bool RenderPipelineManager::ChangePipeLineTo(FRenderPipelineType eRenderPipeline)
 	{
 		
 

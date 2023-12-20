@@ -69,8 +69,8 @@ namespace LostPeterEngine
 
 		VertexDeclaration* pDecl = pSrcVD->GetVertexDeclaration();
 		StreamVertexBinding* pBinding = pSrcVD->GetVertexStreamBinding();
-		const VertexElement* posElem = pDecl->FindVertexElementBySemantic(E_VertexElementSemantic_Position);
-		const VertexElement* normElem = pDecl->FindVertexElementBySemantic(E_VertexElementSemantic_Normal);
+		const VertexElement* posElem = pDecl->FindVertexElementBySemantic(F_VertexElementSemantic_Position);
+		const VertexElement* normElem = pDecl->FindVertexElementBySemantic(F_VertexElementSemantic_Normal);
 		F_Assert(posElem && "StreamTempBlended::ExtractFrom: Positions are required !")
 
 		m_nPosBindIndex	= posElem->GetSourceIndex();

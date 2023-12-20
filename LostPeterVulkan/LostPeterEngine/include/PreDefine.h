@@ -83,56 +83,6 @@ namespace LostPeterEngine
     engineExport const String& E_GetWindowTypeName(EWindowType type);
     engineExport const String& E_GetWindowTypeName(int type);
     engineExport EWindowType E_ParseWindowType(const String& strName);
-
-
-    enum ELightType
-    {
-        E_Light_Directional = 0,
-        E_Light_Point,
-        E_Light_Spot,
-    };
-
-
-    enum ERenderPipelineType
-	{
-		E_RenderPipeline_Forward = 0,                       //0: Forward
-		E_RenderPipeline_Deferred,                          //1: Deferred
-
-		E_RenderPipeline_Count
-	};
-    engineExport const String& E_GetRenderPipelineTypeName(ERenderPipelineType type);
-    engineExport const String& E_GetRenderPipelineTypeName(int32 type);
-    
-
-    enum EVertexElementSemanticType
-	{
-		E_VertexElementSemantic_Position = 0,		        //0: Position
-		E_VertexElementSemantic_BlendWeights,			    //1: BlendWeights
-		E_VertexElementSemantic_BlendIndices,			    //2: BlendIndices
-		E_VertexElementSemantic_Normal,				        //3: Normal
-		E_VertexElementSemantic_Diffuse,				    //4: Diffuse
-		E_VertexElementSemantic_Specular,				    //5: Specular
-		E_VertexElementSemantic_TextureCoordinates,	        //6: TextureCoordinates
-		E_VertexElementSemantic_BiNormal,				    //7: BiNormal
-		E_VertexElementSemantic_Tangent,				    //8: Tangent
-	};			
-
-
-	enum EVertexElementDataType
-	{
-		E_VertexElementData_Float1 = 0,				        //0:  Float1
-		E_VertexElementData_Float2,					        //1:  Float2
-		E_VertexElementData_Float3,					        //2:  Float3
-		E_VertexElementData_Float4,					        //3:  Float4
-		E_VertexElementData_Color,					        //4:  Color
-		E_VertexElementData_Short1,					        //5:  Short1
-		E_VertexElementData_Short2,					        //6:  Short2
-		E_VertexElementData_Short3,					        //7:  Short3
-		E_VertexElementData_Short4,					        //8:  Short4
-		E_VertexElementData_UByte4,					        //9:  UByte4
-		E_VertexElementData_ColorARGB,			            //10: ColorARGB, D3D
-		E_VertexElementData_ColorABGR		                //11: ColorABGR, OpenGL
-	};
     
 
     enum EStreamReleaseType
@@ -284,23 +234,7 @@ namespace LostPeterEngine
     engineExport const String& E_GetObjectTypeName(EObjectType type);
     engineExport const String& E_GetObjectTypeName(int type);
     engineExport EObjectType E_ParseObjectType(const String& strName);
-
-
-    enum ERenderQueueType
-    {
-        E_RenderQueue_BackGround = 0,           //0:    BackGround
-        E_RenderQueue_Opaque,                   //1:    Opaque
-        E_RenderQueue_Terrain,                  //2:    Terrain
-        E_RenderQueue_Sky,                      //3:    Sky
-        E_RenderQueue_Transparent,              //4:    Transparent
-        E_RenderQueue_UI,                       //5:    UI
-
-        E_RenderQueue_Count,
-    };
-    engineExport const String& E_GetRenderQueueTypeName(ERenderQueueType type);
-    engineExport const String& E_GetRenderQueueTypeName(int type);
-    engineExport ERenderQueueType E_ParseRenderQueueType(const String& strName);
-
+    
 
     enum ECpuFeatureType
     {

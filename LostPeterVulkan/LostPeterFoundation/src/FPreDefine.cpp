@@ -492,6 +492,33 @@ namespace LostPeterFoundation
     }
     
 
+    //FLightType
+    static const String s_nameLightTypes[] = 
+    {
+        "Directional",              //0: Directional
+        "Point",                    //1: Point
+        "Spot",                     //2: Spot
+    };
+    const String& F_GetLightTypeName(FLightType type)
+    {
+        return s_nameLightTypes[(int)type];
+    }
+    const String& F_GetLightTypeName(int type)
+    {
+        return s_nameLightTypes[(int)type];
+    }
+    FLightType F_ParseLightType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_Camera_Count; i++)
+        {
+            if (s_nameLightTypes[i] == strName)
+                return (FLightType)(i);
+        }
+        F_Assert(false && "F_ParseLightType: Wrong type name !")
+        return F_Light_Directional;
+    }
+
+
     //FRenderPrimitiveType
     static const String s_nameRenderPrimitiveTypes[] = 
     {
@@ -789,10 +816,12 @@ namespace LostPeterFoundation
     //FRenderQueueType
     static const String s_nameRenderQueueTypes[] = 
     {
-        "Background",               //0: Background:   0    - 1000
-        "Opaque",                   //1: Opaque:       1000 - 2000
-        "Transparent",              //2: Transparent:  2000 - 3000
-        "Overlay",                  //3: Overlay:      3000 - 4000
+        "BackGround",               //0:    BackGround:     0    - 1000            
+        "Opaque",                   //1:    Opaque:         1000 - 2600
+        "Terrain",                  //2:    Terrain:        2600 - 2800
+        "Sky",                      //3:    Sky:            2800 - 3000
+        "Transparent",              //4:    Transparent:    3000 - 4000
+        "UI",                       //5:    UI:             4000 - 5000
     };
     const String& F_GetRenderQueueTypeName(FRenderQueueType type)
     {
@@ -815,10 +844,12 @@ namespace LostPeterFoundation
     
     static const int s_valueRenderQueueTypes[] = 
     {
-        1000,
-        2000,
-        3000,
-        4000,
+        0,          //0:    BackGround
+        1000,       //1:    Opaque
+        2600,       //2:    Terrain
+        2800,       //3:    Sky
+        3000,       //4:    Transparent
+        4000,       //5:    UI
     };
     int F_GetRenderQueueTypeValue(FRenderQueueType type)
     {
@@ -830,14 +861,18 @@ namespace LostPeterFoundation
     }
     FRenderQueueType F_ParseRenderQueueTypeByValue(int value)
     {
-        if (value >= s_valueRenderQueueTypes[(int)F_RenderQueue_Overlay])
-            return F_RenderQueue_Overlay;
-        else if (value >= s_valueRenderQueueTypes[(int)F_RenderQueue_Transparent] && value < s_valueRenderQueueTypes[(int)F_RenderQueue_Overlay])
+        if (value >= s_valueRenderQueueTypes[(int)F_RenderQueue_UI])
+            return F_RenderQueue_UI;
+        else if (value >= s_valueRenderQueueTypes[(int)F_RenderQueue_Transparent] && value < s_valueRenderQueueTypes[(int)F_RenderQueue_UI])
             return F_RenderQueue_Transparent;
-        else if (value >= s_valueRenderQueueTypes[(int)F_RenderQueue_Opaque] && value < s_valueRenderQueueTypes[(int)F_RenderQueue_Transparent])
+        else if (value >= s_valueRenderQueueTypes[(int)F_RenderQueue_Sky] && value < s_valueRenderQueueTypes[(int)F_RenderQueue_Transparent])
+            return F_RenderQueue_Sky;
+        else if (value >= s_valueRenderQueueTypes[(int)F_RenderQueue_Terrain] && value < s_valueRenderQueueTypes[(int)F_RenderQueue_Sky])
+            return F_RenderQueue_Terrain;
+        else if (value >= s_valueRenderQueueTypes[(int)F_RenderQueue_Opaque] && value < s_valueRenderQueueTypes[(int)F_RenderQueue_Terrain])
             return F_RenderQueue_Opaque;
         
-        return F_RenderQueue_Background;
+        return F_RenderQueue_BackGround;
     }
 
 

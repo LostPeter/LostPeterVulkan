@@ -20,16 +20,16 @@ namespace LostPeterEngine
                                       , public FNonCopyable
     {
     public:
-        RenderPipeline(const String& nameRenderPipeline, RenderPipelineManager* pRenderPipelineManager, ERenderPipelineType eRenderPipelineType);
+        RenderPipeline(const String& nameRenderPipeline, RenderPipelineManager* pRenderPipelineManager, FRenderPipelineType eRenderPipelineType);
         virtual ~RenderPipeline();
 
     public:
     protected:
         RenderPipelineManager* m_pRenderPipelineManager;
-		ERenderPipelineType m_eRenderPipelineType;
+		FRenderPipelineType m_eRenderPipelineType;
 
     public:
-		F_FORCEINLINE ERenderPipelineType GetRenderPipePipeLineType() const { return m_eRenderPipelineType; }
+		F_FORCEINLINE FRenderPipelineType GetRenderPipePipeLineType() const { return m_eRenderPipelineType; }
 
     public:
         virtual bool Init() = 0;

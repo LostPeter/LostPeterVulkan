@@ -22,23 +22,23 @@ namespace LostPeterEngine
 		VertexElement();
 		VertexElement(uint16 nSourceIndex,    
                       size_t nOffset, 
-                      EVertexElementSemanticType typeSemantic,
-					  EVertexElementDataType typeData,
+                      FVertexElementSemanticType typeSemantic,
+					  FVertexElementDataType typeData,
                       uint16 nIndex = 0);
 		~VertexElement();
 		
 	public:
 		uint16 m_nSourceIndex;
 		size_t m_nOffset;
-		EVertexElementSemanticType m_eVertexElementSemantic;
-		EVertexElementDataType m_eVertexElementData;
+		FVertexElementSemanticType m_eVertexElementSemantic;
+		FVertexElementDataType m_eVertexElementData;
 		uint16 m_nIndex;	
 
 	public:
 		F_FORCEINLINE uint16 GetSourceIndex() const { return m_nSourceIndex; }
 		F_FORCEINLINE size_t GetOffset() const { return m_nOffset; }
-		F_FORCEINLINE EVertexElementSemanticType GetVertexElementSemanticType() const { return m_eVertexElementSemantic; }
-		F_FORCEINLINE EVertexElementDataType GetVertexElementDataType() const { return m_eVertexElementData; }
+		F_FORCEINLINE FVertexElementSemanticType GetVertexElementSemanticType() const { return m_eVertexElementSemantic; }
+		F_FORCEINLINE FVertexElementDataType GetVertexElementDataType() const { return m_eVertexElementData; }
 		F_FORCEINLINE uint16 GetIndex() const { return m_nIndex; }
 	
 	public:
@@ -46,13 +46,13 @@ namespace LostPeterEngine
 			
 	public:
 		size_t GetSize() const;
-		static size_t GetTypeSize(EVertexElementDataType typeData);
-		static uint16 GetTypeCount(EVertexElementDataType typeData);
-		static EVertexElementDataType MultiplyTypeCount(EVertexElementDataType typeData, uint16 nCount);
-		static EVertexElementDataType GetBaseType(EVertexElementDataType typeData);
-		static void	ConvertColorValue(EVertexElementDataType typeDataSrc, EVertexElementDataType typeDataDst, uint32* ptr);
-		static uint32 ConvertColorValue(const FColor& srcColor, EVertexElementDataType typeData);
-		static EVertexElementDataType GetBestColorVertexElementType();
+		static size_t GetTypeSize(FVertexElementDataType typeData);
+		static uint16 GetTypeCount(FVertexElementDataType typeData);
+		static FVertexElementDataType MultiplyTypeCount(FVertexElementDataType typeData, uint16 nCount);
+		static FVertexElementDataType GetBaseType(FVertexElementDataType typeData);
+		static void	ConvertColorValue(FVertexElementDataType typeDataSrc, FVertexElementDataType typeDataDst, uint32* ptr);
+		static uint32 ConvertColorValue(const FColor& srcColor, FVertexElementDataType typeData);
+		static FVertexElementDataType GetBestColorVertexElementType();
 
 		F_FORCEINLINE void BaseVertexPointerToElement(void* pBase, void** pElem) const
 		{

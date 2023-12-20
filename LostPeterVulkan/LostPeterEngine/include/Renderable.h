@@ -24,10 +24,10 @@ namespace LostPeterEngine
 
     public:
     protected:
-        ERenderQueueType typeRenderQueue;
+        FRenderQueueType typeRenderQueue;
 
     public:
-        F_FORCEINLINE ERenderQueueType GetRenderQueueType() const { return this->typeRenderQueue; }
+        F_FORCEINLINE FRenderQueueType GetRenderQueueType() const { return this->typeRenderQueue; }
 
     public:
         

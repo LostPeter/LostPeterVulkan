@@ -13,7 +13,7 @@
 
 namespace LostPeterEngine
 {
-    RenderPipeline::RenderPipeline(const String& nameRenderPipeline, RenderPipelineManager* pRenderPipelineManager, ERenderPipelineType eRenderPipelineType)
+    RenderPipeline::RenderPipeline(const String& nameRenderPipeline, RenderPipelineManager* pRenderPipelineManager, FRenderPipelineType eRenderPipelineType)
         : Base(nameRenderPipeline)
         , m_pRenderPipelineManager(pRenderPipelineManager)
 		, m_eRenderPipelineType(eRenderPipelineType)
@@ -28,6 +28,8 @@ namespace LostPeterEngine
 
     bool RenderPipeline::RenderOneFrame(RenderFrameEvent& event)
     {
+
+
 
         return true;
     }

@@ -46,22 +46,6 @@ namespace LostPeterEngine
     }
 
 
-    //ERenderPipelineType
-     const String s_nameRenderPipeLineTypes[] = 
-	{
-		"Forward",
-		"Deferred"
-	};
-    const String& E_GetRenderPipelineTypeName(ERenderPipelineType type)
-    {
-        return s_nameRenderPipeLineTypes[(int)type];
-    }
-    const String& E_GetRenderPipelineTypeName(int type)
-    {
-        return s_nameRenderPipeLineTypes[type];
-    }
-
-
     //VulkanDescriptorSetType
     static String s_nameDescriptorSetTypes[] = 
     {
@@ -193,37 +177,7 @@ namespace LostPeterEngine
         return E_Object_Mesh;
     }
 
-
-    //ERenderQueueType
-    static String s_nameRenderQueueTypes[] = 
-    {
-        "BackGround",               //0:    BackGround            
-        "Opaque",                   //1:    Opaque
-        "Terrain",                  //2:    Terrain
-        "Sky",                      //3:    Sky
-        "Transparent",              //4:    Transparent
-        "UI",                       //5:    UI
-    };
-    const String& E_GetRenderQueueTypeName(ERenderQueueType type)
-    {
-        return s_nameRenderQueueTypes[(int)type];
-    }
-    const String& E_GetRenderQueueTypeName(int type)
-    {
-        return s_nameRenderQueueTypes[type];
-    }
-    ERenderQueueType E_ParseRenderQueueType(const String& strName)
-    {
-        for (size_t i = 0; i < (int)E_RenderQueue_Count; i++)
-        {
-            if (s_nameRenderQueueTypes[i] == strName)
-                return (ERenderQueueType)(i);
-        }
-        F_Assert(false && "E_ParseRenderQueueType: Wrong type name !")
-        return E_RenderQueue_Opaque;
-    }
-
-
+    
     //ECpuInfoType
     const String s_nameCPUInfoTypes[] = 
 	{

@@ -14,7 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPipelineForward::RenderPipelineForward(RenderPipelineManager* pRenderPipelineManager)
-        : RenderPipeline("RenderPipelineForward", pRenderPipelineManager, E_RenderPipeline_Forward)
+        : RenderPipeline("RenderPipelineForward", pRenderPipelineManager, F_RenderPipeline_Forward)
     {
 
     }
