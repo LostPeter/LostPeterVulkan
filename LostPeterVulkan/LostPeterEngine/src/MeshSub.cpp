@@ -33,19 +33,11 @@ namespace LostPeterEngine
         , poVertexCount(0)
         , poVertexBuffer_Size(0)
         , poVertexBuffer_Data(nullptr)
-        , poVertexBuffer(VK_NULL_HANDLE)
-        , poVertexBufferMemory(VK_NULL_HANDLE)
-        , poVertexBuffer_Staging(VK_NULL_HANDLE)
-        , poVertexBufferMemory_Staging(VK_NULL_HANDLE)
 
         //Index
         , poIndexCount(0)
         , poIndexBuffer_Size(0)
         , poIndexBuffer_Data(nullptr)
-        , poIndexBuffer(VK_NULL_HANDLE)
-        , poIndexBufferMemory(VK_NULL_HANDLE)
-        , poIndexBuffer_Staging(VK_NULL_HANDLE)
-        , poIndexBufferMemory_Staging(VK_NULL_HANDLE)
 
         //Instance
         , instanceCount(1)

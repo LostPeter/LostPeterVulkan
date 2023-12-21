@@ -48,20 +48,12 @@ namespace LostPeterEngine
         uint32_t poVertexCount;
         size_t poVertexBuffer_Size;
         void* poVertexBuffer_Data;
-        VkBuffer poVertexBuffer;
-        VkDeviceMemory poVertexBufferMemory;
-        VkBuffer poVertexBuffer_Staging;
-        VkDeviceMemory poVertexBufferMemory_Staging;
 
         //Index
         std::vector<uint32_t> indices;
         uint32_t poIndexCount;
         size_t poIndexBuffer_Size;
         void* poIndexBuffer_Data;
-        VkBuffer poIndexBuffer;
-        VkDeviceMemory poIndexBufferMemory;
-        VkBuffer poIndexBuffer_Staging;
-        VkDeviceMemory poIndexBufferMemory_Staging;
 
         //Instance
         uint32_t instanceCount;

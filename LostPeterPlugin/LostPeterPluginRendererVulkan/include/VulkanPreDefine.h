@@ -104,6 +104,9 @@ namespace LostPeterPluginRendererVulkan
     typedef std::vector<VkDescriptorSet> VkDescriptorSetVector;
     typedef std::vector<VkWriteDescriptorSet> VkWriteDescriptorSetVector;
 
+    typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;
+    typedef std::vector<VkVertexInputAttributeDescription> VkVertexInputAttributeDescriptionVector;
+
 
     /////////////////////////////////////// Vulkan Define ////////////////////////////////
 	#define E_CPU_ALLOCATOR              nullptr

@@ -164,59 +164,6 @@ namespace LostPeterEngine
 	};
 
 
-    enum VulkanDescriptorSetType
-    {
-        Vulkan_DescriptorSet_Pass = 0,                      //0:  Pass
-        Vulkan_DescriptorSet_Object,                        //1:  Object
-        Vulkan_DescriptorSet_ObjectTerrain,                 //2:  ObjectTerrain
-        Vulkan_DescriptorSet_ObjectGrid,                    //3:  ObjectGrid
-        Vulkan_DescriptorSet_ObjectCameraAxis,              //4:  ObjectCameraAxis
-        Vulkan_DescriptorSet_ObjectCoordinateAxis,          //5:  ObjectCoordinateAxis
-        Vulkan_DescriptorSet_ObjectLineFlat2D,              //6:  ObjectLineFlat2D
-        Vulkan_DescriptorSet_ObjectLineFlat3D,              //7:  ObjectLineFlat3D
-        Vulkan_DescriptorSet_ObjectCopyBlit,                //8:  ObjectCopyBlit
-        Vulkan_DescriptorSet_Material,                      //9:  Material
-        Vulkan_DescriptorSet_Instance,                      //10: Instance
-        Vulkan_DescriptorSet_TextureCopy,                   //11: TextureCopy
-        Vulkan_DescriptorSet_Tessellation,                  //12: Tessellation
-        Vulkan_DescriptorSet_Geometry,                      //13: Geometry
-        Vulkan_DescriptorSet_TextureVS,                     //14: TextureVS
-        Vulkan_DescriptorSet_TextureTESC,                   //15: TextureTESC
-        Vulkan_DescriptorSet_TextureTESE,                   //16: TextureTESE
-        Vulkan_DescriptorSet_TextureFS,                     //17: TextureFS
-        Vulkan_DescriptorSet_TextureFrameColor,             //18: TextureFrameColor
-        Vulkan_DescriptorSet_TextureCSR,                    //19: TextureCSR
-        Vulkan_DescriptorSet_TextureCSRW,                   //20: TextureCSRW
-
-        Vulkan_DescriptorSet_Count,
-    };
-    engineExport const String& Util_GetDescriptorSetTypeName(VulkanDescriptorSetType type);
-    engineExport const String& Util_GetDescriptorSetTypeName(int type);
-    engineExport VulkanDescriptorSetType Util_ParseDescriptorSetType(const String& strName);
-
-
-    enum VulkanDescriptorSetUsageType
-    {
-        Vulkan_DescriptorSetUsage_Sampler = 0,              //0:  Sampler                   VK_DESCRIPTOR_TYPE_SAMPLER
-        Vulkan_DescriptorSetUsage_CombinedImageSampler,     //1:  CombinedImageSampler      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
-        Vulkan_DescriptorSetUsage_SampledImage,             //2:  SampledImage              VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE
-        Vulkan_DescriptorSetUsage_StorageImage,             //3:  StorageImage              VK_DESCRIPTOR_TYPE_STORAGE_IMAGE
-        Vulkan_DescriptorSetUsage_UniformTexelBuffer,       //4:  UniformTexelBuffer        VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER
-        Vulkan_DescriptorSetUsage_StorageTexelBuffer,       //5:  StorageTexelBuffer        VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER
-        Vulkan_DescriptorSetUsage_UniformBuffer,            //6:  UniformBuffer             VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
-        Vulkan_DescriptorSetUsage_StorageBuffer,            //7:  StorageBuffer             VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
-        Vulkan_DescriptorSetUsage_UniformBufferDynamic,     //8:  UniformBufferDynamic      VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC
-        Vulkan_DescriptorSetUsage_StorageBufferDynamic,     //9:  StorageBufferDynamic      VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
-        Vulkan_DescriptorSetUsage_InputAttachment,          //10: InputAttachment           VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
-
-        Vulkan_DescriptorSetUsage_Count,
-    };
-    engineExport const String& Util_GetDescriptorSetUsageTypeName(VulkanDescriptorSetUsageType type);
-    engineExport const String& Util_GetDescriptorSetUsageTypeName(int type);
-    engineExport VulkanDescriptorSetUsageType Util_ParseDescriptorSetUsageType(const String& strName);
-    engineExport VkDescriptorType Util_Transform2VkDescriptorType(VulkanDescriptorSetUsageType type);    
-
-    
     enum EObjectType
     {
         E_Object_Mesh = 0,                      //0:    Mesh
@@ -469,16 +416,6 @@ namespace LostPeterEngine
     engineExport const String& E_GetFrameProfilerTypeName(int type);
 
 
-////////////////////////////// Vulkan //////////////////////////////    
-    typedef std::vector<VkVertexInputBindingDescription> VkVertexInputBindingDescriptionVector;
-    typedef std::vector<VkVertexInputAttributeDescription> VkVertexInputAttributeDescriptionVector;
-
-    const VkVertexInputBindingDescriptionVector& Util_GetVkVertexInputBindingDescriptionVector(FMeshVertexType type);
-    const VkVertexInputAttributeDescriptionVector& Util_GetVkVertexInputAttributeDescriptionVector(FMeshVertexType type);
-    VkVertexInputBindingDescriptionVector* Util_GetVkVertexInputBindingDescriptionVectorPtr(FMeshVertexType type);
-    VkVertexInputAttributeDescriptionVector* Util_GetVkVertexInputAttributeDescriptionVectorPtr(FMeshVertexType type);
-
-
 ////////////////////////////// Class ///////////////////////////////
     struct LightConstants;
     struct PassConstants;
@@ -590,36 +527,6 @@ namespace LostPeterEngine
         String pathShader;
     };
     typedef std::vector<ShaderModuleInfo> ShaderModuleInfoVector;
-
-
-    struct engineExport DescriptorSetInfo
-    {
-        DescriptorSetInfo();
-        DescriptorSetInfo(const String& _nameDescriptorSetInfo,
-                          VulkanDescriptorSetType _typeDescriptorSet,
-                          VulkanDescriptorSetUsageType _typeDescriptorSetUsage,
-                          const String& _nameShaderTypes);
-        ~DescriptorSetInfo();
-
-        String nameDescriptorSetInfo;
-        VulkanDescriptorSetType typeDescriptorSet;
-        VulkanDescriptorSetUsageType typeDescriptorSetUsage;
-        String nameShaderTypes;
-    };
-    typedef std::vector<DescriptorSetInfo*> DescriptorSetInfoPtrVector;
-    typedef std::map<String, DescriptorSetInfo*> DescriptorSetInfoPtrMap;
-
-
-    struct engineExport DescriptorSetLayoutInfo
-    {
-        DescriptorSetLayoutInfo();
-        DescriptorSetLayoutInfo(const String& _nameDescriptorSetLayoutInfo);
-        ~DescriptorSetLayoutInfo();
-
-        String nameDescriptorSetLayoutInfo;
-    };
-    typedef std::vector<DescriptorSetLayoutInfo*> DescriptorSetLayoutInfoPtrVector;
-    typedef std::map<String, DescriptorSetLayoutInfo*> DescriptorSetLayoutInfoPtrMap;
 
 
     struct engineExport MaterialInfo

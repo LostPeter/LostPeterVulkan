@@ -16,8 +16,5 @@
 #include "FPreIncludeThird.h"
 #include "UIPreIncludeThird.h"
 
-//Vulkan
-#include <vulkan/vulkan.h>
-
 
 #endif

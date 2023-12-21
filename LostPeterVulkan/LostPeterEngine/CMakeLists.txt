@@ -93,15 +93,13 @@ elseif (APPLE)
     SET(COCOA_LIBS ${SYS_FRAMEWORKS_DIR}/Cocoa.framework)
     SET(COREVIDEO_LIBS ${SYS_FRAMEWORKS_DIR}/CoreVideo.framework)
     SET(IOKIT_LIBS ${SYS_FRAMEWORKS_DIR}/IOKit.framework)
-    SET(SYS_VULKAN_LIBS "$ENV{VULKAN_HOME}/macOS/Frameworks/vulkan.framework")
 
 endif ()
 MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
 INCLUDE_DIRECTORIES(${LIB_INCLUDE})
 
-#LIB_VULKAN_DIR, LIB_DEPENDENCIES_DIR, LIB_PLUGINS_DIR
+#LIB_DEPENDENCIES_DIR, LIB_PLUGINS_DIR
 if (WIN32)
-    SET(LIB_VULKAN_DIR "$ENV{VULKAN_SDK}/Lib")
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Lib/Windows") 
     SET(LIB_PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Plugins/Windows")
 
@@ -109,12 +107,10 @@ elseif (ANDROID)
 
 
 elseif (APPLE)
-    SET(LIB_VULKAN_DIR "$ENV{VULKAN_HOME}/macOS/lib")
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Lib/MacOS")
     SET(LIB_PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Plugins/MacOS")
 
 endif ()
-MESSAGE(STATUS "LIB_VULKAN_DIR dir: ${LIB_VULKAN_DIR}")
 MESSAGE(STATUS "LIB_DEPENDENCIES_DIR dir: ${LIB_DEPENDENCIES_DIR}")
 MESSAGE(STATUS "LIB_PLUGINS_DIR dir: ${LIB_PLUGINS_DIR}")
 
@@ -150,7 +146,6 @@ if (WIN32)
     endif()
     if (DEBUG)
         LINK_LIBRARIES(shlwapi.lib
-                       ${LIB_VULKAN_DIR}/vulkan-1.lib
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4_d.lib
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6_d.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan_d.lib
@@ -165,7 +160,6 @@ if (WIN32)
         
     else ()
         LINK_LIBRARIES(shlwapi.lib
-                       ${LIB_VULKAN_DIR}/vulkan-1.lib
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4.lib
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan.lib
@@ -219,10 +213,7 @@ elseif (APPLE)
                        ${LIB_PLUGINS_DIR}/libLostPeterUI.dylib)
     endif()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
-                          ${LIB_VULKAN_DIR}/libvulkan.1.dylib 
-                          ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib 
-                          ${SYS_VULKAN_LIBS})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME})
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS ON)
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES CMAKE_ENABLE_EXPORTS TRUE)   
