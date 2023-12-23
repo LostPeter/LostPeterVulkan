@@ -65,7 +65,6 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/tinyxml-2.6.2"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterFoundation/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterUI/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterVulkan/include")
 
 elseif (ANDROID)     
@@ -84,7 +83,6 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/tinyxml-2.6.2"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterFoundation/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterUI/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterVulkan/include")
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
@@ -154,7 +152,6 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/tinyxml-2.6.2_d.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib
-                       ${LIB_PLUGINS_DIR}/LostPeterUI_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterVulkan_d.lib)
     else ()
         LINK_LIBRARIES(shlwapi.lib 
@@ -167,7 +164,6 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/tinyxml-2.6.2.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib
-                       ${LIB_PLUGINS_DIR}/LostPeterUI.lib
                        ${LIB_PLUGINS_DIR}/LostPeterVulkan.lib)
     endif ()
     MY_ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
@@ -183,12 +179,10 @@ elseif (APPLE)
     if (DEBUG)
         TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
                               ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
-                              ${LIB_PLUGINS_DIR}/libLostPeterUI_d.dylib
                               ${LIB_PLUGINS_DIR}/libLostPeterVulkan_d.dylib)
     else ()
         TARGET_LINK_LIBRARIES(${PROJECT_NAME}
                               ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
-                              ${LIB_PLUGINS_DIR}/libLostPeterUI.dylib 
                               ${LIB_PLUGINS_DIR}/libLostPeterVulkan.dylib)
     endif ()
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)

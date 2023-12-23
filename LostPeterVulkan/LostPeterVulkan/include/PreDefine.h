@@ -18,8 +18,6 @@
 #include "FPreDefine.h"
 #include "FPreInclude.h"
 using namespace LostPeterFoundation;
-#include "UIPreDefine.h"
-using namespace LostPeterUI;
 
 namespace LostPeterVulkan
 {

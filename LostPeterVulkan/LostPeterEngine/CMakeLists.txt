@@ -57,17 +57,12 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/assimp-5.2.4"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glfw-3.3.6"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glm-0.9.9.8"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/imgui-1.85_glfw_vulkan"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/libcpuid-0.5.1"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/libsquish-1.15"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/include/Windows/rapidxml-1.13"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/stb-0.02"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/tinyxml-2.6.2"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/zlib-1.2.11"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterFoundation/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterUI/include")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterFoundation/include")
 
 elseif (ANDROID) 
 
@@ -77,17 +72,12 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/assimp-5.2.4"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glfw-3.3.6"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glm-0.9.9.8"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/imgui-1.85_glfw_vulkan"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/libcpuid-0.5.1"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/libsquish-1.15"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/include/MacOS/rapidxml-1.13"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/stb-0.02"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/tinyxml-2.6.2"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/zlib-1.2.11"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterFoundation/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterUI/include")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterFoundation/include")
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
     SET(COCOA_LIBS ${SYS_FRAMEWORKS_DIR}/Cocoa.framework)
@@ -148,29 +138,21 @@ if (WIN32)
         LINK_LIBRARIES(shlwapi.lib
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4_d.lib
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6_d.lib
-                       ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libcpuid-0.5.1_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/squish-1.15_d.lib
-                       ${LIB_DEPENDENCIES_DIR}/tinyxml-2.6.2_d.lib
-                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
-                       ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib
-                       ${LIB_PLUGINS_DIR}/LostPeterUI_d.lib)
+                       ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib)
         
     else ()
         LINK_LIBRARIES(shlwapi.lib
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4.lib
                        ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6.lib
-                       ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan.lib
                        ${LIB_DEPENDENCIES_DIR}/libcpuid-0.5.1.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/squish-1.15.lib
-                       ${LIB_DEPENDENCIES_DIR}/tinyxml-2.6.2.lib
-                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
-                       ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib
-                       ${LIB_PLUGINS_DIR}/LostPeterUI.lib)
+                       ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib)
         
     endif()
     MY_ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
@@ -190,27 +172,19 @@ elseif (APPLE)
     if (DEBUG)
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4_d.a
                        ${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6_d.a
-                       "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan_d.a -Wl,-noall_load"
                        ${LIB_DEPENDENCIES_DIR}/libcpuid-0.5.1_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libsquish-1.15_d.a
-                       ${LIB_DEPENDENCIES_DIR}/libtinyxml-2.6.2_d.a
-                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a
-                       ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
-                       ${LIB_PLUGINS_DIR}/libLostPeterUI_d.dylib)
+                       ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib)
     else ()
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4.a
                        ${LIB_DEPENDENCIES_DIR}/libglfw-3.3.6.a
-                       "-Wl,-all_load ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_glfw_vulkan.a -Wl,-noall_load"
                        ${LIB_DEPENDENCIES_DIR}/libcpuid-0.5.1.a
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libsquish-1.15.a
-                       ${LIB_DEPENDENCIES_DIR}/libtinyxml-2.6.2.a
-                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a
-                       ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
-                       ${LIB_PLUGINS_DIR}/libLostPeterUI.dylib)
+                       ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib)
     endif()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
     TARGET_LINK_LIBRARIES(${PROJECT_NAME})

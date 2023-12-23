@@ -33,6 +33,7 @@ namespace LostPeterPluginRendererVulkan
         VkPhysicalDeviceFeatures2* m_pVkPhysicalDeviceFeatures2;
         uint32 m_nDesiredNumSwapChainImages;
 
+        VulkanVolk* m_pVolk;
         bool m_bIsEnableValidationLayers;
         VulkanDebug* m_pDebug;
         VulkanDevice* m_pDevice;
@@ -54,6 +55,7 @@ namespace LostPeterPluginRendererVulkan
         F_FORCEINLINE uint32 GetDesiredNumSwapChainImages() const { return m_nDesiredNumSwapChainImages; }
         F_FORCEINLINE void SetDesiredNumSwapChainImages(uint32 num) { m_nDesiredNumSwapChainImages = num; }
         
+        F_FORCEINLINE VulkanVolk* GetVolk() const { return m_pVolk; }
         F_FORCEINLINE bool IsEnableValidationLayers() const { return m_bIsEnableValidationLayers; }
         F_FORCEINLINE VulkanDebug* GetDebug() const { return m_pDebug; }
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
@@ -67,8 +69,10 @@ namespace LostPeterPluginRendererVulkan
     public:
     protected:
         void destroyDebug();
+        void destroyVolk();
 
         bool createInstance();
+        bool createVolk();
         bool createDebug();
         bool createDevice();
 

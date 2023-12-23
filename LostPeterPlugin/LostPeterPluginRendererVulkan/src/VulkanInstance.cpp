@@ -11,6 +11,7 @@
 
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanDebug.h"
+#include "../include/VulkanVolk.h"
 #include "../include/VulkanDevice.h"
 
 namespace LostPeterPluginRendererVulkan
@@ -20,6 +21,7 @@ namespace LostPeterPluginRendererVulkan
         , m_nPreferredVendorID(-1)
         , m_pVkPhysicalDeviceFeatures2(nullptr)
         , m_nDesiredNumSwapChainImages(3)
+        , m_pVolk(nullptr)
         , m_pDebug(nullptr)
         , m_pDevice(nullptr)
         , m_eSwapChainImagePixelFormat(F_PixelFormat_BYTE_A8R8G8B8_UNORM)
@@ -56,6 +58,7 @@ namespace LostPeterPluginRendererVulkan
         F_DELETE(m_pDevice)
         DestroyVkInstance(m_vkInstance);
         m_vkInstance = VK_NULL_HANDLE;
+        destroyVolk();
         
         F_LogInfo("VulkanInstance::Destroy: Destroy success !");
     }
@@ -63,16 +66,20 @@ namespace LostPeterPluginRendererVulkan
     {
         F_DELETE(m_pDebug)
     }
+    void VulkanInstance::destroyVolk()
+    {
+        F_DELETE(m_pVolk)
+    }
 
     bool VulkanInstance::Init()
     {
-        //1> LoadVulkanLibrary
-        //if (!VulkanLauncher::GetPlatform()->LoadVulkanLibrary())
-        // {
-        //     F_LogError("*********************** VulkanInstance::Init: 1> LoadVulkanLibrary failed !");
-        //     return false;
-        // }
-        F_LogInfo("VulkanInstance::Init: 1> LoadVulkanLibrary success !");
+        //1> createVolk
+        if (!createVolk())
+        {
+            F_LogError("*********************** VulkanInstance::Init: 1> createVolk failed !");
+            return false;
+        }
+        F_LogInfo("VulkanInstance::Init: 1> createVolk success !");
 
         //2> createInstance
         if (!createInstance())
@@ -98,6 +105,15 @@ namespace LostPeterPluginRendererVulkan
         }
         F_LogInfo("VulkanInstance::Init: 4> createDevice success !");
 
+        return true;
+    }
+    bool VulkanInstance::createVolk()
+    {
+        m_pVolk = new VulkanVolk;
+        if (!m_pVolk->VolkInitialize())
+        {
+            return false;
+        }
         return true;
     }
     bool VulkanInstance::createInstance()
@@ -141,6 +157,7 @@ namespace LostPeterPluginRendererVulkan
         if (result == VK_ERROR_INCOMPATIBLE_DRIVER) 
         {
             F_LogError("*********************** VulkanInstance::createInstance: Can not find a compatible Vulkan driver (ICD) !");
+            return false;
         }
         else if (result == VK_ERROR_EXTENSION_NOT_PRESENT)
         {
@@ -174,12 +191,14 @@ namespace LostPeterPluginRendererVulkan
         else if (result != VK_SUCCESS) 
         {
             F_LogError("*********************** VulkanInstance::createInstance: Create vulkan instance failed !");
+            return false;
         }
         else 
         {
             F_LogInfo("VulkanInstance::createInstance: Create vulkan instance success !");
         }
         
+        m_pVolk->VolkLoadInstanceOnly(m_vkInstance);
         return true;
     }
     bool VulkanInstance::createDebug()
@@ -282,7 +301,13 @@ namespace LostPeterPluginRendererVulkan
         }
 
         m_pDevice->SetVkPhysicalDeviceFeatures2(m_pVkPhysicalDeviceFeatures2);
-        return m_pDevice->Init(deviceIndex, m_bIsEnableValidationLayers);
+        if (!m_pDevice->Init(deviceIndex, m_bIsEnableValidationLayers))
+        {
+            F_LogError("*********************** VulkanInstance::createDevice: m_pDevice->Init failed !");
+            return false;
+        }
+        
+        return true; 
     }
     
 

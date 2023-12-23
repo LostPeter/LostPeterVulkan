@@ -12,6 +12,8 @@
 #ifndef _VULKAN_PRE_DEFINE_H_
 #define _VULKAN_PRE_DEFINE_H_
 
+#include "volk.h"
+
 #include "FPreDefine.h"
 #include "FPreInclude.h"
 using namespace LostPeterFoundation;
@@ -164,6 +166,7 @@ namespace LostPeterPluginRendererVulkan
 	class VulkanSwapChain;
     class VulkanTexture;
     class VulkanTextureManager;
+    class VulkanVolk;
 
 	typedef std::vector<VulkanDeviceMemoryAllocation*> VulkanDeviceMemoryAllocationPtrVector;
 

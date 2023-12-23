@@ -11,6 +11,7 @@
 
 #include "../include/VulkanDevice.h"
 #include "../include/VulkanInstance.h"
+#include "../include/VulkanVolk.h"
 #include "../include/VulkanQueue.h"
 #include "../include/VulkanFenceManager.h"
 #include "../include/VulkanDeviceMemoryManager.h"
@@ -334,26 +335,41 @@ namespace LostPeterPluginRendererVulkan
             F_LogError("*********************** VulkanDevice::createDevice: vkCreateDevice create a Vulkan device failed !");
             return false;
         }
+        m_pInstance->GetVolk()->VolkLoadDevice(m_vkDevice);
 
+        //VulkanQueue Graphics
         m_pQueueGraphics = new VulkanQueue();
-        m_pQueueGraphics->Init(this, queueFamilyIndex_Graphics);
+        if (!m_pQueueGraphics->Init(this, queueFamilyIndex_Graphics))
+        {
+            F_LogError("*********************** VulkanDevice::createDevice: VulkanQueue Graphics init failed !");
+            return false;
+        }
 
+        //VulkanQueue Compute
         if (queueFamilyIndex_Compute == -1) 
         {
             queueFamilyIndex_Compute = queueFamilyIndex_Graphics;
         }
         m_pQueueCompute = new VulkanQueue();
-        m_pQueueCompute->Init(this, queueFamilyIndex_Compute);
+        if (!m_pQueueCompute->Init(this, queueFamilyIndex_Compute))
+        {
+            F_LogError("*********************** VulkanDevice::createDevice: VulkanQueue Compute init failed !");
+            return false;
+        }
 
+        //VulkanQueue Transfer
         if (queueFamilyIndex_Transfer == -1) 
         {
             queueFamilyIndex_Transfer = queueFamilyIndex_Compute;
         }
         m_pQueueTransfer = new VulkanQueue();
-        m_pQueueTransfer->Init(this, queueFamilyIndex_Transfer);
+        if (!m_pQueueTransfer->Init(this, queueFamilyIndex_Transfer))
+        {
+            F_LogError("*********************** VulkanDevice::createDevice: VulkanQueue Transfer init failed !");
+            return false;
+        }
 
         m_vkCommandPoolTransfer = CreateVkCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, (uint32_t)queueFamilyIndex_Transfer);
-
         return true;
     }
     bool VulkanDevice::checkPixelFormats()

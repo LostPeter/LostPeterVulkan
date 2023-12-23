@@ -21,8 +21,8 @@ else
 fi
 
 
-#1> Build LostPeterUI
-sh ./Build_MacOS_LostPeterUI.sh $debug $rebuild
+#1> Build LostPeterFoundation
+sh ./Build_MacOS_LostPeterFoundation.sh $debug $rebuild
 
 
 #2> Build LostPeterEngine

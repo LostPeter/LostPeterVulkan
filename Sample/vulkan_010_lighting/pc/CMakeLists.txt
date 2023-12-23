@@ -56,7 +56,6 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/tinyxml-2.6.2"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/Windows/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterFoundation/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterUI/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterVulkan/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../share")
 
@@ -75,7 +74,6 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../Dependencies/Include/MacOS/zlib-1.2.11"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterFoundation/include"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterUI/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../../LostPeterVulkan/LostPeterVulkan/include"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../share")
 
@@ -129,7 +127,6 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/tinyxml-2.6.2_d.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib
-                       ${LIB_PLUGINS_DIR}/LostPeterUI_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterVulkan_d.lib
                        ${LIB_SHARE_DIR}/share_${NAME_PROJECT}_d.lib)
     else ()
@@ -143,7 +140,6 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/tinyxml-2.6.2.lib
                        ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib
-                       ${LIB_PLUGINS_DIR}/LostPeterUI.lib
                        ${LIB_PLUGINS_DIR}/LostPeterVulkan.lib
                        ${LIB_SHARE_DIR}/share_${NAME_PROJECT}.lib)
     endif()
@@ -166,7 +162,6 @@ elseif (APPLE)
                               ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib
                               ${SYS_VULKAN_LIBS}
                               ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.dylib
-                              ${LIB_PLUGINS_DIR}/libLostPeterUI_d.dylib
                               ${LIB_PLUGINS_DIR}/libLostPeterVulkan_d.dylib
                               ${LIB_SHARE_DIR}/libshare_${NAME_PROJECT}_d.dylib)
     else ()
@@ -178,7 +173,6 @@ elseif (APPLE)
                               ${LIB_VULKAN_DIR}/libvulkan.1.2.189.dylib
                               ${SYS_VULKAN_LIBS}
                               ${LIB_PLUGINS_DIR}/libLostPeterFoundation.dylib
-                              ${LIB_PLUGINS_DIR}/libLostPeterUI.dylib
                               ${LIB_PLUGINS_DIR}/libLostPeterVulkan.dylib
                               ${LIB_SHARE_DIR}/libshare_${NAME_PROJECT}.dylib)
     endif()

@@ -40,6 +40,7 @@
 #include "../include/VulkanSwapChain.h"
 #include "../include/VulkanTexture.h"
 #include "../include/VulkanTextureManager.h"
+#include "../include/VulkanVolk.h"
 
 
 namespace LostPeterPluginRendererVulkan

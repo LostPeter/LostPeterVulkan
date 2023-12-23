@@ -14,7 +14,15 @@
 
 #include "PreMacro.h"
 #include "FPreIncludeThird.h"
-#include "UIPreIncludeThird.h"
+
+//GLFW
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
+//imgui
+#include <imgui/imgui.h>
+#include <impl_glfw/imgui_impl_glfw.h>
+#include <impl_vulkan/imgui_impl_vulkan.h>
 
 //Vulkan
 #include <vulkan/vulkan.h>
