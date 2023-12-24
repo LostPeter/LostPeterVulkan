@@ -36,7 +36,8 @@ namespace LostPeterPluginRendererVulkan
         F_DELETE(m_pVulkanInstance)
     }
 
-    RenderWindow* VulkanRenderer::Init(bool bAutoCreateWindow, const String& strWndTitle /*= "Render Window"*/)
+    RenderWindow* VulkanRenderer::Init(bool bAutoCreateWindow, 
+                                       const String& strWndTitle /*= "Render Window"*/)
     {
         F_Assert(!m_bRendererIsInit && "VulkanRenderer::Init")
 
@@ -57,6 +58,12 @@ namespace LostPeterPluginRendererVulkan
         }
         initFromRenderCapabilities(nullptr);
         F_LogInfo("VulkanRenderer::Init: 2> Init render capabilities success !");
+
+        //3> Auto CreateWindow
+        if (bAutoCreateWindow)
+        {
+            
+        }
 
         return nullptr;
     }
@@ -83,11 +90,6 @@ namespace LostPeterPluginRendererVulkan
         
         AttachRenderTarget(pRenderWindow);
         return pRenderWindow;
-    }
-
-    bool VulkanRenderer::IsDeviceLost()
-    {
-        return false;
     }
 
     bool VulkanRenderer::initRenderCapabilities()

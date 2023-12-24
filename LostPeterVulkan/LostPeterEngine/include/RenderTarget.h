@@ -86,7 +86,7 @@ namespace LostPeterEngine
 		virtual void RemoveAllViewport();
 
         virtual void Update(bool bSwapBuffers = true);
-		virtual void SwapBuffers(bool bSwapBuffers = true);
+		virtual bool SwapBuffers(bool bSwapBuffers = true) = 0;
 			
 		virtual void NotifyObjectCameraRemoved(const ObjectCamera* pCamera);
 

@@ -146,10 +146,6 @@ namespace LostPeterEngine
             SwapBuffers();
         }
 	}
-	void RenderTarget::SwapBuffers(bool bSwapBuffers /*= true*/)
-	{
-		
-	}
 
 	void RenderTarget::NotifyObjectCameraRemoved(const ObjectCamera* pObjectCamera)
 	{

@@ -136,6 +136,8 @@ namespace LostPeterPluginRendererVulkan
         bool QueueSubmitVkCommandBuffers(const VkQueue& vkQueue,
                                          uint32_t commandBufferCount, 
                                          VkCommandBuffer* pCommandBuffer,
+                                         uint32_t signalSemaphoreCount,
+                                         VkSemaphore* pSignalSemaphores,
                                          VkFence vkFence);
         bool QueueWaitIdle(const VkQueue& vkQueue);
 
@@ -143,11 +145,19 @@ namespace LostPeterPluginRendererVulkan
         VkSemaphore CreateVkSemaphore();
         bool CreateVkSemaphore(VkSemaphore& vkSemaphore);
         void DestroyVkSemaphore(const VkSemaphore& vkSemaphore);
+
+        void DestroyVkSemaphore(VulkanSemaphore* pSemaphore);
+        void DestroyVkSemaphores(VulkanSemaphorePtrVector& aSemaphore);
         
         //////////////////// VkFence ////////////////////////
         VkFence CreateVkFence(bool isCreateSignaled);
         bool CreateVkFence(bool isCreateSignaled, VkFence& vkFence);
         void DestroyVkFence(const VkFence& vkFence);
+
+        void DestroyVkFence(VulkanFence* pFence);
+        void DestroyVkFences(VulkanFencePtrVector& aFence);
+        void RecoveryFence(VulkanFence* pFence);
+        void RecoveryFences(VulkanFencePtrVector& aFence);
 
         //////////////////// VkDescriptorPool ///////////////
         bool CreateVkDescriptorPool(uint32_t descriptorCount,    
@@ -161,6 +171,20 @@ namespace LostPeterPluginRendererVulkan
                                      uint32& numSwapChainImages,
                                      VkImageVector* pVkImages);
         void DestroyVkSwapchainKHR(const VkSwapchainKHR& vkSwapChainKHR);
+
+        VulkanSwapStatusType VkAcquireNextImageKHR(VkSwapchainKHR vkSwapChainKHR,
+                                                   uint64_t timeout,
+                                                   VkSemaphore vkSemaphore,
+                                                   VkFence vkFence,
+                                                   uint32_t* pImageIndex);
+
+        VulkanSwapStatusType VkQueuePresentKHR(VkSwapchainKHR vkSwapChainKHR,
+                                               const VkSemaphoreVector& aWaitSemaphores,
+                                               uint32_t* pImageIndices);
+        VulkanSwapStatusType VkQueuePresentKHR(const VkSwapchainKHRVector& aSwapChainKHR,
+                                               const VkSemaphoreVector& aWaitSemaphores,
+                                               uint32_t* pImageIndices);
+
 
         //////////////////// VkViewport /////////////////////
         void CreateVkViewport(float width,

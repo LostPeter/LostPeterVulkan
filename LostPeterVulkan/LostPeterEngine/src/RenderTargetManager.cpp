@@ -83,12 +83,6 @@ namespace LostPeterEngine
 			}
 			m_mapRenderTarget.erase(itFind);
 		}
-
-		if (pRenderTarget == m_pRenderer->GetActiveRenderTarget())
-		{
-            m_pRenderer->SetActiveRenderTarget(nullptr);
-        }
-
 		return pRenderTarget;
     }
     void RenderTargetManager::DestroyRenderTarget(const String& strName)

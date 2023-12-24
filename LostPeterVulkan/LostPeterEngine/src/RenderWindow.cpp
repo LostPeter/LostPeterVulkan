@@ -58,17 +58,16 @@ namespace LostPeterEngine
 
 	void RenderWindow::Update(bool bSwapBuffers /*= true*/)
 	{
-		RenderTarget::Update();
+		RenderTarget::Update(bSwapBuffers);
 	}
 
-	void RenderWindow::Present(Renderer* pRenderer)
+	bool RenderWindow::Present(Renderer* pRenderer)
 	{
 		if(pRenderer->IsEmptyGpuBuffer())
 		{
 			EmptyGPUCommandBuffer();
 		}
-        
-		SwapBuffers(pRenderer->IsVSync());
+		return SwapBuffers(pRenderer->IsVSync());
 	}
 
 	void RenderWindow::AddRenderWindowListener(RenderWindowListener* pRenderWindowListener)

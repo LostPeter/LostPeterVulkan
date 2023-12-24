@@ -12,16 +12,25 @@
 #include "../include/VulkanRenderWindow.h"
 #include "../include/VulkanDevice.h"
 #include "../include/VulkanSwapChain.h"
+#include "../include/VulkanQueue.h"
+#include "../include/VulkanSemaphore.h"
+#include "../include/VulkanFence.h"
+#include "../include/VulkanFenceManager.h"
 #include "../include/VulkanConverter.h"
 
 namespace LostPeterPluginRendererVulkan
 {
+    int VulkanRenderWindow::s_maxFramesInFight = 2;
     VulkanRenderWindow::VulkanRenderWindow(const String& nameRenderWindow, VulkanDevice* pDevice)
         : RenderWindow(nameRenderWindow)
         , m_pDevice(pDevice)
         , m_eSwapChainImagePixelFormat(F_PixelFormat_BYTE_A8R8G8B8_SRGB)
         , m_nDesiredNumSwapChainImages(3)
         , m_pSwapChain(nullptr)
+
+        , m_bIsCreateRenderComputeSycSemaphore(false)
+        , m_pSemaphore_GraphicsWait(nullptr)
+        , m_pSemaphore_ComputeWait(nullptr)
     {
         F_Assert(m_pDevice && "VulkanRenderWindow::VulkanRenderWindow")
     }   
@@ -35,9 +44,27 @@ namespace LostPeterPluginRendererVulkan
     {
         DestroySwapChain();
         F_DELETE(m_pSwapChain)
+        destroySyncObjects_RenderCompute();
+        destroySyncObjects_PresentRender();
 
         RenderWindow::Destroy();
     }
+    void VulkanRenderWindow::destroySyncObjects_RenderCompute()
+    {
+        F_DELETE(m_pSemaphore_GraphicsWait)
+        F_DELETE(m_pSemaphore_ComputeWait)
+    }
+    void VulkanRenderWindow::destroySyncObjects_PresentRender()
+    {
+        m_pDevice->DestroyVkSemaphores(m_aSemaphores_PresentComplete);
+        m_aSemaphores_PresentComplete.clear();
+        m_pDevice->DestroyVkSemaphores(m_aSemaphores_RenderComplete);
+        m_aSemaphores_RenderComplete.clear();
+        m_pDevice->RecoveryFences(m_aFences_InFlight);
+        m_aFences_InFlight.clear();
+        m_aFences_ImagesInFlight.clear();
+    }
+    
 
 	bool VulkanRenderWindow::Init(int32 nWidth, 
                                   int32 nHeight, 
@@ -55,9 +82,10 @@ namespace LostPeterPluginRendererVulkan
         //1> Create GLFWwindow
         if (!WindowBase::Init(nameWindow, nWidth, nHeight))
         {
-            F_LogError("*********************** VulkanRenderWindow::Init: Create GLFWwindow failed, name: [%s] !", nameWindow.c_str());
+            F_LogError("*********************** VulkanRenderWindow::Init: Create window failed, name: [%s] !", nameWindow.c_str());
             return false;
         }
+        F_LogInfo("VulkanRenderWindow::Init: Create window success, name: [%s] !", nameWindow.c_str());
 
         //2> Create SwapChain
         if (!RecreateSwapChain())
@@ -65,10 +93,96 @@ namespace LostPeterPluginRendererVulkan
             F_LogError("*********************** VulkanRenderWindow::Init: Create SwapChain failed, name: [%s] !", nameWindow.c_str());
             return false;
         }
+        F_LogInfo("VulkanRenderWindow::Init: Create SwapChain success !");
+
+        //3> createSyncObjects_PresentRender
+        if (!createSyncObjects_PresentRender())
+        {
+            F_LogError("*********************** VulkanRenderWindow::Init: Create SyncObjects PresentRender failed, name: [%s] !", nameWindow.c_str());
+            return false;
+        }
+        F_LogInfo("VulkanRenderWindow::Init: Create SyncObjects PresentRender success !");
+
+        //4> createSyncObjects_RenderCompute
+        if (this->m_bIsCreateRenderComputeSycSemaphore)
+        {
+            if (!createSyncObjects_RenderCompute())
+            {
+                F_LogError("*********************** VulkanRenderWindow::Init: Create SyncObjects RenderCompute failed, name: [%s] !", nameWindow.c_str());
+                return false;
+            }
+            F_LogInfo("VulkanRenderWindow::Init: Create SyncObjects RenderCompute success !");
+        }
 
         F_LogInfo("VulkanRenderWindow::Init: Create render window success, name: [%s] !", nameWindow.c_str());
         return true;
     }
+        bool VulkanRenderWindow::createSyncObjects_PresentRender()
+        {
+            this->m_aSemaphores_PresentComplete.clear();
+            this->m_aSemaphores_RenderComplete.clear();
+            this->m_aFences_InFlight.clear();
+            this->m_aFences_ImagesInFlight.clear();
+
+            for (int i = 0; i < s_maxFramesInFight; i++) 
+            {
+                VulkanSemaphore* pSemaphore_PresentComplete = new VulkanSemaphore(m_pDevice);
+                VulkanSemaphore* pSemaphore_RenderComplete = new VulkanSemaphore(m_pDevice);
+                VulkanFence* pFence_InFlight = VulkanFenceManager::GetSingleton().CreateFence(true);
+
+                if (!pSemaphore_PresentComplete->Init() || 
+                    !pSemaphore_RenderComplete->Init() ||
+                    !pFence_InFlight) 
+                {
+                    String msg = "*********************** VulkanRenderWindow::createSyncObjects_PresentRender: Failed to create present/render synchronization objects for a frame !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+
+                this->m_aSemaphores_PresentComplete.push_back(pSemaphore_PresentComplete);
+                this->m_aSemaphores_RenderComplete.push_back(pSemaphore_RenderComplete);
+                this->m_aFences_InFlight.push_back(pFence_InFlight);
+                this->m_aFences_ImagesInFlight.push_back(nullptr);
+            }
+            
+            F_LogInfo("VulkanRenderWindow::createSyncObjects_PresentRender: Success to create present/render synchronization objects for a frame !");
+            return true;
+        }
+        bool VulkanRenderWindow::createSyncObjects_RenderCompute()
+        {
+            VkSemaphoreCreateInfo semaphoreInfo = {};
+            semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+            //1> Semaphore GraphicsWait
+            m_pSemaphore_GraphicsWait = new VulkanSemaphore(m_pDevice);
+            if (!m_pSemaphore_GraphicsWait->Init())
+            {
+                String msg = "*********************** VulkanRenderWindow::createRenderComputeSyncObjects: Failed to create Semaphore GraphicsWait !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+            VkSemaphore vkSignalSemaphores = m_pSemaphore_GraphicsWait->GetVkSemaphore();
+            m_pDevice->QueueSubmitVkCommandBuffers(m_pDevice->GetQueueGraphics()->GetVkQueue(),
+                                                   0,
+                                                   nullptr,
+                                                   1,
+                                                   &vkSignalSemaphores,
+                                                   nullptr);
+            m_pDevice->QueueWaitIdle(m_pDevice->GetQueueGraphics()->GetVkQueue());                 
+
+            //2> Semaphore ComputeWait
+            m_pSemaphore_ComputeWait = new VulkanSemaphore(m_pDevice);
+            if (!m_pSemaphore_GraphicsWait->Init())
+            {
+                String msg = "*********************** VulkanRenderWindow::createRenderComputeSyncObjects: Failed to create Semaphore ComputeWait !";
+                F_LogError(msg.c_str());
+                throw std::runtime_error(msg);
+            }
+
+            F_LogInfo("VulkanRenderWindow::createSyncObjects_RenderCompute: Success to create Semaphore GraphicsWait/ComputeWait !");
+            return true;
+        }
+
 
     void VulkanRenderWindow::Resize(int32 nWidth, int32 nHeight)
     {
@@ -100,6 +214,26 @@ namespace LostPeterPluginRendererVulkan
 
     }
 
+    bool VulkanRenderWindow::SwapBuffers(bool bSwapBuffers /*= true*/)
+    {
+        if (!bSwapBuffers)
+            return true;
+
+        VulkanSwapStatusType typeSwapStatus = m_pSwapChain->Present(nullptr);
+        if (typeSwapStatus == Vulkan_SwapStatus_OutOfDate)
+        {
+            RecreateSwapChain();
+            return false;
+        }
+        else if (typeSwapStatus == Vulkan_SwapStatus_Lost)
+        {
+            RecreateSwapChain();
+            return false;
+        }
+
+        return true;
+    }
+
     bool VulkanRenderWindow::RequiresTextureFlipping() const
     {
         return false;
@@ -123,6 +257,7 @@ namespace LostPeterPluginRendererVulkan
     }
     bool VulkanRenderWindow::RecreateSwapChain()
     {
+        DestroySwapChain();
         const String& nameWindow = GetName();
 
         //1> Window Width/Height

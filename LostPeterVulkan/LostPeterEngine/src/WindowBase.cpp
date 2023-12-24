@@ -60,7 +60,7 @@ namespace LostPeterEngine
 
         //2> registerCallbacks()
         registerCallbacks();
-
+        
         return true;
     }
     bool WindowBase::createWindowGLFW(const String& nameWindow, int32 nWindowWidth, int32 nWindowHeight)

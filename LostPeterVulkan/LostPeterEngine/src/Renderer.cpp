@@ -31,14 +31,13 @@ namespace LostPeterEngine
 		, m_pVertexDeclarationManager(nullptr)
 		, m_pStreamManager(nullptr)
 		, m_pTextureManager(nullptr)
-        , m_pRenderWindow(nullptr)
+        , m_pActiveRenderWindow(nullptr)
         , m_pActiveRenderTarget(nullptr)
         , m_pActiveViewport(nullptr)
         , m_pActiveObjectCamera(nullptr)
         , m_bRendererIsInit(false)
         , m_bFullScreen(false)
 		, m_bFakeFullScreen(false)
-		, m_bUseNvPerfHud(false)
 		, m_bVSync(true)
 		, m_bWBuffer(false)
 		, m_bEmptyGpuBuffer(false)
@@ -121,7 +120,7 @@ namespace LostPeterEngine
 			}
 		}
 		EndFrame();
-		m_pRenderWindow->Present(this);
+		m_pActiveRenderWindow->Present(this);
     }
 
     void Renderer::NotifyObjectCameraRemoved(const ObjectCamera* pObjectCamera)
@@ -150,12 +149,27 @@ namespace LostPeterEngine
 		*pDest = VertexElement::ConvertColorValue(color, GetColorVertexElementType());
 	}
 
-    void Renderer::Present()
+	bool Renderer::BeginRenderWindow(RenderWindow* pRenderWindow)
 	{
-		if (m_pRenderWindow)
+		F_Assert(pRenderWindow && "Renderer::BeginRenderWindow")
+		m_pActiveRenderWindow = pRenderWindow;
+
+		return true;
+	}
+
+	bool Renderer::EndRenderWindow()
+	{
+
+		return true;
+	}
+
+    bool Renderer::Present()
+	{
+		if (m_pActiveRenderWindow)
 		{
-			m_pRenderWindow->Present(this);
+			return m_pActiveRenderWindow->Present(this);
 		}
+		return true;
 	}
 
     bool Renderer::SetViewProjectionMatrix(ObjectCamera* pObjectCamera)

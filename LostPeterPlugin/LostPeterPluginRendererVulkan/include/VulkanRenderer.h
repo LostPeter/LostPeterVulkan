@@ -28,7 +28,8 @@ namespace LostPeterPluginRendererVulkan
 
     public:
         virtual void Destroy();
-        virtual RenderWindow* Init(bool bAutoCreateWindow, const String& strWndTitle = "Render Window");
+        virtual RenderWindow* Init(bool bAutoCreateWindow, 
+                                   const String& strWndTitle = "Render Window");
     protected:
 		virtual bool initRenderCapabilities();
 		virtual void initFromRenderCapabilities(RenderTarget* pPrimary);
@@ -45,10 +46,9 @@ namespace LostPeterPluginRendererVulkan
                                                  uint32 nHeight, 
 												 const String2StringMap* pParams = nullptr);
 
-        virtual bool IsDeviceLost();
-
     public:
         virtual bool BeginFrame();
+            
 		virtual bool EndFrame();
 
         virtual bool SetViewport(Viewport* pViewport);

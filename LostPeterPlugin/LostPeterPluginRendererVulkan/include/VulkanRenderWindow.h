@@ -23,6 +23,9 @@ namespace LostPeterPluginRendererVulkan
         virtual ~VulkanRenderWindow();
 
     public:
+        static int s_maxFramesInFight;
+
+    public:
     protected:
         VulkanDevice* m_pDevice;
 
@@ -31,6 +34,15 @@ namespace LostPeterPluginRendererVulkan
         VkImageVector m_aSwapChainVkImages;
 	    VkImageViewVector m_aSwapChainVkImageViews;
         VulkanSwapChain* m_pSwapChain;
+
+        VulkanSemaphorePtrVector m_aSemaphores_PresentComplete;
+        VulkanSemaphorePtrVector m_aSemaphores_RenderComplete;
+        VulkanFencePtrVector m_aFences_InFlight;
+        VulkanFencePtrVector m_aFences_ImagesInFlight;
+        bool m_bIsCreateRenderComputeSycSemaphore;
+        VulkanSemaphore* m_pSemaphore_GraphicsWait;
+        VulkanSemaphore* m_pSemaphore_ComputeWait;
+        
 
     public:
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
@@ -47,6 +59,8 @@ namespace LostPeterPluginRendererVulkan
                           int32 nHeight, 
                           const String2StringMap* pParams);
 
+
+    public:
         virtual void Resize(int32 nWidth, int32 nHeight);
 		virtual void Reposition(int32 nLeft, int32 nTop);
 		virtual bool IsClosed() const;
@@ -55,15 +69,20 @@ namespace LostPeterPluginRendererVulkan
 		
 		virtual void EmptyGPUCommandBuffer();
 
+        virtual bool SwapBuffers(bool bSwapBuffers = true);
+
         virtual bool RequiresTextureFlipping() const;
 
     public:
         void DestroySwapChain();
         bool RecreateSwapChain();
 
-    public:
     protected:
-    
+        void destroySyncObjects_RenderCompute();
+        void destroySyncObjects_PresentRender();
+
+        bool createSyncObjects_PresentRender();
+        bool createSyncObjects_RenderCompute();
     };
 
 }; //LostPeterPluginRendererVulkan

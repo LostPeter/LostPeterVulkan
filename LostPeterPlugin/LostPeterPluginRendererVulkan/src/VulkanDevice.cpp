@@ -13,6 +13,8 @@
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanVolk.h"
 #include "../include/VulkanQueue.h"
+#include "../include/VulkanSemaphore.h"
+#include "../include/VulkanFence.h"
 #include "../include/VulkanFenceManager.h"
 #include "../include/VulkanDeviceMemoryManager.h"
 #include "../include/VulkanConverter.h"
@@ -588,12 +590,16 @@ namespace LostPeterPluginRendererVulkan
     bool VulkanDevice::QueueSubmitVkCommandBuffers(const VkQueue& vkQueue,
                                                    uint32_t commandBufferCount, 
                                                    VkCommandBuffer* pCommandBuffer,
+                                                   uint32_t signalSemaphoreCount,
+                                                   VkSemaphore* pSignalSemaphores,
                                                    VkFence vkFence)
     {
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = commandBufferCount;
         submitInfo.pCommandBuffers = pCommandBuffer;
+        submitInfo.signalSemaphoreCount = signalSemaphoreCount;
+        submitInfo.pSignalSemaphores = pSignalSemaphores;
         if (!E_CheckVkResult(vkQueueSubmit(vkQueue, commandBufferCount, &submitInfo, vkFence), "vkQueueSubmit")) 
         {
             F_LogError("*********************** VulkanDevice::QueueSubmitVkCommandBuffers: Failed to call vkQueueSubmit !");
@@ -638,6 +644,20 @@ namespace LostPeterPluginRendererVulkan
         }
     }
 
+    void VulkanDevice::DestroyVkSemaphore(VulkanSemaphore* pSemaphore)
+    {
+        F_DELETE(pSemaphore)
+    }
+    void VulkanDevice::DestroyVkSemaphores(VulkanSemaphorePtrVector& aSemaphore)
+    {
+        size_t count = aSemaphore.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            VulkanSemaphore* pSemaphore = aSemaphore[i];
+            F_DELETE(pSemaphore)
+        }
+    }
+
 
     //////////////////// VkFence ////////////////////////
     VkFence VulkanDevice::CreateVkFence(bool isCreateSignaled)
@@ -663,6 +683,34 @@ namespace LostPeterPluginRendererVulkan
         if (vkFence != VK_NULL_HANDLE)
         {
             vkDestroyFence(this->m_vkDevice, vkFence, E_CPU_ALLOCATOR);
+        }
+    }
+
+    void VulkanDevice::DestroyVkFence(VulkanFence* pFence)
+    {
+        m_pFenceManager->DestoryFence(pFence);
+    }
+    void VulkanDevice::DestroyVkFences(VulkanFencePtrVector& aFence)
+    {
+        size_t count = aFence.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            VulkanFence* pFence = aFence[i];
+            m_pFenceManager->DestoryFence(pFence);
+        }
+    }
+
+    void VulkanDevice::RecoveryFence(VulkanFence* pFence)
+    {
+        m_pFenceManager->RecoveryFence(pFence);
+    }
+    void VulkanDevice::RecoveryFences(VulkanFencePtrVector& aFence)
+    {
+        size_t count = aFence.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            VulkanFence* pFence = aFence[i];
+            m_pFenceManager->RecoveryFence(pFence);
         }
     }
 
@@ -741,6 +789,69 @@ namespace LostPeterPluginRendererVulkan
         }
     }
 
+    VulkanSwapStatusType VulkanDevice::VkAcquireNextImageKHR(VkSwapchainKHR vkSwapChainKHR,
+                                                             uint64_t timeout,
+                                                             VkSemaphore vkSemaphore,
+                                                             VkFence vkFence,
+                                                             uint32_t* pImageIndex)
+    {
+        VkResult result = vkAcquireNextImageKHR(this->m_vkDevice, vkSwapChainKHR, timeout, vkSemaphore, vkFence, pImageIndex);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR) 
+        {
+            return Vulkan_SwapStatus_OutOfDate;
+        }
+        else if (result == VK_ERROR_SURFACE_LOST_KHR) 
+        {
+            return Vulkan_SwapStatus_Lost;
+        }
+        else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+        {
+            F_LogError("*********************** VulkanDevice::VkAcquireNextImageKHR: Failed to call vkAcquireNextImageKHR, error: [%s] !", E_VkResult2String(result).c_str());
+            throw std::runtime_error("*********************** VulkanDevice::VkAcquireNextImageKHR: Failed to acquire swap chain image index !");
+            return Vulkan_SwapStatus_Error;
+        }
+        return Vulkan_SwapStatus_Normal;
+    }
+
+    VulkanSwapStatusType VulkanDevice::VkQueuePresentKHR(VkSwapchainKHR vkSwapChainKHR,
+                                                         const VkSemaphoreVector& aWaitSemaphores,
+                                                         uint32_t* pImageIndices)
+    {
+        VkSwapchainKHRVector aSwapChainKHR;
+        aSwapChainKHR.push_back(vkSwapChainKHR);
+        return VkQueuePresentKHR(aSwapChainKHR,
+                                 aWaitSemaphores,
+                                 pImageIndices);
+    }
+    VulkanSwapStatusType VulkanDevice::VkQueuePresentKHR(const VkSwapchainKHRVector& aSwapChainKHR,
+                                                         const VkSemaphoreVector& aWaitSemaphores,
+                                                         uint32_t* pImageIndices)
+    {
+        VkPresentInfoKHR presentInfo;
+        E_ZeroStruct(presentInfo, VK_STRUCTURE_TYPE_PRESENT_INFO_KHR);
+        presentInfo.waitSemaphoreCount = (uint32_t)aWaitSemaphores.size();
+        presentInfo.pWaitSemaphores = aWaitSemaphores.data();
+        presentInfo.swapchainCount = (uint32_t)aSwapChainKHR.size();
+        presentInfo.pSwapchains = aSwapChainKHR.data();
+        presentInfo.pImageIndices = pImageIndices;
+
+        VkResult result = vkQueuePresentKHR(this->m_pQueuePresent->GetVkQueue(), &presentInfo);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR) 
+        {
+            return Vulkan_SwapStatus_OutOfDate;
+        }
+        else if (result == VK_ERROR_SURFACE_LOST_KHR) 
+        {
+            return Vulkan_SwapStatus_Lost;
+        }
+        else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) 
+        {
+            F_LogError("*********************** VulkanDevice::VkQueuePresentKHR: Failed to call vkQueuePresentKHR, error: [%s] !", E_VkResult2String(result).c_str());
+            throw std::runtime_error("*********************** VulkanDevice::VkQueuePresentKHR: Failed to present swap chain image !");
+            return Vulkan_SwapStatus_Error;
+        }
+        return Vulkan_SwapStatus_Normal;
+    }
 
     //////////////////// VkViewport /////////////////////
     void VulkanDevice::CreateVkViewport(float width,
@@ -3893,7 +4004,12 @@ namespace LostPeterPluginRendererVulkan
     void VulkanDevice::EndSingleTimeCommands(VkCommandBuffer& vkCommandBuffer)
     {
         EndVkCommandBuffer(vkCommandBuffer);
-        QueueSubmitVkCommandBuffers(m_pQueueTransfer->GetVkQueue(), 1, &vkCommandBuffer, nullptr);
+        QueueSubmitVkCommandBuffers(m_pQueueTransfer->GetVkQueue(), 
+                                    1, 
+                                    &vkCommandBuffer, 
+                                    0,
+                                    nullptr,
+                                    nullptr);
         QueueWaitIdle(m_pQueueTransfer->GetVkQueue());
         FreeVkCommandBuffers(m_vkCommandPoolTransfer, 1, &vkCommandBuffer);
     }

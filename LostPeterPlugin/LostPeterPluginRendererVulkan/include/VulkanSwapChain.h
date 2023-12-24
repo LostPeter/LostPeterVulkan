@@ -78,11 +78,10 @@ namespace LostPeterPluginRendererVulkan
                   int32 nLockToVSync);
 
     public:
-        VulkanSwapStatusType Present(VulkanQueue* pQueueGraphics, 
-                                     VulkanQueue* pQueuePresent, 
-                                     VkSemaphore* pComplete);
+	    VulkanSwapStatusType AcquireImageIndex(VkSemaphore* pOutSemaphore,
+                                               int32& nSwapChainImageIndex);
 
-	    int32 AcquireImageIndex(VkSemaphore* pOutSemaphore);
+        VulkanSwapStatusType Present(VkSemaphore* pComplete);
 
     private:
         void destroySemaphore();

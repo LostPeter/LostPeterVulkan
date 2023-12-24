@@ -319,10 +319,10 @@ namespace LostPeterEngine
 
 	void RenderEngine::TickOneFrame(RenderFrameEvent& event)
 	{
-		RenderWindow* pRenderWindow = m_pRendererCurrent->GetRenderWindow();
+		RenderWindow* pRenderWindow = m_pRendererCurrent->GetActiveRenderWindow();
 		if (pRenderWindow && !pRenderWindow->IsDeviceLost())
 		{
-
+			
 		}
 	}
 

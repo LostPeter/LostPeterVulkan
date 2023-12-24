@@ -33,7 +33,7 @@ namespace LostPeterEngine
 
         RendererListenerPtrList m_listRendererListeners;
         RenderTargetManager* m_pRenderTargetManager;
-        RenderWindow* m_pRenderWindow;
+        RenderWindow* m_pActiveRenderWindow;
 		RenderTarget* m_pActiveRenderTarget;
 		Viewport* m_pActiveViewport;
 		ObjectCamera* m_pActiveObjectCamera;
@@ -42,7 +42,6 @@ namespace LostPeterEngine
 
         bool m_bFullScreen;
 		bool m_bFakeFullScreen;
-		bool m_bUseNvPerfHud;
 		bool m_bVSync;
 		bool m_bWBuffer;
 		bool m_bEmptyGpuBuffer;
@@ -51,26 +50,24 @@ namespace LostPeterEngine
 		uint32 m_nCurHeight;
 
     public:
-        F_FORCEINLINE RenderWindow* GetRenderWindow() const { return m_pRenderWindow; }
-        F_FORCEINLINE void SetRenderWindow(RenderWindow* pRenderWindow) { m_pRenderWindow = pRenderWindow; }
+        F_FORCEINLINE RenderWindow* GetActiveRenderWindow() const { return m_pActiveRenderWindow; }
         F_FORCEINLINE RenderTarget* GetActiveRenderTarget() const { return m_pActiveRenderTarget; }
-        F_FORCEINLINE void SetActiveRenderTarget(RenderTarget* pRenderTarget) { m_pActiveRenderTarget = pRenderTarget; }
 		F_FORCEINLINE Viewport* GetActiveViewport() const { return m_pActiveViewport; }
 		F_FORCEINLINE ObjectCamera* GetActiveCamera() const { return m_pActiveObjectCamera; }
 		
-		F_FORCEINLINE bool	IsRendererInit() const { return m_bRendererIsInit; }
+		F_FORCEINLINE bool IsRendererInit() const { return m_bRendererIsInit; }
 
-        F_FORCEINLINE bool	IsFullScreen() const { return m_bFullScreen; }
-		F_FORCEINLINE bool	IsFakeFullScreen() const { return m_bFakeFullScreen; }
-		F_FORCEINLINE bool	IsUseNvPerfHud() const { return m_bUseNvPerfHud; }
-		F_FORCEINLINE bool	IsVSync() const { return m_bVSync; }
-		F_FORCEINLINE bool	GetWBufferEnable() const { return m_bWBuffer; }
-		F_FORCEINLINE void	SetWBufferEnable(bool b) { m_bWBuffer = b;}
-		F_FORCEINLINE bool	IsEmptyGpuBuffer() const { return m_bEmptyGpuBuffer; }
+        F_FORCEINLINE bool IsFullScreen() const { return m_bFullScreen; }
+		F_FORCEINLINE bool IsFakeFullScreen() const { return m_bFakeFullScreen; }
+		F_FORCEINLINE bool IsVSync() const { return m_bVSync; }
+		F_FORCEINLINE bool GetWBufferEnable() const { return m_bWBuffer; }
+		F_FORCEINLINE void SetWBufferEnable(bool b) { m_bWBuffer = b;}
+		F_FORCEINLINE bool IsEmptyGpuBuffer() const { return m_bEmptyGpuBuffer; }
 
     public:
         virtual void Destroy();
-        virtual RenderWindow* Init(bool bAutoCreateWindow, const String& strWndTitle = "Render Window") = 0;
+        virtual RenderWindow* Init(bool bAutoCreateWindow, 
+								   const String& strWndTitle = "Render Window") = 0;
 
 		virtual RenderTarget* GetRenderTarget(const String& strName);
 		virtual void AttachRenderTarget(RenderTarget* pRenderTarget);
@@ -98,16 +95,15 @@ namespace LostPeterEngine
 												 uint32 nHeight, 
 												 const String2StringMap* pParams = nullptr) = 0;
 
-		virtual bool IsDeviceLost() = 0;
-
         virtual void RenderEvent_Begin(const char* szEventName)	{ }
 		virtual void RenderEvent_End() { }
 
-		virtual void Present();
-		virtual void UpdateOtherRenderWindows() { }
-
     public:
 		virtual bool BeginFrame() = 0;
+			virtual bool BeginRenderWindow(RenderWindow* pRenderWindow);
+
+			virtual bool EndRenderWindow();
+			virtual bool Present();
 		virtual bool EndFrame() = 0;
 
         virtual bool SetViewport(Viewport* pViewport) = 0;

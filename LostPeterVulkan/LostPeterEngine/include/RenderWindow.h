@@ -86,7 +86,7 @@ namespace LostPeterEngine
 		virtual void EmptyGPUCommandBuffer() = 0;
 		
 		virtual bool IsDeviceLost() { return false; }
-		virtual void Present(Renderer* pRenderer);
+		virtual bool Present(Renderer* pRenderer);
 
 	public:
 		void AddRenderWindowListener(RenderWindowListener* pRenderWindowListener);

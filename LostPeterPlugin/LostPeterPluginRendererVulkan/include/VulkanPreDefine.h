@@ -83,6 +83,8 @@ namespace LostPeterPluginRendererVulkan
     typedef std::vector<VkViewport> VkViewportVector;
     typedef std::vector<VkRect2D> VkRect2DVector;
 
+    typedef std::vector<VkSwapchainKHR> VkSwapchainKHRVector;
+
     typedef std::vector<VkSemaphore> VkSemaphoreVector;
     typedef std::vector<VkFence> VkFenceVector;
         
@@ -116,9 +118,17 @@ namespace LostPeterPluginRendererVulkan
 	enum VulkanSwapStatusType
     {
         Vulkan_SwapStatus_Normal = 0,               //0:    Normal
-        Vulkan_SwapStatus_OutOfDate = -1,           //-1:   OutOfDate
-        Vulkan_SwapStatus_Lost = -2,                //-2:   Lost
-        Vulkan_SwapStatus_Error = -3,               //-3:   Error
+        Vulkan_SwapStatus_OutOfDate,                //1:    OutOfDate
+        Vulkan_SwapStatus_Lost,                     //2:    Lost
+        Vulkan_SwapStatus_Error,                    //3:    Error
+    };
+
+
+    enum VulkanSubmitType
+    {
+        Vulkan_Submit_FlushOnly = 0,                //0:    FlushOnly
+        Vulkan_Submit_NewFrame,                     //1:    NewFrame
+        Vulkan_Submit_EndFrameAndSwap,              //2:    EndFrameAndSwap
     };
 
 
