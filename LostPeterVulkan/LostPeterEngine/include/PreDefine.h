@@ -630,6 +630,7 @@ namespace LostPeterEngine
     class RendererListener;
     class Renderer;
     class RenderPass;
+    class RenderPassDescriptor;
     class RenderPassForwardLit;
     class RenderPassDeferredLit;
     class RenderPassShadowCaster;

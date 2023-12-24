@@ -34,11 +34,13 @@ namespace LostPeterPluginRendererVulkan
         VkImageVector m_aSwapChainVkImages;
 	    VkImageViewVector m_aSwapChainVkImageViews;
         VulkanSwapChain* m_pSwapChain;
+        
 
         VulkanSemaphorePtrVector m_aSemaphores_PresentComplete;
         VulkanSemaphorePtrVector m_aSemaphores_RenderComplete;
         VulkanFencePtrVector m_aFences_InFlight;
         VulkanFencePtrVector m_aFences_ImagesInFlight;
+
         bool m_bIsCreateRenderComputeSycSemaphore;
         VulkanSemaphore* m_pSemaphore_GraphicsWait;
         VulkanSemaphore* m_pSemaphore_ComputeWait;

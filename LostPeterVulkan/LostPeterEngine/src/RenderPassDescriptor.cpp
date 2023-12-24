@@ -2,28 +2,33 @@
 * LostPeterEngine - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-10-22
+* Time:     2023-12-24
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/RenderPassShadowCaster.h"
+#include "../include/RenderPassDescriptor.h"
 
 namespace LostPeterEngine
 {
-    RenderPassShadowCaster::RenderPassShadowCaster(const String& nameRenderPass)
-        : RenderPass(nameRenderPass, F_RenderPass_ShadowCaster)
+    RenderPassDescriptor::RenderPassDescriptor(const String& nameRenderPassDescriptor)
+        : Base(nameRenderPassDescriptor)
+    {
+
+    }
+
+    RenderPassDescriptor::~RenderPassDescriptor()
+    {
+
+    }
+
+    void RenderPassDescriptor::Destroy()
     {
 
     }
     
-    RenderPassShadowCaster::~RenderPassShadowCaster()
-    {
-
-    }
-
     
 
 }; //LostPeterEngine

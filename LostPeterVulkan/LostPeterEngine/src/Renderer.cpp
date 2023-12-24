@@ -15,6 +15,7 @@
 #include "../include/StreamVertexBindingManager.h"
 #include "../include/StreamManager.h"
 #include "../include/TextureManager.h"
+#include "../include/RenderPassManager.h"
 #include "../include/RenderTargetManager.h"
 #include "../include/RenderTarget.h"
 #include "../include/RenderWindow.h"
@@ -31,6 +32,7 @@ namespace LostPeterEngine
 		, m_pVertexDeclarationManager(nullptr)
 		, m_pStreamManager(nullptr)
 		, m_pTextureManager(nullptr)
+		, m_pRenderPassManager(nullptr)
         , m_pActiveRenderWindow(nullptr)
         , m_pActiveRenderTarget(nullptr)
         , m_pActiveViewport(nullptr)
@@ -60,6 +62,7 @@ namespace LostPeterEngine
 		F_DELETE(m_pVertexStreamBindingManager)
 		F_DELETE(m_pStreamManager)
 		F_DELETE(m_pTextureManager)
+		F_DELETE(m_pRenderPassManager)
         F_DELETE(m_pRenderTargetManager)
     }
 

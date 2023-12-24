@@ -32,7 +32,6 @@ namespace LostPeterEngine
         : Base("RenderPipelineManager")
         , m_pPipeLineCurrent(nullptr)
     {
-        m_pRenderPassManager = new RenderPassManager;
 		m_mapRenderPipeLine[F_GetRenderPipelineTypeName(F_RenderPipeline_Forward)] = new RenderPipelineForward(this);
 		//m_mapRenderPipeLine[F_GetRenderPipelineTypeName(F_RenderPipeline_Deferred)] = new RenderPipelineDeferred(this);
     }
@@ -50,7 +49,6 @@ namespace LostPeterEngine
 			delete it->second;
 		}
 		m_mapRenderPipeLine.clear();
-		F_DELETE(m_pRenderPassManager)
 	}
 
     bool RenderPipelineManager::Init(const String& strPipeLineName)

@@ -31,14 +31,15 @@ namespace LostPeterEngine
     {
 
     }
+    
     RenderPassManager::~RenderPassManager()
     {
-        Destroy();
+        
     }
 
     void RenderPassManager::Destroy()
     {
-
+        DestroyRenderPassAll();
     }
 
     bool RenderPassManager::Init()
@@ -48,5 +49,16 @@ namespace LostPeterEngine
         return true;
     }
 
+    void RenderPassManager::DestroyRenderPassAll()
+    {
+        int count = (int)m_aRenderPass.size();
+        for (int i = 0; i < count; i++)
+        {
+            RenderPass* pRenderPass = m_aRenderPass[i];
+            F_DELETE(pRenderPass)
+        }
+        m_aRenderPass.clear();
+        m_mapRenderPass.clear();
+    }
 
 }; //LostPeterEngine

@@ -10,14 +10,18 @@
 ****************************************************************************/
 
 #include "../include/RenderPass.h"
+#include "../include/RenderPassManager.h"
 
 namespace LostPeterEngine
 {
-    RenderPass::RenderPass(const String& nameRenderPass)
+    RenderPass::RenderPass(const String& nameRenderPass, FRenderPassType eRenderPass)
         : Base(nameRenderPass)
+        , m_eRenderPass(eRenderPass)
+        , m_pRenderPassDescriptor(nullptr)
     {
 
     }
+
     RenderPass::~RenderPass()
     {
 
@@ -25,13 +29,35 @@ namespace LostPeterEngine
 
     void RenderPass::Destroy()
     {
-
+        destroyRenderPassDescriptor();
     }
+        void RenderPass::destroyRenderPassDescriptor()
+        {
+            RenderPassManager::GetSingleton().DestroyRenderPassDescriptor(m_pRenderPassDescriptor);
+            m_pRenderPassDescriptor = nullptr;
+        }
     
     bool RenderPass::Init()
     {
+        //1> createRenderPassDescriptor
+        if (!createRenderPassDescriptor())
+        {
+            F_LogError("*********************** RenderPass::Init: createRenderPassDescriptor failed, typeRenderPass: [%s] !", F_GetRenderPassTypeName(this->m_eRenderPass).c_str());
+            return false;
+        }
 
         return true;
     }
+        bool RenderPass::createRenderPassDescriptor()
+        {
+            m_pRenderPassDescriptor = RenderPassManager::GetSingleton().CreateRenderPassDescriptor(m_eRenderPass);
+            if (m_pRenderPassDescriptor == nullptr)
+            {
+                return false;
+            }
+
+            return true;    
+        }
+    
 
 }; //LostPeterEngine

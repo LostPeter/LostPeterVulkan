@@ -25,7 +25,6 @@ namespace LostPeterEngine
 
     public:
     protected:
-        RenderPassManager* m_pRenderPassManager;
 		RenderPipeline* m_pPipeLineCurrent;
 
 		RenderPipelinePtrMap m_mapRenderPipeLine;

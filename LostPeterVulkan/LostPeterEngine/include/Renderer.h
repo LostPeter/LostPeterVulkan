@@ -30,9 +30,10 @@ namespace LostPeterEngine
 		StreamVertexBindingManager* m_pVertexStreamBindingManager;
 		StreamManager* m_pStreamManager;
 		TextureManager* m_pTextureManager;
-
-        RendererListenerPtrList m_listRendererListeners;
+		RenderPassManager* m_pRenderPassManager;
         RenderTargetManager* m_pRenderTargetManager;
+		RendererListenerPtrList m_listRendererListeners;
+
         RenderWindow* m_pActiveRenderWindow;
 		RenderTarget* m_pActiveRenderTarget;
 		Viewport* m_pActiveViewport;

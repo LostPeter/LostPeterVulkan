@@ -78,6 +78,7 @@
 #include "RendererListener.h"
 #include "Renderer.h"
 #include "RenderPass.h"
+#include "RenderPassDescriptor.h"
 #include "RenderPassForwardLit.h"
 #include "RenderPassDeferredLit.h"
 #include "RenderPassShadowCaster.h"
