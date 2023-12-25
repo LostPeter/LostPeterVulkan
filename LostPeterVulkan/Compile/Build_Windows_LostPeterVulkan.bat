@@ -17,8 +17,8 @@ echo %debug%
 echo %rebuild%
 
 
-@REM 1) Build LostPeterUI
-call ./Build_Windows_LostPeterUI.bat %debug% %rebuild%
+@REM 1) Build LostPeterFoundation
+call ./Build_Windows_LostPeterFoundation.bat %debug% %rebuild%
 
 
 @REM #2) Build LostPeterVulkan

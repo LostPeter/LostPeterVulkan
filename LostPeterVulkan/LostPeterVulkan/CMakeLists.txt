@@ -144,6 +144,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation_d.lib)
         
     else ()
@@ -154,6 +155,7 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_vulkan.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
+                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
                        ${LIB_PLUGINS_DIR}/LostPeterFoundation.lib)
         
     endif()
