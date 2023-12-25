@@ -43,8 +43,8 @@ namespace LostPeterEngine
         virtual bool Init();
 
     public:
-        virtual RenderPassDescriptor* GetRenderPassDescriptor(FRenderPassType eRenderPass) = 0;
-        virtual RenderPassDescriptor* CreateRenderPassDescriptor(FRenderPassType eRenderPass) = 0;
+        virtual RenderPassDescriptor* GetRenderPassDescriptor(const String& nameRenderPassDescriptor) = 0;
+        virtual RenderPassDescriptor* CreateRenderPassDescriptor(const String& nameRenderPassDescriptor, FRenderPassType eRenderPass) = 0;
         virtual void DestroyRenderPassDescriptor(RenderPassDescriptor* pRenderPassDescriptor) = 0;
         virtual void DestroyRenderPassDescriptorAll() = 0;
 

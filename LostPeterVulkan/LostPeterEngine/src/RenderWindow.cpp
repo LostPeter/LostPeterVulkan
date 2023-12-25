@@ -12,6 +12,7 @@
 #include "../include/RenderWindow.h"
 #include "../include/RenderWindowListener.h"
 #include "../include/Renderer.h"
+#include "../include/RenderPassDescriptor.h"
 
 namespace LostPeterEngine
 {
@@ -26,6 +27,7 @@ namespace LostPeterEngine
 		, m_nTop(0)
 		, m_nClientWidth(0)
 		, m_nClientHeight(0)
+        , m_pRenderPassDescriptor(nullptr)
     {
 
     }

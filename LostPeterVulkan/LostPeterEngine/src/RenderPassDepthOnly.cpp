@@ -14,7 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassDepthOnly::RenderPassDepthOnly(const String& nameRenderPass)
-        : RenderPass(nameRenderPass, F_RenderPass_DepthOnly)
+        : RenderPass(nameRenderPass, F_RenderPass_DepthOnly, nameRenderPass)
     {
 
     }

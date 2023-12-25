@@ -20,16 +20,20 @@ namespace LostPeterEngine
                                   , public FNonCopyable
     {
     public:
-        RenderPass(const String& nameRenderPass, FRenderPassType eRenderPass);
+        RenderPass(const String& nameRenderPass,
+                   FRenderPassType eRenderPass,
+                   const String& nameRenderPassDescriptor);
         virtual ~RenderPass();
 
     public:
     protected:
         FRenderPassType m_eRenderPass;
+        String m_strNameRenderPassDescriptor;
         RenderPassDescriptor* m_pRenderPassDescriptor;
 
     public:
         F_FORCEINLINE FRenderPassType GetRenderPassType() const { return m_eRenderPass; }
+        F_FORCEINLINE const String& GetRenderPassDescriptorName() const { return m_strNameRenderPassDescriptor; }
         F_FORCEINLINE RenderPassDescriptor* GetRenderPassDescriptor() const { return m_pRenderPassDescriptor; }
 
 

@@ -35,7 +35,6 @@ namespace LostPeterPluginRendererVulkan
 	    VkImageViewVector m_aSwapChainVkImageViews;
         VulkanSwapChain* m_pSwapChain;
         
-
         VulkanSemaphorePtrVector m_aSemaphores_PresentComplete;
         VulkanSemaphorePtrVector m_aSemaphores_RenderComplete;
         VulkanFencePtrVector m_aFences_InFlight;
@@ -80,11 +79,13 @@ namespace LostPeterPluginRendererVulkan
         bool RecreateSwapChain();
 
     protected:
+        void destroyRenderPassDescriptor();
         void destroySyncObjects_RenderCompute();
         void destroySyncObjects_PresentRender();
 
         bool createSyncObjects_PresentRender();
         bool createSyncObjects_RenderCompute();
+        bool createRenderPassDescriptor();
     };
 
 }; //LostPeterPluginRendererVulkan

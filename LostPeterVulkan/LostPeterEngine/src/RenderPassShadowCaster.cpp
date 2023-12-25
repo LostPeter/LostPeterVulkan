@@ -14,7 +14,7 @@
 namespace LostPeterEngine
 {
     RenderPassShadowCaster::RenderPassShadowCaster(const String& nameRenderPass)
-        : RenderPass(nameRenderPass, F_RenderPass_ShadowCaster)
+        : RenderPass(nameRenderPass, F_RenderPass_ShadowCaster, nameRenderPass)
     {
 
     }

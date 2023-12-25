@@ -16,6 +16,7 @@
 #include "../include/VulkanSemaphore.h"
 #include "../include/VulkanFence.h"
 #include "../include/VulkanFenceManager.h"
+#include "../include/VulkanRenderPassDescriptor.h"
 #include "../include/VulkanConverter.h"
 
 namespace LostPeterPluginRendererVulkan
@@ -48,6 +49,10 @@ namespace LostPeterPluginRendererVulkan
         destroySyncObjects_PresentRender();
 
         RenderWindow::Destroy();
+    }
+    void VulkanRenderWindow::destroyRenderPassDescriptor()
+    {
+        F_DELETE(m_pRenderPassDescriptor)
     }
     void VulkanRenderWindow::destroySyncObjects_RenderCompute()
     {
@@ -82,7 +87,7 @@ namespace LostPeterPluginRendererVulkan
         //1> Create GLFWwindow
         if (!WindowBase::Init(nameWindow, nWidth, nHeight))
         {
-            F_LogError("*********************** VulkanRenderWindow::Init: Create window failed, name: [%s] !", nameWindow.c_str());
+            F_LogError("*********************** VulkanRenderWindow::Init: Create window failed, name window: [%s] !", nameWindow.c_str());
             return false;
         }
         F_LogInfo("VulkanRenderWindow::Init: Create window success, name: [%s] !", nameWindow.c_str());
@@ -90,7 +95,7 @@ namespace LostPeterPluginRendererVulkan
         //2> Create SwapChain
         if (!RecreateSwapChain())
         {   
-            F_LogError("*********************** VulkanRenderWindow::Init: Create SwapChain failed, name: [%s] !", nameWindow.c_str());
+            F_LogError("*********************** VulkanRenderWindow::Init: Create SwapChain failed, name window: [%s] !", nameWindow.c_str());
             return false;
         }
         F_LogInfo("VulkanRenderWindow::Init: Create SwapChain success !");
@@ -98,7 +103,7 @@ namespace LostPeterPluginRendererVulkan
         //3> createSyncObjects_PresentRender
         if (!createSyncObjects_PresentRender())
         {
-            F_LogError("*********************** VulkanRenderWindow::Init: Create SyncObjects PresentRender failed, name: [%s] !", nameWindow.c_str());
+            F_LogError("*********************** VulkanRenderWindow::Init: Create SyncObjects PresentRender failed, name window: [%s] !", nameWindow.c_str());
             return false;
         }
         F_LogInfo("VulkanRenderWindow::Init: Create SyncObjects PresentRender success !");
@@ -108,13 +113,20 @@ namespace LostPeterPluginRendererVulkan
         {
             if (!createSyncObjects_RenderCompute())
             {
-                F_LogError("*********************** VulkanRenderWindow::Init: Create SyncObjects RenderCompute failed, name: [%s] !", nameWindow.c_str());
+                F_LogError("*********************** VulkanRenderWindow::Init: Create SyncObjects RenderCompute failed, name window: [%s] !", nameWindow.c_str());
                 return false;
             }
             F_LogInfo("VulkanRenderWindow::Init: Create SyncObjects RenderCompute success !");
         }
 
-        F_LogInfo("VulkanRenderWindow::Init: Create render window success, name: [%s] !", nameWindow.c_str());
+        //5> createRenderPassDescriptor
+        if (!createRenderPassDescriptor())
+        {
+            F_LogError("*********************** VulkanRenderWindow::Init: Create RenderPassDescriptor failed, name window: [%s] !", nameWindow.c_str());
+            return false;
+        }
+
+        F_LogInfo("VulkanRenderWindow::Init: Create render window success, name window: [%s] !", nameWindow.c_str());
         return true;
     }
         bool VulkanRenderWindow::createSyncObjects_PresentRender()
@@ -180,6 +192,13 @@ namespace LostPeterPluginRendererVulkan
             }
 
             F_LogInfo("VulkanRenderWindow::createSyncObjects_RenderCompute: Success to create Semaphore GraphicsWait/ComputeWait !");
+            return true;
+        }
+        bool VulkanRenderWindow::createRenderPassDescriptor()
+        {
+            
+
+            F_LogInfo("VulkanRenderWindow::createRenderPassDescriptor: Success to create VulkanRenderPassDescriptor !");
             return true;
         }
 

@@ -14,9 +14,12 @@
 
 namespace LostPeterEngine
 {
-    RenderPass::RenderPass(const String& nameRenderPass, FRenderPassType eRenderPass)
+    RenderPass::RenderPass(const String& nameRenderPass, 
+                           FRenderPassType eRenderPass,
+                           const String& nameRenderPassDescriptor)
         : Base(nameRenderPass)
         , m_eRenderPass(eRenderPass)
+        , m_strNameRenderPassDescriptor(nameRenderPassDescriptor)
         , m_pRenderPassDescriptor(nullptr)
     {
 
@@ -50,7 +53,7 @@ namespace LostPeterEngine
     }
         bool RenderPass::createRenderPassDescriptor()
         {
-            m_pRenderPassDescriptor = RenderPassManager::GetSingleton().CreateRenderPassDescriptor(m_eRenderPass);
+            m_pRenderPassDescriptor = RenderPassManager::GetSingleton().CreateRenderPassDescriptor(m_strNameRenderPassDescriptor, m_eRenderPass);
             if (m_pRenderPassDescriptor == nullptr)
             {
                 return false;

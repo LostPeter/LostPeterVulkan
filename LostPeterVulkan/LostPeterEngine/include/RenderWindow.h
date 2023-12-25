@@ -37,6 +37,8 @@ namespace LostPeterEngine
 		int32 m_nClientWidth;
 		int32 m_nClientHeight;
 
+		RenderPassDescriptor* m_pRenderPassDescriptor;
+
 	protected:
 		RenderWindowListenerPtrMap m_mapRenderWindowListener;
 
@@ -57,12 +59,14 @@ namespace LostPeterEngine
 		virtual bool IsFocused() const { return m_bFocused && IsVisible(); }
 		virtual void SetFocused(bool bFocused) { m_bFocused = bFocused; }
 
-
 		virtual void GetMetrics(int32& nWidth, int32& nHeight, uint32& nColorDepth, int32& nLeft, int32& nTop);
-		inline int32 GetWindowLeft() const { return m_nLeft; }
-		inline int32 GetWindowTop() const { return m_nTop; }
-		inline int32 GetClientWidth() const	{ return m_nClientWidth; }
-		inline int32 GetClientHeight() const { return m_nClientHeight; }
+
+	public:
+		F_FORCEINLINE int32 GetWindowLeft() const { return m_nLeft; }
+		F_FORCEINLINE int32 GetWindowTop() const { return m_nTop; }
+		F_FORCEINLINE int32 GetClientWidth() const { return m_nClientWidth; }
+		F_FORCEINLINE int32 GetClientHeight() const { return m_nClientHeight; }
+		F_FORCEINLINE RenderPassDescriptor* GetRenderPassDescriptor() const { return m_pRenderPassDescriptor; }
 
 	public:
 		virtual bool IsVisible() const { return true; }

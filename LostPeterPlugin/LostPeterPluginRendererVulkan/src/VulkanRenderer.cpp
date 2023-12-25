@@ -67,7 +67,7 @@ namespace LostPeterPluginRendererVulkan
         }
 
         //4> VulkanRenderPassManager
-        m_pRenderPassManager = new VulkanRenderPassManager();
+        m_pRenderPassManager = new VulkanRenderPassManager(m_pVulkanInstance->GetDevice());
         
 
         return nullptr;

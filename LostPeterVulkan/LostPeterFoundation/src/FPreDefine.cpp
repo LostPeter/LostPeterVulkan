@@ -879,10 +879,17 @@ namespace LostPeterFoundation
     //FRenderPassType
     static const String s_nameRenderPassTypes[] = 
     {
-        "ForwardLit",               //0: ForwardLit
-        "DeferredLit",              //1: DeferredLit
-        "ShadowCaster",             //2: ShadowCaster
-        "DepthOnly",                //3: DepthOnly
+        "BackGround",               //0:  BackGround
+        "ForwardLit",               //1:  ForwardLit
+        "DeferredLit",              //2:  DeferredLit
+        "ShadowCaster",             //3:  ShadowCaster
+        "DepthOnly",                //4:  DepthOnly
+        
+        "Custom1",                  //5:  Custom1
+        "Custom2",                  //6:  Custom2
+        "Custom3",                  //7:  Custom3
+        "Custom4",                  //8:  Custom4
+        "Custom5",                  //9:  Custom5
     };
     const String& F_GetRenderPassTypeName(FRenderPassType type)
     {
@@ -900,7 +907,7 @@ namespace LostPeterFoundation
                 return (FRenderPassType)(i);
         }
         F_Assert(false && "F_ParseRenderPassType: Wrong type name !")
-        return F_RenderPass_ForwardLit;
+        return F_RenderPass_BackGround;
     }
 
 

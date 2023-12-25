@@ -1043,10 +1043,17 @@ namespace LostPeterFoundation
 
     enum FRenderPassType
     {
-        F_RenderPass_ForwardLit = 0,                    //0:  ForwardLit
-        F_RenderPass_DeferredLit,                       //1:  DeferredLit  
-        F_RenderPass_ShadowCaster,                      //2:  ShadowCaster
-        F_RenderPass_DepthOnly,                         //3:  DepthOnly
+        F_RenderPass_BackGround = 0,                    //0:  BackGround
+        F_RenderPass_ForwardLit,                        //1:  ForwardLit
+        F_RenderPass_DeferredLit,                       //2:  DeferredLit  
+        F_RenderPass_ShadowCaster,                      //3:  ShadowCaster
+        F_RenderPass_DepthOnly,                         //4:  DepthOnly
+
+        F_RenderPass_Custom1,                           //5:  Custom1
+        F_RenderPass_Custom2,                           //6:  Custom2
+        F_RenderPass_Custom3,                           //7:  Custom3
+        F_RenderPass_Custom4,                           //8:  Custom4
+        F_RenderPass_Custom5,                           //9:  Custom5
 
         F_RenderPass_Count,
     };

@@ -19,11 +19,12 @@ namespace LostPeterPluginRendererVulkan
     class VulkanRenderPassManager : public RenderPassManager
     {
     public:
-        VulkanRenderPassManager();
+        VulkanRenderPassManager(VulkanDevice* pDevice);
         virtual ~VulkanRenderPassManager();
 
     public:
     protected:
+        VulkanDevice* m_pDevice;
         VulkanRenderPassDescriptorPtrVector m_aRenderPassDescriptor;
         VulkanRenderPassDescriptorPtrMap m_mapRenderPassDescriptor;
 
@@ -32,8 +33,11 @@ namespace LostPeterPluginRendererVulkan
         virtual bool Init();
 
     public:
-        virtual RenderPassDescriptor* GetRenderPassDescriptor(FRenderPassType eRenderPass);
-        virtual RenderPassDescriptor* CreateRenderPassDescriptor(FRenderPassType eRenderPass);
+        VulkanRenderPassDescriptor* NewRenderPassDescriptor(const String& nameRenderPassDescriptor);
+
+    public:
+        virtual RenderPassDescriptor* GetRenderPassDescriptor(const String& nameRenderPassDescriptor);
+        virtual RenderPassDescriptor* CreateRenderPassDescriptor(const String& nameRenderPassDescriptor, FRenderPassType eRenderPass);
         virtual void DestroyRenderPassDescriptor(RenderPassDescriptor* pRenderPassDescriptor);
         virtual void DestroyRenderPassDescriptorAll();
     };
