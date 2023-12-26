@@ -911,6 +911,33 @@ namespace LostPeterFoundation
     }
 
 
+    //FFrameBufferType
+    static const String s_nameFrameBufferTypes[] = 
+    {
+        "Color",
+        "Depth",
+        "DepthStencil",
+    };
+    const String& F_GetFrameBufferTypeName(FFrameBufferType type)
+    {
+        return s_nameFrameBufferTypes[(int)type];
+    }
+    const String& F_GetFrameBufferTypeName(int type)
+    {
+        return s_nameFrameBufferTypes[(int)type];
+    }
+    FFrameBufferType F_ParseFrameBufferType(const String& strName)
+    {
+        for (size_t i = 0; i < (int)F_FrameBuffer_Count; i++)
+        {
+            if (s_nameFrameBufferTypes[i] == strName)
+                return (FFrameBufferType)(i);
+        }
+        F_Assert(false && "F_ParseFrameBufferType: Wrong type name !")
+        return F_FrameBuffer_Color;
+    }
+
+
     //FPixelFormatComponentType
     static String s_namePixelFormatComponentTypes[] = 
     {

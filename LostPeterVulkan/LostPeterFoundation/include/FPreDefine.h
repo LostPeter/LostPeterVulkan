@@ -1064,11 +1064,16 @@ namespace LostPeterFoundation
 
     enum FFrameBufferType 
 	{
-		F_FrameBuffer_Color		= 0x1,	                //Color
-		F_FrameBuffer_Depth		= 0x2,	                //Depth
-		F_FrameBuffer_Stencil	= 0x4,	                //Stencil
+		F_FrameBuffer_Color = 0,	                    //Color
+		F_FrameBuffer_Depth,	                        //Depth
+		F_FrameBuffer_DepthStencil,	                    //DepthStencil
+
+        F_FrameBuffer_Count,
 	};
-    
+    foundationExport const String& F_GetFrameBufferTypeName(FFrameBufferType type);
+    foundationExport const String& F_GetFrameBufferTypeName(int type);
+    foundationExport FFrameBufferType F_ParseFrameBufferType(const String& strName);
+
 
     enum FPixelFormatType                                       // RGBA -> [R->4][G->3][B->2][A->1]  High -> Low
     {

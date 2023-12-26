@@ -16,17 +16,19 @@
 
 namespace LostPeterPluginRendererVulkan
 {
-    class VulkanFrameBufferAttachment
+    class VulkanFrameBufferAttachment : public Base
     {
     public:
-        VulkanFrameBufferAttachment(VulkanDevice* pDevice);
+        VulkanFrameBufferAttachment(const String& nameFrameBufferAttachment,
+                                    VulkanDevice* pDevice, 
+                                    FFrameBufferType eFrameBuffer);
         virtual ~VulkanFrameBufferAttachment();
 
     public:
     protected:
         VulkanDevice* m_pDevice;
 
-        bool m_bIsDepth;
+        FFrameBufferType m_eFrameBuffer;
         bool m_bIsImageArray;
         VkSampleCountFlagBits m_numSamples;
         VkFormat m_formatSwapChain;
@@ -38,7 +40,9 @@ namespace LostPeterPluginRendererVulkan
 
     public:
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
-        F_FORCEINLINE bool IsDepth() const { return m_bIsDepth; }
+        F_FORCEINLINE FFrameBufferType GetFrameBufferType() const { return m_eFrameBuffer; }
+        F_FORCEINLINE bool IsColor() const { return m_eFrameBuffer == F_FrameBuffer_Color; }
+        F_FORCEINLINE bool IsDepth() const { return m_eFrameBuffer == F_FrameBuffer_Depth || m_eFrameBuffer == F_FrameBuffer_DepthStencil; }
         F_FORCEINLINE bool IsImageArray() const { return m_bIsImageArray; }
         F_FORCEINLINE VkSampleCountFlagBits GetNumSamples() const { return m_numSamples; }
         F_FORCEINLINE VkFormat GetFormatSwapChain() const { return m_formatSwapChain; }
@@ -56,7 +60,6 @@ namespace LostPeterPluginRendererVulkan
 
         virtual bool Init(uint32_t width, 
                           uint32_t height, 
-                          bool bIsDepth,
                           bool bIsImageArray,
                           VkSampleCountFlagBits numSamples,
                           VkFormat formatSwapChain,

@@ -189,6 +189,9 @@ namespace LostPeterPluginRendererVulkan
 
     typedef std::vector<VulkanQueue*> VulkanQueuePtrVector;
     typedef std::map<String, VulkanQueue*> VulkanQueuePtrMap;
+
+    typedef std::vector<VulkanFrameBufferAttachment*> VulkanFrameBufferAttachmentPtrVector;
+    typedef std::map<String, VulkanFrameBufferAttachment*> VulkanFrameBufferAttachmentPtrMap;
     
     typedef std::vector<VulkanRenderPassDescriptor*> VulkanRenderPassDescriptorPtrVector;
     typedef std::map<String, VulkanRenderPassDescriptor*> VulkanRenderPassDescriptorPtrMap;

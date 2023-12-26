@@ -11,6 +11,7 @@
 
 #include "../include/VulkanRenderPassDescriptor.h"
 #include "../include/VulkanDevice.h"
+#include "../include/VulkanFrameBufferAttachment.h"
 
 namespace LostPeterPluginRendererVulkan
 {
@@ -28,13 +29,65 @@ namespace LostPeterPluginRendererVulkan
 
     void VulkanRenderPassDescriptor::Destroy()
     {
-        
+        DeleteFrameBufferAttachmentAll();
     }
 
     bool VulkanRenderPassDescriptor::Init()
     {
         
         return true;
+    }
+
+    bool VulkanRenderPassDescriptor::HasFrameBufferAttachment(const String& strName)
+    {
+        return GetFrameBufferAttachment(strName) != nullptr;
+    }
+    VulkanFrameBufferAttachment* VulkanRenderPassDescriptor::GetFrameBufferAttachment(const String& strName)
+    {
+        VulkanFrameBufferAttachmentPtrMap::iterator itFind = m_mapFrameBufferAttachment.find(strName);
+        if (itFind == m_mapFrameBufferAttachment.end())
+        {
+            return nullptr;
+        }
+        return itFind->second;
+    }
+    bool VulkanRenderPassDescriptor::AddFrameBufferAttachment(VulkanFrameBufferAttachment* pFrameBufferAttachment)
+    {
+        const String& strName = pFrameBufferAttachment->GetName();
+        VulkanFrameBufferAttachmentPtrMap::iterator itFind = m_mapFrameBufferAttachment.find(strName);
+        if (itFind != m_mapFrameBufferAttachment.end())
+        {
+            F_LogError("*********************** VulkanRenderPassDescriptor::AddFrameBufferAttachment: FrameBufferAttachment name already exist: [%s] !", strName.c_str());
+            return false;
+        }
+        
+        m_mapFrameBufferAttachment.insert(VulkanFrameBufferAttachmentPtrMap::value_type(strName, pFrameBufferAttachment));
+        m_aFrameBufferAttachment.push_back(pFrameBufferAttachment);
+        return true;
+    }
+    void VulkanRenderPassDescriptor::DeleteFrameBufferAttachment(const String& strName)
+    {
+        VulkanFrameBufferAttachmentPtrMap::iterator itFind = m_mapFrameBufferAttachment.find(strName);
+        if (itFind == m_mapFrameBufferAttachment.end())
+        {
+            return;
+        }
+
+        VulkanFrameBufferAttachmentPtrVector::iterator itFindA = std::find(m_aFrameBufferAttachment.begin(), m_aFrameBufferAttachment.end(), itFind->second);
+        if (itFindA != m_aFrameBufferAttachment.end())
+            m_aFrameBufferAttachment.erase(itFindA);
+        F_DELETE(itFind->second)
+        m_mapFrameBufferAttachment.erase(itFind);
+    }
+    void VulkanRenderPassDescriptor::DeleteFrameBufferAttachmentAll()
+    {
+        for (VulkanFrameBufferAttachmentPtrVector::iterator it = m_aFrameBufferAttachment.begin();
+             it != m_aFrameBufferAttachment.end(); ++it)
+        {
+            F_DELETE(*it)
+        }
+        m_aFrameBufferAttachment.clear();
+        m_mapFrameBufferAttachment.clear();
     }
 
 }; //LostPeterPluginRendererVulkan

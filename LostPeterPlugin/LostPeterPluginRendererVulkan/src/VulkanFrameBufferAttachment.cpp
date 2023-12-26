@@ -15,9 +15,12 @@
 
 namespace LostPeterPluginRendererVulkan
 {
-    VulkanFrameBufferAttachment::VulkanFrameBufferAttachment(VulkanDevice* pDevice)
-        : m_pDevice(pDevice)
-        , m_bIsDepth(false)
+    VulkanFrameBufferAttachment::VulkanFrameBufferAttachment(const String& nameFrameBufferAttachment,
+                                                             VulkanDevice* pDevice, 
+                                                             FFrameBufferType eFrameBuffer)
+        : Base(nameFrameBufferAttachment)
+        , m_pDevice(pDevice)
+        , m_eFrameBuffer(eFrameBuffer)
         , m_bIsImageArray(false)
         , m_vkImage(VK_NULL_HANDLE)
         , m_vkImageMemory(VK_NULL_HANDLE)
@@ -44,13 +47,11 @@ namespace LostPeterPluginRendererVulkan
 
     bool VulkanFrameBufferAttachment::Init(uint32_t width, 
                                            uint32_t height, 
-                                           bool bIsDepth,
                                            bool bIsImageArray,
                                            VkSampleCountFlagBits numSamples,
                                            VkFormat formatSwapChain,
                                            VkFormat formatDepth)
     {
-        this->m_bIsDepth = bIsDepth;
         this->m_bIsImageArray = bIsImageArray;
         this->m_numSamples = numSamples;
         this->m_formatSwapChain = formatSwapChain;
@@ -74,7 +75,7 @@ namespace LostPeterPluginRendererVulkan
         VkImageViewType imageViewType = VK_IMAGE_VIEW_TYPE_2D;
         VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 
-        if (bIsDepth)
+        if (IsDepth())
         {
             format = formatDepth;
             componentMapping.g = VK_COMPONENT_SWIZZLE_ZERO;
