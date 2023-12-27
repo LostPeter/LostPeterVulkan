@@ -27,8 +27,14 @@ namespace LostPeterPluginRendererVulkan
         VulkanDevice* m_pDevice;
         VulkanFrameBufferAttachmentPtrVector m_aFrameBufferAttachment;
         VulkanFrameBufferAttachmentPtrMap m_mapFrameBufferAttachment;
-
+        VkSampler m_vkSampler;
+        VkDescriptorImageInfo m_vkDescriptorImageInfo;
         
+        //RenderPass
+        VkRenderPass poRenderPass;
+
+        //FrameBuffer
+        VkFramebuffer poFrameBuffer;
 
     public:
         F_FORCEINLINE const VulkanFrameBufferAttachmentPtrVector& GetFrameBufferAttachmentPtrVector() const { return m_aFrameBufferAttachment; }
@@ -39,6 +45,8 @@ namespace LostPeterPluginRendererVulkan
     public:
         virtual void Destroy();
         virtual bool Init();
+
+
 
     public:
         bool HasFrameBufferAttachment(const String& strName);

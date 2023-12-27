@@ -25,6 +25,7 @@
 #include "../include/VulkanFence.h"
 #include "../include/VulkanFenceManager.h"
 #include "../include/VulkanFrameBufferAttachment.h"
+#include "../include/VulkanFrameBufferDescriptor.h"
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanPlugin.h"
 #include "../include/VulkanQueue.h"

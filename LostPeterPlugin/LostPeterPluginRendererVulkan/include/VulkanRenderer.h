@@ -26,6 +26,9 @@ namespace LostPeterPluginRendererVulkan
     protected:
         VulkanInstance* m_pVulkanInstance;
 
+        VulkanFrameBufferDescriptorPtrVector m_aFrameBufferDescriptor;
+        VulkanFrameBufferDescriptorPtrMap m_mapFrameBufferDescriptor;
+
     public:
         virtual void Destroy();
         virtual RenderWindow* Init(bool bAutoCreateWindow, 
@@ -74,6 +77,8 @@ namespace LostPeterPluginRendererVulkan
 		virtual bool SetWorldMatrices(const FMatrix4* pMatWorld, int nCount);
 		virtual bool SetViewMatrix(const FMatrix4& matView);
 		virtual bool SetProjectionMatrix(const FMatrix4& matProj);
+        
+    public:
         
     };
 
