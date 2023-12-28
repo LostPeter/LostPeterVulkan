@@ -39,16 +39,12 @@ namespace LostPeterEngine
 		static RenderPassManager* GetSingletonPtr();
 
     public:
-        virtual void Destroy();
-        virtual bool Init();
+        void Destroy();
+        bool Init();
 
     public:
-        virtual RenderPassDescriptor* GetRenderPassDescriptor(const String& nameRenderPassDescriptor) = 0;
-        virtual RenderPassDescriptor* CreateRenderPassDescriptor(const String& nameRenderPassDescriptor, FRenderPassType eRenderPass) = 0;
-        virtual void DestroyRenderPassDescriptor(RenderPassDescriptor* pRenderPassDescriptor) = 0;
-        virtual void DestroyRenderPassDescriptorAll() = 0;
-
-        virtual void DestroyRenderPassAll();
+        void DestroyRenderPassAll();
+        
     };
 
 }; //LostPeterEngine

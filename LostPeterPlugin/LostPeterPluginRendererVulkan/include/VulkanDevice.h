@@ -24,6 +24,9 @@ namespace LostPeterPluginRendererVulkan
 
     public:
     protected:
+        ConstCharPtrVector m_aAppDeviceExtensions;   
+
+    protected:
         VkDevice m_vkDevice;
         VkPhysicalDevice m_vkPhysicalDevice;
         VkPhysicalDeviceProperties m_vkPhysicalDeviceProperties;
@@ -40,12 +43,13 @@ namespace LostPeterPluginRendererVulkan
         VulkanQueue* m_pQueueTransfer;
         VulkanQueue* m_pQueuePresent;
 
-        VulkanFenceManager* m_pFenceManager;
         VulkanDeviceMemoryManager* m_pDeviceMemoryManager;
-
-        ConstCharPtrVector m_aAppDeviceExtensions;    
-
+        VulkanFenceManager* m_pFenceManager;
+        VulkanRenderPassManager* m_pRenderPassManager;
+        VulkanFrameBufferManager* m_pFrameBufferManager;
+        
     public:
+        F_FORCEINLINE void AddAppDeviceExtensions(const char* szNameExtension) { m_aAppDeviceExtensions.push_back(szNameExtension); }
         F_FORCEINLINE VkDevice& GetVkDevice() { return m_vkDevice; }
         F_FORCEINLINE const VkDevice& GetVkDevice() const { return m_vkDevice; }
         F_FORCEINLINE VkPhysicalDevice& GetVkPhysicalDevice() { return m_vkPhysicalDevice; }
@@ -66,10 +70,10 @@ namespace LostPeterPluginRendererVulkan
         F_FORCEINLINE VulkanQueue* GetQueueTransfer() const { return m_pQueueTransfer; }
         F_FORCEINLINE VulkanQueue* GetQueuePresent() const { return m_pQueuePresent; }
 
-        F_FORCEINLINE VulkanFenceManager* GetFenceManager() const { return m_pFenceManager; }
         F_FORCEINLINE VulkanDeviceMemoryManager* GetDeviceMemoryManager() const { return m_pDeviceMemoryManager; }
-
-        F_FORCEINLINE void AddAppDeviceExtensions(const char* szNameExtension) { m_aAppDeviceExtensions.push_back(szNameExtension); }
+        F_FORCEINLINE VulkanFenceManager* GetFenceManager() const { return m_pFenceManager; }
+        F_FORCEINLINE VulkanRenderPassManager* GetRenderPassManager() const { return m_pRenderPassManager; }
+        F_FORCEINLINE VulkanFrameBufferManager* GetFrameBufferManager() const { return m_pFrameBufferManager; }
 
     public:
         void Destroy();

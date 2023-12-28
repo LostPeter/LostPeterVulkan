@@ -27,10 +27,10 @@ namespace LostPeterPluginRendererVulkan
 	}
 
 
-    VulkanFenceManager::VulkanFenceManager()
-        : m_pDevice(nullptr)
+    VulkanFenceManager::VulkanFenceManager(VulkanDevice* pDevice)
+        : m_pDevice(pDevice)
     {
-        
+        F_Assert(m_pDevice && "VulkanFenceManager::VulkanFenceManager")
     }   
 
     VulkanFenceManager::~VulkanFenceManager()
@@ -52,13 +52,6 @@ namespace LostPeterPluginRendererVulkan
         }
         m_aFences_Free.clear();
         m_aFences_Used.clear();
-    }
-
-    bool VulkanFenceManager::Init(VulkanDevice* pDevice)
-    {
-        m_pDevice = pDevice;
-
-        return true;
     }
 
     VulkanFence* VulkanFenceManager::CreateFence(bool bCreateSignaled /*= false*/)

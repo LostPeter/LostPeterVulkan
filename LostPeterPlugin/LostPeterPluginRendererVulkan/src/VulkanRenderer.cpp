@@ -13,7 +13,6 @@
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanDevice.h"
 #include "../include/VulkanRenderWindow.h"
-#include "../include/VulkanRenderPassManager.h"
 #include "../include/VulkanPlugin.h"
 #include "../include/VulkanConverter.h"
 
@@ -66,9 +65,6 @@ namespace LostPeterPluginRendererVulkan
 
         }
 
-        //4> VulkanRenderPassManager
-        m_pRenderPassManager = new VulkanRenderPassManager(m_pVulkanInstance->GetDevice());
-        
 
         return nullptr;
     }

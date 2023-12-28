@@ -629,8 +629,9 @@ namespace LostPeterEngine
     class RenderEngine;
     class RendererListener;
     class Renderer;
-    class RenderPass;
     class RenderPassDescriptor;
+    class RenderPassDescriptorManager;
+    class RenderPass;
     class RenderPassForwardLit;
     class RenderPassDeferredLit;
     class RenderPassShadowCaster;
@@ -714,6 +715,8 @@ namespace LostPeterEngine
     typedef std::list<Renderer*> RendererPtrList;
     typedef std::map<String, Renderer*> RendererPtrMap;
 
+    typedef std::vector<RenderPassDescriptor*> RenderPassDescriptorPtrVector;
+    typedef std::map<String, RenderPassDescriptor*> RenderPassDescriptorPtrMap;
     typedef std::vector<RenderPass*> RenderPassPtrVector;
     typedef std::map<String, RenderPass*> RenderPassPtrMap;
 

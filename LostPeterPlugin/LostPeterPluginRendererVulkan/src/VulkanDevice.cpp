@@ -10,14 +10,16 @@
 ****************************************************************************/
 
 #include "../include/VulkanDevice.h"
+#include "../include/VulkanConverter.h"
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanVolk.h"
 #include "../include/VulkanQueue.h"
+#include "../include/VulkanDeviceMemoryManager.h"
 #include "../include/VulkanSemaphore.h"
 #include "../include/VulkanFence.h"
 #include "../include/VulkanFenceManager.h"
-#include "../include/VulkanDeviceMemoryManager.h"
-#include "../include/VulkanConverter.h"
+#include "../include/VulkanRenderPassManager.h"
+#include "../include/VulkanFrameBufferManager.h"
 
 namespace LostPeterPluginRendererVulkan
 {
@@ -32,8 +34,10 @@ namespace LostPeterPluginRendererVulkan
         , m_pQueueCompute(nullptr)
         , m_pQueueTransfer(nullptr)
         , m_pQueuePresent(nullptr)
-        , m_pFenceManager(nullptr)
         , m_pDeviceMemoryManager(nullptr)
+        , m_pFenceManager(nullptr)
+        , m_pRenderPassManager(nullptr)
+        , m_pFrameBufferManager(nullptr)
     {
         F_Assert(m_vkPhysicalDevice != VK_NULL_HANDLE && "VulkanDevice::VulkanDevice")
     }
@@ -50,6 +54,8 @@ namespace LostPeterPluginRendererVulkan
         F_DELETE(m_pQueueCompute)
         F_DELETE(m_pQueueGraphics)
 
+        F_DELETE(m_pFrameBufferManager)
+        F_DELETE(m_pRenderPassManager)
         F_DELETE(m_pFenceManager)
         F_DELETE(m_pDeviceMemoryManager)
 
@@ -63,7 +69,7 @@ namespace LostPeterPluginRendererVulkan
     {
         vkGetPhysicalDeviceFeatures(m_vkPhysicalDevice, &m_vkPhysicalDeviceFeatures);
         F_LogInfo("VulkanDevice::Init: Using device: [%d], Support Geometry Shader: [%d], Support Tessellation Shader: [%d]", 
-                    deviceIndex, m_vkPhysicalDeviceFeatures.geometryShader, m_vkPhysicalDeviceFeatures.tessellationShader);
+                  deviceIndex, m_vkPhysicalDeviceFeatures.geometryShader, m_vkPhysicalDeviceFeatures.tessellationShader);
 
         //1> createDevice
         if (!createDevice(bIsEnableValidationLayers))
@@ -81,14 +87,17 @@ namespace LostPeterPluginRendererVulkan
         }
         F_LogInfo("VulkanDevice::Init: 2> checkPixelFormats success !");
        
-        //3> VulkanFenceManager
-        m_pFenceManager = new VulkanFenceManager();
-        m_pFenceManager->Init(this);
-
-        //4> VulkanDeviceMemoryManager
+        //3> VulkanDeviceMemoryManager
         m_pDeviceMemoryManager = new VulkanDeviceMemoryManager();
         m_pDeviceMemoryManager->Init(this);
 
+        //4> Vulkan Manager
+        m_pFenceManager = new VulkanFenceManager(this);
+        m_pRenderPassManager = new VulkanRenderPassManager(this);
+        m_pFrameBufferManager = new VulkanFrameBufferManager(this);
+
+
+        F_LogInfo("VulkanDevice::Init: Init vulkan device success !");
         return true;
     }
 

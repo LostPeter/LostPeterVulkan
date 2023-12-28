@@ -11,10 +11,23 @@
 
 #include "../include/VulkanRenderPassManager.h"
 #include "../include/VulkanDevice.h"
-#include "../include/VulkanRenderPassDescriptor.h"
+#include "../include/VulkanRenderPass.h"
+
+template<> LostPeterPluginRendererVulkan::VulkanRenderPassManager* LostPeterFoundation::FSingleton<LostPeterPluginRendererVulkan::VulkanRenderPassManager>::ms_Singleton = nullptr;
 
 namespace LostPeterPluginRendererVulkan
 {
+    VulkanRenderPassManager* VulkanRenderPassManager::GetSingletonPtr()
+	{
+		return ms_Singleton;
+	}
+	VulkanRenderPassManager& VulkanRenderPassManager::GetSingleton()
+	{  
+		F_Assert(ms_Singleton && "VulkanRenderPassManager::GetSingleton")
+		return (*ms_Singleton);     
+	}
+
+
     VulkanRenderPassManager::VulkanRenderPassManager(VulkanDevice* pDevice)
         : m_pDevice(pDevice)
     {
@@ -28,68 +41,74 @@ namespace LostPeterPluginRendererVulkan
 
     void VulkanRenderPassManager::Destroy()
     {
-        DestroyRenderPassDescriptorAll();
-
-        RenderPassManager::Destroy();
+        DeleteRenderPassAll();
     }
 
-    bool VulkanRenderPassManager::Init()
+    bool VulkanRenderPassManager::HasRenderPass(const String& strName)
     {
-
-        return true;
+        return GetRenderPass(strName) != nullptr;
     }
-
-    VulkanRenderPassDescriptor* VulkanRenderPassManager::NewRenderPassDescriptor(const String& nameRenderPassDescriptor)
+    VulkanRenderPass* VulkanRenderPassManager::GetRenderPass(const String& strName)
     {
-        return new VulkanRenderPassDescriptor(nameRenderPassDescriptor, m_pDevice);
-    }
-
-    RenderPassDescriptor* VulkanRenderPassManager::GetRenderPassDescriptor(const String& nameRenderPassDescriptor)
-    {
-        VulkanRenderPassDescriptorPtrMap::iterator itFind = m_mapRenderPassDescriptor.find(nameRenderPassDescriptor);
-        if (itFind == m_mapRenderPassDescriptor.end())
+        VulkanRenderPassPtrMap::iterator itFind = m_mapRenderPass.find(strName);
+        if (itFind == m_mapRenderPass.end())
+        {
             return nullptr;
+        }
         return itFind->second;
     }
-
-    RenderPassDescriptor* VulkanRenderPassManager::CreateRenderPassDescriptor(const String& nameRenderPassDescriptor, FRenderPassType eRenderPass)
+    bool VulkanRenderPassManager::AddRenderPass(VulkanRenderPass* pRenderPass)
     {
-        RenderPassDescriptor* pRenderPassDescriptor = GetRenderPassDescriptor(nameRenderPassDescriptor);
-        if (pRenderPassDescriptor != nullptr)
+        const String& strName = pRenderPass->GetName();
+        VulkanRenderPassPtrMap::iterator itFind = m_mapRenderPass.find(strName);
+        if (itFind != m_mapRenderPass.end())
         {
-            return pRenderPassDescriptor;
+            F_LogError("*********************** VulkanRenderPassManager::AddRenderPass: RenderPass name already exist: [%s] !", strName.c_str());
+            return false;
         }
-
-        VulkanRenderPassDescriptor* pVulkanRenderPassDescriptor = NewRenderPassDescriptor(nameRenderPassDescriptor);
-        m_aRenderPassDescriptor.push_back(pVulkanRenderPassDescriptor);
-        m_mapRenderPassDescriptor[nameRenderPassDescriptor] = pVulkanRenderPassDescriptor;
-        return pVulkanRenderPassDescriptor;
+        
+        m_mapRenderPass.insert(VulkanRenderPassPtrMap::value_type(strName, pRenderPass));
+        m_aRenderPass.push_back(pRenderPass);
+        return true;
     }
-
-    void VulkanRenderPassManager::DestroyRenderPassDescriptor(RenderPassDescriptor* pRenderPassDescriptor)
+    bool VulkanRenderPassManager::CreateRenderPass(const String& nameRenderPass
+                                                    )
     {
-        if (pRenderPassDescriptor == nullptr)
+        VulkanRenderPass* pRenderPass = GetRenderPass(nameRenderPass);
+        if (pRenderPass != nullptr)
+            return true;
+        
+        pRenderPass = new VulkanRenderPass(nameRenderPass, this->m_pDevice);
+        if (!pRenderPass->Init())
+        {
+            return false;
+        }
+        AddRenderPass(pRenderPass);
+        return pRenderPass;
+    }
+    void VulkanRenderPassManager::DeleteRenderPass(const String& strName)
+    {
+        VulkanRenderPassPtrMap::iterator itFind = m_mapRenderPass.find(strName);
+        if (itFind == m_mapRenderPass.end())
+        {
             return;
-
-        VulkanRenderPassDescriptorPtrVector::iterator itF = std::find(m_aRenderPassDescriptor.begin(), m_aRenderPassDescriptor.end(), (VulkanRenderPassDescriptor*)pRenderPassDescriptor);
-        if (itF != m_aRenderPassDescriptor.end())
-            m_aRenderPassDescriptor.erase(itF);
-        VulkanRenderPassDescriptorPtrMap::iterator itFind = m_mapRenderPassDescriptor.find(pRenderPassDescriptor->GetName());
-        if (itFind != m_mapRenderPassDescriptor.end())
-            m_mapRenderPassDescriptor.erase(itFind);
-        F_DELETE(pRenderPassDescriptor)
-    }
-
-    void VulkanRenderPassManager::DestroyRenderPassDescriptorAll()
-    {
-        int count = (int)m_aRenderPassDescriptor.size();
-        for (int i = 0; i < count; i++)
-        {
-            VulkanRenderPassDescriptor* pRenderPassDescriptor = m_aRenderPassDescriptor[i];
-            F_DELETE(pRenderPassDescriptor)
         }
-        m_aRenderPassDescriptor.clear();
-        m_mapRenderPassDescriptor.clear();
+
+        VulkanRenderPassPtrVector::iterator itFindA = std::find(m_aRenderPass.begin(), m_aRenderPass.end(), itFind->second);
+        if (itFindA != m_aRenderPass.end())
+            m_aRenderPass.erase(itFindA);
+        F_DELETE(itFind->second)
+        m_mapRenderPass.erase(itFind);
+    }
+    void VulkanRenderPassManager::DeleteRenderPassAll()
+    {
+        for (VulkanRenderPassPtrVector::iterator it = m_aRenderPass.begin();
+             it != m_aRenderPass.end(); ++it)
+        {
+            F_DELETE(*it)
+        }
+        m_aRenderPass.clear();
+        m_mapRenderPass.clear();
     }
 
 }; //LostPeterPluginRendererVulkan

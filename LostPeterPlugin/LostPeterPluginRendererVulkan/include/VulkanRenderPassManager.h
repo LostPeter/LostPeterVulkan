@@ -16,7 +16,7 @@
 
 namespace LostPeterPluginRendererVulkan
 {
-    class VulkanRenderPassManager : public RenderPassManager
+    class VulkanRenderPassManager : public FSingleton<VulkanRenderPassManager>
     {
     public:
         VulkanRenderPassManager(VulkanDevice* pDevice);
@@ -25,21 +25,31 @@ namespace LostPeterPluginRendererVulkan
     public:
     protected:
         VulkanDevice* m_pDevice;
-        VulkanRenderPassDescriptorPtrVector m_aRenderPassDescriptor;
-        VulkanRenderPassDescriptorPtrMap m_mapRenderPassDescriptor;
+        VulkanRenderPassPtrVector m_aRenderPass;
+        VulkanRenderPassPtrMap m_mapRenderPass;
+
+     public:
+        static VulkanRenderPassManager& GetSingleton();
+		static VulkanRenderPassManager* GetSingletonPtr();
 
     public:
-        virtual void Destroy();
-        virtual bool Init();
+        F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
+        F_FORCEINLINE const VulkanRenderPassPtrVector& GetRenderPassPtrVector() const { return m_aRenderPass; }
+        F_FORCEINLINE VulkanRenderPassPtrVector& GetRenderPassPtrVector() { return m_aRenderPass; }
+        F_FORCEINLINE const VulkanRenderPassPtrMap& GetRenderPassPtrMap() const { return m_mapRenderPass; }
+        F_FORCEINLINE VulkanRenderPassPtrMap& GetRenderPassPtrMap() { return m_mapRenderPass; }
 
     public:
-        VulkanRenderPassDescriptor* NewRenderPassDescriptor(const String& nameRenderPassDescriptor);
+        void Destroy();
 
     public:
-        virtual RenderPassDescriptor* GetRenderPassDescriptor(const String& nameRenderPassDescriptor);
-        virtual RenderPassDescriptor* CreateRenderPassDescriptor(const String& nameRenderPassDescriptor, FRenderPassType eRenderPass);
-        virtual void DestroyRenderPassDescriptor(RenderPassDescriptor* pRenderPassDescriptor);
-        virtual void DestroyRenderPassDescriptorAll();
+        bool HasRenderPass(const String& strName);
+        VulkanRenderPass* GetRenderPass(const String& strName);
+        bool AddRenderPass(VulkanRenderPass* pRenderPass);
+        bool CreateRenderPass(const String& nameRenderPass);
+        void DeleteRenderPass(const String& strName);
+        void DeleteRenderPassAll();
+
     };
 
 }; //LostPeterPluginRendererVulkan

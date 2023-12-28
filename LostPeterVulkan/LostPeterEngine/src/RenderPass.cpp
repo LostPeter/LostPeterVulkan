@@ -10,7 +10,8 @@
 ****************************************************************************/
 
 #include "../include/RenderPass.h"
-#include "../include/RenderPassManager.h"
+#include "../include/RenderPassDescriptor.h"
+#include "../include/RenderPassDescriptorManager.h"
 
 namespace LostPeterEngine
 {
@@ -36,7 +37,7 @@ namespace LostPeterEngine
     }
         void RenderPass::destroyRenderPassDescriptor()
         {
-            RenderPassManager::GetSingleton().DestroyRenderPassDescriptor(m_pRenderPassDescriptor);
+            RenderPassDescriptorManager::GetSingleton().DestroyRenderPassDescriptor(m_pRenderPassDescriptor);
             m_pRenderPassDescriptor = nullptr;
         }
     
@@ -53,7 +54,7 @@ namespace LostPeterEngine
     }
         bool RenderPass::createRenderPassDescriptor()
         {
-            m_pRenderPassDescriptor = RenderPassManager::GetSingleton().CreateRenderPassDescriptor(m_strNameRenderPassDescriptor, m_eRenderPass);
+            m_pRenderPassDescriptor = RenderPassDescriptorManager::GetSingleton().CreateRenderPassDescriptor(m_strNameRenderPassDescriptor, m_eRenderPass);
             if (m_pRenderPassDescriptor == nullptr)
             {
                 return false;

@@ -32,7 +32,6 @@ namespace LostPeterEngine
 		, m_pVertexDeclarationManager(nullptr)
 		, m_pStreamManager(nullptr)
 		, m_pTextureManager(nullptr)
-		, m_pRenderPassManager(nullptr)
         , m_pActiveRenderWindow(nullptr)
         , m_pActiveRenderTarget(nullptr)
         , m_pActiveViewport(nullptr)
@@ -47,6 +46,7 @@ namespace LostPeterEngine
 		, m_nCurHeight(0)
     {
 		m_pVertexStreamBindingManager = new StreamVertexBindingManager();
+		m_pRenderPassManager = new RenderPassManager();
         m_pRenderTargetManager = new RenderTargetManager(this);
     }
     

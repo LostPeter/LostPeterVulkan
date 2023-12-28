@@ -19,7 +19,7 @@ namespace LostPeterPluginRendererVulkan
     class VulkanFenceManager : public FSingleton<VulkanFenceManager>
     {
     public:
-        VulkanFenceManager();
+        VulkanFenceManager(VulkanDevice* pDevice);
         ~VulkanFenceManager();
 
     public:
@@ -45,7 +45,6 @@ namespace LostPeterPluginRendererVulkan
 
     public:
         void Destroy();
-        bool Init(VulkanDevice* pDevice);
         
     public:
         VulkanFence* CreateFence(bool bCreateSignaled = false);
