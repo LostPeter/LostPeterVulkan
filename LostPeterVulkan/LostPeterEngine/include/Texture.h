@@ -45,8 +45,8 @@ namespace LostPeterEngine
 		uint16 m_nBitDepthFloatDesired;
 		bool m_bTreatLuminanceAsAlpha;
 
-		size_t m_nNumMipMapsRequested;
-		size_t m_nNumMipMaps;
+		size_t m_nMipMapsCountRequested;
+		size_t m_nMipMapsCount;
 		bool m_bMipMapsHardwareGenerated;
 
 		float m_fGamma;
@@ -59,8 +59,8 @@ namespace LostPeterEngine
 		F_FORCEINLINE void SetTextureType(FTextureType eTexture) { m_eTexture = eTexture; }
 		F_FORCEINLINE uint32 GetUsage() const { return m_nUsage; }
 		F_FORCEINLINE void SetUsage(uint32 nUsage) { m_nUsage = nUsage; }
-		F_FORCEINLINE bool	IsLoaded() const { return m_bIsLoaded; }
-		F_FORCEINLINE bool	IsManual() const { return m_bIsManual; }
+		F_FORCEINLINE bool IsLoaded() const { return m_bIsLoaded; }
+		F_FORCEINLINE bool IsManual() const { return m_bIsManual; }
 
 		F_FORCEINLINE FPixelFormatType GetDesiredPixelFormat() const { return m_ePixelFormatDesired; }
 		F_FORCEINLINE FPixelFormatType GetPixelFormat() const { return m_ePixelFormat; }
@@ -95,10 +95,10 @@ namespace LostPeterEngine
 		F_FORCEINLINE bool GetTreatLuminanceAsAlpha() const { return m_bTreatLuminanceAsAlpha; }
 		F_FORCEINLINE void SetTreatLuminanceAsAlpha(bool bTreatLuminanceAsAlpha) { m_bTreatLuminanceAsAlpha = bTreatLuminanceAsAlpha; }
 		
-		F_FORCEINLINE size_t GetNumMipMapsRequested() const { return m_nNumMipMapsRequested; }
-		F_FORCEINLINE void SetNumMipMapsRequested(size_t nNumMipMapsRequested) { m_nNumMipMapsRequested = nNumMipMapsRequested; }
-		F_FORCEINLINE size_t GetNumMipMaps() const	{ return m_nNumMipMaps; }
-		F_FORCEINLINE void SetNumMipMaps(size_t nNumMipMaps) { m_nNumMipMaps = nNumMipMaps; }
+		F_FORCEINLINE size_t GetMipMapsCountRequested() const { return m_nMipMapsCountRequested; }
+		F_FORCEINLINE void SetMipMapsCountRequested(size_t nMipMapsCountRequested) { m_nMipMapsCountRequested = nMipMapsCountRequested; }
+		F_FORCEINLINE size_t GetMipMapsCount() const { return m_nMipMapsCount; }
+		F_FORCEINLINE void SetMipMapsCount(size_t nMipMapsCount) { m_nMipMapsCount = nMipMapsCount; }
 		F_FORCEINLINE bool IsMipMapsHardwareGenerated() const { return m_bMipMapsHardwareGenerated; }
 			
 		F_FORCEINLINE float GetGamma() const { return m_fGamma; }
@@ -107,7 +107,7 @@ namespace LostPeterEngine
 		F_FORCEINLINE void SetFSAA(uint32 nFSAA) { m_nFSAA = nFSAA; }
 		
 	public:
-		virtual size_t GetNumFaces() const;
+		virtual size_t GetFacesCount() const;
 	    virtual bool HasAlpha() const;
 		virtual size_t CalculateSize() const;
 

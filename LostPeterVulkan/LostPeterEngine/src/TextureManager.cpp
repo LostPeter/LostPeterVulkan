@@ -33,7 +33,7 @@ namespace LostPeterEngine
         , m_pTextureSerializer(nullptr)
         , m_nBitDepthIntegerPreferred(0)
 		, m_nBitDepthFloatPreferred(0)
-		, m_nNumMipMapsDefault(E_TextureMipMap_UnLimited)
+		, m_nMipMapsCountDefault(E_TextureMipMap_UnLimited)
 		, m_fMipMapLODBiasDefault(0.0f)
     {
 
@@ -311,7 +311,7 @@ namespace LostPeterEngine
     Texture* TextureManager::CreateTexture(uint32 nGroup, 
                                            const String& strName, 
                                            FTextureType eTexture /*= F_Texture_2D*/, 
-                                           int nNumMipMaps /*= E_TextureMipMap_Default*/, 
+                                           int nMipMapsCount /*= E_TextureMipMap_Default*/, 
 				                           float fGamma /*= 1.0f*/, 
                                            bool bIsAlpha /*= false*/, 
                                            FPixelFormatType ePixelFormatDesired /*= F_PixelFormat_Unknown*/, 
@@ -331,7 +331,7 @@ namespace LostPeterEngine
 		pTexture->AddRef();
 		
         pTexture->SetTextureType(eTexture);
-        pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nNumMipMapsDefault : static_cast<size_t>(nNumMipMaps));
+        pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : static_cast<size_t>(nMipMapsCount));
         pTexture->SetGamma(fGamma);
         pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
         pTexture->SetPixelFormat(ePixelFormatDesired);
@@ -352,7 +352,7 @@ namespace LostPeterEngine
                                                  uint32 nWidth, 
                                                  uint32 nHeight, 
                                                  uint32 nDepth, 
-		                                         int nNumMipMaps, 
+		                                         int nMipMapsCount, 
                                                  FPixelFormatType ePixelFormat, 
                                                  uint32 nUsage /*= E_TextureUsage_Default*/, 
                                                  bool bUseMemoryImage /*= false*/, 
@@ -373,7 +373,7 @@ namespace LostPeterEngine
 		pTexture->SetWidth(nWidth);
 		pTexture->SetHeight(nHeight);
 		pTexture->SetDepth(nDepth);
-		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nNumMipMapsDefault : static_cast<size_t>(nNumMipMaps));
+		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : static_cast<size_t>(nMipMapsCount));
 		pTexture->SetPixelFormat(ePixelFormat);
 		pTexture->SetUsage(nUsage);
 		pTexture->SetFSAA(nFSAA);
@@ -387,7 +387,7 @@ namespace LostPeterEngine
                                                     const String& strName, 
                                                     Image* pImage, 
                                                     FTextureType eTexture /*= F_Texture_2D*/,
-				                                    int nNumMipMaps /*= E_TextureMipMap_Default*/, 
+				                                    int nMipMapsCount /*= E_TextureMipMap_Default*/, 
                                                     float fGamma /*= 1.0f*/, 
                                                     bool bIsAlpha /*= false*/,
 				                                    FPixelFormatType ePixelFormatDesired /*= F_PixelFormat_Unknown*/, 
@@ -405,7 +405,7 @@ namespace LostPeterEngine
 		pTexture->AddRef();
 		
 		pTexture->SetTextureType(eTexture);
-		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nNumMipMapsDefault : static_cast<size_t>(nNumMipMaps));
+		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : static_cast<size_t>(nMipMapsCount));
 		pTexture->SetGamma(fGamma);
 		pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
 		pTexture->SetPixelFormat(ePixelFormatDesired);
@@ -424,7 +424,7 @@ namespace LostPeterEngine
                                                        const String& strName, 
                                                        FFileMemory* pInput, 
                                                        FTextureType eTexture /*= F_Texture_2D*/,
-                                                       int nNumMipMaps /*= E_TextureMipMap_Default*/, 
+                                                       int nMipMapsCount /*= E_TextureMipMap_Default*/, 
                                                        float fGamma /*= 1.0f*/, 
                                                        bool bIsAlpha /*= false*/,
                                                        FPixelFormatType ePixelFormatDesired /*= F_PixelFormat_Unknown*/, 
@@ -442,7 +442,7 @@ namespace LostPeterEngine
 		pTexture->AddRef();
 
 		pTexture->SetTextureType(eTexture);
-		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nNumMipMapsDefault : static_cast<size_t>(nNumMipMaps));
+		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : static_cast<size_t>(nMipMapsCount));
 		pTexture->SetGamma(fGamma);
 		pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
 		pTexture->SetPixelFormat(ePixelFormatDesired);
@@ -464,7 +464,7 @@ namespace LostPeterEngine
                                                       size_t nHeight, 
 				                                      FPixelFormatType ePixelFormat, 
                                                       FTextureType eTexture /*= F_Texture_2D*/, 
-                                                      int nNumMipMaps /*= E_TextureMipMap_Default*/, 
+                                                      int nMipMapsCount /*= E_TextureMipMap_Default*/, 
                                                       float fGamma /*= 1.0f*/, 
                                                       bool bUseMemoryImage /*= false*/)
 	{
@@ -480,7 +480,7 @@ namespace LostPeterEngine
 		pTexture->AddRef();
 
 		pTexture->SetTextureType(eTexture);
-		pTexture->SetNumMipMaps((nNumMipMaps == E_TextureMipMap_Default) ? m_nNumMipMapsDefault : static_cast<size_t>(nNumMipMaps));
+		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : static_cast<size_t>(nMipMapsCount));
 		pTexture->SetGamma(fGamma);
 		if (!pTexture->LoadFromRawData(pInput, nWidth, nHeight, ePixelFormat))
         {

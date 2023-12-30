@@ -89,7 +89,7 @@ namespace LostPeterVulkan
         VkOffset2D poOffset;
         VkExtent2D poExtent;
         VkRect2D poScissor;
-        std::vector<VkImage> poSwapChainImages;
+        VkImageVector poSwapChainImages;
         VkFormat poSwapChainImageFormat;
         VkExtent2D poSwapChainExtent;
         FVector2 poFramebufferSize;

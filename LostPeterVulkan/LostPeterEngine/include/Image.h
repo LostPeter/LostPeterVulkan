@@ -31,7 +31,7 @@ namespace LostPeterEngine
 		size_t m_nHeight;
 		size_t m_nDepth;
 		size_t m_nSize;		
-		size_t m_nNumMipMaps;	
+		size_t m_nMipMapsCount;	
 		uint32 m_nFlags;		
 		FPixelFormatType m_ePixelFormat;	
 		uint8 m_nPixelSize;	
@@ -43,9 +43,9 @@ namespace LostPeterEngine
 		F_FORCEINLINE size_t GetHeight() const { return m_nHeight; }
 		F_FORCEINLINE size_t GetDepth() const { return m_nDepth; }
 		F_FORCEINLINE size_t GetSize() const { return m_nSize; }
-		F_FORCEINLINE size_t GetNumMipMaps() const { return m_nNumMipMaps; }
+		F_FORCEINLINE size_t GetMipMapsCount() const { return m_nMipMapsCount; }
 		F_FORCEINLINE bool	HasFlag(const EImageFlagType imgFlag) const { return m_nFlags & imgFlag ? true : false; }
-		F_FORCEINLINE size_t GetNumFaces() const { return HasFlag(E_ImageFlag_IsCubeMap) ? 6 : 1;}
+		F_FORCEINLINE size_t GetFacesCount() const { return HasFlag(E_ImageFlag_IsCubeMap) ? 6 : 1;}
 		F_FORCEINLINE size_t GetRowSpan() const { return m_nWidth * m_nPixelSize; }
 		F_FORCEINLINE FPixelFormatType GetPixelFormat() const { return m_ePixelFormat; }
 		F_FORCEINLINE size_t GetPixelSize() const { return m_nPixelSize; }

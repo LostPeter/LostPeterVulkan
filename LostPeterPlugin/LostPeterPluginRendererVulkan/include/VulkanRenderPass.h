@@ -32,7 +32,10 @@ namespace LostPeterPluginRendererVulkan
 
     public:
         void Destroy();
-        bool Init();
+        bool Init(const VkAttachmentDescriptionVector& aAttachmentDescription,
+                  const VkSubpassDescriptionVector& aSubpassDescription,
+                  const VkSubpassDependencyVector& aSubpassDependency,
+                  VkRenderPassMultiviewCreateInfo* pMultiviewCI);
 
     public:
         

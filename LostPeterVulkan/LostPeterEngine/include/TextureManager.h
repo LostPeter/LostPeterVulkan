@@ -31,7 +31,7 @@ namespace LostPeterEngine
 
         uint16 m_nBitDepthIntegerPreferred;
 		uint16 m_nBitDepthFloatPreferred;
-		size_t m_nNumMipMapsDefault;
+		size_t m_nMipMapsCountDefault;
 		float m_fMipMapLODBiasDefault;
 
     public:
@@ -70,8 +70,8 @@ namespace LostPeterEngine
 		virtual void SetBitDepthFloatPreferred(uint16 nBitDepthFloatPreferred, bool bReloadTextures = true);
 		virtual void SetBitDepthsPreferred(uint16 nBitDepthIntegerPreferred, uint16 nBitDepthFloatPreferred, bool bReloadTextures = true);
       
-        virtual size_t GetNumMipMapsDefault() { return m_nNumMipMapsDefault; }
-		virtual void SetNumMipMapsDefault(size_t nNumMipMapsDefault) { m_nNumMipMapsDefault = nNumMipMapsDefault; }
+        virtual size_t GetMipMapsCountDefault() { return m_nMipMapsCountDefault; }
+		virtual void SetMipMapsCountDefault(size_t nMipMapsCount) { m_nMipMapsCountDefault = nMipMapsCount; }
 		virtual float GetMipMapLODBiasDefault() { return m_fMipMapLODBiasDefault; }
 		virtual void SetMipMapLODBiasDefault(float fMipMapLODBiasDefault) { m_fMipMapLODBiasDefault = fMipMapLODBiasDefault; }
        
@@ -85,7 +85,7 @@ namespace LostPeterEngine
         Texture* CreateTexture(uint32 nGroup, 
                                const String& strName,
                                FTextureType eTexture = F_Texture_2D, 
-                               int nNumMipMaps = E_TextureMipMap_Default, 
+                               int nMipMapsCount = E_TextureMipMap_Default, 
 						       float fGamma = 1.0f, 
                                bool bIsAlpha = false, 
                                FPixelFormatType ePixelFormatDesired = F_PixelFormat_Unknown, 
@@ -99,7 +99,7 @@ namespace LostPeterEngine
                                      uint32 nWidth, 
                                      uint32 nHeight, 
                                      uint32 nDepth, 
-						             int nNumMipMaps, 
+						             int nMipMapsCount, 
                                      FPixelFormatType ePixelFormat, 
                                      uint32 nUsage = E_TextureUsage_Default, 
                                      bool bUseMemoryImage = false, 
@@ -109,7 +109,7 @@ namespace LostPeterEngine
                                         const String& strName, 
                                         Image* pImage, 
                                         FTextureType eTexture = F_Texture_2D,
-						                int nNumMipMaps = E_TextureMipMap_Default, 
+						                int nMipMapsCount = E_TextureMipMap_Default, 
                                         float fGamma = 1.0f, 
                                         bool bIsAlpha = false,
 						                FPixelFormatType ePixelFormatDesired = F_PixelFormat_Unknown, 
@@ -119,7 +119,7 @@ namespace LostPeterEngine
                                            const String& strName, 
                                            FFileMemory* pInput, 
                                            FTextureType eTexture = F_Texture_2D,
-						                   int nNumMipMaps = E_TextureMipMap_Default, 
+						                   int nMipMapsCount = E_TextureMipMap_Default, 
                                            float fGamma = 1.0f, 
                                            bool bIsAlpha = false,
 						                   FPixelFormatType ePixelFormatDesired = F_PixelFormat_Unknown, 
@@ -132,7 +132,7 @@ namespace LostPeterEngine
                                           size_t nHeight, 
 						                  FPixelFormatType ePixelFormat, 
                                           FTextureType eTexture = F_Texture_2D, 
-                                          int nNumMipMaps = E_TextureMipMap_Default, 
+                                          int nMipMapsCount = E_TextureMipMap_Default, 
                                           float fGamma = 1.0f, 
                                           bool bUseMemoryImage = false);
 

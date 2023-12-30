@@ -30,7 +30,7 @@ namespace LostPeterPluginRendererVulkan
         VulkanDevice* m_pDevice;
 
         FPixelFormatType m_eSwapChainImagePixelFormat;
-        uint32 m_nDesiredNumSwapChainImages;
+        uint32 m_nSwapChainImageDesiredCount;
         VkImageVector m_aSwapChainVkImages;
 	    VkImageViewVector m_aSwapChainVkImageViews;
         VulkanSwapChain* m_pSwapChain;
@@ -48,8 +48,8 @@ namespace LostPeterPluginRendererVulkan
     public:
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
         F_FORCEINLINE FPixelFormatType GetSwapChainImagePixelFormat() const { return m_eSwapChainImagePixelFormat; }
-        F_FORCEINLINE uint32 GetDesiredNumSwapChainImages() const { return m_nDesiredNumSwapChainImages; }
-        F_FORCEINLINE void SetDesiredNumSwapChainImages(uint32 nDesiredNumSwapChainImages) { m_nDesiredNumSwapChainImages = nDesiredNumSwapChainImages; }
+        F_FORCEINLINE uint32 GetSwapChainImageDesiredCount() const { return m_nSwapChainImageDesiredCount; }
+        F_FORCEINLINE void SetSwapChainImageDesiredCount(uint32 nSwapChainImageDesiredCount) { m_nSwapChainImageDesiredCount = nSwapChainImageDesiredCount; }
         F_FORCEINLINE const VkImageVector& GetSwapChainVkImages() const { return m_aSwapChainVkImages; }
 	    F_FORCEINLINE const VkImageViewVector& GetSwapChainVkImageViews() const { return m_aSwapChainVkImageViews; }
         F_FORCEINLINE VulkanSwapChain* GetSwapChain() const { return m_pSwapChain; }

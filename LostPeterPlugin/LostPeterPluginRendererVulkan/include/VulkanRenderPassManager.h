@@ -46,7 +46,29 @@ namespace LostPeterPluginRendererVulkan
         bool HasRenderPass(const String& strName);
         VulkanRenderPass* GetRenderPass(const String& strName);
         bool AddRenderPass(VulkanRenderPass* pRenderPass);
-        bool CreateRenderPass(const String& nameRenderPass);
+        VulkanRenderPass* CreateRenderPass(const String& nameRenderPass,
+                                           const VkAttachmentDescriptionVector& aAttachmentDescription,
+                                           const VkSubpassDescriptionVector& aSubpassDescription,
+                                           const VkSubpassDependencyVector& aSubpassDependency,
+                                           VkRenderPassMultiviewCreateInfo* pMultiviewCI);
+        VulkanRenderPass* CreateRenderPass_KhrDepth(const String& nameRenderPass,
+                                                    VkFormat formatSwapChain, 
+                                                    VkFormat formatDepth);
+        VulkanRenderPass* CreateRenderPass_KhrDepthImgui(const String& nameRenderPass,
+                                                         VkFormat formatColor, 
+                                                         VkFormat formatDepth, 
+                                                         VkFormat formatSwapChain);
+        VulkanRenderPass* CreateRenderPass_ColorDepthMSAA(const String& nameRenderPass,
+                                                          VkFormat formatColor, 
+                                                          VkFormat formatDepth, 
+                                                          VkFormat formatSwapChain, 
+                                                          VkSampleCountFlagBits samples);
+        VulkanRenderPass* CreateRenderPass_ColorDepthImguiMSAA(const String& nameRenderPass,
+                                                               VkFormat formatColor,     
+                                                               VkFormat formatDepth, 
+                                                               VkFormat formatSwapChain, 
+                                                               VkSampleCountFlagBits samples);
+        
         void DeleteRenderPass(const String& strName);
         void DeleteRenderPassAll();
 

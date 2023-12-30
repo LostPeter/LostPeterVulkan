@@ -20,11 +20,9 @@ namespace LostPeterPluginRendererVulkan
         : m_vkInstance(VK_NULL_HANDLE)
         , m_nPreferredVendorID(-1)
         , m_pVkPhysicalDeviceFeatures2(nullptr)
-        , m_nDesiredNumSwapChainImages(3)
         , m_pVolk(nullptr)
         , m_pDebug(nullptr)
         , m_pDevice(nullptr)
-        , m_eSwapChainImagePixelFormat(F_PixelFormat_BYTE_A8R8G8B8_UNORM)
     {
     #if F_DEBUG == 1
         m_bIsEnableValidationLayers = true;

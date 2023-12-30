@@ -42,22 +42,22 @@ namespace LostPeterPluginRendererVulkan
     }
 
     VkImageView VulkanTexture::CreateImageView(uint8 mipLevel, 
-                                               uint8 numMipMaps, 
+                                               uint8 mipMapsCount, 
                                                uint16 arraySlice, 
-                                               uint32 numSlices /*= 0u*/, 
+                                               uint32 slicesCount /*= 0u*/, 
                                                VkImage imageOverride /*= nullptr*/) const
     {
         VkImageViewType texType = GetInternalVulkanTextureViewType();
-        if (numSlices == 1u && m_eTexture == F_Texture_CubeMap)
+        if (slicesCount == 1u && m_eTexture == F_Texture_CubeMap)
         {
             texType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
         }
 
-        if (!numMipMaps)
+        if (!mipMapsCount)
         {
-            numMipMaps = m_nNumMipMaps - mipLevel + 1;
+            mipMapsCount = m_nMipMapsCount - mipLevel + 1;
         }
-        F_Assert(numMipMaps <= (m_nNumMipMaps - mipLevel + 1) && "VulkanTexture::CreateImageView: Asking for more mipmaps than the texture has !")
+        F_Assert(mipMapsCount <= (m_nMipMapsCount - mipLevel + 1) && "VulkanTexture::CreateImageView: Asking for more mipmaps than the texture has !")
 
         VulkanTextureManager* pTextureManager = static_cast<VulkanTextureManager*>(TextureManager::GetSingletonPtr());
         VulkanDevice* pDevice = pTextureManager->GetDevice();
@@ -103,12 +103,12 @@ namespace LostPeterPluginRendererVulkan
 
         imageViewCi.subresourceRange.aspectMask = VulkanConverter::Transform2VkImageAspectFlags(m_ePixelFormat, imageOverride == 0);
         imageViewCi.subresourceRange.baseMipLevel = mipLevel;
-        imageViewCi.subresourceRange.levelCount = numMipMaps;
+        imageViewCi.subresourceRange.levelCount = mipMapsCount;
         imageViewCi.subresourceRange.baseArrayLayer = arraySlice;
-        if (numSlices == 0u)
+        if (slicesCount == 0u)
             imageViewCi.subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS;
         else
-            imageViewCi.subresourceRange.layerCount = numSlices;
+            imageViewCi.subresourceRange.layerCount = slicesCount;
 
         VkImageViewUsageCreateInfo flagRestriction = { VK_STRUCTURE_TYPE_IMAGE_VIEW_USAGE_CREATE_INFO };
         if (pTextureManager->CanRestrictImageViewUsage() && IsUAV())
@@ -160,12 +160,12 @@ namespace LostPeterPluginRendererVulkan
 
         const uint32 sourceSlice = srcBox.m_nFront;
         const uint32 destinationSlice = dstBox.m_nFront;
-        const uint32 numSlices = dstBox.GetDepth() != 0 ? dstBox.GetDepth() : pTextureDst->GetDepth();
+        const uint32 slicesCount = dstBox.GetDepth() != 0 ? dstBox.GetDepth() : pTextureDst->GetDepth();
 
         region.srcSubresource.aspectMask = VulkanConverter::Transform2VkImageAspectFlags(GetPixelFormat());
         region.srcSubresource.mipLevel = srcMipLevel;
         region.srcSubresource.baseArrayLayer = sourceSlice;
-        region.srcSubresource.layerCount = numSlices;
+        region.srcSubresource.layerCount = slicesCount;
 
         region.srcOffset.x = static_cast<int32_t>(srcBox.m_nLeft);
         region.srcOffset.y = static_cast<int32_t>(srcBox.m_nTop);
@@ -174,7 +174,7 @@ namespace LostPeterPluginRendererVulkan
         region.dstSubresource.aspectMask = VulkanConverter::Transform2VkImageAspectFlags(pDst->GetPixelFormat());
         region.dstSubresource.mipLevel = dstMipLevel;
         region.dstSubresource.baseArrayLayer = destinationSlice;
-        region.dstSubresource.layerCount = numSlices;
+        region.dstSubresource.layerCount = slicesCount;
 
         region.dstOffset.x = dstBox.m_nLeft;
         region.dstOffset.y = dstBox.m_nTop;
@@ -232,12 +232,12 @@ namespace LostPeterPluginRendererVulkan
         //     pDevice->m_vulkanQueueGraphics.GetCopyEncoder(nullptr, this, true);
         // }
 
-        const uint32 numSlices = GetNumLayers();
+        const uint32 slicesCount = GetLayersCount();
         VkImageMemoryBarrier imageBarrier = GetImageMemoryBarrier();
         imageBarrier.subresourceRange.levelCount = 1u;
         const uint32 internalWidth = GetWidth();
         const uint32 internalHeight = GetHeight();
-        for (size_t i = 1u; i <= m_nNumMipMaps; ++i)
+        for (size_t i = 1u; i <= m_nMipMapsCount; ++i)
         {
             imageBarrier.subresourceRange.baseMipLevel = static_cast<uint32_t>(i);
             imageBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
@@ -259,7 +259,7 @@ namespace LostPeterPluginRendererVulkan
             region.srcSubresource.aspectMask = VulkanConverter::Transform2VkImageAspectFlags(GetPixelFormat());
             region.srcSubresource.mipLevel = static_cast<uint32_t>(i - 1u);
             region.srcSubresource.baseArrayLayer = 0u;
-            region.srcSubresource.layerCount = numSlices;
+            region.srcSubresource.layerCount = slicesCount;
 
             region.srcOffsets[0].x = 0;
             region.srcOffsets[0].y = 0;
@@ -272,7 +272,7 @@ namespace LostPeterPluginRendererVulkan
             region.dstSubresource.aspectMask = region.srcSubresource.aspectMask;
             region.dstSubresource.mipLevel = static_cast<uint32_t>( i );
             region.dstSubresource.baseArrayLayer = 0u;
-            region.dstSubresource.layerCount = numSlices;
+            region.dstSubresource.layerCount = slicesCount;
 
             region.dstOffsets[0].x = 0;
             region.dstOffsets[0].y = 0;
@@ -350,9 +350,9 @@ namespace LostPeterPluginRendererVulkan
         imageMemBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         imageMemBarrier.subresourceRange.aspectMask = VulkanConverter::Transform2VkImageAspectFlags(m_ePixelFormat);
         imageMemBarrier.subresourceRange.baseMipLevel = 0u;
-        imageMemBarrier.subresourceRange.levelCount = m_nNumMipMaps + 1;
+        imageMemBarrier.subresourceRange.levelCount = m_nMipMapsCount + 1;
         imageMemBarrier.subresourceRange.baseArrayLayer = 0;
-        imageMemBarrier.subresourceRange.layerCount = GetNumLayers();
+        imageMemBarrier.subresourceRange.layerCount = GetLayersCount();
         return imageMemBarrier;
     }
 
@@ -454,15 +454,15 @@ namespace LostPeterPluginRendererVulkan
 
         m_ePixelFormat = TextureManager::GetSingleton().GetPixelFormatNative(m_eTexture, m_ePixelFormat, m_nUsage);
         size_t bitSet = FBitwise::MostSignificantBitSet(FMath::Max(FMath::Max(m_nWidth, m_nHeight), m_nDepth));                                                
-        m_nNumMipMaps = FMath::Min(m_nNumMipMaps, bitSet);
+        m_nMipMapsCount = FMath::Min(m_nMipMapsCount, bitSet);
 
         VkImageCreateInfo imageInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
         imageInfo.imageType = GetVulkanTextureType();
         imageInfo.extent.width = GetWidth();
         imageInfo.extent.height = GetHeight();
         imageInfo.extent.depth = GetDepth();
-        imageInfo.mipLevels = m_nNumMipMaps + 1;
-        imageInfo.arrayLayers = GetNumFaces();
+        imageInfo.mipLevels = m_nMipMapsCount + 1;
+        imageInfo.arrayLayers = GetFacesCount();
         imageInfo.flags = 0;
         imageInfo.format = VulkanConverter::Transform2VkFormat(m_ePixelFormat);
         imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
@@ -540,12 +540,14 @@ namespace LostPeterPluginRendererVulkan
         m_vkLayoutNext = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
         uint32 depth = m_nDepth;
-        for (uint8 face = 0; face < GetNumFaces(); face++)
+        uint8 faceCount = (uint8)GetFacesCount();
+        uint32 mipmapCount = (uint32)GetMipMapsCount();
+        for (uint8 face = 0; face < faceCount; face++)
         {
             uint32 width = m_nWidth;
             uint32 height = m_nHeight;
 
-            for (uint32 mip = 0; mip <= GetNumMipMaps(); mip++)
+            for (uint32 mip = 0; mip <= mipmapCount; mip++)
             {
                 if (width > 1)
                     width = width / 2;
@@ -556,7 +558,7 @@ namespace LostPeterPluginRendererVulkan
             }
         }
 
-        m_vkImageViewDefaultSrv = CreateImageView(0, 0, 0, GetNumLayers());
+        m_vkImageViewDefaultSrv = CreateImageView(0, 0, 0, GetLayersCount());
 
         if (m_nFSAA > 1 && !HasMSAAExplicitResolves())
             createMSAASurface();

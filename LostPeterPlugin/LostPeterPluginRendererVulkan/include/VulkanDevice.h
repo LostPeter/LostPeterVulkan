@@ -221,28 +221,7 @@ namespace LostPeterPluginRendererVulkan
                                 VkRenderPass& vkRenderPass);
         void DestroyVkRenderPass(const VkRenderPass& vkRenderPass);
 
-        bool CreateRenderPass_KhrDepth(const String& nameRenderPass,
-                                       VkFormat formatSwapChain, 
-                                       VkFormat formatDepth, 
-                                       VkRenderPass& vkRenderPass);
-        bool CreateRenderPass_KhrDepthImgui(const String& nameRenderPass,
-                                            VkFormat formatColor, 
-                                            VkFormat formatDepth, 
-                                            VkFormat formatSwapChain, 
-                                            VkRenderPass& vkRenderPass);
-        bool CreateRenderPass_ColorDepthMSAA(const String& nameRenderPass,
-                                             VkFormat formatColor, 
-                                             VkFormat formatDepth, 
-                                             VkFormat formatSwapChain, 
-                                             VkSampleCountFlagBits samples, 
-                                             VkRenderPass& vkRenderPass);
-        bool CreateRenderPass_ColorDepthImguiMSAA(const String& nameRenderPass,
-                                                  VkFormat formatColor,     
-                                                  VkFormat formatDepth, 
-                                                  VkFormat formatSwapChain, 
-                                                  VkSampleCountFlagBits samples, 
-                                                  VkRenderPass& vkRenderPass);
-
+        
         //////////////////// VkFramebuffer //////////////////
         bool CreateVkFramebuffer(const String& nameFramebuffer,
                                  const VkImageViewVector& aImageView, 

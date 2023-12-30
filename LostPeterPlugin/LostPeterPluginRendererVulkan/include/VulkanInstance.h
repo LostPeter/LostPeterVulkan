@@ -31,14 +31,11 @@ namespace LostPeterPluginRendererVulkan
         ConstCharPtrVector m_aAppDeviceExtensions;
         int32 m_nPreferredVendorID;
         VkPhysicalDeviceFeatures2* m_pVkPhysicalDeviceFeatures2;
-        uint32 m_nDesiredNumSwapChainImages;
 
         VulkanVolk* m_pVolk;
         bool m_bIsEnableValidationLayers;
         VulkanDebug* m_pDebug;
         VulkanDevice* m_pDevice;
-
-        FPixelFormatType m_eSwapChainImagePixelFormat;
 
     public:
         F_FORCEINLINE const VkInstance& GetVkInstance() const { return m_vkInstance; }
@@ -52,15 +49,11 @@ namespace LostPeterPluginRendererVulkan
         F_FORCEINLINE void SetPreferredVendorID(int32 vendorID) { m_nPreferredVendorID = vendorID; }
         F_FORCEINLINE VkPhysicalDeviceFeatures2* GetVkPhysicalDeviceFeatures2() const { return m_pVkPhysicalDeviceFeatures2; }
         F_FORCEINLINE void SetVkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2* p) { m_pVkPhysicalDeviceFeatures2 = p; }
-        F_FORCEINLINE uint32 GetDesiredNumSwapChainImages() const { return m_nDesiredNumSwapChainImages; }
-        F_FORCEINLINE void SetDesiredNumSwapChainImages(uint32 num) { m_nDesiredNumSwapChainImages = num; }
         
         F_FORCEINLINE VulkanVolk* GetVolk() const { return m_pVolk; }
         F_FORCEINLINE bool IsEnableValidationLayers() const { return m_bIsEnableValidationLayers; }
         F_FORCEINLINE VulkanDebug* GetDebug() const { return m_pDebug; }
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
-
-        F_FORCEINLINE FPixelFormatType GetVkSwapChainImagePixelFormatType() const { return m_eSwapChainImagePixelFormat; }
 
     public:
         void Destroy();

@@ -26,7 +26,7 @@ namespace LostPeterPluginRendererVulkan
         : RenderWindow(nameRenderWindow)
         , m_pDevice(pDevice)
         , m_eSwapChainImagePixelFormat(F_PixelFormat_BYTE_A8R8G8B8_SRGB)
-        , m_nDesiredNumSwapChainImages(3)
+        , m_nSwapChainImageDesiredCount(3)
         , m_pSwapChain(nullptr)
 
         , m_bIsCreateRenderComputeSycSemaphore(false)
@@ -298,7 +298,7 @@ namespace LostPeterPluginRendererVulkan
                                 m_eSwapChainImagePixelFormat,
                                 nWindowWidth,
                                 nWindowHeight,
-                                &this->m_nDesiredNumSwapChainImages,
+                                &this->m_nSwapChainImageDesiredCount,
                                 this->m_aSwapChainVkImages,
                                 1))
         {

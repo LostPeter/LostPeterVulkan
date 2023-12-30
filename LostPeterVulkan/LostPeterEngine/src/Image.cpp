@@ -20,7 +20,7 @@ namespace LostPeterEngine
 		, m_nHeight(0)
 		, m_nDepth(0)
 		, m_nSize(0)
-		, m_nNumMipMaps(0)
+		, m_nMipMapsCount(0)
 		, m_nFlags(0)
 		, m_ePixelFormat(F_PixelFormat_Unknown)
 		, m_pBuffer(nullptr)
@@ -51,7 +51,7 @@ namespace LostPeterEngine
 		m_nSize	= image.m_nSize;
 		m_nFlags = image.m_nFlags;
 		m_nPixelSize = image.m_nPixelSize;
-		m_nNumMipMaps = image.m_nNumMipMaps;
+		m_nMipMapsCount = image.m_nMipMapsCount;
 		m_bAutoDelete = image.m_bAutoDelete;
 		if (m_bAutoDelete)
 		{
@@ -95,7 +95,7 @@ namespace LostPeterEngine
 		m_nDepth = uDepth;
 		m_ePixelFormat = typePixelFormat;
 		m_nPixelSize = static_cast<uint8>(FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat));
-		m_nNumMipMaps = numMipMaps;
+		m_nMipMapsCount = numMipMaps;
 		m_nFlags = 0;
 
 		if (FPixelFormat::IsCompressed(typePixelFormat))
@@ -210,7 +210,7 @@ namespace LostPeterEngine
 		m_nHeight = pImageData->nHeight;
 		m_nDepth = pImageData->nDepth;
 		m_nSize	= pImageData->nSize;
-		m_nNumMipMaps = pImageData->nNumMipmaps;
+		m_nMipMapsCount = pImageData->nNumMipmaps;
 		m_nFlags = pImageData->nFlags;
 		m_ePixelFormat = pImageData->ePixelFormat;
 		m_nPixelSize = static_cast<uint8>(FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat));
@@ -252,7 +252,7 @@ namespace LostPeterEngine
 		m_nHeight = pImageData->nHeight;
 		m_nDepth = pImageData->nDepth;
 		m_nSize	= pImageData->nSize;
-		m_nNumMipMaps = pImageData->nNumMipmaps;
+		m_nMipMapsCount = pImageData->nNumMipmaps;
 		m_nFlags = pImageData->nFlags;
 		m_ePixelFormat = pImageData->ePixelFormat;
 		m_nPixelSize = static_cast<uint8>(FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat));
@@ -365,14 +365,14 @@ namespace LostPeterEngine
 		// face 1, mip 1
 		// face 1, mip 2
 		// etc
-		if (mipmap > GetNumMipMaps())
+		if (mipmap > GetMipMapsCount())
 		{
 			F_LogError("*********************** Image::GetPixelBox: Mipmap index out of range !");
 			F_Assert(false && "Image::GetPixelBox")
 			return false;
 		}
 
-		if (face >= GetNumFaces())
+		if (face >= GetFacesCount())
 		{
 			F_LogError("*********************** Image::GetPixelBox: Face index out of range !");
 			F_Assert(false && "Image::GetPixelBox")
@@ -383,7 +383,7 @@ namespace LostPeterEngine
 		size_t width = GetWidth();
         size_t height = GetHeight();
         size_t depth = GetDepth();
-		size_t numMips = GetNumMipMaps();
+		size_t mipmapCount = GetMipMapsCount();
 
 		// Figure out the offsets 
 		size_t fullFaceSize  = 0;
@@ -391,7 +391,7 @@ namespace LostPeterEngine
 		size_t finalWidth	 = 0; 
 		size_t finalHeight   = 0;
 		size_t finalDepth	 = 0;
-		for (size_t mip = 0; mip <= numMips; ++mip)
+		for (size_t mip = 0; mip <= mipmapCount; ++mip)
 		{
 			if (mip == mipmap)
 			{
@@ -425,7 +425,7 @@ namespace LostPeterEngine
 			return false;
 		}
 
-		m_nNumMipMaps = 0; 
+		m_nMipMapsCount = 0; 
 		uint8* pTempBuffer1 = 0;
 		uint16* pTempBuffer2 = 0;
 		uint8* pTempBuffer3 = 0;
@@ -526,7 +526,7 @@ namespace LostPeterEngine
 			return false;
 		}
 
-		m_nNumMipMaps = 0;
+		m_nMipMapsCount = 0;
 		size_t rowSpan = m_nWidth * m_nPixelSize;
 		uint8 *pTempBuffer = new uint8[rowSpan * m_nHeight];
 		uint8 *ptr1 = m_pBuffer, *ptr2 = pTempBuffer + ((m_nHeight - 1) * rowSpan);
@@ -656,7 +656,7 @@ namespace LostPeterEngine
 		m_nHeight = height;
 		m_nSize	= FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, 1, m_ePixelFormat);
 		m_pBuffer = new uint8[m_nSize];
-		m_nNumMipMaps = 0;
+		m_nMipMapsCount = 0;
 		
 		FPixelBox src;
 		temp.GetPixelBox(src);

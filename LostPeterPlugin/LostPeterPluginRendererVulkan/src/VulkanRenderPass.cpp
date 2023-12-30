@@ -24,9 +24,40 @@ namespace LostPeterPluginRendererVulkan
 
     VulkanRenderPass::~VulkanRenderPass()
     {
-
+        Destroy();
     }
 
-    
+    void VulkanRenderPass::Destroy()
+    {
+        if (this->m_vkRenderPass != VK_NULL_HANDLE)
+        {
+            m_pDevice->DestroyVkRenderPass(this->m_vkRenderPass);
+        }
+        this->m_vkRenderPass = VK_NULL_HANDLE;
+    }
+
+    bool VulkanRenderPass::Init(const VkAttachmentDescriptionVector& aAttachmentDescription,
+                                const VkSubpassDescriptionVector& aSubpassDescription,
+                                const VkSubpassDependencyVector& aSubpassDependency,
+                                VkRenderPassMultiviewCreateInfo* pMultiviewCI)
+    {
+        Destroy();
+        const String& nameRenderPass = GetName();
+        if (!m_pDevice->CreateVkRenderPass(nameRenderPass,
+                                           aAttachmentDescription,
+                                           aSubpassDescription,
+                                           aSubpassDependency,
+                                           pMultiviewCI,
+                                           this->m_vkRenderPass))
+        {
+            F_LogError("*********************** VulkanRenderPass::Init: Failed to CreateVkRenderPass, nameRenderPass: [%s] !", nameRenderPass.c_str());
+            return false;
+        }
+
+        return true;
+    }
+
+
+
 
 }; //LostPeterPluginRendererVulkan

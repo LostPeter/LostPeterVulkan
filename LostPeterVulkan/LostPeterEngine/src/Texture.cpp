@@ -34,8 +34,8 @@ namespace LostPeterEngine
 		, m_nBitDepthIntegerDesired(0)
 		, m_nBitDepthFloatDesired(0)
 		, m_bTreatLuminanceAsAlpha(false)
-		, m_nNumMipMapsRequested(0)
-		, m_nNumMipMaps(0)
+		, m_nMipMapsCountRequested(0)
+		, m_nMipMapsCount(0)
 		, m_bMipMapsHardwareGenerated(false)
 		, m_fGamma(1.0f)
 		, m_nFSAA(0)
@@ -49,7 +49,7 @@ namespace LostPeterEngine
 
 	}
 	
-	size_t Texture::GetNumFaces() const
+	size_t Texture::GetFacesCount() const
 	{
 		return GetTextureType() == F_Texture_CubeMap ? 6 : 1;
 	}
@@ -61,7 +61,7 @@ namespace LostPeterEngine
 
 	size_t Texture::CalculateSize() const
 	{
-		 return GetNumFaces() * FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, m_nDepth, m_ePixelFormat);
+		 return GetFacesCount() * FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, m_nDepth, m_ePixelFormat);
 	}
 
 	bool Texture::LoadFromRawData(FFileMemory* pInput, size_t nWidth, size_t nHeight, FPixelFormatType ePixelFormat)
@@ -108,10 +108,10 @@ namespace LostPeterEngine
 			m_ePixelFormat = FPixelFormat::ParsePixelFormatForBitDepths(m_ePixelFormatSrc, m_nBitDepthIntegerDesired, m_nBitDepthFloatDesired);
 		}
 
-		size_t imageMips = aImages[0]->GetNumMipMaps();
+		size_t imageMips = aImages[0]->GetMipMapsCount();
 		if (imageMips > 0) 
 		{
-			m_nNumMipMaps = m_nNumMipMapsRequested = imageMips;
+			m_nMipMapsCount = m_nMipMapsCountRequested = imageMips;
 			m_nUsage &= ~E_TextureUsage_AutoMipMap;
 		}
 
@@ -126,20 +126,20 @@ namespace LostPeterEngine
 		}
 		else
 		{
-			faces = aImages[0]->GetNumFaces();
+			faces = aImages[0]->GetFacesCount();
 			multiImage = false;
 		}
 
-		if(faces > GetNumFaces())
-			faces = GetNumFaces();
+		if(faces > GetFacesCount())
+			faces = GetFacesCount();
 
 		std::ostringstream str;
 		str << "Texture: '" << GetName() << "': Loading " << faces << " faces"
 			<< "(" << FPixelFormat::GetPixelFormatName(aImages[0]->GetPixelFormat()) << "," <<
 			aImages[0]->GetWidth() << "x" << aImages[0]->GetHeight() << "x" << aImages[0]->GetDepth() <<
 			") with ";
-		if (!(m_bMipMapsHardwareGenerated && m_nNumMipMaps == 0))
-			str << m_nNumMipMaps;
+		if (!(m_bMipMapsHardwareGenerated && m_nMipMapsCount == 0))
+			str << m_nMipMapsCount;
 		if (m_nUsage & E_TextureUsage_AutoMipMap)
 		{
 			if (m_bMipMapsHardwareGenerated)
@@ -210,7 +210,7 @@ namespace LostPeterEngine
 			}
 		}
 
-		m_nSize = GetNumFaces() * FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, m_nDepth, m_ePixelFormat);
+		m_nSize = GetFacesCount() * FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, m_nDepth, m_ePixelFormat);
 		return true;
 	}
 
