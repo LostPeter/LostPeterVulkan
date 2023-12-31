@@ -49,7 +49,7 @@ namespace LostPeterEngine
 			int32 nDepth;
 			int32 nSize;
 			
-			uint16 nNumMipmaps;
+			uint16 nMipmapsCount;
 			uint32 nFlags;
 			FPixelFormatType ePixelFormat;
 

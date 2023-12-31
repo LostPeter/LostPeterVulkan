@@ -49,7 +49,7 @@ namespace LostPeterFoundation
     }
     FMeshType F_ParseMeshType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_Mesh_Count; i++)
+        for (int i = 0; i < (int)F_Mesh_Count; i++)
         {
             if (s_nameMeshTypes[i] == strName)
                 return (FMeshType)(i);
@@ -127,7 +127,7 @@ namespace LostPeterFoundation
     {
         if (s_mapName2MeshGeometryType.size() <= 0)
         {
-            for (size_t i = 0; i < (int)F_MeshGeometry_Count; i++)
+            for (int i = 0; i < (int)F_MeshGeometry_Count; i++)
             {
                 FMeshGeometryType type = (FMeshGeometryType)i;
                 s_mapName2MeshGeometryType[s_nameMeshGeometryTypes[i]] = type;
@@ -200,7 +200,7 @@ namespace LostPeterFoundation
     }
     FMeshVertexType F_ParseMeshVertexType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_MeshVertex_Count; i++)
+        for (int i = 0; i < (int)F_MeshVertex_Count; i++)
         {
             if (s_nameMeshVertexTypes[i] == strName)
                 return (FMeshVertexType)(i);
@@ -229,7 +229,7 @@ namespace LostPeterFoundation
     }
     FTextureType F_ParseTextureType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_Texture_Count; i++)
+        for (int i = 0; i < (int)F_Texture_Count; i++)
         {
             if (s_nameTextureTypes[i] == strName)
                 return (FTextureType)(i);
@@ -257,7 +257,7 @@ namespace LostPeterFoundation
     }
     FTexturePixelFormatType F_ParseTexturePixelFormatType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_TextureFormat_Count; i++)
+        for (int i = 0; i < (int)F_TextureFormat_Count; i++)
         {
             if (s_nameTexturePixelFormatTypes[i] == strName)
                 return (FTexturePixelFormatType)(i);
@@ -284,7 +284,7 @@ namespace LostPeterFoundation
     }
     FTextureFilterSizeType F_ParseTextureFilterSizeType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_TextureFilterSize_Count; i++)
+        for (int i = 0; i < (int)F_TextureFilterSize_Count; i++)
         {
             if (s_nameTextureFilterSizeTypes[i] == strName)
                 return (FTextureFilterSizeType)(i);
@@ -312,7 +312,7 @@ namespace LostPeterFoundation
     }
     FTextureFilterPixelType F_ParseTextureFilterPixelType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_TextureFilterPixel_Count; i++)
+        for (int i = 0; i < (int)F_TextureFilterPixel_Count; i++)
         {
             if (s_nameTextureFilterPixelTypes[i] == strName)
                 return (FTextureFilterPixelType)(i);
@@ -340,7 +340,7 @@ namespace LostPeterFoundation
     }
     FTextureFilterType F_ParseTextureFilterType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_TextureFilter_Count; i++)
+        for (int i = 0; i < (int)F_TextureFilter_Count; i++)
         {
             if (s_nameTextureFilterTypes[i] == strName)
                 return (FTextureFilterType)(i);
@@ -368,7 +368,7 @@ namespace LostPeterFoundation
     }
     FTextureAddressingType F_ParseTextureAddressingType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_TextureAddressing_Count; i++)
+        for (int i = 0; i < (int)F_TextureAddressing_Count; i++)
         {
             if (s_nameTextureAddressingTypes[i] == strName)
                 return (FTextureAddressingType)(i);
@@ -395,7 +395,7 @@ namespace LostPeterFoundation
     }
     FTextureBorderColorType F_ParseTextureBorderColorType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_TextureBorderColor_Count; i++)
+        for (int i = 0; i < (int)F_TextureBorderColor_Count; i++)
         {
             if (s_nameTextureBorderColorTypes[i] == strName)
                 return (FTextureBorderColorType)(i);
@@ -426,7 +426,7 @@ namespace LostPeterFoundation
     }
     FMSAASampleCountType F_ParseMSAASampleCountType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_MSAASampleCount_Count; i++)
+        for (int i = 0; i < (int)F_MSAASampleCount_Count; i++)
         {
             if (s_nameMSAASampleCountTypes[i] == strName)
                 return (FMSAASampleCountType)(i);
@@ -456,7 +456,7 @@ namespace LostPeterFoundation
     }
     FShaderType F_ParseShaderType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_Shader_Count; i++)
+        for (int i = 0; i < (int)F_Shader_Count; i++)
         {
             if (s_nameShaderTypes[i] == strName)
                 return (FShaderType)(i);
@@ -482,7 +482,7 @@ namespace LostPeterFoundation
     }
     FCameraType F_ParseCameraType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_Camera_Count; i++)
+        for (int i = 0; i < (int)F_Camera_Count; i++)
         {
             if (s_nameCameraTypes[i] == strName)
                 return (FCameraType)(i);
@@ -509,7 +509,7 @@ namespace LostPeterFoundation
     }
     FLightType F_ParseLightType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_Camera_Count; i++)
+        for (int i = 0; i < (int)F_Camera_Count; i++)
         {
             if (s_nameLightTypes[i] == strName)
                 return (FLightType)(i);
@@ -539,7 +539,7 @@ namespace LostPeterFoundation
     }
     FRenderPrimitiveType F_ParseRenderPrimitiveType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_RenderPrimitive_Count; i++)
+        for (int i = 0; i < (int)F_RenderPrimitive_Count; i++)
         {
             if (s_nameRenderPrimitiveTypes[i] == strName)
                 return (FRenderPrimitiveType)(i);
@@ -566,7 +566,7 @@ namespace LostPeterFoundation
     }
     FCullingType F_ParseCullingType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_Culling_Count; i++)
+        for (int i = 0; i < (int)F_Culling_Count; i++)
         {
             if (s_nameCullingTypes[i] == strName)
                 return (FCullingType)(i);
@@ -593,7 +593,7 @@ namespace LostPeterFoundation
     }
     FPolygonType F_ParsePolygonType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_Polygon_Count; i++)
+        for (int i = 0; i < (int)F_Polygon_Count; i++)
         {
             if (s_namePolygonTypes[i] == strName)
                 return (FPolygonType)(i);
@@ -625,7 +625,7 @@ namespace LostPeterFoundation
     }
     FStencilOPType F_ParseStencilOPType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_StencilOP_Count; i++)
+        for (int i = 0; i < (int)F_StencilOP_Count; i++)
         {
             if (s_nameStencilOPTypes[i] == strName)
                 return (FStencilOPType)(i);
@@ -657,7 +657,7 @@ namespace LostPeterFoundation
     }
     FCompareFuncType F_ParseCompareFuncType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_CompareFunc_Count; i++)
+        for (int i = 0; i < (int)F_CompareFunc_Count; i++)
         {
             if (s_nameCompareFuncTypes[i] == strName)
                 return (FCompareFuncType)(i);
@@ -686,7 +686,7 @@ namespace LostPeterFoundation
     }
     FSceneBlendingType F_ParseSceneBlendingType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_SceneBlending_Count; i++)
+        for (int i = 0; i < (int)F_SceneBlending_Count; i++)
         {
             if (s_nameSceneBlendingTypes[i] == strName)
                 return (FSceneBlendingType)(i);
@@ -715,7 +715,7 @@ namespace LostPeterFoundation
     }
     FSceneBlendingOPType F_ParseSceneBlendingOPType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_SceneBlendingOP_Count; i++)
+        for (int i = 0; i < (int)F_SceneBlendingOP_Count; i++)
         {
             if (s_nameSceneBlendingOPTypes[i] == strName)
                 return (FSceneBlendingOPType)(i);
@@ -749,7 +749,7 @@ namespace LostPeterFoundation
     }
     FSceneBlendingFactorType F_ParseSceneBlendingFactorType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_SceneBlendingFactor_Count; i++)
+        for (int i = 0; i < (int)F_SceneBlendingFactor_Count; i++)
         {
             if (s_nameSceneBlendingFactorTypes[i] == strName)
                 return (FSceneBlendingFactorType)(i);
@@ -777,7 +777,7 @@ namespace LostPeterFoundation
     }
     FLightingType F_ParseLightingType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_Lighting_Count; i++)
+        for (int i = 0; i < (int)F_Lighting_Count; i++)
         {
             if (s_nameLightingTypes[i] == strName)
                 return (FLightingType)(i);
@@ -803,7 +803,7 @@ namespace LostPeterFoundation
     }
     FRenderPipelineType F_ParseRenderPipelineType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_RenderPipeline_Count; i++)
+        for (int i = 0; i < (int)F_RenderPipeline_Count; i++)
         {
             if (s_nameRenderPipelineTypes[i] == strName)
                 return (FRenderPipelineType)(i);
@@ -833,7 +833,7 @@ namespace LostPeterFoundation
     }
     FRenderQueueType F_ParseRenderQueueType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_RenderQueue_Count; i++)
+        for (int i = 0; i < (int)F_RenderQueue_Count; i++)
         {
             if (s_nameRenderQueueTypes[i] == strName)
                 return (FRenderQueueType)(i);
@@ -884,7 +884,7 @@ namespace LostPeterFoundation
         "DeferredLit",              //2:  DeferredLit
         "ShadowCaster",             //3:  ShadowCaster
         "DepthOnly",                //4:  DepthOnly
-        
+
         "Custom1",                  //5:  Custom1
         "Custom2",                  //6:  Custom2
         "Custom3",                  //7:  Custom3
@@ -901,7 +901,7 @@ namespace LostPeterFoundation
     }
     FRenderPassType F_ParseRenderPassType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_RenderPass_Count; i++)
+        for (int i = 0; i < (int)F_RenderPass_Count; i++)
         {
             if (s_nameRenderPassTypes[i] == strName)
                 return (FRenderPassType)(i);
@@ -914,9 +914,9 @@ namespace LostPeterFoundation
     //FFrameBufferType
     static const String s_nameFrameBufferTypes[] = 
     {
-        "Color",
-        "Depth",
-        "DepthStencil",
+        "Color",                    //0: Color
+        "Depth",                    //1: Depth
+        "DepthStencil",             //2: DepthStencil
     };
     const String& F_GetFrameBufferTypeName(FFrameBufferType type)
     {
@@ -928,7 +928,7 @@ namespace LostPeterFoundation
     }
     FFrameBufferType F_ParseFrameBufferType(const String& strName)
     {
-        for (size_t i = 0; i < (int)F_FrameBuffer_Count; i++)
+        for (int i = 0; i < (int)F_FrameBuffer_Count; i++)
         {
             if (s_nameFrameBufferTypes[i] == strName)
                 return (FFrameBufferType)(i);
@@ -941,17 +941,17 @@ namespace LostPeterFoundation
     //FPixelFormatComponentType
     static String s_namePixelFormatComponentTypes[] = 
     {
-        "ByteU",
-        "ByteS",
-        "ShortU",
-        "ShortS",
-        "IntU",
-        "IntS",
-        "LongU",
-        "LongS",
-        "Float16",
-        "Float32",
-        "Double"
+        "ByteU",                    //0:    Byte unsigned
+        "ByteS",                    //1:    Byte signed
+        "ShortU",                   //2:    Short unsigned
+        "ShortS",                   //3:    Short signed
+        "IntU",                     //4:    Int unsigned
+        "IntS",                     //5:    Int signed
+        "LongU",                    //6:    Long unsigned
+        "LongS",                    //7:    Long signed
+        "Float16",                  //8:    Float 16
+        "Float32",                  //9:    Float 32
+        "Double"                    //10:   Double
     };
     const String& F_GetPixelFormatComponentTypeName(FPixelFormatComponentType type)
     {   
@@ -962,5 +962,52 @@ namespace LostPeterFoundation
         return s_namePixelFormatComponentTypes[type];
     }
     
+
+    //FParamterType
+    static String s_nameParamterTypes[] = 
+    {
+        "Void",                     //0:    Void    
+        "Bool",                     //1:    Bool
+        "Char",                     //2:    Char
+        "UChar",                    //3:    UChar
+        "Short",                    //4:    Short
+        "UShort",                   //5:    UShort
+        "Int",                      //6:    Int
+        "UInt",                     //7:    UInt
+        "Long",                     //8:    Long
+        "ULong",                    //9:    ULong
+        "Int64"                     //10:   Int64
+        "UInt64"                    //11:   UInt64
+        "Float"                     //12:   Float
+        "Double"                    //13:   Double
+        "Real"                      //14:   Real
+        "Vector2"                   //15:   Vector2
+        "Vector3"                   //16:   Vector3
+        "Vector4"                   //17:   Vector4
+        "Matrix3"                   //18:   Matrix3
+        "Matrix4"                   //19:   Matrix4
+        "Quaternion"                //20:   Quaternion
+        "Color"                     //21:   Color
+        "String"                    //22:   String
+    };
+    const String& F_GetParamterTypeName(FParamterType type)
+    {
+        return s_nameParamterTypes[(int)type];
+    }
+    const String& F_GetParamterTypeName(int type)
+    {
+        return s_nameParamterTypes[(int)type];
+    }
+    FParamterType F_ParseFParamterType(const String& strName)
+    {
+        for (int i = 0; i < (int)F_Paramter_Count; i++)
+        {
+            if (s_nameParamterTypes[i] == strName)
+                return (FParamterType)(i);
+        }
+        F_Assert(false && "F_ParseFParamterType: Wrong type name !")
+        return F_Paramter_Void;
+    }
+
 
 }; //LostPeterFoundation

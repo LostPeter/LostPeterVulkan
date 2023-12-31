@@ -27,11 +27,11 @@ namespace LostPeterEngine
 
 	public:
 	protected:
-		size_t m_nWidth;
-		size_t m_nHeight;
-		size_t m_nDepth;
-		size_t m_nSize;		
-		size_t m_nMipMapsCount;	
+		uint32 m_nWidth;
+		uint32 m_nHeight;
+		uint32 m_nDepth;
+		uint32 m_nSize;		
+		uint32 m_nMipMapsCount;	
 		uint32 m_nFlags;		
 		FPixelFormatType m_ePixelFormat;	
 		uint8 m_nPixelSize;	
@@ -39,16 +39,16 @@ namespace LostPeterEngine
 		bool m_bAutoDelete;
 
 	public:
-		F_FORCEINLINE size_t GetWidth() const { return m_nWidth; }
-		F_FORCEINLINE size_t GetHeight() const { return m_nHeight; }
-		F_FORCEINLINE size_t GetDepth() const { return m_nDepth; }
-		F_FORCEINLINE size_t GetSize() const { return m_nSize; }
-		F_FORCEINLINE size_t GetMipMapsCount() const { return m_nMipMapsCount; }
-		F_FORCEINLINE bool	HasFlag(const EImageFlagType imgFlag) const { return m_nFlags & imgFlag ? true : false; }
-		F_FORCEINLINE size_t GetFacesCount() const { return HasFlag(E_ImageFlag_IsCubeMap) ? 6 : 1;}
-		F_FORCEINLINE size_t GetRowSpan() const { return m_nWidth * m_nPixelSize; }
+		F_FORCEINLINE uint32 GetWidth() const { return m_nWidth; }
+		F_FORCEINLINE uint32 GetHeight() const { return m_nHeight; }
+		F_FORCEINLINE uint32 GetDepth() const { return m_nDepth; }
+		F_FORCEINLINE uint32 GetSize() const { return m_nSize; }
+		F_FORCEINLINE uint32 GetMipMapsCount() const { return m_nMipMapsCount; }
+		F_FORCEINLINE bool HasFlag(const EImageFlagType imgFlag) const { return m_nFlags & imgFlag ? true : false; }
+		F_FORCEINLINE uint32 GetFacesCount() const { return HasFlag(E_ImageFlag_IsCubeMap) ? 6 : 1;}
+		F_FORCEINLINE uint32 GetRowSpan() const { return m_nWidth * m_nPixelSize; }
 		F_FORCEINLINE FPixelFormatType GetPixelFormat() const { return m_ePixelFormat; }
-		F_FORCEINLINE size_t GetPixelSize() const { return m_nPixelSize; }
+		F_FORCEINLINE uint32 GetPixelSize() const { return m_nPixelSize; }
 		F_FORCEINLINE uint8 GetBPP() const { return m_nPixelSize * 8; }
 		F_FORCEINLINE uint8* GetData() { return m_pBuffer; }
 		F_FORCEINLINE const uint8* GetData() const { return m_pBuffer; }
@@ -57,16 +57,16 @@ namespace LostPeterEngine
 
 	public:
 		bool LoadDynamicImage(uint8* pData, 
-                              size_t uWidth, 
-                              size_t uHeight, 
-                              size_t uDepth, 
+                              uint32 uWidth, 
+                              uint32 uHeight, 
+                              uint32 uDepth, 
                               FPixelFormatType typePixelFormat, 
 							  bool autoDelete = false, 
-                              size_t numFaces = 1, 
-                              size_t numMipMaps = 0);
+                              uint32 nFacesCount = 1, 
+                              uint32 nMipMapsCount = 0);
 		bool LoadDynamicImage(uint8* pData, 
-                              size_t uWidth, 
-                              size_t uHeight, 
+                              uint32 uWidth, 
+                              uint32 uHeight, 
                               FPixelFormatType typePixelFormat)
 		{
 			return LoadDynamicImage(pData, 
@@ -77,15 +77,15 @@ namespace LostPeterEngine
 		}
 
 		bool LoadRawData(FFileMemory* pInput, 
-                         size_t uWidth, 
-                         size_t uHeight, 
-                         size_t uDepth, 
+                         uint32 uWidth, 
+                         uint32 uHeight, 
+                         uint32 uDepth, 
                          FPixelFormatType typePixelFormat,
-						 size_t numFaces = 1, 
-                         size_t numMipMaps = 0);
+						 uint32 nFacesCount = 1, 
+                         uint32 nMipMapsCount = 0);
 		bool LoadRawData(FFileMemory* pInput, 
-                         size_t uWidth, 
-                         size_t uHeight, 
+                         uint32 uWidth, 
+                         uint32 uHeight, 
                          FPixelFormatType typePixelFormat)
 		{
 			return LoadRawData(pInput, 
@@ -103,7 +103,7 @@ namespace LostPeterEngine
 		FFileMemory* Encode(const String& strExt);
 	
 		FColor GetColorAt(int x, int y, int z = -1) const;
-		bool GetPixelBox(FPixelBox& retPB, size_t face = 0, size_t mipmap = 0) const;
+		bool GetPixelBox(FPixelBox& retPB, uint32 face = 0, uint32 mipmap = 0) const;
 
 		bool FlipAroundY();
 		bool FlipAroundX();
@@ -111,9 +111,9 @@ namespace LostPeterEngine
 		static bool	Scale(const FPixelBox& src, const FPixelBox& dst, EImageFilterType typeImageFilter = E_ImageFilter_Bilinear);
 		bool Resize(uint16 width, uint16 height, EImageFilterType typeImageFilter = E_ImageFilter_Bilinear);
 
-		static size_t CalculateSize(size_t mipmaps, size_t faces, size_t width, size_t height, size_t depth, FPixelFormatType format);
+		static uint32 CalculateSize(uint32 mipmaps, uint32 faces, uint32 width, uint32 height, uint32 depth, FPixelFormatType format);
 		static String GetFileExtFromMagic(FFileIO* pInput);
-		static bool	ApplyGamma(uint8* buffer, float gamma, size_t size, uint8 bpp);
+		static bool	ApplyGamma(uint8* buffer, float gamma, uint32 size, uint8 bpp);
 	};
 
 }; //LostPeterEngine

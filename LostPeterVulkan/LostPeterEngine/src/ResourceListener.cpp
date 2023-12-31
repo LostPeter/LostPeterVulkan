@@ -2,53 +2,41 @@
 * LostPeterEngine - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2023-12-06
+* Time:     2023-12-31
 * Github:   https://github.com/LostPeter/LostPeterVulkan
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#include "../include/ImageCodec.h"
+#include "../include/ResourceListener.h"
+#include "../include/Resource.h"
 
 namespace LostPeterEngine
 {
-    ImageCodec::ImageData::ImageData()
-        : nHeight(0)
-        , nWidth(0)
-        , nDepth(1)
-        , nSize(0)
-        , nMipmapsCount(0)
-        , nFlags(0)
-        , ePixelFormat(F_PixelFormat_Unknown)
+    ResourceListener::ResourceListener()
     {
 
     }
 
-    ImageCodec::ImageData::~ImageData()
+    ResourceListener::~ResourceListener()
     {
 
     }
 
-    String ImageCodec::ImageData::GetDataType() const	
-    {
-        return "ImageData";
-    }
-
-
-    ImageCodec::ImageCodec()
+    void ResourceListener::PreparingComplete(Resource* pResource) 
     {
 
     }
 
-	ImageCodec::~ImageCodec()
+    void ResourceListener::LoadingComplete(Resource* pResource) 
     {
 
     }
 
-    String ImageCodec::GetDataType() const
+    void ResourceListener::UnloadingComplete(Resource* pResource) 
     {
-        return "ImageData";
+
     }
 
 }; //LostPeterEngine

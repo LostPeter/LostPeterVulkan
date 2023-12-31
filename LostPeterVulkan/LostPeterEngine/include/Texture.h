@@ -31,22 +31,22 @@ namespace LostPeterEngine
 
 		FPixelFormatType m_ePixelFormatDesired;
 		FPixelFormatType m_ePixelFormat;	
-		size_t m_nWidth;
-		size_t m_nHeight;
-		size_t m_nDepth;
-		size_t m_nSize;
+		uint32 m_nWidth;
+		uint32 m_nHeight;
+		uint32 m_nDepth;
+		uint32 m_nSize;
 		
 		FPixelFormatType m_ePixelFormatSrc;
-		size_t m_nWidthSrc;
-		size_t m_nHeightSrc;
-		size_t m_nDepthSrc;
+		uint32 m_nWidthSrc;
+		uint32 m_nHeightSrc;
+		uint32 m_nDepthSrc;
 
 		uint16 m_nBitDepthIntegerDesired;
 		uint16 m_nBitDepthFloatDesired;
 		bool m_bTreatLuminanceAsAlpha;
 
-		size_t m_nMipMapsCountRequested;
-		size_t m_nMipMapsCount;
+		uint32 m_nMipMapsCountRequested;
+		uint32 m_nMipMapsCount;
 		bool m_bMipMapsHardwareGenerated;
 
 		float m_fGamma;
@@ -70,18 +70,18 @@ namespace LostPeterEngine
 			m_ePixelFormat = ePixelFormat; 
 			m_ePixelFormatSrc = ePixelFormat;	
 		}
-		F_FORCEINLINE size_t GetWidth() const { return m_nWidth; }
-		F_FORCEINLINE void SetWidth(size_t nWidth) { m_nWidth = m_nWidthSrc = nWidth; }
-		F_FORCEINLINE size_t GetHeight() const { return m_nHeight; }
-		F_FORCEINLINE void SetHeight(size_t nHeight) { m_nHeight = m_nHeightSrc = nHeight; }
-		F_FORCEINLINE size_t GetDepth() const { return m_nDepth; }
-		F_FORCEINLINE void SetDepth(size_t nDepth) { m_nDepth = m_nDepthSrc = nDepth; }
-		F_FORCEINLINE size_t GetSize() const { return m_nSize; }
+		F_FORCEINLINE uint32 GetWidth() const { return m_nWidth; }
+		F_FORCEINLINE void SetWidth(uint32 nWidth) { m_nWidth = m_nWidthSrc = nWidth; }
+		F_FORCEINLINE uint32 GetHeight() const { return m_nHeight; }
+		F_FORCEINLINE void SetHeight(uint32 nHeight) { m_nHeight = m_nHeightSrc = nHeight; }
+		F_FORCEINLINE uint32 GetDepth() const { return m_nDepth; }
+		F_FORCEINLINE void SetDepth(uint32 nDepth) { m_nDepth = m_nDepthSrc = nDepth; }
+		F_FORCEINLINE uint32 GetSize() const { return m_nSize; }
 
 		F_FORCEINLINE FPixelFormatType GetPixelFormatSrc() const { return m_ePixelFormatSrc; }
-		F_FORCEINLINE size_t GetWidthSrc() const { return m_nWidthSrc; }
-		F_FORCEINLINE size_t GetHeightSrc() const { return m_nHeightSrc; }
-		F_FORCEINLINE size_t GetDepthSrc() const { return m_nDepthSrc; }
+		F_FORCEINLINE uint32 GetWidthSrc() const { return m_nWidthSrc; }
+		F_FORCEINLINE uint32 GetHeightSrc() const { return m_nHeightSrc; }
+		F_FORCEINLINE uint32 GetDepthSrc() const { return m_nDepthSrc; }
 		
 		F_FORCEINLINE uint16 GetBitDepthIntegerDesired() const { return m_nBitDepthIntegerDesired; }
 		F_FORCEINLINE void SetBitDepthIntegerDesired(uint16 nBitDepthIntegerDesired) { m_nBitDepthIntegerDesired = nBitDepthIntegerDesired; }
@@ -95,10 +95,10 @@ namespace LostPeterEngine
 		F_FORCEINLINE bool GetTreatLuminanceAsAlpha() const { return m_bTreatLuminanceAsAlpha; }
 		F_FORCEINLINE void SetTreatLuminanceAsAlpha(bool bTreatLuminanceAsAlpha) { m_bTreatLuminanceAsAlpha = bTreatLuminanceAsAlpha; }
 		
-		F_FORCEINLINE size_t GetMipMapsCountRequested() const { return m_nMipMapsCountRequested; }
-		F_FORCEINLINE void SetMipMapsCountRequested(size_t nMipMapsCountRequested) { m_nMipMapsCountRequested = nMipMapsCountRequested; }
-		F_FORCEINLINE size_t GetMipMapsCount() const { return m_nMipMapsCount; }
-		F_FORCEINLINE void SetMipMapsCount(size_t nMipMapsCount) { m_nMipMapsCount = nMipMapsCount; }
+		F_FORCEINLINE uint32 GetMipMapsCountRequested() const { return m_nMipMapsCountRequested; }
+		F_FORCEINLINE void SetMipMapsCountRequested(uint32 nMipMapsCountRequested) { m_nMipMapsCountRequested = nMipMapsCountRequested; }
+		F_FORCEINLINE uint32 GetMipMapsCount() const { return m_nMipMapsCount; }
+		F_FORCEINLINE void SetMipMapsCount(uint32 nMipMapsCount) { m_nMipMapsCount = nMipMapsCount; }
 		F_FORCEINLINE bool IsMipMapsHardwareGenerated() const { return m_bMipMapsHardwareGenerated; }
 			
 		F_FORCEINLINE float GetGamma() const { return m_fGamma; }
@@ -107,11 +107,11 @@ namespace LostPeterEngine
 		F_FORCEINLINE void SetFSAA(uint32 nFSAA) { m_nFSAA = nFSAA; }
 		
 	public:
-		virtual size_t GetFacesCount() const;
+		virtual uint32 GetFacesCount() const;
 	    virtual bool HasAlpha() const;
-		virtual size_t CalculateSize() const;
+		virtual uint32 CalculateSize() const;
 
-		virtual bool LoadFromRawData(FFileMemory* pInput, size_t nWidth, size_t nHeight, FPixelFormatType ePixelFormat);
+		virtual bool LoadFromRawData(FFileMemory* pInput, uint32 nWidth, uint32 nHeight, FPixelFormatType ePixelFormat);
 		virtual bool LoadFromImage(Image* pImage);
 		virtual bool LoadFromImages(const ImagePtrVector& aImages);
 		virtual bool LoadFromDDSImage(FFileMemory* pInput) { return false; }
@@ -121,7 +121,7 @@ namespace LostPeterEngine
 		virtual bool CreateInternalResources();
         virtual void FreeInternalResources();
 
-		virtual StreamTexture* GetTextureStream(size_t nFace = 0, size_t nMipMap = 0) = 0;
+		virtual StreamTexture* GetTextureStream(uint32 nFace = 0, uint32 nMipMap = 0) = 0;
 
 		virtual bool Load() = 0;
 		virtual bool Unload() = 0;

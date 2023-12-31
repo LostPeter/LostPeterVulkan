@@ -327,6 +327,7 @@ namespace LostPeterFoundation
     typedef std::list<String> StringList;
     typedef std::set<String> StringSet;
     typedef std::map<String, String> String2StringMap;
+    typedef std::map<String, String> NameValuePairMap;
     typedef std::vector<const char*> ConstCharPtrVector;
     typedef std::vector<char> CharVector;
     typedef std::vector<uint16> Indices16Vector;
@@ -474,6 +475,10 @@ namespace LostPeterFoundation
     class FLogConsole;
     class FLogFile;
     class FLogManager;
+    class FParameter;
+    class FParameterCommand;
+    class FParameterDictionary;
+    class FParameterInterface;
     class FPathManager;
     class FPixelBox;
     class FPixelFormat;
@@ -508,6 +513,12 @@ namespace LostPeterFoundation
     typedef std::vector<FPlane> FPlaneVector; 
     typedef std::list<FPlane> FPlaneList;
 	typedef std::vector<FPlaneBoundedVolume> FPlaneBoundedVolumeVector;
+
+    typedef std::vector<FParameter*> FParameterPtrVector;
+	typedef std::map<String, FParameter*> FParameterPtrMap;
+    typedef std::vector<FParameterCommand*>	FParameterCommandPtrVector;
+	typedef std::map<String, FParameterCommand*> FParameterCommandPtrMap;
+    typedef std::map<String, FParameterDictionary*> ParameterDictionaryPtrMap;
 
     typedef std::map<uint32, String2StringMap> FPathGroupMap;
 	typedef std::map<uint32, uint32> FPathGroupIDMap;
@@ -1064,9 +1075,9 @@ namespace LostPeterFoundation
 
     enum FFrameBufferType 
 	{
-		F_FrameBuffer_Color = 0,	                    //Color
-		F_FrameBuffer_Depth,	                        //Depth
-		F_FrameBuffer_DepthStencil,	                    //DepthStencil
+		F_FrameBuffer_Color = 0,	                    //0: Color
+		F_FrameBuffer_Depth,	                        //1: Depth
+		F_FrameBuffer_DepthStencil,	                    //2: DepthStencil
 
         F_FrameBuffer_Count,
 	};
@@ -1335,34 +1346,67 @@ namespace LostPeterFoundation
 
     enum FPixelFormatFlagType
 	{
-        F_PixelFormatFlag_IsNative		    = 0x00000001,   //0: IsNative
-        F_PixelFormatFlag_IsCompressed	    = 0x00000002,   //1: IsCompressed
-        F_PixelFormatFlag_IsInteger	        = 0x00000004,   //2: IsInteger
-        F_PixelFormatFlag_IsFloat	        = 0x00000008,   //3: IsFloat
-		F_PixelFormatFlag_IsLuminance	    = 0x00000010,   //4: IsLuminance
-        F_PixelFormatFlag_IsStencil         = 0x00000020,   //5: IsStencil
-		F_PixelFormatFlag_IsDepth		    = 0x00000040,   //6: IsDepth
-        F_PixelFormatFlag_IsDepthStencil    = 0x00000080,   //7: IsDepthStencil
-		F_PixelFormatFlag_HasAlpha		    = 0x00000100,   //8: HasAlpha
+        F_PixelFormatFlag_IsNative		    = 0x00000001,       //0:    IsNative
+        F_PixelFormatFlag_IsCompressed	    = 0x00000002,       //1:    IsCompressed
+        F_PixelFormatFlag_IsInteger	        = 0x00000004,       //2:    IsInteger
+        F_PixelFormatFlag_IsFloat	        = 0x00000008,       //3:    IsFloat
+		F_PixelFormatFlag_IsLuminance	    = 0x00000010,       //4:    IsLuminance
+        F_PixelFormatFlag_IsStencil         = 0x00000020,       //5:    IsStencil
+		F_PixelFormatFlag_IsDepth		    = 0x00000040,       //6:    IsDepth
+        F_PixelFormatFlag_IsDepthStencil    = 0x00000080,       //7:    IsDepthStencil
+		F_PixelFormatFlag_HasAlpha		    = 0x00000100,       //8:    HasAlpha
 	};
 
 
     enum FPixelFormatComponentType
 	{
-		F_PixelFormatComponent_ByteU = 0,              //0: Byte unsigned
-        F_PixelFormatComponent_ByteS,                  //1: Byte signed
-		F_PixelFormatComponent_ShortU,                 //2: Short unsigned
-        F_PixelFormatComponent_ShortS,                 //3: Short signed
-        F_PixelFormatComponent_IntU,				   //4: Int unsigned
-		F_PixelFormatComponent_IntS,				   //5: Int signed
-        F_PixelFormatComponent_LongU,				   //6: Long unsigned
-		F_PixelFormatComponent_LongS,				   //7: Long signed
-		F_PixelFormatComponent_Float16,                //8: Float 16
-		F_PixelFormatComponent_Float32,                //9: Float 32
-        F_PixelFormatComponent_Double,                 //10: Double
+		F_PixelFormatComponent_ByteU = 0,                       //0:    Byte unsigned
+        F_PixelFormatComponent_ByteS,                           //1:    Byte signed
+		F_PixelFormatComponent_ShortU,                          //2:    Short unsigned
+        F_PixelFormatComponent_ShortS,                          //3:    Short signed
+        F_PixelFormatComponent_IntU,				            //4:    Int unsigned
+		F_PixelFormatComponent_IntS,				            //5:    Int signed
+        F_PixelFormatComponent_LongU,				            //6:    Long unsigned
+		F_PixelFormatComponent_LongS,				            //7:    Long signed
+		F_PixelFormatComponent_Float16,                         //8:    Float 16
+		F_PixelFormatComponent_Float32,                         //9:    Float 32
+        F_PixelFormatComponent_Double,                          //10:   Double
 	};
     const String& F_GetPixelFormatComponentTypeName(FPixelFormatComponentType type);
     const String& F_GetPixelFormatComponentTypeName(int type);
+
+
+    enum FParamterType
+    {
+        F_Paramter_Void	= 0,                                    //0:    Void    
+		F_Paramter_Bool,                                        //1:    Bool
+		F_Paramter_Char,                                        //2:    Char
+		F_Paramter_UChar,                                       //3:    UChar
+		F_Paramter_Short,	                                    //4:    Short
+		F_Paramter_UShort,                                      //5:    UShort
+		F_Paramter_Int,                                         //6:    Int
+		F_Paramter_UInt,                                        //7:    UInt
+		F_Paramter_Long,                                        //8:    Long
+		F_Paramter_ULong,                                       //9:    ULong
+		F_Paramter_Int64,                                       //10:   Int64
+		F_Paramter_UInt64,                                      //11:   UInt64
+		F_Paramter_Float,                                       //12:   Float
+		F_Paramter_Double,                                      //13:   Double
+		F_Paramter_Real,                                        //14:   Real
+		F_Paramter_Vector2,                                     //15:   Vector2
+		F_Paramter_Vector3,                                     //16:   Vector3
+		F_Paramter_Vector4,                                     //17:   Vector4
+		F_Paramter_Matrix3,                                     //18:   Matrix3
+		F_Paramter_Matrix4,                                     //19:   Matrix4
+		F_Paramter_Quaternion,                                  //20:   Quaternion
+		F_Paramter_Color,                                       //21:   Color
+		F_Paramter_String,                                      //22:   String
+
+		F_Paramter_Count
+    };
+    foundationExport const String& F_GetParamterTypeName(FParamterType type);
+    foundationExport const String& F_GetParamterTypeName(int type);
+    foundationExport FParamterType F_ParseFParamterType(const String& strName);
 
 
 }; //LostPeterFoundation

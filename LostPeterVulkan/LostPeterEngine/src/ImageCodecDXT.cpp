@@ -198,7 +198,7 @@ namespace LostPeterEngine
 		{
 			numFaces = 6;
 		}
-		size_t nPixelSize = Image::CalculateSize((size_t)pImgData->nNumMipmaps, 
+		size_t nPixelSize = Image::CalculateSize((size_t)pImgData->nMipmapsCount, 
                                                  numFaces,
 			                                     (size_t)pImgData->nWidth, 
                                                  (size_t)pImgData->nHeight, 
@@ -227,7 +227,7 @@ namespace LostPeterEngine
 			pHeader->flags = (pHeader->flags)|DDSD_DEPTH;
 			pHeader->depth = pImgData->nDepth;
 		}
-		pHeader->mipMapCount		= pImgData->nNumMipmaps + 1;
+		pHeader->mipMapCount		= pImgData->nMipmapsCount + 1;
 		pHeader->pixelFormat.fourCC = convertFormatToFourCC(ePixelFormatDXT);		
 		pHeader->pixelFormat.flags	= DDPF_FOURCC;
 		pHeader->sizeOrPitch		= pHeader->width * pHeader->height;
@@ -250,7 +250,7 @@ namespace LostPeterEngine
 			size_t width  = pImgData->nWidth;
 			size_t height = pImgData->nHeight;
 			size_t depth  = pImgData->nDepth;
-			for (size_t mip = 0; mip <= pImgData->nNumMipmaps; ++mip)
+			for (size_t mip = 0; mip <= pImgData->nMipmapsCount; ++mip)
 			{
 				size_t SrcBpp			= FPixelFormat::GetPixelFormatElemBytes(pImgData->ePixelFormat);
 				size_t SrcPitch			= width * SrcBpp;
@@ -406,11 +406,11 @@ namespace LostPeterEngine
 		size_t numFaces	= 1; // assume one face until we know otherwise
 		if (header.caps.caps1 & DDSCAPS_MIPMAP)
 		{
-			pImageData->nNumMipmaps = uint16(header.mipMapCount - 1);
+			pImageData->nMipmapsCount = uint16(header.mipMapCount - 1);
 		}
 		else
 		{
-			pImageData->nNumMipmaps = 0;
+			pImageData->nMipmapsCount = 0;
 		}
 		pImageData->nFlags = 0;
 
@@ -423,7 +423,7 @@ namespace LostPeterEngine
 			iTemp /= 2;
 			mipMapMaxCount++;
 		}
-		pImageData->nNumMipmaps = uint16(pImageData->nNumMipmaps < mipMapMaxCount ? pImageData->nNumMipmaps : mipMapMaxCount);
+		pImageData->nMipmapsCount = uint16(pImageData->nMipmapsCount < mipMapMaxCount ? pImageData->nMipmapsCount : mipMapMaxCount);
 
 
 		bool decompressDXT = false;
@@ -509,7 +509,7 @@ namespace LostPeterEngine
 		}
 
 		// Calculate total size from number of mipmaps, faces and size
-		pImageData->nSize = (int32)Image::CalculateSize((size_t)pImageData->nNumMipmaps, 
+		pImageData->nSize = (int32)Image::CalculateSize((size_t)pImageData->nMipmapsCount, 
                                                         numFaces, 
 														(size_t)pImageData->nWidth, 
 														(size_t)pImageData->nHeight, 
@@ -527,7 +527,7 @@ namespace LostPeterEngine
 			size_t height = pImageData->nHeight;
 			size_t depth  = pImageData->nDepth;
 
-			for(size_t mip = 0; mip <= pImageData->nNumMipmaps; ++mip)
+			for(size_t mip = 0; mip <= pImageData->nMipmapsCount; ++mip)
 			{
 				size_t dstPitch = width * FPixelFormat::GetPixelFormatElemBytes(pImageData->ePixelFormat);
 				if (FPixelFormat::IsCompressed(sourceFormat))
@@ -833,11 +833,11 @@ namespace LostPeterEngine
 		pImageData->nDepth			= 1; 
 		pImageData->nWidth			= width[0] + width[1];
 		pImageData->nHeight		    = height[0] + height[2];
-		pImageData->nNumMipmaps	    = uint16(nMipMaps - 1);
+		pImageData->nMipmapsCount	= uint16(nMipMaps - 1);
 		pImageData->ePixelFormat	= sourceFormat[0];
 		pImageData->nFlags		   |= E_ImageFlag_IsCompressed;
 		// Calculate total size from number of mipmaps, faces and size
-		size_t nPixelSize = Image::CalculateSize((size_t)pImageData->nNumMipmaps, 
+		size_t nPixelSize = Image::CalculateSize((size_t)pImageData->nMipmapsCount, 
                                                  1, 
                                                  (size_t)pImageData->nWidth, 
                                                  (size_t)pImageData->nHeight, 
@@ -866,7 +866,7 @@ namespace LostPeterEngine
 			pHeader->flags  = (pHeader->flags)|DDSD_DEPTH;
 			pHeader->depth  = pImageData->nDepth;
 		}
-		pHeader->mipMapCount		= pImageData->nNumMipmaps + 1;
+		pHeader->mipMapCount		= pImageData->nMipmapsCount + 1;
 		pHeader->pixelFormat.fourCC = convertFormatToFourCC(sourceFormat[0]);		
 		pHeader->pixelFormat.flags	= DDPF_FOURCC;
 		pHeader->sizeOrPitch		= pHeader->width * pHeader->height;
@@ -1048,14 +1048,14 @@ namespace LostPeterEngine
 		
 		ImageData* pImageData = new ImageData();
 		// only 2D texture be supported
-		pImageData->nDepth		 = 1; 
-		pImageData->nWidth		 = width[0] + width[1];
-		pImageData->nHeight		 = height[0];
-		pImageData->nNumMipmaps	 = uint16(nMipMaps - 1);
-		pImageData->ePixelFormat = sourceFormat[0];
-		pImageData->nFlags		|= E_ImageFlag_IsCompressed;
+		pImageData->nDepth		  = 1; 
+		pImageData->nWidth		  = width[0] + width[1];
+		pImageData->nHeight		  = height[0];
+		pImageData->nMipmapsCount = uint16(nMipMaps - 1);
+		pImageData->ePixelFormat  = sourceFormat[0];
+		pImageData->nFlags		 |= E_ImageFlag_IsCompressed;
 		// Calculate total size from number of mipmaps, faces and size
-		size_t nPixelSize = Image::CalculateSize((size_t)pImageData->nNumMipmaps,   
+		size_t nPixelSize = Image::CalculateSize((size_t)pImageData->nMipmapsCount,   
                                                  1, 
                                                  (size_t)pImageData->nWidth, 
                                                  (size_t)pImageData->nHeight, 
@@ -1084,7 +1084,7 @@ namespace LostPeterEngine
 			pHeader->flags  = (pHeader->flags)|DDSD_DEPTH;
 			pHeader->depth = pImageData->nDepth;
 		}
-		pHeader->mipMapCount		= pImageData->nNumMipmaps + 1;
+		pHeader->mipMapCount		= pImageData->nMipmapsCount + 1;
 		pHeader->pixelFormat.fourCC = convertFormatToFourCC(sourceFormat[0]);		
 		pHeader->pixelFormat.flags	= DDPF_FOURCC;
 		pHeader->sizeOrPitch		= pHeader->width * pHeader->height;
@@ -1264,14 +1264,14 @@ namespace LostPeterEngine
 		
 		ImageData* pImageData = new ImageData();
 		// only 2D texture be supported
-		pImageData->nDepth		 = 1; 
-		pImageData->nWidth		 = width[0];
-		pImageData->nHeight		 = height[0] + height[1];
-		pImageData->nNumMipmaps	 = uint16(nMipMaps - 1);
-		pImageData->ePixelFormat = sourceFormat[0];
-		pImageData->nFlags		|= E_ImageFlag_IsCompressed;
+		pImageData->nDepth		  = 1; 
+		pImageData->nWidth		  = width[0];
+		pImageData->nHeight		  = height[0] + height[1];
+		pImageData->nMipmapsCount = uint16(nMipMaps - 1);
+		pImageData->ePixelFormat  = sourceFormat[0];
+		pImageData->nFlags		 |= E_ImageFlag_IsCompressed;
 		// Calculate total size from number of mipmaps, faces and size
-		size_t nPixelSize = Image::CalculateSize((size_t)pImageData->nNumMipmaps,
+		size_t nPixelSize = Image::CalculateSize((size_t)pImageData->nMipmapsCount,
                                                  1, 
                                                  (size_t)pImageData->nWidth, 
                                                  (size_t)pImageData->nHeight, 
@@ -1300,7 +1300,7 @@ namespace LostPeterEngine
 			pHeader->flags = (pHeader->flags)|DDSD_DEPTH;
 			pHeader->depth = pImageData->nDepth;
 		}
-		pHeader->mipMapCount		= pImageData->nNumMipmaps + 1;
+		pHeader->mipMapCount		= pImageData->nMipmapsCount + 1;
 		pHeader->pixelFormat.fourCC = convertFormatToFourCC(sourceFormat[0]);		
 		pHeader->pixelFormat.flags	= DDPF_FOURCC;
 		pHeader->sizeOrPitch		= pHeader->width * pHeader->height;
@@ -1481,14 +1481,14 @@ namespace LostPeterEngine
 		}
 		ImageData* pImageData = new ImageData();
 		// only 2D texture be supported
-		pImageData->nDepth		 = 1; 
-		pImageData->nWidth	     = width * s;
-		pImageData->nHeight		 = height * s;
-		pImageData->nNumMipmaps	 = uint16(nMipMaps - 1);
-		pImageData->ePixelFormat = sourceFormat[0];
-		pImageData->nFlags		|= E_ImageFlag_IsCompressed;
+		pImageData->nDepth		  = 1; 
+		pImageData->nWidth	      = width * s;
+		pImageData->nHeight		  = height * s;
+		pImageData->nMipmapsCount = uint16(nMipMaps - 1);
+		pImageData->ePixelFormat  = sourceFormat[0];
+		pImageData->nFlags		 |= E_ImageFlag_IsCompressed;
 		// Calculate total size from number of mipmaps, faces and size
-		size_t nPixelSize = Image::CalculateSize((size_t)pImageData->nNumMipmaps, 
+		size_t nPixelSize = Image::CalculateSize((size_t)pImageData->nMipmapsCount, 
                                                  1, 
                                                  (size_t)pImageData->nWidth, 
                                                  (size_t)pImageData->nHeight, 
@@ -1517,7 +1517,7 @@ namespace LostPeterEngine
 			pHeader->flags  = (pHeader->flags)|DDSD_DEPTH;
 			pHeader->depth  = pImageData->nDepth;
 		}
-		pHeader->mipMapCount		= pImageData->nNumMipmaps + 1;
+		pHeader->mipMapCount		= pImageData->nMipmapsCount + 1;
 		pHeader->pixelFormat.fourCC = convertFormatToFourCC(sourceFormat[0]);		
 		pHeader->pixelFormat.flags	= DDPF_FOURCC;
 		pHeader->sizeOrPitch		= pHeader->width * pHeader->height;

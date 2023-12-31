@@ -1,0 +1,104 @@
+/****************************************************************************
+* LostPeterEngine - Copyright (C) 2022 by LostPeter
+* 
+* Author:   LostPeter
+* Time:     2023-12-31
+* Github:   https://github.com/LostPeter/LostPeterVulkan
+* Document: https://www.zhihu.com/people/lostpeter/posts
+*
+* This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
+****************************************************************************/
+
+#ifndef _RESOURCE_H_
+#define _RESOURCE_H_
+
+#include "Base.h"
+
+namespace LostPeterEngine
+{
+    class engineExport Resource : public Base
+    {
+    public:
+        Resource(ResourceManager* pResourceManager,
+                 uint32 nGroup, 
+                 const String& strName,
+                 ResourceHandle nHandle,
+                 bool bIsManualLoad = false,
+                 ResourceManualLoader* pResourceManualLoader = nullptr);
+        virtual ~Resource();
+
+    public:
+    protected:
+        ResourceManager* m_pResourceManager;
+        ResourceHandle m_nHandle;
+        std::atomic<EResourceLoadingType> m_eResourceLoading;
+        volatile bool m_bIsBackgroundLoaded;
+        bool m_bIsManualLoad;
+        ResourceManualLoader* m_pResourceManualLoader;
+        size_t m_nSize;
+        String m_strOrigin;
+        size_t m_nStateCount;
+        ResourceListenerPtrList m_listResourceListener;
+
+    public:
+        F_FORCEINLINE ResourceManager* GetResourceManager() const { return m_pResourceManager; }
+        F_FORCEINLINE ResourceHandle GetHandle() const { return m_nHandle; }
+        F_FORCEINLINE EResourceLoadingType GetResourceLoadingState() const { return m_eResourceLoading.load(); }
+        F_FORCEINLINE bool IsUnloaded() const { return (m_eResourceLoading.load() == E_ResourceLoading_Unloaded); }
+        F_FORCEINLINE bool IsLoading() const { return (m_eResourceLoading.load() == E_ResourceLoading_Loading); }
+		F_FORCEINLINE bool IsLoaded() const	{ return (m_eResourceLoading.load() == E_ResourceLoading_Loaded); }
+        F_FORCEINLINE bool IsUnloading() const { return (m_eResourceLoading.load() == E_ResourceLoading_Unloading); }
+        F_FORCEINLINE bool IsPrepared() const { return (m_eResourceLoading.load() == E_ResourceLoading_Prepared); }
+        F_FORCEINLINE bool IsPreparing() const { return (m_eResourceLoading.load() == E_ResourceLoading_Preparing); }
+        F_FORCEINLINE bool IsBackgroundLoaded() const { return m_bIsBackgroundLoaded; }
+		F_FORCEINLINE void SetIsBackgroundLoaded(bool bIsBackgroundLoaded) { m_bIsBackgroundLoaded = bIsBackgroundLoaded; }
+        F_FORCEINLINE bool IsReloadable() const	{ return !m_bIsManualLoad || m_pResourceManualLoader; }
+        F_FORCEINLINE bool IsManuallyLoaded() const	{ return m_bIsManualLoad; }
+		F_FORCEINLINE size_t GetSize() const { return m_nSize; }
+		F_FORCEINLINE const String&	GetOrigin() const { return m_strOrigin; }
+		F_FORCEINLINE void SetOrigin(const String& strOrigin) { m_strOrigin = strOrigin; }
+
+        F_FORCEINLINE size_t GetStateCount() const { return m_nStateCount; }
+		F_FORCEINLINE void AddStateCount() { ++m_nStateCount; }
+
+    public:
+        virtual void Destroy();
+
+
+    public:
+        virtual void AddResourceListener(ResourceListener* pResourceListener);
+		virtual void RemoveResourceListener(ResourceListener* pResourceListener);
+        virtual void RemoveResourceListenerAll();
+
+		virtual void ChangeGroupOwnership(const String& strNewGroup);
+
+		virtual void Prepare();
+		virtual void Load(bool bIsBackgroundThread = false);
+		virtual void Reload();
+		virtual void Unload();
+		virtual void Touch();
+		virtual void EscalateLoading();
+		
+		virtual void _FireLoadingComplete(bool bIsBackgroundLoaded);
+		virtual void _FirePreparingComplete(bool bIsBackgroundLoaded);
+        virtual void _FireUnloadingComplete();
+
+    protected:
+        virtual void preLoadImpl() {}
+		virtual void postLoadImpl()	{}
+		virtual void preUnloadImpl() {}
+		virtual void postUnloadImpl() {}
+		virtual void prepareImpl() {}
+		virtual void unprepareImpl() {}
+
+		virtual void loadImpl() = 0;
+		virtual void unloadImpl() = 0;
+		virtual size_t calculateSize() const = 0;
+
+		virtual void queueFireBackgroundLoadingComplete();
+		virtual void queueFireBackgroundPreparingComplete();
+    };
+
+}; //LostPeterEngine
+
+#endif

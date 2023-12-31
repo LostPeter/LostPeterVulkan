@@ -31,7 +31,7 @@ namespace LostPeterEngine
 
         uint16 m_nBitDepthIntegerPreferred;
 		uint16 m_nBitDepthFloatPreferred;
-		size_t m_nMipMapsCountDefault;
+		uint32 m_nMipMapsCountDefault;
 		float m_fMipMapLODBiasDefault;
 
     public:
@@ -70,8 +70,8 @@ namespace LostPeterEngine
 		virtual void SetBitDepthFloatPreferred(uint16 nBitDepthFloatPreferred, bool bReloadTextures = true);
 		virtual void SetBitDepthsPreferred(uint16 nBitDepthIntegerPreferred, uint16 nBitDepthFloatPreferred, bool bReloadTextures = true);
       
-        virtual size_t GetMipMapsCountDefault() { return m_nMipMapsCountDefault; }
-		virtual void SetMipMapsCountDefault(size_t nMipMapsCount) { m_nMipMapsCountDefault = nMipMapsCount; }
+        virtual uint32 GetMipMapsCountDefault() { return m_nMipMapsCountDefault; }
+		virtual void SetMipMapsCountDefault(uint32 nMipMapsCount) { m_nMipMapsCountDefault = nMipMapsCount; }
 		virtual float GetMipMapLODBiasDefault() { return m_fMipMapLODBiasDefault; }
 		virtual void SetMipMapLODBiasDefault(float fMipMapLODBiasDefault) { m_fMipMapLODBiasDefault = fMipMapLODBiasDefault; }
        
@@ -128,8 +128,8 @@ namespace LostPeterEngine
 		Texture* CreateTextureFromRawData(uint32 nGroup, 
                                           const String& strName, 
                                           FFileMemory* pInput, 
-                                          size_t nWidth, 
-                                          size_t nHeight, 
+                                          uint32 nWidth, 
+                                          uint32 nHeight, 
 						                  FPixelFormatType ePixelFormat, 
                                           FTextureType eTexture = F_Texture_2D, 
                                           int nMipMapsCount = E_TextureMipMap_Default, 

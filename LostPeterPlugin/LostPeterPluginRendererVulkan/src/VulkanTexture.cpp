@@ -237,7 +237,7 @@ namespace LostPeterPluginRendererVulkan
         imageBarrier.subresourceRange.levelCount = 1u;
         const uint32 internalWidth = GetWidth();
         const uint32 internalHeight = GetHeight();
-        for (size_t i = 1u; i <= m_nMipMapsCount; ++i)
+        for (uint32 i = 1u; i <= m_nMipMapsCount; ++i)
         {
             imageBarrier.subresourceRange.baseMipLevel = static_cast<uint32_t>(i);
             imageBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
@@ -429,7 +429,7 @@ namespace LostPeterPluginRendererVulkan
         vkFreeMemory(pDevice->GetVkDevice(), m_vkDeviceMemoryMSAA, nullptr);
     }
 
-    StreamTexture* VulkanTexture::GetTextureStream(size_t nFace /*= 0*/, size_t nMipmap /*= 0*/)
+    StreamTexture* VulkanTexture::GetTextureStream(uint32 nFace /*= 0*/, uint32 nMipmap /*= 0*/)
     {
         
         return nullptr;
@@ -453,7 +453,7 @@ namespace LostPeterPluginRendererVulkan
             return;
 
         m_ePixelFormat = TextureManager::GetSingleton().GetPixelFormatNative(m_eTexture, m_ePixelFormat, m_nUsage);
-        size_t bitSet = FBitwise::MostSignificantBitSet(FMath::Max(FMath::Max(m_nWidth, m_nHeight), m_nDepth));                                                
+        uint32 bitSet = FBitwise::MostSignificantBitSet(FMath::Max(FMath::Max(m_nWidth, m_nHeight), m_nDepth));                                                
         m_nMipMapsCount = FMath::Min(m_nMipMapsCount, bitSet);
 
         VkImageCreateInfo imageInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };

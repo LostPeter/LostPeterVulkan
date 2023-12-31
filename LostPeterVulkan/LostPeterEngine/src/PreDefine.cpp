@@ -22,9 +22,9 @@ namespace LostPeterEngine
     //EWindowType
     static String s_nameWindows[] = 
     {
-        "Main",             //0:    Main
-        "Game",             //1:    Game
-        "Scene",            //2:    Scene
+        "Main",                     //0:    Main
+        "Game",                     //1:    Game
+        "Scene",                    //2:    Scene
     };
     const String& E_GetWindowTypeName(EWindowType type)
     {
@@ -36,7 +36,7 @@ namespace LostPeterEngine
     }
     EWindowType E_ParseWindowType(const String& strName)
     {
-        for (size_t i = 0; i < (int)E_Window_Count; i++)
+        for (int i = 0; i < (int)E_Window_Count; i++)
         {
             if (s_nameWindows[i] == strName)
                 return (EWindowType)(i);
@@ -49,15 +49,15 @@ namespace LostPeterEngine
     //EObjectType
     static String s_nameObjectTypes[] = 
     {
-        "Mesh",                 //0:    Mesh            
-        "SkinMesh",             //1:    SkinMesh
-        "Camera",               //2:    Camera
-        "Light",                //3:    Light
-        "Terrain",              //4:    Terrain
-        "Water",                //5:    Water
-        "Sky",                  //6:    Sky
-        "Cloud",                //7:    Cloud
-        "Particle",             //8:    Particle
+        "Mesh",                     //0:    Mesh            
+        "SkinMesh",                 //1:    SkinMesh
+        "Camera",                   //2:    Camera
+        "Light",                    //3:    Light
+        "Terrain",                  //4:    Terrain
+        "Water",                    //5:    Water
+        "Sky",                      //6:    Sky
+        "Cloud",                    //7:    Cloud
+        "Particle",                 //8:    Particle
     };
     const String& E_GetObjectTypeName(EObjectType type)
     {
@@ -69,13 +69,40 @@ namespace LostPeterEngine
     }
     EObjectType E_ParseObjectType(const String& strName)
     {
-        for (size_t i = 0; i < (int)E_Object_Count; i++)
+        for (int i = 0; i < (int)E_Object_Count; i++)
         {
             if (s_nameObjectTypes[i] == strName)
                 return (EObjectType)(i);
         }
         F_Assert(false && "E_ParseObjectType: Wrong type name !")
         return E_Object_Mesh;
+    }
+
+
+    //EResourceType
+    static String s_nameResourceTypes[] = 
+    {
+        "Mesh",                     //0:    Mesh            
+        "Texture",                  //1:    Texture
+        "Shader",                   //2:    Shader
+    };
+    const String& E_GetResourceypeName(EResourceType type)
+    {
+        return s_nameResourceTypes[(int)type];
+    }
+    const String& E_GetResourceypeName(int type)
+    {
+        return s_nameResourceTypes[type];
+    }
+    EResourceType E_ParseResourceType(const String& strName)
+    {
+        for (int i = 0; i < (int)E_Resource_Count; i++)
+        {
+            if (s_nameResourceTypes[i] == strName)
+                return (EResourceType)(i);
+        }
+        F_Assert(false && "E_ParseResourceType: Wrong type name !")
+        return E_Resource_Mesh;
     }
 
     

@@ -83,7 +83,7 @@ namespace LostPeterPluginRendererVulkan
 
     ////Texture
     public:
-        virtual StreamTexture* GetTextureStream(size_t nFace = 0, size_t nMipmap = 0);
+        virtual StreamTexture* GetTextureStream(uint32 nFace = 0, uint32 nMipmap = 0);
 
 		virtual bool Load();
 		virtual bool Unload();

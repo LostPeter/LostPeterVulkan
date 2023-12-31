@@ -49,7 +49,7 @@ namespace LostPeterEngine
 
 	}
 	
-	size_t Texture::GetFacesCount() const
+	uint32 Texture::GetFacesCount() const
 	{
 		return GetTextureType() == F_Texture_CubeMap ? 6 : 1;
 	}
@@ -59,12 +59,12 @@ namespace LostPeterEngine
 		return FPixelFormat::HasAlpha(m_ePixelFormat);
 	}
 
-	size_t Texture::CalculateSize() const
+	uint32 Texture::CalculateSize() const
 	{
 		 return GetFacesCount() * FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, m_nDepth, m_ePixelFormat);
 	}
 
-	bool Texture::LoadFromRawData(FFileMemory* pInput, size_t nWidth, size_t nHeight, FPixelFormatType ePixelFormat)
+	bool Texture::LoadFromRawData(FFileMemory* pInput, uint32 nWidth, uint32 nHeight, FPixelFormatType ePixelFormat)
 	{
 		Image img;
 		if (!img.LoadRawData(pInput, nWidth, nHeight, ePixelFormat))
@@ -108,7 +108,7 @@ namespace LostPeterEngine
 			m_ePixelFormat = FPixelFormat::ParsePixelFormatForBitDepths(m_ePixelFormatSrc, m_nBitDepthIntegerDesired, m_nBitDepthFloatDesired);
 		}
 
-		size_t imageMips = aImages[0]->GetMipMapsCount();
+		uint32 imageMips = aImages[0]->GetMipMapsCount();
 		if (imageMips > 0) 
 		{
 			m_nMipMapsCount = m_nMipMapsCountRequested = imageMips;
@@ -117,7 +117,7 @@ namespace LostPeterEngine
 
 		CreateInternalResources();
 
-		size_t faces;
+		uint32 faces;
 		bool multiImage;
 		if(aImages.size() > 1)
 		{
@@ -163,9 +163,9 @@ namespace LostPeterEngine
 		F_LogInfo(str.str().c_str());
 
 
-		for (size_t mip = 0; mip <= imageMips; ++mip)
+		for (uint32 mip = 0; mip <= imageMips; ++mip)
 		{
-			for(size_t i = 0; i < faces; ++i)
+			for(uint32 i = 0; i < faces; ++i)
 			{
 				FPixelBox src;
 				if (multiImage)

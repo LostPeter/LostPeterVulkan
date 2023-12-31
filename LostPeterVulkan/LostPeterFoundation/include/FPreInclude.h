@@ -48,6 +48,7 @@
 #include "FMeshGeometry.h"
 #include "FMeshVertex.h"
 #include "FNonCopyable.h"
+#include "FParameter.h"
 #include "FPathManager.h"
 #include "FPixelBox.h"
 #include "FPixelFormat.h"

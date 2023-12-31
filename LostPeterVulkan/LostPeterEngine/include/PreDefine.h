@@ -72,9 +72,9 @@ namespace LostPeterEngine
 ////////////////////////////// Enum ////////////////////////////////
     enum EWindowType
     {
-        E_Window_Main = 0,                         //0:    Main
-        E_Window_Game,                             //1:    Game
-        E_Window_Scene,                            //2:    Scene
+        E_Window_Main = 0,                                  //0:    Main
+        E_Window_Game,                                      //1:    Game
+        E_Window_Scene,                                     //2:    Scene
 
         E_Window_Count,
     };
@@ -164,90 +164,114 @@ namespace LostPeterEngine
 
     enum EObjectType
     {
-        E_Object_Mesh = 0,                      //0:    Mesh
-        E_Object_SkinMesh,                      //1:    SkinMesh
-        E_Object_Camera,                        //2:    Camera
-        E_Object_Light,                         //3:    Light
-        E_Object_Terrain,                       //4:    Terrain
-        E_Object_Water,                         //5:    Water
-        E_Object_Sky,                           //6:    Sky
-        E_Object_Cloud,                         //7:    Cloud
-        E_Object_Particle,                      //8:    Particle
+        E_Object_Mesh = 0,                                  //0:    Mesh
+        E_Object_SkinMesh,                                  //1:    SkinMesh
+        E_Object_Camera,                                    //2:    Camera
+        E_Object_Light,                                     //3:    Light
+        E_Object_Terrain,                                   //4:    Terrain
+        E_Object_Water,                                     //5:    Water
+        E_Object_Sky,                                       //6:    Sky
+        E_Object_Cloud,                                     //7:    Cloud
+        E_Object_Particle,                                  //8:    Particle
 
         E_Object_Count,                
     };
     engineExport const String& E_GetObjectTypeName(EObjectType type);
     engineExport const String& E_GetObjectTypeName(int type);
     engineExport EObjectType E_ParseObjectType(const String& strName);
+
+
+    enum EResourceType
+    {
+        E_Resource_Mesh = 0,                                //0:    Mesh
+        E_Resource_Texture,                                 //1:    Texture
+        E_Resource_Shader,                                  //2:    Shader
+
+        E_Resource_Count,
+    };
+    engineExport const String& E_GetResourceypeName(EResourceType type);
+    engineExport const String& E_GetResourceTypeName(int type);
+    engineExport EResourceType E_ParseResourceType(const String& strName);
     
+
+    enum EResourceLoadingType
+    {
+        E_ResourceLoading_Unloaded = 0,		                //0:    Unloaded
+        E_ResourceLoading_Loading,			                //1:    Loading
+        E_ResourceLoading_Loaded,			                //2:    Loaded
+        E_ResourceLoading_Unloading,		                //3:    Unloading
+        E_ResourceLoading_Prepared,			                //4:    Prepared
+        E_ResourceLoading_Preparing			                //5:    Preparing
+    };
+
 
     enum ECpuFeatureType
     {
-		E_CpuFeature_NONE          	= 0,			    //0:  	 None
+		E_CpuFeature_NONE          	= 0,			        //0:  	 None
 
 #if F_CPU == F_CPU_X86
-		E_CpuFeature_SSE            	= 1 << 0,		//1<<0:  SSE
-		E_CpuFeature_SSE2            	= 1 << 1,		//1<<1:  SSE2
-		E_CpuFeature_SSE3            	= 1 << 2,		//1<<2:  SSE3
-		E_CpuFeature_SSE41           	= 1 << 3,		//1<<3:  SSE41
-		E_CpuFeature_SSE42           	= 1 << 4,		//1<<4:  SSE42
-		E_CpuFeature_MMX             	= 1 << 5,		//1<<5:  MMX 
-		E_CpuFeature_MMXEXT          	= 1 << 6,		//1<<6:  MMXEXT
-		E_CpuFeature_3DNOW           	= 1 << 7,		//1<<7:  3DNOW
-		E_CpuFeature_3DNOWEXT        	= 1 << 8,		//1<<8:  3DNOWEXT
-		E_CpuFeature_CMOV            	= 1 << 9,		//1<<9:  CMOV
-		E_CpuFeature_TSC             	= 1 << 10,		//1<<10: TSC
-		E_CpuFeature_INVARIANT_TSC   	= 1 << 11,		//1<<11: INVARIANT_TSC
-		E_CpuFeature_FPU             	= 1 << 12,		//1<<12: FPU
-		E_CpuFeature_PRO             	= 1 << 13,		//1<<13: PRO
-		E_CpuFeature_HTT             	= 1 << 14,		//1<<14: HTT
+		E_CpuFeature_SSE            	= 1 << 0,		    //1<<0:  SSE
+		E_CpuFeature_SSE2            	= 1 << 1,		    //1<<1:  SSE2
+		E_CpuFeature_SSE3            	= 1 << 2,		    //1<<2:  SSE3
+		E_CpuFeature_SSE41           	= 1 << 3,		    //1<<3:  SSE41
+		E_CpuFeature_SSE42           	= 1 << 4,		    //1<<4:  SSE42
+		E_CpuFeature_MMX             	= 1 << 5,		    //1<<5:  MMX 
+		E_CpuFeature_MMXEXT          	= 1 << 6,		    //1<<6:  MMXEXT
+		E_CpuFeature_3DNOW           	= 1 << 7,		    //1<<7:  3DNOW
+		E_CpuFeature_3DNOWEXT        	= 1 << 8,		    //1<<8:  3DNOWEXT
+		E_CpuFeature_CMOV            	= 1 << 9,		    //1<<9:  CMOV
+		E_CpuFeature_TSC             	= 1 << 10,		    //1<<10: TSC
+		E_CpuFeature_INVARIANT_TSC   	= 1 << 11,		    //1<<11: INVARIANT_TSC
+		E_CpuFeature_FPU             	= 1 << 12,		    //1<<12: FPU
+		E_CpuFeature_PRO             	= 1 << 13,		    //1<<13: PRO
+		E_CpuFeature_HTT             	= 1 << 14,		    //1<<14: HTT
 #elif F_CPU == F_CPU_ARM          
-		E_CpuFeature_VFP             	= 1 << 15,		//1<<15: VFP
-		E_CpuFeature_NEON            	= 1 << 16,		//1<<16: NEON
+		E_CpuFeature_VFP             	= 1 << 15,		    //1<<15: VFP
+		E_CpuFeature_NEON            	= 1 << 16,		    //1<<16: NEON
 #elif F_CPU == F_CPU_MIPS         
-        E_CpuFeature_MSA             	= 1 << 17,		//1<<17: MSA
+        E_CpuFeature_MSA             	= 1 << 17,		    //1<<17: MSA
 #endif
     };
 
 
 	enum ECpuInfoType
 	{
-		E_CpuInfo_Vender = 0,			                //0:  Vender
-		E_CpuInfo_Brand,						        //1:  Brand
-		E_CpuInfo_Code,						            //2:  Code
-		E_CpuInfo_VenderType,					        //3:  VenderType
-		E_CpuInfo_NumCore,					            //4:  NumCore
-		E_CpuInfo_LogicalCpus,				            //5:  LogicalCPUs
-		E_CpuInfo_TotalLogicalCpus,			            //6:  TotalLogicalCPUs
-		E_CpuInfo_L1DataCache,				            //7:  L1DataCache
-		E_CpuInfo_L1InstCache,				            //8:  L1InstCache
-		E_CpuInfo_L2Cache,					            //9:  L2Cache
-		E_CpuInfo_L3Cache,					            //10: L3Cache
-		E_CpuInfo_L1Cache_DataAsso,			            //11: L1Cache_DataAsso
-		E_CpuInfo_L2Cache_Asso,				            //12: L2Cache_Asso
-		E_CpuInfo_L3Cache_Asso,				            //13: L3Cache_Asso
-		E_CpuInfo_L1Cache_DataLine,			            //14: L1Cache_DataLine
-		E_CpuInfo_L2Cache_Line,				            //15: L2Cache_Line
-		E_CpuInfo_L3Cache_Line,				            //16: L3Cache_Line
-		E_CpuInfo_SSESize,					            //17: SSESize
-		E_CpuInfo_SSE,						            //18: SSE
-		E_CpuInfo_SSE2,						            //19: SSE2
-		E_CpuInfo_SSE3,						            //20: SSE3
-		E_CpuInfo_SSE41,						        //21: SSE41
-		E_CpuInfo_SSE42,						        //22: SSE42
-		E_CpuInfo_MMX,						            //23: MMX		
-		E_CpuInfo_MMXEXT,						        //24: MMXEXT
-		E_CpuInfo_3DNOW,						        //25: 3DNOW
-		E_CpuInfo_3DNOWEXT,					            //26: 3DNOWEXT
-		E_CpuInfo_CMOV,						            //27: CMOV
-		E_CpuInfo_TSC,						            //28: TSC
-		E_CpuInfo_INVARIANT_TSC,						//29: INVARIANT_TSC
-		E_CpuInfo_FPU,						            //30: FPU
-		E_CpuInfo_PRO,								    //31: PRO				
-		E_CpuInfo_HTT,							        //32: HTT
-		E_CpuInfo_VFP,							        //33: VFP
-		E_CpuInfo_NEON,							        //34: NEON
-		E_CpuInfo_MSA,							        //35: MSA
+		E_CpuInfo_Vender = 0,			                    //0:  Vender
+		E_CpuInfo_Brand,						            //1:  Brand
+		E_CpuInfo_Code,						                //2:  Code
+		E_CpuInfo_VenderType,					            //3:  VenderType
+		E_CpuInfo_NumCore,					                //4:  NumCore
+		E_CpuInfo_LogicalCpus,				                //5:  LogicalCPUs
+		E_CpuInfo_TotalLogicalCpus,			                //6:  TotalLogicalCPUs
+		E_CpuInfo_L1DataCache,				                //7:  L1DataCache
+		E_CpuInfo_L1InstCache,				                //8:  L1InstCache
+		E_CpuInfo_L2Cache,					                //9:  L2Cache
+		E_CpuInfo_L3Cache,					                //10: L3Cache
+		E_CpuInfo_L1Cache_DataAsso,			                //11: L1Cache_DataAsso
+		E_CpuInfo_L2Cache_Asso,				                //12: L2Cache_Asso
+		E_CpuInfo_L3Cache_Asso,				                //13: L3Cache_Asso
+		E_CpuInfo_L1Cache_DataLine,			                //14: L1Cache_DataLine
+		E_CpuInfo_L2Cache_Line,				                //15: L2Cache_Line
+		E_CpuInfo_L3Cache_Line,				                //16: L3Cache_Line
+		E_CpuInfo_SSESize,					                //17: SSESize
+		E_CpuInfo_SSE,						                //18: SSE
+		E_CpuInfo_SSE2,						                //19: SSE2
+		E_CpuInfo_SSE3,						                //20: SSE3
+		E_CpuInfo_SSE41,						            //21: SSE41
+		E_CpuInfo_SSE42,						            //22: SSE42
+		E_CpuInfo_MMX,						                //23: MMX		
+		E_CpuInfo_MMXEXT,						            //24: MMXEXT
+		E_CpuInfo_3DNOW,						            //25: 3DNOW
+		E_CpuInfo_3DNOWEXT,					                //26: 3DNOWEXT
+		E_CpuInfo_CMOV,						                //27: CMOV
+		E_CpuInfo_TSC,						                //28: TSC
+		E_CpuInfo_INVARIANT_TSC,						    //29: INVARIANT_TSC
+		E_CpuInfo_FPU,						                //30: FPU
+		E_CpuInfo_PRO,								        //31: PRO				
+		E_CpuInfo_HTT,							            //32: HTT
+		E_CpuInfo_VFP,							            //33: VFP
+		E_CpuInfo_NEON,							            //34: NEON
+		E_CpuInfo_MSA,							            //35: MSA
 
 		E_CpuInfo_Count						
 	};
@@ -257,19 +281,19 @@ namespace LostPeterEngine
 
     enum EGpuVendorType
 	{
-		E_GpuVendor_Unknown = 0,                //0:  Unknown
-		E_GpuVendor_Nvidia,                     //1:  Nvidia
-		E_GpuVendor_AMD,                        //2:  AMD
-		E_GpuVendor_Intel,                      //3:  Intel
-		E_GpuVendor_Imagination,                //4:  Imagination
-		E_GpuVendor_Apple,                      //5:  Apple
-		E_GpuVendor_Nokia,                      //6:  Nokia
-		E_GpuVendor_MS_Software,                //7:  MS Software
-		E_GpuVendor_MS_Warp,                    //8:  MS Warp
-		E_GpuVendor_Arm,                        //9:  Arm Mali 
-		E_GpuVendor_Qualcomm,                   //10: Qualcomm
-		E_GpuVendor_Mozilla,                    //11: Mozilla/Firefox WebGL
-		E_GpuVendor_Webkit,                     //12: Webkit/Chrome WebGL
+		E_GpuVendor_Unknown = 0,                            //0:  Unknown
+		E_GpuVendor_Nvidia,                                 //1:  Nvidia
+		E_GpuVendor_AMD,                                    //2:  AMD
+		E_GpuVendor_Intel,                                  //3:  Intel
+		E_GpuVendor_Imagination,                            //4:  Imagination
+		E_GpuVendor_Apple,                                  //5:  Apple
+		E_GpuVendor_Nokia,                                  //6:  Nokia
+		E_GpuVendor_MS_Software,                            //7:  MS Software
+		E_GpuVendor_MS_Warp,                                //8:  MS Warp
+		E_GpuVendor_Arm,                                    //9:  Arm Mali 
+		E_GpuVendor_Qualcomm,                               //10: Qualcomm
+		E_GpuVendor_Mozilla,                                //11: Mozilla/Firefox WebGL
+		E_GpuVendor_Webkit,                                 //12: Webkit/Chrome WebGL
 
 		E_GpuVendor_Count
 	};
@@ -280,10 +304,10 @@ namespace LostPeterEngine
     enum EEngineConfigType
 	{
     ////Common
-		E_EngineConfig_Common_MultiThread = 0,	        //0:  MultiThread
+		E_EngineConfig_Common_MultiThread = 0,	            //0:  MultiThread
 
     ////Render
-        E_EngineConfig_Render_RendererName,             //1:  RendererName
+        E_EngineConfig_Render_RendererName,                 //1:  RendererName
         
     ////Audio
 
@@ -299,17 +323,17 @@ namespace LostPeterEngine
 
     enum ERenderCapabilityCategoryType
 	{
-		E_RenderCapabilityCategory_Common = 0,		//0: Common
-		E_RenderCapabilityCategory_Buffer,			//1: Buffer
-		E_RenderCapabilityCategory_Texture,			//2: Texture
-		E_RenderCapabilityCategory_Shader,			//3: Shader
+		E_RenderCapabilityCategory_Common = 0,		        //0: Common
+		E_RenderCapabilityCategory_Buffer,			        //1: Buffer
+		E_RenderCapabilityCategory_Texture,			        //2: Texture
+		E_RenderCapabilityCategory_Shader,			        //3: Shader
 
-		E_RenderCapabilityCategory_DirectX,			//4: DirectX
-		E_RenderCapabilityCategory_Vulkan,			//5: Vulkan
-		E_RenderCapabilityCategory_Metal,			//6: Metal
-		E_RenderCapabilityCategory_OpenGL,			//7: OpenGL/OpenGL ES
+		E_RenderCapabilityCategory_DirectX,			        //4: DirectX
+		E_RenderCapabilityCategory_Vulkan,			        //5: Vulkan
+		E_RenderCapabilityCategory_Metal,			        //6: Metal
+		E_RenderCapabilityCategory_OpenGL,			        //7: OpenGL/OpenGL ES
 
-		E_RenderCapabilityCategory_Count			//8: Count
+		E_RenderCapabilityCategory_Count			        //8: Count
 	};
 	#define E_RC_CAPS_BITSHIFT (32 - E_RenderCapabilityCategory_Count)
 	#define E_RC_CAPS_CATEGORY_MASK (((1 << E_RenderCapabilityCategory_Count) - 1) << E_RC_CAPS_BITSHIFT)
@@ -403,10 +427,10 @@ namespace LostPeterEngine
 
     enum EFrameProfilerType
     {
-        E_FrameProfiler_Audio = 0,                //0: Audio
-        E_FrameProfiler_Memory,                   //1: Memory
-        E_FrameProfiler_Physics,                  //2: Physics
-        E_FrameProfiler_Render,                   //3: Render
+        E_FrameProfiler_Audio = 0,                          //0: Audio
+        E_FrameProfiler_Memory,                             //1: Memory
+        E_FrameProfiler_Physics,                            //2: Physics
+        E_FrameProfiler_Render,                             //3: Render
         
         E_FrameProfiler_Count
     };
@@ -655,6 +679,13 @@ namespace LostPeterEngine
     class RenderStateShaderItem;
     class RenderStateShader;
     class RenderState;
+    class ResourceManualLoader;
+    class ResourceListener;
+    class Resource;
+    class ResourceManager;
+    class ResourceLoadingListener;
+    class ResourceGroupListener;
+    class ResourceGroupManager;
     class Scene;
     class SceneDataManager;
     class SceneDataSerializer;
@@ -829,6 +860,15 @@ namespace LostPeterEngine
     typedef std::vector<ObjectParticle*> ObjectParticlePtrVector; 
     typedef std::map<String, ObjectParticle*> ObjectParticlePtrMap;
     typedef std::map<int, ObjectParticlePtrMap> ObjectParticlePtrGroupMap;
+
+    typedef uint32 ResourceHandle;
+    typedef std::vector<Resource*> ResourcePtrVector;
+    typedef std::map<String, Resource*> ResourcePtrMap;
+    typedef std::map<String, ResourcePtrMap> ResourcePtrGroupMap;
+	typedef std::map<ResourceHandle, Resource*>	ResourcePtrHandleMap;
+    
+    typedef std::list<ResourceListener*> ResourceListenerPtrList;
+    typedef std::list<ResourceGroupListener*> ResourceGroupListenerPtrList;
 
     typedef std::vector<Scene*> ScenePtrVector;
     typedef std::map<String, Scene*> ScenePtrMap;

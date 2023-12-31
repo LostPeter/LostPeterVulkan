@@ -80,13 +80,13 @@ namespace LostPeterEngine
 	}
 
 	bool Image::LoadDynamicImage(uint8* pData, 
-                                 size_t uWidth, 
-                                 size_t uHeight, 
-                                 size_t uDepth, 
+                                 uint32 uWidth, 
+                                 uint32 uHeight, 
+                                 uint32 uDepth, 
                                  FPixelFormatType typePixelFormat, 
 								 bool autoDelete /*= false*/, 
-                                 size_t numFaces /*= 1*/, 
-                                 size_t numMipMaps /*= 0*/)
+                                 uint32 nFacesCount /*= 1*/, 
+                                 uint32 nMipMapsCount /*= 0*/)
 	{
 		DestroyData();
 
@@ -95,38 +95,38 @@ namespace LostPeterEngine
 		m_nDepth = uDepth;
 		m_ePixelFormat = typePixelFormat;
 		m_nPixelSize = static_cast<uint8>(FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat));
-		m_nMipMapsCount = numMipMaps;
+		m_nMipMapsCount = nMipMapsCount;
 		m_nFlags = 0;
 
 		if (FPixelFormat::IsCompressed(typePixelFormat))
 			m_nFlags |= E_ImageFlag_IsCompressed;
 		if (m_nDepth != 1)
 			m_nFlags |= E_ImageFlag_Is3DTexture;
-		if (numFaces == 6)
+		if (nFacesCount == 6)
 			m_nFlags |= E_ImageFlag_IsCubeMap;
-		if (numFaces != 6 && numFaces != 1)
+		if (nFacesCount != 6 && nFacesCount != 1)
 		{
 			F_LogError("*********************** Image::LoadDynamicImage: Number of faces currently must be 6 or 1 !");
 			F_Assert(false && "Image::LoadDynamicImage")
 			return false;
 		}
 
-		m_nSize = CalculateSize(numMipMaps, numFaces, uWidth, uHeight, uDepth, typePixelFormat);
+		m_nSize = CalculateSize(nMipMapsCount, nFacesCount, uWidth, uHeight, uDepth, typePixelFormat);
 		m_pBuffer = pData;
 		m_bAutoDelete = autoDelete;
 		return true;
 	}
 
 	bool Image::LoadRawData(FFileMemory* pInput, 
-                            size_t uWidth, 
-                            size_t uHeight, 
-                            size_t uDepth, 
+                            uint32 uWidth, 
+                            uint32 uHeight, 
+                            uint32 uDepth, 
                             FPixelFormatType typePixelFormat,
-							size_t numFaces /*= 1*/, 
-                            size_t numMipMaps /*= 0*/)
+							uint32 nFacesCount /*= 1*/, 
+                            uint32 nMipMapsCount /*= 0*/)
 	{
-		size_t size = CalculateSize(numMipMaps, numFaces, uWidth, uHeight, uDepth, typePixelFormat);
-		if (size != (size_t)pInput->Size())
+		uint32 size = CalculateSize(nMipMapsCount, nFacesCount, uWidth, uHeight, uDepth, typePixelFormat);
+		if (size != (uint32)pInput->Size())
 		{
 			F_LogError("*********************** Image::LoadRawData: Stream size does not match calculated image size !");
 			F_Assert(false && "Image::LoadRawData")
@@ -136,7 +136,7 @@ namespace LostPeterEngine
 		uint8 *buffer = new uint8[size];
 		pInput->Read(buffer,size,1);
 
-		return LoadDynamicImage(buffer, uWidth, uHeight, uDepth, typePixelFormat, true, numFaces, numMipMaps);
+		return LoadDynamicImage(buffer, uWidth, uHeight, uDepth, typePixelFormat, true, nFacesCount, nMipMapsCount);
 	}
 	
 	bool Image::Load(const String& strName, uint32 nGroup)
@@ -182,7 +182,7 @@ namespace LostPeterEngine
 		}
 		else
 		{
-			size_t magicLen = FMath::Min((size_t)pFIO->Size(), (size_t)32);
+			uint32 magicLen = FMath::Min((uint32)pFIO->Size(), (uint32)32);
 			char magicBuf[32];
 			pFIO->Read(magicBuf, magicLen, 1);
 			pFIO->Seek(SEEK_SET, 0);
@@ -210,7 +210,7 @@ namespace LostPeterEngine
 		m_nHeight = pImageData->nHeight;
 		m_nDepth = pImageData->nDepth;
 		m_nSize	= pImageData->nSize;
-		m_nMipMapsCount = pImageData->nNumMipmaps;
+		m_nMipMapsCount = pImageData->nMipmapsCount;
 		m_nFlags = pImageData->nFlags;
 		m_ePixelFormat = pImageData->ePixelFormat;
 		m_nPixelSize = static_cast<uint8>(FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat));
@@ -232,7 +232,7 @@ namespace LostPeterEngine
 		}
 		else
 		{
-			size_t magicLen = FMath::Min((size_t)pInput->Size(), (size_t)32);
+			uint32 magicLen = FMath::Min((uint32)pInput->Size(), (uint32)32);
 			char magicBuf[32];
 			pInput->Read(magicBuf, magicLen, 1);
 			pInput->Seek(SEEK_SET,0);
@@ -252,7 +252,7 @@ namespace LostPeterEngine
 		m_nHeight = pImageData->nHeight;
 		m_nDepth = pImageData->nDepth;
 		m_nSize	= pImageData->nSize;
-		m_nMipMapsCount = pImageData->nNumMipmaps;
+		m_nMipMapsCount = pImageData->nMipmapsCount;
 		m_nFlags = pImageData->nFlags;
 		m_ePixelFormat = pImageData->ePixelFormat;
 		m_nPixelSize = static_cast<uint8>(FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat));
@@ -355,7 +355,7 @@ namespace LostPeterEngine
 		return rval;
 	}
 
-	bool Image::GetPixelBox(FPixelBox& retPB, size_t face /*= 0*/, size_t mipmap /*= 0*/) const
+	bool Image::GetPixelBox(FPixelBox& retPB, uint32 face /*= 0*/, uint32 mipmap /*= 0*/) const
 	{
 		// Image data is arranged as:
 		// face 0, top level (mip 0)
@@ -380,18 +380,18 @@ namespace LostPeterEngine
 		}
 
 		uint8* pOffset = const_cast<uint8*>(GetData());
-		size_t width = GetWidth();
-        size_t height = GetHeight();
-        size_t depth = GetDepth();
-		size_t mipmapCount = GetMipMapsCount();
+		uint32 width = GetWidth();
+        uint32 height = GetHeight();
+        uint32 depth = GetDepth();
+		uint32 mipmapCount = GetMipMapsCount();
 
 		// Figure out the offsets 
-		size_t fullFaceSize  = 0;
-		size_t finalFaceSize = 0;
-		size_t finalWidth	 = 0; 
-		size_t finalHeight   = 0;
-		size_t finalDepth	 = 0;
-		for (size_t mip = 0; mip <= mipmapCount; ++mip)
+		uint32 fullFaceSize  = 0;
+		uint32 finalFaceSize = 0;
+		uint32 finalWidth	 = 0; 
+		uint32 finalHeight   = 0;
+		uint32 finalDepth	 = 0;
+		for (uint32 mip = 0; mip <= mipmapCount; ++mip)
 		{
 			if (mip == mipmap)
 			{
@@ -475,10 +475,10 @@ namespace LostPeterEngine
 				pTempBuffer3 = new uint8[m_nWidth * m_nHeight * 3];
 				for (y = 0; y < m_nHeight; y++)
 				{
-					size_t offset = ((y * m_nWidth) + (m_nWidth - 1)) * 3;
+					uint32 offset = ((y * m_nWidth) + (m_nWidth - 1)) * 3;
 					dst3 = pTempBuffer3;
 					dst3 += offset;
-					for (size_t x = 0; x < m_nWidth; x++)
+					for (uint32 x = 0; x < m_nWidth; x++)
 					{
 						memcpy(dst3, src3, sizeof(uint8) * 3);
 						dst3 -= 3; src3 += 3;
@@ -527,7 +527,7 @@ namespace LostPeterEngine
 		}
 
 		m_nMipMapsCount = 0;
-		size_t rowSpan = m_nWidth * m_nPixelSize;
+		uint32 rowSpan = m_nWidth * m_nPixelSize;
 		uint8 *pTempBuffer = new uint8[rowSpan * m_nHeight];
 		uint8 *ptr1 = m_pBuffer, *ptr2 = pTempBuffer + ((m_nHeight - 1) * rowSpan);
 
@@ -665,10 +665,10 @@ namespace LostPeterEngine
 		return Image::Scale(src,dst, typeImageFilter);
 	}
 
-	size_t Image::CalculateSize(size_t mipmaps, size_t faces, size_t width, size_t height, size_t depth, FPixelFormatType format)
+	uint32 Image::CalculateSize(uint32 mipmaps, uint32 faces, uint32 width, uint32 height, uint32 depth, FPixelFormatType format)
 	{
-		size_t size = 0;
-		for(size_t mip = 0; mip <= mipmaps; ++mip)
+		uint32 size = 0;
+		for(uint32 mip = 0; mip <= mipmaps; ++mip)
 		{
 			size += FPixelFormat::GetPixelFormatMemorySize(width, height, depth, format) * faces; 
 			if (width != 1)  width /= 2;
@@ -680,7 +680,7 @@ namespace LostPeterEngine
 
 	String Image::GetFileExtFromMagic(FFileIO* pInput)
 	{
-		size_t magicLen = FMath::Min((size_t)pInput->Size(), (size_t)32);
+		uint32 magicLen = FMath::Min((uint32)pInput->Size(), (uint32)32);
 		char magicBuf[32];
 		pInput->Read(magicBuf, magicLen, 1);
 		pInput->Seek(SEEK_SET, 0);
@@ -692,7 +692,7 @@ namespace LostPeterEngine
 		return FUtilString::BLANK;
 	}
 
-	bool Image::ApplyGamma(uint8* buffer, float gamma, size_t size, uint8 bpp)
+	bool Image::ApplyGamma(uint8* buffer, float gamma, uint32 size, uint8 bpp)
 	{
 		if(gamma == 1.0f)
 			return false;
@@ -703,7 +703,7 @@ namespace LostPeterEngine
 
 		unsigned int stride = bpp >> 3;
 
-		for (size_t i = 0, j = size / stride; i < j; i++, buffer += stride)
+		for (uint32 i = 0, j = size / stride; i < j; i++, buffer += stride)
 		{
 			float r, g, b;
 
