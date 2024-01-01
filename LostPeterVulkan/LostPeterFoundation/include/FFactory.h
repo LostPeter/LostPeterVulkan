@@ -28,8 +28,8 @@ namespace LostPeterFoundation
 
     public:
         virtual const String& GetType() const = 0;
-        virtual T* CreateInstance(const String& name) = 0;
-        virtual void DestroyInstance(T* p) = 0;
+        virtual T* CreateInstance(const String& strName) = 0;
+        virtual void DestroyInstance(T* pInstance) = 0;
 	};	
 
 }; //LostPeterFoundation

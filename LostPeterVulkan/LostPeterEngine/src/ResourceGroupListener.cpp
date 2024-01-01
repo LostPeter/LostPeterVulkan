@@ -10,6 +10,7 @@
 ****************************************************************************/
 
 #include "../include/ResourceGroupListener.h"
+#include "../include/Resource.h"
 
 namespace LostPeterEngine
 {

@@ -16,12 +16,14 @@
 
 namespace LostPeterEngine
 {
-    class engineExport Resource : public Base
+    class engineExport Resource : public FParameterInterface
+                                , public Base
     {
     public:
         Resource(ResourceManager* pResourceManager,
                  uint32 nGroup, 
                  const String& strName,
+                 const String& strGroupName,
                  ResourceHandle nHandle,
                  bool bIsManualLoad = false,
                  ResourceManualLoader* pResourceManualLoader = nullptr);
@@ -30,6 +32,7 @@ namespace LostPeterEngine
     public:
     protected:
         ResourceManager* m_pResourceManager;
+        String m_strGroupName;
         ResourceHandle m_nHandle;
         std::atomic<EResourceLoadingType> m_eResourceLoading;
         volatile bool m_bIsBackgroundLoaded;
@@ -42,6 +45,7 @@ namespace LostPeterEngine
 
     public:
         F_FORCEINLINE ResourceManager* GetResourceManager() const { return m_pResourceManager; }
+        F_FORCEINLINE const String& GetGroupName() const { return m_strGroupName; }
         F_FORCEINLINE ResourceHandle GetHandle() const { return m_nHandle; }
         F_FORCEINLINE EResourceLoadingType GetResourceLoadingState() const { return m_eResourceLoading.load(); }
         F_FORCEINLINE bool IsUnloaded() const { return (m_eResourceLoading.load() == E_ResourceLoading_Unloaded); }
@@ -64,13 +68,12 @@ namespace LostPeterEngine
     public:
         virtual void Destroy();
 
-
-    public:
         virtual void AddResourceListener(ResourceListener* pResourceListener);
 		virtual void RemoveResourceListener(ResourceListener* pResourceListener);
         virtual void RemoveResourceListenerAll();
 
-		virtual void ChangeGroupOwnership(const String& strNewGroup);
+    public:
+		virtual void ChangeGroupOwnership(const String& strNewGroupName);
 
 		virtual void Prepare();
 		virtual void Load(bool bIsBackgroundThread = false);
@@ -84,12 +87,12 @@ namespace LostPeterEngine
         virtual void _FireUnloadingComplete();
 
     protected:
-        virtual void preLoadImpl() {}
-		virtual void postLoadImpl()	{}
-		virtual void preUnloadImpl() {}
-		virtual void postUnloadImpl() {}
-		virtual void prepareImpl() {}
-		virtual void unprepareImpl() {}
+        virtual void preLoadImpl();
+		virtual void postLoadImpl();
+		virtual void preUnloadImpl();
+		virtual void postUnloadImpl();
+		virtual void prepareImpl();
+		virtual void unprepareImpl();
 
 		virtual void loadImpl() = 0;
 		virtual void unloadImpl() = 0;

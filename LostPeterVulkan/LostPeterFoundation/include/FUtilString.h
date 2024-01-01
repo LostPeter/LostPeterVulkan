@@ -32,6 +32,7 @@ namespace LostPeterFoundation
         static bool	EndsWith(const String& str, const String& pattern, bool lowerCase = true);
 
         static String Replace(const String& src_str, const String& sub_str, const String& new_str);
+        static bool	Match(const String& str, const String& pattern, bool caseSensitive = true);
 
         static String FormatString(const char* format, ...);
 

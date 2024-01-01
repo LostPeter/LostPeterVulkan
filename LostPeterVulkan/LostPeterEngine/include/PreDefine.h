@@ -205,6 +205,16 @@ namespace LostPeterEngine
     };
 
 
+    enum EResourceGroupStatusType
+    {
+        E_ResourceGroupStatus_Uninitialized = 0,
+        E_ResourceGroupStatus_Initializing,
+        E_ResourceGroupStatus_Initialized,
+        E_ResourceGroupStatus_Loading,
+        E_ResourceGroupStatus_Loaded,
+    };
+
+
     enum ECpuFeatureType
     {
 		E_CpuFeature_NONE          	= 0,			        //0:  	 None
@@ -862,12 +872,20 @@ namespace LostPeterEngine
     typedef std::map<int, ObjectParticlePtrMap> ObjectParticlePtrGroupMap;
 
     typedef uint32 ResourceHandle;
+    typedef std::pair<Resource*, bool> ResourceCreateOrRetrieveResult;
     typedef std::vector<Resource*> ResourcePtrVector;
+    typedef std::list<Resource*> ResourcePtrList;
+    typedef std::map<float, ResourcePtrList*> ResourceLoadOrderMap;
     typedef std::map<String, Resource*> ResourcePtrMap;
     typedef std::map<String, ResourcePtrMap> ResourcePtrGroupMap;
 	typedef std::map<ResourceHandle, Resource*>	ResourcePtrHandleMap;
+    typedef FIteratorMap<ResourcePtrHandleMap> ResourcePtrHandleMapIterator;
+    typedef std::map<String, ResourceManager*> ResourceManagerPtrMap;
+    typedef FIteratorMap<ResourceManagerPtrMap>	ResourceManagerPtrMapIterator;
     
+    typedef std::vector<ResourceListener*> ResourceListenerPtrVector;
     typedef std::list<ResourceListener*> ResourceListenerPtrList;
+    typedef std::vector<ResourceGroupListener*> ResourceGroupListenerPtrVector;
     typedef std::list<ResourceGroupListener*> ResourceGroupListenerPtrList;
 
     typedef std::vector<Scene*> ScenePtrVector;

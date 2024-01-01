@@ -20,11 +20,13 @@ namespace LostPeterEngine
     Resource::Resource(ResourceManager* pResourceManager,
                        uint32 nGroup, 
                        const String& strName,
+                       const String& strGroupName,
                        ResourceHandle nHandle,
                        bool bIsManualLoad /*= false*/,
                        ResourceManualLoader* pResourceManualLoader /*= nullptr*/)
         : Base(nGroup, strName)
         , m_pResourceManager(pResourceManager)
+        , m_strGroupName(strGroupName)
         , m_nHandle(nHandle)
         , m_bIsManualLoad(bIsManualLoad)
         , m_pResourceManualLoader(pResourceManualLoader)
@@ -55,9 +57,14 @@ namespace LostPeterEngine
         m_listResourceListener.clear();
     }
 
-    void Resource::ChangeGroupOwnership(const String& strNewGroup)
+    void Resource::ChangeGroupOwnership(const String& strNewGroupName)
     {
-
+        if (m_strGroupName != strNewGroupName)
+		{
+			String strOldGroupName = m_strGroupName;
+			m_strGroupName = strNewGroupName;
+			ResourceGroupManager::GetSingleton()._NotifyResourceGroupChanged(strOldGroupName, this);
+		}
     }
 
 	void Resource::Prepare()
@@ -86,12 +93,10 @@ namespace LostPeterEngine
 			}
 			else
 			{
-				// if (m_strGroup == ResourceGroupManager::ms_strRGAutoDetectName)
-				// {
-				// 	ChangeGroupOwnership(
-				// 		ResourceGroupManager::GetSingleton()
-				// 		.FindGroupContainingResource(m_strName));
-				// }
+				if (m_strGroupName == ResourceGroupManager::ms_strNameResourceGroup_AutoDetect)
+				{
+					ChangeGroupOwnership(ResourceGroupManager::GetSingleton().FindGroupContainingResource(GetName()));
+				}
 				prepareImpl();
 			}
 		}
@@ -146,12 +151,10 @@ namespace LostPeterEngine
                 {
                     typeLoading_Old = E_ResourceLoading_Prepared;
 
-                    // if (m_strGroup == ResourceGroupManager::ms_strRGAutoDetectName)
-                    // {
-                    // 	ChangeGroupOwnership(
-                    // 		ResourceGroupManager::GetSingleton()
-                    // 		.FindGroupContainingResource(m_strName));
-                    // }
+                    if (m_strGroupName == ResourceGroupManager::ms_strNameResourceGroup_AutoDetect)
+                    {
+                    	ChangeGroupOwnership(ResourceGroupManager::GetSingleton().FindGroupContainingResource(GetName()));
+                    }
 
                     loadImpl();
                 }
@@ -169,8 +172,8 @@ namespace LostPeterEngine
 		m_eResourceLoading.store(E_ResourceLoading_Loaded);
 		AddStateCount();
 
-		//if(m_pResourceManager)
-		//	m_pResourceManager->_NotifyResourceLoaded(this);
+		if(m_pResourceManager)
+			m_pResourceManager->_NotifyResourceLoaded(this);
 
 		if (m_bIsBackgroundLoaded)
 			queueFireBackgroundLoadingComplete();
@@ -209,8 +212,8 @@ namespace LostPeterEngine
 
 		m_eResourceLoading.store(E_ResourceLoading_Unloaded);
 
-		//if(typeLoading_Old == E_ResourceLoading_Loaded && m_pResourceManager)
-		//	m_pResourceManager->_NotifyResourceUnloaded(this);
+		if(typeLoading_Old == E_ResourceLoading_Loaded && m_pResourceManager)
+			m_pResourceManager->_NotifyResourceUnloaded(this);
 
         _FireUnloadingComplete();
     }
@@ -218,8 +221,8 @@ namespace LostPeterEngine
     {
 		Load();
 
-		//if(m_pResourceManager)
-		//	m_pResourceManager->_NotifyResourceTouched(this);
+		if(m_pResourceManager)
+			m_pResourceManager->_NotifyResourceTouched(this);
     }
     void Resource::EscalateLoading()
     {
@@ -249,6 +252,31 @@ namespace LostPeterEngine
 		{
 			(*it)->UnloadingComplete(this);
 		}
+    }
+
+    void Resource::preLoadImpl() 
+    {
+
+    }
+    void Resource::postLoadImpl()	
+    {
+
+    }
+    void Resource::preUnloadImpl() 
+    {
+
+    }
+    void Resource::postUnloadImpl() 
+    {
+
+    }
+    void Resource::prepareImpl() 
+    {
+
+    }
+    void Resource::unprepareImpl() 
+    {
+
     }
 
     void Resource::queueFireBackgroundLoadingComplete()

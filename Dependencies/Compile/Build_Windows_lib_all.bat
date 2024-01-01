@@ -17,10 +17,12 @@ call ./Build_Windows_lib_rapidxml.bat
 call ./Build_Windows_lib_spdlog.bat
 call ./Build_Windows_lib_stb.bat
 
+call ./Build_Windows_lib_libcpuid.bat %debug% %rebuild%
 call ./Build_Windows_lib_libnoise.bat %debug% %rebuild%
 call ./Build_Windows_lib_libsquish.bat %debug% %rebuild%
 call ./Build_Windows_lib_tinyxml.bat %debug% %rebuild%
 call ./Build_Windows_lib_zlib.bat %debug% %rebuild%
+call ./Build_Windows_lib_zziplib.bat %debug% %rebuild%
 call ./Build_Windows_lib_glfw.bat %debug% %rebuild%
 call ./Build_Windows_lib_imgui.bat %debug% %rebuild%
 call ./Build_Windows_lib_assimp.bat %debug% %rebuild%

@@ -124,6 +124,65 @@ namespace LostPeterFoundation
         return dst_str;
     }
 
+    bool FUtilString::Match(const String& str, const String& pattern, bool caseSensitive /*= true*/)
+    {
+        String tmpStr = str;
+		String tmpPattern = pattern;
+		if (!caseSensitive)
+		{
+			FUtilString::ToLowerCase(tmpStr);
+			FUtilString::ToLowerCase(tmpPattern);
+		}
+
+		String::const_iterator strIt = tmpStr.begin();
+		String::const_iterator patIt = tmpPattern.begin();
+		String::const_iterator lastWildCardIt = tmpPattern.end();
+		while (strIt != tmpStr.end() && patIt != tmpPattern.end())
+		{
+			if (*patIt == '*')
+			{
+				lastWildCardIt = patIt;
+				++patIt;
+				if (patIt == tmpPattern.end())
+				{
+					strIt = tmpStr.end();
+				}
+				else
+				{
+					while(strIt != tmpStr.end() && *strIt != *patIt)
+						++strIt;
+				}
+			}
+			else
+			{
+				if (*patIt != *strIt)
+				{
+					if (lastWildCardIt != tmpPattern.end())
+					{
+						patIt = lastWildCardIt;
+						lastWildCardIt = tmpPattern.end();
+					}
+					else
+					{
+						return false;
+					}
+				}
+				else
+				{
+					++patIt;
+					++strIt;
+				}
+			}
+		}
+
+		if (patIt == tmpPattern.end() && strIt == tmpStr.end())
+		{
+			return true;
+		}
+		
+        return false;
+    }
+
     String FUtilString::FormatString(const char* format, ...)
     {
         char szTemp[2048] = {0};

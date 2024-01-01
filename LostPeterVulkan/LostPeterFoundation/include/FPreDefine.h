@@ -14,6 +14,7 @@
 
 #include "FPreIncludeStd.h"
 #include "FPreIncludeThird.h"
+#include "FIterator.h"
 #include "FPtrListNode.h"
 #include "FTPoint.h"
 #include "FTSize.h"
@@ -31,6 +32,7 @@ namespace LostPeterFoundation
     using uint32 = std::uint32_t;
     using int64 = std::int64_t;
     using uint64 = std::uint64_t;
+    typedef	unsigned long ulong;
 
     #define F_C_PI                              3.14159265f                                         // PI
     #define F_C_PI_HALF				            1.57079632f                                         // 0.5 * PI
@@ -400,6 +402,10 @@ namespace LostPeterFoundation
     struct FMeshDataSkin;
 
     class FAABB;
+    struct FFileInfo;
+    class FArchive;
+    class FArchiveFactory;
+    class FArchiveManager;
     class FAtomicCount;
     class FBitwise;
     class FBox;
@@ -489,6 +495,7 @@ namespace LostPeterFoundation
     class FQuad;
     class FRay;
     class FRefCount;
+    class FScriptLoader;
     class FSegment;
     class FSerializer;
     class FSphere;
@@ -497,7 +504,15 @@ namespace LostPeterFoundation
     class FTriangle;
     class FUtil;
     class FUtilString;
+    
+    typedef	std::vector<FArchive*> FArchivePtrVector;
+    typedef std::map<String, FArchive*> FArchivePtrMap;
+    typedef	FIteratorMap<FArchivePtrMap> FArchivePtrMapIterator;
+    typedef	std::vector<FArchiveFactory*> FArchiveFactoryPtrVector;
+    typedef std::map<String, FArchiveFactory*> FArchiveFactoryPtrMap;
 
+    typedef	std::vector<FFileBase*> FFileBasePtrVector;
+    typedef	std::list<FFileBase*> FFileBasePtrList;
     typedef	std::vector<FFileIO*> FFileIOPtrVector;
 	typedef	std::vector<FFileMemory*> FFileMemoryPtrVector;
     typedef std::map<FFileIO*, int32> FFileIOPtrMap;
@@ -526,6 +541,9 @@ namespace LostPeterFoundation
 	typedef std::map<uint32, bool> FPathGroupRecursiveMap;
     typedef std::map<uint32, bool> FPathGroupDelSuffixMap;
 
+    typedef std::vector<FScriptLoader*> FScriptLoaderPtrVector;
+	typedef std::map<String, FScriptLoader*> FScriptLoaderPtrMap;
+    typedef std::multimap<float,FScriptLoader*>	FScriptLoaderOrderMap;
 
     ////////////////////////////// Enum ////////////////////////////////
     enum FPlatformType

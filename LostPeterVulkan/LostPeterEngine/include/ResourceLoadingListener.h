@@ -27,10 +27,9 @@ namespace LostPeterEngine
 
         
     public:
-
-
-    public:
-        
+        virtual FFileBase* ResourceLoading(const String& strName,const String& strGroupName, Resource* pResource) = 0;
+        virtual void ResourceStreamOpened(const String& strName,const String& strGroupName, Resource* pResource, FFileBase* pStream) = 0;
+        virtual bool ResourceCollision(Resource* pResource, ResourceManager* pResourceManager) = 0;        
     };
 
 }; //LostPeterEngine

@@ -17,10 +17,12 @@ rebuild=${2}
 ./Build_MacOS_lib_spdlog.sh
 ./Build_MacOS_lib_stb.sh
 
+./Build_MacOS_lib_libcpuid.sh $debug $rebuild
 ./Build_MacOS_lib_libnoise.sh $debug $rebuild
 ./Build_MacOS_lib_libsquish.sh $debug $rebuild
 ./Build_MacOS_lib_tinyxml.sh $debug $rebuild
 ./Build_MacOS_lib_zlib.sh $debug $rebuild
+./Build_MacOS_lib_zziplib.sh $debug $rebuild
 ./Build_MacOS_lib_glfw.sh $debug $rebuild
 ./Build_MacOS_lib_imgui.sh $debug $rebuild
 ./Build_MacOS_lib_assimp.sh $debug $rebuild

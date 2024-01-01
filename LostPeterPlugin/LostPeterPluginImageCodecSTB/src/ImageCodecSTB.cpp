@@ -165,7 +165,7 @@ namespace LostPeterPluginImageCodecSTB
         pImageData->nDepth = 1; // only 2D formats handled by this codec
         pImageData->nWidth = width;
         pImageData->nHeight = height;
-        pImageData->nNumMipmaps = 0; // no mipmaps in non-DDS 
+        pImageData->nMipmapsCount = 0; // no mipmaps in non-DDS 
         pImageData->nFlags = 0;
 
         switch (components)
