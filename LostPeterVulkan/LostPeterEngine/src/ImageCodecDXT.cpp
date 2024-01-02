@@ -193,20 +193,20 @@ namespace LostPeterEngine
 			return nullptr;
 		}
 
-		size_t numFaces = 1;
+		uint32 numFaces = 1;
 		if(pImgData->nFlags & E_ImageFlag_IsCubeMap)
 		{
 			numFaces = 6;
 		}
-		size_t nPixelSize = Image::CalculateSize((size_t)pImgData->nMipmapsCount, 
+		uint32 nPixelSize = Image::CalculateSize((uint32)pImgData->nMipmapsCount, 
                                                  numFaces,
-			                                     (size_t)pImgData->nWidth, 
-                                                 (size_t)pImgData->nHeight, 
-                                                 (size_t)pImgData->nDepth, 
+			                                     (uint32)pImgData->nWidth, 
+                                                 (uint32)pImgData->nHeight, 
+                                                 (uint32)pImgData->nDepth, 
                                                  ePixelFormatDXT);
 
-		size_t nAllSize = sizeof(uint32) + sizeof(DDSHeader) + nPixelSize;
-		FFileMemory* pOut = FFileManager::GetSingleton().CreateFileMemory((uint32)nAllSize);
+		uint32 nAllSize = sizeof(uint32) + sizeof(DDSHeader) + nPixelSize;
+		FFileMemory* pOut = FFileManager::GetSingleton().CreateFileMemory(nAllSize);
 		uint8* pImageHead = pOut->GetBuffer();
 
 		uint32* pFileType = (uint32*)(pImageHead);
@@ -403,7 +403,7 @@ namespace LostPeterEngine
 		pImageData->nDepth	= 1; // (deal with volume later)
 		pImageData->nWidth	= header.width;
 		pImageData->nHeight = header.height;
-		size_t numFaces	= 1; // assume one face until we know otherwise
+		uint32 numFaces	= 1; // assume one face until we know otherwise
 		if (header.caps.caps1 & DDSCAPS_MIPMAP)
 		{
 			pImageData->nMipmapsCount = uint16(header.mipMapCount - 1);
@@ -509,11 +509,11 @@ namespace LostPeterEngine
 		}
 
 		// Calculate total size from number of mipmaps, faces and size
-		pImageData->nSize = (int32)Image::CalculateSize((size_t)pImageData->nMipmapsCount, 
+		pImageData->nSize = (int32)Image::CalculateSize((uint32)pImageData->nMipmapsCount, 
                                                         numFaces, 
-														(size_t)pImageData->nWidth, 
-														(size_t)pImageData->nHeight, 
-														(size_t)pImageData->nDepth, 
+														(uint32)pImageData->nWidth, 
+														(uint32)pImageData->nHeight, 
+														(uint32)pImageData->nDepth, 
 														pImageData->ePixelFormat);
 
 		FFileMemory* pOut = FFileManager::GetSingleton().CreateFileMemory((uint32)pImageData->nSize);
@@ -521,7 +521,7 @@ namespace LostPeterEngine
 		void* destPtr = pOut->GetBuffer();
 
 		// all mips for a face, then each face
-		for (size_t i = 0; i < numFaces; ++i)
+		for (uint32 i = 0; i < numFaces; ++i)
 		{   
 			size_t width  = pImageData->nWidth;
 			size_t height = pImageData->nHeight;
@@ -837,11 +837,11 @@ namespace LostPeterEngine
 		pImageData->ePixelFormat	= sourceFormat[0];
 		pImageData->nFlags		   |= E_ImageFlag_IsCompressed;
 		// Calculate total size from number of mipmaps, faces and size
-		size_t nPixelSize = Image::CalculateSize((size_t)pImageData->nMipmapsCount, 
+		size_t nPixelSize = Image::CalculateSize((uint32)pImageData->nMipmapsCount, 
                                                  1, 
-                                                 (size_t)pImageData->nWidth, 
-                                                 (size_t)pImageData->nHeight, 
-                                                 (size_t)pImageData->nDepth, 
+                                                 (uint32)pImageData->nWidth, 
+                                                 (uint32)pImageData->nHeight, 
+                                                 (uint32)pImageData->nDepth, 
                                                  pImageData->ePixelFormat);
 		pImageData->nSize = (int32)(sizeof(uint32) + sizeof(DDSHeader) + nPixelSize);
 		
@@ -1055,11 +1055,11 @@ namespace LostPeterEngine
 		pImageData->ePixelFormat  = sourceFormat[0];
 		pImageData->nFlags		 |= E_ImageFlag_IsCompressed;
 		// Calculate total size from number of mipmaps, faces and size
-		size_t nPixelSize = Image::CalculateSize((size_t)pImageData->nMipmapsCount,   
+		uint32 nPixelSize = Image::CalculateSize((uint32)pImageData->nMipmapsCount,   
                                                  1, 
-                                                 (size_t)pImageData->nWidth, 
-                                                 (size_t)pImageData->nHeight, 
-                                                 (size_t)pImageData->nDepth, 
+                                                 (uint32)pImageData->nWidth, 
+                                                 (uint32)pImageData->nHeight, 
+                                                 (uint32)pImageData->nDepth, 
                                                  pImageData->ePixelFormat);
 		pImageData->nSize = (int32)(sizeof(uint32) + sizeof(DDSHeader) + nPixelSize);
 
@@ -1271,11 +1271,11 @@ namespace LostPeterEngine
 		pImageData->ePixelFormat  = sourceFormat[0];
 		pImageData->nFlags		 |= E_ImageFlag_IsCompressed;
 		// Calculate total size from number of mipmaps, faces and size
-		size_t nPixelSize = Image::CalculateSize((size_t)pImageData->nMipmapsCount,
+		uint32 nPixelSize = Image::CalculateSize((uint32)pImageData->nMipmapsCount,
                                                  1, 
-                                                 (size_t)pImageData->nWidth, 
-                                                 (size_t)pImageData->nHeight, 
-                                                 (size_t)pImageData->nDepth, 
+                                                 (uint32)pImageData->nWidth, 
+                                                 (uint32)pImageData->nHeight, 
+                                                 (uint32)pImageData->nDepth, 
                                                  pImageData->ePixelFormat);
 		pImageData->nSize = (int32)(sizeof(uint32) + sizeof(DDSHeader) + nPixelSize);
 		// buffer	
@@ -1488,11 +1488,11 @@ namespace LostPeterEngine
 		pImageData->ePixelFormat  = sourceFormat[0];
 		pImageData->nFlags		 |= E_ImageFlag_IsCompressed;
 		// Calculate total size from number of mipmaps, faces and size
-		size_t nPixelSize = Image::CalculateSize((size_t)pImageData->nMipmapsCount, 
+		uint32 nPixelSize = Image::CalculateSize((uint32)pImageData->nMipmapsCount, 
                                                  1, 
-                                                 (size_t)pImageData->nWidth, 
-                                                 (size_t)pImageData->nHeight, 
-                                                 (size_t)pImageData->nDepth, 
+                                                 (uint32)pImageData->nWidth, 
+                                                 (uint32)pImageData->nHeight, 
+                                                 (uint32)pImageData->nDepth, 
                                                  pImageData->ePixelFormat);
 		pImageData->nSize = (int32)(sizeof(uint32) + sizeof(DDSHeader) + nPixelSize);
 		

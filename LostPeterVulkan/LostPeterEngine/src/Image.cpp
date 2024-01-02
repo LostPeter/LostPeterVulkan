@@ -400,7 +400,7 @@ namespace LostPeterEngine
 				finalHeight = height;
 				finalDepth = depth;
 			}
-			fullFaceSize += FPixelFormat::GetPixelFormatMemorySize(width, height, depth, GetPixelFormat());
+			fullFaceSize += (uint32)FPixelFormat::GetPixelFormatMemorySize(width, height, depth, GetPixelFormat());
 
 			if(width != 1) 
 				width /= 2;
@@ -654,7 +654,7 @@ namespace LostPeterEngine
 		
 		m_nWidth = width;
 		m_nHeight = height;
-		m_nSize	= FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, 1, m_ePixelFormat);
+		m_nSize	= (uint32)FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, 1, m_ePixelFormat);
 		m_pBuffer = new uint8[m_nSize];
 		m_nMipMapsCount = 0;
 		
@@ -670,7 +670,7 @@ namespace LostPeterEngine
 		uint32 size = 0;
 		for(uint32 mip = 0; mip <= mipmaps; ++mip)
 		{
-			size += FPixelFormat::GetPixelFormatMemorySize(width, height, depth, format) * faces; 
+			size += (uint32)FPixelFormat::GetPixelFormatMemorySize(width, height, depth, format) * faces; 
 			if (width != 1)  width /= 2;
 			if (height != 1) height /= 2;
 			if (depth != 1)  depth /= 2;

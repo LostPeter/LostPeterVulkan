@@ -20,7 +20,10 @@ namespace LostPeterFoundation
 	class FFactory
 	{
 	public:
-		virtual ~FFactory();
+		virtual ~FFactory()
+		{
+			
+		}
 
 	public:
 	private:

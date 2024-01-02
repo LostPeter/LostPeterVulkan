@@ -278,11 +278,11 @@ namespace LostPeterEngine
 	}
 	void ResourceManager::_NotifyResourceLoaded(Resource* pResource)
 	{
-		m_nMemoryUsage += pResource->GetSize();
+		m_nMemoryUsage += (ulong)pResource->GetSize();
 	}
 	void ResourceManager::_NotifyResourceUnloaded(Resource* pResource)
 	{
-		m_nMemoryUsage -= pResource->GetSize();
+		m_nMemoryUsage -= (ulong)pResource->GetSize();
 	}
 
 	ulong ResourceManager::GetMemoryBudget() const

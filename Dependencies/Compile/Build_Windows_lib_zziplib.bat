@@ -21,11 +21,11 @@ set namewrap="zzipwraplib-0.13.72"
 if "%debug%" == "debug" (
     set name_project=%name%"_d"
     set name_lib=%name%"_d.lib"
-    set name_lib_wrap="lib"%namewrap%"_d.a"
+    set name_lib_wrap=%namewrap%"_d.lib"
 ) else (
     set name_project=%name%
     set name_lib=%name%".lib"
-    set name_lib_wrap="lib"%namewrap%".a"
+    set name_lib_wrap=%namewrap%".lib"
 )
 
 @rem build folder
@@ -47,6 +47,20 @@ set plugins_libfile=%plugins_folder%"\"%name_lib%
 if exist %plugins_libfile% (
     del /S/Q %plugins_libfile%
 )
+set plugins_libwrapfile=%plugins_folder%"\"%name_lib_wrap%
+if exist %plugins_libwrapfile% (
+    del /S/Q %plugins_libwrapfile%
+)
+
+set dirCur=%~dp0
+set dirZlibInclude=%dirCur%..\Include\Windows\zlib-1.2.11
+set dirDependencyLib_d=%dirCur%..\Lib\Windows\zlib-1.2.11_d.lib
+set dirDependencyLib=%dirCur%..\Lib\Windows\zlib-1.2.11.lib
+
+echo %dirCur%
+echo %dirZlibInclude%
+echo %dirDependencyLib_d%
+echo %dirDependencyLib%
 
 
 cd ..
@@ -55,13 +69,15 @@ cd Windows
 cd %name_project%
 
 if "%debug%" == "debug" (
-    cmake -DDEBUG=1 "../../../Sources/%name%/"
+    cmake -DDEBUG=1 -DZLIB_INCLUDE_DIR=%dirZlibInclude% -DZLIB_LIBRARY=%dirDependencyLib_d% "../../../Sources/%name%/"
     msbuild zziplib.sln /p:configuration=debug
-    copy /Y ".\Debug\zziplib.lib" "..\..\..\Lib\Windows\"%name_lib%
+    copy /Y ".\zzip\Debug\zzip.lib" "..\..\..\Lib\Windows\"%name_lib%
+    copy /Y ".\zzipwrap\Debug\zzipwrap.lib" "..\..\..\Lib\Windows\"%name_lib_wrap%
 ) else (
-    cmake "../../../Sources/%name%/"
+    cmake -DZLIB_INCLUDE_DIR=%dirZlibInclude% -DZLIB_LIBRARY=%dirDependencyLib% "../../../Sources/%name%/"
     msbuild zziplib.sln /p:configuration=release
-    copy /Y ".\Release\zziplib.lib" "..\..\..\Lib\Windows\"%name_lib%
+    copy /Y ".\zzip\Release\zzip-0.lib" "..\..\..\Lib\Windows\"%name_lib%
+    copy /Y ".\zzipwrap\Release\zzipwrap-0.lib" "..\..\..\Lib\Windows\"%name_lib_wrap%
 )
 
 
@@ -75,7 +91,6 @@ if exist %include_folder% (
     rmdir /S/Q %include_folder%
 )
 mkdir %include_folder%
-
 xcopy /S /E /Y /F "..\Sources\%name%\zzip\*.h" %include_folder%"\"
 
 
@@ -84,5 +99,4 @@ if exist %include_folder_wrap% (
     rmdir /S/Q %include_folder_wrap%
 )
 mkdir %include_folder_wrap%
-
 xcopy /S /E /Y /F "..\Sources\%name%\zzipwrap\*.h" %include_folder_wrap%"\"
