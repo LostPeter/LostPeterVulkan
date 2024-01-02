@@ -35,16 +35,16 @@ namespace LostPeterEngine
     {
         if (!IsGroupNameValid())
 		{
-            F_LogError("*********************** Material::LoadMaterial: Group, Name is not valid: group: [%u, name: [%s] !", this->group, this->name.c_str());
+            F_LogError("*********************** Material::LoadMaterial: Group, Name is not valid: group: [%u], name: [%s] !", GetGroup(), GetName().c_str());
             return false;
         }
         
         if (!m_pMaterialData)
 		{
-			m_pMaterialData = MaterialDataManager::GetSingleton().CreateMaterialData(this->group, this->name, bIsFromFile);
+			m_pMaterialData = MaterialDataManager::GetSingleton().CreateMaterialData(GetGroup(), GetName(), bIsFromFile);
             if (m_pMaterialData == nullptr)
             {
-                F_LogError("*********************** Material::LoadMaterial: CreateMaterialData failed, group: [%u, name: [%s] !", this->group, this->name.c_str());
+                F_LogError("*********************** Material::LoadMaterial: CreateMaterialData failed, group: [%u], name: [%s] !", GetGroup(), GetName().c_str());
                 return false;
             }
 		}

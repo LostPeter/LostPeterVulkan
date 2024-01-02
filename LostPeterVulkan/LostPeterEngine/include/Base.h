@@ -20,34 +20,31 @@ namespace LostPeterEngine
     class engineExport Base
     {
     public:
-        Base(const String& _name);
-        Base(uint32 _group, const String& _name);
+        Base(const String& strName);
+        Base(uint32 nGroup, const String& strName);
         virtual ~Base();
 
     public:
-    public:
-        
-
     protected:
-        uint32 group;
-        String name;
-        int refCount;
+        uint32 m_nGroup;
+        String m_strName;
+        int m_nRefCount;
 
-        bool isInit;
+        bool m_bIsInit;
 
     public:
-        F_FORCEINLINE uint32 GetGroup() const { return this->group; }
-        F_FORCEINLINE void SetGroup(uint32 _group) { this->group = _group; }
-        F_FORCEINLINE const String& GetName() const { return this->name; }
-        F_FORCEINLINE void SetName(const String& _name) { this->name = _name; }
+        F_FORCEINLINE uint32 GetGroup() const { return this->m_nGroup; }
+        F_FORCEINLINE void SetGroup(uint32 nGroup) { this->m_nGroup = nGroup; }
+        F_FORCEINLINE const String& GetName() const { return this->m_strName; }
+        F_FORCEINLINE void SetName(const String& strName) { this->m_strName = strName; }
 
-        F_FORCEINLINE int GetRef() const { return this->refCount; }
-        F_FORCEINLINE bool HasRef() const { return this->refCount <= 0 ? false : true; }
-        F_FORCEINLINE int AddRef() { return ++this->refCount; }
-        F_FORCEINLINE int DelRef() { return --this->refCount; }
+        F_FORCEINLINE int GetRef() const { return this->m_nRefCount; }
+        F_FORCEINLINE bool HasRef() const { return this->m_nRefCount <= 0 ? false : true; }
+        F_FORCEINLINE int AddRef() { return ++this->m_nRefCount; }
+        F_FORCEINLINE int DelRef() { return --this->m_nRefCount; }
 
-        F_FORCEINLINE bool IsInit() const { return this->isInit; }
-        F_FORCEINLINE void SetIsInit(bool b) { this->isInit = b; }
+        F_FORCEINLINE bool IsInit() const { return this->m_bIsInit; }
+        F_FORCEINLINE void SetIsInit(bool b) { this->m_bIsInit = b; }
 
     public:
         bool IsGroupNameValid() const;

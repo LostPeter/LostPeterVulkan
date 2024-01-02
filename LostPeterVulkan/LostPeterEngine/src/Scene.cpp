@@ -55,13 +55,13 @@ namespace LostPeterEngine
     {
         if (!IsGroupNameValid())
 		{
-            F_LogError("*********************** Scene::LoadScene: Group, Name is not valid, group: [%u, name: [%s] !", this->group, this->name.c_str());
+            F_LogError("*********************** Scene::LoadScene: Group, Name is not valid, group: [%u], name: [%s] !", GetGroup(), GetName().c_str());
             return false;
         }
 
-        if (!SceneDataManager::GetSingleton().Parser(this->group, this->name, this))
+        if (!SceneDataManager::GetSingleton().Parser(GetGroup(), GetName(), this))
         {
-            F_LogError("*********************** Scene::LoadScene: Group, Parse scene file failed, group: [%u, name: [%s] !", this->group, this->name.c_str());
+            F_LogError("*********************** Scene::LoadScene: Group, Parse scene file failed, group: [%u], name: [%s] !", GetGroup(), GetName().c_str());
             return false;
         }
 

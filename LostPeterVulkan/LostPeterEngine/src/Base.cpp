@@ -13,19 +13,19 @@
 
 namespace LostPeterEngine
 {
-    Base::Base(const String& _name)
-        : group(0)
-        , name(_name)
-        , refCount(0)
-        , isInit(false)
+    Base::Base(const String& strName)
+        : m_nGroup(0)
+        , m_strName(strName)
+        , m_nRefCount(0)
+        , m_bIsInit(false)
     {
        
     }
-    Base::Base(uint32 _group, const String& _name)
-        : group(_group)
-        , name(_name)
-        , refCount(0)
-        , isInit(false)
+    Base::Base(uint32 nGroup, const String& strName)
+        : m_nGroup(nGroup)
+        , m_strName(strName)
+        , m_nRefCount(0)
+        , m_bIsInit(false)
     {
 
     }
@@ -36,7 +36,7 @@ namespace LostPeterEngine
 
     bool Base::IsGroupNameValid() const
     {
-        if (name.empty() || group <= 0)
+        if (m_strName.empty() || m_nGroup <= 0)
 			return false;
         return true;
     }
