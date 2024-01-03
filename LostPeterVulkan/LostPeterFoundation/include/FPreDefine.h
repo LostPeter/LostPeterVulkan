@@ -499,6 +499,13 @@ namespace LostPeterFoundation
     class FSegment;
     class FSerializer;
     class FSphere;
+    class FStreamData;
+    class FStreamDataDeflate;
+    class FStreamDataFileHandle;
+    class FStreamDataFileStream;
+    class FStreamDataMemory;
+    class FStreamDataZip;
+    class FStreamSerializer;
     class FTimer;
     class FTorus;
     class FTriangle;

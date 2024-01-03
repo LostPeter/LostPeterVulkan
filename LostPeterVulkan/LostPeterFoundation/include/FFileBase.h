@@ -19,20 +19,14 @@ namespace LostPeterFoundation
     class foundationExport FFileBase
 	{
 	public:
-		FFileBase()
-		{
-
-		}
-		virtual ~FFileBase()
-		{
-
-		}
+		FFileBase();
+		virtual ~FFileBase();
 
 	public:
-		virtual bool	Close()												= 0;						
-		virtual size_t	Read(void* buffer, size_t size, size_t count)		= 0;	
-		virtual size_t	Write(const void* buffer, size_t size, size_t count)= 0;	
-		virtual bool	Seek(long offset,int origin)						= 0;	
+		virtual bool 	Close()												= 0;						
+		virtual size_t 	Read(void* buffer, size_t size, size_t count)		= 0;	
+		virtual size_t 	Write(const void* buffer, size_t size, size_t count)= 0;	
+		virtual bool 	Seek(long offset,int origin)						= 0;	
 		virtual long	Tell()												= 0;	
 		virtual long	Size()												= 0;	
 		virtual bool	Flush()												= 0;	

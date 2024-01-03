@@ -13,6 +13,16 @@
 
 namespace LostPeterFoundation
 {
+	FFileBase::FFileBase()
+	{
+
+	}
+	
+	FFileBase::~FFileBase()
+	{
+
+	}
+
     bool FFileBase::PutC(unsigned char c)
 	{
 		size_t nWrote = Write(&c,1,1);
