@@ -407,6 +407,10 @@ namespace LostPeterFoundation
     struct FFileInfo;
     class FArchive;
     class FArchiveFactory;
+    class FArchiveFileSystem;
+    class FArchiveFileSystemFactory;
+    class FArchiveZip;
+    class FArchiveZipFactory;
     class FArchiveManager;
     class FAtomicCount;
     class FBitwise;
