@@ -24,7 +24,7 @@ namespace LostPeterFoundation
 
 	public:
 		virtual const StringVector&	GetScriptPatterns() const = 0;
-		virtual void ParseScript(FFileBase* pFileBase, const String& strGroupName) = 0;
+		virtual void ParseScript(FStreamData* pStream, const String& strGroupName) = 0;
 		virtual float GetLoadingOrder() const = 0;
 	};
 

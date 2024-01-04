@@ -78,7 +78,7 @@ namespace LostPeterEngine
 			return m_aScriptPatterns; 
 		}
 
-		virtual void ParseScript(FFileBase* pFileBase, const String& strGroupName)
+		virtual void ParseScript(FStreamData* pStream, const String& strGroupName)
 		{
 
 		}

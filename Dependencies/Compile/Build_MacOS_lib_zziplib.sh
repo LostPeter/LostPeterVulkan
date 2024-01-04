@@ -69,6 +69,7 @@ for file in ${folderSrc}/*.h
 do 
     cp -rf $file $folderDst
 done
+cp -rf "../Build/MacOS/"$name_project"/zzip/_config.h" $folderDst
 
 
 folderSrcWrap="../Sources/"$name"/zzipwrap"

@@ -51,8 +51,8 @@ namespace LostPeterFoundation
 		virtual void Load()	= 0;
 		virtual void Unload() = 0;
 
-		virtual FFileBase* Open(const String& strFileName, bool bIsReadOnly = true) const = 0;
-		virtual FFileBase* Create(const String& strFileName) const = 0;
+		virtual FStreamData* Open(const String& strFileName, bool bIsReadOnly = true) const = 0;
+		virtual FStreamData* Create(const String& strFileName) const = 0;
 		virtual void Remove(const String& strFileName) const = 0;
 
 		virtual StringVector* ListFile(bool bIsRecursive = true, bool bDirs = false) = 0;

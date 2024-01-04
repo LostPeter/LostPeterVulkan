@@ -60,7 +60,8 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/tinyxml-2.6.2"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/zlib-1.2.11")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/zlib-1.2.11"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/zziplib-0.13.72")
 
 elseif (ANDROID) 
 
@@ -73,7 +74,8 @@ elseif (APPLE)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/tinyxml-2.6.2"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/zlib-1.2.11")
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/zlib-1.2.11"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/zziplib-0.13.72")
 
     SET(SYS_FRAMEWORKS_DIR /System/Library/Frameworks)
     SET(CORE_FOUNDATION_LIBS ${SYS_FRAMEWORKS_DIR}/CoreFoundation.framework)
@@ -136,7 +138,9 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/tinyxml-2.6.2_d.lib
-                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib)
+                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/zziplib-0.13.72_d.lib
+                       ${LIB_DEPENDENCIES_DIR}/zzipwraplib-0.13.72_d.lib)
         
     else ()
         LINK_LIBRARIES(shlwapi.lib
@@ -144,7 +148,9 @@ if (WIN32)
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/tinyxml-2.6.2.lib
-                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib)
+                       ${LIB_DEPENDENCIES_DIR}/zlib-1.2.11.lib
+                       ${LIB_DEPENDENCIES_DIR}/zziplib-0.13.72.lib
+                       ${LIB_DEPENDENCIES_DIR}/zzipwraplib-0.13.72.lib)
         
     endif()
     MY_ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
@@ -161,13 +167,17 @@ elseif (APPLE)
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libtinyxml-2.6.2_d.a
-                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a)
+                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libzziplib-0.13.72_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libzzipwraplib-0.13.72_d.a)
     else ()
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4.a
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libtinyxml-2.6.2.a
-                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a)
+                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a
+                       ${LIB_DEPENDENCIES_DIR}/libzziplib-0.13.72.a
+                       ${LIB_DEPENDENCIES_DIR}/libzzipwraplib-0.13.72.a)
     endif()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
     TARGET_LINK_LIBRARIES(${PROJECT_NAME}

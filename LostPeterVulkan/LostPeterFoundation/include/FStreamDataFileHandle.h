@@ -19,16 +19,22 @@ namespace LostPeterFoundation
 	class foundationExport FStreamDataFileHandle : public FStreamData
 	{
 	public:
-		FStreamDataFileHandle();
+		FStreamDataFileHandle(FILE* pFileHandle, int eStreamAccess = F_StreamAccess_Read);
+		FStreamDataFileHandle(const String& strName, FILE* pFileHandle, int eStreamAccess = F_StreamAccess_Read);
 		virtual ~FStreamDataFileHandle();
 
 	public:
 	protected:
-
+		FILE* m_pFileHandle;
 
 	public:
-		
-
+		virtual size_t Read(void* pBuffer, size_t nCount);
+		virtual size_t Write(const void* pBuffer, size_t nCount);
+		virtual void Skip(long nCount);
+		virtual void Seek(size_t nPos);
+		virtual size_t Tell() const;
+		virtual bool Eof() const;
+		virtual void Close();
 	};
 
 }; //LostPeterFoundation

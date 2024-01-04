@@ -78,6 +78,8 @@ namespace LostPeterFoundation
     #define F_C_POS_INFINITY                    FLT_MAX
 
     #define F_C_DELTA				            0.00001f
+    #define F_C_STREAM_SIZE_TEMP				128
+    #define F_C_DEFLATE_SIZE_TEMP               16 * 1024
 
     #define F_C_NUMBER_SMALL		            1.e-8f
     #define F_C_NUMBER_SMALL_KINDA	            1.e-4f
@@ -552,6 +554,9 @@ namespace LostPeterFoundation
 	typedef std::map<String, FScriptLoader*> FScriptLoaderPtrMap;
     typedef std::multimap<float,FScriptLoader*>	FScriptLoaderOrderMap;
 
+    typedef	std::vector<FStreamData*> FStreamDataPtrVector;
+    typedef	std::list<FStreamData*> FStreamDataPtrList;
+
     ////////////////////////////// Enum ////////////////////////////////
     enum FPlatformType
 	{
@@ -570,6 +575,13 @@ namespace LostPeterFoundation
 		F_FileXML_RapidXML = 0,
 		F_FileXML_TinyXML,
 	};
+
+
+    enum FStreamAccessType
+    {
+        F_StreamAccess_Read = 0,
+        F_StreamAccess_Write,
+    };
 
 
     enum FTransformType

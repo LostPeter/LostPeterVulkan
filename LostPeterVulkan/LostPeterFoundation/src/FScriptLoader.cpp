@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "../include/FScriptLoader.h"
-#include "../include/FFileBase.h"
+#include "../include/FStreamData.h"
 
 namespace LostPeterFoundation
 {

@@ -131,12 +131,12 @@ namespace LostPeterEngine
 		void UndeclareResource(const String& strResourceName,
                                const String& strGroupName);
 
-		FFileBase* OpenResource(const String& strResourceName, 
-							    const String& strGroupName = ms_strNameResourceGroup_Default,
-								bool bIsSearchGroupsIfNotFound = true,
-                                Resource* pResourceBeingLoaded = nullptr);
-		FFileBasePtrList* OpenResources(const String& strPattern,
-                                        const String& strGroupName = ms_strNameResourceGroup_Default);
+		FStreamData* OpenResource(const String& strResourceName, 
+							      const String& strGroupName = ms_strNameResourceGroup_Default,
+								  bool bIsSearchGroupsIfNotFound = true,
+                                  Resource* pResourceBeingLoaded = nullptr);
+		FStreamDataPtrList* OpenResources(const String& strPattern,
+                                          const String& strGroupName = ms_strNameResourceGroup_Default);
 
 		StringVector* ListResourceNames(const String& strGroupName,
                                         bool bDirs = false);
@@ -157,10 +157,10 @@ namespace LostPeterEngine
 		time_t ResourceModifiedTime(const String& strGroupName, const String& strResourceName); 
 		time_t ResourceModifiedTime(ResourceGroup* pResourceGroup, const String& strResourceName); 
 		
-		FFileBase* CreateResource(const String& strResourceName, 
-                                  const String& strGroupName = ms_strNameResourceGroup_Default, 
-                                  bool bIsOverwrite = false, 
-                                  const String& strLocationPattern = FUtilString::BLANK);
+		FStreamData* CreateResource(const String& strResourceName, 
+                                    const String& strGroupName = ms_strNameResourceGroup_Default, 
+                                    bool bIsOverwrite = false, 
+                                    const String& strLocationPattern = FUtilString::BLANK);
 		bool DeleteResource(const String& strResourceName, 
                             const String& strGroupName = ms_strNameResourceGroup_Default, 
                             const String& strLocationPattern = FUtilString::BLANK);

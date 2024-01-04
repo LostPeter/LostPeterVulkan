@@ -650,12 +650,12 @@ namespace LostPeterEngine
 		}
 	}
 
-	FFileBase* ResourceGroupManager::OpenResource(const String& strResourceName, 
-												  const String& strGroupName /*= ms_strNameResourceGroup_Default*/,
-												  bool bIsSearchGroupsIfNotFound /*= true*/,
-                                                  Resource* pResourceBeingLoaded /*= nullptr*/)
+	FStreamData* ResourceGroupManager::OpenResource(const String& strResourceName, 
+												    const String& strGroupName /*= ms_strNameResourceGroup_Default*/,
+												    bool bIsSearchGroupsIfNotFound /*= true*/,
+                                                    Resource* pResourceBeingLoaded /*= nullptr*/)
 	{
-        FFileBase* pStream = nullptr;
+        FStreamData* pStream = nullptr;
 		if (m_pResourceLoadingListener)
 		{
 			pStream = m_pResourceLoadingListener->ResourceLoading(strResourceName, 
@@ -743,8 +743,8 @@ namespace LostPeterEngine
 		return nullptr;
 	}
 
-	FFileBasePtrList* ResourceGroupManager::OpenResources(const String& strPattern,
-                                                          const String& strGroupName /*= ms_strNameResourceGroup_Default*/)
+	FStreamDataPtrList* ResourceGroupManager::OpenResources(const String& strPattern,
+                                                            const String& strGroupName /*= ms_strNameResourceGroup_Default*/)
 	{
 		ResourceGroup* pResourceGroup = GetResourceGroup(strGroupName);
 		if (!pResourceGroup)
@@ -753,7 +753,7 @@ namespace LostPeterEngine
             return nullptr;
 		}
 
-		FFileBasePtrList* pListStream = new FFileBasePtrList;
+		FStreamDataPtrList* pListStream = new FStreamDataPtrList;
 		ResourceLocationPtrList::iterator itLocation, itLocationEnd;
 		itLocationEnd = pResourceGroup->listResourceLocation.end();
 		for (itLocation = pResourceGroup->listResourceLocation.begin(); itLocation != itLocationEnd; ++itLocation)
@@ -763,7 +763,7 @@ namespace LostPeterEngine
 			for (StringVector::iterator it = pNames->begin(); 
                  it != pNames->end(); ++it)
 			{
-				FFileBase* pStream = pArchive->Open(*it);
+				FStreamData* pStream = pArchive->Open(*it);
 				if (pStream != nullptr)
 				{
 					pListStream->push_back(pStream);
@@ -966,10 +966,10 @@ namespace LostPeterEngine
 		return 0;
 	}
 	
-	FFileBase* ResourceGroupManager::CreateResource(const String& strResourceName, 
-                                                    const String& strGroupName /*= ms_strNameResourceGroup_Default*/, 
-                                                    bool bIsOverwrite /*= false*/, 
-                                                    const String& strLocationPattern /*= FUtilString::BLANK*/)
+	FStreamData* ResourceGroupManager::CreateResource(const String& strResourceName, 
+                                                      const String& strGroupName /*= ms_strNameResourceGroup_Default*/, 
+                                                      bool bIsOverwrite /*= false*/, 
+                                                      const String& strLocationPattern /*= FUtilString::BLANK*/)
 	{
 		ResourceGroup* pResourceGroup = GetResourceGroup(strGroupName);
 		if (!pResourceGroup)
@@ -991,7 +991,7 @@ namespace LostPeterEngine
                     return nullptr;
 				}
 
-				FFileBase* pStream = pArchive->Create(strResourceName);
+				FStreamData* pStream = pArchive->Create(strResourceName);
 				pResourceGroup->AddToIndex(strResourceName, pArchive);
 				return pStream;
 			}
@@ -1365,7 +1365,7 @@ namespace LostPeterEngine
                                 {
                                     F_LogInfo("ResourceGroupManager::ParseResourceGroupScripts: Parsing script: [%s] !", itFile->strFileName.c_str());
 
-                                    FFileBase* pStream = itFile->pArchive->Open(itFile->strFileName);
+                                    FStreamData* pStream = itFile->pArchive->Open(itFile->strFileName);
                                     if (pStream != nullptr)
                                     {
                                         if (m_pResourceLoadingListener)
