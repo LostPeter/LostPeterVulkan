@@ -10,9 +10,11 @@
 ****************************************************************************/
 
 #include "../include/FArchiveZipFactory.h"
+#include "../include/FArchiveZip.h"
 
 namespace LostPeterFoundation
 {
+    String FArchiveZipFactory::ms_strFactoryType = "ArchiveZip";
     FArchiveZipFactory::FArchiveZipFactory()
     {
 
@@ -21,6 +23,21 @@ namespace LostPeterFoundation
     FArchiveZipFactory::~FArchiveZipFactory() 
     {
 
+    }
+
+    const String& FArchiveZipFactory::GetType() const
+    {
+        return ms_strFactoryType;
+    }
+
+    FArchive* FArchiveZipFactory::CreateInstance(const String& strName) 
+    {
+        return new FArchiveZip(strName, GetType());
+    }
+
+    void FArchiveZipFactory::DestroyInstance(FArchive* pInstance)
+    { 
+        F_DELETE(pInstance)
     }
     
 }; //LostPeterFoundation

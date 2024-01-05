@@ -41,11 +41,11 @@ namespace LostPeterFoundation
 		bool m_bIsReadOnly;
 
 	public:
-		F_FORCEINLINE const String& GetName(void) const { return m_strName; }
-		F_FORCEINLINE const String& GetType(void) const { return m_strType; }
+		F_FORCEINLINE const String& GetName() const { return m_strName; }
+		F_FORCEINLINE const String& GetType() const { return m_strType; }
 
 	public:
-		virtual bool IsCaseSensitive(void) const = 0;
+		virtual bool IsCaseSensitive() const = 0;
 		virtual bool IsReadOnly() const	{ return m_bIsReadOnly; }
 
 		virtual void Load()	= 0;

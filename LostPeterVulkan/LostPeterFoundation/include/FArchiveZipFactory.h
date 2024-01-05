@@ -23,8 +23,12 @@ namespace LostPeterFoundation
 		virtual ~FArchiveZipFactory();
 
 	public:
-		
+		static String ms_strFactoryType;
 
+	public:
+		virtual const String& GetType() const;
+		virtual FArchive* CreateInstance(const String& strName);
+		virtual void DestroyInstance(FArchive* pInstance);
 	};
 
 }; //LostPeterFoundation

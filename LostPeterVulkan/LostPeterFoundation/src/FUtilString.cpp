@@ -40,7 +40,7 @@ namespace LostPeterFoundation
     StringVector FUtilString::Split(const String& str, const String& delims /*= "\t\n "*/, unsigned int maxSplits /*= 0*/)
     {
         StringVector ret;
-        ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
+        ret.reserve(maxSplits ? maxSplits + 1 : 10);    // 10 is guessed capacity for most case
 
         unsigned int numSplits = 0;
         // Use STL methods 
@@ -74,6 +74,57 @@ namespace LostPeterFoundation
 
         return ret;
     }
+
+    String FUtilString::StandardizePath(const String &init)
+	{
+		String path = init;
+		std::replace(path.begin(), path.end(),'\\', '/');
+		if(path[path.length() - 1] != '/')
+			path += '/';
+		return path;
+	}
+
+	void FUtilString::SplitFileName(const String& qualifiedName, String& outBasename, String& outPath)
+	{
+		String path = qualifiedName;
+		// Replace \ with / first
+		std::replace(path.begin(), path.end(), '\\', '/');
+		// split based on final /
+		size_t i = path.find_last_of('/');
+
+		if (i == String::npos)
+		{
+			outPath.clear();
+			outBasename = qualifiedName;
+		}
+		else
+		{
+			outBasename = path.substr(i+1, path.size() - i - 1);
+			outPath = path.substr(0, i+1);
+		}
+	}
+
+	void FUtilString::SplitFullFileName(const String& qualifiedName, String& outBasename, String& outExtention, String& outPath)
+	{
+		String fullName;
+		SplitFileName(qualifiedName, fullName, outPath);
+		SplitBaseFileName(fullName, outBasename, outExtention);
+	}
+
+	void FUtilString::SplitBaseFileName(const String& fullName, String& outBasename, String& outExtention)
+	{
+		size_t i = fullName.find_last_of(".");
+		if (i == String::npos)
+		{
+			outExtention.clear();
+			outBasename = fullName;
+		}
+		else
+		{
+			outExtention = fullName.substr(i + 1);
+			outBasename = fullName.substr(0, i);
+		}
+	}
 
     void FUtilString::ToLowerCase(String& str)
     {

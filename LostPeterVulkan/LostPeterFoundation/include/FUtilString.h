@@ -24,6 +24,11 @@ namespace LostPeterFoundation
     public:
         static void	Trim(String& str, bool left = true, bool right = true);
         static StringVector Split(const String& str, const String& delims = "\t\n ", unsigned int maxSplits = 0);
+
+		static String StandardizePath(const String& init);
+		static void	SplitFileName(const String& qualifiedName, String& outBasename, String& outPath);
+		static void	SplitFullFileName(const String& qualifiedName,String& outBasename, String& outExtention,String& outPath);
+		static void	SplitBaseFileName(const String& fullName,String& outBasename, String& outExtention);
         
         static void	ToLowerCase(String& str);
         static void	ToUpperCase(String& str);
