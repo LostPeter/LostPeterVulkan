@@ -86,11 +86,11 @@ namespace LostPeterEngine
         "Texture",                  //1:    Texture
         "Shader",                   //2:    Shader
     };
-    const String& E_GetResourceypeName(EResourceType type)
+    const String& E_GetResourceTypeName(EResourceType type)
     {
         return s_nameResourceTypes[(int)type];
     }
-    const String& E_GetResourceypeName(int type)
+    const String& E_GetResourceTypeName(int type)
     {
         return s_nameResourceTypes[type];
     }
@@ -106,6 +106,86 @@ namespace LostPeterEngine
     }
 
     
+    //EMeshParamType
+    static String s_nameMeshParamTypes[] = 
+    {
+        "IsFlip",                   //0:    IsFlip      
+
+    };
+    const String& E_GetMeshParamTypeName(EMeshParamType type)
+    {
+        return s_nameMeshParamTypes[(int)type];
+    }
+    const String& E_GetMeshParamTypeName(int type)
+    {
+        return s_nameMeshParamTypes[type];
+    }
+    EMeshParamType E_ParseMeshParamType(const String& strName)
+    {
+        for (int i = 0; i < (int)E_MeshParam_Count; i++)
+        {
+            if (s_nameMeshParamTypes[i] == strName)
+                return (EMeshParamType)(i);
+        }
+        F_Assert(false && "E_ParseMeshParamType: Wrong type name !")
+        return E_MeshParam_IsFlip;
+    }
+
+
+    //ETextureParamType
+    static String s_nameTextureParamTypes[] = 
+    {
+        "Width",                    //0:    Width            
+        "Height",                   //1:    Height
+        "Depth",                    //2:    Depth
+
+    };
+    const String& E_GetTextureParamTypeName(ETextureParamType type)
+    {
+        return s_nameTextureParamTypes[(int)type];
+    }
+    const String& E_GetTextureParamTypeName(int type)
+    {
+        return s_nameTextureParamTypes[type];
+    }
+    ETextureParamType E_ParseTextureParamType(const String& strName)
+    {
+        for (int i = 0; i < (int)E_TextureParam_Count; i++)
+        {
+            if (s_nameTextureParamTypes[i] == strName)
+                return (ETextureParamType)(i);
+        }
+        F_Assert(false && "E_ParseTextureParamType: Wrong type name !")
+        return E_TextureParam_Width;
+    }
+
+
+    //EShaderParamType
+    static String s_nameShaderParamTypes[] = 
+    {
+        "Type",                     //0:    Type    
+
+    };
+    const String& E_GetShaderParamTypeName(EShaderParamType type)
+    {
+        return s_nameShaderParamTypes[(int)type];
+    }
+    const String& E_GetShaderParamTypeName(int type)
+    {
+        return s_nameShaderParamTypes[type];
+    }
+    EShaderParamType E_ParseShaderParamType(const String& strName)
+    {
+        for (int i = 0; i < (int)E_ShaderParam_Count; i++)
+        {
+            if (s_nameShaderParamTypes[i] == strName)
+                return (EShaderParamType)(i);
+        }
+        F_Assert(false && "E_ParseShaderParamType: Wrong type name !")
+        return E_ShaderParam_Type;
+    }
+
+
     //ECpuInfoType
     const String s_nameCPUInfoTypes[] = 
 	{

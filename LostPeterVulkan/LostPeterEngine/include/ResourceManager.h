@@ -35,7 +35,7 @@ namespace LostPeterEngine
 		ulong m_nMemoryBudget;		
 		ulong m_nMemoryUsage;			
 
-		bool m_bVerbose;				
+		bool m_bIsVerbose;				
 		StringVector m_aScriptPatterns;
 		
 		float m_fLoadingOrder;			
@@ -44,69 +44,58 @@ namespace LostPeterEngine
         F_FORCEINLINE EResourceType GetResourceType() const { return m_eResource; }
         F_FORCEINLINE const String& GetResourceTypeName() const { return m_strResourceType; }
 
+		ResourcePtrHandleMapIterator GetResourceIterator() { return ResourcePtrHandleMapIterator(m_mapResourcesByHandle.begin(), m_mapResourcesByHandle.end()); }
+
     public:
         virtual void Destroy();
 
     public:
-        ResourcePtrHandleMapIterator GetResourceIterator() 
-		{
-			return ResourcePtrHandleMapIterator(m_mapResourcesByHandle.begin(), m_mapResourcesByHandle.end());
-		}
-		
 		virtual Resource* GetResourceByName(const String& strName, const String& strGroupName = ResourceGroupManager::ms_strNameResourceGroup_AutoDetect);
 		virtual Resource* GetResourceByHandle(ResourceHandle nHandle);
 
-		virtual bool ResourceExists(const String& strName)
-		{
-			return GetResourceByName(strName) != nullptr;
-		}
-		virtual bool ResourceExists(ResourceHandle nHandle)
-		{
-            return GetResourceByHandle(nHandle) != nullptr;
-		}
+		virtual bool ResourceExists(const String& strName) { return GetResourceByName(strName) != nullptr; }
+		virtual bool ResourceExists(ResourceHandle nHandle) { return GetResourceByHandle(nHandle) != nullptr; }
 
-		virtual float GetLoadingOrder() const
-		{
-			return m_fLoadingOrder; 
-		}
+		virtual float GetLoadingOrder() const { return m_fLoadingOrder; }
+		virtual bool GetIsVerbose() const { return m_bIsVerbose; }
+		virtual void SetIsVerbose(bool bIsVerbose) { m_bIsVerbose = bIsVerbose; }
 
-		virtual bool GetVerbose() { return m_bVerbose; }
-		virtual void SetVerbose(bool v)	{ m_bVerbose = v; }
+		virtual const StringVector&	GetScriptPatterns() const { return m_aScriptPatterns; }
 
-		virtual const StringVector&	GetScriptPatterns() const
-		{
-			return m_aScriptPatterns; 
-		}
-
+	 public:
 		virtual void ParseScript(FStreamData* pStream, const String& strGroupName)
 		{
 
 		}
 
-		virtual Resource* Create(const String& strName,
+		virtual Resource* Create(uint32 nGroup,
+								 const String& strName,
                                  const String& strGroupName,
-								 bool bIsManual = false,
+								 bool bIsManualLoad = false,
                                  ResourceManualLoader* pManualLoader = nullptr, 
-								 const NameValuePairMap* pParamsCreate = nullptr);
+								 const NameValuePairMap* pLoadParams = nullptr);
 
-		virtual ResourceCreateOrRetrieveResult CreateOrRetrieve(const String& strName, 
+		virtual ResourceCreateOrRetrieveResult CreateOrRetrieve(uint32 nGroup,
+																const String& strName, 
 			                                                    const String& strGroupName,
-                                                                bool bIsManual = false,
-                                                                ResourceManualLoader* loader = nullptr, 
-			                                                    const NameValuePairMap* pParamsCreate = nullptr);
+                                                                bool bIsManualLoad = false,
+                                                                ResourceManualLoader* pManualLoader = nullptr, 
+			                                                    const NameValuePairMap* pLoadParams = nullptr);
 
     public:
-		virtual Resource* Prepare(const String& strName, 
+		virtual Resource* Prepare(uint32 nGroup,
+								  const String& strName, 
                                   const String& strGroupName,
-								  bool bIsManual = false,
+								  bool bIsManualLoad = false,
                                   ResourceManualLoader* pManualLoader = nullptr, 
 								  const NameValuePairMap* pLoadParams = nullptr);
 		
-		virtual Resource* Load(const String& strName, 
+		virtual Resource* Load(uint32 nGroup,
+							   const String& strName, 
                                const String& strGroupName,
-							   bool bIsManual = false,
+							   bool bIsManualLoad = false,
                                ResourceManualLoader* pManualLoader = nullptr, 
-							   const NameValuePairMap* pParamsCreate = nullptr);
+							   const NameValuePairMap* pLoadParams = nullptr);
 
 		virtual void Unload(const String& strName);
 		virtual void Unload(ResourceHandle nHandle);
@@ -130,15 +119,14 @@ namespace LostPeterEngine
 		virtual ulong GetMemoryUsage() const { return m_nMemoryUsage; }
 
 	protected:
-		ResourceHandle getNextHandle();
-
-		virtual Resource* createImpl(const String& strName,
-                                     ResourceHandle nHandle, 
+		virtual ResourceHandle getNextHandle();
+		virtual Resource* createImpl(uint32 nGroup,
+									 const String& strName,
 			                         const String& strGroupName,
-                                     bool isManual,
+									 ResourceHandle nHandle, 
+                                     bool bIsManualLoad,
                                      ResourceManualLoader* pManualLoader, 
-			                         const NameValuePairMap* pParamsCreate)	= 0;
-
+			                         const NameValuePairMap* pLoadParams) = 0;
 		virtual void addImpl(Resource* pResource);
 		virtual void removeImpl(Resource* pResource);
 		virtual void checkUsage();

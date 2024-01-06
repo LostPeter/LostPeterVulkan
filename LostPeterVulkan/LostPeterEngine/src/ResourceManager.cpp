@@ -22,9 +22,9 @@ namespace LostPeterEngine
         , m_nNextHandle(1)
 		, m_nMemoryUsage(0)
 		, m_fLoadingOrder(0)
-		, m_bVerbose(true)
+		, m_bIsVerbose(true)
     {
-        m_strResourceType = E_GetResourceypeName(eResource);
+        m_strResourceType = E_GetResourceTypeName(eResource);
         m_nMemoryBudget = std::numeric_limits<unsigned long>::max();
     }
 
@@ -91,61 +91,67 @@ namespace LostPeterEngine
 		return nullptr;
 	}
 
-	Resource* ResourceManager::Create(const String& strName,
+	Resource* ResourceManager::Create(uint32 nGroup,
+									  const String& strName,
                                       const String& strGroupName,
-									  bool bIsManual /*= false*/,
+									  bool bIsManualLoad /*= false*/,
                                       ResourceManualLoader* pManualLoader /*= nullptr*/, 
-									  const NameValuePairMap* pParamsCreate /*= nullptr*/)
+									  const NameValuePairMap* pLoadParams /*= nullptr*/)
 	{
-        Resource* pResource = createImpl(strName,
-                                         getNextHandle(),
+        Resource* pResource = createImpl(nGroup,
+										 strName,
                                          strGroupName,
-                                         bIsManual,
+										 getNextHandle(),
+                                         bIsManualLoad,
                                          pManualLoader,
-                                         pParamsCreate);
+                                         pLoadParams);
         if (pResource == nullptr)
         {
             F_LogError("*********************** ResourceManager::Create: Failed to create resource, name: [%s], group: [%s] !", strName.c_str(), strGroupName.c_str());
             return nullptr;
         }
 
-		if (pParamsCreate)
-			pResource->SetParameterMap(*pParamsCreate);
+		if (pLoadParams)
+			pResource->SetParameterMap(*pLoadParams);
 
 		addImpl(pResource);
 		ResourceGroupManager::GetSingleton()._NotifyResourceCreated(pResource);
 		return pResource;
 	}
 
-	ResourceCreateOrRetrieveResult ResourceManager::CreateOrRetrieve(const String& strName, 
+	ResourceCreateOrRetrieveResult ResourceManager::CreateOrRetrieve(uint32 nGroup,
+																	 const String& strName, 
 		                                                             const String& strGroupName,
-                                                                     bool bIsManual /*= false*/,
+                                                                     bool bIsManualLoad /*= false*/,
                                                                      ResourceManualLoader* pManualLoader /*= nullptr*/, 
-		                                                             const NameValuePairMap* pParamsCreate /*= nullptr*/)
+		                                                             const NameValuePairMap* pLoadParams /*= nullptr*/)
 	{
 		Resource* pResource = GetResourceByName(strName);
 		bool bIsCreated = false;
 		if (pResource == nullptr)
 		{
 			bIsCreated = true;
-			pResource = Create(strName,
+			pResource = Create(nGroup,
+							   strName,
                                strGroupName,
-                               bIsManual,
+                               bIsManualLoad,
                                pManualLoader,
-                               pParamsCreate);
+                               pLoadParams);
 		}
 		return ResourceCreateOrRetrieveResult(pResource, bIsCreated);
 	}
 
-	Resource* ResourceManager::Prepare(const String& strName, 
+	Resource* ResourceManager::Prepare(uint32 nGroup,
+									   const String& strName, 
                                        const String& strGroupName,
-									   bool bIsManual /*= false*/,
+									   bool bIsManualLoad /*= false*/,
                                        ResourceManualLoader* pManualLoader /*= nullptr*/, 
 									   const NameValuePairMap* pLoadParams /*= nullptr*/)
 	{
-		Resource* pResource = CreateOrRetrieve(strName, 
+		Resource* pResource = CreateOrRetrieve(nGroup,
+											   strName, 
                                                strGroupName, 
-                                               bIsManual, 
+                                               bIsManualLoad, 
                                                pManualLoader, 
                                                pLoadParams).first;
 		
@@ -153,17 +159,19 @@ namespace LostPeterEngine
 		return pResource;
 	}
 
-	Resource* ResourceManager::Load(const String& strName, 
+	Resource* ResourceManager::Load(uint32 nGroup,
+									const String& strName, 
                                     const String& strGroupName,
-									bool bIsManual /*= false*/,
+									bool bIsManualLoad /*= false*/,
                                     ResourceManualLoader* pManualLoader /*= nullptr*/, 
-									const NameValuePairMap* pParamsCreate /*= nullptr*/)
+									const NameValuePairMap* pLoadParams /*= nullptr*/)
 	{
-		Resource* pResource = CreateOrRetrieve(strName, 
+		Resource* pResource = CreateOrRetrieve(nGroup,
+											   strName, 
                                                strGroupName, 
-                                               bIsManual, 
+                                               bIsManualLoad, 
                                                pManualLoader, 
-                                               pParamsCreate).first;
+                                               pLoadParams).first;
 		
 		pResource->Load();
 		return pResource;
@@ -297,7 +305,7 @@ namespace LostPeterEngine
 
 	ResourceHandle ResourceManager::getNextHandle()
 	{
-		return m_nNextHandle++;
+		return ++m_nNextHandle;
 	}	
 
 	void ResourceManager::addImpl(Resource* pResource)

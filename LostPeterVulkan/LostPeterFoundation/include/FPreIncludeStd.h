@@ -64,6 +64,8 @@
 #include <string>
 #include <unordered_map>
 
+#include <sys/types.h>
+#include <sys/stat.h>
 
 //Platform
 #if F_PLATFORM == F_PLATFORM_WINDOW
@@ -87,8 +89,12 @@
 	#include <dirent.h>
     #include <dlfcn.h>
     #include <filesystem>
+    #include <sys/param.h>
+	#define MAX_PATH	MAXPATHLEN
     
 #elif F_PLATFORM == F_PLATFORM_LINUX
+    #include <sys/param.h>
+	#define MAX_PATH	MAXPATHLEN
 
 #elif F_PLATFORM == F_PLATFORM_ANDROID
 

@@ -19,6 +19,7 @@ namespace LostPeterEngine
     ////////////////////////// ResourceDeclaration /////////////////
     struct ResourceDeclaration
     {
+		uint32 nGroup;
         String strResourceName;	
         String strResourceType;	
         ResourceManualLoader* pManualLoader;			

@@ -15,8 +15,20 @@
 
 namespace LostPeterEngine
 {
-    Texture::Texture(uint32 nGroup, const String& strName)
-		: Base(nGroup, strName)
+    Texture::Texture(ResourceManager* pResourceManager,
+					 uint32 nGroup, 
+					 const String& strName,
+					 const String& strGroupName,
+					 ResourceHandle nHandle,
+					 bool bIsManualLoad /*= false*/,
+					 ResourceManualLoader* pResourceManualLoader /*= nullptr*/)
+		: Resource(pResourceManager,
+				   nGroup, 
+				   strName,
+				   strGroupName,
+				   nHandle,
+				   bIsManualLoad,
+				   pResourceManualLoader)
 		, m_eTexture(F_Texture_2D)
 		, m_nUsage(E_TextureUsage_Default)
 		, m_bIsLoaded(false)
@@ -38,6 +50,7 @@ namespace LostPeterEngine
 		, m_nMipMapsCount(0)
 		, m_bMipMapsHardwareGenerated(false)
 		, m_fGamma(1.0f)
+		, m_bIsHardwareGamma(false)
 		, m_nFSAA(0)
 		, m_bInternalResourcesCreated(false)
 	{

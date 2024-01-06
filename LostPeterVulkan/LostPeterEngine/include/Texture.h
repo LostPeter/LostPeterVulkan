@@ -12,14 +12,20 @@
 #ifndef _TEXTURE_H_
 #define _TEXTURE_H_
 
-#include "Base.h"
+#include "Resource.h"
 
 namespace LostPeterEngine
 {
-    class engineExport Texture : public Base
+    class engineExport Texture : public Resource
     {
     public:
-        Texture(uint32 nGroup, const String& strName);
+        Texture(ResourceManager* pResourceManager,
+				uint32 nGroup, 
+				const String& strName,
+				const String& strGroupName,
+                ResourceHandle nHandle,
+                bool bIsManualLoad = false,
+                ResourceManualLoader* pResourceManualLoader = nullptr);
         virtual ~Texture();
 
     public:
@@ -50,6 +56,7 @@ namespace LostPeterEngine
 		bool m_bMipMapsHardwareGenerated;
 
 		float m_fGamma;
+		bool m_bIsHardwareGamma;
 		uint32 m_nFSAA;
 
 		bool m_bInternalResourcesCreated;
@@ -103,6 +110,8 @@ namespace LostPeterEngine
 			
 		F_FORCEINLINE float GetGamma() const { return m_fGamma; }
 		F_FORCEINLINE void SetGamma(float fGamma) { m_fGamma = fGamma; }
+		F_FORCEINLINE bool IsHardwareGammaEnabled() const { return m_bIsHardwareGamma; }
+		F_FORCEINLINE void SetHardwareGammaEnabled(bool bIsHardwareGamma) { m_bIsHardwareGamma = bIsHardwareGamma; }
 		F_FORCEINLINE uint32 GetFSAA() const { return m_nFSAA; }
 		F_FORCEINLINE void SetFSAA(uint32 nFSAA) { m_nFSAA = nFSAA; }
 		
@@ -122,9 +131,6 @@ namespace LostPeterEngine
         virtual void FreeInternalResources();
 
 		virtual StreamTexture* GetTextureStream(uint32 nFace = 0, uint32 nMipMap = 0) = 0;
-
-		virtual bool Load() = 0;
-		virtual bool Unload() = 0;
 
 	protected:
 		virtual void createInternalResourcesImpl() = 0;

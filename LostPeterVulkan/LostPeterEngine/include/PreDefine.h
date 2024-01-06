@@ -120,7 +120,7 @@ namespace LostPeterEngine
 
     enum ETextureMipMapType
 	{
-        E_TextureMipMap_Default	= -1,			            //-1, use DfTextureManager default
+        E_TextureMipMap_Default	= 0,			            //-1, use FTextureManager default
 		E_TextureMipMap_UnLimited = 0x7FFFFFFF,	            //0x7FFFFFFF, generate mipmaps up to 1x1
 		E_TextureMipMap_FromFile  = 0x8FFFFFFF,	            //0x8FFFFFFF, generate mipmaps up to 1x1
 	};
@@ -189,10 +189,47 @@ namespace LostPeterEngine
 
         E_Resource_Count,
     };
-    engineExport const String& E_GetResourceypeName(EResourceType type);
+    engineExport const String& E_GetResourceTypeName(EResourceType type);
     engineExport const String& E_GetResourceTypeName(int type);
     engineExport EResourceType E_ParseResourceType(const String& strName);
-    
+
+
+    enum EMeshParamType
+    {
+        E_MeshParam_IsFlip = 0,                             //0:    IsFlip
+
+        E_MeshParam_Count,                          
+    };
+    engineExport const String& E_GetMeshParamTypeName(EMeshParamType type);
+    engineExport const String& E_GetMeshParamTypeName(int type);
+    engineExport EMeshParamType E_ParseMeshParamType(const String& strName);
+
+
+    enum ETextureParamType
+    {
+        E_TextureParam_Width = 0,                           //0:    Width
+        E_TextureParam_Height,                              //1:    Height
+        E_TextureParam_Depth,                               //2:    Depth
+
+
+        E_TextureParam_Count,   
+    };
+    engineExport const String& E_GetTextureParamTypeName(ETextureParamType type);
+    engineExport const String& E_GetTextureParamTypeName(int type);
+    engineExport ETextureParamType E_ParseTextureParamType(const String& strName);
+
+
+    enum EShaderParamType
+    {   
+        E_ShaderParam_Type = 0,                             //0:    Type
+
+
+        E_ShaderParam_Count,   
+    };
+    engineExport const String& E_GetShaderParamTypeName(EShaderParamType type);
+    engineExport const String& E_GetShaderParamTypeName(int type);
+    engineExport EShaderParamType E_ParseShaderParamType(const String& strName);
+
 
     enum EResourceLoadingType
     {

@@ -37,7 +37,13 @@ namespace LostPeterPluginRendererVulkan
         virtual bool CheckSupport(FPixelFormatType ePixelFormat, uint32 nTextureFlags) const;
 
     protected:
-		virtual Texture* createImpl(uint32 nGroup, const String& strName, const String2StringMap* pParams = nullptr);
+        virtual Resource* createImpl(uint32 nGroup,
+									 const String& strName,
+			                         const String& strGroupName,
+									 ResourceHandle nHandle, 
+                                     bool bIsManualLoad,
+                                     ResourceManualLoader* pManualLoader, 
+			                         const NameValuePairMap* pLoadParams);
     };
 
 }; //LostPeterPluginRendererVulkan

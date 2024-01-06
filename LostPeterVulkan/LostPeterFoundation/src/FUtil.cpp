@@ -1125,6 +1125,27 @@ namespace LostPeterFoundation
         }
     }
 
+////Param
+    void FUtil::SaveNameValuePair(NameValuePairMap& mapParam, const String& strName, const String& strValue)
+    {
+        mapParam[strName] = strValue;
+    }
+    void FUtil::CopyNameValuePairMapTo(const NameValuePairMap& mapParamSrc, NameValuePairMap* pRaramDst)
+    {
+        CopyNameValuePairMapTo(&mapParamSrc, pRaramDst);
+    }
+    void FUtil::CopyNameValuePairMapTo(const NameValuePairMap* pParamSrc, NameValuePairMap* pRaramDst)
+    {
+        if (!pRaramDst)
+            return;
+
+        for (NameValuePairMap::const_iterator it = pParamSrc->begin();
+             it != pParamSrc->end(); ++it)
+        {
+            (*pRaramDst)[it->first] = it->second;
+        }
+    }
+
 
     //////////////////////// Thread ////////////////////////
     //int8/16/32/64 [+-] 1

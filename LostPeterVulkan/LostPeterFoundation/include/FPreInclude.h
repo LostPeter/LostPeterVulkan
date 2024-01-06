@@ -83,6 +83,7 @@
 #include "FTorus.h"
 #include "FTriangle.h"
 #include "FUtil.h"
+#include "FUtilFile.h"
 #include "FUtilOC.h"
 #include "FUtilString.h"
 

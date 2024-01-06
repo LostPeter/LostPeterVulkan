@@ -13,6 +13,10 @@
 #include "../include/FStreamDataFileStream.h"
 #include "../include/FUtilString.h"
 
+#if F_PLATFORM != F_PLATFORM_WINDOW
+	#include "../include/FUtilFile.h"
+#endif
+
 namespace LostPeterFoundation
 {
     static bool is_reserved_dir(const char* fn)

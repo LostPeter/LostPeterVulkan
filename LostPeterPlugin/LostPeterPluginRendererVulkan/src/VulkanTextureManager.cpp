@@ -86,9 +86,21 @@ namespace LostPeterPluginRendererVulkan
         return false;
     }
 
-    Texture* VulkanTextureManager::createImpl(uint32 nGroup, const String& strName, const String2StringMap* pParams /*= nullptr*/)
+    Resource* VulkanTextureManager::createImpl(uint32 nGroup,
+                                               const String& strName,
+                                               const String& strGroupName,
+                                               ResourceHandle nHandle, 
+                                               bool bIsManualLoad,
+                                               ResourceManualLoader* pManualLoader, 
+                                               const NameValuePairMap* pLoadParams)
     {
-        return new VulkanTexture(nGroup, strName);
+        return new VulkanTexture(this,
+                                 nGroup, 
+                                 strName,
+                                 strGroupName,
+                                 nHandle,
+                                 bIsManualLoad,
+                                 pManualLoader);
     }
 
 }; //LostPeterPluginRendererVulkan

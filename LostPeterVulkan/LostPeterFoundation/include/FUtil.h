@@ -109,6 +109,12 @@ namespace LostPeterFoundation
         static void Sort3(float f1, float f2, float f3, int* pIndex);
         static void SortBubble(int count, float* pFloat, int* pIndex);
 
+    ////Param
+        static void SaveNameValuePair(NameValuePairMap& mapParam, const String& strName, const String& strValue);
+        static void CopyNameValuePairMapTo(const NameValuePairMap& mapParamSrc, NameValuePairMap* pRaramDst);
+        static void CopyNameValuePairMapTo(const NameValuePairMap* pParamSrc, NameValuePairMap* pRaramDst);
+
+
     //////////////////////// Thread ////////////////////////
     public:
         //int8/16/32/64 [+-] 1

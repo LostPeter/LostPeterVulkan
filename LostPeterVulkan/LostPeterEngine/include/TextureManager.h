@@ -12,16 +12,29 @@
 #ifndef _TEXTURE_MANAGER_H_
 #define _TEXTURE_MANAGER_H_
 
-#include "Base.h"
+#include "ResourceManager.h"
 
 namespace LostPeterEngine
 {
     class engineExport TextureManager : public FSingleton<TextureManager>
-                                      , public Base
+                                      , public ResourceManager
     {
     public:
         TextureManager();
         virtual ~TextureManager();
+
+    public:
+        //Set TextureParam
+        static void SetTextureParam_Width(NameValuePairMap& mapParam, uint32 nWidth);
+        static void SetTextureParam_Height(NameValuePairMap& mapParam, uint32 nHeight);
+        static void SetTextureParam_Depth(NameValuePairMap& mapParam, uint32 nDepth);
+
+
+        //Get TextureParam
+        static uint32 GetTextureParam_Width(NameValuePairMap& mapParam);
+        static uint32 GetTextureParam_Height(NameValuePairMap& mapParam);
+        static uint32 GetTextureParam_Depth(NameValuePairMap& mapParam);
+
 
     public:
     protected:
@@ -82,24 +95,62 @@ namespace LostPeterEngine
 		virtual bool IsHardwareFilteringSupported(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage, bool bPreciseFormatOnly = false) = 0;	
 
     public:
+        virtual ResourceCreateOrRetrieveResult CreateOrRetrieve(uint32 nGroup, 
+                                                                const String& strName, 
+																const String& strGroupName, 
+																bool bIsManualLoad = false,
+																ResourceManualLoader* pManualLoader = nullptr, 
+																const NameValuePairMap* pLoadParams = nullptr,
+																FTextureType eTexture = F_Texture_2D, 
+																int32 nMipMapsCount = E_TextureMipMap_Default, 
+																float fGamma = 1.0f,
+																bool bIsAlpha = false,
+																FPixelFormatType ePixelFormat = F_PixelFormat_Unknown, 
+																bool bIsHWGammaCorrection = false);
+
+    public:
+        virtual Texture* Prepare(uint32 nGroup, 
+                                 const String& strName, 
+								 const String& strGroupName, 
+								 FTextureType eTexture = F_Texture_2D, 
+								 int32 nMipMapsCount = E_TextureMipMap_Default, 
+								 bool fGamma = 1.0f, 
+								 bool bIsAlpha = false,
+								 FPixelFormatType ePixelFormat = F_PixelFormat_Unknown, 
+								 bool bIsHWGammaCorrection = false);
+
+		virtual Texture* Load(uint32 nGroup, 
+                              const String& strName, 
+                              const String& strGroupName, 
+                              FTextureType eTexture = F_Texture_2D, 
+                              int32 nMipMapsCount = E_TextureMipMap_Default, 
+                              bool fGamma = 1.0f,
+                              bool bIsAlpha = false,
+                              FPixelFormatType ePixelFormat = F_PixelFormat_Unknown, 
+                              bool bIsHWGammaCorrection = false);
+
+    public:
         Texture* CreateTexture(uint32 nGroup, 
                                const String& strName,
+                               const String& strGroupName, 
                                FTextureType eTexture = F_Texture_2D, 
-                               int nMipMapsCount = E_TextureMipMap_Default, 
+                               int32 nMipMapsCount = E_TextureMipMap_Default, 
 						       float fGamma = 1.0f, 
                                bool bIsAlpha = false, 
-                               FPixelFormatType ePixelFormatDesired = F_PixelFormat_Unknown, 
+                               FPixelFormatType ePixelFormat = F_PixelFormat_Unknown, 
                                bool bUseMemoryImage = false,
 						       bool bBackground = true, 
                                uint16 nRecoveryGroupID = 0);
 
 		Texture* CreateTextureManual(uint32 nGroup,
                                      const String& strName,  
+                                     const String& strGroupName, 
+                                     ResourceManualLoader* pManualLoader,
                                      FTextureType eTexture, 
                                      uint32 nWidth, 
                                      uint32 nHeight, 
                                      uint32 nDepth, 
-						             int nMipMapsCount, 
+						             int32 nMipMapsCount, 
                                      FPixelFormatType ePixelFormat, 
                                      uint32 nUsage = E_TextureUsage_Default, 
                                      bool bUseMemoryImage = false, 
@@ -107,37 +158,40 @@ namespace LostPeterEngine
 
 		Texture* CreateTextureFromImage(uint32 nGroup,
                                         const String& strName, 
+                                        const String& strGroupName, 
                                         Image* pImage, 
                                         FTextureType eTexture = F_Texture_2D,
-						                int nMipMapsCount = E_TextureMipMap_Default, 
+						                int32 nMipMapsCount = E_TextureMipMap_Default, 
                                         float fGamma = 1.0f, 
                                         bool bIsAlpha = false,
-						                FPixelFormatType ePixelFormatDesired = F_PixelFormat_Unknown, 
+						                FPixelFormatType ePixelFormat = F_PixelFormat_Unknown, 
                                         bool bUseMemoryImage = false);
 		
 		Texture* CreateTextureFromDDSImage(uint32 nGroup,
                                            const String& strName, 
+                                           const String& strGroupName, 
                                            FFileMemory* pInput, 
                                            FTextureType eTexture = F_Texture_2D,
-						                   int nMipMapsCount = E_TextureMipMap_Default, 
+						                   int32 nMipMapsCount = E_TextureMipMap_Default, 
                                            float fGamma = 1.0f, 
                                            bool bIsAlpha = false,
-						                   FPixelFormatType ePixelFormatDesired = F_PixelFormat_Unknown, 
+						                   FPixelFormatType ePixelFormat = F_PixelFormat_Unknown, 
                                            bool bUseMemoryImage = false);
 	
 		Texture* CreateTextureFromRawData(uint32 nGroup, 
                                           const String& strName, 
+                                          const String& strGroupName, 
                                           FFileMemory* pInput, 
                                           uint32 nWidth, 
                                           uint32 nHeight, 
 						                  FPixelFormatType ePixelFormat, 
                                           FTextureType eTexture = F_Texture_2D, 
-                                          int nMipMapsCount = E_TextureMipMap_Default, 
+                                          int32 nMipMapsCount = E_TextureMipMap_Default, 
                                           float fGamma = 1.0f, 
                                           bool bUseMemoryImage = false);
 
     protected:
-		virtual Texture* createImpl(uint32 nGroup, const String& strName, const String2StringMap* pParams = nullptr) = 0;
+
     };
 
 }; //LostPeterEngine

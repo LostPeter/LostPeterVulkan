@@ -28,16 +28,68 @@ namespace LostPeterEngine
 		return (*ms_Singleton);  
 	}
 
+
+    //Set TextureParam
+    void TextureManager::SetTextureParam_Width(NameValuePairMap& mapParam, uint32 nWidth)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_Width), FUtilString::SaveUInt(nWidth));
+    }
+    void TextureManager::SetTextureParam_Height(NameValuePairMap& mapParam, uint32 nHeight)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_Height), FUtilString::SaveUInt(nHeight));
+    }
+    void TextureManager::SetTextureParam_Depth(NameValuePairMap& mapParam, uint32 nDepth)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_Depth), FUtilString::SaveUInt(nDepth));
+    }
+
+    //Get TextureParam
+    uint32 TextureManager::GetTextureParam_Width(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_Width);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            F_LogError("*********************** TextureManager::GetTextureParam_Width: Can not find param name: [%s] from param map !", strName.c_str());
+            return 0;
+        }
+        return FUtilString::ParserUInt(itFind->second);
+    }
+    uint32 TextureManager::GetTextureParam_Height(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_Height);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            F_LogError("*********************** TextureManager::GetTextureParam_Height: Can not find param name: [%s] from param map !", strName.c_str());
+            return 0;
+        }
+        return FUtilString::ParserUInt(itFind->second);
+    }
+    uint32 TextureManager::GetTextureParam_Depth(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_Depth);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            F_LogError("*********************** TextureManager::GetTextureParam_Depth: Can not find param name: [%s] from param map !", strName.c_str());
+            return 0;
+        }
+        return FUtilString::ParserUInt(itFind->second);
+    }
+
+
     TextureManager::TextureManager()
-        : Base("TextureManager")
+        : ResourceManager(E_GetResourceTypeName(E_Resource_Texture), E_Resource_Texture)
         , m_pTextureSerializer(nullptr)
         , m_nBitDepthIntegerPreferred(0)
 		, m_nBitDepthFloatPreferred(0)
 		, m_nMipMapsCountDefault(E_TextureMipMap_UnLimited)
 		, m_fMipMapLODBiasDefault(0.0f)
     {
-
+        m_fLoadingOrder = 75.0f;
     }
+
     TextureManager::~TextureManager()
     {
         
@@ -226,11 +278,7 @@ namespace LostPeterEngine
 				{
 					pTexture->Unload();
 					pTexture->SetBitDepthIntegerDesired(nBitDepthIntegerPreferred);
-                    if (!pTexture->Load())
-                    {
-                        F_LogError("*********************** TextureManager::SetBitDepthIntegerPreferred: Load texture failed, group: [%d], name: [%s]", pTexture->GetGroup(), pTexture->GetName().c_str());
-                        continue;
-                    }
+                    pTexture->Load();
 				}
 				else
 				{
@@ -254,11 +302,7 @@ namespace LostPeterEngine
 				{
 					pTexture->Unload();
 					pTexture->SetBitDepthFloatDesired(nBitDepthFloatPreferred);
-                    if (!pTexture->Load())
-                    {
-                        F_LogError("*********************** TextureManager::SetBitDepthFloatPreferred: Load texture failed, group: [%d], name: [%s]", pTexture->GetGroup(), pTexture->GetName().c_str());
-                        continue;
-                    }
+                    pTexture->Load();
 				}
 				else
 				{
@@ -283,11 +327,7 @@ namespace LostPeterEngine
 				{
 					pTexture->Unload();
 					pTexture->SetBitDepthsDesired(nBitDepthIntegerPreferred, nBitDepthFloatPreferred);
-                    if (!pTexture->Load())
-                    {
-                        F_LogError("*********************** TextureManager::SetBitDepthsPreferred: Load texture failed, group: [%d], name: [%s]", pTexture->GetGroup(), pTexture->GetName().c_str());
-                        continue;
-                    }
+                    pTexture->Load();
 				}
 				else
 				{
@@ -308,39 +348,144 @@ namespace LostPeterEngine
 		return FPixelFormat::GetPixelFormatElemBits(eSupportedPF) >= FPixelFormat::GetPixelFormatElemBits(ePixelFormat);
 	}
 
+
+    ResourceCreateOrRetrieveResult TextureManager::CreateOrRetrieve(uint32 nGroup, 
+                                                                    const String& strName, 
+                                                                    const String& strGroupName, 
+                                                                    bool bIsManualLoad /*= false*/,
+                                                                    ResourceManualLoader* pManualLoader /*= nullptr*/, 
+                                                                    const NameValuePairMap* pLoadParams /*= nullptr*/,
+                                                                    FTextureType eTexture /*= F_Texture_2D*/, 
+                                                                    int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
+                                                                    float fGamma /*= 1.0f*/,
+                                                                    bool bIsAlpha /*= false*/,
+                                                                    FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
+                                                                    bool bIsHWGammaCorrection /*= false*/)
+    {
+        NameValuePairMap mapTextureParam;
+        if (bIsManualLoad && pLoadParams)
+        {
+            FUtil::CopyNameValuePairMapTo(pLoadParams, &mapTextureParam);
+        }
+
+
+        ResourceCreateOrRetrieveResult result = ResourceManager::CreateOrRetrieve(nGroup,
+                                                                                  strName,
+                                                                                  strGroupName,
+                                                                                  bIsManualLoad,
+                                                                                  pManualLoader,
+                                                                                  &mapTextureParam);
+		if (!result.second || !result.second)
+		{
+            F_LogError("*********************** TextureManager::CreateOrRetrieve: CreateOrRetrieve texture failed, group: [%d], name: [%s]", nGroup, strName.c_str());
+			//Texture* pTexture = (Texture*)result.first;
+			// pTexture->SetTextureType(eTexture);
+			// pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
+			// pTexture->SetGamma(fGamma);
+			// pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
+			// pTexture->SetPixelFormat(ePixelFormat);
+			// pTexture->SetHardwareGammaEnabled(bIsHWGammaCorrection);
+		}
+		return result;
+    }
+
+
+    Texture* TextureManager::Prepare(uint32 nGroup, 
+                                     const String& strName, 
+                                     const String& strGroupName, 
+                                     FTextureType eTexture /*= F_Texture_2D*/, 
+                                     int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
+                                     bool fGamma /*= 1.0f*/, 
+                                     bool bIsAlpha /*= false*/,
+                                     FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
+                                     bool bIsHWGammaCorrection /*= false*/)
+    {
+        ResourceCreateOrRetrieveResult result = CreateOrRetrieve(nGroup,
+                                                                 strName,
+                                                                 strGroupName,
+                                                                 false,
+                                                                 nullptr,
+                                                                 nullptr,
+                                                                 eTexture,
+                                                                 nMipMapsCount,
+                                                                 fGamma,
+                                                                 bIsAlpha,
+                                                                 ePixelFormat,
+                                                                 bIsHWGammaCorrection);
+		Texture* pTexture = (Texture*)result.first;
+        if (!pTexture)
+            return nullptr;
+		pTexture->Prepare();
+		return pTexture;
+    }
+
+
+    Texture* TextureManager::Load(uint32 nGroup, 
+                                  const String& strName, 
+                                  const String& strGroupName, 
+                                  FTextureType eTexture /*= F_Texture_2D*/, 
+                                  int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
+                                  bool fGamma /*= 1.0f*/,
+                                  bool bIsAlpha /*= false*/,
+                                  FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
+                                  bool bIsHWGammaCorrection /*= false*/)
+    {
+        ResourceCreateOrRetrieveResult result = CreateOrRetrieve(nGroup,
+                                                                 strName,
+                                                                 strGroupName,
+                                                                 false,
+                                                                 nullptr,
+                                                                 nullptr,
+                                                                 eTexture,
+                                                                 nMipMapsCount,
+                                                                 fGamma,
+                                                                 bIsAlpha,
+                                                                 ePixelFormat,
+                                                                 bIsHWGammaCorrection);
+		Texture* pTexture = (Texture*)result.first;
+        if (!pTexture)
+            return nullptr;
+		pTexture->Load();
+		return pTexture;
+    }
+
+
     Texture* TextureManager::CreateTexture(uint32 nGroup, 
                                            const String& strName, 
+                                           const String& strGroupName, 
                                            FTextureType eTexture /*= F_Texture_2D*/, 
-                                           int nMipMapsCount /*= E_TextureMipMap_Default*/, 
+                                           int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
 				                           float fGamma /*= 1.0f*/, 
                                            bool bIsAlpha /*= false*/, 
-                                           FPixelFormatType ePixelFormatDesired /*= F_PixelFormat_Unknown*/, 
+                                           FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
                                            bool bUseMemoryImage /*= false*/,
 				                           bool bBackground /*= true*/, 
                                            uint16 nRecoveryGroupID /*= 0*/)
 	{
-		String2StringMap mapParams;
-		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
 		Texture* pTexture = GetTexture(nGroup, strName);
 		if (pTexture)
 		{
 			pTexture->AddRef();
 			return pTexture;
 		}
-		pTexture = createImpl(nGroup, strName, &mapParams);
+
+        NameValuePairMap mapParams;
+		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
+		pTexture = (Texture*)createImpl(nGroup, 
+                                        strName, 
+                                        strGroupName,
+                                        getNextHandle(),
+                                        false,
+                                        nullptr,
+                                        &mapParams);
 		pTexture->AddRef();
 		
         pTexture->SetTextureType(eTexture);
-        pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : static_cast<uint32>(nMipMapsCount));
+        pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
         pTexture->SetGamma(fGamma);
         pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
-        pTexture->SetPixelFormat(ePixelFormatDesired);
-        if (!pTexture->Load())
-        {
-            F_LogError("*********************** TextureManager::CreateTexture: Load texture failed, group: [%d], name: [%s]", nGroup, strName.c_str());
-            F_DELETE(pTexture)
-            return nullptr;
-        }
+        pTexture->SetPixelFormat(ePixelFormat);
+        pTexture->Load();
 
         AddTexture(nGroup, pTexture);
         return pTexture;
@@ -348,32 +493,41 @@ namespace LostPeterEngine
 
 	Texture* TextureManager::CreateTextureManual(uint32 nGroup, 
                                                  const String& strName, 
+                                                 const String& strGroupName, 
+                                                 ResourceManualLoader* pManualLoader,
                                                  FTextureType eTexture, 
                                                  uint32 nWidth, 
                                                  uint32 nHeight, 
                                                  uint32 nDepth, 
-		                                         int nMipMapsCount, 
+		                                         int32 nMipMapsCount, 
                                                  FPixelFormatType ePixelFormat, 
                                                  uint32 nUsage /*= E_TextureUsage_Default*/, 
                                                  bool bUseMemoryImage /*= false*/, 
                                                  uint32 nFSAA /*= 0*/)
 	{
-		String2StringMap mapParams;
-		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
 		Texture* pTexture = GetTexture(nGroup, strName);
 		if (pTexture)
 		{
 			pTexture->AddRef();
 			return pTexture;
 		}
-		pTexture = createImpl(nGroup, strName, &mapParams);
+
+        NameValuePairMap mapParams;
+		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
+		pTexture = (Texture*)createImpl(nGroup, 
+                                        strName, 
+                                        strGroupName,
+                                        getNextHandle(),
+                                        true,
+                                        pManualLoader,
+                                        &mapParams);
 		pTexture->AddRef();
 
 		pTexture->SetTextureType(eTexture);
 		pTexture->SetWidth(nWidth);
 		pTexture->SetHeight(nHeight);
 		pTexture->SetDepth(nDepth);
-		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : static_cast<uint32>(nMipMapsCount));
+		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
 		pTexture->SetPixelFormat(ePixelFormat);
 		pTexture->SetUsage(nUsage);
 		pTexture->SetFSAA(nFSAA);
@@ -385,30 +539,38 @@ namespace LostPeterEngine
 
 	Texture* TextureManager::CreateTextureFromImage(uint32 nGroup, 
                                                     const String& strName, 
+                                                    const String& strGroupName, 
                                                     Image* pImage, 
                                                     FTextureType eTexture /*= F_Texture_2D*/,
-				                                    int nMipMapsCount /*= E_TextureMipMap_Default*/, 
+				                                    int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
                                                     float fGamma /*= 1.0f*/, 
                                                     bool bIsAlpha /*= false*/,
-				                                    FPixelFormatType ePixelFormatDesired /*= F_PixelFormat_Unknown*/, 
+				                                    FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
                                                     bool bUseMemoryImage /*= false*/)
 	{
-		String2StringMap mapParams;
-		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
 		Texture* pTexture = GetTexture(nGroup, strName);
 		if (pTexture)
 		{
 			pTexture->AddRef();
 			return pTexture;
 		}
-		pTexture = createImpl(nGroup, strName, &mapParams);
+
+        NameValuePairMap mapParams;
+		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
+		pTexture = (Texture*)createImpl(nGroup, 
+                                        strName, 
+                                        strGroupName,
+                                        getNextHandle(),
+                                        false,
+                                        nullptr,
+                                        &mapParams);
 		pTexture->AddRef();
 		
 		pTexture->SetTextureType(eTexture);
-		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : static_cast<uint32>(nMipMapsCount));
+		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
 		pTexture->SetGamma(fGamma);
 		pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
-		pTexture->SetPixelFormat(ePixelFormatDesired);
+		pTexture->SetPixelFormat(ePixelFormat);
 		if (!pTexture->LoadFromImage(pImage))
         {
             F_LogError("*********************** TextureManager::CreateTextureFromImage: Load texture from image failed, group: [%d], name: [%s]", nGroup, strName.c_str());
@@ -422,30 +584,38 @@ namespace LostPeterEngine
 
 	Texture* TextureManager::CreateTextureFromDDSImage(uint32 nGroup, 
                                                        const String& strName, 
+                                                       const String& strGroupName, 
                                                        FFileMemory* pInput, 
                                                        FTextureType eTexture /*= F_Texture_2D*/,
-                                                       int nMipMapsCount /*= E_TextureMipMap_Default*/, 
+                                                       int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
                                                        float fGamma /*= 1.0f*/, 
                                                        bool bIsAlpha /*= false*/,
-                                                       FPixelFormatType ePixelFormatDesired /*= F_PixelFormat_Unknown*/, 
+                                                       FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
                                                        bool bUseMemoryImage /*= false*/)
 	{
-		String2StringMap mapParams;
-		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
 		Texture* pTexture = GetTexture(nGroup, strName);
 		if (pTexture)
 		{
 			pTexture->AddRef();
 			return pTexture;
 		}
-		pTexture = createImpl(nGroup, strName, &mapParams);
+
+        NameValuePairMap mapParams;
+		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
+		pTexture = (Texture*)createImpl(nGroup, 
+                                        strName, 
+                                        strGroupName,
+                                        getNextHandle(),
+                                        false,
+                                        nullptr,
+                                        &mapParams);
 		pTexture->AddRef();
 
 		pTexture->SetTextureType(eTexture);
-		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : static_cast<uint32>(nMipMapsCount));
+		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
 		pTexture->SetGamma(fGamma);
 		pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
-		pTexture->SetPixelFormat(ePixelFormatDesired);
+		pTexture->SetPixelFormat(ePixelFormat);
 		if (!pTexture->LoadFromDDSImage(pInput))
         {
             F_LogError("*********************** TextureManager::CreateTextureFromDDSImage: Load texture from dds image failed, group: [%d], name: [%s]", nGroup, strName.c_str());
@@ -459,28 +629,36 @@ namespace LostPeterEngine
 
 	Texture* TextureManager::CreateTextureFromRawData(uint32 nGroup, 
                                                       const String& strName, 
+                                                      const String& strGroupName, 
                                                       FFileMemory* pInput, 
                                                       uint32 nWidth, 
                                                       uint32 nHeight, 
 				                                      FPixelFormatType ePixelFormat, 
                                                       FTextureType eTexture /*= F_Texture_2D*/, 
-                                                      int nMipMapsCount /*= E_TextureMipMap_Default*/, 
+                                                      int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
                                                       float fGamma /*= 1.0f*/, 
                                                       bool bUseMemoryImage /*= false*/)
 	{
-		String2StringMap mapParams;
-		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
 		Texture* pTexture = GetTexture(nGroup, strName);
 		if (pTexture)
 		{
 			pTexture->AddRef();
 			return pTexture;
 		}
-		pTexture = createImpl(nGroup, strName, &mapParams);
+
+        NameValuePairMap mapParams;
+		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
+		pTexture = (Texture*)createImpl(nGroup,
+                                        strName, 
+                                        strGroupName,
+                                        getNextHandle(),
+                                        false,
+                                        nullptr,
+                                        &mapParams);
 		pTexture->AddRef();
 
 		pTexture->SetTextureType(eTexture);
-		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : static_cast<uint32>(nMipMapsCount));
+		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
 		pTexture->SetGamma(fGamma);
 		if (!pTexture->LoadFromRawData(pInput, nWidth, nHeight, ePixelFormat))
         {

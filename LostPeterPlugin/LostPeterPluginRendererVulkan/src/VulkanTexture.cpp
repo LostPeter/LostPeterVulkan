@@ -16,8 +16,20 @@
 
 namespace LostPeterPluginRendererVulkan
 {
-    VulkanTexture::VulkanTexture(uint32 nGroup, const String& strName)
-        : Texture(nGroup, strName)
+    VulkanTexture::VulkanTexture(ResourceManager* pResourceManager,
+                                 uint32 nGroup, 
+                                 const String& strName,
+                                 const String& strGroupName,
+                                 ResourceHandle nHandle,
+                                 bool bIsManualLoad /*= false*/,
+                                 ResourceManualLoader* pResourceManualLoader /*= nullptr*/)
+        : Texture(pResourceManager,
+                  nGroup, 
+                  strName,
+                  strGroupName,
+                  nHandle,
+                  bIsManualLoad,
+                  pResourceManualLoader)
         , m_vkLayoutCurrent(VK_IMAGE_LAYOUT_UNDEFINED)
         , m_vkLayoutNext(VK_IMAGE_LAYOUT_UNDEFINED)
         , m_vkImageDefault(VK_NULL_HANDLE)
@@ -435,18 +447,6 @@ namespace LostPeterPluginRendererVulkan
         return nullptr;
     }
 
-    bool VulkanTexture::Load()
-    {
-
-        return true;
-    }
-
-    bool VulkanTexture::Unload()
-    {
-
-        return true;
-    }
-
     void VulkanTexture::createInternalResourcesImpl()
     {
         if (m_ePixelFormat == F_PixelFormat_Unknown)
@@ -580,6 +580,22 @@ namespace LostPeterPluginRendererVulkan
 
         m_vkLayoutCurrent = VK_IMAGE_LAYOUT_UNDEFINED;
         m_vkLayoutNext = VK_IMAGE_LAYOUT_UNDEFINED;
+    }
+
+
+    void VulkanTexture::loadImpl()
+    {
+
+    }
+
+    void VulkanTexture::unloadImpl()
+    {
+
+    }
+
+    size_t VulkanTexture::calculateSize() const
+    {
+        return 0;
     }
 
 }; //LostPeterPluginRendererVulkan

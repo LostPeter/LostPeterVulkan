@@ -19,7 +19,13 @@ namespace LostPeterPluginRendererVulkan
     class VulkanTexture : public Texture
     {
     public:
-        VulkanTexture(uint32 nGroup, const String& strName);
+        VulkanTexture(ResourceManager* pResourceManager,
+                      uint32 nGroup, 
+                      const String& strName,
+                      const String& strGroupName,
+                      ResourceHandle nHandle,
+                      bool bIsManualLoad = false,
+                      ResourceManualLoader* pResourceManualLoader = nullptr);
         virtual ~VulkanTexture();
 
     public:
@@ -85,12 +91,15 @@ namespace LostPeterPluginRendererVulkan
     public:
         virtual StreamTexture* GetTextureStream(uint32 nFace = 0, uint32 nMipmap = 0);
 
-		virtual bool Load();
-		virtual bool Unload();
-
     protected:
 		virtual void createInternalResourcesImpl();
 		virtual void freeInternalResourcesImpl();
+
+    ////Resource
+    protected:
+        virtual void loadImpl();
+		virtual void unloadImpl();
+		virtual size_t calculateSize() const;
     };
 
 }; //LostPeterPluginRendererVulkan

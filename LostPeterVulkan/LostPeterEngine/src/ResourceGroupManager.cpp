@@ -1396,7 +1396,8 @@ namespace LostPeterEngine
 			ResourceDeclaration& resourceDecl = *it;
 			ResourceManager* pResourceManager = _GetResourceManager(resourceDecl.strResourceType);
 			
-			Resource* pResource = pResourceManager->Create(resourceDecl.strResourceName,
+			Resource* pResource = pResourceManager->Create(resourceDecl.nGroup,
+														   resourceDecl.strResourceName,
                                                            pResourceGroup->strGroupName,
 				                                           resourceDecl.pManualLoader != nullptr, 
                                                            resourceDecl.pManualLoader, 
