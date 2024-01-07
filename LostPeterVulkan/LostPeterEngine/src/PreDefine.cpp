@@ -140,18 +140,18 @@ namespace LostPeterEngine
         "TextureFilterType",            //2:    TextureFilterType    
         "TextureAddressingType",        //3:    TextureAddressingType    
         "TextureBorderColorType",       //4:    TextureBorderColorType    
-        "PixelFormatType",              //5:    PixelFormatType
-        "Width",                        //6:    Width            
-        "Height",                       //7:    Height
-        "Depth",                        //8:    Depth
-        "BitDepthInteger",              //9:    BitDepthInteger
-        "BitDepthFloat",                //10:   BitDepthFloat
-        "IsTreatLuminanceAsAlpha",      //11:   IsTreatLuminanceAsAlpha
-        "MipMapsCount",                 //12:   MipMapsCount
-        "IsMipMapsHardwareGenerated",   //13:   IsMipMapsHardwareGenerated
-        "Gamma",                        //14:   Gamma
-        "IsGammaHardware",              //15:   IsGammaHardware
-        "FSAA",                         //16:   FSAA
+        "MSAASampleCount",              //5:    MSAASampleCount
+        "PixelFormatType",              //6:    PixelFormatType
+        "Width",                        //7:    Width            
+        "Height",                       //8:    Height
+        "Depth",                        //9:    Depth
+        "BitDepthInteger",              //10:    BitDepthInteger
+        "BitDepthFloat",                //11:   BitDepthFloat
+        "IsTreatLuminanceAsAlpha",      //12:   IsTreatLuminanceAsAlpha
+        "MipMapsCount",                 //13:   MipMapsCount
+        "IsMipMapsHardwareGenerated",   //14:   IsMipMapsHardwareGenerated
+        "Gamma",                        //15:   Gamma
+        "IsGammaHardware",              //16:   IsGammaHardware
     };
     const String& E_GetTextureParamTypeName(ETextureParamType type)
     {

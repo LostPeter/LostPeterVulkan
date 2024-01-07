@@ -50,6 +50,10 @@ namespace LostPeterEngine
     {
         FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_TextureBorderColorType), F_GetTextureBorderColorTypeName(eTextureBorderColor));
     }
+    void TextureManager::SetTextureParam_MSAASampleCount(NameValuePairMap& mapParam, FMSAASampleCountType eMSAASampleCount)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_MSAASampleCount), F_GetMSAASampleCountTypeName(eMSAASampleCount));
+    }
     void TextureManager::SetTextureParam_PixelFormatType(NameValuePairMap& mapParam, FPixelFormatType ePixelFormat)
     {
         FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_PixelFormatType), FPixelFormat::GetPixelFormatDes(ePixelFormat).name);
@@ -93,10 +97,6 @@ namespace LostPeterEngine
     void TextureManager::SetTextureParam_IsGammaHardware(NameValuePairMap& mapParam, bool bIsGammaHardware)
     {
         FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_IsGammaHardware), FUtilString::SaveBool(bIsGammaHardware));
-    }
-    void TextureManager::SetTextureParam_FSAA(NameValuePairMap& mapParam, uint32 nFSAA)
-    {
-        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_FSAA), FUtilString::SaveUInt(nFSAA));
     }
     
 
@@ -166,6 +166,17 @@ namespace LostPeterEngine
             return TextureManager::ms_ePixelFormat_Default;
         }
         return FPixelFormat::ParsePixelFormatFromName(itFind->second);
+    }
+    FMSAASampleCountType TextureManager::GetTextureParam_MSAASampleCount(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_MSAASampleCount);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::E_GetTextureParamTypeName: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_eMSAASampleCount_Default;
+        }
+        return F_ParseMSAASampleCountType(itFind->second);
     }
     uint32 TextureManager::GetTextureParam_Width(NameValuePairMap& mapParam)
     {
@@ -277,17 +288,6 @@ namespace LostPeterEngine
         }
         return FUtilString::ParserBool(itFind->second);
     }
-    uint32 TextureManager::GetTextureParam_FSAA(NameValuePairMap& mapParam)
-    {
-        const String& strName = E_GetTextureParamTypeName(E_TextureParam_FSAA);
-        NameValuePairMap::iterator itFind = mapParam.find(strName);
-        if (itFind == mapParam.end())
-        {
-            //F_LogError("*********************** TextureManager::GetTextureParam_FSAA: Can not find param name: [%s] from param map !", strName.c_str());
-            return TextureManager::ms_nFSAA_Default;
-        }
-        return FUtilString::ParserUInt(itFind->second);
-    }
 
 
     NameValuePairMap TextureManager::ms_mapParam_Default;
@@ -296,6 +296,7 @@ namespace LostPeterEngine
         FTextureFilterType TextureManager::ms_eTextureFilter_Default = F_TextureFilter_Bilinear;
         FTextureAddressingType TextureManager::ms_eTextureAddressing_Default = F_TextureAddressing_Clamp;
         FTextureBorderColorType TextureManager::ms_eTextureBorderColor_Default = F_TextureBorderColor_OpaqueBlack;
+        FMSAASampleCountType TextureManager::ms_eMSAASampleCount_Default = F_MSAASampleCount_1_Bit;
         FPixelFormatType TextureManager::ms_ePixelFormat_Default = F_PixelFormat_BYTE_A8R8G8B8_SRGB;
         uint32 TextureManager::ms_nWidth_Default = 512;
         uint32 TextureManager::ms_nHeight_Default = 512;
@@ -307,7 +308,7 @@ namespace LostPeterEngine
         bool TextureManager::ms_bIsMipMapsHardwareGenerated_Default = true;
         float TextureManager::ms_fGamma_Default = 1.0f;
         bool TextureManager::ms_bIsGammaHardware_Default = false;
-        uint32 TextureManager::ms_nFSAA_Default = 0;
+
     
     TextureManager::TextureManager()
         : ResourceManager(E_GetResourceTypeName(E_Resource_Texture), E_Resource_Texture)
@@ -326,6 +327,7 @@ namespace LostPeterEngine
             SetTextureParam_TextureFilterType(ms_mapParam_Default, TextureManager::ms_eTextureFilter_Default);
             SetTextureParam_TextureAddressingType(ms_mapParam_Default, TextureManager::ms_eTextureAddressing_Default);
             SetTextureParam_TextureBorderColorType(ms_mapParam_Default, TextureManager::ms_eTextureBorderColor_Default);
+            SetTextureParam_MSAASampleCount(ms_mapParam_Default, TextureManager::ms_eMSAASampleCount_Default);
             SetTextureParam_PixelFormatType(ms_mapParam_Default,TextureManager::ms_ePixelFormat_Default);
             SetTextureParam_Width(ms_mapParam_Default, TextureManager::ms_nWidth_Default);
             SetTextureParam_Height(ms_mapParam_Default, TextureManager::ms_nHeight_Default);
@@ -337,7 +339,6 @@ namespace LostPeterEngine
             SetTextureParam_IsMipMapsHardwareGenerated(ms_mapParam_Default, TextureManager::ms_bIsMipMapsHardwareGenerated_Default);
             SetTextureParam_Gamma(ms_mapParam_Default, TextureManager::ms_fGamma_Default);
             SetTextureParam_IsGammaHardware(ms_mapParam_Default, TextureManager::ms_bIsGammaHardware_Default);
-            SetTextureParam_FSAA(ms_mapParam_Default, TextureManager::ms_nFSAA_Default);
         }
     }
 
@@ -611,6 +612,7 @@ namespace LostPeterEngine
                                                                     FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
                                                                     FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
                                                                     FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
+                                                                    FMSAASampleCountType eMSAASampleCount /*= TextureManager::ms_eMSAASampleCount_Default*/,
                                                                     FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
                                                                     uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
                                                                     uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
@@ -621,8 +623,7 @@ namespace LostPeterEngine
                                                                     int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
                                                                     bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
                                                                     float fGamma /*= TextureManager::ms_fGamma_Default*/,
-                                                                    bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/,
-                                                                    uint32 nFSAA /*= TextureManager::ms_nFSAA_Default*/)
+                                                                    bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
     {
         NameValuePairMap mapTextureParam;
         if (bIsManualLoad && pLoadParams)
@@ -660,6 +661,7 @@ namespace LostPeterEngine
                                      FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
                                      FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
                                      FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
+                                     FMSAASampleCountType eMSAASampleCount /*= TextureManager::ms_eMSAASampleCount_Default*/,
                                      FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
                                      uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
                                      uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
@@ -670,8 +672,7 @@ namespace LostPeterEngine
                                      int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
                                      bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
                                      float fGamma /*= TextureManager::ms_fGamma_Default*/,
-                                     bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/,
-                                     uint32 nFSAA /*= TextureManager::ms_nFSAA_Default*/)
+                                     bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
     {
         ResourceCreateOrRetrieveResult result = CreateOrRetrieve(nGroup,
                                                                  strName,
@@ -684,6 +685,7 @@ namespace LostPeterEngine
                                                                  eTextureFilter,
                                                                  eTextureAddressing,
                                                                  eTextureBorderColor,
+                                                                 eMSAASampleCount,
                                                                  ePixelFormat,
                                                                  nWidth,
                                                                  nHeight,
@@ -694,8 +696,7 @@ namespace LostPeterEngine
                                                                  nMipMapsCount,
                                                                  bIsMipMapsHardwareGenerated,
                                                                  fGamma,
-                                                                 bIsGammaHardware,
-                                                                 nFSAA);
+                                                                 bIsGammaHardware);
 		Texture* pTexture = (Texture*)result.first;
         if (!pTexture)
             return nullptr;
@@ -712,6 +713,7 @@ namespace LostPeterEngine
                                   FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
                                   FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
                                   FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
+                                  FMSAASampleCountType eMSAASampleCount /*= TextureManager::ms_eMSAASampleCount_Default*/,
                                   FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
                                   uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
                                   uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
@@ -722,8 +724,7 @@ namespace LostPeterEngine
                                   int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
                                   bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
                                   float fGamma /*= TextureManager::ms_fGamma_Default*/,
-                                  bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/,
-                                  uint32 nFSAA /*= TextureManager::ms_nFSAA_Default*/)
+                                  bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
     {
         ResourceCreateOrRetrieveResult result = CreateOrRetrieve(nGroup,
                                                                  strName,
@@ -736,6 +737,7 @@ namespace LostPeterEngine
                                                                  eTextureFilter,
                                                                  eTextureAddressing,
                                                                  eTextureBorderColor,
+                                                                 eMSAASampleCount,
                                                                  ePixelFormat,
                                                                  nWidth,
                                                                  nHeight,
@@ -746,8 +748,7 @@ namespace LostPeterEngine
                                                                  nMipMapsCount,
                                                                  bIsMipMapsHardwareGenerated,
                                                                  fGamma,
-                                                                 bIsGammaHardware,
-                                                                 nFSAA);
+                                                                 bIsGammaHardware);
 		Texture* pTexture = (Texture*)result.first;
         if (!pTexture)
             return nullptr;
@@ -808,8 +809,7 @@ namespace LostPeterEngine
 		                                         int32 nMipMapsCount, 
                                                  FPixelFormatType ePixelFormat, 
                                                  uint32 nUsage /*= E_TextureUsage_Default*/, 
-                                                 bool bUseMemoryImage /*= false*/, 
-                                                 uint32 nFSAA /*= 0*/)
+                                                 bool bUseMemoryImage /*= false*/)
 	{
 		Texture* pTexture = GetTexture(nGroup, strName);
 		if (pTexture)
@@ -836,7 +836,6 @@ namespace LostPeterEngine
 		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
 		pTexture->SetPixelFormat(ePixelFormat);
 		pTexture->SetUsage(nUsage);
-		pTexture->SetFSAA(nFSAA);
 		pTexture->CreateInternalResources();
 
         AddTexture(nGroup, pTexture);

@@ -35,6 +35,7 @@ namespace LostPeterEngine
 		, m_eTextureFilter(TextureManager::ms_eTextureFilter_Default)
 		, m_eTextureAddressing(TextureManager::ms_eTextureAddressing_Default)
 		, m_eTextureBorderColor(TextureManager::ms_eTextureBorderColor_Default)
+		, m_eMSAASampleCount(TextureManager::ms_eMSAASampleCount_Default)
 		, m_ePixelFormatDesired(TextureManager::ms_ePixelFormat_Default)
 		, m_ePixelFormatSrc(TextureManager::ms_ePixelFormat_Default)
 		, m_ePixelFormat(TextureManager::ms_ePixelFormat_Default)
@@ -52,7 +53,6 @@ namespace LostPeterEngine
 		, m_bIsMipMapsHardwareGenerated(TextureManager::ms_bIsMipMapsHardwareGenerated_Default)
 		, m_fGamma(TextureManager::ms_fGamma_Default)
 		, m_bIsGammaHardware(TextureManager::ms_bIsGammaHardware_Default)
-		, m_nFSAA(TextureManager::ms_nFSAA_Default)
 		, m_bInternalResourcesCreated(false)
 	{
 
@@ -61,6 +61,12 @@ namespace LostPeterEngine
 	Texture::~Texture()
 	{
 
+	}
+
+	void Texture::Destroy()
+	{
+		
+		Resource::Destroy();
 	}
 	
 	uint32 Texture::GetFacesCount() const

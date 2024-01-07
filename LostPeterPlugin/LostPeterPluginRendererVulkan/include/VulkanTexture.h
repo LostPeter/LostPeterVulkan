@@ -19,7 +19,8 @@ namespace LostPeterPluginRendererVulkan
     class VulkanTexture : public Texture
     {
     public:
-        VulkanTexture(ResourceManager* pResourceManager,
+        VulkanTexture(VulkanDevice* pDevice,
+                      ResourceManager* pResourceManager,
                       uint32 nGroup, 
                       const String& strName,
                       const String& strGroupName,
@@ -29,63 +30,50 @@ namespace LostPeterPluginRendererVulkan
         virtual ~VulkanTexture();
 
     public:
-        VkImageLayout m_vkLayoutCurrent;
-        VkImageLayout m_vkLayoutNext;
-
     protected:
-        VkImage m_vkImageDefault;
-        VkImageView m_vkImageViewDefaultSrv;
+        VulkanDevice* m_pDevice;
 
-        VkImage m_vkImageFinal;
-        VkDeviceMemory m_vkDeviceMemoryFinal;
+        VkFormat m_eFormat; 
+        VkImage m_vkImage;
+        VkDeviceMemory m_vkImageMemory;
+        VkImageView m_vkImageView;
+        VkSampler m_vkSampler;
+        VkImageLayout m_vkImageLayout;
+        VkDescriptorImageInfo m_vkDescriptorImageInfo;
 
-        VkImage m_vkImageMSAA;
-        VkDeviceMemory m_vkDeviceMemoryMSAA;
+        VkBuffer m_vkBufferStaging;
+        VkDeviceMemory m_vkBufferMemoryStaging;
+
 
     public:
-        F_FORCEINLINE uint32 GetLayersCount() const { return m_eTexture == F_Texture_2DArray ? (uint32)m_nDepth : (uint32)GetFacesCount(); }
+        F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
+
+        F_FORCEINLINE VkFormat GetVkFormat() const { return m_eFormat; }
+        F_FORCEINLINE VkImage GetVkImage() const { return m_vkImage; }
+        F_FORCEINLINE VkDeviceMemory GetVkImageDeviceMemory() const { return m_vkImageMemory; }
+        F_FORCEINLINE VkImageView GetVkImageView() const { return m_vkImageView; }
+        F_FORCEINLINE VkSampler GetVkSampler() const { return m_vkSampler; }
+        F_FORCEINLINE VkImageLayout GetVkImageLayout() const { return m_vkImageLayout; }
+        F_FORCEINLINE const VkDescriptorImageInfo& GetVkDescriptorImageInfo() const { return m_vkDescriptorImageInfo; }
+
+        F_FORCEINLINE VkBuffer GetVkBufferStaging() const { return m_vkBufferStaging; }
+        F_FORCEINLINE VkDeviceMemory GetVkBufferMemoryStaging() const { return m_vkBufferMemoryStaging; }
+
+        F_FORCEINLINE uint32 GetLayersCount() const { return m_eTexture == F_Texture_2DArray ? m_nDepth : GetFacesCount(); }
         F_FORCEINLINE bool HasMSAAExplicitResolves() const { return false; }
         F_FORCEINLINE bool IsUAV() const { return false; }
-        F_FORCEINLINE bool IsMultisample() const { return m_nFSAA > 1; }
-
-        F_FORCEINLINE VkImageLayout GetLayoutCurrent() const { return m_vkLayoutCurrent; }
-        F_FORCEINLINE VkImageLayout GetLayoutNext() const { return m_vkLayoutNext; }
-        F_FORCEINLINE VkImage GetImageDefault() const { return m_vkImageDefault; }
-        F_FORCEINLINE VkImageView GetImageViewDefaultSrv( void ) const { return m_vkImageViewDefaultSrv; }
-        F_FORCEINLINE VkImage GetImageFinal() const { return m_vkImageFinal; }
-        F_FORCEINLINE VkDeviceMemory GetDeviceMemoryFinal() const { return m_vkDeviceMemoryFinal; }
-        F_FORCEINLINE VkImage GetImageMSAA() const { return m_vkImageMSAA; }
-        F_FORCEINLINE VkDeviceMemory GetDeviceMemoryMSAA() const { return m_vkDeviceMemoryMSAA; }
+        F_FORCEINLINE bool IsMultisample() const { return m_eMSAASampleCount != F_MSAASampleCount_1_Bit; }
 
     public:
-        virtual bool IsRenderWindowSpecific() const { return false; }
+        virtual void Destroy();
 
     public:
-        VkImageView CreateImageView() const;
-        VkImageView CreateImageView(uint8 mipLevel, 
-                                    uint8 mipMapsCount, 
-                                    uint16 arraySlice, 
-                                    uint32 slicesCount = 0u, 
-                                    VkImage imageOverride = nullptr) const;
-        void DestroyImageView(VkImageView vkImageView);
+        
 
-        virtual void CopyTo(Texture* pDst, 
-                            const FPixelBox& dstBox, 
-                            uint8 dstMipLevel,
-                            const FPixelBox& srcBox, 
-                            uint8 srcMipLevel,
-                            bool keepResolvedTexSynced = true,
-                            VulkanResourceAccessType issueBarriers = Vulkan_ResourceAccess_ReadWrite);
-
-        void AutogenerateMipmaps(bool bUseBarrierSolver = false);
-
-        VkImageType GetVulkanTextureType() const;
-        VkImageViewType GetInternalVulkanTextureViewType() const;
-        VkImageMemoryBarrier GetImageMemoryBarrier() const;
+       
         
     protected:
-        virtual void createMSAASurface();
-        virtual void destroyMSAASurface();
+    
 
     ////Texture
     public:

@@ -35,7 +35,7 @@ namespace LostPeterEngine
 		bool m_bAutoUpdate;				
 		bool m_bHwGamma;
 
-		uint32 m_nFSAA;	
+		uint32 m_nMSAA;	
 	
 		ViewportPtrOrderMap m_mapViewport;
 		RenderTargetListenerPtrVector m_aRenderTargetListener;
@@ -65,7 +65,7 @@ namespace LostPeterEngine
 		virtual void SetAutoUpdated(bool bAutoUpdate) { m_bAutoUpdate = bAutoUpdate; }
 		
 		virtual bool IsHardwareGammaEnabled() const	{ return m_bHwGamma; }
-		virtual uint32 GetFSAA() const { return m_nFSAA; }
+		virtual uint32 GetMSAA() const { return m_nMSAA; }
 		
 		virtual void AddRenderTargetListener(RenderTargetListener* pRenderTargetListener);
 		virtual void RemoveRenderTargetListener(RenderTargetListener* pRenderTargetListener);

@@ -35,6 +35,7 @@ namespace LostPeterEngine
 		FTextureFilterType m_eTextureFilter;
         FTextureAddressingType m_eTextureAddressing;
         FTextureBorderColorType m_eTextureBorderColor;
+		FMSAASampleCountType m_eMSAASampleCount;
 
 		FPixelFormatType m_ePixelFormatDesired;
 		FPixelFormatType m_ePixelFormatSrc;
@@ -56,13 +57,24 @@ namespace LostPeterEngine
 
 		float m_fGamma;
 		bool m_bIsGammaHardware;
-		uint32 m_nFSAA;
 
 		bool m_bInternalResourcesCreated;
 
 	public:
 		F_FORCEINLINE uint32 GetUsage() const { return m_nUsage; }
 		F_FORCEINLINE void SetUsage(uint32 nUsage) { m_nUsage = nUsage; }
+		F_FORCEINLINE bool IsUsage_Static() const { return m_nUsage & E_TextureUsage_Static; }
+		F_FORCEINLINE bool IsUsage_Dynamic() const { return m_nUsage & E_TextureUsage_Dynamic; }
+		F_FORCEINLINE bool IsUsage_WriteOnly() const { return m_nUsage & E_TextureUsage_WriteOnly; }
+		F_FORCEINLINE bool IsUsage_StaticWriteOnly() const { return m_nUsage & E_TextureUsage_StaticWriteOnly; }
+		F_FORCEINLINE bool IsUsage_DynamicWriteOnly() const { return m_nUsage & E_TextureUsage_DynamicWriteOnly; }
+		F_FORCEINLINE bool IsUsage_DynamicWriteOnlyDiscardable() const { return m_nUsage & E_TextureUsage_DynamicWriteOnlyDiscardable; }
+		F_FORCEINLINE bool IsUsage_AutoMipMap() const { return m_nUsage & E_TextureUsage_AutoMipMap; }
+		F_FORCEINLINE bool IsUsage_RenderTarget() const { return m_nUsage & E_TextureUsage_RenderTarget; }
+		F_FORCEINLINE bool IsUsage_NotSRV() const { return m_nUsage & E_TextureUsage_NotSRV; }
+		F_FORCEINLINE bool IsUsage_UnorderedAccessView() const { return m_nUsage & E_TextureUsage_UnorderedAccessView; }
+		F_FORCEINLINE bool IsUsage_UnorderedAccessViewNotSRV() const { return m_nUsage & E_TextureUsage_UnorderedAccessViewNotSRV; }
+		F_FORCEINLINE bool IsUsage_Default() const { return m_nUsage & E_TextureUsage_Default; }
 		F_FORCEINLINE FTextureType GetTextureType() const { return m_eTexture; }
 		F_FORCEINLINE void SetTextureType(FTextureType eTexture) { m_eTexture = eTexture; }
 		F_FORCEINLINE FTextureFilterType GetTextureFilterType() const { return m_eTextureFilter; }
@@ -71,6 +83,8 @@ namespace LostPeterEngine
 		F_FORCEINLINE void SetTextureAddressingType(FTextureAddressingType eTextureAddressing) { m_eTextureAddressing = eTextureAddressing; }
 		F_FORCEINLINE FTextureBorderColorType GetTextureBorderColorType() const { return m_eTextureBorderColor; }
 		F_FORCEINLINE void SetTextureBorderColorType(FTextureBorderColorType eTextureBorderColor) { m_eTextureBorderColor = eTextureBorderColor; }
+		F_FORCEINLINE FMSAASampleCountType GetMSAASampleCountType() const { return m_eMSAASampleCount; }
+		F_FORCEINLINE void SetMSAASampleCountType(FMSAASampleCountType eMSAASampleCount) { m_eMSAASampleCount = eMSAASampleCount; }
 
 		F_FORCEINLINE FPixelFormatType GetDesiredPixelFormat() const { return m_ePixelFormatDesired; }
 		F_FORCEINLINE FPixelFormatType GetPixelFormatSrc() const { return m_ePixelFormatSrc; }
@@ -114,8 +128,9 @@ namespace LostPeterEngine
 		F_FORCEINLINE void SetGamma(float fGamma) { m_fGamma = fGamma; }
 		F_FORCEINLINE bool IsGammaHardware() const { return m_bIsGammaHardware; }
 		F_FORCEINLINE void SetIsGammaHardware(bool bIsGammaHardware) { m_bIsGammaHardware = bIsGammaHardware; }
-		F_FORCEINLINE uint32 GetFSAA() const { return m_nFSAA; }
-		F_FORCEINLINE void SetFSAA(uint32 nFSAA) { m_nFSAA = nFSAA; }
+
+	public:
+        virtual void Destroy();
 		
 	public:
 		virtual uint32 GetFacesCount() const;

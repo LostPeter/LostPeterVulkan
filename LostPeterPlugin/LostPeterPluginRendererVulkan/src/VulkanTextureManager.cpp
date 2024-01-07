@@ -94,7 +94,8 @@ namespace LostPeterPluginRendererVulkan
                                                ResourceManualLoader* pManualLoader, 
                                                const NameValuePairMap* pLoadParams)
     {
-        return new VulkanTexture(this,
+        return new VulkanTexture(m_pDevice,
+                                 this,
                                  nGroup, 
                                  strName,
                                  strGroupName,

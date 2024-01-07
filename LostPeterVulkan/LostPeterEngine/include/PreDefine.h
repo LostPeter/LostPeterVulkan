@@ -212,18 +212,18 @@ namespace LostPeterEngine
         E_TextureParam_TextureFilterType,                   //2:    TextureFilterType
         E_TextureParam_TextureAddressingType,               //3:    TextureAddressingType
         E_TextureParam_TextureBorderColorType,              //4:    TextureBorderColorType
-        E_TextureParam_PixelFormatType,                     //5:    PixelFormatType
-        E_TextureParam_Width,                               //6:    Width
-        E_TextureParam_Height,                              //7:    Height
-        E_TextureParam_Depth,                               //8:    Depth
-        E_TextureParam_BitDepthInteger,                     //9:    BitDepthInteger
-        E_TextureParam_BitDepthFloat,                       //10:   BitDepthFloat
-        E_TextureParam_IsTreatLuminanceAsAlpha,             //11:   IsTreatLuminanceAsAlpha
-        E_TextureParam_MipMapsCount,                        //12:   MipMapsCount
-        E_TextureParam_IsMipMapsHardwareGenerated,          //13:   IsMipMapsHardwareGenerated
-        E_TextureParam_Gamma,                               //14:   Gamma
-        E_TextureParam_IsGammaHardware,                     //15:   IsGammaHardware
-        E_TextureParam_FSAA,                                //16:   FSAA
+        E_TextureParam_MSAASampleCount,                     //5:    MSAASampleCount
+        E_TextureParam_PixelFormatType,                     //6:    PixelFormatType
+        E_TextureParam_Width,                               //7:    Width
+        E_TextureParam_Height,                              //8:    Height
+        E_TextureParam_Depth,                               //9:    Depth
+        E_TextureParam_BitDepthInteger,                     //10:   BitDepthInteger
+        E_TextureParam_BitDepthFloat,                       //11:   BitDepthFloat
+        E_TextureParam_IsTreatLuminanceAsAlpha,             //12:   IsTreatLuminanceAsAlpha
+        E_TextureParam_MipMapsCount,                        //13:   MipMapsCount
+        E_TextureParam_IsMipMapsHardwareGenerated,          //14:   IsMipMapsHardwareGenerated
+        E_TextureParam_Gamma,                               //15:   Gamma
+        E_TextureParam_IsGammaHardware,                     //16:   IsGammaHardware
 
         E_TextureParam_Count,   
     };

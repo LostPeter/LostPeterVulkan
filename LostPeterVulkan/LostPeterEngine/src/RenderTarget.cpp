@@ -25,7 +25,7 @@ namespace LostPeterEngine
 		, m_bActive(true)
 		, m_bAutoUpdate(true)
 		, m_bHwGamma(false)
-		, m_nFSAA(0)
+		, m_nMSAA(0)
 		, m_bIsDepthBuffered(false)
 		, m_bEnableDepthBuf(true)
 		, m_pShareDepthStencilRT(nullptr)
