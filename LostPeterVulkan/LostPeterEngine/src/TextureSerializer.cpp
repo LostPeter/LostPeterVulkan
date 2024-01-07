@@ -165,7 +165,7 @@ namespace LostPeterEngine
                 F_LogError("*********************** TextureSerializer::deserializeXML: Can not find attribute: 'format', texture index: [%d] !", i);
                 continue;
             }
-            FTexturePixelFormatType typeTexturePixelFormat = F_ParseTexturePixelFormatType(strFormat);
+            FPixelFormatType typePixelFormat = FPixelFormat::ParsePixelFormatFromName(strFormat);
             //filter
             String strFilter;
             if (!pChild->ParserAttribute_String(TEXTURE_TAG_ATTRIBUTE_FILTER, strFilter))
@@ -220,7 +220,7 @@ namespace LostPeterEngine
             TextureInfo* pTextureInfo = new TextureInfo(strNameTexture,
                                                         strPathTexture,
                                                         typeTexture,
-                                                        typeTexturePixelFormat,
+                                                        typePixelFormat,
                                                         typeTextureFilter,
                                                         typeTextureAddressing,
                                                         typeTextureBorderColor,

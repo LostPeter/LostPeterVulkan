@@ -34,19 +34,30 @@ namespace LostPeterEngine
         ResourceManager* m_pResourceManager;
         String m_strGroupName;
         ResourceHandle m_nHandle;
-        std::atomic<EResourceLoadingType> m_eResourceLoading;
-        volatile bool m_bIsBackgroundLoaded;
         bool m_bIsManualLoad;
         ResourceManualLoader* m_pResourceManualLoader;
-        size_t m_nSize;
+
+        uint32 m_nSize;
         String m_strOrigin;
-        size_t m_nStateCount;
+
+        std::atomic<EResourceLoadingType> m_eResourceLoading;
+        volatile bool m_bIsBackgroundLoaded;
+        uint32 m_nStateCount;
+
         ResourceListenerPtrList m_listResourceListener;
 
     public:
         F_FORCEINLINE ResourceManager* GetResourceManager() const { return m_pResourceManager; }
         F_FORCEINLINE const String& GetGroupName() const { return m_strGroupName; }
         F_FORCEINLINE ResourceHandle GetHandle() const { return m_nHandle; }
+        F_FORCEINLINE bool IsReloadable() const	{ return !m_bIsManualLoad || m_pResourceManualLoader; }
+        F_FORCEINLINE bool IsManualLoad() const	{ return m_bIsManualLoad; }
+        F_FORCEINLINE ResourceManualLoader* GetResourceManualLoader() const { return m_pResourceManualLoader; }
+
+        F_FORCEINLINE uint32 GetSize() const { return m_nSize; }
+		F_FORCEINLINE const String&	GetOrigin() const { return m_strOrigin; }
+		F_FORCEINLINE void SetOrigin(const String& strOrigin) { m_strOrigin = strOrigin; }
+
         F_FORCEINLINE EResourceLoadingType GetResourceLoadingState() const { return m_eResourceLoading.load(); }
         F_FORCEINLINE bool IsUnloaded() const { return (m_eResourceLoading.load() == E_ResourceLoading_Unloaded); }
         F_FORCEINLINE bool IsLoading() const { return (m_eResourceLoading.load() == E_ResourceLoading_Loading); }
@@ -56,13 +67,7 @@ namespace LostPeterEngine
         F_FORCEINLINE bool IsPreparing() const { return (m_eResourceLoading.load() == E_ResourceLoading_Preparing); }
         F_FORCEINLINE bool IsBackgroundLoaded() const { return m_bIsBackgroundLoaded; }
 		F_FORCEINLINE void SetIsBackgroundLoaded(bool bIsBackgroundLoaded) { m_bIsBackgroundLoaded = bIsBackgroundLoaded; }
-        F_FORCEINLINE bool IsReloadable() const	{ return !m_bIsManualLoad || m_pResourceManualLoader; }
-        F_FORCEINLINE bool IsManuallyLoaded() const	{ return m_bIsManualLoad; }
-		F_FORCEINLINE size_t GetSize() const { return m_nSize; }
-		F_FORCEINLINE const String&	GetOrigin() const { return m_strOrigin; }
-		F_FORCEINLINE void SetOrigin(const String& strOrigin) { m_strOrigin = strOrigin; }
-
-        F_FORCEINLINE size_t GetStateCount() const { return m_nStateCount; }
+        F_FORCEINLINE uint32 GetStateCount() const { return m_nStateCount; }
 		F_FORCEINLINE void AddStateCount() { ++m_nStateCount; }
 
     public:
@@ -96,7 +101,7 @@ namespace LostPeterEngine
 
 		virtual void loadImpl() = 0;
 		virtual void unloadImpl() = 0;
-		virtual size_t calculateSize() const = 0;
+		virtual uint32 calculateSize() const = 0;
 
 		virtual void queueFireBackgroundLoadingComplete();
 		virtual void queueFireBackgroundPreparingComplete();

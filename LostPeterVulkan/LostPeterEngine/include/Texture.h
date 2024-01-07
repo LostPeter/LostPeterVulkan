@@ -30,46 +30,50 @@ namespace LostPeterEngine
 
     public:
 	protected:
-		FTextureType m_eTexture;
 		uint32 m_nUsage;
-		bool m_bIsLoaded;
-		bool m_bIsManual;
+		FTextureType m_eTexture;
+		FTextureFilterType m_eTextureFilter;
+        FTextureAddressingType m_eTextureAddressing;
+        FTextureBorderColorType m_eTextureBorderColor;
 
 		FPixelFormatType m_ePixelFormatDesired;
+		FPixelFormatType m_ePixelFormatSrc;
 		FPixelFormatType m_ePixelFormat;	
 		uint32 m_nWidth;
 		uint32 m_nHeight;
 		uint32 m_nDepth;
-		uint32 m_nSize;
-		
-		FPixelFormatType m_ePixelFormatSrc;
 		uint32 m_nWidthSrc;
 		uint32 m_nHeightSrc;
 		uint32 m_nDepthSrc;
 
 		uint16 m_nBitDepthIntegerDesired;
 		uint16 m_nBitDepthFloatDesired;
-		bool m_bTreatLuminanceAsAlpha;
+		bool m_bIsTreatLuminanceAsAlpha;
 
 		uint32 m_nMipMapsCountRequested;
 		uint32 m_nMipMapsCount;
-		bool m_bMipMapsHardwareGenerated;
+		bool m_bIsMipMapsHardwareGenerated;
 
 		float m_fGamma;
-		bool m_bIsHardwareGamma;
+		bool m_bIsGammaHardware;
 		uint32 m_nFSAA;
 
 		bool m_bInternalResourcesCreated;
 
 	public:
-		F_FORCEINLINE FTextureType GetTextureType() const { return m_eTexture; }
-		F_FORCEINLINE void SetTextureType(FTextureType eTexture) { m_eTexture = eTexture; }
 		F_FORCEINLINE uint32 GetUsage() const { return m_nUsage; }
 		F_FORCEINLINE void SetUsage(uint32 nUsage) { m_nUsage = nUsage; }
-		F_FORCEINLINE bool IsLoaded() const { return m_bIsLoaded; }
-		F_FORCEINLINE bool IsManual() const { return m_bIsManual; }
+		F_FORCEINLINE FTextureType GetTextureType() const { return m_eTexture; }
+		F_FORCEINLINE void SetTextureType(FTextureType eTexture) { m_eTexture = eTexture; }
+		F_FORCEINLINE FTextureFilterType GetTextureFilterType() const { return m_eTextureFilter; }
+		F_FORCEINLINE void SetTextureFilterType(FTextureFilterType eTextureFilter) { m_eTextureFilter = eTextureFilter; }
+		F_FORCEINLINE FTextureAddressingType GetTextureAddressingType() const { return m_eTextureAddressing; }
+		F_FORCEINLINE void SetTextureAddressingType(FTextureAddressingType eTextureAddressing) { m_eTextureAddressing = eTextureAddressing; }
+		F_FORCEINLINE FTextureBorderColorType GetTextureBorderColorType() const { return m_eTextureBorderColor; }
+		F_FORCEINLINE void SetTextureBorderColorType(FTextureBorderColorType eTextureBorderColor) { m_eTextureBorderColor = eTextureBorderColor; }
 
 		F_FORCEINLINE FPixelFormatType GetDesiredPixelFormat() const { return m_ePixelFormatDesired; }
+		F_FORCEINLINE FPixelFormatType GetPixelFormatSrc() const { return m_ePixelFormatSrc; }
 		F_FORCEINLINE FPixelFormatType GetPixelFormat() const { return m_ePixelFormat; }
 		F_FORCEINLINE void SetPixelFormat(FPixelFormatType ePixelFormat)	
 		{ 
@@ -83,9 +87,6 @@ namespace LostPeterEngine
 		F_FORCEINLINE void SetHeight(uint32 nHeight) { m_nHeight = m_nHeightSrc = nHeight; }
 		F_FORCEINLINE uint32 GetDepth() const { return m_nDepth; }
 		F_FORCEINLINE void SetDepth(uint32 nDepth) { m_nDepth = m_nDepthSrc = nDepth; }
-		F_FORCEINLINE uint32 GetSize() const { return m_nSize; }
-
-		F_FORCEINLINE FPixelFormatType GetPixelFormatSrc() const { return m_ePixelFormatSrc; }
 		F_FORCEINLINE uint32 GetWidthSrc() const { return m_nWidthSrc; }
 		F_FORCEINLINE uint32 GetHeightSrc() const { return m_nHeightSrc; }
 		F_FORCEINLINE uint32 GetDepthSrc() const { return m_nDepthSrc; }
@@ -99,26 +100,26 @@ namespace LostPeterEngine
 			m_nBitDepthIntegerDesired = nBitDepthIntegerDesired;
 			m_nBitDepthFloatDesired = nBitDepthFloatDesired;
 		}
-		F_FORCEINLINE bool GetTreatLuminanceAsAlpha() const { return m_bTreatLuminanceAsAlpha; }
-		F_FORCEINLINE void SetTreatLuminanceAsAlpha(bool bTreatLuminanceAsAlpha) { m_bTreatLuminanceAsAlpha = bTreatLuminanceAsAlpha; }
+		F_FORCEINLINE bool IsTreatLuminanceAsAlpha() const { return m_bIsTreatLuminanceAsAlpha; }
+		F_FORCEINLINE void SetIsTreatLuminanceAsAlpha(bool bIsTreatLuminanceAsAlpha) { m_bIsTreatLuminanceAsAlpha = bIsTreatLuminanceAsAlpha; }
 		
 		F_FORCEINLINE uint32 GetMipMapsCountRequested() const { return m_nMipMapsCountRequested; }
 		F_FORCEINLINE void SetMipMapsCountRequested(uint32 nMipMapsCountRequested) { m_nMipMapsCountRequested = nMipMapsCountRequested; }
 		F_FORCEINLINE uint32 GetMipMapsCount() const { return m_nMipMapsCount; }
 		F_FORCEINLINE void SetMipMapsCount(uint32 nMipMapsCount) { m_nMipMapsCount = nMipMapsCount; }
-		F_FORCEINLINE bool IsMipMapsHardwareGenerated() const { return m_bMipMapsHardwareGenerated; }
+		F_FORCEINLINE bool IsMipMapsHardwareGenerated() const { return m_bIsMipMapsHardwareGenerated; }
+		F_FORCEINLINE void SetIsMipMapsHardwareGenerated(bool bIsMipMapsHardwareGenerated) { m_bIsMipMapsHardwareGenerated = bIsMipMapsHardwareGenerated; }
 			
 		F_FORCEINLINE float GetGamma() const { return m_fGamma; }
 		F_FORCEINLINE void SetGamma(float fGamma) { m_fGamma = fGamma; }
-		F_FORCEINLINE bool IsHardwareGammaEnabled() const { return m_bIsHardwareGamma; }
-		F_FORCEINLINE void SetHardwareGammaEnabled(bool bIsHardwareGamma) { m_bIsHardwareGamma = bIsHardwareGamma; }
+		F_FORCEINLINE bool IsGammaHardware() const { return m_bIsGammaHardware; }
+		F_FORCEINLINE void SetIsGammaHardware(bool bIsGammaHardware) { m_bIsGammaHardware = bIsGammaHardware; }
 		F_FORCEINLINE uint32 GetFSAA() const { return m_nFSAA; }
 		F_FORCEINLINE void SetFSAA(uint32 nFSAA) { m_nFSAA = nFSAA; }
 		
 	public:
 		virtual uint32 GetFacesCount() const;
 	    virtual bool HasAlpha() const;
-		virtual uint32 CalculateSize() const;
 
 		virtual bool LoadFromRawData(FFileMemory* pInput, uint32 nWidth, uint32 nHeight, FPixelFormatType ePixelFormat);
 		virtual bool LoadFromImage(Image* pImage);
@@ -131,6 +132,9 @@ namespace LostPeterEngine
         virtual void FreeInternalResources();
 
 		virtual StreamTexture* GetTextureStream(uint32 nFace = 0, uint32 nMipMap = 0) = 0;
+
+	protected:
+		virtual uint32 calculateSize() const;
 
 	protected:
 		virtual void createInternalResourcesImpl() = 0;

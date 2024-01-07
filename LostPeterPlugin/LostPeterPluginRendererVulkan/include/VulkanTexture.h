@@ -99,7 +99,6 @@ namespace LostPeterPluginRendererVulkan
     protected:
         virtual void loadImpl();
 		virtual void unloadImpl();
-		virtual size_t calculateSize() const;
     };
 
 }; //LostPeterPluginRendererVulkan

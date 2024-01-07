@@ -207,10 +207,23 @@ namespace LostPeterEngine
 
     enum ETextureParamType
     {
-        E_TextureParam_Width = 0,                           //0:    Width
-        E_TextureParam_Height,                              //1:    Height
-        E_TextureParam_Depth,                               //2:    Depth
-
+        E_TextureParam_Usage,                               //0:    Usage
+        E_TextureParam_TextureType,                         //1:    TextureType
+        E_TextureParam_TextureFilterType,                   //2:    TextureFilterType
+        E_TextureParam_TextureAddressingType,               //3:    TextureAddressingType
+        E_TextureParam_TextureBorderColorType,              //4:    TextureBorderColorType
+        E_TextureParam_PixelFormatType,                     //5:    PixelFormatType
+        E_TextureParam_Width,                               //6:    Width
+        E_TextureParam_Height,                              //7:    Height
+        E_TextureParam_Depth,                               //8:    Depth
+        E_TextureParam_BitDepthInteger,                     //9:    BitDepthInteger
+        E_TextureParam_BitDepthFloat,                       //10:   BitDepthFloat
+        E_TextureParam_IsTreatLuminanceAsAlpha,             //11:   IsTreatLuminanceAsAlpha
+        E_TextureParam_MipMapsCount,                        //12:   MipMapsCount
+        E_TextureParam_IsMipMapsHardwareGenerated,          //13:   IsMipMapsHardwareGenerated
+        E_TextureParam_Gamma,                               //14:   Gamma
+        E_TextureParam_IsGammaHardware,                     //15:   IsGammaHardware
+        E_TextureParam_FSAA,                                //16:   FSAA
 
         E_TextureParam_Count,   
     };
@@ -536,7 +549,7 @@ namespace LostPeterEngine
         TextureInfo(const String& _nameTexture,
                     const String& _pathTexture,
                     FTextureType _typeTexture,
-                    FTexturePixelFormatType _typeTexturePixelFormat,
+                    FPixelFormatType _typePixelFormat,
                     FTextureFilterType _typeTextureFilter,
                     FTextureAddressingType _typeTextureAddressing,
                     FTextureBorderColorType _typeTextureBorderColor,
@@ -554,7 +567,7 @@ namespace LostPeterEngine
         String pathTexture;
         
         FTextureType typeTexture;
-        FTexturePixelFormatType typeTexturePixelFormat;
+        FPixelFormatType typePixelFormat;
         FTextureFilterType typeTextureFilter;
         FTextureAddressingType typeTextureAddressing;
         FTextureBorderColorType typeTextureBorderColor;

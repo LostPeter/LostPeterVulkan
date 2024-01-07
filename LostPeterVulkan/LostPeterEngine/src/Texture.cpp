@@ -10,6 +10,7 @@
 ****************************************************************************/
 
 #include "../include/Texture.h"
+#include "../include/TextureManager.h"
 #include "../include/Image.h"
 #include "../include/StreamTexture.h"
 
@@ -29,29 +30,29 @@ namespace LostPeterEngine
 				   nHandle,
 				   bIsManualLoad,
 				   pResourceManualLoader)
-		, m_eTexture(F_Texture_2D)
-		, m_nUsage(E_TextureUsage_Default)
-		, m_bIsLoaded(false)
-		, m_bIsManual(false)
-		, m_ePixelFormatDesired(F_PixelFormat_Unknown)
-		, m_ePixelFormat(F_PixelFormat_Unknown)
-		, m_nWidth(512)
-		, m_nHeight(512)
-		, m_nDepth(1)
-		, m_nSize(0)
-		, m_ePixelFormatSrc(F_PixelFormat_Unknown)
-		, m_nWidthSrc(0)
-		, m_nHeightSrc(0)
-		, m_nDepthSrc(0)
-		, m_nBitDepthIntegerDesired(0)
-		, m_nBitDepthFloatDesired(0)
-		, m_bTreatLuminanceAsAlpha(false)
-		, m_nMipMapsCountRequested(0)
-		, m_nMipMapsCount(0)
-		, m_bMipMapsHardwareGenerated(false)
-		, m_fGamma(1.0f)
-		, m_bIsHardwareGamma(false)
-		, m_nFSAA(0)
+		, m_nUsage(TextureManager::ms_nUsage_Default)
+		, m_eTexture(TextureManager::ms_eTexture_Default)
+		, m_eTextureFilter(TextureManager::ms_eTextureFilter_Default)
+		, m_eTextureAddressing(TextureManager::ms_eTextureAddressing_Default)
+		, m_eTextureBorderColor(TextureManager::ms_eTextureBorderColor_Default)
+		, m_ePixelFormatDesired(TextureManager::ms_ePixelFormat_Default)
+		, m_ePixelFormatSrc(TextureManager::ms_ePixelFormat_Default)
+		, m_ePixelFormat(TextureManager::ms_ePixelFormat_Default)
+		, m_nWidth(TextureManager::ms_nWidth_Default)
+		, m_nHeight(TextureManager::ms_nHeight_Default)
+		, m_nDepth(TextureManager::ms_nDepth_Default)
+		, m_nWidthSrc(TextureManager::ms_nWidth_Default)
+		, m_nHeightSrc(TextureManager::ms_nHeight_Default)
+		, m_nDepthSrc(TextureManager::ms_nDepth_Default)
+		, m_nBitDepthIntegerDesired(TextureManager::ms_nBitDepthInteger_Default)
+		, m_nBitDepthFloatDesired(TextureManager::ms_nBitDepthFloat_Default)
+		, m_bIsTreatLuminanceAsAlpha(TextureManager::ms_bIsTreatLuminanceAsAlpha_Default)
+		, m_nMipMapsCountRequested(TextureManager::ms_nMipMapsCount_Default)
+		, m_nMipMapsCount(TextureManager::ms_nMipMapsCount_Default)
+		, m_bIsMipMapsHardwareGenerated(TextureManager::ms_bIsMipMapsHardwareGenerated_Default)
+		, m_fGamma(TextureManager::ms_fGamma_Default)
+		, m_bIsGammaHardware(TextureManager::ms_bIsGammaHardware_Default)
+		, m_nFSAA(TextureManager::ms_nFSAA_Default)
 		, m_bInternalResourcesCreated(false)
 	{
 
@@ -70,11 +71,6 @@ namespace LostPeterEngine
 	bool Texture::HasAlpha() const
 	{
 		return FPixelFormat::HasAlpha(m_ePixelFormat);
-	}
-
-	uint32 Texture::CalculateSize() const
-	{
-		 return GetFacesCount() * FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, m_nDepth, m_ePixelFormat);
 	}
 
 	bool Texture::LoadFromRawData(FFileMemory* pInput, uint32 nWidth, uint32 nHeight, FPixelFormatType ePixelFormat)
@@ -107,7 +103,7 @@ namespace LostPeterEngine
 		m_nHeightSrc = m_nHeight = aImages[0]->GetHeight();
 		m_nDepthSrc = m_nDepth  = aImages[0]->GetDepth();
 		m_ePixelFormatSrc = aImages[0]->GetPixelFormat();
-		if (m_bTreatLuminanceAsAlpha && m_ePixelFormatSrc == F_PixelFormat_BYTE_L8_UNORM)
+		if (m_bIsTreatLuminanceAsAlpha && m_ePixelFormatSrc == F_PixelFormat_BYTE_L8_UNORM)
 		{
 			m_ePixelFormatSrc = F_PixelFormat_BYTE_A8_UNORM;
 		}
@@ -151,11 +147,11 @@ namespace LostPeterEngine
 			<< "(" << FPixelFormat::GetPixelFormatName(aImages[0]->GetPixelFormat()) << "," <<
 			aImages[0]->GetWidth() << "x" << aImages[0]->GetHeight() << "x" << aImages[0]->GetDepth() <<
 			") with ";
-		if (!(m_bMipMapsHardwareGenerated && m_nMipMapsCount == 0))
+		if (!(m_bIsMipMapsHardwareGenerated && m_nMipMapsCount == 0))
 			str << m_nMipMapsCount;
 		if (m_nUsage & E_TextureUsage_AutoMipMap)
 		{
-			if (m_bMipMapsHardwareGenerated)
+			if (m_bIsMipMapsHardwareGenerated)
 				str << " hardware";
 
 			str << " generated mipmaps";
@@ -244,6 +240,11 @@ namespace LostPeterEngine
 			freeInternalResourcesImpl();
 			m_bInternalResourcesCreated = false;
 		}
+	}
+
+	uint32 Texture::calculateSize() const
+	{
+		 return GetFacesCount() * (uint32)FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, m_nDepth, m_ePixelFormat);
 	}
 
 }; //LostPeterEngine

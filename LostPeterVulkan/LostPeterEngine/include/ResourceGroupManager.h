@@ -72,7 +72,7 @@ namespace LostPeterEngine
 		static String ms_strNameResourceGroup_Internal;			
 		static String ms_strNameResourceGroup_Bootstrap;				
 		static String ms_strNameResourceGroup_AutoDetect;			
-		static size_t ms_nResourceSysRefCounts;				
+		static uint32 ms_nResourceSysRefCounts;				
 		
     protected:
         ResourceManagerPtrMap m_mapResourceManager;	
@@ -218,17 +218,17 @@ namespace LostPeterEngine
 
 		ResourceGroup* FindGroupContainingResourceImpl(const String& strResourceName);
 		
-		void FireResourceGroupScriptingStarted(const String& strGroupName,size_t nScriptCount);
-		void FireScriptStarted(const String& strScriptName,bool& bIsSkipScript);
-		void FireScriptEnded(const String& strScriptName,bool bIsSkipped);	
+		void FireResourceGroupScriptingStarted(const String& strGroupName, uint32 nScriptCount);
+		void FireScriptStarted(const String& strScriptName, bool& bIsSkipScript);
+		void FireScriptEnded(const String& strScriptName, bool bIsSkipped);	
 		void FireResourceGroupScriptingEnded(const String& strGroupName);
 		
-		void FireResourceGroupLoadStarted(const String& strGroupName, size_t nResourceCount);
+		void FireResourceGroupLoadStarted(const String& strGroupName, uint32 nResourceCount);
 		void FireResourceLoadStarted(const Resource* pResource);
 		void FireResourceLoadEnded();
 		void FireResourceGroupLoadEnded(const String& strGroupName);
 		
-		void FireResourceGroupPrepareStarted(const String& strGroupName, size_t nResourceCount);
+		void FireResourceGroupPrepareStarted(const String& strGroupName, uint32 nResourceCount);
 		void FireResourcePrepareStarted(const Resource* pResource);
 		void FireResourcePrepareEnded();
 		void FireResourceGroupPrepareEnded(const String& strGroupName);

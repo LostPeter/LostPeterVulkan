@@ -101,7 +101,7 @@ namespace LostPeterEngine
 	String	ResourceGroupManager::ms_strNameResourceGroup_Internal	= "Internal";	
 	String	ResourceGroupManager::ms_strNameResourceGroup_Bootstrap	= "Bootstrap";		
 	String	ResourceGroupManager::ms_strNameResourceGroup_AutoDetect = "Autodetect";
-	size_t	ResourceGroupManager::ms_nResourceSysRefCounts = 3;
+	uint32	ResourceGroupManager::ms_nResourceSysRefCounts = 3;
     ResourceGroupManager::ResourceGroupManager()
         : Base("ResourceGroupManager")
         , m_pResourceLoadingListener(nullptr)
@@ -219,7 +219,7 @@ namespace LostPeterEngine
 
             m_pResourceGroupCurrent = pResourceGroup;
 
-            size_t nResourceCount = 0;
+            uint32 nResourceCount = 0;
             if (bIsPrepareMainResources)
             {
                 for (ResourceLoadOrderMap::iterator it = pResourceGroup->mapResourceLoadOrder.begin(); 
@@ -241,7 +241,7 @@ namespace LostPeterEngine
                     for (ResourceLoadOrderMap::iterator it = pResourceGroup->mapResourceLoadOrder.begin();
                          it != pResourceGroup->mapResourceLoadOrder.end(); ++it)
                     {
-                        size_t n = 0;
+                        uint32 n = 0;
                         ResourcePtrList* pListResource = it->second;
                         for (ResourcePtrList::iterator itList = pListResource->begin();
                              itList != pListResource->end(); ++itList, ++n)
@@ -294,7 +294,7 @@ namespace LostPeterEngine
 
             m_pResourceGroupCurrent = pResourceGroup;
 
-            size_t nResourceCount = 0;
+            uint32 nResourceCount = 0;
             if (bIsLoadMainResources)
             {
                 for (ResourceLoadOrderMap::iterator it = pResourceGroup->mapResourceLoadOrder.begin(); 
@@ -316,7 +316,7 @@ namespace LostPeterEngine
                     for (ResourceLoadOrderMap::iterator it = pResourceGroup->mapResourceLoadOrder.begin(); 
                          it != pResourceGroup->mapResourceLoadOrder.end(); ++it)
                     {
-                        size_t n = 0;
+                        uint32 n = 0;
                         ResourcePtrList* pListResource = it->second;
                         for (ResourcePtrList::iterator itList = pListResource->begin();
                              itList != pListResource->end(); ++itList, ++n)
@@ -1321,7 +1321,7 @@ namespace LostPeterEngine
             typedef std::pair<FScriptLoader*, FileListList*> LoaderFileListPair;
             typedef std::list<LoaderFileListPair> ScriptLoaderFileList;
             ScriptLoaderFileList scriptLoaderFileList;
-            size_t nScriptCount = 0;
+            uint32 nScriptCount = 0;
 
             FScriptLoaderOrderMap::iterator oi;
             for (oi = m_mapScriptLoaderOrder.begin();
@@ -1493,7 +1493,7 @@ namespace LostPeterEngine
 		return nullptr;
 	}
 
-	void ResourceGroupManager::FireResourceGroupScriptingStarted(const String& strGroupName, size_t nScriptCount)
+	void ResourceGroupManager::FireResourceGroupScriptingStarted(const String& strGroupName, uint32 nScriptCount)
 	{
 		for (ResourceGroupListenerPtrVector::iterator it = m_aResourceGroupListener.begin();
 			 it != m_aResourceGroupListener.end(); ++it)
@@ -1530,7 +1530,7 @@ namespace LostPeterEngine
 	}
     
 
-	void ResourceGroupManager::FireResourceGroupLoadStarted(const String& strGroupName, size_t nResourceCount)
+	void ResourceGroupManager::FireResourceGroupLoadStarted(const String& strGroupName, uint32 nResourceCount)
 	{
 		for (ResourceGroupListenerPtrVector::iterator it = m_aResourceGroupListener.begin();
 			 it != m_aResourceGroupListener.end(); ++it)
@@ -1564,7 +1564,7 @@ namespace LostPeterEngine
 	}
 	
 
-	void ResourceGroupManager::FireResourceGroupPrepareStarted(const String& strGroupName, size_t nResourceCount)
+	void ResourceGroupManager::FireResourceGroupPrepareStarted(const String& strGroupName, uint32 nResourceCount)
 	{
 		for (ResourceGroupListenerPtrVector::iterator it = m_aResourceGroupListener.begin();
 			 it != m_aResourceGroupListener.end(); ++it)

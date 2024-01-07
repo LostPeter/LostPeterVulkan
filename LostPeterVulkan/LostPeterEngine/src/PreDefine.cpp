@@ -135,10 +135,23 @@ namespace LostPeterEngine
     //ETextureParamType
     static String s_nameTextureParamTypes[] = 
     {
-        "Width",                    //0:    Width            
-        "Height",                   //1:    Height
-        "Depth",                    //2:    Depth
-
+        "Usage",                        //0:    Usage    
+        "TextureType",                  //1:    TextureType    
+        "TextureFilterType",            //2:    TextureFilterType    
+        "TextureAddressingType",        //3:    TextureAddressingType    
+        "TextureBorderColorType",       //4:    TextureBorderColorType    
+        "PixelFormatType",              //5:    PixelFormatType
+        "Width",                        //6:    Width            
+        "Height",                       //7:    Height
+        "Depth",                        //8:    Depth
+        "BitDepthInteger",              //9:    BitDepthInteger
+        "BitDepthFloat",                //10:   BitDepthFloat
+        "IsTreatLuminanceAsAlpha",      //11:   IsTreatLuminanceAsAlpha
+        "MipMapsCount",                 //12:   MipMapsCount
+        "IsMipMapsHardwareGenerated",   //13:   IsMipMapsHardwareGenerated
+        "Gamma",                        //14:   Gamma
+        "IsGammaHardware",              //15:   IsGammaHardware
+        "FSAA",                         //16:   FSAA
     };
     const String& E_GetTextureParamTypeName(ETextureParamType type)
     {
@@ -156,7 +169,7 @@ namespace LostPeterEngine
                 return (ETextureParamType)(i);
         }
         F_Assert(false && "E_ParseTextureParamType: Wrong type name !")
-        return E_TextureParam_Width;
+        return E_TextureParam_Usage;
     }
 
 
@@ -356,7 +369,7 @@ namespace LostPeterEngine
         , nameTexture("")
         , pathTexture("")
         , typeTexture(F_Texture_2D)
-        , typeTexturePixelFormat(F_TexturePixelFormat_R8G8B8A8_SRGB)
+        , typePixelFormat(F_PixelFormat_BYTE_A8R8G8B8_SRGB)
         , typeTextureFilter(F_TextureFilter_Bilinear)
         , typeTextureAddressing(F_TextureAddressing_Clamp)
         , typeTextureBorderColor(F_TextureBorderColor_OpaqueBlack)
@@ -373,7 +386,7 @@ namespace LostPeterEngine
     TextureInfo::TextureInfo(const String& _nameTexture,
                              const String& _pathTexture,
                              FTextureType _typeTexture,
-                             FTexturePixelFormatType _typeTexturePixelFormat,
+                             FPixelFormatType _typePixelFormat,
                              FTextureFilterType _typeTextureFilter,
                              FTextureAddressingType _typeTextureAddressing,
                              FTextureBorderColorType _typeTextureBorderColor,
@@ -388,7 +401,7 @@ namespace LostPeterEngine
         , nameTexture(_nameTexture)
         , pathTexture(_pathTexture)
         , typeTexture(_typeTexture)
-        , typeTexturePixelFormat(_typeTexturePixelFormat)
+        , typePixelFormat(_typePixelFormat)
         , typeTextureFilter(_typeTextureFilter)
         , typeTextureAddressing(_typeTextureAddressing)
         , typeTextureBorderColor(_typeTextureBorderColor)

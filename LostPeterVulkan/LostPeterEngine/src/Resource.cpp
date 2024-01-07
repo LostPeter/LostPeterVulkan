@@ -30,6 +30,9 @@ namespace LostPeterEngine
         , m_nHandle(nHandle)
         , m_bIsManualLoad(bIsManualLoad)
         , m_pResourceManualLoader(pResourceManualLoader)
+        , m_nSize(0)
+        , m_bIsBackgroundLoaded(false)
+        , m_nStateCount(0)
     {
         F_Assert(m_pResourceManager && "Resource::Resource")
     }

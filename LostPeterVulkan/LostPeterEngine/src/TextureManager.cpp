@@ -30,6 +30,30 @@ namespace LostPeterEngine
 
 
     //Set TextureParam
+    void TextureManager::SetTextureParam_Usage(NameValuePairMap& mapParam, uint32 nUsage)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_Usage), FUtilString::SaveUInt(nUsage));
+    }
+    void TextureManager::SetTextureParam_TextureType(NameValuePairMap& mapParam, FTextureType eTexture)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_TextureType), F_GetTextureTypeName(eTexture));
+    }
+    void TextureManager::SetTextureParam_TextureFilterType(NameValuePairMap& mapParam, FTextureFilterType eTextureFilter)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_TextureFilterType), F_GetTextureFilterTypeName(eTextureFilter));
+    }
+    void TextureManager::SetTextureParam_TextureAddressingType(NameValuePairMap& mapParam, FTextureAddressingType eTextureAddressing)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_TextureAddressingType), F_GetTextureAddressingTypeName(eTextureAddressing));
+    }
+    void TextureManager::SetTextureParam_TextureBorderColorType(NameValuePairMap& mapParam, FTextureBorderColorType eTextureBorderColor)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_TextureBorderColorType), F_GetTextureBorderColorTypeName(eTextureBorderColor));
+    }
+    void TextureManager::SetTextureParam_PixelFormatType(NameValuePairMap& mapParam, FPixelFormatType ePixelFormat)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_PixelFormatType), FPixelFormat::GetPixelFormatDes(ePixelFormat).name);
+    }
     void TextureManager::SetTextureParam_Width(NameValuePairMap& mapParam, uint32 nWidth)
     {
         FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_Width), FUtilString::SaveUInt(nWidth));
@@ -42,16 +66,115 @@ namespace LostPeterEngine
     {
         FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_Depth), FUtilString::SaveUInt(nDepth));
     }
+    void TextureManager::SetTextureParam_BitDepthInteger(NameValuePairMap& mapParam, uint16 nBitDepthInteger)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_BitDepthInteger), FUtilString::SaveUInt16(nBitDepthInteger));
+    }
+    void TextureManager::SetTextureParam_BitDepthFloat(NameValuePairMap& mapParam, uint16 nBitDepthFloat)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_BitDepthFloat), FUtilString::SaveUInt16(nBitDepthFloat));
+    }
+    void TextureManager::SetTextureParam_IsTreatLuminanceAsAlpha(NameValuePairMap& mapParam, bool bIsTreatLuminanceAsAlpha)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_IsTreatLuminanceAsAlpha), FUtilString::SaveBool(bIsTreatLuminanceAsAlpha));
+    }
+    void TextureManager::SetTextureParam_MipMapsCount(NameValuePairMap& mapParam, uint32 nMipMapsCount)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_MipMapsCount), FUtilString::SaveUInt(nMipMapsCount));
+    }
+    void TextureManager::SetTextureParam_IsMipMapsHardwareGenerated(NameValuePairMap& mapParam, bool bIsMipMapsHardwareGenerated)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_IsMipMapsHardwareGenerated), FUtilString::SaveBool(bIsMipMapsHardwareGenerated));
+    }
+    void TextureManager::SetTextureParam_Gamma(NameValuePairMap& mapParam, float fGamma)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_Gamma), FUtilString::SaveFloat(fGamma));
+    }
+    void TextureManager::SetTextureParam_IsGammaHardware(NameValuePairMap& mapParam, bool bIsGammaHardware)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_IsGammaHardware), FUtilString::SaveBool(bIsGammaHardware));
+    }
+    void TextureManager::SetTextureParam_FSAA(NameValuePairMap& mapParam, uint32 nFSAA)
+    {
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_FSAA), FUtilString::SaveUInt(nFSAA));
+    }
+    
 
     //Get TextureParam
+    uint32 TextureManager::GetTextureParam_Usage(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_Usage);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_Usage: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_nUsage_Default;
+        }
+        return FUtilString::ParserUInt(itFind->second);
+    }
+    FTextureType TextureManager::GetTextureParam_TextureType(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_TextureType);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_TextureType: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_eTexture_Default;
+        }
+        return F_ParseTextureType(itFind->second);
+    }
+    FTextureFilterType TextureManager::GetTextureParam_TextureFilterType(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_TextureFilterType);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_TextureFilterType: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_eTextureFilter_Default;
+        }
+        return F_ParseTextureFilterType(itFind->second);
+    }
+    FTextureAddressingType TextureManager::GetTextureParam_TextureAddressingType(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_TextureAddressingType);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_TextureAddressingType: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_eTextureAddressing_Default;
+        }
+        return F_ParseTextureAddressingType(itFind->second);
+    }
+    FTextureBorderColorType TextureManager::GetTextureParam_TextureBorderColorType(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_TextureBorderColorType);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_TextureBorderColorType: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_eTextureBorderColor_Default;
+        }
+        return F_ParseTextureBorderColorType(itFind->second);
+    }
+    FPixelFormatType TextureManager::GetTextureParam_PixelFormatType(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_TextureBorderColorType);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_PixelFormatType: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_ePixelFormat_Default;
+        }
+        return FPixelFormat::ParsePixelFormatFromName(itFind->second);
+    }
     uint32 TextureManager::GetTextureParam_Width(NameValuePairMap& mapParam)
     {
         const String& strName = E_GetTextureParamTypeName(E_TextureParam_Width);
         NameValuePairMap::iterator itFind = mapParam.find(strName);
         if (itFind == mapParam.end())
         {
-            F_LogError("*********************** TextureManager::GetTextureParam_Width: Can not find param name: [%s] from param map !", strName.c_str());
-            return 0;
+            //F_LogError("*********************** TextureManager::GetTextureParam_Width: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_nWidth_Default;
         }
         return FUtilString::ParserUInt(itFind->second);
     }
@@ -61,8 +184,8 @@ namespace LostPeterEngine
         NameValuePairMap::iterator itFind = mapParam.find(strName);
         if (itFind == mapParam.end())
         {
-            F_LogError("*********************** TextureManager::GetTextureParam_Height: Can not find param name: [%s] from param map !", strName.c_str());
-            return 0;
+            //F_LogError("*********************** TextureManager::GetTextureParam_Height: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_nHeight_Default;
         }
         return FUtilString::ParserUInt(itFind->second);
     }
@@ -72,22 +195,150 @@ namespace LostPeterEngine
         NameValuePairMap::iterator itFind = mapParam.find(strName);
         if (itFind == mapParam.end())
         {
-            F_LogError("*********************** TextureManager::GetTextureParam_Depth: Can not find param name: [%s] from param map !", strName.c_str());
-            return 0;
+            //F_LogError("*********************** TextureManager::GetTextureParam_Depth: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_nDepth_Default;
+        }
+        return FUtilString::ParserUInt(itFind->second);
+    }   
+    uint16 TextureManager::GetTextureParam_BitDepthInteger(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_BitDepthInteger);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_BitDepthInteger: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_nBitDepthInteger_Default;
+        }
+        return FUtilString::ParserUInt16(itFind->second);
+    }
+    uint16 TextureManager::GetTextureParam_BitDepthFloat(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_BitDepthFloat);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_BitDepthFloat: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_nBitDepthFloat_Default;
+        }
+        return FUtilString::ParserUInt16(itFind->second);
+    }
+    bool TextureManager::GetTextureParam_IsTreatLuminanceAsAlpha(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_IsTreatLuminanceAsAlpha);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_IsTreatLuminanceAsAlpha: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_bIsTreatLuminanceAsAlpha_Default;
+        }
+        return FUtilString::ParserBool(itFind->second);
+    }
+    uint32 TextureManager::GetTextureParam_MipMapsCount(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_MipMapsCount);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_MipMapsCount: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_nMipMapsCount_Default;
+        }
+        return FUtilString::ParserUInt(itFind->second);
+    }
+    bool TextureManager::GetTextureParam_IsMipMapsHardwareGenerated(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_IsMipMapsHardwareGenerated);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_IsMipMapsHardwareGenerated: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_bIsMipMapsHardwareGenerated_Default;
+        }
+        return FUtilString::ParserBool(itFind->second);
+    }
+    float TextureManager::GetTextureParam_Gamma(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_Gamma);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_Gamma: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_fGamma_Default;
+        }
+        return FUtilString::ParserFloat(itFind->second);
+    }
+    bool TextureManager::GetTextureParam_IsGammaHardware(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_IsGammaHardware);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_IsGammaHardware: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_bIsGammaHardware_Default;
+        }
+        return FUtilString::ParserBool(itFind->second);
+    }
+    uint32 TextureManager::GetTextureParam_FSAA(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_FSAA);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::GetTextureParam_FSAA: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_nFSAA_Default;
         }
         return FUtilString::ParserUInt(itFind->second);
     }
 
 
+    NameValuePairMap TextureManager::ms_mapParam_Default;
+        uint32 TextureManager::ms_nUsage_Default = E_TextureUsage_Default;
+        FTextureType TextureManager::ms_eTexture_Default = F_Texture_2D;
+        FTextureFilterType TextureManager::ms_eTextureFilter_Default = F_TextureFilter_Bilinear;
+        FTextureAddressingType TextureManager::ms_eTextureAddressing_Default = F_TextureAddressing_Clamp;
+        FTextureBorderColorType TextureManager::ms_eTextureBorderColor_Default = F_TextureBorderColor_OpaqueBlack;
+        FPixelFormatType TextureManager::ms_ePixelFormat_Default = F_PixelFormat_BYTE_A8R8G8B8_SRGB;
+        uint32 TextureManager::ms_nWidth_Default = 512;
+        uint32 TextureManager::ms_nHeight_Default = 512;
+        uint32 TextureManager::ms_nDepth_Default = 1;
+        uint16 TextureManager::ms_nBitDepthInteger_Default = 32;
+        uint16 TextureManager::ms_nBitDepthFloat_Default = 32;
+        bool TextureManager::ms_bIsTreatLuminanceAsAlpha_Default = false;
+        uint32 TextureManager::ms_nMipMapsCount_Default = 0;
+        bool TextureManager::ms_bIsMipMapsHardwareGenerated_Default = true;
+        float TextureManager::ms_fGamma_Default = 1.0f;
+        bool TextureManager::ms_bIsGammaHardware_Default = false;
+        uint32 TextureManager::ms_nFSAA_Default = 0;
+    
     TextureManager::TextureManager()
         : ResourceManager(E_GetResourceTypeName(E_Resource_Texture), E_Resource_Texture)
         , m_pTextureSerializer(nullptr)
-        , m_nBitDepthIntegerPreferred(0)
-		, m_nBitDepthFloatPreferred(0)
+        , m_nBitDepthIntegerPreferred(32)
+		, m_nBitDepthFloatPreferred(32)
 		, m_nMipMapsCountDefault(E_TextureMipMap_UnLimited)
 		, m_fMipMapLODBiasDefault(0.0f)
     {
         m_fLoadingOrder = 75.0f;
+
+        if (ms_mapParam_Default.size() <= 0)
+        {
+            SetTextureParam_Usage(ms_mapParam_Default, TextureManager::ms_nUsage_Default);
+            SetTextureParam_TextureType(ms_mapParam_Default, TextureManager::ms_eTexture_Default);
+            SetTextureParam_TextureFilterType(ms_mapParam_Default, TextureManager::ms_eTextureFilter_Default);
+            SetTextureParam_TextureAddressingType(ms_mapParam_Default, TextureManager::ms_eTextureAddressing_Default);
+            SetTextureParam_TextureBorderColorType(ms_mapParam_Default, TextureManager::ms_eTextureBorderColor_Default);
+            SetTextureParam_PixelFormatType(ms_mapParam_Default,TextureManager::ms_ePixelFormat_Default);
+            SetTextureParam_Width(ms_mapParam_Default, TextureManager::ms_nWidth_Default);
+            SetTextureParam_Height(ms_mapParam_Default, TextureManager::ms_nHeight_Default);
+            SetTextureParam_Depth(ms_mapParam_Default, TextureManager::ms_nDepth_Default);
+            SetTextureParam_BitDepthInteger(ms_mapParam_Default, TextureManager::ms_nBitDepthInteger_Default);
+            SetTextureParam_BitDepthFloat(ms_mapParam_Default, TextureManager::ms_nBitDepthFloat_Default);
+            SetTextureParam_IsTreatLuminanceAsAlpha(ms_mapParam_Default, TextureManager::ms_bIsTreatLuminanceAsAlpha_Default);
+            SetTextureParam_MipMapsCount(ms_mapParam_Default, TextureManager::ms_nMipMapsCount_Default);
+            SetTextureParam_IsMipMapsHardwareGenerated(ms_mapParam_Default, TextureManager::ms_bIsMipMapsHardwareGenerated_Default);
+            SetTextureParam_Gamma(ms_mapParam_Default, TextureManager::ms_fGamma_Default);
+            SetTextureParam_IsGammaHardware(ms_mapParam_Default, TextureManager::ms_bIsGammaHardware_Default);
+            SetTextureParam_FSAA(ms_mapParam_Default, TextureManager::ms_nFSAA_Default);
+        }
     }
 
     TextureManager::~TextureManager()
@@ -274,7 +525,7 @@ namespace LostPeterEngine
 				 it != m_aTexture.end(); ++it)
 			{
 				Texture* pTexture = (*it);
-				if (pTexture->IsLoaded() && !pTexture->IsManual())
+				if (pTexture->IsLoaded() && !pTexture->IsManualLoad())
 				{
 					pTexture->Unload();
 					pTexture->SetBitDepthIntegerDesired(nBitDepthIntegerPreferred);
@@ -298,7 +549,7 @@ namespace LostPeterEngine
 				 it != m_aTexture.end(); ++it)
 			{
 				Texture* pTexture = (*it);
-				if (pTexture->IsLoaded() && !pTexture->IsManual())
+				if (pTexture->IsLoaded() && !pTexture->IsManualLoad())
 				{
 					pTexture->Unload();
 					pTexture->SetBitDepthFloatDesired(nBitDepthFloatPreferred);
@@ -323,7 +574,7 @@ namespace LostPeterEngine
 				 it != m_aTexture.end(); ++it)
 			{
 				Texture* pTexture = (*it);
-				if (pTexture->IsLoaded() && !pTexture->IsManual())
+				if (pTexture->IsLoaded() && !pTexture->IsManualLoad())
 				{
 					pTexture->Unload();
 					pTexture->SetBitDepthsDesired(nBitDepthIntegerPreferred, nBitDepthFloatPreferred);
@@ -355,12 +606,23 @@ namespace LostPeterEngine
                                                                     bool bIsManualLoad /*= false*/,
                                                                     ResourceManualLoader* pManualLoader /*= nullptr*/, 
                                                                     const NameValuePairMap* pLoadParams /*= nullptr*/,
-                                                                    FTextureType eTexture /*= F_Texture_2D*/, 
-                                                                    int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
-                                                                    float fGamma /*= 1.0f*/,
-                                                                    bool bIsAlpha /*= false*/,
-                                                                    FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
-                                                                    bool bIsHWGammaCorrection /*= false*/)
+                                                                    uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
+                                                                    FTextureType eTexture /*= TextureManager::ms_nUsage_Default*/, 
+                                                                    FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
+                                                                    FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
+                                                                    FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
+                                                                    FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
+                                                                    uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
+                                                                    uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
+                                                                    uint32 nDepth /*= TextureManager::ms_nDepth_Default*/,
+                                                                    uint16 nBitDepthInteger /*= TextureManager::ms_nBitDepthInteger_Default*/,
+                                                                    uint16 nBitDepthFloat /*= TextureManager::ms_nBitDepthFloat_Default*/,
+                                                                    bool bIsTreatLuminanceAsAlpha /*= TextureManager::ms_bIsTreatLuminanceAsAlpha_Default*/,
+                                                                    int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
+                                                                    bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
+                                                                    float fGamma /*= TextureManager::ms_fGamma_Default*/,
+                                                                    bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/,
+                                                                    uint32 nFSAA /*= TextureManager::ms_nFSAA_Default*/)
     {
         NameValuePairMap mapTextureParam;
         if (bIsManualLoad && pLoadParams)
@@ -382,9 +644,9 @@ namespace LostPeterEngine
 			// pTexture->SetTextureType(eTexture);
 			// pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
 			// pTexture->SetGamma(fGamma);
-			// pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
+			// pTexture->SetIsTreatLuminanceAsAlpha(bIsTreatLuminanceAsAlpha);
 			// pTexture->SetPixelFormat(ePixelFormat);
-			// pTexture->SetHardwareGammaEnabled(bIsHWGammaCorrection);
+			// pTexture->SetIsGammaHardware(bIsHWGammaCorrection);
 		}
 		return result;
     }
@@ -393,12 +655,23 @@ namespace LostPeterEngine
     Texture* TextureManager::Prepare(uint32 nGroup, 
                                      const String& strName, 
                                      const String& strGroupName, 
-                                     FTextureType eTexture /*= F_Texture_2D*/, 
-                                     int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
-                                     bool fGamma /*= 1.0f*/, 
-                                     bool bIsAlpha /*= false*/,
-                                     FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
-                                     bool bIsHWGammaCorrection /*= false*/)
+                                     uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
+                                     FTextureType eTexture /*= TextureManager::ms_nUsage_Default*/, 
+                                     FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
+                                     FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
+                                     FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
+                                     FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
+                                     uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
+                                     uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
+                                     uint32 nDepth /*= TextureManager::ms_nDepth_Default*/,
+                                     uint16 nBitDepthInteger /*= TextureManager::ms_nBitDepthInteger_Default*/,
+                                     uint16 nBitDepthFloat /*= TextureManager::ms_nBitDepthFloat_Default*/,
+                                     bool bIsTreatLuminanceAsAlpha /*= TextureManager::ms_bIsTreatLuminanceAsAlpha_Default*/,
+                                     int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
+                                     bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
+                                     float fGamma /*= TextureManager::ms_fGamma_Default*/,
+                                     bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/,
+                                     uint32 nFSAA /*= TextureManager::ms_nFSAA_Default*/)
     {
         ResourceCreateOrRetrieveResult result = CreateOrRetrieve(nGroup,
                                                                  strName,
@@ -406,12 +679,23 @@ namespace LostPeterEngine
                                                                  false,
                                                                  nullptr,
                                                                  nullptr,
+                                                                 nUsage,
                                                                  eTexture,
-                                                                 nMipMapsCount,
-                                                                 fGamma,
-                                                                 bIsAlpha,
+                                                                 eTextureFilter,
+                                                                 eTextureAddressing,
+                                                                 eTextureBorderColor,
                                                                  ePixelFormat,
-                                                                 bIsHWGammaCorrection);
+                                                                 nWidth,
+                                                                 nHeight,
+                                                                 nDepth,
+                                                                 nBitDepthInteger,
+                                                                 nBitDepthFloat,
+                                                                 bIsTreatLuminanceAsAlpha,
+                                                                 nMipMapsCount,
+                                                                 bIsMipMapsHardwareGenerated,
+                                                                 fGamma,
+                                                                 bIsGammaHardware,
+                                                                 nFSAA);
 		Texture* pTexture = (Texture*)result.first;
         if (!pTexture)
             return nullptr;
@@ -423,12 +707,23 @@ namespace LostPeterEngine
     Texture* TextureManager::Load(uint32 nGroup, 
                                   const String& strName, 
                                   const String& strGroupName, 
-                                  FTextureType eTexture /*= F_Texture_2D*/, 
-                                  int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
-                                  bool fGamma /*= 1.0f*/,
-                                  bool bIsAlpha /*= false*/,
-                                  FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
-                                  bool bIsHWGammaCorrection /*= false*/)
+                                  uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
+                                  FTextureType eTexture /*= TextureManager::ms_nUsage_Default*/, 
+                                  FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
+                                  FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
+                                  FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
+                                  FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
+                                  uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
+                                  uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
+                                  uint32 nDepth /*= TextureManager::ms_nDepth_Default*/,
+                                  uint16 nBitDepthInteger /*= TextureManager::ms_nBitDepthInteger_Default*/,
+                                  uint16 nBitDepthFloat /*= TextureManager::ms_nBitDepthFloat_Default*/,
+                                  bool bIsTreatLuminanceAsAlpha /*= TextureManager::ms_bIsTreatLuminanceAsAlpha_Default*/,
+                                  int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
+                                  bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
+                                  float fGamma /*= TextureManager::ms_fGamma_Default*/,
+                                  bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/,
+                                  uint32 nFSAA /*= TextureManager::ms_nFSAA_Default*/)
     {
         ResourceCreateOrRetrieveResult result = CreateOrRetrieve(nGroup,
                                                                  strName,
@@ -436,12 +731,23 @@ namespace LostPeterEngine
                                                                  false,
                                                                  nullptr,
                                                                  nullptr,
+                                                                 nUsage,
                                                                  eTexture,
-                                                                 nMipMapsCount,
-                                                                 fGamma,
-                                                                 bIsAlpha,
+                                                                 eTextureFilter,
+                                                                 eTextureAddressing,
+                                                                 eTextureBorderColor,
                                                                  ePixelFormat,
-                                                                 bIsHWGammaCorrection);
+                                                                 nWidth,
+                                                                 nHeight,
+                                                                 nDepth,
+                                                                 nBitDepthInteger,
+                                                                 nBitDepthFloat,
+                                                                 bIsTreatLuminanceAsAlpha,
+                                                                 nMipMapsCount,
+                                                                 bIsMipMapsHardwareGenerated,
+                                                                 fGamma,
+                                                                 bIsGammaHardware,
+                                                                 nFSAA);
 		Texture* pTexture = (Texture*)result.first;
         if (!pTexture)
             return nullptr;
@@ -456,7 +762,7 @@ namespace LostPeterEngine
                                            FTextureType eTexture /*= F_Texture_2D*/, 
                                            int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
 				                           float fGamma /*= 1.0f*/, 
-                                           bool bIsAlpha /*= false*/, 
+                                           bool bIsTreatLuminanceAsAlpha /*= false*/, 
                                            FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
                                            bool bUseMemoryImage /*= false*/,
 				                           bool bBackground /*= true*/, 
@@ -483,7 +789,7 @@ namespace LostPeterEngine
         pTexture->SetTextureType(eTexture);
         pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
         pTexture->SetGamma(fGamma);
-        pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
+        pTexture->SetIsTreatLuminanceAsAlpha(bIsTreatLuminanceAsAlpha);
         pTexture->SetPixelFormat(ePixelFormat);
         pTexture->Load();
 
@@ -544,7 +850,7 @@ namespace LostPeterEngine
                                                     FTextureType eTexture /*= F_Texture_2D*/,
 				                                    int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
                                                     float fGamma /*= 1.0f*/, 
-                                                    bool bIsAlpha /*= false*/,
+                                                    bool bIsTreatLuminanceAsAlpha /*= false*/,
 				                                    FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
                                                     bool bUseMemoryImage /*= false*/)
 	{
@@ -569,7 +875,7 @@ namespace LostPeterEngine
 		pTexture->SetTextureType(eTexture);
 		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
 		pTexture->SetGamma(fGamma);
-		pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
+		pTexture->SetIsTreatLuminanceAsAlpha(bIsTreatLuminanceAsAlpha);
 		pTexture->SetPixelFormat(ePixelFormat);
 		if (!pTexture->LoadFromImage(pImage))
         {
@@ -589,7 +895,7 @@ namespace LostPeterEngine
                                                        FTextureType eTexture /*= F_Texture_2D*/,
                                                        int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
                                                        float fGamma /*= 1.0f*/, 
-                                                       bool bIsAlpha /*= false*/,
+                                                       bool bIsTreatLuminanceAsAlpha /*= false*/,
                                                        FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
                                                        bool bUseMemoryImage /*= false*/)
 	{
@@ -614,7 +920,7 @@ namespace LostPeterEngine
 		pTexture->SetTextureType(eTexture);
 		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
 		pTexture->SetGamma(fGamma);
-		pTexture->SetTreatLuminanceAsAlpha(bIsAlpha);
+		pTexture->SetIsTreatLuminanceAsAlpha(bIsTreatLuminanceAsAlpha);
 		pTexture->SetPixelFormat(ePixelFormat);
 		if (!pTexture->LoadFromDDSImage(pInput))
         {

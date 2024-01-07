@@ -593,9 +593,4 @@ namespace LostPeterPluginRendererVulkan
 
     }
 
-    size_t VulkanTexture::calculateSize() const
-    {
-        return 0;
-    }
-
 }; //LostPeterPluginRendererVulkan
