@@ -18,6 +18,8 @@ namespace LostPeterEngine
 {
     class engineExport Texture : public Resource
     {
+		friend class TextureManager;
+
     public:
         Texture(ResourceManager* pResourceManager,
 				uint32 nGroup, 
@@ -142,18 +144,20 @@ namespace LostPeterEngine
 		virtual bool LoadFromDDSImage(FFileMemory* pInput) { return false; }
 
 		virtual bool SaveTextureToFile(const char* szFileName) { return false; }
-		
-		virtual bool CreateInternalResources();
-        virtual void FreeInternalResources();
 
 		virtual StreamTexture* GetTextureStream(uint32 nFace = 0, uint32 nMipMap = 0) = 0;
 
 	protected:
+		virtual void loadImpl();
+		virtual void unloadImpl();
 		virtual uint32 calculateSize() const;
 
 	protected:
-		virtual void createInternalResourcesImpl() = 0;
-		virtual void freeInternalResourcesImpl() = 0;
+        virtual void destroyInternalResources();
+			virtual void destroyInternalResourcesImpl() = 0;
+
+		virtual bool createInternalResources();
+			virtual void createInternalResourcesImpl() = 0;
     };
 
 }; //LostPeterEngine

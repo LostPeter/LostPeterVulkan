@@ -55,20 +55,13 @@ namespace LostPeterPluginRendererVulkan
         Texture::Destroy();
     }
 
-    
-
     StreamTexture* VulkanTexture::GetTextureStream(uint32 nFace /*= 0*/, uint32 nMipmap /*= 0*/)
     {
         
         return nullptr;
     }
 
-    void VulkanTexture::createInternalResourcesImpl()
-    {
-        
-    }
-
-    void VulkanTexture::freeInternalResourcesImpl()
+    void VulkanTexture::destroyInternalResourcesImpl()
     {
         if (this->m_vkBufferStaging != VK_NULL_HANDLE)
         {
@@ -92,13 +85,7 @@ namespace LostPeterPluginRendererVulkan
         this->m_vkSampler = VK_NULL_HANDLE;
     }
 
-
-    void VulkanTexture::loadImpl()
-    {
-
-    }
-
-    void VulkanTexture::unloadImpl()
+    void VulkanTexture::createInternalResourcesImpl()
     {
 
     }

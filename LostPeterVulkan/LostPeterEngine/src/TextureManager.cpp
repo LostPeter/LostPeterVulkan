@@ -836,7 +836,7 @@ namespace LostPeterEngine
 		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
 		pTexture->SetPixelFormat(ePixelFormat);
 		pTexture->SetUsage(nUsage);
-		pTexture->CreateInternalResources();
+		pTexture->createInternalResources();
 
         AddTexture(nGroup, pTexture);
 		return pTexture;

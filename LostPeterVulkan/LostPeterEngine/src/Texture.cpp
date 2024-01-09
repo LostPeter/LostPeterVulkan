@@ -65,7 +65,7 @@ namespace LostPeterEngine
 
 	void Texture::Destroy()
 	{
-		
+
 		Resource::Destroy();
 	}
 	
@@ -81,14 +81,13 @@ namespace LostPeterEngine
 
 	bool Texture::LoadFromRawData(FFileMemory* pInput, uint32 nWidth, uint32 nHeight, FPixelFormatType ePixelFormat)
 	{
-		Image img;
-		if (!img.LoadRawData(pInput, nWidth, nHeight, ePixelFormat))
+		Image image;
+		if (!image.LoadRawData(pInput, nWidth, nHeight, ePixelFormat))
 		{
-			F_LogError("*********************** Texture::LoadFromRawData: Create image form raw data failed !");
-			F_Assert(false && "Texture::LoadFromRawData: Create image form raw data failed !")
+			F_LogError("*********************** Texture::LoadFromRawData: Load image form raw data failed, [%u - %u] - [%s] !", nWidth, nWidth, FPixelFormat::GetPixelFormatName(ePixelFormat).c_str());
 			return false;
 		}
-		return LoadFromImage(&img);
+		return LoadFromImage(&image);
 	}
 
 	bool Texture::LoadFromImage(Image* pImage)
@@ -130,7 +129,7 @@ namespace LostPeterEngine
 			m_nUsage &= ~E_TextureUsage_AutoMipMap;
 		}
 
-		CreateInternalResources();
+		createInternalResources();
 
 		uint32 faces;
 		bool multiImage;
@@ -229,28 +228,49 @@ namespace LostPeterEngine
 		return true;
 	}
 
-	bool Texture::CreateInternalResources()
+	void Texture::loadImpl()
 	{
-		if (!m_bInternalResourcesCreated)
-		{
-			createInternalResourcesImpl();
-			m_bInternalResourcesCreated = true;
-		}
-		return true;
-	}
 
-	void Texture::FreeInternalResources()
+	}
+	void Texture::unloadImpl()
 	{
-		if (m_bInternalResourcesCreated)
-		{
-			freeInternalResourcesImpl();
-			m_bInternalResourcesCreated = false;
-		}
+		destroyInternalResources();
 	}
 
 	uint32 Texture::calculateSize() const
 	{
 		 return GetFacesCount() * (uint32)FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, m_nDepth, m_ePixelFormat);
+	}
+
+	void Texture::destroyInternalResources()
+	{
+		if (m_bInternalResourcesCreated)
+		{
+			destroyInternalResourcesImpl();
+			m_bInternalResourcesCreated = false;
+
+			if (m_eResourceLoading.load() != E_ResourceLoading_Unloading)
+            {
+                m_eResourceLoading.store(E_ResourceLoading_Unloaded);
+                _FireUnloadingComplete();
+            }
+		}
+	}
+
+	bool Texture::createInternalResources()
+	{
+		if (!m_bInternalResourcesCreated)
+		{
+			createInternalResourcesImpl();
+			m_bInternalResourcesCreated = true;
+
+			if (!IsLoading())
+            {
+                m_eResourceLoading.store(E_ResourceLoading_Loaded);
+                _FireLoadingComplete(false);
+            }
+		}
+		return true;
 	}
 
 }; //LostPeterEngine

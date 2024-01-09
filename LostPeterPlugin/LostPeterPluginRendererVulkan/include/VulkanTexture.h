@@ -73,20 +73,16 @@ namespace LostPeterPluginRendererVulkan
        
         
     protected:
-    
+
 
     ////Texture
     public:
         virtual StreamTexture* GetTextureStream(uint32 nFace = 0, uint32 nMipmap = 0);
 
     protected:
-		virtual void createInternalResourcesImpl();
-		virtual void freeInternalResourcesImpl();
+		virtual void destroyInternalResourcesImpl();
 
-    ////Resource
-    protected:
-        virtual void loadImpl();
-		virtual void unloadImpl();
+        virtual void createInternalResourcesImpl();
     };
 
 }; //LostPeterPluginRendererVulkan
