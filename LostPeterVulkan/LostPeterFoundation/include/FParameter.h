@@ -20,12 +20,12 @@ namespace LostPeterFoundation
 	class foundationExport FParameter
 	{
 	public:
-        FParameter(const String& strName, const String& strValue, FParamterType eParamter);
+        FParameter(const String& strName, const String& strValue, FParameterType eParameter);
 
 	public:
 		String m_strName;
 		String m_strValue;
-		FParamterType m_eParamter;
+		FParameterType m_eParamter;
 
 	};
 	typedef std::vector<FParameter>	FParameterVector;
@@ -63,6 +63,11 @@ namespace LostPeterFoundation
 		F_FORCEINLINE  FParameterVector& GetParameterVector() { return m_aParameter; }
 		F_FORCEINLINE  const FParameterCommandPtrMap& GetParameterCommandPtrMap() const { return m_mapParameterCommand; }
 		F_FORCEINLINE  FParameterCommandPtrMap& GetParameterCommandPtrMap() { return m_mapParameterCommand; }
+
+		F_FORCEINLINE void AddParameter(const String& strName, const String& strValue, FParameterType eParameter, FParameterCommand* pParameterCmd)
+		{
+			AddParameter(FParameter(strName, strValue, eParameter), pParameterCmd);
+		}
 
 		F_FORCEINLINE void AddParameter(const FParameter& parameter, FParameterCommand* pParameterCmd)
 		{
@@ -200,7 +205,7 @@ namespace LostPeterFoundation
 		}		
 
 	protected:
-		bool CreateParameterDictionary(const String& nameClass)
+		bool createParameterDictionary(const String& nameClass)
 		{
 			m_strNameParameterDictionary = nameClass;
 			if (ms_mapParameterDictionary.find(nameClass) == ms_mapParameterDictionary.end())

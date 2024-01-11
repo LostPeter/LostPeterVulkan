@@ -31,7 +31,11 @@ namespace LostPeterEngine
         virtual ~Texture();
 
     public:
+		static const String ms_nameTexture;
+
 	protected:
+		StringVector m_aPath;
+
 		uint32 m_nUsage;
 		FTextureType m_eTexture;
 		FTextureFilterType m_eTextureFilter;
@@ -63,6 +67,8 @@ namespace LostPeterEngine
 		bool m_bInternalResourcesCreated;
 
 	public:
+		F_FORCEINLINE const StringVector& GetPath() const { return m_aPath; }
+		
 		F_FORCEINLINE uint32 GetUsage() const { return m_nUsage; }
 		F_FORCEINLINE void SetUsage(uint32 nUsage) { m_nUsage = nUsage; }
 		F_FORCEINLINE bool IsUsage_Static() const { return m_nUsage & E_TextureUsage_Static; }
@@ -158,6 +164,9 @@ namespace LostPeterEngine
 
 		virtual bool createInternalResources();
 			virtual void createInternalResourcesImpl() = 0;
+
+	protected:
+        virtual void addParameterBase();
     };
 
 }; //LostPeterEngine

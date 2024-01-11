@@ -293,4 +293,9 @@ namespace LostPeterEngine
 		//	ResourceBackgroundQueue::GetSingleton()._QueueFireBackgroundPreparingComplete(this);
     }
 
+    void Resource::addParameterBase()
+    {
+        
+    }
+
 }; //LostPeterEngine

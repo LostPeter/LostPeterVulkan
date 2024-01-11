@@ -52,11 +52,11 @@ namespace LostPeterEngine
     }
     void TextureManager::SetTextureParam_MSAASampleCount(NameValuePairMap& mapParam, FMSAASampleCountType eMSAASampleCount)
     {
-        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_MSAASampleCount), F_GetMSAASampleCountTypeName(eMSAASampleCount));
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_MSAASampleCountType), F_GetMSAASampleCountTypeName(eMSAASampleCount));
     }
     void TextureManager::SetTextureParam_PixelFormatType(NameValuePairMap& mapParam, FPixelFormatType ePixelFormat)
     {
-        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_PixelFormatType), FPixelFormat::GetPixelFormatDes(ePixelFormat).name);
+        FUtil::SaveNameValuePair(mapParam, E_GetTextureParamTypeName(E_TextureParam_PixelFormatType), FPixelFormat::GetPixelFormatName(ePixelFormat));
     }
     void TextureManager::SetTextureParam_Width(NameValuePairMap& mapParam, uint32 nWidth)
     {
@@ -156,6 +156,17 @@ namespace LostPeterEngine
         }
         return F_ParseTextureBorderColorType(itFind->second);
     }
+    FMSAASampleCountType TextureManager::GetTextureParam_MSAASampleCount(NameValuePairMap& mapParam)
+    {
+        const String& strName = E_GetTextureParamTypeName(E_TextureParam_MSAASampleCountType);
+        NameValuePairMap::iterator itFind = mapParam.find(strName);
+        if (itFind == mapParam.end())
+        {
+            //F_LogError("*********************** TextureManager::E_GetTextureParamTypeName: Can not find param name: [%s] from param map !", strName.c_str());
+            return TextureManager::ms_eMSAASampleCount_Default;
+        }
+        return F_ParseMSAASampleCountType(itFind->second);
+    }
     FPixelFormatType TextureManager::GetTextureParam_PixelFormatType(NameValuePairMap& mapParam)
     {
         const String& strName = E_GetTextureParamTypeName(E_TextureParam_TextureBorderColorType);
@@ -166,17 +177,6 @@ namespace LostPeterEngine
             return TextureManager::ms_ePixelFormat_Default;
         }
         return FPixelFormat::ParsePixelFormatFromName(itFind->second);
-    }
-    FMSAASampleCountType TextureManager::GetTextureParam_MSAASampleCount(NameValuePairMap& mapParam)
-    {
-        const String& strName = E_GetTextureParamTypeName(E_TextureParam_MSAASampleCount);
-        NameValuePairMap::iterator itFind = mapParam.find(strName);
-        if (itFind == mapParam.end())
-        {
-            //F_LogError("*********************** TextureManager::E_GetTextureParamTypeName: Can not find param name: [%s] from param map !", strName.c_str());
-            return TextureManager::ms_eMSAASampleCount_Default;
-        }
-        return F_ParseMSAASampleCountType(itFind->second);
     }
     uint32 TextureManager::GetTextureParam_Width(NameValuePairMap& mapParam)
     {
@@ -309,6 +309,13 @@ namespace LostPeterEngine
         float TextureManager::ms_fGamma_Default = 1.0f;
         bool TextureManager::ms_bIsGammaHardware_Default = false;
 
+    const String& TextureManager::GetTextureParamValue(ETextureParamType type)
+    {
+        const String& strName = E_GetTextureParamTypeName(type);
+        NameValuePairMap::iterator itFind = ms_mapParam_Default.find(strName);
+        F_Assert(itFind != ms_mapParam_Default.end() && "TextureManager::GetTextureParamValue")
+        return itFind->second;
+    }
     
     TextureManager::TextureManager()
         : ResourceManager(E_GetResourceTypeName(E_Resource_Texture), E_Resource_Texture)

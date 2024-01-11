@@ -87,7 +87,7 @@ namespace LostPeterPluginRendererVulkan
 
     void VulkanTexture::createInternalResourcesImpl()
     {
-
+        
     }
 
 }; //LostPeterPluginRendererVulkan

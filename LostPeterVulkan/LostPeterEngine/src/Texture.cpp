@@ -16,6 +16,285 @@
 
 namespace LostPeterEngine
 {
+	////////////////////////// TextureCmd //////////////////////////
+	//TextureCmd_Usage
+	class TextureCmd_Usage : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return FUtilString::SaveUInt(pTexture->GetUsage());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetUsage(FUtilString::ParserUInt(strValue));
+		}
+	};
+	//TextureCmd_TextureType
+	class TextureCmd_TextureType : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return F_GetTextureTypeName(pTexture->GetTextureType());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetTextureType(F_ParseTextureType(strValue));
+		}
+	};
+	//TextureCmd_TextureFilterType
+	class TextureCmd_TextureFilterType : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return F_GetTextureFilterTypeName(pTexture->GetTextureFilterType());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetTextureFilterType(F_ParseTextureFilterType(strValue));
+		}
+	};
+	//TextureCmd_TextureAddressingType
+	class TextureCmd_TextureAddressingType : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return F_GetTextureAddressingTypeName(pTexture->GetTextureAddressingType());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetTextureAddressingType(F_ParseTextureAddressingType(strValue));
+		}
+	};
+	//TextureCmd_TextureBorderColorType
+	class TextureCmd_TextureBorderColorType : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return F_GetTextureBorderColorTypeName(pTexture->GetTextureBorderColorType());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetTextureBorderColorType(F_ParseTextureBorderColorType(strValue));
+		}
+	};
+	//TextureCmd_MSAASampleCountType
+	class TextureCmd_MSAASampleCountType : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return F_GetMSAASampleCountTypeName(pTexture->GetMSAASampleCountType());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetMSAASampleCountType(F_ParseMSAASampleCountType(strValue));
+		}
+	};
+	//TextureCmd_PixelFormatType
+	class TextureCmd_PixelFormatType : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return FPixelFormat::GetPixelFormatName(pTexture->GetPixelFormat());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetPixelFormat(FPixelFormat::ParsePixelFormatFromName(strValue));
+		}
+	};
+	//TextureCmd_Width
+	class TextureCmd_Width : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return FUtilString::SaveUInt(pTexture->GetWidth());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetWidth(FUtilString::ParserUInt(strValue));
+		}
+	};
+	//TextureCmd_Height
+	class TextureCmd_Height : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return FUtilString::SaveUInt(pTexture->GetHeight());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetHeight(FUtilString::ParserUInt(strValue));
+		}
+	};
+	//TextureCmd_Depth
+	class TextureCmd_Depth : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return FUtilString::SaveUInt(pTexture->GetDepth());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetDepth(FUtilString::ParserUInt(strValue));
+		}
+	};
+	//TextureCmd_BitDepthInteger
+	class TextureCmd_BitDepthInteger : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return FUtilString::SaveUInt16(pTexture->GetBitDepthIntegerDesired());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetBitDepthIntegerDesired(FUtilString::ParserUInt16(strValue));
+		}
+	};
+	//TextureCmd_BitDepthFloat
+	class TextureCmd_BitDepthFloat : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return FUtilString::SaveUInt16(pTexture->GetBitDepthFloatDesired());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetBitDepthFloatDesired(FUtilString::ParserUInt16(strValue));
+		}
+	};
+	//TextureCmd_IsTreatLuminanceAsAlpha
+	class TextureCmd_IsTreatLuminanceAsAlpha : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return FUtilString::SaveBool(pTexture->IsTreatLuminanceAsAlpha());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetIsTreatLuminanceAsAlpha(FUtilString::ParserBool(strValue));
+		}
+	};
+	//TextureCmd_MipMapsCount
+	class TextureCmd_MipMapsCount : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return FUtilString::SaveUInt(pTexture->GetMipMapsCount());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetMipMapsCount(FUtilString::ParserUInt(strValue));
+		}
+	};
+	//TextureCmd_IsMipMapsHardwareGenerated
+	class TextureCmd_IsMipMapsHardwareGenerated : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return FUtilString::SaveBool(pTexture->IsMipMapsHardwareGenerated());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetIsMipMapsHardwareGenerated(FUtilString::ParserBool(strValue));
+		}
+	};
+	//TextureCmd_Gamma
+	class TextureCmd_Gamma : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return FUtilString::SaveFloat(pTexture->GetGamma());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetGamma(FUtilString::ParserFloat(strValue));
+		}
+	};
+	//TextureCmd_IsGammaHardware
+	class TextureCmd_IsGammaHardware : public FParameterCommand
+	{
+	public:	
+		virtual String DoGet(const void* pTarget) const
+		{
+			const Texture* pTexture = static_cast<const Texture*>(pTarget);
+			return FUtilString::SaveBool(pTexture->IsGammaHardware());
+		}
+		virtual void DoSet(void* pTarget, const String& strValue)
+		{
+			Texture* pTexture = static_cast<Texture*>(pTarget);
+			pTexture->SetIsGammaHardware(FUtilString::ParserBool(strValue));
+		}
+	};
+	
+
+	////////////////////////// Texture /////////////////////////////
+	static TextureCmd_Usage s_TextureCmd_Usage;
+	static TextureCmd_TextureType s_TextureCmd_TextureType;
+	static TextureCmd_TextureFilterType s_TextureCmd_TextureFilterType;
+	static TextureCmd_TextureAddressingType s_TextureCmd_TextureAddressingType;
+	static TextureCmd_TextureBorderColorType s_TextureCmd_TextureBorderColorType;
+	static TextureCmd_MSAASampleCountType s_TextureCmd_MSAASampleCountType;
+	static TextureCmd_PixelFormatType s_TextureCmd_PixelFormatType;
+	static TextureCmd_Width s_TextureCmd_Width;
+	static TextureCmd_Height s_TextureCmd_Height;
+	static TextureCmd_Depth s_TextureCmd_Depth;
+	static TextureCmd_BitDepthInteger s_TextureCmd_BitDepthInteger;
+	static TextureCmd_BitDepthFloat s_TextureCmd_BitDepthFloat;
+	static TextureCmd_IsTreatLuminanceAsAlpha s_TextureCmd_IsTreatLuminanceAsAlpha;
+	static TextureCmd_MipMapsCount s_TextureCmd_MipMapsCount;
+	static TextureCmd_IsMipMapsHardwareGenerated s_TextureCmd_IsMipMapsHardwareGenerated;
+	static TextureCmd_Gamma s_TextureCmd_Gamma;
+	static TextureCmd_IsGammaHardware s_TextureCmd_IsGammaHardware;
+
+
+	const String Texture::ms_nameTexture = "Texture";
     Texture::Texture(ResourceManager* pResourceManager,
 					 uint32 nGroup, 
 					 const String& strName,
@@ -55,8 +334,32 @@ namespace LostPeterEngine
 		, m_bIsGammaHardware(TextureManager::ms_bIsGammaHardware_Default)
 		, m_bInternalResourcesCreated(false)
 	{
-
+		if (createParameterDictionary(ms_nameTexture))
+		{
+			addParameterBase();
+		}
 	}
+		void Texture::addParameterBase()
+		{
+			FParameterDictionary* pDictionary = GetParameterDictionary();
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_Usage), TextureManager::GetTextureParamValue(E_TextureParam_Usage), F_Parameter_UInt, &s_TextureCmd_Usage);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_TextureType), TextureManager::GetTextureParamValue(E_TextureParam_TextureType), F_Parameter_Int, &s_TextureCmd_TextureType);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_TextureFilterType), TextureManager::GetTextureParamValue(E_TextureParam_TextureFilterType), F_Parameter_Int, &s_TextureCmd_TextureFilterType);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_TextureAddressingType), TextureManager::GetTextureParamValue(E_TextureParam_TextureAddressingType), F_Parameter_Int, &s_TextureCmd_TextureAddressingType);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_TextureBorderColorType), TextureManager::GetTextureParamValue(E_TextureParam_TextureBorderColorType), F_Parameter_Int, &s_TextureCmd_TextureBorderColorType);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_MSAASampleCountType), TextureManager::GetTextureParamValue(E_TextureParam_MSAASampleCountType), F_Parameter_Int, &s_TextureCmd_MSAASampleCountType);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_PixelFormatType), TextureManager::GetTextureParamValue(E_TextureParam_PixelFormatType), F_Parameter_Int, &s_TextureCmd_PixelFormatType);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_Width), TextureManager::GetTextureParamValue(E_TextureParam_Width), F_Parameter_UInt, &s_TextureCmd_Width);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_Height), TextureManager::GetTextureParamValue(E_TextureParam_Height), F_Parameter_UInt, &s_TextureCmd_Height);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_Depth), TextureManager::GetTextureParamValue(E_TextureParam_Depth), F_Parameter_UInt, &s_TextureCmd_Depth);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_BitDepthInteger), TextureManager::GetTextureParamValue(E_TextureParam_BitDepthInteger), F_Parameter_UShort, &s_TextureCmd_BitDepthInteger);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_BitDepthFloat), TextureManager::GetTextureParamValue(E_TextureParam_BitDepthFloat), F_Parameter_UShort, &s_TextureCmd_BitDepthFloat);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_IsTreatLuminanceAsAlpha), TextureManager::GetTextureParamValue(E_TextureParam_IsTreatLuminanceAsAlpha), F_Parameter_Bool, &s_TextureCmd_IsTreatLuminanceAsAlpha);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_MipMapsCount), TextureManager::GetTextureParamValue(E_TextureParam_MipMapsCount), F_Parameter_UInt, &s_TextureCmd_MipMapsCount);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_IsMipMapsHardwareGenerated), TextureManager::GetTextureParamValue(E_TextureParam_IsMipMapsHardwareGenerated), F_Parameter_Bool, &s_TextureCmd_IsMipMapsHardwareGenerated);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_Gamma), TextureManager::GetTextureParamValue(E_TextureParam_Gamma), F_Parameter_Float, &s_TextureCmd_Gamma);
+			pDictionary->AddParameter(E_GetTextureParamTypeName(E_TextureParam_IsGammaHardware), TextureManager::GetTextureParamValue(E_TextureParam_IsGammaHardware), F_Parameter_Bool, &s_TextureCmd_IsGammaHardware);
+		}
 
 	Texture::~Texture()
 	{
@@ -135,7 +438,7 @@ namespace LostPeterEngine
 		bool multiImage;
 		if(aImages.size() > 1)
 		{
-			faces = aImages.size();
+			faces = (uint32)aImages.size();
 			multiImage = true;
 		}
 		else
@@ -211,8 +514,10 @@ namespace LostPeterEngine
 					FPixelBox corrected = FPixelBox(src.GetWidth(), src.GetHeight(), src.GetDepth(), src.m_ePixelFormat, pFM->GetBuffer());
 					FPixelFormat::BulkPixelConversion(src,corrected);
 
-					Image::ApplyGamma(static_cast<uint8*>(corrected.m_pData), m_fGamma, corrected.GetConsecutiveSize(), 
-						static_cast<uint8>(FPixelFormat::GetPixelFormatElemBits(src.m_ePixelFormat)));
+					Image::ApplyGamma(static_cast<uint8*>(corrected.m_pData), 
+									  m_fGamma, 
+									  (uint32)corrected.GetConsecutiveSize(), 
+									  static_cast<uint8>(FPixelFormat::GetPixelFormatElemBits(src.m_ePixelFormat)));
 
 					GetTextureStream(i, mip)->BlitFromMemory(corrected);
 					FFileManager::GetSingleton().DeleteFileMemory(pFM);
@@ -224,7 +529,7 @@ namespace LostPeterEngine
 			}
 		}
 
-		m_nSize = GetFacesCount() * FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, m_nDepth, m_ePixelFormat);
+		m_nSize = GetFacesCount() * (uint32)FPixelFormat::GetPixelFormatMemorySize(m_nWidth, m_nHeight, m_nDepth, m_ePixelFormat);
 		return true;
 	}
 

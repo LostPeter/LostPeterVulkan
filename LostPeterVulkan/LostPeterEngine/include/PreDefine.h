@@ -212,7 +212,7 @@ namespace LostPeterEngine
         E_TextureParam_TextureFilterType,                   //2:    TextureFilterType
         E_TextureParam_TextureAddressingType,               //3:    TextureAddressingType
         E_TextureParam_TextureBorderColorType,              //4:    TextureBorderColorType
-        E_TextureParam_MSAASampleCount,                     //5:    MSAASampleCount
+        E_TextureParam_MSAASampleCountType,                 //5:    MSAASampleCountType
         E_TextureParam_PixelFormatType,                     //6:    PixelFormatType
         E_TextureParam_Width,                               //7:    Width
         E_TextureParam_Height,                              //8:    Height

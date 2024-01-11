@@ -105,6 +105,10 @@ namespace LostPeterEngine
 
 		virtual void queueFireBackgroundLoadingComplete();
 		virtual void queueFireBackgroundPreparingComplete();
+
+    protected:
+        virtual void addParameterBase();
+        virtual void addParameterInherit() = 0;
     };
 
 }; //LostPeterEngine

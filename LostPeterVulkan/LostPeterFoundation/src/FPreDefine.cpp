@@ -963,8 +963,8 @@ namespace LostPeterFoundation
     }
     
 
-    //FParamterType
-    static String s_nameParamterTypes[] = 
+    //FParameterType
+    static String s_nameParameterTypes[] = 
     {
         "Void",                     //0:    Void    
         "Bool",                     //1:    Bool
@@ -990,23 +990,23 @@ namespace LostPeterFoundation
         "Color"                     //21:   Color
         "String"                    //22:   String
     };
-    const String& F_GetParamterTypeName(FParamterType type)
+    const String& F_GetParameterTypeName(FParameterType type)
     {
-        return s_nameParamterTypes[(int)type];
+        return s_nameParameterTypes[(int)type];
     }
-    const String& F_GetParamterTypeName(int type)
+    const String& F_GetParameterTypeName(int type)
     {
-        return s_nameParamterTypes[(int)type];
+        return s_nameParameterTypes[(int)type];
     }
-    FParamterType F_ParseFParamterType(const String& strName)
+    FParameterType F_ParseFParameterType(const String& strName)
     {
-        for (int i = 0; i < (int)F_Paramter_Count; i++)
+        for (int i = 0; i < (int)F_Parameter_Count; i++)
         {
-            if (s_nameParamterTypes[i] == strName)
-                return (FParamterType)(i);
+            if (s_nameParameterTypes[i] == strName)
+                return (FParameterType)(i);
         }
-        F_Assert(false && "F_ParseFParamterType: Wrong type name !")
-        return F_Paramter_Void;
+        F_Assert(false && "F_ParseFParameterType: Wrong type name !")
+        return F_Parameter_Void;
     }
 
 

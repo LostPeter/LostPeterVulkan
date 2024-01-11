@@ -43,6 +43,8 @@ namespace LostPeterEngine
             static float ms_fGamma_Default;
             static bool ms_bIsGammaHardware_Default;
 
+        static const String& GetTextureParamValue(ETextureParamType type);
+
         //Set TextureParam
         static void SetTextureParam_Usage(NameValuePairMap& mapParam, uint32 nUsage);
         static void SetTextureParam_TextureType(NameValuePairMap& mapParam, FTextureType eTexture);

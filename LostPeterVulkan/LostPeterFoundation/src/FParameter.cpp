@@ -14,10 +14,10 @@
 namespace LostPeterFoundation
 {
 	////////////////////////// FParameter //////////////////////////
-	FParameter::FParameter(const String& strName, const String& strValue, FParamterType eParamter)
+	FParameter::FParameter(const String& strName, const String& strValue, FParameterType eParameter)
 		: m_strName(strName)
 		, m_strValue(strValue)
-		, m_eParamter(eParamter)
+		, m_eParamter(eParameter)
 	{
 
 	}

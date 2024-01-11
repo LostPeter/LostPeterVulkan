@@ -1417,37 +1417,37 @@ namespace LostPeterFoundation
     const String& F_GetPixelFormatComponentTypeName(int type);
 
 
-    enum FParamterType
+    enum FParameterType
     {
-        F_Paramter_Void	= 0,                                    //0:    Void    
-		F_Paramter_Bool,                                        //1:    Bool
-		F_Paramter_Char,                                        //2:    Char
-		F_Paramter_UChar,                                       //3:    UChar
-		F_Paramter_Short,	                                    //4:    Short
-		F_Paramter_UShort,                                      //5:    UShort
-		F_Paramter_Int,                                         //6:    Int
-		F_Paramter_UInt,                                        //7:    UInt
-		F_Paramter_Long,                                        //8:    Long
-		F_Paramter_ULong,                                       //9:    ULong
-		F_Paramter_Int64,                                       //10:   Int64
-		F_Paramter_UInt64,                                      //11:   UInt64
-		F_Paramter_Float,                                       //12:   Float
-		F_Paramter_Double,                                      //13:   Double
-		F_Paramter_Real,                                        //14:   Real
-		F_Paramter_Vector2,                                     //15:   Vector2
-		F_Paramter_Vector3,                                     //16:   Vector3
-		F_Paramter_Vector4,                                     //17:   Vector4
-		F_Paramter_Matrix3,                                     //18:   Matrix3
-		F_Paramter_Matrix4,                                     //19:   Matrix4
-		F_Paramter_Quaternion,                                  //20:   Quaternion
-		F_Paramter_Color,                                       //21:   Color
-		F_Paramter_String,                                      //22:   String
+        F_Parameter_Void = 0,                                   //0:    Void    
+		F_Parameter_Bool,                                       //1:    Bool
+		F_Parameter_Char,                                       //2:    Char
+		F_Parameter_UChar,                                      //3:    UChar
+		F_Parameter_Short,	                                    //4:    Short
+		F_Parameter_UShort,                                     //5:    UShort
+		F_Parameter_Int,                                        //6:    Int
+		F_Parameter_UInt,                                       //7:    UInt
+		F_Parameter_Long,                                       //8:    Long
+		F_Parameter_ULong,                                      //9:    ULong
+		F_Parameter_Int64,                                      //10:   Int64
+		F_Parameter_UInt64,                                     //11:   UInt64
+		F_Parameter_Float,                                      //12:   Float
+		F_Parameter_Double,                                     //13:   Double
+		F_Parameter_Real,                                       //14:   Real
+		F_Parameter_Vector2,                                    //15:   Vector2
+		F_Parameter_Vector3,                                    //16:   Vector3
+		F_Parameter_Vector4,                                    //17:   Vector4
+		F_Parameter_Matrix3,                                    //18:   Matrix3
+		F_Parameter_Matrix4,                                    //19:   Matrix4
+		F_Parameter_Quaternion,                                 //20:   Quaternion
+		F_Parameter_Color,                                      //21:   Color
+		F_Parameter_String,                                     //22:   String
 
-		F_Paramter_Count
+		F_Parameter_Count
     };
-    foundationExport const String& F_GetParamterTypeName(FParamterType type);
-    foundationExport const String& F_GetParamterTypeName(int type);
-    foundationExport FParamterType F_ParseFParamterType(const String& strName);
+    foundationExport const String& F_GetParameterTypeName(FParameterType type);
+    foundationExport const String& F_GetParameterTypeName(int type);
+    foundationExport FParameterType F_ParseFParameterType(const String& strName);
 
 
 }; //LostPeterFoundation

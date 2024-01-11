@@ -140,7 +140,7 @@ namespace LostPeterEngine
         "TextureFilterType",            //2:    TextureFilterType    
         "TextureAddressingType",        //3:    TextureAddressingType    
         "TextureBorderColorType",       //4:    TextureBorderColorType    
-        "MSAASampleCount",              //5:    MSAASampleCount
+        "MSAASampleCountType",          //5:    MSAASampleCountType
         "PixelFormatType",              //6:    PixelFormatType
         "Width",                        //7:    Width            
         "Height",                       //8:    Height

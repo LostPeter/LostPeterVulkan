@@ -148,8 +148,8 @@ namespace LostPeterEngine
     {
         int width, height;
         glfwGetFramebufferSize(this->m_pWindow, &width, &height);
-        this->m_vFramebufferSize.x = width;
-        this->m_vFramebufferSize.y = height;
+        this->m_vFramebufferSize.x = (float)width;
+        this->m_vFramebufferSize.y = (float)height;
     }
     void WindowBase::RefreshWindowContentScale()
     {
