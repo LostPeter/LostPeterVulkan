@@ -61,6 +61,11 @@ namespace LostPeterPluginRendererVulkan
         return nullptr;
     }
 
+    void VulkanTexture::addParameterInherit()
+    {
+
+    }
+
     void VulkanTexture::destroyInternalResourcesImpl()
     {
         if (this->m_vkBufferStaging != VK_NULL_HANDLE)

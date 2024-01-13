@@ -97,18 +97,24 @@ namespace LostPeterEngine
                                ResourceManualLoader* pManualLoader = nullptr, 
 							   const NameValuePairMap* pLoadParams = nullptr);
 
-		virtual void Unload(const String& strName);
-		virtual void Unload(ResourceHandle nHandle);
+		virtual void Unload(Resource* pResource);
+		virtual Resource* Unload(const String& strName);
+		virtual Resource* Unload(ResourceHandle nHandle);
 		virtual void UnloadAll(bool bReloadableOnly = true);
 		virtual void UnloadUnreferencedResources(bool bReloadableOnly = true);
 		
 		virtual void ReloadAll(bool bReloadableOnly = true);
 		virtual void ReloadUnreferencedResources(bool bReloadableOnly = true);
 
-		virtual void Remove(Resource* pResource);
-		virtual void Remove(const String& strName);
-		virtual void Remove(ResourceHandle nHandle);
+		virtual Resource* Remove(Resource* pResource);
+		virtual Resource* Remove(const String& strName);
+		virtual Resource* Remove(ResourceHandle nHandle);
 		virtual void RemoveAll();
+		
+		virtual void Delete(Resource* pResource);
+		virtual void Delete(const String& strName);
+		virtual void Delete(ResourceHandle nHandle);
+		virtual void DeleteAll();
     
 		virtual void _NotifyResourceTouched(Resource* pResource);
 		virtual void _NotifyResourceLoaded(Resource* pResource);

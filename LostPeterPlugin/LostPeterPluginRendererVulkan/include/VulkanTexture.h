@@ -70,10 +70,12 @@ namespace LostPeterPluginRendererVulkan
     public:
         
 
-       
-        
     protected:
 
+       
+    ////Resource
+    protected:
+        virtual void addParameterInherit();
 
     ////Texture
     public:

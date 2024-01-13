@@ -35,7 +35,7 @@ namespace LostPeterEngine
 
     void ResourceManager::Destroy()
     {
-        RemoveAll();
+		
     }
 
     Resource* ResourceManager::GetResourceByName(const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
@@ -112,7 +112,9 @@ namespace LostPeterEngine
         }
 
 		if (pLoadParams)
+		{
 			pResource->SetParameterMap(*pLoadParams);
+		}
 
 		addImpl(pResource);
 		ResourceGroupManager::GetSingleton()._NotifyResourceCreated(pResource);
@@ -176,23 +178,32 @@ namespace LostPeterEngine
 		pResource->Load();
 		return pResource;
 	}
-	void ResourceManager::Unload(const String& strName)
+
+	void ResourceManager::Unload(Resource* pResource)
+	{
+		if (pResource != nullptr)
+		{
+			pResource->Unload();
+		}
+	}
+	Resource* ResourceManager::Unload(const String& strName)
 	{
 		Resource* pResource = GetResourceByName(strName);
 		if (pResource != nullptr)
 		{
 			pResource->Unload();
 		}
+		return pResource;
 	}
-	void ResourceManager::Unload(ResourceHandle nHandle)
+	Resource* ResourceManager::Unload(ResourceHandle nHandle)
 	{
 		Resource* pResource = GetResourceByHandle(nHandle);
 		if (pResource != nullptr)
 		{
 			pResource->Unload();
 		}
+		return pResource;
 	}	
-
 	void ResourceManager::UnloadAll(bool bReloadableOnly /*= true*/)
 	{
 		for (ResourcePtrMap::iterator it = m_mapResource.begin(); 
@@ -205,7 +216,6 @@ namespace LostPeterEngine
 			}
 		}
 	}
-
 	void ResourceManager::UnloadUnreferencedResources(bool bReloadableOnly /*= true*/)
 	{
 		for (ResourcePtrMap::iterator it = m_mapResource.begin(); 
@@ -234,7 +244,6 @@ namespace LostPeterEngine
 			}
 		}
 	}
-	
 	void ResourceManager::ReloadUnreferencedResources(bool bReloadableOnly /*= true*/)
 	{
 		for (ResourcePtrMap::iterator it = m_mapResource.begin(); 
@@ -251,25 +260,28 @@ namespace LostPeterEngine
 		}
 	}
 
-	void ResourceManager::Remove(Resource* pResource)
+	Resource* ResourceManager::Remove(Resource* pResource)
 	{
 		removeImpl(pResource);
+		return pResource;
 	}
-	void ResourceManager::Remove(const String& strName)
+	Resource* ResourceManager::Remove(const String& strName)
 	{
 		Resource* pResource = GetResourceByName(strName);
 		if (pResource != nullptr)
 		{
 			removeImpl(pResource);
 		}
+		return pResource;
 	}
-	void ResourceManager::Remove(ResourceHandle nHandle)
+	Resource* ResourceManager::Remove(ResourceHandle nHandle)
 	{
 		Resource* pResource = GetResourceByHandle(nHandle);
 		if (pResource != nullptr)
 		{
 			removeImpl(pResource);
 		}
+		return pResource;
 	}
 	void ResourceManager::RemoveAll()
 	{
@@ -278,6 +290,41 @@ namespace LostPeterEngine
 		m_mapResourcesByHandle.clear();
 
 		ResourceGroupManager::GetSingleton()._NotifyAllResourcesRemoved(this);
+	}
+
+	void ResourceManager::Delete(Resource* pResource)
+	{
+		if (pResource != nullptr)
+		{
+			pResource->DelRef();
+			if (pResource->CanDel())
+			{
+				pResource->Unload();
+				Remove(pResource);
+				F_DELETE(pResource)
+			}
+		}
+	}
+	void ResourceManager::Delete(const String& strName)
+	{
+		Resource* pResource = GetResourceByName(strName);
+		Delete(pResource);
+	}
+	void ResourceManager::Delete(ResourceHandle nHandle)
+	{
+		Resource* pResource = GetResourceByHandle(nHandle);
+		Delete(pResource);
+	}
+	void ResourceManager::DeleteAll()
+	{
+		for (ResourcePtrMap::iterator it = m_mapResource.begin(); 
+             it != m_mapResource.end(); ++it)
+		{
+            Resource* pResource = it->second;
+			pResource->Unload();
+			F_DELETE(pResource)
+		}
+		RemoveAll();
 	}
 
 	void ResourceManager::_NotifyResourceTouched(Resource* pResource)
@@ -372,7 +419,7 @@ namespace LostPeterEngine
 
 	void ResourceManager::removeImpl(Resource* pResource)
 	{	
-		if(ResourceGroupManager::GetSingleton().IsResourceGroupInGlobalPool(pResource->GetGroupName()))
+		if (ResourceGroupManager::GetSingleton().IsResourceGroupInGlobalPool(pResource->GetGroupName()))
 		{
 			ResourcePtrMap::iterator itFind = m_mapResource.find(pResource->GetName());
 			if (itFind != m_mapResource.end())

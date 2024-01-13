@@ -535,7 +535,7 @@ namespace LostPeterEngine
 
 	void Texture::loadImpl()
 	{
-
+		createInternalResources();
 	}
 	void Texture::unloadImpl()
 	{

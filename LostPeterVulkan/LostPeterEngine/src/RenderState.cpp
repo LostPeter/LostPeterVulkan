@@ -163,7 +163,7 @@ namespace LostPeterEngine
 	{
 		if (pTexture != nullptr)
 		{
-			TextureManager::GetSingleton().UnloadTexture(pTexture);
+			TextureManager::GetSingleton().Delete(pTexture);
 		}
 		pTexture = nullptr;
 	}

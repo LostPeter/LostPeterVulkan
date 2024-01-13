@@ -357,7 +357,6 @@ namespace LostPeterEngine
     void TextureManager::Destroy()
     {
         F_DELETE(m_pTextureSerializer)
-        DeleteTextureAll();
     }
     bool TextureManager::Init(uint nGroup, const String& strNameCfg)
     {
@@ -380,35 +379,18 @@ namespace LostPeterEngine
         return true;
     }
 
-    bool TextureManager::LoadTextureAll()
-    {
-        if (m_pTextureSerializer == nullptr)
-            return false;
-
-        DeleteTextureAll();
-        TextureInfoPtrVector& aTextureInfos = m_pTextureSerializer->GetTextureInfoPtrVector();
-        for (TextureInfoPtrVector::iterator it = aTextureInfos.begin();
-             it != aTextureInfos.end(); ++it)
-        {
-            if (!loadTexture(*it))
-                continue;
-        }
-
-        return true;
-    }
-
-    Texture* TextureManager::LoadTexture(uint nGroup, const String& strName)
+    Texture* TextureManager::LoadTexture(uint nGroup, const String& strName, const String& strGroupName /*= ResourceGroupManager::ms_strNameResourceGroup_AutoDetect*/)
     {
         if (m_pTextureSerializer == nullptr)
             return nullptr;
 
-        Texture* pTexture = GetTexture(nGroup, strName);
+        Texture* pTexture = GetTexture(strName, strGroupName);
         if (pTexture == nullptr)
         {
             TextureInfo* pTextureInfo = m_pTextureSerializer->GetTextureInfo(nGroup, strName);
             if (pTextureInfo == nullptr)
             {
-                F_LogError("*********************** TextureManager::LoadTexture: Can not find texture info, group: [%u], name: [%s] !", nGroup, strName.c_str());
+                F_LogError("*********************** TextureManager::LoadTexture: Can not find texture info, group: [%u], name: [%s], groupName: [%s] !", nGroup, strName.c_str(), strGroupName.c_str());
                 return nullptr;
             }
             if (!loadTexture(pTextureInfo))
@@ -424,103 +406,31 @@ namespace LostPeterEngine
         StringVector aPathTexture = FUtilString::Split(pTI->pathTexture, ";");
         Texture* pTexture = nullptr;
 
-        // if (AddTexture(pTI->group, pTexture))
-        // {
-        //     F_LogInfo("TextureManager::loadTexture: Load texture success, [%u]-[%s]-[%s] !",
-        //               pTI->group, 
-        //               pTI->nameTexture.c_str(), 
-        //               pTI->pathTexture.c_str());
-        // }
+        
         return pTexture;
     }
-    void TextureManager::UnloadTexture(Texture* pTexture)
-    {
-        if (pTexture == nullptr)
-            return;
-        pTexture->DelRef();
-        if (!HasRef())
-        {
-            DeleteTexture(pTexture->GetGroup(), pTexture->GetName());
-        }
-    }
 
-    bool TextureManager::HasTexture(uint nGroup, const String& strName)
+    bool TextureManager::HasTexture(const String& strName)
     {
-        return GetTexture(nGroup, strName) != nullptr;
+        return GetResourceByName(strName) != nullptr;
     }
-
-    Texture* TextureManager::GetTexture(uint nGroup, const String& strName)
+    bool TextureManager::HasTexture(const String& strName, const String& strGroupName)
     {
-        TextureGroupPtrMap::iterator itFindGroup = m_mapTextureGroup.find(nGroup);
-        if (itFindGroup == m_mapTextureGroup.end())
-        {
+        return GetResourceByName(strName, strGroupName) != nullptr;
+    }
+    Texture* TextureManager::GetTexture(const String& strName)
+    {
+        Resource* pResource = GetResourceByName(strName);
+        if (pResource == nullptr)
             return nullptr;
-        }
-
-        TexturePtrMap::iterator itFindTexture = itFindGroup->second.find(strName);
-        if (itFindTexture == itFindGroup->second.end())
-        {
+        return (Texture*)pResource;
+    }
+    Texture* TextureManager::GetTexture(const String& strName, const String& strGroupName)
+    {
+        Resource* pResource = GetResourceByName(strName, strGroupName);
+        if (pResource == nullptr)
             return nullptr;
-        }
-        return itFindTexture->second;
-    }
-
-    bool TextureManager::AddTexture(uint nGroup, Texture* pTexture)
-    {
-        TextureGroupPtrMap::iterator itFind = m_mapTextureGroup.find(nGroup);
-        if (itFind == m_mapTextureGroup.end())
-        {
-            TexturePtrMap mapTexture;
-            m_mapTextureGroup[nGroup] = mapTexture;
-            itFind = m_mapTextureGroup.find(nGroup);
-        }
-        const String& strName = pTexture->GetName();
-        TexturePtrMap::iterator itFindTexture = itFind->second.find(strName);
-        if (itFindTexture != itFind->second.end())
-        {
-            F_LogError("*********************** TextureManager::AddTexture: Texture name already exist: [%s] !", strName.c_str());
-            F_DELETE(pTexture)
-            return false;
-        }
-
-        itFind->second.insert(TexturePtrMap::value_type(strName, pTexture));
-        m_aTexture.push_back(pTexture);
-        return true;
-    }
-
-    void TextureManager::DeleteTexture(uint nGroup, const String& strName)
-    {
-        TextureGroupPtrMap::iterator itFind = m_mapTextureGroup.find(nGroup);
-        if (itFind == m_mapTextureGroup.end())
-        {
-            return;
-        }
-
-        TexturePtrMap::iterator itFindTexture = itFind->second.find(strName);
-        if (itFindTexture != itFind->second.end())
-        {
-            TexturePtrVector::iterator itFindA = std::find(m_aTexture.begin(), m_aTexture.end(), itFindTexture->second);
-            if (itFindA != m_aTexture.end())
-                m_aTexture.erase(itFindA);
-            F_DELETE(itFindTexture->second)
-            itFind->second.erase(itFindTexture);
-        }
-    }
-
-    void TextureManager::DeleteTextureAll()
-    {
-        for (TextureGroupPtrMap::iterator it = m_mapTextureGroup.begin();
-             it != m_mapTextureGroup.end(); ++it)
-        {
-            TexturePtrMap& mapTexture = it->second;
-            for (TexturePtrMap::iterator itTexture = mapTexture.begin(); 
-                 itTexture != mapTexture.end(); ++itTexture)
-            {
-                F_DELETE(itTexture->second)
-            }
-        }
-        m_aTexture.clear();
-        m_mapTextureGroup.clear();
+        return (Texture*)pResource;
     }
 
     void TextureManager::SetBitDepthIntegerPreferred(uint16 nBitDepthIntegerPreferred, bool bReloadTextures /*= true*/)
@@ -529,10 +439,10 @@ namespace LostPeterEngine
 
 		if (bReloadTextures)
 		{		
-			for (TexturePtrVector::iterator it = m_aTexture.begin(); 
-				 it != m_aTexture.end(); ++it)
+			for (ResourcePtrMap::iterator it = m_mapResource.begin(); 
+				 it != m_mapResource.end(); ++it)
 			{
-				Texture* pTexture = (*it);
+				Texture* pTexture = (Texture*)it->second;
 				if (pTexture->IsLoaded() && !pTexture->IsManualLoad())
 				{
 					pTexture->Unload();
@@ -553,10 +463,10 @@ namespace LostPeterEngine
 
 		if (bReloadTextures)
 		{		
-			for (TexturePtrVector::iterator it = m_aTexture.begin(); 
-				 it != m_aTexture.end(); ++it)
+			for (ResourcePtrMap::iterator it = m_mapResource.begin(); 
+				 it != m_mapResource.end(); ++it)
 			{
-				Texture* pTexture = (*it);
+				Texture* pTexture = (Texture*)it->second;
 				if (pTexture->IsLoaded() && !pTexture->IsManualLoad())
 				{
 					pTexture->Unload();
@@ -578,10 +488,10 @@ namespace LostPeterEngine
 
 		if (bReloadTextures)
 		{
-			for (TexturePtrVector::iterator it = m_aTexture.begin(); 
-				 it != m_aTexture.end(); ++it)
+			for (ResourcePtrMap::iterator it = m_mapResource.begin(); 
+				 it != m_mapResource.end(); ++it)
 			{
-				Texture* pTexture = (*it);
+				Texture* pTexture = (Texture*)it->second;
 				if (pTexture->IsLoaded() && !pTexture->IsManualLoad())
 				{
 					pTexture->Unload();
@@ -608,29 +518,29 @@ namespace LostPeterEngine
 	}
 
 
-    ResourceCreateOrRetrieveResult TextureManager::CreateOrRetrieve(uint32 nGroup, 
-                                                                    const String& strName, 
-                                                                    const String& strGroupName, 
-                                                                    bool bIsManualLoad /*= false*/,
-                                                                    ResourceManualLoader* pManualLoader /*= nullptr*/, 
-                                                                    const NameValuePairMap* pLoadParams /*= nullptr*/,
-                                                                    uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
-                                                                    FTextureType eTexture /*= TextureManager::ms_nUsage_Default*/, 
-                                                                    FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
-                                                                    FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
-                                                                    FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
-                                                                    FMSAASampleCountType eMSAASampleCount /*= TextureManager::ms_eMSAASampleCount_Default*/,
-                                                                    FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
-                                                                    uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
-                                                                    uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
-                                                                    uint32 nDepth /*= TextureManager::ms_nDepth_Default*/,
-                                                                    uint16 nBitDepthInteger /*= TextureManager::ms_nBitDepthInteger_Default*/,
-                                                                    uint16 nBitDepthFloat /*= TextureManager::ms_nBitDepthFloat_Default*/,
-                                                                    bool bIsTreatLuminanceAsAlpha /*= TextureManager::ms_bIsTreatLuminanceAsAlpha_Default*/,
-                                                                    int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
-                                                                    bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
-                                                                    float fGamma /*= TextureManager::ms_fGamma_Default*/,
-                                                                    bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
+    ResourceCreateOrRetrieveResult TextureManager::CreateOrRetrieveTexture(uint32 nGroup, 
+                                                                           const String& strName, 
+                                                                           const String& strGroupName, 
+                                                                           bool bIsManualLoad /*= false*/,
+                                                                           ResourceManualLoader* pManualLoader /*= nullptr*/, 
+                                                                           const NameValuePairMap* pLoadParams /*= nullptr*/,
+                                                                           uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
+                                                                           FTextureType eTexture /*= TextureManager::ms_nUsage_Default*/, 
+                                                                           FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
+                                                                           FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
+                                                                           FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
+                                                                           FMSAASampleCountType eMSAASampleCount /*= TextureManager::ms_eMSAASampleCount_Default*/,
+                                                                           FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
+                                                                           uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
+                                                                           uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
+                                                                           uint32 nDepth /*= TextureManager::ms_nDepth_Default*/,
+                                                                           uint16 nBitDepthInteger /*= TextureManager::ms_nBitDepthInteger_Default*/,
+                                                                           uint16 nBitDepthFloat /*= TextureManager::ms_nBitDepthFloat_Default*/,
+                                                                           bool bIsTreatLuminanceAsAlpha /*= TextureManager::ms_bIsTreatLuminanceAsAlpha_Default*/,
+                                                                           int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
+                                                                           bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
+                                                                           float fGamma /*= TextureManager::ms_fGamma_Default*/,
+                                                                           bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
     {
         NameValuePairMap mapTextureParam;
         if (bIsManualLoad && pLoadParams)
@@ -638,27 +548,38 @@ namespace LostPeterEngine
             FUtil::CopyNameValuePairMapTo(pLoadParams, &mapTextureParam);
         }
 
-
         ResourceCreateOrRetrieveResult result = ResourceManager::CreateOrRetrieve(nGroup,
                                                                                   strName,
                                                                                   strGroupName,
                                                                                   bIsManualLoad,
                                                                                   pManualLoader,
                                                                                   &mapTextureParam);
-		if (!result.second || !result.second)
+		if (!result.first || !result.second)
 		{
-            F_LogError("*********************** TextureManager::CreateOrRetrieve: CreateOrRetrieve texture failed, group: [%d], name: [%s]", nGroup, strName.c_str());
-			//Texture* pTexture = (Texture*)result.first;
-			// pTexture->SetTextureType(eTexture);
-			// pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
-			// pTexture->SetGamma(fGamma);
-			// pTexture->SetIsTreatLuminanceAsAlpha(bIsTreatLuminanceAsAlpha);
-			// pTexture->SetPixelFormat(ePixelFormat);
-			// pTexture->SetIsGammaHardware(bIsHWGammaCorrection);
+            F_LogError("*********************** TextureManager::CreateOrRetrieveTexture: CreateOrRetrieve resource failed, group: [%d], name: [%s]", nGroup, strName.c_str());
+			return result;
 		}
+
+        Texture* pTexture = (Texture*)result.first;
+        pTexture->SetUsage(nUsage);
+        pTexture->SetTextureType(eTexture);
+        pTexture->SetTextureFilterType(eTextureFilter);
+        pTexture->SetTextureAddressingType(eTextureAddressing);
+        pTexture->SetTextureBorderColorType(eTextureBorderColor);
+        pTexture->SetMSAASampleCountType(eMSAASampleCount);
+        pTexture->SetPixelFormat(ePixelFormat);
+        pTexture->SetWidth(nWidth);
+        pTexture->SetHeight(nHeight);
+        pTexture->SetDepth(nDepth);
+        pTexture->SetBitDepthsDesired(nBitDepthInteger, nBitDepthFloat);
+        pTexture->SetIsTreatLuminanceAsAlpha(bIsTreatLuminanceAsAlpha);
+        pTexture->SetMipMapsCount(nMipMapsCount);
+        pTexture->SetIsMipMapsHardwareGenerated(bIsMipMapsHardwareGenerated);
+        pTexture->SetGamma(fGamma);
+        pTexture->SetIsGammaHardware(bIsGammaHardware);
+
 		return result;
     }
-
 
     Texture* TextureManager::Prepare(uint32 nGroup, 
                                      const String& strName, 
@@ -681,171 +602,141 @@ namespace LostPeterEngine
                                      float fGamma /*= TextureManager::ms_fGamma_Default*/,
                                      bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
     {
-        ResourceCreateOrRetrieveResult result = CreateOrRetrieve(nGroup,
-                                                                 strName,
-                                                                 strGroupName,
-                                                                 false,
-                                                                 nullptr,
-                                                                 nullptr,
-                                                                 nUsage,
-                                                                 eTexture,
-                                                                 eTextureFilter,
-                                                                 eTextureAddressing,
-                                                                 eTextureBorderColor,
-                                                                 eMSAASampleCount,
-                                                                 ePixelFormat,
-                                                                 nWidth,
-                                                                 nHeight,
-                                                                 nDepth,
-                                                                 nBitDepthInteger,
-                                                                 nBitDepthFloat,
-                                                                 bIsTreatLuminanceAsAlpha,
-                                                                 nMipMapsCount,
-                                                                 bIsMipMapsHardwareGenerated,
-                                                                 fGamma,
-                                                                 bIsGammaHardware);
+        ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(nGroup,
+                                                                        strName,
+                                                                        strGroupName,
+                                                                        false,
+                                                                        nullptr,
+                                                                        nullptr,
+                                                                        nUsage,
+                                                                        eTexture,
+                                                                        eTextureFilter,
+                                                                        eTextureAddressing,
+                                                                        eTextureBorderColor,
+                                                                        eMSAASampleCount,
+                                                                        ePixelFormat,
+                                                                        nWidth,
+                                                                        nHeight,
+                                                                        nDepth,
+                                                                        nBitDepthInteger,
+                                                                        nBitDepthFloat,
+                                                                        bIsTreatLuminanceAsAlpha,
+                                                                        nMipMapsCount,
+                                                                        bIsMipMapsHardwareGenerated,
+                                                                        fGamma,
+                                                                        bIsGammaHardware);
 		Texture* pTexture = (Texture*)result.first;
         if (!pTexture)
             return nullptr;
 		pTexture->Prepare();
+
 		return pTexture;
     }
-
-
-    Texture* TextureManager::Load(uint32 nGroup, 
-                                  const String& strName, 
-                                  const String& strGroupName, 
-                                  uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
-                                  FTextureType eTexture /*= TextureManager::ms_nUsage_Default*/, 
-                                  FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
-                                  FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
-                                  FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
-                                  FMSAASampleCountType eMSAASampleCount /*= TextureManager::ms_eMSAASampleCount_Default*/,
-                                  FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
-                                  uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
-                                  uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
-                                  uint32 nDepth /*= TextureManager::ms_nDepth_Default*/,
-                                  uint16 nBitDepthInteger /*= TextureManager::ms_nBitDepthInteger_Default*/,
-                                  uint16 nBitDepthFloat /*= TextureManager::ms_nBitDepthFloat_Default*/,
-                                  bool bIsTreatLuminanceAsAlpha /*= TextureManager::ms_bIsTreatLuminanceAsAlpha_Default*/,
-                                  int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
-                                  bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
-                                  float fGamma /*= TextureManager::ms_fGamma_Default*/,
-                                  bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
-    {
-        ResourceCreateOrRetrieveResult result = CreateOrRetrieve(nGroup,
-                                                                 strName,
-                                                                 strGroupName,
-                                                                 false,
-                                                                 nullptr,
-                                                                 nullptr,
-                                                                 nUsage,
-                                                                 eTexture,
-                                                                 eTextureFilter,
-                                                                 eTextureAddressing,
-                                                                 eTextureBorderColor,
-                                                                 eMSAASampleCount,
-                                                                 ePixelFormat,
-                                                                 nWidth,
-                                                                 nHeight,
-                                                                 nDepth,
-                                                                 nBitDepthInteger,
-                                                                 nBitDepthFloat,
-                                                                 bIsTreatLuminanceAsAlpha,
-                                                                 nMipMapsCount,
-                                                                 bIsMipMapsHardwareGenerated,
-                                                                 fGamma,
-                                                                 bIsGammaHardware);
-		Texture* pTexture = (Texture*)result.first;
-        if (!pTexture)
-            return nullptr;
-		pTexture->Load();
-		return pTexture;
-    }
-
 
     Texture* TextureManager::CreateTexture(uint32 nGroup, 
                                            const String& strName, 
                                            const String& strGroupName, 
-                                           FTextureType eTexture /*= F_Texture_2D*/, 
-                                           int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
-				                           float fGamma /*= 1.0f*/, 
-                                           bool bIsTreatLuminanceAsAlpha /*= false*/, 
-                                           FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
-                                           bool bUseMemoryImage /*= false*/,
-				                           bool bBackground /*= true*/, 
-                                           uint16 nRecoveryGroupID /*= 0*/)
-	{
-		Texture* pTexture = GetTexture(nGroup, strName);
-		if (pTexture)
-		{
-			pTexture->AddRef();
-			return pTexture;
-		}
+                                           uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
+                                           FTextureType eTexture /*= TextureManager::ms_nUsage_Default*/, 
+                                           FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
+                                           FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
+                                           FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
+                                           FMSAASampleCountType eMSAASampleCount /*= TextureManager::ms_eMSAASampleCount_Default*/,
+                                           FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
+                                           uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
+                                           uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
+                                           uint32 nDepth /*= TextureManager::ms_nDepth_Default*/,
+                                           uint16 nBitDepthInteger /*= TextureManager::ms_nBitDepthInteger_Default*/,
+                                           uint16 nBitDepthFloat /*= TextureManager::ms_nBitDepthFloat_Default*/,
+                                           bool bIsTreatLuminanceAsAlpha /*= TextureManager::ms_bIsTreatLuminanceAsAlpha_Default*/,
+                                           int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
+                                           bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
+                                           float fGamma /*= TextureManager::ms_fGamma_Default*/,
+                                           bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
+    {
+        ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(nGroup,
+                                                                        strName,
+                                                                        strGroupName,
+                                                                        false,
+                                                                        nullptr,
+                                                                        nullptr,
+                                                                        nUsage,
+                                                                        eTexture,
+                                                                        eTextureFilter,
+                                                                        eTextureAddressing,
+                                                                        eTextureBorderColor,
+                                                                        eMSAASampleCount,
+                                                                        ePixelFormat,
+                                                                        nWidth,
+                                                                        nHeight,
+                                                                        nDepth,
+                                                                        nBitDepthInteger,
+                                                                        nBitDepthFloat,
+                                                                        bIsTreatLuminanceAsAlpha,
+                                                                        nMipMapsCount,
+                                                                        bIsMipMapsHardwareGenerated,
+                                                                        fGamma,
+                                                                        bIsGammaHardware);
+		Texture* pTexture = (Texture*)result.first;
+        if (!pTexture)
+            return nullptr;
+		pTexture->Load();
 
-        NameValuePairMap mapParams;
-		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
-		pTexture = (Texture*)createImpl(nGroup, 
-                                        strName, 
-                                        strGroupName,
-                                        getNextHandle(),
-                                        false,
-                                        nullptr,
-                                        &mapParams);
-		pTexture->AddRef();
-		
-        pTexture->SetTextureType(eTexture);
-        pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
-        pTexture->SetGamma(fGamma);
-        pTexture->SetIsTreatLuminanceAsAlpha(bIsTreatLuminanceAsAlpha);
-        pTexture->SetPixelFormat(ePixelFormat);
-        pTexture->Load();
-
-        AddTexture(nGroup, pTexture);
-        return pTexture;
-	}
+        pTexture->AddRef();
+		return pTexture;
+    }
 
 	Texture* TextureManager::CreateTextureManual(uint32 nGroup, 
                                                  const String& strName, 
                                                  const String& strGroupName, 
                                                  ResourceManualLoader* pManualLoader,
-                                                 FTextureType eTexture, 
-                                                 uint32 nWidth, 
-                                                 uint32 nHeight, 
-                                                 uint32 nDepth, 
-		                                         int32 nMipMapsCount, 
-                                                 FPixelFormatType ePixelFormat, 
-                                                 uint32 nUsage /*= E_TextureUsage_Default*/, 
-                                                 bool bUseMemoryImage /*= false*/)
+                                                 uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
+                                                 FTextureType eTexture /*= TextureManager::ms_nUsage_Default*/, 
+                                                 FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
+                                                 FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
+                                                 FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
+                                                 FMSAASampleCountType eMSAASampleCount /*= TextureManager::ms_eMSAASampleCount_Default*/,
+                                                 FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
+                                                 uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
+                                                 uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
+                                                 uint32 nDepth /*= TextureManager::ms_nDepth_Default*/,
+                                                 uint16 nBitDepthInteger /*= TextureManager::ms_nBitDepthInteger_Default*/,
+                                                 uint16 nBitDepthFloat /*= TextureManager::ms_nBitDepthFloat_Default*/,
+                                                 bool bIsTreatLuminanceAsAlpha /*= TextureManager::ms_bIsTreatLuminanceAsAlpha_Default*/,
+                                                 int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
+                                                 bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
+                                                 float fGamma /*= TextureManager::ms_fGamma_Default*/,
+                                                 bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
 	{
-		Texture* pTexture = GetTexture(nGroup, strName);
-		if (pTexture)
-		{
-			pTexture->AddRef();
-			return pTexture;
-		}
+		ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(nGroup,
+                                                                        strName,
+                                                                        strGroupName,
+                                                                        false,
+                                                                        pManualLoader,
+                                                                        nullptr,
+                                                                        nUsage,
+                                                                        eTexture,
+                                                                        eTextureFilter,
+                                                                        eTextureAddressing,
+                                                                        eTextureBorderColor,
+                                                                        eMSAASampleCount,
+                                                                        ePixelFormat,
+                                                                        nWidth,
+                                                                        nHeight,
+                                                                        nDepth,
+                                                                        nBitDepthInteger,
+                                                                        nBitDepthFloat,
+                                                                        bIsTreatLuminanceAsAlpha,
+                                                                        nMipMapsCount,
+                                                                        bIsMipMapsHardwareGenerated,
+                                                                        fGamma,
+                                                                        bIsGammaHardware);
+		Texture* pTexture = (Texture*)result.first;
+        if (!pTexture)
+            return nullptr;
+		pTexture->Load();
 
-        NameValuePairMap mapParams;
-		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
-		pTexture = (Texture*)createImpl(nGroup, 
-                                        strName, 
-                                        strGroupName,
-                                        getNextHandle(),
-                                        true,
-                                        pManualLoader,
-                                        &mapParams);
-		pTexture->AddRef();
-
-		pTexture->SetTextureType(eTexture);
-		pTexture->SetWidth(nWidth);
-		pTexture->SetHeight(nHeight);
-		pTexture->SetDepth(nDepth);
-		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
-		pTexture->SetPixelFormat(ePixelFormat);
-		pTexture->SetUsage(nUsage);
-		pTexture->createInternalResources();
-
-        AddTexture(nGroup, pTexture);
+        pTexture->AddRef();
 		return pTexture;
 	}
 
@@ -853,36 +744,50 @@ namespace LostPeterEngine
                                                     const String& strName, 
                                                     const String& strGroupName, 
                                                     Image* pImage, 
-                                                    FTextureType eTexture /*= F_Texture_2D*/,
-				                                    int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
-                                                    float fGamma /*= 1.0f*/, 
-                                                    bool bIsTreatLuminanceAsAlpha /*= false*/,
-				                                    FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
-                                                    bool bUseMemoryImage /*= false*/)
+                                                    uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
+                                                    FTextureType eTexture /*= TextureManager::ms_nUsage_Default*/, 
+                                                    FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
+                                                    FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
+                                                    FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
+                                                    FMSAASampleCountType eMSAASampleCount /*= TextureManager::ms_eMSAASampleCount_Default*/,
+                                                    FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
+                                                    uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
+                                                    uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
+                                                    uint32 nDepth /*= TextureManager::ms_nDepth_Default*/,
+                                                    uint16 nBitDepthInteger /*= TextureManager::ms_nBitDepthInteger_Default*/,
+                                                    uint16 nBitDepthFloat /*= TextureManager::ms_nBitDepthFloat_Default*/,
+                                                    bool bIsTreatLuminanceAsAlpha /*= TextureManager::ms_bIsTreatLuminanceAsAlpha_Default*/,
+                                                    int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
+                                                    bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
+                                                    float fGamma /*= TextureManager::ms_fGamma_Default*/,
+                                                    bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
 	{
-		Texture* pTexture = GetTexture(nGroup, strName);
-		if (pTexture)
-		{
-			pTexture->AddRef();
-			return pTexture;
-		}
-
-        NameValuePairMap mapParams;
-		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
-		pTexture = (Texture*)createImpl(nGroup, 
-                                        strName, 
-                                        strGroupName,
-                                        getNextHandle(),
-                                        false,
-                                        nullptr,
-                                        &mapParams);
-		pTexture->AddRef();
-		
-		pTexture->SetTextureType(eTexture);
-		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
-		pTexture->SetGamma(fGamma);
-		pTexture->SetIsTreatLuminanceAsAlpha(bIsTreatLuminanceAsAlpha);
-		pTexture->SetPixelFormat(ePixelFormat);
+		ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(nGroup,
+                                                                        strName,
+                                                                        strGroupName,
+                                                                        false,
+                                                                        nullptr,
+                                                                        nullptr,
+                                                                        nUsage,
+                                                                        eTexture,
+                                                                        eTextureFilter,
+                                                                        eTextureAddressing,
+                                                                        eTextureBorderColor,
+                                                                        eMSAASampleCount,
+                                                                        ePixelFormat,
+                                                                        nWidth,
+                                                                        nHeight,
+                                                                        nDepth,
+                                                                        nBitDepthInteger,
+                                                                        nBitDepthFloat,
+                                                                        bIsTreatLuminanceAsAlpha,
+                                                                        nMipMapsCount,
+                                                                        bIsMipMapsHardwareGenerated,
+                                                                        fGamma,
+                                                                        bIsGammaHardware);
+        Texture* pTexture = (Texture*)result.first;
+        if (!pTexture)
+            return nullptr;
 		if (!pTexture->LoadFromImage(pImage))
         {
             F_LogError("*********************** TextureManager::CreateTextureFromImage: Load texture from image failed, group: [%d], name: [%s]", nGroup, strName.c_str());
@@ -890,7 +795,7 @@ namespace LostPeterEngine
             return nullptr;
         }
 
-        AddTexture(nGroup, pTexture);
+        pTexture->AddRef();
 		return pTexture;
 	}
 
@@ -898,36 +803,50 @@ namespace LostPeterEngine
                                                        const String& strName, 
                                                        const String& strGroupName, 
                                                        FFileMemory* pInput, 
-                                                       FTextureType eTexture /*= F_Texture_2D*/,
-                                                       int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
-                                                       float fGamma /*= 1.0f*/, 
-                                                       bool bIsTreatLuminanceAsAlpha /*= false*/,
-                                                       FPixelFormatType ePixelFormat /*= F_PixelFormat_Unknown*/, 
-                                                       bool bUseMemoryImage /*= false*/)
+                                                       uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
+                                                       FTextureType eTexture /*= TextureManager::ms_nUsage_Default*/, 
+                                                       FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
+                                                       FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
+                                                       FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
+                                                       FMSAASampleCountType eMSAASampleCount /*= TextureManager::ms_eMSAASampleCount_Default*/,
+                                                       FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
+                                                       uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
+                                                       uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
+                                                       uint32 nDepth /*= TextureManager::ms_nDepth_Default*/,
+                                                       uint16 nBitDepthInteger /*= TextureManager::ms_nBitDepthInteger_Default*/,
+                                                       uint16 nBitDepthFloat /*= TextureManager::ms_nBitDepthFloat_Default*/,
+                                                       bool bIsTreatLuminanceAsAlpha /*= TextureManager::ms_bIsTreatLuminanceAsAlpha_Default*/,
+                                                       int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
+                                                       bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
+                                                       float fGamma /*= TextureManager::ms_fGamma_Default*/,
+                                                       bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
 	{
-		Texture* pTexture = GetTexture(nGroup, strName);
-		if (pTexture)
-		{
-			pTexture->AddRef();
-			return pTexture;
-		}
-
-        NameValuePairMap mapParams;
-		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
-		pTexture = (Texture*)createImpl(nGroup, 
-                                        strName, 
-                                        strGroupName,
-                                        getNextHandle(),
-                                        false,
-                                        nullptr,
-                                        &mapParams);
-		pTexture->AddRef();
-
-		pTexture->SetTextureType(eTexture);
-		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
-		pTexture->SetGamma(fGamma);
-		pTexture->SetIsTreatLuminanceAsAlpha(bIsTreatLuminanceAsAlpha);
-		pTexture->SetPixelFormat(ePixelFormat);
+		ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(nGroup,
+                                                                        strName,
+                                                                        strGroupName,
+                                                                        false,
+                                                                        nullptr,
+                                                                        nullptr,
+                                                                        nUsage,
+                                                                        eTexture,
+                                                                        eTextureFilter,
+                                                                        eTextureAddressing,
+                                                                        eTextureBorderColor,
+                                                                        eMSAASampleCount,
+                                                                        ePixelFormat,
+                                                                        nWidth,
+                                                                        nHeight,
+                                                                        nDepth,
+                                                                        nBitDepthInteger,
+                                                                        nBitDepthFloat,
+                                                                        bIsTreatLuminanceAsAlpha,
+                                                                        nMipMapsCount,
+                                                                        bIsMipMapsHardwareGenerated,
+                                                                        fGamma,
+                                                                        bIsGammaHardware);
+        Texture* pTexture = (Texture*)result.first;
+        if (!pTexture)
+            return nullptr;
 		if (!pTexture->LoadFromDDSImage(pInput))
         {
             F_LogError("*********************** TextureManager::CreateTextureFromDDSImage: Load texture from dds image failed, group: [%d], name: [%s]", nGroup, strName.c_str());
@@ -935,7 +854,7 @@ namespace LostPeterEngine
             return nullptr;
         }
 
-        AddTexture(nGroup, pTexture);
+        pTexture->AddRef();
 		return pTexture;
 	}
 
@@ -943,35 +862,50 @@ namespace LostPeterEngine
                                                       const String& strName, 
                                                       const String& strGroupName, 
                                                       FFileMemory* pInput, 
-                                                      uint32 nWidth, 
-                                                      uint32 nHeight, 
-				                                      FPixelFormatType ePixelFormat, 
-                                                      FTextureType eTexture /*= F_Texture_2D*/, 
-                                                      int32 nMipMapsCount /*= E_TextureMipMap_Default*/, 
-                                                      float fGamma /*= 1.0f*/, 
-                                                      bool bUseMemoryImage /*= false*/)
+                                                      uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
+                                                      FTextureType eTexture /*= TextureManager::ms_nUsage_Default*/, 
+                                                      FTextureFilterType eTextureFilter /*= TextureManager::ms_eTextureFilter_Default*/,
+                                                      FTextureAddressingType eTextureAddressing /*= TextureManager::ms_eTextureAddressing_Default*/,
+                                                      FTextureBorderColorType eTextureBorderColor /*= TextureManager::ms_eTextureBorderColor_Default*/,
+                                                      FMSAASampleCountType eMSAASampleCount /*= TextureManager::ms_eMSAASampleCount_Default*/,
+                                                      FPixelFormatType ePixelFormat /*= TextureManager::ms_ePixelFormat_Default*/, 
+                                                      uint32 nWidth /*= TextureManager::ms_nWidth_Default*/,
+                                                      uint32 nHeight /*= TextureManager::ms_nHeight_Default*/,
+                                                      uint32 nDepth /*= TextureManager::ms_nDepth_Default*/,
+                                                      uint16 nBitDepthInteger /*= TextureManager::ms_nBitDepthInteger_Default*/,
+                                                      uint16 nBitDepthFloat /*= TextureManager::ms_nBitDepthFloat_Default*/,
+                                                      bool bIsTreatLuminanceAsAlpha /*= TextureManager::ms_bIsTreatLuminanceAsAlpha_Default*/,
+                                                      int32 nMipMapsCount /*= TextureManager::ms_nMipMapsCount_Default*/, 
+                                                      bool bIsMipMapsHardwareGenerated /*= TextureManager::ms_bIsMipMapsHardwareGenerated_Default*/,
+                                                      float fGamma /*= TextureManager::ms_fGamma_Default*/,
+                                                      bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
 	{
-		Texture* pTexture = GetTexture(nGroup, strName);
-		if (pTexture)
-		{
-			pTexture->AddRef();
-			return pTexture;
-		}
-
-        NameValuePairMap mapParams;
-		mapParams["UseMemoryImage"] = FUtilString::SaveBool(bUseMemoryImage);
-		pTexture = (Texture*)createImpl(nGroup,
-                                        strName, 
-                                        strGroupName,
-                                        getNextHandle(),
-                                        false,
-                                        nullptr,
-                                        &mapParams);
-		pTexture->AddRef();
-
-		pTexture->SetTextureType(eTexture);
-		pTexture->SetMipMapsCount((nMipMapsCount == E_TextureMipMap_Default) ? m_nMipMapsCountDefault : (uint32)nMipMapsCount);
-		pTexture->SetGamma(fGamma);
+		ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(nGroup,
+                                                                        strName,
+                                                                        strGroupName,
+                                                                        false,
+                                                                        nullptr,
+                                                                        nullptr,
+                                                                        nUsage,
+                                                                        eTexture,
+                                                                        eTextureFilter,
+                                                                        eTextureAddressing,
+                                                                        eTextureBorderColor,
+                                                                        eMSAASampleCount,
+                                                                        ePixelFormat,
+                                                                        nWidth,
+                                                                        nHeight,
+                                                                        nDepth,
+                                                                        nBitDepthInteger,
+                                                                        nBitDepthFloat,
+                                                                        bIsTreatLuminanceAsAlpha,
+                                                                        nMipMapsCount,
+                                                                        bIsMipMapsHardwareGenerated,
+                                                                        fGamma,
+                                                                        bIsGammaHardware);
+        Texture* pTexture = (Texture*)result.first;
+        if (!pTexture)
+            return nullptr;
 		if (!pTexture->LoadFromRawData(pInput, nWidth, nHeight, ePixelFormat))
         {
             F_LogError("*********************** TextureManager::CreateTextureFromRawData: Load texture from raw data failed, group: [%d], name: [%s]", nGroup, strName.c_str());
@@ -979,7 +913,7 @@ namespace LostPeterEngine
             return nullptr;
         }
 
-        AddTexture(nGroup, pTexture);
+        pTexture->AddRef();
 		return pTexture;
 	}
 

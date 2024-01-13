@@ -128,7 +128,7 @@ namespace LostPeterEngine
 		F_FORCEINLINE uint32 GetMipMapsCountRequested() const { return m_nMipMapsCountRequested; }
 		F_FORCEINLINE void SetMipMapsCountRequested(uint32 nMipMapsCountRequested) { m_nMipMapsCountRequested = nMipMapsCountRequested; }
 		F_FORCEINLINE uint32 GetMipMapsCount() const { return m_nMipMapsCount; }
-		F_FORCEINLINE void SetMipMapsCount(uint32 nMipMapsCount) { m_nMipMapsCount = nMipMapsCount; }
+		F_FORCEINLINE void SetMipMapsCount(uint32 nMipMapsCount) { m_nMipMapsCount = m_nMipMapsCountRequested = nMipMapsCount; }
 		F_FORCEINLINE bool IsMipMapsHardwareGenerated() const { return m_bIsMipMapsHardwareGenerated; }
 		F_FORCEINLINE void SetIsMipMapsHardwareGenerated(bool bIsMipMapsHardwareGenerated) { m_bIsMipMapsHardwareGenerated = bIsMipMapsHardwareGenerated; }
 			

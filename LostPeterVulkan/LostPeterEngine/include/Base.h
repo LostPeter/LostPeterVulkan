@@ -42,6 +42,8 @@ namespace LostPeterEngine
         F_FORCEINLINE bool HasRef() const { return this->m_nRefCount <= 0 ? false : true; }
         F_FORCEINLINE int AddRef() { return ++this->m_nRefCount; }
         F_FORCEINLINE int DelRef() { return --this->m_nRefCount; }
+        
+        F_FORCEINLINE int CanDel() { return !HasRef(); }
 
         F_FORCEINLINE bool IsInit() const { return this->m_bIsInit; }
         F_FORCEINLINE void SetIsInit(bool b) { this->m_bIsInit = b; }

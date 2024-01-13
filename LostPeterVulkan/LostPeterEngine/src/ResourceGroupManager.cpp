@@ -151,7 +151,7 @@ namespace LostPeterEngine
 		pResourceGroup->eResourceGroupStatus = E_ResourceGroupStatus_Uninitialized;
 		pResourceGroup->strGroupName = strGroupName;
 		pResourceGroup->bIsInGlobalPool = bIsInGlobalPool;
-//		pResourceGroup->pWorldGeometrySceneManager = nullptr;
+		pResourceGroup->pWorldGeometrySceneManager = nullptr;
 		m_mapResourceGroup.insert(ResourceGroupPtrMap::value_type(strGroupName, pResourceGroup));
 
         F_LogInfo("ResourceGroupManager::CreateResourceGroup: ResourceGroup with the nameGroup: [%s] created success !", strGroupName.c_str());
