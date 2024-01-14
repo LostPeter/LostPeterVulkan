@@ -62,7 +62,11 @@ namespace LostPeterEngine
 		F_FORCEINLINE RenderWindow* GetRenderWindowAuto() const { return m_pRenderWindowAuto; }
 		F_FORCEINLINE RenderPipelineManager* GetRenderPipeLineManager() const { return m_pRenderPipeLineManager; }
 		F_FORCEINLINE SceneManager* GetSceneManagerCurrent() const { return m_pSceneManagerCurrent; }
-		F_FORCEINLINE bool	IsInit() const { return m_bIsInit; }
+		F_FORCEINLINE bool IsInit() const { return m_bIsInit; }
+
+	public:
+		uint32 GetCfgGroup(EEngineConfigType typeEngineConfig) const;
+		const String& GetCfgConfigName(EEngineConfigType typeEngineConfig) const;
 
 		Renderer* GetRendererByName(const String& strName);
 		bool AddRenderer(Renderer* pRenderer);

@@ -40,6 +40,7 @@ namespace LostPeterPluginRendererVulkan
     protected:
 		virtual bool initRenderCapabilities();
 		virtual void initFromRenderCapabilities(RenderTarget* pPrimary);
+        virtual bool initTextureManager();
 
     public:
         F_FORCEINLINE VulkanInstance* GetVulkanInstance() const { return m_pVulkanInstance; }

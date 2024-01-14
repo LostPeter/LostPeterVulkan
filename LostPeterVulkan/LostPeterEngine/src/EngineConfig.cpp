@@ -58,7 +58,7 @@ namespace LostPeterEngine
                 String nameValue;
                 if (!pElement->ParserAttribute_String(ENGINE_TAG_ATTRIBUTE_VALUE, nameValue))
                 {
-                    F_LogError("*********************** s_parserXML_EngineCommon: Can not find attribute: 'val', from engine common config !");
+                    F_LogError("*********************** s_parserXML_EngineCommon: Can not find attribute: 'val', from engine common config, key: [%s] !", strKey.c_str());
                     return false;
                 }
                 itFind->second.strCurValue = nameValue;
@@ -67,18 +67,33 @@ namespace LostPeterEngine
             return true;
         }
 
-        static bool	s_parserXML_EngineRender(FXMLElement* pElementRender, Engine* pEngine)
+        static bool	s_parserXML_EngineRender(FXMLElement* pElementRender, Engine* pEngine, RenderEngine* pRenderEngine)
         {
-            F_Assert(pElementRender && pEngine && "s_parserXML_EngineRender")
+            F_Assert(pElementRender && pEngine && pRenderEngine && "s_parserXML_EngineRender")
 
+            ConfigItemMap* pCfgItems = pRenderEngine->GetRendererCfgItems();
             FXMLAttribute* pAttr = nullptr;
             int count_item = pElementRender->GetElementChildrenCount();
             for (int i = 0; i < count_item; i++)
             {
                 FXMLElement* pElement = pElementRender->GetElementChild(i);
 
+                String strKey(pElement->GetName());
+                ConfigItemMap::iterator itFind = pCfgItems->find(strKey);
+                if (itFind == pCfgItems->end())
+                {
+                    F_LogError("*********************** s_parserXML_EngineRender: Config item: [%s] is not a valid engine render config item !", strKey.c_str());
+                    return false;
+                }
 
-            }
+                String nameValue;
+                if (!pElement->ParserAttribute_String(ENGINE_TAG_ATTRIBUTE_VALUE, nameValue))
+                {
+                    F_LogError("*********************** s_parserXML_EngineRender: Can not find attribute: 'val', from engine render config, key: [%s] !", strKey.c_str());
+                    return false;
+                }
+                itFind->second.strCurValue = nameValue;
+            }   
 
             return true;
         }
@@ -149,7 +164,7 @@ namespace LostPeterEngine
 			//cfg_render
 			if (strCfgType == ENGINE_CFG_TAG_RENDER)
 			{
-                if (!s_parserXML_EngineRender(pElementItem, pEngine))
+                if (!s_parserXML_EngineRender(pElementItem, pEngine, pEngine->GetRenderEngine()))
                 {
                     F_LogError("*********************** EngineConfig::Load: Load engine render config failed, file: [%s] !", strCfgPath.c_str());
                     return false;

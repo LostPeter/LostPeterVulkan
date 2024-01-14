@@ -5,7 +5,17 @@
 	</cfg_common>
 	<cfg_render>
 		<RendererName val="LostPeterPluginRendererVulkan" />
-		<pipeline val="Forward"	/>
+		<PipelineName val="Forward"	/>
+
+		<ShaderGroup val="0" />
+		<ShaderConfigName val="Cfg_Shader.xml" />
+		<MeshGroup val="0" />
+		<MeshConfigName val="Cfg_Mesh.xml" />
+		<TextureGroup val="0" />
+		<TextureConfigName val="Cfg_Texture.xml" />
+		<MaterialGroup val="0" />
+		<MaterialConfigName val="Cfg_Material.xml" />
+
 	</cfg_render>
 	<cfg_audio>
 	</cfg_audio>

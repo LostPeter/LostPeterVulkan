@@ -28,6 +28,7 @@ namespace LostPeterEngine
 		return (*ms_Singleton);     
 	}
 
+    const String MaterialManager::ms_strMaterialConfigName = "Cfg_Material.xml";
     uint32 MaterialManager::ms_nInstanceID = 0;
 
     static const int s_nCountDefaults = 3;

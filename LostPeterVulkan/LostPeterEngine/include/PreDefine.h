@@ -368,7 +368,18 @@ namespace LostPeterEngine
 
     ////Render
         E_EngineConfig_Render_RendererName,                 //1:  RendererName
+        E_EngineConfig_Render_PipelineName,                 //2:  PipelineName
+
+        E_EngineConfig_Render_ShaderGroup,                  //3:  ShaderGroup
+        E_EngineConfig_Render_ShaderConfigName,             //4:  ShaderConfigName
+        E_EngineConfig_Render_MeshGroup,                    //5:  MeshGroup
+        E_EngineConfig_Render_MeshConfigName,               //6:  MeshConfigName
+        E_EngineConfig_Render_TextureGroup,                 //7:  TextureGroup
+        E_EngineConfig_Render_TextureConfigName,            //8:  TextureConfigName
+        E_EngineConfig_Render_MaterialGroup,                //9:  MaterialGroup
+        E_EngineConfig_Render_MaterialConfigName,           //10: MaterialConfigName
         
+
     ////Audio
 
 

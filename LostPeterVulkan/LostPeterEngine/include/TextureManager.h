@@ -24,6 +24,9 @@ namespace LostPeterEngine
         virtual ~TextureManager();
 
     public:
+        static const String ms_strTextureConfigName;
+
+    public:
         static NameValuePairMap ms_mapParam_Default;
             static uint32 ms_nUsage_Default;
             static FTextureType ms_eTexture_Default;

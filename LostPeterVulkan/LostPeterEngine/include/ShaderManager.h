@@ -24,6 +24,8 @@ namespace LostPeterEngine
         virtual ~ShaderManager();
 
     public:
+        static const String ms_strShaderConfigName;
+
     protected:
         ShaderSerializer* m_pShaderSerializer;
         ShaderPtrVector m_aShader;

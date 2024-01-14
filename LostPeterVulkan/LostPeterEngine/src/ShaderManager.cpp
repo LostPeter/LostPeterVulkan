@@ -27,6 +27,7 @@ namespace LostPeterEngine
 		return (*ms_Singleton);     
 	}
 
+    const String ShaderManager::ms_strShaderConfigName = "Cfg_Shader.xml";
     ShaderManager::ShaderManager()
         : Base("ShaderManager")
         , m_pShaderSerializer(nullptr)

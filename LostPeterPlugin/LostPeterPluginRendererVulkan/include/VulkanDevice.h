@@ -49,7 +49,6 @@ namespace LostPeterPluginRendererVulkan
         VulkanFrameBufferManager* m_pFrameBufferManager;
         
     public:
-        F_FORCEINLINE void AddAppDeviceExtensions(const char* szNameExtension) { m_aAppDeviceExtensions.push_back(szNameExtension); }
         F_FORCEINLINE VkDevice& GetVkDevice() { return m_vkDevice; }
         F_FORCEINLINE const VkDevice& GetVkDevice() const { return m_vkDevice; }
         F_FORCEINLINE VkPhysicalDevice& GetVkPhysicalDevice() { return m_vkPhysicalDevice; }
@@ -80,6 +79,10 @@ namespace LostPeterPluginRendererVulkan
         bool Init(int32 deviceIndex, bool bIsEnableValidationLayers);
 
     public:
+        void AddAppDeviceExtensions(const char* szNameExtension);
+        bool HasExtensionName(const char* szNameExtension);
+
+    public: 
         bool QueryGPU(int32 deviceIndex);
         bool CreateQueuePresent(VkSurfaceKHR vkSurfaceKHR);
 

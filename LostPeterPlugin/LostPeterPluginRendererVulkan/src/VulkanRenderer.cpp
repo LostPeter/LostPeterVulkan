@@ -12,6 +12,7 @@
 #include "../include/VulkanRenderer.h"
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanDevice.h"
+#include "../include/VulkanTextureManager.h"
 #include "../include/VulkanRenderWindow.h"
 #include "../include/VulkanPlugin.h"
 #include "../include/VulkanConverter.h"
@@ -59,7 +60,15 @@ namespace LostPeterPluginRendererVulkan
         initFromRenderCapabilities(nullptr);
         F_LogInfo("VulkanRenderer::Init: 2> Init render capabilities success !");
 
-        //3> Auto CreateWindow
+        //3> Init TextureManager
+        if (!initTextureManager())
+        {
+            F_LogError("*********************** VulkanRenderer::Init: Failed to init texture manager !");
+            return nullptr;
+        }
+        F_LogInfo("VulkanRenderer::Init: 3> Init texture manager success !");
+
+        //4> Auto CreateWindow
         if (bAutoCreateWindow)
         {
 
@@ -292,6 +301,23 @@ namespace LostPeterPluginRendererVulkan
 	void VulkanRenderer::initFromRenderCapabilities(RenderTarget* pPrimary)
     {
 
+    }
+    bool VulkanRenderer::initTextureManager()
+    {
+        VulkanDevice* pDevice = GetDevice();
+        bool bCanRestrictImageViewUsage = pDevice->HasExtensionName(VK_KHR_MAINTENANCE2_EXTENSION_NAME);
+
+        m_pTextureManager = new VulkanTextureManager(pDevice, bCanRestrictImageViewUsage);
+        uint32 nGroup = RenderEngine::GetSingleton().GetCfgGroup(E_EngineConfig_Render_TextureGroup);
+        const String& strNameCfg =  RenderEngine::GetSingleton().GetCfgConfigName(E_EngineConfig_Render_TextureConfigName);
+        if (!m_pTextureManager->Init(nGroup, strNameCfg))
+        {
+            F_LogError("*********************** VulkanRenderer::initTextureManager: Failed to init texture manager, group: [%u], configName: [%s] !", nGroup, strNameCfg.c_str());
+			return false;
+        }
+
+        F_LogInfo("VulkanRenderer::initTextureManager: Success to init texture manager, group: [%u], configName: [%s] !", nGroup, strNameCfg.c_str());
+        return true;
     }
 
     VulkanDevice* VulkanRenderer::GetDevice() 

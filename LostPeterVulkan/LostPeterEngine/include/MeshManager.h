@@ -24,6 +24,8 @@ namespace LostPeterEngine
         virtual ~MeshManager();
 
     public:
+        static const String ms_strMeshConfigName;
+
     protected:
         MeshSerializer* m_pMeshSerializer;
         MeshPtrVector m_aMesh;

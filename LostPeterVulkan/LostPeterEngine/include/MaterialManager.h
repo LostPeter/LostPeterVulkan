@@ -24,6 +24,7 @@ namespace LostPeterEngine
         virtual ~MaterialManager();
 
     public:
+        static const String ms_strMaterialConfigName;
         static uint32 ms_nInstanceID;
         static uint32 GetNextInstanceID() 
         {

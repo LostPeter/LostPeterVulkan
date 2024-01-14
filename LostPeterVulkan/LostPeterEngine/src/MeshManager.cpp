@@ -27,6 +27,7 @@ namespace LostPeterEngine
 		return (*ms_Singleton);     
 	}
 
+    const String MeshManager::ms_strMeshConfigName = "Cfg_Mesh.xml";
     MeshManager::MeshManager()
         : Base("MeshManager")
         , m_pMeshSerializer(nullptr)

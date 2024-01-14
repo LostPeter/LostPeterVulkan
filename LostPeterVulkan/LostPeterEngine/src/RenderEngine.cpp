@@ -10,9 +10,9 @@
 ****************************************************************************/
 
 #include "../include/RenderEngine.h"
+#include "../include/ShaderManager.h"
 #include "../include/MeshManager.h"
 #include "../include/TextureManager.h"
-#include "../include/ShaderManager.h"
 #include "../include/MaterialDataManager.h"
 #include "../include/MaterialManager.h"
 #include "../include/SceneManagerEnumerator.h"
@@ -72,7 +72,7 @@ namespace LostPeterEngine
     {
 		m_mapRendererCfgItem.clear();
 
-		//0> Renderer
+		//0> RendererName
 		{
 			ConfigItem cfgItem;
 			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_RendererName);
@@ -87,7 +87,76 @@ namespace LostPeterEngine
 			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
 		}
 
-		//1> 
+		//1> PipelineName
+		{
+			ConfigItem cfgItem;
+			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_PipelineName);
+			cfgItem.aPossibleValues.push_back(F_GetRenderPipelineTypeName(F_RenderPipeline_Forward));	//0
+			cfgItem.aPossibleValues.push_back(F_GetRenderPipelineTypeName(F_RenderPipeline_Deferred));	//1
+			cfgItem.strCurValue = cfgItem.aPossibleValues[0];
+			cfgItem.bImmutable = false;
+			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
+		}
+
+		//2> ShaderGroup
+		{
+			ConfigItem cfgItem;
+			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_ShaderGroup);
+			cfgItem.strCurValue = FUtilString::SaveUInt(0);
+			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
+		}
+		//3> ShaderConfigName
+		{
+			ConfigItem cfgItem;
+			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_ShaderConfigName);
+			cfgItem.strCurValue = ShaderManager::ms_strShaderConfigName;
+			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
+		}
+
+		//4> MeshGroup
+		{
+			ConfigItem cfgItem;
+			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_MeshGroup);
+			cfgItem.strCurValue = FUtilString::SaveUInt(0);
+			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
+		}
+		//5> MeshConfigName
+		{
+			ConfigItem cfgItem;
+			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_MeshConfigName);
+			cfgItem.strCurValue = MeshManager::ms_strMeshConfigName;
+			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
+		}
+
+		//6> TextureGroup
+		{
+			ConfigItem cfgItem;
+			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_TextureGroup);
+			cfgItem.strCurValue = FUtilString::SaveUInt(0);
+			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
+		}
+		//7> TextureConfigName
+		{
+			ConfigItem cfgItem;
+			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_TextureConfigName);
+			cfgItem.strCurValue = TextureManager::ms_strTextureConfigName;
+			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
+		}
+
+		//8> MaterialGroup
+		{
+			ConfigItem cfgItem;
+			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_MaterialGroup);
+			cfgItem.strCurValue = FUtilString::SaveUInt(0);
+			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
+		}
+		//9> MaterialConfigName
+		{
+			ConfigItem cfgItem;
+			cfgItem.strName	= E_GetEngineConfigTypeName(E_EngineConfig_Render_MaterialConfigName);
+			cfgItem.strCurValue = MaterialManager::ms_strMaterialConfigName;
+			m_mapRendererCfgItem[cfgItem.strName] = cfgItem;
+		}
     }
 
     void RenderEngine::Destroy()
@@ -155,6 +224,38 @@ namespace LostPeterEngine
 		}
 		m_pRendererCurrent = pRenderer;
 		return true;
+	}
+
+	uint32 RenderEngine::GetCfgGroup(EEngineConfigType typeEngineConfig) const
+	{
+		if (typeEngineConfig != E_EngineConfig_Render_ShaderGroup &&
+			typeEngineConfig != E_EngineConfig_Render_MeshGroup &&
+			typeEngineConfig != E_EngineConfig_Render_TextureGroup &&
+			typeEngineConfig != E_EngineConfig_Render_MaterialGroup)
+		{
+			return 0;
+		}
+
+		const String& strKey = E_GetEngineConfigTypeName(typeEngineConfig);
+		ConfigItemMap::const_iterator itFind = m_mapRendererCfgItem.find(strKey);
+		F_Assert(itFind != m_mapRendererCfgItem.end() && "RenderEngine::GetCfgGroup")
+		const String& strValue = itFind->second.strCurValue;
+		return FUtilString::ParserUInt(strValue);
+	}
+	const String& RenderEngine::GetCfgConfigName(EEngineConfigType typeEngineConfig) const
+	{
+		if (typeEngineConfig != E_EngineConfig_Render_ShaderConfigName &&
+			typeEngineConfig != E_EngineConfig_Render_MeshConfigName &&
+			typeEngineConfig != E_EngineConfig_Render_TextureConfigName &&
+			typeEngineConfig != E_EngineConfig_Render_MaterialConfigName)
+		{
+			return FUtilString::BLANK;
+		}
+
+		const String& strKey = E_GetEngineConfigTypeName(typeEngineConfig);
+		ConfigItemMap::const_iterator itFind = m_mapRendererCfgItem.find(strKey);
+		F_Assert(itFind != m_mapRendererCfgItem.end() && "RenderEngine::GetCfgConfigName")
+		return itFind->second.strCurValue;
 	}
 
 	Renderer* RenderEngine::GetRendererByName(const String& strName)

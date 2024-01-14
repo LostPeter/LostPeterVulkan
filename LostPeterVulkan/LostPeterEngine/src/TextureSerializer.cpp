@@ -30,7 +30,7 @@ namespace LostPeterEngine
 #define TEXTURE_TAG_ATTRIBUTE_IS_RT			        "is_rt"
 #define TEXTURE_TAG_ATTRIBUTE_IS_GCS			    "is_gcs"
 
-
+    
     TextureSerializer::TextureSerializer()
         : Base("TextureSerializer")
     {

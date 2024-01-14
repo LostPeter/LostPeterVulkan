@@ -101,7 +101,29 @@ namespace LostPeterPluginRendererVulkan
         return true;
     }
 
+    void VulkanDevice::AddAppDeviceExtensions(const char* szNameExtension)
+    {
+        if (szNameExtension == nullptr)
+            return;
 
+        int count = (int)m_aAppDeviceExtensions.size();
+        for (int i = 0; i < count; i++)
+        {
+            if (strcmp(szNameExtension, m_aAppDeviceExtensions[i]) == 0)
+                return;
+        }
+        m_aAppDeviceExtensions.push_back(szNameExtension);
+    }
+    bool VulkanDevice::HasExtensionName(const char* szNameExtension)
+    {
+        int count = (int)m_aAppDeviceExtensions.size();
+        for (int i = 0; i < count; i++)
+        {
+            if (strcmp(szNameExtension, m_aAppDeviceExtensions[i]) == 0)
+                return true;
+        }
+        return false;
+    }
 
     bool VulkanDevice::QueryGPU(int32 deviceIndex)
     {
@@ -238,21 +260,23 @@ namespace LostPeterPluginRendererVulkan
                                      validationLayers,
                                      deviceExtensions);
 
-        size_t countAppDeviceExtensions = m_aAppDeviceExtensions.size();
-        if (countAppDeviceExtensions > 0)
+        size_t countAppDeviceExtensions = deviceExtensions.size();
+        for (size_t i = 0; i < countAppDeviceExtensions; i++)
         {
-            F_LogInfo("VulkanDevice::createDevice: Using app device extensions count: %d", (int32)countAppDeviceExtensions);
-            for (int32 i = 0; i < countAppDeviceExtensions; ++i)
-            {
-                deviceExtensions.push_back(m_aAppDeviceExtensions[i]);
-                F_LogInfo("VulkanDevice::createDevice: Using app device extension: %s", m_aAppDeviceExtensions[i]);
-            }
+            AddAppDeviceExtensions(deviceExtensions[i]);
+        }
+
+        countAppDeviceExtensions = m_aAppDeviceExtensions.size();
+        F_LogInfo("VulkanDevice::createDevice: Using app device extensions count: [%d] !", (int32)countAppDeviceExtensions);
+        for (int32 i = 0; i < countAppDeviceExtensions; ++i)
+        {
+            F_LogInfo("VulkanDevice::createDevice: Using app device extension: [%s] !", m_aAppDeviceExtensions[i]);
         }
 
         VkDeviceCreateInfo deviceCreateInfo;
         E_ZeroStruct(deviceCreateInfo, VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO);
-        deviceCreateInfo.enabledExtensionCount = uint32_t(deviceExtensions.size());
-        deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
+        deviceCreateInfo.enabledExtensionCount = uint32_t(m_aAppDeviceExtensions.size());
+        deviceCreateInfo.ppEnabledExtensionNames = m_aAppDeviceExtensions.data();
         deviceCreateInfo.enabledLayerCount = uint32_t(validationLayers.size());
         deviceCreateInfo.ppEnabledLayerNames = validationLayers.data();
 

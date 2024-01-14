@@ -317,6 +317,7 @@ namespace LostPeterEngine
         return itFind->second;
     }
     
+    const String TextureManager::ms_strTextureConfigName = "Cfg_Texture.xml";
     TextureManager::TextureManager()
         : ResourceManager(E_GetResourceTypeName(E_Resource_Texture), E_Resource_Texture)
         , m_pTextureSerializer(nullptr)

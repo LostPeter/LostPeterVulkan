@@ -28,7 +28,7 @@ namespace LostPeterPluginRendererVulkan
         Destroy();
     }
 
-    FPixelFormatType VulkanTextureManager::GetPixelFormatNative(FTextureType eTexture, FPixelFormatType ePixelFormat, int32 nUsage)
+    FPixelFormatType VulkanTextureManager::GetPixelFormatNative(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage)
     {
         if (ePixelFormat == F_PixelFormat_BYTE_R8G8B8_SRGB)
             return F_PixelFormat_BYTE_A8R8G8B8_SRGB;
@@ -43,6 +43,12 @@ namespace LostPeterPluginRendererVulkan
             return ePixelFormat;
 
         return F_PixelFormat_BYTE_A8R8G8B8_SRGB;
+    }
+
+    bool VulkanTextureManager::IsHardwareFilteringSupported(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage, bool bPreciseFormatOnly /*= false*/)
+    {
+            
+        return true;
     }
 
     bool VulkanTextureManager::CheckSupport(FPixelFormatType ePixelFormat, uint32 nTextureFlags) const
