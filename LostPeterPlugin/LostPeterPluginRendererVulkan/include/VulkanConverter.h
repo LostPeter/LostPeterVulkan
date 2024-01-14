@@ -27,7 +27,7 @@ namespace LostPeterPluginRendererVulkan
         static VkBlendFactor Transform2VkBlendFactor(FSceneBlendingFactorType eSceneBlendingFactor);
         static VkStencilOp Transform2VkStencilOp(FStencilOPType eStencilOP);
 
-        static VkImageType Util_Transform2VkImageType(FTextureType eTexture);
+        static VkImageType Transform2VkImageType(FTextureType eTexture);
         static VkImageViewType Transform2VkImageViewType(FTextureType eTexture);
         static VkFilter Transform2VkFilter(FTextureFilterPixelType eTextureFilterPixel);
         static VkFilter Transform2VkFilter(FTextureFilterType eTextureFilter, FTextureFilterSizeType eTextureFilterSize);

@@ -120,7 +120,7 @@ namespace LostPeterPluginRendererVulkan
         return VK_STENCIL_OP_KEEP;
     }
 
-    VkImageType VulkanConverter::Util_Transform2VkImageType(FTextureType eTexture)
+    VkImageType VulkanConverter::Transform2VkImageType(FTextureType eTexture)
     {
         switch ((int)eTexture)
         {
@@ -130,7 +130,7 @@ namespace LostPeterPluginRendererVulkan
         case F_Texture_3D:          return VK_IMAGE_TYPE_3D;
         case F_Texture_CubeMap:     return VK_IMAGE_TYPE_2D;
         }
-        F_Assert(false && "VulkanConverter::Util_Transform2VkImageType: Wrong FTextureType type !")
+        F_Assert(false && "VulkanConverter::Transform2VkImageType: Wrong FTextureType type !")
         return VK_IMAGE_TYPE_2D;
     }
     VkImageViewType VulkanConverter::Transform2VkImageViewType(FTextureType eTexture)
@@ -851,10 +851,10 @@ namespace LostPeterPluginRendererVulkan
 
     VkImageAspectFlags VulkanConverter::Transform2VkImageAspectFlags(FPixelFormatType ePixelFormat, const bool bPreferDepthOverStencil /*= false*/)
     {
-        const uint32 pfFlags = FPixelFormat::GetPixelFormatFlags(ePixelFormat);
+        const uint32 pixelFormatFlags = FPixelFormat::GetPixelFormatFlags(ePixelFormat);
 
         VkImageAspectFlags retVal = 0;
-        if (pfFlags & F_PixelFormatFlag_IsDepth)
+        if (pixelFormatFlags & F_PixelFormatFlag_IsDepth)
         {
             retVal = VK_IMAGE_ASPECT_DEPTH_BIT;
         }

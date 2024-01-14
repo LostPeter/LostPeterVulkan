@@ -50,8 +50,8 @@ namespace LostPeterPluginRendererVulkan
                                const VkImageViewVector& aImageView, 
                                VkRenderPass& vkRenderPass,
                                VkFramebufferCreateFlags flags,
-                               uint32_t width,
-                               uint32_t height,
+                               uint32_t nWidth,
+                               uint32_t nHeight,
                                uint32_t layers);
         void DeleteFrameBuffer(const String& strName);
         void DeleteFrameBufferAll();

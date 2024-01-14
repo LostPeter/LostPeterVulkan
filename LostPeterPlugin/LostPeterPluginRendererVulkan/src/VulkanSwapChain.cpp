@@ -72,8 +72,8 @@ namespace LostPeterPluginRendererVulkan
 
     bool VulkanSwapChain::Init(GLFWwindow* pWindow,
                                FPixelFormatType& eOutPixelFormat,
-                               uint32 width, 
-                               uint32 height, 
+                               uint32 nWidth, 
+                               uint32 nHeight, 
                                uint32* pOutDesiredNumSwapChainImages, 
                                VkImageVector& aOutImages, 
                                int32 nLockToVSync)
@@ -117,7 +117,7 @@ namespace LostPeterPluginRendererVulkan
         F_LogInfo("VulkanSwapChain::Init: 4> chooseSwapPresentMode success !");
 
         //5> createSwapChain
-        if (!createSwapChain(width, height, presentMode, pOutDesiredNumSwapChainImages, aOutImages))
+        if (!createSwapChain(nWidth, nHeight, presentMode, pOutDesiredNumSwapChainImages, aOutImages))
         {
             F_LogError("*********************** VulkanSwapChain::Init: 5> createSwapChain failed !");
             return false;
@@ -297,8 +297,8 @@ namespace LostPeterPluginRendererVulkan
 
         return true;
     }
-    bool VulkanSwapChain::createSwapChain(uint32 width, 
-                                          uint32 height, 
+    bool VulkanSwapChain::createSwapChain(uint32 nWidth, 
+                                          uint32 nHeight, 
                                           VkPresentModeKHR presentMode,
                                           uint32* pOutDesiredNumSwapChainImages, 
                                           VkImageVector& aOutImages)
@@ -332,8 +332,8 @@ namespace LostPeterPluginRendererVulkan
         
         uint32 desiredNumBuffers = surfProperties.maxImageCount > 0 ? FMath::Clamp(*pOutDesiredNumSwapChainImages, surfProperties.minImageCount, surfProperties.maxImageCount) : *pOutDesiredNumSwapChainImages;
         VkExtent2D ext;
-        ext.width = FMath::Clamp(width, surfProperties.minImageExtent.width, surfProperties.maxImageExtent.width);
-        ext.height = FMath::Clamp(height, surfProperties.minImageExtent.height, surfProperties.maxImageExtent.height);
+        ext.width = FMath::Clamp(nWidth, surfProperties.minImageExtent.width, surfProperties.maxImageExtent.width);
+        ext.height = FMath::Clamp(nHeight, surfProperties.minImageExtent.height, surfProperties.maxImageExtent.height);
         
         E_ZeroStruct(m_vkSwapChainCreateInfoKHR, VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR);
         m_vkSwapChainCreateInfoKHR.surface				= m_vkSurfaceKHR;
@@ -352,11 +352,11 @@ namespace LostPeterPluginRendererVulkan
         
         if (m_vkSwapChainCreateInfoKHR.imageExtent.width == 0) 
         {
-            m_vkSwapChainCreateInfoKHR.imageExtent.width = width;
+            m_vkSwapChainCreateInfoKHR.imageExtent.width = nWidth;
         }
         if (m_vkSwapChainCreateInfoKHR.imageExtent.height == 0) 
         {
-            m_vkSwapChainCreateInfoKHR.imageExtent.height = height;
+            m_vkSwapChainCreateInfoKHR.imageExtent.height = nHeight;
         }
 
         VkBool32 supportsPresent;

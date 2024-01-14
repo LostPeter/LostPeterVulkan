@@ -149,19 +149,19 @@ namespace LostPeterPluginRendererVulkan
         return true;
     }
 
-    bool VulkanDevice::IsPixelFormatSupported(VkFormat format)
+    bool VulkanDevice::IsPixelFormatSupported(VkFormat typeFormat)
     {
         VkFormatProperties prop;
         memset(&prop, 0, sizeof(VkFormatProperties));
-        vkGetPhysicalDeviceFormatProperties(m_vkPhysicalDevice, format, &prop);
+        vkGetPhysicalDeviceFormatProperties(m_vkPhysicalDevice, typeFormat, &prop);
 
         return (prop.bufferFeatures != 0 ||
                 prop.linearTilingFeatures != 0 ||
                 prop.optimalTilingFeatures != 0);
     }
-    bool VulkanDevice::IsPixelFormatSupported(FPixelFormatType format)
+    bool VulkanDevice::IsPixelFormatSupported(FPixelFormatType ePixelFormat)
     {
-        return FPixelFormat::GetPixelFormatDes(format).isSupported;
+        return FPixelFormat::GetPixelFormatDes(ePixelFormat).isSupported;
     }
 
     VkSampleCountFlagBits VulkanDevice::GetMaxUsableSampleCount()
@@ -177,22 +177,22 @@ namespace LostPeterPluginRendererVulkan
         return VK_SAMPLE_COUNT_1_BIT;
     }
 
-    VkFormat VulkanDevice::FindSupportedFormat(const VkFormatVector& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+    VkFormat VulkanDevice::FindSupportedFormat(const VkFormatVector& candidates, VkImageTiling typeImageTiling, VkFormatFeatureFlags features)
     {
         size_t count = candidates.size();
         for (int i = 0; i < count; i++) 
         {
-            VkFormat format = candidates[i];
+            VkFormat typeFormat = candidates[i];
             VkFormatProperties props;
-            vkGetPhysicalDeviceFormatProperties(m_vkPhysicalDevice, format, &props);
+            vkGetPhysicalDeviceFormatProperties(m_vkPhysicalDevice, typeFormat, &props);
 
-            if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) 
+            if (typeImageTiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) 
             {
-                return format;
+                return typeFormat;
             } 
-            else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) 
+            else if (typeImageTiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) 
             {
-                return format;
+                return typeFormat;
             }
         }
 
@@ -388,9 +388,9 @@ namespace LostPeterPluginRendererVulkan
         int count = (int)F_PixelFormat_Count;
         for (int i = 1; i < count; i++)
         {
-            FPixelFormatType format = (FPixelFormatType)i;
-            FPixelFormatDes& des = FPixelFormat::GetPixelFormatDesRef(format);
-            des.isSupported = IsPixelFormatSupported(VulkanConverter::Transform2VkFormat(format));
+            FPixelFormatType ePixelFormat = (FPixelFormatType)i;
+            FPixelFormatDes& des = FPixelFormat::GetPixelFormatDesRef(ePixelFormat);
+            des.isSupported = IsPixelFormatSupported(VulkanConverter::Transform2VkFormat(ePixelFormat));
             F_LogInfo("VulkanDevice::createDevice: [%d]: [%s] is supported [%s] !", i, des.name.c_str(), des.isSupported ? "true" : "false");
         }
 
@@ -863,8 +863,8 @@ namespace LostPeterPluginRendererVulkan
     }
 
     //////////////////// VkViewport /////////////////////
-    void VulkanDevice::CreateVkViewport(float width,
-                                        float height,
+    void VulkanDevice::CreateVkViewport(float nWidth,
+                                        float nHeight,
                                         float offsetX,
                                         float offsetY,
                                         float minDepth,
@@ -875,8 +875,8 @@ namespace LostPeterPluginRendererVulkan
         vkViewport  = {};
         vkViewport.x = offsetX;
         vkViewport.y = offsetY;
-        vkViewport.width = width;
-        vkViewport.height = height;
+        vkViewport.width = nWidth;
+        vkViewport.height = nHeight;
         vkViewport.minDepth = minDepth;
         vkViewport.maxDepth = maxDepth;
 
@@ -885,8 +885,8 @@ namespace LostPeterPluginRendererVulkan
         offset.x = (int32_t)offsetX;
         offset.y = (int32_t)offsetY;
         VkExtent2D extent;
-        extent.width = (uint32_t)width;
-        extent.height = (uint32_t)height;
+        extent.width = (uint32_t)nWidth;
+        extent.height = (uint32_t)nHeight;
         vkScissor.offset = offset;
         vkScissor.extent = extent;
     }
@@ -894,7 +894,7 @@ namespace LostPeterPluginRendererVulkan
 
     //////////////////// VkAttachmentDescription ////////
     void VulkanDevice::CreateVkAttachmentDescription(VkAttachmentDescriptionFlags flags,
-                                                     VkFormat format,
+                                                     VkFormat typeFormat,
                                                      VkSampleCountFlagBits samples,
                                                      VkAttachmentLoadOp loadOp,
                                                      VkAttachmentStoreOp storeOp,
@@ -905,7 +905,7 @@ namespace LostPeterPluginRendererVulkan
                                                      VkAttachmentDescription& vkAttachmentDescription)
     {
         vkAttachmentDescription.flags = flags;
-        vkAttachmentDescription.format = format;
+        vkAttachmentDescription.format = typeFormat;
         vkAttachmentDescription.samples = samples;
         vkAttachmentDescription.loadOp = loadOp;
         vkAttachmentDescription.storeOp = storeOp;
@@ -960,8 +960,8 @@ namespace LostPeterPluginRendererVulkan
                                            const VkImageViewVector& aImageView, 
                                            VkRenderPass& vkRenderPass,
                                            VkFramebufferCreateFlags flags,
-                                           uint32_t width,
-                                           uint32_t height,
+                                           uint32_t nWidth,
+                                           uint32_t nHeight,
                                            uint32_t layers,
                                            VkFramebuffer& vkFramebuffer)
     {
@@ -970,8 +970,8 @@ namespace LostPeterPluginRendererVulkan
         framebufferInfo.renderPass = vkRenderPass;
         framebufferInfo.attachmentCount = static_cast<uint32_t>(aImageView.size());
         framebufferInfo.pAttachments = &aImageView[0];
-        framebufferInfo.width = width;
-        framebufferInfo.height = height;
+        framebufferInfo.width = nWidth;
+        framebufferInfo.height = nHeight;
         framebufferInfo.layers = layers;
 
         if (vkCreateFramebuffer(this->m_vkDevice, &framebufferInfo, nullptr, &vkFramebuffer) != VK_SUCCESS) 
@@ -1283,39 +1283,39 @@ namespace LostPeterPluginRendererVulkan
 
 
     //////////////////// VkImage ////////////////////////
-    bool VulkanDevice::CreateVkImage(uint32_t width, 
-                                     uint32_t height, 
-                                     uint32_t depth, 
-                                     uint32_t numArray,
-                                     uint32_t mipMapCount, 
-                                     VkImageType type, 
-                                     bool isCubeMap,
-                                     VkSampleCountFlagBits numSamples, 
-                                     VkFormat format, 
-                                     VkImageTiling tiling, 
-                                     VkImageUsageFlags usage, 
-                                     VkSharingMode sharingMode,
-                                     bool isGraphicsComputeShared,
+    bool VulkanDevice::CreateVkImage(uint32_t nWidth, 
+                                     uint32_t nHeight, 
+                                     uint32_t nDepth, 
+                                     uint32_t nLayerCount,
+                                     uint32_t nMipMapCount, 
+                                     VkImageType typeImage, 
+                                     bool bIsCubeMap,
+                                     VkSampleCountFlagBits typeSamplesCountFlagBits, 
+                                     VkFormat typeFormat, 
+                                     VkImageTiling typeImageTiling, 
+                                     VkImageUsageFlags typeImageUsageFlags, 
+                                     VkSharingMode typeSharingMode,
+                                     bool bIsGraphicsComputeShared,
                                      VkMemoryPropertyFlags properties, 
                                      VkImage& vkImage, 
                                      VkDeviceMemory& vkImageMemory) 
     {
         VkImageCreateInfo imageCreateInfo = {};
         imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-        if (isCubeMap)
+        if (bIsCubeMap)
             imageCreateInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-        imageCreateInfo.imageType = type;
-        imageCreateInfo.format = format;
-        imageCreateInfo.extent.width = width;
-        imageCreateInfo.extent.height = height;
-        imageCreateInfo.extent.depth = depth;
-        imageCreateInfo.mipLevels = mipMapCount <= 0 ? 1 : mipMapCount;
-        imageCreateInfo.arrayLayers = numArray;
-        imageCreateInfo.samples = numSamples;
-        imageCreateInfo.tiling = tiling;
-        imageCreateInfo.usage = usage;
-        imageCreateInfo.sharingMode = sharingMode;
-        if (isGraphicsComputeShared)
+        imageCreateInfo.imageType = typeImage;
+        imageCreateInfo.format = typeFormat;
+        imageCreateInfo.extent.width = nWidth;
+        imageCreateInfo.extent.height = nHeight;
+        imageCreateInfo.extent.depth = nDepth;
+        imageCreateInfo.mipLevels = nMipMapCount <= 0 ? 1 : nMipMapCount;
+        imageCreateInfo.arrayLayers = nLayerCount;
+        imageCreateInfo.samples = typeSamplesCountFlagBits;
+        imageCreateInfo.tiling = typeImageTiling;
+        imageCreateInfo.usage = typeImageUsageFlags;
+        imageCreateInfo.sharingMode = typeSharingMode;
+        if (bIsGraphicsComputeShared)
         {
             if (this->m_pQueueGraphics->GetFamilyIndex() != this->m_pQueueCompute->GetFamilyIndex()) 
             {
@@ -1352,25 +1352,25 @@ namespace LostPeterPluginRendererVulkan
         return true;
     }
     bool VulkanDevice::CreateVkImageView(VkImage vkImage, 
-                                         VkImageViewType type, 
-                                         VkFormat format, 
-                                         VkComponentMapping components,
-                                         VkImageAspectFlags aspectFlags, 
-                                         uint32_t mipMapCount,
-                                         uint32_t numArray,
+                                         VkImageViewType typeImageView, 
+                                         VkFormat typeFormat, 
+                                         VkComponentMapping typeComponentMapping,
+                                         VkImageAspectFlags typeImageAspectFlags, 
+                                         uint32_t nMipMapCount,
+                                         uint32_t nLayerCount,
                                          VkImageView& vkImageView) 
     {
         VkImageViewCreateInfo viewInfo = {};
         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         viewInfo.image = vkImage;
-        viewInfo.viewType = type;
-        viewInfo.format = format;
-        viewInfo.components = components;
-        viewInfo.subresourceRange.aspectMask = aspectFlags;
+        viewInfo.viewType = typeImageView;
+        viewInfo.format = typeFormat;
+        viewInfo.components = typeComponentMapping;
+        viewInfo.subresourceRange.aspectMask = typeImageAspectFlags;
         viewInfo.subresourceRange.baseMipLevel = 0;
-        viewInfo.subresourceRange.levelCount = mipMapCount;
+        viewInfo.subresourceRange.levelCount = nMipMapCount;
         viewInfo.subresourceRange.baseArrayLayer = 0;
-        viewInfo.subresourceRange.layerCount = numArray;
+        viewInfo.subresourceRange.layerCount = nLayerCount;
 
         if (vkCreateImageView(this->m_vkDevice, &viewInfo, nullptr, &vkImageView) != VK_SUCCESS) 
         {
@@ -1379,7 +1379,7 @@ namespace LostPeterPluginRendererVulkan
         }
         return true;
     }
-    bool VulkanDevice::CreateVkSampler(uint32_t mipMapCount, 
+    bool VulkanDevice::CreateVkSampler(uint32_t nMipMapCount, 
                                        VkSampler& vkSampler)
     {
         return CreateVkSampler(F_TextureFilter_Bilinear,
@@ -1388,18 +1388,18 @@ namespace LostPeterPluginRendererVulkan
                                true,
                                this->m_vkPhysicalDeviceProperties.limits.maxSamplerAnisotropy,
                                0.0f,
-                               static_cast<float>(mipMapCount),
+                               static_cast<float>(nMipMapCount),
                                0.0f,
                                vkSampler);
     }
     bool VulkanDevice::CreateVkSampler(FTextureFilterType eTextureFilter,
                                        FTextureAddressingType eTextureAddressing,
                                        FTextureBorderColorType eTextureBorderColor,
-                                       bool enableAnisotropy,
-                                       float maxAnisotropy,
-                                       float minLod, 
-                                       float maxLod, 
-                                       float mipLodBias,
+                                       bool bIsEnableAnisotropy,
+                                       float fMaxAnisotropy,
+                                       float fMinLod, 
+                                       float fMaxLod, 
+                                       float fMipLodBias,
                                        VkSampler& vkSampler)
     {
         VkSamplerCreateInfo samplerInfo = {};
@@ -1409,16 +1409,16 @@ namespace LostPeterPluginRendererVulkan
         samplerInfo.addressModeU = VulkanConverter::Transform2VkSamplerAddressMode(eTextureAddressing);
         samplerInfo.addressModeV = VulkanConverter::Transform2VkSamplerAddressMode(eTextureAddressing);
         samplerInfo.addressModeW = VulkanConverter::Transform2VkSamplerAddressMode(eTextureAddressing);
-        samplerInfo.anisotropyEnable = enableAnisotropy ? VK_TRUE : VK_FALSE;
-        samplerInfo.maxAnisotropy = maxAnisotropy > this->m_vkPhysicalDeviceProperties.limits.maxSamplerAnisotropy ? this->m_vkPhysicalDeviceProperties.limits.maxSamplerAnisotropy : maxAnisotropy;
+        samplerInfo.anisotropyEnable = bIsEnableAnisotropy ? VK_TRUE : VK_FALSE;
+        samplerInfo.maxAnisotropy = fMaxAnisotropy > this->m_vkPhysicalDeviceProperties.limits.maxSamplerAnisotropy ? this->m_vkPhysicalDeviceProperties.limits.maxSamplerAnisotropy : fMaxAnisotropy;
         samplerInfo.borderColor = VulkanConverter::Transform2VkBorderColor(eTextureBorderColor);
         samplerInfo.unnormalizedCoordinates = VK_FALSE;
         samplerInfo.compareEnable = VK_FALSE;
         samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
         samplerInfo.mipmapMode = VulkanConverter::Transform2VkSamplerMipmapMode(eTextureFilter);
-        samplerInfo.minLod = minLod;
-        samplerInfo.maxLod = maxLod;
-        samplerInfo.mipLodBias = mipLodBias;
+        samplerInfo.minLod = fMinLod;
+        samplerInfo.maxLod = fMaxLod;
+        samplerInfo.mipLodBias = fMipLodBias;
 
         if (vkCreateSampler(this->m_vkDevice, &samplerInfo, nullptr, &vkSampler) != VK_SUCCESS) 
         {
@@ -1455,11 +1455,11 @@ namespace LostPeterPluginRendererVulkan
                                                VkImage vkImage, 
                                                VkImageLayout oldLayout, 
                                                VkImageLayout newLayout,
-                                               uint32_t mipBase,
-                                               uint32_t mipCount,
-                                               uint32_t numBase,
-                                               uint32_t numArray,
-                                               VkImageAspectFlags aspectFlags /*= VK_IMAGE_ASPECT_COLOR_BIT*/) 
+                                               uint32_t nMipBase,
+                                               uint32_t nMipCount,
+                                               uint32_t nLayerBase,
+                                               uint32_t nLayerCount,
+                                               VkImageAspectFlags typeImageAspectFlags /*= VK_IMAGE_ASPECT_COLOR_BIT*/) 
     {
         bool isCreate = false;
         if (cmdBuffer == VK_NULL_HANDLE)
@@ -1476,11 +1476,11 @@ namespace LostPeterPluginRendererVulkan
             barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
             barrier.image = vkImage;
 
-            barrier.subresourceRange.aspectMask = aspectFlags;
-            barrier.subresourceRange.baseMipLevel = mipBase;
-            barrier.subresourceRange.levelCount = mipCount;
-            barrier.subresourceRange.baseArrayLayer = numBase;
-            barrier.subresourceRange.layerCount = numArray;
+            barrier.subresourceRange.aspectMask = typeImageAspectFlags;
+            barrier.subresourceRange.baseMipLevel = nMipBase;
+            barrier.subresourceRange.levelCount = nMipCount;
+            barrier.subresourceRange.baseArrayLayer = nLayerBase;
+            barrier.subresourceRange.layerCount = nLayerCount;
 
             VkPipelineStageFlags sourceStage;
             VkPipelineStageFlags destinationStage;
@@ -1546,10 +1546,10 @@ namespace LostPeterPluginRendererVulkan
     void VulkanDevice::CopyVkBufferToVkImage(VkCommandBuffer cmdBuffer,
                                              VkBuffer vkBuffer, 
                                              VkImage vkImage, 
-                                             uint32_t width, 
-                                             uint32_t height,
-                                             uint32_t depth,
-                                             uint32_t numArray) 
+                                             uint32_t nWidth, 
+                                             uint32_t nHeight,
+                                             uint32_t nDepth,
+                                             uint32_t nLayerCount) 
     {
         bool isCreate = false;
         if (cmdBuffer == VK_NULL_HANDLE)
@@ -1559,13 +1559,13 @@ namespace LostPeterPluginRendererVulkan
         }
         {
             std::vector<VkBufferImageCopy> bufferCopyRegions;
-            for (uint32_t i = 0; i < numArray; i++)
+            for (uint32_t i = 0; i < nLayerCount; i++)
             {
                 VkBufferImageCopy region = {};
-                region.bufferOffset = width * height * 4 * i;
-                region.imageExtent.width = width;
-                region.imageExtent.height = height;
-                region.imageExtent.depth = depth;
+                region.bufferOffset = nWidth * nHeight * 4 * i;
+                region.imageExtent.width = nWidth;
+                region.imageExtent.height = nHeight;
+                region.imageExtent.depth = nDepth;
                 region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                 region.imageSubresource.mipLevel = 0;
                 region.imageSubresource.baseArrayLayer = i;
@@ -1587,11 +1587,11 @@ namespace LostPeterPluginRendererVulkan
     void VulkanDevice::GenerateVkImageMipMaps(VkCommandBuffer cmdBuffer,
                                               VkImage vkImage, 
                                               VkFormat imageFormat, 
-                                              int32_t width, 
-                                              int32_t height, 
-                                              uint32_t mipMapCount,
-                                              uint32_t numArray,
-                                              bool autoMipMap)
+                                              int32_t nWidth, 
+                                              int32_t nHeight, 
+                                              uint32_t nMipMapCount,
+                                              uint32_t nLayerCount,
+                                              bool bIsAutoMipMap)
     {
         bool isCreate = false;
         if (cmdBuffer == VK_NULL_HANDLE)
@@ -1600,11 +1600,11 @@ namespace LostPeterPluginRendererVulkan
             cmdBuffer = BeginSingleTimeCommands();
         }
         {
-            if (autoMipMap)
+            if (bIsAutoMipMap)
             {
-                int32_t mipWidth = width;
-                int32_t mipHeight = height;
-                for (uint32_t i = 1; i < mipMapCount; i++) 
+                int32_t mipWidth = nWidth;
+                int32_t mipHeight = nHeight;
+                for (uint32_t i = 1; i < nMipMapCount; i++) 
                 {
                     TransitionVkImageLayout(cmdBuffer,
                                             vkImage, 
@@ -1613,7 +1613,7 @@ namespace LostPeterPluginRendererVulkan
                                             i,
                                             1,
                                             0,
-                                            numArray);
+                                            nLayerCount);
                     {
                         VkImageBlit blit = {};
                         blit.srcOffsets[0] = {0, 0, 0};
@@ -1621,14 +1621,14 @@ namespace LostPeterPluginRendererVulkan
                         blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                         blit.srcSubresource.mipLevel = i - 1;
                         blit.srcSubresource.baseArrayLayer = 0;
-                        blit.srcSubresource.layerCount = numArray;
+                        blit.srcSubresource.layerCount = nLayerCount;
 
                         blit.dstOffsets[0] = {0, 0, 0};
                         blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 };
                         blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                         blit.dstSubresource.mipLevel = i;
                         blit.dstSubresource.baseArrayLayer = 0;
-                        blit.dstSubresource.layerCount = numArray;
+                        blit.dstSubresource.layerCount = nLayerCount;
 
                         vkCmdBlitImage(cmdBuffer,
                                        vkImage, 
@@ -1651,7 +1651,7 @@ namespace LostPeterPluginRendererVulkan
                                             i,
                                             1,
                                             0,
-                                            numArray);
+                                            nLayerCount);
                 }
             }
 
@@ -1660,9 +1660,9 @@ namespace LostPeterPluginRendererVulkan
                                     VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                                     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                                     0,
-                                    mipMapCount,
+                                    nMipMapCount,
                                     0,
-                                    numArray);
+                                    nLayerCount);
         }
         if (isCreate)
         {
@@ -1671,7 +1671,7 @@ namespace LostPeterPluginRendererVulkan
     }
 
     bool VulkanDevice::CreateTexture1D(const String& pathAsset, 
-                                       uint32_t& mipMapCount,
+                                       uint32_t& nMipMapCount,
                                        VkImage& vkImage, 
                                        VkDeviceMemory& vkImageMemory)
     {
@@ -1680,17 +1680,17 @@ namespace LostPeterPluginRendererVulkan
                                VK_SAMPLE_COUNT_1_BIT,
                                VK_FORMAT_R8G8B8A8_SRGB,
                                true,
-                               mipMapCount,
+                               nMipMapCount,
                                vkImage,
                                vkImageMemory);
     }
     
     bool VulkanDevice::CreateTexture2D(const String& pathAsset, 
-                                       VkImageType type,
-                                       VkSampleCountFlagBits numSamples,
-                                       VkFormat format,
-                                       bool autoMipMap, 
-                                       uint32_t& mipMapCount, 
+                                       VkImageType typeImage,
+                                       VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                       VkFormat typeFormat,
+                                       bool bIsAutoMipMap, 
+                                       uint32_t& nMipMapCount, 
                                        VkImage& vkImage, 
                                        VkDeviceMemory& vkImageMemory,
                                        VkBuffer& vkBuffer, 
@@ -1704,11 +1704,11 @@ namespace LostPeterPluginRendererVulkan
             F_LogError("*********************** VulkanDevice::CreateTexture2D: Failed to load texture image: [%s] !", pathAsset.c_str());
             return false;
         }
-        int width = (int)image.GetWidth();
-        int height = (int)image.GetHeight();
+        int nWidth = (int)image.GetWidth();
+        int nHeight = (int)image.GetHeight();
         int pixelSize = (int)image.GetPixelSize();
-        VkDeviceSize imageSize = width * height * pixelSize;
-        mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
+        VkDeviceSize imageSize = nWidth * nHeight * pixelSize;
+        nMipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(nWidth, nHeight)))) + 1;
         uint8* pData = image.GetData();
 
         //2> Create Buffer and copy Texture data to buffer
@@ -1727,19 +1727,19 @@ namespace LostPeterPluginRendererVulkan
                       (uint32_t)imageSize, 
                       0);
 
-        uint32_t depth = 1;
-        uint32_t numArray = 1;
+        uint32_t nDepth = 1;
+        uint32_t nLayerCount = 1;
 
         //3> CreateImage
-        if (!CreateVkImage(width, 
-                           height, 
-                           depth,
-                           numArray,
-                           mipMapCount, 
-                           type,
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
+                           typeImage,
                            false,
-                           numSamples, 
-                           format, 
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
                            VK_IMAGE_TILING_OPTIMAL, 
                            VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
                            VK_SHARING_MODE_EXCLUSIVE,
@@ -1762,15 +1762,15 @@ namespace LostPeterPluginRendererVulkan
                                     0,
                                     1,
                                     0,
-                                    numArray);
+                                    nLayerCount);
             {
                 CopyVkBufferToVkImage(cmdBuffer,
                                       vkBuffer, 
                                       vkImage, 
-                                      static_cast<uint32_t>(width), 
-                                      static_cast<uint32_t>(height),
-                                      static_cast<uint32_t>(depth), 
-                                      numArray);
+                                      static_cast<uint32_t>(nWidth), 
+                                      static_cast<uint32_t>(nHeight),
+                                      static_cast<uint32_t>(nDepth), 
+                                      nLayerCount);
             }
             TransitionVkImageLayout(cmdBuffer,
                                     vkImage, 
@@ -1779,37 +1779,37 @@ namespace LostPeterPluginRendererVulkan
                                     0,
                                     1,
                                     0,
-                                    numArray);
+                                    nLayerCount);
 
             GenerateVkImageMipMaps(cmdBuffer,
                                    vkImage, 
-                                   format, 
-                                   width, 
-                                   height, 
-                                   mipMapCount,
-                                   numArray,
-                                   autoMipMap);
+                                   typeFormat, 
+                                   nWidth, 
+                                   nHeight, 
+                                   nMipMapCount,
+                                   nLayerCount,
+                                   bIsAutoMipMap);
         }
         EndSingleTimeCommands(cmdBuffer);
         return true;
     }
     bool VulkanDevice::CreateTexture2D(const String& pathAsset, 
-                                       VkImageType type,
-                                       VkSampleCountFlagBits numSamples,
-                                       VkFormat format,
-                                       bool autoMipMap, 
-                                       uint32_t& mipMapCount, 
+                                       VkImageType typeImage,
+                                       VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                       VkFormat typeFormat,
+                                       bool bIsAutoMipMap, 
+                                       uint32_t& nMipMapCount, 
                                        VkImage& vkImage, 
                                        VkDeviceMemory& vkImageMemory)
     {
         VkBuffer vkStagingBuffer;
         VkDeviceMemory vkStagingBufferMemory;
         bool bRet = CreateTexture2D(pathAsset, 
-                                    type, 
-                                    numSamples,
-                                    format,
-                                    autoMipMap,
-                                    mipMapCount,
+                                    typeImage, 
+                                    typeSamplesCountFlagBits,
+                                    typeFormat,
+                                    bIsAutoMipMap,
+                                    nMipMapCount,
                                     vkImage, 
                                     vkImageMemory, 
                                     vkStagingBuffer, 
@@ -1818,7 +1818,7 @@ namespace LostPeterPluginRendererVulkan
         return bRet;
     }
     bool VulkanDevice::CreateTexture2D(const String& pathAsset, 
-                                       uint32_t& mipMapCount,
+                                       uint32_t& nMipMapCount,
                                        VkImage& vkImage, 
                                        VkDeviceMemory& vkImageMemory)
     {
@@ -1827,7 +1827,7 @@ namespace LostPeterPluginRendererVulkan
                                VK_SAMPLE_COUNT_1_BIT,
                                VK_FORMAT_R8G8B8A8_SRGB,
                                true,
-                               mipMapCount,
+                               nMipMapCount,
                                vkImage,
                                vkImageMemory);
     }
@@ -1842,11 +1842,11 @@ namespace LostPeterPluginRendererVulkan
         }
     }
     bool VulkanDevice::CreateTexture2DArray(const StringVector& aPathAsset, 
-                                            VkImageType type,
-                                            VkSampleCountFlagBits numSamples,
-                                            VkFormat format,
-                                            bool autoMipMap, 
-                                            uint32_t& mipMapCount, 
+                                            VkImageType typeImage,
+                                            VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                            VkFormat typeFormat,
+                                            bool bIsAutoMipMap, 
+                                            uint32_t& nMipMapCount, 
                                             VkImage& vkImage, 
                                             VkDeviceMemory& vkImageMemory,
                                             VkBuffer& vkBuffer, 
@@ -1876,26 +1876,26 @@ namespace LostPeterPluginRendererVulkan
                 s_DeleteImages(aImages);
                 return false;
             }
-            int width = (int)pImage->GetWidth();
-            int height = (int)pImage->GetHeight();
+            int nWidth = (int)pImage->GetWidth();
+            int nHeight = (int)pImage->GetHeight();
             int pixelSize = (int)pImage->GetPixelSize();
-            aWidth.push_back(width);
-            aHeight.push_back(height);
+            aWidth.push_back(nWidth);
+            aHeight.push_back(nHeight);
             aPixelSize.push_back(pixelSize);
         }
 
-        int width = aWidth[0];
-        int height = aHeight[0];
+        int nWidth = aWidth[0];
+        int nHeight = aHeight[0];
         int pixelSize = aPixelSize[0];
         for (size_t i = 1; i < count_tex; i++)
         {
-            if (aWidth[i] != width)
+            if (aWidth[i] != nWidth)
             {
                 F_LogError("*********************** VulkanDevice::CreateTexture2DArray: Texture image's all width must the same !");
                 s_DeleteImages(aImages);
                 return false;
             }
-            if (aHeight[i] != height)
+            if (aHeight[i] != nHeight)
             {
                 F_LogError("*********************** VulkanDevice::CreateTexture2DArray: Texture image's all height must the same !");
                 s_DeleteImages(aImages);
@@ -1909,16 +1909,16 @@ namespace LostPeterPluginRendererVulkan
             }
         }
 
-        uint32_t depth = 1;
-        uint32_t numArray = (uint32_t)count_tex;
-        if (type == VK_IMAGE_TYPE_1D)
+        uint32_t nDepth = 1;
+        uint32_t nLayerCount = (uint32_t)count_tex;
+        if (typeImage == VK_IMAGE_TYPE_1D)
         {
-            depth = 0;
+            nDepth = 0;
         }
 
         //2> Create Buffer and copy Texture data to buffer
-        mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
-        VkDeviceSize imageSize = width * height * pixelSize;
+        nMipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(nWidth, nHeight)))) + 1;
+        VkDeviceSize imageSize = nWidth * nHeight * pixelSize;
         VkDeviceSize imageSizeAll = imageSize * count_tex;
         if (!CreateVkBuffer(imageSizeAll, 
                             VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
@@ -1937,20 +1937,20 @@ namespace LostPeterPluginRendererVulkan
             WriteVkBuffer(vkBufferMemory,
                           (void*)pImage->GetData(),
                           (uint32_t)imageSizeAll,
-                          (uint32_t)(width * height * pixelSize * i));
+                          (uint32_t)(nWidth * nHeight * pixelSize * i));
         }
         s_DeleteImages(aImages);
 
         //3> CreateImage, TransitionImageLayout and CopyBufferToImage
-        if (!CreateVkImage(width, 
-                           height, 
-                           depth,
-                           numArray,
-                           mipMapCount, 
-                           type,
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
+                           typeImage,
                            false,
-                           numSamples, 
-                           format, 
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
                            VK_IMAGE_TILING_OPTIMAL, 
                            VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
                            VK_SHARING_MODE_EXCLUSIVE,
@@ -1973,15 +1973,15 @@ namespace LostPeterPluginRendererVulkan
                                     0,
                                     1,
                                     0,
-                                    numArray);
+                                    nLayerCount);
             {   
                 CopyVkBufferToVkImage(cmdBuffer,
                                       vkBuffer, 
                                       vkImage, 
-                                      static_cast<uint32_t>(width), 
-                                      static_cast<uint32_t>(height),
-                                      static_cast<uint32_t>(depth), 
-                                      numArray);
+                                      static_cast<uint32_t>(nWidth), 
+                                      static_cast<uint32_t>(nHeight),
+                                      static_cast<uint32_t>(nDepth), 
+                                      nLayerCount);
             }
             TransitionVkImageLayout(cmdBuffer,
                                     vkImage, 
@@ -1990,37 +1990,37 @@ namespace LostPeterPluginRendererVulkan
                                     0,
                                     1,
                                     0,
-                                    numArray);
+                                    nLayerCount);
 
             GenerateVkImageMipMaps(cmdBuffer,
                                    vkImage, 
-                                   format, 
-                                   width, 
-                                   height,
-                                   mipMapCount,
-                                   numArray,
-                                   autoMipMap);
+                                   typeFormat, 
+                                   nWidth, 
+                                   nHeight,
+                                   nMipMapCount,
+                                   nLayerCount,
+                                   bIsAutoMipMap);
         }
         EndSingleTimeCommands(cmdBuffer);
         return true;
     }
     bool VulkanDevice::CreateTexture2DArray(const StringVector& aPathAsset, 
-                                            VkImageType type,
-                                            VkSampleCountFlagBits numSamples,
-                                            VkFormat format,
-                                            bool autoMipMap, 
-                                            uint32_t& mipMapCount, 
+                                            VkImageType typeImage,
+                                            VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                            VkFormat typeFormat,
+                                            bool bIsAutoMipMap, 
+                                            uint32_t& nMipMapCount, 
                                             VkImage& vkImage, 
                                             VkDeviceMemory& vkImageMemory)
     {
         VkBuffer vkStagingBuffer;
         VkDeviceMemory vkStagingBufferMemory;
         bool bRet = CreateTexture2DArray(aPathAsset, 
-                                         type, 
-                                         numSamples,
-                                         format,
-                                         autoMipMap,
-                                         mipMapCount,
+                                         typeImage, 
+                                         typeSamplesCountFlagBits,
+                                         typeFormat,
+                                         bIsAutoMipMap,
+                                         nMipMapCount,
                                          vkImage, 
                                          vkImageMemory, 
                                          vkStagingBuffer, 
@@ -2029,7 +2029,7 @@ namespace LostPeterPluginRendererVulkan
         return bRet;
     }
     bool VulkanDevice::CreateTexture2DArray(const StringVector& aPathAsset, 
-                                            uint32_t& mipMapCount,
+                                            uint32_t& nMipMapCount,
                                             VkImage& vkImage, 
                                             VkDeviceMemory& vkImageMemory)
     {
@@ -2038,31 +2038,31 @@ namespace LostPeterPluginRendererVulkan
                                     VK_SAMPLE_COUNT_1_BIT,
                                     VK_FORMAT_R8G8B8A8_SRGB,
                                     true,
-                                    mipMapCount,
+                                    nMipMapCount,
                                     vkImage,
                                     vkImageMemory);
     }
     
-    bool VulkanDevice::CreateTexture3D(VkFormat format,
+    bool VulkanDevice::CreateTexture3D(VkFormat typeFormat,
                                        const uint8* pDataRGBA,
                                        uint32_t size,
-                                       uint32_t width,
-                                       uint32_t height,
-                                       uint32_t depth,
+                                       uint32_t nWidth,
+                                       uint32_t nHeight,
+                                       uint32_t nDepth,
                                        VkImage& vkImage, 
                                        VkDeviceMemory& vkImageMemory,
                                        VkBuffer& vkBuffer, 
                                        VkDeviceMemory& vkBufferMemory)
     {
         VkFormatProperties formatProperties;
-		vkGetPhysicalDeviceFormatProperties(this->m_vkPhysicalDevice, format, &formatProperties);
+		vkGetPhysicalDeviceFormatProperties(this->m_vkPhysicalDevice, typeFormat, &formatProperties);
 		if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_TRANSFER_DST_BIT))
 		{
             F_LogError("*********************** VulkanDevice::CreateTexture3D: Physical device does not support flag 'VK_FORMAT_FEATURE_TRANSFER_DST_BIT' for selected texture format !");
             return false;
 		}
 		uint32_t maxImageDimension3D(this->m_vkPhysicalDeviceProperties.limits.maxImageDimension3D);
-		if (width > maxImageDimension3D || height > maxImageDimension3D || depth > maxImageDimension3D)
+		if (nWidth > maxImageDimension3D || nHeight > maxImageDimension3D || nDepth > maxImageDimension3D)
 		{
             F_LogError("*********************** VulkanDevice::CreateTexture3D: Requested texture dimensions is greater than supported 3D texture dimension !");
 			return false;
@@ -2086,15 +2086,15 @@ namespace LostPeterPluginRendererVulkan
                       0);
 
         //2> CreateImage
-        if (!CreateVkImage(width, 
-                           height, 
-                           depth,
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
                            1,
                            1, 
                            VK_IMAGE_TYPE_3D,
                            false,
                            VK_SAMPLE_COUNT_1_BIT, 
-                           format, 
+                           typeFormat, 
                            VK_IMAGE_TILING_OPTIMAL, 
                            VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
                            VK_SHARING_MODE_EXCLUSIVE,
@@ -2122,9 +2122,9 @@ namespace LostPeterPluginRendererVulkan
                 CopyVkBufferToVkImage(cmdBuffer,
                                       vkBuffer, 
                                       vkImage, 
-                                      static_cast<uint32_t>(width), 
-                                      static_cast<uint32_t>(height),
-                                      static_cast<uint32_t>(depth), 
+                                      static_cast<uint32_t>(nWidth), 
+                                      static_cast<uint32_t>(nHeight),
+                                      static_cast<uint32_t>(nDepth), 
                                       1);
             }
             TransitionVkImageLayout(cmdBuffer,
@@ -2138,9 +2138,9 @@ namespace LostPeterPluginRendererVulkan
 
             GenerateVkImageMipMaps(cmdBuffer,
                                    vkImage, 
-                                   format, 
-                                   width, 
-                                   height,
+                                   typeFormat, 
+                                   nWidth, 
+                                   nHeight,
                                    1,
                                    1,
                                    false);
@@ -2148,23 +2148,23 @@ namespace LostPeterPluginRendererVulkan
         EndSingleTimeCommands(cmdBuffer);
         return true;
     }
-    bool VulkanDevice::CreateTexture3D(VkFormat format,
+    bool VulkanDevice::CreateTexture3D(VkFormat typeFormat,
                                        const uint8* pDataRGBA,
                                        uint32_t size,
-                                       uint32_t width,
-                                       uint32_t height,
-                                       uint32_t depth,
+                                       uint32_t nWidth,
+                                       uint32_t nHeight,
+                                       uint32_t nDepth,
                                        VkImage& vkImage, 
                                        VkDeviceMemory& vkImageMemory)
     {
         VkBuffer vkStagingBuffer;
         VkDeviceMemory vkStagingBufferMemory;
-        bool bRet = CreateTexture3D(format, 
+        bool bRet = CreateTexture3D(typeFormat, 
                                     pDataRGBA, 
                                     size,
-                                    width,
-                                    height,
-                                    depth,
+                                    nWidth,
+                                    nHeight,
+                                    nDepth,
                                     vkImage, 
                                     vkImageMemory, 
                                     vkStagingBuffer, 
@@ -2174,10 +2174,10 @@ namespace LostPeterPluginRendererVulkan
     }
 
     bool VulkanDevice::CreateTextureCubeMap(const StringVector& aPathAsset, 
-                                            VkSampleCountFlagBits numSamples,
-                                            VkFormat format,
-                                            bool autoMipMap, 
-                                            uint32_t& mipMapCount, 
+                                            VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                            VkFormat typeFormat,
+                                            bool bIsAutoMipMap, 
+                                            uint32_t& nMipMapCount, 
                                             VkImage& vkImage, 
                                             VkDeviceMemory& vkImageMemory,
                                             VkBuffer& vkBuffer, 
@@ -2213,26 +2213,26 @@ namespace LostPeterPluginRendererVulkan
                 s_DeleteImages(aImages);
                 return false;
             }
-            int width = (int)pImage->GetWidth();
-            int height = (int)pImage->GetHeight();
+            int nWidth = (int)pImage->GetWidth();
+            int nHeight = (int)pImage->GetHeight();
             int pixelSize = (int)pImage->GetPixelSize();
-            aWidth.push_back(width);
-            aHeight.push_back(height);
+            aWidth.push_back(nWidth);
+            aHeight.push_back(nHeight);
             aPixelSize.push_back(pixelSize);
         }
 
-        int width = aWidth[0];
-        int height = aHeight[0];
+        int nWidth = aWidth[0];
+        int nHeight = aHeight[0];
         int pixelSize = aPixelSize[0];
         for (size_t i = 1; i < count_tex; i++)
         {
-            if (aWidth[i] != width)
+            if (aWidth[i] != nWidth)
             {
                 F_LogError("*********************** VulkanDevice::CreateTextureCubeMap: Texture image's all width must the same !");
                 s_DeleteImages(aImages);
                 return false;
             }
-            if (aHeight[i] != height)
+            if (aHeight[i] != nHeight)
             {
                 F_LogError("*********************** VulkanDevice::CreateTextureCubeMap: Texture image's all height must the same !");
                 s_DeleteImages(aImages);
@@ -2246,12 +2246,12 @@ namespace LostPeterPluginRendererVulkan
             }
         }
 
-        uint32_t depth = 1;
-        uint32_t numArray = (uint32_t)count_tex;
+        uint32_t nDepth = 1;
+        uint32_t nLayerCount = (uint32_t)count_tex;
 
         //2> Create Buffer and copy Texture data to buffer
-        mipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
-        VkDeviceSize imageSize = width * height * pixelSize;
+        nMipMapCount = static_cast<uint32_t>(std::floor(std::log2(std::max(nWidth, nHeight)))) + 1;
+        VkDeviceSize imageSize = nWidth * nHeight * pixelSize;
         VkDeviceSize imageSizeAll = imageSize * count_tex;
         if (!CreateVkBuffer(imageSizeAll, 
                             VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
@@ -2270,20 +2270,20 @@ namespace LostPeterPluginRendererVulkan
             WriteVkBuffer(vkBufferMemory,
                           (void*)pImage->GetData(),
                           (uint32_t)imageSizeAll,
-                          (uint32_t)(width * height * pixelSize * i));
+                          (uint32_t)(nWidth * nHeight * pixelSize * i));
         }
         s_DeleteImages(aImages);
 
         //3> CreateImage, TransitionImageLayout and CopyBufferToImage
-        if (!CreateVkImage(width, 
-                           height, 
-                           depth,
-                           numArray,
-                           mipMapCount, 
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
                            VK_IMAGE_TYPE_2D,
                            true,
-                           numSamples, 
-                           format, 
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
                            VK_IMAGE_TILING_OPTIMAL, 
                            VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
                            VK_SHARING_MODE_EXCLUSIVE,
@@ -2306,15 +2306,15 @@ namespace LostPeterPluginRendererVulkan
                                     0,
                                     1,
                                     0,
-                                    numArray);
+                                    nLayerCount);
             {   
                 CopyVkBufferToVkImage(cmdBuffer,
                                       vkBuffer, 
                                       vkImage, 
-                                      static_cast<uint32_t>(width), 
-                                      static_cast<uint32_t>(height),
-                                      static_cast<uint32_t>(depth), 
-                                      numArray);
+                                      static_cast<uint32_t>(nWidth), 
+                                      static_cast<uint32_t>(nHeight),
+                                      static_cast<uint32_t>(nDepth), 
+                                      nLayerCount);
             }
             TransitionVkImageLayout(cmdBuffer,
                                     vkImage, 
@@ -2323,35 +2323,35 @@ namespace LostPeterPluginRendererVulkan
                                     0,
                                     1,
                                     0,
-                                    numArray);
+                                    nLayerCount);
 
             GenerateVkImageMipMaps(cmdBuffer,
                                    vkImage, 
-                                   format, 
-                                   width, 
-                                   height,
-                                   mipMapCount,
-                                   numArray,
-                                   autoMipMap);
+                                   typeFormat, 
+                                   nWidth, 
+                                   nHeight,
+                                   nMipMapCount,
+                                   nLayerCount,
+                                   bIsAutoMipMap);
         }
         EndSingleTimeCommands(cmdBuffer);
         return true;
     }
     bool VulkanDevice::CreateTextureCubeMap(const StringVector& aPathAsset, 
-                                            VkSampleCountFlagBits numSamples,
-                                            VkFormat format,
-                                            bool autoMipMap, 
-                                            uint32_t& mipMapCount, 
+                                            VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                            VkFormat typeFormat,
+                                            bool bIsAutoMipMap, 
+                                            uint32_t& nMipMapCount, 
                                             VkImage& vkImage, 
                                             VkDeviceMemory& vkImageMemory)
     {
         VkBuffer vkStagingBuffer;
         VkDeviceMemory vkStagingBufferMemory;
         bool bRet = CreateTextureCubeMap(aPathAsset, 
-                                         numSamples, 
-                                         format,
-                                         autoMipMap,
-                                         mipMapCount,
+                                         typeSamplesCountFlagBits, 
+                                         typeFormat,
+                                         bIsAutoMipMap,
+                                         nMipMapCount,
                                          vkImage, 
                                          vkImageMemory, 
                                          vkStagingBuffer, 
@@ -2360,7 +2360,7 @@ namespace LostPeterPluginRendererVulkan
         return bRet;
     }
     bool VulkanDevice::CreateTextureCubeMap(const StringVector& aPathAsset,
-                                            uint32_t& mipMapCount, 
+                                            uint32_t& nMipMapCount, 
                                             VkImage& vkImage, 
                                             VkDeviceMemory& vkImageMemory)
     {
@@ -2368,19 +2368,19 @@ namespace LostPeterPluginRendererVulkan
                                     VK_SAMPLE_COUNT_1_BIT, 
                                     VK_FORMAT_R8G8B8A8_SRGB,
                                     true,
-                                    mipMapCount,
+                                    nMipMapCount,
                                     vkImage, 
                                     vkImageMemory);
     }
 
-    bool VulkanDevice::CreateTextureRenderTarget1D(const FVector4& clDefault,
+    bool VulkanDevice::CreateTextureRenderTarget1D(const FColor& clDefault,
                                                    bool isSetColor,
-                                                   uint32_t width, 
-                                                   uint32_t mipMapCount,
-                                                   VkSampleCountFlagBits numSamples,
-                                                   VkFormat format,
-                                                   VkImageUsageFlags usage, 
-                                                   bool isGraphicsComputeShared,
+                                                   uint32_t nWidth, 
+                                                   uint32_t nMipMapCount,
+                                                   VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                   VkFormat typeFormat,
+                                                   VkImageUsageFlags typeImageUsageFlags, 
+                                                   bool bIsGraphicsComputeShared,
                                                    VkImage& vkImage, 
                                                    VkDeviceMemory& vkImageMemory,
                                                    VkBuffer& vkBuffer, 
@@ -2388,27 +2388,27 @@ namespace LostPeterPluginRendererVulkan
     {
         return CreateTextureRenderTarget2D(clDefault,
                                            isSetColor,
-                                           width,
+                                           nWidth,
                                            1,
-                                           mipMapCount,
+                                           nMipMapCount,
                                            VK_IMAGE_TYPE_1D,
-                                           numSamples,
-                                           format,
-                                           usage,
-                                           isGraphicsComputeShared,
+                                           typeSamplesCountFlagBits,
+                                           typeFormat,
+                                           typeImageUsageFlags,
+                                           bIsGraphicsComputeShared,
                                            vkImage,
                                            vkImageMemory,
                                            vkBuffer,
                                            vkBufferMemory);
     }
-    bool VulkanDevice::CreateTextureRenderTarget1D(const FVector4& clDefault,
+    bool VulkanDevice::CreateTextureRenderTarget1D(const FColor& clDefault,
                                                    bool isSetColor,
-                                                   uint32_t width, 
-                                                   uint32_t mipMapCount,
-                                                   VkSampleCountFlagBits numSamples,
-                                                   VkFormat format,
-                                                   VkImageUsageFlags usage, 
-                                                   bool isGraphicsComputeShared,
+                                                   uint32_t nWidth, 
+                                                   uint32_t nMipMapCount,
+                                                   VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                   VkFormat typeFormat,
+                                                   VkImageUsageFlags typeImageUsageFlags, 
+                                                   bool bIsGraphicsComputeShared,
                                                    VkImage& vkImage, 
                                                    VkDeviceMemory& vkImageMemory)
     {
@@ -2416,12 +2416,12 @@ namespace LostPeterPluginRendererVulkan
         VkDeviceMemory vkStagingBufferMemory;
         bool bRet = CreateTextureRenderTarget1D(clDefault, 
                                                 isSetColor,
-                                                width, 
-                                                mipMapCount,
-                                                numSamples,
-                                                format,
-                                                usage,
-                                                isGraphicsComputeShared,
+                                                nWidth, 
+                                                nMipMapCount,
+                                                typeSamplesCountFlagBits,
+                                                typeFormat,
+                                                typeImageUsageFlags,
+                                                bIsGraphicsComputeShared,
                                                 vkImage, 
                                                 vkImageMemory, 
                                                 vkStagingBuffer, 
@@ -2430,23 +2430,23 @@ namespace LostPeterPluginRendererVulkan
         return bRet;
     }
 
-    bool VulkanDevice::CreateTextureRenderTarget2D(const FVector4& clDefault,
+    bool VulkanDevice::CreateTextureRenderTarget2D(const FColor& clDefault,
                                                    bool isSetColor,
-                                                   uint32_t width, 
-                                                   uint32_t height,
-                                                   uint32_t mipMapCount,
-                                                   VkImageType type,
-                                                   VkSampleCountFlagBits numSamples,
-                                                   VkFormat format,
-                                                   VkImageUsageFlags usage, 
-                                                   bool isGraphicsComputeShared,
+                                                   uint32_t nWidth, 
+                                                   uint32_t nHeight,
+                                                   uint32_t nMipMapCount,
+                                                   VkImageType typeImage,
+                                                   VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                   VkFormat typeFormat,
+                                                   VkImageUsageFlags typeImageUsageFlags, 
+                                                   bool bIsGraphicsComputeShared,
                                                    VkImage& vkImage, 
                                                    VkDeviceMemory& vkImageMemory,
                                                    VkBuffer& vkBuffer, 
                                                    VkDeviceMemory& vkBufferMemory)
     {
         //1> CreateBuffer
-        VkDeviceSize imageSize = width * height * 4;
+        VkDeviceSize imageSize = nWidth * nHeight * 4;
         if (!CreateVkBuffer(imageSize, 
                             VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -2467,7 +2467,7 @@ namespace LostPeterPluginRendererVulkan
             vkMapMemory(this->m_vkDevice, vkBufferMemory, 0, imageSize, 0, &data);
             {
                 uint8* pColor = (uint8*)data;
-                for (uint32_t i = 0; i < width * height; i++)
+                for (uint32_t i = 0; i < nWidth * nHeight; i++)
                 {
                     pColor[4 * i + 0] = r;
                     pColor[4 * i + 1] = g;
@@ -2479,21 +2479,21 @@ namespace LostPeterPluginRendererVulkan
         }
         
         //2> CreateImage
-        uint32_t depth = 1;
-        uint32_t numArray = 1;
-        if (!CreateVkImage(width, 
-                           height, 
-                           depth,
-                           numArray,
-                           mipMapCount, 
-                           type,
+        uint32_t nDepth = 1;
+        uint32_t nLayerCount = 1;
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
+                           typeImage,
                            false,
-                           numSamples, 
-                           format, 
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
                            VK_IMAGE_TILING_OPTIMAL, 
-                           usage, 
+                           typeImageUsageFlags, 
                            VK_SHARING_MODE_EXCLUSIVE,
-                           isGraphicsComputeShared,
+                           bIsGraphicsComputeShared,
                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                            vkImage, 
                            vkImageMemory))
@@ -2508,20 +2508,20 @@ namespace LostPeterPluginRendererVulkan
                                 VK_IMAGE_LAYOUT_UNDEFINED, 
                                 VK_IMAGE_LAYOUT_GENERAL,
                                 0,
-                                mipMapCount,
+                                nMipMapCount,
                                 0,
-                                numArray);
+                                nLayerCount);
         return true;
     }
-    bool VulkanDevice::CreateTextureRenderTarget2D(const FVector4& clDefault,
+    bool VulkanDevice::CreateTextureRenderTarget2D(const FColor& clDefault,
                                                    bool isSetColor,
-                                                   uint32_t width, 
-                                                   uint32_t height,
-                                                   uint32_t mipMapCount,
-                                                   VkSampleCountFlagBits numSamples,
-                                                   VkFormat format,
-                                                   VkImageUsageFlags usage, 
-                                                   bool isGraphicsComputeShared,
+                                                   uint32_t nWidth, 
+                                                   uint32_t nHeight,
+                                                   uint32_t nMipMapCount,
+                                                   VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                   VkFormat typeFormat,
+                                                   VkImageUsageFlags typeImageUsageFlags, 
+                                                   bool bIsGraphicsComputeShared,
                                                    VkImage& vkImage, 
                                                    VkDeviceMemory& vkImageMemory)
     {
@@ -2529,14 +2529,14 @@ namespace LostPeterPluginRendererVulkan
         VkDeviceMemory vkStagingBufferMemory;
         bool bRet = CreateTextureRenderTarget2D(clDefault, 
                                                 isSetColor,
-                                                width, 
-                                                height,
-                                                mipMapCount,
+                                                nWidth, 
+                                                nHeight,
+                                                nMipMapCount,
                                                 VK_IMAGE_TYPE_2D,
-                                                numSamples,
-                                                format,
-                                                usage,
-                                                isGraphicsComputeShared,
+                                                typeSamplesCountFlagBits,
+                                                typeFormat,
+                                                typeImageUsageFlags,
+                                                bIsGraphicsComputeShared,
                                                 vkImage, 
                                                 vkImageMemory, 
                                                 vkStagingBuffer, 
@@ -2546,30 +2546,30 @@ namespace LostPeterPluginRendererVulkan
     }
 
     bool VulkanDevice::CreateTextureRenderTarget2D(uint8* pData,
-                                                   uint32_t width, 
-                                                   uint32_t height,
-                                                   uint32_t mipMapCount,
-                                                   VkImageType type,
-                                                   VkSampleCountFlagBits numSamples,
-                                                   VkFormat format,
-                                                   VkImageUsageFlags usage, 
-                                                   bool isGraphicsComputeShared,
+                                                   uint32_t nWidth, 
+                                                   uint32_t nHeight,
+                                                   uint32_t nMipMapCount,
+                                                   VkImageType typeImage,
+                                                   VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                   VkFormat typeFormat,
+                                                   VkImageUsageFlags typeImageUsageFlags, 
+                                                   bool bIsGraphicsComputeShared,
                                                    VkImage& vkImage, 
                                                    VkDeviceMemory& vkImageMemory,
                                                    VkBuffer& vkBuffer, 
                                                    VkDeviceMemory& vkBufferMemory)
     {
         uint32_t sizeFormat = 4;
-        if (format == VK_FORMAT_R8_UNORM)
+        if (typeFormat == VK_FORMAT_R8_UNORM)
         {
             sizeFormat = 1;
         }
-        else if (format == VK_FORMAT_R16_UNORM)
+        else if (typeFormat == VK_FORMAT_R16_UNORM)
         {
             sizeFormat = 2;
         }
         //1> CreateBuffer
-        VkDeviceSize imageSize = width * height * sizeFormat;
+        VkDeviceSize imageSize = nWidth * nHeight * sizeFormat;
         if (!CreateVkBuffer(imageSize, 
                             VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -2588,21 +2588,21 @@ namespace LostPeterPluginRendererVulkan
         }
         
         //2> CreateImage
-        uint32_t depth = 1;
-        uint32_t numArray = 1;
-        if (!CreateVkImage(width, 
-                           height, 
-                           depth,
-                           numArray,
-                           mipMapCount, 
-                           type,
+        uint32_t nDepth = 1;
+        uint32_t nLayerCount = 1;
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
+                           typeImage,
                            false,
-                           numSamples, 
-                           format, 
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
                            VK_IMAGE_TILING_OPTIMAL, 
-                           usage, 
+                           typeImageUsageFlags, 
                            VK_SHARING_MODE_EXCLUSIVE,
-                           isGraphicsComputeShared,
+                           bIsGraphicsComputeShared,
                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                            vkImage, 
                            vkImageMemory))
@@ -2617,33 +2617,33 @@ namespace LostPeterPluginRendererVulkan
                                 VK_IMAGE_LAYOUT_UNDEFINED, 
                                 VK_IMAGE_LAYOUT_GENERAL,
                                 0,
-                                mipMapCount,
+                                nMipMapCount,
                                 0,
-                                numArray);
+                                nLayerCount);
         return true;
     }
     bool VulkanDevice::CreateTextureRenderTarget2D(uint8* pData,
-                                                   uint32_t width, 
-                                                   uint32_t height,
-                                                   uint32_t mipMapCount,
-                                                   VkSampleCountFlagBits numSamples,
-                                                   VkFormat format,
-                                                   VkImageUsageFlags usage, 
-                                                   bool isGraphicsComputeShared,
+                                                   uint32_t nWidth, 
+                                                   uint32_t nHeight,
+                                                   uint32_t nMipMapCount,
+                                                   VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                   VkFormat typeFormat,
+                                                   VkImageUsageFlags typeImageUsageFlags, 
+                                                   bool bIsGraphicsComputeShared,
                                                    VkImage& vkImage, 
                                                    VkDeviceMemory& vkImageMemory)
     {
         VkBuffer vkStagingBuffer;
         VkDeviceMemory vkStagingBufferMemory;
         bool bRet = CreateTextureRenderTarget2D(pData,
-                                                width, 
-                                                height,
-                                                mipMapCount,
+                                                nWidth, 
+                                                nHeight,
+                                                nMipMapCount,
                                                 VK_IMAGE_TYPE_2D,
-                                                numSamples,
-                                                format,
-                                                usage,
-                                                isGraphicsComputeShared,
+                                                typeSamplesCountFlagBits,
+                                                typeFormat,
+                                                typeImageUsageFlags,
+                                                bIsGraphicsComputeShared,
                                                 vkImage, 
                                                 vkImageMemory, 
                                                 vkStagingBuffer, 
@@ -2652,25 +2652,25 @@ namespace LostPeterPluginRendererVulkan
         return bRet;
     }
 
-    bool VulkanDevice::CreateTextureRenderTarget2DArray(const FVector4& clDefault,
+    bool VulkanDevice::CreateTextureRenderTarget2DArray(const FColor& clDefault,
                                                         bool isSetColor,
-                                                        uint32_t width, 
-                                                        uint32_t height,
-                                                        uint32_t numArray,
-                                                        uint32_t mipMapCount,
-                                                        VkImageType type,
-                                                        VkSampleCountFlagBits numSamples,
-                                                        VkFormat format,
-                                                        VkImageUsageFlags usage, 
-                                                        bool isGraphicsComputeShared,
+                                                        uint32_t nWidth, 
+                                                        uint32_t nHeight,
+                                                        uint32_t nLayerCount,
+                                                        uint32_t nMipMapCount,
+                                                        VkImageType typeImage,
+                                                        VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                        VkFormat typeFormat,
+                                                        VkImageUsageFlags typeImageUsageFlags, 
+                                                        bool bIsGraphicsComputeShared,
                                                         VkImage& vkImage, 
                                                         VkDeviceMemory& vkImageMemory,
                                                         VkBuffer& vkBuffer, 
                                                         VkDeviceMemory& vkBufferMemory)
     {
         //1> CreateBuffer
-        VkDeviceSize imageSize = width * height * 4;
-        VkDeviceSize imageSizeAll = imageSize * numArray;
+        VkDeviceSize imageSize = nWidth * nHeight * 4;
+        VkDeviceSize imageSizeAll = imageSize * nLayerCount;
         if (!CreateVkBuffer(imageSizeAll, 
                             VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -2691,7 +2691,7 @@ namespace LostPeterPluginRendererVulkan
             vkMapMemory(this->m_vkDevice, vkBufferMemory, 0, imageSizeAll, 0, &data);
             {
                 uint8* pColor = (uint8*)data;
-                for (uint32_t i = 0; i < width * height * numArray; i++)
+                for (uint32_t i = 0; i < nWidth * nHeight * nLayerCount; i++)
                 {
                     pColor[4 * i + 0] = r;
                     pColor[4 * i + 1] = g;
@@ -2703,24 +2703,24 @@ namespace LostPeterPluginRendererVulkan
         }
 
         //2> CreateImage
-        uint32_t depth = 1;
-        if (type == VK_IMAGE_TYPE_1D)
+        uint32_t nDepth = 1;
+        if (typeImage == VK_IMAGE_TYPE_1D)
         {
-            depth = 0;
+            nDepth = 0;
         }
-        if (!CreateVkImage(width, 
-                           height, 
-                           depth,
-                           numArray,
-                           mipMapCount, 
-                           type,
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
+                           typeImage,
                            false,
-                           numSamples, 
-                           format, 
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
                            VK_IMAGE_TILING_OPTIMAL, 
-                           usage, 
+                           typeImageUsageFlags, 
                            VK_SHARING_MODE_EXCLUSIVE,
-                           isGraphicsComputeShared,
+                           bIsGraphicsComputeShared,
                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                            vkImage, 
                            vkImageMemory))
@@ -2735,21 +2735,21 @@ namespace LostPeterPluginRendererVulkan
                                 VK_IMAGE_LAYOUT_UNDEFINED, 
                                 VK_IMAGE_LAYOUT_GENERAL,
                                 0,
-                                mipMapCount,
+                                nMipMapCount,
                                 0,
-                                numArray);
+                                nLayerCount);
         return true;
     }
-    bool VulkanDevice::CreateTextureRenderTarget2DArray(const FVector4& clDefault,
+    bool VulkanDevice::CreateTextureRenderTarget2DArray(const FColor& clDefault,
                                                         bool isSetColor,
-                                                        uint32_t width, 
-                                                        uint32_t height,
-                                                        uint32_t numArray,
-                                                        uint32_t mipMapCount,
-                                                        VkSampleCountFlagBits numSamples,
-                                                        VkFormat format,
-                                                        VkImageUsageFlags usage, 
-                                                        bool isGraphicsComputeShared,
+                                                        uint32_t nWidth, 
+                                                        uint32_t nHeight,
+                                                        uint32_t nLayerCount,
+                                                        uint32_t nMipMapCount,
+                                                        VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                        VkFormat typeFormat,
+                                                        VkImageUsageFlags typeImageUsageFlags, 
+                                                        bool bIsGraphicsComputeShared,
                                                         VkImage& vkImage, 
                                                         VkDeviceMemory& vkImageMemory)
     {
@@ -2757,15 +2757,15 @@ namespace LostPeterPluginRendererVulkan
         VkDeviceMemory vkStagingBufferMemory;
         bool bRet = CreateTextureRenderTarget2DArray(clDefault, 
                                                      isSetColor,
-                                                     width, 
-                                                     height,
-                                                     numArray,
-                                                     mipMapCount,
+                                                     nWidth, 
+                                                     nHeight,
+                                                     nLayerCount,
+                                                     nMipMapCount,
                                                      VK_IMAGE_TYPE_2D,
-                                                     numSamples,
-                                                     format,
-                                                     usage,
-                                                     isGraphicsComputeShared,
+                                                     typeSamplesCountFlagBits,
+                                                     typeFormat,
+                                                     typeImageUsageFlags,
+                                                     bIsGraphicsComputeShared,
                                                      vkImage, 
                                                      vkImageMemory, 
                                                      vkStagingBuffer, 
@@ -2774,23 +2774,23 @@ namespace LostPeterPluginRendererVulkan
         return bRet;
     }
 
-    bool VulkanDevice::CreateTextureRenderTarget3D(const FVector4& clDefault,
+    bool VulkanDevice::CreateTextureRenderTarget3D(const FColor& clDefault,
                                                    bool isSetColor,
-                                                   uint32_t width, 
-                                                   uint32_t height,
-                                                   uint32_t depth,
-                                                   uint32_t mipMapCount,
-                                                   VkSampleCountFlagBits numSamples,
-                                                   VkFormat format,
-                                                   VkImageUsageFlags usage, 
-                                                   bool isGraphicsComputeShared,
+                                                   uint32_t nWidth, 
+                                                   uint32_t nHeight,
+                                                   uint32_t nDepth,
+                                                   uint32_t nMipMapCount,
+                                                   VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                   VkFormat typeFormat,
+                                                   VkImageUsageFlags typeImageUsageFlags, 
+                                                   bool bIsGraphicsComputeShared,
                                                    VkImage& vkImage, 
                                                    VkDeviceMemory& vkImageMemory,
                                                    VkBuffer& vkBuffer, 
                                                    VkDeviceMemory& vkBufferMemory)
     {
         //1> CreateBuffer
-        VkDeviceSize imageSize = width * height * depth * 4;
+        VkDeviceSize imageSize = nWidth * nHeight * nDepth * 4;
         if (!CreateVkBuffer(imageSize, 
                             VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -2811,7 +2811,7 @@ namespace LostPeterPluginRendererVulkan
             vkMapMemory(this->m_vkDevice, vkBufferMemory, 0, imageSize, 0, &data);
             {
                 uint8* pColor = (uint8*)data;
-                for (uint32_t i = 0; i < width * height * depth; i++)
+                for (uint32_t i = 0; i < nWidth * nHeight * nDepth; i++)
                 {
                     pColor[4 * i + 0] = r;
                     pColor[4 * i + 1] = g;
@@ -2823,19 +2823,19 @@ namespace LostPeterPluginRendererVulkan
         }
 
         //2> CreateImage
-        if (!CreateVkImage(width, 
-                           height, 
-                           depth,
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
                            1,
-                           mipMapCount, 
+                           nMipMapCount, 
                            VK_IMAGE_TYPE_3D,
                            false,
-                           numSamples, 
-                           format, 
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
                            VK_IMAGE_TILING_OPTIMAL, 
-                           usage, 
+                           typeImageUsageFlags, 
                            VK_SHARING_MODE_EXCLUSIVE,
-                           isGraphicsComputeShared,
+                           bIsGraphicsComputeShared,
                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                            vkImage, 
                            vkImageMemory))
@@ -2850,21 +2850,21 @@ namespace LostPeterPluginRendererVulkan
                                 VK_IMAGE_LAYOUT_UNDEFINED, 
                                 VK_IMAGE_LAYOUT_GENERAL,
                                 0,
-                                mipMapCount,
+                                nMipMapCount,
                                 0,
                                 1);
         return true;
     }
-    bool VulkanDevice::CreateTextureRenderTarget3D(const FVector4& clDefault,
+    bool VulkanDevice::CreateTextureRenderTarget3D(const FColor& clDefault,
                                                    bool isSetColor,
-                                                   uint32_t width, 
-                                                   uint32_t height,
-                                                   uint32_t depth,
-                                                   uint32_t mipMapCount,
-                                                   VkSampleCountFlagBits numSamples,
-                                                   VkFormat format,
-                                                   VkImageUsageFlags usage, 
-                                                   bool isGraphicsComputeShared,
+                                                   uint32_t nWidth, 
+                                                   uint32_t nHeight,
+                                                   uint32_t nDepth,
+                                                   uint32_t nMipMapCount,
+                                                   VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                   VkFormat typeFormat,
+                                                   VkImageUsageFlags typeImageUsageFlags, 
+                                                   bool bIsGraphicsComputeShared,
                                                    VkImage& vkImage, 
                                                    VkDeviceMemory& vkImageMemory)
     {
@@ -2872,14 +2872,14 @@ namespace LostPeterPluginRendererVulkan
         VkDeviceMemory vkStagingBufferMemory;
         bool bRet = CreateTextureRenderTarget3D(clDefault, 
                                                 isSetColor,
-                                                width, 
-                                                height,
-                                                depth,
-                                                mipMapCount,
-                                                numSamples,
-                                                format,
-                                                usage,
-                                                isGraphicsComputeShared,
+                                                nWidth, 
+                                                nHeight,
+                                                nDepth,
+                                                nMipMapCount,
+                                                typeSamplesCountFlagBits,
+                                                typeFormat,
+                                                typeImageUsageFlags,
+                                                bIsGraphicsComputeShared,
                                                 vkImage, 
                                                 vkImageMemory, 
                                                 vkStagingBuffer, 
@@ -2888,22 +2888,22 @@ namespace LostPeterPluginRendererVulkan
         return bRet;
     }
 
-    bool VulkanDevice::CreateTextureRenderTargetCubeMap(uint32_t width, 
-                                                        uint32_t height,
-                                                        uint32_t mipMapCount,
-                                                        VkSampleCountFlagBits numSamples,
-                                                        VkFormat format,
-                                                        VkImageUsageFlags usage, 
-                                                        bool isGraphicsComputeShared,
+    bool VulkanDevice::CreateTextureRenderTargetCubeMap(uint32_t nWidth, 
+                                                        uint32_t nHeight,
+                                                        uint32_t nMipMapCount,
+                                                        VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                        VkFormat typeFormat,
+                                                        VkImageUsageFlags typeImageUsageFlags, 
+                                                        bool bIsGraphicsComputeShared,
                                                         VkImage& vkImage, 
                                                         VkDeviceMemory& vkImageMemory,
                                                         VkBuffer& vkBuffer, 
                                                         VkDeviceMemory& vkBufferMemory)
     {
-        uint32_t numArray = 6;
+        uint32_t nLayerCount = 6;
         //1> CreateBuffer
-        VkDeviceSize imageSize = width * height * 4;
-        VkDeviceSize imageSizeAll = imageSize * numArray;
+        VkDeviceSize imageSize = nWidth * nHeight * 4;
+        VkDeviceSize imageSizeAll = imageSize * nLayerCount;
         if (!CreateVkBuffer(imageSizeAll, 
                             VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
                             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
@@ -2915,20 +2915,20 @@ namespace LostPeterPluginRendererVulkan
         }
 
         //2> CreateImage
-        uint32_t depth = 1;
-        if (!CreateVkImage(width, 
-                           height, 
-                           depth,
-                           numArray,
-                           mipMapCount, 
+        uint32_t nDepth = 1;
+        if (!CreateVkImage(nWidth, 
+                           nHeight, 
+                           nDepth,
+                           nLayerCount,
+                           nMipMapCount, 
                            VK_IMAGE_TYPE_2D,
                            true,
-                           numSamples, 
-                           format, 
+                           typeSamplesCountFlagBits, 
+                           typeFormat, 
                            VK_IMAGE_TILING_OPTIMAL, 
-                           usage, 
+                           typeImageUsageFlags, 
                            VK_SHARING_MODE_EXCLUSIVE,
-                           isGraphicsComputeShared,
+                           bIsGraphicsComputeShared,
                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
                            vkImage, 
                            vkImageMemory))
@@ -2943,30 +2943,30 @@ namespace LostPeterPluginRendererVulkan
                                 VK_IMAGE_LAYOUT_UNDEFINED, 
                                 VK_IMAGE_LAYOUT_GENERAL,
                                 0,
-                                mipMapCount,
+                                nMipMapCount,
                                 0,
-                                numArray);
+                                nLayerCount);
         return true;
     }
-    bool VulkanDevice::CreateTextureRenderTargetCubeMap(uint32_t width, 
-                                                        uint32_t height,
-                                                        uint32_t mipMapCount,
-                                                        VkSampleCountFlagBits numSamples,
-                                                        VkFormat format,
-                                                        VkImageUsageFlags usage, 
-                                                        bool isGraphicsComputeShared,
+    bool VulkanDevice::CreateTextureRenderTargetCubeMap(uint32_t nWidth, 
+                                                        uint32_t nHeight,
+                                                        uint32_t nMipMapCount,
+                                                        VkSampleCountFlagBits typeSamplesCountFlagBits,
+                                                        VkFormat typeFormat,
+                                                        VkImageUsageFlags typeImageUsageFlags, 
+                                                        bool bIsGraphicsComputeShared,
                                                         VkImage& vkImage, 
                                                         VkDeviceMemory& vkImageMemory)
     {
         VkBuffer vkStagingBuffer;
         VkDeviceMemory vkStagingBufferMemory;
-        bool bRet = CreateTextureRenderTargetCubeMap(width, 
-                                                     height,
-                                                     mipMapCount,
-                                                     numSamples,
-                                                     format,
-                                                     usage,
-                                                     isGraphicsComputeShared,
+        bool bRet = CreateTextureRenderTargetCubeMap(nWidth, 
+                                                     nHeight,
+                                                     nMipMapCount,
+                                                     typeSamplesCountFlagBits,
+                                                     typeFormat,
+                                                     typeImageUsageFlags,
+                                                     bIsGraphicsComputeShared,
                                                      vkImage, 
                                                      vkImageMemory, 
                                                      vkStagingBuffer, 
@@ -3583,8 +3583,8 @@ namespace LostPeterPluginRendererVulkan
                                        const VkFramebuffer& frameBuffer,
                                        const VkOffset2D& offset,
                                        const VkExtent2D& extent,
-                                       const FVector4& clBg,
-                                       float depth,
+                                       const FColor& clBg,
+                                       float fDepth,
                                        uint32_t stencil)
     {
         VkRenderPassBeginInfo renderPassInfo = {};
@@ -3598,7 +3598,7 @@ namespace LostPeterPluginRendererVulkan
         VkClearColorValue colorValue = { clBg.x, clBg.y, clBg.z, clBg.w };
         clearValues[0].color = colorValue;
         VkClearDepthStencilValue depthStencilValue;
-        depthStencilValue.depth = depth;
+        depthStencilValue.depth = fDepth;
         depthStencilValue.stencil = stencil;
         clearValues[1].depthStencil = depthStencilValue;
         renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());

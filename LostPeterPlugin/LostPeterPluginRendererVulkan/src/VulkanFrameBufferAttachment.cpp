@@ -45,23 +45,23 @@ namespace LostPeterPluginRendererVulkan
         this->m_vkImageView = VK_NULL_HANDLE;
     }
 
-    bool VulkanFrameBufferAttachment::Init(uint32_t width, 
-                                           uint32_t height, 
+    bool VulkanFrameBufferAttachment::Init(uint32_t nWidth, 
+                                           uint32_t nHeight, 
                                            bool bIsImageArray,
-                                           VkSampleCountFlagBits numSamples,
+                                           VkSampleCountFlagBits typeSamplesCountFlagBits,
                                            VkFormat formatSwapChain,
                                            VkFormat formatDepth)
     {
         this->m_bIsImageArray = bIsImageArray;
-        this->m_numSamples = numSamples;
+        this->m_numSamples = typeSamplesCountFlagBits;
         this->m_formatSwapChain = formatSwapChain;
         this->m_formatDepth = formatDepth;
 
-        uint32_t depth = 1;
-        uint32_t numArray = 1;
-        uint32_t mipMapCount = 1;
+        uint32_t nDepth = 1;
+        uint32_t nLayerCount = 1;
+        uint32_t nMipMapCount = 1;
         VkImageType imageType = VK_IMAGE_TYPE_2D;
-        VkFormat format = formatSwapChain;
+        VkFormat typeFormat = formatSwapChain;
         VkComponentMapping componentMapping;
         componentMapping.r = VK_COMPONENT_SWIZZLE_R;
 		componentMapping.g = VK_COMPONENT_SWIZZLE_G;
@@ -77,7 +77,7 @@ namespace LostPeterPluginRendererVulkan
 
         if (IsDepth())
         {
-            format = formatDepth;
+            typeFormat = formatDepth;
             componentMapping.g = VK_COMPONENT_SWIZZLE_ZERO;
             componentMapping.b = VK_COMPONENT_SWIZZLE_ZERO;
             componentMapping.a = VK_COMPONENT_SWIZZLE_ZERO;
@@ -87,19 +87,19 @@ namespace LostPeterPluginRendererVulkan
 
         if (bIsImageArray)
         {
-            numArray = 2;
+            nLayerCount = 2;
             imageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
         }
 
-        if (!m_pDevice->CreateVkImage(width, 
-                                      height, 
-                                      depth,
-                                      numArray,
-                                      mipMapCount,
+        if (!m_pDevice->CreateVkImage(nWidth, 
+                                      nHeight, 
+                                      nDepth,
+                                      nLayerCount,
+                                      nMipMapCount,
                                       imageType, 
                                       false,
-                                      numSamples, 
-                                      format, 
+                                      typeSamplesCountFlagBits, 
+                                      typeFormat, 
                                       tiling, 
                                       usage,
                                       sharingMode,
@@ -114,11 +114,11 @@ namespace LostPeterPluginRendererVulkan
         
         if (!m_pDevice->CreateVkImageView(this->m_vkImage, 
                                           imageViewType,
-                                          format, 
+                                          typeFormat, 
                                           componentMapping,
                                           aspectFlags, 
-                                          mipMapCount,
-                                          numArray,
+                                          nMipMapCount,
+                                          nLayerCount,
                                           this->m_vkImageView))
         {
             F_LogError("*********************** VulkanFrameBufferAttachment::Init: Failed to create VkImageView !");

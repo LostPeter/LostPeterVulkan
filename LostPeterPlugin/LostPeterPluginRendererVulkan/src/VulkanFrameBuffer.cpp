@@ -39,8 +39,8 @@ namespace LostPeterPluginRendererVulkan
     bool VulkanFrameBuffer::Init(const VkImageViewVector& aImageView, 
                                  VkRenderPass& vkRenderPass,
                                  VkFramebufferCreateFlags flags,
-                                 uint32_t width,
-                                 uint32_t height,
+                                 uint32_t nWidth,
+                                 uint32_t nHeight,
                                  uint32_t layers)
     {
         Destroy();
@@ -49,8 +49,8 @@ namespace LostPeterPluginRendererVulkan
                                             aImageView,
                                             vkRenderPass,
                                             flags,
-                                            width,
-                                            height,
+                                            nWidth,
+                                            nHeight,
                                             layers,
                                             this->m_vkFrameBuffer))
         {

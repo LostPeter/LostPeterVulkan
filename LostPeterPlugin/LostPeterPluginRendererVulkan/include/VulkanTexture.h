@@ -33,7 +33,14 @@ namespace LostPeterPluginRendererVulkan
     protected:
         VulkanDevice* m_pDevice;
 
-        VkFormat m_eFormat; 
+        VkImageType m_eVkImage;
+        VkImageViewType m_eVkImageView;
+        VkFormat m_eVkFormat; 
+        VkComponentMapping m_eVkComponentMapping;
+        VkImageAspectFlags m_eVkImageAspectFlags;
+        VkSampleCountFlagBits m_eVkSamplesCountFlagBits;
+        VkImageUsageFlags m_vkRTImageUsage;
+
         VkImage m_vkImage;
         VkDeviceMemory m_vkImageMemory;
         VkImageView m_vkImageView;
@@ -44,11 +51,15 @@ namespace LostPeterPluginRendererVulkan
         VkBuffer m_vkBufferStaging;
         VkDeviceMemory m_vkBufferMemoryStaging;
 
-
     public:
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
 
-        F_FORCEINLINE VkFormat GetVkFormat() const { return m_eFormat; }
+        F_FORCEINLINE VkImageType GetVkImageType() const { return m_eVkImage; }
+        F_FORCEINLINE VkImageViewType GetVkImageViewType() const { return m_eVkImageView; }
+        F_FORCEINLINE VkFormat GetVkFormat() const { return m_eVkFormat; }
+        F_FORCEINLINE VkComponentMapping GetVkComponentMapping() const { return m_eVkComponentMapping; }
+        F_FORCEINLINE VkImageAspectFlags GetVkImageAspectFlags() const { return m_eVkImageAspectFlags; }
+
         F_FORCEINLINE VkImage GetVkImage() const { return m_vkImage; }
         F_FORCEINLINE VkDeviceMemory GetVkImageDeviceMemory() const { return m_vkImageMemory; }
         F_FORCEINLINE VkImageView GetVkImageView() const { return m_vkImageView; }

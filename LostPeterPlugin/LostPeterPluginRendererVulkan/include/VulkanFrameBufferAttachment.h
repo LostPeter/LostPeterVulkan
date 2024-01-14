@@ -58,10 +58,10 @@ namespace LostPeterPluginRendererVulkan
     public:
         void Destroy();
 
-        virtual bool Init(uint32_t width, 
-                          uint32_t height, 
+        virtual bool Init(uint32_t nWidth, 
+                          uint32_t nHeight, 
                           bool bIsImageArray,
-                          VkSampleCountFlagBits numSamples,
+                          VkSampleCountFlagBits typeSamplesCountFlagBits,
                           VkFormat formatSwapChain,
                           VkFormat formatDepth);
     };

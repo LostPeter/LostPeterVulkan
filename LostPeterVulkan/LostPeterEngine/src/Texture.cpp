@@ -332,6 +332,10 @@ namespace LostPeterEngine
 		, m_bIsMipMapsHardwareGenerated(TextureManager::ms_bIsMipMapsHardwareGenerated_Default)
 		, m_fGamma(TextureManager::ms_fGamma_Default)
 		, m_bIsGammaHardware(TextureManager::ms_bIsGammaHardware_Default)
+		, m_pDataRGBA(nullptr)
+		, m_bIsGraphicsComputeShared(false)
+		, m_colorRT(0, 0, 0, 0)
+		, m_bIsRTSetColor(true)
 		, m_bInternalResourcesCreated(false)
 	{
 		if (createParameterDictionary(ms_nameTexture))
@@ -368,7 +372,7 @@ namespace LostPeterEngine
 
 	void Texture::Destroy()
 	{
-
+		F_DELETE_T(m_pDataRGBA)
 		Resource::Destroy();
 	}
 	

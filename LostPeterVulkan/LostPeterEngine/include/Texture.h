@@ -63,6 +63,11 @@ namespace LostPeterEngine
 
 		float m_fGamma;
 		bool m_bIsGammaHardware;
+		
+		uint8* m_pDataRGBA;
+		bool m_bIsGraphicsComputeShared;
+		FColor m_colorRT;
+        bool m_bIsRTSetColor; 
 
 		bool m_bInternalResourcesCreated;
 
@@ -83,6 +88,7 @@ namespace LostPeterEngine
 		F_FORCEINLINE bool IsUsage_UnorderedAccessView() const { return m_nUsage & E_TextureUsage_UnorderedAccessView; }
 		F_FORCEINLINE bool IsUsage_UnorderedAccessViewNotSRV() const { return m_nUsage & E_TextureUsage_UnorderedAccessViewNotSRV; }
 		F_FORCEINLINE bool IsUsage_Default() const { return m_nUsage & E_TextureUsage_Default; }
+		F_FORCEINLINE bool IsUsage_StagingBuffer() const { return IsUsage_Dynamic() ||  IsUsage_DynamicWriteOnly() || IsUsage_DynamicWriteOnlyDiscardable() || IsUsage_RenderTarget(); }
 		F_FORCEINLINE FTextureType GetTextureType() const { return m_eTexture; }
 		F_FORCEINLINE void SetTextureType(FTextureType eTexture) { m_eTexture = eTexture; }
 		F_FORCEINLINE FTextureFilterType GetTextureFilterType() const { return m_eTextureFilter; }
@@ -136,6 +142,15 @@ namespace LostPeterEngine
 		F_FORCEINLINE void SetGamma(float fGamma) { m_fGamma = fGamma; }
 		F_FORCEINLINE bool IsGammaHardware() const { return m_bIsGammaHardware; }
 		F_FORCEINLINE void SetIsGammaHardware(bool bIsGammaHardware) { m_bIsGammaHardware = bIsGammaHardware; }
+
+		F_FORCEINLINE uint8* GetDataRGBA() const { return m_pDataRGBA; }
+		F_FORCEINLINE bool IsGraphicsComputeShared() const { return m_bIsGraphicsComputeShared; }
+		F_FORCEINLINE void SetIsGraphicsComputeShared(bool bIsGraphicsComputeShared) { m_bIsGraphicsComputeShared = bIsGraphicsComputeShared; }
+		F_FORCEINLINE const FColor& GetColorRT() const { return m_colorRT; }
+		F_FORCEINLINE void SetColorRT(const FColor& cl) { m_colorRT = cl; }
+		F_FORCEINLINE bool IsRTSetColor() const { return m_bIsRTSetColor; }
+		F_FORCEINLINE void SetIsRTSetColor(bool bIsRTSetColor) { m_bIsRTSetColor = bIsRTSetColor; }
+
 
 	public:
         virtual void Destroy();

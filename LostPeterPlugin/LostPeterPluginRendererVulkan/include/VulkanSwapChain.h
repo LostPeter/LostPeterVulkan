@@ -71,8 +71,8 @@ namespace LostPeterPluginRendererVulkan
         void Destroy();
         bool Init(GLFWwindow* pWindow,
                   FPixelFormatType& eOutPixelFormat,
-                  uint32 width, 
-                  uint32 height, 
+                  uint32 nWidth, 
+                  uint32 nHeight, 
                   uint32* pOutDesiredNumSwapChainImages, 
                   VkImageVector& aOutImages, 
                   int32 nLockToVSync);
@@ -88,8 +88,8 @@ namespace LostPeterPluginRendererVulkan
 
         bool chooseSwapSurfacePixelFormat(FPixelFormatType& eOutPixelFormat);
         bool chooseSwapPresentMode(VkPresentModeKHR& presentMode);
-        bool createSwapChain(uint32 width, 
-                             uint32 height, 
+        bool createSwapChain(uint32 nWidth, 
+                             uint32 nHeight, 
                              VkPresentModeKHR presentMode,
                              uint32* pOutDesiredNumSwapChainImages, 
                              VkImageVector& aOutImages);

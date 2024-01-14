@@ -285,7 +285,7 @@ namespace LostPeterPluginRendererVulkan
         RefreshWindowSize(nWindowWidth, nWindowHeight);
         if (nWindowWidth <= 0 || nWindowHeight <= 0)
         {
-            F_LogError("*********************** VulkanRenderWindow::RecreateSwapChain: Wrong window size: width: [%d], height: [%d], name: [%s] !", nWindowWidth, nWindowHeight, nameWindow.c_str());
+            F_LogError("*********************** VulkanRenderWindow::RecreateSwapChain: Wrong window size: Width: [%d], Height: [%d], name: [%s] !", nWindowWidth, nWindowHeight, nameWindow.c_str());
             return false;
         }
 
