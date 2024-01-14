@@ -553,11 +553,13 @@ namespace LostPeterEngine
                     FTextureFilterType _typeTextureFilter,
                     FTextureAddressingType _typeTextureAddressing,
                     FTextureBorderColorType _typeTextureBorderColor,
+                    FMSAASampleCountType _typeMSAASampleCount,
                     int _width,
                     int _height,
                     int _depth,
                     int _animChunkX,
                     int _animChunkY,
+                    bool _isAlpha,
                     bool _isRT,
                     bool _isGCS);
         ~TextureInfo();
@@ -571,11 +573,13 @@ namespace LostPeterEngine
         FTextureFilterType typeTextureFilter;
         FTextureAddressingType typeTextureAddressing;
         FTextureBorderColorType typeTextureBorderColor;
+        FMSAASampleCountType typeMSAASampleCount;
         int width;
         int height;
         int depth;
         int animChunkX;
         int animChunkY;
+        bool isAlpha;
         bool isRT;
         bool isGCS;
     };

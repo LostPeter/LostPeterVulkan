@@ -73,6 +73,15 @@ namespace LostPeterEngine
 
 	public:
 		F_FORCEINLINE const StringVector& GetPath() const { return m_aPath; }
+		F_FORCEINLINE void SetPath(const StringVector& aPath) 
+		{
+			m_aPath.clear();
+			for (StringVector::const_iterator it = aPath.begin();
+			     it != aPath.end(); ++it)
+			{
+				m_aPath.push_back((*it));
+			}
+		}
 		
 		F_FORCEINLINE uint32 GetUsage() const { return m_nUsage; }
 		F_FORCEINLINE void SetUsage(uint32 nUsage) { m_nUsage = nUsage; }

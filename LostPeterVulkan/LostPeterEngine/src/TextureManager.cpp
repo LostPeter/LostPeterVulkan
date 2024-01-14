@@ -404,9 +404,33 @@ namespace LostPeterEngine
     Texture* TextureManager::loadTexture(TextureInfo* pTI)
     {
         StringVector aPathTexture = FUtilString::Split(pTI->pathTexture, ";");
-        Texture* pTexture = nullptr;
+        uint32 nUsage = pTI->isRT ? E_TextureUsage_RenderTarget : E_TextureUsage_Default;
+        Texture* pTexture = CreateTexture(pTI->group,
+                                          pTI->nameTexture,
+                                          ResourceGroupManager::ms_strNameResourceGroup_AutoDetect,
+                                          nUsage,
+                                          pTI->typeTexture,
+                                          pTI->typeTextureFilter,
+                                          pTI->typeTextureAddressing,
+                                          pTI->typeTextureBorderColor,
+                                          pTI->typeMSAASampleCount,
+                                          TextureManager::ms_ePixelFormat_Default,
+                                          pTI->width,
+                                          pTI->height,
+                                          pTI->depth,
+                                          TextureManager::ms_nBitDepthInteger_Default,
+                                          TextureManager::ms_nBitDepthFloat_Default,
+                                          pTI->isAlpha,
+                                          TextureManager::ms_nMipMapsCount_Default, 
+                                          TextureManager::ms_bIsMipMapsHardwareGenerated_Default,
+                                          TextureManager::ms_fGamma_Default,
+                                          TextureManager::ms_bIsGammaHardware_Default);
+        if (!pTexture)
+        {
+            return nullptr;
+        }
+        pTexture->SetPath(aPathTexture);
 
-        
         return pTexture;
     }
 

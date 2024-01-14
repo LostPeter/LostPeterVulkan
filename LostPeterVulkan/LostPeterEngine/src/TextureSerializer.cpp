@@ -23,8 +23,10 @@ namespace LostPeterEngine
 #define TEXTURE_TAG_ATTRIBUTE_FILTER			    "filter"
 #define TEXTURE_TAG_ATTRIBUTE_ADDRESSING			"addressing"
 #define TEXTURE_TAG_ATTRIBUTE_BORDER_COLOR			"border_color"
+#define TEXTURE_TAG_ATTRIBUTE_SAMPLE_COUNT			"sample_count"
 #define TEXTURE_TAG_ATTRIBUTE_SIZE			        "size"
 #define TEXTURE_TAG_ATTRIBUTE_ANIM_CHUNK			"anim_chunk"
+#define TEXTURE_TAG_ATTRIBUTE_IS_ALPHA			    "is_alpha"
 #define TEXTURE_TAG_ATTRIBUTE_IS_RT			        "is_rt"
 #define TEXTURE_TAG_ATTRIBUTE_IS_GCS			    "is_gcs"
 
@@ -190,6 +192,14 @@ namespace LostPeterEngine
                 continue;
             }
             FTextureBorderColorType typeTextureBorderColor = F_ParseTextureBorderColorType(strBorderColor);
+            //sample_count
+            String strSampleCount;
+            if (!pChild->ParserAttribute_String(TEXTURE_TAG_ATTRIBUTE_SAMPLE_COUNT, strSampleCount))
+            {
+                F_LogError("*********************** TextureSerializer::deserializeXML: Can not find attribute: 'sample_count', texture index: [%d] !", i);
+                continue;
+            }
+            FMSAASampleCountType typeMSAASampleCount = F_ParseMSAASampleCountType(strSampleCount);
             //size
             FVector3 vSize;
             if (!pChild->ParserAttribute_Vector3(TEXTURE_TAG_ATTRIBUTE_SIZE, vSize))
@@ -209,6 +219,9 @@ namespace LostPeterEngine
             }
             int animChunkX = (int)vAnimChunk.x;
             int animChunkY = (int)vAnimChunk.y;
+            //is_alpha
+            bool isAlpha = false;
+            pChild->ParserAttribute_Bool(TEXTURE_TAG_ATTRIBUTE_IS_ALPHA, isAlpha);
             //is_rt
             bool isRT = false;
             pChild->ParserAttribute_Bool(TEXTURE_TAG_ATTRIBUTE_IS_RT, isRT);
@@ -224,13 +237,15 @@ namespace LostPeterEngine
                                                         typeTextureFilter,
                                                         typeTextureAddressing,
                                                         typeTextureBorderColor,
+                                                        typeMSAASampleCount,
                                                         width, height, depth,
                                                         animChunkX, animChunkY,
+                                                        isAlpha,
                                                         isRT,
                                                         isGCS);
             if (AddTextureInfo(pTextureInfo))
             {
-                F_LogInfo("TextureSerializer::deserializeXML: Add texture info success, [%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%d-%d-%d]-[%d-%d]-[%d]-[%d] !",
+                F_LogInfo("TextureSerializer::deserializeXML: Add texture info success, [%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%d-%d-%d]-[%d-%d]-[%d]-[%d]-[%d] !",
                           strNameTexture.c_str(), 
                           strPathTexture.c_str(), 
                           strType.c_str(), 
@@ -238,8 +253,10 @@ namespace LostPeterEngine
                           strFilter.c_str(), 
                           strAddressing.c_str(), 
                           strBorderColor.c_str(), 
+                          strSampleCount.c_str(),
                           width, height, depth,
                           animChunkX, animChunkY, 
+                          isAlpha ? 1 : 0,
                           isRT ? 1 : 0, 
                           isGCS ? 1 : 0);
             }

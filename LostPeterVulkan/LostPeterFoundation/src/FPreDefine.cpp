@@ -408,13 +408,13 @@ namespace LostPeterFoundation
     //FMSAASampleCountType
     static String s_nameMSAASampleCountTypes[] = 
     {
-        "1-Bit",                //0: 1_Bit
-        "2-Bit",                //1: 2_Bit
-        "4-Bit",                //2: 4_Bit
-        "8-Bit",                //3: 8_Bit
-        "16-Bit",               //4: 16_Bit
-        "32-Bit",               //5: 32_Bit
-        "64-Bit",               //6: 64_Bit
+        "1_Bit",                //0: 1_Bit
+        "2_Bit",                //1: 2_Bit
+        "4_Bit",                //2: 4_Bit
+        "8_Bit",                //3: 8_Bit
+        "16_Bit",               //4: 16_Bit
+        "32_Bit",               //5: 32_Bit
+        "64_Bit",               //6: 64_Bit
     };
     const String& F_GetMSAASampleCountTypeName(FMSAASampleCountType type)
     {

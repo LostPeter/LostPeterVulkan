@@ -373,11 +373,13 @@ namespace LostPeterEngine
         , typeTextureFilter(F_TextureFilter_Bilinear)
         , typeTextureAddressing(F_TextureAddressing_Clamp)
         , typeTextureBorderColor(F_TextureBorderColor_OpaqueBlack)
+        , typeMSAASampleCount(F_MSAASampleCount_1_Bit)
         , width(512)
         , height(512)
         , depth(1)
         , animChunkX(0)
         , animChunkY(0)
+        , isAlpha(false)
         , isRT(false)
         , isGCS(false)
     {
@@ -390,11 +392,13 @@ namespace LostPeterEngine
                              FTextureFilterType _typeTextureFilter,
                              FTextureAddressingType _typeTextureAddressing,
                              FTextureBorderColorType _typeTextureBorderColor,
+                             FMSAASampleCountType _typeMSAASampleCount,
                              int _width,
                              int _height,
                              int _depth,
                              int _animChunkX,
                              int _animChunkY,
+                             bool _isAlpha,
                              bool _isRT,
                              bool _isGCS)
         : group(0)
@@ -405,11 +409,13 @@ namespace LostPeterEngine
         , typeTextureFilter(_typeTextureFilter)
         , typeTextureAddressing(_typeTextureAddressing)
         , typeTextureBorderColor(_typeTextureBorderColor)
+        , typeMSAASampleCount(_typeMSAASampleCount)
         , width(_width)
         , height(_height)
         , depth(_depth)
         , animChunkX(_animChunkX)
         , animChunkY(_animChunkY)
+        , isAlpha(_isAlpha)
         , isRT(_isRT)
         , isGCS(_isGCS)
     {
