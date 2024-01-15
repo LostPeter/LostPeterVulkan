@@ -97,10 +97,10 @@ namespace LostPeterEngine
 		return (*ms_Singleton);     
 	}
 
-    String	ResourceGroupManager::ms_strNameResourceGroup_Default = "Default";	
-	String	ResourceGroupManager::ms_strNameResourceGroup_Internal	= "Internal";	
-	String	ResourceGroupManager::ms_strNameResourceGroup_Bootstrap	= "Bootstrap";		
-	String	ResourceGroupManager::ms_strNameResourceGroup_AutoDetect = "Autodetect";
+    String	ResourceGroupManager::ms_strNameResourceGroup_Default = "ResourceGroup_Default";	
+	String	ResourceGroupManager::ms_strNameResourceGroup_Internal	= "ResourceGroup_Internal";	
+	String	ResourceGroupManager::ms_strNameResourceGroup_Bootstrap	= "ResourceGroup_Bootstrap";		
+	String	ResourceGroupManager::ms_strNameResourceGroup_AutoDetect = "ResourceGroup_AutoDetect";
 	uint32	ResourceGroupManager::ms_nResourceSysRefCounts = 3;
     ResourceGroupManager::ResourceGroupManager()
         : Base("ResourceGroupManager")
@@ -225,7 +225,7 @@ namespace LostPeterEngine
                 for (ResourceLoadOrderMap::iterator it = pResourceGroup->mapResourceLoadOrder.begin(); 
                     it != pResourceGroup->mapResourceLoadOrder.end(); ++it)
                 {
-                    nResourceCount += it->second->size();
+                    nResourceCount += (uint32)it->second->size();
                 }
             }
             
@@ -300,7 +300,7 @@ namespace LostPeterEngine
                 for (ResourceLoadOrderMap::iterator it = pResourceGroup->mapResourceLoadOrder.begin(); 
                      it != pResourceGroup->mapResourceLoadOrder.end(); ++it)
                 {
-                    nResourceCount += it->second->size();
+                    nResourceCount += (uint32)it->second->size();
                 }
             }   
 
@@ -1335,7 +1335,7 @@ namespace LostPeterEngine
                      p != aPatterns.end(); ++p)
                 {
                     FFileInfoVector* pFileList = FindResourceFileInfo(pResourceGroup->strGroupName, *p);
-                    nScriptCount += pFileList->size();
+                    nScriptCount += (uint32)pFileList->size();
                     pFileListList->push_back(pFileList);
                 }
                 scriptLoaderFileList.push_back(LoaderFileListPair(pScriptLoader, pFileListList));

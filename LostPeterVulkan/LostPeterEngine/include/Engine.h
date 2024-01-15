@@ -42,6 +42,7 @@ namespace LostPeterEngine
         FFileManager* m_pFileManager;
         FCodecManager* m_pCodecManager;
         FPluginManager* m_pPluginManager;
+        ResourceGroupManager* m_pResourceGroupManager;
 
         RenderEngine* m_pRenderEngine;
 
@@ -79,6 +80,7 @@ namespace LostPeterEngine
         F_FORCEINLINE FFileManager* GetFileManager() { return m_pFileManager; }
         F_FORCEINLINE FCodecManager* GetCodecManager() { return m_pCodecManager; }
         F_FORCEINLINE FPluginManager* GetPluginManager() { return m_pPluginManager; }
+        F_FORCEINLINE ResourceGroupManager* GetResourceGroupManager() { return m_pResourceGroupManager; }
         F_FORCEINLINE RenderEngine* GetRenderEngine() { return m_pRenderEngine; }
 
         F_FORCEINLINE FTimer* GetTimer() const { return m_pTimer; }

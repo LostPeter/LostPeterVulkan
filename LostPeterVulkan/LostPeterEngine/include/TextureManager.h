@@ -136,7 +136,8 @@ namespace LostPeterEngine
 		virtual bool IsHardwareFilteringSupported(FTextureType eTexture, FPixelFormatType ePixelFormat, uint32 nUsage, bool bPreciseFormatOnly = false) = 0;	
 
     public:
-        virtual ResourceCreateOrRetrieveResult CreateOrRetrieveTexture(uint32 nGroup, 
+        virtual ResourceCreateOrRetrieveResult CreateOrRetrieveTexture(const StringVector& aPathTexture,
+                                                                       uint32 nGroup, 
                                                                        const String& strName, 
                                                                        const String& strGroupName, 
                                                                        bool bIsManualLoad = false,
@@ -161,7 +162,8 @@ namespace LostPeterEngine
                                                                        bool bIsGammaHardware = TextureManager::ms_bIsGammaHardware_Default);
 
     public:
-        virtual Texture* Prepare(uint32 nGroup, 
+        virtual Texture* Prepare(const StringVector& aPathTexture,
+                                 uint32 nGroup, 
                                  const String& strName, 
 								 const String& strGroupName, 
 								 uint32 nUsage = TextureManager::ms_nUsage_Default,
@@ -183,7 +185,8 @@ namespace LostPeterEngine
                                  bool bIsGammaHardware = TextureManager::ms_bIsGammaHardware_Default);
 
     public:
-        virtual Texture* CreateTexture(uint32 nGroup, 
+        virtual Texture* CreateTexture(const StringVector& aPathTexture,
+                                       uint32 nGroup, 
                                        const String& strName, 
                                        const String& strGroupName, 
                                        uint32 nUsage = TextureManager::ms_nUsage_Default,

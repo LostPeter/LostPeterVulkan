@@ -30,7 +30,7 @@ namespace LostPeterEngine
 #define TEXTURE_TAG_ATTRIBUTE_IS_RT			        "is_rt"
 #define TEXTURE_TAG_ATTRIBUTE_IS_GCS			    "is_gcs"
 
-    
+
     TextureSerializer::TextureSerializer()
         : Base("TextureSerializer")
     {
@@ -245,7 +245,7 @@ namespace LostPeterEngine
                                                         isGCS);
             if (AddTextureInfo(pTextureInfo))
             {
-                F_LogInfo("TextureSerializer::deserializeXML: Add texture info success, [%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%d-%d-%d]-[%d-%d]-[%d]-[%d]-[%d] !",
+                F_LogInfo("TextureSerializer::deserializeXML: Add texture info success, [%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%s]-[%d-%d-%d]-[%d-%d]-[%s]-[%s]-[%s] !",
                           strNameTexture.c_str(), 
                           strPathTexture.c_str(), 
                           strType.c_str(), 
@@ -256,9 +256,9 @@ namespace LostPeterEngine
                           strSampleCount.c_str(),
                           width, height, depth,
                           animChunkX, animChunkY, 
-                          isAlpha ? 1 : 0,
-                          isRT ? 1 : 0, 
-                          isGCS ? 1 : 0);
+                          isAlpha ? "true" : "false",
+                          isRT ? "true" : "false", 
+                          isGCS ? "true" : "false");
             }
         }
 

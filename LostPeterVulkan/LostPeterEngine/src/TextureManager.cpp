@@ -406,9 +406,10 @@ namespace LostPeterEngine
     {
         StringVector aPathTexture = FUtilString::Split(pTI->pathTexture, ";");
         uint32 nUsage = pTI->isRT ? E_TextureUsage_RenderTarget : E_TextureUsage_Default;
-        Texture* pTexture = CreateTexture(pTI->group,
+        Texture* pTexture = CreateTexture(aPathTexture,
+                                          pTI->group,
                                           pTI->nameTexture,
-                                          ResourceGroupManager::ms_strNameResourceGroup_AutoDetect,
+                                          ResourceGroupManager::ms_strNameResourceGroup_Internal,
                                           nUsage,
                                           pTI->typeTexture,
                                           pTI->typeTextureFilter,
@@ -430,7 +431,6 @@ namespace LostPeterEngine
         {
             return nullptr;
         }
-        pTexture->SetPath(aPathTexture);
 
         return pTexture;
     }
@@ -543,7 +543,8 @@ namespace LostPeterEngine
 	}
 
 
-    ResourceCreateOrRetrieveResult TextureManager::CreateOrRetrieveTexture(uint32 nGroup, 
+    ResourceCreateOrRetrieveResult TextureManager::CreateOrRetrieveTexture(const StringVector& aPathTexture,
+                                                                           uint32 nGroup, 
                                                                            const String& strName, 
                                                                            const String& strGroupName, 
                                                                            bool bIsManualLoad /*= false*/,
@@ -586,6 +587,7 @@ namespace LostPeterEngine
 		}
 
         Texture* pTexture = (Texture*)result.first;
+        pTexture->SetPath(aPathTexture);
         pTexture->SetUsage(nUsage);
         pTexture->SetTextureType(eTexture);
         pTexture->SetTextureFilterType(eTextureFilter);
@@ -606,7 +608,8 @@ namespace LostPeterEngine
 		return result;
     }
 
-    Texture* TextureManager::Prepare(uint32 nGroup, 
+    Texture* TextureManager::Prepare(const StringVector& aPathTexture,
+                                     uint32 nGroup, 
                                      const String& strName, 
                                      const String& strGroupName, 
                                      uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
@@ -627,7 +630,8 @@ namespace LostPeterEngine
                                      float fGamma /*= TextureManager::ms_fGamma_Default*/,
                                      bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
     {
-        ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(nGroup,
+        ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(aPathTexture,
+                                                                        nGroup,
                                                                         strName,
                                                                         strGroupName,
                                                                         false,
@@ -658,7 +662,8 @@ namespace LostPeterEngine
 		return pTexture;
     }
 
-    Texture* TextureManager::CreateTexture(uint32 nGroup, 
+    Texture* TextureManager::CreateTexture(const StringVector& aPathTexture,
+                                           uint32 nGroup, 
                                            const String& strName, 
                                            const String& strGroupName, 
                                            uint32 nUsage /*= TextureManager::ms_nUsage_Default*/,
@@ -679,7 +684,8 @@ namespace LostPeterEngine
                                            float fGamma /*= TextureManager::ms_fGamma_Default*/,
                                            bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
     {
-        ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(nGroup,
+        ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(aPathTexture,
+                                                                        nGroup,
                                                                         strName,
                                                                         strGroupName,
                                                                         false,
@@ -733,7 +739,9 @@ namespace LostPeterEngine
                                                  float fGamma /*= TextureManager::ms_fGamma_Default*/,
                                                  bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
 	{
-		ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(nGroup,
+        StringVector aPathTexture;
+		ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(aPathTexture,
+                                                                        nGroup,
                                                                         strName,
                                                                         strGroupName,
                                                                         false,
@@ -787,7 +795,9 @@ namespace LostPeterEngine
                                                     float fGamma /*= TextureManager::ms_fGamma_Default*/,
                                                     bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
 	{
-		ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(nGroup,
+        StringVector aPathTexture;
+		ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(aPathTexture,
+                                                                        nGroup,
                                                                         strName,
                                                                         strGroupName,
                                                                         false,
@@ -846,7 +856,9 @@ namespace LostPeterEngine
                                                        float fGamma /*= TextureManager::ms_fGamma_Default*/,
                                                        bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
 	{
-		ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(nGroup,
+        StringVector aPathTexture;
+		ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(aPathTexture,
+                                                                        nGroup,
                                                                         strName,
                                                                         strGroupName,
                                                                         false,
@@ -905,7 +917,9 @@ namespace LostPeterEngine
                                                       float fGamma /*= TextureManager::ms_fGamma_Default*/,
                                                       bool bIsGammaHardware /*= TextureManager::ms_bIsGammaHardware_Default*/)
 	{
-		ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(nGroup,
+        StringVector aPathTexture;
+		ResourceCreateOrRetrieveResult result = CreateOrRetrieveTexture(aPathTexture,
+                                                                        nGroup,
                                                                         strName,
                                                                         strGroupName,
                                                                         false,

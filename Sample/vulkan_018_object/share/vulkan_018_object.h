@@ -21,7 +21,17 @@ public:
     Vulkan_018_Object(const String& nameSample, int width, int height);
 
 public: 
-   
+    
+
+public:
+    virtual void OnLoad();
+
+protected:
+    virtual void loadShaders();
+    virtual void loadMeshes();
+    virtual void loadTextures();
+    virtual void loadMaterials();
+
 };
 
 

@@ -11,6 +11,7 @@
 
 #include "../include/Engine.h"
 #include "../include/EngineConfig.h"
+#include "../include/ResourceGroupManager.h"
 #include "../include/RenderEngine.h"
 #include "../include/SystemCapabilities.h"
 #include "../include/EngineFrameProfiler.h"
@@ -55,6 +56,7 @@ namespace LostPeterEngine
         , m_pFileManager(nullptr)
         , m_pCodecManager(nullptr)
         , m_pPluginManager(nullptr)
+        , m_pResourceGroupManager(nullptr)
         , m_pRenderEngine(nullptr)
 
         , m_pTimer(nullptr)
@@ -84,6 +86,7 @@ namespace LostPeterEngine
         {
             m_pRenderEngine->Destroy();
         }
+        F_DELETE(m_pResourceGroupManager)
         if (m_pPluginManager != nullptr)
         {
             m_pPluginManager->UnloadPlugins();
@@ -135,7 +138,8 @@ namespace LostPeterEngine
             ImageCodecDXT::Startup();
             m_bCodecIsInit = true;
 
-            //<5> ControllerManager
+            //<5> ResourceGroupManager
+            m_pResourceGroupManager = new ResourceGroupManager();
         }
 
         //2, All Engines
