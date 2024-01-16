@@ -394,12 +394,12 @@ namespace LostPeterEngine
                 F_LogError("*********************** TextureManager::LoadTexture: Can not find texture info, group: [%u], name: [%s], groupName: [%s] !", nGroup, strName.c_str(), strGroupName.c_str());
                 return nullptr;
             }
-            if (!loadTexture(pTextureInfo))
+            pTexture = loadTexture(pTextureInfo);
+            if (pTexture == nullptr)
             {
                 return nullptr;
             }
         }
-        pTexture->AddRef();
         return pTexture;
     }
     Texture* TextureManager::loadTexture(TextureInfo* pTI)
@@ -429,6 +429,7 @@ namespace LostPeterEngine
                                           TextureManager::ms_bIsGammaHardware_Default);
         if (!pTexture)
         {
+            F_LogError("*********************** TextureManager::loadTexture: CreateTexture failed, group: [%u], name: [%s] !", pTI->group, pTI->nameTexture.c_str());
             return nullptr;
         }
 
