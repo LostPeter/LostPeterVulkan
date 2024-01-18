@@ -1960,7 +1960,7 @@ namespace LostPeterPluginRendererVulkan
             Image* pImage = aImages[i];
             WriteVkBuffer(vkBufferMemory,
                           (void*)pImage->GetData(),
-                          (uint32_t)imageSizeAll,
+                          (uint32_t)imageSize,
                           (uint32_t)(nWidth * nHeight * pixelSize * i));
         }
         s_DeleteImages(aImages);
@@ -2293,7 +2293,7 @@ namespace LostPeterPluginRendererVulkan
             Image* pImage = aImages[i];
             WriteVkBuffer(vkBufferMemory,
                           (void*)pImage->GetData(),
-                          (uint32_t)imageSizeAll,
+                          (uint32_t)imageSize,
                           (uint32_t)(nWidth * nHeight * pixelSize * i));
         }
         s_DeleteImages(aImages);

@@ -58,7 +58,8 @@ void Vulkan_018_Object::loadTextures()
             F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
             return;
         }
-        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
+        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s] !", 
+                  nGroup, strNameTexture.c_str(), pTexture1->GetPath().at(0).c_str());
 
         // 6002 - mountain_diffuse
         nGroup = 6002;
@@ -69,29 +70,40 @@ void Vulkan_018_Object::loadTextures()
             F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
             return;
         }
-        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
+        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s] !", 
+                  nGroup, strNameTexture.c_str(), pTexture2->GetPath().at(0).c_str());
 
         //6004 - texture_terrain_diffuse
-        // nGroup = 6004;
-        // strNameTexture = "texture_terrain_diffuse";
-        // Texture* pTexture3 = TextureManager::GetSingleton().LoadTexture(nGroup, strNameTexture);
-        // if (pTexture3 == nullptr)
-        // {
-        //     F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
-        //     return;
-        // }
-        // F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
+        nGroup = 6004;
+        strNameTexture = "texture_terrain_diffuse";
+        Texture* pTexture3 = TextureManager::GetSingleton().LoadTexture(nGroup, strNameTexture);
+        if (pTexture3 == nullptr)
+        {
+            F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
+            return;
+        }
+        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s][%s][%s][%s] !", 
+                  nGroup, strNameTexture.c_str(), 
+                  pTexture3->GetPath().at(0).c_str(), 
+                  pTexture3->GetPath().at(1).c_str(),
+                  pTexture3->GetPath().at(2).c_str(),
+                  pTexture3->GetPath().at(3).c_str());
 
         //6006 - texturecubemap
-        // nGroup = 6006;
-        // strNameTexture = "texturecubemap";
-        // Texture* pTexture4 = TextureManager::GetSingleton().LoadTexture(nGroup, strNameTexture);
-        // if (pTexture4 == nullptr)
-        // {
-        //     F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
-        //     return;
-        // }
-        // F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
+        nGroup = 6006;
+        strNameTexture = "texturecubemap";
+        Texture* pTexture4 = TextureManager::GetSingleton().LoadTexture(nGroup, strNameTexture);
+        if (pTexture4 == nullptr)
+        {
+            F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
+            return;
+        }
+        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s][%s][%s][%s] !", 
+                  nGroup, strNameTexture.c_str(),
+                  pTexture4->GetPath().at(0).c_str(), 
+                  pTexture4->GetPath().at(1).c_str(),
+                  pTexture4->GetPath().at(2).c_str(),
+                  pTexture4->GetPath().at(3).c_str());
 
     }
     F_LogInfo("---------- Vulkan_018_Object::loadTextures: Load texture test end !");
