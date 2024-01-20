@@ -48,6 +48,9 @@ namespace LostPeterEngine
 		
 		virtual FDecodeResult Decode(FFileMemory* pInput) const;
 
+	public:
+		virtual FDecodeResult Decode(const String& strPath, bool isRGBA) const;
+
     public:
 		/** Combine four DXT textures to one, these four dxt textures will be combined like that:
 		tex0 | tex1

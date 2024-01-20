@@ -96,6 +96,7 @@ namespace LostPeterEngine
 		}
 		
 		bool Load(const String& strName, uint32 nGroup);
+		bool Load(const String& strFilePath, bool isRGBA);
 		bool Load(const String& strFilePath);
 		bool Load(FFileIO* pFIO, const String& strType = FUtilString::BLANK);
 		bool Load(FFileMemory* pInput, const String& strType = FUtilString::BLANK);

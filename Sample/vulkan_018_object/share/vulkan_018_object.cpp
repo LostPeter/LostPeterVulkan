@@ -58,8 +58,10 @@ void Vulkan_018_Object::loadTextures()
             F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
             return;
         }
-        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s] !", 
-                  nGroup, strNameTexture.c_str(), pTexture1->GetPath().at(0).c_str());
+        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s], formatDesire: [%s], formatSrc: [%s] !", 
+                  nGroup, strNameTexture.c_str(), pTexture1->GetPath().at(0).c_str(),
+                  FPixelFormat::GetPixelFormatName(pTexture1->GetPixelFormatDesired()).c_str(),
+                  FPixelFormat::GetPixelFormatName(pTexture1->GetPixelFormatSrc()).c_str());
 
         // 6002 - mountain_diffuse
         nGroup = 6002;
@@ -70,8 +72,10 @@ void Vulkan_018_Object::loadTextures()
             F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
             return;
         }
-        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s] !", 
-                  nGroup, strNameTexture.c_str(), pTexture2->GetPath().at(0).c_str());
+        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s], formatDesire: [%s], formatSrc: [%s] !", 
+                  nGroup, strNameTexture.c_str(), pTexture2->GetPath().at(0).c_str(),
+                  FPixelFormat::GetPixelFormatName(pTexture2->GetPixelFormatDesired()).c_str(),
+                  FPixelFormat::GetPixelFormatName(pTexture2->GetPixelFormatSrc()).c_str());
 
         //6004 - texture_terrain_diffuse
         nGroup = 6004;
@@ -82,12 +86,14 @@ void Vulkan_018_Object::loadTextures()
             F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
             return;
         }
-        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s][%s][%s][%s] !", 
+        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s][%s][%s][%s], formatDesire: [%s], formatSrc: [%s] !", 
                   nGroup, strNameTexture.c_str(), 
                   pTexture3->GetPath().at(0).c_str(), 
                   pTexture3->GetPath().at(1).c_str(),
                   pTexture3->GetPath().at(2).c_str(),
-                  pTexture3->GetPath().at(3).c_str());
+                  pTexture3->GetPath().at(3).c_str(),
+                  FPixelFormat::GetPixelFormatName(pTexture3->GetPixelFormatDesired()).c_str(),
+                  FPixelFormat::GetPixelFormatName(pTexture3->GetPixelFormatSrc()).c_str());
 
         //6006 - texturecubemap
         nGroup = 6006;
@@ -98,12 +104,14 @@ void Vulkan_018_Object::loadTextures()
             F_LogError("*********************** Vulkan_018_Object::loadTextures: Load textue failed, group: [%u], name: [%s] !", nGroup, strNameTexture.c_str());
             return;
         }
-        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s][%s][%s][%s] !", 
+        F_LogInfo("Vulkan_018_Object::loadTextures: Load textue success, group: [%u], name: [%s], path: [%s][%s][%s][%s], formatDesire: [%s], formatSrc: [%s] !", 
                   nGroup, strNameTexture.c_str(),
                   pTexture4->GetPath().at(0).c_str(), 
                   pTexture4->GetPath().at(1).c_str(),
                   pTexture4->GetPath().at(2).c_str(),
-                  pTexture4->GetPath().at(3).c_str());
+                  pTexture4->GetPath().at(3).c_str(),
+                  FPixelFormat::GetPixelFormatName(pTexture4->GetPixelFormatDesired()).c_str(),
+                  FPixelFormat::GetPixelFormatName(pTexture4->GetPixelFormatSrc()).c_str());
 
     }
     F_LogInfo("---------- Vulkan_018_Object::loadTextures: Load texture test end !");

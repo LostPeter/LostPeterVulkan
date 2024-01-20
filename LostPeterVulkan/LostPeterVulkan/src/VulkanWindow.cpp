@@ -12,6 +12,10 @@
 #include "../include/PreInclude.h"
 #include "../include/VulkanWindow.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_STATIC
+#include <stb_image.h>
+
 namespace LostPeterVulkan
 {
 #if F_DEBUG == 1

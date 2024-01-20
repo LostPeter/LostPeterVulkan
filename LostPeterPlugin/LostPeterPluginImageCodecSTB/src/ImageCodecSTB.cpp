@@ -13,14 +13,13 @@
 #include "../include/ImageCodecSTB.h"
 
 
-#define STBI_NO_STDIO
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_STATIC
-#include "stb_image.h"
+#include <stb_image.h>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STBI_WRITE_NO_STDIO
-#include "stb_image_write.h"
+#include <stb_image_write.h>
 
 
 namespace LostPeterPluginImageCodecSTB
@@ -85,7 +84,7 @@ namespace LostPeterPluginImageCodecSTB
     {
         if (m_strImageType != s_extWrite)
         {
-            F_LogError("ImageCodecSTB::Code: Currently only encoding to PNG supported !");
+            F_LogError("*********************** ImageCodecSTB::Code: Currently only encoding to PNG supported !");
             return nullptr;
         }
 
@@ -95,13 +94,14 @@ namespace LostPeterPluginImageCodecSTB
 
         // Convert image data to ABGR format for STBI (unless it's already compatible)
         uint8* pTempData = 0;
-        if (format != F_PixelFormat_BYTE_A8B8G8R8_UNORM && 
-            format != F_PixelFormat_BYTE_B8G8R8_UNORM && 
-            format != F_PixelFormat_BYTE_AL_UNORM && 
+        if (format != F_PixelFormat_BYTE_A8B8G8R8_SRGB && 
+            format != F_PixelFormat_BYTE_B8G8R8_SRGB && 
+            format != F_PixelFormat_BYTE_G8R8_SRGB && 
             format != F_PixelFormat_BYTE_L8_UNORM && 
-            format != F_PixelFormat_BYTE_R8_UNORM)
+            format != F_PixelFormat_BYTE_R8_UNORM &&
+            format != F_PixelFormat_BYTE_R8_SRGB)
         {   
-            format = F_PixelFormat_BYTE_A8B8G8R8_UNORM;
+            format = F_PixelFormat_BYTE_A8B8G8R8_SRGB;
             size_t tempDataSize = pImgData->nWidth * pImgData->nHeight * pImgData->nDepth * FPixelFormat::GetPixelFormatElemBytes(format);
             pTempData = new uint8[tempDataSize];
             FPixelBox pbIn(pImgData->nWidth, pImgData->nHeight, pImgData->nDepth, pImgData->ePixelFormat, pInputData);
@@ -125,7 +125,7 @@ namespace LostPeterPluginImageCodecSTB
 
         if (!pBuf) 
         {
-            F_LogError("ImageCodecSTB::Code: Error code image: [%s] !", stbi_failure_reason());
+            F_LogError("*********************** ImageCodecSTB::Code: Error code image: [%s] !", stbi_failure_reason());
             F_Assert(false && "ImageCodecSTB::Code: Error code image !")
         }
 
@@ -138,7 +138,7 @@ namespace LostPeterPluginImageCodecSTB
         std::ofstream file(outFilePath.c_str(), std::ios::out | std::ios::binary);
         if (!file.is_open())
         {
-            F_LogError("ImageCodecSTB::CodeToFile: Could not open file: [%s] !", outFilePath.c_str());
+            F_LogError("*********************** ImageCodecSTB::CodeToFile: Could not open file: [%s] !", outFilePath.c_str());
             F_Assert(false && "ImageCodecSTB::CodeToFile: Could not open file !")
             return false;
         }
@@ -153,12 +153,16 @@ namespace LostPeterPluginImageCodecSTB
         uint8* pData = pInput->GetBuffer();
         int width, height, components;
         stbi_uc* pixelData = stbi_load_from_memory((const uint8*)pData,
-                static_cast<int>(pInput->Size()), &width, &height, &components, 0);
-
+                                                    static_cast<int>(pInput->Size()), 
+                                                    &width, 
+                                                    &height, 
+                                                    &components, 
+                                                    0);
         if (!pixelData)
         {
-            F_LogError("ImageCodecSTB::Decode: Error decode image: [%s] !", stbi_failure_reason());
-            F_Assert(false && "ImageCodecSTB::Decode: Error decode image !")
+            String msg = "*********************** ImageCodecSTB::Decode: Failed to load texture image, reason: " + String(stbi_failure_reason());
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg);
         }
 
         ImageData* pImageData = new ImageData();
@@ -171,20 +175,80 @@ namespace LostPeterPluginImageCodecSTB
         switch (components)
         {
             case 1:
-                pImageData->ePixelFormat = F_PixelFormat_BYTE_L8_UNORM;
+                pImageData->ePixelFormat = F_PixelFormat_BYTE_R8_SRGB;
                 break;
             case 2:
-                pImageData->ePixelFormat = F_PixelFormat_BYTE_AL_UNORM;
+                pImageData->ePixelFormat = F_PixelFormat_BYTE_G8R8_SRGB;
                 break;
             case 3:
-                pImageData->ePixelFormat = F_PixelFormat_BYTE_R8G8B8_UNORM;
+                pImageData->ePixelFormat = F_PixelFormat_BYTE_B8G8R8_SRGB;
                 break;
             case 4:
-                pImageData->ePixelFormat = F_PixelFormat_BYTE_A8R8G8B8_UNORM;
+                pImageData->ePixelFormat = F_PixelFormat_BYTE_A8B8G8R8_SRGB;
                 break;
             default:
-                stbi_image_free(pixelData);
-                F_Assert(false && "ImageCodecSTB::Decode: Unknown or unsupported image format !")
+                {
+                    stbi_image_free(pixelData);
+                    String msg = "*********************** ImageCodecSTB::Decode: Unknown or unsupported image format !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
+                break;
+        }
+        
+        size_t dstPitch = pImageData->nWidth * FPixelFormat::GetPixelFormatElemBytes(pImageData->ePixelFormat);
+        pImageData->nSize = (int32)(dstPitch * pImageData->nHeight);
+        FFileMemory* pFM = FFileManager::GetSingleton().CreateFileMemory(pixelData, pImageData->nSize);
+        
+        FDecodeResult ret;
+        ret.first = pFM;
+        ret.second = pImageData;
+        return ret;
+    }
+
+    ImageCodecSTB::FDecodeResult ImageCodecSTB::Decode(const String& strPath, bool isRGBA) const
+    {
+        int width, height, texChannels;
+        stbi_uc* pixelData = stbi_load(strPath.c_str(), 
+                                       &width, 
+                                       &height, 
+                                       &texChannels, 
+                                       isRGBA ? STBI_rgb_alpha : 0);
+        if (!pixelData) 
+        {   
+            String msg = "*********************** ImageCodecSTB::Decode: Failed to load texture image: " + strPath + ", reason: " + String(stbi_failure_reason());
+            F_LogError(msg.c_str());
+            throw std::runtime_error(msg);
+        }
+
+        ImageData* pImageData = new ImageData();
+        pImageData->nDepth = 1; // only 2D formats handled by this codec
+        pImageData->nWidth = width;
+        pImageData->nHeight = height;
+        pImageData->nMipmapsCount = 0; // no mipmaps in non-DDS 
+        pImageData->nFlags = 0;
+
+        switch (texChannels)
+        {
+            case 1:
+                pImageData->ePixelFormat = F_PixelFormat_BYTE_R8_SRGB;
+                break;
+            case 2:
+                pImageData->ePixelFormat = F_PixelFormat_BYTE_G8R8_SRGB;
+                break;
+            case 3:
+                pImageData->ePixelFormat = F_PixelFormat_BYTE_B8G8R8_SRGB;
+                break;
+            case 4:
+                pImageData->ePixelFormat = F_PixelFormat_BYTE_A8B8G8R8_SRGB;
+                break;
+            default:
+                {
+                    stbi_image_free(pixelData);
+                    String msg = "*********************** ImageCodecSTB::Decode: Unknown or unsupported image format !";
+                    F_LogError(msg.c_str());
+                    throw std::runtime_error(msg);
+                }
                 break;
         }
         

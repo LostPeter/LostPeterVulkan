@@ -113,6 +113,7 @@ namespace LostPeterPluginRendererVulkan
         uint32 nWidth = GetWidth();
         uint32 nHeight = GetHeight();
         uint32 nDepth = GetDepth();
+        uint32 nPixelSize = FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat);
 
         if (!IsUsage_RenderTarget())
         {
@@ -127,6 +128,7 @@ namespace LostPeterPluginRendererVulkan
                                                this->m_eVkImage,
                                                this->m_eVkSamplesCountFlagBits,
                                                this->m_eVkFormat,
+                                               this->m_ePixelFormatSrc,
                                                bIsAutoMipMap,
                                                this->m_nMipMapsCount, 
                                                this->m_vkImage, 
@@ -140,14 +142,22 @@ namespace LostPeterPluginRendererVulkan
                                                this->m_eVkImage,
                                                this->m_eVkSamplesCountFlagBits,
                                                this->m_eVkFormat,
+                                               this->m_ePixelFormatSrc,
                                                bIsAutoMipMap,
                                                this->m_nMipMapsCount, 
                                                this->m_vkImage, 
                                                this->m_vkImageMemory);
                 }
+                if (this->m_ePixelFormatSrc != m_ePixelFormat)
+                {
+                    m_ePixelFormat = this->m_ePixelFormatSrc;
+                    m_eVkComponentMapping = VulkanConverter::Transform2VkComponentMapping(m_ePixelFormat);
+                    m_eVkImageAspectFlags = VulkanConverter::Transform2VkImageAspectFlags(m_ePixelFormat);
+                }
+
                 m_pDevice->CreateVkImageView(this->m_vkImage, 
                                              this->m_eVkImageView, 
-                                             this->m_eVkFormat, 
+                                             this->m_eVkFormat,
                                              this->m_eVkComponentMapping,
                                              this->m_eVkImageAspectFlags, 
                                              this->m_nMipMapsCount, 
@@ -162,6 +172,7 @@ namespace LostPeterPluginRendererVulkan
                                                     this->m_eVkImage,
                                                     this->m_eVkSamplesCountFlagBits,
                                                     this->m_eVkFormat,
+                                                    this->m_ePixelFormatSrc,
                                                     bIsAutoMipMap,
                                                     this->m_nMipMapsCount, 
                                                     this->m_vkImage, 
@@ -175,14 +186,22 @@ namespace LostPeterPluginRendererVulkan
                                                     this->m_eVkImage,
                                                     this->m_eVkSamplesCountFlagBits,
                                                     this->m_eVkFormat,
+                                                    this->m_ePixelFormatSrc,
                                                     bIsAutoMipMap,
                                                     this->m_nMipMapsCount, 
                                                     this->m_vkImage, 
                                                     this->m_vkImageMemory);
                 }
+                if (this->m_ePixelFormatSrc != m_ePixelFormat)
+                {
+                    m_ePixelFormat = this->m_ePixelFormatSrc;
+                    m_eVkComponentMapping = VulkanConverter::Transform2VkComponentMapping(m_ePixelFormat);
+                    m_eVkImageAspectFlags = VulkanConverter::Transform2VkImageAspectFlags(m_ePixelFormat);
+                }
+
                 m_pDevice->CreateVkImageView(this->m_vkImage, 
                                              this->m_eVkImageView, 
-                                             this->m_eVkFormat, 
+                                             this->m_eVkFormat,
                                              this->m_eVkComponentMapping,
                                              this->m_eVkImageAspectFlags, 
                                              this->m_nMipMapsCount, 
@@ -191,22 +210,22 @@ namespace LostPeterPluginRendererVulkan
             }
             else if (this->m_eTexture == F_Texture_3D)
             {
-                uint32_t nSize = nWidth * nHeight * nDepth;
+                uint32_t nSize = nWidth * nHeight * nDepth * nPixelSize;
                 this->m_pDataRGBA = new uint8[nSize];
                 memset(this->m_pDataRGBA, 0, (size_t)nSize);
-                m_pDevice->CreateTexture3D(this->m_eVkFormat, 
+                m_pDevice->CreateTexture3D(this->m_eVkFormat,
                                            this->m_pDataRGBA, 
-                                           nSize, 
                                            nWidth, 
                                            nHeight, 
                                            nDepth, 
+                                           nPixelSize,
                                            this->m_vkImage, 
                                            this->m_vkImageMemory, 
                                            this->m_vkBufferStaging, 
                                            this->m_vkBufferMemoryStaging);
                 m_pDevice->CreateVkImageView(this->m_vkImage, 
                                              this->m_eVkImageView, 
-                                             this->m_eVkFormat, 
+                                             this->m_eVkFormat,
                                              this->m_eVkComponentMapping,
                                              this->m_eVkImageAspectFlags, 
                                              this->m_nMipMapsCount,
@@ -220,6 +239,7 @@ namespace LostPeterPluginRendererVulkan
                     m_pDevice->CreateTextureCubeMap(this->m_aPath, 
                                                     this->m_eVkSamplesCountFlagBits,
                                                     this->m_eVkFormat,
+                                                    this->m_ePixelFormatSrc,
                                                     bIsAutoMipMap,
                                                     this->m_nMipMapsCount, 
                                                     this->m_vkImage, 
@@ -232,14 +252,22 @@ namespace LostPeterPluginRendererVulkan
                     m_pDevice->CreateTextureCubeMap(this->m_aPath, 
                                                     this->m_eVkSamplesCountFlagBits,
                                                     this->m_eVkFormat,
+                                                    this->m_ePixelFormatSrc,
                                                     bIsAutoMipMap,
                                                     this->m_nMipMapsCount, 
                                                     this->m_vkImage, 
                                                     this->m_vkImageMemory);
                 }
+                if (this->m_ePixelFormatSrc != m_ePixelFormat)
+                {
+                    m_ePixelFormat = this->m_ePixelFormatSrc;
+                    m_eVkComponentMapping = VulkanConverter::Transform2VkComponentMapping(m_ePixelFormat);
+                    m_eVkImageAspectFlags = VulkanConverter::Transform2VkImageAspectFlags(m_ePixelFormat);
+                }
+
                 m_pDevice->CreateVkImageView(this->m_vkImage, 
                                              this->m_eVkImageView, 
-                                             this->m_eVkFormat, 
+                                             this->m_eVkFormat,
                                              this->m_eVkComponentMapping,
                                              this->m_eVkImageAspectFlags, 
                                              this->m_nMipMapsCount, 

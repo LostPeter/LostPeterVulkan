@@ -29,9 +29,6 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/ext/scalar_common.hpp>
 
-//stb_image
-#include <stb_image.h>
-
 //libnoise
 #include <noise/noise.h>
 #include <noiseutils/noiseutils.h>

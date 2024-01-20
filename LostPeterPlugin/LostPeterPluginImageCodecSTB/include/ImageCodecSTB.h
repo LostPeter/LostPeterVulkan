@@ -42,6 +42,9 @@ namespace LostPeterPluginImageCodecSTB
         virtual bool CodeToFile(FFileMemory* pInput, const String& outFilePath, FCodecData* pCodecData) const;
 
         virtual FDecodeResult Decode(FFileMemory* pInput) const;
+
+    public:
+		virtual FDecodeResult Decode(const String& strPath, bool isRGBA) const;
     };
 
 }; //LostPeterPluginImageCodecSTB

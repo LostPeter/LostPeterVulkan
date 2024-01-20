@@ -361,6 +361,7 @@ namespace LostPeterPluginRendererVulkan
                                    uint32_t nWidth, 
                                    uint32_t nHeight,
                                    uint32_t nDepth,
+                                   uint32_t nPixelSize,
                                    uint32_t nLayerCount);
         void GenerateVkImageMipMaps(VkCommandBuffer cmdBuffer,
                                     VkImage vkImage, 
@@ -372,6 +373,7 @@ namespace LostPeterPluginRendererVulkan
                                     bool bIsAutoMipMap);
 
         bool CreateTexture1D(const String& pathAsset, 
+                             FPixelFormatType& ePixelFormatRet,
                              uint32_t& nMipMapCount,
                              VkImage& vkImage, 
                              VkDeviceMemory& vkImageMemory);
@@ -379,7 +381,8 @@ namespace LostPeterPluginRendererVulkan
         bool CreateTexture2D(const String& pathAsset, 
                              VkImageType typeImage,
                              VkSampleCountFlagBits typeSamplesCountFlagBits,
-                             VkFormat typeFormat,
+                             VkFormat& typeFormat,
+                             FPixelFormatType& ePixelFormatRet,
                              bool bIsAutoMipMap, 
                              uint32_t& nMipMapCount, 
                              VkImage& vkImage, 
@@ -389,12 +392,14 @@ namespace LostPeterPluginRendererVulkan
         bool CreateTexture2D(const String& pathAsset, 
                              VkImageType typeImage,
                              VkSampleCountFlagBits typeSamplesCountFlagBits,
-                             VkFormat typeFormat,
+                             VkFormat& typeFormat,
+                             FPixelFormatType& ePixelFormatRet,
                              bool bIsAutoMipMap, 
                              uint32_t& nMipMapCount, 
                              VkImage& vkImage, 
                              VkDeviceMemory& vkImageMemory);
         bool CreateTexture2D(const String& pathAsset, 
+                             FPixelFormatType& ePixelFormatRet,
                              uint32_t& nMipMapCount,
                              VkImage& vkImage, 
                              VkDeviceMemory& vkImageMemory);
@@ -402,7 +407,8 @@ namespace LostPeterPluginRendererVulkan
         bool CreateTexture2DArray(const StringVector& aPathAsset, 
                                   VkImageType typeImage,
                                   VkSampleCountFlagBits typeSamplesCountFlagBits,
-                                  VkFormat typeFormat,
+                                  VkFormat& typeFormat,
+                                  FPixelFormatType& ePixelFormatRet,
                                   bool bIsAutoMipMap, 
                                   uint32_t& nMipMapCount, 
                                   VkImage& vkImage, 
@@ -412,38 +418,41 @@ namespace LostPeterPluginRendererVulkan
         bool CreateTexture2DArray(const StringVector& aPathAsset, 
                                   VkImageType typeImage,
                                   VkSampleCountFlagBits typeSamplesCountFlagBits,
-                                  VkFormat typeFormat,
+                                  VkFormat& typeFormat,
+                                  FPixelFormatType& ePixelFormatRet,
                                   bool bIsAutoMipMap, 
                                   uint32_t& nMipMapCount, 
                                   VkImage& vkImage, 
                                   VkDeviceMemory& vkImageMemory);
         bool CreateTexture2DArray(const StringVector& aPathAsset, 
+                                  FPixelFormatType& ePixelFormatRet,
                                   uint32_t& nMipMapCount,
                                   VkImage& vkImage, 
                                   VkDeviceMemory& vkImageMemory);
 
         bool CreateTexture3D(VkFormat typeFormat,
                              const uint8* pDataRGBA,
-                             uint32_t size,
                              uint32_t nWidth,
                              uint32_t nHeight,
                              uint32_t nDepth,
+                             uint32_t nPixelSize,
                              VkImage& vkImage, 
                              VkDeviceMemory& vkImageMemory,
                              VkBuffer& vkBuffer, 
                              VkDeviceMemory& vkBufferMemory);
         bool CreateTexture3D(VkFormat typeFormat,
                              const uint8* pDataRGBA,
-                             uint32_t size,
                              uint32_t nWidth,
                              uint32_t nHeight,
                              uint32_t nDepth,
+                             uint32_t nPixelSize,
                              VkImage& vkImage, 
                              VkDeviceMemory& vkImageMemory);
         
         bool CreateTextureCubeMap(const StringVector& aPathAsset, 
                                   VkSampleCountFlagBits typeSamplesCountFlagBits,
-                                  VkFormat typeFormat,
+                                  VkFormat& typeFormat,
+                                  FPixelFormatType& ePixelFormatRet,
                                   bool bIsAutoMipMap, 
                                   uint32_t& nMipMapCount, 
                                   VkImage& vkImage, 
@@ -452,12 +461,14 @@ namespace LostPeterPluginRendererVulkan
                                   VkDeviceMemory& vkBufferMemory);
         bool CreateTextureCubeMap(const StringVector& aPathAsset, 
                                   VkSampleCountFlagBits typeSamplesCountFlagBits,
-                                  VkFormat typeFormat,
+                                  VkFormat& typeFormat,
+                                  FPixelFormatType& ePixelFormatRet,
                                   bool bIsAutoMipMap, 
                                   uint32_t& nMipMapCount, 
                                   VkImage& vkImage, 
                                   VkDeviceMemory& vkImageMemory);
         bool CreateTextureCubeMap(const StringVector& aPathAsset,
+                                  FPixelFormatType& ePixelFormatRet,
                                   uint32_t& nMipMapCount, 
                                   VkImage& vkImage, 
                                   VkDeviceMemory& vkImageMemory);

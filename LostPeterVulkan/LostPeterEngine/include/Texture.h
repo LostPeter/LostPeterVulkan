@@ -109,7 +109,7 @@ namespace LostPeterEngine
 		F_FORCEINLINE FMSAASampleCountType GetMSAASampleCountType() const { return m_eMSAASampleCount; }
 		F_FORCEINLINE void SetMSAASampleCountType(FMSAASampleCountType eMSAASampleCount) { m_eMSAASampleCount = eMSAASampleCount; }
 
-		F_FORCEINLINE FPixelFormatType GetDesiredPixelFormat() const { return m_ePixelFormatDesired; }
+		F_FORCEINLINE FPixelFormatType GetPixelFormatDesired() const { return m_ePixelFormatDesired; }
 		F_FORCEINLINE FPixelFormatType GetPixelFormatSrc() const { return m_ePixelFormatSrc; }
 		F_FORCEINLINE FPixelFormatType GetPixelFormat() const { return m_ePixelFormat; }
 		F_FORCEINLINE void SetPixelFormat(FPixelFormatType ePixelFormat)	

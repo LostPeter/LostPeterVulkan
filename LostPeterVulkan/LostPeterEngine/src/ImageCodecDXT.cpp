@@ -668,6 +668,16 @@ namespace LostPeterEngine
 		return ret;
     }
 
+	ImageCodecDXT::FDecodeResult ImageCodecDXT::Decode(const String& strPath, bool isRGBA) const
+	{
+		F_Assert(false && "ImageCodecDXT::Decode: Not Implement !")
+
+		FDecodeResult ret;
+		ret.first  = nullptr;
+		ret.second = nullptr;
+		return ret;
+	}
+
     ImageCodecDXT::FDecodeResult ImageCodecDXT::CombineFourTexture(FFileIO* stream0, FFileIO* stream1, FFileIO* stream2, FFileIO* stream3, uint16 mipmaps /*= 0*/)
     {
         // Read 4 character code

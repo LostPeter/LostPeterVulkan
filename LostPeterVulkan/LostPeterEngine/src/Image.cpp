@@ -151,6 +151,47 @@ namespace LostPeterEngine
 		return Load(strPath);
 	}
 
+	bool Image::Load(const String& strFilePath, bool isRGBA)
+	{
+		String strExt;
+		size_t pos = strFilePath.find_last_of(".");
+		if (pos != String::npos && pos < (strFilePath.length() - 1))
+		{
+			strExt = strFilePath.substr(pos+1);
+		}
+
+		DestroyData();
+		FCodec* pCodec = nullptr;
+		if (!strExt.empty())
+		{
+			pCodec = FCodecManager::GetCodec(strExt);
+		}
+		ImageCodec* pImageCodec = static_cast<ImageCodec*>(pCodec);
+		if (!pImageCodec)
+		{
+			F_LogError("*********************** Image::Load: Load image: [%s] failed, can not get image codec form ext: [%s] !", strFilePath.c_str(), strExt.c_str());
+			F_Assert(false && "Image::Load")
+			return false;
+		}
+
+		FCodec::FDecodeResult decodeResult = pImageCodec->Decode(strFilePath, isRGBA);
+		ImageCodec::ImageData* pImageData = static_cast<ImageCodec::ImageData*>(decodeResult.second);
+		m_nWidth = pImageData->nWidth;
+		m_nHeight = pImageData->nHeight;
+		m_nDepth = pImageData->nDepth;
+		m_nSize	= pImageData->nSize;
+		m_nMipMapsCount = pImageData->nMipmapsCount;
+		m_nFlags = pImageData->nFlags;
+		m_ePixelFormat = pImageData->ePixelFormat;
+		m_nPixelSize = static_cast<uint8>(FPixelFormat::GetPixelFormatElemBytes(m_ePixelFormat));
+		m_pBuffer = decodeResult.first->GetBuffer(true);
+		
+		FFileManager::GetSingleton().DeleteFileMemory(decodeResult.first);
+		F_DELETE(pImageData);
+
+		return true;
+	}
+
 	bool Image::Load(const String& strFilePath)
 	{
 		String strExt;
@@ -175,7 +216,7 @@ namespace LostPeterEngine
 	bool Image::Load(FFileIO* pFIO, const String& strType /*= FUtilString::BLANK*/)
 	{
 		DestroyData();
-		FCodec* pCodec = 0;
+		FCodec* pCodec = nullptr;
 		if (!strType.empty())
 		{
 			pCodec = FCodecManager::GetCodec(strType);
@@ -222,10 +263,10 @@ namespace LostPeterEngine
 		return true;
 	}
 
-	bool Image::Load(FFileMemory* pInput,const String& strType /*= FUtilString::BLANK*/)
+	bool Image::Load(FFileMemory* pInput, const String& strType /*= FUtilString::BLANK*/)
 	{
 		DestroyData();
-		FCodec* pCodec = 0;
+		FCodec* pCodec = nullptr;
 		if (!strType.empty())
 		{
 			pCodec = FCodecManager::GetCodec(strType);

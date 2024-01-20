@@ -59,6 +59,9 @@ namespace LostPeterEngine
 
 	public:
 		virtual String GetDataType() const;
+
+	public:
+		virtual FDecodeResult Decode(const String& strPath, bool isRGBA) const = 0;
 	};
 
 }; //LostPeterEngine
