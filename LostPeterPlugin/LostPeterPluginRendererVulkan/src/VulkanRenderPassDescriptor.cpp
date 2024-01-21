@@ -12,6 +12,7 @@
 #include "../include/VulkanRenderPassDescriptor.h"
 #include "../include/VulkanDevice.h"
 #include "../include/VulkanFrameBufferAttachment.h"
+#include "../include/VulkanRenderPassDescriptor.h"
 
 namespace LostPeterPluginRendererVulkan
 {

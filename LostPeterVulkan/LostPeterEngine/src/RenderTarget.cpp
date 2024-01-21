@@ -35,13 +35,8 @@ namespace LostPeterEngine
 	
     RenderTarget::~RenderTarget()
     {
-        for (ViewportPtrOrderMap::iterator it = m_mapViewport.begin();
-			it != m_mapViewport.end(); ++it)
-		{
-			fireViewportRemoved(it->second);
-            F_DELETE(it->second)
-		}
-		F_LogInfo("RenderTarget::~RenderTarget: Render Target: [%s] is deleted !", GetName().c_str());
+		RemoveRenderTargetListenerAll();
+		RemoveViewportAll();
     }
 
     void RenderTarget::GetMetrics(uint32& nWidth, uint32& nHeight, uint32& nColorDepth)
@@ -55,7 +50,6 @@ namespace LostPeterEngine
 	{
 		m_aRenderTargetListener.push_back(pRenderTargetListener);
 	}
-
 	void RenderTarget::RemoveRenderTargetListener(RenderTargetListener* pRenderTargetListener)
 	{
 		for (RenderTargetListenerPtrVector::iterator it = m_aRenderTargetListener.begin(); 
@@ -68,8 +62,7 @@ namespace LostPeterEngine
 			}
 		}
 	}
-
-	void RenderTarget::RemoveAllRenderTargetListeners()
+	void RenderTarget::RemoveRenderTargetListenerAll()
 	{
 		m_aRenderTargetListener.clear();
 	}
@@ -126,7 +119,7 @@ namespace LostPeterEngine
 			m_mapViewport.erase(itFind);
 		}
 	}
-	void RenderTarget::RemoveAllViewport()
+	void RenderTarget::RemoveViewportAll()
 	{
 		for (ViewportPtrOrderMap::iterator it = m_mapViewport.begin();
 			 it != m_mapViewport.end(); ++it)
@@ -135,6 +128,25 @@ namespace LostPeterEngine
             F_DELETE(it->second)
 		}
 		m_mapViewport.clear();
+	}
+
+	void RenderTarget::UpdateViewport(int nZOrder)
+	{
+		ViewportPtrOrderMap::iterator itFind = m_mapViewport.find(nZOrder);
+		if (itFind != m_mapViewport.end())
+		{
+			itFind->second->UpdateDimensions();
+			fireViewportResized(itFind->second);
+		}
+	}
+	void RenderTarget::UpdateViewportAll()
+	{
+		for (ViewportPtrOrderMap::iterator it = m_mapViewport.begin();
+			 it != m_mapViewport.end(); ++it)
+		{
+			it->second->UpdateDimensions();
+			fireViewportResized(it->second);
+		}
 	}
 
 	void RenderTarget::Update(bool bSwapBuffers /*= true*/)
@@ -177,7 +189,6 @@ namespace LostPeterEngine
 			(*it)->PreRenderTargetUpdate(evt);
 		}
 	}
-
 	void RenderTarget::firePostUpdate()
 	{
 		RenderTargetEvent evt;
@@ -201,7 +212,6 @@ namespace LostPeterEngine
 			(*it)->PreViewportUpdate(evt);
 		}
 	}
-
 	void RenderTarget::fireViewportPostUpdate(Viewport* pViewport)
 	{
 		RenderTargetViewportEvent evt;
@@ -213,7 +223,6 @@ namespace LostPeterEngine
 			(*it)->PostViewportUpdate(evt);
 		}
 	}
-
 	void RenderTarget::fireViewportAdded(Viewport* pViewport)
 	{	
 		RenderTargetViewportEvent evt;
@@ -225,7 +234,17 @@ namespace LostPeterEngine
 			(*it)->ViewportAdded(evt);
 		}
 	}
+	void RenderTarget::fireViewportResized(Viewport* pViewport)
+	{
+		RenderTargetViewportEvent evt;
+		evt.pViewportSrc = pViewport;
 
+		for (RenderTargetListenerPtrVector::iterator it = m_aRenderTargetListener.begin(); 
+			 it != m_aRenderTargetListener.end(); ++it)
+		{
+			(*it)->ViewportResized(evt);
+		}
+	}
 	void RenderTarget::fireViewportRemoved(Viewport* pViewport)
 	{
 		RenderTargetViewportEvent evt;

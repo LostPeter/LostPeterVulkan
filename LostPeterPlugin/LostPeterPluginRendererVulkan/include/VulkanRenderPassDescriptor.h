@@ -30,17 +30,14 @@ namespace LostPeterPluginRendererVulkan
         VkSampler m_vkSampler;
         VkDescriptorImageInfo m_vkDescriptorImageInfo;
         
-        //RenderPass
-        VkRenderPass poRenderPass;
-
-        //FrameBuffer
-        VkFramebuffer poFrameBuffer;
 
     public:
         F_FORCEINLINE const VulkanFrameBufferAttachmentPtrVector& GetFrameBufferAttachmentPtrVector() const { return m_aFrameBufferAttachment; }
         F_FORCEINLINE VulkanFrameBufferAttachmentPtrVector& GetFrameBufferAttachmentPtrVector() { return m_aFrameBufferAttachment; }
         F_FORCEINLINE const VulkanFrameBufferAttachmentPtrMap& GetFrameBufferAttachmentPtrMap() const { return m_mapFrameBufferAttachment; }
         F_FORCEINLINE VulkanFrameBufferAttachmentPtrMap& GetFrameBufferAttachmentPtrMap() { return m_mapFrameBufferAttachment; }
+
+
 
     public:
         virtual void Destroy();

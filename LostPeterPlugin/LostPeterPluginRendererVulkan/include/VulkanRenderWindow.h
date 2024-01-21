@@ -13,10 +13,12 @@
 #define _VULKAN_RENDER_WINDOW_H_
 
 #include "VulkanPreDefine.h"
+#include "VulkanViewport.h"
 
 namespace LostPeterPluginRendererVulkan
 {
     class VulkanRenderWindow : public RenderWindow
+                             , public RenderTargetListener
     {
     public:
         VulkanRenderWindow(const String& nameRenderWindow, VulkanDevice* pDevice);
@@ -24,6 +26,9 @@ namespace LostPeterPluginRendererVulkan
 
     public:
         static int s_maxFramesInFight;
+
+    public:
+        typedef std::map<Viewport*, VulkanViewport> VulkanViewportMap;
 
     public:
     protected:
@@ -44,6 +49,9 @@ namespace LostPeterPluginRendererVulkan
         VulkanSemaphore* m_pSemaphore_GraphicsWait;
         VulkanSemaphore* m_pSemaphore_ComputeWait;
         
+        VulkanViewportMap m_mapVulkanViewport;
+        VkViewportVector m_aVkViewports;
+        VkRect2DVector m_aVkScissors;
 
     public:
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
@@ -59,14 +67,9 @@ namespace LostPeterPluginRendererVulkan
 		virtual bool Init(int32 nWidth, 
                           int32 nHeight, 
                           const String2StringMap* pParams);
-
-
+        
     public:
-        virtual void Resize(int32 nWidth, int32 nHeight);
-		virtual void Reposition(int32 nLeft, int32 nTop);
 		virtual bool IsClosed() const;
-		virtual void WindowMovedOrResized();
-		virtual bool CanChangeToWindowMode(int32 srcWidth, int32 srcHeight, int32& destWidth, int32& destHeight);
 		
 		virtual void EmptyGPUCommandBuffer();
 
@@ -86,6 +89,20 @@ namespace LostPeterPluginRendererVulkan
         bool createSyncObjects_PresentRender();
         bool createSyncObjects_RenderCompute();
         bool createRenderPassDescriptor();
+
+
+    public: 
+        virtual void ViewportAdded(const RenderTargetViewportEvent& evt);
+        virtual void ViewportResized(const RenderTargetViewportEvent& evt);
+		virtual void ViewportRemoved(const RenderTargetViewportEvent& evt);
+
+    protected:  
+        void clearVkViewports();
+        void updateVkViewports();
+
+    public:
+        virtual void OnResize(int w, int h, bool force);
+
     };
 
 }; //LostPeterPluginRendererVulkan

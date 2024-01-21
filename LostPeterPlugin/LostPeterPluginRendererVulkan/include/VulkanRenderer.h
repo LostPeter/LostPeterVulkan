@@ -26,8 +26,6 @@ namespace LostPeterPluginRendererVulkan
     protected:
         VulkanInstance* m_pVulkanInstance;
 
-        VulkanFrameBufferDescriptorPtrVector m_aFrameBufferDescriptor;
-        VulkanFrameBufferDescriptorPtrMap m_mapFrameBufferDescriptor;
 
     public:
         virtual void Destroy();

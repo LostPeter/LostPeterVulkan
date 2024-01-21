@@ -34,6 +34,7 @@ namespace LostPeterPluginRendererVulkan
         , m_pSemaphore_ComputeWait(nullptr)
     {
         F_Assert(m_pDevice && "VulkanRenderWindow::VulkanRenderWindow")
+        AddRenderTargetListener(this);
     }   
 
     VulkanRenderWindow::~VulkanRenderWindow()
@@ -43,6 +44,7 @@ namespace LostPeterPluginRendererVulkan
 
     void VulkanRenderWindow::Destroy()
     {
+        clearVkViewports();
         DestroySwapChain();
         F_DELETE(m_pSwapChain)
         destroySyncObjects_RenderCompute();
@@ -202,30 +204,9 @@ namespace LostPeterPluginRendererVulkan
             return true;
         }
 
-
-    void VulkanRenderWindow::Resize(int32 nWidth, int32 nHeight)
-    {
-
-    }
-
-    void VulkanRenderWindow::Reposition(int32 nLeft, int32 nTop)
-    {
-
-    }
-
     bool VulkanRenderWindow::IsClosed() const
     {
         return false;
-    }
-
-    void VulkanRenderWindow::WindowMovedOrResized()
-    {
-
-    }
-
-    bool VulkanRenderWindow::CanChangeToWindowMode(int32 srcWidth, int32 srcHeight, int32& destWidth, int32& destHeight)
-    {
-        return true;
     }
     
     void VulkanRenderWindow::EmptyGPUCommandBuffer()
@@ -328,6 +309,75 @@ namespace LostPeterPluginRendererVulkan
         }
 
         return true;
+    }
+
+
+    void VulkanRenderWindow::ViewportAdded(const RenderTargetViewportEvent& evt)
+    {
+        if (evt.pViewportSrc == nullptr)
+            return;
+
+        VulkanViewportMap::iterator itFind = m_mapVulkanViewport.find(evt.pViewportSrc);
+        if (itFind == m_mapVulkanViewport.end())
+        {
+            VulkanViewport vp;
+            vp.Init(evt.pViewportSrc);
+            m_mapVulkanViewport[evt.pViewportSrc] = vp;
+        }
+        updateVkViewports();
+    }
+    void VulkanRenderWindow::ViewportResized(const RenderTargetViewportEvent& evt)
+    {
+        if (evt.pViewportSrc == nullptr)
+            return;
+
+        VulkanViewportMap::iterator itFind = m_mapVulkanViewport.find(evt.pViewportSrc);
+        if (itFind != m_mapVulkanViewport.end())
+        {
+            m_mapVulkanViewport.erase(itFind);
+        }
+        updateVkViewports();
+    }
+	void VulkanRenderWindow::ViewportRemoved(const RenderTargetViewportEvent& evt)
+    {
+        if (evt.pViewportSrc == nullptr)
+            return;
+
+        for (ViewportPtrOrderMap::iterator it = m_mapViewport.begin();
+			 it != m_mapViewport.end(); ++it)
+		{
+            VulkanViewportMap::iterator itFind = m_mapVulkanViewport.find(it->second);
+            VulkanViewport& vp = itFind->second;
+            vp.Init(it->second);
+		}
+        updateVkViewports();
+    }
+    void VulkanRenderWindow::clearVkViewports()
+    {
+        m_mapVulkanViewport.clear();
+        m_aVkViewports.clear();
+        m_aVkScissors.clear();
+    }
+    void VulkanRenderWindow::updateVkViewports()
+    {
+        m_aVkViewports.clear();
+        m_aVkScissors.clear();
+        for (ViewportPtrOrderMap::iterator it = m_mapViewport.begin();
+			 it != m_mapViewport.end(); ++it)
+		{
+            VulkanViewportMap::iterator itFind = m_mapVulkanViewport.find(it->second);
+            VulkanViewport& vp = itFind->second;
+
+            m_aVkViewports.push_back(vp.GetVkViewport());
+            m_aVkScissors.push_back(vp.GetScissor());
+		}
+    }
+
+    void VulkanRenderWindow::OnResize(int w, int h, bool force)
+    {
+        UpdateViewportAll();
+
+        RenderWindow::OnResize(w, h, force);
     }
 
 }; //LostPeterPluginRendererVulkan

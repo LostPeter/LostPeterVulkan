@@ -80,12 +80,8 @@ namespace LostPeterEngine
 		virtual bool Init(int32 nWidth, 
 						  int32 nHeight, 
 						  const String2StringMap* pParams) = 0;
-    
-		virtual void Resize(int32 nWidth, int32 nHeight) = 0;
-		virtual void Reposition(int32 nLeft, int32 nTop) = 0;
+		
 		virtual bool IsClosed() const = 0;
-		virtual void WindowMovedOrResized() = 0;
-		virtual bool CanChangeToWindowMode(int32 srcWidth, int32 srcHeight, int32& destWidth, int32& destHeight) = 0;
 		
 		virtual void EmptyGPUCommandBuffer() = 0;
 		

@@ -69,7 +69,7 @@ namespace LostPeterEngine
 		
 		virtual void AddRenderTargetListener(RenderTargetListener* pRenderTargetListener);
 		virtual void RemoveRenderTargetListener(RenderTargetListener* pRenderTargetListener);
-		virtual void RemoveAllRenderTargetListeners();
+		virtual void RemoveRenderTargetListenerAll();
 
     public:
 		virtual int GetViewportCount() const;
@@ -83,7 +83,10 @@ namespace LostPeterEngine
 									  float fWidth = 1.0f,
                                       float fHeight = 1.0f);
 		virtual void RemoveViewport(int nZOrder);
-		virtual void RemoveAllViewport();
+		virtual void RemoveViewportAll();
+
+		virtual void UpdateViewport(int nZOrder);
+		virtual void UpdateViewportAll();
 
         virtual void Update(bool bSwapBuffers = true);
 		virtual bool SwapBuffers(bool bSwapBuffers = true) = 0;
@@ -105,6 +108,7 @@ namespace LostPeterEngine
 		virtual void fireViewportPreUpdate(Viewport* pViewport);
 		virtual void fireViewportPostUpdate(Viewport* pViewport);
 		virtual void fireViewportAdded(Viewport* pViewport);
+		virtual void fireViewportResized(Viewport* pViewport);
 		virtual void fireViewportRemoved(Viewport* pViewport);
 
 		virtual void updateImpl();

@@ -26,12 +26,12 @@
 #include "../include/VulkanFenceManager.h"
 #include "../include/VulkanFrameBuffer.h"
 #include "../include/VulkanFrameBufferAttachment.h"
-#include "../include/VulkanFrameBufferDescriptor.h"
 #include "../include/VulkanFrameBufferManager.h"
 #include "../include/VulkanInstance.h"
 #include "../include/VulkanPlugin.h"
 #include "../include/VulkanQueue.h"
 #include "../include/VulkanRenderer.h"
+#include "../include/VulkanRenderFrameBufferDescriptor.h"
 #include "../include/VulkanRenderPass.h"
 #include "../include/VulkanRenderPassManager.h"
 #include "../include/VulkanRenderPassDescriptor.h"
@@ -46,6 +46,7 @@
 #include "../include/VulkanSwapChain.h"
 #include "../include/VulkanTexture.h"
 #include "../include/VulkanTextureManager.h"
+#include "../include/VulkanViewport.h"
 #include "../include/VulkanVolk.h"
 
 

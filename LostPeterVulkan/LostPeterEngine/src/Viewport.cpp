@@ -18,14 +18,17 @@ namespace LostPeterEngine
     Viewport::Viewport(const String& nameViewport,
                        ObjectCamera* pObjectCamera,
                        RenderTarget* pRenderTarget,
-                       float fLeft,
-                       float fTop,
-                       float fWidth,
-                       float fHeight,
-                       int nZOrder)
+                       int nZOrder,
+					   float fLeft /*= 0.0f*/,
+					   float fTop /*= 0.0f*/,
+					   float fWidth /*= 1.0f*/,
+					   float fHeight /*= 1.0f*/,
+					   float fDepthMin /*= 0.0f*/,
+					   float fDepthMax /*= 1.0f*/)
         : Base(nameViewport)
         , m_pObjectCamera(pObjectCamera)
 		, m_pRenderTarget(pRenderTarget)
+		, m_nZOrder(nZOrder)
 		, m_fLeft(fLeft)
 		, m_fTop(fTop)
 		, m_fWidth(fWidth)
@@ -34,8 +37,9 @@ namespace LostPeterEngine
 		, m_nActTop(0)
 		, m_nActWidth(0)
 		, m_nActHeight(0)
-		, m_nZOrder(nZOrder)
-		, m_clBackColor(FMath::ms_clBlack)
+		, m_fDepthMin(fDepthMin)
+		, m_fDepthMax(fDepthMax)
+		, m_clBackGroundColor(FMath::ms_clBlack)
 		, m_bClearEveryFrame(true)
 		, m_nClearBuffers(F_FrameBuffer_Color | F_FrameBuffer_Depth)
 		, m_bUpdated(false)
@@ -43,12 +47,13 @@ namespace LostPeterEngine
 		, m_bShowSkies(true)
 		, m_bShowShadows(true)
 		, m_nVisibilityMask(0xFFFFFFFF)
-		, m_fRangeMinZ(0.0f)
-		, m_fRangeMaxZ(1.0f)
     {
-		F_LogInfo("Viewport::Viewport: RenderTarget: [%s], ObjectCamera: [%s], Pos: [%f, %f], Size: [%f, %f], ZOrder: [%d] !",
-			      pRenderTarget->GetName().c_str(), 
-                  !pObjectCamera ? "Null" : pObjectCamera->GetName().c_str(),
+		F_Assert(pRenderTarget && "Viewport::Viewport")
+
+		F_LogInfo("Viewport::Viewport: [%s], ObjectCamera: [%s], RenderTarget: [%s], Offset: [%f, %f], Size: [%f, %f], ZOrder: [%d] !",
+				  nameViewport.c_str(),
+                  pObjectCamera ? pObjectCamera->GetName().c_str() : "Null",
+				  pRenderTarget->GetName().c_str(), 
                   fLeft, fTop, fWidth, fHeight,
                   nZOrder);
 
@@ -123,8 +128,8 @@ namespace LostPeterEngine
             //     m_pObjectCamera->SetAspectRatio((float)m_nActWidth/(float)m_nActHeight);
             // }
 
-			F_LogInfo("Viewport::UpdateDimensions: ObjectCamera: [%s], Pos: [%d,%d], Size: [%d,%d] !",
-				      m_pObjectCamera ? "Null" : m_pObjectCamera->GetName().c_str(),
+			F_LogInfo("Viewport::UpdateDimensions: ObjectCamera: [%s], Offset: [%d, %d], Size: [%d, %d] !",
+				      m_pObjectCamera ? m_pObjectCamera->GetName().c_str() : "Null",
                       m_nActLeft, m_nActTop, m_nActWidth, m_nActHeight);
 		}
 		m_bUpdated = true;

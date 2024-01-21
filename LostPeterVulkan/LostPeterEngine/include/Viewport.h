@@ -23,17 +23,21 @@ namespace LostPeterEngine
         Viewport(const String& nameViewport,
                  ObjectCamera* pObjectCamera,
                  RenderTarget* pRenderTarget,
-                 float fLeft,
-                 float fTop,
-                 float fWidth,
-                 float fHeight,
-                 int nZOrder);
+				 int nZOrder,
+                 float fLeft = 0.0f,
+                 float fTop = 0.0f,
+                 float fWidth = 1.0f,
+                 float fHeight = 1.0f,
+				 float fDepthMin = 0.0f,
+				 float fDepthMax = 1.0f);
         virtual ~Viewport();
 
     public:
     protected:
         ObjectCamera* m_pObjectCamera;			
 		RenderTarget* m_pRenderTarget;
+
+		int	m_nZOrder;
 
 		float m_fLeft;
 		float m_fTop;
@@ -44,10 +48,11 @@ namespace LostPeterEngine
 		int	m_nActTop;
 		int	m_nActWidth;
 		int	m_nActHeight;
-		
-		int	m_nZOrder;
 
-		FColor m_clBackColor;
+		float m_fDepthMin;
+		float m_fDepthMax;
+
+		FColor m_clBackGroundColor;
 		bool m_bClearEveryFrame;
 		uint32 m_nClearBuffers;
 		bool m_bUpdated;
@@ -55,9 +60,6 @@ namespace LostPeterEngine
 		bool m_bShowSkies;
 		bool m_bShowShadows;
 		uint32 m_nVisibilityMask;
-
-		float m_fRangeMinZ;
-		float m_fRangeMaxZ;
 
     public:
         void Destroy();
@@ -83,10 +85,20 @@ namespace LostPeterEngine
 			nHeight	= m_nActHeight;
 		}
 		F_FORCEINLINE int GetZOrder() const { return m_nZOrder; }
-		F_FORCEINLINE const FColor& GetBackGroundColor() const { return m_clBackColor; }
-		F_FORCEINLINE void	SetBackGroundColor(const FColor& color)	{ m_clBackColor=color; }
-		F_FORCEINLINE bool	GetClearEveryFrame() const { return m_bClearEveryFrame; }
-		F_FORCEINLINE void	SetClearEveryFrame(bool bClear, uint32 buffers = F_FrameBuffer_Color | F_FrameBuffer_Depth)
+
+		F_FORCEINLINE float GetDepthMin() { return m_fDepthMin; }
+		F_FORCEINLINE float GetDepthMax() { return m_fDepthMax; }
+		F_FORCEINLINE void SetDepthMinMax(float fDepthMin,float fDepthMax)
+		{
+			m_fDepthMin = fDepthMin;
+			m_fDepthMax = fDepthMax;
+			m_bUpdated = true;
+		}
+
+		F_FORCEINLINE const FColor& GetBackGroundColor() const { return m_clBackGroundColor; }
+		F_FORCEINLINE void SetBackGroundColor(const FColor& color)	{ m_clBackGroundColor = color; }
+		F_FORCEINLINE bool GetClearEveryFrame() const { return m_bClearEveryFrame; }
+		F_FORCEINLINE void SetClearEveryFrame(bool bClear, uint32 buffers = F_FrameBuffer_Color | F_FrameBuffer_Depth)
 		{
 			m_bClearEveryFrame = bClear;
 			m_nClearBuffers = buffers;
@@ -94,22 +106,14 @@ namespace LostPeterEngine
 		F_FORCEINLINE uint32 GetClearBuffers() const { return m_nClearBuffers; }
 		F_FORCEINLINE bool IsUpdated() const { return m_bUpdated; }
 		F_FORCEINLINE void ClearUpdatedFlag() { m_bUpdated = false; }
-		F_FORCEINLINE bool	GetOverlaysEnabled() const { return m_bShowOverlays; }
-		F_FORCEINLINE void	SetOverlaysEnabled(bool b) { m_bShowOverlays = b; }
-		F_FORCEINLINE bool	GetSkiesEnabled() const { return m_bShowSkies; }
-		F_FORCEINLINE void	SetSkiesEnabled(bool b)	{ m_bShowSkies = b; }
-		F_FORCEINLINE bool	GetShadowsEnabled() const { return m_bShowShadows; }
+		F_FORCEINLINE bool GetOverlaysEnabled() const { return m_bShowOverlays; }
+		F_FORCEINLINE void SetOverlaysEnabled(bool b) { m_bShowOverlays = b; }
+		F_FORCEINLINE bool GetSkiesEnabled() const { return m_bShowSkies; }
+		F_FORCEINLINE void SetSkiesEnabled(bool b)	{ m_bShowSkies = b; }
+		F_FORCEINLINE bool GetShadowsEnabled() const { return m_bShowShadows; }
 		F_FORCEINLINE void SetShadowsEnabled(bool b) { m_bShowShadows = b; }
 		F_FORCEINLINE uint32 GetVisibilityMask() const { return m_nVisibilityMask; }
-		F_FORCEINLINE void	SetVisibilityMask(uint32 nMask)	{ m_nVisibilityMask = nMask; }
-		F_FORCEINLINE float GetRangeMinZ() { return m_fRangeMinZ; }
-		F_FORCEINLINE float GetRangeMaxZ() { return m_fRangeMaxZ; }
-		F_FORCEINLINE void	SetRangeZ(float fMinZ,float fMaxZ)
-		{
-			m_fRangeMinZ = fMinZ;
-			m_fRangeMaxZ = fMaxZ;
-			m_bUpdated = true;
-		}
+		F_FORCEINLINE void SetVisibilityMask(uint32 nMask)	{ m_nVisibilityMask = nMask; }
 			
 		uint32 GetNumRenderedFaces() const;
 		uint32 GetNumRenderedBatches() const;

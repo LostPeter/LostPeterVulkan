@@ -30,6 +30,7 @@ namespace LostPeterEngine
 		virtual void PostViewportUpdate(const RenderTargetViewportEvent& evt) { }
 
 		virtual void ViewportAdded(const RenderTargetViewportEvent& evt) { }
+        virtual void ViewportResized(const RenderTargetViewportEvent& evt) { }
 		virtual void ViewportRemoved(const RenderTargetViewportEvent& evt) { }
     };
 

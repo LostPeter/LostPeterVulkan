@@ -728,6 +728,7 @@ namespace LostPeterEngine
     class RenderEngine;
     class RendererListener;
     class Renderer;
+    class RenderFrameBufferDescriptor;
     class RenderPassDescriptor;
     class RenderPassDescriptorManager;
     class RenderPass;

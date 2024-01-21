@@ -77,6 +77,7 @@
 #include "RenderEngine.h"
 #include "RendererListener.h"
 #include "Renderer.h"
+#include "RenderFrameBufferDescriptor.h"
 #include "RenderPassDescriptor.h"
 #include "RenderPassDescriptorManager.h"
 #include "RenderPass.h"
