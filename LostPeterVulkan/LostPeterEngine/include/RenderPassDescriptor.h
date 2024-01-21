@@ -34,7 +34,11 @@ namespace LostPeterEngine
 
     
     public:
-        
+        virtual void SetClearColor(uint8 nIndex, const FColor& clearColor) = 0;
+        virtual void SetClearColor(const FColor& clearColor) = 0;
+
+        virtual void SetClearDepth(float clearDepth) = 0;
+        virtual void SetClearStencil(uint32 clearStencil) = 0;
 
 
     };

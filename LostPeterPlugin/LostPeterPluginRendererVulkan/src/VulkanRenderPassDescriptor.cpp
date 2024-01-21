@@ -91,4 +91,23 @@ namespace LostPeterPluginRendererVulkan
         m_mapFrameBufferAttachment.clear();
     }
 
+
+    void VulkanRenderPassDescriptor::SetClearColor(uint8 nIndex, const FColor& clearColor)
+    {
+
+    }
+    void VulkanRenderPassDescriptor::SetClearColor(const FColor& clearColor)
+    {
+
+    }
+        
+    void VulkanRenderPassDescriptor::SetClearDepth(float clearDepth)
+    {
+
+    }
+    void VulkanRenderPassDescriptor::SetClearStencil(uint32 clearStencil)
+    {
+        
+    }
+
 }; //LostPeterPluginRendererVulkan

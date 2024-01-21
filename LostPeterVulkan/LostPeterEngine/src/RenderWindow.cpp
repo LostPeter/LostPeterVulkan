@@ -27,6 +27,7 @@ namespace LostPeterEngine
 		, m_nTop(0)
 		, m_nClientWidth(0)
 		, m_nClientHeight(0)
+        , m_pRenderFrameBufferDescriptor(nullptr)
         , m_pRenderPassDescriptor(nullptr)
     {
 

@@ -37,6 +37,7 @@ namespace LostPeterEngine
 		int32 m_nClientWidth;
 		int32 m_nClientHeight;
 
+		RenderFrameBufferDescriptor* m_pRenderFrameBufferDescriptor;
 		RenderPassDescriptor* m_pRenderPassDescriptor;
 
 	protected:
@@ -66,6 +67,8 @@ namespace LostPeterEngine
 		F_FORCEINLINE int32 GetWindowTop() const { return m_nTop; }
 		F_FORCEINLINE int32 GetClientWidth() const { return m_nClientWidth; }
 		F_FORCEINLINE int32 GetClientHeight() const { return m_nClientHeight; }
+
+		F_FORCEINLINE RenderFrameBufferDescriptor* GetRenderFrameBufferDescriptor() const { return m_pRenderFrameBufferDescriptor; }
 		F_FORCEINLINE RenderPassDescriptor* GetRenderPassDescriptor() const { return m_pRenderPassDescriptor; }
 
 	public:
@@ -81,12 +84,17 @@ namespace LostPeterEngine
 						  int32 nHeight, 
 						  const String2StringMap* pParams) = 0;
 		
+
+	public:
+		virtual FTextureType GetTextureType() const = 0;
+        virtual FMSAASampleCountType GetMSAASampleCountType() const = 0;
+        virtual FPixelFormatType GetSwapChainImagePixelFormat() const = 0;
+
 		virtual bool IsClosed() const = 0;
-		
 		virtual void EmptyGPUCommandBuffer() = 0;
-		
 		virtual bool IsDeviceLost() { return false; }
 		virtual bool Present(Renderer* pRenderer);
+
 
 	public:
 		void AddRenderWindowListener(RenderWindowListener* pRenderWindowListener);

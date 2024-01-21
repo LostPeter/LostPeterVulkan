@@ -28,7 +28,6 @@ namespace LostPeterPluginRendererVulkan
     protected:
         VulkanDevice* m_pDevice;
         VulkanSwapChain* m_pSwapChain;
-
         VulkanRenderPass* m_pRenderPass;    
         VulkanFrameBuffer* m_pFrameBuffer;
 
@@ -39,15 +38,23 @@ namespace LostPeterPluginRendererVulkan
 
     public:
         virtual void Destroy();
-        bool Init(VkFormat typeFormatColorImage,
-                  VkFormat typeFormatDepthImage,
-                  VkSampleCountFlagBits vkSampleCountFlagBits,
-                  bool bHasImgui);
+        virtual bool Init(FTextureType eTexture,
+                          FPixelFormatType ePixelFormatColor,
+                          FPixelFormatType ePixelFormatDepth,
+                          FMSAASampleCountType eMSAASampleCount,
+                          bool bHasImGUI);
 
     public:
     protected:
-        virtual bool createTextureColor();
-        virtual bool createTextureDepth();
+        void destroyTextures(TexturePtrVector& aTexture);
+
+        virtual bool createTextureColor(FTextureType eTexture,
+                                        FPixelFormatType ePixelFormatColor, 
+                                        FMSAASampleCountType eMSAASampleCount);
+        virtual bool createTextureDepth(FTextureType eTexture,
+                                        FPixelFormatType ePixelFormatDepth, 
+                                        FMSAASampleCountType eMSAASampleCount);
+        virtual bool createTextureSwapChain();
 
         virtual bool createRenderPass();
         virtual bool createRenderFrameBuffer();

@@ -34,12 +34,16 @@ namespace LostPeterPluginRendererVulkan
     protected:
         VulkanDevice* m_pDevice;
 
+        FTextureType m_eTexture;
+        FMSAASampleCountType m_eMSAASampleCount;
         FPixelFormatType m_eSwapChainImagePixelFormat;
+        bool m_bHasImGUI;
+
         uint32 m_nSwapChainImageDesiredCount;
         VkImageVector m_aSwapChainVkImages;
 	    VkImageViewVector m_aSwapChainVkImageViews;
         VulkanSwapChain* m_pSwapChain;
-        
+
         VulkanSemaphorePtrVector m_aSemaphores_PresentComplete;
         VulkanSemaphorePtrVector m_aSemaphores_RenderComplete;
         VulkanFencePtrVector m_aFences_InFlight;
@@ -55,7 +59,6 @@ namespace LostPeterPluginRendererVulkan
 
     public:
         F_FORCEINLINE VulkanDevice* GetDevice() const { return m_pDevice; }
-        F_FORCEINLINE FPixelFormatType GetSwapChainImagePixelFormat() const { return m_eSwapChainImagePixelFormat; }
         F_FORCEINLINE uint32 GetSwapChainImageDesiredCount() const { return m_nSwapChainImageDesiredCount; }
         F_FORCEINLINE void SetSwapChainImageDesiredCount(uint32 nSwapChainImageDesiredCount) { m_nSwapChainImageDesiredCount = nSwapChainImageDesiredCount; }
         F_FORCEINLINE const VkImageVector& GetSwapChainVkImages() const { return m_aSwapChainVkImages; }
@@ -69,12 +72,13 @@ namespace LostPeterPluginRendererVulkan
                           const String2StringMap* pParams);
         
     public:
+        virtual FTextureType GetTextureType() const { return m_eTexture; }
+        virtual FMSAASampleCountType GetMSAASampleCountType() const { return m_eMSAASampleCount; }
+        virtual FPixelFormatType GetSwapChainImagePixelFormat() const { return m_eSwapChainImagePixelFormat; }
+
 		virtual bool IsClosed() const;
-		
 		virtual void EmptyGPUCommandBuffer();
-
         virtual bool SwapBuffers(bool bSwapBuffers = true);
-
         virtual bool RequiresTextureFlipping() const;
 
     public:
@@ -83,11 +87,13 @@ namespace LostPeterPluginRendererVulkan
 
     protected:
         void destroyRenderPassDescriptor();
+        void destroyRenderFrameBufferDescriptor();
         void destroySyncObjects_RenderCompute();
         void destroySyncObjects_PresentRender();
 
         bool createSyncObjects_PresentRender();
         bool createSyncObjects_RenderCompute();
+        bool createRenderFrameBufferDescriptor();
         bool createRenderPassDescriptor();
 
 
@@ -102,7 +108,6 @@ namespace LostPeterPluginRendererVulkan
 
     public:
         virtual void OnResize(int w, int h, bool force);
-
     };
 
 }; //LostPeterPluginRendererVulkan

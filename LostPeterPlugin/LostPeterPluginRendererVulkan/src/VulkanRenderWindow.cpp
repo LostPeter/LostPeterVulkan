@@ -16,6 +16,7 @@
 #include "../include/VulkanSemaphore.h"
 #include "../include/VulkanFence.h"
 #include "../include/VulkanFenceManager.h"
+#include "../include/VulkanRenderFrameBufferDescriptor.h"
 #include "../include/VulkanRenderPassDescriptor.h"
 #include "../include/VulkanConverter.h"
 
@@ -25,7 +26,12 @@ namespace LostPeterPluginRendererVulkan
     VulkanRenderWindow::VulkanRenderWindow(const String& nameRenderWindow, VulkanDevice* pDevice)
         : RenderWindow(nameRenderWindow)
         , m_pDevice(pDevice)
+
+        , m_eTexture(F_Texture_2D)
+        , m_eMSAASampleCount(F_MSAASampleCount_1_Bit)
         , m_eSwapChainImagePixelFormat(F_PixelFormat_BYTE_A8R8G8B8_SRGB)
+        , m_bHasImGUI(true)
+
         , m_nSwapChainImageDesiredCount(3)
         , m_pSwapChain(nullptr)
 
@@ -45,32 +51,39 @@ namespace LostPeterPluginRendererVulkan
     void VulkanRenderWindow::Destroy()
     {
         clearVkViewports();
-        DestroySwapChain();
-        F_DELETE(m_pSwapChain)
+
+        destroyRenderPassDescriptor();
+        destroyRenderFrameBufferDescriptor();
         destroySyncObjects_RenderCompute();
         destroySyncObjects_PresentRender();
+        DestroySwapChain();
+        F_DELETE(m_pSwapChain)
 
         RenderWindow::Destroy();
     }
-    void VulkanRenderWindow::destroyRenderPassDescriptor()
-    {
-        F_DELETE(m_pRenderPassDescriptor)
-    }
-    void VulkanRenderWindow::destroySyncObjects_RenderCompute()
-    {
-        F_DELETE(m_pSemaphore_GraphicsWait)
-        F_DELETE(m_pSemaphore_ComputeWait)
-    }
-    void VulkanRenderWindow::destroySyncObjects_PresentRender()
-    {
-        m_pDevice->DestroyVkSemaphores(m_aSemaphores_PresentComplete);
-        m_aSemaphores_PresentComplete.clear();
-        m_pDevice->DestroyVkSemaphores(m_aSemaphores_RenderComplete);
-        m_aSemaphores_RenderComplete.clear();
-        m_pDevice->RecoveryFences(m_aFences_InFlight);
-        m_aFences_InFlight.clear();
-        m_aFences_ImagesInFlight.clear();
-    }
+        void VulkanRenderWindow::destroyRenderPassDescriptor()
+        {
+            F_DELETE(m_pRenderPassDescriptor)
+        }
+        void VulkanRenderWindow::destroyRenderFrameBufferDescriptor()
+        {
+            F_DELETE(m_pRenderFrameBufferDescriptor)
+        }
+        void VulkanRenderWindow::destroySyncObjects_RenderCompute()
+        {
+            F_DELETE(m_pSemaphore_GraphicsWait)
+            F_DELETE(m_pSemaphore_ComputeWait)
+        }
+        void VulkanRenderWindow::destroySyncObjects_PresentRender()
+        {
+            m_pDevice->DestroyVkSemaphores(m_aSemaphores_PresentComplete);
+            m_aSemaphores_PresentComplete.clear();
+            m_pDevice->DestroyVkSemaphores(m_aSemaphores_RenderComplete);
+            m_aSemaphores_RenderComplete.clear();
+            m_pDevice->RecoveryFences(m_aFences_InFlight);
+            m_aFences_InFlight.clear();
+            m_aFences_ImagesInFlight.clear();
+        }
     
 
 	bool VulkanRenderWindow::Init(int32 nWidth, 
@@ -89,46 +102,56 @@ namespace LostPeterPluginRendererVulkan
         //1> Create GLFWwindow
         if (!WindowBase::Init(nameWindow, nWidth, nHeight))
         {
-            F_LogError("*********************** VulkanRenderWindow::Init: Create window failed, name window: [%s] !", nameWindow.c_str());
+            F_LogError("*********************** VulkanRenderWindow::Init: 1> Create WindowBase failed, name window: [%s] !", nameWindow.c_str());
             return false;
         }
-        F_LogInfo("VulkanRenderWindow::Init: Create window success, name: [%s] !", nameWindow.c_str());
+        F_LogInfo("VulkanRenderWindow::Init: 1> Create WindowBase success, name: [%s] !", nameWindow.c_str());
 
         //2> Create SwapChain
         if (!RecreateSwapChain())
         {   
-            F_LogError("*********************** VulkanRenderWindow::Init: Create SwapChain failed, name window: [%s] !", nameWindow.c_str());
+            F_LogError("*********************** VulkanRenderWindow::Init: 2> Create SwapChain failed, name window: [%s] !", nameWindow.c_str());
             return false;
         }
-        F_LogInfo("VulkanRenderWindow::Init: Create SwapChain success !");
+        F_LogInfo("VulkanRenderWindow::Init: 2> Create SwapChain success !");
 
         //3> createSyncObjects_PresentRender
         if (!createSyncObjects_PresentRender())
         {
-            F_LogError("*********************** VulkanRenderWindow::Init: Create SyncObjects PresentRender failed, name window: [%s] !", nameWindow.c_str());
+            F_LogError("*********************** VulkanRenderWindow::Init: 3> Create SyncObjects PresentRender failed, name window: [%s] !", nameWindow.c_str());
             return false;
         }
-        F_LogInfo("VulkanRenderWindow::Init: Create SyncObjects PresentRender success !");
+        F_LogInfo("VulkanRenderWindow::Init: 3> Create SyncObjects PresentRender success !");
 
         //4> createSyncObjects_RenderCompute
         if (this->m_bIsCreateRenderComputeSycSemaphore)
         {
             if (!createSyncObjects_RenderCompute())
             {
-                F_LogError("*********************** VulkanRenderWindow::Init: Create SyncObjects RenderCompute failed, name window: [%s] !", nameWindow.c_str());
+                F_LogError("*********************** VulkanRenderWindow::Init: 4> Create SyncObjects RenderCompute failed, name window: [%s] !", nameWindow.c_str());
                 return false;
             }
-            F_LogInfo("VulkanRenderWindow::Init: Create SyncObjects RenderCompute success !");
+            F_LogInfo("VulkanRenderWindow::Init: 4> Create SyncObjects RenderCompute success !");
         }
 
-        //5> createRenderPassDescriptor
-        if (!createRenderPassDescriptor())
+        //5> createRenderFrameBufferDescriptor
+        if (!createRenderFrameBufferDescriptor())
         {
-            F_LogError("*********************** VulkanRenderWindow::Init: Create RenderPassDescriptor failed, name window: [%s] !", nameWindow.c_str());
+            F_LogError("*********************** VulkanRenderWindow::Init: 5> Create RenderFrameBufferDescriptor failed, name window: [%s] !", nameWindow.c_str());
             return false;
         }
+        F_LogInfo("VulkanRenderWindow::Init: 5> Create RenderFrameBufferDescriptor success !");
 
-        F_LogInfo("VulkanRenderWindow::Init: Create render window success, name window: [%s] !", nameWindow.c_str());
+        //6> createRenderPassDescriptor
+        if (!createRenderPassDescriptor())
+        {
+            F_LogError("*********************** VulkanRenderWindow::Init: 6> Create RenderPassDescriptor failed, name window: [%s] !", nameWindow.c_str());
+            return false;
+        }
+        F_LogInfo("VulkanRenderWindow::Init: 6> Create RenderPassDescriptor success !");
+
+
+        F_LogInfo("VulkanRenderWindow::Init: Create RenderWindow success, name window: [%s] !", nameWindow.c_str());
         return true;
     }
         bool VulkanRenderWindow::createSyncObjects_PresentRender()
@@ -148,9 +171,8 @@ namespace LostPeterPluginRendererVulkan
                     !pSemaphore_RenderComplete->Init() ||
                     !pFence_InFlight) 
                 {
-                    String msg = "*********************** VulkanRenderWindow::createSyncObjects_PresentRender: Failed to create present/render synchronization objects for a frame !";
-                    F_LogError(msg.c_str());
-                    throw std::runtime_error(msg);
+                    F_LogError("*********************** VulkanRenderWindow::createSyncObjects_PresentRender: Failed to create present/render synchronization objects for a frame !");
+                    return false;
                 }
 
                 this->m_aSemaphores_PresentComplete.push_back(pSemaphore_PresentComplete);
@@ -171,9 +193,8 @@ namespace LostPeterPluginRendererVulkan
             m_pSemaphore_GraphicsWait = new VulkanSemaphore(m_pDevice);
             if (!m_pSemaphore_GraphicsWait->Init())
             {
-                String msg = "*********************** VulkanRenderWindow::createRenderComputeSyncObjects: Failed to create Semaphore GraphicsWait !";
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg);
+                F_LogError("*********************** VulkanRenderWindow::createRenderComputeSyncObjects: Failed to create Semaphore GraphicsWait !");
+                return false;
             }
             VkSemaphore vkSignalSemaphores = m_pSemaphore_GraphicsWait->GetVkSemaphore();
             m_pDevice->QueueSubmitVkCommandBuffers(m_pDevice->GetQueueGraphics()->GetVkQueue(),
@@ -188,12 +209,28 @@ namespace LostPeterPluginRendererVulkan
             m_pSemaphore_ComputeWait = new VulkanSemaphore(m_pDevice);
             if (!m_pSemaphore_GraphicsWait->Init())
             {
-                String msg = "*********************** VulkanRenderWindow::createRenderComputeSyncObjects: Failed to create Semaphore ComputeWait !";
-                F_LogError(msg.c_str());
-                throw std::runtime_error(msg);
+                F_LogError("*********************** VulkanRenderWindow::createRenderComputeSyncObjects: Failed to create Semaphore ComputeWait !");
+                return false;
             }
 
             F_LogInfo("VulkanRenderWindow::createSyncObjects_RenderCompute: Success to create Semaphore GraphicsWait/ComputeWait !");
+            return true;
+        }
+        bool VulkanRenderWindow::createRenderFrameBufferDescriptor()
+        {
+            String nameRenderFrameBufferDescriptor = "RenderFrameBufferDescriptor-" + GetName();
+            m_pRenderFrameBufferDescriptor = new VulkanRenderFrameBufferDescriptor(nameRenderFrameBufferDescriptor, m_pDevice, m_pSwapChain);
+            if (!m_pRenderFrameBufferDescriptor->Init(this->m_eTexture,
+                                                      this->m_eSwapChainImagePixelFormat,
+                                                      this->m_eSwapChainImagePixelFormat,
+                                                      this->m_eMSAASampleCount,
+                                                      this->m_bHasImGUI))
+            {
+                F_LogError("*********************** VulkanRenderWindow::createRenderFrameBufferDescriptor: Failed to create VulkanRenderPassDescriptor !");
+                return false;
+            }
+
+            F_LogInfo("VulkanRenderWindow::createRenderFrameBufferDescriptor: Success to create VulkanRenderPassDescriptor !");
             return true;
         }
         bool VulkanRenderWindow::createRenderPassDescriptor()

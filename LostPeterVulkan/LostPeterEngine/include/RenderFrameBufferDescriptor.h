@@ -25,18 +25,35 @@ namespace LostPeterEngine
 
     public:
     protected:
-        TexturePtrVector m_aTextureSwapChain;
         TexturePtrVector m_aTextureColor;
         TexturePtrVector m_aTextureDepth;
+        TexturePtrVector m_aTextureSwapChain;
+
+    public:
+        F_FORCEINLINE const TexturePtrVector& GetTextureColor() const { return m_aTextureColor; }
+        F_FORCEINLINE const TexturePtrVector& GetTextureDepth() const { return m_aTextureDepth; }
+        F_FORCEINLINE const TexturePtrVector& GetTextureSwapChain() const { return m_aTextureSwapChain; }
 
     public:
         virtual void Destroy();
+        virtual bool Init(FTextureType eTexture,
+                          FPixelFormatType ePixelFormatColor,
+                          FPixelFormatType ePixelFormatDepth,
+                          FMSAASampleCountType eMSAASampleCount,
+                          bool bHasImGUI) = 0;
         
 
     public:
+
+
+
     protected:
-        virtual bool createTextureColor() = 0;
-        virtual bool createTextureDepth() = 0;
+        virtual bool createTextureColor(FTextureType eTexture,
+                                        FPixelFormatType ePixelFormatColor, 
+                                        FMSAASampleCountType eMSAASampleCount) = 0;
+        virtual bool createTextureDepth(FTextureType eTexture,
+                                        FPixelFormatType ePixelFormatDepth, 
+                                        FMSAASampleCountType eMSAASampleCount) = 0;
 
         virtual bool createRenderPass() = 0;
         virtual bool createRenderFrameBuffer() = 0;

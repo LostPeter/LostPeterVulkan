@@ -19,7 +19,8 @@ namespace LostPeterPluginRendererVulkan
     class VulkanRenderPassDescriptor : public RenderPassDescriptor
     {
     public:
-        VulkanRenderPassDescriptor(const String& nameRenderPassDescriptor, VulkanDevice* pDevice);
+        VulkanRenderPassDescriptor(const String& nameRenderPassDescriptor, 
+                                   VulkanDevice* pDevice);
         virtual ~VulkanRenderPassDescriptor();
 
     public:
@@ -30,6 +31,7 @@ namespace LostPeterPluginRendererVulkan
         VkSampler m_vkSampler;
         VkDescriptorImageInfo m_vkDescriptorImageInfo;
         
+        VkClearValue m_vkClearValues[C_CONFIG_MAX_RENDER_TARGET_MULTIPLE_COUNT * 2u + 2u];
 
     public:
         F_FORCEINLINE const VulkanFrameBufferAttachmentPtrVector& GetFrameBufferAttachmentPtrVector() const { return m_aFrameBufferAttachment; }
@@ -43,14 +45,20 @@ namespace LostPeterPluginRendererVulkan
         virtual void Destroy();
         virtual bool Init();
 
-
-
     public:
         bool HasFrameBufferAttachment(const String& strName);
         VulkanFrameBufferAttachment* GetFrameBufferAttachment(const String& strName);
         bool AddFrameBufferAttachment(VulkanFrameBufferAttachment* pFrameBufferAttachment);
         void DeleteFrameBufferAttachment(const String& strName);
         void DeleteFrameBufferAttachmentAll();
+
+
+    public:
+        virtual void SetClearColor(uint8 nIndex, const FColor& clearColor);
+        virtual void SetClearColor(const FColor& clearColor);
+        
+        virtual void SetClearDepth(float clearDepth);
+        virtual void SetClearStencil(uint32 clearStencil);
 
     };
 
