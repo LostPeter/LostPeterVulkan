@@ -218,11 +218,12 @@ namespace LostPeterPluginRendererVulkan
         }
         bool VulkanRenderWindow::createRenderFrameBufferDescriptor()
         {
+            this->m_eDepthPixelFormat = m_pDevice->FindDepthPixelFormatType();
             String nameRenderFrameBufferDescriptor = "RenderFrameBufferDescriptor-" + GetName();
             m_pRenderFrameBufferDescriptor = new VulkanRenderFrameBufferDescriptor(nameRenderFrameBufferDescriptor, m_pDevice, m_pSwapChain);
             if (!m_pRenderFrameBufferDescriptor->Init(this->m_eTexture,
                                                       this->m_eSwapChainImagePixelFormat,
-                                                      this->m_eSwapChainImagePixelFormat,
+                                                      this->m_eDepthPixelFormat,
                                                       this->m_eMSAASampleCount,
                                                       this->m_bHasImGUI))
             {

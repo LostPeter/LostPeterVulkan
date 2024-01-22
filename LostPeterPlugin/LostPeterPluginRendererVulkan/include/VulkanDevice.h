@@ -37,6 +37,9 @@ namespace LostPeterPluginRendererVulkan
         VkSampleCountFlagBits m_vkMaxMSAASamples;
         VkCommandPool m_vkCommandPoolTransfer;
 
+        VkFormatVector m_aDepthVkFormat;
+        VkFormat2PixelFormatMap m_mapDepthVkFormat2PixelFormat;
+
         VulkanInstance* m_pInstance;
         VulkanQueue* m_pQueueGraphics;
         VulkanQueue* m_pQueueCompute;
@@ -91,7 +94,8 @@ namespace LostPeterPluginRendererVulkan
 
         VkSampleCountFlagBits GetMaxUsableSampleCount();
         VkFormat FindSupportedFormat(const VkFormatVector& candidates, VkImageTiling typeImageTiling, VkFormatFeatureFlags features);
-        VkFormat FindDepthFormat();
+        VkFormat FindDepthVkFormat();
+        FPixelFormatType FindDepthPixelFormatType();
         uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
     private:

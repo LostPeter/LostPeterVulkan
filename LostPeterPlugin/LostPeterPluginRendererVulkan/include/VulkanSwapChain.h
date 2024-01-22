@@ -83,7 +83,7 @@ namespace LostPeterPluginRendererVulkan
 
         VulkanSwapStatusType Present(VkSemaphore* pComplete);
 
-    private:
+    protected:
         void destroySemaphore();
 
         bool chooseSwapSurfacePixelFormat(FPixelFormatType& eOutPixelFormat);

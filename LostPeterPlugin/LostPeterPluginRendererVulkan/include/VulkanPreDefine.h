@@ -63,6 +63,9 @@ namespace LostPeterPluginRendererVulkan
     }
 
 
+    typedef std::vector<FPixelFormatType> PixelFormatTypeVector;
+    typedef std::map<FPixelFormatType, VkFormat> PixelFormat2VkFormatMap;
+    typedef std::map<VkFormat, FPixelFormatType> VkFormat2PixelFormatMap;
     typedef std::vector<VkFormat> VkFormatVector;
     typedef std::map<VkFormat, VkFormatProperties> VkFormat2PropertiesMap;
     typedef std::vector<VkClearValue> VkClearValueVector;

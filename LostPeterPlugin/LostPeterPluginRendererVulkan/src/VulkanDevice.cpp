@@ -40,6 +40,14 @@ namespace LostPeterPluginRendererVulkan
         , m_pFrameBufferManager(nullptr)
     {
         F_Assert(m_vkPhysicalDevice != VK_NULL_HANDLE && "VulkanDevice::VulkanDevice")
+
+        m_aDepthVkFormat.push_back(VK_FORMAT_D32_SFLOAT);
+        m_aDepthVkFormat.push_back(VK_FORMAT_D32_SFLOAT_S8_UINT);
+        m_aDepthVkFormat.push_back(VK_FORMAT_D24_UNORM_S8_UINT);
+
+        m_mapDepthVkFormat2PixelFormat[VK_FORMAT_D32_SFLOAT] = F_PixelFormat_DEPTH_D32_SFLOAT;
+        m_mapDepthVkFormat2PixelFormat[VK_FORMAT_D32_SFLOAT_S8_UINT] = F_PixelFormat_DEPTHSTENCIL_D32_SFLOAT_S8_UINT;
+        m_mapDepthVkFormat2PixelFormat[VK_FORMAT_D24_UNORM_S8_UINT] = F_PixelFormat_DEPTHSTENCIL_D24_UNORM_S8_UINT;
     }
 
     VulkanDevice::~VulkanDevice()
@@ -223,15 +231,22 @@ namespace LostPeterPluginRendererVulkan
         throw std::runtime_error(msg);
     }
 
-    VkFormat VulkanDevice::FindDepthFormat()
+    VkFormat VulkanDevice::FindDepthVkFormat()
     {
-        VkFormatVector candidates;
-        candidates.push_back(VK_FORMAT_D32_SFLOAT);
-        candidates.push_back(VK_FORMAT_D32_SFLOAT_S8_UINT);
-        candidates.push_back(VK_FORMAT_D24_UNORM_S8_UINT);
-        return FindSupportedFormat(candidates,
+        return FindSupportedFormat(this->m_aDepthVkFormat,
                                    VK_IMAGE_TILING_OPTIMAL,
                                    VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+    }
+    FPixelFormatType VulkanDevice::FindDepthPixelFormatType()
+    {
+        VkFormat typeFormat = FindDepthVkFormat();
+        VkFormat2PixelFormatMap::iterator itFind = m_mapDepthVkFormat2PixelFormat.find(typeFormat);
+        if (itFind == m_mapDepthVkFormat2PixelFormat.end())
+        {
+            F_LogError("*********************** VulkanDevice::FindDepthPixelFormatType: Failed to find supported depth format !");
+            return F_PixelFormat_DEPTHSTENCIL_D24_UNORM_S8_UINT;
+        }
+        return itFind->second;
     }
 
     uint32_t VulkanDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
@@ -1392,7 +1407,7 @@ namespace LostPeterPluginRendererVulkan
         viewInfo.components = typeComponentMapping;
         viewInfo.subresourceRange.aspectMask = typeImageAspectFlags;
         viewInfo.subresourceRange.baseMipLevel = 0;
-        viewInfo.subresourceRange.levelCount = nMipMapCount;
+        viewInfo.subresourceRange.levelCount = nMipMapCount <= 0 ? 1 : nMipMapCount;
         viewInfo.subresourceRange.baseArrayLayer = 0;
         viewInfo.subresourceRange.layerCount = nLayerCount;
 
@@ -1502,7 +1517,7 @@ namespace LostPeterPluginRendererVulkan
 
             barrier.subresourceRange.aspectMask = typeImageAspectFlags;
             barrier.subresourceRange.baseMipLevel = nMipBase;
-            barrier.subresourceRange.levelCount = nMipCount;
+            barrier.subresourceRange.levelCount = nMipCount <= 0 ? 1 : nMipCount;
             barrier.subresourceRange.baseArrayLayer = nLayerBase;
             barrier.subresourceRange.layerCount = nLayerCount;
 

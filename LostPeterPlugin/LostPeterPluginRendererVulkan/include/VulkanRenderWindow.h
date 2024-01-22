@@ -37,6 +37,7 @@ namespace LostPeterPluginRendererVulkan
         FTextureType m_eTexture;
         FMSAASampleCountType m_eMSAASampleCount;
         FPixelFormatType m_eSwapChainImagePixelFormat;
+        FPixelFormatType m_eDepthPixelFormat;
         bool m_bHasImGUI;
 
         uint32 m_nSwapChainImageDesiredCount;

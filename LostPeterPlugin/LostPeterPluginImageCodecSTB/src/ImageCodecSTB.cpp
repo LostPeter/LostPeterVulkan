@@ -228,6 +228,8 @@ namespace LostPeterPluginImageCodecSTB
         pImageData->nMipmapsCount = 0; // no mipmaps in non-DDS 
         pImageData->nFlags = 0;
 
+        if (isRGBA)
+            texChannels = 4;
         switch (texChannels)
         {
             case 1:
